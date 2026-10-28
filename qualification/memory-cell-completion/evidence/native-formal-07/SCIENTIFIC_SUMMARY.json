@@ -1,0 +1,787 @@
+{
+  "all_execution_exit_codes": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "ci_passed": true,
+  "ci_verify_wall_seconds": 3873.634182575,
+  "continual": {
+    "actual_fit_calls": 36,
+    "actual_worker_processes": 6,
+    "causal_parameter_gate_passed": true,
+    "evidence_grants_authority": false,
+    "exact_rss_byte_time_available": false,
+    "fixture_sha256": "750ecabdcdbc0aa9f5bf253615efaff090800c3a96a2958e0d17a4df829c6502",
+    "full_cost_net_gain_established": false,
+    "input_sha256": "70637d275066b6f037ab6daf61c841bd59a75add4ea52e49b9de8d4943e4416e",
+    "integrity": "verified",
+    "natural_language_addressing_evaluated": false,
+    "novel_address_or_open_world_program_discovery_established": false,
+    "original_report": {
+      "bytes": 181544,
+      "path": "diagnostics/continual-learning-score.json",
+      "sha256": "15fba3b4332ba1efcb00370284747c1f5c9a0caf818d8a06a7f43950f93709b0"
+    },
+    "parent_wall_ns_before_final_receipt": 785088933167,
+    "schema": "hepta.memory.v9.continual-score.v1",
+    "stages": [
+      {
+        "causal_gate_passed": true,
+        "interventions": {
+          "clean": {
+            "future": {
+              "correct_decisions": 24,
+              "correct_reads": 144,
+              "reads": 144,
+              "tasks": 24
+            },
+            "retention": {
+              "correct_decisions": 8,
+              "correct_reads": 48,
+              "reads": 48,
+              "tasks": 8
+            }
+          },
+          "frozen": {
+            "future": {
+              "correct_decisions": 0,
+              "correct_reads": 0,
+              "reads": 144,
+              "tasks": 24
+            },
+            "retention": {
+              "correct_decisions": 0,
+              "correct_reads": 0,
+              "reads": 48,
+              "tasks": 8
+            }
+          },
+          "trained": {
+            "future": {
+              "correct_decisions": 24,
+              "correct_reads": 144,
+              "reads": 144,
+              "tasks": 24
+            },
+            "retention": {
+              "correct_decisions": 8,
+              "correct_reads": 48,
+              "reads": 48,
+              "tasks": 8
+            }
+          },
+          "zero": {
+            "future": {
+              "correct_decisions": 0,
+              "correct_reads": 0,
+              "reads": 144,
+              "tasks": 24
+            },
+            "retention": {
+              "correct_decisions": 0,
+              "correct_reads": 0,
+              "reads": 48,
+              "tasks": 8
+            }
+          }
+        },
+        "owner_current_entities": 9,
+        "representation": "catalog",
+        "stage": 0
+      },
+      {
+        "causal_gate_passed": true,
+        "interventions": {
+          "clean": {
+            "future": {
+              "correct_decisions": 24,
+              "correct_reads": 144,
+              "reads": 144,
+              "tasks": 24
+            },
+            "retention": {
+              "correct_decisions": 8,
+              "correct_reads": 48,
+              "reads": 48,
+              "tasks": 8
+            }
+          },
+          "frozen": {
+            "future": {
+              "correct_decisions": 0,
+              "correct_reads": 49,
+              "reads": 144,
+              "tasks": 24
+            },
+            "retention": {
+              "correct_decisions": 8,
+              "correct_reads": 48,
+              "reads": 48,
+              "tasks": 8
+            }
+          },
+          "trained": {
+            "future": {
+              "correct_decisions": 24,
+              "correct_reads": 144,
+              "reads": 144,
+              "tasks": 24
+            },
+            "retention": {
+              "correct_decisions": 8,
+              "correct_reads": 48,
+              "reads": 48,
+              "tasks": 8
+            }
+          },
+          "zero": {
+            "future": {
+              "correct_decisions": 0,
+              "correct_reads": 0,
+              "reads": 144,
+              "tasks": 24
+            },
+            "retention": {
+              "correct_decisions": 0,
+              "correct_reads": 0,
+              "reads": 48,
+              "tasks": 8
+            }
+          }
+        },
+        "owner_current_entities": 17,
+        "representation": "catalog",
+        "stage": 1
+      },
+      {
+        "causal_gate_passed": true,
+        "interventions": {
+          "clean": {
+            "future": {
+              "correct_decisions": 24,
+              "correct_reads": 144,
+              "reads": 144,
+              "tasks": 24
+            },
+            "retention": {
+              "correct_decisions": 8,
+              "correct_reads": 48,
+              "reads": 48,
+              "tasks": 8
+            }
+          },
+          "frozen": {
+            "future": {
+              "correct_decisions": 5,
+              "correct_reads": 56,
+              "reads": 144,
+              "tasks": 24
+            },
+            "retention": {
+              "correct_decisions": 8,
+              "correct_reads": 48,
+              "reads": 48,
+              "tasks": 8
+            }
+          },
+          "trained": {
+            "future": {
+              "correct_decisions": 24,
+              "correct_reads": 144,
+              "reads": 144,
+              "tasks": 24
+            },
+            "retention": {
+              "correct_decisions": 8,
+              "correct_reads": 48,
+              "reads": 48,
+              "tasks": 8
+            }
+          },
+          "zero": {
+            "future": {
+              "correct_decisions": 0,
+              "correct_reads": 0,
+              "reads": 144,
+              "tasks": 24
+            },
+            "retention": {
+              "correct_decisions": 0,
+              "correct_reads": 0,
+              "reads": 48,
+              "tasks": 8
+            }
+          }
+        },
+        "owner_current_entities": 25,
+        "representation": "catalog",
+        "stage": 2
+      },
+      {
+        "causal_gate_passed": true,
+        "interventions": {
+          "clean": {
+            "future": {
+              "correct_decisions": 24,
+              "correct_reads": 144,
+              "reads": 144,
+              "tasks": 24
+            },
+            "retention": {
+              "correct_decisions": 8,
+              "correct_reads": 48,
+              "reads": 48,
+              "tasks": 8
+            }
+          },
+          "frozen": {
+            "future": {
+              "correct_decisions": 0,
+              "correct_reads": 0,
+              "reads": 144,
+              "tasks": 24
+            },
+            "retention": {
+              "correct_decisions": 0,
+              "correct_reads": 0,
+              "reads": 48,
+              "tasks": 8
+            }
+          },
+          "trained": {
+            "future": {
+              "correct_decisions": 24,
+              "correct_reads": 144,
+              "reads": 144,
+              "tasks": 24
+            },
+            "retention": {
+              "correct_decisions": 8,
+              "correct_reads": 48,
+              "reads": 48,
+              "tasks": 8
+            }
+          },
+          "zero": {
+            "future": {
+              "correct_decisions": 0,
+              "correct_reads": 0,
+              "reads": 144,
+              "tasks": 24
+            },
+            "retention": {
+              "correct_decisions": 0,
+              "correct_reads": 0,
+              "reads": 48,
+              "tasks": 8
+            }
+          }
+        },
+        "owner_current_entities": 9,
+        "representation": "byte",
+        "stage": 0
+      },
+      {
+        "causal_gate_passed": true,
+        "interventions": {
+          "clean": {
+            "future": {
+              "correct_decisions": 24,
+              "correct_reads": 144,
+              "reads": 144,
+              "tasks": 24
+            },
+            "retention": {
+              "correct_decisions": 8,
+              "correct_reads": 48,
+              "reads": 48,
+              "tasks": 8
+            }
+          },
+          "frozen": {
+            "future": {
+              "correct_decisions": 0,
+              "correct_reads": 49,
+              "reads": 144,
+              "tasks": 24
+            },
+            "retention": {
+              "correct_decisions": 8,
+              "correct_reads": 48,
+              "reads": 48,
+              "tasks": 8
+            }
+          },
+          "trained": {
+            "future": {
+              "correct_decisions": 24,
+              "correct_reads": 144,
+              "reads": 144,
+              "tasks": 24
+            },
+            "retention": {
+              "correct_decisions": 8,
+              "correct_reads": 48,
+              "reads": 48,
+              "tasks": 8
+            }
+          },
+          "zero": {
+            "future": {
+              "correct_decisions": 0,
+              "correct_reads": 0,
+              "reads": 144,
+              "tasks": 24
+            },
+            "retention": {
+              "correct_decisions": 0,
+              "correct_reads": 0,
+              "reads": 48,
+              "tasks": 8
+            }
+          }
+        },
+        "owner_current_entities": 17,
+        "representation": "byte",
+        "stage": 1
+      },
+      {
+        "causal_gate_passed": true,
+        "interventions": {
+          "clean": {
+            "future": {
+              "correct_decisions": 24,
+              "correct_reads": 144,
+              "reads": 144,
+              "tasks": 24
+            },
+            "retention": {
+              "correct_decisions": 8,
+              "correct_reads": 48,
+              "reads": 48,
+              "tasks": 8
+            }
+          },
+          "frozen": {
+            "future": {
+              "correct_decisions": 0,
+              "correct_reads": 56,
+              "reads": 144,
+              "tasks": 24
+            },
+            "retention": {
+              "correct_decisions": 8,
+              "correct_reads": 48,
+              "reads": 48,
+              "tasks": 8
+            }
+          },
+          "trained": {
+            "future": {
+              "correct_decisions": 24,
+              "correct_reads": 144,
+              "reads": 144,
+              "tasks": 24
+            },
+            "retention": {
+              "correct_decisions": 8,
+              "correct_reads": 48,
+              "reads": 48,
+              "tasks": 8
+            }
+          },
+          "zero": {
+            "future": {
+              "correct_decisions": 0,
+              "correct_reads": 0,
+              "reads": 144,
+              "tasks": 24
+            },
+            "retention": {
+              "correct_decisions": 0,
+              "correct_reads": 0,
+              "reads": 48,
+              "tasks": 8
+            }
+          }
+        },
+        "owner_current_entities": 25,
+        "representation": "byte",
+        "stage": 2
+      }
+    ],
+    "system_compression_established": false,
+    "three_stages_are_independent_trials": false
+  },
+  "derived_from_original_reports_only": true,
+  "interpretation": [
+    "Execution and evidence-integrity success does not establish scientific superiority.",
+    "The retained V9 byte/catalog runtime is separate from the new residual TensorCell profile.",
+    "Language report candidate remains a qualification shadow with a false quality gate.",
+    "Native structure measurements lack exclusive search/replay/communication wall costs; NoChange is preserved.",
+    "Finalizer live authentication and source gates must still pass before fix/format is authorized."
+  ],
+  "language": [
+    {
+      "arm": "frozen-v7",
+      "binding_failures": 0,
+      "counts": {
+        "ambiguous_alias": {
+          "errors": 0,
+          "native_correct": 8,
+          "negative_routes": 0,
+          "routing_correct": 8,
+          "rows": 8,
+          "wrong_native_accepts": 0
+        },
+        "known": {
+          "errors": 0,
+          "native_correct": 52,
+          "negative_routes": 0,
+          "routing_correct": 52,
+          "rows": 144,
+          "wrong_native_accepts": 0
+        },
+        "time_conflict": {
+          "errors": 0,
+          "native_correct": 12,
+          "negative_routes": 0,
+          "routing_correct": 12,
+          "rows": 12,
+          "wrong_native_accepts": 0
+        },
+        "unknown_entity": {
+          "errors": 0,
+          "native_correct": 12,
+          "negative_routes": 0,
+          "routing_correct": 12,
+          "rows": 12,
+          "wrong_native_accepts": 0
+        },
+        "unsupported": {
+          "errors": 0,
+          "native_correct": 90,
+          "negative_routes": 6,
+          "routing_correct": 90,
+          "rows": 96,
+          "wrong_native_accepts": 6
+        }
+      },
+      "errors": 0,
+      "final_use_authority": false,
+      "known_correct_coverage": 0.3611111111111111,
+      "language_head_fits": 0,
+      "native_rows_attempted": 272,
+      "native_rows_returned": 272,
+      "new_memory_parameter_fits": 2,
+      "population_risk_established": false,
+      "qualification_shadow": false,
+      "quality_gate_passed": false,
+      "raw_file_identity": {
+        "bytes": 1214015,
+        "sha256": "90ac378058469c09dfbc03fa4bb484463a73d8581bfbeba2e72f17c4cf9800ba"
+      },
+      "report": "diagnostics/baseline-v7-native-held.json",
+      "unsupported_route_acceptance_rate": 0.0625
+    },
+    {
+      "arm": "frozen-v8-shadow",
+      "binding_failures": 0,
+      "counts": {
+        "ambiguous_alias": {
+          "errors": 0,
+          "native_correct": 8,
+          "negative_routes": 0,
+          "routing_correct": 8,
+          "rows": 8,
+          "wrong_native_accepts": 0
+        },
+        "known": {
+          "errors": 0,
+          "native_correct": 78,
+          "negative_routes": 0,
+          "routing_correct": 78,
+          "rows": 144,
+          "wrong_native_accepts": 0
+        },
+        "time_conflict": {
+          "errors": 0,
+          "native_correct": 12,
+          "negative_routes": 0,
+          "routing_correct": 12,
+          "rows": 12,
+          "wrong_native_accepts": 0
+        },
+        "unknown_entity": {
+          "errors": 0,
+          "native_correct": 12,
+          "negative_routes": 0,
+          "routing_correct": 12,
+          "rows": 12,
+          "wrong_native_accepts": 0
+        },
+        "unsupported": {
+          "errors": 0,
+          "native_correct": 86,
+          "negative_routes": 10,
+          "routing_correct": 86,
+          "rows": 96,
+          "wrong_native_accepts": 10
+        }
+      },
+      "errors": 0,
+      "final_use_authority": false,
+      "known_correct_coverage": 0.5416666666666666,
+      "language_head_fits": 0,
+      "native_rows_attempted": 272,
+      "native_rows_returned": 272,
+      "new_memory_parameter_fits": 2,
+      "population_risk_established": false,
+      "qualification_shadow": true,
+      "quality_gate_passed": false,
+      "raw_file_identity": {
+        "bytes": 1303044,
+        "sha256": "632d83e79d7de96dc59f796271da8c5b7ad5a2a941aa54a15d09390daf7e7ec1"
+      },
+      "report": "diagnostics/baseline-v8-native-held.json",
+      "unsupported_route_acceptance_rate": 0.10416666666666667
+    },
+    {
+      "arm": "candidate-v9-shadow",
+      "binding_failures": 0,
+      "counts": {
+        "ambiguous_alias": {
+          "errors": 0,
+          "native_correct": 8,
+          "negative_routes": 0,
+          "routing_correct": 8,
+          "rows": 8,
+          "wrong_native_accepts": 0
+        },
+        "known": {
+          "errors": 0,
+          "native_correct": 94,
+          "negative_routes": 0,
+          "routing_correct": 94,
+          "rows": 144,
+          "wrong_native_accepts": 0
+        },
+        "time_conflict": {
+          "errors": 0,
+          "native_correct": 12,
+          "negative_routes": 0,
+          "routing_correct": 12,
+          "rows": 12,
+          "wrong_native_accepts": 0
+        },
+        "unknown_entity": {
+          "errors": 0,
+          "native_correct": 12,
+          "negative_routes": 0,
+          "routing_correct": 12,
+          "rows": 12,
+          "wrong_native_accepts": 0
+        },
+        "unsupported": {
+          "errors": 0,
+          "native_correct": 88,
+          "negative_routes": 8,
+          "routing_correct": 88,
+          "rows": 96,
+          "wrong_native_accepts": 8
+        }
+      },
+      "errors": 0,
+      "final_use_authority": false,
+      "known_correct_coverage": 0.6527777777777778,
+      "language_head_fits": 0,
+      "native_rows_attempted": 272,
+      "native_rows_returned": 272,
+      "new_memory_parameter_fits": 2,
+      "population_risk_established": false,
+      "qualification_shadow": true,
+      "quality_gate_passed": false,
+      "raw_file_identity": {
+        "bytes": 1318925,
+        "sha256": "03eedeb56259cd8f54c7918123544a1085662ac4b02a8e8965ea42038bfc6e20"
+      },
+      "report": "diagnostics/candidate-v9-native-held.json",
+      "unsupported_route_acceptance_rate": 0.08333333333333333
+    }
+  ],
+  "migration": {
+    "original_report": {
+      "bytes": 133248,
+      "path": "diagnostics/migration-process.json",
+      "sha256": "d2b70f96ccfbb65a6b1e2b6cc9e0de5a163551e6e49029c1ab52c3afd28755cb"
+    },
+    "source_roots_unavailable_during_readback": true,
+    "total_lifecycle_ns": "7597756365"
+  },
+  "native_test_log_summaries": {
+    "actual-native-tests.log": {
+      "raw_file_identity": {
+        "bytes": 35072,
+        "sha256": "574845b44200d3209df0dbf83cbae6eea614b4286c7390feb802fdea4be04801"
+      },
+      "summary_without_ansi": "Summary [3141.920s] 3 tests run: 3 passed (3 slow), 235 skipped"
+    },
+    "ordinary-native-tests.log": {
+      "raw_file_identity": {
+        "bytes": 222313,
+        "sha256": "068536488628eeeb618d51f15e0a93d1d414f5ae42599550cf1e6855eda150d2"
+      },
+      "summary_without_ansi": "Summary [  76.085s] 951 tests run: 951 passed, 29 skipped"
+    }
+  },
+  "receipt": {
+    "bytes": 106653,
+    "sha256": "57a5bd42848344f8c4c93448c55d925000ffb5f9de0e119a54d2a5a32fb2ce31"
+  },
+  "schema": "hepta.memory.completion.native-original-summary.v1",
+  "scoring_or_model_execution_performed": false,
+  "source": {
+    "commit": "8510464dd7c4bbed20b5dfa81d3b65eaf6671132",
+    "job_id": 122975678245,
+    "run_id": 40733474806,
+    "tree": "71ff3402b3da1ad2d7fa9a39873364fbd9f4f7a5"
+  },
+  "structure": {
+    "actual_fit_calls": 256,
+    "actual_selection_processes": 3,
+    "actual_training_processes": 27,
+    "decision": "NoChange",
+    "evidence_grants_authority": false,
+    "exact_continuous_cost_established": false,
+    "fixture_sha256": "750ecabdcdbc0aa9f5bf253615efaff090800c3a96a2958e0d17a4df829c6502",
+    "full_cost_gain_established": false,
+    "input_sha256": "d796d09788243986ea91db4c468649f9d3c30f7e971da9b4e5021fa1fab2f960",
+    "integrity": "verified",
+    "natural_language_addressing_evaluated": false,
+    "new_domains_are_independent_trials": false,
+    "new_semantic_type_or_program_discovery_established": false,
+    "original_report": {
+      "bytes": 311049,
+      "path": "diagnostics/structure-learning-score.json",
+      "sha256": "1da686a2dc91e0ffe2baf8c0f6ac359025608b0e28b103c0f658b5df8373b1c4"
+    },
+    "resource": {
+      "full_cost_exact": false,
+      "integrals": {
+        "storage_allocated_bytes": {
+          "estimate_scope": "observed inter-sample intervals only; unknown intervals excluded",
+          "exact_continuous_integral": false,
+          "observed_interval_ns": 2280140462941,
+          "sampled_byte_ns_estimate": 62270653500489678848,
+          "trapezoid_numerator_byte_ns": 124541307000979357696,
+          "unobserved_interval_ns": 8649790
+        },
+        "storage_logical_bytes": {
+          "estimate_scope": "observed inter-sample intervals only; unknown intervals excluded",
+          "exact_continuous_integral": false,
+          "observed_interval_ns": 2280140462941,
+          "sampled_byte_ns_estimate": 60030392996682054035,
+          "trapezoid_numerator_byte_ns": 120060785993364108071,
+          "unobserved_interval_ns": 8649790
+        },
+        "tree_pss_bytes": {
+          "estimate_scope": "observed inter-sample intervals only; unknown intervals excluded",
+          "exact_continuous_integral": false,
+          "observed_interval_ns": 2279728186388,
+          "sampled_byte_ns_estimate": 282475059303010869248,
+          "trapezoid_numerator_byte_ns": 564950118606021738496,
+          "unobserved_interval_ns": 420926343
+        },
+        "tree_rss_bytes": {
+          "estimate_scope": "observed inter-sample intervals only; unknown intervals excluded",
+          "exact_continuous_integral": false,
+          "observed_interval_ns": 2279728186388,
+          "sampled_byte_ns_estimate": 364342610767670579200,
+          "trapezoid_numerator_byte_ns": 728685221535341158400,
+          "unobserved_interval_ns": 420926343
+        }
+      },
+      "passed": true,
+      "sample_count": 10940,
+      "sample_error_count": 1,
+      "samples": {
+        "bytes": 10219562,
+        "path": "/home/runner/work/hepta-private-ci/hepta-private-ci/memory-v9-ci-output/structure-learning.artifacts/samples.jsonl",
+        "sha256": "44ec91c54af13e35dd0bb8b1676e1a081731dcf62d302590cf7ff2efe0264f67"
+      },
+      "timed_out_or_sample_cap": false,
+      "wall_ns_through_observation_close": 2280149112731
+    },
+    "schema": "hepta.memory.v9.structure-score.v1",
+    "specialization_learned_from_completed_prefix_only": true,
+    "stages": [
+      {
+        "actual_fit_calls": 82,
+        "missing_exclusive_cost_fields": [
+          "communication_wall_ns",
+          "replay_wall_ns",
+          "search_wall_ns"
+        ],
+        "selected_counts": {
+          "fixed": 8,
+          "learned": 5
+        },
+        "stage": 0,
+        "structure_gate": {
+          "full_cost_gain_established": false,
+          "owner_publication_performed": false,
+          "proposal_candidates": 1,
+          "reason": "MissingMeasurements",
+          "selected_generation_unchanged": 12
+        }
+      },
+      {
+        "actual_fit_calls": 88,
+        "missing_exclusive_cost_fields": [
+          "communication_wall_ns",
+          "replay_wall_ns",
+          "search_wall_ns"
+        ],
+        "selected_counts": {
+          "fixed": 8,
+          "learned": 8
+        },
+        "stage": 1,
+        "structure_gate": {
+          "full_cost_gain_established": false,
+          "owner_publication_performed": false,
+          "proposal_candidates": 1,
+          "reason": "MissingMeasurements",
+          "selected_generation_unchanged": 24
+        }
+      },
+      {
+        "actual_fit_calls": 86,
+        "missing_exclusive_cost_fields": [
+          "communication_wall_ns",
+          "replay_wall_ns",
+          "search_wall_ns"
+        ],
+        "selected_counts": {
+          "fixed": 3,
+          "learned": 7
+        },
+        "stage": 2,
+        "structure_gate": {
+          "full_cost_gain_established": false,
+          "owner_publication_performed": false,
+          "proposal_candidates": 1,
+          "reason": "MissingMeasurements",
+          "selected_generation_unchanged": 36
+        }
+      }
+    ]
+  }
+}

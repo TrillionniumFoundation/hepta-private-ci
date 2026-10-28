@@ -1,0 +1,170 @@
+{
+  "audit_passed": true,
+  "case_details": "See AUDIT_FULL.json.gz, or unpacked memory-run/evaluation/AUDIT.json",
+  "checks": 835791,
+  "complete_execution_plan_bound": true,
+  "distinct_language_families": 36,
+  "distinct_language_templates": 288,
+  "execution_plan_sha256": "31556d81459aac45a7091bde291cca2950ae0d22d4134536e40c367990fdd88a",
+  "failures": [],
+  "family_intervals": {
+    "exact_same_router": {
+      "known": {
+        "families": 24,
+        "interpretation": "descriptive family-block resampling; no population guarantee",
+        "percentile95": [
+          0.546875,
+          0.7760416666666666
+        ],
+        "resamples": 2000,
+        "template_mean": 0.6666666666666666,
+        "templates": 192
+      },
+      "unsupported": {
+        "families": 12,
+        "interpretation": "descriptive family-block resampling; no population guarantee",
+        "percentile95": [
+          0.052083333333333336,
+          0.22916666666666666
+        ],
+        "resamples": 2000,
+        "template_mean": 0.13541666666666666,
+        "templates": 96
+      }
+    },
+    "parameter_actual": {
+      "known": {
+        "families": 24,
+        "interpretation": "descriptive family-block resampling; no population guarantee",
+        "percentile95": [
+          0.546875,
+          0.7760416666666666
+        ],
+        "resamples": 2000,
+        "template_mean": 0.6666666666666666,
+        "templates": 192
+      },
+      "unsupported": {
+        "families": 12,
+        "interpretation": "descriptive family-block resampling; no population guarantee",
+        "percentile95": [
+          0.052083333333333336,
+          0.22916666666666666
+        ],
+        "resamples": 2000,
+        "template_mean": 0.13541666666666666,
+        "templates": 96
+      }
+    },
+    "parameter_no_procedure": {
+      "known": {
+        "families": 24,
+        "interpretation": "descriptive family-block resampling; no population guarantee",
+        "percentile95": [
+          0.296875,
+          0.5885416666666666
+        ],
+        "resamples": 2000,
+        "template_mean": 0.4427083333333333,
+        "templates": 192
+      },
+      "unsupported": {
+        "families": 12,
+        "interpretation": "descriptive family-block resampling; no population guarantee",
+        "percentile95": [
+          0.052083333333333336,
+          0.22916666666666666
+        ],
+        "resamples": 2000,
+        "template_mean": 0.13541666666666666,
+        "templates": 96
+      }
+    },
+    "parameter_no_semantic": {
+      "known": {
+        "families": 24,
+        "interpretation": "descriptive family-block resampling; no population guarantee",
+        "percentile95": [
+          0.23958333333333334,
+          0.5208333333333334
+        ],
+        "resamples": 2000,
+        "template_mean": 0.375,
+        "templates": 192
+      },
+      "unsupported": {
+        "families": 12,
+        "interpretation": "descriptive family-block resampling; no population guarantee",
+        "percentile95": [
+          0.052083333333333336,
+          0.22916666666666666
+        ],
+        "resamples": 2000,
+        "template_mean": 0.13541666666666666,
+        "templates": 96
+      }
+    },
+    "parameter_oracle": {
+      "known": {
+        "families": 24,
+        "interpretation": "descriptive family-block resampling; no population guarantee",
+        "percentile95": [
+          1.0,
+          1.0
+        ],
+        "resamples": 2000,
+        "template_mean": 1.0,
+        "templates": 192
+      },
+      "unsupported": {
+        "families": 12,
+        "interpretation": "descriptive family-block resampling; no population guarantee",
+        "percentile95": [
+          0.0,
+          0.0
+        ],
+        "resamples": 2000,
+        "template_mean": 0.0,
+        "templates": 96
+      }
+    },
+    "parameter_shuffled": {
+      "known": {
+        "families": 24,
+        "interpretation": "descriptive family-block resampling; no population guarantee",
+        "percentile95": [
+          0.16666666666666666,
+          0.4583333333333333
+        ],
+        "resamples": 2000,
+        "template_mean": 0.3072916666666667,
+        "templates": 192
+      },
+      "unsupported": {
+        "families": 12,
+        "interpretation": "descriptive family-block resampling; no population guarantee",
+        "percentile95": [
+          0.052083333333333336,
+          0.22916666666666666
+        ],
+        "resamples": 2000,
+        "template_mean": 0.13541666666666666,
+        "templates": 96
+      }
+    }
+  },
+  "held_seal_sha256": "1ad29249d97b7b91c23cb5383b3a3baa411fe17f8c90bd7d3a913862a1b62cae",
+  "limitations": [
+    "Gold numeric values/provenance are supplied by the sealed grader, not independently reconstructed source truth.",
+    "Process timing, process history and operating-system I/O are not authenticated by record arithmetic.",
+    "Synthetic assistant-authored variants, domains and seeds do not establish population generalization.",
+    "Resource sums cover recorded reads only; model, training, versions, replay and migration costs need separate ledgers."
+  ],
+  "paired_primary_exact_rows": 4320,
+  "paired_primary_minus_exact_success_count": 0,
+  "primary_joint_gate": false,
+  "records_sha256": "29b82275adb010bbca2c466b51e399f7ae58927c56f8406a4dc21da3e14cbab7",
+  "rows": 25920,
+  "schema": "hepta.memory.v6.independent-results-audit.v1",
+  "validated_rows": 25920
+}

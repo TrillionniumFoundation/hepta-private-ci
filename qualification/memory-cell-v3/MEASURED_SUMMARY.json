@@ -1,0 +1,5712 @@
+{
+  "capacity_actual_training_work": {
+    "candidate_fits": 83193,
+    "extra_control_fits": 44661,
+    "fit_wall_seconds": 58.42404492435526,
+    "kmeans_distance_component_terms": 6174562380,
+    "kmeans_iterations": 3559,
+    "svd_calls": 59308,
+    "svd_work_proxy": 22884406368
+  },
+  "capacity_real_domains_all_budgets": [
+    {
+      "budget_bytes": 402,
+      "domain": "co2",
+      "global": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 392.0,
+          "mean": 392.0,
+          "mean_bootstrap_interval": [
+            392.0,
+            392.0
+          ],
+          "minimum": 392.0
+        },
+        "budget_bytes": 402,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 1477.0,
+          "mean": 1477.0,
+          "mean_bootstrap_interval": [
+            1477.0,
+            1477.0
+          ],
+          "minimum": 1477.0
+        },
+        "dataset_group": "co2",
+        "family": "global_svd",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.015625,
+          "mean": 0.01171875,
+          "mean_bootstrap_interval": [
+            0.009375,
+            0.0140625
+          ],
+          "minimum": 0.0078125
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.1912890625,
+          "mean": 0.18474609375,
+          "mean_bootstrap_interval": [
+            0.18121875,
+            0.1887421875
+          ],
+          "minimum": 0.17958984375
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 588.33984375,
+          "mean": 558.063671875,
+          "mean_bootstrap_interval": [
+            536.928125,
+            579.19921875
+          ],
+          "minimum": 530.94921875
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          0,
+          5
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      },
+      "local": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 395.0,
+          "mean": 383.0,
+          "mean_bootstrap_interval": [
+            374.6,
+            391.4
+          ],
+          "minimum": 373.0
+        },
+        "budget_bytes": 402,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 1480.0,
+          "mean": 1468.0,
+          "mean_bootstrap_interval": [
+            1459.6,
+            1476.4
+          ],
+          "minimum": 1458.0
+        },
+        "dataset_group": "co2",
+        "family": "learned_cells",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.01171875,
+          "mean": 0.008984375,
+          "mean_bootstrap_interval": [
+            0.00703125,
+            0.010546875
+          ],
+          "minimum": 0.005859375
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 3.796953125,
+          "mean": 3.2887773437499996,
+          "mean_bootstrap_interval": [
+            2.86872265625,
+            3.6988515625
+          ],
+          "minimum": 2.6625
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 336996.85546875,
+          "mean": 295949.800390625,
+          "mean_bootstrap_interval": [
+            256873.302734375,
+            333638.9921875
+          ],
+          "minimum": 236496.26171875
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": -404.2900818036979,
+          "mean": -533.5247939199361,
+          "mean_bootstrap_interval": [
+            -618.3652517871282,
+            -448.684336052744
+          ],
+          "minimum": -623.124011388801
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": -404.2900818036979,
+          "mean": -533.5247939199361,
+          "mean_bootstrap_interval": [
+            -618.3652517871282,
+            -448.684336052744
+          ],
+          "minimum": -623.124011388801
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          5,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      },
+      "vq": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 382.0,
+          "mean": 382.0,
+          "mean_bootstrap_interval": [
+            382.0,
+            382.0
+          ],
+          "minimum": 382.0
+        },
+        "budget_bytes": 402,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 1467.0,
+          "mean": 1467.0,
+          "mean_bootstrap_interval": [
+            1467.0,
+            1467.0
+          ],
+          "minimum": 1467.0
+        },
+        "dataset_group": "co2",
+        "family": "learned_vq",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.001953125,
+          "mean": 0.000390625,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.001171875
+          ],
+          "minimum": 0.0
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 4.748359375,
+          "mean": 4.610675781249999,
+          "mean_bootstrap_interval": [
+            4.535312500000001,
+            4.6941171875
+          ],
+          "minimum": 4.52353515625
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 299544.28515625,
+          "mean": 289855.939453125,
+          "mean_bootstrap_interval": [
+            285176.884375,
+            295049.95390625
+          ],
+          "minimum": 281984.435546875
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": -491.362714383259,
+          "mean": -519.1051335091979,
+          "mean_bootstrap_interval": [
+            -535.1916616361146,
+            -501.6127848917038
+          ],
+          "minimum": -547.3275089572772
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": -491.362714383259,
+          "mean": -519.1051335091979,
+          "mean_bootstrap_interval": [
+            -535.1916616361146,
+            -501.6127848917038
+          ],
+          "minimum": -547.3275089572772
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          5,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      }
+    },
+    {
+      "budget_bytes": 804,
+      "domain": "co2",
+      "global": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 708.0,
+          "mean": 708.0,
+          "mean_bootstrap_interval": [
+            708.0,
+            708.0
+          ],
+          "minimum": 708.0
+        },
+        "budget_bytes": 804,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 1793.0,
+          "mean": 1793.0,
+          "mean_bootstrap_interval": [
+            1793.0,
+            1793.0
+          ],
+          "minimum": 1793.0
+        },
+        "dataset_group": "co2",
+        "family": "global_svd",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.02734375,
+          "mean": 0.025,
+          "mean_bootstrap_interval": [
+            0.023046875,
+            0.026953125
+          ],
+          "minimum": 0.021484375
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.14431640625,
+          "mean": 0.1390546875,
+          "mean_bootstrap_interval": [
+            0.13682812500000002,
+            0.14185546875
+          ],
+          "minimum": 0.1359765625
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 320.080078125,
+          "mean": 302.1875,
+          "mean_bootstrap_interval": [
+            292.21796875,
+            312.56640625
+          ],
+          "minimum": 290.6875
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          0,
+          5
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      },
+      "local": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 799.0,
+          "mean": 782.6,
+          "mean_bootstrap_interval": [
+            769.0,
+            794.2
+          ],
+          "minimum": 757.0
+        },
+        "budget_bytes": 804,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 1884.0,
+          "mean": 1867.6,
+          "mean_bootstrap_interval": [
+            1854.0,
+            1879.2
+          ],
+          "minimum": 1842.0
+        },
+        "dataset_group": "co2",
+        "family": "learned_cells",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.02734375,
+          "mean": 0.01953125,
+          "mean_bootstrap_interval": [
+            0.015224609375000087,
+            0.02421875
+          ],
+          "minimum": 0.01171875
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.1695703125,
+          "mean": 0.16592968749999998,
+          "mean_bootstrap_interval": [
+            0.16379296875,
+            0.16809375
+          ],
+          "minimum": 0.16341796875
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 477.14453125,
+          "mean": 456.29296875,
+          "mean_bootstrap_interval": [
+            442.906640625,
+            468.271484375
+          ],
+          "minimum": 432.052734375
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": -0.34982700862210997,
+          "mean": -0.5139638929516156,
+          "mean_bootstrap_interval": [
+            -0.6028389110330463,
+            -0.42055001091627864
+          ],
+          "minimum": -0.6414346377123199
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": -0.34982700862210997,
+          "mean": -0.5139638929516156,
+          "mean_bootstrap_interval": [
+            -0.6028389110330463,
+            -0.42055001091627864
+          ],
+          "minimum": -0.6414346377123199
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          5,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      },
+      "vq": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 782.0,
+          "mean": 782.0,
+          "mean_bootstrap_interval": [
+            782.0,
+            782.0
+          ],
+          "minimum": 782.0
+        },
+        "budget_bytes": 804,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 1867.0,
+          "mean": 1867.0,
+          "mean_bootstrap_interval": [
+            1867.0,
+            1867.0
+          ],
+          "minimum": 1867.0
+        },
+        "dataset_group": "co2",
+        "family": "learned_vq",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.001953125,
+          "mean": 0.00078125,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0015625
+          ],
+          "minimum": 0.0
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 2.37119140625,
+          "mean": 2.2580625000000003,
+          "mean_bootstrap_interval": [
+            2.199125,
+            2.32590625
+          ],
+          "minimum": 2.1775
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 90768.169921875,
+          "mean": 76412.2078125,
+          "mean_bootstrap_interval": [
+            71413.4875,
+            83983.872265625
+          ],
+          "minimum": 69711.40234375
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": -236.43515360501567,
+          "mean": -251.46036296821876,
+          "mean_bootstrap_interval": [
+            -267.87679434080104,
+            -239.4286731444059
+          ],
+          "minimum": -282.57956688084647
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": -236.43515360501567,
+          "mean": -251.46036296821876,
+          "mean_bootstrap_interval": [
+            -267.87679434080104,
+            -239.4286731444059
+          ],
+          "minimum": -282.57956688084647
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          5,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      }
+    },
+    {
+      "budget_bytes": 1608,
+      "domain": "co2",
+      "global": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 1498.0,
+          "mean": 1498.0,
+          "mean_bootstrap_interval": [
+            1498.0,
+            1498.0
+          ],
+          "minimum": 1498.0
+        },
+        "budget_bytes": 1608,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 2583.0,
+          "mean": 2583.0,
+          "mean_bootstrap_interval": [
+            2583.0,
+            2583.0
+          ],
+          "minimum": 2583.0
+        },
+        "dataset_group": "co2",
+        "family": "global_svd",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.140625,
+          "mean": 0.119140625,
+          "mean_bootstrap_interval": [
+            0.105859375,
+            0.13203125
+          ],
+          "minimum": 0.095703125
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.0531640625,
+          "mean": 0.05048046874999999,
+          "mean_bootstrap_interval": [
+            0.049277343749999994,
+            0.051968749999999994
+          ],
+          "minimum": 0.04861328125
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 61.9765625,
+          "mean": 56.307421875,
+          "mean_bootstrap_interval": [
+            54.158984375,
+            59.303125
+          ],
+          "minimum": 53.263671875
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          0,
+          5
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      },
+      "local": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 1607.0,
+          "mean": 1594.6,
+          "mean_bootstrap_interval": [
+            1586.2,
+            1603.0
+          ],
+          "minimum": 1585.0
+        },
+        "budget_bytes": 1608,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 2692.0,
+          "mean": 2679.6,
+          "mean_bootstrap_interval": [
+            2671.2,
+            2688.0
+          ],
+          "minimum": 2670.0
+        },
+        "dataset_group": "co2",
+        "family": "learned_cells",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.064453125,
+          "mean": 0.038671875,
+          "mean_bootstrap_interval": [
+            0.030078125,
+            0.051953125
+          ],
+          "minimum": 0.02734375
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.0789453125,
+          "mean": 0.07667968750000001,
+          "mean_bootstrap_interval": [
+            0.07508984375000001,
+            0.07818359375000002
+          ],
+          "minimum": 0.074140625
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 119.521484375,
+          "mean": 101.35390625,
+          "mean_bootstrap_interval": [
+            93.918359375,
+            111.175390625
+          ],
+          "minimum": 90.5
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": -0.5918315895625866,
+          "mean": -0.8077156457679038,
+          "mean_bootstrap_interval": [
+            -1.0202221402229221,
+            -0.6231675188499337
+          ],
+          "minimum": -1.1881145635928059
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": -0.5918315895625866,
+          "mean": -0.8077156457679038,
+          "mean_bootstrap_interval": [
+            -1.0202221402229221,
+            -0.6231675188499337
+          ],
+          "minimum": -1.1881145635928059
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          5,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      },
+      "vq": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 1574.0,
+          "mean": 1574.0,
+          "mean_bootstrap_interval": [
+            1574.0,
+            1574.0
+          ],
+          "minimum": 1574.0
+        },
+        "budget_bytes": 1608,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 2659.0,
+          "mean": 2659.0,
+          "mean_bootstrap_interval": [
+            2659.0,
+            2659.0
+          ],
+          "minimum": 2659.0
+        },
+        "dataset_group": "co2",
+        "family": "learned_vq",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.099609375,
+          "mean": 0.0859375,
+          "mean_bootstrap_interval": [
+            0.06875,
+            0.098046875
+          ],
+          "minimum": 0.052734375
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 1.01001953125,
+          "mean": 0.9601015624999999,
+          "mean_bootstrap_interval": [
+            0.94133984375,
+            0.9861445312499999
+          ],
+          "minimum": 0.932109375
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 14597.955078125,
+          "mean": 13595.4796875,
+          "mean_bootstrap_interval": [
+            13074.97578125,
+            14136.953515625
+          ],
+          "minimum": 12827.9921875
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": -219.67546955754443,
+          "mean": -240.94652140208353,
+          "mean_bootstrap_interval": [
+            -254.0326268717851,
+            -228.17172790322547
+          ],
+          "minimum": -263.0110561638997
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": -219.67546955754443,
+          "mean": -240.94652140208353,
+          "mean_bootstrap_interval": [
+            -254.0326268717851,
+            -228.17172790322547
+          ],
+          "minimum": -263.0110561638997
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          5,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      }
+    },
+    {
+      "budget_bytes": 3216,
+      "domain": "co2",
+      "global": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 1972.0,
+          "mean": 1972.0,
+          "mean_bootstrap_interval": [
+            1972.0,
+            1972.0
+          ],
+          "minimum": 1972.0
+        },
+        "budget_bytes": 3216,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 3057.0,
+          "mean": 3057.0,
+          "mean_bootstrap_interval": [
+            3057.0,
+            3057.0
+          ],
+          "minimum": 3057.0
+        },
+        "dataset_group": "co2",
+        "family": "global_svd",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 1.0,
+          "mean": 1.0,
+          "mean_bootstrap_interval": [
+            1.0,
+            1.0
+          ],
+          "minimum": 1.0
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          0,
+          5
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 5
+      },
+      "local": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 3021.0,
+          "mean": 2958.2,
+          "mean_bootstrap_interval": [
+            2905.4,
+            3011.0
+          ],
+          "minimum": 2889.0
+        },
+        "budget_bytes": 3216,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 4106.0,
+          "mean": 4043.2,
+          "mean_bootstrap_interval": [
+            3990.4,
+            4096.0
+          ],
+          "minimum": 3974.0
+        },
+        "dataset_group": "co2",
+        "family": "learned_cells",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 1.0,
+          "mean": 0.996484375,
+          "mean_bootstrap_interval": [
+            0.989453125,
+            1.0
+          ],
+          "minimum": 0.982421875
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.00017578125,
+          "mean": 3.515625e-05,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.00010546875000000001
+          ],
+          "minimum": 0.0
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 0.017578125,
+          "mean": 0.003515625,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.010546875
+          ],
+          "minimum": 0.0
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          1,
+          4
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 5
+      },
+      "vq": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 3207.0,
+          "mean": 3207.0,
+          "mean_bootstrap_interval": [
+            3207.0,
+            3207.0
+          ],
+          "minimum": 3207.0
+        },
+        "budget_bytes": 3216,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 4292.0,
+          "mean": 4292.0,
+          "mean_bootstrap_interval": [
+            4292.0,
+            4292.0
+          ],
+          "minimum": 4292.0
+        },
+        "dataset_group": "co2",
+        "family": "learned_vq",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.73828125,
+          "mean": 0.692578125,
+          "mean_bootstrap_interval": [
+            0.668359375,
+            0.71875
+          ],
+          "minimum": 0.654296875
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.17828125,
+          "mean": 0.16128515625,
+          "mean_bootstrap_interval": [
+            0.15040625,
+            0.1721640625
+          ],
+          "minimum": 0.1444140625
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 1657.08203125,
+          "mean": 1198.826953125,
+          "mean_bootstrap_interval": [
+            1029.4421875,
+            1447.301953125
+          ],
+          "minimum": 976.96875
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          5,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 5
+      }
+    },
+    {
+      "budget_bytes": 876,
+      "domain": "temperature",
+      "global": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 708.0,
+          "mean": 708.0,
+          "mean_bootstrap_interval": [
+            708.0,
+            708.0
+          ],
+          "minimum": 708.0
+        },
+        "budget_bytes": 876,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 1937.0,
+          "mean": 1937.0,
+          "mean_bootstrap_interval": [
+            1937.0,
+            1937.0
+          ],
+          "minimum": 1937.0
+        },
+        "dataset_group": "temperature",
+        "family": "global_svd",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.06640625,
+          "mean": 0.055859375,
+          "mean_bootstrap_interval": [
+            0.04921875,
+            0.0625
+          ],
+          "minimum": 0.04296875
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.0640234375,
+          "mean": 0.06271093750000001,
+          "mean_bootstrap_interval": [
+            0.06174609375000001,
+            0.06364453125
+          ],
+          "minimum": 0.0612109375
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 66.388671875,
+          "mean": 64.45546875,
+          "mean_bootstrap_interval": [
+            62.875,
+            66.0359375
+          ],
+          "minimum": 62.197265625
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          0,
+          5
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      },
+      "local": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 875.0,
+          "mean": 847.0,
+          "mean_bootstrap_interval": [
+            823.4,
+            868.2
+          ],
+          "minimum": 803.0
+        },
+        "budget_bytes": 876,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 2104.0,
+          "mean": 2076.0,
+          "mean_bootstrap_interval": [
+            2052.4,
+            2097.2
+          ],
+          "minimum": 2032.0
+        },
+        "dataset_group": "temperature",
+        "family": "learned_cells",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.060546875,
+          "mean": 0.0484375,
+          "mean_bootstrap_interval": [
+            0.039453125,
+            0.057421875
+          ],
+          "minimum": 0.037109375
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.0728125,
+          "mean": 0.07026171875000001,
+          "mean_bootstrap_interval": [
+            0.068953125,
+            0.0715546875
+          ],
+          "minimum": 0.0684765625
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 87.015625,
+          "mean": 84.458984375,
+          "mean_bootstrap_interval": [
+            82.684765625,
+            86.233203125
+          ],
+          "minimum": 81.63671875
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": -0.2651918816978986,
+          "mean": -0.3110635830664717,
+          "mean_bootstrap_interval": [
+            -0.3473513283151068,
+            -0.2787137327941992
+          ],
+          "minimum": -0.3795878742327446
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": -0.2651918816978986,
+          "mean": -0.3110635830664717,
+          "mean_bootstrap_interval": [
+            -0.3473513283151068,
+            -0.2787137327941992
+          ],
+          "minimum": -0.3795878742327446
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          5,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      },
+      "vq": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 821.0,
+          "mean": 821.0,
+          "mean_bootstrap_interval": [
+            821.0,
+            821.0
+          ],
+          "minimum": 821.0
+        },
+        "budget_bytes": 876,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 2050.0,
+          "mean": 2050.0,
+          "mean_bootstrap_interval": [
+            2050.0,
+            2050.0
+          ],
+          "minimum": 2050.0
+        },
+        "dataset_group": "temperature",
+        "family": "learned_vq",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.04296875,
+          "mean": 0.035546875,
+          "mean_bootstrap_interval": [
+            0.028125,
+            0.041015625
+          ],
+          "minimum": 0.021484375
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.08357421875,
+          "mean": 0.08195703124999999,
+          "mean_bootstrap_interval": [
+            0.0809453125,
+            0.0828828125
+          ],
+          "minimum": 0.08017578125
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 115.7578125,
+          "mean": 111.269921875,
+          "mean_bootstrap_interval": [
+            108.783203125,
+            114.005859375
+          ],
+          "minimum": 106.998046875
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": -0.6552322673648907,
+          "mean": -0.7277760494943442,
+          "mean_bootstrap_interval": [
+            -0.7926745870120323,
+            -0.6745948350132854
+          ],
+          "minimum": -0.8560691469372417
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": -0.6552322673648907,
+          "mean": -0.7277760494943442,
+          "mean_bootstrap_interval": [
+            -0.7926745870120323,
+            -0.6745948350132854
+          ],
+          "minimum": -0.8560691469372417
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          5,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      }
+    },
+    {
+      "budget_bytes": 1752,
+      "domain": "temperature",
+      "global": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 1656.0,
+          "mean": 1656.0,
+          "mean_bootstrap_interval": [
+            1656.0,
+            1656.0
+          ],
+          "minimum": 1656.0
+        },
+        "budget_bytes": 1752,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 2885.0,
+          "mean": 2885.0,
+          "mean_bootstrap_interval": [
+            2885.0,
+            2885.0
+          ],
+          "minimum": 2885.0
+        },
+        "dataset_group": "temperature",
+        "family": "global_svd",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.111328125,
+          "mean": 0.0875,
+          "mean_bootstrap_interval": [
+            0.075,
+            0.101953125
+          ],
+          "minimum": 0.068359375
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.04310546875,
+          "mean": 0.041695312500000005,
+          "mean_bootstrap_interval": [
+            0.0405859375,
+            0.042800781249999996
+          ],
+          "minimum": 0.03990234375
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 30.337890625,
+          "mean": 28.5140625,
+          "mean_bootstrap_interval": [
+            26.859375,
+            30.044921875
+          ],
+          "minimum": 25.728515625
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          0,
+          5
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      },
+      "local": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 1749.0,
+          "mean": 1736.6,
+          "mean_bootstrap_interval": [
+            1727.4,
+            1744.6
+          ],
+          "minimum": 1721.0
+        },
+        "budget_bytes": 1752,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 2978.0,
+          "mean": 2965.6,
+          "mean_bootstrap_interval": [
+            2956.4,
+            2973.6
+          ],
+          "minimum": 2950.0
+        },
+        "dataset_group": "temperature",
+        "family": "learned_cells",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.09765625,
+          "mean": 0.08671875,
+          "mean_bootstrap_interval": [
+            0.077734375,
+            0.094140625
+          ],
+          "minimum": 0.072265625
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.047109375,
+          "mean": 0.04548828125,
+          "mean_bootstrap_interval": [
+            0.04434765625,
+            0.046628906250000005
+          ],
+          "minimum": 0.0434765625
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 36.9921875,
+          "mean": 35.506640625,
+          "mean_bootstrap_interval": [
+            34.194140625,
+            36.632421875
+          ],
+          "minimum": 33.08203125
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": -0.1614935064935065,
+          "mean": -0.2492291643589955,
+          "mean_bootstrap_interval": [
+            -0.3259859202912421,
+            -0.19024755959298306
+          ],
+          "minimum": -0.3941395278220603
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": -0.1614935064935065,
+          "mean": -0.2492291643589955,
+          "mean_bootstrap_interval": [
+            -0.3259859202912421,
+            -0.19024755959298306
+          ],
+          "minimum": -0.3941395278220603
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          5,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      },
+      "vq": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 1736.0,
+          "mean": 1736.0,
+          "mean_bootstrap_interval": [
+            1736.0,
+            1736.0
+          ],
+          "minimum": 1736.0
+        },
+        "budget_bytes": 1752,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 2965.0,
+          "mean": 2965.0,
+          "mean_bootstrap_interval": [
+            2965.0,
+            2965.0
+          ],
+          "minimum": 2965.0
+        },
+        "dataset_group": "temperature",
+        "family": "learned_vq",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.068359375,
+          "mean": 0.055078125,
+          "mean_bootstrap_interval": [
+            0.046875,
+            0.06330078124999972
+          ],
+          "minimum": 0.041015625
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.0683984375,
+          "mean": 0.06556640624999999,
+          "mean_bootstrap_interval": [
+            0.063765625,
+            0.06736718750000001
+          ],
+          "minimum": 0.062890625
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 83.4765625,
+          "mean": 71.834765625,
+          "mean_bootstrap_interval": [
+            66.9640625,
+            77.725
+          ],
+          "minimum": 64.23046875
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": -1.2672374943668319,
+          "mean": -1.5305397535116971,
+          "mean_bootstrap_interval": [
+            -1.81296911331921,
+            -1.3205553062040296
+          ],
+          "minimum": -2.0879271728921323
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": -1.2672374943668319,
+          "mean": -1.5305397535116971,
+          "mean_bootstrap_interval": [
+            -1.81296911331921,
+            -1.3205553062040296
+          ],
+          "minimum": -2.0879271728921323
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          5,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      }
+    },
+    {
+      "budget_bytes": 3504,
+      "domain": "temperature",
+      "global": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 3236.0,
+          "mean": 3236.0,
+          "mean_bootstrap_interval": [
+            3236.0,
+            3236.0
+          ],
+          "minimum": 3236.0
+        },
+        "budget_bytes": 3504,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 4465.0,
+          "mean": 4465.0,
+          "mean_bootstrap_interval": [
+            4465.0,
+            4465.0
+          ],
+          "minimum": 4465.0
+        },
+        "dataset_group": "temperature",
+        "family": "global_svd",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.42578125,
+          "mean": 0.41328125,
+          "mean_bootstrap_interval": [
+            0.40546875,
+            0.421484375
+          ],
+          "minimum": 0.404296875
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.01392578125,
+          "mean": 0.013261718750000002,
+          "mean_bootstrap_interval": [
+            0.012921875,
+            0.01365625
+          ],
+          "minimum": 0.01275390625
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 4.962890625,
+          "mean": 4.583203125,
+          "mean_bootstrap_interval": [
+            4.3875,
+            4.780078125
+          ],
+          "minimum": 4.236328125
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          0,
+          5
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      },
+      "local": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 3501.0,
+          "mean": 3495.0,
+          "mean_bootstrap_interval": [
+            3490.2,
+            3499.8
+          ],
+          "minimum": 3487.0
+        },
+        "budget_bytes": 3504,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 4730.0,
+          "mean": 4724.0,
+          "mean_bootstrap_interval": [
+            4719.2,
+            4728.8
+          ],
+          "minimum": 4716.0
+        },
+        "dataset_group": "temperature",
+        "family": "learned_cells",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.39453125,
+          "mean": 0.303515625,
+          "mean_bootstrap_interval": [
+            0.273828125,
+            0.350390625
+          ],
+          "minimum": 0.267578125
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.01783203125,
+          "mean": 0.016628906250000002,
+          "mean_bootstrap_interval": [
+            0.015558593749999999,
+            0.017472656250000003
+          ],
+          "minimum": 0.01458984375
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 7.490234375,
+          "mean": 6.201953125,
+          "mean_bootstrap_interval": [
+            5.645703125,
+            6.857421875
+          ],
+          "minimum": 5.421875
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": -0.20329432162982228,
+          "mean": -0.3525796128459307,
+          "mean_bootstrap_interval": [
+            -0.46248401065086187,
+            -0.2426752150409996
+          ],
+          "minimum": -0.5094513600737667
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": -0.20329432162982228,
+          "mean": -0.3525796128459307,
+          "mean_bootstrap_interval": [
+            -0.46248401065086187,
+            -0.2426752150409996
+          ],
+          "minimum": -0.5094513600737667
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          5,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      },
+      "vq": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 3490.0,
+          "mean": 3490.0,
+          "mean_bootstrap_interval": [
+            3490.0,
+            3490.0
+          ],
+          "minimum": 3490.0
+        },
+        "budget_bytes": 3504,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 4719.0,
+          "mean": 4719.0,
+          "mean_bootstrap_interval": [
+            4719.0,
+            4719.0
+          ],
+          "minimum": 4719.0
+        },
+        "dataset_group": "temperature",
+        "family": "learned_vq",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.228515625,
+          "mean": 0.1953125,
+          "mean_bootstrap_interval": [
+            0.180078125,
+            0.213671875
+          ],
+          "minimum": 0.171875
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.04517578125,
+          "mean": 0.044062500000000004,
+          "mean_bootstrap_interval": [
+            0.043214843749999995,
+            0.04486328125
+          ],
+          "minimum": 0.04267578125
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 40.236328125,
+          "mean": 37.35625,
+          "mean_bootstrap_interval": [
+            36.32265625,
+            38.858984375
+          ],
+          "minimum": 36.095703125
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": -6.554112554112554,
+          "mean": -7.172953525480452,
+          "mean_bootstrap_interval": [
+            -7.645864481086032,
+            -6.714962049011296
+          ],
+          "minimum": -7.964751958224543
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": -6.554112554112554,
+          "mean": -7.172953525480452,
+          "mean_bootstrap_interval": [
+            -7.645864481086032,
+            -6.714962049011296
+          ],
+          "minimum": -7.964751958224543
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          5,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      }
+    },
+    {
+      "budget_bytes": 7008,
+      "domain": "temperature",
+      "global": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 3868.0,
+          "mean": 3868.0,
+          "mean_bootstrap_interval": [
+            3868.0,
+            3868.0
+          ],
+          "minimum": 3868.0
+        },
+        "budget_bytes": 7008,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 5097.0,
+          "mean": 5097.0,
+          "mean_bootstrap_interval": [
+            5097.0,
+            5097.0
+          ],
+          "minimum": 5097.0
+        },
+        "dataset_group": "temperature",
+        "family": "global_svd",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 1.0,
+          "mean": 1.0,
+          "mean_bootstrap_interval": [
+            1.0,
+            1.0
+          ],
+          "minimum": 1.0
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          0,
+          5
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 5
+      },
+      "local": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 4937.0,
+          "mean": 4871.8,
+          "mean_bootstrap_interval": [
+            4825.0,
+            4918.6
+          ],
+          "minimum": 4799.0
+        },
+        "budget_bytes": 7008,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 6166.0,
+          "mean": 6100.8,
+          "mean_bootstrap_interval": [
+            6054.0,
+            6147.6
+          ],
+          "minimum": 6028.0
+        },
+        "dataset_group": "temperature",
+        "family": "learned_cells",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 1.0,
+          "mean": 0.999609375,
+          "mean_bootstrap_interval": [
+            0.998828125,
+            1.0
+          ],
+          "minimum": 0.998046875
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 1.953125e-05,
+          "mean": 3.90625e-06,
+          "mean_bootstrap_interval": [
+            0.0,
+            1.171875e-05
+          ],
+          "minimum": 0.0
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 0.001953125,
+          "mean": 0.000390625,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.001171875
+          ],
+          "minimum": 0.0
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          1,
+          4
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 5
+      },
+      "vq": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 6980.0,
+          "mean": 6980.0,
+          "mean_bootstrap_interval": [
+            6980.0,
+            6980.0
+          ],
+          "minimum": 6980.0
+        },
+        "budget_bytes": 7008,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 8209.0,
+          "mean": 8209.0,
+          "mean_bootstrap_interval": [
+            8209.0,
+            8209.0
+          ],
+          "minimum": 8209.0
+        },
+        "dataset_group": "temperature",
+        "family": "learned_vq",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.734375,
+          "mean": 0.723828125,
+          "mean_bootstrap_interval": [
+            0.717578125,
+            0.730078125
+          ],
+          "minimum": 0.71484375
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.0122265625,
+          "mean": 0.01089453125,
+          "mean_bootstrap_interval": [
+            0.01023828125,
+            0.011609375
+          ],
+          "minimum": 0.00994140625
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 7.46484375,
+          "mean": 6.264453125,
+          "mean_bootstrap_interval": [
+            5.481640625,
+            7.0171875
+          ],
+          "minimum": 4.873046875
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          5,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 5
+      }
+    },
+    {
+      "budget_bytes": 1662,
+      "domain": "sunspots",
+      "global": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 1232.0,
+          "mean": 1232.0,
+          "mean_bootstrap_interval": [
+            1232.0,
+            1232.0
+          ],
+          "minimum": 1232.0
+        },
+        "budget_bytes": 1662,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 2529.0,
+          "mean": 2529.0,
+          "mean_bootstrap_interval": [
+            2529.0,
+            2529.0
+          ],
+          "minimum": 2529.0
+        },
+        "dataset_group": "sunspots",
+        "family": "global_svd",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.01171875,
+          "mean": 0.005078125,
+          "mean_bootstrap_interval": [
+            0.00234375,
+            0.00859375
+          ],
+          "minimum": 0.001953125
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 14.496484375,
+          "mean": 14.101523437500001,
+          "mean_bootstrap_interval": [
+            13.784765625,
+            14.4019921875
+          ],
+          "minimum": 13.5681640625
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 43372.28515625,
+          "mean": 40358.386328125,
+          "mean_bootstrap_interval": [
+            37692.2296875,
+            42483.616015625
+          ],
+          "minimum": 35327.634765625
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": -0.011062044132137213,
+          "mean_bootstrap_interval": [
+            -0.03318613239641164,
+            0.0
+          ],
+          "minimum": -0.05531022066068606
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          0,
+          5
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      },
+      "local": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 1658.0,
+          "mean": 1642.0,
+          "mean_bootstrap_interval": [
+            1633.6,
+            1650.8
+          ],
+          "minimum": 1632.0
+        },
+        "budget_bytes": 1662,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 2955.0,
+          "mean": 2939.0,
+          "mean_bootstrap_interval": [
+            2930.6,
+            2947.8
+          ],
+          "minimum": 2929.0
+        },
+        "dataset_group": "sunspots",
+        "family": "learned_cells",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.00390625,
+          "mean": 0.0015625,
+          "mean_bootstrap_interval": [
+            0.000390625,
+            0.002734375
+          ],
+          "minimum": 0.0
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 14.2470703125,
+          "mean": 13.820976562500002,
+          "mean_bootstrap_interval": [
+            13.3796484375,
+            14.166484375
+          ],
+          "minimum": 13.0033203125
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 36748.525390625,
+          "mean": 33949.834765625,
+          "mean_bootstrap_interval": [
+            31851.33359375,
+            35949.76171875
+          ],
+          "minimum": 30626.701171875
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": 0.29386470965176587,
+          "mean": 0.14617294847263118,
+          "mean_bootstrap_interval": [
+            0.10155905203851581,
+            0.22113248927404788
+          ],
+          "minimum": 0.09457564759254578
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": 0.29386470965176587,
+          "mean": 0.1554145760973353,
+          "mean_bootstrap_interval": [
+            0.1029014791678792,
+            0.22814679647505334
+          ],
+          "minimum": 0.09457564759254578
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          5,
+          0,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      },
+      "vq": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 1650.0,
+          "mean": 1650.0,
+          "mean_bootstrap_interval": [
+            1650.0,
+            1650.0
+          ],
+          "minimum": 1650.0
+        },
+        "budget_bytes": 1662,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 2947.0,
+          "mean": 2947.0,
+          "mean_bootstrap_interval": [
+            2947.0,
+            2947.0
+          ],
+          "minimum": 2947.0
+        },
+        "dataset_group": "sunspots",
+        "family": "learned_vq",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.01953125,
+          "mean": 0.011328125,
+          "mean_bootstrap_interval": [
+            0.007421875,
+            0.016015625
+          ],
+          "minimum": 0.005859375
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 15.51875,
+          "mean": 15.09765625,
+          "mean_bootstrap_interval": [
+            14.814375000000002,
+            15.380937500000002
+          ],
+          "minimum": 14.634765625
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 44543.67578125,
+          "mean": 41626.80703125,
+          "mean_bootstrap_interval": [
+            40364.306640625,
+            43238.098046875
+          ],
+          "minimum": 39695.59765625
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": -0.04597640965958638,
+          "mean_bootstrap_interval": [
+            -0.10661251681896947,
+            -0.009088572211619569
+          ],
+          "minimum": -0.16509417506843996
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": 0.05241133799126727,
+          "mean": -0.03549414206133293,
+          "mean_bootstrap_interval": [
+            -0.10661251681896947,
+            0.022358230583140792
+          ],
+          "minimum": -0.16509417506843996
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          1,
+          4,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      }
+    },
+    {
+      "budget_bytes": 3324,
+      "domain": "sunspots",
+      "global": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 2966.0,
+          "mean": 2966.0,
+          "mean_bootstrap_interval": [
+            2966.0,
+            2966.0
+          ],
+          "minimum": 2966.0
+        },
+        "budget_bytes": 3324,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 4263.0,
+          "mean": 4263.0,
+          "mean_bootstrap_interval": [
+            4263.0,
+            4263.0
+          ],
+          "minimum": 4263.0
+        },
+        "dataset_group": "sunspots",
+        "family": "global_svd",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.00390625,
+          "mean": 0.002734375,
+          "mean_bootstrap_interval": [
+            0.001171875,
+            0.00390625
+          ],
+          "minimum": 0.0
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 10.36875,
+          "mean": 10.168359375,
+          "mean_bootstrap_interval": [
+            10.05546875,
+            10.281640625
+          ],
+          "minimum": 9.9771484375
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 22249.80859375,
+          "mean": 20474.01015625,
+          "mean_bootstrap_interval": [
+            19445.67265625,
+            21488.430859375
+          ],
+          "minimum": 18744.638671875
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          0,
+          5
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      },
+      "local": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 3320.0,
+          "mean": 3308.4,
+          "mean_bootstrap_interval": [
+            3302.0,
+            3315.6
+          ],
+          "minimum": 3298.0
+        },
+        "budget_bytes": 3324,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 4617.0,
+          "mean": 4605.4,
+          "mean_bootstrap_interval": [
+            4599.0,
+            4612.6
+          ],
+          "minimum": 4595.0
+        },
+        "dataset_group": "sunspots",
+        "family": "learned_cells",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.01171875,
+          "mean": 0.00546875,
+          "mean_bootstrap_interval": [
+            0.002734375,
+            0.00859375
+          ],
+          "minimum": 0.001953125
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 9.5525390625,
+          "mean": 8.9558984375,
+          "mean_bootstrap_interval": [
+            8.5825,
+            9.305351562499999
+          ],
+          "minimum": 8.334765625
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 16643.240234375,
+          "mean": 14494.944140625,
+          "mean_bootstrap_interval": [
+            13357.11640625,
+            15699.675390625
+          ],
+          "minimum": 12639.79296875
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": 0.3513156977649562,
+          "mean": 0.29120886747764463,
+          "mean_bootstrap_interval": [
+            0.24171105477559665,
+            0.3407066801796927
+          ],
+          "minimum": 0.20787709374128813
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": 0.3513156977649562,
+          "mean": 0.29120886747764463,
+          "mean_bootstrap_interval": [
+            0.24171105477559665,
+            0.3407066801796927
+          ],
+          "minimum": 0.20787709374128813
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          5,
+          0,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      },
+      "vq": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 3308.0,
+          "mean": 3308.0,
+          "mean_bootstrap_interval": [
+            3308.0,
+            3308.0
+          ],
+          "minimum": 3308.0
+        },
+        "budget_bytes": 3324,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 4605.0,
+          "mean": 4605.0,
+          "mean_bootstrap_interval": [
+            4605.0,
+            4605.0
+          ],
+          "minimum": 4605.0
+        },
+        "dataset_group": "sunspots",
+        "family": "learned_vq",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.07421875,
+          "mean": 0.05625,
+          "mean_bootstrap_interval": [
+            0.048828125,
+            0.065625
+          ],
+          "minimum": 0.044921875
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 12.380859375,
+          "mean": 12.039765625,
+          "mean_bootstrap_interval": [
+            11.884374999999999,
+            12.22484375
+          ],
+          "minimum": 11.76640625
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 31132.31640625,
+          "mean": 27949.0453125,
+          "mean_bootstrap_interval": [
+            26648.026171875,
+            29717.621875
+          ],
+          "minimum": 26580.00390625
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": -0.26878586360875945,
+          "mean": -0.36600893730364337,
+          "mean_bootstrap_interval": [
+            -0.40217594373201787,
+            -0.31463538029998256
+          ],
+          "minimum": -0.4180056693294072
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": -0.26878586360875945,
+          "mean": -0.36600893730364337,
+          "mean_bootstrap_interval": [
+            -0.40217594373201787,
+            -0.31463538029998256
+          ],
+          "minimum": -0.4180056693294072
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          5,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      }
+    },
+    {
+      "budget_bytes": 6648,
+      "domain": "sunspots",
+      "global": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 6434.0,
+          "mean": 6434.0,
+          "mean_bootstrap_interval": [
+            6434.0,
+            6434.0
+          ],
+          "minimum": 6434.0
+        },
+        "budget_bytes": 6648,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 7731.0,
+          "mean": 7731.0,
+          "mean_bootstrap_interval": [
+            7731.0,
+            7731.0
+          ],
+          "minimum": 7731.0
+        },
+        "dataset_group": "sunspots",
+        "family": "global_svd",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.109375,
+          "mean": 0.09765625,
+          "mean_bootstrap_interval": [
+            0.094140625,
+            0.103515625
+          ],
+          "minimum": 0.09375
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 2.730859375,
+          "mean": 2.6848046874999993,
+          "mean_bootstrap_interval": [
+            2.6346484375,
+            2.721484375
+          ],
+          "minimum": 2.5880859375
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 1704.291015625,
+          "mean": 1631.799609375,
+          "mean_bootstrap_interval": [
+            1566.6953125,
+            1685.62734375
+          ],
+          "minimum": 1521.587890625
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          0,
+          5
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      },
+      "local": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 6642.0,
+          "mean": 6615.2,
+          "mean_bootstrap_interval": [
+            6599.6,
+            6630.8
+          ],
+          "minimum": 6590.0
+        },
+        "budget_bytes": 6648,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 7939.0,
+          "mean": 7912.2,
+          "mean_bootstrap_interval": [
+            7896.6,
+            7927.8
+          ],
+          "minimum": 7887.0
+        },
+        "dataset_group": "sunspots",
+        "family": "learned_cells",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.677734375,
+          "mean": 0.5359375,
+          "mean_bootstrap_interval": [
+            0.403515625,
+            0.632421875
+          ],
+          "minimum": 0.27734375
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 2.69453125,
+          "mean": 2.0670703125000003,
+          "mean_bootstrap_interval": [
+            1.8019140625000003,
+            2.3915234375000005
+          ],
+          "minimum": 1.726171875
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 2047.89453125,
+          "mean": 1717.056640625,
+          "mean_bootstrap_interval": [
+            1465.875390625,
+            1949.20234375
+          ],
+          "minimum": 1267.439453125
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": 0.16702843067159745,
+          "mean": -0.04789008493864582,
+          "mean_bootstrap_interval": [
+            -0.16892825654794957,
+            0.06953207554495085
+          ],
+          "minimum": -0.2304054561499033
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": 0.16702843067159745,
+          "mean": -0.04789008493864582,
+          "mean_bootstrap_interval": [
+            -0.16892825654794957,
+            0.06953207554495085
+          ],
+          "minimum": -0.2304054561499033
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          2,
+          3,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      },
+      "vq": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 6647.0,
+          "mean": 6647.0,
+          "mean_bootstrap_interval": [
+            6647.0,
+            6647.0
+          ],
+          "minimum": 6647.0
+        },
+        "budget_bytes": 6648,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 7944.0,
+          "mean": 7944.0,
+          "mean_bootstrap_interval": [
+            7944.0,
+            7944.0
+          ],
+          "minimum": 7944.0
+        },
+        "dataset_group": "sunspots",
+        "family": "learned_vq",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.216796875,
+          "mean": 0.203515625,
+          "mean_bootstrap_interval": [
+            0.19453125,
+            0.211328125
+          ],
+          "minimum": 0.1875
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 7.9412109375,
+          "mean": 7.632539062499999,
+          "mean_bootstrap_interval": [
+            7.3615234375,
+            7.8829296875
+          ],
+          "minimum": 7.1814453125
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 14395.03125,
+          "mean": 12959.038671875,
+          "mean_bootstrap_interval": [
+            11863.00546875,
+            14008.65625
+          ],
+          "minimum": 10770.904296875
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": -5.4205232629890165,
+          "mean": -6.967918791080419,
+          "mean_bootstrap_interval": [
+            -7.845693165400201,
+            -6.059334734601967
+          ],
+          "minimum": -8.460532210260405
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": -5.4205232629890165,
+          "mean": -6.967918791080419,
+          "mean_bootstrap_interval": [
+            -7.845693165400201,
+            -6.059334734601967
+          ],
+          "minimum": -8.460532210260405
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          5,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      }
+    },
+    {
+      "budget_bytes": 13296,
+      "domain": "sunspots",
+      "global": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 7012.0,
+          "mean": 7012.0,
+          "mean_bootstrap_interval": [
+            7012.0,
+            7012.0
+          ],
+          "minimum": 7012.0
+        },
+        "budget_bytes": 13296,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 8309.0,
+          "mean": 8309.0,
+          "mean_bootstrap_interval": [
+            8309.0,
+            8309.0
+          ],
+          "minimum": 8309.0
+        },
+        "dataset_group": "sunspots",
+        "family": "global_svd",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 1.0,
+          "mean": 1.0,
+          "mean_bootstrap_interval": [
+            1.0,
+            1.0
+          ],
+          "minimum": 1.0
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          0,
+          5
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 5
+      },
+      "local": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 8114.0,
+          "mean": 8114.0,
+          "mean_bootstrap_interval": [
+            8114.0,
+            8114.0
+          ],
+          "minimum": 8114.0
+        },
+        "budget_bytes": 13296,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 9411.0,
+          "mean": 9411.0,
+          "mean_bootstrap_interval": [
+            9411.0,
+            9411.0
+          ],
+          "minimum": 9411.0
+        },
+        "dataset_group": "sunspots",
+        "family": "learned_cells",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 1.0,
+          "mean": 1.0,
+          "mean_bootstrap_interval": [
+            1.0,
+            1.0
+          ],
+          "minimum": 1.0
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          0,
+          5
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 5
+      },
+      "vq": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 13289.0,
+          "mean": 13289.0,
+          "mean_bootstrap_interval": [
+            13289.0,
+            13289.0
+          ],
+          "minimum": 13289.0
+        },
+        "budget_bytes": 13296,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 14586.0,
+          "mean": 14586.0,
+          "mean_bootstrap_interval": [
+            14586.0,
+            14586.0
+          ],
+          "minimum": 14586.0
+        },
+        "dataset_group": "sunspots",
+        "family": "learned_vq",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.78515625,
+          "mean": 0.7515625,
+          "mean_bootstrap_interval": [
+            0.734375,
+            0.77109375
+          ],
+          "minimum": 0.73046875
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 1.345703125,
+          "mean": 1.170078125,
+          "mean_bootstrap_interval": [
+            1.073203125,
+            1.2769921874999999
+          ],
+          "minimum": 1.0060546875
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 1190.83984375,
+          "mean": 956.3921875,
+          "mean_bootstrap_interval": [
+            842.549609375,
+            1087.2921875
+          ],
+          "minimum": 818.365234375
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          5,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 5
+      }
+    },
+    {
+      "budget_bytes": 57504,
+      "domain": "digits-pixels",
+      "global": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 56114.0,
+          "mean": 56114.0,
+          "mean_bootstrap_interval": [
+            56114.0,
+            56114.0
+          ],
+          "minimum": 56114.0
+        },
+        "budget_bytes": 57504,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 56434.0,
+          "mean": 56434.0,
+          "mean_bootstrap_interval": [
+            56434.0,
+            56434.0
+          ],
+          "minimum": 56434.0
+        },
+        "dataset_group": "digits-pixels",
+        "family": "global_svd",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.4140625,
+          "mean": 0.4,
+          "mean_bootstrap_interval": [
+            0.391015625,
+            0.408984375
+          ],
+          "minimum": 0.388671875
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 1.205078125,
+          "mean": 1.15390625,
+          "mean_bootstrap_interval": [
+            1.11796875,
+            1.18984375
+          ],
+          "minimum": 1.111328125
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 3.5,
+          "mean": 3.0890625,
+          "mean_bootstrap_interval": [
+            2.83671875,
+            3.351171875
+          ],
+          "minimum": 2.806640625
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          0,
+          5
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      },
+      "local": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 57488.0,
+          "mean": 57465.2,
+          "mean_bootstrap_interval": [
+            57449.99,
+            57480.8
+          ],
+          "minimum": 57436.0
+        },
+        "budget_bytes": 57504,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 57808.0,
+          "mean": 57785.2,
+          "mean_bootstrap_interval": [
+            57769.99,
+            57800.8
+          ],
+          "minimum": 57756.0
+        },
+        "dataset_group": "digits-pixels",
+        "family": "learned_cells",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.482421875,
+          "mean": 0.458203125,
+          "mean_bootstrap_interval": [
+            0.44296875,
+            0.473046875
+          ],
+          "minimum": 0.431640625
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.982421875,
+          "mean": 0.913671875,
+          "mean_bootstrap_interval": [
+            0.8609375,
+            0.959765625
+          ],
+          "minimum": 0.810546875
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 2.365234375,
+          "mean": 2.066796875,
+          "mean_bootstrap_interval": [
+            1.86875,
+            2.252734375
+          ],
+          "minimum": 1.689453125
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": 0.41395663956639567,
+          "mean": 0.32970012539770643,
+          "mean_bootstrap_interval": [
+            0.2844975999774408,
+            0.3789280422132757
+          ],
+          "minimum": 0.25755494505494503
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": 0.41395663956639567,
+          "mean": 0.32970012539770643,
+          "mean_bootstrap_interval": [
+            0.2844975999774408,
+            0.3789280422132757
+          ],
+          "minimum": 0.25755494505494503
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          5,
+          0,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      },
+      "vq": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 57257.0,
+          "mean": 57257.0,
+          "mean_bootstrap_interval": [
+            57257.0,
+            57257.0
+          ],
+          "minimum": 57257.0
+        },
+        "budget_bytes": 57504,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 57577.0,
+          "mean": 57577.0,
+          "mean_bootstrap_interval": [
+            57577.0,
+            57577.0
+          ],
+          "minimum": 57577.0
+        },
+        "dataset_group": "digits-pixels",
+        "family": "learned_vq",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.533203125,
+          "mean": 0.51328125,
+          "mean_bootstrap_interval": [
+            0.498828125,
+            0.5265625
+          ],
+          "minimum": 0.490234375
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 1.197265625,
+          "mean": 1.133203125,
+          "mean_bootstrap_interval": [
+            1.10078125,
+            1.171484375
+          ],
+          "minimum": 1.09765625
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 4.076171875,
+          "mean": 3.833984375,
+          "mean_bootstrap_interval": [
+            3.71328125,
+            3.969921875
+          ],
+          "minimum": 3.6484375
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": -0.12077847738981111,
+          "mean": -0.249717701183154,
+          "mean_bootstrap_interval": [
+            -0.3286823905312627,
+            -0.1707530118350453
+          ],
+          "minimum": -0.3848295059151009
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": -0.12077847738981111,
+          "mean": -0.249717701183154,
+          "mean_bootstrap_interval": [
+            -0.3286823905312627,
+            -0.1707530118350453
+          ],
+          "minimum": -0.3848295059151009
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          5,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      }
+    },
+    {
+      "budget_bytes": 115008,
+      "domain": "digits-pixels",
+      "global": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 111944.0,
+          "mean": 111944.0,
+          "mean_bootstrap_interval": [
+            111944.0,
+            111944.0
+          ],
+          "minimum": 111944.0
+        },
+        "budget_bytes": 115008,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 112264.0,
+          "mean": 112264.0,
+          "mean_bootstrap_interval": [
+            112264.0,
+            112264.0
+          ],
+          "minimum": 112264.0
+        },
+        "dataset_group": "digits-pixels",
+        "family": "global_svd",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.603515625,
+          "mean": 0.573828125,
+          "mean_bootstrap_interval": [
+            0.559375,
+            0.591015625
+          ],
+          "minimum": 0.5546875
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.56640625,
+          "mean": 0.532421875,
+          "mean_bootstrap_interval": [
+            0.509765625,
+            0.555078125
+          ],
+          "minimum": 0.501953125
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 0.96875,
+          "mean": 0.815234375,
+          "mean_bootstrap_interval": [
+            0.755078125,
+            0.89453125
+          ],
+          "minimum": 0.736328125
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          0,
+          5
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      },
+      "local": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 114932.0,
+          "mean": 114878.4,
+          "mean_bootstrap_interval": [
+            114840.4,
+            114914.02
+          ],
+          "minimum": 114808.0
+        },
+        "budget_bytes": 115008,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 115252.0,
+          "mean": 115198.4,
+          "mean_bootstrap_interval": [
+            115160.4,
+            115234.02
+          ],
+          "minimum": 115128.0
+        },
+        "dataset_group": "digits-pixels",
+        "family": "learned_cells",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.646484375,
+          "mean": 0.624609375,
+          "mean_bootstrap_interval": [
+            0.61484375,
+            0.636328125
+          ],
+          "minimum": 0.609375
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.4609375,
+          "mean": 0.438671875,
+          "mean_bootstrap_interval": [
+            0.421875,
+            0.45546875
+          ],
+          "minimum": 0.412109375
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 0.6796875,
+          "mean": 0.582421875,
+          "mean_bootstrap_interval": [
+            0.531640625,
+            0.6332128906249999
+          ],
+          "minimum": 0.509765625
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": 0.38588235294117645,
+          "mean": 0.28266922403427014,
+          "mean_bootstrap_interval": [
+            0.22220790703549326,
+            0.3391484593837535
+          ],
+          "minimum": 0.1909814323607427
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": 0.38588235294117645,
+          "mean": 0.28266922403427014,
+          "mean_bootstrap_interval": [
+            0.22220790703549326,
+            0.3391484593837535
+          ],
+          "minimum": 0.1909814323607427
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          5,
+          0,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      },
+      "vq": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 69401.0,
+          "mean": 69401.0,
+          "mean_bootstrap_interval": [
+            69401.0,
+            69401.0
+          ],
+          "minimum": 69401.0
+        },
+        "budget_bytes": 115008,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 69721.0,
+          "mean": 69721.0,
+          "mean_bootstrap_interval": [
+            69721.0,
+            69721.0
+          ],
+          "minimum": 69721.0
+        },
+        "dataset_group": "digits-pixels",
+        "family": "learned_vq",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.5625,
+          "mean": 0.532421875,
+          "mean_bootstrap_interval": [
+            0.508984375,
+            0.5546875
+          ],
+          "minimum": 0.494140625
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 1.171875,
+          "mean": 1.059375,
+          "mean_bootstrap_interval": [
+            0.98984375,
+            1.12890625
+          ],
+          "minimum": 0.9609375
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 4.0,
+          "mean": 3.50859375,
+          "mean_bootstrap_interval": [
+            3.189453125,
+            3.803515625
+          ],
+          "minimum": 3.0234375
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 5,
+          "maximum": -2.642352941176471,
+          "mean": -3.3485060495247807,
+          "mean_bootstrap_interval": [
+            -3.9555438609358164,
+            -2.816957719067776
+          ],
+          "minimum": -4.43236074270557
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 5,
+          "maximum": -2.642352941176471,
+          "mean": -3.3485060495247807,
+          "mean_bootstrap_interval": [
+            -3.9555438609358164,
+            -2.816957719067776
+          ],
+          "minimum": -4.43236074270557
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          5,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 0
+      }
+    },
+    {
+      "budget_bytes": 230016,
+      "domain": "digits-pixels",
+      "global": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 227326.0,
+          "mean": 221370.8,
+          "mean_bootstrap_interval": [
+            218393.2,
+            225092.8
+          ],
+          "minimum": 216160.0
+        },
+        "budget_bytes": 230016,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 227646.0,
+          "mean": 221690.8,
+          "mean_bootstrap_interval": [
+            218713.2,
+            225412.8
+          ],
+          "minimum": 216480.0
+        },
+        "dataset_group": "digits-pixels",
+        "family": "global_svd",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 1.0,
+          "mean": 1.0,
+          "mean_bootstrap_interval": [
+            1.0,
+            1.0
+          ],
+          "minimum": 1.0
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          0,
+          5
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 5
+      },
+      "local": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 222256.0,
+          "mean": 219046.0,
+          "mean_bootstrap_interval": [
+            218074.4,
+            220692.8
+          ],
+          "minimum": 217980.0
+        },
+        "budget_bytes": 230016,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 222576.0,
+          "mean": 219366.0,
+          "mean_bootstrap_interval": [
+            218394.4,
+            221012.8
+          ],
+          "minimum": 218300.0
+        },
+        "dataset_group": "digits-pixels",
+        "family": "learned_cells",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 1.0,
+          "mean": 1.0,
+          "mean_bootstrap_interval": [
+            1.0,
+            1.0
+          ],
+          "minimum": 1.0
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          0,
+          5
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 5
+      },
+      "vq": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 69401.0,
+          "mean": 69401.0,
+          "mean_bootstrap_interval": [
+            69401.0,
+            69401.0
+          ],
+          "minimum": 69401.0
+        },
+        "budget_bytes": 230016,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 69721.0,
+          "mean": 69721.0,
+          "mean_bootstrap_interval": [
+            69721.0,
+            69721.0
+          ],
+          "minimum": 69721.0
+        },
+        "dataset_group": "digits-pixels",
+        "family": "learned_vq",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.5625,
+          "mean": 0.532421875,
+          "mean_bootstrap_interval": [
+            0.508984375,
+            0.5546875
+          ],
+          "minimum": 0.494140625
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 1.171875,
+          "mean": 1.059375,
+          "mean_bootstrap_interval": [
+            0.98984375,
+            1.12890625
+          ],
+          "minimum": 0.9609375
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 4.0,
+          "mean": 3.50859375,
+          "mean_bootstrap_interval": [
+            3.189453125,
+            3.803515625
+          ],
+          "minimum": 3.0234375
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          5,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 5
+      }
+    },
+    {
+      "budget_bytes": 460032,
+      "domain": "digits-pixels",
+      "global": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 227326.0,
+          "mean": 221370.8,
+          "mean_bootstrap_interval": [
+            218393.2,
+            225092.8
+          ],
+          "minimum": 216160.0
+        },
+        "budget_bytes": 460032,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 227646.0,
+          "mean": 221690.8,
+          "mean_bootstrap_interval": [
+            218713.2,
+            225412.8
+          ],
+          "minimum": 216480.0
+        },
+        "dataset_group": "digits-pixels",
+        "family": "global_svd",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 1.0,
+          "mean": 1.0,
+          "mean_bootstrap_interval": [
+            1.0,
+            1.0
+          ],
+          "minimum": 1.0
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          0,
+          5
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 5
+      },
+      "local": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 222256.0,
+          "mean": 219046.0,
+          "mean_bootstrap_interval": [
+            218074.4,
+            220692.8
+          ],
+          "minimum": 217980.0
+        },
+        "budget_bytes": 460032,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 222576.0,
+          "mean": 219366.0,
+          "mean_bootstrap_interval": [
+            218394.4,
+            221012.8
+          ],
+          "minimum": 218300.0
+        },
+        "dataset_group": "digits-pixels",
+        "family": "learned_cells",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 1.0,
+          "mean": 1.0,
+          "mean_bootstrap_interval": [
+            1.0,
+            1.0
+          ],
+          "minimum": 1.0
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 0.0,
+          "mean": 0.0,
+          "mean_bootstrap_interval": [
+            0.0,
+            0.0
+          ],
+          "minimum": 0.0
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          0,
+          5
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 5
+      },
+      "vq": {
+        "artifact_bytes": {
+          "count": 5,
+          "maximum": 69401.0,
+          "mean": 69401.0,
+          "mean_bootstrap_interval": [
+            69401.0,
+            69401.0
+          ],
+          "minimum": 69401.0
+        },
+        "budget_bytes": 460032,
+        "complete_parameter_read_bytes": {
+          "count": 5,
+          "maximum": 69721.0,
+          "mean": 69721.0,
+          "mean_bootstrap_interval": [
+            69721.0,
+            69721.0
+          ],
+          "minimum": 69721.0
+        },
+        "dataset_group": "digits-pixels",
+        "family": "learned_vq",
+        "hidden_exact_accuracy": {
+          "count": 5,
+          "maximum": 0.5625,
+          "mean": 0.532421875,
+          "mean_bootstrap_interval": [
+            0.508984375,
+            0.5546875
+          ],
+          "minimum": 0.494140625
+        },
+        "hidden_mae_original_units": {
+          "count": 5,
+          "maximum": 1.171875,
+          "mean": 1.059375,
+          "mean_bootstrap_interval": [
+            0.98984375,
+            1.12890625
+          ],
+          "minimum": 0.9609375
+        },
+        "hidden_mse": {
+          "count": 5,
+          "maximum": 4.0,
+          "mean": 3.50859375,
+          "mean_bootstrap_interval": [
+            3.189453125,
+            3.803515625
+          ],
+          "minimum": 3.0234375
+        },
+        "relative_mse_gain_vs_best_global_or_vq": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "relative_mse_gain_vs_global": {
+          "count": 0,
+          "maximum": null,
+          "mean": null,
+          "mean_bootstrap_interval": null,
+          "minimum": null
+        },
+        "seeds": [
+          307,
+          311,
+          313,
+          317,
+          331
+        ],
+        "wins_losses_ties_vs_global": [
+          0,
+          5,
+          0
+        ],
+        "zero_global_mse_cases_excluded_from_relative_gain": 5
+      }
+    }
+  ],
+  "capacity_same_work_controls": {
+    "checked": 640,
+    "floors_met": 640
+  },
+  "complete_numeric_exact_storage": [
+    {
+      "best_global_archival_complete_bytes": 2361,
+      "best_global_archival_rank": 1,
+      "best_selected_family": "global_svd",
+      "best_selected_model_residual_complete_bytes": 2479,
+      "common_address_provenance_bytes": 1085,
+      "dataset": "co2",
+      "dataset_group": "co2",
+      "exact_reconstruction_independently_verified": true,
+      "minimum_audited_complete_bytes": 2361,
+      "minimum_audited_relative_saving": 0.02679307502061006,
+      "strong_exact_complete_bytes": 2426
+    },
+    {
+      "best_global_archival_complete_bytes": 42033,
+      "best_global_archival_rank": 0,
+      "best_selected_family": "predeclared_cells",
+      "best_selected_model_residual_complete_bytes": 92124,
+      "common_address_provenance_bytes": 320,
+      "dataset": "digits-pixels",
+      "dataset_group": "digits-pixels",
+      "exact_reconstruction_independently_verified": true,
+      "minimum_audited_complete_bytes": 42033,
+      "minimum_audited_relative_saving": -0.004588800458880046,
+      "strong_exact_complete_bytes": 41841
+    },
+    {
+      "best_global_archival_complete_bytes": 6530,
+      "best_global_archival_rank": 0,
+      "best_selected_family": "global_svd",
+      "best_selected_model_residual_complete_bytes": 6986,
+      "common_address_provenance_bytes": 1297,
+      "dataset": "sunspots",
+      "dataset_group": "sunspots",
+      "exact_reconstruction_independently_verified": true,
+      "minimum_audited_complete_bytes": 6530,
+      "minimum_audited_relative_saving": -0.09453570231310761,
+      "strong_exact_complete_bytes": 5966
+    },
+    {
+      "best_global_archival_complete_bytes": 3182,
+      "best_global_archival_rank": 0,
+      "best_selected_family": "global_svd",
+      "best_selected_model_residual_complete_bytes": 3414,
+      "common_address_provenance_bytes": 1229,
+      "dataset": "temperature",
+      "dataset_group": "temperature",
+      "exact_reconstruction_independently_verified": true,
+      "minimum_audited_complete_bytes": 3182,
+      "minimum_audited_relative_saving": -0.12756909992912827,
+      "strong_exact_complete_bytes": 2822
+    }
+  ],
+  "evidence": {
+    "commit_binding": "exact-committed-bytes",
+    "development_only": false,
+    "execution": "completed",
+    "manifest": {
+      "bytes": 925934,
+      "sha256": "5f52760eebc7407811b7778d09795e843bc73d1bbf9fe48cf27dfa5fad40af42"
+    },
+    "output_bytes": 327220847,
+    "output_files": 4920,
+    "source_commit": "66dc3a2ed500a60b8abb6c01eb6fe9d501dc8ea2",
+    "source_files": 229,
+    "verified": true,
+    "verified_stages": [
+      "capacity",
+      "routing_graph",
+      "lifecycle",
+      "structure",
+      "native"
+    ]
+  },
+  "lifecycle": {
+    "all_lossless_exact": true,
+    "all_parameter_retention_gate": true,
+    "audit_limits": [
+      "Saved model parsing and residual decoding reuse production format parsers; parameter inference arithmetic, source targets and metrics are independently recomputed.",
+      "Original fault execution and process isolation are retained receipts, not new fault executions by this auditor.",
+      "No historical elapsed-time proof, distributed consensus, production admission or weight-unlearning certification."
+    ],
+    "domain_seed_runs": 15,
+    "domains": [
+      {
+        "domain": "co2",
+        "max_old_exact_regression": 0.0125,
+        "old_parameter_retention_gate_passes": 5,
+        "raw_deleted_coincidental_matches": 0,
+        "stages": [
+          {
+            "lossless_exact_mean": 1.0,
+            "parameter_exact_mean": 0.029166666666666667,
+            "parameter_mae_mean": 0.12702083333333333,
+            "revoked_refusals_total": 0,
+            "stage": "initial"
+          },
+          {
+            "lossless_exact_mean": 1.0,
+            "parameter_exact_mean": 0.026119402985074626,
+            "parameter_mae_mean": 0.13757462686567165,
+            "revoked_refusals_total": 0,
+            "stage": "append"
+          },
+          {
+            "lossless_exact_mean": 1.0,
+            "parameter_exact_mean": 0.021393034825870648,
+            "parameter_mae_mean": 0.175636815920398,
+            "revoked_refusals_total": 0,
+            "stage": "correct"
+          },
+          {
+            "lossless_exact_mean": 1.0,
+            "parameter_exact_mean": 0.08919597989949749,
+            "parameter_mae_mean": 0.22752261306532662,
+            "revoked_refusals_total": 40,
+            "stage": "withdraw"
+          },
+          {
+            "lossless_exact_mean": 1.0,
+            "parameter_exact_mean": 0.08919597989949749,
+            "parameter_mae_mean": 0.22752261306532662,
+            "revoked_refusals_total": 40,
+            "stage": "clean_replay"
+          }
+        ]
+      },
+      {
+        "domain": "temperature",
+        "max_old_exact_regression": 0.0045871559633027525,
+        "old_parameter_retention_gate_passes": 5,
+        "raw_deleted_coincidental_matches": 1,
+        "stages": [
+          {
+            "lossless_exact_mean": 1.0,
+            "parameter_exact_mean": 0.05363984674329502,
+            "parameter_mae_mean": 0.047078544061302685,
+            "revoked_refusals_total": 0,
+            "stage": "initial"
+          },
+          {
+            "lossless_exact_mean": 1.0,
+            "parameter_exact_mean": 0.0656392694063927,
+            "parameter_mae_mean": 0.049885844748858446,
+            "revoked_refusals_total": 0,
+            "stage": "append"
+          },
+          {
+            "lossless_exact_mean": 1.0,
+            "parameter_exact_mean": 0.0978310502283105,
+            "parameter_mae_mean": 0.06648630136986301,
+            "revoked_refusals_total": 0,
+            "stage": "correct"
+          },
+          {
+            "lossless_exact_mean": 1.0,
+            "parameter_exact_mean": 0.09713302752293579,
+            "parameter_mae_mean": 0.0664908256880734,
+            "revoked_refusals_total": 40,
+            "stage": "withdraw"
+          },
+          {
+            "lossless_exact_mean": 1.0,
+            "parameter_exact_mean": 0.09713302752293579,
+            "parameter_mae_mean": 0.0664908256880734,
+            "revoked_refusals_total": 40,
+            "stage": "clean_replay"
+          }
+        ]
+      },
+      {
+        "domain": "sunspots",
+        "max_old_exact_regression": 0.0018094089264173705,
+        "old_parameter_retention_gate_passes": 5,
+        "raw_deleted_coincidental_matches": 0,
+        "stages": [
+          {
+            "lossless_exact_mean": 1.0,
+            "parameter_exact_mean": 0.006024096385542169,
+            "parameter_mae_mean": 11.337449799196786,
+            "revoked_refusals_total": 0,
+            "stage": "initial"
+          },
+          {
+            "lossless_exact_mean": 1.0,
+            "parameter_exact_mean": 0.005415162454873646,
+            "parameter_mae_mean": 11.316546329723225,
+            "revoked_refusals_total": 0,
+            "stage": "append"
+          },
+          {
+            "lossless_exact_mean": 1.0,
+            "parameter_exact_mean": 0.004271961492178099,
+            "parameter_mae_mean": 11.31777376654633,
+            "revoked_refusals_total": 0,
+            "stage": "correct"
+          },
+          {
+            "lossless_exact_mean": 1.0,
+            "parameter_exact_mean": 0.0048854041013269,
+            "parameter_mae_mean": 11.302708082026538,
+            "revoked_refusals_total": 40,
+            "stage": "withdraw"
+          },
+          {
+            "lossless_exact_mean": 1.0,
+            "parameter_exact_mean": 0.0048854041013269,
+            "parameter_mae_mean": 11.302708082026538,
+            "revoked_refusals_total": 40,
+            "stage": "clean_replay"
+          }
+        ]
+      }
+    ],
+    "fault_probes_recorded_rejected": 75,
+    "manifest_sha256": "5f52760eebc7407811b7778d09795e843bc73d1bbf9fe48cf27dfa5fad40af42",
+    "new_processes": 30,
+    "source_commit": "66dc3a2ed500a60b8abb6c01eb6fe9d501dc8ea2",
+    "stage_rows": 135180
+  },
+  "manifest_sha256": "5f52760eebc7407811b7778d09795e843bc73d1bbf9fe48cf27dfa5fad40af42",
+  "native": {
+    "accuracy": {
+      "max": 1.0,
+      "mean": 1.0,
+      "median": 1.0,
+      "min": 1.0,
+      "n": 5
+    },
+    "all_signals_abstain": true,
+    "any_calibration_admission": false,
+    "artifact_bytes_per_seed": {
+      "max": 1128,
+      "mean": 1128,
+      "median": 1128,
+      "min": 1128,
+      "n": 5
+    },
+    "correct_queries": 320,
+    "durable_journal_frames": 320,
+    "logit_entries_compared": 2560,
+    "logits_and_bits_all_exact": true,
+    "native_mechanism_gate": true,
+    "negative_cases": 30,
+    "negative_cases_all_refused_without_state_mutation": true,
+    "output_bits_compared": 2560,
+    "owner_state_bytes_per_seed": {
+      "max": 35545,
+      "mean": 35545,
+      "median": 35545,
+      "min": 35545,
+      "n": 5
+    },
+    "pooled_accuracy": 1.0,
+    "query_count": 320,
+    "seeds": [
+      307,
+      311,
+      313,
+      317,
+      331
+    ],
+    "successful_native_process_count": 10,
+    "total_actual_optimizer_steps": 8000,
+    "total_training_examples_seen": 512000,
+    "written_fact_source_bytes_per_seed": {
+      "max": 1304,
+      "mean": 1304,
+      "median": 1304,
+      "min": 1304,
+      "n": 5
+    },
+    "written_recall_95pct_gate": true
+  },
+  "qualification": {
+    "all_blockers_closed": false,
+    "closed_bounded_engineering_items": [
+      "Real parameter training and portable artifact loading",
+      "Actual NeuronModelPort/NeuronRuntime execution and journal/witness recovery",
+      "Strict value-free request and parameter/residual reader separation",
+      "Same-ceiling, natural-cost and actual same-work control measurement",
+      "Immutable source snapshots, full output seals and independent metric audits",
+      "Durable prepare/intent/witness/publish sequence and matching-intent recovery",
+      "Validated candidate parsing before witness advance and same-checked-byte address parsing",
+      "Fresh-process correction/revocation/replay and per-hop owner binding",
+      "Actual split/consolidation artifacts and route migration evidence"
+    ],
+    "evidence_integrity_pass": true,
+    "formal_manifest_sha256": "5f52760eebc7407811b7778d09795e843bc73d1bbf9fe48cf27dfa5fad40af42",
+    "formal_seeds": [
+      307,
+      311,
+      313,
+      317,
+      331
+    ],
+    "formal_source_commit": "66dc3a2ed500a60b8abb6c01eb6fe9d501dc8ea2",
+    "general_memory_system_established": false,
+    "no_post_formal_training_or_threshold_tuning": true,
+    "open_empirical_blockers": [
+      {
+        "closed": false,
+        "finding": "All 20 seed-domain pairs miss 80% correct accepted known coverage; held unemployment also has high OOD acceptance.",
+        "id": "semantic_addressing",
+        "required_evidence": "A newly preregistered independent language/domain set meeting coverage and risk together; no reuse of these formal outcomes for model selection."
+      },
+      {
+        "closed": false,
+        "finding": "Convergent seed 331 exposes a candidate-partition/controller failure despite a good fixed_4 structure at the same ceiling; the natural-cost mean also loses.",
+        "id": "robust_structural_net_benefit",
+        "required_evidence": "A stronger bounded candidate/fallback controller tested on fresh streams, with natural fixed costs and every rejected candidate charged."
+      },
+      {
+        "closed": false,
+        "finding": "Program primitives are supplied; zero-update numeric domain transport alone does not meet new-type/new-task generality.",
+        "id": "learned_types_and_general_memory",
+        "required_evidence": "Independently authored domains and task families, learned or transferred procedures, and retained old competence under the same control plane."
+      }
+    ],
+    "original_v1_v2_gates_preserved": true,
+    "out_of_scope_not_claimed": [
+      "Complete product workspace validation or calibration admission",
+      "Distributed multi-writer consensus",
+      "Certified removal from all old artifacts or weights",
+      "Full process RSS, energy or currency cost",
+      "Universally better lossless compression or autonomous type invention"
+    ],
+    "production_admitted": false,
+    "schema": "memory-cell-v3.qualification.v1",
+    "six_stages": [
+      {
+        "evidence": "320/320 trained facts, 10 fresh native processes, exact logits/bits; capacity and distortion independently measured",
+        "limits": "Small synthetic bit memory plus numeric SVD families; not pretrained language-model memory fine-tuning or universal compression.",
+        "name": "单 cell 参数记忆",
+        "pass": true,
+        "stage": 1,
+        "status": "qualified_within_declared_small_workload"
+      },
+      {
+        "declared_scoped_gate_pass": true,
+        "evidence": "Measured advantages in low-budget sunspots and Digits; CO2/temperature lose, and some maximum-budget cases still incur post-selection parameter reconstruction errors",
+        "limits": "Same byte ceilings, different integer-rank occupancy. Stored coordinate routing is distinct from natural-language semantic routing.",
+        "name": "固定多 cell",
+        "pass": true,
+        "qualifying_conditions": [
+          "sunspots/1662B",
+          "sunspots/3324B",
+          "digits-pixels/57504B",
+          "digits-pixels/115008B"
+        ],
+        "stage": 2,
+        "status": "qualified_within_declared_type_budget_conditions",
+        "universal_advantage_established": false
+      },
+      {
+        "evidence": "20/20 seed-domain cases exceed both 10 percentage-point edge-ablation gains; all 20 semantic quality cases fail; learned layout ties a strong supplied planner",
+        "limits": "Typed primitives and their implementations are supplied. Residual-supported composition is separate from pure-parameter exactness.",
+        "name": "类型化 meta network",
+        "pass": false,
+        "stage": 3,
+        "status": "lossless_composition_mechanism_pass_semantic_addressing_fail"
+      },
+      {
+        "evidence": "135180 rows regraded, 15/15 parameter old-exact retention floors, all exact-codec retention, 75 recorded fault rejections, 30 fresh owner readers",
+        "limits": "Rank-four parameter MAE can worsen. Independent witness assumption; no distributed consensus or certified weight erasure.",
+        "name": "持续学习与维护",
+        "pass": true,
+        "stage": 4,
+        "status": "qualified_within_single_writer_owner_contract"
+      },
+      {
+        "evidence": "4/20 strict cases; convergent 4/5, other flows 0/5; 10 actual splits and 5 consolidations; pair-merge candidates/adoptions both zero",
+        "limits": "Seed 331 fails quality and natural/matched costs. All-flow and convergent-all-seed gates remain false.",
+        "name": "分裂、合并与巩固",
+        "pass": false,
+        "stage": 5,
+        "status": "not_qualified"
+      },
+      {
+        "evidence": "348 new economic facts written with zero router/layout updates, but held-domain correct coverage 43.33% and OOD false acceptance 25% on seed means",
+        "limits": "Fixed English numeric tasks do not establish new learned memory types, open dialogue, multilingual use or general memory.",
+        "name": "扩展通用性",
+        "pass": false,
+        "stage": 6,
+        "status": "zero_update_transfer_mechanism_pass_reliable_generality_fail"
+      }
+    ],
+    "unproven_broader_hypotheses": [
+      {
+        "classification": "unproven broader hypothesis; scoped stage2 gate passes",
+        "closed": false,
+        "finding": "Local parameterization helps selected workloads but loses on CO2/temperature; complete model+residual storage usually exceeds strong exact codecs.",
+        "id": "broader_compression_claim_not_a_new_stage2_gate",
+        "required_evidence": "Declared type-specific gains across independent workloads, including every model, address, residual, cache and maintenance cost."
+      }
+    ]
+  },
+  "routing": [
+    {
+      "correct_known_coverage": {
+        "maximum": 0.4236111111111111,
+        "mean": 0.3819444444444445,
+        "minimum": 0.3611111111111111,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.3888888888888889,
+          0.3611111111111111,
+          0.4236111111111111,
+          0.3611111111111111,
+          0.375
+        ]
+      },
+      "domain": "co2",
+      "known_coverage": {
+        "maximum": 0.5208333333333334,
+        "mean": 0.44027777777777777,
+        "minimum": 0.3611111111111111,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.4861111111111111,
+          0.3611111111111111,
+          0.5208333333333334,
+          0.3611111111111111,
+          0.4722222222222222
+        ]
+      },
+      "lossless_exact": {
+        "maximum": 0.4236111111111111,
+        "mean": 0.3819444444444445,
+        "minimum": 0.3611111111111111,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.3888888888888889,
+          0.3611111111111111,
+          0.4236111111111111,
+          0.3611111111111111,
+          0.375
+        ]
+      },
+      "ood_false_accept": {
+        "maximum": 0.09375,
+        "mean": 0.025,
+        "minimum": 0.0,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.03125,
+          0.0,
+          0.0,
+          0.0,
+          0.09375
+        ]
+      },
+      "oracle_exact": {
+        "maximum": 1.0,
+        "mean": 1.0,
+        "minimum": 1.0,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "parameter_exact": {
+        "maximum": 0.013888888888888888,
+        "mean": 0.006944444444444445,
+        "minimum": 0.0,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.0,
+          0.013888888888888888,
+          0.013888888888888888,
+          0.006944444444444444,
+          0.0
+        ]
+      },
+      "permuted_edges_exact": {
+        "maximum": 0.16666666666666666,
+        "mean": 0.16111111111111112,
+        "minimum": 0.1527777777777778,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.1527777777777778,
+          0.16666666666666666,
+          0.1527777777777778,
+          0.16666666666666666,
+          0.16666666666666666
+        ]
+      },
+      "removed_edges_exact": {
+        "maximum": 0.08333333333333333,
+        "mean": 0.07083333333333333,
+        "minimum": 0.05555555555555555,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.0625,
+          0.08333333333333333,
+          0.06944444444444445,
+          0.08333333333333333,
+          0.05555555555555555
+        ]
+      }
+    },
+    {
+      "correct_known_coverage": {
+        "maximum": 0.3611111111111111,
+        "mean": 0.33472222222222225,
+        "minimum": 0.2986111111111111,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.3472222222222222,
+          0.3611111111111111,
+          0.3055555555555556,
+          0.3611111111111111,
+          0.2986111111111111
+        ]
+      },
+      "domain": "temperature",
+      "known_coverage": {
+        "maximum": 0.4791666666666667,
+        "mean": 0.3916666666666667,
+        "minimum": 0.3611111111111111,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.4791666666666667,
+          0.3611111111111111,
+          0.3888888888888889,
+          0.3611111111111111,
+          0.3680555555555556
+        ]
+      },
+      "lossless_exact": {
+        "maximum": 0.3611111111111111,
+        "mean": 0.33472222222222225,
+        "minimum": 0.2986111111111111,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.3472222222222222,
+          0.3611111111111111,
+          0.3055555555555556,
+          0.3611111111111111,
+          0.2986111111111111
+        ]
+      },
+      "ood_false_accept": {
+        "maximum": 0.125,
+        "mean": 0.0375,
+        "minimum": 0.0,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.125,
+          0.0,
+          0.03125,
+          0.0,
+          0.03125
+        ]
+      },
+      "oracle_exact": {
+        "maximum": 1.0,
+        "mean": 1.0,
+        "minimum": 1.0,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "parameter_exact": {
+        "maximum": 0.020833333333333332,
+        "mean": 0.00972222222222222,
+        "minimum": 0.0,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.006944444444444444,
+          0.0,
+          0.006944444444444444,
+          0.020833333333333332,
+          0.013888888888888888
+        ]
+      },
+      "permuted_edges_exact": {
+        "maximum": 0.16666666666666666,
+        "mean": 0.15555555555555556,
+        "minimum": 0.1388888888888889,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.16666666666666666,
+          0.16666666666666666,
+          0.1388888888888889,
+          0.16666666666666666,
+          0.1388888888888889
+        ]
+      },
+      "removed_edges_exact": {
+        "maximum": 0.09027777777777778,
+        "mean": 0.07083333333333333,
+        "minimum": 0.041666666666666664,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.09027777777777778,
+          0.08333333333333333,
+          0.041666666666666664,
+          0.08333333333333333,
+          0.05555555555555555
+        ]
+      }
+    },
+    {
+      "correct_known_coverage": {
+        "maximum": 0.4305555555555556,
+        "mean": 0.3902777777777778,
+        "minimum": 0.3611111111111111,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.4305555555555556,
+          0.3611111111111111,
+          0.4166666666666667,
+          0.3611111111111111,
+          0.3819444444444444
+        ]
+      },
+      "domain": "sunspots",
+      "known_coverage": {
+        "maximum": 0.7083333333333334,
+        "mean": 0.5416666666666667,
+        "minimum": 0.3611111111111111,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.7083333333333334,
+          0.3611111111111111,
+          0.6458333333333334,
+          0.3611111111111111,
+          0.6319444444444444
+        ]
+      },
+      "lossless_exact": {
+        "maximum": 0.4305555555555556,
+        "mean": 0.3902777777777778,
+        "minimum": 0.3611111111111111,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.4305555555555556,
+          0.3611111111111111,
+          0.4166666666666667,
+          0.3611111111111111,
+          0.3819444444444444
+        ]
+      },
+      "ood_false_accept": {
+        "maximum": 0.53125,
+        "mean": 0.25625,
+        "minimum": 0.0,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.53125,
+          0.0,
+          0.3125,
+          0.0,
+          0.4375
+        ]
+      },
+      "oracle_exact": {
+        "maximum": 1.0,
+        "mean": 1.0,
+        "minimum": 1.0,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "parameter_exact": {
+        "maximum": 0.0,
+        "mean": 0.0,
+        "minimum": 0.0,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "permuted_edges_exact": {
+        "maximum": 0.2569444444444444,
+        "mean": 0.2111111111111111,
+        "minimum": 0.16666666666666666,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.25,
+          0.16666666666666666,
+          0.2569444444444444,
+          0.16666666666666666,
+          0.2152777777777778
+        ]
+      },
+      "removed_edges_exact": {
+        "maximum": 0.16666666666666666,
+        "mean": 0.125,
+        "minimum": 0.08333333333333333,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.16666666666666666,
+          0.08333333333333333,
+          0.1388888888888889,
+          0.08333333333333333,
+          0.1527777777777778
+        ]
+      }
+    },
+    {
+      "correct_known_coverage": {
+        "maximum": 0.5138888888888888,
+        "mean": 0.4333333333333333,
+        "minimum": 0.3611111111111111,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.4930555555555556,
+          0.3611111111111111,
+          0.5138888888888888,
+          0.3611111111111111,
+          0.4375
+        ]
+      },
+      "domain": "unemployment",
+      "known_coverage": {
+        "maximum": 0.7986111111111112,
+        "mean": 0.6125,
+        "minimum": 0.3611111111111111,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.7569444444444444,
+          0.3611111111111111,
+          0.7986111111111112,
+          0.3611111111111111,
+          0.7847222222222222
+        ]
+      },
+      "lossless_exact": {
+        "maximum": 0.5138888888888888,
+        "mean": 0.4333333333333333,
+        "minimum": 0.3611111111111111,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.4930555555555556,
+          0.3611111111111111,
+          0.5138888888888888,
+          0.3611111111111111,
+          0.4375
+        ]
+      },
+      "ood_false_accept": {
+        "maximum": 0.5,
+        "mean": 0.25,
+        "minimum": 0.0,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.28125,
+          0.0,
+          0.46875,
+          0.0,
+          0.5
+        ]
+      },
+      "oracle_exact": {
+        "maximum": 1.0,
+        "mean": 1.0,
+        "minimum": 1.0,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "parameter_exact": {
+        "maximum": 0.10416666666666667,
+        "mean": 0.04583333333333333,
+        "minimum": 0.006944444444444444,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.10416666666666667,
+          0.006944444444444444,
+          0.09027777777777778,
+          0.020833333333333332,
+          0.006944444444444444
+        ]
+      },
+      "permuted_edges_exact": {
+        "maximum": 0.25,
+        "mean": 0.20277777777777778,
+        "minimum": 0.16666666666666666,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.2361111111111111,
+          0.16666666666666666,
+          0.25,
+          0.16666666666666666,
+          0.19444444444444445
+        ]
+      },
+      "removed_edges_exact": {
+        "maximum": 0.16666666666666666,
+        "mean": 0.13333333333333333,
+        "minimum": 0.08333333333333333,
+        "nonmissing_seeds": 5,
+        "seed_values": [
+          0.16666666666666666,
+          0.08333333333333333,
+          0.16666666666666666,
+          0.08333333333333333,
+          0.16666666666666666
+        ]
+      }
+    }
+  ],
+  "routing_costs": {
+    "actual_encoder_calls_total": 11195,
+    "all_candidate_layout_executions_total": 16560,
+    "all_candidate_layout_operation_calls_total": 40320,
+    "base_load_receipt_repeated_across_seed_summaries_not_summed": true,
+    "candidate_artifact_bytes_total": 1331903,
+    "candidate_artifacts_verified_total": 60,
+    "decoded_cache_bytes_by_domain_per_codec": {
+      "co2": 4020,
+      "sunspots": 16620,
+      "temperature": 8760,
+      "unemployment": 1740
+    },
+    "encoder_base_loaded_once_seconds": 0.14042263999726856,
+    "evaluation_actual_operation_calls_total": 101994,
+    "lossless_memory_bytes_minus_strong_exact_memory_bytes": 3981,
+    "lossless_memory_to_strong_exact_memory_ratio": 1.3622713622713623,
+    "lossless_pipeline_bytes_minus_strong_exact_planner_pipeline": 6956,
+    "research_router_artifact_bytes_total_including_copies": 1553883,
+    "router_candidate_actual_example_updates_total": 10296000,
+    "router_candidate_optimizer_steps_total": 36000,
+    "selected_copies_verified_total": 10,
+    "selected_copy_bytes_total": 221980,
+    "serialized_deployment_each_seed": {
+      "budget_scope": "serialized model and address/control metadata; common runtime/interpreter/program code excluded",
+      "codec_resident_exact_cache_bytes": 31140,
+      "diagnostic_models_are_separately_saved": true,
+      "encoder_is_charged_once": true,
+      "frozen_encoder_bytes": 23516451,
+      "learned_layout_bytes": 3129,
+      "lossless_codec_memories_with_address_metadata_bytes": 14970,
+      "lossless_total_with_shared_encoder": 23556748,
+      "parameter_memories_with_address_metadata_bytes": 8278,
+      "parameter_total_with_shared_encoder": 23550056,
+      "selected_router_bytes": 22198,
+      "strong_exact_codec_memories_with_address_metadata_bytes": 10989,
+      "strong_exact_planner_metadata_bytes": 154,
+      "strong_exact_planner_total_with_shared_encoder": 23549792
+    }
+  },
+  "schema": "memory-cell-v3.measured-summary.v1",
+  "source_commit": "66dc3a2ed500a60b8abb6c01eb6fe9d501dc8ea2",
+  "structure_operations": {
+    "accepted_consolidations": 5,
+    "accepted_merges": 0,
+    "accepted_parameter_refreshes": 5,
+    "accepted_splits": 10,
+    "accepted_structural_changes": 15,
+    "consolidation_decisions": 5,
+    "feasible_split_candidates": 10,
+    "merge_decisions": 10,
+    "merge_decisions_skipped_without_search": 10,
+    "search_disabled_triggers": 23,
+    "split_decisions": 12,
+    "trained_global_bases": 25,
+    "trained_merge_candidate_bases": 0,
+    "trained_refresh_bases": 5,
+    "trained_split_candidate_bases": 24
+  },
+  "structure_per_flow": [
+    {
+      "adaptive_retained_state_ratio_vs_efficient": {
+        "max": 1.4030124072167742,
+        "mean": 1.0288648828256413,
+        "median": 0.9370844378775368,
+        "min": 0.929850536576931,
+        "n": 5
+      },
+      "adaptive_work_ratio_vs_efficient": {
+        "max": 2.1811387686191344,
+        "mean": 1.489895244966143,
+        "median": 1.322749037225606,
+        "min": 1.3080396676680504,
+        "n": 5
+      },
+      "adaptive_work_ratio_vs_efficient_single": {
+        "max": 12.164000790916944,
+        "mean": 7.846605664113651,
+        "median": 6.86849993754944,
+        "min": 6.630059833506764,
+        "n": 5
+      },
+      "all_seeds_strict_pass": false,
+      "failed_seeds": [
+        307,
+        311,
+        313,
+        317,
+        331
+      ],
+      "flow": "heterogeneous",
+      "gate_component_pass_counts": {
+        "priced_loss_below_efficient": 0,
+        "priced_loss_below_matched": 4,
+        "quality_gain_vs_efficient_at_least_0_05": 0,
+        "quality_gain_vs_matched_at_least_0_05": 0,
+        "selection_domain_retention_floors": 5
+      },
+      "hidden_mse": {
+        "adaptive": {
+          "max": 70.97144700758187,
+          "mean": 14.197337516826847,
+          "median": 0.004196255648805681,
+          "min": 0.002789171452009844,
+          "n": 5
+        },
+        "efficient_fixed": {
+          "max": 0.0030625402965828497,
+          "mean": 0.0019403334554372281,
+          "median": 0.0020981278244028407,
+          "min": 0.0008203445447087777,
+          "n": 5
+        },
+        "efficient_single": {
+          "max": 131.26904955320876,
+          "mean": 111.98056798472645,
+          "median": 114.26434558349452,
+          "min": 93.0191966446201,
+          "n": 5
+        },
+        "matched_fixed": {
+          "max": 0.0030625402965828497,
+          "mean": 0.0019403334554372281,
+          "median": 0.0020981278244028407,
+          "min": 0.0008203445447087777,
+          "n": 5
+        }
+      },
+      "literal_relative_mse_gain_vs_efficient": {
+        "max": -0.26315789473684215,
+        "mean": -6285.9612030075195,
+        "median": -1.9999999999999998,
+        "min": -31424.142857142862,
+        "n": 5
+      },
+      "normalized_gain_vs_efficient": {
+        "max": -0.0008059316569954868,
+        "mean": -14.19539718337141,
+        "median": -0.0020981278244028407,
+        "min": -70.96918857880304,
+        "n": 5
+      },
+      "operations": {
+        "accepted_consolidations": 0,
+        "accepted_merges": 0,
+        "accepted_parameter_refreshes": 0,
+        "accepted_splits": 5,
+        "accepted_structural_changes": 5,
+        "consolidation_decisions": 0,
+        "feasible_split_candidates": 5,
+        "merge_decisions": 5,
+        "merge_decisions_skipped_without_search": 5,
+        "search_disabled_triggers": 4,
+        "split_decisions": 6,
+        "trained_global_bases": 5,
+        "trained_merge_candidate_bases": 0,
+        "trained_refresh_bases": 0,
+        "trained_split_candidate_bases": 12
+      },
+      "priced_loss": {
+        "adaptive": {
+          "max": 1.8366082760099638,
+          "mean": 0.9083981147251657,
+          "median": 0.6811895378815824,
+          "min": 0.6699261139680102,
+          "n": 5
+        },
+        "efficient_fixed": {
+          "max": 0.6745561455191312,
+          "mean": 0.6641233279163307,
+          "median": 0.6627280824801032,
+          "min": 0.65880679448802,
+          "n": 5
+        },
+        "efficient_single": {
+          "max": 1.2466070147711836,
+          "mean": 1.2465673262383852,
+          "median": 1.2465533061993874,
+          "min": 1.2465505596173563,
+          "n": 5
+        },
+        "matched_fixed": {
+          "max": 0.9775894600518791,
+          "mean": 0.7977293874839395,
+          "median": 0.7539350132218645,
+          "min": 0.7498364258904255,
+          "n": 5
+        }
+      },
+      "priced_regret_vs_efficient": {
+        "max": 1.1620521304908324,
+        "mean": 0.24427478680883505,
+        "median": 0.018329331287094908,
+        "min": 0.010069535300660126,
+        "n": 5
+      },
+      "priced_regret_vs_matched": {
+        "max": 0.8590188159580847,
+        "mean": 0.11066872724122623,
+        "median": -0.07274547534028208,
+        "min": -0.08111936550011034,
+        "n": 5
+      },
+      "seeds": [
+        307,
+        311,
+        313,
+        317,
+        331
+      ],
+      "strict_case_count": 5,
+      "strict_pass_count": 0
+    },
+    {
+      "adaptive_retained_state_ratio_vs_efficient": {
+        "max": 1.1219290316599453,
+        "mean": 0.9302634147744615,
+        "median": 0.8814832402881697,
+        "min": 0.8809510009621292,
+        "n": 5
+      },
+      "adaptive_work_ratio_vs_efficient": {
+        "max": 1.4926321849109474,
+        "mean": 1.0926371201717309,
+        "median": 0.9891952118332782,
+        "min": 0.9810609994766178,
+        "n": 5
+      },
+      "adaptive_work_ratio_vs_efficient_single": {
+        "max": 7.738737520798669,
+        "mean": 5.601641123981843,
+        "median": 5.117640942998986,
+        "min": 4.99761052461797,
+        "n": 5
+      },
+      "all_seeds_strict_pass": false,
+      "failed_seeds": [
+        331
+      ],
+      "flow": "convergent",
+      "gate_component_pass_counts": {
+        "priced_loss_below_efficient": 4,
+        "priced_loss_below_matched": 4,
+        "quality_gain_vs_efficient_at_least_0_05": 4,
+        "quality_gain_vs_matched_at_least_0_05": 4,
+        "selection_domain_retention_floors": 5
+      },
+      "hidden_mse": {
+        "adaptive": {
+          "max": 35.595913654936716,
+          "mean": 7.202392129178256,
+          "median": 0.10706827466965055,
+          "min": 0.09568933136240795,
+          "n": 5
+        },
+        "efficient_fixed": {
+          "max": 8.428112871206192,
+          "mean": 6.476704331484952,
+          "median": 6.007292145913434,
+          "min": 4.575903016168339,
+          "n": 5
+        },
+        "efficient_single": {
+          "max": 65.73976671208825,
+          "mean": 56.09400736312806,
+          "median": 57.225927887132876,
+          "min": 46.61978847345583,
+          "n": 5
+        },
+        "matched_fixed": {
+          "max": 8.428112871206192,
+          "mean": 6.476704331484952,
+          "median": 6.007292145913434,
+          "min": 4.575903016168339,
+          "n": 5
+        }
+      },
+      "literal_relative_mse_gain_vs_efficient": {
+        "max": 0.9876090921953368,
+        "mean": 0.14081693067004686,
+        "median": 0.9810487545691997,
+        "min": -3.2234737715184862,
+        "n": 5
+      },
+      "normalized_gain_vs_efficient": {
+        "max": 0.9876090921953368,
+        "mean": 0.14081693067004686,
+        "median": 0.9810487545691997,
+        "min": -3.2234737715184862,
+        "n": 5
+      },
+      "operations": {
+        "accepted_consolidations": 5,
+        "accepted_merges": 0,
+        "accepted_parameter_refreshes": 5,
+        "accepted_splits": 5,
+        "accepted_structural_changes": 10,
+        "consolidation_decisions": 5,
+        "feasible_split_candidates": 5,
+        "merge_decisions": 5,
+        "merge_decisions_skipped_without_search": 5,
+        "search_disabled_triggers": 9,
+        "split_decisions": 6,
+        "trained_global_bases": 10,
+        "trained_merge_candidate_bases": 0,
+        "trained_refresh_bases": 5,
+        "trained_split_candidate_bases": 12
+      },
+      "priced_loss": {
+        "adaptive": {
+          "max": 1.5267011611075245,
+          "mean": 0.7628967029580049,
+          "median": 0.5741546961765804,
+          "min": 0.5686975797242428,
+          "n": 5
+        },
+        "efficient_fixed": {
+          "max": 0.8107377849602035,
+          "mean": 0.7474164148350381,
+          "median": 0.7447512252043855,
+          "min": 0.7004357424003981,
+          "n": 5
+        },
+        "efficient_single": {
+          "max": 1.2465716167462624,
+          "mean": 1.2465613445565022,
+          "median": 1.2465612164367474,
+          "min": 1.2465536321595658,
+          "n": 5
+        },
+        "matched_fixed": {
+          "max": 0.9736979341908227,
+          "mean": 0.8302514785623653,
+          "median": 0.7986202405484751,
+          "min": 0.7723031653893067,
+          "n": 5
+        }
+      },
+      "priced_regret_vs_efficient": {
+        "max": 0.715963376147321,
+        "mean": 0.015480288122966802,
+        "median": -0.15147500489067678,
+        "min": -0.1859377779450594,
+        "n": 5
+      },
+      "priced_regret_vs_matched": {
+        "max": 0.5530032269167018,
+        "mean": -0.06735477560436032,
+        "median": -0.20522877586466803,
+        "min": -0.25766273804408635,
+        "n": 5
+      },
+      "seeds": [
+        307,
+        311,
+        313,
+        317,
+        331
+      ],
+      "strict_case_count": 5,
+      "strict_pass_count": 4
+    },
+    {
+      "adaptive_retained_state_ratio_vs_efficient": {
+        "max": 0.4524485041404286,
+        "mean": 0.433188310463916,
+        "median": 0.4502634025410598,
+        "min": 0.4060533289168599,
+        "n": 5
+      },
+      "adaptive_work_ratio_vs_efficient": {
+        "max": 0.2010933974057178,
+        "mean": 0.1897823700104465,
+        "median": 0.19004796134455948,
+        "min": 0.1798636197331043,
+        "n": 5
+      },
+      "adaptive_work_ratio_vs_efficient_single": {
+        "max": 1.0326286526352915,
+        "mean": 1.031537424853654,
+        "median": 1.0311550468262227,
+        "min": 1.0310379283067572,
+        "n": 5
+      },
+      "all_seeds_strict_pass": false,
+      "failed_seeds": [
+        307,
+        311,
+        313,
+        317,
+        331
+      ],
+      "flow": "stable_lowrank",
+      "gate_component_pass_counts": {
+        "priced_loss_below_efficient": 5,
+        "priced_loss_below_matched": 5,
+        "quality_gain_vs_efficient_at_least_0_05": 0,
+        "quality_gain_vs_matched_at_least_0_05": 0,
+        "selection_domain_retention_floors": 5
+      },
+      "hidden_mse": {
+        "adaptive": {
+          "max": 0.02691811734364926,
+          "mean": 0.025507833138501464,
+          "median": 0.02564929827391515,
+          "min": 0.02428219852337982,
+          "n": 5
+        },
+        "efficient_fixed": {
+          "max": 0.027457351746547523,
+          "mean": 0.025255389317328705,
+          "median": 0.02543068088597211,
+          "min": 0.021455073398935313,
+          "n": 5
+        },
+        "efficient_single": {
+          "max": 0.02691811734364926,
+          "mean": 0.025507833138501464,
+          "median": 0.02564929827391515,
+          "min": 0.02428219852337982,
+          "n": 5
+        },
+        "matched_fixed": {
+          "max": 0.027457351746547523,
+          "mean": 0.025255389317328705,
+          "median": 0.02543068088597211,
+          "min": 0.021455073398935313,
+          "n": 5
+        }
+      },
+      "literal_relative_mse_gain_vs_efficient": {
+        "max": 0.04733727810650891,
+        "mean": -0.016923977227275233,
+        "median": 0.011834319526627144,
+        "min": -0.19548872180451124,
+        "n": 5
+      },
+      "normalized_gain_vs_efficient": {
+        "max": 0.0012997562956945583,
+        "mean": -0.0002524438211727612,
+        "median": 0.00032237266279819266,
+        "min": -0.004194224874979835,
+        "n": 5
+      },
+      "operations": {
+        "accepted_consolidations": 0,
+        "accepted_merges": 0,
+        "accepted_parameter_refreshes": 0,
+        "accepted_splits": 0,
+        "accepted_structural_changes": 0,
+        "consolidation_decisions": 0,
+        "feasible_split_candidates": 0,
+        "merge_decisions": 0,
+        "merge_decisions_skipped_without_search": 0,
+        "search_disabled_triggers": 5,
+        "split_decisions": 0,
+        "trained_global_bases": 5,
+        "trained_merge_candidate_bases": 0,
+        "trained_refresh_bases": 0,
+        "trained_split_candidate_bases": 0
+      },
+      "priced_loss": {
+        "adaptive": {
+          "max": 0.2743575222082932,
+          "mean": 0.27299752681501593,
+          "median": 0.27308449539651647,
+          "min": 0.2718879034044079,
+          "n": 5
+        },
+        "efficient_fixed": {
+          "max": 0.7302408649028973,
+          "mean": 0.6878299651365111,
+          "median": 0.6677258280942524,
+          "min": 0.6551763191040776,
+          "n": 5
+        },
+        "efficient_single": {
+          "max": 0.2734640993242867,
+          "mean": 0.27208734099371934,
+          "median": 0.27218878369415067,
+          "min": 0.2709445842801671,
+          "n": 5
+        },
+        "matched_fixed": {
+          "max": 0.7511013082715998,
+          "mean": 0.7067146472014757,
+          "median": 0.6853252229675156,
+          "min": 0.6727808811812248,
+          "n": 5
+        }
+      },
+      "priced_regret_vs_efficient": {
+        "max": -0.38318289761347785,
+        "mean": -0.41483243832149513,
+        "median": -0.3958379246898445,
+        "min": -0.4558833426946041,
+        "n": 5
+      },
+      "priced_regret_vs_matched": {
+        "max": -0.40078745969062507,
+        "mean": -0.43371712038645976,
+        "median": -0.41343731956310775,
+        "min": -0.47674378606330664,
+        "n": 5
+      },
+      "seeds": [
+        307,
+        311,
+        313,
+        317,
+        331
+      ],
+      "strict_case_count": 5,
+      "strict_pass_count": 0
+    },
+    {
+      "adaptive_retained_state_ratio_vs_efficient": {
+        "max": 0.41853890631334145,
+        "mean": 0.4110268504008966,
+        "median": 0.40990252107864134,
+        "min": 0.40568154789604854,
+        "n": 5
+      },
+      "adaptive_work_ratio_vs_efficient": {
+        "max": 0.2679462159144465,
+        "mean": 0.2558390672840863,
+        "median": 0.2569158484021415,
+        "min": 0.2396096931744799,
+        "n": 5
+      },
+      "adaptive_work_ratio_vs_efficient_single": {
+        "max": 1.5426329156084766,
+        "mean": 1.542587506831486,
+        "median": 1.5426222684703434,
+        "min": 1.5424883043058826,
+        "n": 5
+      },
+      "all_seeds_strict_pass": false,
+      "failed_seeds": [
+        307,
+        311,
+        313,
+        317,
+        331
+      ],
+      "flow": "random",
+      "gate_component_pass_counts": {
+        "priced_loss_below_efficient": 5,
+        "priced_loss_below_matched": 5,
+        "quality_gain_vs_efficient_at_least_0_05": 0,
+        "quality_gain_vs_matched_at_least_0_05": 0,
+        "selection_domain_retention_floors": 5
+      },
+      "hidden_mse": {
+        "adaptive": {
+          "max": 1552.0190319934372,
+          "mean": 1521.5279483723066,
+          "median": 1522.239554766898,
+          "min": 1501.3439480097481,
+          "n": 5
+        },
+        "efficient_fixed": {
+          "max": 1402.7450369155044,
+          "mean": 1367.9516048019193,
+          "median": 1365.9967506092607,
+          "min": 1340.5802707930368,
+          "n": 5
+        },
+        "efficient_single": {
+          "max": 1552.0190319934372,
+          "mean": 1521.5279483723066,
+          "median": 1522.239554766898,
+          "min": 1501.3439480097481,
+          "n": 5
+        },
+        "matched_fixed": {
+          "max": 1402.7450369155044,
+          "mean": 1367.9516048019193,
+          "median": 1365.9967506092607,
+          "min": 1340.5802707930368,
+          "n": 5
+        }
+      },
+      "literal_relative_mse_gain_vs_efficient": {
+        "max": -0.09908310348477765,
+        "mean": -0.11235066730795938,
+        "median": -0.11037903229412487,
+        "min": -0.12315774032819676,
+        "n": 5
+      },
+      "normalized_gain_vs_efficient": {
+        "max": -0.09908310348477765,
+        "mean": -0.11235066730795938,
+        "median": -0.11037903229412487,
+        "min": -0.12315774032819676,
+        "n": 5
+      },
+      "operations": {
+        "accepted_consolidations": 0,
+        "accepted_merges": 0,
+        "accepted_parameter_refreshes": 0,
+        "accepted_splits": 0,
+        "accepted_structural_changes": 0,
+        "consolidation_decisions": 0,
+        "feasible_split_candidates": 0,
+        "merge_decisions": 0,
+        "merge_decisions_skipped_without_search": 0,
+        "search_disabled_triggers": 5,
+        "split_decisions": 0,
+        "trained_global_bases": 5,
+        "trained_merge_candidate_bases": 0,
+        "trained_refresh_bases": 0,
+        "trained_split_candidate_bases": 0
+      },
+      "priced_loss": {
+        "adaptive": {
+          "max": 1.2626167790781486,
+          "mean": 1.262500767873635,
+          "median": 1.2624780766855705,
+          "min": 1.2624227935689627,
+          "n": 5
+        },
+        "efficient_fixed": {
+          "max": 1.6235058405429508,
+          "mean": 1.6048203493494004,
+          "median": 1.5970154960458811,
+          "min": 1.5895119813475114,
+          "n": 5
+        },
+        "efficient_single": {
+          "max": 1.246673459953908,
+          "mean": 1.2465894746326265,
+          "median": 1.2465809916921893,
+          "min": 1.2465182964878356,
+          "n": 5
+        },
+        "matched_fixed": {
+          "max": 1.644369356453863,
+          "mean": 1.6256909129789903,
+          "median": 1.6179385535935844,
+          "min": 1.610355683982743,
+          "n": 5
+        }
+      },
+      "priced_regret_vs_efficient": {
+        "max": -0.3270339046619408,
+        "mean": -0.3423195814757654,
+        "median": -0.3343987169677325,
+        "min": -0.36099360731998087,
+        "n": 5
+      },
+      "priced_regret_vs_matched": {
+        "max": -0.34787760729717254,
+        "mean": -0.36319014510535524,
+        "median": -0.3553217745154358,
+        "min": -0.38185712323089316,
+        "n": 5
+      },
+      "seeds": [
+        307,
+        311,
+        313,
+        317,
+        331
+      ],
+      "strict_case_count": 5,
+      "strict_pass_count": 0
+    }
+  ]
+}

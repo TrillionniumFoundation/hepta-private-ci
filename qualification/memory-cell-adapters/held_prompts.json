@@ -1,0 +1,53 @@
+{
+  "schema": "hepta.memory.adapters.held-prompts.v1",
+  "authoring": {
+    "purpose": "Independent natural-language wording held until formal evaluation",
+    "training_prompts_inspected": false,
+    "frozen_v9_held_examples_inspected": false,
+    "target_values_included": false,
+    "placeholders": ["entity", "workflow"],
+    "missing_entity_cases_intentional": true
+  },
+  "prompts": {
+    "semantic": [
+      "Before I make a stock decision for {entity}, what reserve, pack size, and stock limit are on record?",
+      "I'd like the inventory settings saved under {entity}: the safety reserve, ordering unit, and upper bound.",
+      "Which buffer level, replenishment bundle size, and ceiling does {entity} use?",
+      "Read back the stock-policy parameters stored for {entity}.",
+      "I'm auditing the configuration of {entity}. Show the values that define its reserve, purchasing pack, and maximum inventory.",
+      "When {entity} replenishes inventory, how much must stay in reserve, in what packs is stock handled, and what limit applies?",
+      "Give me the saved reserve/pack/limit tuple for {entity}.",
+      "For project {entity}, retrieve the policy settings that constrain its stock levels and batch size."
+    ],
+    "skill": [
+      "Walk me through the ordered instructions stored for workflow {workflow}.",
+      "If I opened {workflow}'s saved procedure, which operations would I find, and in what order?",
+      "Read out the small program attached to {workflow}; I only need its definition.",
+      "What is the full four-step recipe named {workflow}?",
+      "Before we run anything, describe how workflow {workflow} transforms an input.",
+      "List each stage of {workflow}, starting with its first operation and ending with its last.",
+      "I need to inspect the executable sequence saved as {workflow}.",
+      "How does the registered routine {workflow} proceed from input to result?"
+    ],
+    "compose": [
+      "Use the latest event for {entity} and run it through {workflow}; what action results?",
+      "What should we actually do for {entity} now if we follow workflow {workflow}?",
+      "Take {entity}'s current recorded situation, apply its stock policy using {workflow}, and give the final decision.",
+      "Please calculate the action that {workflow} would produce for {entity}'s most recent event.",
+      "I'd like the outcome of executing {workflow} on {entity} with the newest available event and the saved inventory settings.",
+      "Resolve the next action for project {entity} by combining its latest state with the procedure called {workflow}.",
+      "For {entity}, carry out {workflow}'s instructions on the current event and report the resulting action.",
+      "What final action comes out when {workflow} processes {entity}'s latest record under that project's inventory policy?"
+    ],
+    "unknown": [
+      "Book a flight for tomorrow morning.",
+      "Rename project {entity} and delete the old entry.",
+      "Which employee last approved changes to {entity}?",
+      "Explain why {workflow} was originally chosen by the project team.",
+      "Predict next month's sales for {entity}.",
+      "Compare the weather at all warehouse locations.",
+      "Show me the inventory policy.",
+      "Run the latest saved workflow for the project I'm thinking of."
+    ]
+  }
+}

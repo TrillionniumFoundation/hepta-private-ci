@@ -1,0 +1,3144 @@
+{
+  "schema": "hepta.memory.v8.language-suite.v1",
+  "split": "held",
+  "entities": [
+    {
+      "entity": "meter:v8-held-00",
+      "aliases": [
+        "Aurora gauge 1",
+        "极光计1号",
+        "Shared station",
+        "共用站"
+      ],
+      "records": [
+        {
+          "kind": "event",
+          "effective_at": 1727740800,
+          "value": 4
+        },
+        {
+          "kind": "event",
+          "effective_at": 1738368000,
+          "value": 12
+        },
+        {
+          "kind": "event",
+          "effective_at": 1751328000,
+          "value": 30
+        },
+        {
+          "kind": "semantic",
+          "effective_at": 1738368000,
+          "value": {
+            "factor": 2,
+            "label": "held-owner-value-0"
+          }
+        },
+        {
+          "kind": "procedure",
+          "effective_at": 1738368000,
+          "value": {
+            "opcode": "identity",
+            "bias": -5,
+            "limit": 25
+          }
+        }
+      ]
+    },
+    {
+      "entity": "meter:v8-held-01",
+      "aliases": [
+        "Lotus valve 2",
+        "莲花阀2号",
+        "Shared station",
+        "共用站"
+      ],
+      "records": [
+        {
+          "kind": "event",
+          "effective_at": 1727740800,
+          "value": 5
+        },
+        {
+          "kind": "event",
+          "effective_at": 1738368000,
+          "value": 13
+        },
+        {
+          "kind": "event",
+          "effective_at": 1751328000,
+          "value": 31
+        },
+        {
+          "kind": "semantic",
+          "effective_at": 1738368000,
+          "value": {
+            "factor": 3,
+            "label": "held-owner-value-1"
+          }
+        },
+        {
+          "kind": "procedure",
+          "effective_at": 1738368000,
+          "value": {
+            "opcode": "add_bias",
+            "bias": -4,
+            "limit": 26
+          }
+        }
+      ]
+    },
+    {
+      "entity": "meter:v8-held-02",
+      "aliases": [
+        "Basalt meter 3",
+        "玄武表3号"
+      ],
+      "records": [
+        {
+          "kind": "event",
+          "effective_at": 1727740800,
+          "value": 6
+        },
+        {
+          "kind": "event",
+          "effective_at": 1738368000,
+          "value": 14
+        },
+        {
+          "kind": "event",
+          "effective_at": 1751328000,
+          "value": 32
+        },
+        {
+          "kind": "semantic",
+          "effective_at": 1738368000,
+          "value": {
+            "factor": 4,
+            "label": "held-owner-value-2"
+          }
+        },
+        {
+          "kind": "procedure",
+          "effective_at": 1738368000,
+          "value": {
+            "opcode": "multiply",
+            "bias": -3,
+            "limit": 27
+          }
+        }
+      ]
+    },
+    {
+      "entity": "meter:v8-held-03",
+      "aliases": [
+        "Cobalt probe 4",
+        "钴蓝探头4号"
+      ],
+      "records": [
+        {
+          "kind": "event",
+          "effective_at": 1727740800,
+          "value": 7
+        },
+        {
+          "kind": "event",
+          "effective_at": 1738368000,
+          "value": 15
+        },
+        {
+          "kind": "event",
+          "effective_at": 1751328000,
+          "value": 33
+        },
+        {
+          "kind": "semantic",
+          "effective_at": 1738368000,
+          "value": {
+            "factor": 2,
+            "label": "held-owner-value-3"
+          }
+        },
+        {
+          "kind": "procedure",
+          "effective_at": 1738368000,
+          "value": {
+            "opcode": "affine",
+            "bias": -2,
+            "limit": 28
+          }
+        }
+      ]
+    },
+    {
+      "entity": "meter:v8-held-04",
+      "aliases": [
+        "Tundra pump 5",
+        "冻原泵5号"
+      ],
+      "records": [
+        {
+          "kind": "event",
+          "effective_at": 1727740800,
+          "value": 8
+        },
+        {
+          "kind": "event",
+          "effective_at": 1738368000,
+          "value": 16
+        },
+        {
+          "kind": "event",
+          "effective_at": 1751328000,
+          "value": 34
+        },
+        {
+          "kind": "semantic",
+          "effective_at": 1738368000,
+          "value": {
+            "factor": 3,
+            "label": "held-owner-value-4"
+          }
+        },
+        {
+          "kind": "procedure",
+          "effective_at": 1738368000,
+          "value": {
+            "opcode": "clamp",
+            "bias": -1,
+            "limit": 29
+          }
+        }
+      ]
+    },
+    {
+      "entity": "meter:v8-held-05",
+      "aliases": [
+        "Saffron sensor 6",
+        "藏红传感器6号"
+      ],
+      "records": [
+        {
+          "kind": "event",
+          "effective_at": 1727740800,
+          "value": 9
+        },
+        {
+          "kind": "event",
+          "effective_at": 1738368000,
+          "value": 17
+        },
+        {
+          "kind": "event",
+          "effective_at": 1751328000,
+          "value": 35
+        },
+        {
+          "kind": "semantic",
+          "effective_at": 1738368000,
+          "value": {
+            "factor": 4,
+            "label": "held-owner-value-5"
+          }
+        },
+        {
+          "kind": "procedure",
+          "effective_at": 1738368000,
+          "value": {
+            "opcode": "identity",
+            "bias": 0,
+            "limit": 30
+          }
+        }
+      ]
+    },
+    {
+      "entity": "meter:v8-held-06",
+      "aliases": [
+        "Aurora gauge 7",
+        "极光计7号"
+      ],
+      "records": [
+        {
+          "kind": "event",
+          "effective_at": 1727740800,
+          "value": 10
+        },
+        {
+          "kind": "event",
+          "effective_at": 1738368000,
+          "value": 18
+        },
+        {
+          "kind": "event",
+          "effective_at": 1751328000,
+          "value": 36
+        },
+        {
+          "kind": "semantic",
+          "effective_at": 1738368000,
+          "value": {
+            "factor": 2,
+            "label": "held-owner-value-6"
+          }
+        },
+        {
+          "kind": "procedure",
+          "effective_at": 1738368000,
+          "value": {
+            "opcode": "add_bias",
+            "bias": 1,
+            "limit": 31
+          }
+        }
+      ]
+    },
+    {
+      "entity": "meter:v8-held-07",
+      "aliases": [
+        "Lotus valve 8",
+        "莲花阀8号"
+      ],
+      "records": [
+        {
+          "kind": "event",
+          "effective_at": 1727740800,
+          "value": 11
+        },
+        {
+          "kind": "event",
+          "effective_at": 1738368000,
+          "value": 19
+        },
+        {
+          "kind": "event",
+          "effective_at": 1751328000,
+          "value": 37
+        },
+        {
+          "kind": "semantic",
+          "effective_at": 1738368000,
+          "value": {
+            "factor": 3,
+            "label": "held-owner-value-7"
+          }
+        },
+        {
+          "kind": "procedure",
+          "effective_at": 1738368000,
+          "value": {
+            "opcode": "multiply",
+            "bias": 2,
+            "limit": 32
+          }
+        }
+      ]
+    },
+    {
+      "entity": "meter:v8-held-08",
+      "aliases": [
+        "Basalt meter 9",
+        "玄武表9号"
+      ],
+      "records": [
+        {
+          "kind": "event",
+          "effective_at": 1727740800,
+          "value": 12
+        },
+        {
+          "kind": "event",
+          "effective_at": 1738368000,
+          "value": 20
+        },
+        {
+          "kind": "event",
+          "effective_at": 1751328000,
+          "value": 38
+        },
+        {
+          "kind": "semantic",
+          "effective_at": 1738368000,
+          "value": {
+            "factor": 4,
+            "label": "held-owner-value-8"
+          }
+        },
+        {
+          "kind": "procedure",
+          "effective_at": 1738368000,
+          "value": {
+            "opcode": "affine",
+            "bias": 3,
+            "limit": 33
+          }
+        }
+      ]
+    },
+    {
+      "entity": "meter:v8-held-09",
+      "aliases": [
+        "Cobalt probe 10",
+        "钴蓝探头10号"
+      ],
+      "records": [
+        {
+          "kind": "event",
+          "effective_at": 1727740800,
+          "value": 13
+        },
+        {
+          "kind": "event",
+          "effective_at": 1738368000,
+          "value": 21
+        },
+        {
+          "kind": "event",
+          "effective_at": 1751328000,
+          "value": 39
+        },
+        {
+          "kind": "semantic",
+          "effective_at": 1738368000,
+          "value": {
+            "factor": 2,
+            "label": "held-owner-value-9"
+          }
+        },
+        {
+          "kind": "procedure",
+          "effective_at": 1738368000,
+          "value": {
+            "opcode": "clamp",
+            "bias": 4,
+            "limit": 34
+          }
+        }
+      ]
+    },
+    {
+      "entity": "meter:v8-held-10",
+      "aliases": [
+        "Tundra pump 11",
+        "冻原泵11号"
+      ],
+      "records": [
+        {
+          "kind": "event",
+          "effective_at": 1727740800,
+          "value": 14
+        },
+        {
+          "kind": "event",
+          "effective_at": 1738368000,
+          "value": 22
+        },
+        {
+          "kind": "event",
+          "effective_at": 1751328000,
+          "value": 40
+        },
+        {
+          "kind": "semantic",
+          "effective_at": 1738368000,
+          "value": {
+            "factor": 3,
+            "label": "held-owner-value-10"
+          }
+        },
+        {
+          "kind": "procedure",
+          "effective_at": 1738368000,
+          "value": {
+            "opcode": "identity",
+            "bias": 5,
+            "limit": 35
+          }
+        }
+      ]
+    },
+    {
+      "entity": "meter:v8-held-11",
+      "aliases": [
+        "Saffron sensor 12",
+        "藏红传感器12号"
+      ],
+      "records": [
+        {
+          "kind": "event",
+          "effective_at": 1727740800,
+          "value": 15
+        },
+        {
+          "kind": "event",
+          "effective_at": 1738368000,
+          "value": 23
+        },
+        {
+          "kind": "event",
+          "effective_at": 1751328000,
+          "value": 41
+        },
+        {
+          "kind": "semantic",
+          "effective_at": 1738368000,
+          "value": {
+            "factor": 4,
+            "label": "held-owner-value-11"
+          }
+        },
+        {
+          "kind": "procedure",
+          "effective_at": 1738368000,
+          "value": {
+            "opcode": "add_bias",
+            "bias": 6,
+            "limit": 36
+          }
+        }
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "id": "held-0000",
+      "family": "held.known.current.en.0",
+      "language": "en",
+      "entity": "meter:v8-held-00",
+      "text": "For Aurora gauge 1, fetch the observation at the tail of the record.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "held-0001",
+      "family": "held.known.current.en.0",
+      "language": "en",
+      "entity": "meter:v8-held-05",
+      "text": "For the inspection record: For Saffron sensor 6, fetch the observation at the tail of the record.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "held-0002",
+      "family": "held.known.current.en.1",
+      "language": "en",
+      "entity": "meter:v8-held-01",
+      "text": "Report the freshest unmodified sample of Lotus valve 2 that you have kept.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "held-0003",
+      "family": "held.known.current.en.1",
+      "language": "en",
+      "entity": "meter:v8-held-06",
+      "text": "For the inspection record: Report the freshest unmodified sample of Aurora gauge 7 that you have kept.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "held-0004",
+      "family": "held.known.current.en.2",
+      "language": "en",
+      "entity": "meter:v8-held-02",
+      "text": "What number is in the newest raw entry for Basalt meter 3?",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "held-0005",
+      "family": "held.known.current.en.2",
+      "language": "en",
+      "entity": "meter:v8-held-07",
+      "text": "For the inspection record: What number is in the newest raw entry for Lotus valve 8?",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "held-0006",
+      "family": "held.known.current.en.3",
+      "language": "en",
+      "entity": "meter:v8-held-03",
+      "text": "Open Cobalt probe 4's measurement history and give me only its final recorded value.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "held-0007",
+      "family": "held.known.current.en.3",
+      "language": "en",
+      "entity": "meter:v8-held-08",
+      "text": "For the inspection record: Open Basalt meter 9's measurement history and give me only its final recorded value.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "held-0008",
+      "family": "held.known.current.en.4",
+      "language": "en",
+      "entity": "meter:v8-held-04",
+      "text": "The handover needs the last logged observation of Tundra pump 5, before processing.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "held-0009",
+      "family": "held.known.current.en.4",
+      "language": "en",
+      "entity": "meter:v8-held-09",
+      "text": "For the inspection record: The handover needs the last logged observation of Cobalt probe 10, before processing.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "held-0010",
+      "family": "held.known.current.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-held-00",
+      "text": "请读出极光计1号记录末尾那次观测的值。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "held-0011",
+      "family": "held.known.current.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-held-05",
+      "text": "用于检查记录：请读出藏红传感器6号记录末尾那次观测的值。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "held-0012",
+      "family": "held.known.current.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-held-01",
+      "text": "交班表需要莲花阀2号保留的最新未加工样本。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "held-0013",
+      "family": "held.known.current.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-held-06",
+      "text": "用于检查记录：交班表需要极光计7号保留的最新未加工样本。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "held-0014",
+      "family": "held.known.current.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-held-02",
+      "text": "玄武表3号原始记录中最新一项填了什么数？",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "held-0015",
+      "family": "held.known.current.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-held-07",
+      "text": "用于检查记录：莲花阀8号原始记录中最新一项填了什么数？",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "held-0016",
+      "family": "held.known.current.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-held-03",
+      "text": "打开钴蓝探头4号的测量历史，只给我最后记下的值。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "held-0017",
+      "family": "held.known.current.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-held-08",
+      "text": "用于检查记录：打开玄武表9号的测量历史，只给我最后记下的值。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "held-0018",
+      "family": "held.known.current.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-held-04",
+      "text": "我要冻原泵5号最近落档的观测，不做程序运算。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "held-0019",
+      "family": "held.known.current.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-held-09",
+      "text": "用于检查记录：我要钴蓝探头10号最近落档的观测，不做程序运算。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "current",
+      "category": "known"
+    },
+    {
+      "id": "held-0020",
+      "family": "held.known.history.en.0",
+      "language": "en",
+      "entity": "meter:v8-held-01",
+      "text": "Recover the last entry for Lotus valve 2 that existed when the clock reached 2025-04-01.",
+      "at": 1743465600,
+      "since": 1743465600,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "held-0021",
+      "family": "held.known.history.en.0",
+      "language": "en",
+      "entity": "meter:v8-held-06",
+      "text": "For the inspection record: Recover the last entry for Aurora gauge 7 that existed when the clock reached 2025-04-01.",
+      "at": 1743465600,
+      "since": 1743465600,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "held-0022",
+      "family": "held.known.history.en.1",
+      "language": "en",
+      "entity": "meter:v8-held-02",
+      "text": "The audit stops at 2025-04-01; which raw observation of Basalt meter 3 was then the newest?",
+      "at": 1743465600,
+      "since": 1743465600,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "held-0023",
+      "family": "held.known.history.en.1",
+      "language": "en",
+      "entity": "meter:v8-held-07",
+      "text": "For the inspection record: The audit stops at 2025-04-01; which raw observation of Lotus valve 8 was then the newest?",
+      "at": 1743465600,
+      "since": 1743465600,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "held-0024",
+      "family": "held.known.history.en.2",
+      "language": "en",
+      "entity": "meter:v8-held-03",
+      "text": "Ignore observations after 2025-04-01 and report the remaining latest value for Cobalt probe 4.",
+      "at": 1743465600,
+      "since": 1743465600,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "held-0025",
+      "family": "held.known.history.en.2",
+      "language": "en",
+      "entity": "meter:v8-held-08",
+      "text": "For the inspection record: Ignore observations after 2025-04-01 and report the remaining latest value for Basalt meter 9.",
+      "at": 1743465600,
+      "since": 1743465600,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "held-0026",
+      "family": "held.known.history.en.3",
+      "language": "en",
+      "entity": "meter:v8-held-04",
+      "text": "Read Tundra pump 5 from the historical record truncated at 2025-04-01.",
+      "at": 1743465600,
+      "since": 1743465600,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "held-0027",
+      "family": "held.known.history.en.3",
+      "language": "en",
+      "entity": "meter:v8-held-09",
+      "text": "For the inspection record: Read Cobalt probe 10 from the historical record truncated at 2025-04-01.",
+      "at": 1743465600,
+      "since": 1743465600,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "held-0028",
+      "family": "held.known.history.en.4",
+      "language": "en",
+      "entity": "meter:v8-held-05",
+      "text": "On the 2025-04-01 reporting boundary, what recorded reading was available for Saffron sensor 6?",
+      "at": 1743465600,
+      "since": 1743465600,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "held-0029",
+      "family": "held.known.history.en.4",
+      "language": "en",
+      "entity": "meter:v8-held-10",
+      "text": "For the inspection record: On the 2025-04-01 reporting boundary, what recorded reading was available for Tundra pump 11?",
+      "at": 1743465600,
+      "since": 1743465600,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "held-0030",
+      "family": "held.known.history.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-held-01",
+      "text": "时钟到达2025-04-01时，莲花阀2号已有记录的末项是多少？",
+      "at": 1743465600,
+      "since": 1743465600,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "held-0031",
+      "family": "held.known.history.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-held-06",
+      "text": "用于检查记录：时钟到达2025-04-01时，极光计7号已有记录的末项是多少？",
+      "at": 1743465600,
+      "since": 1743465600,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "held-0032",
+      "family": "held.known.history.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-held-02",
+      "text": "审计截在2025-04-01，当时玄武表3号最新的原始观测是什么？",
+      "at": 1743465600,
+      "since": 1743465600,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "held-0033",
+      "family": "held.known.history.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-held-07",
+      "text": "用于检查记录：审计截在2025-04-01，当时莲花阀8号最新的原始观测是什么？",
+      "at": 1743465600,
+      "since": 1743465600,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "held-0034",
+      "family": "held.known.history.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-held-03",
+      "text": "忽略2025-04-01之后的观测，返回钴蓝探头4号剩余记录中的最新值。",
+      "at": 1743465600,
+      "since": 1743465600,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "held-0035",
+      "family": "held.known.history.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-held-08",
+      "text": "用于检查记录：忽略2025-04-01之后的观测，返回玄武表9号剩余记录中的最新值。",
+      "at": 1743465600,
+      "since": 1743465600,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "held-0036",
+      "family": "held.known.history.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-held-04",
+      "text": "将冻原泵5号历史截到2025-04-01，读出当时最后的值。",
+      "at": 1743465600,
+      "since": 1743465600,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "held-0037",
+      "family": "held.known.history.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-held-09",
+      "text": "用于检查记录：将钴蓝探头10号历史截到2025-04-01，读出当时最后的值。",
+      "at": 1743465600,
+      "since": 1743465600,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "held-0038",
+      "family": "held.known.history.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-held-05",
+      "text": "在2025-04-01这个报表边界，藏红传感器6号已有的读数是多少？",
+      "at": 1743465600,
+      "since": 1743465600,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "held-0039",
+      "family": "held.known.history.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-held-10",
+      "text": "用于检查记录：在2025-04-01这个报表边界，冻原泵11号已有的读数是多少？",
+      "at": 1743465600,
+      "since": 1743465600,
+      "expected_operation": "history",
+      "category": "known"
+    },
+    {
+      "id": "held-0040",
+      "family": "held.known.semantic.en.0",
+      "language": "en",
+      "entity": "meter:v8-held-02",
+      "text": "Which factor-and-label pair have you retained for Basalt meter 3?",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "held-0041",
+      "family": "held.known.semantic.en.0",
+      "language": "en",
+      "entity": "meter:v8-held-07",
+      "text": "For the inspection record: Which factor-and-label pair have you retained for Lotus valve 8?",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "held-0042",
+      "family": "held.known.semantic.en.1",
+      "language": "en",
+      "entity": "meter:v8-held-03",
+      "text": "Return the semantic information assigned to Cobalt probe 4, as stored.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "held-0043",
+      "family": "held.known.semantic.en.1",
+      "language": "en",
+      "entity": "meter:v8-held-08",
+      "text": "For the inspection record: Return the semantic information assigned to Basalt meter 9, as stored.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "held-0044",
+      "family": "held.known.semantic.en.2",
+      "language": "en",
+      "entity": "meter:v8-held-04",
+      "text": "I am checking Tundra pump 5's remembered coefficient, with no calculation requested.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "held-0045",
+      "family": "held.known.semantic.en.2",
+      "language": "en",
+      "entity": "meter:v8-held-09",
+      "text": "For the inspection record: I am checking Cobalt probe 10's remembered coefficient, with no calculation requested.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "held-0046",
+      "family": "held.known.semantic.en.3",
+      "language": "en",
+      "entity": "meter:v8-held-05",
+      "text": "Fetch the semantic settings on file for Saffron sensor 6.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "held-0047",
+      "family": "held.known.semantic.en.3",
+      "language": "en",
+      "entity": "meter:v8-held-10",
+      "text": "For the inspection record: Fetch the semantic settings on file for Tundra pump 11.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "held-0048",
+      "family": "held.known.semantic.en.4",
+      "language": "en",
+      "entity": "meter:v8-held-06",
+      "text": "Expose the stored multiplier metadata of Aurora gauge 7 by itself.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "held-0049",
+      "family": "held.known.semantic.en.4",
+      "language": "en",
+      "entity": "meter:v8-held-11",
+      "text": "For the inspection record: Expose the stored multiplier metadata of Saffron sensor 12 by itself.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "held-0050",
+      "family": "held.known.semantic.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-held-02",
+      "text": "玄武表3号保留下来的因子与标签这一对是什么？",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "held-0051",
+      "family": "held.known.semantic.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-held-07",
+      "text": "用于检查记录：莲花阀8号保留下来的因子与标签这一对是什么？",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "held-0052",
+      "family": "held.known.semantic.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-held-03",
+      "text": "原样返回分配给钴蓝探头4号的语义信息。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "held-0053",
+      "family": "held.known.semantic.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-held-08",
+      "text": "用于检查记录：原样返回分配给玄武表9号的语义信息。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "held-0054",
+      "family": "held.known.semantic.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-held-04",
+      "text": "我在核对冻原泵5号记住的系数，不要求计算。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "held-0055",
+      "family": "held.known.semantic.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-held-09",
+      "text": "用于检查记录：我在核对钴蓝探头10号记住的系数，不要求计算。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "held-0056",
+      "family": "held.known.semantic.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-held-05",
+      "text": "调出藏红传感器6号档案里的语义设置。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "held-0057",
+      "family": "held.known.semantic.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-held-10",
+      "text": "用于检查记录：调出冻原泵11号档案里的语义设置。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "held-0058",
+      "family": "held.known.semantic.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-held-06",
+      "text": "单独显示极光计7号保存的乘数元数据。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "held-0059",
+      "family": "held.known.semantic.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-held-11",
+      "text": "用于检查记录：单独显示藏红传感器12号保存的乘数元数据。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "semantic",
+      "category": "known"
+    },
+    {
+      "id": "held-0060",
+      "family": "held.known.procedure.en.0",
+      "language": "en",
+      "entity": "meter:v8-held-03",
+      "text": "What operation recipe is currently remembered for Cobalt probe 4? Leave it idle.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "held-0061",
+      "family": "held.known.procedure.en.0",
+      "language": "en",
+      "entity": "meter:v8-held-08",
+      "text": "For the inspection record: What operation recipe is currently remembered for Basalt meter 9? Leave it idle.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "held-0062",
+      "family": "held.known.procedure.en.1",
+      "language": "en",
+      "entity": "meter:v8-held-04",
+      "text": "Read back Tundra pump 5's instruction record, including its bias and bound.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "held-0063",
+      "family": "held.known.procedure.en.1",
+      "language": "en",
+      "entity": "meter:v8-held-09",
+      "text": "For the inspection record: Read back Cobalt probe 10's instruction record, including its bias and bound.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "held-0064",
+      "family": "held.known.procedure.en.2",
+      "language": "en",
+      "entity": "meter:v8-held-05",
+      "text": "I need the program definition saved for Saffron sensor 6, rather than an execution result.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "held-0065",
+      "family": "held.known.procedure.en.2",
+      "language": "en",
+      "entity": "meter:v8-held-10",
+      "text": "For the inspection record: I need the program definition saved for Tundra pump 11, rather than an execution result.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "held-0066",
+      "family": "held.known.procedure.en.3",
+      "language": "en",
+      "entity": "meter:v8-held-06",
+      "text": "List the recipe already attached to Aurora gauge 7; do not evaluate a sample.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "held-0067",
+      "family": "held.known.procedure.en.3",
+      "language": "en",
+      "entity": "meter:v8-held-11",
+      "text": "For the inspection record: List the recipe already attached to Saffron sensor 12; do not evaluate a sample.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "held-0068",
+      "family": "held.known.procedure.en.4",
+      "language": "en",
+      "entity": "meter:v8-held-07",
+      "text": "Retrieve the dormant processing instructions of Lotus valve 8.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "held-0069",
+      "family": "held.known.procedure.en.4",
+      "language": "en",
+      "entity": "meter:v8-held-00",
+      "text": "For the inspection record: Retrieve the dormant processing instructions of Aurora gauge 1.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "held-0070",
+      "family": "held.known.procedure.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-held-03",
+      "text": "目前给钴蓝探头4号记住了什么操作配方？先让它保持未运行。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "held-0071",
+      "family": "held.known.procedure.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-held-08",
+      "text": "用于检查记录：目前给玄武表9号记住了什么操作配方？先让它保持未运行。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "held-0072",
+      "family": "held.known.procedure.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-held-04",
+      "text": "读回冻原泵5号的指令记录，包括偏置和界限。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "held-0073",
+      "family": "held.known.procedure.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-held-09",
+      "text": "用于检查记录：读回钴蓝探头10号的指令记录，包括偏置和界限。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "held-0074",
+      "family": "held.known.procedure.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-held-05",
+      "text": "我要藏红传感器6号保存的程序定义，不要求执行结果。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "held-0075",
+      "family": "held.known.procedure.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-held-10",
+      "text": "用于检查记录：我要冻原泵11号保存的程序定义，不要求执行结果。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "held-0076",
+      "family": "held.known.procedure.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-held-06",
+      "text": "列出附在极光计7号上的现有配方，先不计算样本。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "held-0077",
+      "family": "held.known.procedure.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-held-11",
+      "text": "用于检查记录：列出附在藏红传感器12号上的现有配方，先不计算样本。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "held-0078",
+      "family": "held.known.procedure.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-held-07",
+      "text": "取回莲花阀8号尚未执行的处理指令。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "held-0079",
+      "family": "held.known.procedure.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-held-00",
+      "text": "用于检查记录：取回极光计1号尚未执行的处理指令。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "procedure",
+      "category": "known"
+    },
+    {
+      "id": "held-0080",
+      "family": "held.known.change.en.0",
+      "language": "en",
+      "entity": "meter:v8-held-04",
+      "text": "Take the newest number for Tundra pump 5 and deduct the number on record by 2025-04-01.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "held-0081",
+      "family": "held.known.change.en.0",
+      "language": "en",
+      "entity": "meter:v8-held-09",
+      "text": "For the inspection record: Take the newest number for Cobalt probe 10 and deduct the number on record by 2025-04-01.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "held-0082",
+      "family": "held.known.change.en.1",
+      "language": "en",
+      "entity": "meter:v8-held-05",
+      "text": "Give the additive displacement of Saffron sensor 6 from the 2025-04-01 reading to the newest reading.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "held-0083",
+      "family": "held.known.change.en.1",
+      "language": "en",
+      "entity": "meter:v8-held-10",
+      "text": "For the inspection record: Give the additive displacement of Tundra pump 11 from the 2025-04-01 reading to the newest reading.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "held-0084",
+      "family": "held.known.change.en.2",
+      "language": "en",
+      "entity": "meter:v8-held-06",
+      "text": "For Aurora gauge 7, report a signed raw-unit delta against the record as of 2025-04-01.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "held-0085",
+      "family": "held.known.change.en.2",
+      "language": "en",
+      "entity": "meter:v8-held-11",
+      "text": "For the inspection record: For Saffron sensor 12, report a signed raw-unit delta against the record as of 2025-04-01.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "held-0086",
+      "family": "held.known.change.en.3",
+      "language": "en",
+      "entity": "meter:v8-held-07",
+      "text": "The reconciliation is latest less the archived 2025-04-01 value of Lotus valve 8; return that number.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "held-0087",
+      "family": "held.known.change.en.3",
+      "language": "en",
+      "entity": "meter:v8-held-00",
+      "text": "For the inspection record: The reconciliation is latest less the archived 2025-04-01 value of Aurora gauge 1; return that number.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "held-0088",
+      "family": "held.known.change.en.4",
+      "language": "en",
+      "entity": "meter:v8-held-08",
+      "text": "How many units separate Basalt meter 9's newest observation from its 2025-04-01 baseline, keeping the sign?",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "held-0089",
+      "family": "held.known.change.en.4",
+      "language": "en",
+      "entity": "meter:v8-held-01",
+      "text": "For the inspection record: How many units separate Lotus valve 2's newest observation from its 2025-04-01 baseline, keeping the sign?",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "held-0090",
+      "family": "held.known.change.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-held-04",
+      "text": "取冻原泵5号最新的数，扣除截至2025-04-01记下的那个数。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "held-0091",
+      "family": "held.known.change.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-held-09",
+      "text": "用于检查记录：取钴蓝探头10号最新的数，扣除截至2025-04-01记下的那个数。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "held-0092",
+      "family": "held.known.change.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-held-05",
+      "text": "给出藏红传感器6号从2025-04-01读数到最新读数的加法位移。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "held-0093",
+      "family": "held.known.change.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-held-10",
+      "text": "用于检查记录：给出冻原泵11号从2025-04-01读数到最新读数的加法位移。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "held-0094",
+      "family": "held.known.change.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-held-06",
+      "text": "对极光计7号，报告相对2025-04-01记录的带符号原单位差值。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "held-0095",
+      "family": "held.known.change.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-held-11",
+      "text": "用于检查记录：对藏红传感器12号，报告相对2025-04-01记录的带符号原单位差值。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "held-0096",
+      "family": "held.known.change.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-held-07",
+      "text": "核对式是莲花阀8号最新值扣掉2025-04-01档案值，请返回这个数。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "held-0097",
+      "family": "held.known.change.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-held-00",
+      "text": "用于检查记录：核对式是极光计1号最新值扣掉2025-04-01档案值，请返回这个数。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "held-0098",
+      "family": "held.known.change.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-held-08",
+      "text": "玄武表9号最新观测与2025-04-01基线相隔多少个单位？保留正负号。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "held-0099",
+      "family": "held.known.change.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-held-01",
+      "text": "用于检查记录：莲花阀2号最新观测与2025-04-01基线相隔多少个单位？保留正负号。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "change",
+      "category": "known"
+    },
+    {
+      "id": "held-0100",
+      "family": "held.known.apply.en.0",
+      "language": "en",
+      "entity": "meter:v8-held-05",
+      "text": "Evaluate the recipe on file for Saffron sensor 6 against its newest recorded input, with its retained parameters.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "held-0101",
+      "family": "held.known.apply.en.0",
+      "language": "en",
+      "entity": "meter:v8-held-10",
+      "text": "For the inspection record: Evaluate the recipe on file for Tundra pump 11 against its newest recorded input, with its retained parameters.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "held-0102",
+      "family": "held.known.apply.en.1",
+      "language": "en",
+      "entity": "meter:v8-held-06",
+      "text": "Produce the processed output for Aurora gauge 7 from the three stored pieces: observation, semantics and instructions.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "held-0103",
+      "family": "held.known.apply.en.1",
+      "language": "en",
+      "entity": "meter:v8-held-11",
+      "text": "For the inspection record: Produce the processed output for Saffron sensor 12 from the three stored pieces: observation, semantics and instructions.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "held-0104",
+      "family": "held.known.apply.en.2",
+      "language": "en",
+      "entity": "meter:v8-held-07",
+      "text": "Carry out the remembered computation for Lotus valve 8 using the most recent observation already in memory.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "held-0105",
+      "family": "held.known.apply.en.2",
+      "language": "en",
+      "entity": "meter:v8-held-00",
+      "text": "For the inspection record: Carry out the remembered computation for Aurora gauge 1 using the most recent observation already in memory.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "held-0106",
+      "family": "held.known.apply.en.3",
+      "language": "en",
+      "entity": "meter:v8-held-08",
+      "text": "Feed the last logged sample of Basalt meter 9 through its own saved transformation.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "held-0107",
+      "family": "held.known.apply.en.3",
+      "language": "en",
+      "entity": "meter:v8-held-01",
+      "text": "For the inspection record: Feed the last logged sample of Lotus valve 2 through its own saved transformation.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "held-0108",
+      "family": "held.known.apply.en.4",
+      "language": "en",
+      "entity": "meter:v8-held-09",
+      "text": "Resolve Cobalt probe 10's saved program with its current recorded event and semantic settings, then give the result.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "held-0109",
+      "family": "held.known.apply.en.4",
+      "language": "en",
+      "entity": "meter:v8-held-02",
+      "text": "For the inspection record: Resolve Basalt meter 3's saved program with its current recorded event and semantic settings, then give the result.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "held-0110",
+      "family": "held.known.apply.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-held-05",
+      "text": "用藏红传感器6号保留的参数，对最新已记输入求值档案中的配方。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "held-0111",
+      "family": "held.known.apply.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-held-10",
+      "text": "用于检查记录：用冻原泵11号保留的参数，对最新已记输入求值档案中的配方。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "held-0112",
+      "family": "held.known.apply.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-held-06",
+      "text": "用极光计7号存下的观测、语义和指令这三部分产生处理输出。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "held-0113",
+      "family": "held.known.apply.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-held-11",
+      "text": "用于检查记录：用藏红传感器12号存下的观测、语义和指令这三部分产生处理输出。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "held-0114",
+      "family": "held.known.apply.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-held-07",
+      "text": "使用记忆里最近的观测，完成莲花阀8号记住的计算。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "held-0115",
+      "family": "held.known.apply.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-held-00",
+      "text": "用于检查记录：使用记忆里最近的观测，完成极光计1号记住的计算。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "held-0116",
+      "family": "held.known.apply.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-held-08",
+      "text": "让玄武表9号最后落档的样本通过它自己的已存变换。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "held-0117",
+      "family": "held.known.apply.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-held-01",
+      "text": "用于检查记录：让莲花阀2号最后落档的样本通过它自己的已存变换。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "held-0118",
+      "family": "held.known.apply.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-held-09",
+      "text": "把钴蓝探头10号当前已记事件和语义设置代入保存的程序，给出结果。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "held-0119",
+      "family": "held.known.apply.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-held-02",
+      "text": "用于检查记录：把玄武表3号当前已记事件和语义设置代入保存的程序，给出结果。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": "apply",
+      "category": "known"
+    },
+    {
+      "id": "held-0120",
+      "family": "held.unsupported.en.0",
+      "language": "en",
+      "entity": "meter:v8-held-00",
+      "text": "Express Aurora gauge 1's latest-versus-2025-04-01 difference as a fraction of the old reading.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0121",
+      "family": "held.unsupported.en.0",
+      "language": "en",
+      "entity": "meter:v8-held-03",
+      "text": "Express Cobalt probe 4's latest-versus-2025-04-01 difference as a fraction of the old reading.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0122",
+      "family": "held.unsupported.en.1",
+      "language": "en",
+      "entity": "meter:v8-held-01",
+      "text": "How many times the 2025-04-01 baseline is the newest value of Lotus valve 2?",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0123",
+      "family": "held.unsupported.en.1",
+      "language": "en",
+      "entity": "meter:v8-held-04",
+      "text": "How many times the 2025-04-01 baseline is the newest value of Tundra pump 5?",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0124",
+      "family": "held.unsupported.en.2",
+      "language": "en",
+      "entity": "meter:v8-held-02",
+      "text": "Identify the drivers behind Basalt meter 3's latest increase.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0125",
+      "family": "held.unsupported.en.2",
+      "language": "en",
+      "entity": "meter:v8-held-05",
+      "text": "Identify the drivers behind Saffron sensor 6's latest increase.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0126",
+      "family": "held.unsupported.en.3",
+      "language": "en",
+      "entity": "meter:v8-held-03",
+      "text": "Estimate what Cobalt probe 4 will read tomorrow.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0127",
+      "family": "held.unsupported.en.3",
+      "language": "en",
+      "entity": "meter:v8-held-06",
+      "text": "Estimate what Aurora gauge 7 will read tomorrow.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0128",
+      "family": "held.unsupported.en.4",
+      "language": "en",
+      "entity": "meter:v8-held-04",
+      "text": "For Tundra pump 5, retain the saved recipe but substitute an invented sample of 81.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0129",
+      "family": "held.unsupported.en.4",
+      "language": "en",
+      "entity": "meter:v8-held-07",
+      "text": "For Lotus valve 8, retain the saved recipe but substitute an invented sample of 81.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0130",
+      "family": "held.unsupported.en.5",
+      "language": "en",
+      "entity": "meter:v8-held-05",
+      "text": "Cube the semantic coefficient kept for Saffron sensor 6.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0131",
+      "family": "held.unsupported.en.5",
+      "language": "en",
+      "entity": "meter:v8-held-08",
+      "text": "Cube the semantic coefficient kept for Basalt meter 9.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0132",
+      "family": "held.unsupported.en.6",
+      "language": "en",
+      "entity": "meter:v8-held-06",
+      "text": "Edit the bias inside Aurora gauge 7's stored program.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0133",
+      "family": "held.unsupported.en.6",
+      "language": "en",
+      "entity": "meter:v8-held-09",
+      "text": "Edit the bias inside Cobalt probe 10's stored program.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0134",
+      "family": "held.unsupported.en.7",
+      "language": "en",
+      "entity": "meter:v8-held-07",
+      "text": "Sum every observation of Lotus valve 8 recorded after 2025-04-01.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0135",
+      "family": "held.unsupported.en.7",
+      "language": "en",
+      "entity": "meter:v8-held-10",
+      "text": "Sum every observation of Tundra pump 11 recorded after 2025-04-01.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0136",
+      "family": "held.unsupported.en.8",
+      "language": "en",
+      "entity": "meter:v8-held-08",
+      "text": "Which procedure version belonged to Basalt meter 9 at 2025-04-01?",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0137",
+      "family": "held.unsupported.en.8",
+      "language": "en",
+      "entity": "meter:v8-held-11",
+      "text": "Which procedure version belonged to Saffron sensor 12 at 2025-04-01?",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0138",
+      "family": "held.unsupported.en.9",
+      "language": "en",
+      "entity": "meter:v8-held-09",
+      "text": "Subtract Cobalt probe 10's 2025-01-01 record from its 2025-04-01 record, without using the current value.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0139",
+      "family": "held.unsupported.en.9",
+      "language": "en",
+      "entity": "meter:v8-held-00",
+      "text": "Subtract Aurora gauge 1's 2025-01-01 record from its 2025-04-01 record, without using the current value.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0140",
+      "family": "held.unsupported.en.10",
+      "language": "en",
+      "entity": "meter:v8-held-10",
+      "text": "Rank all historical values of Tundra pump 11 from largest to smallest.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0141",
+      "family": "held.unsupported.en.10",
+      "language": "en",
+      "entity": "meter:v8-held-01",
+      "text": "Rank all historical values of Lotus valve 2 from largest to smallest.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0142",
+      "family": "held.unsupported.en.11",
+      "language": "en",
+      "entity": "meter:v8-held-11",
+      "text": "Count the saved events of Saffron sensor 12.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0143",
+      "family": "held.unsupported.en.11",
+      "language": "en",
+      "entity": "meter:v8-held-02",
+      "text": "Count the saved events of Basalt meter 3.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0144",
+      "family": "held.unsupported.en.12",
+      "language": "en",
+      "entity": "meter:v8-held-00",
+      "text": "Normalize the latest observation of Aurora gauge 1 by the historical standard deviation.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0145",
+      "family": "held.unsupported.en.12",
+      "language": "en",
+      "entity": "meter:v8-held-03",
+      "text": "Normalize the latest observation of Cobalt probe 4 by the historical standard deviation.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0146",
+      "family": "held.unsupported.en.13",
+      "language": "en",
+      "entity": "meter:v8-held-01",
+      "text": "What probability does Lotus valve 2 have of crossing 50 next week?",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0147",
+      "family": "held.unsupported.en.13",
+      "language": "en",
+      "entity": "meter:v8-held-04",
+      "text": "What probability does Tundra pump 5 have of crossing 50 next week?",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0148",
+      "family": "held.unsupported.en.14",
+      "language": "en",
+      "entity": "meter:v8-held-02",
+      "text": "Compose a causal narrative of Basalt meter 3's full history.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0149",
+      "family": "held.unsupported.en.14",
+      "language": "en",
+      "entity": "meter:v8-held-05",
+      "text": "Compose a causal narrative of Saffron sensor 6's full history.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0150",
+      "family": "held.unsupported.en.15",
+      "language": "en",
+      "entity": "meter:v8-held-03",
+      "text": "Take the logarithm of the factor stored for Cobalt probe 4.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0151",
+      "family": "held.unsupported.en.15",
+      "language": "en",
+      "entity": "meter:v8-held-06",
+      "text": "Take the logarithm of the factor stored for Aurora gauge 7.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0152",
+      "family": "held.unsupported.en.16",
+      "language": "en",
+      "entity": "meter:v8-held-04",
+      "text": "Invent a better algorithm to replace Tundra pump 5's recipe.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0153",
+      "family": "held.unsupported.en.16",
+      "language": "en",
+      "entity": "meter:v8-held-07",
+      "text": "Invent a better algorithm to replace Lotus valve 8's recipe.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0154",
+      "family": "held.unsupported.en.17",
+      "language": "en",
+      "entity": "meter:v8-held-05",
+      "text": "Undo the most recent write to Saffron sensor 6.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0155",
+      "family": "held.unsupported.en.17",
+      "language": "en",
+      "entity": "meter:v8-held-08",
+      "text": "Undo the most recent write to Basalt meter 9.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0156",
+      "family": "held.unsupported.en.18",
+      "language": "en",
+      "entity": "meter:v8-held-06",
+      "text": "Determine whether a hardware fault explains Aurora gauge 7's change since 2025-04-01.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0157",
+      "family": "held.unsupported.en.18",
+      "language": "en",
+      "entity": "meter:v8-held-09",
+      "text": "Determine whether a hardware fault explains Cobalt probe 10's change since 2025-04-01.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0158",
+      "family": "held.unsupported.en.19",
+      "language": "en",
+      "entity": "meter:v8-held-07",
+      "text": "Apply Lotus valve 8's procedure twice, using its own first output as the second input.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0159",
+      "family": "held.unsupported.en.19",
+      "language": "en",
+      "entity": "meter:v8-held-10",
+      "text": "Apply Tundra pump 11's procedure twice, using its own first output as the second input.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0160",
+      "family": "held.unknown.en.0",
+      "language": "en",
+      "entity": "meter:v8-unknown-held-0",
+      "text": "For Unregistered unit 0, fetch the observation at the tail of the record.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "held-0161",
+      "family": "held.unknown.en.1",
+      "language": "en",
+      "entity": "meter:v8-unknown-held-1",
+      "text": "Report the freshest unmodified sample of Unregistered unit 1 that you have kept.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "held-0162",
+      "family": "held.unknown.en.2",
+      "language": "en",
+      "entity": "meter:v8-unknown-held-2",
+      "text": "What number is in the newest raw entry for Unregistered unit 2?",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "held-0163",
+      "family": "held.unknown.en.3",
+      "language": "en",
+      "entity": "meter:v8-unknown-held-3",
+      "text": "Open Unregistered unit 3's measurement history and give me only its final recorded value.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "held-0164",
+      "family": "held.unknown.en.4",
+      "language": "en",
+      "entity": "meter:v8-unknown-held-4",
+      "text": "The handover needs the last logged observation of Unregistered unit 4, before processing.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "held-0165",
+      "family": "held.unknown.en.5",
+      "language": "en",
+      "entity": "meter:v8-unknown-held-5",
+      "text": "For Unregistered unit 5, fetch the observation at the tail of the record.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "held-0166",
+      "family": "held.unknown.en.6",
+      "language": "en",
+      "entity": "meter:v8-unknown-held-6",
+      "text": "Report the freshest unmodified sample of Unregistered unit 6 that you have kept.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "held-0167",
+      "family": "held.unknown.en.7",
+      "language": "en",
+      "entity": "meter:v8-unknown-held-7",
+      "text": "What number is in the newest raw entry for Unregistered unit 7?",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "held-0168",
+      "family": "held.ambiguous.en.0",
+      "language": "en",
+      "entity": "meter:v8-held-00",
+      "text": "For Shared station, fetch the observation at the tail of the record.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "ambiguous_alias"
+    },
+    {
+      "id": "held-0169",
+      "family": "held.ambiguous.en.1",
+      "language": "en",
+      "entity": "meter:v8-held-01",
+      "text": "Report the freshest unmodified sample of Shared station that you have kept.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "ambiguous_alias"
+    },
+    {
+      "id": "held-0170",
+      "family": "held.ambiguous.en.2",
+      "language": "en",
+      "entity": "meter:v8-held-00",
+      "text": "What number is in the newest raw entry for Shared station?",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "ambiguous_alias"
+    },
+    {
+      "id": "held-0171",
+      "family": "held.ambiguous.en.3",
+      "language": "en",
+      "entity": "meter:v8-held-01",
+      "text": "Open Shared station's measurement history and give me only its final recorded value.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "ambiguous_alias"
+    },
+    {
+      "id": "held-0172",
+      "family": "held.ambiguous.en.4",
+      "language": "en",
+      "entity": "meter:v8-held-00",
+      "text": "The handover needs the last logged observation of Shared station, before processing.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "ambiguous_alias"
+    },
+    {
+      "id": "held-0173",
+      "family": "held.ambiguous.en.5",
+      "language": "en",
+      "entity": "meter:v8-held-01",
+      "text": "For Shared station, fetch the observation at the tail of the record.",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "ambiguous_alias"
+    },
+    {
+      "id": "held-0174",
+      "family": "held.time-conflict.en.0",
+      "language": "en",
+      "entity": "meter:v8-held-00",
+      "text": "Recover the last entry for Aurora gauge 1 that existed when the clock reached 2025-04-01.",
+      "at": 1743469200,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "time_conflict"
+    },
+    {
+      "id": "held-0175",
+      "family": "held.time-conflict.en.1",
+      "language": "en",
+      "entity": "meter:v8-held-01",
+      "text": "Give the additive displacement of Lotus valve 2 from the 2025-04-01 reading to the newest reading.",
+      "at": 1751414400,
+      "since": 1743469200,
+      "expected_operation": null,
+      "category": "time_conflict"
+    },
+    {
+      "id": "held-0176",
+      "family": "held.time-conflict.en.2",
+      "language": "en",
+      "entity": "meter:v8-held-02",
+      "text": "Ignore observations after 2025-04-01 and report the remaining latest value for Basalt meter 3.",
+      "at": 1743552000,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "time_conflict"
+    },
+    {
+      "id": "held-0177",
+      "family": "held.time-conflict.en.3",
+      "language": "en",
+      "entity": "meter:v8-held-03",
+      "text": "The reconciliation is latest less the archived 2025-04-01 value of Cobalt probe 4; return that number.",
+      "at": 1751414400,
+      "since": 1743552000,
+      "expected_operation": null,
+      "category": "time_conflict"
+    },
+    {
+      "id": "held-0178",
+      "family": "held.time-conflict.en.4",
+      "language": "en",
+      "entity": "meter:v8-held-04",
+      "text": "On the 2025-04-01 reporting boundary, what recorded reading was available for Tundra pump 5?",
+      "at": 1743379200,
+      "since": 1743379200,
+      "expected_operation": null,
+      "category": "time_conflict"
+    },
+    {
+      "id": "held-0179",
+      "family": "held.time-conflict.en.5",
+      "language": "en",
+      "entity": "meter:v8-held-05",
+      "text": "Take the newest number for Saffron sensor 6 and deduct the number on record by 2025-04-01.",
+      "at": 1751414400,
+      "since": 1743379200,
+      "expected_operation": null,
+      "category": "time_conflict"
+    },
+    {
+      "id": "held-0180",
+      "family": "held.unsupported.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-held-00",
+      "text": "将极光计1号最新值相对2025-04-01的差额表示为旧值的比例。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0181",
+      "family": "held.unsupported.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-held-03",
+      "text": "将钴蓝探头4号最新值相对2025-04-01的差额表示为旧值的比例。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0182",
+      "family": "held.unsupported.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-held-01",
+      "text": "莲花阀2号最新值是2025-04-01基线的多少倍？",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0183",
+      "family": "held.unsupported.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-held-04",
+      "text": "冻原泵5号最新值是2025-04-01基线的多少倍？",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0184",
+      "family": "held.unsupported.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-held-02",
+      "text": "查明玄武表3号最近上涨的驱动因素。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0185",
+      "family": "held.unsupported.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-held-05",
+      "text": "查明藏红传感器6号最近上涨的驱动因素。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0186",
+      "family": "held.unsupported.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-held-03",
+      "text": "估计钴蓝探头4号明天会读到什么数。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0187",
+      "family": "held.unsupported.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-held-06",
+      "text": "估计极光计7号明天会读到什么数。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0188",
+      "family": "held.unsupported.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-held-04",
+      "text": "保留冻原泵5号的配方，但将输入换成虚构样本81。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0189",
+      "family": "held.unsupported.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-held-07",
+      "text": "保留莲花阀8号的配方，但将输入换成虚构样本81。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0190",
+      "family": "held.unsupported.zh.5",
+      "language": "zh",
+      "entity": "meter:v8-held-05",
+      "text": "对藏红传感器6号保存的语义系数求立方。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0191",
+      "family": "held.unsupported.zh.5",
+      "language": "zh",
+      "entity": "meter:v8-held-08",
+      "text": "对玄武表9号保存的语义系数求立方。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0192",
+      "family": "held.unsupported.zh.6",
+      "language": "zh",
+      "entity": "meter:v8-held-06",
+      "text": "修改极光计7号已存程序里的偏置。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0193",
+      "family": "held.unsupported.zh.6",
+      "language": "zh",
+      "entity": "meter:v8-held-09",
+      "text": "修改钴蓝探头10号已存程序里的偏置。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0194",
+      "family": "held.unsupported.zh.7",
+      "language": "zh",
+      "entity": "meter:v8-held-07",
+      "text": "将莲花阀8号在2025-04-01之后的所有观测相加。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0195",
+      "family": "held.unsupported.zh.7",
+      "language": "zh",
+      "entity": "meter:v8-held-10",
+      "text": "将冻原泵11号在2025-04-01之后的所有观测相加。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0196",
+      "family": "held.unsupported.zh.8",
+      "language": "zh",
+      "entity": "meter:v8-held-08",
+      "text": "玄武表9号在2025-04-01对应哪个历史过程版本？",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0197",
+      "family": "held.unsupported.zh.8",
+      "language": "zh",
+      "entity": "meter:v8-held-11",
+      "text": "藏红传感器12号在2025-04-01对应哪个历史过程版本？",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0198",
+      "family": "held.unsupported.zh.9",
+      "language": "zh",
+      "entity": "meter:v8-held-09",
+      "text": "用钴蓝探头10号的2025-04-01记录减去2025-01-01记录，不使用当前值。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0199",
+      "family": "held.unsupported.zh.9",
+      "language": "zh",
+      "entity": "meter:v8-held-00",
+      "text": "用极光计1号的2025-04-01记录减去2025-01-01记录，不使用当前值。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0200",
+      "family": "held.unsupported.zh.10",
+      "language": "zh",
+      "entity": "meter:v8-held-10",
+      "text": "把冻原泵11号全部历史值从大到小排序。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0201",
+      "family": "held.unsupported.zh.10",
+      "language": "zh",
+      "entity": "meter:v8-held-01",
+      "text": "把莲花阀2号全部历史值从大到小排序。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0202",
+      "family": "held.unsupported.zh.11",
+      "language": "zh",
+      "entity": "meter:v8-held-11",
+      "text": "数一数藏红传感器12号保存了几个事件。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0203",
+      "family": "held.unsupported.zh.11",
+      "language": "zh",
+      "entity": "meter:v8-held-02",
+      "text": "数一数玄武表3号保存了几个事件。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0204",
+      "family": "held.unsupported.zh.12",
+      "language": "zh",
+      "entity": "meter:v8-held-00",
+      "text": "用历史标准差归一化极光计1号的最新观测。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0205",
+      "family": "held.unsupported.zh.12",
+      "language": "zh",
+      "entity": "meter:v8-held-03",
+      "text": "用历史标准差归一化钴蓝探头4号的最新观测。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0206",
+      "family": "held.unsupported.zh.13",
+      "language": "zh",
+      "entity": "meter:v8-held-01",
+      "text": "莲花阀2号下周超过50的概率是多少？",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0207",
+      "family": "held.unsupported.zh.13",
+      "language": "zh",
+      "entity": "meter:v8-held-04",
+      "text": "冻原泵5号下周超过50的概率是多少？",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0208",
+      "family": "held.unsupported.zh.14",
+      "language": "zh",
+      "entity": "meter:v8-held-02",
+      "text": "为玄武表3号完整历史写出因果叙事。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0209",
+      "family": "held.unsupported.zh.14",
+      "language": "zh",
+      "entity": "meter:v8-held-05",
+      "text": "为藏红传感器6号完整历史写出因果叙事。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0210",
+      "family": "held.unsupported.zh.15",
+      "language": "zh",
+      "entity": "meter:v8-held-03",
+      "text": "对钴蓝探头4号已存因子取对数。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0211",
+      "family": "held.unsupported.zh.15",
+      "language": "zh",
+      "entity": "meter:v8-held-06",
+      "text": "对极光计7号已存因子取对数。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0212",
+      "family": "held.unsupported.zh.16",
+      "language": "zh",
+      "entity": "meter:v8-held-04",
+      "text": "发明更好的算法来替代冻原泵5号的配方。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0213",
+      "family": "held.unsupported.zh.16",
+      "language": "zh",
+      "entity": "meter:v8-held-07",
+      "text": "发明更好的算法来替代莲花阀8号的配方。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0214",
+      "family": "held.unsupported.zh.17",
+      "language": "zh",
+      "entity": "meter:v8-held-05",
+      "text": "撤销藏红传感器6号最近一次写入。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0215",
+      "family": "held.unsupported.zh.17",
+      "language": "zh",
+      "entity": "meter:v8-held-08",
+      "text": "撤销玄武表9号最近一次写入。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0216",
+      "family": "held.unsupported.zh.18",
+      "language": "zh",
+      "entity": "meter:v8-held-06",
+      "text": "判断极光计7号自2025-04-01的变化是否由硬件故障造成。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0217",
+      "family": "held.unsupported.zh.18",
+      "language": "zh",
+      "entity": "meter:v8-held-09",
+      "text": "判断钴蓝探头10号自2025-04-01的变化是否由硬件故障造成。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0218",
+      "family": "held.unsupported.zh.19",
+      "language": "zh",
+      "entity": "meter:v8-held-07",
+      "text": "运行莲花阀8号过程两次，将第一次输出作为第二次输入。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0219",
+      "family": "held.unsupported.zh.19",
+      "language": "zh",
+      "entity": "meter:v8-held-10",
+      "text": "运行冻原泵11号过程两次，将第一次输出作为第二次输入。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unsupported"
+    },
+    {
+      "id": "held-0220",
+      "family": "held.unknown.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-unknown-held-0",
+      "text": "请读出未登记单元0记录末尾那次观测的值。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "held-0221",
+      "family": "held.unknown.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-unknown-held-1",
+      "text": "交班表需要未登记单元1保留的最新未加工样本。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "held-0222",
+      "family": "held.unknown.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-unknown-held-2",
+      "text": "未登记单元2原始记录中最新一项填了什么数？",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "held-0223",
+      "family": "held.unknown.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-unknown-held-3",
+      "text": "打开未登记单元3的测量历史，只给我最后记下的值。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "held-0224",
+      "family": "held.unknown.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-unknown-held-4",
+      "text": "我要未登记单元4最近落档的观测，不做程序运算。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "held-0225",
+      "family": "held.unknown.zh.5",
+      "language": "zh",
+      "entity": "meter:v8-unknown-held-5",
+      "text": "请读出未登记单元5记录末尾那次观测的值。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "held-0226",
+      "family": "held.unknown.zh.6",
+      "language": "zh",
+      "entity": "meter:v8-unknown-held-6",
+      "text": "交班表需要未登记单元6保留的最新未加工样本。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "held-0227",
+      "family": "held.unknown.zh.7",
+      "language": "zh",
+      "entity": "meter:v8-unknown-held-7",
+      "text": "未登记单元7原始记录中最新一项填了什么数？",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "unknown_entity"
+    },
+    {
+      "id": "held-0228",
+      "family": "held.ambiguous.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-held-00",
+      "text": "请读出共用站记录末尾那次观测的值。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "ambiguous_alias"
+    },
+    {
+      "id": "held-0229",
+      "family": "held.ambiguous.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-held-01",
+      "text": "交班表需要共用站保留的最新未加工样本。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "ambiguous_alias"
+    },
+    {
+      "id": "held-0230",
+      "family": "held.ambiguous.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-held-00",
+      "text": "共用站原始记录中最新一项填了什么数？",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "ambiguous_alias"
+    },
+    {
+      "id": "held-0231",
+      "family": "held.ambiguous.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-held-01",
+      "text": "打开共用站的测量历史，只给我最后记下的值。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "ambiguous_alias"
+    },
+    {
+      "id": "held-0232",
+      "family": "held.ambiguous.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-held-00",
+      "text": "我要共用站最近落档的观测，不做程序运算。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "ambiguous_alias"
+    },
+    {
+      "id": "held-0233",
+      "family": "held.ambiguous.zh.5",
+      "language": "zh",
+      "entity": "meter:v8-held-01",
+      "text": "请读出共用站记录末尾那次观测的值。",
+      "at": 1751414400,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "ambiguous_alias"
+    },
+    {
+      "id": "held-0234",
+      "family": "held.time-conflict.zh.0",
+      "language": "zh",
+      "entity": "meter:v8-held-00",
+      "text": "时钟到达2025-04-01时，极光计1号已有记录的末项是多少？",
+      "at": 1743469200,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "time_conflict"
+    },
+    {
+      "id": "held-0235",
+      "family": "held.time-conflict.zh.1",
+      "language": "zh",
+      "entity": "meter:v8-held-01",
+      "text": "给出莲花阀2号从2025-04-01读数到最新读数的加法位移。",
+      "at": 1751414400,
+      "since": 1743469200,
+      "expected_operation": null,
+      "category": "time_conflict"
+    },
+    {
+      "id": "held-0236",
+      "family": "held.time-conflict.zh.2",
+      "language": "zh",
+      "entity": "meter:v8-held-02",
+      "text": "忽略2025-04-01之后的观测，返回玄武表3号剩余记录中的最新值。",
+      "at": 1743552000,
+      "since": 1743465600,
+      "expected_operation": null,
+      "category": "time_conflict"
+    },
+    {
+      "id": "held-0237",
+      "family": "held.time-conflict.zh.3",
+      "language": "zh",
+      "entity": "meter:v8-held-03",
+      "text": "核对式是钴蓝探头4号最新值扣掉2025-04-01档案值，请返回这个数。",
+      "at": 1751414400,
+      "since": 1743552000,
+      "expected_operation": null,
+      "category": "time_conflict"
+    },
+    {
+      "id": "held-0238",
+      "family": "held.time-conflict.zh.4",
+      "language": "zh",
+      "entity": "meter:v8-held-04",
+      "text": "在2025-04-01这个报表边界，冻原泵5号已有的读数是多少？",
+      "at": 1743379200,
+      "since": 1743379200,
+      "expected_operation": null,
+      "category": "time_conflict"
+    },
+    {
+      "id": "held-0239",
+      "family": "held.time-conflict.zh.5",
+      "language": "zh",
+      "entity": "meter:v8-held-05",
+      "text": "取藏红传感器6号最新的数，扣除截至2025-04-01记下的那个数。",
+      "at": 1751414400,
+      "since": 1743379200,
+      "expected_operation": null,
+      "category": "time_conflict"
+    }
+  ]
+}

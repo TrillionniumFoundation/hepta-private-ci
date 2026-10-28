@@ -1,0 +1,43 @@
+name: Memory cell V4 interrupted-delivery recovery
+
+on:
+  push:
+    branches: [research/memory-cell-v4-recovery-20261027]
+    paths:
+      - .github/workflows/memory-cell-v4-recovery.yml
+      - qualification/memory-cell-v4-recovery/*.py
+
+permissions:
+  contents: read
+
+jobs:
+  recover-original-objects:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out the exact recovery source and registered archive parts
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 16
+          sparse-checkout: |
+            qualification/memory-cell-delivery
+            qualification/memory-cell-v3-delivery
+            qualification/memory-cell-v4-recovery
+
+      - name: Verify prior complete history and salvage only complete V4 objects
+        env:
+          EXPECTED_SOURCE_SHA: ${{ github.sha }}
+        run: python3 -B qualification/memory-cell-v4-recovery/run_hosted_recovery.py
+
+      - name: Retain exact bytes, original-object exports and explicit missing-object receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-cell-recovery-${{ github.sha }}
+          path: qualification/memory-cell-v4-recovery/recovered
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0

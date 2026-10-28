@@ -1,0 +1,44 @@
+{
+  "argv": [
+    "/workspace/scratch/9bbd63a0445f/hcsn-venv/bin/python",
+    "-I",
+    "-B",
+    "/workspace/scratch/76e2020e4b36/hepta-memory-completion/qualification/memory-cell-adapters/evaluation/audit_skill_longrun_tests.py"
+  ],
+  "exit_code": 0,
+  "independent_float32_arithmetic_replay": true,
+  "schema": "hepta.memory.skill-audit-boundary-tests.v1",
+  "scope": "invented audit fixtures only; no formal training, no frozen-protocol result",
+  "sources": {
+    "qualification/memory-cell-adapters/evaluation/audit_skill_longrun.py": {
+      "bytes": 23540,
+      "sha256": "de9dedbc5d02c6c94d25516971b2ab0c22d636673126b4768232de0d2c3fcf88"
+    },
+    "qualification/memory-cell-adapters/evaluation/audit_skill_longrun_ci.py": {
+      "bytes": 11774,
+      "sha256": "ed39f19b097907210eb840bf35fb05b10cb0c39bc918146c0007cb2fc65583e7"
+    },
+    "qualification/memory-cell-adapters/evaluation/audit_skill_longrun_fit.py": {
+      "bytes": 6424,
+      "sha256": "c573447f73f8c361d53e5faee51c904bc50e6fe79776450c6e7872d6e149891e"
+    },
+    "qualification/memory-cell-adapters/evaluation/audit_skill_longrun_support.py": {
+      "bytes": 23778,
+      "sha256": "f6fece3099b14f07685b08e0ba21821974ee23f771ab270fe94562abd79d1193"
+    },
+    "qualification/memory-cell-adapters/evaluation/audit_skill_longrun_tests.py": {
+      "bytes": 5473,
+      "sha256": "2558593d8fbd95e11d16cde54788c49d55729d80c17288da18170ad65683bc5e"
+    }
+  },
+  "stderr": {
+    "bytes": 102,
+    "sha256": "dcf0a7fc200cab9ab36e5d3037278eb791f53b95cc73af6040c74a0a911416bc"
+  },
+  "stdout": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "training_executed": false,
+  "wall_ns": 194331460
+}

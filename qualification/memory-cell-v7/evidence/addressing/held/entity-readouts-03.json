@@ -1,0 +1,1402 @@
+[
+  {
+    "id": "held-address-unknown-zh-061",
+    "language": "zh",
+    "family": "held.owner_unknown",
+    "expected": {
+      "operation": "reject",
+      "intent_operation": "current",
+      "resolution": "unknown",
+      "canonical_entity": null,
+      "result": null,
+      "reason": "The supplied request entity is absent from all canonical entities and aliases in this registry."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unknown-zh-061",
+      "scope": "agent:memory-v7-eval",
+      "entity": "蓼泽记录柜 66",
+      "text": "请读出蓼泽记录柜 66最近入档的那笔数值。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unknown-zh-061",
+      "scope": "agent:memory-v7-eval",
+      "entity": "蓼泽记录柜 66",
+      "text": "请读出蓼泽记录柜 66最近入档的那笔数值。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": null,
+      "error": "unknown-or-ambiguous-entity"
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-zh-061",
+      "request_digest": "bf75ba26045f291830620747490fcec0cfa1435746d9cdd56dbb2a68d2867d5f",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "b4154dcdf69e58acb0bda63afc4f0d71871a540d03098a1fc68988a609994abe",
+      "source_cut": "90d7f00b4e576b5696645c8d4ee6c89da90958d41723b40bab9fa3b7a2a6512a",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-zh-061",
+      "request_digest": "b47001ce646242e687cb5c49d90051fc82f13877d1a8f581c77e0f3ab2ce0992",
+      "status": "rejected",
+      "reason": "unknown-or-ambiguous-entity",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "b4154dcdf69e58acb0bda63afc4f0d71871a540d03098a1fc68988a609994abe",
+      "source_cut": "90d7f00b4e576b5696645c8d4ee6c89da90958d41723b40bab9fa3b7a2a6512a",
+      "decision": null,
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unknown-zh-062",
+    "language": "zh",
+    "family": "held.owner_unknown",
+    "expected": {
+      "operation": "reject",
+      "intent_operation": "history",
+      "resolution": "unknown",
+      "canonical_entity": null,
+      "result": null,
+      "reason": "The supplied request entity is absent from all canonical entities and aliases in this registry."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unknown-zh-062",
+      "scope": "agent:memory-v7-eval",
+      "entity": "杉荫仪表席 92",
+      "text": "从杉荫仪表席 92档案中取截至20260615最后一次观测的值。",
+      "at": 20260615,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unknown-zh-062",
+      "scope": "agent:memory-v7-eval",
+      "entity": "杉荫仪表席 92",
+      "text": "从杉荫仪表席 92档案中取截至20260615最后一次观测的值。",
+      "at": 20260615,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": null,
+      "error": "unknown-or-ambiguous-entity"
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-zh-062",
+      "request_digest": "909a20c9e80c2dede3a67709c50d978692318cabb9bb3a15b7df199730bbb977",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "28b16033558b5f4edc4cc744b80954668fb6a091eb9a6016d1b90b9729b68064",
+      "source_cut": "76a6d8cc8d6cec7fb2a5657c36bd396148c3b054e43e94ccd04ff028f880304a",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-zh-062",
+      "request_digest": "9b5d80ea15e613df79d85c614a4adc78ccab7bfe31cb8c6f0f2af12b8fbc48b1",
+      "status": "rejected",
+      "reason": "unknown-or-ambiguous-entity",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "28b16033558b5f4edc4cc744b80954668fb6a091eb9a6016d1b90b9729b68064",
+      "source_cut": "76a6d8cc8d6cec7fb2a5657c36bd396148c3b054e43e94ccd04ff028f880304a",
+      "decision": null,
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unknown-zh-063",
+    "language": "zh",
+    "family": "held.owner_unknown",
+    "expected": {
+      "operation": "reject",
+      "intent_operation": "semantic",
+      "resolution": "unknown",
+      "canonical_entity": null,
+      "result": null,
+      "reason": "The supplied request entity is absent from all canonical entities and aliases in this registry."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unknown-zh-063",
+      "scope": "agent:memory-v7-eval",
+      "entity": "苕溪测量点 45",
+      "text": "我需要苕溪测量点 45当前保存的所有属性和值。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unknown-zh-063",
+      "scope": "agent:memory-v7-eval",
+      "entity": "苕溪测量点 45",
+      "text": "我需要苕溪测量点 45当前保存的所有属性和值。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": null,
+      "error": "unknown-or-ambiguous-entity"
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-zh-063",
+      "request_digest": "e3ce33769cd634c7e3f4e007c03a1a4295502d8c8493135f3889355ba5ac571a",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "7677ad748f10778bb179be729cd5674cd7a46bd2c2e71860970b956b331c89bf",
+      "source_cut": "3ae2b3dd52e569ca7e674e9d890b877cb3cd82491a46e0099b2be864e7256e7e",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-zh-063",
+      "request_digest": "943c71501a46aa0e303c91059d13aa5e3b2b04cf5dab1668ab6ced0ab801e24f",
+      "status": "rejected",
+      "reason": "unknown-or-ambiguous-entity",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "7677ad748f10778bb179be729cd5674cd7a46bd2c2e71860970b956b331c89bf",
+      "source_cut": "3ae2b3dd52e569ca7e674e9d890b877cb3cd82491a46e0099b2be864e7256e7e",
+      "decision": null,
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unknown-zh-064",
+    "language": "zh",
+    "family": "held.owner_unknown",
+    "expected": {
+      "operation": "reject",
+      "intent_operation": "procedure",
+      "resolution": "unknown",
+      "canonical_entity": null,
+      "result": null,
+      "reason": "The supplied request entity is absent from all canonical entities and aliases in this registry."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unknown-zh-064",
+      "scope": "agent:memory-v7-eval",
+      "entity": "椿浦档案柜 23",
+      "text": "请调阅椿浦档案柜 23留存的规则程序完整内容。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unknown-zh-064",
+      "scope": "agent:memory-v7-eval",
+      "entity": "椿浦档案柜 23",
+      "text": "请调阅椿浦档案柜 23留存的规则程序完整内容。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": null,
+      "error": "unknown-or-ambiguous-entity"
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-zh-064",
+      "request_digest": "dbc65376fb16159910b7bd13bffea1c97aa5c8c3d534e94946677247bc84f5e1",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "80cf590f800143560e6de534441c9271f1bebe7092121188a7a89d9b68c977b0",
+      "source_cut": "bcf9c7e8eeaba111f30b4484d104e762b3f281c97423712360055835bfb2cc90",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-zh-064",
+      "request_digest": "215bc1ac511c48d6275e4fdc80ffaaf44a18b5597d43601be45b378caed5686d",
+      "status": "rejected",
+      "reason": "unknown-or-ambiguous-entity",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "80cf590f800143560e6de534441c9271f1bebe7092121188a7a89d9b68c977b0",
+      "source_cut": "bcf9c7e8eeaba111f30b4484d104e762b3f281c97423712360055835bfb2cc90",
+      "decision": null,
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unknown-zh-065",
+    "language": "zh",
+    "family": "held.owner_unknown",
+    "expected": {
+      "operation": "reject",
+      "intent_operation": "change",
+      "resolution": "unknown",
+      "canonical_entity": null,
+      "result": null,
+      "reason": "The supplied request entity is absent from all canonical entities and aliases in this registry."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unknown-zh-065",
+      "scope": "agent:memory-v7-eval",
+      "entity": "锦榭采集台 57",
+      "text": "算出锦榭采集台 57最新记录值减去截至20260315记录值的净差。",
+      "at": 20261027,
+      "since": 20260315,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unknown-zh-065",
+      "scope": "agent:memory-v7-eval",
+      "entity": "锦榭采集台 57",
+      "text": "算出锦榭采集台 57最新记录值减去截至20260315记录值的净差。",
+      "at": 20261027,
+      "since": 20260315,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": null,
+      "error": "unknown-or-ambiguous-entity"
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-zh-065",
+      "request_digest": "053f6631e3202198dd7c873e35d697c66b2b69c970a295a11f3e6f75003600f7",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "0de3da337d2302e94a5a43d9b12d5d54c9d9ac4b2c4d0e17ad0e93d00ca2a274",
+      "source_cut": "cbf03c1359efa5712a5a7d7d305ece306a6fb0a75c6875a1982f13171f2005fd",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-zh-065",
+      "request_digest": "8aa93dc449a5f263c72110f6315ecf8d361378113b3cd86270959a4910f5334c",
+      "status": "rejected",
+      "reason": "unknown-or-ambiguous-entity",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "0de3da337d2302e94a5a43d9b12d5d54c9d9ac4b2c4d0e17ad0e93d00ca2a274",
+      "source_cut": "cbf03c1359efa5712a5a7d7d305ece306a6fb0a75c6875a1982f13171f2005fd",
+      "decision": null,
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unknown-zh-066",
+    "language": "zh",
+    "family": "held.owner_unknown",
+    "expected": {
+      "operation": "reject",
+      "intent_operation": "apply",
+      "resolution": "unknown",
+      "canonical_entity": null,
+      "result": null,
+      "reason": "The supplied request entity is absent from all canonical entities and aliases in this registry."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unknown-zh-066",
+      "scope": "agent:memory-v7-eval",
+      "entity": "竹阙校验架 81",
+      "text": "让竹阙校验架 81已存程序用当前参数处理其最新数值，返回运算结果。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unknown-zh-066",
+      "scope": "agent:memory-v7-eval",
+      "entity": "竹阙校验架 81",
+      "text": "让竹阙校验架 81已存程序用当前参数处理其最新数值，返回运算结果。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": null,
+      "error": "unknown-or-ambiguous-entity"
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-zh-066",
+      "request_digest": "ea0c64f41f6d4bcf4a5329cc25a8d1c47045703f232c2175da5f0519e184d1d5",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "a739911c2f119ef2182351a2688bfe8767402fe7d94dab882f46dca06d604168",
+      "source_cut": "183bcdf5bdba9ed7fe8e0826c2d7fbd70756e9b8cd51f9d067b2bfdd656994ed",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-zh-066",
+      "request_digest": "0b1d6d943b9983b9f17f7f654e3d0e9fe1d06d89cebf12e3f0fb8e49baeaf8a7",
+      "status": "rejected",
+      "reason": "unknown-or-ambiguous-entity",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "a739911c2f119ef2182351a2688bfe8767402fe7d94dab882f46dca06d604168",
+      "source_cut": "183bcdf5bdba9ed7fe8e0826c2d7fbd70756e9b8cd51f9d067b2bfdd656994ed",
+      "decision": null,
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unknown-zh-067",
+    "language": "zh",
+    "family": "held.owner_unknown",
+    "expected": {
+      "operation": "reject",
+      "intent_operation": "current",
+      "resolution": "unknown",
+      "canonical_entity": null,
+      "result": null,
+      "reason": "The supplied request entity is absent from all canonical entities and aliases in this registry."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unknown-zh-067",
+      "scope": "agent:memory-v7-eval",
+      "entity": "枫鹭计数槽 38",
+      "text": "请读出枫鹭计数槽 38最近入档的那笔数值。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unknown-zh-067",
+      "scope": "agent:memory-v7-eval",
+      "entity": "枫鹭计数槽 38",
+      "text": "请读出枫鹭计数槽 38最近入档的那笔数值。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": null,
+      "error": "unknown-or-ambiguous-entity"
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-zh-067",
+      "request_digest": "b61f5dea25f22886b6dc201dce7c9117b3edbc784b00f9df86c335f06d79d963",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "48fb1e1f3df0eca0cd0e3ab77cb9999a5c993dba69b010da096d43040cf5a6f7",
+      "source_cut": "1ebca1169573e389c4f95e319b5de370ed578bb8b73a52e8a8450e79597d9136",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-zh-067",
+      "request_digest": "7ca8e14b6a47bb1a2316b60bcbc6f5bfa606f156f1039340de3ee6dcf10d0c9d",
+      "status": "rejected",
+      "reason": "unknown-or-ambiguous-entity",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "48fb1e1f3df0eca0cd0e3ab77cb9999a5c993dba69b010da096d43040cf5a6f7",
+      "source_cut": "1ebca1169573e389c4f95e319b5de370ed578bb8b73a52e8a8450e79597d9136",
+      "decision": null,
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unknown-zh-068",
+    "language": "zh",
+    "family": "held.owner_unknown",
+    "expected": {
+      "operation": "reject",
+      "intent_operation": "history",
+      "resolution": "unknown",
+      "canonical_entity": null,
+      "result": null,
+      "reason": "The supplied request entity is absent from all canonical entities and aliases in this registry."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unknown-zh-068",
+      "scope": "agent:memory-v7-eval",
+      "entity": "荇桥观测窗 74",
+      "text": "从荇桥观测窗 74档案中取截至20260615最后一次观测的值。",
+      "at": 20260615,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unknown-zh-068",
+      "scope": "agent:memory-v7-eval",
+      "entity": "荇桥观测窗 74",
+      "text": "从荇桥观测窗 74档案中取截至20260615最后一次观测的值。",
+      "at": 20260615,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": null,
+      "error": "unknown-or-ambiguous-entity"
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-zh-068",
+      "request_digest": "017c895069ea1447d34b5ef872c85b48f009487b1994d5ef66e61e85ce8b1145",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "29f64abe6cfb34a7ca045fbf8586dbe22214165f7a70039ba5d6c0477a6cfb69",
+      "source_cut": "d099546b1f8670e7a84ca101da32ec6dc95a30217b0f6efc6bffb7eb8324cd0c",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-zh-068",
+      "request_digest": "300248cf800b5e595739e40f72547122754d8bacb3aa41385d26ed3ed53d35e9",
+      "status": "rejected",
+      "reason": "unknown-or-ambiguous-entity",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "29f64abe6cfb34a7ca045fbf8586dbe22214165f7a70039ba5d6c0477a6cfb69",
+      "source_cut": "d099546b1f8670e7a84ca101da32ec6dc95a30217b0f6efc6bffb7eb8324cd0c",
+      "decision": null,
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unknown-zh-069",
+    "language": "zh",
+    "family": "held.owner_unknown",
+    "expected": {
+      "operation": "reject",
+      "intent_operation": "semantic",
+      "resolution": "unknown",
+      "canonical_entity": null,
+      "result": null,
+      "reason": "The supplied request entity is absent from all canonical entities and aliases in this registry."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unknown-zh-069",
+      "scope": "agent:memory-v7-eval",
+      "entity": "芥亭读数台 15",
+      "text": "我需要芥亭读数台 15当前保存的所有属性和值。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unknown-zh-069",
+      "scope": "agent:memory-v7-eval",
+      "entity": "芥亭读数台 15",
+      "text": "我需要芥亭读数台 15当前保存的所有属性和值。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": null,
+      "error": "unknown-or-ambiguous-entity"
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-zh-069",
+      "request_digest": "33f715a8e114fbc65ee7220a392e6d01d9651760a0a6d1ee3fa0cd8cd3d0cf80",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "601791c654807b010acc4248f177f198d3d7ea720d2ea7ae07446c8761f95ff3",
+      "source_cut": "c0dc53d371e4712aff398cd30b2a811ff6e418ca9925088690bcb2826aee20ad",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-zh-069",
+      "request_digest": "ad72f7054968788a08363965e4fe2feb2a46407b12bb043e31e104f0481ceb24",
+      "status": "rejected",
+      "reason": "unknown-or-ambiguous-entity",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "601791c654807b010acc4248f177f198d3d7ea720d2ea7ae07446c8761f95ff3",
+      "source_cut": "c0dc53d371e4712aff398cd30b2a811ff6e418ca9925088690bcb2826aee20ad",
+      "decision": null,
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unknown-zh-070",
+    "language": "zh",
+    "family": "held.owner_unknown",
+    "expected": {
+      "operation": "reject",
+      "intent_operation": "procedure",
+      "resolution": "unknown",
+      "canonical_entity": null,
+      "result": null,
+      "reason": "The supplied request entity is absent from all canonical entities and aliases in this registry."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unknown-zh-070",
+      "scope": "agent:memory-v7-eval",
+      "entity": "苓岸存档站 93",
+      "text": "请调阅苓岸存档站 93留存的规则程序完整内容。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unknown-zh-070",
+      "scope": "agent:memory-v7-eval",
+      "entity": "苓岸存档站 93",
+      "text": "请调阅苓岸存档站 93留存的规则程序完整内容。",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": null,
+      "error": "unknown-or-ambiguous-entity"
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-zh-070",
+      "request_digest": "d1e5a4650d6e2b5888b0b0dc249bf074cb381c2a6bb11effcb2126a3b1802d7a",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "d843db6cf25c49f02ac5dad8484fb2f4849ead344f77f2b9203703704090d4e0",
+      "source_cut": "3f30d418d5ac0e0b4652868058c0f6fb49bc55baef2d9c80d7392fd18a5a5dc0",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-zh-070",
+      "request_digest": "9c0f48326bba4893b02123b6a61f4676792d1e0b3368c81e28cf4ae4b94170d7",
+      "status": "rejected",
+      "reason": "unknown-or-ambiguous-entity",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "d843db6cf25c49f02ac5dad8484fb2f4849ead344f77f2b9203703704090d4e0",
+      "source_cut": "3f30d418d5ac0e0b4652868058c0f6fb49bc55baef2d9c80d7392fd18a5a5dc0",
+      "decision": null,
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unknown-en-071",
+    "language": "en",
+    "family": "held.owner_unknown",
+    "expected": {
+      "operation": "reject",
+      "intent_operation": "change",
+      "resolution": "unknown",
+      "canonical_entity": null,
+      "result": null,
+      "reason": "The supplied request entity is absent from all canonical entities and aliases in this registry."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unknown-en-071",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Tamarisk gauge 66",
+      "text": "Calculate the net gap obtained by subtracting the value held for Tamarisk gauge 66 through 20260315 from its latest recorded value.",
+      "at": 20261027,
+      "since": 20260315,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unknown-en-071",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Tamarisk gauge 66",
+      "text": "Calculate the net gap obtained by subtracting the value held for Tamarisk gauge 66 through 20260315 from its latest recorded value.",
+      "at": 20261027,
+      "since": 20260315,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": null,
+      "error": "unknown-or-ambiguous-entity"
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-en-071",
+      "request_digest": "f56ffa95729989ffa80c0d5b174e01eed3acf6565d6731f5cf5dfcf51f5179de",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "3fd1eb029a5219aef6ba084a07e517b75610c4be5cbea339a1d81cde991baa90",
+      "source_cut": "4c743eced261761a69a889c37fd8c72d6bdc79b4cbb121d092e5f24525e43ca4",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-en-071",
+      "request_digest": "57a17c713b6413767f78b77f9a90aea1d08b6c697c031da03b61510d2ad1beff",
+      "status": "rejected",
+      "reason": "unknown-or-ambiguous-entity",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "3fd1eb029a5219aef6ba084a07e517b75610c4be5cbea339a1d81cde991baa90",
+      "source_cut": "4c743eced261761a69a889c37fd8c72d6bdc79b4cbb121d092e5f24525e43ca4",
+      "decision": null,
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unknown-en-072",
+    "language": "en",
+    "family": "held.owner_unknown",
+    "expected": {
+      "operation": "reject",
+      "intent_operation": "apply",
+      "resolution": "unknown",
+      "canonical_entity": null,
+      "result": null,
+      "reason": "The supplied request entity is absent from all canonical entities and aliases in this registry."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unknown-en-072",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Ochre rack 92",
+      "text": "Have the saved program for Ochre rack 92 process its newest number with its current parameters and return the output.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unknown-en-072",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Ochre rack 92",
+      "text": "Have the saved program for Ochre rack 92 process its newest number with its current parameters and return the output.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": null,
+      "error": "unknown-or-ambiguous-entity"
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-en-072",
+      "request_digest": "7fcd00e6441d4c050c783b8e9fb881a38decc85645b8d19e6875dc3d846b2006",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "9f0d89a3b50252e43c0f294dc5aad9fe9f80bb18e47783de395497435fb5dcc5",
+      "source_cut": "92fd04ab046d9cc07492184ab642d97888184939e56318a047efc265741c662a",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-en-072",
+      "request_digest": "e5fc1f5dd0db3b6e3a7e97613a17aed2d1302bbe4f65ce4284c00dcb1e45a133",
+      "status": "rejected",
+      "reason": "unknown-or-ambiguous-entity",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "9f0d89a3b50252e43c0f294dc5aad9fe9f80bb18e47783de395497435fb5dcc5",
+      "source_cut": "92fd04ab046d9cc07492184ab642d97888184939e56318a047efc265741c662a",
+      "decision": null,
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unknown-en-073",
+    "language": "en",
+    "family": "held.owner_unknown",
+    "expected": {
+      "operation": "reject",
+      "intent_operation": "current",
+      "resolution": "unknown",
+      "canonical_entity": null,
+      "result": null,
+      "reason": "The supplied request entity is absent from all canonical entities and aliases in this registry."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unknown-en-073",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Hawthorn inlet 45",
+      "text": "Read the numeric value in the most recently archived entry for Hawthorn inlet 45.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unknown-en-073",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Hawthorn inlet 45",
+      "text": "Read the numeric value in the most recently archived entry for Hawthorn inlet 45.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": null,
+      "error": "unknown-or-ambiguous-entity"
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-en-073",
+      "request_digest": "14ab544e512f9a7b1e7d55ff941c327f1836cee5964149ac2868b2e99c121137",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "cf915d28ed3692191428fce3f888da64c260f6d3281a09c3561fcd45b6d724ea",
+      "source_cut": "0ddb8e1b276dd1ca8213f8fcce955dc48484d31a6c2ed8e963a38ae6537cf3c7",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-en-073",
+      "request_digest": "6343c0ee0637a6339145dd92e2f11834f0be205a2e39d7e2868e589517d54959",
+      "status": "rejected",
+      "reason": "unknown-or-ambiguous-entity",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "cf915d28ed3692191428fce3f888da64c260f6d3281a09c3561fcd45b6d724ea",
+      "source_cut": "0ddb8e1b276dd1ca8213f8fcce955dc48484d31a6c2ed8e963a38ae6537cf3c7",
+      "decision": null,
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unknown-en-074",
+    "language": "en",
+    "family": "held.owner_unknown",
+    "expected": {
+      "operation": "reject",
+      "intent_operation": "history",
+      "resolution": "unknown",
+      "canonical_entity": null,
+      "result": null,
+      "reason": "The supplied request entity is absent from all canonical entities and aliases in this registry."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unknown-en-074",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Beryl archive stand 23",
+      "text": "From the archive for Beryl archive stand 23, retrieve the final observation value available through 20260615.",
+      "at": 20260615,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unknown-en-074",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Beryl archive stand 23",
+      "text": "From the archive for Beryl archive stand 23, retrieve the final observation value available through 20260615.",
+      "at": 20260615,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": null,
+      "error": "unknown-or-ambiguous-entity"
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-en-074",
+      "request_digest": "d8399476269fcfe0e78eea9a28be3d142f3f366bdbfdcc064eb522df9c108aec",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "3365144d1b4d3de5cef0e53bd0c9b40150c6897132103d91f5367b03eb836aa7",
+      "source_cut": "8a0bc1823a00b18ee88972922a3b608c0606db7d8d0a267d31e7c9db46fabc1b",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-en-074",
+      "request_digest": "57ecbf3fe8cb737572592975d80f7979c95543786e82b94c8c93d38bde6b65e6",
+      "status": "rejected",
+      "reason": "unknown-or-ambiguous-entity",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "3365144d1b4d3de5cef0e53bd0c9b40150c6897132103d91f5367b03eb836aa7",
+      "source_cut": "8a0bc1823a00b18ee88972922a3b608c0606db7d8d0a267d31e7c9db46fabc1b",
+      "decision": null,
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unknown-en-075",
+    "language": "en",
+    "family": "held.owner_unknown",
+    "expected": {
+      "operation": "reject",
+      "intent_operation": "semantic",
+      "resolution": "unknown",
+      "canonical_entity": null,
+      "result": null,
+      "reason": "The supplied request entity is absent from all canonical entities and aliases in this registry."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unknown-en-075",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Pinewell desk 57",
+      "text": "I need all the properties and values currently stored for Pinewell desk 57.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unknown-en-075",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Pinewell desk 57",
+      "text": "I need all the properties and values currently stored for Pinewell desk 57.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": null,
+      "error": "unknown-or-ambiguous-entity"
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-en-075",
+      "request_digest": "be6e3ce8364a1201a9212d79867520ad69cfeee5483177f5a214149fc7312168",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "392e1906837c40e235b9b36438f0dc196d2df0214dc79ceb17ade7cd704423cf",
+      "source_cut": "4a9dc491aa8b7839c76648822f7400b634819b88aa1b95993771e069585d7ff8",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-en-075",
+      "request_digest": "ddef8e7f307e53bc7e84dcdbd22440c5e4299123e3452715056948279bcb4ab8",
+      "status": "rejected",
+      "reason": "unknown-or-ambiguous-entity",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "392e1906837c40e235b9b36438f0dc196d2df0214dc79ceb17ade7cd704423cf",
+      "source_cut": "4a9dc491aa8b7839c76648822f7400b634819b88aa1b95993771e069585d7ff8",
+      "decision": null,
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unknown-en-076",
+    "language": "en",
+    "family": "held.owner_unknown",
+    "expected": {
+      "operation": "reject",
+      "intent_operation": "procedure",
+      "resolution": "unknown",
+      "canonical_entity": null,
+      "result": null,
+      "reason": "The supplied request entity is absent from all canonical entities and aliases in this registry."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unknown-en-076",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Dunlin receiver 81",
+      "text": "Open the full contents of the rule program retained for Dunlin receiver 81.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unknown-en-076",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Dunlin receiver 81",
+      "text": "Open the full contents of the rule program retained for Dunlin receiver 81.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": null,
+      "error": "unknown-or-ambiguous-entity"
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-en-076",
+      "request_digest": "3a70f22603acff46612464f437a893d100c89daaffd5de632b2523948db404b1",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "4c908315a6161390106ffa269837a2dcff020aa9871abf5f54679e2d9b12a8ce",
+      "source_cut": "aa1e6a7a4486d87c32b1dc3f12c208ef074ca5d3ba69774ae20f1b96deef0646",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-en-076",
+      "request_digest": "4d48d57a80e9f2442d79f42639f2fd81f81d0ab9a835843ebbae50b760c9a00a",
+      "status": "rejected",
+      "reason": "unknown-or-ambiguous-entity",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "4c908315a6161390106ffa269837a2dcff020aa9871abf5f54679e2d9b12a8ce",
+      "source_cut": "aa1e6a7a4486d87c32b1dc3f12c208ef074ca5d3ba69774ae20f1b96deef0646",
+      "decision": null,
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unknown-en-077",
+    "language": "en",
+    "family": "held.owner_unknown",
+    "expected": {
+      "operation": "reject",
+      "intent_operation": "change",
+      "resolution": "unknown",
+      "canonical_entity": null,
+      "result": null,
+      "reason": "The supplied request entity is absent from all canonical entities and aliases in this registry."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unknown-en-077",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Garnet counting bay 38",
+      "text": "Calculate the net gap obtained by subtracting the value held for Garnet counting bay 38 through 20260315 from its latest recorded value.",
+      "at": 20261027,
+      "since": 20260315,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unknown-en-077",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Garnet counting bay 38",
+      "text": "Calculate the net gap obtained by subtracting the value held for Garnet counting bay 38 through 20260315 from its latest recorded value.",
+      "at": 20261027,
+      "since": 20260315,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": null,
+      "error": "unknown-or-ambiguous-entity"
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-en-077",
+      "request_digest": "a1e4141d502da8fc5bd97a5b5e84d72a96a61ef2f4b8f6eab1b1b1863f4ace36",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "90ab8bac9b5c21e57007a2ed86719bef87302da4094a59c0e5d50c47a6d05a05",
+      "source_cut": "df189ac5bd28b617fc56c46ed2da8aafa02d53fe2d1bce36501c97ed2a962d75",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-en-077",
+      "request_digest": "e9f0e3d6b43f36736156739c7b93811b0cacbc2a5d17a6d879ef3e4213d6f7ca",
+      "status": "rejected",
+      "reason": "unknown-or-ambiguous-entity",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "90ab8bac9b5c21e57007a2ed86719bef87302da4094a59c0e5d50c47a6d05a05",
+      "source_cut": "df189ac5bd28b617fc56c46ed2da8aafa02d53fe2d1bce36501c97ed2a962d75",
+      "decision": null,
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unknown-en-078",
+    "language": "en",
+    "family": "held.owner_unknown",
+    "expected": {
+      "operation": "reject",
+      "intent_operation": "apply",
+      "resolution": "unknown",
+      "canonical_entity": null,
+      "result": null,
+      "reason": "The supplied request entity is absent from all canonical entities and aliases in this registry."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unknown-en-078",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Wren portal 74",
+      "text": "Have the saved program for Wren portal 74 process its newest number with its current parameters and return the output.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unknown-en-078",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Wren portal 74",
+      "text": "Have the saved program for Wren portal 74 process its newest number with its current parameters and return the output.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": null,
+      "error": "unknown-or-ambiguous-entity"
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-en-078",
+      "request_digest": "2b32f76d6f1a17eca6f3637500edf2fca8a4e52b0967832e383e92540b8b2b99",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "186804e3acc15fea6238de7e42abd7269f350ca0e2d17fac301480641169f9c7",
+      "source_cut": "07a4473d9a25a56ef83ad427b9b5ce1dfddc684cf0b3db667dfd8740e0268910",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-en-078",
+      "request_digest": "23df6be60622f527af371780e9719011cf79598bc16aaa2000f76edc7aef1f9e",
+      "status": "rejected",
+      "reason": "unknown-or-ambiguous-entity",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "186804e3acc15fea6238de7e42abd7269f350ca0e2d17fac301480641169f9c7",
+      "source_cut": "07a4473d9a25a56ef83ad427b9b5ce1dfddc684cf0b3db667dfd8740e0268910",
+      "decision": null,
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unknown-en-079",
+    "language": "en",
+    "family": "held.owner_unknown",
+    "expected": {
+      "operation": "reject",
+      "intent_operation": "current",
+      "resolution": "unknown",
+      "canonical_entity": null,
+      "result": null,
+      "reason": "The supplied request entity is absent from all canonical entities and aliases in this registry."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unknown-en-079",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Larkspur panel 15",
+      "text": "Read the numeric value in the most recently archived entry for Larkspur panel 15.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unknown-en-079",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Larkspur panel 15",
+      "text": "Read the numeric value in the most recently archived entry for Larkspur panel 15.",
+      "at": 0,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": null,
+      "error": "unknown-or-ambiguous-entity"
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-en-079",
+      "request_digest": "8752655c4a080055a4b4a22d095c105d15e55cefbd0b0800c82b53631f160a04",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "7e571f0c34500ca83da8324535a172eb9014985c5c71eb01756b9d1d3765cfa6",
+      "source_cut": "428accea213e649b1704ffac20eb66f11aa05ce3d5aa5eb2c602813256979190",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-en-079",
+      "request_digest": "6147ac913212fb524ae3ecd05051dbe43b3bd37d6c1d8280ccbb20289ebe3c1b",
+      "status": "rejected",
+      "reason": "unknown-or-ambiguous-entity",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "7e571f0c34500ca83da8324535a172eb9014985c5c71eb01756b9d1d3765cfa6",
+      "source_cut": "428accea213e649b1704ffac20eb66f11aa05ce3d5aa5eb2c602813256979190",
+      "decision": null,
+      "authority": false
+    }
+  },
+  {
+    "id": "held-address-unknown-en-080",
+    "language": "en",
+    "family": "held.owner_unknown",
+    "expected": {
+      "operation": "reject",
+      "intent_operation": "history",
+      "resolution": "unknown",
+      "canonical_entity": null,
+      "result": null,
+      "reason": "The supplied request entity is absent from all canonical entities and aliases in this registry."
+    },
+    "original_request": {
+      "schema": "hepta.memory.request.v1",
+      "query_id": "held-address-unknown-en-080",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Dapple station 93",
+      "text": "From the archive for Dapple station 93, retrieve the final observation value available through 20260615.",
+      "at": 20260615,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 32
+    },
+    "diagnostic_request": {
+      "query_id": "held-address-unknown-en-080",
+      "scope": "agent:memory-v7-eval",
+      "entity": "Dapple station 93",
+      "text": "From the archive for Dapple station 93, retrieve the final observation value available through 20260615.",
+      "at": 20260615,
+      "since": 0,
+      "max_hops": 8,
+      "max_cells": 8
+    },
+    "strict_resolution": {
+      "entity": null,
+      "error": "invalid max cells"
+    },
+    "diagnostic_resolution": {
+      "entity": null,
+      "error": "unknown-or-ambiguous-entity"
+    },
+    "strict_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-en-080",
+      "request_digest": "c252767818b523eb97815e9a36ba2a8e946583167e0ed94dd06c1e51f1f3f73f",
+      "status": "rejected",
+      "reason": "invalid max cells",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "081c93ca6a732f48b992afee886cf0ab2421896bdd329d2339242e65b6a2976d",
+      "source_cut": "7ab9f3518e984d29dbdbb061781d3fab3d764f69b7e2c9174d844c6927c9567c",
+      "decision": null,
+      "authority": false
+    },
+    "diagnostic_plan": {
+      "schema": "hepta.memory.v7.address-decision.v1",
+      "query_id": "held-address-unknown-en-080",
+      "request_digest": "23f4e320f25097016faec9e6a0678d54a678d562ee1808f70f050fac6c51c3f1",
+      "status": "rejected",
+      "reason": "unknown-or-ambiguous-entity",
+      "request": null,
+      "plan": null,
+      "model_digest": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "registry_digest": "081c93ca6a732f48b992afee886cf0ab2421896bdd329d2339242e65b6a2976d",
+      "source_cut": "7ab9f3518e984d29dbdbb061781d3fab3d764f69b7e2c9174d844c6927c9567c",
+      "decision": null,
+      "authority": false
+    }
+  }
+]

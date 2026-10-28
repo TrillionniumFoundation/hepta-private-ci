@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.memory.v8.author-suite-lock.v1",
+  "author": "root evaluator, separate from addressing implementer",
+  "fitting_author_allowed_to_read_before_model_selection": false,
+  "external_third_party": false,
+  "iid_sampling_established": false,
+  "wrapper_variants_share_family": true,
+  "expected_fields_sent_to_worker": false,
+  "native_cell_budget": 8,
+  "native_hop_budget": 8,
+  "author_source_sha256": "97ef1301183290c5eec32fdc3d14ccf12226efdd7ae0595b0ac7c36fd5ec118e",
+  "files": {
+    "calibration.json": {
+      "bytes": 98563,
+      "sha256": "555506dfd380617e9547f02204f3945f99d1e911d46acac9797a42f69b952bf9",
+      "rows": 240,
+      "categories": {
+        "ambiguous_alias": 12,
+        "known": 120,
+        "time_conflict": 12,
+        "unknown_entity": 16,
+        "unsupported": 80
+      },
+      "families": 140,
+      "entities": 12
+    },
+    "held.json": {
+      "bytes": 95502,
+      "sha256": "0514a7443e249087e02a5a98b2096795ef25770de35e7cd2a910564d17ba4b16",
+      "rows": 240,
+      "categories": {
+        "ambiguous_alias": 12,
+        "known": 120,
+        "time_conflict": 12,
+        "unknown_entity": 16,
+        "unsupported": 80
+      },
+      "families": 140,
+      "entities": 12
+    }
+  }
+}

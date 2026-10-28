@@ -1,0 +1,549 @@
+{
+  "checks": {
+    "all_context_values_match_declared_counterfactual": true,
+    "all_latest_sequences_stay_one": true,
+    "eight_same_logical_event_ids_across_contexts": true,
+    "metadata_snapshot_also_equal_across_contexts": true,
+    "one_metadata_snapshot_per_context": true,
+    "separate_database_files": true,
+    "three_distinct_database_content_hashes": true
+  },
+  "conclusion": "The three shifts are independent counterfactual database copies retaining logical event IDs and sequence=1 while values differ. Metadata snapshot hashes do not bind event payload content across contexts. Same-router comparisons inside each context remain valid; this does not demonstrate immutable content-addressed production provenance, streaming version progression, or native source-authority binding.",
+  "contexts": [
+    {
+      "database_path": "/workspace/scratch/76e2020e4b36/memory-adapter-formal-01/read-seed-731-event-0.sqlite",
+      "database_sha256": "53704443091f90c91ff214bb72cce62c3d3f8d1f912947bb2a772e27722a2348",
+      "event_shift": 0,
+      "latest_events": [
+        {
+          "entity": 0,
+          "identity": "2ea73b41b19b12f20bec597e1f2c9df90d5cc71ecc8a154b96d8e217e31df8ad",
+          "sequence": 1,
+          "value": 5
+        },
+        {
+          "entity": 1,
+          "identity": "e0626a2ce436ebb323f81900ef2698bc533244db73b8df0278e2401fb1531d06",
+          "sequence": 1,
+          "value": 8
+        },
+        {
+          "entity": 2,
+          "identity": "4876bd352560d68986fa8957a3e528a608f18f96d0b72ede19dd0359518f3d0c",
+          "sequence": 1,
+          "value": 11
+        },
+        {
+          "entity": 3,
+          "identity": "2e90e856292f14621e48d7a91fbe7bf16cbd67df984c524cd0e8e43321bebe5f",
+          "sequence": 1,
+          "value": 14
+        },
+        {
+          "entity": 4,
+          "identity": "e0cdb9d94c3392caebe321dd316d2a9d8f1a9824a4fe87acadcbcc5801c07132",
+          "sequence": 1,
+          "value": 0
+        },
+        {
+          "entity": 5,
+          "identity": "fc98390393c0afa66027b2e9b03667385bb0b86cf4c0333e202d5576bc1cc8cb",
+          "sequence": 1,
+          "value": 3
+        },
+        {
+          "entity": 6,
+          "identity": "2ffa093b18a0fe5ad0a3ee19ddfeb74c876793c79aa62bdb39b7b13397266eee",
+          "sequence": 1,
+          "value": 6
+        },
+        {
+          "entity": 7,
+          "identity": "8b1bfc1a902e4841de8f716704166a655038944a3a13b89aa2e494d4ccd3e1e5",
+          "sequence": 1,
+          "value": 9
+        }
+      ],
+      "seed": 731,
+      "within_context_metadata_snapshots": [
+        "d068e34b39bf34057711f5c1708a6fd198cd87b984e4357d65c6cce2bfa7cdd0"
+      ]
+    },
+    {
+      "database_path": "/workspace/scratch/76e2020e4b36/memory-adapter-formal-01/read-seed-731-event-7.sqlite",
+      "database_sha256": "660b9e6ef2edd97a8a1dee1d33c1ea907773521e4376ce4e2aaef38ae49889dd",
+      "event_shift": 7,
+      "latest_events": [
+        {
+          "entity": 0,
+          "identity": "2ea73b41b19b12f20bec597e1f2c9df90d5cc71ecc8a154b96d8e217e31df8ad",
+          "sequence": 1,
+          "value": 12
+        },
+        {
+          "entity": 1,
+          "identity": "e0626a2ce436ebb323f81900ef2698bc533244db73b8df0278e2401fb1531d06",
+          "sequence": 1,
+          "value": 15
+        },
+        {
+          "entity": 2,
+          "identity": "4876bd352560d68986fa8957a3e528a608f18f96d0b72ede19dd0359518f3d0c",
+          "sequence": 1,
+          "value": 1
+        },
+        {
+          "entity": 3,
+          "identity": "2e90e856292f14621e48d7a91fbe7bf16cbd67df984c524cd0e8e43321bebe5f",
+          "sequence": 1,
+          "value": 4
+        },
+        {
+          "entity": 4,
+          "identity": "e0cdb9d94c3392caebe321dd316d2a9d8f1a9824a4fe87acadcbcc5801c07132",
+          "sequence": 1,
+          "value": 7
+        },
+        {
+          "entity": 5,
+          "identity": "fc98390393c0afa66027b2e9b03667385bb0b86cf4c0333e202d5576bc1cc8cb",
+          "sequence": 1,
+          "value": 10
+        },
+        {
+          "entity": 6,
+          "identity": "2ffa093b18a0fe5ad0a3ee19ddfeb74c876793c79aa62bdb39b7b13397266eee",
+          "sequence": 1,
+          "value": 13
+        },
+        {
+          "entity": 7,
+          "identity": "8b1bfc1a902e4841de8f716704166a655038944a3a13b89aa2e494d4ccd3e1e5",
+          "sequence": 1,
+          "value": 16
+        }
+      ],
+      "seed": 731,
+      "within_context_metadata_snapshots": [
+        "d068e34b39bf34057711f5c1708a6fd198cd87b984e4357d65c6cce2bfa7cdd0"
+      ]
+    },
+    {
+      "database_path": "/workspace/scratch/76e2020e4b36/memory-adapter-formal-01/read-seed-731-event-11.sqlite",
+      "database_sha256": "84e9c72aaf35173a51576cf4bba28e2ec559ab406a343d544b79de733d4bee27",
+      "event_shift": 11,
+      "latest_events": [
+        {
+          "entity": 0,
+          "identity": "2ea73b41b19b12f20bec597e1f2c9df90d5cc71ecc8a154b96d8e217e31df8ad",
+          "sequence": 1,
+          "value": 16
+        },
+        {
+          "entity": 1,
+          "identity": "e0626a2ce436ebb323f81900ef2698bc533244db73b8df0278e2401fb1531d06",
+          "sequence": 1,
+          "value": 2
+        },
+        {
+          "entity": 2,
+          "identity": "4876bd352560d68986fa8957a3e528a608f18f96d0b72ede19dd0359518f3d0c",
+          "sequence": 1,
+          "value": 5
+        },
+        {
+          "entity": 3,
+          "identity": "2e90e856292f14621e48d7a91fbe7bf16cbd67df984c524cd0e8e43321bebe5f",
+          "sequence": 1,
+          "value": 8
+        },
+        {
+          "entity": 4,
+          "identity": "e0cdb9d94c3392caebe321dd316d2a9d8f1a9824a4fe87acadcbcc5801c07132",
+          "sequence": 1,
+          "value": 11
+        },
+        {
+          "entity": 5,
+          "identity": "fc98390393c0afa66027b2e9b03667385bb0b86cf4c0333e202d5576bc1cc8cb",
+          "sequence": 1,
+          "value": 14
+        },
+        {
+          "entity": 6,
+          "identity": "2ffa093b18a0fe5ad0a3ee19ddfeb74c876793c79aa62bdb39b7b13397266eee",
+          "sequence": 1,
+          "value": 0
+        },
+        {
+          "entity": 7,
+          "identity": "8b1bfc1a902e4841de8f716704166a655038944a3a13b89aa2e494d4ccd3e1e5",
+          "sequence": 1,
+          "value": 3
+        }
+      ],
+      "seed": 731,
+      "within_context_metadata_snapshots": [
+        "d068e34b39bf34057711f5c1708a6fd198cd87b984e4357d65c6cce2bfa7cdd0"
+      ]
+    },
+    {
+      "database_path": "/workspace/scratch/76e2020e4b36/memory-adapter-formal-01/read-seed-732-event-0.sqlite",
+      "database_sha256": "53704443091f90c91ff214bb72cce62c3d3f8d1f912947bb2a772e27722a2348",
+      "event_shift": 0,
+      "latest_events": [
+        {
+          "entity": 0,
+          "identity": "2ea73b41b19b12f20bec597e1f2c9df90d5cc71ecc8a154b96d8e217e31df8ad",
+          "sequence": 1,
+          "value": 5
+        },
+        {
+          "entity": 1,
+          "identity": "e0626a2ce436ebb323f81900ef2698bc533244db73b8df0278e2401fb1531d06",
+          "sequence": 1,
+          "value": 8
+        },
+        {
+          "entity": 2,
+          "identity": "4876bd352560d68986fa8957a3e528a608f18f96d0b72ede19dd0359518f3d0c",
+          "sequence": 1,
+          "value": 11
+        },
+        {
+          "entity": 3,
+          "identity": "2e90e856292f14621e48d7a91fbe7bf16cbd67df984c524cd0e8e43321bebe5f",
+          "sequence": 1,
+          "value": 14
+        },
+        {
+          "entity": 4,
+          "identity": "e0cdb9d94c3392caebe321dd316d2a9d8f1a9824a4fe87acadcbcc5801c07132",
+          "sequence": 1,
+          "value": 0
+        },
+        {
+          "entity": 5,
+          "identity": "fc98390393c0afa66027b2e9b03667385bb0b86cf4c0333e202d5576bc1cc8cb",
+          "sequence": 1,
+          "value": 3
+        },
+        {
+          "entity": 6,
+          "identity": "2ffa093b18a0fe5ad0a3ee19ddfeb74c876793c79aa62bdb39b7b13397266eee",
+          "sequence": 1,
+          "value": 6
+        },
+        {
+          "entity": 7,
+          "identity": "8b1bfc1a902e4841de8f716704166a655038944a3a13b89aa2e494d4ccd3e1e5",
+          "sequence": 1,
+          "value": 9
+        }
+      ],
+      "seed": 732,
+      "within_context_metadata_snapshots": [
+        "d068e34b39bf34057711f5c1708a6fd198cd87b984e4357d65c6cce2bfa7cdd0"
+      ]
+    },
+    {
+      "database_path": "/workspace/scratch/76e2020e4b36/memory-adapter-formal-01/read-seed-732-event-7.sqlite",
+      "database_sha256": "660b9e6ef2edd97a8a1dee1d33c1ea907773521e4376ce4e2aaef38ae49889dd",
+      "event_shift": 7,
+      "latest_events": [
+        {
+          "entity": 0,
+          "identity": "2ea73b41b19b12f20bec597e1f2c9df90d5cc71ecc8a154b96d8e217e31df8ad",
+          "sequence": 1,
+          "value": 12
+        },
+        {
+          "entity": 1,
+          "identity": "e0626a2ce436ebb323f81900ef2698bc533244db73b8df0278e2401fb1531d06",
+          "sequence": 1,
+          "value": 15
+        },
+        {
+          "entity": 2,
+          "identity": "4876bd352560d68986fa8957a3e528a608f18f96d0b72ede19dd0359518f3d0c",
+          "sequence": 1,
+          "value": 1
+        },
+        {
+          "entity": 3,
+          "identity": "2e90e856292f14621e48d7a91fbe7bf16cbd67df984c524cd0e8e43321bebe5f",
+          "sequence": 1,
+          "value": 4
+        },
+        {
+          "entity": 4,
+          "identity": "e0cdb9d94c3392caebe321dd316d2a9d8f1a9824a4fe87acadcbcc5801c07132",
+          "sequence": 1,
+          "value": 7
+        },
+        {
+          "entity": 5,
+          "identity": "fc98390393c0afa66027b2e9b03667385bb0b86cf4c0333e202d5576bc1cc8cb",
+          "sequence": 1,
+          "value": 10
+        },
+        {
+          "entity": 6,
+          "identity": "2ffa093b18a0fe5ad0a3ee19ddfeb74c876793c79aa62bdb39b7b13397266eee",
+          "sequence": 1,
+          "value": 13
+        },
+        {
+          "entity": 7,
+          "identity": "8b1bfc1a902e4841de8f716704166a655038944a3a13b89aa2e494d4ccd3e1e5",
+          "sequence": 1,
+          "value": 16
+        }
+      ],
+      "seed": 732,
+      "within_context_metadata_snapshots": [
+        "d068e34b39bf34057711f5c1708a6fd198cd87b984e4357d65c6cce2bfa7cdd0"
+      ]
+    },
+    {
+      "database_path": "/workspace/scratch/76e2020e4b36/memory-adapter-formal-01/read-seed-732-event-11.sqlite",
+      "database_sha256": "84e9c72aaf35173a51576cf4bba28e2ec559ab406a343d544b79de733d4bee27",
+      "event_shift": 11,
+      "latest_events": [
+        {
+          "entity": 0,
+          "identity": "2ea73b41b19b12f20bec597e1f2c9df90d5cc71ecc8a154b96d8e217e31df8ad",
+          "sequence": 1,
+          "value": 16
+        },
+        {
+          "entity": 1,
+          "identity": "e0626a2ce436ebb323f81900ef2698bc533244db73b8df0278e2401fb1531d06",
+          "sequence": 1,
+          "value": 2
+        },
+        {
+          "entity": 2,
+          "identity": "4876bd352560d68986fa8957a3e528a608f18f96d0b72ede19dd0359518f3d0c",
+          "sequence": 1,
+          "value": 5
+        },
+        {
+          "entity": 3,
+          "identity": "2e90e856292f14621e48d7a91fbe7bf16cbd67df984c524cd0e8e43321bebe5f",
+          "sequence": 1,
+          "value": 8
+        },
+        {
+          "entity": 4,
+          "identity": "e0cdb9d94c3392caebe321dd316d2a9d8f1a9824a4fe87acadcbcc5801c07132",
+          "sequence": 1,
+          "value": 11
+        },
+        {
+          "entity": 5,
+          "identity": "fc98390393c0afa66027b2e9b03667385bb0b86cf4c0333e202d5576bc1cc8cb",
+          "sequence": 1,
+          "value": 14
+        },
+        {
+          "entity": 6,
+          "identity": "2ffa093b18a0fe5ad0a3ee19ddfeb74c876793c79aa62bdb39b7b13397266eee",
+          "sequence": 1,
+          "value": 0
+        },
+        {
+          "entity": 7,
+          "identity": "8b1bfc1a902e4841de8f716704166a655038944a3a13b89aa2e494d4ccd3e1e5",
+          "sequence": 1,
+          "value": 3
+        }
+      ],
+      "seed": 732,
+      "within_context_metadata_snapshots": [
+        "d068e34b39bf34057711f5c1708a6fd198cd87b984e4357d65c6cce2bfa7cdd0"
+      ]
+    },
+    {
+      "database_path": "/workspace/scratch/76e2020e4b36/memory-adapter-formal-01/read-seed-733-event-0.sqlite",
+      "database_sha256": "53704443091f90c91ff214bb72cce62c3d3f8d1f912947bb2a772e27722a2348",
+      "event_shift": 0,
+      "latest_events": [
+        {
+          "entity": 0,
+          "identity": "2ea73b41b19b12f20bec597e1f2c9df90d5cc71ecc8a154b96d8e217e31df8ad",
+          "sequence": 1,
+          "value": 5
+        },
+        {
+          "entity": 1,
+          "identity": "e0626a2ce436ebb323f81900ef2698bc533244db73b8df0278e2401fb1531d06",
+          "sequence": 1,
+          "value": 8
+        },
+        {
+          "entity": 2,
+          "identity": "4876bd352560d68986fa8957a3e528a608f18f96d0b72ede19dd0359518f3d0c",
+          "sequence": 1,
+          "value": 11
+        },
+        {
+          "entity": 3,
+          "identity": "2e90e856292f14621e48d7a91fbe7bf16cbd67df984c524cd0e8e43321bebe5f",
+          "sequence": 1,
+          "value": 14
+        },
+        {
+          "entity": 4,
+          "identity": "e0cdb9d94c3392caebe321dd316d2a9d8f1a9824a4fe87acadcbcc5801c07132",
+          "sequence": 1,
+          "value": 0
+        },
+        {
+          "entity": 5,
+          "identity": "fc98390393c0afa66027b2e9b03667385bb0b86cf4c0333e202d5576bc1cc8cb",
+          "sequence": 1,
+          "value": 3
+        },
+        {
+          "entity": 6,
+          "identity": "2ffa093b18a0fe5ad0a3ee19ddfeb74c876793c79aa62bdb39b7b13397266eee",
+          "sequence": 1,
+          "value": 6
+        },
+        {
+          "entity": 7,
+          "identity": "8b1bfc1a902e4841de8f716704166a655038944a3a13b89aa2e494d4ccd3e1e5",
+          "sequence": 1,
+          "value": 9
+        }
+      ],
+      "seed": 733,
+      "within_context_metadata_snapshots": [
+        "d068e34b39bf34057711f5c1708a6fd198cd87b984e4357d65c6cce2bfa7cdd0"
+      ]
+    },
+    {
+      "database_path": "/workspace/scratch/76e2020e4b36/memory-adapter-formal-01/read-seed-733-event-7.sqlite",
+      "database_sha256": "660b9e6ef2edd97a8a1dee1d33c1ea907773521e4376ce4e2aaef38ae49889dd",
+      "event_shift": 7,
+      "latest_events": [
+        {
+          "entity": 0,
+          "identity": "2ea73b41b19b12f20bec597e1f2c9df90d5cc71ecc8a154b96d8e217e31df8ad",
+          "sequence": 1,
+          "value": 12
+        },
+        {
+          "entity": 1,
+          "identity": "e0626a2ce436ebb323f81900ef2698bc533244db73b8df0278e2401fb1531d06",
+          "sequence": 1,
+          "value": 15
+        },
+        {
+          "entity": 2,
+          "identity": "4876bd352560d68986fa8957a3e528a608f18f96d0b72ede19dd0359518f3d0c",
+          "sequence": 1,
+          "value": 1
+        },
+        {
+          "entity": 3,
+          "identity": "2e90e856292f14621e48d7a91fbe7bf16cbd67df984c524cd0e8e43321bebe5f",
+          "sequence": 1,
+          "value": 4
+        },
+        {
+          "entity": 4,
+          "identity": "e0cdb9d94c3392caebe321dd316d2a9d8f1a9824a4fe87acadcbcc5801c07132",
+          "sequence": 1,
+          "value": 7
+        },
+        {
+          "entity": 5,
+          "identity": "fc98390393c0afa66027b2e9b03667385bb0b86cf4c0333e202d5576bc1cc8cb",
+          "sequence": 1,
+          "value": 10
+        },
+        {
+          "entity": 6,
+          "identity": "2ffa093b18a0fe5ad0a3ee19ddfeb74c876793c79aa62bdb39b7b13397266eee",
+          "sequence": 1,
+          "value": 13
+        },
+        {
+          "entity": 7,
+          "identity": "8b1bfc1a902e4841de8f716704166a655038944a3a13b89aa2e494d4ccd3e1e5",
+          "sequence": 1,
+          "value": 16
+        }
+      ],
+      "seed": 733,
+      "within_context_metadata_snapshots": [
+        "d068e34b39bf34057711f5c1708a6fd198cd87b984e4357d65c6cce2bfa7cdd0"
+      ]
+    },
+    {
+      "database_path": "/workspace/scratch/76e2020e4b36/memory-adapter-formal-01/read-seed-733-event-11.sqlite",
+      "database_sha256": "84e9c72aaf35173a51576cf4bba28e2ec559ab406a343d544b79de733d4bee27",
+      "event_shift": 11,
+      "latest_events": [
+        {
+          "entity": 0,
+          "identity": "2ea73b41b19b12f20bec597e1f2c9df90d5cc71ecc8a154b96d8e217e31df8ad",
+          "sequence": 1,
+          "value": 16
+        },
+        {
+          "entity": 1,
+          "identity": "e0626a2ce436ebb323f81900ef2698bc533244db73b8df0278e2401fb1531d06",
+          "sequence": 1,
+          "value": 2
+        },
+        {
+          "entity": 2,
+          "identity": "4876bd352560d68986fa8957a3e528a608f18f96d0b72ede19dd0359518f3d0c",
+          "sequence": 1,
+          "value": 5
+        },
+        {
+          "entity": 3,
+          "identity": "2e90e856292f14621e48d7a91fbe7bf16cbd67df984c524cd0e8e43321bebe5f",
+          "sequence": 1,
+          "value": 8
+        },
+        {
+          "entity": 4,
+          "identity": "e0cdb9d94c3392caebe321dd316d2a9d8f1a9824a4fe87acadcbcc5801c07132",
+          "sequence": 1,
+          "value": 11
+        },
+        {
+          "entity": 5,
+          "identity": "fc98390393c0afa66027b2e9b03667385bb0b86cf4c0333e202d5576bc1cc8cb",
+          "sequence": 1,
+          "value": 14
+        },
+        {
+          "entity": 6,
+          "identity": "2ffa093b18a0fe5ad0a3ee19ddfeb74c876793c79aa62bdb39b7b13397266eee",
+          "sequence": 1,
+          "value": 0
+        },
+        {
+          "entity": 7,
+          "identity": "8b1bfc1a902e4841de8f716704166a655038944a3a13b89aa2e494d4ccd3e1e5",
+          "sequence": 1,
+          "value": 3
+        }
+      ],
+      "seed": 733,
+      "within_context_metadata_snapshots": [
+        "d068e34b39bf34057711f5c1708a6fd198cd87b984e4357d65c6cce2bfa7cdd0"
+      ]
+    }
+  ],
+  "passed": true,
+  "schema": "hepta.memory.formal-counterfactual-provenance-audit.v1",
+  "scope": "Read-only audit of preserved SQLite files and reader receipts; no rerun or frozen artifact change.",
+  "validity_assessment": "No additional defect in the declared within-context parameter-versus-SQL outcome comparison. Cross-context source-identity immutability or live event-version claims would exceed the evidence."
+}

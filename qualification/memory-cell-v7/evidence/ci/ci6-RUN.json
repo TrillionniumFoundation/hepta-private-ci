@@ -1,0 +1,39 @@
+{
+  "schema": "hepta.memory.v7.provider-run-evidence.v1",
+  "run_id": 40560143963,
+  "source_commit": "13eadb8944c39b0a2aa71d74a8f65d5a442bf70e",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "jobs": [
+    {
+      "job_id": 122386655531,
+      "group": "plan",
+      "status": "completed",
+      "conclusion": "success",
+      "evidence": "122386655531.json",
+      "test_counts": null
+    },
+    {
+      "job_id": 122386655823,
+      "group": "bazel-lock",
+      "status": "completed",
+      "conclusion": "success",
+      "evidence": "122386655823.json",
+      "test_counts": null
+    },
+    {
+      "job_id": 122387016802,
+      "group": "daemon",
+      "status": "completed",
+      "conclusion": "failure",
+      "evidence": "122387016802.json",
+      "test_counts": null
+    }
+  ],
+  "daemon_tests_executed": false,
+  "daemon_ignored_profile_executed": false,
+  "daemon_compile_error_count": 4,
+  "primary_error": "E0659 assert_eq macro ambiguity in memory_cell_temporal_runtime_tests.rs",
+  "bazel_lock_unchanged": true,
+  "verified_lock_file": "MODULE.bazel.lock",
+  "archive_index": "ci6-job-logs.INDEX.json"
+}

@@ -6,7 +6,11 @@ mod decision;
 mod engram;
 mod generation_bound;
 mod generator;
+mod memory_cell;
 mod v2;
+
+pub use memory_cell::MemorySourceVerifierV1;
+pub use memory_cell::revalidate_memory_readout_v1;
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;

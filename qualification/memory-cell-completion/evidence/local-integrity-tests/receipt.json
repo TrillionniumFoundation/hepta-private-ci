@@ -1,0 +1,95 @@
+{
+  "executions": [
+    {
+      "command": [
+        "/tmp/hepta-memory-v8-runtime/venv/bin/python",
+        "-I",
+        "-B",
+        "qualification/memory-cell-completion/finalize_preflight_tests.py",
+        "-v"
+      ],
+      "discovered_test_count": 19,
+      "elapsed_seconds": 1.2405016789998626,
+      "exit_code": 0,
+      "finished_utc": "2026-10-28T11:45:02.018761+00:00",
+      "logs": {
+        "stderr": {
+          "bytes": 2894,
+          "path": "finalize_preflight_tests.stderr.log",
+          "sha256": "b892aa8b52e8553e63f20cfa164cc64b89fbd7b579a6852d9cbcf4cad085ed25"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "finalize_preflight_tests.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "started_utc": "2026-10-28T11:45:00.778244+00:00"
+    },
+    {
+      "command": [
+        "/tmp/hepta-memory-v8-runtime/venv/bin/python",
+        "-I",
+        "-B",
+        "qualification/memory-cell-completion/authenticate_ci_artifact_tests.py",
+        "-v"
+      ],
+      "discovered_test_count": 7,
+      "elapsed_seconds": 0.13254957100434694,
+      "exit_code": 0,
+      "finished_utc": "2026-10-28T11:45:02.152034+00:00",
+      "logs": {
+        "stderr": {
+          "bytes": 1112,
+          "path": "authenticate_ci_artifact_tests.stderr.log",
+          "sha256": "b0590ed30aa578e1ca17d9b3a079fd3b7535b8ea94df09b35733799db0524f64"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "authenticate_ci_artifact_tests.stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "started_utc": "2026-10-28T11:45:02.019474+00:00"
+    }
+  ],
+  "native_tests_executed": false,
+  "real_ci_run_authenticated": false,
+  "schema": "hepta.memory.completion.local-integrity-tests.v1",
+  "scientific_quality_pass_asserted": false,
+  "scope": "synthetic fixture verification only; no real CI run or scientific result",
+  "source_files": {
+    "qualification/memory-cell-completion/README.md": {
+      "bytes": 11532,
+      "sha256": "f0da4e28827519332263e3e04f23a53e0e0e64d10b4336d9c1701abab74016f3"
+    },
+    "qualification/memory-cell-completion/authenticate_ci_artifact.py": {
+      "bytes": 12342,
+      "sha256": "0e35cf16ad1a6cf86ebde6326513baf3c47317996b9e92005464e812eb1b3611"
+    },
+    "qualification/memory-cell-completion/authenticate_ci_artifact_tests.py": {
+      "bytes": 9687,
+      "sha256": "5b53eba44f5c3a436c1be40f78aaf3a29802066aef68d52f81b2d09c035e77b3"
+    },
+    "qualification/memory-cell-completion/evidence_transport.py": {
+      "bytes": 13195,
+      "sha256": "da2062d8201bf7892c5c6fd71d716f77aead3ad0efe7628ae9c34a9105331f9f"
+    },
+    "qualification/memory-cell-completion/finalize_preflight.py": {
+      "bytes": 7389,
+      "sha256": "9cae2ff8d9000dc6736ae441b4caf0a71131ab7abfb4264cbe77160e4cb54224"
+    },
+    "qualification/memory-cell-completion/finalize_preflight_tests.py": {
+      "bytes": 16721,
+      "sha256": "31d1389dbad0f0176b6598f5ee3490aa1dce102ddc824dd971b343b4714fcc0d"
+    },
+    "qualification/memory-cell-completion/source_freeze.py": {
+      "bytes": 6609,
+      "sha256": "f8101794385815de0f331ec0641eb2002293fe154d3b34adae7892842d39bd38"
+    }
+  },
+  "source_unchanged_after_tests": true,
+  "synthetic_fixtures_only": true,
+  "synthetic_integrity_tests_passed": true,
+  "training_executed": false
+}

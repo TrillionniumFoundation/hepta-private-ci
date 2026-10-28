@@ -1,0 +1,33 @@
+{
+  "archive": {
+    "archive_bytes": 7089136,
+    "archive_sha256": "20c348466832e026e6d9280ea542f50f252bf9e633f64ea3fec0a0c900442a90",
+    "directories": 633,
+    "extracted": false,
+    "members": 4786,
+    "raw_bytes": 21766558,
+    "regular_files": 4153,
+    "verified": true
+  },
+  "helper": {
+    "bytes": 7876,
+    "sha256": "e51cf59093e6c491021af67164b2a93e4e4d0da71d88fe28f743a1aef843bcbb"
+  },
+  "meaningful_transport_checks": {
+    "directory_and_regular_file_restore": true,
+    "reject_absolute": true,
+    "reject_ancestor_file": true,
+    "reject_backslash": true,
+    "reject_duplicate_member": true,
+    "reject_duplicate_transport": true,
+    "reject_noncanonical": true,
+    "reject_null": true,
+    "reject_root": true,
+    "reject_symlink": true,
+    "reject_traversal": true
+  },
+  "original_archive_or_raw_evidence_modified": false,
+  "schema": "hepta.memory.adapter-ci-transport-verification.v1",
+  "training_or_prediction_executed": false,
+  "verification_wall_ns": 812942335
+}

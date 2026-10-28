@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.memory.v7.recovered-provider-log-archive.v1",
+  "run_id": 40568534089,
+  "source_commit": "59b45ccd863cab0fd1ea96f3b4b025715aa814f8",
+  "archive": "ci10-job-logs.tar.xz",
+  "bytes": 43768,
+  "sha256": "bfcca52e0b88fbc799341e99089bb3c05101e795159bfebbffda2ca0fccdb376",
+  "encoding": "Exact UTF-8 re-encoding of connector decoded provider logs; BOM, ANSI and newlines preserved.",
+  "members": [
+    {
+      "path": "122416179044.log",
+      "job_id": 122416179044,
+      "bytes": 15665,
+      "sha256": "b40268d03299e0823083633cd95df67858731b0c103ec7617912414f81df25f9"
+    },
+    {
+      "path": "122416179846.log",
+      "job_id": 122416179846,
+      "bytes": 62045,
+      "sha256": "764ae8ba6781ec29a0a48c0272a043f906bc4fd051aa3525a737c561abfcf958"
+    },
+    {
+      "path": "122416437476.log",
+      "job_id": 122416437476,
+      "bytes": 302610,
+      "sha256": "f709c93245b1aa41b50c01e0a87fe3064340df21285efad62a8b4e9cc9598d02"
+    }
+  ],
+  "scope": "Whole provider job logs; distinct from execution.log inside the daemon artifact."
+}

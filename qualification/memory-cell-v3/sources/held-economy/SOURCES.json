@@ -1,0 +1,39 @@
+{
+  "files": {
+    "bls-unemployment-1996-2005.json": {
+      "bytes": 10223,
+      "sha256": "9b37f3e8a4b96e7b591d5706562f5ede259f9c2abf0f37f86556ba268f4f2fbb"
+    },
+    "bls-unemployment-2006-2015.json": {
+      "bytes": 10224,
+      "sha256": "573b977483c8dee4291efaeb3b30edd34db641c401046dfb09eb0d4de4ccd03c"
+    },
+    "bls-unemployment-2016-2025.json": {
+      "bytes": 10302,
+      "sha256": "0eae36bfec292670ce1bd33e7270be85c4c11a93fd0acdf851081ef1b4850775"
+    },
+    "unemployment.json": {
+      "bytes": 6778,
+      "sha256": "5ee841d932a2afa9bdb38f5637bf74e3342ae1d5d71e2f1691fd9b30dd6af78e"
+    }
+  },
+  "observations": 348,
+  "policy_development_or_selection_permitted": false,
+  "retrieved_at_utc": "2026-10-26T14:04:13.833104+00:00",
+  "rows": 29,
+  "schema": "memory-cell-v3.held-domain-source.v1",
+  "source": {
+    "caveat": "Published seasonally adjusted observations may be revised. The experiment reads this fixed historical snapshot; it does not forecast unemployment.",
+    "credit": "U.S. Bureau of Labor Statistics, Current Population Survey, seasonally adjusted unemployment rate, series LNS14000000",
+    "license_note": "U.S. government public data; citation requested; retain series and snapshot attribution.",
+    "page": "https://www.bls.gov/cps/",
+    "reference": "https://fred.stlouisfed.org/series/UNRATE",
+    "scale": 100,
+    "unit": "percentage points of the civilian labor force"
+  },
+  "urls": [
+    "https://api.bls.gov/publicAPI/v2/timeseries/data/LNS14000000?startyear=1996&endyear=2005",
+    "https://api.bls.gov/publicAPI/v2/timeseries/data/LNS14000000?startyear=2006&endyear=2015",
+    "https://api.bls.gov/publicAPI/v2/timeseries/data/LNS14000000?startyear=2016&endyear=2025"
+  ]
+}

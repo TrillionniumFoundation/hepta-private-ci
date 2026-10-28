@@ -1,0 +1,36 @@
+name: Memory cell V5 read-only failed-job log collection
+
+on:
+  push:
+    branches:
+      - research/memory-cell-v5-ci-20261027
+    paths:
+      - .github/workflows/memory-cell-v5-ci-log-read.yml
+      - qualification/memory-cell-v5-ci/collect_log.py
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  collect-observed-cargo-deny-log:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Read the fixed failed job and preserve bounded error context
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 -B qualification/memory-cell-v5-ci/collect_log.py --output "$RUNNER_TEMP/memory-ci-cargo-deny-log"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-cell-v5-cargo-deny-log-${{ github.sha }}
+          path: ${{ runner.temp }}/memory-ci-cargo-deny-log/
+          if-no-files-found: error
+          retention-days: 14

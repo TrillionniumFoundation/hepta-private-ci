@@ -71,10 +71,15 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
+#[path = "native_agent_output.rs"]
+mod agent_output;
 #[path = "native_run_control.rs"]
 mod control;
+#[path = "native_memory_cell.rs"]
+mod memory_cell;
 pub use control::NativeAdmission;
 pub use control::NativeIntelligenceRunBinding;
+pub use memory_cell::load_native_memory_request_v1;
 use tokio::time::Instant;
 use tokio::time::timeout;
 use tokio::time::timeout_at;
@@ -146,6 +151,7 @@ pub struct NativeWorkerConfig {
 pub struct AppServerModelDriver {
     config: NativeWorkerConfig,
     turn_start_authorizer: Option<Arc<dyn TurnStartAuthorizer>>,
+    memory_request: Option<codex_hepta_cognitive_types::MemoryRequestV1>,
 }
 
 #[derive(Clone)]
@@ -168,6 +174,7 @@ impl AppServerModelDriver {
         Ok(Self {
             config,
             turn_start_authorizer: None,
+            memory_request: None,
         })
     }
 
@@ -405,6 +412,7 @@ impl AppServerModelDriver {
                     .to_string(),
             ),
         };
+        control::retain_reconciliation_boundary(record, &mut output);
         let _ =
             verify_owner_health(&mut output, owner.health(), Instant::now() + RPC_TIMEOUT).await;
         downgrade_for_owner_loss(&mut output);
@@ -521,7 +529,7 @@ impl AppServerModelDriver {
             .as_ref()
             .map(|snapshot| -> Result<_> { Ok(control::digest(&serde_json::to_vec(snapshot)?)) })
             .transpose()?;
-        let additional_context = context
+        let mut additional_context = context
             .as_ref()
             .map(|snapshot| -> Result<_> {
                 let value = serde_json::to_string(&snapshot)?;
@@ -537,6 +545,20 @@ impl AppServerModelDriver {
                 )]))
             })
             .transpose()?;
+        let memory_evidence = self.acquire_memory_evidence(&owner).await?;
+        if let Some(evidence) = memory_evidence.as_ref() {
+            additional_context.get_or_insert_with(HashMap::new).insert(
+                "hepta-memory-cell".to_string(),
+                AdditionalContextEntry {
+                    value: String::from_utf8(evidence.realized().content.clone())?,
+                    kind: AdditionalContextKind::Untrusted,
+                },
+            );
+            if serde_json::to_vec(&additional_context)?.len() > MAX_COGNITIVE_CONTEXT_BYTES {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err("combined owner context exceeds the attachment byte limit".into());
+            }
+        }
         if cancellation.is_cancelled() {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
@@ -759,6 +781,18 @@ impl AppServerModelDriver {
                 );
             }
         }
+        if let Some(evidence) = memory_evidence.as_ref()
+            && let Err(error) = self.revalidate_memory_evidence(&owner, evidence).await
+        {
+            let reason: String = format!("memory cell final-use revalidation failed: {error}")
+                .chars()
+                .take(1024)
+                .collect();
+            let stopped = control.abort_native_before_effect(pre_effect_abort, reason);
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            stopped?;
+            return Err(error);
+        }
         if cancellation.is_cancelled() {
             let stopped = control.abort_native_before_effect(
                 pre_effect_abort,
@@ -900,10 +934,12 @@ impl AppServerModelDriver {
         }
         let deadline =
             Instant::now() + observation_budget_from(unix_time_ms()?, binding.intent.deadline_ms);
+        let mut agent_output = agent_output::AgentOutput::default();
         let result = self
             .observe(
                 &mut client,
                 &mut output,
+                &mut agent_output,
                 deadline,
                 cancellation,
                 Some(&owner),
@@ -913,30 +949,25 @@ impl AppServerModelDriver {
         if let Err(reason) = result {
             output.boundary_status = classify_observation_failure(&reason);
             output.stop_reason = Some(reason.clone());
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
-                if let Ok(cancelled) = owner
+            // Persist the observed boundary before any asynchronous cancel or
+            // interrupt. Recovery may learn terminal facts later, but a crash
+            // must not erase the failure that stopped this observation.
+            let failure_recorded = control
+                .settle_native(request_id, output.clone())
+                .map(|_| ());
+            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
+                && let Ok(cancelled) = owner
                     .run_cancel(
                         binding.run_id.clone(),
                         revision,
                         reason.chars().take(512).collect(),
                     )
                     .await
-                {
-                    intelligence_revision = Some(cancelled.receipt.revision);
-                }
+            {
+                intelligence_revision = Some(cancelled.receipt.revision);
             }
             // Persist cancellation intent, but still interrupt if that write
             // fails. A failed journal write fences later admission/settlement.
-            // Commit observed authority loss before waiting for interruption:
-            // a process crash must not erase it from a later settlement.
-            let loss_recorded =
-                if matches!(output.owner_authority, NativeOwnerAuthority::Lost { .. }) {
-                    control
-                        .settle_native(request_id, output.clone())
-                        .map(|_| ())
-                } else {
-                    Ok(())
-                };
             let cancel_recorded = control.cancel_native(request_id);
             interrupt(&mut client, &output).await;
             let grace = CancellationToken::new();
@@ -944,13 +975,14 @@ impl AppServerModelDriver {
                 .observe(
                     &mut client,
                     &mut output,
+                    &mut agent_output,
                     Instant::now() + INTERRUPT_GRACE,
                     &grace,
                     /*owner*/ None,
                     &binding,
                 )
                 .await;
-            loss_recorded?;
+            failure_recorded?;
             cancel_recorded?;
             if !output.terminal_observed
                 && let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
@@ -1008,6 +1040,7 @@ impl AppServerModelDriver {
         &self,
         client: &mut RemoteAppServerClient,
         output: &mut NativeRunOutput,
+        agent_output: &mut agent_output::AgentOutput,
         deadline: Instant,
         cancellation: &CancellationToken,
         owner: Option<&AgentdClient>,
@@ -1029,7 +1062,7 @@ impl AppServerModelDriver {
             };
             match event.event() {
                 AppServerEvent::ServerNotification(_) => {
-                    if observe_event(output, &event, binding)? {
+                    if observe_event(output, agent_output, &event, binding)? {
                         return Ok(());
                     }
                 }
@@ -1419,21 +1452,15 @@ async fn interrupt(client: &mut RemoteAppServerClient, output: &NativeRunOutput)
 
 fn observe_event(
     output: &mut NativeRunOutput,
+    agent_output: &mut agent_output::AgentOutput,
     observed: &RemoteAppServerObservedEvent,
     binding: &CodexTurnBinding,
 ) -> std::result::Result<bool, String> {
     let AppServerEvent::ServerNotification(notification) = observed.event() else {
         return Ok(false);
     };
+    agent_output.observe(output, notification)?;
     match notification.as_ref() {
-        ServerNotification::AgentMessageDelta(delta)
-            if delta.thread_id == output.thread_id && delta.turn_id == output.turn_id =>
-        {
-            if delta.delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
-                return Err("output byte limit exceeded".to_string());
-            }
-            output.output.push_str(&delta.delta);
-        }
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
         {
@@ -1477,7 +1504,9 @@ fn observe_event(
                     .ok_or_else(|| "terminal receipt omitted correlation digest".to_string())?
                     .to_string(),
             );
-            if let Some(error) = &completed.turn.error {
+            if output.stop_reason.is_none()
+                && let Some(error) = &completed.turn.error
+            {
                 output.stop_reason = Some(error.message.chars().take(1024).collect());
             }
             output.terminal_observed = true;

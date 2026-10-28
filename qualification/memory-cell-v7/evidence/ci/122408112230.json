@@ -1,0 +1,73 @@
+{
+  "schema": "hepta.memory.v7.provider-job-evidence.v1",
+  "run_id": 40566233542,
+  "job_id": 122408112230,
+  "group": "bazel-lock",
+  "status": "completed",
+  "conclusion": "success",
+  "source_commit": "229ccd74788adbba4e31169bf2cc6e06f85633dd",
+  "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40566233542/job/122408112230",
+  "receipt": {
+    "command": [
+      "just",
+      "bazel-lock-update"
+    ],
+    "commands": [
+      [
+        "just",
+        "bazel-lock-update"
+      ]
+    ],
+    "complete_workspace_test": false,
+    "executions": [
+      {
+        "command": [
+          "just",
+          "bazel-lock-update"
+        ],
+        "exit_code": 0,
+        "wall_seconds": 19.397065347999984
+      }
+    ],
+    "exit_code": 0,
+    "final_tracked_changes": "",
+    "group": null,
+    "initial_tracked_changes": "",
+    "lock_after": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "lock_before": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "log": {
+      "bytes": 2208,
+      "sha256": "3ba7351e6be3038d39a1a19f048638a12d9af5d8ab7f5db93a8d96613e01365c"
+    },
+    "mode": "lock",
+    "passed": true,
+    "production_manifests_modified_for_test": false,
+    "request": {
+      "attempt": 8,
+      "groups": [
+        "daemon"
+      ],
+      "schema": "hepta.memory.v7.product-verification-request.v1",
+      "stage": "completed-agent-messages-and-acquired-lease-recovery",
+      "tests_before_final_fix_and_format": true
+    },
+    "schema": "hepta.memory.v7.product-ci-receipt.v1",
+    "source_commit": "229ccd74788adbba4e31169bf2cc6e06f85633dd",
+    "source_tree": "eddc7c2c346060623ff8dfe7ce14332052241d50",
+    "wall_seconds": 19.397184991000017
+  },
+  "test_summaries": [],
+  "test_counts": null,
+  "provider_log": {
+    "name": "122408112230.log",
+    "bytes": 62039,
+    "sha256": "654ad5ef30c6b4ebc7d0b0dcab4c0e14c77a42e994d6b8bd62e360d02bae341a"
+  },
+  "log_representation": "Exact UTF-8 encoding of decoded provider job log, preserving ANSI, BOM, line endings and final newline; distinct from execution.log whose identity is in the CI receipt."
+}

@@ -1,0 +1,155 @@
+{
+  "addressing_python_style_sealed": true,
+  "boundary_tests_unique_methods": 13,
+  "development_directories": [
+    "/workspace/scratch/528d510b462f/v7-addressing-development-01",
+    "/workspace/scratch/528d510b462f/v7-addressing-development-02"
+  ],
+  "external_calibration_opened": false,
+  "external_calibration_row_fields": [
+    "id",
+    "text",
+    "operation",
+    "language",
+    "family"
+  ],
+  "final_fix_or_format_performed": false,
+  "first_calibration_is_now_public_diagnostic": true,
+  "formatting_after_tests": false,
+  "latest_test_log": "/workspace/scratch/528d510b462f/v7-addressing-tests-04.log",
+  "new_held_opened": false,
+  "operations": [
+    "current",
+    "history",
+    "semantic",
+    "procedure",
+    "change",
+    "apply"
+  ],
+  "post_handoff_contract_change": "Align since <= at with Rust MemoryRequestV1; made before fresh calibration or held consumption.",
+  "registry_source_cut": "64 lowercase hexadecimal ContractDigestV1 from real CognitiveStore owner",
+  "schema": "hepta.memory.v7.addressing-handoff.v1",
+  "second_development_summary": {
+    "actual_head_fits": 12,
+    "cpu_seconds": 14.023068353,
+    "selected_candidate": 5,
+    "selection": {
+      "known_correct": 77,
+      "known_correct_rate": 0.875,
+      "known_rows": 88,
+      "known_wrong_accepted": 1,
+      "known_wrong_rate": 0.011363636363636364,
+      "language_known_correct_rates": {
+        "en": 0.9107142857142857,
+        "zh": 0.8125
+      },
+      "ood_acceptance_rate": 0.0,
+      "ood_accepted": 0,
+      "ood_rows": 46
+    },
+    "serving_admitted": false,
+    "wall_seconds": 14.063858531008009
+  },
+  "source_change_rule": "Any source change invalidates the recorded source identity; serving models also bind policy source digest. Final formatting and formal source commit are owned by root.",
+  "source_files": {
+    "__init__.py": {
+      "bytes": 139,
+      "sha256": "63b47bb28e00abee0c283d5eebc7480633028b17061cc40ba95aa0fadce89e90"
+    },
+    "calibration.py": {
+      "bytes": 5485,
+      "sha256": "ce1a8de18b63666ff9c77d152edccddb03fc2e758a4262d529b61ec30b289c8d"
+    },
+    "capabilities.py": {
+      "bytes": 5547,
+      "sha256": "f2c7b4882dadb2f3a68c51a5cf8963f79c3648ffc7b14b7f45d58594e48793fd"
+    },
+    "cli.py": {
+      "bytes": 1506,
+      "sha256": "d6f3b0a8511f6a15bc80c277b2d70c84302a71a5a025296cf427b8ca089c88bf"
+    },
+    "contracts.py": {
+      "bytes": 8899,
+      "sha256": "9b4553b6bbe8054ce7fcdc947dbb47a0087562793ab975092cbb0f8d0e6879d1"
+    },
+    "corpus.py": {
+      "bytes": 30433,
+      "sha256": "a55897eecc8d34ab2ba6dfef34d13571bfda030046f67e6fafba76fedec6e448"
+    },
+    "model.py": {
+      "bytes": 14944,
+      "sha256": "a825bc732833d3d9d0c6b92fc2684a578b58b1056c89d35501b29fdd3ece72b2"
+    },
+    "planner.py": {
+      "bytes": 1970,
+      "sha256": "e31b71fa9ffaaddba7ff956c656af0abe4deb0ada1e5bee5afd1269dff874481"
+    },
+    "tests/test_planner.py": {
+      "bytes": 7752,
+      "sha256": "1657200d5c2fb7e0b31405922aba1a4b2d928ddbb958f6a8c833d586fab53af7"
+    },
+    "tests/test_worker.py": {
+      "bytes": 4471,
+      "sha256": "04e191419a35cf655c6446d21f45f8b209a4953098afbbb80b4aab75d9cb1871"
+    },
+    "train.py": {
+      "bytes": 12915,
+      "sha256": "65c460f3696cacc1441c9071ebfc7266c9b94f245ec7190f48480d90604447b9"
+    },
+    "worker.py": {
+      "bytes": 4833,
+      "sha256": "75325681fe3b4247b8bacf6acaae8e2f7b3cf64a0aa2029439777e45cb10b679"
+    }
+  },
+  "test_log_sha256": "7e6dba38e0af8d1c3d99d00be65a10fe7506584d28695aebef97d73972a50abb",
+  "tested_source_files": {
+    "__init__.py": {
+      "bytes": 139,
+      "sha256": "63b47bb28e00abee0c283d5eebc7480633028b17061cc40ba95aa0fadce89e90"
+    },
+    "calibration.py": {
+      "bytes": 5485,
+      "sha256": "ce1a8de18b63666ff9c77d152edccddb03fc2e758a4262d529b61ec30b289c8d"
+    },
+    "capabilities.py": {
+      "bytes": 5547,
+      "sha256": "f2c7b4882dadb2f3a68c51a5cf8963f79c3648ffc7b14b7f45d58594e48793fd"
+    },
+    "cli.py": {
+      "bytes": 1506,
+      "sha256": "d6f3b0a8511f6a15bc80c277b2d70c84302a71a5a025296cf427b8ca089c88bf"
+    },
+    "contracts.py": {
+      "bytes": 8899,
+      "sha256": "9b4553b6bbe8054ce7fcdc947dbb47a0087562793ab975092cbb0f8d0e6879d1"
+    },
+    "corpus.py": {
+      "bytes": 30433,
+      "sha256": "a55897eecc8d34ab2ba6dfef34d13571bfda030046f67e6fafba76fedec6e448"
+    },
+    "model.py": {
+      "bytes": 14944,
+      "sha256": "a825bc732833d3d9d0c6b92fc2684a578b58b1056c89d35501b29fdd3ece72b2"
+    },
+    "planner.py": {
+      "bytes": 1970,
+      "sha256": "e31b71fa9ffaaddba7ff956c656af0abe4deb0ada1e5bee5afd1269dff874481"
+    },
+    "tests/test_planner.py": {
+      "bytes": 7752,
+      "sha256": "1657200d5c2fb7e0b31405922aba1a4b2d928ddbb958f6a8c833d586fab53af7"
+    },
+    "tests/test_worker.py": {
+      "bytes": 4471,
+      "sha256": "04e191419a35cf655c6446d21f45f8b209a4953098afbbb80b4aab75d9cb1871"
+    },
+    "train.py": {
+      "bytes": 12915,
+      "sha256": "65c460f3696cacc1441c9071ebfc7266c9b94f245ec7190f48480d90604447b9"
+    },
+    "worker.py": {
+      "bytes": 4833,
+      "sha256": "75325681fe3b4247b8bacf6acaae8e2f7b3cf64a0aa2029439777e45cb10b679"
+    }
+  }
+}

@@ -1,0 +1,145 @@
+{
+  "actual_head_fits": 0,
+  "contract_comparison": {
+    "after_contract_with_same_frozen_policy": {
+      "by_operation": {
+        "apply": {
+          "correct": 10,
+          "rows": 12
+        },
+        "change": {
+          "correct": 11,
+          "rows": 12
+        },
+        "current": {
+          "correct": 11,
+          "rows": 12
+        },
+        "history": {
+          "correct": 6,
+          "rows": 12
+        },
+        "procedure": {
+          "correct": 10,
+          "rows": 12
+        },
+        "semantic": {
+          "correct": 11,
+          "rows": 12
+        }
+      },
+      "known": 72,
+      "known_abstained": 13,
+      "known_correct": 59,
+      "known_correct_coverage": 0.8194444444444444,
+      "known_wrong_accepted": 0,
+      "ood": 48,
+      "ood_acceptance_rate": 0.020833333333333332,
+      "ood_accepted": 1
+    },
+    "explicit_contract_rejections": {
+      "known": 0,
+      "ood": 31
+    },
+    "interpretation": "Diagnostic contract ablation on the same rows; not an independently admitted raw-model policy.",
+    "raw_learned_argmax_known_correct": 69,
+    "raw_learned_argmax_ood_routes": 14,
+    "raw_learned_with_same_frozen_policy": {
+      "by_operation": {
+        "apply": {
+          "correct": 10,
+          "rows": 12
+        },
+        "change": {
+          "correct": 11,
+          "rows": 12
+        },
+        "current": {
+          "correct": 11,
+          "rows": 12
+        },
+        "history": {
+          "correct": 6,
+          "rows": 12
+        },
+        "procedure": {
+          "correct": 10,
+          "rows": 12
+        },
+        "semantic": {
+          "correct": 11,
+          "rows": 12
+        }
+      },
+      "known": 72,
+      "known_abstained": 13,
+      "known_correct": 59,
+      "known_correct_coverage": 0.8194444444444444,
+      "known_wrong_accepted": 0,
+      "ood": 48,
+      "ood_acceptance_rate": 0.0625,
+      "ood_accepted": 3
+    },
+    "weights_and_thresholds_identical": true
+  },
+  "cpu_seconds": 2.8981129969999997,
+  "final_use_authority": false,
+  "held_opened": false,
+  "identity": {
+    "base_bytes": 127538960,
+    "deployment_bytes_excluding_base": 807984,
+    "manifest_sha256": "36bf40924f93fdc47ab569b02132adb1edef659338d4b82ea1bd695fdfdb40bf"
+  },
+  "metrics": {
+    "by_operation": {
+      "apply": {
+        "correct": 10,
+        "rows": 12
+      },
+      "change": {
+        "correct": 11,
+        "rows": 12
+      },
+      "current": {
+        "correct": 11,
+        "rows": 12
+      },
+      "history": {
+        "correct": 6,
+        "rows": 12
+      },
+      "procedure": {
+        "correct": 10,
+        "rows": 12
+      },
+      "semantic": {
+        "correct": 11,
+        "rows": 12
+      }
+    },
+    "known": 72,
+    "known_abstained": 13,
+    "known_correct": 59,
+    "known_correct_coverage": 0.8194444444444444,
+    "known_wrong_accepted": 0,
+    "ood": 48,
+    "ood_acceptance_rate": 0.020833333333333332,
+    "ood_accepted": 1
+  },
+  "original_receipt": {
+    "bytes": 26727,
+    "sha256": "51a50641aad94602179054aedda08aeb4ea47a913cd77ee2f4acd385f8536d0d"
+  },
+  "population_risk_established": false,
+  "schema": "hepta.memory.v9.addressing-admission-result.v1",
+  "selected": "/tmp/hepta-v9-address-selection-02",
+  "selection_lock_sha256": "ab55a2d217da4e80a0d601ea73fb8909dbdf1e3603ea61c7d9f2f974a71791b3",
+  "serving_admitted": true,
+  "serving_admitted_scope": "calibration only; does not replace independent held quality gate",
+  "source": {
+    "source_commit": "00d386c9b45b59fa84841871d48e07baf0bef384",
+    "source_files_verified_against_git": 43,
+    "source_inventory_sha256": "c206caf1ab074e9282813897ed817a81341b96239e9e45f0dd1dab79aebcde5c"
+  },
+  "wall_seconds": 2.9139042110000446
+}

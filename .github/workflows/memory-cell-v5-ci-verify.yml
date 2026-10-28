@@ -1,0 +1,183 @@
+name: Memory cell V5 CI repair verification
+
+on:
+  push:
+    branches:
+      - research/memory-cell-v5-ci-20261027
+    paths:
+      - .github/workflows/memory-cell-v5-ci-verify.yml
+      - qualification/memory-cell-v5-ci/VERIFY_REQUEST.json
+
+permissions:
+  contents: read
+
+jobs:
+  repository-contract-and-format:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 64
+          persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: 0.11.3
+          enable-cache: false
+      - run: python3 -B qualification/memory-cell-v5-ci/recheck.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-cell-v5-ci-source-${{ github.sha }}
+          path: memory-ci-output/
+          if-no-files-found: error
+          retention-days: 14
+  codespell:
+    uses: ./.github/workflows/codespell.yml
+  dependency-diagnostic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - run: python3 qualification/memory-cell-v5-ci/probe_dependency.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-cell-v5-ci-dependency-${{ github.sha }}
+          path: dependency-probe-output/
+          if-no-files-found: error
+          retention-days: 14
+  bazel-dependency:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: ./.github/actions/setup-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+      - name: Verify the locked toolchain with fresh repository caches
+        shell: bash
+        run: |
+          python3 -B - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import tempfile
+          import time
+
+          root = Path.cwd()
+          output = root / "bazel-dependency-output"
+          output.mkdir(exist_ok=False)
+          probe = Path(tempfile.mkdtemp(prefix="memory-v5-bazel-", dir=os.environ["RUNNER_TEMP"]))
+          expected_sha256 = "7074b6a2f6367a10d280c00a1cb02e74277709180bab4f2491a2f355ab2d6c20"
+          target = "@@rules_rs++toolchains+rustc_linux_x86_64_1_95_0//:rustc_lib"
+          lock = root / "MODULE.bazel.lock"
+
+          def identity(raw):
+              return {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
+
+          before = lock.read_bytes()
+          committed = subprocess.check_output(["git", "show", "HEAD:MODULE.bazel.lock"])
+          report = {
+              "schema": "hepta.memory.v5.bazel-dependency-recheck.v1",
+              "commit": os.environ["GITHUB_SHA"],
+              "lock_before": identity(before),
+              "lock_matches_checkout_commit": before == committed,
+              "patch_identity": identity((root / "patches/rules_rs_build_script_deps_annotation.patch").read_bytes()),
+              "declared_bazel_version": (root / ".bazelversion").read_text().strip(),
+              "fresh_cache_root": str(probe),
+              "cache_root_initially_empty": not any(probe.iterdir()),
+              "expected_download_sha256": expected_sha256,
+              "target": target,
+              "unit_tests_executed": False,
+              "commands": [],
+          }
+          startup = [
+              "bazel",
+              f"--output_base={probe / 'output'}",
+              "--noexperimental_remote_repo_contents_cache",
+          ]
+          common = [
+              "--lockfile_mode=error",
+              f"--repository_cache={probe / 'downloads'}",
+              f"--repo_contents_cache={probe / 'contents'}",
+          ]
+          commands = [
+              (["bazel", "--version"], 60),
+              ([*startup, "mod", "deps", *common], 240),
+              ([*startup, "build", *common, target], 480),
+          ]
+          version_output = ""
+          for index, (command, timeout) in enumerate(commands, 1):
+              started = time.perf_counter()
+              try:
+                  process = subprocess.run(command, capture_output=True, timeout=timeout)
+                  stdout, stderr, status = process.stdout, process.stderr, process.returncode
+              except subprocess.TimeoutExpired as error:
+                  stdout, stderr, status = error.stdout or b"", error.stderr or b"", 124
+              except OSError as error:
+                  stdout, stderr, status = b"", str(error).encode(), 127
+              record = {
+                  "command": command,
+                  "exit_code": status,
+                  "wall_seconds": time.perf_counter() - started,
+                  "timeout_seconds": timeout,
+              }
+              for stream, raw in (("stdout", stdout), ("stderr", stderr)):
+                  name = f"command-{index:02d}.{stream}.txt"
+                  (output / name).write_bytes(raw)
+                  record[stream] = {"artifact_member": name, **identity(raw)}
+              report["commands"].append(record)
+              if index == 1:
+                  version_output = stdout.decode("utf-8", errors="replace").strip()
+          library_root = probe / "output/external/rules_rs++toolchains+rustc_linux_x86_64_1_95_0/lib"
+          libraries = {
+              path.name: identity(path.read_bytes())
+              for path in sorted(library_root.glob("libz.so.1*"))
+              if path.is_file()
+          }
+          cache_entry = probe / "downloads/content_addressable/sha256" / expected_sha256 / "file"
+          cache_identity = identity(cache_entry.read_bytes()) if cache_entry.is_file() else None
+          after = lock.read_bytes()
+          report.update({
+              "actual_bazel_version": version_output,
+              "lock_after": identity(after),
+              "lock_unchanged": after == before,
+              "extracted_zlib_libraries": libraries,
+              "download_cache_identity": cache_identity,
+              "mirror_attribution": "No specific mirror is asserted; inspect retained Bazel command logs.",
+          })
+          report["passed"] = (
+              report["lock_matches_checkout_commit"]
+              and report["cache_root_initially_empty"]
+              and after == before
+              and report["declared_bazel_version"] == "9.0.0"
+              and version_output == "bazel 9.0.0"
+              and bool(libraries)
+              and (cache_identity is None or cache_identity["sha256"] == expected_sha256)
+              and all(row["exit_code"] == 0 for row in report["commands"])
+          )
+          (output / "BAZEL_DEPENDENCY.json").write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
+          print(json.dumps({key: report[key] for key in ("commit", "passed", "lock_unchanged", "actual_bazel_version")}))
+          raise SystemExit(0 if report["passed"] else 1)
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-cell-v5-ci-bazel-dependency-${{ github.sha }}
+          path: bazel-dependency-output/
+          if-no-files-found: error
+          retention-days: 14

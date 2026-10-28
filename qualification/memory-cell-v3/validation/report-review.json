@@ -1,0 +1,46 @@
+{
+  "final_report_files": {
+    "MEASURED_SUMMARY.json": {
+      "bytes": 153037,
+      "sha256": "50aa403171e47ee2e4814bd08101804b3040a7d97dd1bc712251f9d75797cf1b"
+    },
+    "QUALIFICATION.json": {
+      "bytes": 6417,
+      "sha256": "5a86437fc6b8d121fbbfe7f93ae6216ba0e1142eae2a13c9710f41c620321b30"
+    },
+    "RESULTS.md": {
+      "bytes": 19952,
+      "sha256": "c3093ede8bd778060ab2ca934ef2c017ea61534c6a1b42af09484a8dcb487d3a"
+    }
+  },
+  "reviewed_inputs": [
+    "RESULTS.md",
+    "QUALIFICATION.json",
+    "MEASURED_SUMMARY.json"
+  ],
+  "reviews": [
+    {
+      "corrections_applied": [
+        "Stage2 is scoped-pass in four declared conditions, not a new all-domain/all-budget gate.",
+        "Maximum-budget local errors described as post-selection reconstruction errors, not attributed solely to rounding."
+      ],
+      "numeric_findings": "All 16 real-domain/budget rows and full global/local/VQ objects match independent audit; all 4 exact-storage rows, work totals and controls match.",
+      "scope": "capacity and complete storage"
+    },
+    {
+      "corrections_applied": [
+        "Each seed keeps its own policy digest unchanged across transfer; different seeds do not share one identical digest.",
+        "100% oracle exact is explicitly limited to model plus residual; pure-parameter held oracle exact is 10.2778%."
+      ],
+      "numeric_findings": "All reported means, deployment costs, 20/20 lossless composition and 0/20 semantic quality match independent audit.",
+      "scope": "routing, composition, transfer and system costs"
+    },
+    {
+      "corrections_applied": [],
+      "numeric_findings": "All numbers and admission/retention/merge distinctions match independent reports.",
+      "scope": "native, structure and maintenance"
+    }
+  ],
+  "schema": "memory-cell-v3.report-review.v1",
+  "training_or_protocol_modified": false
+}

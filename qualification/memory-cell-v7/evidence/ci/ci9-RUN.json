@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.memory.v7.provider-run-evidence.v1",
+  "run_id": 40566233542,
+  "source_commit": "229ccd74788adbba4e31169bf2cc6e06f85633dd",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "jobs": [
+    {
+      "job_id": 122408112230,
+      "group": "bazel-lock",
+      "status": "completed",
+      "conclusion": "success",
+      "evidence": "122408112230.json",
+      "test_counts": null
+    },
+    {
+      "job_id": 122408112970,
+      "group": "plan",
+      "status": "completed",
+      "conclusion": "success",
+      "evidence": "122408112970.json",
+      "test_counts": null
+    },
+    {
+      "job_id": 122408347206,
+      "group": "daemon",
+      "status": "completed",
+      "conclusion": "failure",
+      "evidence": "122408347206.json",
+      "test_counts": null
+    }
+  ],
+  "daemon_tests_executed": false,
+  "daemon_ignored_profile_executed": false,
+  "daemon_compile_error_count": 1,
+  "primary_error": "E0432 unresolved import pretty_assertions in hepta-infer-worker-host/src/native_agent_output_tests.rs:4",
+  "command_wall_seconds": 213.21335427099996,
+  "runtime_build_wall_seconds": 178.72095438900004,
+  "runtime_executable": {
+    "bytes": 443980736,
+    "path": "/home/runner/.cache/codex-ci/cargo-target/debug/codex-app-server",
+    "sha256": "0677e84a41247785074bb427d8e8202c923058993ffdc4cbf9e4ab2506696f3e"
+  },
+  "bazel_lock_unchanged": true,
+  "verified_lock_file": "MODULE.bazel.lock",
+  "archive_index": "ci9-job-logs.INDEX.json",
+  "provider_artifacts": [
+    {
+      "id": 12764161111,
+      "name": "memory-v7-runtime-preparation-229ccd74788adbba4e31169bf2cc6e06f85633dd",
+      "size_in_bytes": 2008,
+      "digest": "sha256:44b9bbe591775d045eeb005e7efbec778e5e64ca476175ab102717d3a5cbbb9a"
+    },
+    {
+      "id": 12763766431,
+      "name": "memory-v7-daemon-229ccd74788adbba4e31169bf2cc6e06f85633dd",
+      "size_in_bytes": 6612,
+      "digest": "sha256:d24a177016afcae042c050bf2801997c69d665bed48d88428e5c50fc153dc3fa"
+    },
+    {
+      "id": 12761759910,
+      "name": "memory-v7-bazel-lock-229ccd74788adbba4e31169bf2cc6e06f85633dd",
+      "size_in_bytes": 223503,
+      "digest": "sha256:be7520de71293e8d3803945ccb20849e8df8ce17cd6a75e79376805ffa2d1456"
+    }
+  ]
+}

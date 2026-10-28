@@ -1,0 +1,858 @@
+{
+  "all_blockers_closed": false,
+  "all_independent_artifact_audits_passed": true,
+  "executed_source_commit": "6206dfba0a3219534dd1a0274431bf48fd23673c",
+  "formal_manifest_sha256": "ec975d0e9afc53903ba2d26129446e263d06ebea0abb8b9e729e556546eca3ff",
+  "historical_v3_results_unchanged": true,
+  "joint_gate_pass_counts": {
+    "parameter_composition": 18,
+    "residual_composition": 18,
+    "semantic": 0
+  },
+  "measured_gates": {
+    "dynamic_structure_all_seeds": true,
+    "new_event_full_rank_hidden_read": true,
+    "new_event_storage_advantage": false,
+    "new_type_maintenance_all_seeds": true,
+    "pure_parameter_composition_all_seeds_all_domains": false,
+    "semantic_all_seeds_all_domains": false
+  },
+  "open_blockers": [
+    "Selected natural-language routers fail 80% correct acceptance; one seed also exceeds 5% unsupported acceptance.",
+    "Actual-routing composition edge gain fails two of five seeds across all six domains.",
+    "New typed exact parameter-plus-residual state is larger than the strongest ordinary exact codec.",
+    "Broad type/task transfer and autonomous type discovery remain unqualified; explicit slots, supplied types and operation catalog are required."
+  ],
+  "production_admitted": false,
+  "report_input_fingerprints": {
+    "results/20261026-v4-frozen/MANIFEST.json": {
+      "bytes": 1313135,
+      "sha256": "ec975d0e9afc53903ba2d26129446e263d06ebea0abb8b9e729e556546eca3ff"
+    },
+    "results/20261026-v4-frozen/environment.json": {
+      "bytes": 549,
+      "sha256": "f789dfbd255edd5b493873b726aff0904d74e904b29e0d3be59afe7c548557b4"
+    },
+    "results/20261026-v4-frozen/execution_status.json": {
+      "bytes": 244,
+      "sha256": "bc53d9368f0d5d2ee923e1c40fb8d12dbc80a4445c60b2d2ebc137b8849d4bad"
+    },
+    "results/20261026-v4-frozen/joint/summary.json": {
+      "bytes": 2534613,
+      "sha256": "01fcfd1c556fd037aae7e4a8dac7a38695d51992ffa33c1ac01dbf0f890c339c"
+    },
+    "results/20261026-v4-frozen/protocol.json": {
+      "bytes": 7396,
+      "sha256": "414da4ab69b4457027f77bb15714c908534ec7f248c6ca347f6a0154164e8da5"
+    },
+    "results/20261026-v4-frozen/results.json": {
+      "bytes": 11034245,
+      "sha256": "ae0190cd418b506335df10528ffcd0fb8dc3d9b9e95b44d3f916bbb52639cab9"
+    },
+    "results/20261026-v4-frozen/structure/structure.json": {
+      "bytes": 4104498,
+      "sha256": "5a8098b317fcac0c1681a09f0e043f6a86752ed85b4bee5b29229d4c0299c902"
+    },
+    "results/20261026-v4-frozen/transfer/transfer-summary.json": {
+      "bytes": 214264,
+      "sha256": "bd855f1780f4e02c680b02590dc7bb70a459670bd4c4970a99106fdcf7095536"
+    },
+    "results/20261026-v4-frozen/typed_maintenance/typed-lifecycle-summary.json": {
+      "bytes": 773987,
+      "sha256": "409179e86b781f93b1a8e244421e089b82558522ba97efcb9791e159276da9ac"
+    },
+    "validation/final-format-verification.json": {
+      "bytes": 21948,
+      "sha256": "986a4a3369b9ec711ee41a361c44bb2ebdc17f195b041afcbd1d452c9a415d06"
+    },
+    "validation/final-python-checks-v2.json": {
+      "bytes": 68662,
+      "sha256": "dfb3aee0706fd78fde60d817fa3a36bf373021ab341e0fdc9ce57b79aec0ffc6"
+    },
+    "validation/formal-joint-audit.json": {
+      "bytes": 305645,
+      "sha256": "0e873f53e192ed75edf7e8284f3069ac8b0491dabb89a7bbce72bd3c5652be73"
+    },
+    "validation/formal-selected-replay-audit.json": {
+      "bytes": 17962,
+      "sha256": "8969e6a9c8fc7ae5e6774455e7c3586dbbdd6f0085d0a5fe4d1911a8e110216a"
+    },
+    "validation/formal-structure-audit.json": {
+      "bytes": 186118,
+      "sha256": "c32c69a514de44c77b441ec0ad290ab5923237e36d02895423e5e597583e214b"
+    },
+    "validation/formal-transfer-audit.json": {
+      "bytes": 5572,
+      "sha256": "bcc79ec6b80c71f74323f31c2721d2efededa21357107540140537ce235d90e0"
+    },
+    "validation/formal-typed-maintenance-audit.json": {
+      "bytes": 790725,
+      "sha256": "8264fb26c375f649728ba18d0ecd455347e18add8cc3e6b5d228121e9580b922"
+    }
+  },
+  "schema": "memory-cell-v4.qualification.v1",
+  "scope_of_passed_maintenance": "local POSIX single-writer, retained replay/history, clean refit; no physical erasure or distributed guarantee",
+  "scope_of_passed_structure": "two predeclared changing numeric flows at 4096B; static bounded-regret is a separate diagnostic",
+  "seeds": [
+    401,
+    409,
+    419,
+    421,
+    431
+  ],
+  "separate_diagnostics": {
+    "dynamic_all_seed_gate": true,
+    "flows": {
+      "convergent": {
+        "adaptive_hidden_mse": {
+          "maximum": 0.11445135973963932,
+          "mean": 0.09986364170012815,
+          "minimum": 0.0786443616733373,
+          "seed_bootstrap_95_percent_interval": [
+            0.08812939604497098,
+            0.10978752766670138
+          ],
+          "values": [
+            0.1088389856259034,
+            0.09502655385933914,
+            0.0786443616733373,
+            0.10235694760242152,
+            0.11445135973963932
+          ]
+        },
+        "best_fixed_hidden_mse": {
+          "maximum": 6.890863324866255,
+          "mean": 4.573352679788744,
+          "minimum": 2.7522401061881725,
+          "seed_bootstrap_95_percent_interval": [
+            3.4876407508436094,
+            5.88144998113646
+          ],
+          "values": [
+            4.0421765322357635,
+            4.692483398847771,
+            2.7522401061881725,
+            6.890863324866255,
+            4.48900003680576
+          ]
+        },
+        "cell_schedules": [
+          [
+            4,
+            1
+          ],
+          [
+            4,
+            1
+          ],
+          [
+            4,
+            1
+          ],
+          [
+            4,
+            1
+          ],
+          [
+            4,
+            1
+          ]
+        ],
+        "dynamic_passed": 5,
+        "literal_relative_mse_regret": {
+          "maximum": -0.9714253267741749,
+          "mean": -0.9767797439241639,
+          "minimum": -0.9851459907450119,
+          "seed_bootstrap_95_percent_interval": [
+            -0.981652266616108,
+            -0.9727006042406844
+          ],
+          "values": [
+            -0.9730741631994722,
+            -0.9797491976460325,
+            -0.9714253267741749,
+            -0.9851459907450119,
+            -0.974504041256128
+          ]
+        },
+        "matched_priced_loss_regret": {
+          "maximum": -0.234454159367532,
+          "mean": -0.26044025962641937,
+          "minimum": -0.29427662166777374,
+          "seed_bootstrap_95_percent_interval": [
+            -0.2806344392694672,
+            -0.24452726757370774
+          ],
+          "values": [
+            -0.2502999166903493,
+            -0.25312818575277624,
+            -0.234454159367532,
+            -0.29427662166777374,
+            -0.2700424146536655
+          ]
+        },
+        "natural_priced_loss_ratio": {
+          "maximum": 0.722006555152105,
+          "mean": 0.6955429368661317,
+          "minimum": 0.6645415104708657,
+          "seed_bootstrap_95_percent_interval": [
+            0.6766953590693117,
+            0.7111743858780551
+          ],
+          "values": [
+            0.7040865974890846,
+            0.7013143547737263,
+            0.722006555152105,
+            0.6645415104708657,
+            0.685765666444876
+          ]
+        },
+        "natural_priced_loss_regret": {
+          "maximum": -0.18837390511588925,
+          "mean": -0.21442256325002856,
+          "minimum": -0.24840761521197102,
+          "seed_bootstrap_95_percent_interval": [
+            -0.23469924542505533,
+            -0.19849552937694717
+          ],
+          "values": [
+            -0.20433596111001923,
+            -0.20705791443291893,
+            -0.18837390511588925,
+            -0.24840761521197102,
+            -0.2239374203793444
+          ]
+        },
+        "normalized_hidden_mse_gain": {
+          "maximum": 0.9851459907450119,
+          "mean": 0.9767797439241639,
+          "minimum": 0.9714253267741749,
+          "seed_bootstrap_95_percent_interval": [
+            0.9727006042406844,
+            0.981652266616108
+          ],
+          "values": [
+            0.9730741631994722,
+            0.9797491976460325,
+            0.9714253267741749,
+            0.9851459907450119,
+            0.974504041256128
+          ]
+        },
+        "static_diagnostic_passed": 0,
+        "strict_all_flow_diagnostic_passed": 5
+      },
+      "heterogeneous": {
+        "adaptive_hidden_mse": {
+          "maximum": 0.002607137037640541,
+          "mean": 0.0018855447193258559,
+          "minimum": 0.000826856292376385,
+          "seed_bootstrap_95_percent_interval": [
+            0.0012044080096673137,
+            0.0025666814289843987
+          ],
+          "values": [
+            0.0009682104243989027,
+            0.00259361322742746,
+            0.002607137037640541,
+            0.0024319066147859923,
+            0.000826856292376385
+          ]
+        },
+        "best_fixed_hidden_mse": {
+          "maximum": 0.002607137037640541,
+          "mean": 0.0018855447193258559,
+          "minimum": 0.000826856292376385,
+          "seed_bootstrap_95_percent_interval": [
+            0.0012044080096673137,
+            0.0025666814289843987
+          ],
+          "values": [
+            0.0009682104243989027,
+            0.00259361322742746,
+            0.002607137037640541,
+            0.0024319066147859923,
+            0.000826856292376385
+          ]
+        },
+        "cell_schedules": [
+          [
+            4
+          ],
+          [
+            4
+          ],
+          [
+            4
+          ],
+          [
+            4
+          ],
+          [
+            4
+          ]
+        ],
+        "dynamic_passed": 0,
+        "literal_relative_mse_regret": {
+          "maximum": 0.0,
+          "mean": 0.0,
+          "minimum": 0.0,
+          "seed_bootstrap_95_percent_interval": [
+            0.0,
+            0.0
+          ],
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "matched_priced_loss_regret": {
+          "maximum": -0.03087393827216567,
+          "mean": -0.031955229428651456,
+          "minimum": -0.032779582922376815,
+          "seed_bootstrap_95_percent_interval": [
+            -0.03245526609705931,
+            -0.03134268637960269
+          ],
+          "values": [
+            -0.03218504423054869,
+            -0.03087393827216567,
+            -0.032045808540758225,
+            -0.03189177317740788,
+            -0.032779582922376815
+          ]
+        },
+        "natural_priced_loss_ratio": {
+          "maximum": 1.0935753995630302,
+          "mean": 1.0929379659377403,
+          "minimum": 1.0919433266754208,
+          "seed_bootstrap_95_percent_interval": [
+            1.0924120305623222,
+            1.0933677057776208
+          ],
+          "values": [
+            1.0932863216846849,
+            1.0935753995630302,
+            1.092769695372891,
+            1.0919433266754208,
+            1.093115086392674
+          ]
+        },
+        "natural_priced_loss_regret": {
+          "maximum": 0.06158023922942424,
+          "mean": 0.061501913448768916,
+          "minimum": 0.061298066875335344,
+          "seed_bootstrap_95_percent_interval": [
+            0.061396403873481664,
+            0.06156721096102193
+          ],
+          "values": [
+            0.061298066875335344,
+            0.061543442397682724,
+            0.06158023922942424,
+            0.06152175176711305,
+            0.061566066974289235
+          ]
+        },
+        "normalized_hidden_mse_gain": {
+          "maximum": 0.0,
+          "mean": 0.0,
+          "minimum": 0.0,
+          "seed_bootstrap_95_percent_interval": [
+            0.0,
+            0.0
+          ],
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "static_diagnostic_passed": 5,
+        "strict_all_flow_diagnostic_passed": 0
+      },
+      "random": {
+        "adaptive_hidden_mse": {
+          "maximum": 1434.188847463122,
+          "mean": 1395.423085167609,
+          "minimum": 1362.082781991286,
+          "seed_bootstrap_95_percent_interval": [
+            1375.313751919438,
+            1418.3113053930992
+          ],
+          "values": [
+            1362.082781991286,
+            1434.188847463122,
+            1390.5233827603063,
+            1398.4666018158237,
+            1391.8538118075078
+          ]
+        },
+        "best_fixed_hidden_mse": {
+          "maximum": 1434.188847463122,
+          "mean": 1395.423085167609,
+          "minimum": 1362.082781991286,
+          "seed_bootstrap_95_percent_interval": [
+            1375.313751919438,
+            1418.3113053930992
+          ],
+          "values": [
+            1362.082781991286,
+            1434.188847463122,
+            1390.5233827603063,
+            1398.4666018158237,
+            1391.8538118075078
+          ]
+        },
+        "cell_schedules": [
+          [
+            4
+          ],
+          [
+            4
+          ],
+          [
+            4
+          ],
+          [
+            4
+          ],
+          [
+            4
+          ]
+        ],
+        "dynamic_passed": 0,
+        "literal_relative_mse_regret": {
+          "maximum": 0.0,
+          "mean": 0.0,
+          "minimum": 0.0,
+          "seed_bootstrap_95_percent_interval": [
+            0.0,
+            0.0
+          ],
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "matched_priced_loss_regret": {
+          "maximum": -0.03305879138764878,
+          "mean": -0.046638314831180104,
+          "minimum": -0.05599110431185306,
+          "seed_bootstrap_95_percent_interval": [
+            -0.053812262162316896,
+            -0.03946436750004332
+          ],
+          "values": [
+            -0.05599110431185306,
+            -0.04266952244282307,
+            -0.03305879138764878,
+            -0.05560694617430273,
+            -0.04586520983927289
+          ]
+        },
+        "natural_priced_loss_ratio": {
+          "maximum": 1.0381127855630294,
+          "mean": 1.037882999673378,
+          "minimum": 1.0376579809434638,
+          "seed_bootstrap_95_percent_interval": [
+            1.0377461603493694,
+            1.0380263030536465
+          ],
+          "values": [
+            1.0381127855630294,
+            1.037781883289333,
+            1.037851073281254,
+            1.0376579809434638,
+            1.0380112752898105
+          ]
+        },
+        "natural_priced_loss_regret": {
+          "maximum": 0.0616134618207862,
+          "mean": 0.061561714113220714,
+          "minimum": 0.061464179832146026,
+          "seed_bootstrap_95_percent_interval": [
+            0.061505943188503664,
+            0.06160558551268723
+          ],
+          "values": [
+            0.061464179832146026,
+            0.061604350481846426,
+            0.0616134618207862,
+            0.06153282596423382,
+            0.06159375246709109
+          ]
+        },
+        "normalized_hidden_mse_gain": {
+          "maximum": 0.0,
+          "mean": 0.0,
+          "minimum": 0.0,
+          "seed_bootstrap_95_percent_interval": [
+            0.0,
+            0.0
+          ],
+          "values": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "static_diagnostic_passed": 5,
+        "strict_all_flow_diagnostic_passed": 0
+      },
+      "recurrent_regimes": {
+        "adaptive_hidden_mse": {
+          "maximum": 0.10526877062634045,
+          "mean": 0.09449279128006086,
+          "minimum": 0.08056302114675197,
+          "seed_bootstrap_95_percent_interval": [
+            0.08591928725616638,
+            0.10139554606012471
+          ],
+          "values": [
+            0.08056302114675197,
+            0.09885769863065338,
+            0.08904967420992262,
+            0.10526877062634045,
+            0.09872479178663582
+          ]
+        },
+        "best_fixed_hidden_mse": {
+          "maximum": 7.421554098937572,
+          "mean": 6.061886158652906,
+          "minimum": 4.724900319670179,
+          "seed_bootstrap_95_percent_interval": [
+            5.222066003111857,
+            6.824783316330093
+          ],
+          "values": [
+            5.346357423972277,
+            6.46418943309082,
+            6.35242951759368,
+            4.724900319670179,
+            7.421554098937572
+          ]
+        },
+        "cell_schedules": [
+          [
+            1,
+            4,
+            1,
+            4
+          ],
+          [
+            1,
+            4,
+            1,
+            4
+          ],
+          [
+            1,
+            4,
+            1,
+            4
+          ],
+          [
+            1,
+            4,
+            1,
+            4
+          ],
+          [
+            1,
+            4,
+            1,
+            4
+          ]
+        ],
+        "dynamic_passed": 5,
+        "literal_relative_mse_regret": {
+          "maximum": -0.9777204250874676,
+          "mean": -0.9840075752344493,
+          "minimum": -0.9866975581568868,
+          "seed_bootstrap_95_percent_interval": [
+            -0.9861249457443207,
+            -0.9808148599253578
+          ],
+          "values": [
+            -0.9849312317232067,
+            -0.984706868563506,
+            -0.9859817926411791,
+            -0.9777204250874676,
+            -0.9866975581568868
+          ]
+        },
+        "matched_priced_loss_regret": {
+          "maximum": -0.16189663691898792,
+          "mean": -0.27139596684529055,
+          "minimum": -0.33062466540744606,
+          "seed_bootstrap_95_percent_interval": [
+            -0.3123818038345508,
+            -0.21408234703659587
+          ],
+          "values": [
+            -0.27767411073740766,
+            -0.2944235089496032,
+            -0.29236091221300786,
+            -0.16189663691898792,
+            -0.33062466540744606
+          ]
+        },
+        "natural_priced_loss_ratio": {
+          "maximum": 0.8705384203012818,
+          "mean": 0.7026917140521752,
+          "minimum": 0.6346475684083283,
+          "seed_bootstrap_95_percent_interval": [
+            0.6496182547441455,
+            0.7887378708830388
+          ],
+          "values": [
+            0.6781115217400682,
+            0.6641240130555232,
+            0.6660370467556745,
+            0.8705384203012818,
+            0.6346475684083283
+          ]
+        },
+        "natural_priced_loss_regret": {
+          "maximum": -0.09288285284203956,
+          "mean": -0.22079953273473568,
+          "minimum": -0.2846508037807016,
+          "seed_bootstrap_95_percent_interval": [
+            -0.2664046301296451,
+            -0.1542653183361486
+          ],
+          "values": [
+            -0.2317317227288085,
+            -0.24839326774481657,
+            -0.24633901657731216,
+            -0.09288285284203956,
+            -0.2846508037807016
+          ]
+        },
+        "normalized_hidden_mse_gain": {
+          "maximum": 0.9866975581568868,
+          "mean": 0.9840075752344493,
+          "minimum": 0.9777204250874676,
+          "seed_bootstrap_95_percent_interval": [
+            0.9808148599253578,
+            0.9861249457443207
+          ],
+          "values": [
+            0.9849312317232067,
+            0.984706868563506,
+            0.9859817926411791,
+            0.9777204250874676,
+            0.9866975581568868
+          ]
+        },
+        "static_diagnostic_passed": 0,
+        "strict_all_flow_diagnostic_passed": 5
+      },
+      "stable_lowrank": {
+        "adaptive_hidden_mse": {
+          "maximum": 0.028443856457747642,
+          "mean": 0.026994343704913687,
+          "minimum": 0.02468936582217202,
+          "seed_bootstrap_95_percent_interval": [
+            0.025701422503581862,
+            0.028204496691745296
+          ],
+          "values": [
+            0.02468936582217202,
+            0.02836764467498784,
+            0.02607137037640541,
+            0.027399481193255512,
+            0.028443856457747642
+          ]
+        },
+        "best_fixed_hidden_mse": {
+          "maximum": 0.027070838061274114,
+          "mean": 0.02421489561403583,
+          "minimum": 0.02156290531776913,
+          "seed_bootstrap_95_percent_interval": [
+            0.022677536985836754,
+            0.026005213894268166
+          ],
+          "values": [
+            0.025496207842504438,
+            0.027070838061274114,
+            0.0236271794036174,
+            0.02156290531776913,
+            0.023317347445014056
+          ]
+        },
+        "cell_schedules": [
+          [
+            1
+          ],
+          [
+            1
+          ],
+          [
+            1
+          ],
+          [
+            1
+          ],
+          [
+            1
+          ]
+        ],
+        "dynamic_passed": 0,
+        "literal_relative_mse_regret": {
+          "maximum": 0.2706766917293233,
+          "mean": 0.12204834912325487,
+          "minimum": -0.031645569620253146,
+          "seed_bootstrap_95_percent_interval": [
+            0.027193103971019088,
+            0.2169035942754906
+          ],
+          "values": [
+            -0.031645569620253146,
+            0.047904191616766345,
+            0.10344827586206903,
+            0.2706766917293233,
+            0.21985815602836878
+          ]
+        },
+        "matched_priced_loss_regret": {
+          "maximum": -0.38174472525075087,
+          "mean": -0.4159783324214281,
+          "minimum": -0.45661959965656373,
+          "seed_bootstrap_95_percent_interval": [
+            -0.4438802804423078,
+            -0.3880763844005485
+          ],
+          "values": [
+            -0.3978677888682418,
+            -0.45661959965656373,
+            -0.3895123413164994,
+            -0.38174472525075087,
+            -0.45414720701508493
+          ]
+        },
+        "natural_priced_loss_ratio": {
+          "maximum": 0.42089088759381904,
+          "mean": 0.4005968736109112,
+          "minimum": 0.3786900649108872,
+          "seed_bootstrap_95_percent_interval": [
+            0.38523102326754727,
+            0.41596272395427497
+          ],
+          "values": [
+            0.4084274106484283,
+            0.3786900649108872,
+            0.4148022169676542,
+            0.42089088759381904,
+            0.3801737879337669
+          ]
+        },
+        "natural_priced_loss_regret": {
+          "maximum": -0.38174472525075087,
+          "mean": -0.4159783324214281,
+          "minimum": -0.45661959965656373,
+          "seed_bootstrap_95_percent_interval": [
+            -0.4438802804423078,
+            -0.3880763844005485
+          ],
+          "values": [
+            -0.3978677888682418,
+            -0.45661959965656373,
+            -0.3895123413164994,
+            -0.38174472525075087,
+            -0.45414720701508493
+          ]
+        },
+        "normalized_hidden_mse_gain": {
+          "maximum": 0.0008068420203324184,
+          "mean": -0.002779448090877857,
+          "minimum": -0.005836575875486381,
+          "seed_bootstrap_95_percent_interval": [
+            -0.004874072149845589,
+            -0.000684824031910125
+          ],
+          "values": [
+            0.0008068420203324184,
+            -0.0012968066137137267,
+            -0.0024441909727880087,
+            -0.005836575875486381,
+            -0.005126509012733586
+          ]
+        },
+        "static_diagnostic_passed": 5,
+        "strict_all_flow_diagnostic_passed": 0
+      }
+    },
+    "pair_merges": [
+      {
+        "after_bytes": 1900,
+        "after_hidden_mse": 0.19848313700177506,
+        "before_bytes": 2164,
+        "before_hidden_mse": 0.2170405034694207,
+        "changed_row_labels": 192,
+        "from_cells": 4,
+        "reload_parity": true,
+        "seed": 401,
+        "to_cells": 3
+      },
+      {
+        "after_bytes": 1900,
+        "after_hidden_mse": 0.23828821526989788,
+        "before_bytes": 2164,
+        "before_hidden_mse": 0.23293888798832874,
+        "changed_row_labels": 192,
+        "from_cells": 4,
+        "reload_parity": true,
+        "seed": 409,
+        "to_cells": 3
+      },
+      {
+        "after_bytes": 1900,
+        "after_hidden_mse": 0.22584324588561186,
+        "before_bytes": 2164,
+        "before_hidden_mse": 0.2284503829232524,
+        "changed_row_labels": 192,
+        "from_cells": 4,
+        "reload_parity": true,
+        "seed": 419,
+        "to_cells": 3
+      },
+      {
+        "after_bytes": 1900,
+        "after_hidden_mse": 0.21222438391699092,
+        "before_bytes": 2164,
+        "before_hidden_mse": 0.23508430609597925,
+        "changed_row_labels": 192,
+        "from_cells": 4,
+        "reload_parity": true,
+        "seed": 421,
+        "to_cells": 3
+      },
+      {
+        "after_bytes": 1900,
+        "after_hidden_mse": 0.2207706300644948,
+        "before_bytes": 2164,
+        "before_hidden_mse": 0.21217132462378038,
+        "changed_row_labels": 192,
+        "from_cells": 4,
+        "reload_parity": true,
+        "seed": 431,
+        "to_cells": 3
+      }
+    ],
+    "static_bounded_regret_diagnostic": true,
+    "strict_all_flow_diagnostic": false
+  },
+  "source_native_integration": "V3 historical native integration retained; V4 event/procedure owner not production-admitted"
+}

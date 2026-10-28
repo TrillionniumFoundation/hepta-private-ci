@@ -1,0 +1,55 @@
+{
+  "schema": "hepta.memory.v7.provider-job-evidence.v1",
+  "run_id": 40552007265,
+  "job_id": 122358149222,
+  "group": "release-owner",
+  "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40552007265/job/122358149222",
+  "receipt": {
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--lib",
+      "-p",
+      "codex-hepta-learning-artifacts"
+    ],
+    "complete_workspace_test": false,
+    "exit_code": 0,
+    "final_tracked_changes": "",
+    "group": "release-owner",
+    "initial_tracked_changes": "",
+    "lock_after": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "lock_before": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "log": {
+      "bytes": 23208,
+      "sha256": "4edc3cdf06f7f629c83b7eb767730bd45b509ff1029d13b9645f5dae20c9bccb"
+    },
+    "mode": "test",
+    "passed": true,
+    "production_manifests_modified_for_test": false,
+    "request": {
+      "attempt": 2,
+      "groups": [
+        "release-owner",
+        "daemon"
+      ],
+      "schema": "hepta.memory.v7.product-verification-request.v1",
+      "stage": "release-owner-and-daemon",
+      "tests_before_final_fix_and_format": true
+    },
+    "schema": "hepta.memory.v7.product-ci-receipt.v1",
+    "source_commit": "ad808194314fe87009e966f53324c7f185119f3b",
+    "source_tree": "41018de94dc2023f8605af7acdaa222d17bdf8be",
+    "wall_seconds": 17.011400793999996
+  },
+  "test_summaries": [
+    "     Summary [   0.822s] 92 tests run: 92 passed, 1 skipped"
+  ],
+  "log_representation": "Exact UTF-8 decoded provider job log; distinct from the execution.log whose identity is in the CI receipt."
+}

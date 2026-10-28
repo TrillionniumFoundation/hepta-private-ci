@@ -1,0 +1,373 @@
+{
+  "schema": "hepta.memory.v7.actual-ci-runtime-review.v1",
+  "run_id": 40568534089,
+  "source_commit": "59b45ccd863cab0fd1ea96f3b4b025715aa814f8",
+  "source_tree": "4d7e6d4180e9a8e1a003065eecfccded3b2c9103",
+  "artifact_index": "ci10-daemon-artifact.INDEX.json",
+  "provider_job": "122416437476.json",
+  "provider_log_index": "ci10-job-logs.INDEX.json",
+  "original_receipt_bytes_unchanged": true,
+  "recovery": "Reconstructed from the same SHA-256-verified original GitHub artifact and exact tested source after the transient workspace expired; no additional tests or model fits.",
+  "review_basis": "Read-only arithmetic and scope review of original artifact receipts, exact tested Git files, provider run/jobs and complete job logs.",
+  "test_source_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/memory_cell_training_tests.rs",
+      "bytes": 8204,
+      "sha256": "6e2e04fc8f9d4c2ff5fa7dbee86dc769e8874a50635ed301290d376be6d507b6",
+      "git_blob_sha": "91fec8150013e6484f530cdb065cf88a6f540bf1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/memory_cell_language_runtime_tests.rs",
+      "bytes": 12079,
+      "sha256": "a34b78b2866e70d6dcba8e65f84e1b744fcd789427326b13fe7eb74f53a0500a",
+      "git_blob_sha": "7ac1839b59d242b0672048ada8cce101baa25291"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/memory_cell_temporal_runtime_tests.rs",
+      "bytes": 4793,
+      "sha256": "e8ae531aec1cecc256562a7a87e3451f6437f517d055674f06202a22e13cb7b7",
+      "git_blob_sha": "ce7f40060a971251f68555553ead22a39225111e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/memory_cell_population_tests.rs",
+      "bytes": 10271,
+      "sha256": "378db64988987b4f8f7a50474b3bd278af03252eb961f8a992a2510b1a49e382",
+      "git_blob_sha": "bef5fe2875e4d2bdfcd3138edc6f1af2ceff47f1"
+    }
+  ],
+  "verification_profiles": {
+    "ordinary": {
+      "run": 350,
+      "passed": 350,
+      "failed": 0,
+      "skipped": 9,
+      "slow": 0,
+      "flaky": 0,
+      "binaries": 21,
+      "nextest_wall_seconds": 61.423
+    },
+    "actual_ignored": {
+      "run": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 204,
+      "slow": 0,
+      "flaky": 0,
+      "binaries": 1,
+      "nextest_wall_seconds": 19.307
+    },
+    "aggregate_test_count": null,
+    "all_three_commands_exit_zero": true,
+    "first_command_is_build_only": true,
+    "complete_workspace_test": false,
+    "source_clean_before_and_after": true,
+    "dependency_lock_scope": "MODULE.bazel.lock before/after equality; not an independently recorded Cargo.lock before/after hash.",
+    "exact_summaries": [
+      "Summary [  61.423s] 350 tests run: 350 passed, 9 skipped",
+      "Summary [  19.307s] 3 tests run: 3 passed, 204 skipped"
+    ]
+  },
+  "training": {
+    "receipt": "ci10-runtime/training-receipt.json",
+    "stages": [
+      {
+        "stage": "initial",
+        "queries": 24,
+        "correct": 24,
+        "training_mode": "clean",
+        "reported_fit_calls": 2
+      },
+      {
+        "stage": "replay_after_addition",
+        "queries": 32,
+        "correct": 32,
+        "training_mode": "replay",
+        "reported_fit_calls": 2
+      },
+      {
+        "stage": "clean_after_correction",
+        "queries": 32,
+        "correct": 32,
+        "training_mode": "clean",
+        "reported_fit_calls": 2
+      },
+      {
+        "stage": "clean_after_withdrawal",
+        "queries": 28,
+        "correct": 28,
+        "training_mode": "clean",
+        "reported_fit_calls": 2
+      }
+    ],
+    "total_successful_readbacks": 116,
+    "clean_parameter_rebuild_equal": true,
+    "replay_rejected_after_correction": true,
+    "replay_rejected_after_withdrawal": true,
+    "withdrawn_entity_apply_abstention_asserted_in_passed_test": true,
+    "reported_fit_calls": 8,
+    "additional_repeat_clean_fit_calls_in_test_source": 2,
+    "executed_fit_calls_from_receipts_and_test_source": 10,
+    "complete_per_fit_cost_receipts": false,
+    "missing_cost_receipt": "The second clean fit used to assert parameter-digest reproducibility executes two per-type fits; its individual training receipt is omitted from the report.",
+    "reported_fit_cpu_seconds": 0.49239979899999997,
+    "reported_fit_wall_seconds": 0.4938059369999337,
+    "routing": "explicit trusted integration resolver",
+    "catalog_contains_explicit_values": true,
+    "language_model_finetuning": false,
+    "independent_future_task_evaluation": false,
+    "long_term_forgetting_established": false,
+    "calibration_population_risk_established": false,
+    "ledger_decision_is_independent_success_outcome": false
+  },
+  "language": {
+    "receipt": "ci10-runtime/language-receipt.json",
+    "test_kind": "product-protocol-and-data-binding-only",
+    "public_fit_positive_cases": 6,
+    "public_smoke_abstention_cases": 2,
+    "operations": [
+      "current",
+      "history",
+      "semantic",
+      "procedure",
+      "change",
+      "apply"
+    ],
+    "temporal_positive_cases": 2,
+    "temporal_abstention_cases": 4,
+    "temporal_positive_values": [
+      {
+        "operation": "history",
+        "value": 37
+      },
+      {
+        "operation": "change",
+        "value": 16
+      }
+    ],
+    "temporal_unit": "unix_seconds",
+    "temporal_semantics": "UTC midnight only",
+    "temporal_profile": "hepta.memory.host-utc-midnight-time-view.v1",
+    "total_control_reads": 14,
+    "worker": {
+      "attempts": 14,
+      "cpu_ns": 82673056,
+      "host_request_ns": 96191783,
+      "process_starts": 1,
+      "reported_wall_ns": 83846997,
+      "responses": 14,
+      "startup_wall_ns": 1559506227,
+      "stdin_bytes": 10556,
+      "stdout_bytes": 17805
+    },
+    "control_transport": {
+      "received_bytes": 9260,
+      "rpc_attempts": 14,
+      "transmitted_bytes": 6319
+    },
+    "reported_parameter_fit_calls": 2,
+    "additional_temporal_fit_calls_in_test_source": 2,
+    "executed_fit_calls_from_receipt_and_test_source": 4,
+    "complete_per_fit_cost_receipts": false,
+    "missing_cost_receipt": "The temporal helper executes a second clean fit, retaining training-code and owner-cut digests rather than a complete training receipt.",
+    "held_reads": 0,
+    "independent_language_evaluation": false,
+    "classifier_held_results_cover_temporal_adapter": false,
+    "frozen_python_or_model_modified": false,
+    "general_semantic_addressing_gate_established": false
+  },
+  "population": {
+    "receipt": "ci10-runtime/population-receipt.json",
+    "stages": [
+      {
+        "generation": 1,
+        "shards_per_type": 1,
+        "transition": "fixed",
+        "fit_calls": 2,
+        "awake_readbacks": 48,
+        "after_sleep_readbacks": 48,
+        "budget_failure_closed": true,
+        "first_awake_batch_socket_roundtrip_wall_ns": 2586431453,
+        "runtime_costs": [
+          {
+            "aggregate_support_bytes": 1769,
+            "artifact_load_wall_ns": 4712861,
+            "catalog_bytes": 665,
+            "eviction_count": 1,
+            "lineage_bytes": 872,
+            "parameter_bytes": 15924,
+            "raw_payload_bytes": 82300,
+            "read_count": 48,
+            "read_wall_ns": 15855866,
+            "resident_budget_bytes": 19230,
+            "resident_catalog_bytes": 665,
+            "resident_lineage_bytes": 872,
+            "resident_parameter_bytes": 15924,
+            "resident_shards": 1,
+            "resident_support_bytes": 1769,
+            "route_bytes": 898,
+            "serialized_bytes": 84532,
+            "shard_lineage_bytes": 872,
+            "shard_support_bytes": 1769,
+            "wake_count": 2,
+            "wake_wall_ns": 8251825
+          },
+          {
+            "aggregate_support_bytes": 1769,
+            "artifact_load_wall_ns": 4464595,
+            "catalog_bytes": 482,
+            "eviction_count": 1,
+            "lineage_bytes": 872,
+            "parameter_bytes": 15404,
+            "raw_payload_bytes": 79632,
+            "read_count": 48,
+            "read_wall_ns": 22713014,
+            "resident_budget_bytes": 18527,
+            "resident_catalog_bytes": 482,
+            "resident_lineage_bytes": 872,
+            "resident_parameter_bytes": 15404,
+            "resident_shards": 1,
+            "resident_support_bytes": 1769,
+            "route_bytes": 898,
+            "serialized_bytes": 81875,
+            "shard_lineage_bytes": 872,
+            "shard_support_bytes": 1769,
+            "wake_count": 2,
+            "wake_wall_ns": 15910143
+          }
+        ]
+      },
+      {
+        "generation": 2,
+        "shards_per_type": 2,
+        "transition": "split",
+        "fit_calls": 4,
+        "awake_readbacks": 48,
+        "after_sleep_readbacks": 48,
+        "budget_failure_closed": true,
+        "first_awake_batch_socket_roundtrip_wall_ns": 3045352506,
+        "runtime_costs": [
+          {
+            "aggregate_support_bytes": 1769,
+            "artifact_load_wall_ns": 5254881,
+            "catalog_bytes": 666,
+            "eviction_count": 2,
+            "lineage_bytes": 872,
+            "parameter_bytes": 14260,
+            "raw_payload_bytes": 74562,
+            "read_count": 48,
+            "read_wall_ns": 16698674,
+            "resident_budget_bytes": 17569,
+            "resident_catalog_bytes": 666,
+            "resident_lineage_bytes": 873,
+            "resident_parameter_bytes": 14260,
+            "resident_shards": 2,
+            "resident_support_bytes": 1770,
+            "route_bytes": 898,
+            "serialized_bytes": 76938,
+            "shard_lineage_bytes": 873,
+            "shard_support_bytes": 1770,
+            "wake_count": 4,
+            "wake_wall_ns": 10038498
+          },
+          {
+            "aggregate_support_bytes": 1769,
+            "artifact_load_wall_ns": 4583414,
+            "catalog_bytes": 525,
+            "eviction_count": 2,
+            "lineage_bytes": 872,
+            "parameter_bytes": 14128,
+            "raw_payload_bytes": 73799,
+            "read_count": 48,
+            "read_wall_ns": 16034888,
+            "resident_budget_bytes": 17296,
+            "resident_catalog_bytes": 525,
+            "resident_lineage_bytes": 873,
+            "resident_parameter_bytes": 14128,
+            "resident_shards": 2,
+            "resident_support_bytes": 1770,
+            "route_bytes": 898,
+            "serialized_bytes": 76194,
+            "shard_lineage_bytes": 873,
+            "shard_support_bytes": 1770,
+            "wake_count": 4,
+            "wake_wall_ns": 10588971
+          }
+        ]
+      },
+      {
+        "generation": 3,
+        "shards_per_type": 1,
+        "transition": "merge",
+        "fit_calls": 2,
+        "awake_readbacks": 48,
+        "after_sleep_readbacks": 48,
+        "budget_failure_closed": true,
+        "first_awake_batch_socket_roundtrip_wall_ns": 3409734948,
+        "runtime_costs": [
+          {
+            "aggregate_support_bytes": 1769,
+            "artifact_load_wall_ns": 4614451,
+            "catalog_bytes": 665,
+            "eviction_count": 1,
+            "lineage_bytes": 872,
+            "parameter_bytes": 15924,
+            "raw_payload_bytes": 82300,
+            "read_count": 48,
+            "read_wall_ns": 15189784,
+            "resident_budget_bytes": 19230,
+            "resident_catalog_bytes": 665,
+            "resident_lineage_bytes": 872,
+            "resident_parameter_bytes": 15924,
+            "resident_shards": 1,
+            "resident_support_bytes": 1769,
+            "route_bytes": 898,
+            "serialized_bytes": 84532,
+            "shard_lineage_bytes": 872,
+            "shard_support_bytes": 1769,
+            "wake_count": 2,
+            "wake_wall_ns": 8235501
+          },
+          {
+            "aggregate_support_bytes": 1769,
+            "artifact_load_wall_ns": 4301218,
+            "catalog_bytes": 482,
+            "eviction_count": 1,
+            "lineage_bytes": 872,
+            "parameter_bytes": 15404,
+            "raw_payload_bytes": 79632,
+            "read_count": 48,
+            "read_wall_ns": 13634404,
+            "resident_budget_bytes": 18527,
+            "resident_catalog_bytes": 482,
+            "resident_lineage_bytes": 872,
+            "resident_parameter_bytes": 15404,
+            "resident_shards": 1,
+            "resident_support_bytes": 1769,
+            "route_bytes": 898,
+            "serialized_bytes": 81875,
+            "shard_lineage_bytes": 872,
+            "shard_support_bytes": 1769,
+            "wake_count": 2,
+            "wake_wall_ns": 7922797
+          }
+        ]
+      }
+    ],
+    "total_successful_readbacks": 288,
+    "fit_calls": 8,
+    "fit_cpu_ns": 363447976,
+    "fit_wall_ns": 363473392,
+    "first_awake_batch_socket_roundtrip_wall_ns": 9041518907,
+    "socket_timing_scope": "Only the first 48-read awake batch in each generation is timed by this field; it includes native inference and control transport, excludes post-sleep batches, and is not exclusive communication cost.",
+    "stale_source_cut_rejected": true,
+    "source_ledger_cost": null,
+    "exclusive_communication_cost": null,
+    "structural_net_benefit_established": false,
+    "independent_future_task_evaluation": false,
+    "learned_specialization_established": false,
+    "routing": "explicit trusted integration resolver with deterministic support partition; not learned expert allocation",
+    "resident_memory_scope": "Logical parameter/catalog/support/lineage byte accounting, not measured process RSS.",
+    "full_cost_gate_established": false
+  },
+  "overall_scope": "Three actual integration paths execute real parameter training, native readback, signed releases, source-cut invalidation and sleep/wake transitions in bounded typed fixtures. They do not establish reliable held-language routing, parametric-only compression, future-task learning gains, a positive structural full-cost advantage, cross-machine replication, or self-organized general memory."
+}

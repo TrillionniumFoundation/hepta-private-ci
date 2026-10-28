@@ -1,0 +1,141 @@
+{
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-agent-protocol",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-context-compiler",
+    "-p",
+    "codex-hepta-infer-worker-host"
+  ],
+  "commands": [
+    [
+      "cargo",
+      "build",
+      "--locked",
+      "--manifest-path",
+      "codex-rs/Cargo.toml",
+      "-p",
+      "codex-app-server",
+      "--bin",
+      "codex-app-server"
+    ],
+    [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-agent-protocol",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-context-compiler",
+      "-p",
+      "codex-hepta-infer-worker-host"
+    ],
+    [
+      "just",
+      "test",
+      "--locked",
+      "--lib",
+      "-p",
+      "codex-hepta-agentd",
+      "--run-ignored",
+      "only",
+      "-E",
+      "test(memory_cell_) & test(actual_)"
+    ]
+  ],
+  "complete_workspace_test": false,
+  "executions": [
+    {
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "-p",
+        "codex-app-server",
+        "--bin",
+        "codex-app-server"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 132.188636324
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-context-compiler",
+        "-p",
+        "codex-hepta-infer-worker-host"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 233.76080650699998
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--lib",
+        "-p",
+        "codex-hepta-agentd",
+        "--run-ignored",
+        "only",
+        "-E",
+        "test(memory_cell_) & test(actual_)"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 39.513138570000024
+    }
+  ],
+  "exit_code": 0,
+  "final_tracked_changes": "",
+  "group": "daemon",
+  "initial_tracked_changes": "",
+  "lock_after": {
+    "bytes": 1658169,
+    "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+  },
+  "lock_before": {
+    "bytes": 1658169,
+    "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+  },
+  "log": {
+    "bytes": 146841,
+    "sha256": "11852a12c002ddfb20244b76d02a6993d632270b02f5b1f5eea08e2cbe927e4d"
+  },
+  "mode": "test",
+  "passed": true,
+  "production_manifests_modified_for_test": false,
+  "request": {
+    "attempt": 9,
+    "groups": [
+      "daemon"
+    ],
+    "schema": "hepta.memory.v7.product-verification-request.v1",
+    "stage": "durable-recovery-boundaries-and-complete-test-dependencies",
+    "tests_before_final_fix_and_format": true
+  },
+  "runtime_executable": {
+    "bytes": 443980736,
+    "path": "/home/runner/.cache/codex-ci/cargo-target/debug/codex-app-server",
+    "sha256": "0677e84a41247785074bb427d8e8202c923058993ffdc4cbf9e4ab2506696f3e"
+  },
+  "schema": "hepta.memory.v7.product-ci-receipt.v1",
+  "source_commit": "59b45ccd863cab0fd1ea96f3b4b025715aa814f8",
+  "source_tree": "4d7e6d4180e9a8e1a003065eecfccded3b2c9103",
+  "wall_seconds": 405.7173464560001
+}

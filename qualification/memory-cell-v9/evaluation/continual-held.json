@@ -1,0 +1,5510 @@
+{
+  "schema": "hepta.memory.v9.continual-fixture.v1",
+  "stages": [
+    {
+      "future": [
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "local-new-domain",
+          "id": "s0-future-00",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": -15
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "bridge-old-new",
+          "id": "s0-future-01",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": -8
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "interleaved-programs",
+          "id": "s0-future-02",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": -1
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "local-new-domain",
+          "id": "s0-future-03",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 6
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "bridge-old-new",
+          "id": "s0-future-04",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 13
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "interleaved-programs",
+          "id": "s0-future-05",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 20
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "local-new-domain",
+          "id": "s0-future-06",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 27
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "bridge-old-new",
+          "id": "s0-future-07",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 34
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "interleaved-programs",
+          "id": "s0-future-08",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 41
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "local-new-domain",
+          "id": "s0-future-09",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 48
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "bridge-old-new",
+          "id": "s0-future-10",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 55
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "interleaved-programs",
+          "id": "s0-future-11",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 62
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "local-new-domain",
+          "id": "s0-future-12",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 69
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "bridge-old-new",
+          "id": "s0-future-13",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 76
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "interleaved-programs",
+          "id": "s0-future-14",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 83
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "local-new-domain",
+          "id": "s0-future-15",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 90
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "bridge-old-new",
+          "id": "s0-future-16",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 97
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "interleaved-programs",
+          "id": "s0-future-17",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 104
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "local-new-domain",
+          "id": "s0-future-18",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 111
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "bridge-old-new",
+          "id": "s0-future-19",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 118
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "interleaved-programs",
+          "id": "s0-future-20",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 125
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "local-new-domain",
+          "id": "s0-future-21",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 132
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "bridge-old-new",
+          "id": "s0-future-22",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 139
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "interleaved-programs",
+          "id": "s0-future-23",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 146
+        }
+      ],
+      "id": "stage-0",
+      "prefix": [
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "completed-observation",
+          "id": "s0-prefix-00",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "current"
+            }
+          ],
+          "threshold": -15
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s0-prefix-01",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "current"
+            }
+          ],
+          "threshold": -8
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s0-prefix-02",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "current"
+            }
+          ],
+          "threshold": -1
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "completed-observation",
+          "id": "s0-prefix-03",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "current"
+            }
+          ],
+          "threshold": 6
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s0-prefix-04",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "current"
+            }
+          ],
+          "threshold": 13
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s0-prefix-05",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "current"
+            }
+          ],
+          "threshold": 20
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "completed-observation",
+          "id": "s0-prefix-06",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "current"
+            }
+          ],
+          "threshold": 27
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s0-prefix-07",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "current"
+            }
+          ],
+          "threshold": 34
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s0-prefix-08",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "current"
+            }
+          ],
+          "threshold": 41
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "completed-observation",
+          "id": "s0-prefix-09",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "current"
+            }
+          ],
+          "threshold": 48
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s0-prefix-10",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "current"
+            }
+          ],
+          "threshold": 55
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s0-prefix-11",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "current"
+            }
+          ],
+          "threshold": 62
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "completed-observation",
+          "id": "s0-prefix-12",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "current"
+            }
+          ],
+          "threshold": 69
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s0-prefix-13",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "current"
+            }
+          ],
+          "threshold": 76
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s0-prefix-14",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "current"
+            }
+          ],
+          "threshold": 83
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "completed-observation",
+          "id": "s0-prefix-15",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "current"
+            }
+          ],
+          "threshold": 90
+        }
+      ],
+      "retention": [
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "earlier-written-facts",
+          "id": "s0-retention-00",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "apply"
+            }
+          ],
+          "threshold": -15
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "earlier-written-facts",
+          "id": "s0-retention-01",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "apply"
+            }
+          ],
+          "threshold": -8
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "earlier-written-facts",
+          "id": "s0-retention-02",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "apply"
+            }
+          ],
+          "threshold": -1
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "earlier-written-facts",
+          "id": "s0-retention-03",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "apply"
+            }
+          ],
+          "threshold": 6
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "earlier-written-facts",
+          "id": "s0-retention-04",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "apply"
+            }
+          ],
+          "threshold": 13
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "earlier-written-facts",
+          "id": "s0-retention-05",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "apply"
+            }
+          ],
+          "threshold": 20
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "earlier-written-facts",
+          "id": "s0-retention-06",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "apply"
+            }
+          ],
+          "threshold": 27
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "earlier-written-facts",
+          "id": "s0-retention-07",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "apply"
+            }
+          ],
+          "threshold": 34
+        }
+      ],
+      "writes": [
+        {
+          "domain": "horticulture",
+          "entity": "unit:v9-continual-0-0",
+          "event": -29,
+          "procedure": {
+            "bias": -7,
+            "limit": 31,
+            "opcode": "affine"
+          },
+          "semantic": {
+            "factor": -3,
+            "label": "class-0-0"
+          }
+        },
+        {
+          "domain": "horticulture",
+          "entity": "unit:v9-continual-0-1",
+          "event": -18,
+          "procedure": {
+            "bias": -4,
+            "limit": 40,
+            "opcode": "clamp"
+          },
+          "semantic": {
+            "factor": -2,
+            "label": "class-0-1"
+          }
+        },
+        {
+          "domain": "horticulture",
+          "entity": "unit:v9-continual-0-2",
+          "event": -7,
+          "procedure": {
+            "bias": -1,
+            "limit": 49,
+            "opcode": "add_bias"
+          },
+          "semantic": {
+            "factor": -1,
+            "label": "class-0-2"
+          }
+        },
+        {
+          "domain": "horticulture",
+          "entity": "unit:v9-continual-0-3",
+          "event": 4,
+          "procedure": {
+            "bias": 2,
+            "limit": 58,
+            "opcode": "multiply"
+          },
+          "semantic": {
+            "factor": 0,
+            "label": "class-0-0"
+          }
+        },
+        {
+          "domain": "fabrication",
+          "entity": "unit:v9-continual-0-4",
+          "event": 15,
+          "procedure": {
+            "bias": 5,
+            "limit": 67,
+            "opcode": "affine"
+          },
+          "semantic": {
+            "factor": 1,
+            "label": "class-0-1"
+          }
+        },
+        {
+          "domain": "fabrication",
+          "entity": "unit:v9-continual-0-5",
+          "event": 26,
+          "procedure": {
+            "bias": 8,
+            "limit": 76,
+            "opcode": "clamp"
+          },
+          "semantic": {
+            "factor": 2,
+            "label": "class-0-2"
+          }
+        },
+        {
+          "domain": "fabrication",
+          "entity": "unit:v9-continual-0-6",
+          "event": 37,
+          "procedure": {
+            "bias": 11,
+            "limit": 85,
+            "opcode": "add_bias"
+          },
+          "semantic": {
+            "factor": 3,
+            "label": "class-0-0"
+          }
+        },
+        {
+          "domain": "fabrication",
+          "entity": "unit:v9-continual-0-7",
+          "event": 48,
+          "procedure": {
+            "bias": 14,
+            "limit": 94,
+            "opcode": "multiply"
+          },
+          "semantic": {
+            "factor": -3,
+            "label": "class-0-1"
+          }
+        }
+      ]
+    },
+    {
+      "future": [
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "local-new-domain",
+          "id": "s1-future-00",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": -8
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "bridge-old-new",
+          "id": "s1-future-01",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-6",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": -1
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "interleaved-programs",
+          "id": "s1-future-02",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-3",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 6
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "local-new-domain",
+          "id": "s1-future-03",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-5",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-5",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 13
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "bridge-old-new",
+          "id": "s1-future-04",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-5",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 20
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "interleaved-programs",
+          "id": "s1-future-05",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-7",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-6",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 27
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "local-new-domain",
+          "id": "s1-future-06",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 34
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "bridge-old-new",
+          "id": "s1-future-07",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-2",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 41
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "interleaved-programs",
+          "id": "s1-future-08",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-5",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 48
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "local-new-domain",
+          "id": "s1-future-09",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-5",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-5",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 55
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "bridge-old-new",
+          "id": "s1-future-10",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-3",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-5",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-7",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 62
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "interleaved-programs",
+          "id": "s1-future-11",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-2",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-7",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 69
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "local-new-domain",
+          "id": "s1-future-12",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 76
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "bridge-old-new",
+          "id": "s1-future-13",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-2",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 83
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "interleaved-programs",
+          "id": "s1-future-14",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-6",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-5",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 90
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "local-new-domain",
+          "id": "s1-future-15",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-5",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-5",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 97
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "bridge-old-new",
+          "id": "s1-future-16",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-5",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 104
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "interleaved-programs",
+          "id": "s1-future-17",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-3",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-2",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 111
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "local-new-domain",
+          "id": "s1-future-18",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 118
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "bridge-old-new",
+          "id": "s1-future-19",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-6",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 125
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "interleaved-programs",
+          "id": "s1-future-20",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-6",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-5",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 132
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "local-new-domain",
+          "id": "s1-future-21",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-5",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-5",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 139
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "bridge-old-new",
+          "id": "s1-future-22",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-7",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-3",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 146
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "interleaved-programs",
+          "id": "s1-future-23",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-3",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 153
+        }
+      ],
+      "id": "stage-1",
+      "prefix": [
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "completed-observation",
+          "id": "s1-prefix-00",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-2",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-3",
+              "operation": "current"
+            }
+          ],
+          "threshold": -15
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s1-prefix-01",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-5",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-6",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-7",
+              "operation": "current"
+            }
+          ],
+          "threshold": -8
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s1-prefix-02",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-2",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-3",
+              "operation": "current"
+            }
+          ],
+          "threshold": -1
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "completed-observation",
+          "id": "s1-prefix-03",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-5",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-6",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-7",
+              "operation": "current"
+            }
+          ],
+          "threshold": 6
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s1-prefix-04",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-2",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-3",
+              "operation": "current"
+            }
+          ],
+          "threshold": 13
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s1-prefix-05",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-5",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-6",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-7",
+              "operation": "current"
+            }
+          ],
+          "threshold": 20
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "completed-observation",
+          "id": "s1-prefix-06",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-2",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-3",
+              "operation": "current"
+            }
+          ],
+          "threshold": 27
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s1-prefix-07",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-5",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-6",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-7",
+              "operation": "current"
+            }
+          ],
+          "threshold": 34
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s1-prefix-08",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-2",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-3",
+              "operation": "current"
+            }
+          ],
+          "threshold": 41
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "completed-observation",
+          "id": "s1-prefix-09",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-5",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-6",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-7",
+              "operation": "current"
+            }
+          ],
+          "threshold": 48
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s1-prefix-10",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-2",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-3",
+              "operation": "current"
+            }
+          ],
+          "threshold": 55
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s1-prefix-11",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-5",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-6",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-7",
+              "operation": "current"
+            }
+          ],
+          "threshold": 62
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "completed-observation",
+          "id": "s1-prefix-12",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-2",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-3",
+              "operation": "current"
+            }
+          ],
+          "threshold": 69
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s1-prefix-13",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-5",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-6",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-7",
+              "operation": "current"
+            }
+          ],
+          "threshold": 76
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s1-prefix-14",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-2",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-3",
+              "operation": "current"
+            }
+          ],
+          "threshold": 83
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "completed-observation",
+          "id": "s1-prefix-15",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-5",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-6",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-1-7",
+              "operation": "current"
+            }
+          ],
+          "threshold": 90
+        }
+      ],
+      "retention": [
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "earlier-written-facts",
+          "id": "s1-retention-00",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "apply"
+            }
+          ],
+          "threshold": -15
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "earlier-written-facts",
+          "id": "s1-retention-01",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "apply"
+            }
+          ],
+          "threshold": -8
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "earlier-written-facts",
+          "id": "s1-retention-02",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "apply"
+            }
+          ],
+          "threshold": -1
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "earlier-written-facts",
+          "id": "s1-retention-03",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "apply"
+            }
+          ],
+          "threshold": 6
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "earlier-written-facts",
+          "id": "s1-retention-04",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "apply"
+            }
+          ],
+          "threshold": 13
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "earlier-written-facts",
+          "id": "s1-retention-05",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "apply"
+            }
+          ],
+          "threshold": 20
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "earlier-written-facts",
+          "id": "s1-retention-06",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "apply"
+            }
+          ],
+          "threshold": 27
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "earlier-written-facts",
+          "id": "s1-retention-07",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "apply"
+            }
+          ],
+          "threshold": 34
+        }
+      ],
+      "writes": [
+        {
+          "domain": "cryogenics",
+          "entity": "unit:v9-continual-1-0",
+          "event": -12,
+          "procedure": {
+            "bias": -12,
+            "limit": 42,
+            "opcode": "affine"
+          },
+          "semantic": {
+            "factor": -1,
+            "label": "class-1-0"
+          }
+        },
+        {
+          "domain": "cryogenics",
+          "entity": "unit:v9-continual-1-1",
+          "event": -1,
+          "procedure": {
+            "bias": -9,
+            "limit": 51,
+            "opcode": "clamp"
+          },
+          "semantic": {
+            "factor": 0,
+            "label": "class-1-1"
+          }
+        },
+        {
+          "domain": "cryogenics",
+          "entity": "unit:v9-continual-1-2",
+          "event": 10,
+          "procedure": {
+            "bias": -6,
+            "limit": 60,
+            "opcode": "add_bias"
+          },
+          "semantic": {
+            "factor": 1,
+            "label": "class-1-2"
+          }
+        },
+        {
+          "domain": "cryogenics",
+          "entity": "unit:v9-continual-1-3",
+          "event": 21,
+          "procedure": {
+            "bias": -3,
+            "limit": 69,
+            "opcode": "multiply"
+          },
+          "semantic": {
+            "factor": 2,
+            "label": "class-1-0"
+          }
+        },
+        {
+          "domain": "hydrology",
+          "entity": "unit:v9-continual-1-4",
+          "event": 32,
+          "procedure": {
+            "bias": 0,
+            "limit": 78,
+            "opcode": "affine"
+          },
+          "semantic": {
+            "factor": 3,
+            "label": "class-1-1"
+          }
+        },
+        {
+          "domain": "hydrology",
+          "entity": "unit:v9-continual-1-5",
+          "event": 43,
+          "procedure": {
+            "bias": 3,
+            "limit": 87,
+            "opcode": "clamp"
+          },
+          "semantic": {
+            "factor": -3,
+            "label": "class-1-2"
+          }
+        },
+        {
+          "domain": "hydrology",
+          "entity": "unit:v9-continual-1-6",
+          "event": 54,
+          "procedure": {
+            "bias": 6,
+            "limit": 96,
+            "opcode": "add_bias"
+          },
+          "semantic": {
+            "factor": -2,
+            "label": "class-1-0"
+          }
+        },
+        {
+          "domain": "hydrology",
+          "entity": "unit:v9-continual-1-7",
+          "event": 65,
+          "procedure": {
+            "bias": 9,
+            "limit": 105,
+            "opcode": "multiply"
+          },
+          "semantic": {
+            "factor": -1,
+            "label": "class-1-1"
+          }
+        }
+      ]
+    },
+    {
+      "future": [
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "local-new-domain",
+          "id": "s2-future-00",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-1",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-2-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-1",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": -1
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "bridge-old-new",
+          "id": "s2-future-01",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-2-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-6",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 6
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "interleaved-programs",
+          "id": "s2-future-02",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-2-1",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 13
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "local-new-domain",
+          "id": "s2-future-03",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-5",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-2-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-5",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 20
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "bridge-old-new",
+          "id": "s2-future-04",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-5",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-2-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-1",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 27
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "interleaved-programs",
+          "id": "s2-future-05",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-7",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-2-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 34
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "local-new-domain",
+          "id": "s2-future-06",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-1",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-2-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-1",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 41
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "bridge-old-new",
+          "id": "s2-future-07",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-2-2",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-3",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-4",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 48
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "interleaved-programs",
+          "id": "s2-future-08",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-5",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-2",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-2-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 55
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "local-new-domain",
+          "id": "s2-future-09",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-5",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-2-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-5",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 62
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "bridge-old-new",
+          "id": "s2-future-10",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-2",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-3",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-2-5",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-7",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 69
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "interleaved-programs",
+          "id": "s2-future-11",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-5",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 76
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "local-new-domain",
+          "id": "s2-future-12",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-1",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-2-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-1",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 83
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "bridge-old-new",
+          "id": "s2-future-13",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-5",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-7",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-2-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-2",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 90
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "interleaved-programs",
+          "id": "s2-future-14",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-1-6",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-3",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-7",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 97
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "local-new-domain",
+          "id": "s2-future-15",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-5",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-2-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-5",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 104
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "bridge-old-new",
+          "id": "s2-future-16",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-1",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-2-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-5",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 111
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "interleaved-programs",
+          "id": "s2-future-17",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-1",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-5",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-2",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 118
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "local-new-domain",
+          "id": "s2-future-18",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-1",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-2-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-1",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 125
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "bridge-old-new",
+          "id": "s2-future-19",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-2-6",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-0",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 132
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "interleaved-programs",
+          "id": "s2-future-20",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-5",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 139
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "local-new-domain",
+          "id": "s2-future-21",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-5",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-2-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-5",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 146
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "bridge-old-new",
+          "id": "s2-future-22",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-7",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-2-1",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-2-3",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 153
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "interleaved-programs",
+          "id": "s2-future-23",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-6",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-2-3",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "procedure"
+            }
+          ],
+          "threshold": 160
+        }
+      ],
+      "id": "stage-2",
+      "prefix": [
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "completed-observation",
+          "id": "s2-prefix-00",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-0",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-1",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-2",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-3",
+              "operation": "current"
+            }
+          ],
+          "threshold": -15
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s2-prefix-01",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-4",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-5",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-6",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-7",
+              "operation": "current"
+            }
+          ],
+          "threshold": -8
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s2-prefix-02",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-0",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-1",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-2",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-3",
+              "operation": "current"
+            }
+          ],
+          "threshold": -1
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "completed-observation",
+          "id": "s2-prefix-03",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-4",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-5",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-6",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-7",
+              "operation": "current"
+            }
+          ],
+          "threshold": 6
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s2-prefix-04",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-0",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-1",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-2",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-3",
+              "operation": "current"
+            }
+          ],
+          "threshold": 13
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s2-prefix-05",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-4",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-5",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-6",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-7",
+              "operation": "current"
+            }
+          ],
+          "threshold": 20
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "completed-observation",
+          "id": "s2-prefix-06",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-0",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-1",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-2",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-3",
+              "operation": "current"
+            }
+          ],
+          "threshold": 27
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s2-prefix-07",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-4",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-5",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-6",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-7",
+              "operation": "current"
+            }
+          ],
+          "threshold": 34
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s2-prefix-08",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-0",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-1",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-2",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-3",
+              "operation": "current"
+            }
+          ],
+          "threshold": 41
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "completed-observation",
+          "id": "s2-prefix-09",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-4",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-5",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-6",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-7",
+              "operation": "current"
+            }
+          ],
+          "threshold": 48
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s2-prefix-10",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-0",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-1",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-2",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-3",
+              "operation": "current"
+            }
+          ],
+          "threshold": 55
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s2-prefix-11",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-4",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-5",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-6",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-7",
+              "operation": "current"
+            }
+          ],
+          "threshold": 62
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "completed-observation",
+          "id": "s2-prefix-12",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-0",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-1",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-2",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-3",
+              "operation": "current"
+            }
+          ],
+          "threshold": 69
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s2-prefix-13",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-4",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-5",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-6",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-7",
+              "operation": "current"
+            }
+          ],
+          "threshold": 76
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "completed-observation",
+          "id": "s2-prefix-14",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-0",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-1",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-2",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-3",
+              "operation": "current"
+            }
+          ],
+          "threshold": 83
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "completed-observation",
+          "id": "s2-prefix-15",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-2-4",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-5",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-6",
+              "operation": "current"
+            },
+            {
+              "entity": "unit:v9-continual-2-7",
+              "operation": "current"
+            }
+          ],
+          "threshold": 90
+        }
+      ],
+      "retention": [
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "earlier-written-facts",
+          "id": "s2-retention-00",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "apply"
+            }
+          ],
+          "threshold": -15
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "earlier-written-facts",
+          "id": "s2-retention-01",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-1",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "apply"
+            }
+          ],
+          "threshold": -8
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "earlier-written-facts",
+          "id": "s2-retention-02",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "apply"
+            }
+          ],
+          "threshold": -1
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "earlier-written-facts",
+          "id": "s2-retention-03",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-3",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "apply"
+            }
+          ],
+          "threshold": 6
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "earlier-written-facts",
+          "id": "s2-retention-04",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-4",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "apply"
+            }
+          ],
+          "threshold": 13
+        },
+        {
+          "coefficients": [
+            1,
+            -1,
+            1,
+            2,
+            -1,
+            2
+          ],
+          "family": "earlier-written-facts",
+          "id": "s2-retention-05",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-5",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-2",
+              "operation": "apply"
+            }
+          ],
+          "threshold": 20
+        },
+        {
+          "coefficients": [
+            -1,
+            2,
+            1,
+            -1,
+            1,
+            2
+          ],
+          "family": "earlier-written-facts",
+          "id": "s2-retention-06",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-6",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-2",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-3",
+              "operation": "apply"
+            }
+          ],
+          "threshold": 27
+        },
+        {
+          "coefficients": [
+            1,
+            2,
+            -1,
+            2,
+            1,
+            -1
+          ],
+          "family": "earlier-written-facts",
+          "id": "s2-retention-07",
+          "queries": [
+            {
+              "entity": "unit:v9-continual-0-7",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-0",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-1",
+              "operation": "apply"
+            },
+            {
+              "entity": "unit:v9-continual-1-2",
+              "operation": "semantic"
+            },
+            {
+              "entity": "unit:v9-continual-1-3",
+              "operation": "procedure"
+            },
+            {
+              "entity": "unit:v9-continual-1-4",
+              "operation": "apply"
+            }
+          ],
+          "threshold": 34
+        }
+      ],
+      "writes": [
+        {
+          "domain": "logistics",
+          "entity": "unit:v9-continual-2-0",
+          "event": 5,
+          "procedure": {
+            "bias": -17,
+            "limit": 53,
+            "opcode": "affine"
+          },
+          "semantic": {
+            "factor": 1,
+            "label": "class-2-0"
+          }
+        },
+        {
+          "domain": "logistics",
+          "entity": "unit:v9-continual-2-1",
+          "event": 16,
+          "procedure": {
+            "bias": -14,
+            "limit": 62,
+            "opcode": "clamp"
+          },
+          "semantic": {
+            "factor": 2,
+            "label": "class-2-1"
+          }
+        },
+        {
+          "domain": "logistics",
+          "entity": "unit:v9-continual-2-2",
+          "event": 27,
+          "procedure": {
+            "bias": -11,
+            "limit": 71,
+            "opcode": "add_bias"
+          },
+          "semantic": {
+            "factor": 3,
+            "label": "class-2-2"
+          }
+        },
+        {
+          "domain": "logistics",
+          "entity": "unit:v9-continual-2-3",
+          "event": 38,
+          "procedure": {
+            "bias": -8,
+            "limit": 80,
+            "opcode": "multiply"
+          },
+          "semantic": {
+            "factor": -3,
+            "label": "class-2-0"
+          }
+        },
+        {
+          "domain": "energy",
+          "entity": "unit:v9-continual-2-4",
+          "event": 49,
+          "procedure": {
+            "bias": -5,
+            "limit": 89,
+            "opcode": "affine"
+          },
+          "semantic": {
+            "factor": -2,
+            "label": "class-2-1"
+          }
+        },
+        {
+          "domain": "energy",
+          "entity": "unit:v9-continual-2-5",
+          "event": 60,
+          "procedure": {
+            "bias": -2,
+            "limit": 98,
+            "opcode": "clamp"
+          },
+          "semantic": {
+            "factor": -1,
+            "label": "class-2-2"
+          }
+        },
+        {
+          "domain": "energy",
+          "entity": "unit:v9-continual-2-6",
+          "event": 71,
+          "procedure": {
+            "bias": 1,
+            "limit": 107,
+            "opcode": "add_bias"
+          },
+          "semantic": {
+            "factor": 0,
+            "label": "class-2-0"
+          }
+        },
+        {
+          "domain": "energy",
+          "entity": "unit:v9-continual-2-7",
+          "event": 82,
+          "procedure": {
+            "bias": 4,
+            "limit": 116,
+            "opcode": "multiply"
+          },
+          "semantic": {
+            "factor": 1,
+            "label": "class-2-1"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,185 @@
+{
+  "artifacts": {
+    "AFTER_FILES.json": {
+      "bytes": 74427,
+      "sha256": "31ea97ccf16a937fb226fadd5180a84224b23e782e95dd1a41592e681bb653e9"
+    },
+    "BEFORE_FILES.json": {
+      "bytes": 77140,
+      "sha256": "2abf6dd800d2798d2ee4090a04f5c376b36bbadf16cdf2ad81c4927a068a5477"
+    },
+    "FINALIZE_REQUEST.json": {
+      "bytes": 747,
+      "sha256": "90d47e85e6e6a0cbdc19b2f973d99586fb871db6de79945989df2b102d3308c7"
+    },
+    "PATCH.tar.xz": {
+      "bytes": 59908,
+      "sha256": "ea6c85f07393028ce162b1390302b5be891b67f1951c0d732f4e22ea054e99f7"
+    },
+    "SOURCE.json": {
+      "bytes": 1522,
+      "sha256": "46e50cdbfc57850af29549d044c246510f84d67e35162e487dabd9cee55db7eb"
+    },
+    "TESTED_VERIFICATION_RECEIPT.json": {
+      "bytes": 106653,
+      "sha256": "57a5bd42848344f8c4c93448c55d925000ffb5f9de0e119a54d2a5a32fb2ce31"
+    },
+    "after-fix.from-head.patch": {
+      "bytes": 1329,
+      "sha256": "ce67e74534e76a1d0df1e24468a131736611a7582ba22be7f36fb540bac7546e"
+    },
+    "after-fix.from-head.patch.xz": {
+      "bytes": 612,
+      "sha256": "1836fb0698bce6b7e25b9671739f1e1f0904b0d9e73d8751db0e4b9e7679fa7c"
+    },
+    "after-fix.json": {
+      "bytes": 1093,
+      "sha256": "560b433902e79471f04478b2f7260b60433db4b64967a53bd13c03cf50393a64"
+    },
+    "after-fix.patch": {
+      "bytes": 1329,
+      "sha256": "ce67e74534e76a1d0df1e24468a131736611a7582ba22be7f36fb540bac7546e"
+    },
+    "after-fix.patch.xz": {
+      "bytes": 612,
+      "sha256": "1836fb0698bce6b7e25b9671739f1e1f0904b0d9e73d8751db0e4b9e7679fa7c"
+    },
+    "after-format.from-head.patch": {
+      "bytes": 297234,
+      "sha256": "cf1ea514c924aab13cadb850942fa2e04b1075f2f5b553eb777c3cbcb0f87a71"
+    },
+    "after-format.from-head.patch.xz": {
+      "bytes": 48688,
+      "sha256": "7147f51dd72bb0aa8f3900b8d5b87cafe5d3e6b81a8bfbb6b7825f931a525b4d"
+    },
+    "after-format.json": {
+      "bytes": 1116,
+      "sha256": "e70867adda9f768b8f4c1f06c7cfa1db488919125b60ee3f60853980bba31182"
+    },
+    "after-format.patch": {
+      "bytes": 297233,
+      "sha256": "342eb0b21828549a58cab5235e2800f3871762db6933faedf0361f2ecdf57ce4"
+    },
+    "after-format.patch.xz": {
+      "bytes": 48668,
+      "sha256": "ddd3588f46ac520fb37e4c6f773e4ea8ae37f9741c5f8d9361c7a8ffb274301f"
+    },
+    "commands/01.output.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "commands/02.output.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "commands/03.output.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "commands/04.output.log": {
+      "bytes": 346456,
+      "sha256": "67d3f6777f6f0588821d65116fbe5a184846c7dd0111147fcff37928b7885ef2"
+    },
+    "commands/05.output.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "execution.log": {
+      "bytes": 356738,
+      "sha256": "7413679440c9d2a0974dc46812da453b077ffe5eaca30e31987847331d5615c2"
+    },
+    "generated.patch": {
+      "bytes": 297234,
+      "sha256": "cf1ea514c924aab13cadb850942fa2e04b1075f2f5b553eb777c3cbcb0f87a71"
+    },
+    "generated.patch.xz": {
+      "bytes": 48688,
+      "sha256": "7147f51dd72bb0aa8f3900b8d5b87cafe5d3e6b81a8bfbb6b7825f931a525b4d"
+    }
+  },
+  "console_patch_payloads": false,
+  "final_patch": {
+    "compressed": {
+      "bytes": 48688,
+      "path": "generated.patch.xz",
+      "sha256": "7147f51dd72bb0aa8f3900b8d5b87cafe5d3e6b81a8bfbb6b7825f931a525b4d"
+    },
+    "raw_patch_limit_bytes": 512000,
+    "standalone_uncompressed_path": "generated.patch",
+    "transport": "artifact files",
+    "uncompressed": {
+      "bytes": 297234,
+      "sha256": "cf1ea514c924aab13cadb850942fa2e04b1075f2f5b553eb777c3cbcb0f87a71"
+    }
+  },
+  "schema": "hepta.memory.v9.final-patch-index.v1",
+  "stages": [
+    {
+      "after_tracked_tree": "0351e222fc2878878085f318e7495293f24b63ce",
+      "before_tracked_tree": "8f55bde73e94040e4f0db1572966a2882751a1d9",
+      "cumulative_patch": {
+        "compressed": {
+          "bytes": 612,
+          "path": "after-fix.from-head.patch.xz",
+          "sha256": "1836fb0698bce6b7e25b9671739f1e1f0904b0d9e73d8751db0e4b9e7679fa7c"
+        },
+        "raw_patch_limit_bytes": 512000,
+        "standalone_uncompressed_path": "after-fix.from-head.patch",
+        "transport": "artifact files",
+        "uncompressed": {
+          "bytes": 1329,
+          "sha256": "ce67e74534e76a1d0df1e24468a131736611a7582ba22be7f36fb540bac7546e"
+        }
+      },
+      "incremental_patch": {
+        "compressed": {
+          "bytes": 612,
+          "path": "after-fix.patch.xz",
+          "sha256": "1836fb0698bce6b7e25b9671739f1e1f0904b0d9e73d8751db0e4b9e7679fa7c"
+        },
+        "raw_patch_limit_bytes": 512000,
+        "standalone_uncompressed_path": "after-fix.patch",
+        "transport": "artifact files",
+        "uncompressed": {
+          "bytes": 1329,
+          "sha256": "ce67e74534e76a1d0df1e24468a131736611a7582ba22be7f36fb540bac7546e"
+        }
+      },
+      "stage": "after-fix"
+    },
+    {
+      "after_tracked_tree": "28b310cc8db30270110605f8509f95b772451fd6",
+      "before_tracked_tree": "0351e222fc2878878085f318e7495293f24b63ce",
+      "cumulative_patch": {
+        "compressed": {
+          "bytes": 48688,
+          "path": "after-format.from-head.patch.xz",
+          "sha256": "7147f51dd72bb0aa8f3900b8d5b87cafe5d3e6b81a8bfbb6b7825f931a525b4d"
+        },
+        "raw_patch_limit_bytes": 512000,
+        "standalone_uncompressed_path": "after-format.from-head.patch",
+        "transport": "artifact files",
+        "uncompressed": {
+          "bytes": 297234,
+          "sha256": "cf1ea514c924aab13cadb850942fa2e04b1075f2f5b553eb777c3cbcb0f87a71"
+        }
+      },
+      "incremental_patch": {
+        "compressed": {
+          "bytes": 48668,
+          "path": "after-format.patch.xz",
+          "sha256": "ddd3588f46ac520fb37e4c6f773e4ea8ae37f9741c5f8d9361c7a8ffb274301f"
+        },
+        "raw_patch_limit_bytes": 512000,
+        "standalone_uncompressed_path": "after-format.patch",
+        "transport": "artifact files",
+        "uncompressed": {
+          "bytes": 297233,
+          "sha256": "342eb0b21828549a58cab5235e2800f3871762db6933faedf0361f2ecdf57ce4"
+        }
+      },
+      "stage": "after-format"
+    }
+  ],
+  "tests_executed_after_fix_or_format": false
+}

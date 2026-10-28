@@ -1,0 +1,1607 @@
+cargo clippy --fix --tests --allow-dirty {args}
+    Checking typenum v1.20.0
+    Checking cfg-if v1.0.4
+    Checking cpufeatures v0.2.17
+    Checking serde_core v1.0.228
+    Checking zeroize v1.8.2
+    Checking zmij v1.0.19
+    Checking itoa v1.0.17
+    Checking const-oid v0.9.6
+    Checking memchr v2.8.1
+    Checking signature v2.2.0
+    Checking subtle v2.6.1
+    Checking bitflags v2.13.1
+    Checking linux-raw-sys v0.12.1
+    Checking der v0.7.10
+    Checking generic-array v0.14.7
+    Checking spki v0.7.3
+    Checking pkcs8 v0.10.2
+    Checking ed25519 v2.2.3
+    Checking crypto-common v0.1.7
+    Checking block-buffer v0.10.4
+    Checking rustix v1.1.4
+    Checking digest v0.10.7
+    Checking sha2 v0.10.9
+    Checking curve25519-dalek v4.1.3
+    Checking codex-hepta-types v0.0.0 (/workspace/scratch/528d510b462f/v6-native-leaf-02/hepta-types)
+    Checking serde_json v1.0.149
+    Checking serde v1.0.228
+    Checking codex-hepta-wire v0.0.0 (/workspace/scratch/528d510b462f/v6-native-leaf-02/hepta-wire)
+    Checking ed25519-dalek v2.2.0
+    Checking codex-hepta-cognitive-types v0.0.0 (/workspace/scratch/528d510b462f/v6-native-leaf-02/hepta-cognitive-types)
+    Checking codex-hepta-contracts v0.0.0 (/workspace/scratch/528d510b462f/v6-native-leaf-02/hepta-contracts)
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:317:13
+    |
+317 |     let a = canonical_contract_digest_v1(&active).expect("active digest");
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+    = note: requested on the command line with `-D clippy::expect-used`
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:318:13
+    |
+318 |     let s = canonical_contract_digest_v1(&superseded).expect("superseded digest");
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:319:13
+    |
+319 |     let t = canonical_contract_digest_v1(&tombstoned).expect("tombstone digest");
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:327:19
+    |
+327 |     let encoded = encode_wire_v1(&text_span()).expect("canonical span wire");
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:335:9
+    |
+335 |         decode_wire_v1::<ModalitySpanRefV1>(&encoded).expect("decode canonical vector"),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:339:9
+    |
+339 | /         canonical_contract_digest_v1(&text_span())
+340 | |             .expect("canonical digest")
+    | |_______________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:345:9
+    |
+345 | /         canonical_contract_digest_v1(&event())
+346 | |             .expect("canonical event digest")
+    | |_____________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:354:19
+    |
+354 |     let encoded = String::from_utf8(encode_wire_v1(&text_span()).expect("wire")).expect("utf8");
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:354:37
+    |
+354 |     let encoded = String::from_utf8(encode_wire_v1(&text_span()).expect("wire")).expect("utf8");
+    |                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect_err()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:366:9
+    |
+366 | /         decode_wire_v1::<ModalitySpanRefV1>(noncanonical.as_bytes())
+367 | |             .expect_err("whitespace must be rejected")
+    | |______________________________________________________^
+    |
+    = note: if this value is an `Ok`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:398:13
+    |
+398 |             canonical_contract_digest_v1(&text_span()).expect("span"),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:402:13
+    |
+402 |             canonical_contract_digest_v1(&event()).expect("event"),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:406:13
+    |
+406 |             canonical_contract_digest_v1(&cross_binding()).expect("binding"),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:410:13
+    |
+410 |             canonical_contract_digest_v1(&engram_node()).expect("engram"),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:414:13
+    |
+414 |             canonical_contract_digest_v1(&synapse()).expect("synapse"),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:418:13
+    |
+418 |             canonical_contract_digest_v1(&cue()).expect("cue"),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:422:13
+    |
+422 |             canonical_contract_digest_v1(&recall_packet()).expect("recall"),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:426:13
+    |
+426 |             canonical_contract_digest_v1(&outcome()).expect("outcome"),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:430:13
+    |
+430 |             canonical_contract_digest_v1(&replay_receipt()).expect("replay"),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:434:13
+    |
+434 |             canonical_contract_digest_v1(&plasticity()).expect("plasticity"),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:438:13
+    |
+438 |             canonical_contract_digest_v1(&topology()).expect("topology"),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:442:13
+    |
+442 |             canonical_contract_digest_v1(&forget()).expect("forget"),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:472:9
+    |
+472 |         encode_wire_v1(&right).expect("right"),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:473:9
+    |
+473 |         encode_wire_v1(&other).expect("other")
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:476:9
+    |
+476 |         canonical_contract_digest_v1(&right).expect("right digest"),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:477:9
+    |
+477 |         canonical_contract_digest_v1(&other).expect("other digest")
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:491:19
+    |
+491 |     let encoded = encode_wire_v1(&proposal).expect("topology wire");
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:492:19
+    |
+492 |     let encoded = String::from_utf8(encoded).expect("topology wire utf8");
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:516:9
+    |
+516 |         u16::try_from(overfull.active_nodes.len()).expect("bounded node count");
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-cognitive-types/src/contract_tests.rs:518:9
+    |
+518 |         u16::try_from(overfull.active_nodes.len()).expect("bounded active count");
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: `codex-hepta-cognitive-types` (lib test) generated 30 warnings
+    Checking codex-hepta-memory-retrieval v0.0.0 (/workspace/scratch/528d510b462f/v6-native-leaf-02/hepta-memory-retrieval)
+    Checking codex-hepta-context-compiler v0.0.0 (/workspace/scratch/528d510b462f/v6-native-leaf-02/hepta-context-compiler)
+warning: used `expect()` on a `Result` value
+  --> hepta-memory-retrieval/src/decision_tests.rs:43:5
+   |
+43 | /     CognitiveSnapshotKeyV1::new(LaneCGenerationVectorV1 {
+44 | |         scope_id: id("scope:assignment"),
+45 | |         purpose_id: id("purpose:assignment"),
+46 | |         memory_ledger_frontier: 10,
+...  |
+60 | |     })
+61 | |     .expect("snapshot key")
+   | |___________________________^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+   = note: requested on the command line with `-D clippy::expect-used`
+
+warning: used `expect()` on a `Result` value
+  --> hepta-memory-retrieval/src/decision_tests.rs:65:5
+   |
+65 | /     compile_cue(
+66 | |         id("cue:assignment"),
+67 | |         digest("objective"),
+68 | |         digest("approved-context"),
+...  |
+73 | |     .expect("cue")
+   | |__________________^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/decision_tests.rs:106:19
+    |
+106 |       let receipt = RetrievalGeneratorReceiptV1::new(
+    |  ___________________^
+107 | |         owner,
+108 | |         cue().snapshot_key.vector_digest,
+109 | |         digest(&format!("owner-generation:{owner:?}")),
+...   |
+113 | |     .expect("generator receipt");
+    | |________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/decision_tests.rs:145:5
+    |
+145 | /     EngramSnapshotV1::new(
+146 | |         cue.snapshot_key.vector_digest,
+147 | |         digest("engram-generation"),
+148 | |         vec![
+...   |
+174 | |     .expect("engram")
+    | |_____________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/decision_tests.rs:187:17
+    |
+187 |       let input = GeneratedCandidateInputV1::new(vec![
+    |  _________________^
+188 | |         batch(
+189 | |             RetrievalGeneratorOwnerV1::CognitiveLexical,
+190 | |             vec![
+...   |
+204 | |     ])
+205 | |     .expect("input");
+    | |____________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/decision_tests.rs:206:20
+    |
+206 |     let dynamics = EngramDynamicsPolicyV1::product_default().expect("dynamics");
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/decision_tests.rs:208:9
+    |
+208 |         recall_generated_with_engram(&cue, &policy, &input, &engram(), &dynamics).expect("recall");
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/decision_tests.rs:216:9
+    |
+216 |         observe_retrieval_assignment(&cue, &policy, &input, &recall).expect("assignment");
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/decision_tests.rs:222:5
+    |
+222 |     observation.validate().expect("valid assignment");
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/decision_tests.rs:229:9
+    |
+229 |         observe_retrieval_assignment(&cue, &policy, &input, &recall).expect("assignment");
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/decision_tests.rs:242:17
+    |
+242 |       let input = GeneratedCandidateInputV1::new(vec![
+    |  _________________^
+243 | |         batch(
+244 | |             RetrievalGeneratorOwnerV1::CognitiveLexical,
+245 | |             vec![
+...   |
+256 | |     ])
+257 | |     .expect("input");
+    | |____________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/decision_tests.rs:258:18
+    |
+258 |       let recall = recall_generated_with_engram(
+    |  __________________^
+259 | |         &cue,
+260 | |         &policy,
+261 | |         &input,
+...   |
+265 | |     .expect("recall");
+    | |_____________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/decision_tests.rs:263:10
+    |
+263 |         &EngramDynamicsPolicyV1::product_default().expect("dynamics"),
+    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/decision_tests.rs:267:9
+    |
+267 |         observe_retrieval_assignment(&cue, &policy, &input, &recall).expect("assignment");
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/decision_tests.rs:278:9
+    |
+278 |         observe_retrieval_assignment(&cue, &policy, &input, &recall).expect("assignment");
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+  --> hepta-memory-retrieval/src/engram_tests.rs:30:5
+   |
+30 | /     CognitiveSnapshotKeyV1::new(LaneCGenerationVectorV1 {
+31 | |         scope_id: id("scope:engram"),
+32 | |         purpose_id: id("purpose:recall"),
+33 | |         memory_ledger_frontier: 10,
+...  |
+47 | |     })
+48 | |     .expect("snapshot key")
+   | |___________________________^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:143:17
+    |
+143 |       let plain = crate::recall(&cue, &retrieval_policy, vec![high.clone(), low.clone()])
+    |  _________________^
+144 | |         .expect("plain recall");
+    | |_______________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:147:20
+    |
+147 |       let snapshot = EngramSnapshotV1::new(
+    |  ____________________^
+148 | |         cue.snapshot_key.vector_digest,
+149 | |         digest("engram-generation"),
+150 | |         vec![
+...   |
+171 | |     .expect("engram snapshot");
+    | |______________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:172:24
+    |
+172 |     let mut dynamics = EngramDynamicsPolicyV1::product_default().expect("policy");
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:176:18
+    |
+176 |       let packet = recall_with_engram(
+    |  __________________^
+177 | |         &cue,
+178 | |         &retrieval_policy,
+179 | |         vec![high, low],
+...   |
+183 | |     .expect("engram recall");
+    | |____________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on an `Option` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:187:18
+    |
+187 |     let engram = packet.engram.as_ref().expect("engram receipt");
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is `None`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:217:9
+    |
+217 |         crate::recall(&cue, &retrieval_policy, candidates.clone()).expect("plain recall");
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:220:34
+    |
+220 |       let no_recurrence_snapshot = EngramSnapshotV1::new(
+    |  __________________________________^
+221 | |         cue.snapshot_key.vector_digest,
+222 | |         digest("engram-no-recurrence"),
+223 | |         nodes.clone(),
+...   |
+226 | |     .expect("no recurrence snapshot");
+    | |_____________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:227:29
+    |
+227 |     let mut no_recurrence = EngramDynamicsPolicyV1::product_default().expect("policy");
+    |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:233:32
+    |
+233 |       let no_recurrence_packet = recall_with_engram(
+    |  ________________________________^
+234 | |         &cue,
+235 | |         &retrieval_policy,
+236 | |         candidates.clone(),
+...   |
+240 | |     .expect("no recurrence recall");
+    | |___________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on an `Option` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:241:33
+    |
+241 |     let no_recurrence_receipt = no_recurrence_packet.engram.as_ref().expect("engram");
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is `None`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:245:31
+    |
+245 |       let inhibition_snapshot = EngramSnapshotV1::new(
+    |  _______________________________^
+246 | |         cue.snapshot_key.vector_digest,
+247 | |         digest("engram-inhibition-ablation"),
+248 | |         nodes,
+...   |
+251 | |     .expect("inhibition snapshot");
+    | |__________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:252:31
+    |
+252 |     let mut with_inhibition = EngramDynamicsPolicyV1::product_default().expect("policy");
+    |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:261:21
+    |
+261 |       let inhibited = recall_with_engram(
+    |  _____________________^
+262 | |         &cue,
+263 | |         &retrieval_policy,
+264 | |         candidates.clone(),
+...   |
+268 | |     .expect("inhibited recall");
+    | |_______________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:269:23
+    |
+269 |       let uninhibited = recall_with_engram(
+    |  _______________________^
+270 | |         &cue,
+271 | |         &retrieval_policy,
+272 | |         candidates,
+...   |
+276 | |     .expect("uninhibited recall");
+    | |_________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on an `Option` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:277:29
+    |
+277 |     let inhibited_receipt = inhibited.engram.as_ref().expect("inhibited engram");
+    |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is `None`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on an `Option` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:278:31
+    |
+278 |     let uninhibited_receipt = uninhibited.engram.as_ref().expect("uninhibited engram");
+    |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is `None`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:309:20
+    |
+309 |       let snapshot = EngramSnapshotV1::new(
+    |  ____________________^
+310 | |         cue.snapshot_key.vector_digest,
+311 | |         digest("engram-generation"),
+312 | |         nodes,
+...   |
+315 | |     .expect("snapshot");
+    | |_______________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:316:24
+    |
+316 |     let mut dynamics = EngramDynamicsPolicyV1::product_default().expect("policy");
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:321:17
+    |
+321 |     let union = build_candidate_union(&cue, &retrieval_policy(16), candidates).expect("union");
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:322:19
+    |
+322 |     let receipt = settle_engram(&cue, &union, &snapshot, &dynamics).expect("settle");
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:335:20
+    |
+335 |       let snapshot = EngramSnapshotV1::new(
+    |  ____________________^
+336 | |         cue.snapshot_key.vector_digest,
+337 | |         digest("engram-generation"),
+338 | |         vec![
+...   |
+359 | |     .expect("snapshot");
+    | |_______________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:360:24
+    |
+360 |     let mut dynamics = EngramDynamicsPolicyV1::product_default().expect("policy");
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:362:18
+    |
+362 |       let packet = recall_with_engram(&cue, &retrieval_policy(2), candidates, &snapshot, &dynamics)
+    |  __________________^
+363 | |         .expect("recall");
+    | |_________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on an `Option` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:370:10
+    |
+370 |           !packet
+    |  __________^
+371 | |             .engram
+372 | |             .as_ref()
+373 | |             .expect("engram")
+    | |_____________________________^
+    |
+    = note: if this value is `None`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:382:24
+    |
+382 |       let mut snapshot = EngramSnapshotV1::new(
+    |  ________________________^
+383 | |         cue.snapshot_key.vector_digest,
+384 | |         digest("engram-generation"),
+385 | |         vec![node(
+...   |
+393 | |     .expect("snapshot");
+    | |_______________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:400:20
+    |
+400 |       let snapshot = EngramSnapshotV1::new(
+    |  ____________________^
+401 | |         cue.snapshot_key.vector_digest,
+402 | |         digest("engram-generation"),
+403 | |         vec![node(
+...   |
+411 | |     .expect("snapshot");
+    | |_______________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:412:17
+    |
+412 |       let union = build_candidate_union(
+    |  _________________^
+413 | |         &cue,
+414 | |         &retrieval_policy(1),
+415 | |         vec![candidate(1, FixedQ32::ONE.raw())],
+416 | |     )
+417 | |     .expect("union");
+    | |____________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:418:18
+    |
+418 |     let policy = EngramDynamicsPolicyV1::product_default().expect("policy");
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:419:23
+    |
+419 |     let mut receipt = settle_engram(&cue, &union, &snapshot, &policy).expect("receipt");
+    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:430:20
+    |
+430 |       let snapshot = EngramSnapshotV1::new(
+    |  ____________________^
+431 | |         cue.snapshot_key.vector_digest,
+432 | |         digest("engram-generation"),
+433 | |         vec![node(
+...   |
+441 | |     .expect("snapshot");
+    | |_______________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:442:17
+    |
+442 |       let union = build_candidate_union(
+    |  _________________^
+443 | |         &cue,
+444 | |         &retrieval_policy(1),
+445 | |         vec![candidate(1, FixedQ32::ONE.raw())],
+446 | |     )
+447 | |     .expect("union");
+    | |____________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:448:18
+    |
+448 |     let policy = EngramDynamicsPolicyV1::product_default().expect("policy");
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:450:31
+    |
+450 |     let mut missing_support = settle_engram(&cue, &union, &snapshot, &policy).expect("receipt");
+    |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:459:9
+    |
+459 |         settle_engram(&cue, &union, &snapshot, &policy).expect("receipt");
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:471:30
+    |
+471 |     let mut wrong_coverage = settle_engram(&cue, &union, &snapshot, &policy).expect("receipt");
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:482:22
+    |
+482 |     let mut policy = EngramDynamicsPolicyV1::product_default().expect("default");
+    |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:488:22
+    |
+488 |     let mut policy = EngramDynamicsPolicyV1::product_default().expect("default");
+    |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:533:20
+    |
+533 |       let snapshot = EngramSnapshotV1::new(
+    |  ____________________^
+534 | |         cue.snapshot_key.vector_digest,
+535 | |         digest("qualification-engram-generation"),
+536 | |         nodes,
+...   |
+539 | |     .expect("qualification snapshot");
+    | |_____________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:541:20
+    |
+541 |     let dynamics = EngramDynamicsPolicyV1::product_default().expect("dynamics");
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:547:22
+    |
+547 |           let packet = recall_with_engram(&cue, &policy, candidates.clone(), &snapshot, &dynamics)
+    |  ______________________^
+548 | |             .expect("HNMF recall");
+    | |__________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on an `Option` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:554:21
+    |
+554 |     let resources = last_resources.expect("resource receipt");
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is `None`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:610:20
+    |
+610 |       let snapshot = EngramSnapshotV1::new(
+    |  ____________________^
+611 | |         cue.snapshot_key.vector_digest,
+612 | |         digest("qualification-full-structural-ceiling"),
+613 | |         nodes,
+...   |
+616 | |     .expect("full structural-ceiling snapshot");
+    | |_______________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:620:5
+    |
+620 |     snapshot.validate().expect("structural ceiling validates");
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:624:20
+    |
+624 |     let dynamics = EngramDynamicsPolicyV1::product_default().expect("dynamics");
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:631:22
+    |
+631 |           let packet = recall_with_engram(&cue, &policy, candidates.clone(), &snapshot, &dynamics)
+    |  ______________________^
+632 | |             .expect("full-ceiling HNMF recall");
+    | |_______________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on an `Option` value
+   --> hepta-memory-retrieval/src/engram_tests.rs:638:21
+    |
+638 |     let resources = last_resources.expect("resource receipt");
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is `None`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/generation_bound_tests.rs:329:9
+    |
+329 |         u32::try_from(MAX_GENERATION_BOUND_CANDIDATES).expect("bound");
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on an `Option` value
+   --> hepta-memory-retrieval/src/generation_bound_tests.rs:390:16
+    |
+390 |       let swap = (pivot + 1..values.len())
+    |  ________________^
+391 | |         .rev()
+392 | |         .find(|index| values[*index] > values[pivot])
+393 | |         .expect("permutation successor");
+    | |________________________________________^
+    |
+    = note: if this value is `None`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/generator_tests.rs:162:5
+    |
+162 |     cue.validate().expect("compiled cue validates");
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/generator_tests.rs:180:21
+    |
+180 |       let exhausted = GeneratedCandidateInputV1::new(vec![batch(
+    |  _____________________^
+181 | |         RetrievalGeneratorOwnerV1::CognitiveLexical,
+182 | |         vec![candidate(
+183 | |             record.clone(),
+...   |
+189 | |     )])
+190 | |     .expect("exhausted input");
+    | |______________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/generator_tests.rs:191:19
+    |
+191 |       let limited = GeneratedCandidateInputV1::new(vec![batch(
+    |  ___________________^
+192 | |         RetrievalGeneratorOwnerV1::CognitiveLexical,
+193 | |         vec![candidate(record, RetrievalChannelV1::Lexical, 1, "support")],
+194 | |         RetrievalSourceCompletenessV1::LimitReached,
+195 | |     )])
+196 | |     .expect("limited input");
+    | |____________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/generator_tests.rs:206:17
+    |
+206 |       let input = GeneratedCandidateInputV1::new(vec![
+    |  _________________^
+207 | |         batch(
+208 | |             RetrievalGeneratorOwnerV1::CognitiveEntity,
+209 | |             vec![candidate(
+...   |
+227 | |     ])
+228 | |     .expect("merged input");
+    | |___________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/generator_tests.rs:229:21
+    |
+229 |     let flattened = input.flattened_candidates().expect("flatten");
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/generator_tests.rs:237:23
+    |
+237 |       let mut receipt = RetrievalGeneratorReceiptV1::new(
+    |  _______________________^
+238 | |         RetrievalGeneratorOwnerV1::CognitiveTemporal,
+239 | |         cue().snapshot_key.vector_digest,
+240 | |         digest("owner-generation"),
+...   |
+244 | |     .expect("receipt");
+    | |______________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/generator_tests.rs:274:17
+    |
+274 |                 u32::try_from(number).expect("rank"),
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/generator_tests.rs:285:17
+    |
+285 |                 u32::try_from(index + 1).expect("rank"),
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/generator_tests.rs:309:17
+    |
+309 |       let input = GeneratedCandidateInputV1::new(vec![batch(
+    |  _________________^
+310 | |         RetrievalGeneratorOwnerV1::CognitiveLexical,
+311 | |         vec![candidate(
+312 | |             record(1),
+...   |
+318 | |     )])
+319 | |     .expect("input");
+    | |____________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/generator_tests.rs:321:25
+    |
+321 |       let mut generated = build_candidate_union_from_generated(&cue, &lexical_policy(), &input)
+    |  _________________________^
+322 | |         .expect("generated union");
+    | |__________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/generator_tests.rs:324:23
+    |
+324 |       let replacement = RetrievalGeneratorReceiptV1::new(
+    |  _______________________^
+325 | |         RetrievalGeneratorOwnerV1::CognitiveLexical,
+326 | |         digest("different-generation"),
+327 | |         digest("different-owner-generation"),
+...   |
+331 | |     .expect("replacement receipt");
+    | |__________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/generator_tests.rs:362:17
+    |
+362 |       let input = GeneratedCandidateInputV1::new(vec![batch(
+    |  _________________^
+363 | |         RetrievalGeneratorOwnerV1::CognitiveLexical,
+364 | |         vec![candidate(
+365 | |             record(1),
+...   |
+371 | |     )])
+372 | |     .expect("input");
+    | |____________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/generator_tests.rs:380:17
+    |
+380 |       let input = GeneratedCandidateInputV1::new(vec![
+    |  _________________^
+381 | |         batch(
+382 | |             RetrievalGeneratorOwnerV1::CognitiveLexical,
+383 | |             vec![candidate(
+...   |
+396 | |     ])
+397 | |     .expect("input");
+    | |____________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/generator_tests.rs:408:17
+    |
+408 |       let input = GeneratedCandidateInputV1::new(vec![
+    |  _________________^
+409 | |         batch(
+410 | |             RetrievalGeneratorOwnerV1::CognitiveLexical,
+411 | |             vec![candidate(
+...   |
+424 | |     ])
+425 | |     .expect("bounded unavailable batch");
+    | |________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/generator_tests.rs:479:21
+    |
+479 |           let input = GeneratedCandidateInputV1::new(
+    |  _____________________^
+480 | |             order.iter().map(|index| batches[*index].clone()).collect(),
+481 | |         )
+482 | |         .expect("input");
+    | |________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/generator_tests.rs:483:22
+    |
+483 |         let recall = recall_generated(&cue, &policy, &input).expect("recall");
+    |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on an `Option` value
+   --> hepta-memory-retrieval/src/generator_tests.rs:502:16
+    |
+502 |       let swap = (pivot + 1..values.len())
+    |  ________________^
+503 | |         .rev()
+504 | |         .find(|index| values[*index] > values[pivot])
+505 | |         .expect("permutation successor");
+    | |________________________________________^
+    |
+    = note: if this value is `None`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on an `Option` value
+   --> hepta-memory-retrieval/src/generator_tests.rs:558:21
+    |
+558 |       let workspace = retrieval_crate
+    |  _____________________^
+559 | |         .parent()
+560 | |         .expect("memory.retrieval must live inside the codex-rs workspace");
+    | |___________________________________________________________________________^
+    |
+    = note: if this value is `None`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+  --> hepta-memory-retrieval/src/v2_tests.rs:13:5
+   |
+13 |     StableId::new(value).expect("fixture identifier is valid")
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+  --> hepta-memory-retrieval/src/v2_tests.rs:20:23
+   |
+20 |             revision: Revision::new(/*value*/ 1).expect("fixture revision is valid"),
+   |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+  --> hepta-memory-retrieval/src/v2_tests.rs:50:26
+   |
+50 |     let expected_input = request.binding_digest_v2().expect("valid input binding");
+   |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+  --> hepta-memory-retrieval/src/v2_tests.rs:51:18
+   |
+51 |     let legacy = retrieve(request.clone()).expect("legacy retrieval succeeds");
+   |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+  --> hepta-memory-retrieval/src/v2_tests.rs:52:17
+   |
+52 |     let bound = retrieve_v2(request).expect("V2 retrieval succeeds");
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+  --> hepta-memory-retrieval/src/v2_tests.rs:75:16
+   |
+75 |     let full = retrieve_v2(request()).expect("full retrieval succeeds");
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+  --> hepta-memory-retrieval/src/v2_tests.rs:78:19
+   |
+78 |     let shorter = retrieve_v2(shorter_request).expect("short retrieval succeeds");
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+  --> hepta-memory-retrieval/src/v2_tests.rs:96:20
+   |
+96 |     let baseline = retrieve_v2(baseline_request.clone()).expect("baseline succeeds");
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/v2_tests.rs:104:23
+    |
+104 |         let receipt = retrieve_v2(variant).expect("variant succeeds");
+    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/v2_tests.rs:118:20
+    |
+118 |     let baseline = retrieve_v2(baseline_request.clone()).expect("baseline succeeds");
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/v2_tests.rs:126:24
+    |
+126 |         let expected = variant.binding_digest_v2().expect("valid variant input");
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/v2_tests.rs:127:23
+    |
+127 |         let receipt = retrieve_v2(variant).expect("variant succeeds");
+    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/v2_tests.rs:148:17
+    |
+148 |     let first = retrieve_v2(first_request.clone()).expect("first succeeds");
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-memory-retrieval/src/v2_tests.rs:151:18
+    |
+151 |     let second = retrieve_v2(first_request).expect("permutation succeeds");
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect_err()` on a `Result` value
+   --> hepta-memory-retrieval/src/v2_tests.rs:164:28
+    |
+164 |         let legacy_error = retrieve(request.clone()).expect_err("V1 rejects invalid input");
+    |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Ok`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: `codex-hepta-memory-retrieval` (lib test) generated 97 warnings
+warning: empty line after doc comment
+   --> hepta-context-compiler/src/v2.rs:99:5
+    |
+ 99 | /     /// context.compiler does not reinterpret it as a raw preparation digest.
+100 | |
+    | |_^
+101 |       fn verify_delivery(
+    |       ------------------ the comment documents this function
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#empty_line_after_doc_comments
+    = note: `#[warn(clippy::empty_line_after_doc_comments)]` on by default
+    = help: if the empty line is unintentional, remove it
+
+warning: this function has too many arguments (8/7)
+    --> hepta-context-compiler/src/v2.rs:1995:1
+     |
+1995 | / pub fn observe_delivery(
+1996 | |     preparation: &ContextDeliveryPreparationV2,
+1997 | |     attachment: &ContextAttachmentV2,
+1998 | |     serialization: &SerializedContextV2,
+...    |
+2003 | |     observed_unix_ms: u64,
+2004 | | ) -> Result<ContextDeliveryReceiptV2, ContextCompilerV2Error> {
+     | |_____________________________________________________________^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#too_many_arguments
+     = note: `#[warn(clippy::too_many_arguments)]` on by default
+
+warning: `codex-hepta-context-compiler` (lib) generated 2 warnings
+    Checking native-memory-bridge v0.0.0 (/workspace/scratch/528d510b462f/v6-native-leaf-02/bridge)
+warning: used `expect()` on a `Result` value
+ --> hepta-context-compiler/src/candidate_bound_tests.rs:7:5
+  |
+7 |     StableId::new(value).expect("fixture identifier is valid")
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: if this value is an `Err`, it will panic
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+  = note: requested on the command line with `-D clippy::expect-used`
+
+warning: used `expect()` on a `Result` value
+  --> hepta-context-compiler/src/candidate_bound_tests.rs:37:24
+   |
+37 |     let first_legacy = compile(first_request.clone()).expect("legacy compilation succeeds");
+   |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+  --> hepta-context-compiler/src/candidate_bound_tests.rs:38:25
+   |
+38 |     let second_legacy = compile(second_request.clone()).expect("legacy compilation succeeds");
+   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+  --> hepta-context-compiler/src/candidate_bound_tests.rs:41:17
+   |
+41 |     let first = compile_candidate_bound(first_request).expect("bound compilation succeeds");
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+  --> hepta-context-compiler/src/candidate_bound_tests.rs:42:18
+   |
+42 |     let second = compile_candidate_bound(second_request).expect("bound compilation succeeds");
+   |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+  --> hepta-context-compiler/src/candidate_bound_tests.rs:70:17
+   |
+70 |     let first = compile_candidate_bound(first_request.clone()).expect("first succeeds");
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+  --> hepta-context-compiler/src/candidate_bound_tests.rs:71:18
+   |
+71 |     let second = compile_candidate_bound(second_request).expect("second succeeds");
+   |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+  --> hepta-context-compiler/src/candidate_bound_tests.rs:75:17
+   |
+75 |     let third = compile_candidate_bound(first_request).expect("third succeeds");
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+  --> hepta-context-compiler/src/candidate_bound_tests.rs:81:17
+   |
+81 |       let first = compile_candidate_bound(request(vec![
+   |  _________________^
+82 | |         item("evidence:head", 8),
+83 | |         item("evidence:tail-a", 8),
+84 | |     ]))
+85 | |     .expect("first succeeds");
+   | |_____________________________^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+  --> hepta-context-compiler/src/candidate_bound_tests.rs:86:18
+   |
+86 |       let second = compile_candidate_bound(request(vec![
+   |  __________________^
+87 | |         item("evidence:head", 8),
+88 | |         item("evidence:tail-b", 8),
+89 | |     ]))
+90 | |     .expect("second succeeds");
+   | |______________________________^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-context-compiler/src/candidate_bound_tests.rs:120:19
+    |
+120 |       let receipt = compile_candidate_bound_with_requirements(request, requirements)
+    |  ___________________^
+121 | |         .expect("required compilation succeeds");
+    | |________________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+ --> hepta-context-compiler/src/requirements_tests.rs:4:5
+  |
+4 |     StableId::new(value).expect("fixture identifier is valid")
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: if this value is an `Err`, it will panic
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `unwrap()` on a `Result` value
+  --> hepta-context-compiler/src/requirements_tests.rs:45:19
+   |
+45 |     let receipt = compile_with_requirements(request, requirements).unwrap();
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+   = note: requested on the command line with `-D clippy::unwrap-used`
+
+warning: used `unwrap()` on a `Result` value
+  --> hepta-context-compiler/src/requirements_tests.rs:76:20
+   |
+76 |     let expected = compile_with_requirements(request.clone(), requirements.clone()).unwrap();
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-context-compiler/src/requirements_tests.rs:147:17
+    |
+147 |     let first = compile_with_requirements(request.clone(), requirements.clone()).unwrap();
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-context-compiler/src/requirements_tests.rs:150:18
+    |
+150 |     let second = compile_with_requirements(request, changed).unwrap();
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: `codex-hepta-context-compiler` (lib test) generated 18 warnings (2 duplicates)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 11.29s

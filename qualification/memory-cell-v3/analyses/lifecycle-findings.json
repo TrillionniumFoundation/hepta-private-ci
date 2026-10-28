@@ -1,0 +1,146 @@
+{
+  "all_lossless_exact": true,
+  "all_parameter_retention_gate": true,
+  "audit_limits": [
+    "Saved model parsing and residual decoding reuse production format parsers; parameter inference arithmetic, source targets and metrics are independently recomputed.",
+    "Original fault execution and process isolation are retained receipts, not new fault executions by this auditor.",
+    "No historical elapsed-time proof, distributed consensus, production admission or weight-unlearning certification."
+  ],
+  "domain_seed_runs": 15,
+  "domains": [
+    {
+      "domain": "co2",
+      "max_old_exact_regression": 0.0125,
+      "old_parameter_retention_gate_passes": 5,
+      "raw_deleted_coincidental_matches": 0,
+      "stages": [
+        {
+          "lossless_exact_mean": 1.0,
+          "parameter_exact_mean": 0.029166666666666667,
+          "parameter_mae_mean": 0.12702083333333333,
+          "revoked_refusals_total": 0,
+          "stage": "initial"
+        },
+        {
+          "lossless_exact_mean": 1.0,
+          "parameter_exact_mean": 0.026119402985074626,
+          "parameter_mae_mean": 0.13757462686567165,
+          "revoked_refusals_total": 0,
+          "stage": "append"
+        },
+        {
+          "lossless_exact_mean": 1.0,
+          "parameter_exact_mean": 0.021393034825870648,
+          "parameter_mae_mean": 0.175636815920398,
+          "revoked_refusals_total": 0,
+          "stage": "correct"
+        },
+        {
+          "lossless_exact_mean": 1.0,
+          "parameter_exact_mean": 0.08919597989949749,
+          "parameter_mae_mean": 0.22752261306532662,
+          "revoked_refusals_total": 40,
+          "stage": "withdraw"
+        },
+        {
+          "lossless_exact_mean": 1.0,
+          "parameter_exact_mean": 0.08919597989949749,
+          "parameter_mae_mean": 0.22752261306532662,
+          "revoked_refusals_total": 40,
+          "stage": "clean_replay"
+        }
+      ]
+    },
+    {
+      "domain": "temperature",
+      "max_old_exact_regression": 0.0045871559633027525,
+      "old_parameter_retention_gate_passes": 5,
+      "raw_deleted_coincidental_matches": 1,
+      "stages": [
+        {
+          "lossless_exact_mean": 1.0,
+          "parameter_exact_mean": 0.05363984674329502,
+          "parameter_mae_mean": 0.047078544061302685,
+          "revoked_refusals_total": 0,
+          "stage": "initial"
+        },
+        {
+          "lossless_exact_mean": 1.0,
+          "parameter_exact_mean": 0.0656392694063927,
+          "parameter_mae_mean": 0.049885844748858446,
+          "revoked_refusals_total": 0,
+          "stage": "append"
+        },
+        {
+          "lossless_exact_mean": 1.0,
+          "parameter_exact_mean": 0.0978310502283105,
+          "parameter_mae_mean": 0.06648630136986301,
+          "revoked_refusals_total": 0,
+          "stage": "correct"
+        },
+        {
+          "lossless_exact_mean": 1.0,
+          "parameter_exact_mean": 0.09713302752293579,
+          "parameter_mae_mean": 0.0664908256880734,
+          "revoked_refusals_total": 40,
+          "stage": "withdraw"
+        },
+        {
+          "lossless_exact_mean": 1.0,
+          "parameter_exact_mean": 0.09713302752293579,
+          "parameter_mae_mean": 0.0664908256880734,
+          "revoked_refusals_total": 40,
+          "stage": "clean_replay"
+        }
+      ]
+    },
+    {
+      "domain": "sunspots",
+      "max_old_exact_regression": 0.0018094089264173705,
+      "old_parameter_retention_gate_passes": 5,
+      "raw_deleted_coincidental_matches": 0,
+      "stages": [
+        {
+          "lossless_exact_mean": 1.0,
+          "parameter_exact_mean": 0.006024096385542169,
+          "parameter_mae_mean": 11.337449799196786,
+          "revoked_refusals_total": 0,
+          "stage": "initial"
+        },
+        {
+          "lossless_exact_mean": 1.0,
+          "parameter_exact_mean": 0.005415162454873646,
+          "parameter_mae_mean": 11.316546329723225,
+          "revoked_refusals_total": 0,
+          "stage": "append"
+        },
+        {
+          "lossless_exact_mean": 1.0,
+          "parameter_exact_mean": 0.004271961492178099,
+          "parameter_mae_mean": 11.31777376654633,
+          "revoked_refusals_total": 0,
+          "stage": "correct"
+        },
+        {
+          "lossless_exact_mean": 1.0,
+          "parameter_exact_mean": 0.0048854041013269,
+          "parameter_mae_mean": 11.302708082026538,
+          "revoked_refusals_total": 40,
+          "stage": "withdraw"
+        },
+        {
+          "lossless_exact_mean": 1.0,
+          "parameter_exact_mean": 0.0048854041013269,
+          "parameter_mae_mean": 11.302708082026538,
+          "revoked_refusals_total": 40,
+          "stage": "clean_replay"
+        }
+      ]
+    }
+  ],
+  "fault_probes_recorded_rejected": 75,
+  "manifest_sha256": "5f52760eebc7407811b7778d09795e843bc73d1bbf9fe48cf27dfa5fad40af42",
+  "new_processes": 30,
+  "source_commit": "66dc3a2ed500a60b8abb6c01eb6fe9d501dc8ea2",
+  "stage_rows": 135180
+}

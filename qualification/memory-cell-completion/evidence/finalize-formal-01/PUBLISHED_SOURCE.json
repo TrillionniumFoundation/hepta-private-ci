@@ -1,0 +1,270 @@
+{
+  "artifact_id": 12845041139,
+  "artifact_zip": {
+    "bytes": 565627,
+    "sha256": "d342f64c9d96b38c3bd737eab24adbc0e0f7820c8aebb1ade904bb4116541214"
+  },
+  "branch": "research/memory-cell-completion-20261028",
+  "branch_source_readback": "d6ef56de0a786e5c291602d4801125ae55f3be15",
+  "ci_after_tracked_tree": "28b310cc8db30270110605f8509f95b772451fd6",
+  "ci_job": 123027755943,
+  "ci_run": 40748270215,
+  "formatters_executed": false,
+  "historical_note": "The temporary workspace and the first private-index verification receipt were lost during interrupted connector calls. The current recovered files and this receipt were independently reconstructed from fixed GitHub and CI identities; no claim is made that derived recovery receipts are byte-identical to lost helper files.",
+  "input_tree": "8f55bde73e94040e4f0db1572966a2882751a1d9",
+  "models_executed": false,
+  "observed_at_utc": "2026-10-28T23:51:30.137699+00:00",
+  "parent_commit": "d4193c842bba8113719ef36f451cbc9061e34a7f",
+  "passed": true,
+  "patch": {
+    "bytes": 297234,
+    "sha256": "cf1ea514c924aab13cadb850942fa2e04b1075f2f5b553eb777c3cbcb0f87a71"
+  },
+  "recovery_method": "Restore the original ZIP by its frozen identity; fetch the 33 before files at the fixed parent commit; verify their Git blob identities; git apply --check and git apply the original patch; verify every after SHA-256 and Git blob. Publish those exact blobs on the exact input tree, assert the resulting complete tree equals the original CI output, then update the branch with an expected-head lease and read back both ref and commit tree.",
+  "schema": "hepta.memory.finalizer-published-source.v1",
+  "source_commit": "d6ef56de0a786e5c291602d4801125ae55f3be15",
+  "source_commit_parent_readback": "d4193c842bba8113719ef36f451cbc9061e34a7f",
+  "source_commit_tree_readback": "28b310cc8db30270110605f8509f95b772451fd6",
+  "source_files": [
+    {
+      "before_git_blob_sha": "85958d0afec424f31a67dead8c8a9f4b35a136d0",
+      "bytes": 15469,
+      "git_blob_sha": "6489018d17ddce992831c9a43263c200328a2811",
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "sha256": "ed43d1386e80bf2145741ac62117cfb6059bbc0d70233a47c936a5f96385e28d"
+    },
+    {
+      "before_git_blob_sha": "4ac868082aee8394e57e060c3ee4ac9cdc12a514",
+      "bytes": 2389,
+      "git_blob_sha": "6fa0a50ec3302780df8a9f7142ca089e36b72c1a",
+      "path": "codex-rs/hepta-agentd/src/memory_cell_address_worker_profile_v9.rs",
+      "sha256": "688f1fbc9e20a9f677cf191199a4ebf2e0414af83e5c0e1f63e721cba2f5970b"
+    },
+    {
+      "before_git_blob_sha": "54e3ac53e9cbae1b6f7279b96b87df1fe26a951e",
+      "bytes": 4753,
+      "git_blob_sha": "77cc2b21f266836dc10757d8c60bfb9f11d835d6",
+      "path": "codex-rs/hepta-agentd/src/memory_cell_address_worker_profile_v9_tests.rs",
+      "sha256": "75a4916d82b061714a465f9a4b27f7105d997601ad552b5797b9934fa4fcf52b"
+    },
+    {
+      "before_git_blob_sha": "65f44cb836ef836c3ad93da0fd748bda0d862921",
+      "bytes": 15940,
+      "git_blob_sha": "2787ea0709e57234ad28a2a89de3ada1abb407f3",
+      "path": "codex-rs/hepta-agentd/src/memory_cell_language_v9_tests.rs",
+      "sha256": "6282e97e64dd45fd44f184df019f96ea46ae96883e64c23c86441d5b40d00227"
+    },
+    {
+      "before_git_blob_sha": "2e98de0761642269bd49d4dc4c3578fd5486112e",
+      "bytes": 8152,
+      "git_blob_sha": "08931deda18feb9f466077f90975d909666dedd4",
+      "path": "codex-rs/hepta-agentd/src/memory_cell_migration_v9_case_support.rs",
+      "sha256": "0df83a9eebea41b4997cab2796e0048412279e1daa4b7714dccae333db3a004a"
+    },
+    {
+      "before_git_blob_sha": "b6da6a50dea726e265987070872fc5ebc87d2770",
+      "bytes": 6730,
+      "git_blob_sha": "1ff8fbc1661838b43bc1a171fb77cfa6706ad4cd",
+      "path": "codex-rs/hepta-agentd/src/memory_cell_migration_v9_concurrency_tests.rs",
+      "sha256": "5b96079942e4ff615f16d1044f8c883138a5ea87097d80deba3eb4cb61b45b16"
+    },
+    {
+      "before_git_blob_sha": "be0a10726ac3d30c25752aee71f648c9f78be780",
+      "bytes": 9899,
+      "git_blob_sha": "0740062071f5bcfcd5338c29d0235524af53fceb",
+      "path": "codex-rs/hepta-agentd/src/memory_cell_migration_v9_image.rs",
+      "sha256": "44e4e924f47bbbcf8eee2dc6536b29fefc9bbd2629c23a7994feb0a24e299d85"
+    },
+    {
+      "before_git_blob_sha": "d22cc591e0570130691638275b38d6ec547af194",
+      "bytes": 8610,
+      "git_blob_sha": "83df989e547551b4814355576b91a3515e8897f2",
+      "path": "codex-rs/hepta-agentd/src/memory_cell_migration_v9_process_support.rs",
+      "sha256": "415c8723cb130e027c8398c0e7927b94130b0a7eb0a0883b3d72412fbd926c48"
+    },
+    {
+      "before_git_blob_sha": "e56ab3294bdd5475a17132fb021a837ead7c64ee",
+      "bytes": 15642,
+      "git_blob_sha": "70e9a569a1e06ff4ea06577511d73b0a80699ea4",
+      "path": "codex-rs/hepta-agentd/src/memory_cell_migration_v9_process_tests.rs",
+      "sha256": "c6d956b239e09aaad49c31b17bf1d2fa715ec74ac29a73fd8366169d1f598097"
+    },
+    {
+      "before_git_blob_sha": "28e81b9f035333fe44638f5c976ce1071f2bd6da",
+      "bytes": 4301,
+      "git_blob_sha": "7fc48cad2f6f839d659d8be249fcbcd329bca0ba",
+      "path": "codex-rs/hepta-agentd/src/memory_cell_migration_v9_receiver.rs",
+      "sha256": "70b44245e52f0fe9b4a4cdaceb3b3137faf090b5ec269535ab45d902571e47ce"
+    },
+    {
+      "before_git_blob_sha": "7d0784902c82b8ff2fdc57b5f33795ca6f24234f",
+      "bytes": 3991,
+      "git_blob_sha": "35c7e9f6cca980c541446f0e81b72a53fa24a677",
+      "path": "codex-rs/hepta-agentd/src/memory_cell_migration_v9_storage.rs",
+      "sha256": "a17f1a7234dd7f2bcfb1dabdf11413c74f63e05e3c25988da2c50455edb83e6a"
+    },
+    {
+      "before_git_blob_sha": "01d7309af446e1a311bbc683b54ca67923a54005",
+      "bytes": 11317,
+      "git_blob_sha": "fbee8549da65806c82a06dc9aae07cce554f5b47",
+      "path": "codex-rs/hepta-agentd/src/memory_cell_migration_v9_store.rs",
+      "sha256": "c5bdf90edab7d203e120be341a2bf53bbc40d2544d413be2f56263aee99b39f2"
+    },
+    {
+      "before_git_blob_sha": "ddac5b99308e44ee827756716bd22a21eebd12ee",
+      "bytes": 9976,
+      "git_blob_sha": "1d001bc7a8bc6f7de620d386cdc6e657d4cc3c0a",
+      "path": "codex-rs/hepta-agentd/src/memory_cell_migration_v9_target_support.rs",
+      "sha256": "b7894037e0b476a24b17543b257f9f9c2eeb5590bab295bf0ba6d2b6de4634b8"
+    },
+    {
+      "before_git_blob_sha": "55799d1c100eb2d04e788cdba8cc0240f00f3c67",
+      "bytes": 10375,
+      "git_blob_sha": "7df408d6d1351af126d35271af0f50ff3fa75e6f",
+      "path": "codex-rs/hepta-agentd/src/memory_cell_migration_v9_taskflow_support.rs",
+      "sha256": "36b249c39416783426af40efca87a5b6211a6d422b4c966446b4b5e844d5eefc"
+    },
+    {
+      "before_git_blob_sha": "19451a160e99cb9917e7533266621c0d3f9ef979",
+      "bytes": 5326,
+      "git_blob_sha": "cea85c060b3dbb95a189f5a7336175cad2940b20",
+      "path": "codex-rs/hepta-agentd/src/memory_cell_migration_v9_taskflow_tests.rs",
+      "sha256": "d75960a01f1db60c1c8825f7bf6a166d023ca930d607be75739bc1d4224a3cc8"
+    },
+    {
+      "before_git_blob_sha": "4ac44dce475af48369501bba972554b8231d2b1f",
+      "bytes": 5646,
+      "git_blob_sha": "6eba3640fa4c26afeed90bbd80fa4af57bafdd8f",
+      "path": "codex-rs/hepta-agentd/src/memory_cell_migration_v9_tests.rs",
+      "sha256": "43306bd7d9b1ae52745171ea79a88da1994668e715152c8ccc817c6f945d9adf"
+    },
+    {
+      "before_git_blob_sha": "840f564bbb2a5dcd1829dc8d3f93b818c8081009",
+      "bytes": 6781,
+      "git_blob_sha": "be24ba4ecb478ffc01cf0b0041ffdeec74a42f85",
+      "path": "codex-rs/hepta-agentd/src/memory_cell_migration_v9_transport.rs",
+      "sha256": "1864545adb0605abf743cafda2ea0e56a47f0c328bef6026c04ab50a7cbf3736"
+    },
+    {
+      "before_git_blob_sha": "f303800a4201f99674a10677c9f314b624f2ac6a",
+      "bytes": 6041,
+      "git_blob_sha": "f0b7ee5c32d401329d93ecbfdc0b5837a6e174ce",
+      "path": "codex-rs/hepta-agentd/src/memory_cell_migration_v9_wire.rs",
+      "sha256": "fcb0a87af670ed0a25aef0f38afb3fa3b70e459d95a92c713c5c801a5428108b"
+    },
+    {
+      "before_git_blob_sha": "b494d487ad6ed8840a4ff8148225ce0fb396b55e",
+      "bytes": 16347,
+      "git_blob_sha": "4e99a7a78364821092c0543f7d9cbc533fd02f6e",
+      "path": "codex-rs/hepta-agentd/src/memory_cell_network.rs",
+      "sha256": "dd29f14dab4f946eefed826182b1ce3ad3b528370d3c6cae1a2a22e7147df768"
+    },
+    {
+      "before_git_blob_sha": "818b13236f64b2c98ab16cb13c705270ba1b5ac6",
+      "bytes": 22611,
+      "git_blob_sha": "4ec417ab5a1c8d7d068b3f0d19a500672cee0111",
+      "path": "codex-rs/hepta-agentd/src/memory_cell_network_process_test_support.rs",
+      "sha256": "3ef5bdc4ee94d409982c93b227e83d0c98e8535e9174deeef9a9486810c0a319"
+    },
+    {
+      "before_git_blob_sha": "006782e01ea434969efcd288dbab86a6289d4167",
+      "bytes": 17038,
+      "git_blob_sha": "88b1b5647399f6311a21231f45da796be83d4e4d",
+      "path": "codex-rs/hepta-agentd/src/memory_cell_v9_continual_tests.rs",
+      "sha256": "309dcc47de53c4df2efc25977bbed698c733fe443a68caf43584b196d7a76e34"
+    },
+    {
+      "before_git_blob_sha": "34a871c9dba9a990422bb55e4ba1babf52558abb",
+      "bytes": 11436,
+      "git_blob_sha": "ca54bd6f6e5f93e7c8461f5ea488799f37549b6c",
+      "path": "codex-rs/hepta-agentd/src/memory_cell_v9_data.rs",
+      "sha256": "82ab0610c7ed894a9396f062da54c37c3a04f49ba97e3867d2f3d47353e8d3ed"
+    },
+    {
+      "before_git_blob_sha": "ca86e773ce8b2d25103148d9d94c628625199056",
+      "bytes": 7159,
+      "git_blob_sha": "4c92cf76b7fe9d87a57b497e4c58bc28fdd7c57b",
+      "path": "codex-rs/hepta-agentd/src/memory_cell_v9_fit.rs",
+      "sha256": "ab61abdd6bcddfb0c305a4ed9105669b84e0247f8918258d169a2fe8fb6cf2e1"
+    },
+    {
+      "before_git_blob_sha": "d8fc6d90f7c333669e15f82479fb7d2fae34f311",
+      "bytes": 8820,
+      "git_blob_sha": "92c2093d95dd9f093eef007eed27d6f1b5bde8e7",
+      "path": "codex-rs/hepta-agentd/src/memory_cell_v9_structure_gate.rs",
+      "sha256": "1ad5ee7223a41753ec153024d3a7827e5b4e40d5269a5b8becf3d7ea9d53442b"
+    },
+    {
+      "before_git_blob_sha": "e4c8e917c4d9495b036d07d3af0fae8e167f7cf8",
+      "bytes": 6862,
+      "git_blob_sha": "9305e8efc2cf5b72918d83b49b64f7aa954a13ce",
+      "path": "codex-rs/hepta-agentd/src/memory_cell_v9_structure_support.rs",
+      "sha256": "1c30590643b44e866796705d97566d77ca6262e54bdfd057b9f540677aba9f5d"
+    },
+    {
+      "before_git_blob_sha": "6c1e1c7be2c631f8c5c07486bfce28590f4391c7",
+      "bytes": 15217,
+      "git_blob_sha": "7aefb8097e93d48b0831d022f8c8f36933ecadab",
+      "path": "codex-rs/hepta-agentd/src/memory_cell_v9_structure_tests.rs",
+      "sha256": "0c513244ecea05796dcd9e6efb38a1b663ad60b3e9a134a75bfde3709695b314"
+    },
+    {
+      "before_git_blob_sha": "c9cbfdb649543a2dc3e1a0bc2c457e39345b55c2",
+      "bytes": 5140,
+      "git_blob_sha": "bf2896adbd0339065287ab0dfd8ebaa4bc07406b",
+      "path": "codex-rs/hepta-agentd/src/memory_structure_runtime_v9.rs",
+      "sha256": "b5343bb73b6c61221b318d1eb9481e4e62fec0a615f8f0064cc279088b2637cb"
+    },
+    {
+      "before_git_blob_sha": "32b17379d413b4f58383c597a98d1094409143e6",
+      "bytes": 11116,
+      "git_blob_sha": "a3e48a9f894a8ad53fe1bc66220d52d8ac0ded26",
+      "path": "codex-rs/hepta-agentd/src/memory_structure_runtime_v9_tests.rs",
+      "sha256": "5e29bee7446ceed896c7e7166d5293e6dd5f4058febc6461cb4b7e095f9eaedb"
+    },
+    {
+      "before_git_blob_sha": "8d482757a18c19bca00a346de890c8e8c1ee5ca3",
+      "bytes": 9901,
+      "git_blob_sha": "d398bd62ff8b26f6f6bd6678f0b9d9f79054b8f5",
+      "path": "codex-rs/hepta-neuron/src/memory_byte_cell_v9.rs",
+      "sha256": "f1d3d0baab48cfac5645ea74bc12c300636a9fb1aeea9e696aeb596453ebe049"
+    },
+    {
+      "before_git_blob_sha": "6308ae5618213e7ae4cf1d2c65e014c1a44d6074",
+      "bytes": 5215,
+      "git_blob_sha": "f28025618166bf1c18518d3fc061d9465b7a1177",
+      "path": "codex-rs/hepta-neuron/src/memory_byte_cell_v9_tests.rs",
+      "sha256": "0ab08a28972d6818e06f03df207feacf8a6d2ca85a34abb1f002a292cccd7429"
+    },
+    {
+      "before_git_blob_sha": "368c65a897ea84b35014e5a8f466abcc2d671bfc",
+      "bytes": 2981,
+      "git_blob_sha": "ca1908d64636beb9eb0a1be7246c2bfa859446d0",
+      "path": "codex-rs/hepta-neuron/src/memory_parameter_cell_v9.rs",
+      "sha256": "8a1f59d44a3bd9d2e7ac09346ee9513b538b1be4765e10985b1c7bb61ec9a04b"
+    },
+    {
+      "before_git_blob_sha": "645cb92df71b50f138346845709ab25045824604",
+      "bytes": 10528,
+      "git_blob_sha": "843878efb8c0649f99ea78d1ad9dc774b15f2491",
+      "path": "codex-rs/hepta-neuron/src/memory_population.rs",
+      "sha256": "f6bf7d1785f711eee70193bfc822ca9f85698eabe8e380bcc368010135078896"
+    },
+    {
+      "before_git_blob_sha": "33d058c1adcbc335777014e09cc9dd54e13a9378",
+      "bytes": 6656,
+      "git_blob_sha": "308c63ba46f27fdf0f9389e32de667b1805461f4",
+      "path": "codex-rs/hepta-neuron/src/memory_population_cache.rs",
+      "sha256": "5ef04f9105cc1b09afbdf2d5b30bb28ad91a32d25cbd04679f1c24de1672b8bb"
+    }
+  ],
+  "source_identity_checks_only": true,
+  "source_tree": "28b310cc8db30270110605f8509f95b772451fd6",
+  "static_review": {
+    "bytes": 14299,
+    "file": "FINAL_PATCH_STATIC_REVIEW.json",
+    "sha256": "de515bc24bef3c0c9ff1056104bc51e394a77a4c90b402f1bf41456d7fcc58e1"
+  },
+  "tests_executed": false,
+  "training_executed": false
+}

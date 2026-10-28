@@ -1,0 +1,42 @@
+{
+  "schema": "memory-cell-research.protocol.v1",
+  "baseline_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "baseline_tree": "15c9d6ea07bf3832de82825a6cc1e8c958dd3d45",
+  "scope": "CPU numerical MemoryCell research; not a pretrained language model or production integration",
+  "seeds": [11, 23, 47, 71, 101],
+  "transfer_seeds": [701, 709, 719],
+  "feature_dim": 128,
+  "num_classes": 64,
+  "cell_rank": 8,
+  "optimizer_steps": 600,
+  "learning_rate": 0.03,
+  "primary_domain_sizes": [24, 24, 24, 24],
+  "capacity_domain_sizes": [[8, 8, 8, 8], [24, 24, 24, 24], [64, 64, 64, 64]],
+  "encoding": "shared frozen hash encoder; model reads typed canonical keys; free-text routing reported separately",
+  "typed_readout_scope": "written-key recall; changing question text does not create a new effective model input",
+  "composition_profile": {"chains": 2, "cells_per_chain": 3, "records_per_cell": 24, "rank": 8, "scaffold": "supplied episodic-to-semantic-to-procedural chain; fixed shared slot vocabulary"},
+  "maintenance_profile": {"initial_records": 24, "additions": 12, "corrections": 8, "deletions": 4, "rank": 8},
+  "growth_profile": {"domains": 2, "records_per_domain": 24, "parent_rank": 16, "child_ranks": [8, 8], "fixed_ranks": [8, 8], "merge_rank": 16, "selection": "sort keys within domain; even indices selection, odd indices hidden test; all keys may be written, but selection/test readout keys are disjoint", "byte_price": 0.000001, "training_second_price": 0.01, "read_second_price": 1.0},
+  "read_modes": {
+    "parameter_only": "fresh process receives only checked parameter artifacts and query keys; no events, targets, replay, raw text or retained hidden state",
+    "hybrid_baseline": "exact and lexical retrieval may read source events; all payload and index bytes counted"
+  },
+  "budget_rule": "count model tensors, routing tensors, manifests and source payload separately; use a single-cell comparator with at least the multi-cell numerical storage budget and report integer-rank rounding; also report actual training work and wall time",
+  "stage_criteria": {
+    "single": "fresh-process exact accuracy >= 0.95 on primary load for every registered seed; publish all capacity and distortion measurements regardless of outcome",
+    "multi": "actual routed accuracy exceeds same-budget single by >= 0.02 and the exploratory seed-cluster 95% interval excludes zero; report oracle gap",
+    "graph": "typed composition exceeds no-edge and valid shuffled-edge ablations; disclose fixed type/program scaffold and include exact chained retrieval",
+    "maintenance": "new/corrected accuracy >= 0.95; old retention regression <= 0.02; revoked lineage cannot serve; clean retrain excludes removed records",
+    "growth": "selected split or merge outperforms same-budget fixed structure on hidden queries and measured total lifecycle cost; selection never reads test targets",
+    "transfer": "frozen writer/reader settings evaluated on independent seeds, domains and pinned real-source facts; broad transfer remains unqualified without independent real task streams"
+  },
+  "qualification_aggregation": "single, graph, maintenance and growth require their criterion on every registered primary seed; multi uses the preregistered paired seed-cluster comparison; transfer never establishes broad generality from these diagnostics alone",
+  "statistics": "paired differences clustered by independent seed or root episode, never by paraphrase; small-seed intervals are exploratory, not future-calendar qualification",
+  "negative_results": "retain failed comparisons; no hyperparameter search on final hidden-query scores; no relabeling mechanism tests as efficacy",
+  "capability_claims": {
+    "production_activation": false,
+    "pretrained_language_model_finetuning": false,
+    "independent_future_calendar_windows": false,
+    "general_memory_system_established": false
+  }
+}

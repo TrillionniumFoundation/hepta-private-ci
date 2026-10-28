@@ -1,0 +1,6 @@
+# Executed source hashes must equal committed bytes on every platform.
+*.py text eol=lf
+PROTOCOL.json text eol=lf
+requirements.txt text eol=lf
+# Raw run evidence is hashed before publication; never normalize its bytes.
+results/** -text

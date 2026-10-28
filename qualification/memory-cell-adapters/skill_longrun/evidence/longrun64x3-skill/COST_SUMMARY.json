@@ -1,0 +1,497 @@
+{
+  "all_three_maintenance_runs": {
+    "combined_exact_decimal": "3468.069704855",
+    "combined_known_disjoint_cpu_lower_bound_seconds": 3468.069704855,
+    "completed_fits": 648,
+    "completed_sample_presentations": 12441600,
+    "completed_steps": 388800,
+    "exclusions": "Not total project cost. Excludes incomplete first-semantic attempt, first-semantic driver/monitor, all native CI, original Formal-01, checkout/setup/upload, transfers, audits and verification.",
+    "new_skill_disjoint_observed_cpu_seconds": 785.766679218,
+    "semantic_known_disjoint_cpu_lower_bound_seconds": 2682.303025637
+  },
+  "audit": {
+    "bytes": 104245,
+    "check_count": 28467,
+    "passed": true,
+    "path": "../../../evaluation/AUDIT-skill-longrun.json",
+    "sha256": "e3a14f7a26a36e9b52a371175f6743ed1ab089f13c50069e82d1946fe0270640"
+  },
+  "completed": {
+    "child_processes": 435,
+    "clean_rebuilds": 24,
+    "cycles": 192,
+    "decoded_checkpoints": 222,
+    "fits": 216,
+    "fresh_readers": 219,
+    "initial_and_phase_active_programs_per_arm": 1728,
+    "initial_and_phase_public_executions_per_arm": 6912,
+    "public_probes_per_active_program": 4,
+    "sample_presentations": 4147200,
+    "steps": 129600,
+    "update_fits": 192
+  },
+  "cpu_scopes": {
+    "disjoint_wrapper_plus_packaging_exact_decimal": "785.766679218",
+    "disjoint_wrapper_plus_packaging_seconds": 785.766679218,
+    "fit_and_reader_children_seconds": 661.6656370000005,
+    "fit_children_seconds": 433.33438200000074,
+    "manager_with_waited_descendants_seconds": 664.500067,
+    "monitor_launcher_with_manager_seconds": 751.157676,
+    "preparation_child_seconds": 15.690651,
+    "reader_children_seconds": 228.33125499999971,
+    "separate_packaging_seconds": 18.2249502,
+    "warning": "Worker, manager, monitor and wrapper scopes are nested. Only wrapper+separate packaging is added here. Checkout/setup/upload/audit costs are outside this sum.",
+    "wrapper_including_all_waited_children_seconds": 767.541729018
+  },
+  "full_cost_exact": false,
+  "hardware": {
+    "cpu_model": "AMD EPYC 9V45 96-Core Processor",
+    "dependencies": {
+      "numpy": "2.3.5",
+      "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+      "python": "3.12.15 (main, Oct  1 2026, 02:35:59) [GCC 13.3.0]",
+      "torch": "2.8.0+cpu"
+    },
+    "logical_cpus": 4,
+    "same_hardware_as_semantic_run": false
+  },
+  "job_id": 123006077672,
+  "limitations": [
+    "Eight known canonical workflows with full replay; no held-language, capacity-growth or open-world generalization claim.",
+    "Both reading arms share each fresh process and run in fixed parameter-then-SQL order. Loop timings exclude common setup/load and are not isolated service latencies.",
+    "Quality equals exact-SQL on this finite workload; no quality, storage or full lifecycle cost superiority is demonstrated.",
+    "Historical source records/checkpoints are retained; current revocation and clean rebuild are not physical erasure.",
+    "Different CPU hardware from the semantic clean run prevents interpreting timing differences as an algorithmic improvement.",
+    "Sampled RSS/PSS/storage intervals include explicit unknown portions; sampled peaks are not exact continuous maxima.",
+    "The before-summary logical storage snapshot is retained but not independently reconstructable while the resource log is concurrently growing."
+  ],
+  "native_runtime_executed": false,
+  "packaging_receipt": {
+    "bytes": 308,
+    "sha256": "584a904953a449fe131719f1b745d731a0932b59392a74920b02fb9f5ce7bdb4"
+  },
+  "quality": {
+    "all_correct": true,
+    "all_phase_exact_execution_status_value_and_trace": {
+      "exact_sql": {
+        "active": {
+          "correct": 1704,
+          "count": 1704
+        },
+        "changed": {
+          "correct": 231,
+          "count": 231
+        },
+        "retention": {
+          "correct": 1473,
+          "count": 1473
+        },
+        "revoked": {
+          "correct": 24,
+          "count": 24
+        }
+      },
+      "parameter": {
+        "active": {
+          "correct": 1704,
+          "count": 1704
+        },
+        "changed": {
+          "correct": 231,
+          "count": 231
+        },
+        "retention": {
+          "correct": 1473,
+          "count": 1473
+        },
+        "revoked": {
+          "correct": 24,
+          "count": 24
+        }
+      }
+    },
+    "all_phase_exact_programs": {
+      "exact_sql": {
+        "active": {
+          "correct": 1704,
+          "count": 1704
+        },
+        "changed": {
+          "correct": 231,
+          "count": 231
+        },
+        "retention": {
+          "correct": 1473,
+          "count": 1473
+        },
+        "revoked": {
+          "correct": 24,
+          "count": 24
+        }
+      },
+      "parameter": {
+        "active": {
+          "correct": 1704,
+          "count": 1704
+        },
+        "changed": {
+          "correct": 231,
+          "count": 231
+        },
+        "retention": {
+          "correct": 1473,
+          "count": 1473
+        },
+        "revoked": {
+          "correct": 24,
+          "count": 24
+        }
+      }
+    },
+    "execution_count_unit": "One workflow succeeds only if all four public execution probes exactly match, including full traces",
+    "final_cycle_exact_execution_status_value_and_trace": {
+      "exact_sql": {
+        "active": {
+          "correct": 1512,
+          "count": 1512
+        },
+        "changed": {
+          "correct": 207,
+          "count": 207
+        },
+        "retention": {
+          "correct": 1305,
+          "count": 1305
+        },
+        "revoked": {
+          "correct": 24,
+          "count": 24
+        }
+      },
+      "parameter": {
+        "active": {
+          "correct": 1512,
+          "count": 1512
+        },
+        "changed": {
+          "correct": 207,
+          "count": 207
+        },
+        "retention": {
+          "correct": 1305,
+          "count": 1305
+        },
+        "revoked": {
+          "correct": 24,
+          "count": 24
+        }
+      }
+    },
+    "final_cycle_exact_programs": {
+      "exact_sql": {
+        "active": {
+          "correct": 1512,
+          "count": 1512
+        },
+        "changed": {
+          "correct": 207,
+          "count": 207
+        },
+        "retention": {
+          "correct": 1305,
+          "count": 1305
+        },
+        "revoked": {
+          "correct": 24,
+          "count": 24
+        }
+      },
+      "parameter": {
+        "active": {
+          "correct": 1512,
+          "count": 1512
+        },
+        "changed": {
+          "correct": 207,
+          "count": 207
+        },
+        "retention": {
+          "correct": 1305,
+          "count": 1305
+        },
+        "revoked": {
+          "correct": 24,
+          "count": 24
+        }
+      }
+    }
+  },
+  "run_id": 40742088819,
+  "sampling": {
+    "after_last_sample_ns": 721622,
+    "before_first_sample_ns": 9076325,
+    "coverage": {
+      "storage_allocated_bytes": {
+        "observed_fraction": 0.9999853608399759,
+        "observed_ns": 669287278104,
+        "observed_peak_bytes": 74301440,
+        "sampled_byte_ns_estimate": 24163130500736090112,
+        "unknown_ns": 9797947
+      },
+      "storage_logical_bytes": {
+        "observed_fraction": 0.9999853608399759,
+        "observed_ns": 669287278104,
+        "observed_peak_bytes": 64489266,
+        "sampled_byte_ns_estimate": 20954491726034329155,
+        "unknown_ns": 9797947
+      },
+      "tree_pss_bytes": {
+        "observed_fraction": 0.9686796704048313,
+        "observed_ns": 648334471032,
+        "observed_peak_bytes": 521078784,
+        "sampled_byte_ns_estimate": 286242864309686973952,
+        "unknown_ns": 20962605019
+      },
+      "tree_rss_bytes": {
+        "observed_fraction": 0.9686796704048313,
+        "observed_ns": 648334471032,
+        "observed_peak_bytes": 690384896,
+        "sampled_byte_ns_estimate": 384068061819131496448,
+        "unknown_ns": 20962605019
+      }
+    },
+    "error_classification": {
+      "process": {
+        "FileNotFoundError": 21,
+        "ProcessLookupError": 25
+      },
+      "storage": {}
+    },
+    "first_sample_ns": 93060468347,
+    "integral_boundary": "Includes pre/post sample gaps as unknown",
+    "integrals": {
+      "storage_allocated_bytes": {
+        "observed_interval_ns": 669287278104,
+        "sampled_byte_ns_estimate": 24163130500736090112,
+        "trapezoid_numerator_byte_ns": 48326261001472180224,
+        "unobserved_interval_ns": 9797947
+      },
+      "storage_logical_bytes": {
+        "observed_interval_ns": 669287278104,
+        "sampled_byte_ns_estimate": 20954491726034329155,
+        "trapezoid_numerator_byte_ns": 41908983452068658311,
+        "unobserved_interval_ns": 9797947
+      },
+      "tree_pss_bytes": {
+        "observed_interval_ns": 648334471032,
+        "sampled_byte_ns_estimate": 286242864309686973952,
+        "trapezoid_numerator_byte_ns": 572485728619373947904,
+        "unobserved_interval_ns": 20962605019
+      },
+      "tree_rss_bytes": {
+        "observed_interval_ns": 648334471032,
+        "sampled_byte_ns_estimate": 384068061819131496448,
+        "trapezoid_numerator_byte_ns": 768136123638262992896,
+        "unobserved_interval_ns": 20962605019
+      }
+    },
+    "last_sample_ns": 762347746451,
+    "maximum_observed_gap_ns": 262010748,
+    "peaks": {
+      "storage_allocated_bytes": 74301440,
+      "storage_logical_bytes": 64489266,
+      "tree_pss_bytes": 521078784,
+      "tree_rss_bytes": 690384896
+    },
+    "sample_count": 2913,
+    "sample_errors": 46
+  },
+  "schema": "hepta.memory.skill-ci-cost-summary.v1",
+  "scope": "Separately frozen skill maintenance; no superiority or exact full-cost claim",
+  "source_commit": "4693e8028fb8563ec730dcb55458a212389154a5",
+  "source_tree": "df3224a5a13c1fcc0a41d3b0278a864174e12d7e",
+  "storage": {
+    "all_retained_checkpoint_bytes": 13413236,
+    "archived_output_root_regular_bytes": 64564040,
+    "archived_output_root_regular_files": 4399,
+    "current_cells": [
+      {
+        "active_value_only_json_bytes": 71,
+        "active_workflows": 7,
+        "all_source_state_json_bytes": 1202,
+        "checkpoint": "seed-731/stage-064/rebuild/checkpoint",
+        "checkpoint_bytes": 54709,
+        "float32_parameter_bytes": 55408,
+        "float32_parameter_count": 13852,
+        "seed": 731
+      },
+      {
+        "active_value_only_json_bytes": 71,
+        "active_workflows": 7,
+        "all_source_state_json_bytes": 1202,
+        "checkpoint": "seed-732/stage-064/rebuild/checkpoint",
+        "checkpoint_bytes": 54575,
+        "float32_parameter_bytes": 55408,
+        "float32_parameter_count": 13852,
+        "seed": 732
+      },
+      {
+        "active_value_only_json_bytes": 71,
+        "active_workflows": 7,
+        "all_source_state_json_bytes": 1202,
+        "checkpoint": "seed-733/stage-064/rebuild/checkpoint",
+        "checkpoint_bytes": 54714,
+        "float32_parameter_bytes": 55408,
+        "float32_parameter_count": 13852,
+        "seed": 733
+      }
+    ],
+    "current_checkpoint_bytes_total": 163998,
+    "encoder_reference_loaded_or_reencoded_in_maintenance": false,
+    "original_archive": {
+      "bytes": 14171396,
+      "sha256": "2f621ed540664d2239d13ef1965d62ccbfe1506f185ebfbb640ba5a28438f331"
+    },
+    "original_github_zip": {
+      "bytes": 14172080,
+      "sha256": "07106a74b014414be481a9d35080a3dc0a5323a17d7dc234ec34099dc2429733"
+    },
+    "retained_inventory": {
+      "canonical_features_bytes": 23189,
+      "children_cpu_seconds_including_failures": 661.6656370000005,
+      "children_wall_ns_including_failures": 665567728491,
+      "current_output_regular_bytes_before_summary": 64071538,
+      "current_source_sqlite_bytes": 86016,
+      "driver_own_cpu_ns_before_summary": 1674140298,
+      "driver_wall_ns_before_summary": 667897596950,
+      "historical_source_sqlite_snapshot_bytes": 6193152,
+      "initial_checkpoint_copies_bytes": 164283,
+      "initial_source_sqlite_snapshot_bytes": 86016,
+      "kernel_output_blocks_children": 99648,
+      "peak_and_integral_authority": "outer resource.json; independent child maxima are not summed",
+      "reader_children_cpu_seconds": 228.33125499999971,
+      "retained_explicit_source_json_bytes": 494374,
+      "retained_fitted_checkpoint_bytes": 13105634,
+      "retained_sample_schedule_bytes": 33177600,
+      "shared_encoder_reference_bytes": 127536988,
+      "training_children_cpu_seconds": 433.33438200000074,
+      "untrained_checkpoint_bytes": 143319
+    }
+  },
+  "timing_distributions": {
+    "checkpoint_load_wall_ns": {
+      "count": 219,
+      "max": 4050763,
+      "median": 2649081,
+      "min": 2440418,
+      "p95_nearest_rank": 2991120,
+      "sum": 588596978
+    },
+    "exact_sql_eight_workflow_loop_ns": {
+      "count": 219,
+      "max": 261084,
+      "median": 123206,
+      "min": 111620,
+      "p95_nearest_rank": 196385,
+      "sum": 29406057
+    },
+    "fit_body_cpu_ns": {
+      "count": 216,
+      "max": 968086896,
+      "median": 803239045.0,
+      "min": 749315015,
+      "p95_nearest_rank": 900253774,
+      "sum": 175675070349
+    },
+    "fit_body_wall_ns": {
+      "count": 216,
+      "max": 980282873,
+      "median": 808502571.0,
+      "min": 754247399,
+      "p95_nearest_rank": 905946034,
+      "sum": 176797677996
+    },
+    "fit_method_cpu_seconds": {
+      "count": 216,
+      "max": 0.9575284050000001,
+      "median": 0.7939686324999999,
+      "min": 0.741391919,
+      "p95_nearest_rank": 0.8900010289999999,
+      "sum": 173.628025578
+    },
+    "fit_method_wall_seconds": {
+      "count": 216,
+      "max": 0.9697267999999895,
+      "median": 0.7991763734999608,
+      "min": 0.7461416649999819,
+      "p95_nearest_rank": 0.8953094910000061,
+      "sum": 174.75105134699996
+    },
+    "fit_process_cpu_seconds": {
+      "count": 216,
+      "max": 2.695547999999996,
+      "median": 1.9579150000000096,
+      "min": 1.8404860000000909,
+      "p95_nearest_rank": 2.311159,
+      "sum": 433.33438200000074
+    },
+    "fit_process_wall_ns": {
+      "count": 216,
+      "max": 2716367771,
+      "median": 1969735846.0,
+      "min": 1848252784,
+      "p95_nearest_rank": 2322920212,
+      "sum": 435836452845
+    },
+    "parameter_eight_workflow_loop_ns": {
+      "count": 219,
+      "max": 1563084,
+      "median": 1010242,
+      "min": 820038,
+      "p95_nearest_rank": 1139097,
+      "sum": 222382715
+    },
+    "reader_body_cpu_ns": {
+      "count": 219,
+      "max": 8024238,
+      "median": 5704395,
+      "min": 5266892,
+      "p95_nearest_rank": 6502676,
+      "sum": 1266802260
+    },
+    "reader_body_wall_ns": {
+      "count": 219,
+      "max": 8026012,
+      "median": 5707248,
+      "min": 5268833,
+      "p95_nearest_rank": 6504536,
+      "sum": 1267410654
+    },
+    "reader_process_cpu_seconds": {
+      "count": 219,
+      "max": 1.3634540000000017,
+      "median": 1.013690999999998,
+      "min": 0.9400700000000697,
+      "p95_nearest_rank": 1.263351999999999,
+      "sum": 228.33125499999971
+    },
+    "reader_process_wall_ns": {
+      "count": 219,
+      "max": 1370148102,
+      "median": 1021130909,
+      "min": 944124321,
+      "p95_nearest_rank": 1270475023,
+      "sum": 229731275646
+    }
+  },
+  "wall_scopes": {
+    "fit_processes_ns": 435836452845,
+    "maintenance_observation_window_ns": 669297076051,
+    "monitor_launcher_ns": 669343782478,
+    "preparation_ns": 18248626993,
+    "reader_processes_ns": 229731275646,
+    "separate_packaging_ns": 18227032657,
+    "warning": "Nested wall scopes are reported separately; caller scheduling and pre-wrapper CI steps are not included in wrapper wall.",
+    "wrapper_ns": 687657296069
+  }
+}
