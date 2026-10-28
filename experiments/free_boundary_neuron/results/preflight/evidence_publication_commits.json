@@ -1,0 +1,86 @@
+{
+  "schema": "hepta.free-boundary.evidence-publication.v1",
+  "source_commit": "95b0d6668892868a4a19268a2fb707f2dca586ba",
+  "source_seal_sha256": "5876ab602e03e4c1f324342f8e046246c2162d4e9a07d1016d7d2edfcffa162c",
+  "verified_scientific_inputs": 105,
+  "pre_receipt_evidence_tree": "989955d7ad33c16237c9fb67cb8db98ba80b306d",
+  "pre_receipt_remote_head": "21b766f88117e3a03e858dcbe5ddadf9da1ab2c8",
+  "source_and_result_trees_match_local": true,
+  "native_journal_and_witness_blobs_verified": 336,
+  "figure_binary_blobs_verified": 1,
+  "maximum_added_blob_bytes": 436178,
+  "blob_policy_limit_bytes": 512000,
+  "meaning": "Every published stage tree exactly matches its recorded local commit tree. Local verification commit IDs can be mapped to published commits below; the scientific source commit itself is unchanged and was published before outcomes.",
+  "commits": [
+    {
+      "commit": "a3fa5cf7e33b5560f38193ce814accfac711a5bc",
+      "local_commit": "23544f65ac0a33710ebbf7b1c3740e1caad5d761",
+      "tree": "a64bfe23cec6e58c3162a9440f592c2d0a36579c",
+      "message": "Preserve sealed mathematics and preregistration evidence",
+      "changed_paths": 19
+    },
+    {
+      "commit": "cc452e930c94a583271c5f85a0ebadb63bb71afd",
+      "local_commit": "9c93e7c4c3850ad8e7ee044c3d431053dcd0a422",
+      "tree": "01b8f59eb79834a009dd636f5f04a6f4d6212414",
+      "message": "Preserve screening checkpoints, scores and independent audit",
+      "changed_paths": 73
+    },
+    {
+      "commit": "4a953e78a20cdc1fdbea6d2caafe38f5c8982c04",
+      "local_commit": "29199f12ba2a3bf449a7d9781ff67bbb01d024a1",
+      "tree": "d554dd11c6efffef94ad2cb760f4e98a8d03e5ce",
+      "message": "Preserve confirmation checkpoints, scores and independent audit",
+      "changed_paths": 138
+    },
+    {
+      "commit": "119acf78b7fc169c3b85c5805007322bb662a456",
+      "local_commit": "56d31efdc6d6f3e985a629f27ab7060ee4ce721a",
+      "tree": "e02fb5835f4e5547eded0b72670f969c95e488b2",
+      "message": "Record native build history and complete run accounting",
+      "changed_paths": 18
+    },
+    {
+      "commit": "e79b8fe2aafc6ad3a2cea481bcb95061b31c906d",
+      "local_commit": "84e9cdbd08aabdb491863cff1776d1c0fc2d1354",
+      "tree": "8c88005364c427ba05bb63e44e26ccf09e720231",
+      "message": "Preserve all free-boundary native trajectories and cold replays",
+      "changed_paths": 342
+    },
+    {
+      "commit": "b12cd71101aa87ad916b31db5ad1e3ddbd94e56b",
+      "local_commit": "c414facc23ea3649efe7c121be6a97a2fbe12564",
+      "tree": "e34a28fb30f5088a62186a456d96c5d5c45d5523",
+      "message": "Preserve all exact-DP native trajectories and cold replays",
+      "changed_paths": 342
+    },
+    {
+      "commit": "918ec2b12526b7361c1f2ce0c4b3e4c28b8a9593",
+      "local_commit": "639271c09d1e60a766877b17d12c5b816d1227cf",
+      "tree": "d9a1a3b299a6ecbce2364bf2a9f9ca085560a67e",
+      "message": "Preserve all tuned-fixed native trajectories and cold replays",
+      "changed_paths": 342
+    },
+    {
+      "commit": "eb17302e502928603dd3f4af086a650f35924610",
+      "local_commit": "b068c9ad4e5d16de89d2052952f51c7bc1073c30",
+      "tree": "028982eb8b55b39cfb0db4f9787c0ac2dc69288e",
+      "message": "Document registered findings, limitations and reproducible figures",
+      "changed_paths": 9
+    },
+    {
+      "commit": "8733f1fbedc7a1ee0a0eba8cb6a6ad4262bf1e8e",
+      "local_commit": "83e39c90725f836008f5c634f4e1997f4236c8ed",
+      "tree": "66e3539d1817d3893690fc02fdbafbdc066cc7a0",
+      "message": "Disambiguate archived Cargo logs from Bazel source files",
+      "changed_paths": 13
+    },
+    {
+      "commit": "21b766f88117e3a03e858dcbe5ddadf9da1ab2c8",
+      "local_commit": "13a112f4db189e18073bb04c5c853212444ca610",
+      "tree": "989955d7ad33c16237c9fb67cb8db98ba80b306d",
+      "message": "Record clean-checkout validation and unchanged scientific inputs",
+      "changed_paths": 2
+    }
+  ]
+}
