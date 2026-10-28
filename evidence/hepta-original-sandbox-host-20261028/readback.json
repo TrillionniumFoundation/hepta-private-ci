@@ -1,0 +1,79 @@
+{
+  "schema": "hepta-original-sandbox-host-readback-v1",
+  "old_source": {
+    "commit": "4c542f81a61a66531d219670545f8fd0e7149d29",
+    "dirty": false,
+    "parents": [
+      "746d7590990eec46d20400293feb80f499813bd9"
+    ],
+    "tree": "4188be94692de3f4b4780ad073cc98ccc64d4511"
+  },
+  "run": 40619831342,
+  "job": 122590897457,
+  "artifact": 12786442829,
+  "artifact_sha256": "fd5236f8618ae9c5621a97ee15c49ec48497dfa1fa790a08388a8cdf65abca9b",
+  "artifact_all_19_members_read": true,
+  "actual_probe": {
+    "after": {
+      "commit": "4c542f81a61a66531d219670545f8fd0e7149d29",
+      "dirty": false,
+      "parents": [
+        "746d7590990eec46d20400293feb80f499813bd9"
+      ],
+      "tree": "4188be94692de3f4b4780ad073cc98ccc64d4511"
+    },
+    "base_sha": "746d7590990eec46d20400293feb80f499813bd9",
+    "before": {
+      "commit": "4c542f81a61a66531d219670545f8fd0e7149d29",
+      "dirty": false,
+      "parents": [
+        "746d7590990eec46d20400293feb80f499813bd9"
+      ],
+      "tree": "4188be94692de3f4b4780ad073cc98ccc64d4511"
+    },
+    "command": [
+      "bwrap",
+      "--unshare-user",
+      "--unshare-net",
+      "--ro-bind",
+      "/",
+      "/",
+      "/bin/true"
+    ],
+    "command_exit_code": 1,
+    "elapsed_seconds": 1.3270082340000044,
+    "exit_code": 1,
+    "finished_at": "2026-10-28T02:16:35.371083+00:00",
+    "job": "cold-ordinary-three-rounds",
+    "lane": "source-head",
+    "log_bytes": 61,
+    "log_file": "sandbox-host-capability.json.4633c86914df4b638b4d42f69897ee51.log",
+    "log_sha256": "ed3471f7900377f86150471417911309833a36d664cb5af7409e139103f67ddf",
+    "minimum_tests": 0,
+    "observed_failed_tests": 0,
+    "observed_passed_tests": 0,
+    "output_limit_exceeded": false,
+    "returncode": 1,
+    "run_attempt": "1",
+    "run_id": "40619831342",
+    "schema_version": 1,
+    "source_sha": "4c542f81a61a66531d219670545f8fd0e7149d29",
+    "started_at": "2026-10-28T02:16:34.043409+00:00",
+    "status": "failed",
+    "tested_sha": "4c542f81a61a66531d219670545f8fd0e7149d29",
+    "timed_out": false,
+    "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci/hepta"
+  },
+  "physical_memory_bytes": 16766414848,
+  "observed_limit_excludes_12_gib": false,
+  "resource_capacity_qualified": false,
+  "new_workflow_yaml_and_bash_syntax": "PASS",
+  "bash_steps": [
+    "Preserve actual host and exact source metadata",
+    "Install the original distribution sandbox prerequisite",
+    "Require the actual original 500ms user and network namespace probe",
+    "Recheck unchanged source and preserve bounded metadata"
+  ],
+  "ubuntu_26_capability": "NOT_RUN",
+  "full_native_and_model_qualification": false
+}

@@ -1,0 +1,93 @@
+name: Hepta original sandbox host capability
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-original-sandbox-host-capability.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  original-probe:
+    name: Original sandbox probe (${{ matrix.runner }})
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-26.04]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 10
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.sha }}
+      HEPTA_CI_LANE: source-head
+      PYTHONNOUSERSITE: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.3"
+      - name: Preserve actual host and exact source metadata
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/hepta-original-sandbox-host"
+          mkdir -m 700 "$out"
+          echo "OUT=$out" >> "$GITHUB_ENV"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git rev-parse HEAD HEAD^{tree} > "$out/source.txt"
+          git status --porcelain=v1 > "$out/source-status.txt"
+          test ! -s "$out/source-status.txt"
+          uname -a > "$out/kernel.txt"
+          cat /etc/os-release > "$out/os-release.txt"
+          printf '%s\n' "$ImageOS" "$ImageVersion" > "$out/runner-image.txt"
+          id -u > "$out/uid.txt"
+          for name in apparmor_restrict_unprivileged_userns unprivileged_userns_clone; do
+            path="/proc/sys/kernel/$name"
+            if test -r "$path"; then cat "$path" > "$out/$name.txt"; fi
+          done
+          cat /sys/module/apparmor/parameters/enabled > "$out/apparmor-enabled.txt"
+          test "$(cat "$out/apparmor-enabled.txt")" = Y
+          test "$(cat "$out/apparmor_restrict_unprivileged_userns.txt")" = 1
+          if test -r /etc/apparmor.d/bwrap-userns-restrict; then
+            sha256sum /etc/apparmor.d/bwrap-userns-restrict > "$out/distribution-bwrap-profile.sha256"
+          fi
+          python3 -I -B scripts/hepta_smollm_host_resources.py --output "$out/host.json"
+      - name: Install the original distribution sandbox prerequisite
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y bubblewrap
+          command -v bwrap > "$OUT/bwrap-path.txt"
+          bwrap --version > "$OUT/bwrap-version.txt"
+          dpkg-query -W bubblewrap apparmor > "$OUT/package-versions.txt"
+          sha256sum /usr/bin/bwrap > "$OUT/bwrap.sha256"
+      - name: Require the actual original 500ms user and network namespace probe
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$OUT/sandbox-host-capability.json" --timeout-seconds 0.5 --minimum-tests 0 -- bwrap --unshare-user --unshare-net --ro-bind / / /bin/true
+      - name: Recheck unchanged source and preserve bounded metadata
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git rev-parse HEAD HEAD^{tree} > "$OUT/source-after.txt"
+          git status --porcelain=v1 > "$OUT/source-status-after.txt"
+          test ! -s "$OUT/source-status-after.txt"
+          cmp "$OUT/source.txt" "$OUT/source-after.txt"
+          printf 'Original host capability only. No native Rust, model training, product qualification, ordinary installation or production activation is established. Each matrix outcome remains independent.\n' > "$OUT/SCOPE.txt"
+          find "$OUT" -maxdepth 1 -type f -print0 | sort -z | xargs -0 sha256sum > "$RUNNER_TEMP/hepta-original-sandbox-host.sha256"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-original-sandbox-host-${{ matrix.runner }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-original-sandbox-host
+            ${{ runner.temp }}/hepta-original-sandbox-host.sha256
+          if-no-files-found: error
+          retention-days: 14
