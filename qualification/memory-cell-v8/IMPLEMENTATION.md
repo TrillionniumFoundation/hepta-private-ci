@@ -2,7 +2,7 @@
 
 本轮实现把类型化请求、三类 memory cell、参数训练、访问分区学习、预算约束和多 owner 读取接到现有 Hepta 路径。**工程候选已完成两轮完整的相关集成验证，六项验收仍未全部满足。** [CI02：40612088249](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40612088249) 与 [CI03：40612818087](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40612818087) 均通过 18 项 Python、511 项普通 Rust 和 5 项 actual 测试，包括真实参数训练、native 配对读回、完整 11-arm 比较和同机多进程恢复。V8 自然语言寻址的生产准入仍为 `serving_admitted=false`；learned 分区没有超过强固定、同信息轻量或 direct-owner 对照的冻结成本代理，完整成本门保持 `NoChange`。[CI01](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40609738136) 的失败与局部结果原样保留。
 
-本文以 `qualification/memory-cell-v8/` 为相对路径起点。自然语言寻址的模型阶段、源开发与测试阶段均已结束；这些结果没有用于重新选择寻址权重、候选、阈值或比较协议。CI02 绑定 source `1f52f23f2dc9cf1ecc863c61e52cce8e53f35330`，CI03 绑定最终受测 source `75256635aae979f34b4ec830764b7dbfa24c389d`，已包含 finalizer 的完整 evaluation 输入冻结。CI03 在 CI02 结果产生前启动，没有使用其结果改动模型、数据或协议。两轮评分器均在各自精确源码树上只读重放，输出与原收据逐字节相同；这不增加训练或独立试验样本。最终 `just fix` / `just fmt` 已成功，原始补丁应用后与 CI 生成树一致，完整收据见第 6 节。
+本文以 `qualification/memory-cell-v8/` 为相对路径起点。自然语言寻址的模型阶段、源开发与测试阶段均已结束；这些结果没有用于重新选择寻址权重、候选、阈值或比较协议。CI02 绑定 source `1f52f23f2dc9cf1ecc863c61e52cce8e53f35330`，CI03 绑定最终受测 source `75256635aae979f34b4ec830764b7dbfa24c389d`，已包含 finalizer 的完整 evaluation 输入冻结。CI03 在 CI02 结果产生前启动，没有使用其结果改动模型、数据或协议。两轮评分器均在各自精确源码树上只读重放，输出与原收据逐字节相同；这不增加训练或独立试验样本。最终 `just fix` / `just fmt` 已成功，原始补丁应用后与 CI 生成树一致，完整收据见第 7 节。
 
 第 3、4、6 项的完整解释口径见 [ACCEPTANCE.md](ACCEPTANCE.md)：明确训练因果收益的可识别范围、固定比较分母、逐项 retention 转移，以及三类参照和完整成本门。该说明解释现有冻结协议，不改变模型或验收门。
 
