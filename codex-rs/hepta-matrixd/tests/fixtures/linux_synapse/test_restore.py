@@ -18,7 +18,10 @@ class ProducerRestore(unittest.TestCase):
     def test_integrated_restore_preserves_committed_tree_and_independent_replay(self):
         self.exercise_restore("integrated")
 
-    def exercise_restore(self, source_mode):
+    def test_amended_integrated_restore_carries_the_exact_source_revision(self):
+        self.exercise_restore("integrated", amendment=True)
+
+    def exercise_restore(self, source_mode, *, amendment=False):
         # Reuse the existing synthetic artifact fixture, not a relaxed copy of
         # the production port guard. Its setup exercises actual Git patching.
         repo = Path(__file__).resolve().parents[5]
@@ -84,6 +87,14 @@ class ProducerRestore(unittest.TestCase):
                     fixture.root, fixture.recipe, fixture.record, fixture.artifact
                 )
                 fixture.source = fixture.record["source_commit"]
+                if amendment:
+                    from ndu_port_integration_test_support import amend_fixture
+
+                    fixture.record, fixture.result_sha = amend_fixture(
+                        fixture.root, fixture.recipe, fixture.record, fixture.artifact,
+                        {fixture.source_file: b"reviewed source  \n"},
+                    )
+                    fixture.source = fixture.record["source_commit"]
             output = fixture.base / "linux-restore"
             output.mkdir()
             git = Path(shutil.which("git")).resolve()
@@ -132,6 +143,11 @@ class ProducerRestore(unittest.TestCase):
                 (seal["candidate_tree"], seal["qualification_tree"]), (tree, tree)
             )
             self.assertEqual(seal["producer_source_mode"], source_mode)
+            if amendment:
+                self.assertEqual(
+                    (evidence / "producer/source-amendment.json").read_bytes(),
+                    (fixture.root / "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/SOURCE_AMENDMENT.v7.1.json").read_bytes(),
+                )
             if source_mode == "integrated":
                 wrong = {**fixture.record, "source_tree": "f" * 40}
                 rejected = fixture.base / "wrong-replay"

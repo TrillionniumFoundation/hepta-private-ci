@@ -233,7 +233,7 @@ def capture_after(runner, frozen, record, recipe, test_path, evidence):
         describe(runner.root, POLICIES) == record["policy_inputs"],
         "Clippy changed original dependency policy",
     )
-    verify_vendor(runner.root, recipe)
+    verify_vendor(runner.root, recipe, source_mode=candidate_source_mode(record))
     require(
         describe(test_path.parent, evidence) == evidence,
         "Clippy changed original test evidence",

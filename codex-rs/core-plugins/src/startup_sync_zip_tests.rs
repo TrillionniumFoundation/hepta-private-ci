@@ -74,14 +74,21 @@ fn zipball_extraction_strips_privileged_bits_and_keeps_executable_access() {
     // unix_mode() already clears privileged bits in zip 9. Verify the actual
     // untrusted header metadata instead, then check the resulting filesystem.
     assert_eq!(
-        reader.by_index(0).expect("read hostile ZIP entry").external_attributes() >> 16,
+        reader
+            .by_index(0)
+            .expect("read hostile ZIP entry")
+            .external_attributes()
+            >> 16,
         mode
     );
 
     extract_zipball_to_dir(&archive, destination.path()).expect("extract hostile ZIP");
 
     let output = destination.path().join("plugin/run.sh");
-    assert_eq!(std::fs::read(&output).expect("read extracted plugin"), CONTENTS);
+    assert_eq!(
+        std::fs::read(&output).expect("read extracted plugin"),
+        CONTENTS
+    );
     assert_eq!(
         std::fs::metadata(&output)
             .expect("read extracted permissions")
@@ -114,19 +121,23 @@ fn zipball_extraction_rejects_invalid_utf8_names() {
         .expect("find central-directory record");
     let local_flags = u16::from_le_bytes(archive[6..8].try_into().expect("local ZIP flags"));
     let central_flags = u16::from_le_bytes(
-        archive[central + 8..central + 10].try_into().expect("central ZIP flags"),
+        archive[central + 8..central + 10]
+            .try_into()
+            .expect("central ZIP flags"),
     );
     archive[6..8].copy_from_slice(&(local_flags | 0x800).to_le_bytes());
     archive[central + 8..central + 10].copy_from_slice(&(central_flags | 0x800).to_le_bytes());
     archive[30] = 0xff;
     archive[central + 46] = 0xff;
 
-    let error =
-        extract_zipball_to_dir(&archive, destination.path()).expect_err("reject invalid UTF-8 name");
+    let error = extract_zipball_to_dir(&archive, destination.path())
+        .expect_err("reject invalid UTF-8 name");
     assert!(error.contains("declares UTF-8"));
 
     assert_eq!(
-        std::fs::read_dir(destination.path()).expect("read extraction directory").count(),
+        std::fs::read_dir(destination.path())
+            .expect("read extraction directory")
+            .count(),
         0
     );
 }
@@ -176,13 +187,20 @@ fn zipball_extraction_does_not_follow_archive_symlink_targets() {
     let destination = parent.path().join("destination");
     let mut writer = ZipWriter::new(Cursor::new(Vec::new()));
     writer
-        .add_symlink("archive/link", outside.to_string_lossy(), SimpleFileOptions::default())
+        .add_symlink(
+            "archive/link",
+            outside.to_string_lossy(),
+            SimpleFileOptions::default(),
+        )
         .expect("add hostile symlink");
     let archive = writer.finish().expect("finish ZIP archive").into_inner();
 
     extract_zipball_to_dir(&archive, &destination).expect("extract symlink as regular content");
 
-    assert_eq!(std::fs::read(&outside).expect("read outside file"), b"unchanged");
+    assert_eq!(
+        std::fs::read(&outside).expect("read outside file"),
+        b"unchanged"
+    );
     assert!(
         !std::fs::symlink_metadata(destination.join("link"))
             .expect("read extracted file metadata")

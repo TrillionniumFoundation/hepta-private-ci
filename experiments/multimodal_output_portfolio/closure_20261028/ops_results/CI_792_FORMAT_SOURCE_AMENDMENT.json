@@ -1,0 +1,498 @@
+{
+  "schema": "hepta.port-source-amendment-evidence.v1",
+  "baseline_head": "792beb14600f9b49b04ed18f9061e11d0e163759",
+  "status": "implemented_and_behavior_guard_tests_pass_native_complete_workspace_gates_pending",
+  "ci_failures": {
+    "rustfmt_job": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677089566/job/122779462199",
+    "repo_format_job": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677089566/job/122779281640"
+  },
+  "purpose": "Apply the exact seven Rust 1.96 formatting corrections without overwriting historical v7 source qualification or relaxing source identity. Add the real missing i18n workspace alias to the candidate Bazel analysis scope.",
+  "source_amendment": {
+    "path": "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/SOURCE_AMENDMENT.v7.1.json",
+    "bytes": 3256,
+    "sha256": "f802638dd5d01f3b3d7583986848c1ad6264c3ec478ed055f4e1edebc7a0d40a",
+    "payload_source_changes": 6,
+    "vendor_source_changes": 1,
+    "origin_payload_count": 35,
+    "vendor_inventory_count": 9,
+    "no_lock_policy_recipe_or_historical_patch_changes": true
+  },
+  "retained_contracts": [
+    "Exact historical INTEGRATION.v7.json and RECIPE.v7.json bytes and patch remain unchanged.",
+    "The new amendment matches each before identity to the original payload or complete historical vendor inventory and binds each after identity. Only existing nonexecutable .rs paths are eligible.",
+    "The effective payload still has exactly 35 entries. The vendor override applies only to the named source while the entire original nine vendor tree inventory remains checked.",
+    "Amendment, every changed vendor path, original payload, file modes and manifest must match committed HEAD; staged and worktree drift remain rejected.",
+    "Producer and consumers bind the exact amendment artifact, source tree, original recipe, original policies and same workflow run/attempt.",
+    "Legacy patched mode keeps successful exact patch application and the original vendor inventory.",
+    "Real Cargo metadata, just bazel-lock-update and just bazel-lock-check still run in integrated native CI and must leave both graph and lock bytes unchanged.",
+    "The isolated Synapse loader remains standard-library-only and copies the exact amendment into source provenance; it does not invoke a host Rust toolchain.",
+    "Post-qualification checks retain the original before/after source distinction and use the explicitly amended vendor identity."
+  ],
+  "format_proof": {
+    "actual_toolchain": "1.96.0",
+    "formatter": {
+      "version": "rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)",
+      "sha256": "342c3d56e8958da0b108108a39e37ceac64ebdd42e6eefafa237d219e5b7eb0c"
+    },
+    "independent_original_bytes_to_stdout_replays": [
+      {
+        "path": "codex-rs/core-plugins/src/startup_sync.rs",
+        "before_sha256": "d7402cc77b21a4412b9b47683a422353d60d977b735961b096b841d9218edea4",
+        "after_sha256": "bb1b928786848b3bbf18b254e379feb380370fc12302fe0b8ab83c223d760971",
+        "replayed_stdout_sha256": "bb1b928786848b3bbf18b254e379feb380370fc12302fe0b8ab83c223d760971",
+        "exact_output_match": true,
+        "command": [
+          "/tmp/hepta-ci-rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+          "--edition",
+          "2024",
+          "--config",
+          "imports_granularity=Item,skip_children=true",
+          "--emit",
+          "stdout"
+        ],
+        "cwd": "/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/core-plugins",
+        "returncode": 0,
+        "stderr": "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\n"
+      },
+      {
+        "path": "codex-rs/core-plugins/src/startup_sync_zip_tests.rs",
+        "before_sha256": "a273b864f58b584390bcc8dbffa090bc1deb98594566bb103e53ad3beab8ee31",
+        "after_sha256": "48c71a3ba32afa9a30f434493061c37e97046a75e78d183fc6355291c2362663",
+        "replayed_stdout_sha256": "48c71a3ba32afa9a30f434493061c37e97046a75e78d183fc6355291c2362663",
+        "exact_output_match": true,
+        "command": [
+          "/tmp/hepta-ci-rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+          "--edition",
+          "2024",
+          "--config",
+          "imports_granularity=Item,skip_children=true",
+          "--emit",
+          "stdout"
+        ],
+        "cwd": "/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/core-plugins",
+        "returncode": 0,
+        "stderr": "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\n"
+      },
+      {
+        "path": "codex-rs/hepta-matrix-sdk/tests/event_context_migration.rs",
+        "before_sha256": "6f4bdff30fd7966fd8a2ba69fbf0e3276a513c2fb43a312ba320b7e787dbce06",
+        "after_sha256": "ff4b61369287f33f3c362bf2ee2791d25c0885613f08090b5ca354acad3e14dd",
+        "replayed_stdout_sha256": "ff4b61369287f33f3c362bf2ee2791d25c0885613f08090b5ca354acad3e14dd",
+        "exact_output_match": true,
+        "command": [
+          "/tmp/hepta-ci-rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+          "--edition",
+          "2024",
+          "--config",
+          "imports_granularity=Item,skip_children=true",
+          "--emit",
+          "stdout"
+        ],
+        "cwd": "/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/hepta-matrix-sdk",
+        "returncode": 0,
+        "stderr": "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\n"
+      },
+      {
+        "path": "codex-rs/third_party/i18n-config-0.4.8/src/lib.rs",
+        "before_sha256": "60f6bf0687e5e277aa7c79f3903ef93aa85c1bcc52a87f4d7ceb217597ddd7d3",
+        "after_sha256": "71ebfc1fa810ab942933a862c622b5fe2c2326d225bd65ba252a60f464aed69c",
+        "replayed_stdout_sha256": "71ebfc1fa810ab942933a862c622b5fe2c2326d225bd65ba252a60f464aed69c",
+        "exact_output_match": true,
+        "command": [
+          "/tmp/hepta-ci-rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+          "--edition",
+          "2018",
+          "--config",
+          "imports_granularity=Item,skip_children=true",
+          "--emit",
+          "stdout"
+        ],
+        "cwd": "/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/third_party/i18n-config-0.4.8",
+        "returncode": 0,
+        "stderr": "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\n"
+      },
+      {
+        "path": "codex-rs/utils/yaml/src/lib.rs",
+        "before_sha256": "778cb731c9007e7a6a1b692e07ead52073df639c5a64d9b6a0a2150cd484de06",
+        "after_sha256": "d45f22ca7e681d92e0372b65caa5f4916f9a47f0a045724e1225cc196060413c",
+        "replayed_stdout_sha256": "d45f22ca7e681d92e0372b65caa5f4916f9a47f0a045724e1225cc196060413c",
+        "exact_output_match": true,
+        "command": [
+          "/tmp/hepta-ci-rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+          "--edition",
+          "2024",
+          "--config",
+          "imports_granularity=Item,skip_children=true",
+          "--emit",
+          "stdout"
+        ],
+        "cwd": "/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/utils/yaml",
+        "returncode": 0,
+        "stderr": "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\n"
+      },
+      {
+        "path": "codex-rs/utils/yaml/src/yaml_tests.rs",
+        "before_sha256": "81be6c0dc3c175d9b3171a010a6f9a710a132074f09a70152306ea163c98c036",
+        "after_sha256": "795b317a85ae2277465c975928d89bc4bc761ec9296d81746dfc8fc804ad864c",
+        "replayed_stdout_sha256": "795b317a85ae2277465c975928d89bc4bc761ec9296d81746dfc8fc804ad864c",
+        "exact_output_match": true,
+        "command": [
+          "/tmp/hepta-ci-rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+          "--edition",
+          "2024",
+          "--config",
+          "imports_granularity=Item,skip_children=true",
+          "--emit",
+          "stdout"
+        ],
+        "cwd": "/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/utils/yaml",
+        "returncode": 0,
+        "stderr": "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\n"
+      },
+      {
+        "path": "codex-rs/utils/yaml/tests/legacy_projection.rs",
+        "before_sha256": "39c0a2eabf2052add31543d71f081e0667603ad397aca8dbcc075f544a3271be",
+        "after_sha256": "57ae4de6d759eba0654f11f34537982cd654d4154c8920bdc4edf8044720b346",
+        "replayed_stdout_sha256": "57ae4de6d759eba0654f11f34537982cd654d4154c8920bdc4edf8044720b346",
+        "exact_output_match": true,
+        "command": [
+          "/tmp/hepta-ci-rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+          "--edition",
+          "2024",
+          "--config",
+          "imports_granularity=Item,skip_children=true",
+          "--emit",
+          "stdout"
+        ],
+        "cwd": "/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/utils/yaml",
+        "returncode": 0,
+        "stderr": "Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.\n"
+      }
+    ],
+    "replays_passed": 7,
+    "source_changes_made_by_formatter_only": true
+  },
+  "behavior_tests": {
+    "total_executed": 82,
+    "counts_by_scope": {
+      "port_candidate_and_amendment": 59,
+      "post_qualification": 16,
+      "isolated_source_and_restore": 7
+    },
+    "new_cases": 10,
+    "results": [
+      {
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "scripts",
+          "-p",
+          "test_ndu_port*.py",
+          "-v"
+        ],
+        "cwd": "/dev/shm/hepta-ndu-unified-20261028/repo",
+        "returncode": 0,
+        "bytes": 49440,
+        "sha256": "954ecbce6a66bdd0e48752bc1df072c812cb1204ca8f5026cfed9c2c9d953b51",
+        "tail": "idate.patch\nRunning check-candidate-patch: git apply --check --index /tmp/tmpjnfoubs0/artifact/candidate.patch\nRunning apply-candidate-patch: git apply --index /tmp/tmpjnfoubs0/artifact/candidate.patch\nRunning verify-head: git rev-parse HEAD\nRunning changed-paths: git diff --no-renames --name-only -z HEAD\nRunning untracked-paths: git ls-files --others --exclude-standard -z\nRunning source-head: git rev-parse HEAD\nRunning clean-checkout: git status --porcelain --untracked-files=all\nRunning source-head: git rev-parse HEAD\nRunning clean-checkout: git status --porcelain --untracked-files=all\nRunning integrated-index-drift: git diff --cached --name-only -z HEAD\nRunning integrated-committed-files: git ls-tree -z HEAD -- MODULE.bazel.lock codex-rs/Cargo.lock codex-rs/binary.fixture codex-rs/fixture.rs experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/INTEGRATION.v7.json\nRunning integrated-source-tree: git rev-parse HEAD^{tree}\nRunning source-head: git rev-parse HEAD\nRunning clean-checkout: git status --porcelain --untracked-files=all\nRunning integrated-index-drift: git diff --cached --name-only -z HEAD\nRunning integrated-committed-files: git ls-tree -z HEAD -- MODULE.bazel.lock codex-rs/Cargo.lock codex-rs/binary.fixture codex-rs/fixture.rs experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/INTEGRATION.v7.json\nRunning integrated-source-tree: git rev-parse HEAD^{tree}\nRunning source-head: git rev-parse HEAD\nRunning clean-checkout: git status --porcelain --untracked-files=all\nRunning integrated-index-drift: git diff --cached --name-only -z HEAD\nRunning integrated-committed-files: git ls-tree -z HEAD -- MODULE.bazel.lock codex-rs/Cargo.lock codex-rs/binary.fixture codex-rs/fixture.rs experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/INTEGRATION.v7.json\nRunning integrated-source-tree: git rev-parse HEAD^{tree}\nok\ntest_consumer_detects_permission_changes_to_preserved_original (test_ndu_port_matrix_fixture.OldFixtureBindingTests.test_consumer_detects_permission_changes_to_preserved_original) ... ok\ntest_consumer_restores_bound_session_mode_before_actual_phase_dispatch (test_ndu_port_matrix_fixture.OldFixtureBindingTests.test_consumer_restores_bound_session_mode_before_actual_phase_dispatch) ... ok\ntest_consumer_uses_separate_exact_copy_including_wal_and_shm (test_ndu_port_matrix_fixture.OldFixtureBindingTests.test_consumer_uses_separate_exact_copy_including_wal_and_shm) ... ok\ntest_failed_reopen_keeps_after_state_and_does_not_erase_original (test_ndu_port_matrix_fixture.OldFixtureBindingTests.test_failed_reopen_keeps_after_state_and_does_not_erase_original) ... ok\ntest_missing_or_modified_sidecar_rejected_before_phase (test_ndu_port_matrix_fixture.OldFixtureBindingTests.test_missing_or_modified_sidecar_rejected_before_phase) ... ok\ntest_unbound_or_tampered_permission_manifest_is_rejected_before_phase (test_ndu_port_matrix_fixture.OldFixtureBindingTests.test_unbound_or_tampered_permission_manifest_is_rejected_before_phase) ... ok\ntest_wrong_old_head_or_new_driver_head_rejected_before_phase (test_ndu_port_matrix_fixture.OldFixtureBindingTests.test_wrong_old_head_or_new_driver_head_rejected_before_phase) ... ok\ntest_only_exact_one_nonflaky_executed_phase_is_accepted (test_ndu_port_matrix_fixture.PhaseEvidenceTests.test_only_exact_one_nonflaky_executed_phase_is_accepted) ... ok\n\n----------------------------------------------------------------------\nRan 59 tests in 6.381s\n\nOK\n"
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "scripts",
+          "-p",
+          "test_ndu_post_qualification*.py",
+          "-v"
+        ],
+        "cwd": "/dev/shm/hepta-ndu-unified-20261028/repo",
+        "returncode": 0,
+        "bytes": 35050,
+        "sha256": "1080eac3d84f7e065e7c1d6d7e31e77d1cf8e6aeb08191bbe8cd65a24434f626",
+        "tail": "portfolio/closure_20261028/ci/port-remediation/INTEGRATION.v7.json\nRunning integrated-source-tree: git rev-parse HEAD^{tree}\nRunning verify-head: git rev-parse HEAD\nRunning changed-paths: git diff --no-renames --name-only -z HEAD\nRunning untracked-paths: git ls-files --others --exclude-standard -z\nRunning integrated-index-drift: git diff --cached --name-only -z HEAD\nRunning integrated-committed-files: git ls-tree -z HEAD -- MODULE.bazel.lock codex-rs/Cargo.lock codex-rs/hepta-matrix-sdk/src/lib.rs experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/INTEGRATION.v7.json\nRunning integrated-source-tree: git rev-parse HEAD^{tree}\nok\ntest_source_fix_preserves_locks_but_requires_new_behavioral_qualification (test_ndu_post_qualification_integrated.IntegratedPostQualificationTests.test_source_fix_preserves_locks_but_requires_new_behavioral_qualification) ... Running integrated-index-drift: git diff --cached --name-only -z HEAD\nRunning integrated-committed-files: git ls-tree -z HEAD -- MODULE.bazel.lock codex-rs/Cargo.lock codex-rs/hepta-matrix-sdk/src/lib.rs experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/INTEGRATION.v7.json\nRunning integrated-source-tree: git rev-parse HEAD^{tree}\nRunning verify-head: git rev-parse HEAD\nRunning changed-paths: git diff --no-renames --name-only -z HEAD\nRunning untracked-paths: git ls-files --others --exclude-standard -z\nRunning integrated-index-drift: git diff --cached --name-only -z HEAD\nRunning integrated-committed-files: git ls-tree -z HEAD -- MODULE.bazel.lock codex-rs/Cargo.lock codex-rs/hepta-matrix-sdk/src/lib.rs experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/INTEGRATION.v7.json\nRunning integrated-source-tree: git rev-parse HEAD^{tree}\nRunning before-unstaged: git diff --name-only -z\nRunning before-untracked: git ls-files --others -z\nRunning index-path: git rev-parse --git-path index\nRunning before-tree: git write-tree\nRunning replay-base: git read-tree 75b6b73fe5b5182054fbbf7c41d8969f62e11c1e\nRunning replayed-tree: git write-tree\nRunning before-index-entries: git ls-files --stage -z\nRunning bound-rustc-path: rustup which --toolchain 1.96.0 rustc\nRunning rustc-version: /tmp/tmpyqysqd7e/tools/rustc --version --verbose\nRunning cargo-version: cargo --version\nRunning just-version: just --version\nRunning bound-cargo: rustup which --toolchain 1.96.0 cargo\nRunning cargo-version: /tmp/tmpyqysqd7e/tools/cargo --version\nRunning bound-cargo-clippy: rustup which --toolchain 1.96.0 cargo-clippy\nRunning cargo-clippy-version: /tmp/tmpyqysqd7e/tools/cargo-clippy --version\nRunning bound-clippy-driver: rustup which --toolchain 1.96.0 clippy-driver\nRunning clippy-driver-version: /tmp/tmpyqysqd7e/tools/clippy-driver --version\nRunning bound-just-version: /tmp/tmpyqysqd7e/tools/just --version\nRunning scoped-clippy-fix: /tmp/tmpyqysqd7e/tools/just fix --locked --profile ci-test -p codex-hepta-matrix-sdk -p codex-hepta-matrixd --features codex-hepta-matrixd/real-synapse-e2e\nRunning after-tree-stage: git add -u -- .\nRunning after-tree: git write-tree\nRunning export-fix-patch: git diff --binary --full-index --no-renames --output=/tmp/tmpyqysqd7e/fix-output/fix.patch\nRunning fix-paths: git diff --name-only -z\nRunning after-index-entries: git ls-files --stage -z\nRunning after-untracked: git ls-files --others -z\nRunning after-head: git rev-parse HEAD\nok\n\n----------------------------------------------------------------------\nRan 16 tests in 11.482s\n\nOK\n"
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "linux_synapse.test_source",
+          "linux_synapse.test_restore",
+          "-v"
+        ],
+        "cwd": "/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/hepta-matrixd/tests/fixtures",
+        "returncode": 0,
+        "bytes": 2431,
+        "sha256": "664a078d787168df4d08cabd549cc6dfe64015b98c90b6a1488dd529ea9797ff",
+        "tail": "test_candidate_mode_drift_rejected_by_exact_patch_tree (linux_synapse.test_source.SourceImportBoundary.test_candidate_mode_drift_rejected_by_exact_patch_tree) ... ok\ntest_staged_matching_bytecode_cache_is_never_executed (linux_synapse.test_source.SourceImportBoundary.test_staged_matching_bytecode_cache_is_never_executed) ... ok\ntest_staged_or_unstaged_helper_tamper_never_executes (linux_synapse.test_source.SourceImportBoundary.test_staged_or_unstaged_helper_tamper_never_executes) ... ok\ntest_staged_stdlib_shadow_is_not_imported (linux_synapse.test_source.SourceImportBoundary.test_staged_stdlib_shadow_is_not_imported) ... ok\ntest_amended_integrated_restore_carries_the_exact_source_revision (linux_synapse.test_restore.ProducerRestore.test_amended_integrated_restore_carries_the_exact_source_revision) ... Running source-head: git rev-parse HEAD\nRunning clean-checkout: git status --porcelain --untracked-files=all\nRunning patch-paths: git apply --numstat -z /tmp/tmpnfrp0nxz/artifact/candidate.patch\nRunning check-candidate-patch: git apply --check --index /tmp/tmpnfrp0nxz/artifact/candidate.patch\nRunning apply-candidate-patch: git apply --index /tmp/tmpnfrp0nxz/artifact/candidate.patch\nRunning verify-head: git rev-parse HEAD\nRunning changed-paths: git diff --no-renames --name-only -z HEAD\nRunning untracked-paths: git ls-files --others --exclude-standard -z\nok\ntest_integrated_restore_preserves_committed_tree_and_independent_replay (linux_synapse.test_restore.ProducerRestore.test_integrated_restore_preserves_committed_tree_and_independent_replay) ... Running source-head: git rev-parse HEAD\nRunning clean-checkout: git status --porcelain --untracked-files=all\nRunning patch-paths: git apply --numstat -z /tmp/tmpu5_8wdgs/artifact/candidate.patch\nRunning check-candidate-patch: git apply --check --index /tmp/tmpu5_8wdgs/artifact/candidate.patch\nRunning apply-candidate-patch: git apply --index /tmp/tmpu5_8wdgs/artifact/candidate.patch\nRunning verify-head: git rev-parse HEAD\nRunning changed-paths: git diff --no-renames --name-only -z HEAD\nRunning untracked-paths: git ls-files --others --exclude-standard -z\nok\ntest_original_restore_guards_then_identical_private_tree_without_host_rust (linux_synapse.test_restore.ProducerRestore.test_original_restore_guards_then_identical_private_tree_without_host_rust) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 14.695s\n\nOK\n"
+      }
+    ],
+    "scope": "Actual Git repositories, immutable file/artifact identities and controlled resolver/Clippy subprocesses. This is not a Rust/Bazel build, live resolver or native business qualification."
+  },
+  "initial_test_attempt": {
+    "log": "tests-0.log",
+    "bytes": 54207,
+    "sha256": "e5a3a308a7a06ee92e23a86d2752d049a3974aa4049875f5c66bf8d3c6c439b6",
+    "outcome": "55 passed; 4 existing frozen-evidence tests failed setup because the sparse checkout lacked docs/governance/DOCUMENT_SYSTEM.json. Its exact committed bytes were materialized; no test or gate was weakened."
+  },
+  "required_native_commands": [
+    {
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-core-plugins",
+        "-p",
+        "codex-utils-yaml",
+        "-p",
+        "codex-hepta-matrix-sdk",
+        "-p",
+        "i18n-config"
+      ],
+      "returncode": 101,
+      "bytes": 499,
+      "sha256": "e81097acc8643f3069b3041813e61895acdcbe6f7ba1de0f55ff96dc4502c670",
+      "output": "RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py \"$@\"\nerror: failed to load manifest for workspace member `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth`\nreferenced by workspace at `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/Cargo.toml`\n\nCaused by:\n  failed to read `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth/Cargo.toml`\n\nCaused by:\n  No such file or directory (os error 2)\nerror: recipe `test` failed on line 89 with exit code 101\n"
+    },
+    {
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-core-plugins",
+        "-p",
+        "codex-utils-yaml",
+        "-p",
+        "codex-hepta-matrix-sdk",
+        "-p",
+        "i18n-config"
+      ],
+      "returncode": 101,
+      "bytes": 462,
+      "sha256": "73c71fa32cb474620f4b6e0ddc8130068b59aef2a10d663afa9aab8964785d83",
+      "output": "cargo clippy --fix --tests --allow-dirty {args}\nerror: failed to load manifest for workspace member `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth`\nreferenced by workspace at `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/Cargo.toml`\n\nCaused by:\n  failed to read `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth/Cargo.toml`\n\nCaused by:\n  No such file or directory (os error 2)\nerror: recipe `fix` failed on line 58 with exit code 101\n"
+    }
+  ],
+  "source_checks": {
+    "scoped_rustfmt_1_96": "passed",
+    "scoped_repository_python_formatter": "passed",
+    "codespell": "passed",
+    "diff_check": "passed",
+    "metadata_frozen_payload_unchanged": true
+  },
+  "bazel_coverage": {
+    "retained_targets": 12,
+    "added_target": "@crates//:i18n-config-0.4.8",
+    "total_targets": 13,
+    "native_analysis_status": "pending complete CI with the separately reviewed .bazelignore correction"
+  },
+  "protected_original_inputs": [
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/INTEGRATION.v7.json",
+      "bytes": 9120,
+      "sha256": "ef1fc0a4cfd8c2621eeb82e413555c1ea1780020a1f74f7c666253b62a5bfde2"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v7.json",
+      "bytes": 348278,
+      "sha256": "8c655b7b3c539527e6506869a52d0e98a88ed37e334e9d34d13be83713bce03f"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/combined-source-v7.patch",
+      "bytes": 89162,
+      "sha256": "9f76d0986e0ec2897c0cc95d550b132d1cf8c51b90f3d925a72859758217ada9"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "bytes": 420227,
+      "sha256": "c335e0649d5d516cadd52d68c1a15ed5c136814d11553ef5c791ea7e5058a478"
+    },
+    {
+      "path": "MODULE.bazel.lock",
+      "bytes": 1722721,
+      "sha256": "fe4bbfb92aac1eba58fb25357bf3182088d29a09b1838144041c94b03f8218cf"
+    },
+    {
+      "path": ".github/workflows/cargo-deny.yml",
+      "bytes": 1697,
+      "sha256": "9e0d8388810a90f12776687b64e050d8110a025ff504f41f6c9f992b7f5b2959"
+    },
+    {
+      "path": "codex-rs/deny.toml",
+      "bytes": 18803,
+      "sha256": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352"
+    },
+    {
+      "path": "scripts/cargo_deny_diagnostics.py",
+      "bytes": 4247,
+      "sha256": "da5dbc01a44143fce4f70cbce68e97d0ca10a70ed59841d3d3224e99957d4bcc"
+    }
+  ],
+  "source_files": [
+    {
+      "path": "codex-rs/core-plugins/src/startup_sync.rs",
+      "mode": "100644",
+      "bytes": 39846,
+      "sha256": "bb1b928786848b3bbf18b254e379feb380370fc12302fe0b8ab83c223d760971",
+      "git_blob_sha": "da338d3c5fa59a6c23334f932138ddabc54657f7",
+      "baseline_sha256": "d7402cc77b21a4412b9b47683a422353d60d977b735961b096b841d9218edea4",
+      "needs_large_blob_transfer": false
+    },
+    {
+      "path": "codex-rs/core-plugins/src/startup_sync_zip_tests.rs",
+      "mode": "100644",
+      "bytes": 7818,
+      "sha256": "48c71a3ba32afa9a30f434493061c37e97046a75e78d183fc6355291c2362663",
+      "git_blob_sha": "0e9fc8dc2417af490241e2a7a06002d06eca2a3b",
+      "baseline_sha256": "a273b864f58b584390bcc8dbffa090bc1deb98594566bb103e53ad3beab8ee31",
+      "needs_large_blob_transfer": false
+    },
+    {
+      "path": "codex-rs/hepta-matrix-sdk/tests/event_context_migration.rs",
+      "mode": "100644",
+      "bytes": 4655,
+      "sha256": "ff4b61369287f33f3c362bf2ee2791d25c0885613f08090b5ca354acad3e14dd",
+      "git_blob_sha": "ece3219f0c460fa679cbecf10425ba9918788d05",
+      "baseline_sha256": "6f4bdff30fd7966fd8a2ba69fbf0e3276a513c2fb43a312ba320b7e787dbce06",
+      "needs_large_blob_transfer": false
+    },
+    {
+      "path": "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/source.py",
+      "mode": "100644",
+      "bytes": 13707,
+      "sha256": "236cd0d79143a6769407e1b88e9960276b37c1a40060b539e948c44535b03f72",
+      "git_blob_sha": "d961754fb98766da570db7d217c1f7d1d5ac9deb",
+      "baseline_sha256": "e209239bd87302e96005b1c07643f037c1af6d3a4fda03a1f3acde5265c75060",
+      "needs_large_blob_transfer": false
+    },
+    {
+      "path": "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/test_restore.py",
+      "mode": "100644",
+      "bytes": 7602,
+      "sha256": "d81b1b2fc2359c0d32d8b27564b54f479cd24fe457ffb4b89d800b2227d5d1e1",
+      "git_blob_sha": "255e661b165b121e5dfae544656d1663d4d9e694",
+      "baseline_sha256": "450de506ac65ee8e3e5b18834333bf9910dbf5d035c99748780e1cb94480439a",
+      "needs_large_blob_transfer": false
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/src/lib.rs",
+      "mode": "100644",
+      "bytes": 14763,
+      "sha256": "71ebfc1fa810ab942933a862c622b5fe2c2326d225bd65ba252a60f464aed69c",
+      "git_blob_sha": "b88a8213e7454f393eb1739b766fc36d7e7d518e",
+      "baseline_sha256": "60f6bf0687e5e277aa7c79f3903ef93aa85c1bcc52a87f4d7ceb217597ddd7d3",
+      "needs_large_blob_transfer": false
+    },
+    {
+      "path": "codex-rs/utils/yaml/src/lib.rs",
+      "mode": "100644",
+      "bytes": 6244,
+      "sha256": "d45f22ca7e681d92e0372b65caa5f4916f9a47f0a045724e1225cc196060413c",
+      "git_blob_sha": "153fe8477bf76124c78e8e8367c807a76e899c03",
+      "baseline_sha256": "778cb731c9007e7a6a1b692e07ead52073df639c5a64d9b6a0a2150cd484de06",
+      "needs_large_blob_transfer": false
+    },
+    {
+      "path": "codex-rs/utils/yaml/src/yaml_tests.rs",
+      "mode": "100644",
+      "bytes": 3683,
+      "sha256": "795b317a85ae2277465c975928d89bc4bc761ec9296d81746dfc8fc804ad864c",
+      "git_blob_sha": "2b72aecac9a68a53484d8a4313e29249c9ab9eda",
+      "baseline_sha256": "81be6c0dc3c175d9b3171a010a6f9a710a132074f09a70152306ea163c98c036",
+      "needs_large_blob_transfer": false
+    },
+    {
+      "path": "codex-rs/utils/yaml/tests/legacy_projection.rs",
+      "mode": "100644",
+      "bytes": 8065,
+      "sha256": "57ae4de6d759eba0654f11f34537982cd654d4154c8920bdc4edf8044720b346",
+      "git_blob_sha": "b462ff7fde9178d78a92a1b9077a9cfb2f42c01e",
+      "baseline_sha256": "39c0a2eabf2052add31543d71f081e0667603ad397aca8dbcc075f544a3271be",
+      "needs_large_blob_transfer": false
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/SOURCE_AMENDMENT.v7.1.json",
+      "mode": "100644",
+      "bytes": 3256,
+      "sha256": "f802638dd5d01f3b3d7583986848c1ad6264c3ec478ed055f4e1edebc7a0d40a",
+      "git_blob_sha": "9ce5dacdc5fe931438c1f40bdb89564cd62c31bc",
+      "baseline_sha256": null,
+      "needs_large_blob_transfer": false
+    },
+    {
+      "path": "scripts/ndu_port_candidate.py",
+      "mode": "100644",
+      "bytes": 14775,
+      "sha256": "6e0436bbf6e889e9f775a40fd6e2140984fad22b4767931e437e584bb9b1cf3c",
+      "git_blob_sha": "445940ea01f5685e748800d8b23b300ba2e80be9",
+      "baseline_sha256": "006a70bd9fb7d5fe61f381b33890de30eea1252827c85b25de653c3f2d5b8f3c",
+      "needs_large_blob_transfer": false
+    },
+    {
+      "path": "scripts/ndu_port_candidate_common.py",
+      "mode": "100644",
+      "bytes": 34719,
+      "sha256": "11f2ec939088e845a5c7bcbf164ce8edfe048ed5362ce906309825e412239aea",
+      "git_blob_sha": "74f20a83796ef2210673f3b223ebfdbfdf8ce4f1",
+      "baseline_sha256": "d138c8e20141ac68e16d2fe213ecd5896b0cd318b37e331285fdc23f9bf1c39d",
+      "needs_large_blob_transfer": false
+    },
+    {
+      "path": "scripts/ndu_port_integrated.py",
+      "mode": "100644",
+      "bytes": 3917,
+      "sha256": "716d6ab47fe326b8e9d522cf08e355e74850a4d165da27ffe6372f441295e2cc",
+      "git_blob_sha": "a9d9836f1bafae191d4e50090336707495320d3a",
+      "baseline_sha256": "1195d6c69a971e6fdb4bd7b73d08c5711a2d52a8fad04e13ea92a27330146d32",
+      "needs_large_blob_transfer": false
+    },
+    {
+      "path": "scripts/ndu_port_integration_test_support.py",
+      "mode": "100644",
+      "bytes": 4859,
+      "sha256": "e141d35b857a4209252d061419b29dc3962710feeb42945075c295f9e0f1e0d6",
+      "git_blob_sha": "dc12f1a7ad3728d429713c219c3636ecb83dcb1a",
+      "baseline_sha256": "72d89d12e2da818e4b8ff3781434b47fd121c3d9499364fb41e4687c19cec19c",
+      "needs_large_blob_transfer": false
+    },
+    {
+      "path": "scripts/ndu_post_qualification_fix.py",
+      "mode": "100644",
+      "bytes": 13196,
+      "sha256": "6f6ac08bb9db02d712311f2fd08b05097d879a8c942c53a917e8c4b85424acf2",
+      "git_blob_sha": "96b42637bcb0332b207273db043d91d9987aa868",
+      "baseline_sha256": "b9e521a92e62e71ed9e4cc321c2f8ea3e3e23762241cddbec7daf02d4d0092ab",
+      "needs_large_blob_transfer": false
+    },
+    {
+      "path": "scripts/test_ndu_port_amendment.py",
+      "mode": "100644",
+      "bytes": 7252,
+      "sha256": "f4659d025d9a201af97dd4fde95ea04bd2955ca1902af66e54b1fda97e5378c7",
+      "git_blob_sha": "6c58db875e83cbebf6b390b149933ebb769a4c5a",
+      "baseline_sha256": null,
+      "needs_large_blob_transfer": false
+    },
+    {
+      "path": "scripts/test_ndu_post_qualification_integrated.py",
+      "mode": "100644",
+      "bytes": 3571,
+      "sha256": "ee5ae09bf691f9592888bb311a9f9c7cff59018df091bf793e78e58a6459416a",
+      "git_blob_sha": "d42fca64e115d6f6b487053e639a913be82a48c9",
+      "baseline_sha256": "305654cb4614ffbe8d66fec4b37cce6920a330a790bcea3e3c0fa18e489ed6bb",
+      "needs_large_blob_transfer": false
+    }
+  ],
+  "remaining_limits": [
+    "The actual sparse checkout cannot compile because codex-rs/aws-auth/Cargo.toml is absent; required just test/fix returned 101 before compilation.",
+    "The real complete vendor inventories are enforced by the production guard; local synthetic guard tests are not a fresh scan of unmaterialized sparse vendor trees.",
+    "Full native policy, Windows/Linux/macOS tests, old-store migration and Synapse qualification remain separate required gates.",
+    "No original qualification result is overwritten or promoted by this source revision."
+  ]
+}

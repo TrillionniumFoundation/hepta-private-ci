@@ -1135,12 +1135,14 @@ fn apply_zip_permissions<R: std::io::Read + ?Sized>(
     };
     // ZIP metadata is untrusted. Preserve ordinary access and executable bits,
     // but never restore setuid, setgid, or sticky bits from an archive.
-    std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(mode & 0o777)).map_err(|err| {
-        format!(
-            "failed to set permissions on curated plugins file {}: {err}",
-            output_path.display()
-        )
-    })
+    std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(mode & 0o777)).map_err(
+        |err| {
+            format!(
+                "failed to set permissions on curated plugins file {}: {err}",
+                output_path.display()
+            )
+        },
+    )
 }
 
 #[cfg(not(unix))]

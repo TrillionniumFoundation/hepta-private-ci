@@ -29,8 +29,7 @@ struct InitiallyMissing;
 type Deliveries = Arc<Mutex<Vec<(String, String)>>>;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn event_context_preserves_types_clones_and_replacement()
--> Result<(), Box<dyn Error>> {
+async fn event_context_preserves_types_clones_and_replacement() -> Result<(), Box<dyn Error>> {
     let server = MockServer::start().await;
     let client = Client::builder()
         .homeserver_url(server.uri())
@@ -78,7 +77,10 @@ async fn event_context_preserves_types_clones_and_replacement()
             }
         },
     );
-    for (index, label) in ["before replacement", "after replacement"].into_iter().enumerate() {
+    for (index, label) in ["before replacement", "after replacement"]
+        .into_iter()
+        .enumerate()
+    {
         client.add_event_handler_context(Label(label.to_owned()));
         if index == 1 {
             client.add_event_handler_context(InitiallyMissing);

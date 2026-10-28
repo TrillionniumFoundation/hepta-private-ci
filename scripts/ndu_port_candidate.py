@@ -57,6 +57,7 @@ BAZEL_TARGETS = (
     "@crates//:matrix-sdk-0.19.1",
     "@crates//:matrix-sdk-sqlite-0.19.1",
     "@crates//:starlark-0.14.2",
+    "@crates//:i18n-config-0.4.8",
 )
 
 

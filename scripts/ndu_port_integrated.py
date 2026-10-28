@@ -6,6 +6,7 @@ from ndu_port_candidate_common import INTEGRATION
 from ndu_port_candidate_common import LOCKS
 from ndu_port_candidate_common import POLICIES
 from ndu_port_candidate_common import RECIPE
+from ndu_port_candidate_common import SOURCE_AMENDMENT
 from ndu_port_candidate_common import check_checkout
 from ndu_port_candidate_common import check_toolchain
 from ndu_port_candidate_common import checksum
@@ -34,10 +35,16 @@ def generate_integrated(runner, expected_source):
     shutil.copyfile(runner.root / RECIPE, runner.output / "recipe.json")
     shutil.copyfile(runner.root / INTEGRATION, runner.output / "integration.json")
     shutil.copyfile(runner.root / recipe["patch_path"], runner.output / "source.patch")
+    amendment_artifacts = ()
+    if "source_amendment" in binding:
+        shutil.copyfile(
+            runner.root / SOURCE_AMENDMENT, runner.output / "source-amendment.json"
+        )
+        amendment_artifacts = ("source-amendment.json",)
     # An explicitly declared empty delta binds this already committed source.
     # Patched mode still requires successful nonempty Git patch application.
     (runner.output / "candidate.patch").write_bytes(b"")
-    verify_vendor(runner.root, recipe)
+    verify_vendor(runner.root, recipe, source_mode="integrated")
     check_toolchain(runner, "1.96.0")
     runner.run("bazel-version", ["bazel", "--version"])
     metadata_command = [
@@ -69,6 +76,7 @@ def generate_integrated(runner, expected_source):
             "candidate.patch",
             "metadata-before-bazel.json",
             "metadata.json",
+            *amendment_artifacts,
         ),
     )
     verify_tree(runner, runner.record, recipe)

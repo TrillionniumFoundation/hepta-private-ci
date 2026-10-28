@@ -1,0 +1,99 @@
+{
+  "schema": "hepta.port-source-amendment.v1",
+  "parent": {
+    "path": "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/INTEGRATION.v7.json",
+    "bytes": 9120,
+    "sha256": "ef1fc0a4cfd8c2621eeb82e413555c1ea1780020a1f74f7c666253b62a5bfde2"
+  },
+  "recipe": {
+    "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v7.json",
+    "bytes": 348278,
+    "sha256": "8c655b7b3c539527e6506869a52d0e98a88ed37e334e9d34d13be83713bce03f"
+  },
+  "operation": "rustfmt",
+  "toolchain": "1.96.0",
+  "formatter": {
+    "version": "rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)",
+    "sha256": "342c3d56e8958da0b108108a39e37ceac64ebdd42e6eefafa237d219e5b7eb0c"
+  },
+  "changes": {
+    "codex-rs/core-plugins/src/startup_sync.rs": {
+      "before": {
+        "bytes": 39811,
+        "sha256": "d7402cc77b21a4412b9b47683a422353d60d977b735961b096b841d9218edea4"
+      },
+      "after": {
+        "bytes": 39846,
+        "sha256": "bb1b928786848b3bbf18b254e379feb380370fc12302fe0b8ab83c223d760971"
+      },
+      "mode": "100644"
+    },
+    "codex-rs/core-plugins/src/startup_sync_zip_tests.rs": {
+      "before": {
+        "bytes": 7623,
+        "sha256": "a273b864f58b584390bcc8dbffa090bc1deb98594566bb103e53ad3beab8ee31"
+      },
+      "after": {
+        "bytes": 7818,
+        "sha256": "48c71a3ba32afa9a30f434493061c37e97046a75e78d183fc6355291c2362663"
+      },
+      "mode": "100644"
+    },
+    "codex-rs/hepta-matrix-sdk/tests/event_context_migration.rs": {
+      "before": {
+        "bytes": 4633,
+        "sha256": "6f4bdff30fd7966fd8a2ba69fbf0e3276a513c2fb43a312ba320b7e787dbce06"
+      },
+      "after": {
+        "bytes": 4655,
+        "sha256": "ff4b61369287f33f3c362bf2ee2791d25c0885613f08090b5ca354acad3e14dd"
+      },
+      "mode": "100644"
+    },
+    "codex-rs/third_party/i18n-config-0.4.8/src/lib.rs": {
+      "before": {
+        "bytes": 14747,
+        "sha256": "60f6bf0687e5e277aa7c79f3903ef93aa85c1bcc52a87f4d7ceb217597ddd7d3"
+      },
+      "after": {
+        "bytes": 14763,
+        "sha256": "71ebfc1fa810ab942933a862c622b5fe2c2326d225bd65ba252a60f464aed69c"
+      },
+      "mode": "100644"
+    },
+    "codex-rs/utils/yaml/src/lib.rs": {
+      "before": {
+        "bytes": 6264,
+        "sha256": "778cb731c9007e7a6a1b692e07ead52073df639c5a64d9b6a0a2150cd484de06"
+      },
+      "after": {
+        "bytes": 6244,
+        "sha256": "d45f22ca7e681d92e0372b65caa5f4916f9a47f0a045724e1225cc196060413c"
+      },
+      "mode": "100644"
+    },
+    "codex-rs/utils/yaml/src/yaml_tests.rs": {
+      "before": {
+        "bytes": 3649,
+        "sha256": "81be6c0dc3c175d9b3171a010a6f9a710a132074f09a70152306ea163c98c036"
+      },
+      "after": {
+        "bytes": 3683,
+        "sha256": "795b317a85ae2277465c975928d89bc4bc761ec9296d81746dfc8fc804ad864c"
+      },
+      "mode": "100644"
+    },
+    "codex-rs/utils/yaml/tests/legacy_projection.rs": {
+      "before": {
+        "bytes": 6520,
+        "sha256": "39c0a2eabf2052add31543d71f081e0667603ad397aca8dbcc075f544a3271be"
+      },
+      "after": {
+        "bytes": 8065,
+        "sha256": "57ae4de6d759eba0654f11f34537982cd654d4154c8920bdc4edf8044720b346"
+      },
+      "mode": "100644"
+    }
+  },
+  "promotion_allowed": false
+}

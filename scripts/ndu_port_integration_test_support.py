@@ -66,3 +66,55 @@ def integrate_fixture(root, recipe, original, artifact):
     )
     (artifact / "RESULT.json").write_text(json.dumps(record))
     return record, common.checksum(artifact / "RESULT.json")
+
+
+def amend_fixture(root, recipe, original, artifact, replacements):
+    """Commit a controlled source-only delta; no formatter/native qualification."""
+    record = copy.deepcopy(original)
+    changes = {}
+    for name, contents in replacements.items():
+        before = common.describe(root, (name,))[name]
+        (root / name).write_bytes(contents)
+        changes[name] = {
+            "before": before,
+            "after": common.describe(root, (name,))[name],
+            "mode": "100644",
+        }
+    amendment = {
+        "schema": "hepta.port-source-amendment.v1",
+        "parent": {
+            "path": common.INTEGRATION,
+            **common.describe(root, (common.INTEGRATION,))[common.INTEGRATION],
+        },
+        "recipe": {
+            "path": common.RECIPE,
+            **common.describe(root, (common.RECIPE,))[common.RECIPE],
+        },
+        "operation": "rustfmt",
+        "toolchain": "1.96.0",
+        "formatter": {
+            "version": "rustfmt controlled fixture, not executed",
+            "sha256": "0" * 64,
+        },
+        "changes": changes,
+        "promotion_allowed": False,
+    }
+    path = root / common.SOURCE_AMENDMENT
+    path.write_text(json.dumps(amendment, indent=2) + "\n")
+    common.load_source_amendment(root, recipe)
+    git(root, "add", "--", *changes, common.SOURCE_AMENDMENT)
+    git(root, "commit", "-qm", "synthetic source amendment and exact identities")
+    record.update(
+        source_commit=git(root, "rev-parse", "HEAD").decode().strip(),
+        source_tree=git(root, "rev-parse", "HEAD^{tree}").decode().strip(),
+    )
+    record["integration"]["source_amendment"] = {
+        "path": common.SOURCE_AMENDMENT,
+        **common.describe(root, (common.SOURCE_AMENDMENT,))[common.SOURCE_AMENDMENT],
+    }
+    record["files"] = common.describe(root, record["files"])
+    common.copy_files(root, artifact / "files", record["files"])
+    shutil.copyfile(path, artifact / "source-amendment.json")
+    record["artifacts"].update(common.describe(artifact, ("source-amendment.json",)))
+    (artifact / "RESULT.json").write_text(json.dumps(record))
+    return record, common.checksum(artifact / "RESULT.json")

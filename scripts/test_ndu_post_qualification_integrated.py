@@ -2,6 +2,7 @@
 
 import unittest
 
+from ndu_port_integration_test_support import amend_fixture
 from ndu_port_integration_test_support import integrate_fixture
 from ndu_post_qualification_test_support import PostQualificationFixture
 
@@ -22,6 +23,30 @@ class IntegratedPostQualificationTests(PostQualificationFixture):
         self.index_before = (self.root / ".git/index").read_bytes()
 
     def test_exact_committed_tree_replays_and_qualifies_without_source_mutation(self):
+        status, receipt, output = self.run_fix()
+        self.assertEqual(status, 0)
+        self.assertEqual(receipt["status"], "clippy_passed_source_unchanged")
+        self.assertEqual(receipt["before_tree"], self.candidate["source_tree"])
+        self.assertEqual(receipt["before_tree"], receipt["after_tree"])
+        self.assertEqual((output / "fix.patch").read_bytes(), b"")
+        self.assertEqual((self.root / ".git/index").read_bytes(), self.index_before)
+
+    def test_explicit_amendment_keeps_the_same_committed_source_through_clippy(self):
+        self.candidate, self.candidate_sha = amend_fixture(
+            self.root,
+            self.recipe,
+            self.candidate,
+            self.artifact,
+            {self.source: b"controlled reviewed source  \n"},
+        )
+        self.head = self.candidate["source_commit"]
+        self.make_test_receipt("matrix")
+        self.test_record.update(
+            (key, self.candidate[key])
+            for key in ("source_mode", "source_tree", "integration")
+        )
+        self.write_receipt()
+        self.index_before = (self.root / ".git/index").read_bytes()
         status, receipt, output = self.run_fix()
         self.assertEqual(status, 0)
         self.assertEqual(receipt["status"], "clippy_passed_source_unchanged")

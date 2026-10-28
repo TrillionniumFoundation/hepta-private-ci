@@ -87,7 +87,10 @@ fn malformed_and_duplicate_nested_values_fail_the_whole_document() {
         "ignored: *undefined\n",
     ] {
         assert!(validate(input).is_err(), "accepted invalid input: {input}");
-        assert!(scalar_mapping(input).is_err(), "accepted invalid input: {input}");
+        assert!(
+            scalar_mapping(input).is_err(),
+            "accepted invalid input: {input}"
+        );
     }
     assert_eq!(scalar_mapping("[one, two]").unwrap(), None);
     assert_eq!(scalar_mapping("null").unwrap(), None);

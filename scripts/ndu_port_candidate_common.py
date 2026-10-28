@@ -15,6 +15,7 @@ import tomllib
 SCHEMA = "hepta.ci.port-candidate.v1"
 RECIPE = "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v7.json"
 INTEGRATION = "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/INTEGRATION.v7.json"
+SOURCE_AMENDMENT = "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/SOURCE_AMENDMENT.v7.1.json"
 LOCKS = ("codex-rs/Cargo.lock", "MODULE.bazel.lock")
 POLICIES = (
     "codex-rs/deny.toml",
@@ -90,9 +91,17 @@ def tree_files(root):
     return describe(root, files)
 
 
-def verify_vendor(root, recipe):
+def verify_vendor(root, recipe, *, source_mode="patched"):
+    amendment = (
+        load_source_amendment(root, recipe) if source_mode == "integrated" else None
+    )
+    changes = amendment["changes"] if amendment else {}
     for name, inventory in recipe["vendor_dirs"].items():
-        if tree_files(regular_path(root, name)) != inventory:
+        expected = dict(inventory)
+        for changed, identity in changes.items():
+            if changed.startswith(name + "/"):
+                expected[changed[len(name) + 1 :]] = identity["after"]
+        if tree_files(regular_path(root, name)) != expected:
             raise ValueError(f"Vendor inventory differs, including extra files: {name}")
 
 
@@ -479,6 +488,86 @@ def candidate_source_mode(record):
     return mode
 
 
+def valid_file_identity(value):
+    return (
+        isinstance(value, dict)
+        and set(value) == {"bytes", "sha256"}
+        and type(value["bytes"]) is int
+        and value["bytes"] >= 0
+        and isinstance(value["sha256"], str)
+        and HEX256.fullmatch(value["sha256"]) is not None
+    )
+
+
+def load_source_amendment(root, recipe, manifest=None):
+    """Read one explicit reviewed formatting delta; historical inputs stay exact."""
+    path = regular_path(root, SOURCE_AMENDMENT)
+    if not path.exists():
+        return None
+    if manifest is None:
+        manifest = json.loads(regular_path(root, INTEGRATION).read_text())
+    amendment = json.loads(path.read_text())
+    if (
+        set(amendment)
+        != {
+            "schema",
+            "parent",
+            "recipe",
+            "operation",
+            "toolchain",
+            "formatter",
+            "changes",
+            "promotion_allowed",
+        }
+        or amendment["schema"] != "hepta.port-source-amendment.v1"
+        or amendment["parent"]
+        != {"path": INTEGRATION, **describe(root, (INTEGRATION,))[INTEGRATION]}
+        or amendment["recipe"] != {"path": RECIPE, **describe(root, (RECIPE,))[RECIPE]}
+        or amendment["operation"] != "rustfmt"
+        or amendment["toolchain"] != "1.96.0"
+        or amendment["promotion_allowed"] is not False
+    ):
+        raise ValueError("Source amendment changed its historical parent or contract")
+    formatter = amendment["formatter"]
+    if (
+        not isinstance(formatter, dict)
+        or set(formatter) != {"version", "sha256"}
+        or not isinstance(formatter["version"], str)
+        or not formatter["version"].startswith("rustfmt ")
+        or not isinstance(formatter["sha256"], str)
+        or not HEX256.fullmatch(formatter["sha256"])
+    ):
+        raise ValueError("Source amendment lacks its actual formatter identity")
+    known = dict(manifest["files"])
+    for directory, inventory in recipe["vendor_dirs"].items():
+        for name, identity in inventory.items():
+            full_name = directory + "/" + name
+            if full_name in known and known[full_name] != identity:
+                raise ValueError("Historical source and vendor identities disagree")
+            known[full_name] = identity
+    changes = amendment["changes"]
+    if not isinstance(changes, dict) or not changes:
+        raise ValueError("Source amendment requires an exact nonempty source set")
+    for name, change in changes.items():
+        relative_path(name)
+        if (
+            not name.endswith(".rs")
+            or name not in known
+            or not isinstance(change, dict)
+            or set(change) != {"before", "after", "mode"}
+            or not valid_file_identity(change["before"])
+            or not valid_file_identity(change["after"])
+            or change["before"] != known[name]
+            or change["before"] == change["after"]
+            or change["mode"] != "100644"
+            or manifest["file_modes"].get(name, "100644") != change["mode"]
+        ):
+            raise ValueError(
+                "Source amendment has an unreviewed path, predecessor or mode"
+            )
+    return amendment
+
+
 def verify_integrated_source(runner, recipe, record=None, artifact=None):
     """Keep the isolated Synapse guard self-contained and bound to exact HEAD."""
     path = regular_path(runner.root, INTEGRATION)
@@ -517,6 +606,26 @@ def verify_integrated_source(runner, recipe, record=None, artifact=None):
         != describe(runner.root, (recipe["patch_path"],))[recipe["patch_path"]]
     ):
         raise ValueError("Integrated origin binding is invalid")
+    amendment = load_source_amendment(runner.root, recipe, manifest)
+    committed = expected | {INTEGRATION}
+    amendment_identity = None
+    if amendment is not None:
+        files = dict(files)
+        for name, change in amendment["changes"].items():
+            if describe(runner.root, (name,))[name] != change["after"]:
+                raise ValueError(
+                    "Integrated amended source differs from reviewed output"
+                )
+            if name in files:
+                files[name] = change["after"]
+        committed |= {SOURCE_AMENDMENT, *amendment["changes"]}
+        amendment_identity = {
+            "path": SOURCE_AMENDMENT,
+            **describe(runner.root, (SOURCE_AMENDMENT,))[SOURCE_AMENDMENT],
+        }
+        # Return the effective inventory, while preserving the original
+        # manifest bytes and identity in the artifact and its binding.
+        manifest = {**manifest, "files": files}
     if describe(runner.root, expected) != files:
         raise ValueError("Integrated source or lock bytes differ from reviewed origin")
     if runner.text(
@@ -526,7 +635,7 @@ def verify_integrated_source(runner, recipe, record=None, artifact=None):
         raise ValueError("Integrated index differs from the committed HEAD")
     entries = runner.text(
         "integrated-committed-files",
-        ["git", "ls-tree", "-z", "HEAD", "--", *sorted(expected), INTEGRATION],
+        ["git", "ls-tree", "-z", "HEAD", "--", *sorted(committed)],
     )
     seen = {}
     for row in entries.split("\0"):
@@ -536,13 +645,13 @@ def verify_integrated_source(runner, recipe, record=None, artifact=None):
             if kind != "blob" or mode not in {"100644", "100755"}:
                 raise ValueError("Integrated input is not a regular committed blob")
             seen[name] = (mode, blob)
-    if set(seen) != expected | {INTEGRATION}:
+    if set(seen) != committed:
         raise ValueError("Integrated input is missing from the committed HEAD")
-    for name in sorted(expected | {INTEGRATION}):
+    for name in sorted(committed):
         current = regular_path(runner.root, name)
         raw = current.read_bytes()
         blob = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
-        wanted = modes[name] if name != INTEGRATION else "100644"
+        wanted = modes.get(name, "100644")
         actual_mode = "100755" if current.stat().st_mode & 0o111 else "100644"
         if seen[name] != (wanted, blob) or actual_mode != wanted:
             raise ValueError("Integrated bytes or modes differ from the committed HEAD")
@@ -554,6 +663,8 @@ def verify_integrated_source(runner, recipe, record=None, artifact=None):
         "manifest_sha256": checksum(path),
         "origin_result_sha256": origin["result_sha256"],
     }
+    if amendment_identity is not None:
+        binding["source_amendment"] = amendment_identity
     if record is not None:
         if (
             candidate_source_mode(record) != "integrated"
@@ -566,6 +677,12 @@ def verify_integrated_source(runner, recipe, record=None, artifact=None):
             != {"bytes": 0, "sha256": hashlib.sha256(b"").hexdigest()}
             or record["artifacts"].get("integration.json")
             != {"bytes": path.stat().st_size, "sha256": binding["manifest_sha256"]}
+            or record["artifacts"].get("source-amendment.json")
+            != (
+                {key: amendment_identity[key] for key in ("bytes", "sha256")}
+                if amendment_identity
+                else None
+            )
         ):
             raise ValueError(
                 "Integrated candidate receipt differs from committed binding"
@@ -573,6 +690,11 @@ def verify_integrated_source(runner, recipe, record=None, artifact=None):
         if artifact is not None and (
             (artifact / "candidate.patch").read_bytes() != b""
             or (artifact / "integration.json").read_bytes() != path.read_bytes()
+            or (
+                amendment_identity is not None
+                and (artifact / "source-amendment.json").read_bytes()
+                != regular_path(runner.root, SOURCE_AMENDMENT).read_bytes()
+            )
         ):
             raise ValueError("Integrated candidate delta or manifest transport changed")
     return manifest, binding, source_tree
@@ -592,7 +714,7 @@ def verify_tree(runner, record, recipe):
         raise ValueError("The original dependency policy or scan scope changed")
     if checksum(runner.root / RECIPE) != record["recipe_sha256"]:
         raise ValueError("Candidate recipe changed")
-    verify_vendor(runner.root, recipe)
+    verify_vendor(runner.root, recipe, source_mode=candidate_source_mode(record))
     if describe(runner.root, record["files"], allow_missing=True) != record["files"]:
         raise ValueError("Source or lock files differ from the sealed candidate")
     changed = changed_paths(runner)

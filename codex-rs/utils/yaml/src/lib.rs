@@ -97,8 +97,7 @@ impl<'de> Deserialize<'de> for Node {
         let ordinary_tag = matches!(
             tag.as_deref(),
             None | Some(
-                "!"
-                    | "tag:yaml.org,2002:str"
+                "!" | "tag:yaml.org,2002:str"
                     | "tag:yaml.org,2002:bool"
                     | "tag:yaml.org,2002:int"
                     | "tag:yaml.org,2002:float"
