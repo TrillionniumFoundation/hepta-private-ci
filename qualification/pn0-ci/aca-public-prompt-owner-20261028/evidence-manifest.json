@@ -116,10 +116,22 @@
       "original_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-public-prompt-owner-validation-20261028-002/artifact-storage-correction.json"
     },
     {
-      "name": "original-artifact-diff-check.raw.log",
-      "bytes": 1616,
-      "sha256": "4a3b0cff5bd83169d7fd20b2f3399a1440f516aed109ee822b6a5798f2eefb0a",
+      "name": "original-artifact-diff-check.raw.log.gz",
+      "encoding": "gzip",
+      "bytes": 173,
+      "sha256": "922139384adfd71aaa5096851ac811c9efd811a3ee67afab08cfab470dfd4c5b",
+      "uncompressed_bytes": 1616,
+      "uncompressed_sha256": "4a3b0cff5bd83169d7fd20b2f3399a1440f516aed109ee822b6a5798f2eefb0a",
       "original_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-public-prompt-owner-validation-20261028-002/original-artifact-diff-check.raw.log"
+    },
+    {
+      "name": "artifact-storage-second-check.raw.log.gz",
+      "encoding": "gzip",
+      "bytes": 168,
+      "sha256": "fca89805e3061167e3d090aed8b37b1dc911d6e904dee755cc361b9fd7d4b7d2",
+      "uncompressed_bytes": 1796,
+      "uncompressed_sha256": "f1af21aa76b61294102b6fa5534dabb0ff5e97ef1bdaadcbfff64cfe45241e9d",
+      "original_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/aca-public-prompt-owner-validation-20261028-002/artifact-storage-second-check.raw.log"
     }
   ],
   "task_complete": false,
@@ -132,5 +144,12 @@
     "codex-rs/utils/windows-private-state/src/parent_anchor.rs": "790b4ac7105d585fa07793b584426cd919ac50a1f2e07170236aef91e49e0bf2",
     "codex-rs/utils/windows-private-state/src/parent_anchor_tests.rs": "7c8ad289fa41d9bab6c1e7689b7972ebedd22631d4488528242ba6fae2d65038",
     "codex-rs/utils/windows-private-state/src/private_owner_lock.rs": "9f6ef5f7ac348bf2ebac9c3872b19df16776ea88c47b2009aab05ca3f91f1c82"
+  },
+  "artifact_storage_followup": {
+    "utc": "2026-10-28T15:55:29.354792+00:00",
+    "second_actual_diff_exit": 2,
+    "reason": "first raw error output itself includes original whitespace context",
+    "fix": "both raw error outputs losslessly gzipped; original bytes retained in prior commits and outside source worktree",
+    "source_assertion_guard_changes": false
   }
 }
