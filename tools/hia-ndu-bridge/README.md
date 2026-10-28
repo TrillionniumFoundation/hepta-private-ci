@@ -61,6 +61,24 @@ The response binds the raw request SHA256, objective, snapshot, generation,
 source identity, per-path native recursive receipts and native evaluation/policy
 digests. Its authority is always `DENY_ALL`, and `safety_certificate` is false.
 
+### Bounded persistent transport
+
+`--stream` starts one native process and emits an identity handshake. It accepts
+at most 256 newline-terminated requests, each bounded to 1 MiB before parsing.
+Every request still passes through the original typed decoder and original NDU
+evaluation functions. It emits a numbered response with the exact request digest;
+there is no evaluation-result cache. Partial frames, invalid requests and a 257th
+request terminate the process without admitting later work.
+
+The companion `hepta.hia_ndu_session.NduSession` executes a sealed Linux memfd,
+checks the actual process executable inode, and verifies the handshake, sequence,
+source identity, objective, snapshot, generation and raw request digest. Timeouts
+or protocol errors close the session; later requests need a new owned process.
+This amortizes process startup only. Native compilation, startup, each decision,
+all proof/build/measurement work and shutdown remain costs of the experiment.
+It is still advisory and is not a safety certificate, hostile-code sandbox or
+evidence of a net performance advantage over a matched control.
+
 ## Boundary and validation
 
 `verified` and verification/support digests report upstream decisions. This
@@ -83,7 +101,7 @@ explicit abstention/ties, stale identities, duplicate events and malformed
 protocol inputs. The small deterministic examples verify integration and do not
 claim a measured performance advantage for NDU.
 
-The executable also has five Rust protocol tests in `src/protocol_tests.rs`.
+The executable also has eight Rust protocol tests in `src/protocol_tests.rs`.
 They call the original recursion and candidate evaluator through the typed
 request parser, including later refusal cost, hard/resource/risk rejection,
 abstention, unresolved frontiers and exact request/snapshot identity. Run them

@@ -7,6 +7,8 @@
 #[path = "protocol_tests.rs"]
 mod tests;
 
+mod stream;
+
 use std::collections::BTreeSet;
 use std::io::Read;
 use std::process::ExitCode;
@@ -313,6 +315,15 @@ fn run() -> Result<Value, String> {
 }
 
 fn main() -> ExitCode {
+    if std::env::args().skip(1).collect::<Vec<_>>() == ["--stream"] {
+        return match stream::run(std::io::stdin().lock(), std::io::stdout().lock()) {
+            Ok(()) => ExitCode::SUCCESS,
+            Err(error) => {
+                eprintln!("{error}");
+                ExitCode::FAILURE
+            }
+        };
+    }
     match run() {
         Ok(value) => {
             println!("{value}");

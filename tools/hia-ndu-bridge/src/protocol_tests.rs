@@ -42,6 +42,67 @@ fn response(request: &Value) -> Value {
 }
 
 #[test]
+fn stream_preserves_native_results_and_exact_request_identity() {
+    let first = serde_json::to_vec(&request(vec![path("first", &[3, 7])]))
+        .expect("encode the first actual request");
+    let second = serde_json::to_vec(&request(vec![path("second", &[-5, 19])]))
+        .expect("encode the second actual request");
+    let mut input = first.clone();
+    input.push(b'\n');
+    input.extend_from_slice(&second);
+    input.push(b'\n');
+    let mut output = Vec::new();
+    super::stream::run(std::io::Cursor::new(input), &mut output)
+        .expect("evaluate both requests in the bounded stream");
+    let lines: Vec<Value> = output
+        .split(|byte| *byte == b'\n')
+        .filter(|line| !line.is_empty())
+        .map(|line| serde_json::from_slice(line).expect("decode the actual stream result"))
+        .collect();
+    assert_eq!(lines.len(), 3);
+    assert_eq!(lines[0]["identity"], super::identity());
+    for (index, raw) in [first, second].iter().enumerate() {
+        assert_eq!(lines[index + 1]["sequence"], json!(index + 1));
+        assert_eq!(
+            lines[index + 1]["response"],
+            evaluate(raw).expect("compare with the same original native evaluator")
+        );
+    }
+}
+
+#[test]
+fn stream_refuses_partial_oversized_and_invalid_frames_without_a_later_result() {
+    let valid =
+        serde_json::to_vec(&request(vec![path("valid", &[1])])).expect("encode a valid request");
+    for invalid in [valid.clone(), vec![b' '; 1_048_578], b"{}\n".to_vec()] {
+        let mut output = Vec::new();
+        assert!(super::stream::run(std::io::Cursor::new(invalid), &mut output).is_err());
+        assert_eq!(output.iter().filter(|byte| **byte == b'\n').count(), 1);
+    }
+    let mut input = b"{}\n".to_vec();
+    input.extend_from_slice(&valid);
+    input.push(b'\n');
+    let mut output = Vec::new();
+    assert!(super::stream::run(std::io::Cursor::new(input), &mut output).is_err());
+    assert_eq!(output.iter().filter(|byte| **byte == b'\n').count(), 1);
+}
+
+#[test]
+fn stream_request_limit_is_a_hard_stop() {
+    let mut line = serde_json::to_vec(&request(vec![path("bounded", &[1])]))
+        .expect("encode a bounded request");
+    line.push(b'\n');
+    let input = line.repeat(257);
+    let mut output = Vec::new();
+    let failure = super::stream::run(std::io::Cursor::new(input), &mut output);
+    assert_eq!(
+        failure,
+        Err("stream request budget of 256 exhausted".into())
+    );
+    assert_eq!(output.iter().filter(|byte| **byte == b'\n').count(), 257);
+}
+
+#[test]
 fn original_recursive_utility_keeps_later_value_and_refusal_cost() {
     let first = path("immediate", &[5, 0]);
     let second = path("continue", &[-3, 20]);
