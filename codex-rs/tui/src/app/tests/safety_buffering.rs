@@ -36,6 +36,7 @@ const RETRY_GOAL: &str = "Preserve this goal across the retry";
 enum SafetyRetryScenario {
     Once,
     RetryTwice,
+    ClearGoalBeforeCompletion,
     InterruptedPrevious,
     UnsupportedPermissions,
 }
@@ -363,11 +364,17 @@ async fn run_safety_retry(
     if committed_steer.is_some() {
         response_sequences.push(steered_chunks);
     }
-    if scenario == SafetyRetryScenario::RetryTwice {
-        response_sequences.push(retry_chunks);
-        response_sequences.push(response_chunks("second-retry-response"));
-    } else {
-        response_sequences.push(response_chunks("retry-response"));
+    match scenario {
+        SafetyRetryScenario::RetryTwice => {
+            response_sequences.push(retry_chunks);
+            response_sequences.push(response_chunks("second-retry-response"));
+        }
+        SafetyRetryScenario::ClearGoalBeforeCompletion => response_sequences.push(retry_chunks),
+        SafetyRetryScenario::Once
+        | SafetyRetryScenario::InterruptedPrevious
+        | SafetyRetryScenario::UnsupportedPermissions => {
+            response_sequences.push(response_chunks("retry-response"));
+        }
     }
     response_sequences.push(vec![StreamingSseChunk {
         gate: None,
@@ -672,6 +679,48 @@ goals = true
     }
 
     let first_retry_thread_id = app.chat_widget.thread_id().expect("first retry thread id");
+    if scenario == SafetyRetryScenario::ClearGoalBeforeCompletion {
+        let _ = next_turn_started(&mut app, &mut app_server, first_retry_thread_id).await;
+        drive_until_request_count(
+            &mut app,
+            &mut app_server,
+            &server,
+            /*expected_request_count*/ 2,
+        )
+        .await;
+        app_server.thread_goal_clear(first_retry_thread_id).await?;
+        assert_eq!(
+            app_server
+                .thread_goal_get(first_retry_thread_id)
+                .await?
+                .goal,
+            None
+        );
+        let _ = release_retry_response.send(());
+        wait_for_turn_completed(&mut app, &mut app_server, first_retry_thread_id).await;
+        let retry = app_server
+            .thread_read(first_retry_thread_id, /*include_turns*/ true)
+            .await?;
+        assert_eq!(
+            retry.turns.last().map(|turn| &turn.status),
+            Some(&TurnStatus::Completed)
+        );
+        assert_eq!(user_message_count(&retry, RETRY_PROMPT), 1);
+        let _ = release_active_response
+            .take()
+            .expect("source response gate")
+            .send(());
+        let _ = release_steered_response.send(());
+        let _ = release_previous_response.send(());
+        app_server.shutdown().await?;
+        assert_eq!(
+            server.requests().await.len(),
+            2,
+            "cleared goals must not be restarted by a deferred idle callback"
+        );
+        server.shutdown().await;
+        return Ok(());
+    }
     if scenario == SafetyRetryScenario::RetryTwice {
         let first_retry_turn_id =
             next_turn_started(&mut app, &mut app_server, first_retry_thread_id).await;
@@ -984,6 +1033,17 @@ async fn safety_retry_rejects_unsupported_permissions_before_interrupting() -> R
         /*failing_draft*/ None,
         /*committed_steer*/ None,
         SafetyRetryScenario::UnsupportedPermissions,
+    )
+    .await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn safety_retry_does_not_continue_a_goal_cleared_before_completion() -> Result<()> {
+    run_safety_retry(
+        /*previous_prompt*/ None,
+        /*failing_draft*/ None,
+        /*committed_steer*/ None,
+        SafetyRetryScenario::ClearGoalBeforeCompletion,
     )
     .await
 }

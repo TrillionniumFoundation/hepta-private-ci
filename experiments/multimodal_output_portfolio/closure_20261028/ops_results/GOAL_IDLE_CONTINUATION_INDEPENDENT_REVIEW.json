@@ -1,0 +1,37 @@
+{
+  "schema": "independent-static-review/v1",
+  "created_utc": "2026-10-28T10:41:06.597332+00:00",
+  "reviewer": "/root/unified_profile",
+  "subject": "Deferred goal continuation after exact cleanup completion",
+  "sources": [
+    {
+      "path": "codex-rs/ext/goal/src/runtime.rs",
+      "sha256": "148861bf9c21ce3b88c9b8bd063990938d7205051b9c552bfb2955e20effa11d"
+    },
+    {
+      "path": "codex-rs/ext/goal/src/runtime/idle_continuation.rs",
+      "sha256": "1f14cda3fd4222b765c68adca9a794ceafbd0682e4fafe22c62919498d14d2b4"
+    },
+    {
+      "path": "codex-rs/core/src/tasks/cleanup.rs",
+      "sha256": "724db45c00bac2c0fda4133947697908948e7f5cda7e5284f12a8e1c26b83b3d"
+    },
+    {
+      "path": "codex-rs/core/src/session/session.rs",
+      "sha256": "6d2661234c66afdf80206db3856fde2fa0932f11533f05c437349035d878a48b"
+    }
+  ],
+  "decision": "no new blocking finding from reviewed changed continuation and cleanup paths",
+  "reviewed_properties": [
+    "Cleanup future waits for captured completion owners and checks original turn epoch and no shutdown before returning true.",
+    "No standard MutexGuard crosses an await in the deferred-registration branch.",
+    "Weak runtime and thread references avoid a strong registry-task-runtime reference cycle.",
+    "Continuation reacquires the goal-state permit, rechecks current deferral, verifies manager thread Arc identity, reads current goal state, and uses the existing atomic start-if-idle gate.",
+    "Ready completion is not treated as admission authority; a concurrent active or terminalizing task remains subject to the original start gate.",
+    "No global lifecycle callback replay or weakened terminalization fence was introduced."
+  ],
+  "limits": [
+    "Static review only; no Rust compilation, Windows execution, or new tests were run by this reviewer.",
+    "Dropping JoinHandle detaches the task; this review does not claim immediate cancellation. The captured cleanup future has a session-termination exit and does not retain the runtime or thread strongly."
+  ]
+}

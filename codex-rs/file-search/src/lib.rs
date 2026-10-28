@@ -594,8 +594,16 @@ fn matcher_worker(
                     };
                     inner.reporter.on_update(&snapshot);
                 }
-                if !status.running && walk_complete {
-                    inner.reporter.on_complete();
+                if status.running {
+                    // A worker completion can race nucleo's notification arm.
+                    // Keep driving active work even if that callback is lost.
+                    will_notify = true;
+                    next_notify = after(Duration::from_millis(TICK_TIMEOUT_MS));
+                } else {
+                    next_notify = never();
+                    if walk_complete {
+                        inner.reporter.on_complete();
+                    }
                 }
             }
             default(Duration::from_millis(100)) => {
@@ -847,6 +855,69 @@ mod tests {
         assert!(completed);
         let updates = reporter.updates();
         assert!(updates.iter().any(|snapshot| !snapshot.walk_complete));
+    }
+
+    #[test]
+    fn matcher_completes_without_a_worker_notification() {
+        let dir = create_temp_tree(/*file_count*/ 1);
+        let reporter = Arc::new(RecordingReporter::default());
+        let (work_tx, work_rx) = unbounded();
+        let inner = Arc::new(SessionInner {
+            search_directories: vec![dir.path().to_path_buf()],
+            limit: 20,
+            threads: 1,
+            compute_indices: false,
+            respect_gitignore: true,
+            cancelled: Arc::new(AtomicBool::new(false)),
+            shutdown: Arc::new(AtomicBool::new(false)),
+            reporter: reporter.clone(),
+            work_tx: work_tx.clone(),
+        });
+        // Exercise the real matcher while intentionally losing its callback.
+        let mut nucleo = Nucleo::new(
+            Config::DEFAULT.match_paths(),
+            Arc::new(|| {}),
+            /*num_threads*/ Some(1),
+            /*columns*/ 1,
+        );
+        let deadline = Instant::now() + Duration::from_secs(5);
+        while nucleo.tick(/*timeout*/ 10).running {
+            assert!(
+                Instant::now() < deadline,
+                "empty matcher should become idle"
+            );
+            thread::yield_now();
+        }
+        let file = dir.path().join("file-0000.txt");
+        nucleo.injector().push(
+            IndexedEntry {
+                full_path: Arc::from(file.to_str().expect("UTF-8 fixture path")),
+                match_type: MatchType::File,
+            },
+            |_, columns| columns[0] = Utf32String::from("file-0000.txt"),
+        );
+        // Do not change the primed pattern: its first tick must start the new
+        // item and return running=true, without an extra cancel/restart tick.
+        work_tx
+            .send(WorkSignal::WalkComplete)
+            .expect("walk complete");
+        let worker = thread::spawn(move || matcher_worker(inner, work_rx, nucleo));
+        let completed = reporter.wait_for_complete(Duration::from_secs(5));
+        work_tx.send(WorkSignal::Shutdown).expect("shutdown worker");
+        worker
+            .join()
+            .expect("matcher thread")
+            .expect("matcher worker");
+
+        assert!(
+            completed,
+            "active matching must not depend on another callback"
+        );
+        let snapshot = reporter.snapshot();
+        assert!(snapshot.walk_complete);
+        assert_eq!(snapshot.scanned_file_count, 1);
+        assert_eq!(snapshot.total_match_count, 1);
+        assert_eq!(snapshot.matches[0].path, PathBuf::from("file-0000.txt"));
     }
 
     #[test]

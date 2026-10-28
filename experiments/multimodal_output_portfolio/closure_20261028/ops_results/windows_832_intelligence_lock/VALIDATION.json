@@ -1,0 +1,85 @@
+{
+  "commands": [
+    {
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-intelligence",
+        "evaluated_shadow"
+      ],
+      "cwd": "/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs",
+      "exit_code": 101,
+      "log": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_832_intelligence_lock/just-test.log",
+      "sha256": "e81097acc8643f3069b3041813e61895acdcbe6f7ba1de0f55ff96dc4502c670",
+      "compiled": false,
+      "tests_executed": false,
+      "phase": "workspace_manifest_loading"
+    },
+    {
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-intelligence"
+      ],
+      "cwd": "/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs",
+      "exit_code": 101,
+      "log": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_832_intelligence_lock/just-fix.log",
+      "sha256": "73c71fa32cb474620f4b6e0ddc8130068b59aef2a10d663afa9aab8964785d83",
+      "compiled": false,
+      "tests_executed": false,
+      "phase": "workspace_manifest_loading"
+    }
+  ],
+  "formatter": {
+    "method": "scripts.format.scoped_formatter_groups(paths, check=False) followed by run_formatter_group",
+    "paths": [
+      "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+      "codex-rs/hepta-intelligence/src/evaluated_shadow_lock_tests.rs"
+    ],
+    "groups": [
+      {
+        "name": "Rust",
+        "commands": [
+          {
+            "args": [
+              "rustfmt",
+              "--edition",
+              "2024",
+              "--config",
+              "imports_granularity=Item,skip_children=true",
+              "--",
+              "/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/hepta-intelligence/src/evaluated_shadow_lock_tests.rs"
+            ],
+            "cwd": "/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/hepta-intelligence"
+          },
+          {
+            "args": [
+              "rustfmt",
+              "--edition",
+              "2024",
+              "--config",
+              "imports_granularity=Item,skip_children=true",
+              "--",
+              "/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs"
+            ],
+            "cwd": "/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/hepta-intelligence"
+          }
+        ]
+      }
+    ],
+    "results": [
+      {
+        "name": "Rust",
+        "output": "",
+        "returncode": 0
+      }
+    ]
+  },
+  "git_diff_check": "passed",
+  "rust_compilation_verified": false,
+  "windows_execution_verified": false,
+  "unix_execution_verified": false,
+  "required_gate": "CI must compile and execute evaluated_shadow tests on actual Windows and Unix."
+}

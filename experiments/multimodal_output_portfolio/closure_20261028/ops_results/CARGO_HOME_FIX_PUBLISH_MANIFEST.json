@@ -1,0 +1,63 @@
+{
+  "checks": {
+    "codespell": "passed",
+    "frozen_bindings_unchanged": true,
+    "frozen_dependency_files_and_modes": 35,
+    "frozen_integrated_files": 13,
+    "git_diff_check": "passed",
+    "python_ast_parse": "passed for both source files",
+    "scoped_python_formatter": "passed via repository Python scripts Ruff configuration on these two fixture files; default router does not select this fixture path"
+  },
+  "evidence_scope": {
+    "original_large_archive_downloaded": false,
+    "verified_diagnostic_files": 398,
+    "verified_payload_bytes": 975286
+  },
+  "files": {
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/prep_inside.py": {
+      "bytes": 7214,
+      "mode": "100644",
+      "sha256": "37a5a21e06a547c2954d243d9d34362780faaace700485102038e7d97f43fb5e"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/test_boundaries.py": {
+      "bytes": 12495,
+      "mode": "100644",
+      "sha256": "0369af4b206658a46de72b0379aec107311f3a99f793f002dcbeacb45c69a8b1"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_results/CI_832_SYNAPSE_CARGO_HOME.json": {
+      "bytes": 16865,
+      "mode": "100644",
+      "sha256": "5d2b8b7cf8c47c2d0193d7a111180e9479604965888be88867e7238c75161ed8"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_results/CI_832_SYNAPSE_CARGO_HOME.md": {
+      "bytes": 5206,
+      "mode": "100644",
+      "sha256": "86c2ca68a03048f68ad2bf161d4f859b9d85964b3db3fe3c9e8fcb02b550d8fe"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_results/CI_832_SYNAPSE_CARGO_HOME_TESTS.log": {
+      "bytes": 4115,
+      "mode": "100644",
+      "sha256": "4cdf81333322d0244310b71acd132d4974de08b03061f3de8e5b9db8535da21b"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_results/CI_832_SYNAPSE_DIAGNOSTICS_INVENTORY.json": {
+      "bytes": 71455,
+      "mode": "100644",
+      "sha256": "14d4c07df22c04e27431002c38375577b310d1a9f23804a8aad4d5c9c9ea3502"
+    }
+  },
+  "local_test_result": {
+    "existing": 19,
+    "failed": 0,
+    "ignored": 0,
+    "log_sha256": "4cdf81333322d0244310b71acd132d4974de08b03061f3de8e5b9db8535da21b",
+    "new": 2,
+    "passed": 21,
+    "tested_before_final_scoped_format": true
+  },
+  "native_qualification_pass_claimed": false,
+  "native_rerun_required": true,
+  "producer_source_commit": "832b2a382a155bc840df0d255b2c183a43b0d219",
+  "production_change": "One explicit image CARGO_HOME environment entry in probe_tools; no host inheritance or sandbox change.",
+  "promotion_allowed": false,
+  "schema": "hepta.ci.cargo-home-fix.publish-manifest.v1"
+}

@@ -1,0 +1,595 @@
+{
+  "schema": "hepta.ndu.ci-832-core-goal-repair.v1",
+  "source_failure_head": "832b2a382a155bc840df0d255b2c183a43b0d219",
+  "status": "frozen_for_remote_ci_static_reviews_passed_workspace_execution_pending",
+  "native_workspace_compile_or_test_pass_claim": false,
+  "modified_source_files": {
+    "codex-rs/core/src/agent/control_tests.rs": {
+      "bytes": 163999,
+      "sha256": "4b33c7fdf8dc144af2a39d01067015165e5eeddb6595e92fe8759efb304cc5de"
+    },
+    "codex-rs/core/src/environment_selection.rs": {
+      "bytes": 73645,
+      "sha256": "9ae6c752bd8399ca26a3151d7e9087411a80fdce2ae399c90870a168c702a9e3"
+    },
+    "codex-rs/ext/goal/src/runtime.rs": {
+      "bytes": 21155,
+      "sha256": "148861bf9c21ce3b88c9b8bd063990938d7205051b9c552bfb2955e20effa11d"
+    },
+    "codex-rs/ext/goal/src/runtime/idle_continuation.rs": {
+      "bytes": 2834,
+      "sha256": "1f14cda3fd4222b765c68adca9a794ceafbd0682e4fafe22c62919498d14d2b4"
+    },
+    "codex-rs/tui/src/app/tests/safety_buffering.rs": {
+      "bytes": 37890,
+      "sha256": "f2a21eaf3d8b70ab66b1a370cf2d6d6d11cee1abd0611adc059de1dbe401f520"
+    },
+    "codex-rs/file-search/src/lib.rs": {
+      "bytes": 42839,
+      "sha256": "4190cf829450aa70c37dd511059691c00087e2c790e758a1115a99d52f7f00ad"
+    }
+  },
+  "failures": [
+    {
+      "job_id": 122730593496,
+      "test": "agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context",
+      "panic": "InvalidRequest: turn is terminalizing or shutting down and cannot accept injected context",
+      "cause": "The durable fixture called ordinary nonblocking abort_all_tasks then injected before an existing exact cleanup owner completed.",
+      "change": "Wait on pending_turn_cleanup with its live generation result, then retain the original injection and durability checks."
+    },
+    {
+      "job_id": 122730593496,
+      "test": "agent::control::tests::spawn_agent_fork_last_n_turns_drops_parent_startup_prefix_when_under_limit",
+      "cause": "The test inspected a transient empty reference baseline after spawning the initial prompt, which can already rebuild that baseline.",
+      "change": "Use existing pause_next_startup_before_delivery after child registration and before initial prompt delivery; keep all original history, selected roots and None baseline assertions, then release and assert the delivered thread identity."
+    },
+    {
+      "job_id": 122730593496,
+      "test": "environment_selection::tests::blocking_snapshot_waits_for_starting_environment",
+      "cause": "The pinned tracing-core single-dispatch optimization may cache never-interest when another thread first registers the static callsite without a scoped subscriber. Exact pinned native reproducer demonstrates this mechanism; complete Windows reproduction awaits CI.",
+      "change": "Retain a second uninstalled NoSubscriber Dispatch during this scoped capture test; preserve all original nested-span and readiness assertions. No dependency or production tracing change.",
+      "primary_sources": [
+        "https://github.com/tokio-rs/tracing/issues/3611",
+        "https://github.com/tokio-rs/tracing/issues/2874",
+        "https://github.com/tokio-rs/tracing/pull/3614"
+      ]
+    },
+    {
+      "job_id": 122730593641,
+      "tests": [
+        "safety_retry_replays_older_interruption_notices",
+        "safety_retry_preserves_a_committed_steer_from_the_interrupted_turn",
+        "safety_retry_can_retry_a_first_turn_a_second_time",
+        "safety_retry_forks_after_the_previous_turn_and_uses_faster_settings",
+        "safety_retry_forks_first_turn_and_continues_without_duplicating_prompt"
+      ],
+      "cause": "The goal idle callback attempted immediate atomic turn admission while its caller still owned the terminalization cleanup fence; rejection had no later wake-up. Static lifecycle analysis matches the missing final goal request. Full new-code execution awaits CI.",
+      "change": "Defer only this goal runtime outside the callback, track exact thread Arc and generation, deduplicate unfinished waits, weakly retain the runtime, wait for the original completion, then recheck loaded Arc, current goal, deferral and unchanged atomic admission. Do not replay global idle lifecycle or weaken the fence."
+    },
+    {
+      "job_id": 122730593496,
+      "test": "tests::session_streams_updates_before_walk_complete",
+      "cause": "Pinned Nucleo clears should_notify before trying the worker lock; after a lock timeout, its worker can read false and finish before tick stores true. The resulting running=true can lack a completion callback. Once the one-shot timer and WalkComplete have been consumed, the old matcher loop never ticks again. This is a proven source-level race, not a claim that the Windows log reveals its unique scheduling cause.",
+      "change": "Rearm the existing 10ms timer while tick reports running, and disable the timer with never() when idle. Preserve the original 600-file streaming test and its five-second bound.",
+      "primary_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/helix-editor/nucleo/4253de9faabb4e5c6d81d946a5e35a90f87347ee/src/lib.rs",
+          "sha256": "5a7cad74be8f5de7c205bb1359cdf35953e8b816df6a135e9dc449ff05e6a792"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/helix-editor/nucleo/4253de9faabb4e5c6d81d946a5e35a90f87347ee/src/worker.rs",
+          "sha256": "e383d9a57f5a1089ab375bc46baebe04ac3c2a77fcba80bf173c3a9e7f820c2c"
+        }
+      ]
+    }
+  ],
+  "native_tracing_reproducer": {
+    "scope": "Standalone native process, not repository core/TUI qualification",
+    "compiler": "1.95.0-x86_64-unknown-linux-gnu",
+    "command": "CARGO_HOME=/tmp/hepta-ci-cargo RUSTUP_HOME=/tmp/hepta-ci-rustup CARGO_TARGET_DIR=<probe>/target PATH=<1.95.0>/bin:$PATH cargo run --offline --manifest-path <probe>/Cargo.toml",
+    "exit_code": 0,
+    "stdout": "{\"pinned_tracing\":\"0.1.44\",\"pinned_core\":\"0.1.36\",\"before_captured\":0,\"after_captured\":1,\"status\":\"PASS\"}\n",
+    "source_and_lock": {
+      "Cargo.toml": {
+        "bytes": 229,
+        "sha256": "fdbf9b44ccae229c5e6750864767dd345036f23a1afa2db9554f7b61f2b1e135",
+        "content": "[package]\nname = \"hepta-tracing-interest-reproducer\"\nversion = \"0.0.0\"\nedition = \"2024\"\n\n[dependencies]\ntracing = { version = \"=0.1.44\", default-features = false, features = [\"std\"] }\n\n[profile.dev]\ndebug = 0\nincremental = false\n"
+      },
+      "Cargo.lock": {
+        "bytes": 1082,
+        "sha256": "01582582a25f18c68c8bfcae0739a08142f7182e39477bc9d7a6fa8bda158b98",
+        "content": "# This file is automatically @generated by Cargo.\n# It is not intended for manual editing.\nversion = 4\n\n[[package]]\nname = \"hepta-tracing-interest-reproducer\"\nversion = \"0.0.0\"\ndependencies = [\n \"tracing\",\n]\n\n[[package]]\nname = \"once_cell\"\nversion = \"1.21.4\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50\"\n\n[[package]]\nname = \"pin-project-lite\"\nversion = \"0.2.16\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"3b3cff922bd51709b605d9ead9aa71031d81447142d828eb4a6eba76fe619f9b\"\n\n[[package]]\nname = \"tracing\"\nversion = \"0.1.44\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"63e71662fa4b2a2c3a26f570f037eb95bb1f85397f3cd8076caed2f026a6d100\"\ndependencies = [\n \"pin-project-lite\",\n \"tracing-core\",\n]\n\n[[package]]\nname = \"tracing-core\"\nversion = \"0.1.36\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"db97caf9d906fbde555dd62fa95ddba9eecfd14cb388e4f491a66d74cd5fb79a\"\ndependencies = [\n \"once_cell\",\n]\n"
+      },
+      "src/main.rs": {
+        "bytes": 1531,
+        "sha256": "02ba3b41e28efd579cd205781ea8146d721a2c03197084fc1be21c388efddaa0",
+        "content": "use std::sync::Arc;\nuse std::sync::atomic::{AtomicUsize, Ordering};\nuse tracing::{Event, Metadata, Subscriber};\nuse tracing::span::{Attributes, Id, Record};\n\nstruct Capture(Arc<AtomicUsize>);\n\nimpl Subscriber for Capture {\n    fn enabled(&self, _: &Metadata<'_>) -> bool { true }\n    fn new_span(&self, _: &Attributes<'_>) -> Id {\n        Id::from_u64(self.0.fetch_add(1, Ordering::SeqCst) as u64 + 1)\n    }\n    fn record(&self, _: &Id, _: &Record<'_>) {}\n    fn record_follows_from(&self, _: &Id, _: &Id) {}\n    fn event(&self, _: &Event<'_>) {}\n    fn enter(&self, _: &Id) {}\n    fn exit(&self, _: &Id) {}\n}\n\nfn cold_callsite() {\n    let _span = tracing::info_span!(\"isolated_capture\");\n}\n\nfn main() {\n    let captured = Arc::new(AtomicUsize::new(0));\n    let dispatch = tracing::Dispatch::new(Capture(Arc::clone(&captured)));\n    std::thread::spawn(cold_callsite).join().expect(\"plain thread\");\n    tracing::dispatcher::with_default(&dispatch, cold_callsite);\n    let before = captured.load(Ordering::SeqCst);\n    assert_eq!(before, 0, \"pinned upstream regression must be reproduced\");\n    let _other_dispatch = tracing::Dispatch::new(tracing::subscriber::NoSubscriber::default());\n    tracing::dispatcher::with_default(&dispatch, cold_callsite);\n    let after = captured.load(Ordering::SeqCst);\n    assert_eq!(after, 1, \"the real span must reach the scoped subscriber\");\n    println!(\"{{\\\"pinned_tracing\\\":\\\"0.1.44\\\",\\\"pinned_core\\\":\\\"0.1.36\\\",\\\"before_captured\\\":{before},\\\"after_captured\\\":{after},\\\"status\\\":\\\"PASS\\\"}}\");\n}\n"
+      }
+    },
+    "binary": {
+      "bytes": 656040,
+      "sha256": "32c4cda1235babc5b8e5aeb07b492f75303ca1945ebc6f1e6ae80a46e4b37e4a"
+    }
+  },
+  "required_rust_commands": [
+    {
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-core",
+        "-p",
+        "codex-tui",
+        "-p",
+        "codex-goal-extension"
+      ],
+      "cwd": "/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs",
+      "returncode": 101,
+      "path": "/dev/shm/hepta-ndu-unified-20261028/ci-832-windows/required-test.log",
+      "bytes": 499,
+      "sha256": "e81097acc8643f3069b3041813e61895acdcbe6f7ba1de0f55ff96dc4502c670",
+      "output": "RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py \"$@\"\nerror: failed to load manifest for workspace member `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth`\nreferenced by workspace at `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/Cargo.toml`\n\nCaused by:\n  failed to read `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth/Cargo.toml`\n\nCaused by:\n  No such file or directory (os error 2)\nerror: recipe `test` failed on line 89 with exit code 101\n"
+    },
+    {
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-core",
+        "-p",
+        "codex-tui",
+        "-p",
+        "codex-goal-extension"
+      ],
+      "cwd": "/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs",
+      "returncode": 101,
+      "path": "/dev/shm/hepta-ndu-unified-20261028/ci-832-windows/required-fix.log",
+      "bytes": 899,
+      "sha256": "99031af7c05244a5731882a427ea2372b14f32f2b1e25d3380db0ea501e1f498",
+      "output": "cargo clippy --fix --tests --allow-dirty {args}\ninfo: syncing channel updates for 1.96.0-x86_64-unknown-linux-gnu\ninfo: latest update on 2026-05-28 for version 1.96.0 (ac68faa20 2026-05-25)\ninfo: downloading 6 components\nwarn: the missing active toolchain `1.96.0-x86_64-unknown-linux-gnu` has been auto-installed\nwarn: this might cause rustup commands to take longer time to finish than expected\ninfo: you may opt out with `RUSTUP_AUTO_INSTALL=0` or `rustup set auto-install disable`\nerror: failed to load manifest for workspace member `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth`\nreferenced by workspace at `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/Cargo.toml`\n\nCaused by:\n  failed to read `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth/Cargo.toml`\n\nCaused by:\n  No such file or directory (os error 2)\nerror: recipe `fix` failed on line 58 with exit code 101\n"
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-file-search"
+      ],
+      "cwd": "/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs",
+      "returncode": 101,
+      "path": "/dev/shm/hepta-ndu-unified-20261028/ci-832-windows/file-search-required-test.log",
+      "bytes": 499,
+      "sha256": "e81097acc8643f3069b3041813e61895acdcbe6f7ba1de0f55ff96dc4502c670",
+      "output": "RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py \"$@\"\nerror: failed to load manifest for workspace member `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth`\nreferenced by workspace at `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/Cargo.toml`\n\nCaused by:\n  failed to read `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth/Cargo.toml`\n\nCaused by:\n  No such file or directory (os error 2)\nerror: recipe `test` failed on line 89 with exit code 101\n"
+    },
+    {
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-file-search"
+      ],
+      "cwd": "/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs",
+      "returncode": 101,
+      "path": "/dev/shm/hepta-ndu-unified-20261028/ci-832-windows/file-search-required-fix.log",
+      "bytes": 462,
+      "sha256": "73c71fa32cb474620f4b6e0ddc8130068b59aef2a10d663afa9aab8964785d83",
+      "output": "cargo clippy --fix --tests --allow-dirty {args}\nerror: failed to load manifest for workspace member `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth`\nreferenced by workspace at `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/Cargo.toml`\n\nCaused by:\n  failed to read `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth/Cargo.toml`\n\nCaused by:\n  No such file or directory (os error 2)\nerror: recipe `fix` failed on line 58 with exit code 101\n"
+    }
+  ],
+  "scoped_checks": [
+    {
+      "name": "Rust",
+      "returncode": 0,
+      "output": ""
+    },
+    {
+      "name": "Rust",
+      "returncode": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "/tmp/hepta-codespell-policy-venv/bin/codespell",
+        "-I",
+        ".codespellignore",
+        "codex-rs/core/src/agent/control_tests.rs",
+        "codex-rs/core/src/environment_selection.rs",
+        "codex-rs/ext/goal/src/runtime.rs",
+        "codex-rs/ext/goal/src/runtime/idle_continuation.rs",
+        "codex-rs/tui/src/app/tests/safety_buffering.rs"
+      ],
+      "returncode": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "codex-rs/core/src/agent/control_tests.rs",
+        "codex-rs/core/src/environment_selection.rs",
+        "codex-rs/ext/goal/src/runtime.rs",
+        "codex-rs/ext/goal/src/runtime/idle_continuation.rs",
+        "codex-rs/tui/src/app/tests/safety_buffering.rs"
+      ],
+      "returncode": 0,
+      "output": ""
+    },
+    {
+      "name": "Rust",
+      "check": false,
+      "returncode": 0,
+      "output": ""
+    },
+    {
+      "name": "Rust",
+      "check": true,
+      "returncode": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "/tmp/hepta-codespell-policy-venv/bin/codespell",
+        "-I",
+        ".codespellignore",
+        "codex-rs/file-search/src/lib.rs"
+      ],
+      "returncode": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "codex-rs/file-search/src/lib.rs"
+      ],
+      "returncode": 0,
+      "output": ""
+    }
+  ],
+  "format_scope": "Only the six owned Rust paths through scripts/format.py scoped_formatter_groups with explicit existing Rust 1.95; all frozen paths left byte-identical. No workspace tests rerun after formatting.",
+  "toolchain_side_effect": {
+    "operation": "The required just fix invoked cargo-clippy and rustup auto-installed the repository-pinned Rust 1.96.0 while Rust 1.95 was on PATH.",
+    "install_root": "/tmp/hepta-ci-rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu",
+    "observed_bytes": 691378762,
+    "workspace_compilation_started": false,
+    "preserved_install_log": "required_rust_commands[1].output",
+    "storage_boundary": "The shared root filesystem briefly reported no available bytes; subsequent measurement showed 667295744 available. Concurrent unrelated workloads also changed free space, so this is not a claim that all observed changes came from this install. Root chose to retain the task toolchain after space recovered. No process was killed or shared original toolchain deleted.",
+    "future_commands": "Explicit RUSTUP_TOOLCHAIN and tool paths avoid implicit installs."
+  },
+  "frozen_dependency_inputs_verified_unchanged": [
+    {
+      "manifest": "/dev/shm/hepta-ndu-unified-20261028/ci-v7-work/INTEGRATED_MODE_PUBLISH_MANIFEST.json",
+      "identity": {
+        "bytes": 5394,
+        "sha256": "aeb8a6054b19de07d9cbc16a63b522ccea9d837cab4c66f3846c17b1c77e6bec"
+      },
+      "verified_files": 13
+    },
+    {
+      "manifest": "/dev/shm/hepta-ndu-unified-20261028/repo/experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/INTEGRATION.v7.json",
+      "identity": {
+        "bytes": 9120,
+        "sha256": "ef1fc0a4cfd8c2621eeb82e413555c1ea1780020a1f74f7c666253b62a5bfde2"
+      },
+      "verified_files": 35
+    }
+  ],
+  "latest_blocking_832": {
+    "run_id": 40661665726,
+    "counts": {
+      "success": 17,
+      "failure": 9,
+      "cancelled": 9,
+      "skipped": 4
+    },
+    "jobs": [
+      {
+        "id": 122728135160,
+        "name": "Select blocking CI scope",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122728135494,
+        "name": "Codespell / Check for spelling errors",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122728135738,
+        "name": "Blob size policy / Blob size policy",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122730592713,
+        "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "id": 122730592862,
+        "name": "sdk / sdks",
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 122730592882,
+        "name": "rust-ci / Detect changed areas",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122730592910,
+        "name": "cargo-deny / cargo-deny",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "id": 122730592989,
+        "name": "repo-checks / build-test",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122730593062,
+        "name": "repo-checks / Native Hepta paths on windows-latest",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122730593085,
+        "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122730593120,
+        "name": "repo-checks / Native Hepta paths on macos-15",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122730593191,
+        "name": "sdk / python-sdk",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122730593330,
+        "name": "NDU v6 neural rollout smoke / Python, native NDU, and real rollout",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122730593367,
+        "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "id": 122730593420,
+        "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 122730593427,
+        "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 122730593438,
+        "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 122730593496,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "id": 122730593526,
+        "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122730593529,
+        "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 122730593546,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "id": 122730593558,
+        "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 122730593560,
+        "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 122730593563,
+        "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 122730593575,
+        "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+        "status": "completed",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 122730593641,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "id": 122730593645,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "id": 122730593918,
+        "name": "NDU v6 neural rollout smoke / Unified profile and executed-policy regressions / Objective, continuation, and selected-policy invariants",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122730596476,
+        "name": "Lightweight prose and derived checks",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "id": 122730596534,
+        "name": "Hepta scoped native checks",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "id": 122730597695,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "id": 122731986440,
+        "name": "rust-ci / cargo shear",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122731986471,
+        "name": "rust-ci / Rust format",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122731986677,
+        "name": "rust-ci / Cargo manifest preflight",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122731988317,
+        "name": "rust-ci / Argument comment lint package",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "id": 122733039117,
+        "name": "rust-ci / Rust benchmark smoke",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122733910943,
+        "name": "rust-ci / CI results (required)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 122756981873,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "id": 122759576645,
+        "name": "CI required",
+        "status": "completed",
+        "conclusion": "failure"
+      }
+    ],
+    "cancelled_is_success": false
+  },
+  "candidate_832": {
+    "run_id": 40661665504,
+    "success_jobs": 10,
+    "failure_jobs": 1,
+    "known_failure_job": 122728804035,
+    "failure": "Native Synapse tool probe could not determine Cargo home; separate frozen Cargo-home repair remains awaiting new CI."
+  },
+  "remaining_open": [
+    "File-search liveness repair and deterministic real-matcher regression are implemented and statically reviewed; actual Windows/Linux/macOS tests remain pending.",
+    "New shard2/4 missing serialized metadata and WebSocket request-count failures require shared-cause analysis; no per-assertion relaxation.",
+    "These changes have not yet passed the real Windows/Linux/macOS Rust workspace jobs.",
+    "Native Synapse cold-start qualification and integrated locks on a committed HEAD still require remote execution.",
+    "NDU production and natural capability gates remain unchanged; this CI repair is not model efficacy evidence."
+  ],
+  "new_behavior_tests": [
+    {
+      "path": "codex-rs/tui/src/app/tests/safety_buffering.rs",
+      "name": "safety_retry_does_not_continue_a_goal_cleared_before_completion",
+      "behavior": "Real embedded app-server and gated model SSE: retry keeps its prompt, public goal clear occurs before terminal response, retry completes, shutdown joins runtime, and request count remains two. An extra response sequence remains available so unexpected continuation is detectable.",
+      "local_execution_status": "not_compiled_due_to_sparse_workspace_missing_aws_auth_manifest"
+    },
+    {
+      "path": "codex-rs/file-search/src/lib.rs",
+      "name": "matcher_completes_without_a_worker_notification",
+      "behavior": "Prime real Nucleo with an empty pattern until idle, inject one existing temporary file without further tick/reparse, intentionally replace notify with a no-op, and send only WalkComplete. Its first non-canceled tick must report running; completion must then arrive without another callback. Shutdown and join occur before assertions, followed by exact scanned/matched counts and filename checks.",
+      "local_execution_status": "not_compiled_due_to_sparse_workspace_missing_aws_auth_manifest"
+    }
+  ],
+  "independent_static_reviews": [
+    {
+      "reviewer": "unified_profile",
+      "scope": [
+        "codex-rs/ext/goal/src/runtime.rs",
+        "codex-rs/ext/goal/src/runtime/idle_continuation.rs",
+        "existing core/tasks/cleanup.rs readback"
+      ],
+      "blocking_issue_found": false,
+      "findings": [
+        "Exact captured completion waits run outside the lifecycle callback; standard Mutex guards do not cross await.",
+        "Weak runtime and thread references avoid a registry/JoinHandle strong-reference cycle.",
+        "After readiness the path rereads the current manager Arc, goal state permit, deferral and goal; original atomic turn admission remains authoritative.",
+        "No global lifecycle replay or cleanup fence weakening."
+      ],
+      "limits": [
+        "Static review only, no workspace compile or Windows execution.",
+        "Dropping JoinHandle detaches; this is not a real-time cancellation guarantee. The wait has weak ownership and the original session-termination exit."
+      ]
+    },
+    {
+      "reviewer": "asset_natural",
+      "scope": [
+        "codex-rs/file-search/src/lib.rs",
+        "exact pinned Nucleo lib.rs and worker.rs"
+      ],
+      "blocking_issue_found": false,
+      "findings": [
+        "Rearming only while running closes the callback-loss gap without polling when idle.",
+        "The real matcher regression primes Fresh/Unchanged before injection, so the first post-injection tick starts work and reports running.",
+        "No extra query/reparse or tick can accidentally consume the deterministic test setup.",
+        "The original timeout and streaming assertion remain unchanged; shutdown and join precede the final assertion."
+      ],
+      "limits": [
+        "The implemented deterministic mechanism test has not been compiled locally because required workspace metadata is missing.",
+        "The Windows trace itself does not prove that this race is the only possible cause."
+      ]
+    }
+  ]
+}

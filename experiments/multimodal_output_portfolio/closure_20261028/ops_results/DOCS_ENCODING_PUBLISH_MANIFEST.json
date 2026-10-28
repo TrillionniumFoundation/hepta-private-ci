@@ -1,0 +1,50 @@
+{
+  "actual_development_gate": "PASS_HEPTA_DEVELOPMENT_DOCS_V8",
+  "all_66_logical_frozen_files_verified": true,
+  "behavior_tests_passed": 4,
+  "codespell": "passed",
+  "deleted_paths": [
+    {
+      "original_identity": {
+        "bytes": 35136,
+        "sha256": "9f762b4dc72fa806827581b95c2bd2b1fb7af027ed77cf7d446f97b8d8acd7a5"
+      },
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/fullpath_results/QUALIFICATION_STATUS.json",
+      "replacement_encoding": "experiments/multimodal_output_portfolio/closure_20261028/fullpath_results/SOURCE_REFUSAL.raw.json.gz"
+    }
+  ],
+  "files": {
+    "experiments/multimodal_output_portfolio/closure_20261028/fullpath_results/SOURCE_REFUSAL.md": {
+      "bytes": 2164,
+      "mode": "100644",
+      "sha256": "71116bc675cf8b950e90cef7a9ff66bb375a9eb236fff810967cf5979a1ca104"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/fullpath_results/SOURCE_REFUSAL.raw.json.gz": {
+      "bytes": 16867,
+      "mode": "100644",
+      "sha256": "6918fbef8a3699580c7b202be9f3004315b31de886573bbf5d1fa988c77d94df"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/fullpath_results/SOURCE_REFUSAL_ENCODING.json": {
+      "bytes": 1581,
+      "mode": "100644",
+      "sha256": "00f571c1c4ff7bc65c26507216c933574168436a5f98078b368b336a380cf63c"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_results/CI_832_DOCS_ENCODING.json": {
+      "bytes": 28291,
+      "mode": "100644",
+      "sha256": "cd1de204072f722e1bdd3b5ce381487be6aef5307ab1e337d20a7f5875bec09b"
+    },
+    "scripts/test_ndu_port_frozen_evidence.py": {
+      "bytes": 3853,
+      "mode": "100644",
+      "sha256": "e7c2d6def374fb4df789847a53bb7adcd3f04b2bf72754ceacc2301e07c3ad2b"
+    }
+  },
+  "frozen_publication_manifest_rewritten": false,
+  "governance_policy_changed": false,
+  "original_failure_reproduced": true,
+  "python_ast": "passed",
+  "remote_ci_still_required": true,
+  "schema": "hepta.ci.docs-evidence-encoding.publish-manifest.v1",
+  "scoped_formatter": "passed"
+}
