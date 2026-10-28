@@ -151,6 +151,7 @@ impl LoadedMemoryCellBundleV1 {
         let population = wire.schema == POPULATION_SCHEMA;
         if semantic.kind() != MemoryCellKindV1::Semantic || procedure.kind() != MemoryCellKindV1::Procedure
             || semantic.is_population() != population || procedure.is_population() != population
+            || [&semantic, &procedure].iter().any(|model| model.routing_source_cut().is_some_and(|cut| cut != wire.owner_cut_digest.digest()))
             || complete_lineage(&semantic, &procedure)? != wire.lineage_sources {
             return Err("memory bundle type or complete lineage mismatch".to_string());
         }
@@ -164,6 +165,9 @@ impl LoadedMemoryCellBundleV1 {
             return Err("memory bundle owner cut or scope mismatch".to_string());
         }
         for model in [&self.semantic, &self.procedure] {
+            if model.routing_source_cut().is_some_and(|cut| cut != snapshot.owner_cut_digest().digest()) {
+                return Err("memory routing trace belongs to a different owner cut".to_string());
+            }
             let records = snapshot.training_records(model.kind());
             let sources: BTreeSet<_> = records.iter().map(|row| row.source_id.to_string()).collect();
             let support: BTreeMap<_, _> = records.iter().map(|row| {

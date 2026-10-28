@@ -25,6 +25,7 @@ mod memory_model;
 mod memory_population;
 mod memory_population_cache;
 mod memory_population_cost;
+mod memory_population_learned;
 mod plasticity;
 mod population_v2;
 mod protocol;

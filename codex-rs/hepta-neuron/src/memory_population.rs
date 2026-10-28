@@ -18,6 +18,7 @@ use crate::AssociativeMemoryError;
 use crate::memory_population_cache::PopulationCache;
 use crate::memory_population_cost::MemoryPopulationCostV2;
 use crate::memory_population_cost::ShardCost;
+use crate::memory_population_learned::LearnedPopulationWire;
 
 pub const MEMORY_POPULATION_SCHEMA_V2: &str = "hepta.memory.population.native.v2";
 pub const MEMORY_POPULATION_PARTITION_V2: &str = "hepta.memory.sha256-address-rank.v1";
@@ -41,7 +42,7 @@ struct PopulationWire {
     lineage_sources: Vec<String>,
 }
 
-/// V1-compatible typed model or a V2 population. Prediction identity binds the
+/// V1-compatible typed model or a V2/V3 population. Prediction identity binds the
 /// entire population; `shard_digests` identifies the actual parameter members.
 /// Sleeping discards decoded tensors, retaining the pinned raw artifact bytes.
 pub struct MemoryCellPopulationV2 {
@@ -50,6 +51,7 @@ pub struct MemoryCellPopulationV2 {
     pub(super) parameter_digest: Digest32,
     head_digest: Digest32,
     population: bool,
+    routing_source_cut: Option<Digest32>,
     supports: BTreeMap<String, Vec<String>>,
     lineage: Vec<String>,
     pub(super) routes: BTreeMap<String, usize>,
@@ -61,7 +63,8 @@ pub struct MemoryCellPopulationV2 {
 
 impl MemoryCellPopulationV2 {
     /// V1 native bytes retain their original artifact, parameter and head
-    /// digests. V2 bytes bind a checked, non-overlapping 1..=8 shard partition.
+    /// digests. V2 retains its fixed rank partition; V3 independently verifies
+    /// the declared completed-trace partition. Both check exact shard support.
     pub fn from_bytes(bytes: &[u8], expected: Digest32) -> Result<Self, AssociativeMemoryError> {
         let started = Instant::now();
         if bytes.is_empty() || bytes.len() > MAX_POPULATION_BYTES {
@@ -73,11 +76,15 @@ impl MemoryCellPopulationV2 {
         #[derive(Deserialize)]
         struct Schema { schema: String }
         let header: Schema = serde_json::from_slice(bytes).map_err(|_| AssociativeMemoryError::InvalidArtifact)?;
-        let (kind, population, shards, routes, lineage) = if header.schema == "hepta.memory.associative-native.v1" {
+        let (kind, population, shards, routes, lineage, routing_source_cut) = if header.schema == "hepta.memory.associative-native.v1" {
             let model = AssociativeMemoryCellV1::from_bytes(bytes, expected)?;
             (model.kind(), false, vec![ShardPayload { digest: expected.to_string(),
                 payload: std::str::from_utf8(bytes).map_err(|_| AssociativeMemoryError::InvalidArtifact)?.to_owned() }],
-                model.supports().keys().map(|key| (key.clone(), 0)).collect(), model.lineage_sources().to_vec())
+                model.supports().keys().map(|key| (key.clone(), 0)).collect(), model.lineage_sources().to_vec(), None)
+        } else if header.schema == crate::memory_population_learned::SCHEMA {
+            let wire: LearnedPopulationWire = serde_json::from_slice(bytes).map_err(|_| AssociativeMemoryError::InvalidArtifact)?;
+            let source_cut = wire.validate()?;
+            (wire.kind, true, wire.shards, wire.routes, wire.lineage_sources, Some(source_cut))
         } else {
             let wire: PopulationWire = serde_json::from_slice(bytes).map_err(|_| AssociativeMemoryError::InvalidArtifact)?;
             if wire.schema != MEMORY_POPULATION_SCHEMA_V2 || wire.partition_profile != MEMORY_POPULATION_PARTITION_V2
@@ -85,7 +92,7 @@ impl MemoryCellPopulationV2 {
                 || wire.shards.len() > wire.routes.len() || wire.kind == MemoryCellKindV1::Event {
                 return Err(AssociativeMemoryError::InvalidArtifact);
             }
-            (wire.kind, true, wire.shards, wire.routes, wire.lineage_sources)
+            (wire.kind, true, wire.shards, wire.routes, wire.lineage_sources, None)
         };
         let mut supports = BTreeMap::new();
         let mut sources = BTreeSet::new();
@@ -118,7 +125,8 @@ impl MemoryCellPopulationV2 {
         }
         // Sorted SHA-256 address ranks are independent of values and training
         // labels. Reject a declared profile paired with a hand-written routing.
-        if population && routes.iter().enumerate().any(|(rank, (_, shard))| *shard != rank * shards.len() / routes.len()) {
+        if population && routing_source_cut.is_none()
+            && routes.iter().enumerate().any(|(rank, (_, shard))| *shard != rank * shards.len() / routes.len()) {
             return Err(AssociativeMemoryError::InvalidArtifact);
         }
         let (parameter_digest, head_digest) = if population {
@@ -127,7 +135,7 @@ impl MemoryCellPopulationV2 {
         let costs = MemoryPopulationCostV2::new(bytes.len(), &shards, &shard_costs, &routes, &supports, &lineage,
             u64::try_from(started.elapsed().as_nanos()).unwrap_or(u64::MAX))?;
         let budget = shard_costs.iter().map(ShardCost::resident_bytes).sum();
-        Ok(Self { kind, digest: expected, parameter_digest, head_digest, population,
+        Ok(Self { kind, digest: expected, parameter_digest, head_digest, population, routing_source_cut,
             supports, lineage, routes, shards, shard_costs, costs, cache: Mutex::new(PopulationCache::new(budget)) })
     }
 
@@ -138,6 +146,9 @@ impl MemoryCellPopulationV2 {
     pub fn supports(&self) -> &BTreeMap<String, Vec<String>> { &self.supports }
     pub fn lineage_sources(&self) -> &[String] { &self.lineage }
     pub fn is_population(&self) -> bool { self.population }
+    /// V3 trace identity must also match the live owner cut at host admission.
+    /// This digest grants no source or publication authority by itself.
+    pub fn routing_source_cut(&self) -> Option<Digest32> { self.routing_source_cut }
     pub fn shard_count(&self) -> usize { self.shards.len() }
     pub fn serialized_bytes(&self) -> usize { self.costs.serialized_bytes as usize }
     pub fn shard_digests(&self) -> Vec<Digest32> {
