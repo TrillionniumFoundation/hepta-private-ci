@@ -1,0 +1,654 @@
+{
+  "changed_files": {
+    "codex-rs/hepta-agent-protocol/src/lib.rs": {
+      "bytes": 46787,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "1a26555bbf3eed43e6ec85ad2f24c630a00e2b8ca78c11b2c05fc4cf02bd867c"
+    },
+    "codex-rs/hepta-agent-protocol/src/memory_cells_tests.rs": {
+      "bytes": 2361,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "894a810671a17a2cbd48eb4339437c291e92322c0318cee0feebc236b7f579f4"
+    },
+    "codex-rs/hepta-agentd/src/client.rs": {
+      "bytes": 27203,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "c5a5928dde9918dae3b3d7a5169971e9db194938ec310cbbf5f3d30472e59a58"
+    },
+    "codex-rs/hepta-agentd/src/client_traffic.rs": {
+      "bytes": 1551,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "9415becec4196b924faf04e39e29976b1ec2e25ba70ac90c9cf4ae0ec3c0088a"
+    },
+    "codex-rs/hepta-agentd/src/client_traffic_tests.rs": {
+      "bytes": 3621,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "c716d551e5c8a1510bff66ac5c4f33504ff95518b4607c830d97a7e34464099d"
+    },
+    "codex-rs/hepta-agentd/src/config.rs": {
+      "bytes": 23705,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "2614c35b7be87cf5471a2fc2ca7da4d278db8383ab38ed2370977bef04a851cd"
+    },
+    "codex-rs/hepta-agentd/src/lib.rs": {
+      "bytes": 14529,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "7235e7d9e9596fcc982b9c0f1c9f87a3d33041930612229457d85bc9eea0e082"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_address_worker.rs": {
+      "bytes": 12248,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "ba5cd9afe4b647517cd5d570c9cdd4c35393008817f6cc63000e42e8a39446d0"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_address_worker_config.rs": {
+      "bytes": 7195,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "71b2d8f22912d1699ec69c2744ecae4da03ebc4f20237e40a776788aaa289688"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_address_worker_test_support.rs": {
+      "bytes": 8307,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "8e396259031d9b574c2d99e2549667e3469c790fe40839688dc6d4435feb38db"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_address_worker_tests.rs": {
+      "bytes": 11095,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "557cfa40fbacac028951de820fc48290c439222a721d7a818306e04d8c582aa1"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_address_worker_wire.rs": {
+      "bytes": 13635,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "654670e1fa95e9d734ee782645fd68e754eafc03b508de406b2f461e1ef49d46"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_bundle.rs": {
+      "bytes": 12310,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "bb3aa13f7baf3a52024d6f82fb5ce869e9a542d53c9f3b2c3ec5292b10e47ba2"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_client.rs": {
+      "bytes": 4827,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "7fa4916f9946f2d80d762a0052773803364bc2ac928c07d20e8809284ef95ede"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_context_test_support.rs": {
+      "bytes": 10293,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "a3fe5b009dbd8ac2cca5f6e3f01a4215f8c947ca79df054bbe7fbfa222c24377"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_context_tests.rs": {
+      "bytes": 6235,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "8d8249b522b75801da963f634a2753b244401a87c3f6f2095f1104996530ef02"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_control_tests.rs": {
+      "bytes": 7210,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "57bca64bbbf56274b43372ded75389399977d830fdc76618ab3f62b3193afa9b"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_execution.rs": {
+      "bytes": 5496,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "9a1558b99dfc2c52c594d466d46b439d4a5e1c26761980ee402f0b8ad99659b9"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_language_runtime_tests.rs": {
+      "bytes": 14602,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "c6d17f45ebd71021f06f32dea41d74afdd4badfbcc734c4b76b774ea1ae01aff"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_learning.rs": {
+      "bytes": 8887,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "c097d451e572a019e47329d10ead7024f00b5de9b5bce84374780bc5dc9790b5"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_learning_test_support.rs": {
+      "bytes": 9251,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "579f2d457ff562eb46b371d5b9a599ff8268c55d2724f494adbc68d7a36a0c36"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_learning_tests.rs": {
+      "bytes": 5709,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "104830de3eb703df54dca15b209e5da6309adf93dee420925ebfa15ea0dbb615"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_network.rs": {
+      "bytes": 13660,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "a19d91c51e6ecac828af9f239a5fba9ce8377af2d361f11cba09bface0d8452e"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_network_bindings.rs": {
+      "bytes": 7481,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "0ad86060c532fe2fa098b2ddce7d697f5f0967ed55950707e12eac47f530be05"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_network_organ.rs": {
+      "bytes": 7140,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "54900fe33b379091c6d81f8bac3741785b84435cb04bf8b63779d165c6770426"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_network_test_support.rs": {
+      "bytes": 18017,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "953e5a0f3bddc2bc0031c1a4c2006c0f02e7516c3f3fbd3fc1d3bde223fe5eb2"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_network_tests.rs": {
+      "bytes": 12744,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "23b89dc091a22af6516f9bb19c754bb6992cfe57f785dc739ae33f814083b284"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_network_transport.rs": {
+      "bytes": 12389,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "f2ad4a144fc25d9836d39f29d645889cf7ea239d08135f2c8bc33fb453fd74a3"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_population_tests.rs": {
+      "bytes": 11787,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "2a9c67f8a3bc220c158deb1e2f054f3fe07fa9c7be06c7519dfc3d2954656dcd"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_release.rs": {
+      "bytes": 11799,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "3c34f282b50e9e5b1a8f4bd167fc73d36b1e8d82b661f726b9c33dd01b9d677a"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_release_test_support.rs": {
+      "bytes": 19258,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "97aa4e802889cad1b4f3cb5081251278d0ce735943b46d326712d314a2054e74"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_release_tests.rs": {
+      "bytes": 13883,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "2e9844172f8a273cea3376b53374592ae2470113f067226fef5de7e185accc4a"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_release_trust_tests.rs": {
+      "bytes": 7699,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "0209eb288c4042b3e7817423d1eaab5370114f794ac75b177cf456336d55221f"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_runtime.rs": {
+      "bytes": 9771,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "94565b9bf4f4360a1848c247aec680f079d874d73ddb17463ee63f608952352d"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_runtime_tests.rs": {
+      "bytes": 14746,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "42e780e0328718249e41ff413ff4d310f32b5364f48f903753094c473ad251bd"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_snapshot.rs": {
+      "bytes": 5255,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "cb829d7393e468713f987ba9504e133ef31696aedba85193257e2c84b72ae07a"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_temporal_runtime_tests.rs": {
+      "bytes": 5886,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "e5a8555ce08669ee223e7d33f8a22793b90f934180703ca3a9fd923a04a094e3"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_test_support.rs": {
+      "bytes": 6896,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "3763cb9c22e7d8c8d36e1c77b05bede446cbc6c22f0d51eb2480bbc047e4499f"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_time_view.rs": {
+      "bytes": 8038,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "b4423445279c730e02f9512e1dd68da8908a27e08e826df905e99e8394e4d56b"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_time_view_tests.rs": {
+      "bytes": 5119,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "75318ae487d213836d567097de34ce4c759d5ba86203577bcd54f7e7c02c8145"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_training.rs": {
+      "bytes": 12675,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "332a96019b8da05d91ed08704277147389e5b7125da4ce5790cde269d6542c8f"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_training_test_support.rs": {
+      "bytes": 8127,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "c3b7a244ab3196ba6047295fce19e1e9bdd4daa1de1e71c563590e3df0858217"
+    },
+    "codex-rs/hepta-agentd/src/memory_cell_training_tests.rs": {
+      "bytes": 10029,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "dab12fc90e809b5b6a9bffe1d75e13693930a210865b629124410344f2ff7817"
+    },
+    "codex-rs/hepta-agentd/src/state.rs": {
+      "bytes": 34128,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "32655c31e8470127aa439db8007eb21fbdce6b6b0e71c0babc5873e7f5fdeb79"
+    },
+    "codex-rs/hepta-agentd/src/state_control.rs": {
+      "bytes": 61869,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "93440b9051536021dc36f9cbdda1953f5b8aa86340285148352c96d49f67994e"
+    },
+    "codex-rs/hepta-agentd/src/test_support.rs": {
+      "bytes": 13318,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "22dd13745bafb2076e767b5bfafa39f0a33bedf6a5af2e14c074cc26e279cc95"
+    },
+    "codex-rs/hepta-cognitive-store/src/durable.rs": {
+      "bytes": 3247,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "56b952129dc0238912667129473e7da7e453ec062b6731df13a2eef1bd6babaa"
+    },
+    "codex-rs/hepta-cognitive-store/src/lib.rs": {
+      "bytes": 8387,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "28c3d62daf0a06728c4e304f2faf12ad714b848ef35d3605d6fc1feeb8de9221"
+    },
+    "codex-rs/hepta-cognitive-types/src/memory_cell_values.rs": {
+      "bytes": 3585,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "b3567d61645e888a43f7b080cb53cb814689cb321dd1720c4df9917c75ae860d"
+    },
+    "codex-rs/hepta-cognitive-types/src/memory_cell_values_tests.rs": {
+      "bytes": 1871,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "43efd56bfcd63773649f792fa4628a502f8afe01fabe3431f62b679fbc55bce4"
+    },
+    "codex-rs/hepta-context-compiler/src/memory_cell.rs": {
+      "bytes": 6489,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "f71231dce23003c94d42039329812c4561f1ab5a8a9a1f3c5a24c5b56834e743"
+    },
+    "codex-rs/hepta-context-compiler/src/memory_cell_tests.rs": {
+      "bytes": 4709,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "d6acaad357bdd88e5f0c53990796bf96050ce32be38026d205202964db573612"
+    },
+    "codex-rs/hepta-infer-worker-host/src/native_agent_output.rs": {
+      "bytes": 3647,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "dbb0485c43f858ed789c8a00f94d9762a6ac8ecf1e335431a365a7a8904c096f"
+    },
+    "codex-rs/hepta-infer-worker-host/src/native_agent_output_tests.rs": {
+      "bytes": 4946,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "8d21f77379f5f4c42ce3b68bf682c45a71aba14564ed818eed8ca33b7da41224"
+    },
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs": {
+      "bytes": 65586,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "2af7dc858fb26d024ec1f7d0ac5c3b0b519f9f5fee522c19537b73cead2b408d"
+    },
+    "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs": {
+      "bytes": 28567,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "f7c3226a501c6c948a3a56f4ae445562e6c60268e5ad4dc1ad8f5cce7d68959b"
+    },
+    "codex-rs/hepta-infer-worker-host/src/native_memory_cell.rs": {
+      "bytes": 3329,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "1fa456b6133e99ca1c4b521eea87f731fee614946d27ce57a5be4119c0211e28"
+    },
+    "codex-rs/hepta-infer-worker-host/src/native_memory_cell_tests.rs": {
+      "bytes": 3955,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "0f13f11f161c5fded32a90000ab4c311b4bad78e700a641164227ed5f0c593c3"
+    },
+    "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs": {
+      "bytes": 18411,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "d13b9016e70cf314dfc8201b1bbd51f238bdf62676113528f89cf180d5bdd40a"
+    },
+    "codex-rs/hepta-learning-artifacts/src/owner_service.rs": {
+      "bytes": 26044,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "56c740020d1f7e08373baa1465912ee3b4bc3bc45abac5643c4a2b24de03b11b"
+    },
+    "codex-rs/hepta-learning-artifacts/src/selection.rs": {
+      "bytes": 30078,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "e344d73ff59ce19062e51637eb4819d40d1a5f1534022c914886bea1c303d473"
+    },
+    "codex-rs/hepta-memory/src/memory_cell_owner.rs": {
+      "bytes": 19659,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "0af3536c37b17caeb0c17e9d3f60cc1a196433a38eefbd95ccef4268ccd39d36"
+    },
+    "codex-rs/hepta-memory/src/memory_cell_owner_tests.rs": {
+      "bytes": 17281,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "9925ebe40c69bacbb7145b6f0ce4ff1386ae8c411e7d09a5d76ba984d1ba6d77"
+    },
+    "codex-rs/hepta-memory/src/memory_cell_write.rs": {
+      "bytes": 5326,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "7969c06f257dfb8ea7851fbd1a530458a6bbcc04bb14730e1125b05e783cd537"
+    },
+    "codex-rs/hepta-neuron/BUILD.bazel": {
+      "bytes": 198,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "bef8cfeb93ec9b9ce4a668e5f7302d56514880dc89e29cca71ed31b40c9b16cc"
+    },
+    "codex-rs/hepta-neuron/src/associative_memory.rs": {
+      "bytes": 11910,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "59333ae7cfda41eb1321da763a4629b71836a66fa54f1579cbafe21f2171a6db"
+    },
+    "codex-rs/hepta-neuron/src/associative_memory_port.rs": {
+      "bytes": 6289,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "725513d0899fd209991fe7c512f90f780b517d0bf3fe4eb6ed1177847cc428ca"
+    },
+    "codex-rs/hepta-neuron/src/associative_memory_tests.rs": {
+      "bytes": 9351,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "81afdbf1852b09857e7e483e0eccac8823bab1c85b29370eaab73c8bb27a8cf2"
+    },
+    "codex-rs/hepta-neuron/src/lib.rs": {
+      "bytes": 10622,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "32d488b35acab1d6c93e1444ebf7920bbe6a73c5eecdfea25aecdc98872e1581"
+    },
+    "codex-rs/hepta-neuron/src/memory_population.rs": {
+      "bytes": 9080,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "9df9a9d639eff87848b931e79c6fd5c107e821db9b1b8d20427e4c5fdbddeb76"
+    },
+    "codex-rs/hepta-neuron/src/memory_population_cache.rs": {
+      "bytes": 6388,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "951a75363111473d7c2591841ad6f2d5ccf6ee4185d95d70810564c61795573e"
+    },
+    "codex-rs/hepta-neuron/src/memory_population_cost.rs": {
+      "bytes": 3362,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "012f222ea7e531032359aabfc3232f80fcbf761c6b99b5107529de73dcf5be1f"
+    },
+    "codex-rs/hepta-neuron/src/memory_population_tests.rs": {
+      "bytes": 5699,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "376f7d6120f4e6efab360b31bc836ca3fb3ad36e8e18b1faebacc668c0e4e09f"
+    },
+    "codex-rs/hepta-plasticity/src/memory_budget.rs": {
+      "bytes": 16545,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "22dafccdeacc6d80c5c6c9f1abe5ccafa87cf7ad198d8a77602e93ace9a60a2f"
+    },
+    "codex-rs/hepta-plasticity/src/memory_budget_tests.rs": {
+      "bytes": 7715,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "a11b25de0853b5bdbb57c51059774c85c5bc7e4d103f7d2d713933084b3fb8a0"
+    }
+  },
+  "runtime_python": {
+    "qualification/memory-cell-v6/v6/__init__.py": {
+      "bytes": 84,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "e48c0b6136220a43e666e0616e415b365f4041f4ce1211846d9a144d7073bfed"
+    },
+    "qualification/memory-cell-v6/v6/artifacts.py": {
+      "bytes": 7451,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "209c8d8581b02217cc4705111f7a060c78845ea804fb46364d4456d651882fbd"
+    },
+    "qualification/memory-cell-v6/v6/cells.py": {
+      "bytes": 16224,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "e0b2f7dbf3f280ebf6618c68c60b7799bb945eaf76cc603b6bfcfc3d33de2024"
+    },
+    "qualification/memory-cell-v6/v6/contracts.py": {
+      "bytes": 5785,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "42be7b9d9f0e3afe86c5ad52c58d8d4b8a5ba8972846c0702fc1e42c3b62834f"
+    },
+    "qualification/memory-cell-v6/v6/encoder.py": {
+      "bytes": 6724,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "5660dc13f9ee7f1b7239e61edae9b51eee6a8870f0b4ef351d5d0f35e87d18ab"
+    },
+    "qualification/memory-cell-v6/v6/evolution.py": {
+      "bytes": 23036,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "c60be48c2713fc97cea803894fc0df6e9b0a6655edbdcd0d35f2e97a753e939d"
+    },
+    "qualification/memory-cell-v6/v6/learning.py": {
+      "bytes": 20809,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "602e4976ba819a102271b669ff9c1972a07054e832051a560c49ef068c18d470"
+    },
+    "qualification/memory-cell-v6/v6/lifecycle.py": {
+      "bytes": 22775,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "dc5ea910465ba2aa1139764dac104c924786c16d2e7231999429e5f1b177f548"
+    },
+    "qualification/memory-cell-v6/v6/network.py": {
+      "bytes": 24129,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "af3a667031fe9e185aa59ff2fa9cd01ee763107ab3bdee67ddb1e7094cfaa6d6"
+    },
+    "qualification/memory-cell-v6/v6/router.py": {
+      "bytes": 16676,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "369c86fc1e6cb6d64823f6602c535d36cc292de4f6c834dff15d617fa24e35f0"
+    },
+    "qualification/memory-cell-v6/v6/runtime.py": {
+      "bytes": 9891,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "f4ceaa5b80b372385f902d63afb1151aada0d2c79eae786747a668f13dc8801a"
+    },
+    "qualification/memory-cell-v6/v6/store.py": {
+      "bytes": 8880,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "81d8917a49a9a2ed79cb8ae9f52f843123fb304e7addcada80b561e88c4a41a1"
+    },
+    "qualification/memory-cell-v6/v6/study_data.py": {
+      "bytes": 3846,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "882f4e38eb90a11fa6cea582f60efea961037656ed5b3b2e48ac6863f08ec4b8"
+    },
+    "qualification/memory-cell-v6/v6/training_language.py": {
+      "bytes": 25133,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "18c5d7254c99b1f39f3f426e0f1cda389670cf35c19aaebf4c44ec0eaef9a668"
+    },
+    "qualification/memory-cell-v6/v6/transfer.py": {
+      "bytes": 28290,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "389e5a684af86b211830232ac37cc061b99f06c6a1bcc0608b2f0466d78b9692"
+    },
+    "qualification/memory-cell-v6/v6/values.py": {
+      "bytes": 1789,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "5b3d658ce921ec7e91778fa58507091257bba151eb773f515fdf0ad6097dedfb"
+    },
+    "qualification/memory-cell-v7/addressing/__init__.py": {
+      "bytes": 139,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "63b47bb28e00abee0c283d5eebc7480633028b17061cc40ba95aa0fadce89e90"
+    },
+    "qualification/memory-cell-v7/addressing/calibration.py": {
+      "bytes": 5485,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "ce1a8de18b63666ff9c77d152edccddb03fc2e758a4262d529b61ec30b289c8d"
+    },
+    "qualification/memory-cell-v7/addressing/capabilities.py": {
+      "bytes": 5547,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "f2c7b4882dadb2f3a68c51a5cf8963f79c3648ffc7b14b7f45d58594e48793fd"
+    },
+    "qualification/memory-cell-v7/addressing/cli.py": {
+      "bytes": 1506,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "d6f3b0a8511f6a15bc80c277b2d70c84302a71a5a025296cf427b8ca089c88bf"
+    },
+    "qualification/memory-cell-v7/addressing/contracts.py": {
+      "bytes": 8899,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "9b4553b6bbe8054ce7fcdc947dbb47a0087562793ab975092cbb0f8d0e6879d1"
+    },
+    "qualification/memory-cell-v7/addressing/corpus.py": {
+      "bytes": 30433,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "a55897eecc8d34ab2ba6dfef34d13571bfda030046f67e6fafba76fedec6e448"
+    },
+    "qualification/memory-cell-v7/addressing/model.py": {
+      "bytes": 14944,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "a825bc732833d3d9d0c6b92fc2684a578b58b1056c89d35501b29fdd3ece72b2"
+    },
+    "qualification/memory-cell-v7/addressing/planner.py": {
+      "bytes": 1970,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "e31b71fa9ffaaddba7ff956c656af0abe4deb0ada1e5bee5afd1269dff874481"
+    },
+    "qualification/memory-cell-v7/addressing/tests/test_planner.py": {
+      "bytes": 7752,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "1657200d5c2fb7e0b31405922aba1a4b2d928ddbb958f6a8c833d586fab53af7"
+    },
+    "qualification/memory-cell-v7/addressing/tests/test_worker.py": {
+      "bytes": 4471,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "04e191419a35cf655c6446d21f45f8b209a4953098afbbb80b4aab75d9cb1871"
+    },
+    "qualification/memory-cell-v7/addressing/train.py": {
+      "bytes": 12915,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "65c460f3696cacc1441c9071ebfc7266c9b94f245ec7190f48480d90604447b9"
+    },
+    "qualification/memory-cell-v7/addressing/worker.py": {
+      "bytes": 4833,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "75325681fe3b4247b8bacf6acaae8e2f7b3cf64a0aa2029439777e45cb10b679"
+    },
+    "qualification/memory-cell-v7/native_export.py": {
+      "bytes": 2976,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "cbdc28764bd14c9524ce046ea6fd0a1c8043a75225a66def4b8ce23d874a9616"
+    },
+    "qualification/memory-cell-v7/population_training.py": {
+      "bytes": 6003,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "6ae057448f3f8d5dce746401adb116d8c47f73f47d5e87d6a763af1ff648d069"
+    },
+    "qualification/memory-cell-v7/population_worker.py": {
+      "bytes": 1318,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "f71afd8d40f724f596a3278c35ddf162a05e419ea08afeeee7d92617ecf27ec7"
+    },
+    "qualification/memory-cell-v7/training.py": {
+      "bytes": 9763,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "d6205c6020fb2218a9afb56371482f77fe8a2b49ba42ec9b4f0f516eeb55a0c0"
+    },
+    "qualification/memory-cell-v7/training_worker.py": {
+      "bytes": 965,
+      "kind": "file",
+      "mode": "0o644",
+      "sha256": "43392c23d00fa1a2c706742c9834fd27b9319f22b05927d796015c9d542cc040"
+    }
+  }
+}

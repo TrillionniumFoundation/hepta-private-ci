@@ -98,10 +98,12 @@
   ],
   "finalization": {
     "published_product_source": true,
-    "ci10_receipts_in_this_unpublished_patch": true,
-    "fix_executed": false,
-    "fmt_executed": false,
+    "fix_executed": true,
+    "fmt_executed": true,
     "request_file": "FINALIZE_REQUEST.json",
-    "provenance": "FINAL_DELIVERY.json"
+    "provenance": "FINAL_DELIVERY.json",
+    "ci10_evidence_published_at": "bad9b4adbb3a57bcc5ad2e29a6289645bb60f051",
+    "finalizer_run": 40605424672,
+    "tests_rerun_after_fix_or_fmt": false
   }
 }
