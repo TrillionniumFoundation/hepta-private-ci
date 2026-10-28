@@ -95,6 +95,27 @@ impl MemoryCellMigrationManifestV9 {
     pub fn digest(&self) -> Result<Sha256Digest, String> {
         serde_json::to_vec(self).map(|raw| Sha256Digest::for_bytes(&raw)).map_err(failure)
     }
+
+    pub(super) fn validate(&self) -> Result<(), String> {
+        if self.schema != "hepta.memory.migration.image.v9" || self.destination.is_empty() || self.destination.len() > 128
+            || self.generation == 0 || (self.generation == 1) != self.predecessor.is_none()
+            || self.files.is_empty() || self.files.len() > MAX_FILES
+            || self.pin.owner_agent_id != self.pin.cognitive_anchor.owner_agent_id
+        { return Err("migration manifest schema, owner, generation or inventory".into()); }
+        if let Some(digest) = &self.predecessor { Sha256Digest::parse(digest.as_str().to_string()).map_err(failure)?; }
+        let mut previous: Option<&str> = None;
+        let mut bytes = 0_u64;
+        for file in &self.files {
+            validate_path(&file.path)?;
+            Sha256Digest::parse(file.sha256.as_str().to_string()).map_err(failure)?;
+            bytes = bytes.checked_add(file.bytes).ok_or("migration inventory size overflow")?;
+            if previous.is_some_and(|prior| prior >= file.path.as_str()) || !matches!(file.mode, 0o400 | 0o444 | 0o600 | 0o644)
+                || bytes > MAX_IMAGE_BYTES as u64
+            { return Err("migration file order, duplicate, mode or inventory size".into()); }
+            previous = Some(&file.path);
+        }
+        Ok(())
+    }
 }
 
 /// Exact TaskFlow payload. Capture only closed/quiesced source descriptors;
@@ -166,22 +187,14 @@ pub(super) fn decode(raw: &[u8]) -> Result<(MemoryCellMigrationManifestV9, Vec<&
     let offset = MAGIC.len() + 4;
     if size > MAX_HEADER_BYTES || offset + size > raw.len() { return Err("migration header bound".into()); }
     let manifest: MemoryCellMigrationManifestV9 = serde_json::from_slice(&raw[offset..offset + size]).map_err(failure)?;
-    if manifest.schema != "hepta.memory.migration.image.v9" || manifest.files.is_empty() || manifest.files.len() > MAX_FILES {
-        return Err("migration schema or file count".into());
-    }
+    manifest.validate()?;
     let mut offset = offset + size;
-    let mut previous: Option<&str> = None;
     let mut contents = Vec::new();
     for file in &manifest.files {
-        validate_path(&file.path)?;
-        if previous.is_some_and(|prior| prior >= file.path.as_str()) || !matches!(file.mode, 0o400 | 0o444 | 0o600 | 0o644) {
-            return Err("migration file order, duplicate or mode".into());
-        }
         let length = usize::try_from(file.bytes).map_err(failure)?;
         let end = offset.checked_add(length).ok_or("migration length overflow")?;
         let value = raw.get(offset..end).ok_or("migration truncated contents")?;
         if Sha256Digest::for_bytes(value) != file.sha256 { return Err("migration file digest mismatch".into()); }
-        previous = Some(&file.path);
         contents.push(value);
         offset = end;
     }

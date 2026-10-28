@@ -53,6 +53,7 @@ pub struct MemoryCellMigrationStoreV9 {
 
 impl MemoryCellMigrationStoreV9 {
     pub fn open(root: PathBuf, expected: MemoryCellMigrationManifestV9) -> Result<Self, String> {
+        expected.validate()?;
         private_directory(&root)?;
         let lock_path = root.join("LOCK");
         regular_or_absent(&lock_path)?;
@@ -68,6 +69,9 @@ impl MemoryCellMigrationStoreV9 {
             let path = entry.map_err(failure)?.path();
             if path.extension().is_some_and(|value| value == "json") {
                 let row: Transaction = read_json(&path)?;
+                row.intent.validate().map_err(failure)?;
+                Sha256Digest::parse(row.manifest.as_str().to_string()).map_err(failure)?;
+                if path != store.transaction_path(&row.intent) { return Err("migration journal key/path mismatch".into()); }
                 if row.manifest == store.expected.digest()? && row.phase != Phase::Committed {
                     let payload = read_bounded(&store.payload_path(&row.intent), MAX_IMAGE_BYTES)?;
                     store.commit(&row.intent, &payload, &mut |_| {})?;
@@ -81,10 +85,11 @@ impl MemoryCellMigrationStoreV9 {
     /// owner or selecting its artifact still needs the existing owner APIs.
     pub fn committed_image(&self, expected_payload: &Sha256Digest) -> Result<PathBuf, String> {
         let current: Current = read_json(&self.root.join("CURRENT.json"))?;
+        current.intent.validate().map_err(failure)?;
         if current.intent.payload_sha256 != *expected_payload || current.manifest != self.expected {
             return Err("migration committed vector mismatch".into());
         }
-        self.verify_image(&current.intent)?;
+        if self.verify_image(&current.intent)? != current.manifest { return Err("migration CURRENT differs from retained image".into()); }
         Ok(self.image_path(&current.intent).join("data"))
     }
 
@@ -161,6 +166,9 @@ impl MemoryCellMigrationStoreV9 {
             return Err("migration missing required predecessor".into());
         }
         let current: Current = read_json(&path)?;
+        current.intent.validate().map_err(failure)?;
+        current.manifest.validate()?;
+        if self.verify_image(&current.intent)? != current.manifest { return Err("migration CURRENT differs from retained image".into()); }
         if current.manifest == self.expected && same_intent.is_none_or(|value| value == &current.intent) {
             return Ok(());
         }
@@ -172,7 +180,8 @@ impl MemoryCellMigrationStoreV9 {
         Err("migration stale, forked or mismatched current image".into())
     }
 
-    fn verify_image(&self, intent: &ProviderEffectIntent) -> Result<(), String> {
+    fn verify_image(&self, intent: &ProviderEffectIntent) -> Result<MemoryCellMigrationManifestV9, String> {
+        intent.validate().map_err(failure)?;
         let raw = read_bounded(&self.payload_path(intent), MAX_IMAGE_BYTES)?;
         if Sha256Digest::for_bytes(&raw) != intent.payload_sha256 { return Err("migration retained payload corrupt".into()); }
         let (manifest, _) = decode(&raw)?;
@@ -184,7 +193,7 @@ impl MemoryCellMigrationStoreV9 {
                 return Err("migration materialized file bytes or mode mismatch".into());
             }
         }
-        Ok(())
+        Ok(manifest)
     }
 
     fn transaction_path(&self, intent: &ProviderEffectIntent) -> PathBuf {
