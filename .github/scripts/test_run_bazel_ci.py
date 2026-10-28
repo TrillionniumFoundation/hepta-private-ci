@@ -198,7 +198,8 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertIn("--config=clippy", calls[0])
         native_args = json.loads(physical.read_text(encoding="utf-8").splitlines()[0])
         self.assertLess(
-            sum(len(arg.encode("utf-16-le")) // 2 + 3 for arg in native_args), 32767
+            sum(len(arg.encode("utf-16-le")) // 2 + 3 for arg in native_args),
+            32767,
         )
         pattern_file = next(
             arg.split("=", 1)[1]
