@@ -1,0 +1,31 @@
+{
+  "all_failed_gates_and_interrupted_work_preserved": true,
+  "fresh_capability_qualification_performed": false,
+  "hyperparameter_or_gate_changes_after_development_scores": false,
+  "risk_over_matched_mean_blocker_closed": false,
+  "schema": "hepta.ndu.fullpath-lax-attempt-register.v1",
+  "studies": [
+    {
+      "archive_receipt": "SMOKE_ARCHIVE_RECEIPT.json",
+      "id": "lax-smoke-001",
+      "status": "eight optimizer updates and actual readback passed; qualification forbidden by smoke flag"
+    },
+    {
+      "effective_completed_optimizer_steps": 2048,
+      "id": "lax-development-001",
+      "new_qualification_predictions": 0,
+      "raw_path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001",
+      "resource_interruption_sha256": "e9cc3f7df54de7d97d450be6db4507908c7e9f4221c35ab0617e87ba79762548",
+      "status": "resource-interrupted after two complete seed17 arms; first next-arm counterfactual interrupted before optimizer update"
+    },
+    {
+      "development_seal_sha256": "3410a22d5d3928fd661a237c45b021b336d8b8f1c0cc7c08441be723df9285e0",
+      "id": "lax-development-002",
+      "new_effective_optimizer_steps": 4096,
+      "new_qualification_predictions": 0,
+      "raw_path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002",
+      "status": "exact completed-arm continuation; all remaining4096 updates completed; failed matched-mean admission gate",
+      "total_effective_optimizer_steps": 6144
+    }
+  ]
+}

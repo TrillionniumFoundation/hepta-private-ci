@@ -1,0 +1,104 @@
+{
+  "continuation": {
+    "actual_delivery_source_sha256": "781cec9ce1726918e794a3820f115b5d98c50bf042d8e8b6fe7fdae4717aec95",
+    "emission_modes": {
+      "greedy_prior": {
+        "allowed_parameters": "508931a0cb780d413bc39de83b8de91aeab68b33cfe1b384f176cb8e8f004ee6",
+        "image": "sigmoid(mean) then uint8 PNG",
+        "text": "greedy fixed horizon then render"
+      },
+      "stochastic": {
+        "image_logit_sigma": 0.03,
+        "latent_token_steps": 7,
+        "latent_tokens_after_EOS": "sampled_and_density_accounted_fixed_horizon",
+        "render": "sigmoid_round_uint8_PNG_and_unrepaired_UTF8",
+        "sampling": "independent_normal_logits_and_autoregressive_categorical",
+        "text_temperature": 0.2
+      }
+    },
+    "frozen_plan": "original encoder/gate; all current generator paths trainable in registered stages",
+    "generator_source_sha256": "4146d5348b5090f7f80a69d7fb965ec1f6275b6254e4ca10d453a676aa2878cc",
+    "horizon": 2,
+    "native_runtime": false,
+    "policy_binding": "actual parameter hash, original reference snapshot, explicit emission mode",
+    "reference_checkpoint_sha256": "508931a0cb780d413bc39de83b8de91aeab68b33cfe1b384f176cb8e8f004ee6",
+    "stop": "actual delivered PNG and unrepaired UTF8 readback",
+    "tariffs": {
+      "encoder": 0.00015,
+      "gate": 5e-05,
+      "observer": 0.00015,
+      "pixel_emission": 0.0003,
+      "read": 5e-05,
+      "token_emission": 2e-05,
+      "transition": 0.0001,
+      "write": 5e-05
+    }
+  },
+  "objective": {
+    "condition_weights": [
+      0.25,
+      0.25,
+      0.25,
+      0.25
+    ],
+    "conditions": [
+      "clean",
+      "occlusion",
+      "missing",
+      "heavy_noise"
+    ],
+    "cost": "actual declared deployment work counts times frozen tariffs",
+    "cost_scope": "WP2 capability diagnostic; actual training/inference CPU reported separately, not a full physical-cost certificate",
+    "metric": {
+      "image_observer": "separate_source_pool_frozen_mnist_classifier",
+      "raw_modalities": [
+        "text/utf-8",
+        "image/png;grayscale;56x28"
+      ],
+      "schema": "hepta.ndu-v6.joint-observation.v1",
+      "unsupported": [
+        "natural_language_generalization",
+        "audio",
+        "video",
+        "human_verified_semantics",
+        "authenticated_outcome_owner"
+      ],
+      "utility": "1 - 2 * joint_loss",
+      "weights": {
+        "crossmodal_disagreement": 0.1,
+        "image_fact": 0.35,
+        "pixel_mse": 0.1,
+        "relation": 0.15,
+        "text_fact": 0.3
+      }
+    },
+    "retention": "hard external validation constraint, never added as an auxiliary reward"
+  },
+  "observer": {
+    "actual_observer_source_sha256": "5e9c6444e43ae3ccd44b1683a94f6d6487d8956534e4bfc6c2fcfa069bbf716e",
+    "metric": {
+      "image_observer": "separate_source_pool_frozen_mnist_classifier",
+      "raw_modalities": [
+        "text/utf-8",
+        "image/png;grayscale;56x28"
+      ],
+      "schema": "hepta.ndu-v6.joint-observation.v1",
+      "unsupported": [
+        "natural_language_generalization",
+        "audio",
+        "video",
+        "human_verified_semantics",
+        "authenticated_outcome_owner"
+      ],
+      "utility": "1 - 2 * joint_loss",
+      "weights": {
+        "crossmodal_disagreement": 0.1,
+        "image_fact": 0.35,
+        "pixel_mse": 0.1,
+        "relation": 0.15,
+        "text_fact": 0.3
+      }
+    },
+    "weights_file_sha256": "a9cfe78a08b9192ba9d8fe9c144de29ef5d3b1e9cd6ed236d01d170d32034210"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.ndu.resource-boundary-watch.v1",
+  "owned_process_id": 1050672,
+  "expected_command_output": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001",
+  "target": "seed17 matched mean/risk complete-arm boundary",
+  "reason": "shared cgroup near memory.max; preserve completed-arm checkpoint and frozen budget",
+  "changes_to_model_law_hyperparameters_sources_or_gates": false,
+  "boundary_files": {
+    "seed-17-lax_mean/TRAINING.json": "d0f77db7755ab2413cd31a285bcd0027529fc7bb05d47202e491fbc92e356234",
+    "seed-17-lax_mean/validation/SELECTION.json": "c8aa631bf0205108412b90c8adc40333df236705b14ee37ae1dccf7ed49eeae9",
+    "seed-17-lax_risk/TRAINING.json": "f0d30515c44bebc0e918f88e14e34b8f6ce42e1ed9d3c9b1c59e90e5e711240b",
+    "seed-17-lax_risk/validation/SELECTION.json": "cae5157170bb73cd38fbd2c320f4cab7ab934c440526ef7657987e303b7e6d51"
+  },
+  "effective_completed_optimizer_steps": 2048,
+  "remaining_prespecified_optimizer_steps": 4096,
+  "interruption_signal": "SIGINT after complete arm",
+  "qualification_predictions": 0
+}

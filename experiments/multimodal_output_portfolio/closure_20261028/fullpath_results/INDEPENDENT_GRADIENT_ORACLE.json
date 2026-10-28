@@ -1,0 +1,174 @@
+{
+  "schema": "hepta.ndu.conditional-lax-independent-oracle.v1",
+  "passed": true,
+  "torch_version": "2.8.0+cpu",
+  "joint_step_codec_cases": [
+    {
+      "theta": [
+        0.17,
+        -0.4
+      ],
+      "gamma": 0.0,
+      "exact_gradient": [
+        -0.2365857850390026,
+        -0.17544917621708184
+      ],
+      "integrated_actual_surrogate_gradient": [
+        -0.23658578503900696,
+        -0.17544917621708178
+      ],
+      "finite_difference": [
+        -0.23658578503227276,
+        -0.17544917621514775
+      ],
+      "max_absolute_error": 4.3576253716537394e-15,
+      "missing_pathwise_error": 0.265297400918985,
+      "self_dependent_image_baseline_error": 0.2562977549834097
+    },
+    {
+      "theta": [
+        0.17,
+        -0.4
+      ],
+      "gamma": 2.0,
+      "exact_gradient": [
+        -0.11964817665856746,
+        -0.07920905568842165
+      ],
+      "integrated_actual_surrogate_gradient": [
+        -0.11964817665857183,
+        -0.07920905568842235
+      ],
+      "finite_difference": [
+        -0.11964817665244264,
+        -0.07920905568808978
+      ],
+      "max_absolute_error": 4.371503159461554e-15,
+      "missing_pathwise_error": 0.26529740091898424,
+      "self_dependent_image_baseline_error": 0.12782074320400683
+    },
+    {
+      "theta": [
+        -0.4,
+        0.3
+      ],
+      "gamma": 0.0,
+      "exact_gradient": [
+        -0.26515376671968427,
+        -0.16169192973498347
+      ],
+      "integrated_actual_surrogate_gradient": [
+        -0.26515376671968544,
+        -0.16169192973498248
+      ],
+      "finite_difference": [
+        -0.2651537667097692,
+        -0.1616919297342534
+      ],
+      "max_absolute_error": 1.1657341758564144e-15,
+      "missing_pathwise_error": 0.10359475296874782,
+      "self_dependent_image_baseline_error": 0.2806529742138467
+    },
+    {
+      "theta": [
+        -0.4,
+        0.3
+      ],
+      "gamma": 2.0,
+      "exact_gradient": [
+        -0.11495057696934273,
+        -0.07510508642805665
+      ],
+      "integrated_actual_surrogate_gradient": [
+        -0.11495057696934487,
+        -0.07510508642805674
+      ],
+      "finite_difference": [
+        -0.11495057696542242,
+        -0.07510508642782909
+      ],
+      "max_absolute_error": 2.1371793224034263e-15,
+      "missing_pathwise_error": 0.10359475296874693,
+      "self_dependent_image_baseline_error": 0.12261471156127432
+    }
+  ],
+  "actual_production_density_and_parameter_gradients": {
+    "executed": true,
+    "module": "experiments.multimodal_output_portfolio.closure_20261028.fullpath_model",
+    "source_sha256": "4146d5348b5090f7f80a69d7fb965ec1f6275b6254e4ca10d453a676aa2878cc",
+    "fixture": "untrained inherited command-conditioned architecture with all four frozen plans",
+    "architecture": "public-command-film-layernorm-v1",
+    "actual_leave_one_out": [
+      {
+        "K": 4,
+        "expected_gradient": -0.23585575604352002,
+        "exact_gradient": -0.23585575604352002
+      },
+      {
+        "K": 8,
+        "expected_gradient": -0.23585575604352005,
+        "exact_gradient": -0.23585575604352002
+      }
+    ],
+    "gaussian_log_density_max_error": 9.094947017729282e-13,
+    "categorical_log_density_max_error": 3.552713678800501e-15,
+    "all_parameter_gradient_max_error": 8.128608897095546e-12,
+    "module_gradient_norms": {
+      "semantic_cell": 86.98537026995464,
+      "coupling_cell": 506.53033621103987,
+      "initial_image": 838.5592081821399,
+      "initial_text": 74.24552874238464,
+      "image_cell": 183.3749975173554,
+      "text_cell": 0.891700667760827,
+      "pixel_decoder": 6863.800996503834,
+      "text_initial": 7.583326580225514,
+      "text_decoder": 30.425659085435996,
+      "text_projection": 34.332529376742855,
+      "token_embedding": 222.14934216589876,
+      "text_encoder": 1166.0553241465113,
+      "pixel_encoder": 23790.21880815844,
+      "fuse": 4950.5779073166905,
+      "command_embedding": 104.6800570592311,
+      "command_film": 719.7862146351255
+    },
+    "finite_difference_probes": [
+      {
+        "stage": "transition",
+        "parameter": "coupling_cell.0.weight",
+        "flat_index": 192,
+        "actual_score_gradient": -63.208401033470714,
+        "fixed_action_finite_difference": -63.20840108552753
+      },
+      {
+        "stage": "adapter",
+        "parameter": "initial_image.bias",
+        "flat_index": 9,
+        "actual_score_gradient": 178.86807427427826,
+        "fixed_action_finite_difference": 178.86807432129592
+      },
+      {
+        "stage": "emission",
+        "parameter": "pixel_decoder.2.bias",
+        "flat_index": 990,
+        "actual_score_gradient": -171.86664383681202,
+        "fixed_action_finite_difference": -171.86664386675452
+      },
+      {
+        "stage": "encoder",
+        "parameter": "pixel_encoder.5.bias",
+        "flat_index": 14,
+        "actual_score_gradient": -2492.6305946633643,
+        "fixed_action_finite_difference": -2492.6305946034213
+      }
+    ],
+    "latent_tokens_including_BOS": 8,
+    "default_and_explicit_stochastic_deployment_match": true
+  },
+  "source_sha256": {
+    "fullpath_model.py": "4146d5348b5090f7f80a69d7fb965ec1f6275b6254e4ca10d453a676aa2878cc",
+    "fullpath_lax.py": "2be7aad2a765b4e0e386fb329daad20e7d4182f789f6c03cb9c715fa952fa2bd",
+    "fullpath_oracle.py": "b0ec2b3a706241d81449b3a6c16dbccb3d9dc234c2a9fca14648d3b0c825efb3"
+  },
+  "scope": "independent mathematical/production primitive check; not capability, optimization or runtime-cost evidence",
+  "reference": "https://arxiv.org/abs/1711.00123"
+}

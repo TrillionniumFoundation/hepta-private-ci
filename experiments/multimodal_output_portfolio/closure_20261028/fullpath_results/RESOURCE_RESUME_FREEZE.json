@@ -1,0 +1,50 @@
+{
+  "approximate_optimizer_resume": false,
+  "completed_arms": [
+    {
+      "arm": "lax_mean",
+      "seed": 17,
+      "selection_record": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001/seed-17-lax_mean/validation/SELECTION.json",
+      "selection_record_sha256": "c8aa631bf0205108412b90c8adc40333df236705b14ee37ae1dccf7ed49eeae9",
+      "training_record": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001/seed-17-lax_mean/TRAINING.json",
+      "training_record_sha256": "d0f77db7755ab2413cd31a285bcd0027529fc7bb05d47202e491fbc92e356234"
+    },
+    {
+      "arm": "lax_risk",
+      "seed": 17,
+      "selection_record": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001/seed-17-lax_risk/validation/SELECTION.json",
+      "selection_record_sha256": "cae5157170bb73cd38fbd2c320f4cab7ab934c440526ef7657987e303b7e6d51",
+      "training_record": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001/seed-17-lax_risk/TRAINING.json",
+      "training_record_sha256": "f0d30515c44bebc0e918f88e14e34b8f6ce42e1ed9d3c9b1c59e90e5e711240b"
+    }
+  ],
+  "hyperparameter_objective_source_and_gate_changes": false,
+  "interrupted_partial_next_arm": "preserved as resource-interrupted overhead; never promoted or counted as a completed model path",
+  "new_effective_optimizer_steps": 4096,
+  "original_development": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001",
+  "original_interruption_sha256": "e9cc3f7df54de7d97d450be6db4507908c7e9f4221c35ab0617e87ba79762548",
+  "qualification_predictions": 0,
+  "remaining_arms": [
+    [
+      29,
+      "lax_mean"
+    ],
+    [
+      29,
+      "lax_risk"
+    ],
+    [
+      43,
+      "lax_mean"
+    ],
+    [
+      43,
+      "lax_risk"
+    ]
+  ],
+  "resource_pause": "an external PAUSE_AFTER_ARM file requests a normal return only after a complete saved arm",
+  "resume_retrains_completed_arms": false,
+  "schema": "hepta.ndu.fullpath-complete-arm-resume.v1",
+  "source_allocation_sha256": "1fa0fe6e5140f72c70c0129adfbe609a14c25a6255485608ad0a3d4e9b511b93",
+  "total_effective_optimizer_steps": 6144
+}

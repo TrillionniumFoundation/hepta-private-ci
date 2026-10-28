@@ -1,0 +1,431 @@
+[
+  {
+    "arm": "lax_mean",
+    "audit_observer_used": false,
+    "candidates": [
+      {
+        "deterministic": true,
+        "eligible": true,
+        "path": null,
+        "quality_ce": 0.7942405032547595,
+        "retention_ce": 0.8819427856419054,
+        "stage": "prior_greedy"
+      },
+      {
+        "deterministic": false,
+        "eligible": false,
+        "path": null,
+        "quality_ce": 0.7942035107342037,
+        "retention_ce": 0.8631956157828816,
+        "stage": "prior_stochastic"
+      },
+      {
+        "checkpoint_sha256": "0b35a33aac7a5be7370878e0c9662c92ff934e6a82e06e635f1022b0d69d036a",
+        "deterministic": false,
+        "eligible": false,
+        "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001/seed-17-lax_mean/transition.pt",
+        "quality_ce": 0.7990342772914105,
+        "retention_ce": 0.8587912513838046,
+        "stage": "transition"
+      },
+      {
+        "checkpoint_sha256": "82602eaebfcdcc89df9d211ddf25e1ba900112d453a5623c989b9e2d24943daf",
+        "deterministic": false,
+        "eligible": false,
+        "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001/seed-17-lax_mean/adapter.pt",
+        "quality_ce": 0.7970949195457555,
+        "retention_ce": 0.8631838982940784,
+        "stage": "adapter"
+      },
+      {
+        "checkpoint_sha256": "c58efe41d0488a7e6581120d4f9054ed23ae66cce3a22c05d6f0b0fb836f0f3e",
+        "deterministic": false,
+        "eligible": true,
+        "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001/seed-17-lax_mean/emission.pt",
+        "quality_ce": 0.8107024711938844,
+        "retention_ce": 0.8809885111192741,
+        "stage": "emission"
+      },
+      {
+        "checkpoint_sha256": "8ba8b3ddee4176f42b1c0b432006b39285a86b7616a845c91e9b371ef6328603",
+        "deterministic": false,
+        "eligible": true,
+        "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001/seed-17-lax_mean/encoder.pt",
+        "quality_ce": 0.8175894309446742,
+        "retention_ce": 0.8873494607195759,
+        "stage": "encoder"
+      }
+    ],
+    "primary_profile_sha256": "797184c42f56386af8de9f5b973d224953dce27798450eecf1ce5cd264682626",
+    "qualification_used": false,
+    "retention_constraint": "actual primary observer CE >= exact strong prior CE - .005",
+    "seed": 17,
+    "selected": {
+      "checkpoint_sha256": "8ba8b3ddee4176f42b1c0b432006b39285a86b7616a845c91e9b371ef6328603",
+      "deterministic": false,
+      "eligible": true,
+      "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001/seed-17-lax_mean/encoder.pt",
+      "quality_ce": 0.8175894309446742,
+      "retention_ce": 0.8873494607195759,
+      "stage": "encoder"
+    },
+    "training_profile_sha256": "f6c5358c231d8d59051e4d9da40b649bbb168813572fb83398a1984f62b8ef8c"
+  },
+  {
+    "arm": "lax_risk",
+    "audit_observer_used": false,
+    "candidates": [
+      {
+        "deterministic": true,
+        "eligible": true,
+        "path": null,
+        "quality_ce": 0.7942405032547595,
+        "retention_ce": 0.8819427856419054,
+        "stage": "prior_greedy"
+      },
+      {
+        "deterministic": false,
+        "eligible": false,
+        "path": null,
+        "quality_ce": 0.7942035107342037,
+        "retention_ce": 0.8631956157828816,
+        "stage": "prior_stochastic"
+      },
+      {
+        "checkpoint_sha256": "8fb36cb67dbd28706b50f63f751173630cc0ac192a2fd9061abbbf628befbd8d",
+        "deterministic": false,
+        "eligible": false,
+        "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001/seed-17-lax_risk/transition.pt",
+        "quality_ce": 0.7990338116788122,
+        "retention_ce": 0.8632005811939208,
+        "stage": "transition"
+      },
+      {
+        "checkpoint_sha256": "fb68ee29b2137209254bc41e9c01a5f9f2d9c37f95eefa5777430d52248def50",
+        "deterministic": false,
+        "eligible": false,
+        "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001/seed-17-lax_risk/adapter.pt",
+        "quality_ce": 0.7989162995026517,
+        "retention_ce": 0.8631925153528988,
+        "stage": "adapter"
+      },
+      {
+        "checkpoint_sha256": "f715a90a2eaaa420eb64fbe6ced4944798061b17e8ca63e8dcf0cd4dd89f7044",
+        "deterministic": false,
+        "eligible": false,
+        "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001/seed-17-lax_risk/emission.pt",
+        "quality_ce": 0.7993168561885239,
+        "retention_ce": 0.8675400197058586,
+        "stage": "emission"
+      },
+      {
+        "checkpoint_sha256": "c98b7826ba0044bc15f09a14a36b33e03ad6a217f4dbd05ef2a622e0aa6debf1",
+        "deterministic": false,
+        "eligible": true,
+        "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001/seed-17-lax_risk/encoder.pt",
+        "quality_ce": 0.8009775005686361,
+        "retention_ce": 0.9077351825694396,
+        "stage": "encoder"
+      }
+    ],
+    "primary_profile_sha256": "797184c42f56386af8de9f5b973d224953dce27798450eecf1ce5cd264682626",
+    "qualification_used": false,
+    "retention_constraint": "actual primary observer CE >= exact strong prior CE - .005",
+    "seed": 17,
+    "selected": {
+      "checkpoint_sha256": "c98b7826ba0044bc15f09a14a36b33e03ad6a217f4dbd05ef2a622e0aa6debf1",
+      "deterministic": false,
+      "eligible": true,
+      "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001/seed-17-lax_risk/encoder.pt",
+      "quality_ce": 0.8009775005686361,
+      "retention_ce": 0.9077351825694396,
+      "stage": "encoder"
+    },
+    "training_profile_sha256": "797184c42f56386af8de9f5b973d224953dce27798450eecf1ce5cd264682626"
+  },
+  {
+    "arm": "lax_mean",
+    "audit_observer_used": false,
+    "candidates": [
+      {
+        "deterministic": true,
+        "eligible": true,
+        "path": null,
+        "quality_ce": 0.8500426720639798,
+        "retention_ce": 0.8665961115546477,
+        "stage": "prior_greedy"
+      },
+      {
+        "deterministic": false,
+        "eligible": true,
+        "path": null,
+        "quality_ce": 0.8460997726596388,
+        "retention_ce": 0.8665953074511047,
+        "stage": "prior_stochastic"
+      },
+      {
+        "checkpoint_sha256": "6cb35191bfaff28571b01a8a1d34ae41f1d8f922350b2faac9b6537d79de3685",
+        "deterministic": false,
+        "eligible": true,
+        "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-29-lax_mean/transition.pt",
+        "quality_ce": 0.8460981082437707,
+        "retention_ce": 0.8665903705285746,
+        "stage": "transition"
+      },
+      {
+        "checkpoint_sha256": "80d86841947e66ae27a6022bfe95df931b3f924ecb5bc59057094d99656e430b",
+        "deterministic": false,
+        "eligible": true,
+        "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-29-lax_mean/adapter.pt",
+        "quality_ce": 0.8396737939239225,
+        "retention_ce": 0.8665883340489857,
+        "stage": "adapter"
+      },
+      {
+        "checkpoint_sha256": "01c9534bd48cefd6c16f6a5a2e26013607f9dbf65613e246087b731f4a74dc9a",
+        "deterministic": false,
+        "eligible": false,
+        "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-29-lax_mean/emission.pt",
+        "quality_ce": 0.8329752109462661,
+        "retention_ce": 0.8483937916942071,
+        "stage": "emission"
+      },
+      {
+        "checkpoint_sha256": "091a418d270751a118b9fdd0f7fe10cd477dd58ee6163504e056367b69cae934",
+        "deterministic": false,
+        "eligible": false,
+        "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-29-lax_mean/encoder.pt",
+        "quality_ce": 0.8091824724562177,
+        "retention_ce": 0.8145695968342641,
+        "stage": "encoder"
+      }
+    ],
+    "primary_profile_sha256": "797184c42f56386af8de9f5b973d224953dce27798450eecf1ce5cd264682626",
+    "qualification_used": false,
+    "retention_constraint": "actual primary observer CE >= exact strong prior CE - .005",
+    "seed": 29,
+    "selected": {
+      "deterministic": true,
+      "eligible": true,
+      "path": null,
+      "quality_ce": 0.8500426720639798,
+      "retention_ce": 0.8665961115546477,
+      "stage": "prior_greedy"
+    },
+    "training_profile_sha256": "f6c5358c231d8d59051e4d9da40b649bbb168813572fb83398a1984f62b8ef8c"
+  },
+  {
+    "arm": "lax_risk",
+    "audit_observer_used": false,
+    "candidates": [
+      {
+        "deterministic": true,
+        "eligible": true,
+        "path": null,
+        "quality_ce": 0.8500426720639798,
+        "retention_ce": 0.8665961115546477,
+        "stage": "prior_greedy"
+      },
+      {
+        "deterministic": false,
+        "eligible": true,
+        "path": null,
+        "quality_ce": 0.8460997726596388,
+        "retention_ce": 0.8665953074511047,
+        "stage": "prior_stochastic"
+      },
+      {
+        "checkpoint_sha256": "dc7a99469d5be90a84b60cb8343799fcac3d6d11186fb7188419b56bec667eba",
+        "deterministic": false,
+        "eligible": true,
+        "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-29-lax_risk/transition.pt",
+        "quality_ce": 0.8460970943357042,
+        "retention_ce": 0.8665931347616489,
+        "stage": "transition"
+      },
+      {
+        "checkpoint_sha256": "248294951a608baa3af0e8d2fc7dca0ae548fb6b9536028a447dd4e2faca430f",
+        "deterministic": false,
+        "eligible": true,
+        "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-29-lax_risk/adapter.pt",
+        "quality_ce": 0.8405891859146686,
+        "retention_ce": 0.8665809789251402,
+        "stage": "adapter"
+      },
+      {
+        "checkpoint_sha256": "1c51c96915b9ece4df0dab6f90dc890ad044de1d166ffeba269eaf38d7272f17",
+        "deterministic": false,
+        "eligible": false,
+        "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-29-lax_risk/emission.pt",
+        "quality_ce": 0.8406170446344565,
+        "retention_ce": 0.84838489526959,
+        "stage": "emission"
+      },
+      {
+        "checkpoint_sha256": "1adeae7e7aa129a244b7760d5d2d753dcdeb0590535929a859dc42f6741f509e",
+        "deterministic": false,
+        "eligible": false,
+        "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-29-lax_risk/encoder.pt",
+        "quality_ce": 0.839634842996711,
+        "retention_ce": 0.8098864007110751,
+        "stage": "encoder"
+      }
+    ],
+    "primary_profile_sha256": "797184c42f56386af8de9f5b973d224953dce27798450eecf1ce5cd264682626",
+    "qualification_used": false,
+    "retention_constraint": "actual primary observer CE >= exact strong prior CE - .005",
+    "seed": 29,
+    "selected": {
+      "deterministic": true,
+      "eligible": true,
+      "path": null,
+      "quality_ce": 0.8500426720639798,
+      "retention_ce": 0.8665961115546477,
+      "stage": "prior_greedy"
+    },
+    "training_profile_sha256": "797184c42f56386af8de9f5b973d224953dce27798450eecf1ce5cd264682626"
+  },
+  {
+    "arm": "lax_mean",
+    "audit_observer_used": false,
+    "candidates": [
+      {
+        "deterministic": true,
+        "eligible": true,
+        "path": null,
+        "quality_ce": 0.8116653914979941,
+        "retention_ce": 0.8848193545593894,
+        "stage": "prior_greedy"
+      },
+      {
+        "deterministic": false,
+        "eligible": true,
+        "path": null,
+        "quality_ce": 0.8098177514737396,
+        "retention_ce": 0.8848163969944564,
+        "stage": "prior_stochastic"
+      },
+      {
+        "checkpoint_sha256": "54f7cba9cd0dbb52a962e8f5bb1877c35aba1831d0fd6833da9cde3036fa8c26",
+        "deterministic": false,
+        "eligible": true,
+        "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-43-lax_mean/transition.pt",
+        "quality_ce": 0.8098216664604454,
+        "retention_ce": 0.8848205795317562,
+        "stage": "transition"
+      },
+      {
+        "checkpoint_sha256": "06af432d998513a23c0a49fab8f45a6c758c0b2220ffde465dfe03cbadd21ac2",
+        "deterministic": false,
+        "eligible": true,
+        "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-43-lax_mean/adapter.pt",
+        "quality_ce": 0.8116929337139333,
+        "retention_ce": 0.8848227461792049,
+        "stage": "adapter"
+      },
+      {
+        "checkpoint_sha256": "2878c59af384e5ea7e18b06bd7a811156b7391e4e430625ab0293be181ef5708",
+        "deterministic": false,
+        "eligible": true,
+        "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-43-lax_mean/emission.pt",
+        "quality_ce": 0.8099504357533532,
+        "retention_ce": 0.8912608571422257,
+        "stage": "emission"
+      },
+      {
+        "checkpoint_sha256": "69abd3ef789b429dffc7e2fe31028584640a551ad57e7b1ed476fa464c2d8b19",
+        "deterministic": false,
+        "eligible": true,
+        "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-43-lax_mean/encoder.pt",
+        "quality_ce": 0.7919394820092482,
+        "retention_ce": 0.8951037397014265,
+        "stage": "encoder"
+      }
+    ],
+    "primary_profile_sha256": "797184c42f56386af8de9f5b973d224953dce27798450eecf1ce5cd264682626",
+    "qualification_used": false,
+    "retention_constraint": "actual primary observer CE >= exact strong prior CE - .005",
+    "seed": 43,
+    "selected": {
+      "checkpoint_sha256": "06af432d998513a23c0a49fab8f45a6c758c0b2220ffde465dfe03cbadd21ac2",
+      "deterministic": false,
+      "eligible": true,
+      "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-43-lax_mean/adapter.pt",
+      "quality_ce": 0.8116929337139333,
+      "retention_ce": 0.8848227461792049,
+      "stage": "adapter"
+    },
+    "training_profile_sha256": "f6c5358c231d8d59051e4d9da40b649bbb168813572fb83398a1984f62b8ef8c"
+  },
+  {
+    "arm": "lax_risk",
+    "audit_observer_used": false,
+    "candidates": [
+      {
+        "deterministic": true,
+        "eligible": true,
+        "path": null,
+        "quality_ce": 0.8116653914979941,
+        "retention_ce": 0.8848193545593894,
+        "stage": "prior_greedy"
+      },
+      {
+        "deterministic": false,
+        "eligible": true,
+        "path": null,
+        "quality_ce": 0.8098177514737396,
+        "retention_ce": 0.8848163969944564,
+        "stage": "prior_stochastic"
+      },
+      {
+        "checkpoint_sha256": "c860f360322ab96c71ca00f24d7c9491a813ffaa3a29c21f213bc39ba5225914",
+        "deterministic": false,
+        "eligible": true,
+        "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-43-lax_risk/transition.pt",
+        "quality_ce": 0.8098229089565532,
+        "retention_ce": 0.8802619014148417,
+        "stage": "transition"
+      },
+      {
+        "checkpoint_sha256": "31becc93f7eca169e8525305c31bd999d9901190ff3d4b6075df4607d84d1d50",
+        "deterministic": false,
+        "eligible": true,
+        "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-43-lax_risk/adapter.pt",
+        "quality_ce": 0.8087052861027468,
+        "retention_ce": 0.8848190622644837,
+        "stage": "adapter"
+      },
+      {
+        "checkpoint_sha256": "1dd35d15e02ac18036b09cca938e8752303cfa5d3179aaedf09cc49096936d3d",
+        "deterministic": false,
+        "eligible": true,
+        "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-43-lax_risk/emission.pt",
+        "quality_ce": 0.8111233012441025,
+        "retention_ce": 0.8912580819072096,
+        "stage": "emission"
+      },
+      {
+        "checkpoint_sha256": "ca7f6155ae7d793ce322b3245e69cdb26565c149f13f5dc41cd17a9e54b3aea6",
+        "deterministic": false,
+        "eligible": true,
+        "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-43-lax_risk/encoder.pt",
+        "quality_ce": 0.8055876279461569,
+        "retention_ce": 0.9109832660517522,
+        "stage": "encoder"
+      }
+    ],
+    "primary_profile_sha256": "797184c42f56386af8de9f5b973d224953dce27798450eecf1ce5cd264682626",
+    "qualification_used": false,
+    "retention_constraint": "actual primary observer CE >= exact strong prior CE - .005",
+    "seed": 43,
+    "selected": {
+      "deterministic": true,
+      "eligible": true,
+      "path": null,
+      "quality_ce": 0.8116653914979941,
+      "retention_ce": 0.8848193545593894,
+      "stage": "prior_greedy"
+    },
+    "training_profile_sha256": "797184c42f56386af8de9f5b973d224953dce27798450eecf1ce5cd264682626"
+  }
+]

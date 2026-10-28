@@ -1,0 +1,32 @@
+{
+  "allocated_bytes_to_release": 195571712,
+  "archive_index_sha256": "d118528a435592794786cfe26ed9e9dea08b581e20f47d4a2bf499a6d6314899",
+  "logical_bytes_to_release": 194963762,
+  "phase_payload_bytes": 195202728,
+  "phase_payload_files": 189,
+  "preserve": [
+    "entire repository research code and compact fullpath_results/control_results",
+    "canonical fullpath_results/SOURCE_ALLOCATION.json and qualification status",
+    "all natural-task directories/assets",
+    "all historical assets and strong prior checkpoint",
+    "all durable archive copies"
+  ],
+  "release_only": [
+    {
+      "allocated_bytes": 65339392,
+      "directory": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001",
+      "exact_file_set_and_hashes_match_archive_index": true,
+      "files": 90,
+      "logical_bytes": 65027283
+    },
+    {
+      "allocated_bytes": 130232320,
+      "directory": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002",
+      "exact_file_set_and_hashes_match_archive_index": true,
+      "files": 70,
+      "logical_bytes": 129936479
+    }
+  ],
+  "schema": "hepta.ndu.fullpath.raw-release-plan.v1",
+  "status": "awaiting part05 durable receipt and parent directory confirmation; no raw deleted"
+}

@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.ndu.operational-process-tree-budget.v1",
+  "protocol": {
+    "command": [
+      "python",
+      "experiments/multimodal_output_portfolio/closure_20261028/control_supervisor_fixture.py",
+      "complete"
+    ],
+    "cpu_budget_seconds": 0.5,
+    "wall_budget_seconds": 5.0,
+    "poll_seconds": 0.005,
+    "per_process_hard_CPU_seconds": 2,
+    "per_file_bytes": 16777216,
+    "kill_scope": "new job session plus adopted job descendants",
+    "finite_cost_support_claim": false,
+    "environment_probe": {
+      "platform": "Linux",
+      "clock_ticks_per_second": 100,
+      "cgroup_root_writable": false,
+      "own_cgroup_membership": "0::/",
+      "shared_cgroup_cpu_is_not_episode_cpu": true,
+      "RLIMIT_CPU_scope": "each process independently, including independently inherited child limits",
+      "finite_total_cpu_support_proved": false,
+      "references": [
+        "https://man7.org/linux/man-pages/man2/getrlimit.2.html",
+        "https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v2.html",
+        "https://man7.org/linux/man-pages/man2/PR_SET_CHILD_SUBREAPER.2const.html"
+      ]
+    }
+  },
+  "job_pid": 1029730,
+  "job_returncode": 0,
+  "kill_reason": null,
+  "observed_tree_cpu_peak_seconds": 0.185822,
+  "actual_reaped_tree_cpu_seconds": 0.185822,
+  "supervisor_cpu_seconds": 0.088546,
+  "complete_cpu_seconds": 0.274368,
+  "cumulative_waited_child_cpu_seconds": 0.185822,
+  "wait4_sum_vs_cumulative_delta_seconds": 0.0,
+  "child_accounting_reconciles_within_microsecond_rounding": true,
+  "uncapped_cpu_overshoot_seconds": 0.0,
+  "actual_wall_seconds": 0.11183794499811484,
+  "reaped": [
+    {
+      "pid": 1029730,
+      "exit_status": 0,
+      "cpu_seconds": 0.185822,
+      "own_and_waited_descendant_usage": true
+    }
+  ],
+  "remaining_known_pids": [],
+  "all_job_descendants_reaped": true,
+  "physical_accounting_complete": true,
+  "finite_future_cpu_support_proved": false,
+  "full_episode_integration": false,
+  "scope": "actual operational job cleanup/accounting test; not an NDU certificate or a capability gain"
+}
