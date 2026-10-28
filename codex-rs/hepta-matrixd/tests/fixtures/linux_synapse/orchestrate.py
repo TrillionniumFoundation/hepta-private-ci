@@ -7,6 +7,7 @@ import shutil
 import sys
 
 from .commands import Commands
+from .dependencies import SEED_SCHEMA
 from .contract import (
     ENTRY,
     PROXY,
@@ -179,7 +180,7 @@ def run(args):
         copy_file(Path(args.seed_ledger), plan_dir / "SEED_LEDGER.json")
         seed_identity = read_json(plan_dir / "SEED_LEDGER.json")
         if (
-            seed_identity["schema"] != "hepta.synapse.linux.seed.v1"
+            seed_identity["schema"] != SEED_SCHEMA
             or seed_identity["producer_result_sha256"]
             != source["producer_result_sha256"]
             or seed_identity["candidate_tree"] != source["candidate_tree"]

@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "unittest",
+    "linux_synapse.test_dependencies",
+    "linux_synapse.test_boundaries"
+  ],
+  "cwd": "codex-rs/hepta-matrixd/tests/fixtures",
+  "exit_code": 0,
+  "log_sha256": "0ca1cc8eccfda8dbb316b5912de8296630c3e49dbe2d3900a59a8350407509f1",
+  "execution_scope": "Actual temporary-file, process and symlink regression fixtures; not native Synapse qualification.",
+  "new_peer_review_regression": "file/. must fail actual kernel ENOTDIR and inventory; legal .././LICENSE remains exact and readable."
+}

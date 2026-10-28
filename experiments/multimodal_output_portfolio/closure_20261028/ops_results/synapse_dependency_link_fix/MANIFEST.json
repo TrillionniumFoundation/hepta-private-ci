@@ -1,0 +1,79 @@
+{
+  "schema": "hepta.synapse.dependency-link-fix-publish.v1",
+  "baseline_head": "792beb14600f9b49b04ed18f9061e11d0e163759",
+  "files": {
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/dependencies.py": {
+      "mode": "100644",
+      "bytes": 4587,
+      "sha256": "1c3a5bd68be6c52284aa43c3b845016322f4ea05d817a205de5db8377ad55253",
+      "base_sha256": null
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/test_dependencies.py": {
+      "mode": "100644",
+      "bytes": 8309,
+      "sha256": "065c8310b884eaefe5d02e3cdd13e2eaf357b22d54cfbb8ea0eee3a03372c56e",
+      "base_sha256": null
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/inputs.py": {
+      "mode": "100644",
+      "bytes": 8524,
+      "sha256": "8913e2b0ce0adbeb2eecd5ee2a2886d8ebdcac63258b4ca31100d535ad996b5b",
+      "base_sha256": "74c0456585275c8145c51e413c1bae4624c39f90b58eea7e025cbd7aef557215"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/prep_inside.py": {
+      "mode": "100644",
+      "bytes": 7349,
+      "sha256": "628a862f5689b5adb9f00ae48ba778c4a5be014f5a69fcd4d54a82a16b7d5c22",
+      "base_sha256": "37a5a21e06a547c2954d243d9d34362780faaace700485102038e7d97f43fb5e"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/orchestrate.py": {
+      "mode": "100644",
+      "bytes": 17088,
+      "sha256": "302b28770109a41e2ed445a52e07bf0aea3a69e7bcff59b70570d0b0a16b7f16",
+      "base_sha256": "2d42626d3a78c4a37a90f9bb6425da4fc11c12fa0814f6662fafea9fe812daed"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/build.py": {
+      "mode": "100644",
+      "bytes": 11715,
+      "sha256": "1ae633b7e5acee268d11cfe84ae0495c07a1e1d5f77db8cc23a9ff70bbd9bffa",
+      "base_sha256": "1daaab491e194b9f47c82ef51aea42a55e7da805d36c9d5f0b161ca1a1776796"
+    }
+  },
+  "evidence_files": {
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_results/synapse_dependency_link_fix/CODESPELL.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_results/synapse_dependency_link_fix/CODESPELL_BASE_PYTHON_ATTEMPT.log": {
+      "bytes": 101,
+      "sha256": "2c32b7495996d60c964e7ecd3df1f9b98f849662b154a8dfe1fa68f956223489"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_results/synapse_dependency_link_fix/DIFF_CHECK.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_results/synapse_dependency_link_fix/README.md": {
+      "bytes": 1582,
+      "sha256": "a9c3e417e5ab6c7d2dce3de144afed2df3fbfe14ead747adaee97ec63a57ad6c"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_results/synapse_dependency_link_fix/REVIEW.json": {
+      "bytes": 2662,
+      "sha256": "0f5e51a1e04aa75d22cdc9b7e0966e86705c10c9f0a03e56256ed55ef8419de8"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_results/synapse_dependency_link_fix/STDLIB_TESTS.json": {
+      "bytes": 615,
+      "sha256": "4939e36d140907fac5d9ebbf5507b6ff7ead8958845ba3a0ef7eb5c88590d6e6"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_results/synapse_dependency_link_fix/STDLIB_TESTS.log": {
+      "bytes": 120,
+      "sha256": "0ca1cc8eccfda8dbb316b5912de8296630c3e49dbe2d3900a59a8350407509f1"
+    }
+  },
+  "ownership_excludes": [
+    "linux_synapse/source.py",
+    "linux_synapse/test_restore.py",
+    "scripts/ndu_port_candidate_common.py",
+    "all native-tail formatting/source amendment files"
+  ],
+  "native_qualification": false
+}

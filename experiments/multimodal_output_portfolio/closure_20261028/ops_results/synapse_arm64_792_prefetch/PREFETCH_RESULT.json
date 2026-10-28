@@ -1,0 +1,437 @@
+{
+  "candidate_tree": "1fc4042c047ae66720ad4c56adeb23a9bc9e679b",
+  "commands": [
+    {
+      "arguments": [
+        "rev-parse",
+        "HEAD"
+      ],
+      "child_cpu_seconds": 0.001232999999999998,
+      "cost_scope": "direct command and children; Docker client CPU excludes daemon/container CPU",
+      "cwd": "/home/runner/work/_temp/ndu-native-synapse-worktrees/preparation",
+      "environment": {
+        "AR": "/usr/bin/aarch64-linux-gnu-ar",
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_BUILD_TARGET": "aarch64-unknown-linux-gnu",
+        "CARGO_HOME": "/hepta-prefetch/cargo-home",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_NET_OFFLINE": "true",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "CARGO_TERM_COLOR": "never",
+        "CC": "/usr/bin/aarch64-linux-gnu-gcc-12",
+        "CMAKE": "/usr/bin/cmake",
+        "CXX": "/usr/bin/aarch64-linux-gnu-g++-12",
+        "GIT_CONFIG_GLOBAL": "/dev/null",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_OPTIONAL_LOCKS": "0",
+        "HOME": "/hepta-prefetch/home",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "MAKE": "/usr/bin/make",
+        "PATH": "/hepta-prefetch/closed-bin",
+        "PKG_CONFIG": "/usr/bin/pkgconf",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "RANLIB": "/usr/bin/aarch64-linux-gnu-ranlib",
+        "RUSTC": "/usr/local/rustup/toolchains/1.96.0-aarch64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/usr/local/rustup/toolchains/1.96.0-aarch64-unknown-linux-gnu/bin/rustdoc",
+        "TMPDIR": "/hepta-prefetch/tmp",
+        "TZ": "UTC"
+      },
+      "executable": {
+        "bytes": 3756992,
+        "path": "/usr/bin/git",
+        "sha256": "54af380ba6ca1b36305358e99427a31ae4b0af5dc5cb6d0198c6f2f16e97651d"
+      },
+      "executable_unchanged": true,
+      "exit_code": 0,
+      "started_at": "2026-10-28T11:08:54.832444+00:00",
+      "stderr": {
+        "bytes": 0,
+        "path": "000-source-identity.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin": "none",
+      "stdout": {
+        "bytes": 41,
+        "path": "000-source-identity.stdout",
+        "sha256": "ee27d665c54be64fcc0d457ab3407bcb2ff6fd9593ce6391b74f24fddd51d391"
+      },
+      "timeout_seconds": null,
+      "tool": "git",
+      "wall_seconds": 0.0018691939999939677
+    },
+    {
+      "arguments": [
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "child_cpu_seconds": 0.001469999999999999,
+      "cost_scope": "direct command and children; Docker client CPU excludes daemon/container CPU",
+      "cwd": "/home/runner/work/_temp/ndu-native-synapse-worktrees/preparation",
+      "environment": {
+        "AR": "/usr/bin/aarch64-linux-gnu-ar",
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_BUILD_TARGET": "aarch64-unknown-linux-gnu",
+        "CARGO_HOME": "/hepta-prefetch/cargo-home",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_NET_OFFLINE": "true",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "CARGO_TERM_COLOR": "never",
+        "CC": "/usr/bin/aarch64-linux-gnu-gcc-12",
+        "CMAKE": "/usr/bin/cmake",
+        "CXX": "/usr/bin/aarch64-linux-gnu-g++-12",
+        "GIT_CONFIG_GLOBAL": "/dev/null",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_OPTIONAL_LOCKS": "0",
+        "HOME": "/hepta-prefetch/home",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "MAKE": "/usr/bin/make",
+        "PATH": "/hepta-prefetch/closed-bin",
+        "PKG_CONFIG": "/usr/bin/pkgconf",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "RANLIB": "/usr/bin/aarch64-linux-gnu-ranlib",
+        "RUSTC": "/usr/local/rustup/toolchains/1.96.0-aarch64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/usr/local/rustup/toolchains/1.96.0-aarch64-unknown-linux-gnu/bin/rustdoc",
+        "TMPDIR": "/hepta-prefetch/tmp",
+        "TZ": "UTC"
+      },
+      "executable": {
+        "bytes": 3756992,
+        "path": "/usr/bin/git",
+        "sha256": "54af380ba6ca1b36305358e99427a31ae4b0af5dc5cb6d0198c6f2f16e97651d"
+      },
+      "executable_unchanged": true,
+      "exit_code": 0,
+      "started_at": "2026-10-28T11:08:54.840832+00:00",
+      "stderr": {
+        "bytes": 0,
+        "path": "001-source-identity.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin": "none",
+      "stdout": {
+        "bytes": 41,
+        "path": "001-source-identity.stdout",
+        "sha256": "bd0e013d918b2573faa5e8d970f491683cc98455d3d4118c8ac3a7804c1a0624"
+      },
+      "timeout_seconds": null,
+      "tool": "git",
+      "wall_seconds": 0.0020855580000045393
+    },
+    {
+      "arguments": [
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all",
+        "--ignored=matching"
+      ],
+      "child_cpu_seconds": 0.15205,
+      "cost_scope": "direct command and children; Docker client CPU excludes daemon/container CPU",
+      "cwd": "/home/runner/work/_temp/ndu-native-synapse-worktrees/preparation",
+      "environment": {
+        "AR": "/usr/bin/aarch64-linux-gnu-ar",
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_BUILD_TARGET": "aarch64-unknown-linux-gnu",
+        "CARGO_HOME": "/hepta-prefetch/cargo-home",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_NET_OFFLINE": "true",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "CARGO_TERM_COLOR": "never",
+        "CC": "/usr/bin/aarch64-linux-gnu-gcc-12",
+        "CMAKE": "/usr/bin/cmake",
+        "CXX": "/usr/bin/aarch64-linux-gnu-g++-12",
+        "GIT_CONFIG_GLOBAL": "/dev/null",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_OPTIONAL_LOCKS": "0",
+        "HOME": "/hepta-prefetch/home",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "MAKE": "/usr/bin/make",
+        "PATH": "/hepta-prefetch/closed-bin",
+        "PKG_CONFIG": "/usr/bin/pkgconf",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "RANLIB": "/usr/bin/aarch64-linux-gnu-ranlib",
+        "RUSTC": "/usr/local/rustup/toolchains/1.96.0-aarch64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/usr/local/rustup/toolchains/1.96.0-aarch64-unknown-linux-gnu/bin/rustdoc",
+        "TMPDIR": "/hepta-prefetch/tmp",
+        "TZ": "UTC"
+      },
+      "executable": {
+        "bytes": 3756992,
+        "path": "/usr/bin/git",
+        "sha256": "54af380ba6ca1b36305358e99427a31ae4b0af5dc5cb6d0198c6f2f16e97651d"
+      },
+      "executable_unchanged": true,
+      "exit_code": 0,
+      "started_at": "2026-10-28T11:08:54.849005+00:00",
+      "stderr": {
+        "bytes": 0,
+        "path": "002-source-clean.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin": "none",
+      "stdout": {
+        "bytes": 0,
+        "path": "002-source-clean.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timeout_seconds": null,
+      "tool": "git",
+      "wall_seconds": 0.12354632000000265
+    },
+    {
+      "arguments": [
+        "fetch",
+        "--manifest-path",
+        "/home/runner/work/_temp/ndu-native-synapse-worktrees/preparation/codex-rs/Cargo.toml",
+        "--locked"
+      ],
+      "child_cpu_seconds": 12.595403,
+      "cost_scope": "direct command and children; Docker client CPU excludes daemon/container CPU",
+      "cwd": "/home/runner/work/_temp/ndu-native-synapse-worktrees/preparation",
+      "environment": {
+        "AR": "/usr/bin/aarch64-linux-gnu-ar",
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_BUILD_TARGET": "aarch64-unknown-linux-gnu",
+        "CARGO_HOME": "/hepta-prefetch/cargo-home",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_NET_OFFLINE": "false",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "CARGO_TERM_COLOR": "never",
+        "CC": "/usr/bin/aarch64-linux-gnu-gcc-12",
+        "CMAKE": "/usr/bin/cmake",
+        "CXX": "/usr/bin/aarch64-linux-gnu-g++-12",
+        "GIT_CONFIG_GLOBAL": "/dev/null",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_OPTIONAL_LOCKS": "0",
+        "HOME": "/hepta-prefetch/home",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "MAKE": "/usr/bin/make",
+        "PATH": "/hepta-prefetch/closed-bin",
+        "PKG_CONFIG": "/usr/bin/pkgconf",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "RANLIB": "/usr/bin/aarch64-linux-gnu-ranlib",
+        "RUSTC": "/usr/local/rustup/toolchains/1.96.0-aarch64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/usr/local/rustup/toolchains/1.96.0-aarch64-unknown-linux-gnu/bin/rustdoc",
+        "TMPDIR": "/hepta-prefetch/tmp",
+        "TZ": "UTC"
+      },
+      "executable": {
+        "bytes": 41331560,
+        "path": "/usr/local/rustup/toolchains/1.96.0-aarch64-unknown-linux-gnu/bin/cargo",
+        "sha256": "7db170801729d4775347548ed5970b459844fc2f6b20798efb96f444b5b94fc3"
+      },
+      "executable_unchanged": true,
+      "exit_code": 0,
+      "started_at": "2026-10-28T11:08:55.004962+00:00",
+      "stderr": {
+        "bytes": 43421,
+        "path": "003-online-complete-locked-seed.stderr",
+        "sha256": "e392a0b2b22179f0321f563201540c6622632403c9267771bcba551c4854c0e3"
+      },
+      "stdin": "none",
+      "stdout": {
+        "bytes": 0,
+        "path": "003-online-complete-locked-seed.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timeout_seconds": null,
+      "tool": "cargo",
+      "wall_seconds": 15.05627416499999
+    },
+    {
+      "arguments": [
+        "rev-parse",
+        "HEAD"
+      ],
+      "child_cpu_seconds": 0.0012259999999990612,
+      "cost_scope": "direct command and children; Docker client CPU excludes daemon/container CPU",
+      "cwd": "/home/runner/work/_temp/ndu-native-synapse-worktrees/preparation",
+      "environment": {
+        "AR": "/usr/bin/aarch64-linux-gnu-ar",
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_BUILD_TARGET": "aarch64-unknown-linux-gnu",
+        "CARGO_HOME": "/hepta-prefetch/cargo-home",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_NET_OFFLINE": "true",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "CARGO_TERM_COLOR": "never",
+        "CC": "/usr/bin/aarch64-linux-gnu-gcc-12",
+        "CMAKE": "/usr/bin/cmake",
+        "CXX": "/usr/bin/aarch64-linux-gnu-g++-12",
+        "GIT_CONFIG_GLOBAL": "/dev/null",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_OPTIONAL_LOCKS": "0",
+        "HOME": "/hepta-prefetch/home",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "MAKE": "/usr/bin/make",
+        "PATH": "/hepta-prefetch/closed-bin",
+        "PKG_CONFIG": "/usr/bin/pkgconf",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "RANLIB": "/usr/bin/aarch64-linux-gnu-ranlib",
+        "RUSTC": "/usr/local/rustup/toolchains/1.96.0-aarch64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/usr/local/rustup/toolchains/1.96.0-aarch64-unknown-linux-gnu/bin/rustdoc",
+        "TMPDIR": "/hepta-prefetch/tmp",
+        "TZ": "UTC"
+      },
+      "executable": {
+        "bytes": 3756992,
+        "path": "/usr/bin/git",
+        "sha256": "54af380ba6ca1b36305358e99427a31ae4b0af5dc5cb6d0198c6f2f16e97651d"
+      },
+      "executable_unchanged": true,
+      "exit_code": 0,
+      "started_at": "2026-10-28T11:09:10.103225+00:00",
+      "stderr": {
+        "bytes": 0,
+        "path": "004-source-identity.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin": "none",
+      "stdout": {
+        "bytes": 41,
+        "path": "004-source-identity.stdout",
+        "sha256": "ee27d665c54be64fcc0d457ab3407bcb2ff6fd9593ce6391b74f24fddd51d391"
+      },
+      "timeout_seconds": null,
+      "tool": "git",
+      "wall_seconds": 0.0017041149999954541
+    },
+    {
+      "arguments": [
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "child_cpu_seconds": 0.0013519999999997978,
+      "cost_scope": "direct command and children; Docker client CPU excludes daemon/container CPU",
+      "cwd": "/home/runner/work/_temp/ndu-native-synapse-worktrees/preparation",
+      "environment": {
+        "AR": "/usr/bin/aarch64-linux-gnu-ar",
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_BUILD_TARGET": "aarch64-unknown-linux-gnu",
+        "CARGO_HOME": "/hepta-prefetch/cargo-home",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_NET_OFFLINE": "true",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "CARGO_TERM_COLOR": "never",
+        "CC": "/usr/bin/aarch64-linux-gnu-gcc-12",
+        "CMAKE": "/usr/bin/cmake",
+        "CXX": "/usr/bin/aarch64-linux-gnu-g++-12",
+        "GIT_CONFIG_GLOBAL": "/dev/null",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_OPTIONAL_LOCKS": "0",
+        "HOME": "/hepta-prefetch/home",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "MAKE": "/usr/bin/make",
+        "PATH": "/hepta-prefetch/closed-bin",
+        "PKG_CONFIG": "/usr/bin/pkgconf",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "RANLIB": "/usr/bin/aarch64-linux-gnu-ranlib",
+        "RUSTC": "/usr/local/rustup/toolchains/1.96.0-aarch64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/usr/local/rustup/toolchains/1.96.0-aarch64-unknown-linux-gnu/bin/rustdoc",
+        "TMPDIR": "/hepta-prefetch/tmp",
+        "TZ": "UTC"
+      },
+      "executable": {
+        "bytes": 3756992,
+        "path": "/usr/bin/git",
+        "sha256": "54af380ba6ca1b36305358e99427a31ae4b0af5dc5cb6d0198c6f2f16e97651d"
+      },
+      "executable_unchanged": true,
+      "exit_code": 0,
+      "started_at": "2026-10-28T11:09:10.111108+00:00",
+      "stderr": {
+        "bytes": 0,
+        "path": "005-source-identity.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin": "none",
+      "stdout": {
+        "bytes": 41,
+        "path": "005-source-identity.stdout",
+        "sha256": "bd0e013d918b2573faa5e8d970f491683cc98455d3d4118c8ac3a7804c1a0624"
+      },
+      "timeout_seconds": null,
+      "tool": "git",
+      "wall_seconds": 0.0017984480000166059
+    },
+    {
+      "arguments": [
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all",
+        "--ignored=matching"
+      ],
+      "child_cpu_seconds": 0.15130599999999994,
+      "cost_scope": "direct command and children; Docker client CPU excludes daemon/container CPU",
+      "cwd": "/home/runner/work/_temp/ndu-native-synapse-worktrees/preparation",
+      "environment": {
+        "AR": "/usr/bin/aarch64-linux-gnu-ar",
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_BUILD_TARGET": "aarch64-unknown-linux-gnu",
+        "CARGO_HOME": "/hepta-prefetch/cargo-home",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_NET_OFFLINE": "true",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "CARGO_TERM_COLOR": "never",
+        "CC": "/usr/bin/aarch64-linux-gnu-gcc-12",
+        "CMAKE": "/usr/bin/cmake",
+        "CXX": "/usr/bin/aarch64-linux-gnu-g++-12",
+        "GIT_CONFIG_GLOBAL": "/dev/null",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_OPTIONAL_LOCKS": "0",
+        "HOME": "/hepta-prefetch/home",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "MAKE": "/usr/bin/make",
+        "PATH": "/hepta-prefetch/closed-bin",
+        "PKG_CONFIG": "/usr/bin/pkgconf",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "RANLIB": "/usr/bin/aarch64-linux-gnu-ranlib",
+        "RUSTC": "/usr/local/rustup/toolchains/1.96.0-aarch64-unknown-linux-gnu/bin/rustc",
+        "RUSTDOC": "/usr/local/rustup/toolchains/1.96.0-aarch64-unknown-linux-gnu/bin/rustdoc",
+        "TMPDIR": "/hepta-prefetch/tmp",
+        "TZ": "UTC"
+      },
+      "executable": {
+        "bytes": 3756992,
+        "path": "/usr/bin/git",
+        "sha256": "54af380ba6ca1b36305358e99427a31ae4b0af5dc5cb6d0198c6f2f16e97651d"
+      },
+      "executable_unchanged": true,
+      "exit_code": 0,
+      "started_at": "2026-10-28T11:09:10.118784+00:00",
+      "stderr": {
+        "bytes": 0,
+        "path": "006-source-clean.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdin": "none",
+      "stdout": {
+        "bytes": 0,
+        "path": "006-source-clean.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "timeout_seconds": null,
+      "tool": "git",
+      "wall_seconds": 0.1316415359999894
+    }
+  ],
+  "error": "Symlink in evidence tree: /hepta-prefetch/cargo-home/git/checkouts/nucleo-425d994cd74b3654/4253de9/matcher/LICENSE",
+  "error_type": "ValueError",
+  "network_scope": "explicit online preparation only; no build or tests",
+  "producer_result_sha256": "08061da333d8c36f2dc9a56e9f1d2aeff7e95decb923bf5b26025be3e34cbe8e",
+  "schema": "hepta.synapse.linux.prefetch.v1",
+  "status": "failed"
+}
