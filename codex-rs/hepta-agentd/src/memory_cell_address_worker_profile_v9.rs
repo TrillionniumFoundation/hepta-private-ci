@@ -18,7 +18,7 @@ pub(super) fn source_profile(script: &Path) -> Result<SourceProfile, String> {
     }
     let package = addressing.join("v9_addressing");
     let frozen = qualification.join("memory-cell-v7/addressing");
-    let mut paths = ["__init__.py", "identity.py", "model.py", "artifact.py", "policy.py"]
+    let mut paths = ["__init__.py", "identity.py", "model.py", "artifact.py", "policy.py", "capabilities.py"]
         .into_iter().map(|name| package.join(name)).collect::<Vec<_>>();
     paths.extend(["worker.py", "qualification_shadow_worker.py", "bootstrap.py"]
         .into_iter().map(|name| addressing.join(name)));

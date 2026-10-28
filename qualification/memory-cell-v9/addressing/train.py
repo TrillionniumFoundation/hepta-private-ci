@@ -14,7 +14,7 @@ from addressing.contracts import digest
 from v6.encoder import MiniLMEncoder
 from v9_addressing.model import CompatibilityIntentModel
 from v9_addressing.native_fixture import load_suite, native_fixture
-from v9_addressing.policy import fit_policies
+from v9_addressing.policy import contract_comparison, fit_policies
 from v9_addressing.public_corpus import public_rows
 from v9_addressing.runner_io import check_source_lock, load_json, retain_sources, sources, write_json
 
@@ -22,13 +22,25 @@ from v9_addressing.runner_io import check_source_lock, load_json, retain_sources
 CANDIDATES = [(kind, regularization) for kind in ("semantic", "hybrid") for regularization in (2.0, 8.0, 32.0)]
 
 
-def select(encoder_path, output):
+def select(encoder_path, output, previous_public_selection=None):
     source, repo = sources()
     rows = public_rows()
+    previous = None
+    if previous_public_selection is not None:
+        path = Path(previous_public_selection) / "TRAINING.json"
+        prior = load_json(path)
+        if (prior.get("schema") != "hepta.memory.v9.addressing-selection-result.v1"
+                or prior.get("calibration_opened") is not False or prior.get("held_opened") is not False):
+            raise ValueError("development history must precede independent calibration and held evaluation")
+        previous = {"training_receipt_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                    "directory": str(Path(previous_public_selection).absolute()),
+                    "head_fits": prior.get("development_cumulative_head_fits", prior["actual_head_fits"]),
+                    "wall_seconds": prior.get("development_cumulative_wall_seconds", prior["total_wall_seconds"]),
+                    "cpu_seconds": prior.get("development_cumulative_cpu_seconds", prior["total_cpu_seconds"])}
     write_json(output / "DESIGN.json", {"schema": "hepta.memory.v9.addressing-selection-design.v1", "source": source,
         "candidates": [{"kind": kind, "C": regularization} for kind, regularization in CANDIDATES],
         "input_sha256": {name: digest(values) for name, values in rows.items()},
-        "calibration_opened": False, "held_opened": False,
+        "calibration_opened": False, "held_opened": False, "previous_public_selection": previous,
         "known_limitations": ["Authored language; no iid population guarantee.", "Explicit owner-listed aliases.",
                               "Disclosed V7/V8 public train and selection are reused only for fitting; V9 has a new public selection and new independent calibration/held."]})
     retain_sources(output, source, repo)
@@ -48,14 +60,21 @@ def select(encoder_path, output):
         model = CompatibilityIntentModel(encoder, kind, regularization)
         fitting = model.fit(rows["train"], dense=features["train"])
         predictions = model.hypotheses([row["text"] for row in rows["selection"]], dense=features["selection"])
+        diagnostics = model.last_diagnostics
+        raw_predictions = model.learned_hypotheses([row["text"] for row in rows["selection"]], dense=features["selection"])
         policy = fit_policies(rows["selection"], predictions)
+        comparison = contract_comparison(rows["selection"], raw_predictions, predictions, policy["policies"])
         model.policies = policy["policies"]
         identity = model.save(output / f"candidate-{number:02}")
         write_json(output / f"candidate-{number:02}" / "selection-predictions.json", predictions)
-        write_json(output / f"candidate-{number:02}" / "selection-head-diagnostics.json", model.last_diagnostics)
+        write_json(output / f"candidate-{number:02}" / "selection-head-diagnostics.json", diagnostics)
+        write_json(output / f"candidate-{number:02}" / "raw-learned-predictions.json", raw_predictions)
+        write_json(output / f"candidate-{number:02}" / "raw-head-diagnostics.json", model.last_diagnostics)
+        write_json(output / f"candidate-{number:02}" / "CONTRACT_COMPARISON.json", comparison)
         write_json(output / f"candidate-{number:02}" / "SELECTION.json", policy)
         candidate = {"candidate": number, "directory": f"candidate-{number:02}", "kind": kind, "C": regularization,
                      "training": fitting, "selection_metrics": policy["metrics"], "selection_key": policy["selection_key"],
+                     "contract_comparison": comparison,
                      "identity": identity, "wall_seconds": time.perf_counter() - began, "cpu_seconds": time.process_time() - process}
         candidates.append(candidate)
         write_json(output / "progress" / f"{number:02}.json", candidate)
@@ -64,7 +83,7 @@ def select(encoder_path, output):
     lock = {"schema": "hepta.memory.v9.addressing-selection-lock.v1", "source": source,
             "candidate": chosen["candidate"], "directory": chosen["directory"], "identity": chosen["identity"],
             "all_candidates_sha256": digest(candidates), "input_sha256": {name: digest(values) for name, values in rows.items()},
-            "calibration_opened": False, "held_opened": False}
+            "calibration_opened": False, "held_opened": False, "previous_public_selection": previous}
     write_json(output / "SELECTION_LOCK.json", lock)
     result = {"schema": "hepta.memory.v9.addressing-selection-result.v1", "source": source, "candidates": candidates,
               "selected_candidate": chosen["candidate"], "encoding": encoding, "actual_head_fits": 7 * len(candidates),
@@ -72,6 +91,10 @@ def select(encoder_path, output):
               "total_wall_seconds": time.perf_counter() - started, "total_cpu_seconds": time.process_time() - cpu,
               "retained_bytes_before_final_report": sum(path.stat().st_size for path in output.rglob("*") if path.is_file()),
               "serving_admitted": False, "calibration_opened": False, "held_opened": False}
+    result.update(previous_public_selection=previous,
+                  development_cumulative_head_fits=7 * len(candidates) + (previous["head_fits"] if previous else 0),
+                  development_cumulative_wall_seconds=result["total_wall_seconds"] + (previous["wall_seconds"] if previous else 0),
+                  development_cumulative_cpu_seconds=result["total_cpu_seconds"] + (previous["cpu_seconds"] if previous else 0))
     write_json(output / "TRAINING.json", result)
     return result
 
@@ -102,7 +125,11 @@ def calibrate(encoder_path, selected, calibration_path, calibration_sha256, outp
     started, cpu = time.perf_counter(), time.process_time()
     encoder = MiniLMEncoder(encoder_path)
     model = CompatibilityIntentModel.load(selected / lock["directory"], encoder, lock["identity"]["manifest_sha256"])
-    predictions = model.hypotheses([row["text"] for row in rows])
+    dense = encoder.encode([row["text"] for row in rows])
+    np.savez_compressed(output / "calibration-features.npz", dense=dense)
+    predictions = model.hypotheses([row["text"] for row in rows], dense=dense)
+    diagnostics = model.last_diagnostics
+    raw_predictions = model.learned_hypotheses([row["text"] for row in rows], dense=dense)
     policy = fit_policies(rows, predictions, previous=model.policies)
     model.policies = policy["policies"]
     model.calibration = {key: value for key, value in policy.items() if key not in ("curves", "policies", "selection_key")}
@@ -111,12 +138,16 @@ def calibrate(encoder_path, selected, calibration_path, calibration_sha256, outp
                              candidate_reselected=False, held_opened=False)
     identity = model.save(output / "model")
     write_json(output / "calibration-predictions.json", predictions)
-    write_json(output / "calibration-head-diagnostics.json", model.last_diagnostics)
+    write_json(output / "calibration-head-diagnostics.json", diagnostics)
+    write_json(output / "raw-learned-predictions.json", raw_predictions)
+    write_json(output / "raw-head-diagnostics.json", model.last_diagnostics)
+    comparison = contract_comparison(rows, raw_predictions, predictions, model.policies)
+    write_json(output / "CONTRACT_COMPARISON.json", comparison)
     write_json(output / "CALIBRATION.json", policy)
     result = {"schema": "hepta.memory.v9.addressing-admission-result.v1", "source": source, "selected": str(selected),
               "selection_lock_sha256": hashlib.sha256((selected / "SELECTION_LOCK.json").read_bytes()).hexdigest(),
               "identity": identity, "calibration_input": input_receipt, "metrics": policy["metrics"],
-              "serving_admitted": policy["empirical_gate_passed"], "actual_head_fits": 0,
+              "serving_admitted": policy["empirical_gate_passed"], "actual_head_fits": 0, "contract_comparison": comparison,
               "held_opened": False, "population_risk_established": False,
               "wall_seconds": time.perf_counter() - started, "cpu_seconds": time.process_time() - cpu}
     write_json(output / "ADMISSION.json", result)
@@ -131,6 +162,7 @@ if __name__ == "__main__":
     parser.add_argument("--selection", type=Path)
     parser.add_argument("--calibration", type=Path)
     parser.add_argument("--calibration-sha256")
+    parser.add_argument("--previous-public-selection", type=Path)
     args = parser.parse_args()
     output = args.output.absolute()
     output.mkdir(parents=True, exist_ok=False)
@@ -138,10 +170,12 @@ if __name__ == "__main__":
         if args.stage == "select":
             if args.selection is not None or args.calibration is not None or args.calibration_sha256 is not None:
                 raise ValueError("selection cannot receive calibration material")
-            result = select(args.encoder, output)
+            result = select(args.encoder, output, args.previous_public_selection)
         else:
             if args.selection is None or args.calibration is None or args.calibration_sha256 is None:
                 raise ValueError("calibration requires an existing selection and new input")
+            if args.previous_public_selection is not None:
+                raise ValueError("calibration cannot change the public development history")
             result = calibrate(args.encoder, args.selection, args.calibration, args.calibration_sha256, output)
         print(json.dumps(result, sort_keys=True), flush=True)
     except Exception as error:

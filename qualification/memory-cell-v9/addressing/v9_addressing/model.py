@@ -8,9 +8,9 @@ from scipy.special import expit, softmax
 from sklearn.linear_model import LogisticRegression
 from threadpoolctl import threadpool_limits
 
-from addressing.capabilities import capability_violation
 from addressing.contracts import OPERATIONS, digest
 from addressing.model import IntentModel
+from .capabilities import capability_violation
 from .identity import policy_digest
 
 
@@ -78,11 +78,27 @@ class CompatibilityIntentModel(IntentModel):
                                   "capability_reason": reason} for reason in reasons]
         if not eligible:
             return output
-        features = self.features([texts[index] for index in eligible],
-                                 dense=None if dense is None else np.asarray(dense)[eligible])
+        learned, diagnostics = self._learned([texts[index] for index in eligible],
+                                             dense=None if dense is None else np.asarray(dense)[eligible])
+        for index, prediction, diagnostic in zip(eligible, learned, diagnostics):
+            output[index], self.last_diagnostics[index] = prediction, diagnostic
+        return output
+
+    def learned_hypotheses(self, texts, *, dense=None):
+        """Offline ablation of learned heads before explicit contract rejection.
+
+        These are diagnostics, not a separate runtime serving entry point.
+        Scoring them with the frozen policy cannot grant production admission.
+        """
+        output, self.last_diagnostics = self._learned(texts, dense=dense)
+        return output
+
+    def _learned(self, texts, *, dense=None):
+        features = self.features(texts, dense=dense)
         joint = softmax(np.asarray(features @ self.arrays["joint_coef"].T) + self.arrays["joint_intercept"], axis=1)
         compatibility = expit(np.asarray(features @ self.arrays["compat_coef"].T) + self.arrays["compat_intercept"])
-        for index, probabilities, checks in zip(eligible, joint, compatibility):
+        output, diagnostics = [], []
+        for probabilities, checks in zip(joint, compatibility):
             order = np.argsort(-probabilities, kind="stable")
             first, second = int(order[0]), int(order[1])
             score, margin = float(probabilities[first]), float(probabilities[first] - probabilities[second])
@@ -90,12 +106,12 @@ class CompatibilityIntentModel(IntentModel):
                 score = min(score, float(checks[first]))
                 alternatives = np.delete(checks, first)
                 margin = max(0.0, min(margin, float(checks[first] - alternatives.max()), 2 * float(checks[first]) - 1))
-            output[index] = {"raw_operation": LABELS[first], "score": score, "margin": margin,
-                             "score_kind": SCORE_KIND, "capability_reason": None}
-            self.last_diagnostics[index] = {"joint_scores": dict(zip(LABELS, map(float, probabilities))),
-                                            "compatibility_scores": dict(zip(OPERATIONS, map(float, checks))),
-                                            "capability_reason": None}
-        return output
+            output.append({"raw_operation": LABELS[first], "score": score, "margin": margin,
+                           "score_kind": SCORE_KIND, "capability_reason": None})
+            diagnostics.append({"joint_scores": dict(zip(LABELS, map(float, probabilities))),
+                                "compatibility_scores": dict(zip(OPERATIONS, map(float, checks))),
+                                "capability_reason": None})
+        return output, diagnostics
 
     def decide(self, hypothesis):
         raw = hypothesis["raw_operation"]

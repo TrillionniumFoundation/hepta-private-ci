@@ -17,7 +17,7 @@ from v6.encoder import MiniLMEncoder
 from v8_addressing.model import SelectiveIntentModel
 from v9_addressing.model import CompatibilityIntentModel
 from v9_addressing.native_fixture import load_suite, native_fixture
-from v9_addressing.policy import metrics
+from v9_addressing.policy import contract_comparison, metrics
 from v9_addressing.runner_io import check_source_lock, load_json, retain_sources, sources, write_json
 
 
@@ -62,6 +62,11 @@ def evaluate(args, output):
     scored = metrics(rows, hypotheses, model.policies)
     write_json(output / "held-readouts.json", [{"row": row, "decision": decision, "head_diagnostics": diagnostic}
                for row, decision, diagnostic in zip(rows, decisions, model.last_diagnostics)])
+    raw_predictions = model.learned_hypotheses([row["text"] for row in rows], dense=dense)
+    write_json(output / "raw-learned-readouts.json", [{"row": row, "decision": model.decide(prediction), "head_diagnostics": diagnostic}
+               for row, prediction, diagnostic in zip(rows, raw_predictions, model.last_diagnostics)])
+    comparison = contract_comparison(rows, raw_predictions, hypotheses, model.policies)
+    write_json(output / "CONTRACT_COMPARISON.json", comparison)
     baselines = {}
     for name, model_class, directory, identity in baseline_specs:
         if directory is None:
@@ -77,7 +82,7 @@ def evaluate(args, output):
                    [{"row": row, "decision": legacy.decide(value)} for row, value in zip(rows, predictions)])
     result = {"schema": "hepta.memory.v9.held-language-result.v1", "source": source, "input": receipt,
               "identity": admission["identity"], "serving_admitted": admission["serving_admitted"],
-              "metrics": scored, "frozen_baselines": baselines, "actual_head_fits": 0,
+              "metrics": scored, "contract_comparison": comparison, "frozen_baselines": baselines, "actual_head_fits": 0,
               "wall_seconds": time.perf_counter() - began, "cpu_seconds": time.process_time() - cpu,
               "native_rows_executed_by_this_python_stage": 0, "native_fixture": "native-fixture.json",
               "native_fixture_sha256": hashlib.sha256((output / "native-fixture.json").read_bytes()).hexdigest(),

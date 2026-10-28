@@ -45,6 +45,25 @@ def metrics(rows, hypotheses, policies):
     return counts
 
 
+def contract_comparison(rows, learned, guarded, policies):
+    """Keep learned scores separate from explicit-contract gains and losses."""
+    if len(rows) != len(learned) or len(rows) != len(guarded):
+        raise ValueError("contract comparison requires identical paired requests")
+    return {
+        "raw_learned_with_same_frozen_policy": metrics(rows, learned, policies),
+        "after_contract_with_same_frozen_policy": metrics(rows, guarded, policies),
+        "raw_learned_argmax_known_correct": sum(row["operation"] != "reject" and raw["raw_operation"] == row["operation"]
+                                                 for row, raw in zip(rows, learned)),
+        "raw_learned_argmax_ood_routes": sum(row["operation"] == "reject" and raw["raw_operation"] != "reject"
+                                             for row, raw in zip(rows, learned)),
+        "explicit_contract_rejections": {
+            label: sum((row["operation"] == "reject") == (label == "ood") and bool(value["capability_reason"])
+                       for row, value in zip(rows, guarded)) for label in ("known", "ood")},
+        "weights_and_thresholds_identical": True,
+        "interpretation": "Diagnostic contract ablation on the same rows; not an independently admitted raw-model policy.",
+    }
+
+
 def fit_policies(rows, hypotheses, previous=None):
     """Maximize empirical coverage under one unchanged total OOD constraint.
 

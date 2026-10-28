@@ -13,7 +13,7 @@ MAX_ARTIFACT_BYTES = 16_000_000
 def runtime_paths():
     here = Path(__file__).resolve().parent
     qualification = here.parents[2]
-    paths = [here / name for name in ("__init__.py", "identity.py", "model.py", "artifact.py", "policy.py")]
+    paths = [here / name for name in ("__init__.py", "identity.py", "model.py", "artifact.py", "policy.py", "capabilities.py")]
     paths += [here.parent / name for name in ("worker.py", "qualification_shadow_worker.py", "bootstrap.py")]
     paths += [qualification / "memory-cell-v7/addressing" / name for name in (
         "__init__.py", "contracts.py", "capabilities.py", "model.py", "planner.py", "worker.py")]
