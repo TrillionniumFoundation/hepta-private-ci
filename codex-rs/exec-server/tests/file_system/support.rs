@@ -1,6 +1,8 @@
 use std::fmt;
 use std::sync::Arc;
 
+#[cfg(windows)]
+use anyhow::Context;
 use anyhow::Result;
 use codex_exec_server::Environment;
 use codex_exec_server::ExecServerRuntimePaths;
@@ -48,6 +50,65 @@ impl fmt::Display for FileSystemImplementation {
 pub(crate) async fn create_file_system_context(
     implementation: FileSystemImplementation,
 ) -> Result<FileSystemContext> {
+    #[cfg(windows)]
+    {
+        static HELPERS: std::sync::OnceLock<std::result::Result<(), String>> =
+            std::sync::OnceLock::new();
+        let staged = HELPERS.get_or_init(|| {
+            (|| -> Result<()> {
+                let test_exe = std::env::current_exe()
+                    .context("resolve Windows filesystem test executable")?;
+                let helper_dir = test_exe
+                    .parent()
+                    .context("Windows filesystem test executable has no parent")?;
+                for helper_name in ["codex-windows-sandbox-setup", "codex-command-runner"] {
+                    let source = codex_utils_cargo_bin::cargo_bin(helper_name)?;
+                    // The production lookup checks direct siblings before package resources.
+                    // Stage the real declared runfile at that first lookup location.
+                    let destination = helper_dir.join(format!("{helper_name}.exe"));
+                    if !destination.try_exists()? {
+                        let mut input = std::fs::File::open(&source)?;
+                        let mut temporary = tempfile::NamedTempFile::new_in(helper_dir)?;
+                        std::io::copy(&mut input, temporary.as_file_mut())?;
+                        match temporary.persist_noclobber(&destination) {
+                            Ok(_) => {}
+                            Err(error)
+                                if error.error.kind() == std::io::ErrorKind::AlreadyExists => {}
+                            Err(error) => {
+                                return Err(error.error).with_context(|| {
+                                    format!(
+                                        "stage Windows sandbox helper {}",
+                                        destination.display()
+                                    )
+                                });
+                            }
+                        }
+                    }
+                    // Another process may already have staged or opened this executable.
+                    // Reuse only the exact declared helper; never overwrite a live image or
+                    // accept an arbitrary existing file as evidence of correct packaging.
+                    anyhow::ensure!(
+                        std::fs::symlink_metadata(&destination)?
+                            .file_type()
+                            .is_file(),
+                        "staged Windows sandbox helper is not a regular file: {}",
+                        destination.display()
+                    );
+                    anyhow::ensure!(
+                        std::fs::read(&destination)? == std::fs::read(&source)?,
+                        "staged Windows sandbox helper differs from declared runfile: {}",
+                        destination.display()
+                    );
+                }
+                Ok(())
+            })()
+            .map_err(|error| format!("{error:#}"))
+        });
+        if let Err(message) = staged {
+            anyhow::bail!("{message}");
+        }
+    }
+
     match implementation {
         FileSystemImplementation::Local => {
             let helper_paths = test_codex_helper_paths()?;
