@@ -53,7 +53,8 @@ class ResearchBoundaryTests(unittest.TestCase):
             (
                 "three-rounds-native.json",
                 1,
-                native + [
+                native
+                + [
                     research.THREE_ROUNDS,
                     "--run-ignored",
                     "only",
@@ -191,9 +192,13 @@ class ResearchBoundaryTests(unittest.TestCase):
                 if change == "withdrawal":
                     loop["ordinary_sessions"][-1]["withdrawal_refused"] = True
                 elif change == "parent":
-                    loop["ordinary_sessions"][-1]["parent"]["adapter"] = "different-parent"
+                    loop["ordinary_sessions"][-1]["parent"]["adapter"] = (
+                        "different-parent"
+                    )
                 elif change == "current":
-                    loop["ordinary_sessions"][-1]["current_after"] = dict(record_count=2)
+                    loop["ordinary_sessions"][-1]["current_after"] = dict(
+                        record_count=2
+                    )
                 else:
                     loop["completed_rounds"] = 2
                 with self.assertRaises(ValueError):
@@ -215,9 +220,10 @@ class ResearchBoundaryTests(unittest.TestCase):
             dict(proposal_parent=Path("/other")),
             dict(proposal_training_lineage=[{}]),
         ):
-            with self.subTest(change=change), patch.object(
-                research.subprocess, "check_output"
-            ) as process:
+            with (
+                self.subTest(change=change),
+                patch.object(research.subprocess, "check_output") as process,
+            ):
                 with self.assertRaises(ValueError):
                     research.validate_request(SimpleNamespace(**dict(values, **change)))
                 process.assert_not_called()
