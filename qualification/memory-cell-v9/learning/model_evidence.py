@@ -15,7 +15,7 @@ COMMON = {"schema", "kind", "address_profile", "numeric_profile", "dimension", "
 
 def parameters(model):
     output = len(model["catalog"]) if "catalog" in model else 1040
-    sizes = (48 * 32, 32, 32 * output, output)
+    sizes = (model["dimension"] * model["hidden"], model["hidden"], model["hidden"] * output, output)
     require(set(model["arrays"]) == set(NAMES), "native tensor inventory")
     result = []
     for name, size in zip(NAMES, sizes):
@@ -28,7 +28,7 @@ def parameters(model):
     return result
 
 
-def artifact(payload, representation, kind, facts, report=None):
+def artifact(payload, representation, kind, facts, report=None, shape=(48, 32)):
     require(set(payload) == ({"native", "original"} if representation == "catalog" else {"native"}), "artifact representation fields")
     raw = payload["native"].encode()
     model = decode(raw)
@@ -38,7 +38,7 @@ def artifact(payload, representation, kind, facts, report=None):
     profile = "hepta.memory.f32-weights-f64-tanh-softmax.v1" if representation == "catalog" else "hepta.memory.f32-f64-tanh-bytebits.v9"
     require(model["schema"] == schema and model["numeric_profile"] == profile and model["kind"] == kind
             and model["address_profile"] == "hepta.memory.sha256-shake256-f64.v1"
-            and model["dimension"] == 48 and model["hidden"] == 32
+            and (model["dimension"], model["hidden"]) == shape
             and model["threshold"] == (0.5 if representation == "catalog" else 0.9), "frozen native numeric profile")
     supports = {digest(entity.encode()): [row[kind][0]] for entity, row in facts.items()}
     require(model["supports"] == supports and model["lineage_sources"] == sorted(source[0] for source in supports.values()), "native current support/lineage")
@@ -57,7 +57,7 @@ def artifact(payload, representation, kind, facts, report=None):
                 "original model fields")
         for key in ("kind", "dimension", "hidden", "catalog", "supports", "threshold", "acceptance_enabled", "lineage_sources"):
             require(source[key] == model[key], "original/native metadata differ")
-        shapes = ([48, 32], [32], [32, len(values)], [len(values)])
+        shapes = ([shape[0], shape[1]], [shape[1]], [shape[1], len(values)], [len(values)])
         require(set(source["arrays"]) == {"A", "a", "B", "b"}, "original tensor inventory")
         for name, expected, shape in zip(("A", "a", "B", "b"), bits, shapes):
             tensor = source["arrays"][name]

@@ -22,7 +22,7 @@ pub(super) fn evaluate(release: &ReleaseFixture, snapshot: &MemoryCellOwnerSnaps
     let keep = roles.iter().find(|role|role["role"] == "keep-fixed-2").unwrap();
     let task_digest = Digest32::of_bytes(&serde_json::to_vec(&json!({"future":stage.future,"retention":stage.retention})).unwrap());
     let budget = MemoryStructureBudgetV1 {required_fixed_shards:(1..=8).collect(),max_artifact_bytes:16_777_216,
-        max_resident_payload_bytes:32_768,forecast_queries:100_000,max_retention_error_permyriad:10_000,
+        max_resident_payload_bytes:32_768,forecast_queries:100_000,max_retention_error_permyriad:0,
         error_weight:1_000_000_000,byte_weight:1,wall_ns_weight:1,communication_byte_weight:1};
     let mut measurements = Vec::new();
     let mut wires = Vec::new();

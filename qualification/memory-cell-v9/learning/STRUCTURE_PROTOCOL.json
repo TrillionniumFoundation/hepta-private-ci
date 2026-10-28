@@ -9,7 +9,7 @@
   "future_forecast_queries": 100000,
   "weights": {"error":1000000000,"byte":1,"wall_ns":1,"communication_byte":1},
   "maximum_artifact_bytes": 16777216,
-  "maximum_retention_error_permyriad": 10000,
+  "maximum_retention_error_permyriad": 0,
   "workers": "Per stage: one fixed-2 bootstrap, seven other fixed fits, one selected learned fit, and one parameter-free selection worker. Exactly 27 fit workers plus 3 selection workers. Fits per stage are 72 + 2*selected_learned_count; no future result selects count or routes.",
   "causal_order": "Append current facts; fit and publish fixed-2; complete source-current prefix; derive only address/coaccess observations; freeze learned and lightweight choices; train the other fixed candidates and selected learned model; publish each predeclared evaluation role; then evaluate future and retention.",
   "selection": "For each k=1..8, build SHA-rank and existing causal-coaccess-greedy routes. Replay only completed prefix address order through an LRU proxy with per-shard bytes 4*(48*w+w+w*n+n)+331*n+8, where w is its share of total_hidden=64 and n its address count. Minimize (budget-rejected reads, loaded proxy bytes, k). This is a declared cost proxy, not a runtime measurement. Both learned and lightweight selectors receive exactly the same address set, observations and budget.",

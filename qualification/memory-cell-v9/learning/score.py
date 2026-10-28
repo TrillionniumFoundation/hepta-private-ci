@@ -181,8 +181,12 @@ def main():
     require(args.input.is_absolute() and args.output.is_absolute(), "absolute evidence and score paths required")
     failed = False
     try:
-        result = score(args.input)
-    except (ValueError, KeyError, TypeError, OSError, OverflowError, AssertionError) as error:
+        if read_json(args.input).get("schema") == "hepta.memory.v9.actual-structure.v1":
+            from structure_score import score as score_structure
+            result = score_structure(args.input)
+        else:
+            result = score(args.input)
+    except (ValueError, KeyError, TypeError, OSError, OverflowError, AssertionError, IndexError, StopIteration) as error:
         result = {"schema": "hepta.memory.v9.continual-score.v1", "integrity": "failed", "error": f"{type(error).__name__}: {error}"}
         failed = True
     with args.output.open("x") as stream:
