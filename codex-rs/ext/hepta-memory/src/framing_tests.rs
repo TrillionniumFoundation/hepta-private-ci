@@ -23,10 +23,15 @@ fn unregistered_path_shapes_do_not_produce_a_workspace_identity() -> std::io::Re
     let canonical = root.path().canonicalize()?;
     let file = canonical.join("ordinary-file");
     std::fs::write(&file, b"not a workspace")?;
+    // PathBuf::join normalizes `..` on Windows verbatim paths. Preserve the
+    // unregistered input spelling so the guard actually receives a parent step.
+    let mut parent_step = canonical.as_os_str().to_os_string();
+    parent_step.push(std::path::MAIN_SEPARATOR_STR);
+    parent_step.push("..");
     for path in [
         std::path::PathBuf::from("relative-workspace"),
         canonical.join("missing"),
-        canonical.join(".."),
+        std::path::PathBuf::from(parent_step),
         file,
     ] {
         assert_eq!(registered_workspace_path(&path), None);

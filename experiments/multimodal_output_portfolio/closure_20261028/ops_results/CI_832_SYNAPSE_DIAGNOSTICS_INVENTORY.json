@@ -1,0 +1,1666 @@
+{
+  "schema": "hepta.synapse.diagnostic-export.v1",
+  "complete": true,
+  "source_directory": "/home/runner/work/_temp/ndu-native-synapse",
+  "selection": {
+    "recursive_suffixes": [
+      ".json",
+      ".jsonl",
+      ".log",
+      ".stderr",
+      ".stdout",
+      ".txt",
+      ".xml"
+    ]
+  },
+  "bounds": {
+    "part_bytes": 134217728,
+    "max_parts": 8,
+    "max_files": 5000,
+    "max_path_bytes": 1024
+  },
+  "files": {
+    "BOOTSTRAP_AUTHORITY.json": {
+      "bytes": 253,
+      "sha256": "8c4970ba3fb02e70aa75c90f13aa0d7ee5c9db7f228b48f3492aa5d328001d4c"
+    },
+    "CI_RESULT.json": {
+      "bytes": 537,
+      "sha256": "aad76647a83bab56756a46abbd75f740c85398329174fd16cbcdec12ac56e301"
+    },
+    "CI_STARTED.json": {
+      "bytes": 428,
+      "sha256": "f49d8c87deb2a8abf594dd6603356a41224b58249943ea9122016f7ea59fe33d"
+    },
+    "HOST_TOOLS.json": {
+      "bytes": 558,
+      "sha256": "2b49aed4c13c34bec594824e27d2525d9cdd6e526a1793b5a2f69216df433acf"
+    },
+    "preparation/APT_MATERIALIZATION.json": {
+      "bytes": 20935,
+      "sha256": "964f076e81bf57fa3a20d288b18917f6dec363e55a81a6ff6cb20f9d09bef051"
+    },
+    "preparation/BUILDER_ARCHIVE_READBACK.json": {
+      "bytes": 481,
+      "sha256": "234dbf6ac31ac2a95cc7ecfa502f06c96b3c54c1811242910ac7361b8502bb6e"
+    },
+    "preparation/BUILDER_IMAGE_ID.txt": {
+      "bytes": 71,
+      "sha256": "10c27efb2927e2084dcf83fb33da2103c2e1d39c8f787c8d4f48cd23cac1da4b"
+    },
+    "preparation/BUILDER_PREPARATION_INPUTS.json": {
+      "bytes": 1252,
+      "sha256": "f059211309d8c01f51689de2e165363a4ff2ece5b0ee501b73570999cd24de29"
+    },
+    "preparation/CONTROLLER_PREFLIGHT.json": {
+      "bytes": 23140,
+      "sha256": "bde251bdd058c6bb7a183b6e96928fc51499c4e325c4fa3186e2c90fbf3548af"
+    },
+    "preparation/PREPARATION_RESULT.json": {
+      "bytes": 102934,
+      "sha256": "9b624d9eba962d2125b275088686a91894910d5819c33dd957c965cff23f09fb"
+    },
+    "preparation/RESOURCE_OWNER.json": {
+      "bytes": 520,
+      "sha256": "d5d56ce7de2df2dc8ff97d861861078753a2a6aacb949013b55c3c08b20a9587"
+    },
+    "preparation/STARTED.json": {
+      "bytes": 189,
+      "sha256": "78672f0b40288db3f95b994e3f8a29187501bdb01f3a434907a6b08e3281bc0d"
+    },
+    "preparation/TEARDOWN.json": {
+      "bytes": 397,
+      "sha256": "1ce84acbd5eefcaea8841f02397b3a24500c071b13ac6597c4627a6d6a34cd8a"
+    },
+    "preparation/TOOL_ARCHIVES.json": {
+      "bytes": 3892,
+      "sha256": "b25fc1a7fcdfd240dcca9a690e816d78e954bb434785ae9afd1ac67a7ac36685"
+    },
+    "preparation/controller-commands/000-END.json": {
+      "bytes": 1468,
+      "sha256": "7fba64d9c5778a15b2e4b1ab581bdc92ab80bc618665a5459f2654c4d4103e3b"
+    },
+    "preparation/controller-commands/000-START.json": {
+      "bytes": 1031,
+      "sha256": "4b9ee2b2ea5d19c660809cee5bec8ee0b7ef0f66030a28ce9778934dc8db39e7"
+    },
+    "preparation/controller-commands/000-online-pull-rust-base.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/000-online-pull-rust-base.stdout": {
+      "bytes": 1040,
+      "sha256": "9197d8c2d5b6e3c68f206ff1c2c5af9d52274b2f481d034ffe9d2f437d9c86b7"
+    },
+    "preparation/controller-commands/001-END.json": {
+      "bytes": 1485,
+      "sha256": "c5d73bd3df9cce27e387856c9f102803316e1c3cc4129e336b8c30ddf38bca52"
+    },
+    "preparation/controller-commands/001-START.json": {
+      "bytes": 1029,
+      "sha256": "b1ad7b14ddc4086746a764c6992a0c6d22438a2157ec2b7f8c2f8eb97522ba7b"
+    },
+    "preparation/controller-commands/001-online-pull-original-synapse.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/001-online-pull-original-synapse.stdout": {
+      "bytes": 1777,
+      "sha256": "bad17d118bdd63bb728fd116af1371e58649f9bde4c33658599016a26ce187bf"
+    },
+    "preparation/controller-commands/002-END.json": {
+      "bytes": 1338,
+      "sha256": "dd87f996d69988ac43727e93a75fe368ca3068709dc939c74f026c3a5ea30ede"
+    },
+    "preparation/controller-commands/002-START.json": {
+      "bytes": 926,
+      "sha256": "a2c6e1de8b6bee679c4cddfb851d3517e544dd7b0f7949da183ed042b7e90d71"
+    },
+    "preparation/controller-commands/002-docker-info.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/002-docker-info.stdout": {
+      "bytes": 9764,
+      "sha256": "fb62d5540bb43ebee94683723ce90d3174e696493e1df2dc1efb056b469cbc1d"
+    },
+    "preparation/controller-commands/003-END.json": {
+      "bytes": 1437,
+      "sha256": "73b2f4fb20fb9d12ea551ee9e22dcc293f95f46bc6053b61eb3fd2b87bd946e2"
+    },
+    "preparation/controller-commands/003-START.json": {
+      "bytes": 1010,
+      "sha256": "1e6a67b3ced16e552e19be599402bb8e19adf1a7bcf2dff8a0d3b568f066d5ed"
+    },
+    "preparation/controller-commands/003-builder-image.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/003-builder-image.stdout": {
+      "bytes": 2984,
+      "sha256": "9dcccc1040a8b63a17679a6c019be943088008b07fcb8ad9f690d3cb3538db5d"
+    },
+    "preparation/controller-commands/004-END.json": {
+      "bytes": 1437,
+      "sha256": "59e5f1bac4955749f8023890bf9c2d135d709b14e93e2f4bd934d61e523cbba3"
+    },
+    "preparation/controller-commands/004-START.json": {
+      "bytes": 1008,
+      "sha256": "16a1c961fd6fdb92d4a1d9c5659e712222cae00ff2e8e50a81cf9e33f4a84402"
+    },
+    "preparation/controller-commands/004-synapse-image.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/004-synapse-image.stdout": {
+      "bytes": 4950,
+      "sha256": "811a6f171d78ff0cc4e4af9ad5dc555691cc48cc819542c4cdd7f4aab4adfbfd"
+    },
+    "preparation/controller-commands/005-END.json": {
+      "bytes": 1360,
+      "sha256": "f4d7cd543bfa1a4199206405319b272391ef992908c5b23279c79f9f3bb8f07d"
+    },
+    "preparation/controller-commands/005-START.json": {
+      "bytes": 929,
+      "sha256": "b58084351d48171c7f02c3a87eb5f6c94b0023074afe59988c35b46a2771d56e"
+    },
+    "preparation/controller-commands/005-docker-version.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/005-docker-version.stdout": {
+      "bytes": 1078,
+      "sha256": "b255acce62168a7623fdf8330dfebab171ecdda6ef9c5d61af387b66744ac688"
+    },
+    "preparation/controller-commands/006-END.json": {
+      "bytes": 1330,
+      "sha256": "142ea7b63d043edc806552708572013da60ec24ffa5d9c6d0e283a410e789d2e"
+    },
+    "preparation/controller-commands/006-START.json": {
+      "bytes": 902,
+      "sha256": "ad81b1b8b4e0faff00fdc3ed9b40bec7b838a151e54e65801d41941b9adf9dd2"
+    },
+    "preparation/controller-commands/006-original-head.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/006-original-head.stdout": {
+      "bytes": 41,
+      "sha256": "bca6d75a2709ad581a559e14bf809ab4ffb669aaf74221b528d3240965384c68"
+    },
+    "preparation/controller-commands/007-END.json": {
+      "bytes": 1366,
+      "sha256": "71932b9e76d4e89065e9e3fb90aae21d9093f431994843a5964862c5fcbdbcd9"
+    },
+    "preparation/controller-commands/007-START.json": {
+      "bytes": 904,
+      "sha256": "decd1e2e7b5023cd144145d867534dccbd48a7eb6b5561f02149616fd416c5da"
+    },
+    "preparation/controller-commands/007-preimport-index-equals-worktree.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/007-preimport-index-equals-worktree.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/008-END.json": {
+      "bytes": 1367,
+      "sha256": "3b4374ef8ba3f0a0e0ba4e9da25ad925509338a2cf1c9a74a09e1830df9caf28"
+    },
+    "preparation/controller-commands/008-START.json": {
+      "bytes": 931,
+      "sha256": "d61fcb50944e1f964a1ba3bd9ef9d30bde7001ec2cb4200e88ea5eb1b7c2a569"
+    },
+    "preparation/controller-commands/008-preimport-untracked.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/008-preimport-untracked.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/009-END.json": {
+      "bytes": 1381,
+      "sha256": "e02e66b293f1cfcf9b5c5295da982155da79e70afd54464c0342c61cfbdbc44c"
+    },
+    "preparation/controller-commands/009-START.json": {
+      "bytes": 948,
+      "sha256": "ed3436b72c55e08efb7eb8a7b7ee80742dae8ddc93a338faea58ed1b3d51601a"
+    },
+    "preparation/controller-commands/009-preimport-ignored.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/009-preimport-ignored.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/010-END.json": {
+      "bytes": 1428,
+      "sha256": "0aa1d70d38078059e765b4f7265c19d3863909f71f68d55d4186cc2bd9e4b274"
+    },
+    "preparation/controller-commands/010-START.json": {
+      "bytes": 970,
+      "sha256": "41edb7436ea7ca2a377638ee33bbf406dd7b8957ffeee4537e37b4a450a5b386"
+    },
+    "preparation/controller-commands/010-preimport-head-helper-blob.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/010-preimport-head-helper-blob.stdout": {
+      "bytes": 23593,
+      "sha256": "1ed425a91d5ac38b96d61f10dc4d41c6ca55755b088456f17beeeefa3f15092e"
+    },
+    "preparation/controller-commands/011-END.json": {
+      "bytes": 1444,
+      "sha256": "103da3c649defe5170192c537b50d579f12f75c67b92d14487cb44199f8d89d0"
+    },
+    "preparation/controller-commands/011-START.json": {
+      "bytes": 990,
+      "sha256": "30be4cbfdf98c59d3924f2611c1c15b181c50768d47140fa249eac9663a4af86"
+    },
+    "preparation/controller-commands/011-preimport-head-helper-mode.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/011-preimport-head-helper-mode.stdout": {
+      "bytes": 90,
+      "sha256": "84d206c82e1ccfa6b5a2f7a062a05180e7f8f363aa0139fb734be453164ca37c"
+    },
+    "preparation/controller-commands/012-END.json": {
+      "bytes": 1327,
+      "sha256": "0f0cf0e0b48599bb28f3c0e181a2a9e4cd776b3fff3fa05a19dfa42344aa9342"
+    },
+    "preparation/controller-commands/012-START.json": {
+      "bytes": 902,
+      "sha256": "25ef5fd88615beee73a2890153481cac6622b988ff46e1dd57560663d529a901"
+    },
+    "preparation/controller-commands/012-verify-head.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/012-verify-head.stdout": {
+      "bytes": 41,
+      "sha256": "bca6d75a2709ad581a559e14bf809ab4ffb669aaf74221b528d3240965384c68"
+    },
+    "preparation/controller-commands/013-END.json": {
+      "bytes": 1373,
+      "sha256": "5efafadaccd3a8ec786aa7d2e7116e160020f413a23d4d8b98e8d458b91bbc87"
+    },
+    "preparation/controller-commands/013-START.json": {
+      "bytes": 946,
+      "sha256": "8c4130e211439717ab958f18fb543f786d9a0a05245b8054eb1a6046e5fc1420"
+    },
+    "preparation/controller-commands/013-changed-paths.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/013-changed-paths.stdout": {
+      "bytes": 1385,
+      "sha256": "e24bd161c1a9f49a1c2cec4936d39f333c1e8dba5186fb520a7c2d447458c79d"
+    },
+    "preparation/controller-commands/014-END.json": {
+      "bytes": 1370,
+      "sha256": "84c4dd2095c30f69971c0c3245425c48c9ccbba70a3faea474c2f614c4762f1e"
+    },
+    "preparation/controller-commands/014-START.json": {
+      "bytes": 941,
+      "sha256": "82232c1c4f3c2c7592a10a680ea31c32b426f7ff6444a825242f628ee3ba72f9"
+    },
+    "preparation/controller-commands/014-untracked-paths.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/014-untracked-paths.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/015-END.json": {
+      "bytes": 1357,
+      "sha256": "74f3b1d8e7acdca04200b7f6ef99f5f7c29eecd375771a77bb47877d8e6dcd16"
+    },
+    "preparation/controller-commands/015-START.json": {
+      "bytes": 904,
+      "sha256": "daf18b4e92bed16224fdc9bee16e1acad08f8cad734d985f328d4ca80233d72c"
+    },
+    "preparation/controller-commands/015-index-equals-working-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/015-index-equals-working-source.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/016-END.json": {
+      "bytes": 1366,
+      "sha256": "d0a870660c062a956e0b08516a428131b60cce0622be67b7fa2c9fa9858579d2"
+    },
+    "preparation/controller-commands/016-START.json": {
+      "bytes": 931,
+      "sha256": "c1dbc9cb5d3948a88992e7b24036e5a9fdfe2531b1634772383c239566ba8558"
+    },
+    "preparation/controller-commands/016-original-untracked.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/016-original-untracked.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/017-END.json": {
+      "bytes": 1379,
+      "sha256": "258b25c30fd79c2ea658ac650a9f32e2a24a65a6face6dcfa6825b05c7618e87"
+    },
+    "preparation/controller-commands/017-START.json": {
+      "bytes": 948,
+      "sha256": "7108879ae5c3220cd2ebca4408d7f24c6c9b118755d9d37377615c43db7c456a"
+    },
+    "preparation/controller-commands/017-original-ignored.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/017-original-ignored.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/018-END.json": {
+      "bytes": 1437,
+      "sha256": "c6030b82ec974f3804b29f3f9f06151fb579c1c1fa8c2e84f3d41df62344b765"
+    },
+    "preparation/controller-commands/018-START.json": {
+      "bytes": 979,
+      "sha256": "726229518d1478a20d6512fde9bdca4e7509dcd1abfd0ef77c6e1aca3160523c"
+    },
+    "preparation/controller-commands/018-linux-entry-in-producer-head.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/018-linux-entry-in-producer-head.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/019-END.json": {
+      "bytes": 1491,
+      "sha256": "c2aa18f86a053bc54b3e5dd601354c95045a77249003cab371427845a601fdbb"
+    },
+    "preparation/controller-commands/019-START.json": {
+      "bytes": 1048,
+      "sha256": "711d90c5d18d1769055f1b883a0b1918664542ff7197ea55f6b0403c21858f40"
+    },
+    "preparation/controller-commands/019-independent-base-index.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/019-independent-base-index.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/020-END.json": {
+      "bytes": 1543,
+      "sha256": "bde63a5e9a2ea3e120ff5f959178357b24fc6717be1ca038d0a67d570c86344f"
+    },
+    "preparation/controller-commands/020-START.json": {
+      "bytes": 1093,
+      "sha256": "1511410cf3d4cb3413a3dc49e9ac1811966263061b8526f39a210b699658eb21"
+    },
+    "preparation/controller-commands/020-check-exact-producer-patch.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/020-check-exact-producer-patch.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/021-END.json": {
+      "bytes": 1530,
+      "sha256": "5f143c734c8e2049d81946869ff5ef2435406aae4f9e3f0fd085b5ee5305b392"
+    },
+    "preparation/controller-commands/021-START.json": {
+      "bytes": 1078,
+      "sha256": "9479da2074f6b35acd9e14002258da1d6e220c5baa29122c6deb8d75e9bd6e69"
+    },
+    "preparation/controller-commands/021-replay-exact-producer-patch.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/021-replay-exact-producer-patch.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/022-END.json": {
+      "bytes": 1440,
+      "sha256": "73569240200584e83eea30e1dda6ca5f6d91a4c8b9d0985b21e4eeef2c09e5f5"
+    },
+    "preparation/controller-commands/022-START.json": {
+      "bytes": 1001,
+      "sha256": "fa136917ccb5fb421434a157943472d125693dd88719160d97e572118ec7a73a"
+    },
+    "preparation/controller-commands/022-producer-patch-tree.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/022-producer-patch-tree.stdout": {
+      "bytes": 41,
+      "sha256": "1ed3926cf537840005235f85d4b262b472c041def43d4837dd90ec158575a730"
+    },
+    "preparation/controller-commands/023-END.json": {
+      "bytes": 1361,
+      "sha256": "677a6c9edc024e8e29583449e337171eeaa3d93e944c1d89ac5da743daa8fd76"
+    },
+    "preparation/controller-commands/023-START.json": {
+      "bytes": 921,
+      "sha256": "6a04f63479527834f950b871baa9e10eac35c65f0d429bfdba17308c7c78fa88"
+    },
+    "preparation/controller-commands/023-original-index-path.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/023-original-index-path.stdout": {
+      "bytes": 11,
+      "sha256": "742e1586a644af64934a892663d03c75415bfb01edafdfdd924a8627573bfb9c"
+    },
+    "preparation/controller-commands/024-END.json": {
+      "bytes": 1456,
+      "sha256": "62af2baf109e7c145d1cf5c95032a59eb631f55fcc631d3a6a461a121ae9c42f"
+    },
+    "preparation/controller-commands/024-START.json": {
+      "bytes": 1001,
+      "sha256": "b89f52502ad82fdc1832d0345739c5fce1c3194b4c10808396f9d5f0bc62b3e2"
+    },
+    "preparation/controller-commands/024-actual-candidate-index-tree.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/024-actual-candidate-index-tree.stdout": {
+      "bytes": 41,
+      "sha256": "1ed3926cf537840005235f85d4b262b472c041def43d4837dd90ec158575a730"
+    },
+    "preparation/controller-commands/025-END.json": {
+      "bytes": 1385,
+      "sha256": "5629c900333d6a082897dfa166cfd94fd9b52b4bbddfcd744f6eac5e39c803b6"
+    },
+    "preparation/controller-commands/025-START.json": {
+      "bytes": 944,
+      "sha256": "aaee031d6bb9dac99e8ce9da7133bd902df7a531e0b12f232894b9f1e6ec5bae"
+    },
+    "preparation/controller-commands/025-original-git-common.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/025-original-git-common.stdout": {
+      "bytes": 57,
+      "sha256": "a200b28cb0433f0abb14ec3cb92f11a4e127d608b3eba474f0630a93dd71fd4b"
+    },
+    "preparation/controller-commands/026-END.json": {
+      "bytes": 1452,
+      "sha256": "0d60fe941daed44999cdd1d684ae1f7ec3f6dbc4454cab60c4649b635aa7f8d4"
+    },
+    "preparation/controller-commands/026-START.json": {
+      "bytes": 1005,
+      "sha256": "34e533105a0d104c1c6c9b3d06ba4475a2f313b39295da6ec6ae4150839201aa"
+    },
+    "preparation/controller-commands/026-private-git-authority.stderr": {
+      "bytes": 586,
+      "sha256": "3e70934f1909b0f5a846d62237fcc1509d733b9fb0321187024723dfc67176d3"
+    },
+    "preparation/controller-commands/026-private-git-authority.stdout": {
+      "bytes": 117,
+      "sha256": "c67436dcbc2ea2b29e0d22debba556b5cf23def387bfe4775fec19336529a24e"
+    },
+    "preparation/controller-commands/027-END.json": {
+      "bytes": 1890,
+      "sha256": "06724c1c534820b0273839737ae3f3a04616f26a6998b8ed803709a3cf04d8e3"
+    },
+    "preparation/controller-commands/027-START.json": {
+      "bytes": 1437,
+      "sha256": "8ca618e784e4aa7127e7f6f424adb337ff77493ca88646e6e7871900426ec833"
+    },
+    "preparation/controller-commands/027-qualification-only-commit.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/027-qualification-only-commit.stdout": {
+      "bytes": 41,
+      "sha256": "b925750314538e247ef2931753708aa5528618c3b292eff86d181bd081964285"
+    },
+    "preparation/controller-commands/028-END.json": {
+      "bytes": 1599,
+      "sha256": "00b8e2512fb3e9436623f7eadb44480dea40c1699fd30e497afa4796fea743a4"
+    },
+    "preparation/controller-commands/028-START.json": {
+      "bytes": 1133,
+      "sha256": "4b9d3e5028a54abad7553c206176470878f6c0c8ffd8281eaeffe21e366f12be"
+    },
+    "preparation/controller-commands/028-independent-qualification-worktree.stderr": {
+      "bytes": 43,
+      "sha256": "58251e77e6e26ea06f8702beae0349d10eae43107c5069565d8c1f7b637b5018"
+    },
+    "preparation/controller-commands/028-independent-qualification-worktree.stdout": {
+      "bytes": 56,
+      "sha256": "3063b616b5bb1986a904fb8aeaefbd1356634eb26b211447e0bb89aabd8558a8"
+    },
+    "preparation/controller-commands/029-END.json": {
+      "bytes": 1341,
+      "sha256": "ba5dabd8eeb9aef2dcfdcdae62c9469425de63b63ab5fb93e19f58bce826dc02"
+    },
+    "preparation/controller-commands/029-START.json": {
+      "bytes": 902,
+      "sha256": "c09d9d76850e76200f10249cc6683ff2c2db1fe9cbdbb230de634d65e33f3b17"
+    },
+    "preparation/controller-commands/029-original-head-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/029-original-head-after.stdout": {
+      "bytes": 41,
+      "sha256": "bca6d75a2709ad581a559e14bf809ab4ffb669aaf74221b528d3240965384c68"
+    },
+    "preparation/controller-commands/030-END.json": {
+      "bytes": 1327,
+      "sha256": "5f5a4aa24a035a98327aea36db7743c73627890084b727ee65c6697d102b84b3"
+    },
+    "preparation/controller-commands/030-START.json": {
+      "bytes": 902,
+      "sha256": "a7c6724d49802e15f8f104ee007616441fa26acff354f7d32c23242d70f70900"
+    },
+    "preparation/controller-commands/030-verify-head.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/030-verify-head.stdout": {
+      "bytes": 41,
+      "sha256": "bca6d75a2709ad581a559e14bf809ab4ffb669aaf74221b528d3240965384c68"
+    },
+    "preparation/controller-commands/031-END.json": {
+      "bytes": 1375,
+      "sha256": "7c9d63cd5223256f949f6588a21d601202db7406835da905a26d3428545920eb"
+    },
+    "preparation/controller-commands/031-START.json": {
+      "bytes": 946,
+      "sha256": "cc3757e0e90f06cc8049731aaf459764951f957e1aa73feffaede0d81dffa20b"
+    },
+    "preparation/controller-commands/031-changed-paths.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/031-changed-paths.stdout": {
+      "bytes": 1385,
+      "sha256": "e24bd161c1a9f49a1c2cec4936d39f333c1e8dba5186fb520a7c2d447458c79d"
+    },
+    "preparation/controller-commands/032-END.json": {
+      "bytes": 1371,
+      "sha256": "2b8243b52cda51315b29e0e1d27874d9dd7872a53b97b3e46fe96ba31618b26a"
+    },
+    "preparation/controller-commands/032-START.json": {
+      "bytes": 941,
+      "sha256": "313b1545237f8fdafda28a993f5f9085cd2eb0c3affa5308f217122881613120"
+    },
+    "preparation/controller-commands/032-untracked-paths.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/032-untracked-paths.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/033-END.json": {
+      "bytes": 1747,
+      "sha256": "fb4995db177d6ac9b99596642f6e93b6396a78c2e7cc3cc0db613d6ebe24df5a"
+    },
+    "preparation/controller-commands/033-START.json": {
+      "bytes": 1274,
+      "sha256": "411ef2a66f717a4d0daf80bf05e357944a3816d855f008ff97787bc934778165"
+    },
+    "preparation/controller-commands/033-online-fixed-builder-materialization.stderr": {
+      "bytes": 15898,
+      "sha256": "6dd58912c1cf99d89f61e398c303c1ac2174c8a56254eae933482abebfbe79ac"
+    },
+    "preparation/controller-commands/033-online-fixed-builder-materialization.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/034-END.json": {
+      "bytes": 1436,
+      "sha256": "1f194ec35b9c466ce8892f9cf0966fd73d8337847e3bf66de9dc16e0d8f01285"
+    },
+    "preparation/controller-commands/034-START.json": {
+      "bytes": 987,
+      "sha256": "e8ee3aaa6dfc4de5a1db8d1c2a4bbea8a7cf35a2a33670f26e224fe043bfea58"
+    },
+    "preparation/controller-commands/034-derived-builder-inspect.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/034-derived-builder-inspect.stdout": {
+      "bytes": 3079,
+      "sha256": "8b5baf54f674a4a5608b555300649c8ef670db33dfd552a7c6b84b39a55171f0"
+    },
+    "preparation/controller-commands/035-END.json": {
+      "bytes": 1534,
+      "sha256": "e4f21b04874a7fb44393876098047cb830018f1f8a40454f5f17c225c5ff93f9"
+    },
+    "preparation/controller-commands/035-START.json": {
+      "bytes": 1080,
+      "sha256": "d34766a1eca875008da0fbdfd016bcf1d9b6ab0cbbd9b0bd72c9a45cca86bfee"
+    },
+    "preparation/controller-commands/035-save-complete-derived-builder.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/035-save-complete-derived-builder.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/036-END.json": {
+      "bytes": 1762,
+      "sha256": "9caa50593392f163c907451f3e7c71953520a2d38a2f473d0968a6b7d916a28b"
+    },
+    "preparation/controller-commands/036-START.json": {
+      "bytes": 1324,
+      "sha256": "759fbea789a86a8b7438d56c709489487751be73b92c3163c0b683c6241c8868"
+    },
+    "preparation/controller-commands/036-create-apt-evidence.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/036-create-apt-evidence.stdout": {
+      "bytes": 65,
+      "sha256": "98b9c7fd47b549bdec246e8dfffdce24b0865715d7c98e9db57b85e224576e62"
+    },
+    "preparation/controller-commands/037-END.json": {
+      "bytes": 1413,
+      "sha256": "2d2b38f9821ea060cdf8fffddf3d82acdb38c1b88754a558ad01b09ae7b6ee19"
+    },
+    "preparation/controller-commands/037-START.json": {
+      "bytes": 974,
+      "sha256": "73b087256fa55aa68c2e5384aedac054787fc494493456864bbb1c6c3cb92a9f"
+    },
+    "preparation/controller-commands/037-start-apt-evidence.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/037-start-apt-evidence.stdout": {
+      "bytes": 20935,
+      "sha256": "964f076e81bf57fa3a20d288b18917f6dec363e55a81a6ff6cb20f9d09bef051"
+    },
+    "preparation/controller-commands/038-END.json": {
+      "bytes": 1392,
+      "sha256": "53f10b592bff25ac74c12a7170523d26c6c7cc850900bc65641d55933ab3ba93"
+    },
+    "preparation/controller-commands/038-START.json": {
+      "bytes": 957,
+      "sha256": "6a09bd3aea439dd9e045623759ee0eb4f971d28827820a9dbc489d4ce4ec1df8"
+    },
+    "preparation/controller-commands/038-actual-apt-inputs.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/038-actual-apt-inputs.stdout": {
+      "bytes": 20935,
+      "sha256": "964f076e81bf57fa3a20d288b18917f6dec363e55a81a6ff6cb20f9d09bef051"
+    },
+    "preparation/controller-commands/039-END.json": {
+      "bytes": 2032,
+      "sha256": "a34d191f99d983bce3dbbdafa5b4c7c1ffb89298f7f13af0c7dfac01d88527fd"
+    },
+    "preparation/controller-commands/039-START.json": {
+      "bytes": 1588,
+      "sha256": "d4d1c49d567517a6fd391845131ea3e60ceab5ab1817ca46ee8dac39abb570e1"
+    },
+    "preparation/controller-commands/039-create-bootstrap-probe.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/039-create-bootstrap-probe.stdout": {
+      "bytes": 65,
+      "sha256": "1e46dc6d6a5b75b62641dc10abd07e254b5e00c79884daef20c954d49638bd20"
+    },
+    "preparation/controller-commands/040-END.json": {
+      "bytes": 1419,
+      "sha256": "c97f750dd5cb3bd5e81d7c11b56c3724305c83ccb007331b4ecfe8525e8b8cdf"
+    },
+    "preparation/controller-commands/040-START.json": {
+      "bytes": 977,
+      "sha256": "1561d6e70e76f91038525472efb52d3a34465d5e93fe7f850f72e7dd3e4f73ac"
+    },
+    "preparation/controller-commands/040-start-bootstrap-probe.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/040-start-bootstrap-probe.stdout": {
+      "bytes": 270,
+      "sha256": "62ef67b73339888ddc5cbb2ee2be05d14b0b1a064cd9b15d0c8f00e84c1c302b"
+    },
+    "preparation/controller-commands/041-END.json": {
+      "bytes": 1405,
+      "sha256": "3c4ab799bd0a02c01911421e4676c1bcb2d4ccc3267674d45cd114a36a3b0764"
+    },
+    "preparation/controller-commands/041-START.json": {
+      "bytes": 960,
+      "sha256": "951c5cb9e44eff2a5b090b6769b11e1133d267d8d9bfcb17cd7c37589eed9f18"
+    },
+    "preparation/controller-commands/041-actual-bootstrap-tools.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/041-actual-bootstrap-tools.stdout": {
+      "bytes": 270,
+      "sha256": "62ef67b73339888ddc5cbb2ee2be05d14b0b1a064cd9b15d0c8f00e84c1c302b"
+    },
+    "preparation/controller-commands/042-END.json": {
+      "bytes": 3089,
+      "sha256": "50acf80a19a50a360c133d8032a40533366d7b8fb69dd1fe67a482fa4e40cfc0"
+    },
+    "preparation/controller-commands/042-START.json": {
+      "bytes": 2643,
+      "sha256": "9aa627db5b7daf25701cb3ce9dff22dd8cd660fa31d5df0d00de00a9378863b8"
+    },
+    "preparation/controller-commands/042-create-native-tool-probe.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/042-create-native-tool-probe.stdout": {
+      "bytes": 65,
+      "sha256": "cae179437631b8c999b65c795a21e9202d59705439d44c4375c5b09900b74c37"
+    },
+    "preparation/controller-commands/043-END.json": {
+      "bytes": 1426,
+      "sha256": "d6de3520e2b0814949fadc2c9ae5418312e460193a0922e6a7b9494b802c66de"
+    },
+    "preparation/controller-commands/043-START.json": {
+      "bytes": 979,
+      "sha256": "f31b1975fca6bfa0f5a78aee224e72147470e28e250f5351cddd40d1452b5ece"
+    },
+    "preparation/controller-commands/043-start-native-tool-probe.stderr": {
+      "bytes": 1152,
+      "sha256": "c0403e6fb191e2cb761b7ae3eddb701b2d2820450733644adf48c1b0efd613c2"
+    },
+    "preparation/controller-commands/043-start-native-tool-probe.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/044-END.json": {
+      "bytes": 1482,
+      "sha256": "4fa2e1e9f58a6cbaebb2d47ca742b28a0fe2a174323acae6fd5c04376c610e2e"
+    },
+    "preparation/controller-commands/044-START.json": {
+      "bytes": 1032,
+      "sha256": "0be33e94292ae702715430bbe986f7c48e8adf272a691707e78c949f75abdcd9"
+    },
+    "preparation/controller-commands/044-recover-owned-containers.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/044-recover-owned-containers.stdout": {
+      "bytes": 182,
+      "sha256": "fb09b331c8f88922529abd59eb52d37d9942f42ef6167aa534e71023d41f7499"
+    },
+    "preparation/controller-commands/045-END.json": {
+      "bytes": 1479,
+      "sha256": "f8a697b68e463b46ad92ee091df9ac546dd37f03db1456d3abf16e1c5f32211d"
+    },
+    "preparation/controller-commands/045-START.json": {
+      "bytes": 1036,
+      "sha256": "6557b28da1dd74cdad6c6c6c7a6ee90cf0521cf81cda6ef64d986d96fe81345b"
+    },
+    "preparation/controller-commands/045-recover-owned-networks.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/045-recover-owned-networks.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/046-END.json": {
+      "bytes": 1476,
+      "sha256": "939608ee8d5503b3944030097d96c8b590889ac9cdbffa02484411baebcfc4a4"
+    },
+    "preparation/controller-commands/046-START.json": {
+      "bytes": 1035,
+      "sha256": "effdb22bc2c9487e39373f2be02786a50823bd4a31a85ab5b61937aa9e4549ff"
+    },
+    "preparation/controller-commands/046-recover-owned-volumes.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/046-recover-owned-volumes.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/047-END.json": {
+      "bytes": 1430,
+      "sha256": "d26c0f8d3abd9468eaa132630b55c0bbce2deadcbf0b73d76449409d4d6f3224"
+    },
+    "preparation/controller-commands/047-START.json": {
+      "bytes": 980,
+      "sha256": "b53f178166cf7a7d378b3b691e1a8344823ffe0a80e72c11d9ffaf82f81d3955"
+    },
+    "preparation/controller-commands/047-cleanup-owned-container.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/047-cleanup-owned-container.stdout": {
+      "bytes": 12742,
+      "sha256": "7d88b97fa6346b34bf6850ed4e2a6e39dceec26bc616cb7cfc822a9ae5ec7b25"
+    },
+    "preparation/controller-commands/048-END.json": {
+      "bytes": 1400,
+      "sha256": "c58d04814f823a3293f3b6aa8d0efa0af087f8126cd4ac79ef770ac0b7c6d42f"
+    },
+    "preparation/controller-commands/048-START.json": {
+      "bytes": 960,
+      "sha256": "4b347d3670cec3ad13c72de7e4844dcf81bc188373c3bf14d9213826e916f3c0"
+    },
+    "preparation/controller-commands/048-container-final-log.stderr": {
+      "bytes": 1152,
+      "sha256": "c0403e6fb191e2cb761b7ae3eddb701b2d2820450733644adf48c1b0efd613c2"
+    },
+    "preparation/controller-commands/048-container-final-log.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/049-END.json": {
+      "bytes": 1414,
+      "sha256": "90907e19749b00f3ef5b1ef253952238dd3862ec9550e559c243f753f6893ef9"
+    },
+    "preparation/controller-commands/049-START.json": {
+      "bytes": 984,
+      "sha256": "f63f6a072fe47272efa24aa415da0c68fb56a915eb8a6f071e64a88bb8b520bc"
+    },
+    "preparation/controller-commands/049-container-stop.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/049-container-stop.stdout": {
+      "bytes": 118,
+      "sha256": "9e6d561716487dd98fb0440284ca4c148e96cc1c9288daa5c916d98217440af5"
+    },
+    "preparation/controller-commands/050-END.json": {
+      "bytes": 1391,
+      "sha256": "749571f448c12eb8e306149dd4ea7c29161925a7fd01e27e940f825c91df1d2d"
+    },
+    "preparation/controller-commands/050-START.json": {
+      "bytes": 958,
+      "sha256": "1029896c9be8fb110863e359accff99b5e81aadd504cb4df8b927ebae2d8d5d9"
+    },
+    "preparation/controller-commands/050-container-remove.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/050-container-remove.stdout": {
+      "bytes": 63,
+      "sha256": "22b2d5e3f19658dfbb77286019bfa4f2ffee4d3f6801297522d329fd3c3832f8"
+    },
+    "preparation/controller-commands/051-END.json": {
+      "bytes": 1426,
+      "sha256": "67b2c598a3fadefa6deb1a4528fc700538ee1b476da6c49e6d467db7230badf5"
+    },
+    "preparation/controller-commands/051-START.json": {
+      "bytes": 978,
+      "sha256": "2533ee85136d17a747b4f50c4ea9d1ae54d0bb362a9e173ea8606e66b1422b22"
+    },
+    "preparation/controller-commands/051-cleanup-owned-container.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/051-cleanup-owned-container.stdout": {
+      "bytes": 8864,
+      "sha256": "c1fd6877cec56276124ccafc02085d403f78550bd9e82d996e37c942aff5811c"
+    },
+    "preparation/controller-commands/052-END.json": {
+      "bytes": 1396,
+      "sha256": "e2106068cd3a4d85a344bed674b5a73b7d347c75a67815eff4bbd5402d583440"
+    },
+    "preparation/controller-commands/052-START.json": {
+      "bytes": 958,
+      "sha256": "1bfe407c9ca01cc029a0112b64ac42c1cf111f2ff1969e31df9786d37b9b8d2b"
+    },
+    "preparation/controller-commands/052-container-final-log.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/052-container-final-log.stdout": {
+      "bytes": 270,
+      "sha256": "62ef67b73339888ddc5cbb2ee2be05d14b0b1a064cd9b15d0c8f00e84c1c302b"
+    },
+    "preparation/controller-commands/053-END.json": {
+      "bytes": 1410,
+      "sha256": "31a5b467484a6d78f6e2109faa8bedade80155aaf5dca22642b545c8d76510d0"
+    },
+    "preparation/controller-commands/053-START.json": {
+      "bytes": 982,
+      "sha256": "f0c1b02dbdd7d3d892a0a372c10e1534b78e31d9acf55750d797c0a30161c3d3"
+    },
+    "preparation/controller-commands/053-container-stop.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/053-container-stop.stdout": {
+      "bytes": 116,
+      "sha256": "c5700d510eb0bed1611cff2143b9c0ab2708d90bd27714654b4b4fabf6fc1f93"
+    },
+    "preparation/controller-commands/054-END.json": {
+      "bytes": 1388,
+      "sha256": "a44ab07fd52ad6528f257eb700f2e897c93546fcb61fabe469b582000e46501e"
+    },
+    "preparation/controller-commands/054-START.json": {
+      "bytes": 956,
+      "sha256": "3772fe1621a49944454b0b6acd4d4c37264953456f97ae2699d784e7c923f061"
+    },
+    "preparation/controller-commands/054-container-remove.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/054-container-remove.stdout": {
+      "bytes": 61,
+      "sha256": "5728c588b667ccff6fd7748579c270887a47f0b1532036864718457d999e7ef3"
+    },
+    "preparation/controller-commands/055-END.json": {
+      "bytes": 1424,
+      "sha256": "e1913e791aac4b304d27f13079dd4383216f1f195347993fe47f32e15f0d8038"
+    },
+    "preparation/controller-commands/055-START.json": {
+      "bytes": 975,
+      "sha256": "288e18dcd8821a0315dbb5295572944da39c139db30c6b6ac2588108597d52b1"
+    },
+    "preparation/controller-commands/055-cleanup-owned-container.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/055-cleanup-owned-container.stdout": {
+      "bytes": 8299,
+      "sha256": "b3a9add55af409b6920f119a86c4bb6d1a65735ad2f860283d1beee07f8b12ca"
+    },
+    "preparation/controller-commands/056-END.json": {
+      "bytes": 1395,
+      "sha256": "9b797185a1e168a6acb6e0ea955adc2e8720726301962e2c68b8856deffc32b4"
+    },
+    "preparation/controller-commands/056-START.json": {
+      "bytes": 955,
+      "sha256": "cbc708ec260ddb5081756d13f9f9003cdbcb5336b39bbf08d6d70687d33d5dbd"
+    },
+    "preparation/controller-commands/056-container-final-log.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/056-container-final-log.stdout": {
+      "bytes": 20935,
+      "sha256": "964f076e81bf57fa3a20d288b18917f6dec363e55a81a6ff6cb20f9d09bef051"
+    },
+    "preparation/controller-commands/057-END.json": {
+      "bytes": 1409,
+      "sha256": "f687186e95c5b5ae3b895380ca173c61bf60835c899144697af0ec472569aff7"
+    },
+    "preparation/controller-commands/057-START.json": {
+      "bytes": 979,
+      "sha256": "44ed22c4a091c77c6da9810844081fdcf5c6b46a522c69cae7913a69fa9aab36"
+    },
+    "preparation/controller-commands/057-container-stop.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/057-container-stop.stdout": {
+      "bytes": 113,
+      "sha256": "8bea26602005aab9b70fcb0f0558e977f20a16a480163775752e39cd95d08f85"
+    },
+    "preparation/controller-commands/058-END.json": {
+      "bytes": 1384,
+      "sha256": "463aa7733df9b56283236be86e7cf56e76171ab463c4590044a783a5a9480b91"
+    },
+    "preparation/controller-commands/058-START.json": {
+      "bytes": 953,
+      "sha256": "387e1dfaefacf6a89500cd3d0b5ff154f2b987e4bb384856649475338dc8e21f"
+    },
+    "preparation/controller-commands/058-container-remove.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/058-container-remove.stdout": {
+      "bytes": 58,
+      "sha256": "199c87ab0bf120b7bc213dbf1e966cf063cc9ce4473a9227929f31639ca256b4"
+    },
+    "preparation/controller-commands/059-END.json": {
+      "bytes": 1433,
+      "sha256": "2f652510eae28bfd1e6561a3efab134b60d26078386c009bb8b21f73b6c04fa6"
+    },
+    "preparation/controller-commands/059-START.json": {
+      "bytes": 999,
+      "sha256": "3afe18934d6e77190670e7107170e7ec89fe6d2af37213adaf574626bed08276"
+    },
+    "preparation/controller-commands/059-absent-containers.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/059-absent-containers.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/060-END.json": {
+      "bytes": 1442,
+      "sha256": "1328032cd2f0bf35d8b892d6ef24c9323bc792b10f580c0dcdc67a3c129d2bab"
+    },
+    "preparation/controller-commands/060-START.json": {
+      "bytes": 1013,
+      "sha256": "3c97a4f306db83cfd6e8ec8e8238ba58baa393a786ab5a2167d53a45cf8aee63"
+    },
+    "preparation/controller-commands/060-absent-networks.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/060-absent-networks.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/061-END.json": {
+      "bytes": 1439,
+      "sha256": "fe670621c7c05de74bb240db6258a3dc1a14379acb542fa3a5e769b7e1ee7e73"
+    },
+    "preparation/controller-commands/061-START.json": {
+      "bytes": 1012,
+      "sha256": "037eabd01dfd77f1d9aa44a61f868709a92795fd713758bb5e72398a31b21989"
+    },
+    "preparation/controller-commands/061-absent-volumes.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/controller-commands/061-absent-volumes.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/plan/PROBE_PLAN.json": {
+      "bytes": 411,
+      "sha256": "50744573408b5de257642cf9a9e1489136ab870ecd7102a1b3a335312543497c"
+    },
+    "preparation/plan/SOURCE_SEAL.json": {
+      "bytes": 3157,
+      "sha256": "c16d4263120d22ad0dba0b87ff0aee6189c738bbc08ee4de4b3791739ea97233"
+    },
+    "preparation/source/SOURCE_SEAL.json": {
+      "bytes": 3157,
+      "sha256": "c16d4263120d22ad0dba0b87ff0aee6189c738bbc08ee4de4b3791739ea97233"
+    },
+    "preparation/source/policy-guard-000.json": {
+      "bytes": 52,
+      "sha256": "de2fcc616a9895a5ab216e9f59fe62a7d535d13ca6ef12dce713cd563e4f33a2"
+    },
+    "preparation/source/policy-guard-001.json": {
+      "bytes": 52,
+      "sha256": "de2fcc616a9895a5ab216e9f59fe62a7d535d13ca6ef12dce713cd563e4f33a2"
+    },
+    "preparation/source/producer/RESULT.json": {
+      "bytes": 31722,
+      "sha256": "c574e8d53e8b448eae0a75952e65bdf9b2b7f29849dee191873a74234b390247"
+    },
+    "preparation/source/producer/recipe.json": {
+      "bytes": 348278,
+      "sha256": "8c655b7b3c539527e6506869a52d0e98a88ed37e334e9d34d13be83713bce03f"
+    },
+    "preparation/source/source-final-commands/000-END.json": {
+      "bytes": 1390,
+      "sha256": "3d2f03a6ac44c3ca03cf6cebe92eaa8fb9c67569bec5f1d14f312ffc63b5b401"
+    },
+    "preparation/source/source-final-commands/000-START.json": {
+      "bytes": 977,
+      "sha256": "0f00d8f6c3a42395d20c0959bc813ee07a3e4c7e87cf9262f612a650926a41e0"
+    },
+    "preparation/source/source-final-commands/000-source-status.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/source/source-final-commands/000-source-status.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/source/source-final-commands/001-END.json": {
+      "bytes": 1361,
+      "sha256": "cf77709e1c366c0b05c5699a19256055daca0ce1314949abdfa77bfc55a421c5"
+    },
+    "preparation/source/source-final-commands/001-START.json": {
+      "bytes": 922,
+      "sha256": "9f0f495b797d2d0272ead7cc4a7a570a75462ea4a1d694f53b9f0ff702412c44"
+    },
+    "preparation/source/source-final-commands/001-qualification-tree.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "preparation/source/source-final-commands/001-qualification-tree.stdout": {
+      "bytes": 41,
+      "sha256": "1ed3926cf537840005235f85d4b262b472c041def43d4837dd90ec158575a730"
+    },
+    "preparation/tool-archives/cargo-nextest.tar.gz.receipt.json": {
+      "bytes": 773,
+      "sha256": "ef69369161eab4a806cf09b868de2ca65509a0f87ef40ee9afac458693851097"
+    },
+    "preparation/tool-archives/dotslash.tar.gz.receipt.json": {
+      "bytes": 711,
+      "sha256": "32b424ffe4a6fc9ecc01d28f74c092808ddc8cbd620900cb52609392e25e6347"
+    },
+    "preparation/tool-archives/just.tar.gz.receipt.json": {
+      "bytes": 708,
+      "sha256": "351af2267e1d55097f04c55520ddc2464bdf11870d120aacf09e344b62f092e4"
+    },
+    "preparation/tool-probe/bootstrap-tool-commands/000-END.json": {
+      "bytes": 1103,
+      "sha256": "e663bf18497846aa46f511ed17162176cc01d98fc58177b9e732aa40964f2cd8"
+    },
+    "preparation/tool-probe/bootstrap-tool-commands/000-START.json": {
+      "bytes": 690,
+      "sha256": "face0ad71cbc6981f55b56a72e3d90050a9f3c3ad7243f6a240ac879c8afec2f"
+    },
+    "preparation/tool-probe/bootstrap-tool-commands/000-actual-cargo.stderr": {
+      "bytes": 69,
+      "sha256": "708fed68fb2ca6a521717b5e182165a34d37ee84990c43035d0d2efa855e4596"
+    },
+    "preparation/tool-probe/bootstrap-tool-commands/000-actual-cargo.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/RESTORED_SOURCE.json": {
+      "bytes": 574,
+      "sha256": "997c473ebfe8abcb8138c2ba397dc72b3b179740c0da316569f2b8045a05a272"
+    },
+    "restore/controller-commands/000-END.json": {
+      "bytes": 1383,
+      "sha256": "ce1aaaa556d3289217ff5b03a87cf97e8b5ed141fb8d707954e21a2671fab3ef"
+    },
+    "restore/controller-commands/000-START.json": {
+      "bytes": 960,
+      "sha256": "c7247c255026477895b81ad5d7481c9e80319b9503bc6da7c551019892f1eb0f"
+    },
+    "restore/controller-commands/000-source-status.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/000-source-status.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/001-END.json": {
+      "bytes": 1326,
+      "sha256": "162410ef4b50a6b959e691a4cde5c55f6950b162ae34da32b1aed16837470de5"
+    },
+    "restore/controller-commands/001-START.json": {
+      "bytes": 898,
+      "sha256": "7737e534dc331244ee26242bf04bda64b78e1e9116545f04297ba971563845e5"
+    },
+    "restore/controller-commands/001-original-head.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/001-original-head.stdout": {
+      "bytes": 41,
+      "sha256": "bca6d75a2709ad581a559e14bf809ab4ffb669aaf74221b528d3240965384c68"
+    },
+    "restore/controller-commands/002-END.json": {
+      "bytes": 1349,
+      "sha256": "51a80c114797b1879872453813ed5d69bf8503f4c9772d0b4339eb9a1f7c6203"
+    },
+    "restore/controller-commands/002-START.json": {
+      "bytes": 900,
+      "sha256": "80352337a6ceb4e5c5d62558ebbe9ad7fcd54c14ffc40fcc7dfedcce5dd93334"
+    },
+    "restore/controller-commands/002-preimport-index-equals-worktree.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/002-preimport-index-equals-worktree.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/003-END.json": {
+      "bytes": 1365,
+      "sha256": "f6067846c3f8f6020a918cff790943a8626d45c11062f3dd610a1011fe396ad3"
+    },
+    "restore/controller-commands/003-START.json": {
+      "bytes": 927,
+      "sha256": "d87f20f766176f6065f463aad181fd0f888c2075cb23822a7f63ffe1fa4ac70c"
+    },
+    "restore/controller-commands/003-preimport-untracked.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/003-preimport-untracked.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/004-END.json": {
+      "bytes": 1377,
+      "sha256": "b58f715854ae292ca58ba82cd7de6f536427d8fffd7209b999e6adfcf488b8ec"
+    },
+    "restore/controller-commands/004-START.json": {
+      "bytes": 944,
+      "sha256": "f477518184a5797189badd7941c17865c31628b448c9b7e20e5065c7903a946c"
+    },
+    "restore/controller-commands/004-preimport-ignored.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/004-preimport-ignored.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/005-END.json": {
+      "bytes": 1424,
+      "sha256": "ed8355c06e45bf60fddb6b2b6138765a9dee120c66854add47a9895bdbc2d8f7"
+    },
+    "restore/controller-commands/005-START.json": {
+      "bytes": 966,
+      "sha256": "1852b31e26b393dcfd3d7b27176f1048bf9ca5b472ee7338fc84d3cab34800c3"
+    },
+    "restore/controller-commands/005-preimport-head-helper-blob.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/005-preimport-head-helper-blob.stdout": {
+      "bytes": 23593,
+      "sha256": "1ed425a91d5ac38b96d61f10dc4d41c6ca55755b088456f17beeeefa3f15092e"
+    },
+    "restore/controller-commands/006-END.json": {
+      "bytes": 1440,
+      "sha256": "b3638ad38f664872af42d387d18c3db3384d2682d24797de07a854b6a367c008"
+    },
+    "restore/controller-commands/006-START.json": {
+      "bytes": 986,
+      "sha256": "1792ee3402ddb0f6375dc8a6c3ea07c25d32f15d67e68496816df5173f05ba78"
+    },
+    "restore/controller-commands/006-preimport-head-helper-mode.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/006-preimport-head-helper-mode.stdout": {
+      "bytes": 90,
+      "sha256": "84d206c82e1ccfa6b5a2f7a062a05180e7f8f363aa0139fb734be453164ca37c"
+    },
+    "restore/controller-commands/007-END.json": {
+      "bytes": 1323,
+      "sha256": "593e20a13cc90d9354bb9b41a484cd9d010c993206d670289c1492e9ae5560cd"
+    },
+    "restore/controller-commands/007-START.json": {
+      "bytes": 898,
+      "sha256": "9205356b8c804f9d8f3c81d9c5839dab4070025dee91f9a0d96749e33fc78bf1"
+    },
+    "restore/controller-commands/007-source-head.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/007-source-head.stdout": {
+      "bytes": 41,
+      "sha256": "bca6d75a2709ad581a559e14bf809ab4ffb669aaf74221b528d3240965384c68"
+    },
+    "restore/controller-commands/008-END.json": {
+      "bytes": 1356,
+      "sha256": "e092e3ee0f08d03d350431c9c145b921c5b2cab502424979c9efb59dcf9d7809"
+    },
+    "restore/controller-commands/008-START.json": {
+      "bytes": 931,
+      "sha256": "3f38f354333abe794ec0ca3662f1407b2a9f4f6d2f1b6278038f0e8259382a58"
+    },
+    "restore/controller-commands/008-clean-checkout.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/008-clean-checkout.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/009-END.json": {
+      "bytes": 1401,
+      "sha256": "513f8712486ea93839bc47b19f94fbbc88c7638ba588ebf54a6146edb79b8a73"
+    },
+    "restore/controller-commands/009-START.json": {
+      "bytes": 975,
+      "sha256": "aac0b73d89bab42b90b418949306f9139699d06fa75a9d00fc8bcd701d1fb136"
+    },
+    "restore/controller-commands/009-patch-paths.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/009-patch-paths.stdout": {
+      "bytes": 1563,
+      "sha256": "ad0b03cf1d2b5278816590eb8e718162781e458c1ae58c15ec82c35049f04af3"
+    },
+    "restore/controller-commands/010-END.json": {
+      "bytes": 1420,
+      "sha256": "e17cd268b08af5d0ec2fafa2ba7d3f44cc0bc1dd4a4bf674d5a551e6f162f324"
+    },
+    "restore/controller-commands/010-START.json": {
+      "bytes": 978,
+      "sha256": "ed3ed098f191954f9a2b57e59bf99cd17fc5751cf7e955f879a101805a2dff45"
+    },
+    "restore/controller-commands/010-check-candidate-patch.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/010-check-candidate-patch.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/011-END.json": {
+      "bytes": 1391,
+      "sha256": "3aa67c06c6589f55b6e369725e3ddcd8e69d124bb5e872a9d283dce5200f94f6"
+    },
+    "restore/controller-commands/011-START.json": {
+      "bytes": 963,
+      "sha256": "fdb96cf56a81e0214820814b430fe628dd7b0be1e69199420bbed1f303f18eb2"
+    },
+    "restore/controller-commands/011-apply-candidate-patch.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/011-apply-candidate-patch.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/012-END.json": {
+      "bytes": 1322,
+      "sha256": "eb54d45faa3a5494ce5fc8202f36bc14d775b993b31e08f3304e96076046a16c"
+    },
+    "restore/controller-commands/012-START.json": {
+      "bytes": 898,
+      "sha256": "93254f809a6910287dfa77b2e5bf3a077825ec963576bb66483fd48f1b4c0243"
+    },
+    "restore/controller-commands/012-verify-head.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/012-verify-head.stdout": {
+      "bytes": 41,
+      "sha256": "bca6d75a2709ad581a559e14bf809ab4ffb669aaf74221b528d3240965384c68"
+    },
+    "restore/controller-commands/013-END.json": {
+      "bytes": 1370,
+      "sha256": "7facdb57f521b04fa92163efd536cbd3bfebc9d06de4f19596555d41a25d5a6d"
+    },
+    "restore/controller-commands/013-START.json": {
+      "bytes": 942,
+      "sha256": "2be3bfb80d824e2fc9a7647634b407f10e9b37fc86ef77c703e2deb0ba5b930b"
+    },
+    "restore/controller-commands/013-changed-paths.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/013-changed-paths.stdout": {
+      "bytes": 1385,
+      "sha256": "e24bd161c1a9f49a1c2cec4936d39f333c1e8dba5186fb520a7c2d447458c79d"
+    },
+    "restore/controller-commands/014-END.json": {
+      "bytes": 1365,
+      "sha256": "4615a6fa502eca384183ef66a9ee6bfdfcdc2f74fc3a5d8ca7c3e38307defd50"
+    },
+    "restore/controller-commands/014-START.json": {
+      "bytes": 937,
+      "sha256": "90eb346c8f22b0c3983cc1f93f81d264a9d0f3d8c4c8d42710bcbbb15889c694"
+    },
+    "restore/controller-commands/014-untracked-paths.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/014-untracked-paths.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/015-END.json": {
+      "bytes": 1476,
+      "sha256": "c6e89b0a3b2b15182f5a74884f2f54f7409ac1dc00e35b1aad8ac01f3a25cdde"
+    },
+    "restore/controller-commands/015-START.json": {
+      "bytes": 1033,
+      "sha256": "6f64d9c5535797d0099f3548d7295bc295a820c49c715583c153bad812a8be4d"
+    },
+    "restore/controller-commands/015-independent-base-index.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/015-independent-base-index.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/016-END.json": {
+      "bytes": 1528,
+      "sha256": "be221df8e75818447963ec837c59127509c82bfa393bedeedbd416eaca68d8e6"
+    },
+    "restore/controller-commands/016-START.json": {
+      "bytes": 1078,
+      "sha256": "204eb80ba46268f388802753567bfd2781343e1d55f74e1ea13dd573980f1574"
+    },
+    "restore/controller-commands/016-check-exact-producer-patch.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/016-check-exact-producer-patch.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/017-END.json": {
+      "bytes": 1515,
+      "sha256": "303e95872ffd803a5780f74bdeadd8f93d7978ecdd1cec874ddd5e800da26ff8"
+    },
+    "restore/controller-commands/017-START.json": {
+      "bytes": 1063,
+      "sha256": "2d72f476b5fd744e0fb366a8db5d1e679a8e562feb4e34682d4826f2f4abaeb5"
+    },
+    "restore/controller-commands/017-replay-exact-producer-patch.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/017-replay-exact-producer-patch.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/018-END.json": {
+      "bytes": 1425,
+      "sha256": "f614654447d07462a9db63e26102cfb644482fd9f6f16c124d77bd7458d90fbb"
+    },
+    "restore/controller-commands/018-START.json": {
+      "bytes": 986,
+      "sha256": "78ab94738449b5da36378daca79133770c3e9dbccc713b5c94c99b6913c5ba0a"
+    },
+    "restore/controller-commands/018-producer-patch-tree.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/018-producer-patch-tree.stdout": {
+      "bytes": 41,
+      "sha256": "1ed3926cf537840005235f85d4b262b472c041def43d4837dd90ec158575a730"
+    },
+    "restore/controller-commands/019-END.json": {
+      "bytes": 1357,
+      "sha256": "d051b90a2929b57ed764e2df15e3a1a95c76ba40843d88ca02d6dab6404794be"
+    },
+    "restore/controller-commands/019-START.json": {
+      "bytes": 917,
+      "sha256": "02f668642b0309771ca3cc750c331fa7230e64ad3ba5ce075dcbe03ef75e3918"
+    },
+    "restore/controller-commands/019-original-index-path.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/019-original-index-path.stdout": {
+      "bytes": 11,
+      "sha256": "742e1586a644af64934a892663d03c75415bfb01edafdfdd924a8627573bfb9c"
+    },
+    "restore/controller-commands/020-END.json": {
+      "bytes": 1441,
+      "sha256": "1fe612ece6b1ca63bea2a04c69c47cc4361f955ee0a1f7220ab8452b7e2364de"
+    },
+    "restore/controller-commands/020-START.json": {
+      "bytes": 986,
+      "sha256": "64632c9324f902618e6b11290337ad6d8cb2e5f6f4ccaa64825ea46e325c4edd"
+    },
+    "restore/controller-commands/020-actual-candidate-index-tree.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "restore/controller-commands/020-actual-candidate-index-tree.stdout": {
+      "bytes": 41,
+      "sha256": "1ed3926cf537840005235f85d4b262b472c041def43d4837dd90ec158575a730"
+    },
+    "restore/policy-guard-000.json": {
+      "bytes": 115,
+      "sha256": "8cace8d0ae525c7fb64be2f6b1ec51c525308fbed2832cb6d30e20026011af3f"
+    },
+    "restore/policy-guard-001.json": {
+      "bytes": 574,
+      "sha256": "997c473ebfe8abcb8138c2ba397dc72b3b179740c0da316569f2b8045a05a272"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/RESULT.json": {
+      "bytes": 10650,
+      "sha256": "f1119f4f83717ea5f88461b883f617edb547949045f454426015325fb8841909"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/STARTED.json": {
+      "bytes": 154,
+      "sha256": "9f9f9bef48d836bbe213e499a3f81385b712e5ee10dfbc7cf83edcb74cc223b3"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/controller-commands/000-END.json": {
+      "bytes": 1519,
+      "sha256": "62a8b019be6978b46a495b13cb68723e9e3539cb638c1f149b65bfcede32f384"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/controller-commands/000-START.json": {
+      "bytes": 1071,
+      "sha256": "43f58f2b618a4a779cc1af2f60dc1c980885b145fb734b09cc0820430d496f01"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/controller-commands/000-recover-owned-containers.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/controller-commands/000-recover-owned-containers.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/controller-commands/001-END.json": {
+      "bytes": 1519,
+      "sha256": "76b25e524a1d9e3ee9ea97ca131f395e425cf1749b0ec18fda01cdf70eb3ddaf"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/controller-commands/001-START.json": {
+      "bytes": 1075,
+      "sha256": "615cd902a4b3989de947f63216dc0368bc35c5983cbf765eb0c7620178d951e6"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/controller-commands/001-recover-owned-networks.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/controller-commands/001-recover-owned-networks.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/controller-commands/002-END.json": {
+      "bytes": 1516,
+      "sha256": "a8b9bf8d545aebc53465ea36c9d721c5b8002b9a79b3072ef7619f3b566d29a6"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/controller-commands/002-START.json": {
+      "bytes": 1074,
+      "sha256": "715a44e46e28b61800c3a0a348d16e12d90d2479a6641368fcf00bab82ca302d"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/controller-commands/002-recover-owned-volumes.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/controller-commands/002-recover-owned-volumes.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/controller-commands/003-END.json": {
+      "bytes": 1470,
+      "sha256": "29ae251556cbfb4042ce8169945903510e3b78260c5307699aa2ddd5c3644ae6"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/controller-commands/003-START.json": {
+      "bytes": 1038,
+      "sha256": "843734cfd51ecd2ac935991cf354299f76cb48e63d85b6d393dd914856f0abaf"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/controller-commands/003-absent-containers.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/controller-commands/003-absent-containers.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/controller-commands/004-END.json": {
+      "bytes": 1481,
+      "sha256": "53bff195921f3ab1197213d270bdbcd8be703a58ae4d6777c917dd8cb4f0af9d"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/controller-commands/004-START.json": {
+      "bytes": 1052,
+      "sha256": "095c055679a462da7a20bf653a160b8cc3aa4db59bf6284003ba6e1790f44a9a"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/controller-commands/004-absent-networks.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/controller-commands/004-absent-networks.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/controller-commands/005-END.json": {
+      "bytes": 1478,
+      "sha256": "556bf8196210be160907e3cfb8ab59dd6ebb702c9d62f4030dbbdbcab87c81bf"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/controller-commands/005-START.json": {
+      "bytes": 1051,
+      "sha256": "c320f3268ba832ce3ff161b90c95343325f3f82b2ab09bf31c1dfe042b8891e3"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/controller-commands/005-absent-volumes.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/controller-commands/005-absent-volumes.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "teardown-recovery-512312ec27514ba2be4db1b2ccd6fa97/preparation/TEARDOWN.json": {
+      "bytes": 184,
+      "sha256": "2aa2255d8299ec225c0c7e4278893ec19cdaba2da16f8c505451aa4ad843a4c5"
+    }
+  },
+  "parts": [
+    {
+      "file": "part-01.tar.part",
+      "bytes": 1249280,
+      "sha256": "f3d67a12239c345e405f70e193fba040b2fef4bc517a74a3f8c1b42aefb5df6c"
+    }
+  ],
+  "reconstruction": "Verify part hashes, concatenate parts in listed order, open as tar, then verify every member against files. An incomplete export is not a complete diagnostic record.",
+  "original_artifact_unchanged": true,
+  "qualification_or_promotion": false,
+  "workflow": {
+    "GITHUB_RUN_ID": "40661665504",
+    "GITHUB_RUN_ATTEMPT": "1",
+    "GITHUB_SHA": "c94ee75afd9d1d16eb1452f78c6e9cd23fca0f13"
+  },
+  "tar_sha256": "f3d67a12239c345e405f70e193fba040b2fef4bc517a74a3f8c1b42aefb5df6c",
+  "native_tool_probe": [
+    {
+      "stdout": {
+        "path": "preparation/controller-commands/043-start-native-tool-probe.stdout",
+        "identity": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "stderr": {
+        "path": "preparation/controller-commands/043-start-native-tool-probe.stderr",
+        "identity": {
+          "bytes": 1152,
+          "sha256": "c0403e6fb191e2cb761b7ae3eddb701b2d2820450733644adf48c1b0efd613c2"
+        }
+      },
+      "start": {
+        "path": "preparation/controller-commands/043-START.json",
+        "identity": {
+          "bytes": 979,
+          "sha256": "f31b1975fca6bfa0f5a78aee224e72147470e28e250f5351cddd40d1452b5ece"
+        }
+      },
+      "end": {
+        "path": "preparation/controller-commands/043-END.json",
+        "identity": {
+          "bytes": 1426,
+          "sha256": "d6de3520e2b0814949fadc2c9ae5418312e460193a0922e6a7b9494b802c66de"
+        }
+      }
+    }
+  ],
+  "file_count": 398,
+  "selected_bytes": 975286
+}

@@ -1,0 +1,162 @@
+{
+  "schema": "windows-three-fix-manifest/v1",
+  "created_utc": "2026-10-28T10:32:51.699806+00:00",
+  "base_commit": "832b2a382a155bc840df0d255b2c183a43b0d219",
+  "observed_head": "832b2a382a155bc840df0d255b2c183a43b0d219",
+  "status": "implemented_and_formatted_pending_compile_and_runtime_CI",
+  "source_files": [
+    {
+      "path": "codex-rs/ext/hepta-memory/src/framing_tests.rs",
+      "bytes": 1984,
+      "sha256": "e6b8fba60208304eb59f88ca773074eefb3e4fe503ce64e8048cffc1f2125c1e",
+      "mode": "100644",
+      "base_sha256": "aa362aeeeeb92acd06d0272ed50c46df397dd00e97e2501eb086f5a48aa6538c"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/restart_budget.rs",
+      "bytes": 8137,
+      "sha256": "29002ff38ef0ca3f88e53f0ef7f2fe2b323ffaa95d227153f90da5e83a86b4f7",
+      "mode": "100644",
+      "base_sha256": "51f36c3f3fd7f57755d6b6c0b9df3a5e2233dfb4f630bf18d9115341c474b93c"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/recovery.rs",
+      "bytes": 15564,
+      "sha256": "7e44c18caa1db88f1caf283c884bfbcd406f315cd9bd77eed0b328c5a30c33ea",
+      "mode": "100644",
+      "base_sha256": "c5e93d67fbe8aa1e7d5276721247a46354fc8b6f159534e314d210ce8d888e50"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+      "bytes": 11528,
+      "sha256": "fde0ee26cf35d971d6277a317d2801a9054f218e4ad15f312bd46fa278912e26",
+      "mode": "100644",
+      "base_sha256": "1851a4f88fb35d3d10ad0aba7543c7aba5d1e2f35faed3e364c10ec0fb0d32f6"
+    },
+    {
+      "path": "codex-rs/hepta-matrixd/src/control.rs",
+      "bytes": 31720,
+      "sha256": "b5ba05598ee623f9c3f68e678f3e5754087de970b69d0a540ba5148974c76325",
+      "mode": "100644",
+      "base_sha256": "1836968b6f7f16e808591e380e583e5a66067767a546288c00d7fb0537461604"
+    },
+    {
+      "path": "codex-rs/hepta-matrixd/src/control_platform_tests.rs",
+      "bytes": 5177,
+      "sha256": "35e82ef785aa61675918f13c8ebf27de10a26767637c5068d2cd4683297975ab",
+      "mode": "100644",
+      "base_sha256": null
+    }
+  ],
+  "reference_files": [
+    {
+      "path": "codex-rs/ext/hepta-memory/src/framing.rs",
+      "sha256": "529297fc521bfed2d9ff6f7a515547d36ae6a4adaaf5e34a20d15507ea4a2e36"
+    },
+    {
+      "path": "codex-rs/uds/src/lib.rs",
+      "sha256": "b81907ec7757b85cce001328f272c9d1c3467e42b8772d667b09b17a7d455c75"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick.rs",
+      "sha256": "0e0600077443692bfbb755392bdd3182465eb7ca8d424e11fe9daaec6d34cca4"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/restart_journal.rs",
+      "sha256": "da99147a71f63066bb131d3f67d126f28e174db022ce18a78a0e79bf8d8a2a3f"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "sha256": "98ce7286ce2b9680bfb2838ec14e969c2333d7818c7ed14711263a08003e0b48"
+    },
+    {
+      "path": "codex-rs/hepta-matrixd/BUILD.bazel",
+      "sha256": "239259f6f7d3065f9574bade319df087c1c1974274bb1917f4e58678bea32dd3"
+    }
+  ],
+  "input_logs": [
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_832_three_fixes/windows-122730593496-failure-excerpts.log",
+      "sha256": "3de186929df699aeab3ed9fe5497677f4f557a74e9f102ae448fc7f5fd857034",
+      "bytes": 10382,
+      "kind": "verbatim relevant failure excerpts, not the complete job log",
+      "workflow_run": 40661665726,
+      "job": 122730593496
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_832_three_fixes/windows-122730593641-failure-excerpts.log",
+      "sha256": "6f2b351e3f5eea51dabd9841a5796e32aad4a2b531c338c39f43afcc55d91fcd",
+      "bytes": 7188,
+      "kind": "verbatim relevant failure excerpts, not the complete job log",
+      "workflow_run": 40661665726,
+      "job": 122730593641
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_832_three_fixes/REVIEW.md",
+      "bytes": 4535,
+      "sha256": "30906764f4b3b1ab88061e282d4fbf066ed198a1d8b925ead8ed750024ce99ed",
+      "mode": "100644"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_832_three_fixes/VALIDATION.json",
+      "bytes": 6809,
+      "sha256": "09d1635740068ae4fb800e1734706606ee3e7872f0407099a70e7330cf1d1eb9",
+      "mode": "100644"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_832_three_fixes/just-fix-01.log",
+      "bytes": 462,
+      "sha256": "73c71fa32cb474620f4b6e0ddc8130068b59aef2a10d663afa9aab8964785d83",
+      "mode": "100644"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_832_three_fixes/just-fix-02.log",
+      "bytes": 462,
+      "sha256": "73c71fa32cb474620f4b6e0ddc8130068b59aef2a10d663afa9aab8964785d83",
+      "mode": "100644"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_832_three_fixes/just-fix-03.log",
+      "bytes": 462,
+      "sha256": "73c71fa32cb474620f4b6e0ddc8130068b59aef2a10d663afa9aab8964785d83",
+      "mode": "100644"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_832_three_fixes/just-test-01.log",
+      "bytes": 499,
+      "sha256": "e81097acc8643f3069b3041813e61895acdcbe6f7ba1de0f55ff96dc4502c670",
+      "mode": "100644"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_832_three_fixes/just-test-02.log",
+      "bytes": 499,
+      "sha256": "e81097acc8643f3069b3041813e61895acdcbe6f7ba1de0f55ff96dc4502c670",
+      "mode": "100644"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_832_three_fixes/just-test-03.log",
+      "bytes": 499,
+      "sha256": "e81097acc8643f3069b3041813e61895acdcbe6f7ba1de0f55ff96dc4502c670",
+      "mode": "100644"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_832_three_fixes/windows-122730593496-failure-excerpts.log",
+      "bytes": 10382,
+      "sha256": "3de186929df699aeab3ed9fe5497677f4f557a74e9f102ae448fc7f5fd857034",
+      "mode": "100644"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_832_three_fixes/windows-122730593641-failure-excerpts.log",
+      "bytes": 7188,
+      "sha256": "6f2b351e3f5eea51dabd9841a5796e32aad4a2b531c338c39f43afcc55d91fcd",
+      "mode": "100644"
+    }
+  ],
+  "publication_scope": "Only these six source files and this independent evidence directory; excludes concurrent Synapse and previous frozen research files.",
+  "remaining_blockers": [
+    "Local workspace manifest loading prevents Rust compilation/tests.",
+    "Windows and Unix actual execution must establish the new assertions."
+  ]
+}

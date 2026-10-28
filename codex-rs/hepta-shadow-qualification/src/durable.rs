@@ -1,3 +1,4 @@
+#[cfg(not(windows))]
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Read;
@@ -118,7 +119,21 @@ pub(crate) fn verify_private_tree(root: &Path) -> Result<(), QualificationError>
 }
 
 pub(crate) fn sync_directory(path: &Path) -> Result<(), QualificationError> {
-    File::open(path)?.sync_all()?;
+    #[cfg(windows)]
+    let directory = {
+        use std::os::windows::fs::OpenOptionsExt;
+
+        // Windows directory handles need BACKUP_SEMANTICS, and
+        // FlushFileBuffers requires write access. Do not ignore sync errors.
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(0x0200_0000)
+            .open(path)?
+    };
+    #[cfg(not(windows))]
+    let directory = File::open(path)?;
+    directory.sync_all()?;
     Ok(())
 }
 

@@ -1,0 +1,34 @@
+test_ancestor_symlink_rejected_before_any_external_write (linux_synapse.test_boundaries.FileBoundaries.test_ancestor_symlink_rejected_before_any_external_write) ... ok
+test_compiler_overrides_even_empty_fail_closed (linux_synapse.test_boundaries.FileBoundaries.test_compiler_overrides_even_empty_fail_closed) ... ok
+test_contract_digest_and_platform_rejected_before_execution (linux_synapse.test_boundaries.FileBoundaries.test_contract_digest_and_platform_rejected_before_execution) ... ok
+test_copy_readback_and_changed_input_rejected (linux_synapse.test_boundaries.FileBoundaries.test_copy_readback_and_changed_input_rejected) ... ok
+test_invalid_paths_do_not_create_output (linux_synapse.test_boundaries.FileBoundaries.test_invalid_paths_do_not_create_output) ... ok
+test_missing_cargo_home_retains_observed_failure_bytes (linux_synapse.test_boundaries.FileBoundaries.test_missing_cargo_home_retains_observed_failure_bytes) ... ok
+test_nonoverwriting_atomic_publication (linux_synapse.test_boundaries.FileBoundaries.test_nonoverwriting_atomic_publication) ... ok
+test_nonzero_child_keeps_exact_stdout_stderr (linux_synapse.test_boundaries.FileBoundaries.test_nonzero_child_keeps_exact_stdout_stderr) ... ok
+test_pinned_synapse_publisher_labels_and_mutations (linux_synapse.test_boundaries.FileBoundaries.test_pinned_synapse_publisher_labels_and_mutations) ... ok
+test_symlink_and_special_file_rejected (linux_synapse.test_boundaries.FileBoundaries.test_symlink_and_special_file_rejected) ... ok
+test_tool_probe_passes_image_cargo_home_without_host_environment (linux_synapse.test_boundaries.FileBoundaries.test_tool_probe_passes_image_cargo_home_without_host_environment) ... ok
+test_interrupted_create_is_discovered_but_foreign_identity_is_never_removed (linux_synapse.test_cleanup.TeardownEvidence.test_interrupted_create_is_discovered_but_foreign_identity_is_never_removed) ... ok
+test_timed_out_control_command_keeps_a_failure_receipt (linux_synapse.test_cleanup.TeardownEvidence.test_timed_out_control_command_keeps_a_failure_receipt) ... ok
+test_full_inventory_selects_one_actual_frozen_path_and_rejects_tamper (linux_synapse.test_execution.ExecutionEvidence.test_full_inventory_selects_one_actual_frozen_path_and_rejects_tamper) ... ok
+test_junit_requires_one_success_and_no_hidden_skips_or_reruns (linux_synapse.test_execution.ExecutionEvidence.test_junit_requires_one_success_and_no_hidden_skips_or_reruns) ... ok
+test_integrated_restore_preserves_committed_tree_and_independent_replay (linux_synapse.test_restore.ProducerRestore.test_integrated_restore_preserves_committed_tree_and_independent_replay) ... Running source-head: git rev-parse HEAD
+Running clean-checkout: git status --porcelain --untracked-files=all
+Running patch-paths: git apply --numstat -z /tmp/tmpuc2o6d0d/artifact/candidate.patch
+Running check-candidate-patch: git apply --check --index /tmp/tmpuc2o6d0d/artifact/candidate.patch
+Running apply-candidate-patch: git apply --index /tmp/tmpuc2o6d0d/artifact/candidate.patch
+Running verify-head: git rev-parse HEAD
+Running changed-paths: git diff --no-renames --name-only -z HEAD
+Running untracked-paths: git ls-files --others --exclude-standard -z
+ok
+test_original_restore_guards_then_identical_private_tree_without_host_rust (linux_synapse.test_restore.ProducerRestore.test_original_restore_guards_then_identical_private_tree_without_host_rust) ... ok
+test_candidate_mode_drift_rejected_by_exact_patch_tree (linux_synapse.test_source.SourceImportBoundary.test_candidate_mode_drift_rejected_by_exact_patch_tree) ... ok
+test_staged_matching_bytecode_cache_is_never_executed (linux_synapse.test_source.SourceImportBoundary.test_staged_matching_bytecode_cache_is_never_executed) ... ok
+test_staged_or_unstaged_helper_tamper_never_executes (linux_synapse.test_source.SourceImportBoundary.test_staged_or_unstaged_helper_tamper_never_executes) ... ok
+test_staged_stdlib_shadow_is_not_imported (linux_synapse.test_source.SourceImportBoundary.test_staged_stdlib_shadow_is_not_imported) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 10.467s
+
+OK

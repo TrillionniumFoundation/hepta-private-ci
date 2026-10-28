@@ -10,6 +10,8 @@ codex_rust_crate(
     ],
     extra_binaries = [
         "//codex-rs/bwrap:bwrap",
+        "//codex-rs/windows-sandbox-rs:codex-command-runner",
+        "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup",
     ],
     integration_compile_data_extra = [
         "src/proto/codex.exec_server.relay.v1.rs",
@@ -18,6 +20,8 @@ codex_rust_crate(
     # process-global test-binary dispatch state, and the remote exec-server
     # cases already rely on serialization around the full CLI path.
     integration_test_args = ["--test-threads=1"],
+    # The Windows sandbox fixture needs actual helper paths on manifest-only Bazel.
+    integration_test_runfiles_launcher = True,
     test_tags = ["no-sandbox"],
     unit_test_args = ["--test-threads=1"],
 )

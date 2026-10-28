@@ -1,0 +1,179 @@
+{
+  "base_commit": "832b2a382a155bc840df0d255b2c183a43b0d219",
+  "classification_and_repairs": [
+    {
+      "cause": "Ordinary Windows directory File::open(...).sync_all() fails with AccessDenied.",
+      "production_changes": [
+        "hepta-operator-acceptance/src/durable.rs",
+        "hepta-shadow-qualification/src/durable.rs"
+      ],
+      "repair": "Open only directory-sync handles with read+write+FILE_FLAG_BACKUP_SEMANTICS on Windows; retain existing non-Windows path, every sync error, and file identity/reparse validation.",
+      "scope": "operator acceptance 3 durable failures and shadow qualification 17 failures",
+      "tests": "Cross-platform write/readback/no-overwrite, missing directory rejection; actual Windows incompatible-sharing handle causes error and release permits sync."
+    },
+    {
+      "cause": "Fixtures invoke /usr/bin/ssh-keygen even before cross-platform policy tests; only two actual signature verification positive paths are production Unix-only.",
+      "production_verifier_changed": false,
+      "repair": "Shared fixture retains real OpenSSH generation/fingerprint on Unix. Non-Unix constructs a real deterministic Rust Ed25519 public key, canonical SSH blob and SHA256 fingerprint; production policy digest/key/namespace paths remain exercised. Only two Unix verification positives are scoped; non-Unix directly tests the exact unsupported errors plus unchanged trust/challenge trees and no verified signature.",
+      "scope": "operator trust/G5 10 shared fixture failures"
+    },
+    {
+      "cause": "Both require DurablePromptRegistry and FinalUseAuthority; underlying production explicitly returns UnsafeStateDirectory on non-Unix.",
+      "production_owner_changed": false,
+      "repair": "Scope exactly those two positive tests and their private fixture-only imports/functions to Unix. Non-Unix executes real registry and authority opens on missing and existing state paths, requires exact UnsafeStateDirectory and compares all original state/sidecar/pointer/tree bytes.",
+      "scope": "prompt optimizer 2 canonical durable-owner tests"
+    }
+  ],
+  "files": [
+    {
+      "bytes": 15413,
+      "lines": 450,
+      "old_sha256": "3276ff205c520772f93183b3b174c48720346b9cf7447ef72cd86af28565b367",
+      "path": "codex-rs/hepta-operator-acceptance/src/durable.rs",
+      "sha256": "c6143c19c6cd376abea528a21266b8a238b95d0d60e445c412293b88bc68ad0e"
+    },
+    {
+      "bytes": 2002,
+      "lines": 55,
+      "old_sha256": null,
+      "path": "codex-rs/hepta-operator-acceptance/src/durable_sync_tests.rs",
+      "sha256": "dc05dbf8c24ef5775661de4b3fc6cbd4448b3f097b7f6a208cc089dc9fd1a453"
+    },
+    {
+      "bytes": 15876,
+      "lines": 429,
+      "old_sha256": "7715079dc8ff96545b263bc370ff8809c08a4c78fe915b3877836c60af85d871",
+      "path": "codex-rs/hepta-operator-acceptance/src/g5_trust_tests.rs",
+      "sha256": "2108e0dfe46d9c322447becbb1e8143ff50e4cffa0bb2c91eb8f0839dfdd66e6"
+    },
+    {
+      "bytes": 3432,
+      "lines": 91,
+      "old_sha256": "f57fd28fa22d99cde286dba188f425fed765dece42ec8810359f620785911045",
+      "path": "codex-rs/hepta-operator-acceptance/src/test_support.rs",
+      "sha256": "8b8ced0a90e7c7e9508c7403e1476b8c3f7c34c76a045d885dd0323f88e8900b"
+    },
+    {
+      "bytes": 9508,
+      "lines": 269,
+      "old_sha256": "aa76ba9ddd0a5a235d69a1e0b44e57ab1adc55b88a74a5b06287706f1d7d963d",
+      "path": "codex-rs/hepta-operator-acceptance/src/trust_tests.rs",
+      "sha256": "d3e686c3f7d925b24db9df0d866395fe21e3472cefe21809d153ea259fb74855"
+    },
+    {
+      "bytes": 51158,
+      "lines": 1392,
+      "old_sha256": "fa6295111aaf259c8a5263a8488351eeea10f84c92837a09c1369c7dea92a4a1",
+      "path": "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
+      "sha256": "a2e2974b7b46ae5e6c3313c03ae788186564bc4e899bcf577668ee10406eab10"
+    },
+    {
+      "bytes": 3143,
+      "lines": 84,
+      "old_sha256": null,
+      "path": "codex-rs/hepta-prompt-optimizer/src/canonical_platform_tests.rs",
+      "sha256": "2ffa01b227cbbde62d4c2dd4ebd488f78afe22adfdfe6c632713cbb338891cf7"
+    },
+    {
+      "bytes": 23886,
+      "lines": 668,
+      "old_sha256": "8292a5492a517fc6f7e2b7a8db2c3b403398947d16166503ea66f629732290a8",
+      "path": "codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs",
+      "sha256": "4e96671d8a9dca37846e556d2c37174b060bc6abc4a378c8140dde7c8ed1f563"
+    },
+    {
+      "bytes": 5847,
+      "lines": 183,
+      "old_sha256": "f4daa6b0fbf2edcd8685a917dc6cf9e9ce8b024ff01865ed4343cf06efe6b433",
+      "path": "codex-rs/hepta-shadow-qualification/src/durable.rs",
+      "sha256": "1ad9100e7acfb8b9530046ddb65810f5cc648db2e8e9d2f12c80fc5ac7d43a42"
+    },
+    {
+      "bytes": 2378,
+      "lines": 70,
+      "old_sha256": "00f0f925e741020dafed195c3e9e39698857f17030e388911713f2546f6478c6",
+      "path": "codex-rs/hepta-shadow-qualification/src/durable_tests.rs",
+      "sha256": "b0eb8bef8f822461a1ca350fdcf76c3df1d40b84c448a76ea610094b5110b736"
+    }
+  ],
+  "original_evidence": {
+    "job_id": 122710332255,
+    "log_path": "/workspace/scratch/627fa3bea56c/stage_ci_diagnostics/windows-shard4-122710332255.log",
+    "operator_acceptance": {
+      "failed": 13,
+      "passed": 13
+    },
+    "prompt_optimizer": {
+      "failed": 2,
+      "passed": 30
+    },
+    "sha256": "0247034eab05a4d6c97f6c68b86e7bc7b82360b103d057e647f05e20ed1a0123",
+    "shadow_qualification": {
+      "failed": 17,
+      "passed": 14
+    }
+  },
+  "publication": "No commit or push by this agent; parent reviews and publishes.",
+  "schema": "hepta.windows-three-crate-repair-manifest.v1",
+  "scope_limits": [
+    "No change to Windows production signature support or Unix secure-owner requirements.",
+    "No claim of Windows ACL ownership verification or power-failure durability from directory flush alone.",
+    "No Rust dependencies, lockfiles, production sandbox policy or test skip mechanisms changed."
+  ],
+  "test_execution_contract": {
+    "build_filters_or_target_compatibility_changed": false,
+    "mixed_unit_targets_remain_cross_platform": true,
+    "new_ignored_tests": 0,
+    "new_zero_test_filtered_targets": 0,
+    "reason_no_target_compatibility_change": "These existing targets run mixed complete unit suites, not dedicated Unix qualification filters; substantive non-Unix tests remain in the same targets.",
+    "unix_positives_preserved": true,
+    "windows_count_basis": "Original logged counts; operator replaces two Unix positives with two exact non-Unix negatives and adds three directory tests; optimizer replaces two owner positives with two exact negatives; shadow adds three directory tests.",
+    "windows_expected_counts_not_yet_run": {
+      "operator_acceptance": 29,
+      "prompt_optimizer": 32,
+      "shadow_qualification": 34
+    }
+  },
+  "validation": {
+    "diff_check_exit_code": 0,
+    "format_record_sha256": "cb7061afb8a222fba8374d021b8acc0b1f1463d5cf9c0f352ac990335ee6bb52",
+    "native_compile_or_test_success_claimed": false,
+    "remaining_gate": "Real Linux/macOS/Windows CI; parent owns final shared just fmt --check.",
+    "rustfmt_parse": "PASS Rust1.95 edition2024",
+    "scoped_repository_formatter": "PASS scripts/format.py scoped_formatter_groups+run_formatter_group on only ten owned paths, authorized by parent",
+    "test_and_fix": [
+      {
+        "command": [
+          "/tmp/hepta-just-1.51.0/just",
+          "test",
+          "-p",
+          "codex-hepta-operator-acceptance",
+          "-p",
+          "codex-hepta-prompt-optimizer",
+          "-p",
+          "codex-hepta-shadow-qualification",
+          "--lib"
+        ],
+        "exit_code": 101,
+        "output": "RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py \"$@\"\nerror: failed to load manifest for workspace member `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth`\nreferenced by workspace at `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/Cargo.toml`\n\nCaused by:\n  failed to read `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth/Cargo.toml`\n\nCaused by:\n  No such file or directory (os error 2)\nerror: recipe `test` failed on line 89 with exit code 101\n",
+        "seconds": 0.12389430400071433
+      },
+      {
+        "command": [
+          "/tmp/hepta-just-1.51.0/just",
+          "fix",
+          "-p",
+          "codex-hepta-operator-acceptance",
+          "-p",
+          "codex-hepta-prompt-optimizer",
+          "-p",
+          "codex-hepta-shadow-qualification"
+        ],
+        "exit_code": 101,
+        "output": "cargo clippy --fix --tests --allow-dirty {args}\nerror: failed to load manifest for workspace member `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth`\nreferenced by workspace at `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/Cargo.toml`\n\nCaused by:\n  failed to read `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth/Cargo.toml`\n\nCaused by:\n  No such file or directory (os error 2)\nerror: recipe `fix` failed on line 58 with exit code 101\n",
+        "seconds": 0.0825106920019607
+      }
+    ],
+    "validation_record_sha256": "0af5b1cce64f9686242e2d91c00aafaf65a21fdaa08462f4818f59ef353a876d"
+  }
+}

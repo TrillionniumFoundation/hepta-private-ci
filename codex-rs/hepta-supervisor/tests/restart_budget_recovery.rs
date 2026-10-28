@@ -245,7 +245,15 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     let (mut supervisor, recovered) =
         Supervisor::recover(registry.clone(), control.driver(), config(), now)?;
     assert_eq!(recovered, TickReport::default());
-    assert!(supervisor.snapshot(&agent_id).expect("snapshot").active);
+    let snapshot = supervisor.snapshot(&agent_id).expect("snapshot");
+    assert_eq!(
+        (
+            snapshot.active,
+            snapshot.restart_attempt,
+            snapshot.restart_pending
+        ),
+        (true, 1, false)
+    );
     now += Duration::from_millis(1);
     control.crash(&agent_id);
     assert_eq!(supervisor.tick(now), TickReport::default());
@@ -276,6 +284,15 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     let (mut supervisor, recovered) =
         Supervisor::recover(registry.clone(), control.driver(), config(), now)?;
     assert_eq!(recovered, TickReport::default());
+    let snapshot = supervisor.snapshot(&agent_id).expect("snapshot");
+    assert_eq!(
+        (
+            snapshot.active,
+            snapshot.restart_attempt,
+            snapshot.restart_pending
+        ),
+        (true, 2, false)
+    );
     now += Duration::from_millis(1);
     control.crash(&agent_id);
     assert_eq!(supervisor.tick(now), TickReport::default());
@@ -302,6 +319,15 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     let (mut supervisor, recovered) =
         Supervisor::recover(registry, control.driver(), config(), now)?;
     assert_eq!(recovered, TickReport::default());
+    let snapshot = supervisor.snapshot(&agent_id).expect("snapshot");
+    assert_eq!(
+        (
+            snapshot.active,
+            snapshot.restart_attempt,
+            snapshot.restart_pending
+        ),
+        (true, 3, false)
+    );
     now += Duration::from_millis(1);
     control.crash(&agent_id);
     assert_eq!(

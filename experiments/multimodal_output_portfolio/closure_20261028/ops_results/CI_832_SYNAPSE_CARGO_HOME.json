@@ -1,0 +1,364 @@
+{
+  "actual_failure": {
+    "inner_command": {
+      "bytes": 1103,
+      "path": "preparation/tool-probe/bootstrap-tool-commands/000-END.json",
+      "record": {
+        "arguments": [
+          "which",
+          "cargo"
+        ],
+        "child_cpu_seconds": 0.005079,
+        "cost_scope": "direct command and children; Docker client CPU excludes daemon/container CPU",
+        "cwd": "/",
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PATH": "/hepta-tools:/usr/local/cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "RUSTUP_HOME": "/usr/local/rustup"
+        },
+        "executable": {
+          "bytes": 19502880,
+          "path": "/usr/local/cargo/bin/rustup",
+          "sha256": "9732d6c5e2a098d3521fca8145d826ae0aaa067ef2385ead08e6feac88fa5792"
+        },
+        "executable_unchanged": true,
+        "exit_code": 1,
+        "started_at": "2026-10-28T09:22:07.068861+00:00",
+        "stderr": {
+          "bytes": 69,
+          "path": "000-actual-cargo.stderr",
+          "sha256": "708fed68fb2ca6a521717b5e182165a34d37ee84990c43035d0d2efa855e4596"
+        },
+        "stdin": "none",
+        "stdout": {
+          "bytes": 0,
+          "path": "000-actual-cargo.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "timeout_seconds": null,
+        "tool": "rustup",
+        "wall_seconds": 0.005912497000025496
+      },
+      "sha256": "e663bf18497846aa46f511ed17162176cc01d98fc58177b9e732aa40964f2cd8"
+    },
+    "launch_command": {
+      "bytes": 2643,
+      "path": "preparation/controller-commands/042-START.json",
+      "record": {
+        "arguments": [
+          "create",
+          "--pull=never",
+          "--platform",
+          "linux/arm64",
+          "--name",
+          "hepta-linux-de54b3a88aa64e12aecddc68803bee1d-native-tool-probe",
+          "--label",
+          "hepta.linux.qualification=hepta-linux-de54b3a88aa64e12aecddc68803bee1d",
+          "--network",
+          "none",
+          "--read-only",
+          "--user",
+          "1001:1001",
+          "--cap-drop=ALL",
+          "--security-opt=no-new-privileges",
+          "--mount",
+          "type=bind,src=/home/runner/work/_temp/ndu-native-synapse-worktrees/preparation,dst=/home/runner/work/_temp/ndu-native-synapse-worktrees/preparation,readonly",
+          "--mount",
+          "type=bind,src=/home/runner/work/_temp/ndu-native-synapse/preparation/source/qualification-git,dst=/home/runner/work/_temp/ndu-native-synapse/preparation/source/qualification-git,readonly",
+          "--mount",
+          "type=bind,src=/home/runner/work/hepta-private-ci/hepta-private-ci/.git/objects,dst=/home/runner/work/hepta-private-ci/hepta-private-ci/.git/objects,readonly",
+          "--mount",
+          "type=bind,src=/home/runner/work/_temp/ndu-native-synapse/preparation/tool-bundle,dst=/hepta-tools,readonly",
+          "--mount",
+          "type=bind,src=/home/runner/work/_temp/ndu-native-synapse/preparation/plan,dst=/hepta-plan,readonly",
+          "--mount",
+          "type=bind,src=/home/runner/work/_temp/ndu-native-synapse/preparation/tool-probe,dst=/hepta-probe",
+          "--entrypoint",
+          "/usr/bin/python3.11",
+          "sha256:760b800c39b66a71f812fc7bf13ca942d09991c0f26ed133b2e1195b86a52ebb",
+          "-I",
+          "/home/runner/work/_temp/ndu-native-synapse-worktrees/preparation/codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse-linux.py",
+          "probe-inside",
+          "--plan",
+          "/hepta-plan/PROBE_PLAN.json",
+          "--plan-sha256",
+          "50744573408b5de257642cf9a9e1489136ab870ecd7102a1b3a335312543497c"
+        ],
+        "cost_scope": "direct command and children; Docker client CPU excludes daemon/container CPU",
+        "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+        "environment": {
+          "DOCKER_CONFIG": "/home/runner/work/_temp/ndu-native-synapse/preparation/empty-docker-config",
+          "DOCKER_HOST": "unix:///run/docker.sock",
+          "GIT_CONFIG_GLOBAL": "/dev/null",
+          "GIT_CONFIG_NOSYSTEM": "1",
+          "GIT_OPTIONAL_LOCKS": "0",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PATH": "/usr/bin:/bin",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "TZ": "UTC"
+        },
+        "executable": {
+          "bytes": 41651784,
+          "path": "/usr/bin/docker",
+          "sha256": "94128e4afada0d46de642165e79dd70beb08e6775014648013283ed901b68248"
+        },
+        "exit_code": null,
+        "started_at": "2026-10-28T09:22:06.775520+00:00",
+        "stdin": "none",
+        "timeout_seconds": null,
+        "tool": "docker"
+      },
+      "sha256": "9aa627db5b7daf25701cb3ce9dff22dd8cd660fa31d5df0d00de00a9378863b8"
+    },
+    "outer_command": {
+      "bytes": 1426,
+      "path": "preparation/controller-commands/043-END.json",
+      "record": {
+        "arguments": [
+          "start",
+          "--attach",
+          "hepta-linux-de54b3a88aa64e12aecddc68803bee1d-native-tool-probe"
+        ],
+        "child_cpu_seconds": 0.018502999999999936,
+        "cost_scope": "direct command and children; Docker client CPU excludes daemon/container CPU",
+        "cwd": "/home/runner/work/hepta-private-ci/hepta-private-ci",
+        "environment": {
+          "DOCKER_CONFIG": "/home/runner/work/_temp/ndu-native-synapse/preparation/empty-docker-config",
+          "DOCKER_HOST": "unix:///run/docker.sock",
+          "GIT_CONFIG_GLOBAL": "/dev/null",
+          "GIT_CONFIG_NOSYSTEM": "1",
+          "GIT_OPTIONAL_LOCKS": "0",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PATH": "/usr/bin:/bin",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "TZ": "UTC"
+        },
+        "executable": {
+          "bytes": 41651784,
+          "path": "/usr/bin/docker",
+          "sha256": "94128e4afada0d46de642165e79dd70beb08e6775014648013283ed901b68248"
+        },
+        "executable_unchanged": true,
+        "exit_code": 1,
+        "started_at": "2026-10-28T09:22:06.854719+00:00",
+        "stderr": {
+          "bytes": 1152,
+          "path": "043-start-native-tool-probe.stderr",
+          "sha256": "c0403e6fb191e2cb761b7ae3eddb701b2d2820450733644adf48c1b0efd613c2"
+        },
+        "stdin": "none",
+        "stdout": {
+          "bytes": 0,
+          "path": "043-start-native-tool-probe.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "timeout_seconds": null,
+        "tool": "docker",
+        "wall_seconds": 0.2738723909999976
+      },
+      "sha256": "d6de3520e2b0814949fadc2c9ae5418312e460193a0922e6a7b9494b802c66de"
+    },
+    "outer_stderr": {
+      "bytes": 1152,
+      "path": "preparation/controller-commands/043-start-native-tool-probe.stderr",
+      "sha256": "c0403e6fb191e2cb761b7ae3eddb701b2d2820450733644adf48c1b0efd613c2",
+      "utf8": "Traceback (most recent call last):\n  File \"/home/runner/work/_temp/ndu-native-synapse-worktrees/preparation/codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse-linux.py\", line 348, in <module>\n    main()\n  File \"/home/runner/work/_temp/ndu-native-synapse-worktrees/preparation/codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse-linux.py\", line 318, in main\n    probe_tools(Path(\"/hepta-probe\"))\n  File \"/home/runner/work/_temp/ndu-native-synapse-worktrees/preparation/codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/prep_inside.py\", line 43, in probe_tools\n    actual = bootstrap_commands.text(\n             ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/_temp/ndu-native-synapse-worktrees/preparation/codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/commands.py\", line 172, in text\n    _, path = self.run(tool, args, label=label)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/_temp/ndu-native-synapse-worktrees/preparation/codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/commands.py\", line 166, in run\n    raise RuntimeError(\nRuntimeError: actual-cargo failed with exit 1; raw output retained\n"
+    },
+    "stderr": {
+      "bytes": 69,
+      "path": "preparation/tool-probe/bootstrap-tool-commands/000-actual-cargo.stderr",
+      "sha256": "708fed68fb2ca6a521717b5e182165a34d37ee84990c43035d0d2efa855e4596",
+      "utf8": "error: failed to determine cargo home: could not find cargo home dir\n"
+    }
+  },
+  "candidate_tree": "d454e457b2e5cb3c7f2b79480a7724aadf357fab",
+  "confirmed_image_environment": {
+    "base": {
+      "architecture": "arm64",
+      "bytes": 2984,
+      "config_id": "sha256:e1c74d1ab074f9e6696ae7b759e9c522b1517b32c5a30cc567b3f11f8c3e1be0",
+      "environment": [
+        "PATH=/usr/local/cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+        "RUSTUP_HOME=/usr/local/rustup",
+        "CARGO_HOME=/usr/local/cargo",
+        "RUST_VERSION=1.96.0"
+      ],
+      "os": "linux",
+      "path": "preparation/controller-commands/003-builder-image.stdout",
+      "repo_digests": [
+        "rust@sha256:05f85ef6eb0f2600ac62e9d779642b5b362d5be2ed67b80e162fae6e28b66524"
+      ],
+      "sha256": "9dcccc1040a8b63a17679a6c019be943088008b07fcb8ad9f690d3cb3538db5d"
+    },
+    "derived": {
+      "architecture": "arm64",
+      "bytes": 3079,
+      "config_id": "sha256:760b800c39b66a71f812fc7bf13ca942d09991c0f26ed133b2e1195b86a52ebb",
+      "environment": [
+        "PATH=/usr/local/cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+        "RUSTUP_HOME=/usr/local/rustup",
+        "CARGO_HOME=/usr/local/cargo",
+        "RUST_VERSION=1.96.0"
+      ],
+      "os": "linux",
+      "path": "preparation/controller-commands/034-derived-builder-inspect.stdout",
+      "sha256": "8b5baf54f674a4a5608b555300649c8ef670db33dfd552a7c6b84b39a55171f0"
+    }
+  },
+  "diagnostic_verification": {
+    "all_selected_file_length_and_sha256_verified": true,
+    "all_tar_members_regular": true,
+    "bounds": {
+      "max_files": 5000,
+      "max_parts": 8,
+      "max_path_bytes": 1024,
+      "part_bytes": 134217728
+    },
+    "complete_selected_suffix_inventory": true,
+    "concatenated_tar_sha256": "f3d67a12239c345e405f70e193fba040b2fef4bc517a74a3f8c1b42aefb5df6c",
+    "full_small_zip_artifacts": [
+      {
+        "all_member_crc_verified": true,
+        "artifact_id": 12804089695,
+        "bytes": 71601,
+        "full_zip_hash_verified_against_api": true,
+        "local_name": "synapse-manifest.zip",
+        "sha256": "507a005318b83357e647f5e612ffb9d003ec6e547152fb1349a66e76adda8709",
+        "source_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12804089695"
+      },
+      {
+        "all_member_crc_verified": true,
+        "artifact_id": 12804723667,
+        "bytes": 1249426,
+        "full_zip_hash_verified_against_api": true,
+        "local_name": "synapse-part01.zip",
+        "sha256": "72603dee172de1ed2a94513415575d544e305466e0a9becc285f5f1b301dcc70",
+        "source_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12804723667"
+      },
+      {
+        "all_member_crc_verified": true,
+        "artifact_id": 12805065260,
+        "bytes": 1935599,
+        "full_zip_hash_verified_against_api": true,
+        "local_name": "candidate.zip",
+        "sha256": "eb427117ce2464ac58ff8af35dd1be44428b1204b82cb5768ef4c8832ea80b05",
+        "source_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12805065260"
+      }
+    ],
+    "inventory_file": {
+      "bytes": 71455,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/CI_832_SYNAPSE_DIAGNOSTICS_INVENTORY.json",
+      "sha256": "14d4c07df22c04e27431002c38375577b310d1a9f23804a8aad4d5c9c9ea3502"
+    },
+    "inventory_raw_bytes_preserved": true,
+    "original_large_artifact": {
+      "artifact_id": 12804139790,
+      "bytes": 580275852,
+      "downloaded": false,
+      "full_zip_hash_independently_verified": false,
+      "reason": "Artifact exceeds the connector 512 MiB download limit; no size override or limit bypass used.",
+      "sha256_reported_by_api": "61228f5bb2d7900469d885fd8afbf48e3377331b23b50a1836d727d48dd3fa8d",
+      "source_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12804139790"
+    },
+    "part": {
+      "bytes": 1249280,
+      "file": "part-01.tar.part",
+      "sha256": "f3d67a12239c345e405f70e193fba040b2fef4bc517a74a3f8c1b42aefb5df6c"
+    },
+    "scope_note": "Complete means all 398 files selected by the published suffix inventory, not the untransferred 580 MB original artifact. The collector reports source files unchanged; no full-original-archive readback is claimed.",
+    "selected_bytes": 975286,
+    "selected_file_count": 398,
+    "selection": {
+      "recursive_suffixes": [
+        ".json",
+        ".jsonl",
+        ".log",
+        ".stderr",
+        ".stdout",
+        ".txt",
+        ".xml"
+      ]
+    },
+    "tar_member_set_equals_inventory": true
+  },
+  "fix": {
+    "actual_probe_uid_gid": "1001:1001",
+    "build_and_prefetch_cargo_home_changed": false,
+    "cap_drop": "ALL",
+    "change": "Pass CARGO_HOME=/usr/local/cargo explicitly alongside the already explicit RUSTUP_HOME=/usr/local/rustup.",
+    "credential_mount_added": false,
+    "file": "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/prep_inside.py",
+    "home_added": false,
+    "host_environment_inherited": false,
+    "network_mode": "none",
+    "no_new_privileges": true,
+    "post_format_sources": {
+      "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/prep_inside.py": {
+        "bytes": 7214,
+        "sha256": "37a5a21e06a547c2954d243d9d34362780faaace700485102038e7d97f43fb5e"
+      },
+      "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/test_boundaries.py": {
+        "bytes": 12495,
+        "sha256": "0369af4b206658a46de72b0379aec107311f3a99f793f002dcbeacb45c69a8b1"
+      }
+    },
+    "read_only_rootfs": true,
+    "sandbox_launch_changed": false
+  },
+  "frozen_integration_files_modified": false,
+  "identity_note": "The workflow event SHA is a merge/event identity. The source seal separately binds the checked-out producer source commit and candidate tree.",
+  "job_id": 122728804035,
+  "local_validation": {
+    "added": 2,
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "linux_synapse.test_boundaries",
+      "linux_synapse.test_cleanup",
+      "linux_synapse.test_execution",
+      "linux_synapse.test_restore",
+      "linux_synapse.test_source",
+      "-v"
+    ],
+    "cwd": "/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/hepta-matrixd/tests/fixtures",
+    "existing": 19,
+    "exit_code": 0,
+    "failed": 0,
+    "log": {
+      "bytes": 4115,
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/CI_832_SYNAPSE_CARGO_HOME_TESTS.log",
+      "sha256": "4cdf81333322d0244310b71acd132d4974de08b03061f3de8e5b9db8535da21b"
+    },
+    "passed": 21,
+    "skipped": 0,
+    "tested_before_final_scoped_format": true,
+    "wall_seconds": 10.703335920996324
+  },
+  "native_qualification_pass_claimed": false,
+  "official_sources": [
+    {
+      "fact": "CARGO_HOME selects Cargo home; the default uses HOME/.cargo.",
+      "url": "https://doc.rust-lang.org/cargo/guide/cargo-home.html"
+    },
+    {
+      "fact": "RUSTUP_HOME selects the installed toolchain/configuration root.",
+      "url": "https://rust-lang.github.io/rustup/environment-variables.html"
+    }
+  ],
+  "producer_result_sha256": "c574e8d53e8b448eae0a75952e65bdf9b2b7f29849dee191873a74234b390247",
+  "producer_source_commit": "832b2a382a155bc840df0d255b2c183a43b0d219",
+  "promotion_allowed": false,
+  "regression_scope": "A controlled real child process checks actual environment transmission and exact stderr retention. It is not Rustup, uses no compiler, emits no TOOL_PROBE qualification, and does not simulate a passing native business gate.",
+  "remaining_native_gate": "Rerun the original ARM64 Rustup/tool probe, sealed preparation, offline build, and actual Synapse business test under unchanged isolation.",
+  "root_cause": "probe_tools reconstructs an explicit child environment and omitted image CARGO_HOME. Commands.run passes that environment without inheriting the container or host environment. Actual rustup which cargo therefore exits 1 before tool version or business qualification.",
+  "schema": "hepta.ci.synapse.cargo-home-root-cause.v1",
+  "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40661665504/job/122728804035",
+  "status": "observed native failure localized; narrow source fix and local subprocess regressions complete; native rerun required",
+  "workflow_attempt": 1,
+  "workflow_event_sha": "c94ee75afd9d1d16eb1452f78c6e9cd23fca0f13",
+  "workflow_run_id": 40661665504
+}

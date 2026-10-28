@@ -25,6 +25,7 @@ def probe_tools(output):
         "LANG": "C.UTF-8",
         "LC_ALL": "C.UTF-8",
         "RUSTUP_HOME": "/usr/local/rustup",
+        "CARGO_HOME": "/usr/local/cargo",
     }
     tools = {}
     bootstrap_commands = None

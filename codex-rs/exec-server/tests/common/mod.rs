@@ -20,6 +20,8 @@ use codex_test_binary_support::configure_test_binary_dispatch;
 use ctor::ctor;
 
 pub(crate) mod exec_server;
+#[cfg(windows)]
+mod windows_helpers;
 
 pub(crate) const DELAYED_OUTPUT_AFTER_EXIT_PARENT_ARG: &str =
     "--codex-test-delayed-output-after-exit-parent";

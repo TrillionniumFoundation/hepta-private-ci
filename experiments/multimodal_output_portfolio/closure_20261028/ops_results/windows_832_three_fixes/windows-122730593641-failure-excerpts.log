@@ -1,0 +1,72 @@
+2026-10-28T10:00:02.0684349Z 
+2026-10-28T10:00:02.0716825Z running 31 tests
+2026-10-28T10:00:02.0768463Z test config::tests::config_rejects_a_generation_that_does_not_own_the_running_agentd ... ok
+2026-10-28T10:00:02.1032241Z test config::tests::config_binds_one_running_spawn_generation_without_exposing_secrets ... ok
+2026-10-28T10:00:02.1182696Z test control::tests::health_tracks_real_task_state_and_owner_uds_serves_exact_identity ... FAILED
+2026-10-28T10:00:02.1200596Z test control::tests::cancel_requires_active_pair_and_duplicate_is_safe ... ok
+2026-10-28T10:00:02.1222376Z test control::tests::persisted_resolving_decision_is_the_only_crash_retry ... ok
+2026-10-28T10:00:02.1225098Z test control::tests::authoritative_resolved_event_may_win_local_completion_race ... ok
+2026-10-28T10:00:02.1232797Z test runner::tests::command_approval_summary_is_typed_safe_bounded_and_does_not_echo_hidden_fields ... ok
+2026-10-28T10:00:02.1255521Z test runner::tests::file_approval_reason_without_a_concrete_scope_is_not_actionable ... ok
+2026-10-28T10:00:02.1259182Z test runner::tests::file_approval_summary_bounds_multibyte_and_strips_control_and_bidi ... ok
+2026-10-28T10:00:02.1389745Z test runner::tests::product_runner_has_one_durable_sync_authority ... ok
+2026-10-28T10:00:02.1394205Z test control::tests::stale_fence_never_reaches_mutation_transport ... ok
+2026-10-28T10:00:02.1396855Z test runtime::tests::queued_recovery_never_recreates_a_missing_core_record ... ok
+2026-10-28T10:00:02.1402093Z test runner::startup_tests::initial_sync_redaction_commits_before_resume_and_inbox_recovery ... ok
+2026-10-28T10:00:02.1411359Z test runner::startup_tests::pending_or_failed_initial_sync_cannot_resume_or_dispatch_old_inbox ... ok
+2026-10-28T10:00:02.1415990Z test runtime::tests::crash_restart_and_duplicate_event_admit_core_exactly_once ... ok
+2026-10-28T10:00:02.1416856Z test send_observer::tests::failed_send_is_terminal_and_only_identical_replay_is_idempotent ... ok
+2026-10-28T10:00:02.1458830Z test tests::submission_uses_one_atomic_reconcile_rpc_and_revalidates_the_response ... ok
+2026-10-28T10:00:02.1459350Z 
+2026-10-28T10:00:02.1459472Z failures:
+2026-10-28T10:00:02.1459678Z 
+2026-10-28T10:00:02.1460065Z ---- control::tests::health_tracks_real_task_state_and_owner_uds_serves_exact_identity stdout ----
+2026-10-28T10:00:02.1465107Z Error: Io(Custom { kind: AlreadyExists, error: "matrixd control socket path is not stale: \\\\?\\D:\\tmp\\hmx-control-IrWZWd\\fleet\\run\\aaghu64s7r56mdd2v36p3hkrmci.mx" })
+2026-10-28T10:00:02.1465973Z 
+2026-10-28T10:00:02.1465980Z 
+2026-10-28T10:00:02.1466158Z failures:
+2026-10-28T10:00:02.1469548Z     control::tests::health_tracks_real_task_state_and_owner_uds_serves_exact_identity
+2026-10-28T10:00:02.1470000Z 
+2026-10-28T10:00:02.1470357Z test result: FAILED. 30 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.93s
+2026-10-28T10:00:02.1470986Z 
+2026-10-28T10:00:02.1474090Z ================================================================================
+2026-10-28T10:00:02.4901094Z [3,812 / 3,825] 93 / 150 tests, 1 failed; Compiling Rust bin //codex-rs/cli:codex (55 files); 22s local ... (6 actions, 5 running)
+2026-10-28T10:00:03.9844377Z [3,815 / 3,833] 94 / 150 tests, 1 failed; Compiling Rust bin //codex-rs/cli:codex (55 files); 23s local ... (11 actions, 4 running)
+2026-10-28T10:00:14.1448632Z [3,815 / 3,833] 94 / 150 tests, 1 failed; Compiling Rust bin //codex-rs/cli:codex (55 files); 33s local ... (11 actions, 4 running)
+2026-10-28T10:00:15.1552093Z [3,815 / 3,833] 94 / 150 tests, 1 failed; Compiling Rust bin //codex-rs/cli:codex (55 files); 34s local ... (11 actions, 5 running)
+2026-10-28T10:02:36.9780371Z 
+2026-10-28T10:02:36.9780489Z running 31 tests
+2026-10-28T10:02:36.9781063Z test config::tests::config_rejects_a_generation_that_does_not_own_the_running_agentd ... ok
+2026-10-28T10:02:36.9781903Z test config::tests::config_binds_one_running_spawn_generation_without_exposing_secrets ... ok
+2026-10-28T10:02:36.9782702Z test control::tests::health_tracks_real_task_state_and_owner_uds_serves_exact_identity ... FAILED
+2026-10-28T10:02:36.9783455Z test control::tests::cancel_requires_active_pair_and_duplicate_is_safe ... ok
+2026-10-28T10:02:36.9784098Z test control::tests::persisted_resolving_decision_is_the_only_crash_retry ... ok
+2026-10-28T10:02:36.9784811Z test control::tests::authoritative_resolved_event_may_win_local_completion_race ... ok
+2026-10-28T10:02:36.9785652Z test runner::tests::command_approval_summary_is_typed_safe_bounded_and_does_not_echo_hidden_fields ... ok
+2026-10-28T10:02:36.9786661Z test runner::tests::file_approval_reason_without_a_concrete_scope_is_not_actionable ... ok
+2026-10-28T10:02:36.9787388Z test runner::tests::file_approval_summary_bounds_multibyte_and_strips_control_and_bidi ... ok
+2026-10-28T10:02:36.9787991Z test runner::tests::product_runner_has_one_durable_sync_authority ... ok
+2026-10-28T10:02:36.9788896Z test control::tests::stale_fence_never_reaches_mutation_transport ... ok
+2026-10-28T10:02:36.9789513Z test runtime::tests::queued_recovery_never_recreates_a_missing_core_record ... ok
+2026-10-28T10:02:36.9790243Z test runner::startup_tests::initial_sync_redaction_commits_before_resume_and_inbox_recovery ... ok
+2026-10-28T10:02:36.9790976Z test runner::startup_tests::pending_or_failed_initial_sync_cannot_resume_or_dispatch_old_inbox ... ok
+2026-10-28T10:02:36.9791655Z test runtime::tests::crash_restart_and_duplicate_event_admit_core_exactly_once ... ok
+2026-10-28T10:02:36.9792325Z test send_observer::tests::failed_send_is_terminal_and_only_identical_replay_is_idempotent ... ok
+2026-10-28T10:02:36.9800471Z test tests::submission_uses_one_atomic_reconcile_rpc_and_revalidates_the_response ... ok
+2026-10-28T10:02:36.9800733Z 
+2026-10-28T10:02:36.9800790Z failures:
+2026-10-28T10:02:36.9800879Z 
+2026-10-28T10:02:36.9801079Z ---- control::tests::health_tracks_real_task_state_and_owner_uds_serves_exact_identity stdout ----
+2026-10-28T10:02:36.9802105Z Error: Io(Custom { kind: AlreadyExists, error: "matrixd control socket path is not stale: \\\\?\\D:\\tmp\\hmx-control-IrWZWd\\fleet\\run\\aaghu64s7r56mdd2v36p3hkrmci.mx" })
+2026-10-28T10:02:36.9802810Z 
+2026-10-28T10:02:36.9802817Z 
+2026-10-28T10:02:36.9802918Z failures:
+2026-10-28T10:02:36.9803351Z     control::tests::health_tracks_real_task_state_and_owner_uds_serves_exact_identity
+2026-10-28T10:02:36.9803741Z 
+2026-10-28T10:02:36.9804046Z test result: FAILED. 30 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.93s
+2026-10-28T10:02:36.9804456Z 
+2026-10-28T10:02:36.9808504Z ##[endgroup]
+2026-10-28T10:02:37.0315767Z ##[group]Bazel test log tail for //codex-rs/tui:tui-unit-tests
+2026-10-28T10:02:37.0474631Z test external_agent_config_migration::flow::tests::external_agent_config_migration_status_lines_use_semantic_colors ... ok
+2026-10-28T10:02:37.0476464Z test external_agent_config_migration::tests::summary_does_not_toggle_selection ... ok
+2026-10-28T10:02:37.0478646Z test external_editor::buffer_tests::editor_directory_rejects_writable_descendant ... ok
