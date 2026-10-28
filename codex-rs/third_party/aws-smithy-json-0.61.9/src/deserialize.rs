@@ -217,7 +217,11 @@ impl<'a> JsonTokenIterator<'a> {
         if expected != &self.input[start..end] {
             return Err(self.error_at(
                 start,
-                ExpectedLiteral(std::str::from_utf8(expected).unwrap().into()),
+                ExpectedLiteral(
+                    std::str::from_utf8(expected)
+                        .map_err(|_| self.error_at(start, InvalidUtf8))?
+                        .into(),
+                ),
             ));
         }
         self.index = end;
@@ -503,7 +507,11 @@ impl<'a> Iterator for JsonTokenIterator<'a> {
             State::ObjectFieldValue => Some(self.state_object_field_value()),
         };
         // Invalidate the stream if we encountered an error
-        if result.as_ref().map(|r| r.is_err()).unwrap_or(false) {
+        if result
+            .as_ref()
+            .map(std::result::Result::is_err)
+            .unwrap_or(false)
+        {
             self.index = self.input.len();
         }
         result

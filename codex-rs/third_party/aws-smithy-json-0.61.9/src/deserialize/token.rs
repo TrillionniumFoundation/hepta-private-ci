@@ -257,7 +257,7 @@ pub fn expect_timestamp_or_null(
 ) -> Result<Option<DateTime>, Error> {
     Ok(match timestamp_format {
         Format::EpochSeconds => expect_number_or_null(token)?
-            .map(|v| v.to_f64_lossy())
+            .map(Number::to_f64_lossy)
             .map(|v| {
                 if v.is_nan() {
                     Err(Error::custom("NaN is not a valid epoch"))
@@ -323,7 +323,7 @@ where
             loop {
                 match tokens.peek() {
                     Some(Ok(Token::EndArray { .. })) => {
-                        tokens.next().transpose().unwrap();
+                        tokens.next().transpose()?;
                         break;
                     }
                     _ => array.push(expect_document_inner(tokens, depth + 1)?),
