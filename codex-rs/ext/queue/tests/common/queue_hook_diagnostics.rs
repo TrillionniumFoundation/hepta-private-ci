@@ -120,8 +120,11 @@ pub fn write_hook(home: &Path, script_path: &Path, script: &str) -> String {
     });
     fs::write(root.join("descriptor.json"), descriptor.to_string())
         .expect("retain hook diagnostic command identity");
-    fs::write(home.join("queue_hook_diagnostics.json"), descriptor.to_string())
-        .expect("retain hook diagnostic artifact location");
+    fs::write(
+        home.join("queue_hook_diagnostics.json"),
+        descriptor.to_string(),
+    )
+    .expect("retain hook diagnostic artifact location");
     eprintln!("QUEUE_HOOK_DIAGNOSTIC_LOCATION {descriptor}");
     command
 }
