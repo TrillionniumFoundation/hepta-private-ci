@@ -1,0 +1,93 @@
+name: Memory cell completion final fix and format
+
+on:
+  push:
+    branches:
+      - research/memory-cell-completion-20261028
+    paths:
+      - qualification/memory-cell-v9/FINALIZE_REQUEST.json
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: memory-completion-finalization-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_TARGET_DIR: ${{ github.workspace }}/memory-v7-target
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy, rustfmt
+      - uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ${{ env.CARGO_TARGET_DIR }}
+          key: memory-v9-rust-1.95-finalize-${{ hashFiles('codex-rs/Cargo.lock') }}-${{ github.sha }}
+          restore-keys: |
+            memory-v9-rust-1.95-finalize-${{ hashFiles('codex-rs/Cargo.lock') }}-
+            memory-v9-rust-1.95-${{ hashFiles('codex-rs/Cargo.lock') }}-
+            memory-v8-rust-1.95-finalize-${{ hashFiles('codex-rs/Cargo.lock') }}-
+      - name: Authenticate the exact completed native CI artifact
+        timeout-minutes: 15
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 -B qualification/memory-cell-completion/authenticate_ci_artifact.py \
+            --transport qualification/memory-cell-completion/evidence/native-formal-06/TRANSPORT.json \
+            --origin qualification/memory-cell-completion/evidence/native-formal-06/GITHUB_ORIGIN.json \
+            --output memory-v9-completion-preflight/GITHUB_AUTHENTICATION.json
+      - name: Verify every retained native file and independent adapter source proof
+        timeout-minutes: 10
+        run: |
+          python3 -B qualification/memory-cell-completion/finalize_preflight.py \
+            --transport qualification/memory-cell-completion/evidence/native-formal-06/TRANSPORT.json \
+            --request qualification/memory-cell-v9/FINALIZE_REQUEST.json \
+            --adapter-freeze qualification/memory-cell-adapters/longrun/evidence/longrun64x3/RAW_FREEZE-run-01.json \
+            --adapter-freeze qualification/memory-cell-adapters/longrun/evidence/longrun64x3/RAW_FREEZE-run-02-resume.json \
+            --adapter-freeze qualification/memory-cell-adapters/longrun/evidence/longrun64x3-clean/RAW_FREEZE-run-03-clean.json \
+            --output memory-v9-completion-preflight/receipt.json
+      - name: Verify successful exact-source CI receipt, fix and format without tests
+        run: python3 -B qualification/memory-cell-v9/ci_finalize.py
+      - name: Verify independent research bytes after fix and format
+        if: always()
+        run: |
+          python3 -B qualification/memory-cell-completion/finalize_preflight.py \
+            --after memory-v9-completion-preflight/receipt.json \
+            --output memory-v9-finalize-output/COMPLETION_FREEZE.json
+      - uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        if: always()
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ${{ env.CARGO_TARGET_DIR }}
+          key: memory-v9-rust-1.95-finalize-${{ hashFiles('codex-rs/Cargo.lock') }}-${{ github.sha }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-v9-finalize-${{ github.sha }}
+          path: |
+            memory-v9-finalize-output/
+            memory-v9-completion-preflight/
+          if-no-files-found: error
+          retention-days: 30
