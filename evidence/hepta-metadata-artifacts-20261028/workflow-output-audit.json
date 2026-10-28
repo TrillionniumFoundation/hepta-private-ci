@@ -1,0 +1,75 @@
+{
+  "base": "894704474237b8771695be88dc115c9a4887fd2b",
+  "audits": [
+    {
+      "workflow": ".github/workflows/hepta-public-initial-v2.yml",
+      "original_execution_steps_conditions_and_budgets_unchanged": true,
+      "upload_steps": [
+        {
+          "job": "cold-ordinary-three-rounds",
+          "name": "Retain filtered metadata and logs, including failed outcomes",
+          "condition": "${{ always() && steps.metadata_export.outcome == 'success' }}",
+          "parameters": {
+            "name": "hepta-public-v2-metadata-${{ env.SOURCE_SHA }}",
+            "retention-days": 14,
+            "include-hidden-files": false,
+            "if-no-files-found": "error",
+            "path": "${{ runner.temp }}/hepta-public-initial-v2-metadata/"
+          }
+        }
+      ]
+    },
+    {
+      "workflow": ".github/workflows/hepta-architecture-convergence.yml",
+      "original_execution_steps_conditions_and_budgets_unchanged": true,
+      "upload_steps": [
+        {
+          "job": "qualification",
+          "name": "Retain command records and bounded stdout stderr",
+          "condition": "always()",
+          "parameters": {
+            "name": "hepta-architecture-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}",
+            "path": "${{ runner.temp }}/hepta-command-records/*.json\n${{ runner.temp }}/hepta-command-records/*.json.*.log\n",
+            "include-hidden-files": false,
+            "if-no-files-found": "error",
+            "retention-days": 30
+          }
+        }
+      ]
+    },
+    {
+      "workflow": ".github/workflows/hepta-pon-native-pair.yml",
+      "original_execution_steps_conditions_and_budgets_unchanged": true,
+      "upload_steps": [
+        {
+          "job": "pair",
+          "name": null,
+          "condition": "always()",
+          "parameters": {
+            "name": "hepta-pon-pair-${{ matrix.runner }}-${{ matrix.lane }}-${{ github.run_attempt }}",
+            "path": "${{ runner.temp }}/pon-pair/*.json\n${{ runner.temp }}/pon-pair/*.json.*.log\n${{ runner.temp }}/pon-pair/chain-retained-delta-cost.jsonl\n${{ runner.temp }}/pon-pair/*.sha256\n${{ runner.temp }}/pon-pair/*-identity.txt\n${{ runner.temp }}/pon-pair/tuple.txt\n${{ runner.temp }}/pon-pair/SCOPE.txt\n${{ runner.temp }}/pon-pair/prior-windows-*.log\n${{ runner.temp }}/pon-pair/prior-windows-*.fetch-exit\n${{ runner.temp }}/pon-pair/prior-windows-SCOPE.txt\n",
+            "include-hidden-files": false,
+            "if-no-files-found": "error",
+            "retention-days": 14
+          }
+        },
+        {
+          "job": "windows-ledger",
+          "name": null,
+          "condition": "always()",
+          "parameters": {
+            "name": "hepta-windows-ledger-${{ matrix.lane }}-${{ github.run_attempt }}",
+            "path": "${{ runner.temp }}/windows-ledger/rustc.txt\n${{ runner.temp }}/windows-ledger/check.py\n${{ runner.temp }}/windows-ledger/source-before.json\n${{ runner.temp }}/windows-ledger/source-after.json\n${{ runner.temp }}/windows-ledger/result.json\n${{ runner.temp }}/windows-ledger/witness.json\n${{ runner.temp }}/windows-ledger/witness.log\n${{ runner.temp }}/windows-ledger/evaluated-shadow.json\n${{ runner.temp }}/windows-ledger/evaluated-shadow.log\n",
+            "include-hidden-files": false,
+            "if-no-files-found": "error",
+            "retention-days": 14
+          }
+        }
+      ]
+    }
+  ],
+  "model_export_controls_added_after_model_work": true,
+  "model_checkpoint_upload_removed": true,
+  "source_archive_upload_removed": true,
+  "same_run_directory_not_uploaded": true
+}

@@ -1,0 +1,16 @@
+==> Python scripts formatter failed
+$ uv run --frozen --project scripts ruff format ./scripts/hepta_smollm_metadata_artifact_v1.py ./scripts/test_hepta_smollm_metadata_artifact_v1.py
+Using CPython 3.12.14 interpreter at: /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3
+Creating virtual environment at: scripts/.venv
+error: Failed to download `ruff==0.15.13`
+  cause: Request failed after 3 retries in 4.9s
+  cause: Failed to fetch: https://files.pythonhosted.org/packages/e8/31/bf1a0803d077e679cfeee5f2f67290a0fa79c7385b5d9a8c17b9db2c48f0/ruff-0.15.13-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+  cause: error sending request for url (https://files.pythonhosted.org/packages/e8/31/bf1a0803d077e679cfeee5f2f67290a0fa79c7385b5d9a8c17b9db2c48f0/ruff-0.15.13-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl)
+  cause: client error (Connect)
+  cause: tunnel error: failed to create underlying connection
+  cause: tcp open error
+  cause: Operation not permitted (os error 1)
+
+hint: `ruff` (v0.15.13) was included because `codex-scripts` (v0.0.0) depends on `ruff`
+Formatting failed: Python scripts
+error: recipe `fmt` failed on line 51 with exit code 1
