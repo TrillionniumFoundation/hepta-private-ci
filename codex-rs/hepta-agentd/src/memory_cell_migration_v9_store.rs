@@ -68,7 +68,7 @@ impl MemoryCellMigrationStoreV9 {
             let path = entry.map_err(failure)?.path();
             if path.extension().is_some_and(|value| value == "json") {
                 let row: Transaction = read_json(&path)?;
-                row.intent.validate().map_err(failure)?;
+                row.intent.validate().map_err(|error| format!("{error:?}"))?;
                 Sha256Digest::parse(row.manifest.as_str().to_string()).map_err(failure)?;
                 if path != store.transaction_path(&row.intent) { return Err("migration journal key/path mismatch".into()); }
                 if row.manifest == store.expected.digest()? && row.phase != Phase::Committed {
@@ -84,7 +84,7 @@ impl MemoryCellMigrationStoreV9 {
     /// owner or selecting its artifact still needs the existing owner APIs.
     pub fn committed_image(&self, expected_payload: &Sha256Digest) -> Result<PathBuf, String> {
         let current: Current = read_json(&self.root.join("CURRENT.json"))?;
-        current.intent.validate().map_err(failure)?;
+        current.intent.validate().map_err(|error| format!("{error:?}"))?;
         if current.intent.payload_sha256 != *expected_payload || current.manifest != self.expected {
             return Err("migration committed vector mismatch".into());
         }
@@ -98,7 +98,7 @@ impl MemoryCellMigrationStoreV9 {
         raw: &[u8],
         observe: &mut dyn FnMut(&str),
     ) -> Result<ProviderEffectAck, String> {
-        intent.validate().map_err(failure)?;
+        intent.validate().map_err(|error| format!("{error:?}"))?;
         if Sha256Digest::for_bytes(raw) != intent.payload_sha256 {
             return Err("migration provider payload binding mismatch".into());
         }
@@ -144,7 +144,7 @@ impl MemoryCellMigrationStoreV9 {
     }
 
     pub(super) fn lookup(&self, intent: &ProviderEffectIntent) -> Result<ProviderEffectLookup, String> {
-        intent.validate().map_err(failure)?;
+        intent.validate().map_err(|error| format!("{error:?}"))?;
         let path = self.transaction_path(intent);
         if !path.exists() { return Ok(ProviderEffectLookup::NotFound); }
         let row: Transaction = read_json(&path)?;
@@ -165,7 +165,7 @@ impl MemoryCellMigrationStoreV9 {
             return Err("migration missing required predecessor".into());
         }
         let current: Current = read_json(&path)?;
-        current.intent.validate().map_err(failure)?;
+        current.intent.validate().map_err(|error| format!("{error:?}"))?;
         current.manifest.validate()?;
         if self.verify_image(&current.intent)? != current.manifest { return Err("migration CURRENT differs from retained image".into()); }
         if current.manifest == self.expected && same_intent.is_none_or(|value| value == &current.intent) {
@@ -180,7 +180,7 @@ impl MemoryCellMigrationStoreV9 {
     }
 
     fn verify_image(&self, intent: &ProviderEffectIntent) -> Result<MemoryCellMigrationManifestV9, String> {
-        intent.validate().map_err(failure)?;
+        intent.validate().map_err(|error| format!("{error:?}"))?;
         let raw = read_bounded(&self.payload_path(intent), MAX_IMAGE_BYTES)?;
         if Sha256Digest::for_bytes(&raw) != intent.payload_sha256 { return Err("migration retained payload corrupt".into()); }
         let (manifest, _) = decode(&raw)?;

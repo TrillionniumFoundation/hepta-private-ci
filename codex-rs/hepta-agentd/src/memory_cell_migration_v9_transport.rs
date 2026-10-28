@@ -68,7 +68,7 @@ impl MemoryCellMigrationProviderV9 {
 
     fn exchange(&self, action: Action, intent: ProviderEffectIntent, payload: &[u8]) -> Result<Outcome, String> {
         let _attempt = Attempt::begin(Arc::clone(&self.traffic))?;
-        intent.validate().map_err(failure)?;
+        intent.validate().map_err(|error| format!("{error:?}"))?;
         if payload.len() > MAX_IMAGE_BYTES { return Err("migration payload bound".into()); }
         let nonce = serde_json::to_vec(&(std::process::id(), SystemTime::now().duration_since(UNIX_EPOCH).map_err(failure)?.as_nanos(), NEXT_NONCE.fetch_add(1, Ordering::Relaxed))).map_err(failure)?;
         let body = Request { destination: self.destination.clone(), action, intent, payload_bytes: payload.len() as u64, nonce: Sha256Digest::for_bytes(&nonce) };
