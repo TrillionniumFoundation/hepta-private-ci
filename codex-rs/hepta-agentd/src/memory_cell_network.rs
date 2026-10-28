@@ -459,6 +459,9 @@ mod process_test_support;
 #[cfg(all(test, unix))]
 #[path = "memory_cell_network_process_tests.rs"]
 mod process_tests;
+#[cfg(all(test, unix))]
+#[path = "memory_cell_migration_v9_process_tests.rs"]
+mod migration_v9_process_tests;
 #[cfg(test)]
 #[path = "memory_cell_network_test_support.rs"]
 mod test_support;

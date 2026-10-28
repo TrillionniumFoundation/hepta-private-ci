@@ -48,6 +48,8 @@ mod memory_cell_network;
 mod memory_cell_population_tests;
 #[cfg(test)]
 mod memory_cell_prospective_tests;
+#[cfg(test)]
+mod memory_cell_v9_continual_tests;
 mod memory_cell_release;
 mod memory_cell_runtime;
 #[cfg(test)]
