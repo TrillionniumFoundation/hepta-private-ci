@@ -6,6 +6,7 @@
 //! database, mint a federation grant, select a model, or invoke TaskFlow effects.
 
 use std::collections::BTreeMap;
+use std::fs::File;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::time::Duration;
@@ -16,10 +17,14 @@ use codex_hepta_cognitive_types::MemoryRequestV1;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_control_plane::OrganHostV1;
 use codex_hepta_fleet::FleetRegistry;
+use codex_hepta_memory::workspace_binding_digest;
+use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 #[path = "memory_cell_network_bindings.rs"]
 mod bindings;
+#[path = "memory_cell_network_anchor.rs"]
+mod anchor;
 #[path = "memory_cell_network_organ.rs"]
 mod organ;
 #[path = "memory_cell_network_transport.rs"]
@@ -37,6 +42,7 @@ struct NetworkState {
     organ: OrganHostV1,
     phase: Phase,
     epoch: u64,
+    anchor: Option<anchor::NetworkAnchor>,
 }
 
 /// One composition owner, never a second cognitive or artifact writer. Pins
@@ -51,6 +57,8 @@ pub struct MemoryCellNetworkV1 {
 }
 
 impl MemoryCellNetworkV1 {
+    /// Configure an ephemeral composition. Use `open_anchored` when an
+    /// acknowledged route generation must survive composition-host restart.
     pub fn new(registry: FleetRegistry, consumer: AgentId, consumer_spawn: u64,
         deployment: MemoryCellDeploymentV1) -> Result<Self, MemoryCellNetworkErrorV1> {
         if consumer_spawn == 0 || deployment.nodes.iter().any(|node| node.grant.consumer_agent_id() != &consumer) {
@@ -60,8 +68,24 @@ impl MemoryCellNetworkV1 {
         let mut organ = OrganHostV1::new(graph, handlers).map_err(|error| error.to_string())?;
         organ.start_all().map_err(|error| error.to_string())?;
         Ok(Self { registry, consumer, consumer_spawn, state: Mutex::new(NetworkState {
-            deployment: Arc::new(deployment), organ, phase: Phase::Unavailable, epoch: 0 }),
+            deployment: Arc::new(deployment), organ, phase: Phase::Unavailable, epoch: 0, anchor: None }),
             host_token: Arc::new(()), accounting: Arc::new(Mutex::new(MemoryCellNetworkCostV1::default())) })
+    }
+
+    /// Open a deployment at the exact durable acknowledged vector. The caller
+    /// supplies an exclusively lockable journal in an independent rollback
+    /// domain; this does not grant source access or restore model selection.
+    /// Every reopen starts unavailable and still requires complete recovery.
+    pub fn open_anchored(registry: FleetRegistry, consumer: AgentId, consumer_spawn: u64,
+        deployment: MemoryCellDeploymentV1, journal: File) -> Result<Self, MemoryCellNetworkErrorV1> {
+        let consumer_record = registry.load_agent(&consumer).map_err(|error| error.to_string())?;
+        let scope = serde_json::to_vec(&("hepta.memory.network-anchor.v1", &consumer,
+            workspace_binding_digest(consumer_record.manifest.workspace.as_path()))).map_err(|error| error.to_string())?;
+        let version = deployment.version();
+        let mut network = Self::new(registry, consumer, consumer_spawn, deployment)?;
+        let anchor = anchor::NetworkAnchor::open(journal, Digest32::of_bytes(&scope), version)?;
+        network.state.get_mut().map_err(|_| "memory network state lock poisoned".to_string())?.anchor = Some(anchor);
+        Ok(network)
     }
 
     pub fn version(&self) -> Result<MemoryCellNetworkVersionV1, MemoryCellNetworkErrorV1> {
@@ -113,6 +137,10 @@ impl MemoryCellNetworkV1 {
                 .map_err(|error| error.to_string())?;
             if !migration.applied { return Err("memory route state migration did not acknowledge".to_string()); }
             organ::verify_routes(&mut state.organ, &candidate)?;
+            // The organ replacement is in-memory and grants no effects. A
+            // crash before this fsync recovers the old vector; a crash after
+            // it must reopen the successor. No fallible work follows commit.
+            if let Some(anchor) = state.anchor.as_mut() { anchor.commit(expected, version)?; }
             state.deployment = Arc::new(candidate);
             state.phase = Phase::Ready;
             admission.armed = false;
@@ -178,6 +206,7 @@ impl MemoryCellNetworkV1 {
     fn begin_change(&self, expected: MemoryCellNetworkVersionV1) -> Result<(Arc<MemoryCellDeploymentV1>, AdmissionGuard<'_>), String> {
         let mut state = self.state.lock().map_err(|_| "memory network state lock poisoned".to_string())?;
         if state.deployment.version() != expected || state.phase == Phase::Preparing { return Err("memory deployment compare-and-swap failed".to_string()); }
+        if let Some(anchor) = state.anchor.as_ref() { anchor.require(expected)?; }
         state.epoch = state.epoch.checked_add(1).ok_or_else(|| "memory admission epoch exhausted".to_string())?;
         state.phase = Phase::Preparing;
         Ok((Arc::clone(&state.deployment), AdmissionGuard { network: self, epoch: state.epoch, armed: true }))
@@ -233,3 +262,6 @@ mod tests;
 #[cfg(test)]
 #[path = "memory_cell_network_test_support.rs"]
 mod test_support;
+#[cfg(test)]
+#[path = "memory_cell_network_anchor_tests.rs"]
+mod anchor_tests;
