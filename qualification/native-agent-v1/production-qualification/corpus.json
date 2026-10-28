@@ -1,0 +1,299 @@
+{
+  "schema": "hepta.production-qualification.v1",
+  "cases": [
+    {
+      "id": "control_sum",
+      "capabilities": [
+        "shared_readonly_probe"
+      ],
+      "input": "Call hepta_probe exactly once with task=\"sum\". After the tool completes successfully, return exactly its stdout JSON object. Do not calculate the answer yourself. Do not add markdown, explanation or other text.",
+      "oracle": [
+        "Read pinned fixture.txt as integers; independently sum all lines.",
+        "Exactly one original tool operation and matching call-id feedback; no injected answer."
+      ],
+      "fault": null
+    },
+    {
+      "id": "control_lines",
+      "capabilities": [
+        "shared_readonly_probe"
+      ],
+      "input": "Call hepta_probe exactly once with task=\"lines\". After the tool completes successfully, return exactly its stdout JSON object. Do not calculate the answer yourself. Do not add markdown, explanation or other text.",
+      "oracle": [
+        "Independently count lines in pinned fixture.txt.",
+        "Exactly one original tool operation and matching call-id feedback."
+      ],
+      "fault": null
+    },
+    {
+      "id": "control_digest",
+      "capabilities": [
+        "shared_readonly_probe"
+      ],
+      "input": "Call hepta_probe exactly once with task=\"digest\". After the tool completes successfully, return exactly its stdout JSON object. Do not calculate the answer yourself. Do not add markdown, explanation or other text.",
+      "oracle": [
+        "Independently SHA-256 the exact pinned fixture.txt bytes.",
+        "Exactly one original tool operation and matching call-id feedback."
+      ],
+      "fault": null
+    },
+    {
+      "id": "long_output",
+      "capabilities": [
+        "production_owner",
+        "bounded_context",
+        "terminal_output"
+      ],
+      "input": {
+        "command": [
+          "python3",
+          "-c",
+          "import sys; sys.stdout.write(''.join('row=%08d value=0123456789abcdef\\n'%i for i in range(32768)))"
+        ],
+        "max_model_item_bytes": 4096
+      },
+      "oracle": [
+        "Capture complete terminal output, exact byte length and SHA-256 from the original operation.",
+        "Model-facing output is bounded, declares truncation and links retained output; no item exceeds the admitted cap.",
+        "No silent successful short read; identical full output oracle across lanes."
+      ],
+      "fault": null
+    },
+    {
+      "id": "pty",
+      "capabilities": [
+        "production_owner",
+        "pty",
+        "stdin"
+      ],
+      "input": {
+        "command": [
+          "python3",
+          "-u",
+          "-c",
+          "import os; print('TTY='+str(os.isatty(0)),flush=True); x=input('value>'); print('ACK:'+x,flush=True)"
+        ],
+        "stdin": "hepta-pty-v1\n"
+      },
+      "oracle": [
+        "Observe TTY=True, send input only to the original admitted PTY, receive ACK:hepta-pty-v1.",
+        "Original operation terminal receipt and PTY exit are confirmed, not inferred from client closure."
+      ],
+      "fault": null
+    },
+    {
+      "id": "edit",
+      "capabilities": [
+        "production_owner",
+        "read",
+        "write",
+        "patch",
+        "exec"
+      ],
+      "input": {
+        "files": {
+          "src/calc.py": "def total(values):\n    return 0\n",
+          "test_calc.py": "from src.calc import total\nassert total([1, 2, 4]) == 7\nassert total([]) == 0\nassert total([-3, 2]) == -1\n"
+        },
+        "request": "Implement total in src/calc.py and run the supplied tests. Do not modify the tests."
+      },
+      "oracle": [
+        "Independent isolated checker runs pinned tests against resulting source.",
+        "test_calc.py and all unlisted files retain their initial SHA-256.",
+        "Patch/read/exec each have actual original writer and terminal evidence."
+      ],
+      "fault": null
+    },
+    {
+      "id": "repair",
+      "capabilities": [
+        "production_owner",
+        "read",
+        "patch",
+        "exec",
+        "observed_failure"
+      ],
+      "input": {
+        "files": {
+          "src/calc.py": "def total(values):\n    return sum(values) + 1\n",
+          "test_calc.py": "from src.calc import total\nassert total([1, 2, 4]) == 7\nassert total([]) == 0\n"
+        },
+        "request": "Run tests first; inspect the failure; fix the source and rerun the unchanged tests."
+      },
+      "oracle": [
+        "First original test process exits nonzero before any edit; result enters model context.",
+        "Repair follows observed failure; independent unchanged tests subsequently pass.",
+        "Failed physical execution is not marked NotApplied or automatically resent."
+      ],
+      "fault": null
+    },
+    {
+      "id": "multi_tool",
+      "capabilities": [
+        "production_owner",
+        "read",
+        "write",
+        "exec",
+        "multi_call"
+      ],
+      "input": {
+        "files": {
+          "input.json": "[9,1,4,1]\n"
+        },
+        "request": "Read input.json, write sorted.json as [1,1,4,9] followed by newline, then execute an independent validator."
+      },
+      "oracle": [
+        "At least three distinct admitted calls in causal order: read, write, validate.",
+        "Independent byte comparison and input immutability pass.",
+        "No skipped tool event, call-id reuse or hidden direct execution."
+      ],
+      "fault": null
+    },
+    {
+      "id": "mcp_readonly",
+      "capabilities": [
+        "production_owner",
+        "mcp",
+        "third_process"
+      ],
+      "input": {
+        "server_fixture": "deterministic stdio MCP server pinned by SHA-256",
+        "method": "tools/call",
+        "tool": "lookup_version",
+        "arguments": {
+          "package": "hepta-qualification"
+        },
+        "expected": {
+          "version": "1.0.0",
+          "source": "fixture"
+        }
+      },
+      "oracle": [
+        "Initialize, list tools and call an independently owned MCP fixture process via the production tool path.",
+        "Exact result and original admission/terminal evidence retained; this is a synthetic MCP compatibility case, not a live service result."
+      ],
+      "fault": null
+    },
+    {
+      "id": "third_party_readonly",
+      "capabilities": [
+        "production_owner",
+        "third_party_connector",
+        "credential_boundary"
+      ],
+      "input": {
+        "service_identity": null,
+        "resource_identity": null,
+        "request": "Read one explicitly authorized immutable third-party resource; do not mutate it."
+      },
+      "oracle": [
+        "Held until service, immutable resource, connector revision and expected content digest are frozen.",
+        "Record remote request/receipt identity and exact content digest; no credentials in corpus or reports.",
+        "Account/service scope and retry policy agree across lanes."
+      ],
+      "fault": null
+    },
+    {
+      "id": "cancel",
+      "capabilities": [
+        "production_owner",
+        "cancellation",
+        "terminal_reconciliation"
+      ],
+      "input": {
+        "command": [
+          "python3",
+          "-u",
+          "-c",
+          "import time; print('STARTED',flush=True); time.sleep(300)"
+        ],
+        "trigger": "cancel after retained STARTED evidence, using original operation id"
+      },
+      "oracle": [
+        "Actual owned process terminal cancellation confirmed through original runtime observation.",
+        "No survivor process/job in owned scope; client exit alone is insufficient.",
+        "Late terminal evidence remains reconcilable; no newly created operation."
+      ],
+      "fault": {
+        "kind": "explicit_cancel",
+        "at": "after_started_receipt"
+      }
+    },
+    {
+      "id": "recover_tool",
+      "capabilities": [
+        "production_owner",
+        "unknown_effect_hold",
+        "original_operation_observation"
+      ],
+      "input": {
+        "command": [
+          "python3",
+          "-c",
+          "from pathlib import Path; p=Path('counter'); p.write_text(str(int(p.read_text())+1))"
+        ],
+        "initial_files": {
+          "counter": "0"
+        }
+      },
+      "oracle": [
+        "Drop acknowledgement after physical entry; owner state becomes unknown/pending.",
+        "Recover by observing the same original operation; counter is exactly 1 and physical entry count is 1.",
+        "No second key, new grant, re-enqueue or inferred NotApplied."
+      ],
+      "fault": {
+        "kind": "lose_terminal_ack",
+        "at": "after_physical_effect"
+      }
+    },
+    {
+      "id": "recover_process",
+      "capabilities": [
+        "production_owner",
+        "checkpoint",
+        "controller_restart",
+        "original_operation_observation"
+      ],
+      "input": {
+        "command": [
+          "python3",
+          "-u",
+          "-c",
+          "import time; from pathlib import Path; print('STARTED',flush=True); time.sleep(2); Path('done').write_text('once\\n')"
+        ],
+        "request": "Restart only the test controller after retained STARTED evidence."
+      },
+      "oracle": [
+        "Restarted production owner reads original ThreadStore/queue/writer state and observes the original operation.",
+        "Same thread, generation binding and operation identity; no fixture SessionOwner or parallel history store.",
+        "Exactly one physical entry and one done artifact; unrecoverable ambiguity remains held."
+      ],
+      "fault": {
+        "kind": "owned_controller_restart",
+        "at": "after_started_receipt"
+      }
+    },
+    {
+      "id": "recover_model",
+      "capabilities": [
+        "production_owner",
+        "model_checkpoint",
+        "retained_response",
+        "unknown_effect_hold"
+      ],
+      "input": {
+        "prompt": "Return the literal response HEPTA_RECOVERY_V1.",
+        "expected": "HEPTA_RECOVERY_V1"
+      },
+      "oracle": [
+        "Lose model acknowledgement after accepted original request; checkpoint retains original request/response identity.",
+        "Recover retained response without issuing a second POST; original provider request count is 1.",
+        "If provider cannot reconcile retained response, remain pending/held; do not fabricate completion or resend."
+      ],
+      "fault": {
+        "kind": "lose_model_ack",
+        "at": "after_provider_acceptance"
+      }
+    }
+  ]
+}

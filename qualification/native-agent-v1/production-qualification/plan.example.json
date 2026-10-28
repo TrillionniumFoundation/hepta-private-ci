@@ -1,0 +1,87 @@
+{
+  "schema": "hepta.production-qualification.v1",
+  "group": "behavior_matched",
+  "mode": "replay",
+  "model": {
+    "id": "qwen38-flash-next-uc",
+    "revision": null,
+    "revision_evidence_sha256": null
+  },
+  "revisions": {
+    "private_ci": "2277a2f0f2e23d96f688a78d455ab2c6c926d7ee",
+    "runtime": "a3c8b5a10dccc379a432b4f0c85f3ef369d78331",
+    "codex_upstream": null
+  },
+  "repeats": 2,
+  "warmup": true,
+  "timeout_seconds": 240,
+  "lane_order": [
+    "app-server",
+    "facade",
+    "native"
+  ],
+  "source_root": null,
+  "source_hashes": {
+    "benchmark_v2.py": "cc8c7c35005fcf1ab9abd2e09c19cc7ebf7f2c82da08cfc1437cb0776089a69c",
+    "protocol_driver.py": "1427b63df4532f66da8b55042a617fe9257a96221bfb93d649ef19337992339a",
+    "process_metrics.py": "f397be2091fc39343d63e1bdfc072a43b9251493b57a409acbb006ccbdebe27d",
+    "process_metrics_v2.py": "e823227becebde2d15a003107bdb17b35693632eb8373aab854d47624aa7f4f4",
+    "model_gateway.py": "fb63a8fdf0a314e5302c72c7bf5f12412bb4a00338dbdad17fbbcc87e325857d"
+  },
+  "fixture": {
+    "directory": null,
+    "files": {
+      "fixture_tool.py": null,
+      "fixture.txt": null
+    }
+  },
+  "binaries": {
+    "native": {
+      "path": null,
+      "sha256": null
+    },
+    "codex": {
+      "path": null,
+      "sha256": null
+    },
+    "facade": {
+      "path": null,
+      "sha256": null
+    }
+  },
+  "profiles": {
+    "app-server": {
+      "context_bytes": 65536,
+      "output_tokens": 256,
+      "model_calls": 4,
+      "tool_calls": 3,
+      "tool_output_bytes": 32768,
+      "model_timeout_seconds": 120,
+      "tool_timeout_seconds": 60
+    },
+    "facade": {
+      "context_bytes": 65536,
+      "output_tokens": 256,
+      "model_calls": 4,
+      "tool_calls": 3,
+      "tool_output_bytes": 32768,
+      "model_timeout_seconds": 120,
+      "tool_timeout_seconds": 60
+    },
+    "native": {
+      "context_bytes": 65536,
+      "output_tokens": 256,
+      "model_calls": 4,
+      "tool_calls": 3,
+      "tool_output_bytes": 32768,
+      "model_timeout_seconds": 120,
+      "tool_timeout_seconds": 60
+    }
+  },
+  "optimization_notes": {
+    "app-server": null,
+    "facade": null,
+    "native": null
+  },
+  "upstream": "http://127.0.0.1:18081/v1"
+}
