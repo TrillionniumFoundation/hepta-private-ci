@@ -1,0 +1,214 @@
+{
+  "schema": "hepta.ci.windows-792-failure-readback.v1",
+  "source_commit": "792beb14600f9b49b04ed18f9061e11d0e163759",
+  "run_id": 40677089566,
+  "run_attempt": 1,
+  "scope": "Complete connector-decoded logs for native Windows shards 1,2,4; no new executions or production changes. Counts below are Bazel targets, not Rust test-function totals.",
+  "raw_logs": [
+    {
+      "shard": 1,
+      "job_id": 122779281927,
+      "source": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677089566/job/122779281927",
+      "path": "/workspace/scratch/627fa3bea56c/ci-792-windows-readback/job-122779281927.log",
+      "bytes": 455586,
+      "sha256": "2da31eaaa18a287ed0292ea2eec3929c89c0f7c91d54ce9395bb4d0803073ed6",
+      "decoded_lines": 3686,
+      "complete_decoded_log": true,
+      "excerpt_lines": 159
+    },
+    {
+      "shard": 2,
+      "job_id": 122779282045,
+      "source": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677089566/job/122779282045",
+      "path": "/workspace/scratch/627fa3bea56c/ci-792-windows-readback/job-122779282045.log",
+      "bytes": 505670,
+      "sha256": "1d400736b05695c24244dd2bd6dabbb299c5fab28545e5fc441acedfa7a78f38",
+      "decoded_lines": 4088,
+      "complete_decoded_log": true,
+      "excerpt_lines": 229
+    },
+    {
+      "shard": 4,
+      "job_id": 122779282009,
+      "source": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677089566/job/122779282009",
+      "path": "/workspace/scratch/627fa3bea56c/ci-792-windows-readback/job-122779282009.log",
+      "bytes": 466232,
+      "sha256": "1fefd0beacc5fe01751c3bde9f4b8fcfb091e40a9e6be22333811145e1a169b4",
+      "decoded_lines": 3715,
+      "complete_decoded_log": true,
+      "excerpt_lines": 75
+    }
+  ],
+  "custody_encoding": "Exact UTF-8 encoding of the complete connector-decoded response, including original BOM and CRLF. These hashes identify decoded log bytes, not an original server ZIP.",
+  "target_summaries": [
+    {
+      "shard": 1,
+      "job_id": 122779281927,
+      "literal_target_summary": "2026-10-28T11:33:00.7172088Z Executed 58 out of 109 tests: 58 tests pass, 1 fails to build, and 50 were skipped.",
+      "head_present_in_raw_log": true
+    },
+    {
+      "shard": 2,
+      "job_id": 122779282045,
+      "literal_target_summary": "2026-10-28T11:33:46.2597187Z Executed 59 out of 101 tests: 58 tests pass, 1 fails locally, and 42 were skipped.",
+      "head_present_in_raw_log": true
+    },
+    {
+      "shard": 4,
+      "job_id": 122779282009,
+      "literal_target_summary": "2026-10-28T11:32:59.3104895Z Executed 67 out of 102 tests: 67 tests pass, 1 fails to build, and 34 were skipped.",
+      "head_present_in_raw_log": true
+    }
+  ],
+  "classifications": [
+    {
+      "shard": 1,
+      "category": "known_compile_blocker_with_separate_fix_candidate",
+      "error": "E0616 private AgentSupervisorSnapshot.restart_attempt / restart_pending",
+      "source": "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+      "positions": [
+        252,
+        253,
+        291,
+        292,
+        326,
+        327
+      ],
+      "candidate_owner": "asset_natural",
+      "candidate_status": "read-only accessors and unchanged operands prepared separately; native verification pending"
+    },
+    {
+      "shard": 2,
+      "category": "known_bazel_analysis_blocker_with_separate_fix_candidate",
+      "error": "i18n-config-0.4.8 package excluded by --deleted_packages",
+      "candidate_owner": "root",
+      "candidate_status": "narrow .bazelignore correction plus added actual candidate Bazel target; native verification pending"
+    },
+    {
+      "shard": 2,
+      "category": "actual_permission_failures_not_closed",
+      "failures": [
+        "deny repair idempotence reported (true,true,true) rather than (false,true,false)",
+        "outside existing-write and create denied, but outside file and directory delete succeeded",
+        "real legacy cmd.exe removed outside file and protected .git directory while allowed deletions also succeeded"
+      ],
+      "candidate_scope": "ACL normalization patch addresses recognition/idempotence. It is not proof of isolation for independent FILE_DELETE_CHILD under WRITE_RESTRICTED. Original assertions remain required.",
+      "original_native_test_counts": {
+        "nonserial_passed": 92,
+        "serial_passed": 52,
+        "serial_failed": 3,
+        "serial_ignored": 2
+      },
+      "duplicate_failure_log_blocks_are_not_extra_test_executions": true
+    },
+    {
+      "shard": 4,
+      "category": "new_compile_blocker_with_exact_single_import_fix",
+      "error": "E0432 unresolved pretty_assertions import",
+      "source": "codex-rs/hepta-prompt-optimizer/src/canonical_platform_tests.rs",
+      "position": 11,
+      "candidate_owner": "unified_profile; independently checked by native_tail",
+      "candidate_sha256": "83a660c7c0864973078cff80dea46acbcbe6aefe4cd091208222d223b4870eff",
+      "candidate_bytes": 3109,
+      "source_delta": "Only use pretty_assertions::assert_eq was removed; all other bytes including assertion operands unchanged. Existing crate tests use std macros and its Cargo.toml has no pretty_assertions dependency.",
+      "candidate_status": "no dependency or lock change; native compilation pending"
+    }
+  ],
+  "complete_runtime_failure_blocks": [
+    {
+      "test": "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+      "log_job": 122779282045,
+      "start_line": 3251,
+      "end_line": 3267,
+      "complete_first_failure_block_lines": [
+        "2026-10-28T11:32:32.2340018Z ---- token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes stdout ----",
+        "2026-10-28T11:32:32.2340611Z ",
+        "2026-10-28T11:32:32.2341251Z thread 'token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes' (5084) panicked at windows-sandbox-rs/src\\token_tests.rs:213:5:",
+        "2026-10-28T11:32:32.2342157Z assertion failed: `(left == right)`",
+        "2026-10-28T11:32:32.2342495Z ",
+        "2026-10-28T11:32:32.2342653Z Diff < left / right > :",
+        "2026-10-28T11:32:32.2345628Z  (",
+        "2026-10-28T11:32:32.2345931Z >    false,",
+        "2026-10-28T11:32:32.2346260Z      true,",
+        "2026-10-28T11:32:32.2346564Z <    true,",
+        "2026-10-28T11:32:32.2346858Z <    true,",
+        "2026-10-28T11:32:32.2347183Z >    false,",
+        "2026-10-28T11:32:32.2347488Z  )",
+        "2026-10-28T11:32:32.2347679Z ",
+        "2026-10-28T11:32:32.2347683Z ",
+        "2026-10-28T11:32:32.2348035Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "2026-10-28T11:32:32.2348460Z "
+      ]
+    },
+    {
+      "test": "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+      "log_job": 122779282045,
+      "start_line": 3268,
+      "end_line": 3292,
+      "complete_first_failure_block_lines": [
+        "2026-10-28T11:32:32.2348932Z ---- token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces stdout ----",
+        "2026-10-28T11:32:32.2349492Z ",
+        "2026-10-28T11:32:32.2350211Z thread 'token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces' (3556) panicked at windows-sandbox-rs/src\\token_tests.rs:280:5:",
+        "2026-10-28T11:32:32.2351186Z assertion failed: `(left == right)`",
+        "2026-10-28T11:32:32.2351466Z ",
+        "2026-10-28T11:32:32.2351598Z Diff < left / right > :",
+        "2026-10-28T11:32:32.2351933Z  [",
+        "2026-10-28T11:32:32.2352375Z      Some(",
+        "2026-10-28T11:32:32.2353050Z          PermissionDenied,",
+        "2026-10-28T11:32:32.2353486Z      ),",
+        "2026-10-28T11:32:32.2353799Z      Some(",
+        "2026-10-28T11:32:32.2354126Z          PermissionDenied,",
+        "2026-10-28T11:32:32.2354483Z      ),",
+        "2026-10-28T11:32:32.2354763Z <    None,",
+        "2026-10-28T11:32:32.2355054Z <    None,",
+        "2026-10-28T11:32:32.2355349Z >    Some(",
+        "2026-10-28T11:32:32.2355650Z >        PermissionDenied,",
+        "2026-10-28T11:32:32.2355988Z >    ),",
+        "2026-10-28T11:32:32.2356266Z >    Some(",
+        "2026-10-28T11:32:32.2356572Z >        PermissionDenied,",
+        "2026-10-28T11:32:32.2356907Z >    ),",
+        "2026-10-28T11:32:32.2357185Z  ]",
+        "2026-10-28T11:32:32.2357362Z ",
+        "2026-10-28T11:32:32.2357367Z ",
+        "2026-10-28T11:32:32.2357371Z "
+      ]
+    },
+    {
+      "test": "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+      "log_job": 122779282045,
+      "start_line": 3293,
+      "end_line": 3316,
+      "complete_first_failure_block_lines": [
+        "2026-10-28T11:32:32.2357793Z ---- unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots stdout ----",
+        "2026-10-28T11:32:32.2358307Z ",
+        "2026-10-28T11:32:32.2359003Z thread 'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots' (8296) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:775:9:",
+        "2026-10-28T11:32:32.2359963Z assertion failed: `(left == right)`: stdout=\"\"",
+        "2026-10-28T11:32:32.2361150Z [2026-10-28 11:32:07.322 windows-sandbox-rs-unit-tests-bin.exe] START: C:\\Windows\\System32\\cmd.exe /d /c D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\.tmpoJjvC5\\workspace\\delete-fixtures.cmd",
+        "2026-10-28T11:32:32.2362098Z ",
+        "2026-10-28T11:32:32.2362103Z ",
+        "2026-10-28T11:32:32.2362226Z Diff < left / right > :",
+        "2026-10-28T11:32:32.2362733Z  (",
+        "2026-10-28T11:32:32.2363010Z      0,",
+        "2026-10-28T11:32:32.2363299Z      false,",
+        "2026-10-28T11:32:32.2363595Z      false,",
+        "2026-10-28T11:32:32.2363887Z      false,",
+        "2026-10-28T11:32:32.2364173Z <    None,",
+        "2026-10-28T11:32:32.2364642Z <    false,",
+        "2026-10-28T11:32:32.2364943Z >    Some(",
+        "2026-10-28T11:32:32.2365243Z >        \"outside\",",
+        "2026-10-28T11:32:32.2365568Z >    ),",
+        "2026-10-28T11:32:32.2365851Z >    true,",
+        "2026-10-28T11:32:32.2366136Z  )",
+        "2026-10-28T11:32:32.2366326Z ",
+        "2026-10-28T11:32:32.2366331Z ",
+        "2026-10-28T11:32:32.2366334Z ",
+        "2026-10-28T11:32:32.2366338Z "
+      ]
+    }
+  ],
+  "interpretation_limits": [
+    "Failed analysis/build and skipped targets do not establish that previously failing runtime tests now pass.",
+    "The three runtime failures are preserved verbatim; the currently prepared ACL change is not counted as a successful rerun.",
+    "This report does not certify a general WRITE_RESTRICTED deletion boundary."
+  ]
+}

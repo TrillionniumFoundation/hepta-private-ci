@@ -1,0 +1,588 @@
+{
+  "schema": "hepta.preceding-source-ci-snapshot.v1",
+  "source_head": "792beb14600f9b49b04ed18f9061e11d0e163759",
+  "observed_at_utc": "2026-10-28T11:46:09.697Z",
+  "runs": [
+    {
+      "run_id": 40677089566,
+      "total_count": 38,
+      "jobs": [
+        {
+          "id": 122778758022,
+          "name": "Select blocking CI scope",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:05:49Z",
+          "completed_at": "2026-10-28T11:06:57Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122778758280,
+          "name": "Blob size policy / Blob size policy",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:05:48Z",
+          "completed_at": "2026-10-28T11:07:25Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122778758368,
+          "name": "Codespell / Check for spelling errors",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:05:49Z",
+          "completed_at": "2026-10-28T11:06:30Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122779281522,
+          "name": "sdk / python-sdk",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:06:59Z",
+          "completed_at": "2026-10-28T11:08:12Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122779281538,
+          "name": "sdk / sdks",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:07:13Z",
+          "completed_at": "2026-10-28T11:08:57Z",
+          "failed_steps": [
+            "Build codex and code-mode host with Bazel"
+          ]
+        },
+        {
+          "id": 122779281583,
+          "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:08:05Z",
+          "completed_at": "2026-10-28T11:09:14Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122779281621,
+          "name": "rust-ci / Detect changed areas",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:07:08Z",
+          "completed_at": "2026-10-28T11:07:21Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122779281627,
+          "name": "cargo-deny / cargo-deny",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:08:05Z",
+          "completed_at": "2026-10-28T11:10:08Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122779281630,
+          "name": "repo-checks / Native Hepta paths on macos-15",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:07:02Z",
+          "completed_at": "2026-10-28T11:08:21Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122779281640,
+          "name": "repo-checks / build-test",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:07:52Z",
+          "completed_at": "2026-10-28T11:10:34Z",
+          "failed_steps": [
+            "Check formatting (run `just fmt` to fix)"
+          ]
+        },
+        {
+          "id": 122779281676,
+          "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:07:00Z",
+          "completed_at": "2026-10-28T11:07:51Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122779281696,
+          "name": "repo-checks / Native Hepta paths on windows-latest",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:07:11Z",
+          "completed_at": "2026-10-28T11:09:05Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122779281804,
+          "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+          "status": "in_progress",
+          "conclusion": null,
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:08:05Z",
+          "completed_at": null,
+          "failed_steps": []
+        },
+        {
+          "id": 122779281837,
+          "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:08:04Z",
+          "completed_at": "2026-10-28T11:09:10Z",
+          "failed_steps": [
+            "bazel build --config=clippy lint targets"
+          ]
+        },
+        {
+          "id": 122779281908,
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:07:08Z",
+          "completed_at": "2026-10-28T11:08:27Z",
+          "failed_steps": [
+            "bazel test //..."
+          ]
+        },
+        {
+          "id": 122779281915,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:08:05Z",
+          "completed_at": "2026-10-28T11:40:12Z",
+          "failed_steps": [
+            "bazel test shard"
+          ]
+        },
+        {
+          "id": 122779281927,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:08:10Z",
+          "completed_at": "2026-10-28T11:33:12Z",
+          "failed_steps": [
+            "bazel test shard"
+          ]
+        },
+        {
+          "id": 122779281968,
+          "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:07:04Z",
+          "completed_at": "2026-10-28T11:09:07Z",
+          "failed_steps": [
+            "bazel build --config=clippy lint targets"
+          ]
+        },
+        {
+          "id": 122779282009,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:08:12Z",
+          "completed_at": "2026-10-28T11:33:11Z",
+          "failed_steps": [
+            "bazel test shard"
+          ]
+        },
+        {
+          "id": 122779282013,
+          "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:07:27Z",
+          "completed_at": "2026-10-28T11:09:47Z",
+          "failed_steps": [
+            "bazel test //..."
+          ]
+        },
+        {
+          "id": 122779282027,
+          "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:08:04Z",
+          "completed_at": "2026-10-28T11:09:17Z",
+          "failed_steps": [
+            "bazel build verify-release-build targets"
+          ]
+        },
+        {
+          "id": 122779282044,
+          "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:07:56Z",
+          "completed_at": "2026-10-28T11:09:43Z",
+          "failed_steps": [
+            "bazel build verify-release-build targets"
+          ]
+        },
+        {
+          "id": 122779282045,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:08:28Z",
+          "completed_at": "2026-10-28T11:34:02Z",
+          "failed_steps": [
+            "bazel test shard"
+          ]
+        },
+        {
+          "id": 122779282065,
+          "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:08:13Z",
+          "completed_at": "2026-10-28T11:12:18Z",
+          "failed_steps": [
+            "bazel test //..."
+          ]
+        },
+        {
+          "id": 122779282089,
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:08:15Z",
+          "completed_at": "2026-10-28T11:09:59Z",
+          "failed_steps": [
+            "bazel test //..."
+          ]
+        },
+        {
+          "id": 122779282139,
+          "name": "NDU v6 neural rollout smoke / Python, native NDU, and real rollout",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:08:07Z",
+          "completed_at": "2026-10-28T11:25:43Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122779282752,
+          "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:08:20Z",
+          "completed_at": "2026-10-28T11:43:18Z",
+          "failed_steps": [
+            "bazel build verify-release-build targets"
+          ]
+        },
+        {
+          "id": 122779282939,
+          "name": "NDU v6 neural rollout smoke / Unified profile and executed-policy regressions / Objective, continuation, and selected-policy invariants",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:07:14Z",
+          "completed_at": "2026-10-28T11:07:48Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122779283537,
+          "name": "Lightweight prose and derived checks",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:06:57Z",
+          "completed_at": "2026-10-28T11:06:57Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122779283850,
+          "name": "Hepta scoped native checks",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:06:57Z",
+          "completed_at": "2026-10-28T11:06:57Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122779284740,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:06:57Z",
+          "completed_at": "2026-10-28T11:06:57Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122779461959,
+          "name": "rust-ci / Cargo manifest preflight",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:07:35Z",
+          "completed_at": "2026-10-28T11:08:02Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122779462047,
+          "name": "rust-ci / cargo shear",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:07:41Z",
+          "completed_at": "2026-10-28T11:08:27Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122779462199,
+          "name": "rust-ci / Rust format",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:08:12Z",
+          "completed_at": "2026-10-28T11:08:59Z",
+          "failed_steps": [
+            "cargo fmt"
+          ]
+        },
+        {
+          "id": 122779463566,
+          "name": "rust-ci / Argument comment lint package",
+          "status": "completed",
+          "conclusion": "skipped",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:07:21Z",
+          "completed_at": "2026-10-28T11:07:21Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122779757939,
+          "name": "rust-ci / Rust benchmark smoke",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:08:36Z",
+          "completed_at": "2026-10-28T11:10:15Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122780718383,
+          "name": "rust-ci / CI results (required)",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:10:40Z",
+          "completed_at": "2026-10-28T11:10:42Z",
+          "failed_steps": [
+            "Summarize"
+          ]
+        },
+        {
+          "id": 122793904420,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:40:16Z",
+          "completed_at": "2026-10-28T11:40:19Z",
+          "failed_steps": [
+            "Confirm Windows Bazel test shards passed"
+          ]
+        }
+      ]
+    },
+    {
+      "run_id": 40677089497,
+      "total_count": 11,
+      "jobs": [
+        {
+          "id": 122778157852,
+          "name": "generate-reviewable-candidate",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:05:16Z",
+          "completed_at": "2026-10-28T11:06:49Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122778158215,
+          "name": "produce-independent-matrix-018-fixture",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:05:16Z",
+          "completed_at": "2026-10-28T11:12:37Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122779227067,
+          "name": "independent-full-upstream-aws",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:06:52Z",
+          "completed_at": "2026-10-28T11:09:18Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122779227069,
+          "name": "linux-bazel-libraries",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:06:56Z",
+          "completed_at": "2026-10-28T11:17:41Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122779227070,
+          "name": "full-scope-candidate-cargo-deny",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:06:52Z",
+          "completed_at": "2026-10-28T11:08:25Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122779227082,
+          "name": "native-arm64-synapse",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:06:54Z",
+          "completed_at": "2026-10-28T11:11:16Z",
+          "failed_steps": [
+            "Prepare sealed native inputs then qualify the actual isolated business test"
+          ]
+        },
+        {
+          "id": 122779227169,
+          "name": "targeted-workspace-tests (yaml)",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:06:59Z",
+          "completed_at": "2026-10-28T11:28:05Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122779227194,
+          "name": "targeted-workspace-tests (execpolicy)",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:06:57Z",
+          "completed_at": "2026-10-28T11:09:01Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122779227285,
+          "name": "targeted-workspace-tests (aws)",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:06:58Z",
+          "completed_at": "2026-10-28T11:17:41Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122779227381,
+          "name": "targeted-workspace-tests (keyring)",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:06:58Z",
+          "completed_at": "2026-10-28T11:08:10Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122781760976,
+          "name": "matrix-workspace-and-old-fixture",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:15:36Z",
+          "completed_at": "2026-10-28T11:40:47Z",
+          "failed_steps": []
+        }
+      ]
+    },
+    {
+      "run_id": 40677089531,
+      "total_count": 3,
+      "jobs": [
+        {
+          "id": 122778615741,
+          "name": "Architecture convergence (source-head)",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:05:31Z",
+          "completed_at": "2026-10-28T11:12:47Z",
+          "failed_steps": [
+            "Module lifecycle generations and migration rollback"
+          ]
+        },
+        {
+          "id": 122778615868,
+          "name": "Architecture convergence (base-merge)",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:05:32Z",
+          "completed_at": "2026-10-28T11:06:08Z",
+          "failed_steps": []
+        },
+        {
+          "id": 122781837076,
+          "name": "Architecture required",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+          "started_at": "2026-10-28T11:16:48Z",
+          "completed_at": "2026-10-28T11:16:51Z",
+          "failed_steps": [
+            "Require both exact-candidate lanes"
+          ]
+        }
+      ]
+    }
+  ],
+  "scope": "Actual status of preceding source only. No result is inherited by amended sources. Base-merge architecture reused the same tree and skipped native execution; its green result does not override source-head failure."
+}

@@ -148,21 +148,31 @@
         "natural_code_snapshot_20261028.json",
         "natural_results/NATURAL_V3_RESULT.json",
         "natural_results/INDEPENDENT_RESULT_AUDIT.json",
-        "natural_v3_report.md"
+        "natural_v3_report.md",
+        "natural_completed_snapshot_005.json",
+        "semantic_top1_v4/ci/REGISTRATION.json",
+        "semantic_top1_v4/ci/PILOT.json",
+        "ops_results/NATURAL_TOP1_V4_PILOT_INDEPENDENT_REVIEW002.json",
+        "natural_results/TRAINING_ONLY_NEXT_STUDY_DIAGNOSTIC_001.json"
       ],
       "evidence_sha256": {
         "data_coverage_v3_registration.json": "ccde37409d4f220f18276419d8514d6825ea3240c281597499f9d7c8d7cd4c04",
         "data_prepare_v2.py": "cb90cfb1807250af63081f8e6bb304c8785cca6912033a537fefecc9016237a9",
         "natural_archive_index.json": "9241ce7b2d479fee35dfcc2472ee2b95853d2502e44b684f1f82d004ca27d0ef",
         "natural_code_snapshot_20261028.json": "bcc4c8e89f8b7e730bb2f1db4591d6e1b76836ca38bdf4bb7f547cddcb3e1b1f",
+        "natural_completed_snapshot_005.json": "6a9b5206ed48948e08e3e4902b5db6184b065c5bcc3318a2150df43ba1412f41",
         "natural_results/INDEPENDENT_RESULT_AUDIT.json": "ce46e849c19929c62dcfab012e603a0bd48edac24c1a8e8760867179a9d98d5f",
         "natural_results/NATURAL_V3_RESULT.json": "a66caaafc6f4525f3bafba7ea7809d7488685775f7a301182f0df2fe971ccfe1",
+        "natural_results/TRAINING_ONLY_NEXT_STUDY_DIAGNOSTIC_001.json": "4dba0c87392c618c2af4882146b3ab81fd73b2371245063db25a5b820ec275ec",
         "natural_v3_report.md": "f7ac409b98fd38025362219fce1ffe0d97e752408d9b95e35ca12de6cd8c9b7f",
-        "semantic_observer.py": "4d34eceb37a498f6b8699fd8d30e69b3f4fb5504fd68adff283764f149bc06c5"
+        "ops_results/NATURAL_TOP1_V4_PILOT_INDEPENDENT_REVIEW002.json": "e85ba795d407528d3403018bf08cb42b5c4af69dcc1cdd9caa94499561954518",
+        "semantic_observer.py": "4d34eceb37a498f6b8699fd8d30e69b3f4fb5504fd68adff283764f149bc06c5",
+        "semantic_top1_v4/ci/PILOT.json": "8cdef6b074217504d1cdcc419dfa635f758c042978ab00dfdc1fadaf1da31615",
+        "semantic_top1_v4/ci/REGISTRATION.json": "dbbe54b0b15e789f4955f020e5a2cbef91c1759810c886400d801308824708b5"
       },
       "id": "WP5-OBSERVER",
       "package": 5,
-      "remaining": "All 18 registered candidates and 3072 observer updates completed. Frozen independent source calibration gives action 21/64 and sound 30/64; both fail 60%, and sound also loses to its 37/64 majority baseline. No calibration labels were unseen in observer training. Actual SemanticJudge/Study guards refuse; policy calibration and qualification remain unconsumed in this execution record. A separately registered improved observer with fresh calibration is required; the original failed study and thresholds are preserved.",
+      "remaining": "All 18 registered candidates and 3072 observer updates completed. Frozen independent source calibration gives action 21/64 and sound 30/64; both fail 60%, and sound also loses to its 37/64 majority baseline. No calibration labels were unseen in observer training. Actual SemanticJudge/Study guards refuse; policy calibration and qualification remain unconsumed in this execution record. A separately registered improved observer with fresh calibration is required; the original failed study and thresholds are preserved. A separate original-top1 v4 follow-up now freezes source-only folds, candidates and update budgets. Its portable pilot uses eight existing training sources and43 events, no fitting and no holdout access. Original-task thresholds and failed v3 results remain unchanged. The prepared CI entry is not a mechanism or adequacy pass; full-fitting implementation must be pinned before optimizer execution, and fresh adequacy remains gated.",
       "requirement": "Frozen independent observers meet the unchanged adequacy gate on disjoint source calibration before semantic rewards are trusted.",
       "status": "independent_adequacy_failed"
     },
@@ -199,16 +209,32 @@
         "ops_results/V7_INTEGRATED_TOOLING_MANIFEST.json",
         "ops_results/INTEGRATED_V7_INDEPENDENT_REVIEW.json",
         "ops_results/CI_832_SYNAPSE_CARGO_HOME.json",
-        "ops_results/OBJECT_TRANSFER_READBACK.json"
+        "ops_results/OBJECT_TRANSFER_READBACK.json",
+        "ops_results/CI_792_STATUS_BEFORE_BATCH7.json",
+        "ci/port-remediation/SOURCE_AMENDMENT.v7.1.json",
+        "ops_results/FORMAT_AMENDMENT_PUBLISH_MANIFEST.json",
+        "ops_results/FORMAT_AMENDMENT_INDEPENDENT_REVIEW.json",
+        "ops_results/synapse_arm64_792_prefetch/RESULT.json",
+        "ops_results/synapse_dependency_link_fix/MANIFEST.json",
+        "ops_results/synapse_dependency_link_fix/ROOT_REVIEW.json",
+        "ops_results/bazel_i18n_792/REPAIR.json"
       ],
       "evidence_sha256": {
         "ci/port-remediation/INTEGRATION.v7.json": "ef1fc0a4cfd8c2621eeb82e413555c1ea1780020a1f74f7c666253b62a5bfde2",
+        "ci/port-remediation/SOURCE_AMENDMENT.v7.1.json": "f802638dd5d01f3b3d7583986848c1ad6264c3ec478ed055f4e1edebc7a0d40a",
+        "ops_results/CI_792_STATUS_BEFORE_BATCH7.json": "6e74b4327eac6bb0c0c9c659dca24e2fabc74e5ada0b914374adadc234f65a30",
         "ops_results/CI_832_SYNAPSE_CARGO_HOME.json": "5d2b8b7cf8c47c2d0193d7a111180e9479604965888be88867e7238c75161ed8",
         "ops_results/CI_V7_VERIFIED_RESULT.json": "ad608b575a87be7761888f8db96e5c093daa23ccd67cac9962e0fff2517bde3e",
+        "ops_results/FORMAT_AMENDMENT_INDEPENDENT_REVIEW.json": "e08e7f9b145a83192aba1fb0863ac1c1766f133104a4b3a000bc2e1775c621d8",
+        "ops_results/FORMAT_AMENDMENT_PUBLISH_MANIFEST.json": "3437153d5502cd0cae6fe8e5176e5e2ba6aba61006d8625698e8d129ac297a82",
         "ops_results/INTEGRATED_V7_INDEPENDENT_REVIEW.json": "3cfda1c62596cee97115b68df37576167e78490cfcbba670fe122abe1e61e5bb",
         "ops_results/OBJECT_TRANSFER_READBACK.json": "13a5bafe1a1ded764350e66a77a7aac3c6e871a27968f1432541949ee577a6bf",
         "ops_results/V7_ACTUAL_INTEGRATION.json": "aec9cd664dc61d32ebf829e3369338f28fd2d8483402ae91ead05702d9aa6e10",
-        "ops_results/V7_INTEGRATED_TOOLING_MANIFEST.json": "aeb8a6054b19de07d9cbc16a63b522ccea9d837cab4c66f3846c17b1c77e6bec"
+        "ops_results/V7_INTEGRATED_TOOLING_MANIFEST.json": "aeb8a6054b19de07d9cbc16a63b522ccea9d837cab4c66f3846c17b1c77e6bec",
+        "ops_results/bazel_i18n_792/REPAIR.json": "9c1521987f9661db756cc17baf901aa6adb9e6959d1ea3e85ed8c511a2924936",
+        "ops_results/synapse_arm64_792_prefetch/RESULT.json": "5f09e69cea27bb4786e228f7a16312f37c46e0717f7854dda1a19193d7069e5e",
+        "ops_results/synapse_dependency_link_fix/MANIFEST.json": "4d50370e17558e3dd32080b01329abface2417200eb96de86fc63128e7c586f1",
+        "ops_results/synapse_dependency_link_fix/ROOT_REVIEW.json": "2d9ba3faa1989b0d48cbabb5f1745a594398b9ee9320f80632386987b41dfad6"
       },
       "external_evidence": [
         "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660435",
@@ -217,9 +243,9 @@
       ],
       "id": "CI-DEPENDENCIES",
       "package": 4,
-      "remaining": "This publication applies all 35 exact generated source/lock payloads and adds strict integrated-HEAD validation. The previous 832 candidate completed 10 successful jobs and one failed native Synapse job; the latter lost image CARGO_HOME in an explicitly restricted child environment. The one-line repair retains isolation and passes 21 local preparation tests. New-head Cargo/Bazel resolver, unchanged cargo-deny, old-state migration and native Synapse must still execute. The Matrix startup policy uses a shared 20-second preset and an authentication-future cap of five seconds, not a proved per-request or hard preemptive bound; custom supervisor health windows and complete fallback/cold-start qualification remain open.",
+      "remaining": "On source792 the integrated lock producer, unchanged cargo-deny, upstream AWS, actual libraries, four targeted suites and independent old Matrix producer/consumer all passed: ten successful jobs. Synapse cargo fetch actually exited0, then dependency custody rejected the legal nucleo LICENSE symlink. This publication adds dependency-only seed.v2 with constrained exact links and unchanged general evidence refusal. It also makes the confirmed i18n workspace alias visible to Bazel and adds it to actual target coverage. A versioned seven-source Rust1.96 formatting amendment retains original v7/recipe/policies/locks;82 actual local identity/restore tests pass, with no native qualification inferred. All amended source must rerun native CI. Matrix custom-health-window/fallback/cold-start and nonpreemptive deadline limitations remain open.",
       "requirement": "Actual dependency resolution generates Cargo and Bazel locks and passes unchanged advisory, license, source, migration and native integration gates.",
-      "status": "exact_generated_payload_integrated_pending_new_head_qualification"
+      "status": "preceding_source_ten_candidate_jobs_passed_synapse_custody_repaired_pending_new_head"
     },
     {
       "evidence": [
@@ -243,17 +269,35 @@
         "ops_results/GOAL_IDLE_CONTINUATION_INDEPENDENT_REVIEW.json",
         "ops_results/WINDOW_METADATA_PUBLISH_MANIFEST.json",
         "ops_results/WINDOW_OBJECT_TRANSFER_READBACK.json",
-        "ops_results/windows_acl_probe/MANIFEST.json"
+        "ops_results/windows_acl_probe/MANIFEST.json",
+        "ops_results/CI_792_STATUS_BEFORE_BATCH7.json",
+        "ops_results/bedrock_dispatch_792/REPAIR.json",
+        "ops_results/BEDROCK_DISPATCH_INDEPENDENT_REVIEW.json",
+        "ops_results/FIRST_PARTY_TRANSPORT_PUBLISH_MANIFEST.json",
+        "ops_results/FIRST_PARTY_TRANSPORT_INDEPENDENT_REVIEW.json",
+        "ops_results/architecture_restart_snapshot_792/REPORT.json",
+        "ops_results/windows_optimizer_test_import_fix/MANIFEST.json",
+        "ops_results/windows_acl_python_fix_792/MANIFEST.json",
+        "ops_results/windows_acl_native_b076/RESULT.json",
+        "ops_results/windows_acl_normalization_fix/MANIFEST.json",
+        "ops_results/windows_acl_normalization_fix/ROOT_REVIEW.json",
+        "ops_results/windows_delete_contract_review/RESULT.json",
+        "ops_results/CI_792_WINDOWS_FAILURE_READBACK.json"
       ],
       "evidence_sha256": {
         "ops_results/BAO_INDETERMINATE_FIX_MANIFEST.json": "970cb66bce5e28b0d193be42c8b7e412f68fdf4c009250c13f339f6a4fba6b87",
         "ops_results/BAO_INDETERMINATE_FIX_PREFLIGHT.json": "66528d777174893bd73d9028e2b1dcd6ad3c65af8dce7f55d28b47ba1fa03119",
         "ops_results/BAO_INDETERMINATE_REVIEW.json": "8ceb87708f9918eb4bd66297437bf50e1acd228be0b6cae5f8d73d0ac3542124",
         "ops_results/BATCH5_COMPILE_FIX_PREFLIGHT.json": "e14ce3b39ec4ecc1f8044e1a71810e488f03723bd1c8738de0ca438e1c652706",
+        "ops_results/BEDROCK_DISPATCH_INDEPENDENT_REVIEW.json": "d569208eb3a90784d70d0f4a516d5b0dec720b69420bbf15b585708339d69b5c",
+        "ops_results/CI_792_STATUS_BEFORE_BATCH7.json": "6e74b4327eac6bb0c0c9c659dca24e2fabc74e5ada0b914374adadc234f65a30",
+        "ops_results/CI_792_WINDOWS_FAILURE_READBACK.json": "08552b20c6f7a149a6bb2e954a52fee12416dcdf41aec3513fb4dc2140893cda",
         "ops_results/CI_832_DOCS_ENCODING.json": "cd1de204072f722e1bdd3b5ce381487be6aef5307ab1e337d20a7f5875bec09b",
         "ops_results/CI_V7_VERIFIED_RESULT.json": "ad608b575a87be7761888f8db96e5c093daa23ccd67cac9962e0fff2517bde3e",
         "ops_results/CORE_GOAL_PUBLISH_MANIFEST.json": "6292b12daea8e551f8d64cdf8ff428c7088496bd0e0ccc1f3b123d8298c8025d",
         "ops_results/EXEC_WINDOWS_HELPER_PREFLIGHT.json": "e8c2c1a322ca47a81bb9e2e633728da2ffa41f3a96e076f6a54497e21f06ac94",
+        "ops_results/FIRST_PARTY_TRANSPORT_INDEPENDENT_REVIEW.json": "a7fd1fb8b08d6d48a2b8d273e7c74b35776177e14aef131df35e6c865dfac8c4",
+        "ops_results/FIRST_PARTY_TRANSPORT_PUBLISH_MANIFEST.json": "0f06ce9abe501975e2963435a11f2de9af4b7650fecfd98511cf78e04d35c2d0",
         "ops_results/FLEET_FIXTURE_CLIPPY_PREFLIGHT.json": "461ebf968e0bcd98c92547f0f63515d7ce348f36affa879414e4a812cba900d5",
         "ops_results/GOAL_IDLE_CONTINUATION_INDEPENDENT_REVIEW.json": "fdf44f03e533e1882685b042c597ed2c96a7dd5087335cbd2309e2fc5bff40f2",
         "ops_results/HTTP_REDIRECT_FIXTURE_PREFLIGHT.json": "e8ac14116d584f2e9a42dd27e4325f8174dd9d55dae4fd258e4c4b53f49e1617",
@@ -264,9 +308,17 @@
         "ops_results/WINDOWS_STORAGE_OBSERVATION.json": "ca4fbc05ee8921b739295e5e6542ab89bd68d4aeb04d7f39f70c816798179bdd",
         "ops_results/WINDOW_METADATA_PUBLISH_MANIFEST.json": "352838a0f1eb62d25361f7b6caaa3239f53b91607eb813aaa0661baf5be7e846",
         "ops_results/WINDOW_OBJECT_TRANSFER_READBACK.json": "9b181bbbcb8eb4747337ae289044e725f35d692bf5cf8e35ed0ce0d5f5706f9e",
+        "ops_results/architecture_restart_snapshot_792/REPORT.json": "074032da6611a0437eec1f8b0237e7742316d2155900017febbeb02224a11e6c",
+        "ops_results/bedrock_dispatch_792/REPAIR.json": "280bb9885871fedc0e217691d24d12f2448fee58e2a3fb40a65a685ffbe2785c",
         "ops_results/windows_832_intelligence_lock/MANIFEST.json": "f875dd2b24c1fd9ef56f9cc2289ffde138a2323ceeace5e8ea9e4e9fe58f2350",
         "ops_results/windows_832_three_fixes/MANIFEST.json": "1ff06e33f03f8f75e4832f95bc6fc429b5cb4131a86a56c64b26b454df417a46",
-        "ops_results/windows_acl_probe/MANIFEST.json": "4169a0711c9e22c94a0fa5e2a524ef1bff38e579bae8f516e4205dec243d2436"
+        "ops_results/windows_acl_native_b076/RESULT.json": "3a7fc57886ffbbbaaba14b8dd38cbd5e5ac822f513e6311f1a36cfde97edd029",
+        "ops_results/windows_acl_normalization_fix/MANIFEST.json": "cabeb265ff7676566a9b82f652d06f1a8886508563865da2e08d69cbb36c9c50",
+        "ops_results/windows_acl_normalization_fix/ROOT_REVIEW.json": "b5638d1a561faee205af88529d2568880b4c0c3c0e85d0eb29018870e10c08c8",
+        "ops_results/windows_acl_probe/MANIFEST.json": "4169a0711c9e22c94a0fa5e2a524ef1bff38e579bae8f516e4205dec243d2436",
+        "ops_results/windows_acl_python_fix_792/MANIFEST.json": "4c6b182ba4feb68a2a4be94ef7cc8b77ff4370d375067face0749bc7fb3cfef6",
+        "ops_results/windows_delete_contract_review/RESULT.json": "7faf810f31016213fe543e0deb1bf8bb09145ff923e778f23af513bf3a3ab437",
+        "ops_results/windows_optimizer_test_import_fix/MANIFEST.json": "a9ade57811bab76788818597b05807121ac25f18f5ecdc8b70a07ae6ec7f92ca"
       },
       "external_evidence": [
         "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40656660657",
@@ -274,9 +326,9 @@
       ],
       "id": "CI-PLATFORM-CONTRACTS",
       "package": 4,
-      "remaining": "The original Windows helper, directory-sync, SSH fixture and secure-owner platform repairs are now implemented with their original assertions or exact unsupported-platform/no-mutation checks. This publication also repairs a raw parent-step fixture, durable restart-count recovery, non-Unix Matrix control refusal before path mutation, a fixture Clippy unwrap and accepted HTTP stream blocking mode. Development docs gate now actually passes with the original historical JSON bytes losslessly encoded. Local Rust attempts still stop at sparse-workspace manifest loading. Newly observed core/TUI/app-server and Windows sandbox failures remain under investigation; neither these changes nor previous canceled jobs establish full native qualification. Goal auto-continuation now waits outside the exact cleanup callback, then rechecks live thread and goal state before atomic admission. File search rearms progress while the real matcher is running. Ledger fixture byte reads occur only after releasing exclusive ownership, with normal acknowledged recovery and Windows lock-refusal tests. These new fixes await native CI; metadata and Windows delete-permission failures remain open. The main-turn context-window UUID omission is repaired from the same existing window snapshot, with fork independence checked. The first-party internal metadata fixture, other app-server/WebSocket failures, and actual Windows DELETE/DELETE_CHILD authorization remain open. A source-bound native ACL observation job now retains every failed invariant; its four local integrity tests pass, but observation completion is never permission qualification.",
+      "remaining": "Source792 native Hepta path checks pass on Linux, macOS and Windows, and the NDU rollout/26-profile regressions pass. Full blocking CI is not green. This publication retains original assertions while correcting Bedrock experimental dispatch, first-party owned HTTP fixtures, supervisor snapshot accessors, the Windows optimizer test import and native deny-ACE normalization. New Rust tests have only reached local sparse-manifest refusal, so native execution remains required. The source-bound Windows diagnostic on helper b076 recorded26 checks with8 failures:2 normalization/idempotence failures and6 outside-delete/protected-object preservation failures. The normalization change must be remeasured; it cannot close the independently demonstrated parent DELETE_CHILD bypass. Cold-resume profile/environment recovery and other app-server/WebSocket failures are still being investigated. Base-merge architecture skipped native execution and does not override source-head failure.",
       "requirement": "Platform tests exercise supported positive behavior and explicit no-mutation refusal where secure owner support is absent, without weakening production checks.",
-      "status": "implementation_repaired_exact_head_native_ci_required"
+      "status": "actual_failures_preserved_source_repairs_pending_native_reexecution"
     },
     {
       "evidence": [
@@ -285,25 +337,33 @@
         "ops_results/RECLAIMED_PRIOR_FULLPATH.json",
         "ops_results/RECLAIMED_PRIOR_NATURAL.json.gz",
         "fullpath_results/PHASE_RECEIPT.json",
-        "fullpath_results/RAW_RELEASE_RECEIPT.json"
+        "fullpath_results/RAW_RELEASE_RECEIPT.json",
+        "natural_v3_archive_index.json",
+        "natural_results/V3_RAW_RELEASE_RESULT.json",
+        "natural_completed_snapshot_005.json",
+        "semantic_top1_v4/ci/LOCAL_PORTABLE_RESOURCE_ATTEMPT002.json"
       ],
       "evidence_sha256": {
         "fullpath_results/PHASE_RECEIPT.json": "67797908f7b2a1f63293b9582331e9b89493106d542c174b4dbe974f7646e03a",
         "fullpath_results/RAW_RELEASE_RECEIPT.json": "44b1e7a85bfb44d7c2433c28bc924858cecdf87879e45b558d126cee2b3551b1",
         "fullpath_results/RESOURCE_RESUME_PREFLIGHT.json": "d0d00c33cf877bd9987228e5526065d7ebdfb3d86be669545279d50910c13399",
         "natural_archive_index.json": "9241ce7b2d479fee35dfcc2472ee2b95853d2502e44b684f1f82d004ca27d0ef",
+        "natural_completed_snapshot_005.json": "6a9b5206ed48948e08e3e4902b5db6184b065c5bcc3318a2150df43ba1412f41",
+        "natural_results/V3_RAW_RELEASE_RESULT.json": "7b32804e58cbc16f7b5e10c23fdbb88b4c64191dd38f816742cc26d3b1d008d8",
+        "natural_v3_archive_index.json": "9d6b734a37acc6d58cb8a4735b043ed7fd13631ff8bcbf6db816941ee6db57e1",
         "ops_results/RECLAIMED_PRIOR_FULLPATH.json": "00df165fce5591e88bd2add72103d1415e19e67310e60ceaa30c14e12d53f3ab",
-        "ops_results/RECLAIMED_PRIOR_NATURAL.json.gz": "68eab268b541b9b43138d82e24fed693c9e9856f0794d43d055972c14c8f5f73"
+        "ops_results/RECLAIMED_PRIOR_NATURAL.json.gz": "68eab268b541b9b43138d82e24fed693c9e9856f0794d43d055972c14c8f5f73",
+        "semantic_top1_v4/ci/LOCAL_PORTABLE_RESOURCE_ATTEMPT002.json": "f2edbeed2e3fa8cf8a68ca577ec0e48225efac826e00d17a65f00d968fd210a3"
       },
       "id": "EXEC-RESOURCE-RECOVERY",
       "package": 0,
-      "remaining": "Fullpath completed all six arms and all five raw archive parts are durable and member-hash verified. Only the two exact completed raw directories were released. Interrupted natural warmstart002 remains preserved;003 must replay from its original seed with complete recoverable optimizer/RNG state.",
+      "remaining": "All fullpath raw archives and14 natural evidence packages are durably confirmed with local member hashes; the latter total480934288 compressed bytes. Only exact authorized completed raw files were released, retaining observer-training features, receipts and consumption markers. Independent remote download/readback is not claimed. Natural warmstart003 and NDU/mean updates remain unexecuted because the original independent observer failed adequacy. The separately registered v4 pilot is blocked locally before heavy imports by measured resource headroom and now has a portable CI entry. Its host/ancestor observations do not prove a future CPU or memory envelope.",
       "requirement": "Resource interruptions retain source/RNG/model/optimizer evidence, do not reduce frozen update budgets or consume qualification accidentally, and can resume at valid boundaries.",
-      "status": "completed_fullpath_evidence_preserved_natural_replay_in_progress"
+      "status": "completed_raw_evidence_custody_preserved_new_observer_pilot_pending"
     }
   ],
   "draft_pr": 4155,
-  "evidence_published_parent": "1bdc0098164540c78e4a42fff70238e1632f958f",
+  "evidence_published_parent": "792beb14600f9b49b04ed18f9061e11d0e163759",
   "frozen_historical_evidence_preserved": true,
   "global_optimality_established": false,
   "promotion_authorized": false,
@@ -311,5 +371,5 @@
   "repository": "TrillionniumFoundation/hepta-private-ci",
   "schema": "hepta.ndu.blocker-register.v1",
   "status_semantics": "A pilot mechanism closure does not close an empirical gain, observer adequacy, strict tail or full-platform qualification gate.",
-  "updated_at_utc": "2026-10-28T11:02:44.855804+00:00"
+  "updated_at_utc": "2026-10-28T11:47:15.599235+00:00"
 }

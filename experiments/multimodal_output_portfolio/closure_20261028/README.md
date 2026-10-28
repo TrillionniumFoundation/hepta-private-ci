@@ -156,6 +156,38 @@ retained as a failed result.
 
 ## Runtime and CI evidence
 
+### Source792 follow-up and versioned repairs
+
+The actual candidate workflow on source `792beb14600f9b49b04ed18f9061e11d0e163759`
+completed ten successful jobs and one failed Synapse job. Its integrated lock
+verification, unchanged dependency policy, upstream AWS tests, targeted suites,
+real libraries and old Matrix state migration passed. Synapse's online Cargo
+fetch succeeded; the following dependency inventory rejected a legitimate
+relative `LICENSE` link. The new dependency-only seed schema preserves bounded
+in-root file links while the general evidence inventory remains strict.
+
+The current publication also repairs the i18n workspace target's visibility,
+adds that target to actual Bazel coverage, and records seven Rust 1.96 formatting
+changes as an explicit source amendment. The original v7 manifest, recipe,
+patch, locks and policy inputs remain byte-exact. All 82 local guard/restore
+checks passed; those are not native compilation results. Bedrock dispatch,
+owned first-party HTTP fixtures and supervisor/platform test compilation repairs
+preserve the original positive and negative expectations.
+
+The native Windows diagnostic completed all 26 observations and found 8 failures.
+Two concern normalized deny-ACE idempotence; six concern actual outside deletion
+or protected-object preservation. The separate normalization repair retains all
+permission masks and token flags and requires another native observation.
+The parent `DELETE_CHILD` isolation failure is still open. The remaining
+cold-resume/profile and app-server/WebSocket failures also need actual resolution.
+No successful job from an earlier source qualifies these amended bytes.
+
+See [the exact prior CI snapshot](ops_results/CI_792_STATUS_BEFORE_BATCH7.json),
+[the source amendment review](ops_results/FORMAT_AMENDMENT_INDEPENDENT_REVIEW.json),
+[the native ACL observations](ops_results/windows_acl_native_b076/RESULT.json)
+and [the blocker register](BLOCKERS.json).
+
+
 The exact generated v7 dependency payload is integrated in this publication:
 35 source/lock files, including both resolver-generated locks and Rust 1.96.
 The original dependency policy files are unchanged. The integrated source mode
@@ -202,6 +234,24 @@ access. Its four integrity tests pass; native observations and any subsequent
 permission repair remain pending. A completed observation is never qualification.
 Canceled checks are not passes. Local Rust test/fix commands still stop before compilation because
 this sparse checkout lacks a workspace manifest.
+
+### Separately registered original-top1 observer follow-up
+
+[Snapshot 005](natural_completed_snapshot_005.json) preserves all earlier studies
+and registers the [v4 follow-up](semantic_top1_v4/README.md). The first portable
+CI pilot exercises 43 events from eight fixed existing observer-training sources.
+It performs no fitting, opens no holdout and cannot certify semantic quality.
+The current implementation and original source bytes are pinned; a second
+independent review checked the cgroup-aware resource adapter and unchanged
+numerical mechanism. Hidden ancestor limits and future capacity remain unknown.
+The original action 21/64 and sound 30/64 independent calibration failures still
+block natural generator training and policy qualification.
+
+All 14 natural evidence packages are durably confirmed, totaling 480934288
+compressed bytes. [The archive index](natural_v3_archive_index.json) binds the
+local member verification, upload receipts and exact authorized raw release.
+This is not an independent remote-download/readback claim. Retained training
+feature caches and source-consumption markers protect the study boundary.
 
 ## Regression and evidence custody
 
