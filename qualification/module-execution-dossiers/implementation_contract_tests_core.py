@@ -79,10 +79,13 @@ class NativeBindingCoverageTests(unittest.TestCase):
 
     def test_native_binding_blobs_and_exports_bind_the_current_checkout(self):
         _, historical = self.merged_native_observations()
+        registered_rows = c.apply_observation_updates(
+            c.ROOT, historical, c.read_json(BASE/'NATIVE_BINDING_UPDATES.json')
+        )
         actual = c.current_native_bindings(c.ROOT)
         self.assertEqual(actual['sourceSha'], c.git(c.ROOT, 'rev-parse', 'HEAD').decode().strip())
         self.assertEqual(actual['sourceTree'], c.git(c.ROOT, 'rev-parse', 'HEAD^{tree}').decode().strip())
-        for observed, registered in zip(actual['observations'], historical, strict=True):
+        for observed, registered in zip(actual['observations'], registered_rows, strict=True):
             data = (c.ROOT / registered['path']).read_bytes()
             self.assertEqual(observed, dict(registered, blobSha=c.blob(data), historicalBlobSha=registered['blobSha']))
         self.assertFalse(actual['consumerCallsitesProved'])
