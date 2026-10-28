@@ -21,6 +21,7 @@ ROOT_TEXT = {
     "chain-source.txt",
     "hepta-source.txt",
     "research-chain-source.txt",
+    "observation-chain-source.txt",
     "rustc.txt",
     "bubblewrap-version.txt",
     "codex-binary.sha256",
@@ -48,6 +49,9 @@ COMMANDS = (
     "descendant-boundary-controls",
     "research-boundary-controls",
     "metadata-export-controls",
+    "observation-boundary-controls",
+    "observation-owner-controls",
+    "sandbox-host-capability",
 )
 ROUND = r"(?:n/p/round-[123]|descendant-diagnostics/round-[123]|answer-eos-research-v3)"
 ROLES = r"(?:candidate|current-backbone|fresh-budget-matched-lora|budget-matched-full-tune|randomized-rank-matched-lora|actual-current-incumbent)"
@@ -65,6 +69,8 @@ RULES = tuple(
         + r"/(?:assessment|abort|candidate-parent-material|evaluation-roster|experiment-plan|phase-outcomes|round-freeze)\.json",
         ROUND + r"/(?:train|evaluate)-" + ROLES + "/" + STAGE_TEXT,
         ROUND + r"/train-candidate/parent-step-(?:input|result)(?:-v[23])?\.json",
+        r"n/p/round-[123]/observation-plan-v1\.json",
+        r"n/p/round-[123]/train-candidate/parent-step-(?:input|result)-observed-v1\.json",
         ROUND + r"/train-candidate/execution/" + STAGE_TEXT,
     )
 )

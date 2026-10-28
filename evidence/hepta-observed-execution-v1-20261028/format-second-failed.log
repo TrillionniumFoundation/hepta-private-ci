@@ -1,0 +1,5 @@
+==> Rust formatter failed
+$ rustfmt --edition 2024 --config imports_granularity=Item,skip_children=true -- /workspace/scratch/3d4ec372c488/hepta-observed-plan-v3/codex-rs/hepta-infer-worker-host/src/smollm_public_initial_loop_tests.rs
+[Errno 2] No such file or directory: 'rustfmt'
+Formatting failed: Rust
+error: recipe `fmt` failed on line 51 with exit code 1

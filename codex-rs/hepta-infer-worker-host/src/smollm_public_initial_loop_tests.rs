@@ -14,6 +14,60 @@ use std::process::Stdio;
 use std::time::Duration;
 use std::time::Instant;
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum RoundExecution {
+    OriginalV2,
+    ObservedV1,
+}
+
+const OBSERVED_PROFILE: &str = "hepta-original-model-observed-execution-v1";
+
+fn validate_round_assessment(
+    assessment: &serde_json::Value,
+    round: usize,
+    execution: RoundExecution,
+) -> TestResult<()> {
+    let schema = match execution {
+        RoundExecution::OriginalV2 => "hepta-controlled-real-round-assessment-v2",
+        RoundExecution::ObservedV1 => "hepta-controlled-real-round-assessment-observed-v1",
+    };
+    let context_valid = match execution {
+        RoundExecution::OriginalV2 => {
+            assessment.get("observation_execution").is_none()
+                && assessment.get("execution_profile").is_none()
+        }
+        RoundExecution::ObservedV1 => {
+            assessment["execution_profile"] == OBSERVED_PROFILE
+                && assessment["model_plan_profile"] == "strict-v1"
+                && assessment["observation_execution"]["profile"]
+                    == "canonical-parent-original-task-observed-execution-v1"
+                && ["plan_sha256", "observer", "model_plan"]
+                    .iter()
+                    .all(|field| {
+                        assessment["observation_execution"][*field]
+                            .as_str()
+                            .is_some_and(|value| {
+                                value.len() == 64
+                                    && value.bytes().all(|byte| byte.is_ascii_hexdigit())
+                                    && value.bytes().any(|byte| byte != b'0')
+                            })
+                    })
+        }
+    };
+    if assessment["schema"] != schema
+        || !context_valid
+        || assessment["round"] != round
+        || assessment["decision"] != "hold-no-positive-gain"
+        || assessment["all_required_controls_executed"] != true
+        || assessment["training_budget_matched_by_steps_and_token_schedule"] != true
+        || assessment["installed_child"] != false
+        || assessment["product_qualification"] != false
+    {
+        return Err("round did not retain its exact execution profile and original unqualified hold decision".into());
+    }
+    Ok(())
+}
+
 // All current Python phase children inherit this new group. Keep the original
 // child unreaped until signaling so an unrelated reused PID cannot be targeted.
 struct OwnedRound {
@@ -69,6 +123,7 @@ async fn train_round(
     output: &Path,
     round: usize,
     readback: &Path,
+    execution: RoundExecution,
 ) -> TestResult<serde_json::Value> {
     let script = PathBuf::from(
         std::env::var_os("HEPTA_PUBLIC_INITIAL_ROUND_RUNNER")
@@ -78,7 +133,7 @@ async fn train_round(
     let stem = output.parent().ok_or("round output parent")?;
     let stdout = File::create(stem.join(format!("round-{round}.stdout.log")))?;
     let stderr = File::create(stem.join(format!("round-{round}.stderr.log")))?;
-    let launch = serde_json::json!({
+    let mut launch = serde_json::json!({
         "schema":"hepta-controlled-real-round-launch-v2", "round":round,
         "python":input.python,"script":script,"script_sha256":Digest32::of_bytes(&fs::read(&script)?).to_string(),
         "chain":input.chain,"materials":input.materials,"parent":input.parent,
@@ -87,6 +142,10 @@ async fn train_round(
         "original_phase_budgets_unchanged":true,"isolated_python":true,"fresh_owned_process_group":true,
         "product_qualification_issued":false
     });
+    if execution == RoundExecution::ObservedV1 {
+        launch["schema"] = serde_json::json!("hepta-controlled-real-round-launch-observed-v1");
+        launch["execution_profile"] = serde_json::json!(OBSERVED_PROFILE);
+    }
     fs::write(
         stem.join(format!("round-{round}.launch.json")),
         serde_json::to_vec_pretty(&launch)?,
@@ -150,22 +209,19 @@ async fn train_round(
         return Err("controlled assessment exceeds its bounded test envelope".into());
     }
     let assessment: serde_json::Value = serde_json::from_slice(&fs::read(path)?)?;
-    if assessment["schema"] != "hepta-controlled-real-round-assessment-v2"
-        || assessment["round"] != round
-        || assessment["decision"] != "hold-no-positive-gain"
-        || assessment["all_required_controls_executed"] != true
-        || assessment["training_budget_matched_by_steps_and_token_schedule"] != true
-        || assessment["installed_child"] != false
-        || assessment["product_qualification"] != false
-    {
-        return Err("round did not retain the original unqualified hold decision".into());
-    }
+    validate_round_assessment(&assessment, round, execution)?;
     Ok(assessment)
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 #[ignore = "requires actual public V2 weights and three five-arm training/evaluation rounds"]
 async fn real_public_initial_three_rounds_hold_and_read_original_current() -> TestResult<()> {
+    let execution = match std::env::var("HEPTA_PUBLIC_INITIAL_EXECUTION_PROFILE") {
+        Err(std::env::VarError::NotPresent) => RoundExecution::OriginalV2,
+        Ok(profile) if profile == "strict-v2" => RoundExecution::OriginalV2,
+        Ok(profile) if profile == OBSERVED_PROFILE => RoundExecution::ObservedV1,
+        _ => return Err("unknown explicit round execution profile".into()),
+    };
     let (input, mut worker, bytes) = input_and_worker("public-loop-session-0")?;
     // Short owned fixture paths preserve the original AF_UNIX socket layout.
     let root = input.output.join("p");
@@ -196,6 +252,11 @@ async fn real_public_initial_three_rounds_hold_and_read_original_current() -> Te
         "beneficial_releases":0,"installed_children":0,"product_qualification_issued":false,
         "public_network_ready":false,"independent_future_quality":false
     });
+    if execution == RoundExecution::ObservedV1 {
+        report["schema"] =
+            serde_json::json!("hepta-controlled-public-initial-three-round-loop-observed-v1");
+        report["execution_profile"] = serde_json::json!(OBSERVED_PROFILE);
+    }
     let report_path = root.join("loop-observations.json");
     fs::write(&report_path, serde_json::to_vec_pretty(&report)?)?;
     for round in 1..=3 {
@@ -204,6 +265,7 @@ async fn real_public_initial_three_rounds_hold_and_read_original_current() -> Te
             &root.join(format!("round-{round}")),
             round,
             &effects.join("ordinary-session-result.json"),
+            execution,
         )
         .await?;
         if fixture
@@ -260,5 +322,35 @@ async fn real_public_initial_three_rounds_hold_and_read_original_current() -> Te
             .receipt(),
         baseline
     );
+    Ok(())
+}
+
+#[test]
+fn observed_round_cannot_relabel_legacy_or_authorize_installation() -> TestResult<()> {
+    let original = serde_json::json!({
+        "schema":"hepta-controlled-real-round-assessment-v2", "round":1,
+        "decision":"hold-no-positive-gain", "all_required_controls_executed":true,
+        "training_budget_matched_by_steps_and_token_schedule":true,
+        "installed_child":false, "product_qualification":false
+    });
+    validate_round_assessment(&original, 1, RoundExecution::OriginalV2)?;
+    assert!(validate_round_assessment(&original, 1, RoundExecution::ObservedV1).is_err());
+    let mut observed = original.clone();
+    observed["schema"] = serde_json::json!("hepta-controlled-real-round-assessment-observed-v1");
+    observed["execution_profile"] = serde_json::json!(OBSERVED_PROFILE);
+    observed["model_plan_profile"] = serde_json::json!("strict-v1");
+    observed["observation_execution"] = serde_json::json!({
+        "profile":"canonical-parent-original-task-observed-execution-v1",
+        "plan_sha256":"1".repeat(64), "observer":"2".repeat(64), "model_plan":"3".repeat(64)
+    });
+    validate_round_assessment(&observed, 1, RoundExecution::ObservedV1)?;
+    assert!(validate_round_assessment(&observed, 1, RoundExecution::OriginalV2).is_err());
+    for field in ["installed_child", "product_qualification"] {
+        let mut changed = observed.clone();
+        changed[field] = serde_json::json!(true);
+        assert!(validate_round_assessment(&changed, 1, RoundExecution::ObservedV1).is_err());
+    }
+    observed["observation_execution"]["observer"] = serde_json::json!("0".repeat(64));
+    assert!(validate_round_assessment(&observed, 1, RoundExecution::ObservedV1).is_err());
     Ok(())
 }

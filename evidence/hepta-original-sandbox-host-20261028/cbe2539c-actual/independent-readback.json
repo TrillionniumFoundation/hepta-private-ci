@@ -1,0 +1,63 @@
+{
+  "schema": "hepta-original-host-independent-readback-v1",
+  "cases": [
+    {
+      "host": "ubuntu-26.04",
+      "artifact_bytes": 125927,
+      "artifact_sha256": "90a518e76bad8fcfb15778a6b8e68a5ce51f7714210a9092541c5cedb48f35d5",
+      "members": 27,
+      "all_crc_and_manifest_hashes_pass": true,
+      "source_before_after_equal": true,
+      "exit_code": 0,
+      "log_bytes": 0,
+      "original_child_budget_seconds": 0.5,
+      "owner_total_elapsed_seconds": 1.2976813450000009,
+      "elapsed_scope": "includes full source identity checks; not child-only timing or hard real-time guarantee",
+      "apparmor_enabled": true,
+      "unprivileged_userns_restricted": true,
+      "physical_memory_bytes": 16759443456,
+      "effective_resource_capacity_qualified": false,
+      "cpython_build_owner_seconds": 147.400280952,
+      "image": [
+        "ubuntu26",
+        "20261026.180.1"
+      ],
+      "packages": [
+        "apparmor\t5.0.2-0ubuntu1~26.04.1",
+        "bubblewrap\t0.11.1-1ubuntu0.3"
+      ]
+    },
+    {
+      "host": "ubuntu-24.04",
+      "artifact_bytes": 7961,
+      "artifact_sha256": "e4dbd67bdaf99070165ef30cc9ced7d19269212346f1e1c74cfa8e32e705f4f7",
+      "members": 21,
+      "all_crc_and_manifest_hashes_pass": true,
+      "source_before_after_equal": true,
+      "exit_code": 1,
+      "log_bytes": 61,
+      "original_child_budget_seconds": 0.5,
+      "owner_total_elapsed_seconds": 0.758064933,
+      "elapsed_scope": "includes full source identity checks; not child-only timing or hard real-time guarantee",
+      "apparmor_enabled": true,
+      "unprivileged_userns_restricted": true,
+      "physical_memory_bytes": 16766406656,
+      "effective_resource_capacity_qualified": false,
+      "cpython_build_owner_seconds": null,
+      "image": [
+        "ubuntu24",
+        "20261023.334.3"
+      ],
+      "packages": [
+        "apparmor\t4.0.1really4.0.1-0ubuntu0.24.04.8",
+        "bubblewrap\t0.9.0-1ubuntu0.3"
+      ]
+    }
+  ],
+  "whole_matrix_passed": false,
+  "ubuntu26_probe_passed": true,
+  "native_rust_qualified": false,
+  "model_loop_qualified": false,
+  "ordinary_installed_child": false,
+  "production_activated": false
+}
