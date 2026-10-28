@@ -421,6 +421,26 @@ if [[ "${RUNNER_OS:-}" == "Windows" ]]; then
   post_config_bazel_args+=("--test_tmpdir=${TEMP}")
 fi
 
+# Windows durable-state tests use the verified NTFS TEMP/TMP directory.
+# Git Bash does not guarantee an implicit /tmp after those variables change.
+# Keep wrapper diagnostics on that same directory, never an unverified fallback.
+if [[ "${RUNNER_OS:-}" == "Windows" ]]; then
+  if command -v cygpath >/dev/null 2>&1; then
+    verified_shell_temp="$(cygpath -u "$TEMP")"
+  elif [[ "$TEMP" == /* ]]; then
+    # POSIX test harness emulating a Windows runner.
+    verified_shell_temp="$TEMP"
+  else
+    echo "Verified Windows test temporary path cannot be translated" >&2
+    exit 1
+  fi
+  if [[ ! -d "$verified_shell_temp" ]]; then
+    echo "Verified Windows test temporary directory is missing" >&2
+    exit 1
+  fi
+  export TMPDIR="$verified_shell_temp"
+fi
+
 bazel_console_log="$(mktemp)"
 trap 'rm -f "$bazel_console_log"' EXIT
 
