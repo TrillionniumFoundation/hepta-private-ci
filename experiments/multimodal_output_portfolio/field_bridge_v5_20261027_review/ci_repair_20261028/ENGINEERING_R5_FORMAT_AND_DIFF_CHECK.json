@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "at_utc": "2026-10-28T10:06:08.171545+00:00",
+  "kind": "actual_just_fmt_and_diff_check",
+  "command": [
+    "/tmp/hepta-just-1.51.0/just",
+    "fmt"
+  ],
+  "cwd": "/workspace/scratch/e8a4dc33549f/hepta/codex-rs",
+  "returncode": 0,
+  "output": "",
+  "diff_check_returncode": 0,
+  "diff_check_output": "",
+  "before": {
+    "codex-rs/core/src/session/tests/terminal_event_tests.rs": {
+      "bytes": 8957,
+      "sha256": "e591a8e9d512b23869e2b2585e2e876c7c6c22e4103ddb757e428dc5886cf057"
+    },
+    "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs": {
+      "bytes": 18383,
+      "sha256": "6d14fbd6f8940c0effb9fcf6b1244374996af0cf7ec487cef64afb6f908cccea"
+    },
+    "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/branch_state.py": {
+      "bytes": 12779,
+      "sha256": "332080139de3a15a74d6ee5fad907fef661a1866551a0e23689884587d73cf82"
+    },
+    "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/budget.py": {
+      "bytes": 7369,
+      "sha256": "ea325da155d015e974ea65eddc9db60b0a6befc25835c481810d6e3235825c0b"
+    },
+    "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/codec.py": {
+      "bytes": 6335,
+      "sha256": "75b2be74e5a9bf7ff474e74f5e25f3f6dc3758c09d07ff78a1417537ddc772fb"
+    },
+    "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/independent_review/independent_probes.py": {
+      "bytes": 6302,
+      "sha256": "ba11e0549c5abfcd2225752cdc47418d6e5a63086e0cb08b8c1d4ff082077a20"
+    },
+    "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/tests.py": {
+      "bytes": 18077,
+      "sha256": "506d27b2f04cf97c7f75aa6dfe8e6fe1d6cc9506fd21b3914a901dfb44226bf9"
+    },
+    "experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/adapter.py": {
+      "bytes": 22211,
+      "sha256": "59b32cbd4ac52dee2e3b0dec7f1c0b197d2c84dbd6fdf404156ad788d3d38e21"
+    },
+    "experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/independent_review/independent_probes.py": {
+      "bytes": 7596,
+      "sha256": "7dbe2bd596ea33db01cb71b5ebbc74bdc4515e60c61ea5d0bfd5209876a3f881"
+    },
+    "experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/tests.py": {
+      "bytes": 18511,
+      "sha256": "c6bf74e88f3b5cd0632c4930d9d248603c806a3d2232e6e0dcb72a4843320b04"
+    },
+    "scripts/capture_cargo_deny_diagnostic.py": {
+      "bytes": 15062,
+      "sha256": "c040903cab7a58bcab1c690958555ace26a33c7ce41290d92216b5b68684e34f"
+    },
+    "scripts/test_capture_cargo_deny_diagnostic.py": {
+      "bytes": 18599,
+      "sha256": "7f811178e2e6dbeba2c0c59b0ba54bfece13a4bab2682a2485ce8411e817792b"
+    }
+  },
+  "after": {
+    "codex-rs/core/src/session/tests/terminal_event_tests.rs": {
+      "bytes": 8957,
+      "sha256": "e591a8e9d512b23869e2b2585e2e876c7c6c22e4103ddb757e428dc5886cf057"
+    },
+    "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs": {
+      "bytes": 18383,
+      "sha256": "6d14fbd6f8940c0effb9fcf6b1244374996af0cf7ec487cef64afb6f908cccea"
+    },
+    "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/branch_state.py": {
+      "bytes": 12779,
+      "sha256": "332080139de3a15a74d6ee5fad907fef661a1866551a0e23689884587d73cf82"
+    },
+    "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/budget.py": {
+      "bytes": 7369,
+      "sha256": "ea325da155d015e974ea65eddc9db60b0a6befc25835c481810d6e3235825c0b"
+    },
+    "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/codec.py": {
+      "bytes": 6335,
+      "sha256": "75b2be74e5a9bf7ff474e74f5e25f3f6dc3758c09d07ff78a1417537ddc772fb"
+    },
+    "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/independent_review/independent_probes.py": {
+      "bytes": 6302,
+      "sha256": "ba11e0549c5abfcd2225752cdc47418d6e5a63086e0cb08b8c1d4ff082077a20"
+    },
+    "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/tests.py": {
+      "bytes": 18077,
+      "sha256": "506d27b2f04cf97c7f75aa6dfe8e6fe1d6cc9506fd21b3914a901dfb44226bf9"
+    },
+    "experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/adapter.py": {
+      "bytes": 22211,
+      "sha256": "59b32cbd4ac52dee2e3b0dec7f1c0b197d2c84dbd6fdf404156ad788d3d38e21"
+    },
+    "experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/independent_review/independent_probes.py": {
+      "bytes": 7596,
+      "sha256": "7dbe2bd596ea33db01cb71b5ebbc74bdc4515e60c61ea5d0bfd5209876a3f881"
+    },
+    "experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/tests.py": {
+      "bytes": 18511,
+      "sha256": "c6bf74e88f3b5cd0632c4930d9d248603c806a3d2232e6e0dcb72a4843320b04"
+    },
+    "scripts/capture_cargo_deny_diagnostic.py": {
+      "bytes": 15062,
+      "sha256": "c040903cab7a58bcab1c690958555ace26a33c7ce41290d92216b5b68684e34f"
+    },
+    "scripts/test_capture_cargo_deny_diagnostic.py": {
+      "bytes": 18599,
+      "sha256": "7f811178e2e6dbeba2c0c59b0ba54bfece13a4bab2682a2485ce8411e817792b"
+    }
+  },
+  "all_reviewed_source_bytes_unchanged": true,
+  "rust_tests_executed": false,
+  "rust_validation": "New CI compilation and tests required; previous Windows jobs failed compilation on ambiguous assert_eq macros."
+}
