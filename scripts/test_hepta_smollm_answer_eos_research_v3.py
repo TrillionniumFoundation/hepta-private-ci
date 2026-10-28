@@ -53,7 +53,12 @@ class ResearchBoundaryTests(unittest.TestCase):
             (
                 "three-rounds-native.json",
                 1,
-                native + [research.THREE_ROUNDS, "--run-ignored", "only", "--no-capture"],
+                native + [
+                    research.THREE_ROUNDS,
+                    "--run-ignored",
+                    "only",
+                    "--no-capture",
+                ],
             ),
         ):
             log = self.root / (name + ".log")
