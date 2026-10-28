@@ -1,0 +1,10 @@
+{
+  "causal_attribution": "No preincident counter baseline; current pressure and accumulated OOM counters are diagnostics, not proof of this interruption cause.",
+  "memory.current": "7970975744\n",
+  "memory.events": "low 0\nhigh 0\nmax 3047216\noom 11\noom_kill 7\noom_group_kill 0\n",
+  "memory.max": "8589934592\n",
+  "memory.peak": "8595619840\n",
+  "memory.stat": "anon 211660800\nfile 6589480960\nkernel 1168273408\nkernel_stack 1081344\npagetables 5369856\nsec_pagetables 0\npercpu 14872\nsock 4096\nvmalloc 8192\nshmem 4926959616\nfile_mapped 36864\nfile_dirty 126943232\nfile_writeback 0\nswapcached 0\nanon_thp 0\nfile_thp 104857600\nshmem_thp 0\ninactive_anon 854245376\nactive_anon 4283957248\ninactive_file 536498176\nactive_file 1126023168\nunevictable 0\nslab_reclaimable 1095525736\nslab_unreclaimable 66212360\nslab 1161738096\nworkingset_refault_anon 0\nworkingset_refault_file 126318836\nworkingset_activate_anon 0\nworkingset_activate_file 24736623\nworkingset_restore_anon 0\nworkingset_restore_file 11488598\nworkingset_nodereclaim 64261\npgdemote_kswapd 0\npgdemote_direct 0\npgdemote_khugepaged 0\npgdemote_proactive 0\npgscan 608715497\npgsteal 145934694\npswpin 0\npswpout 0\npgscan_kswapd 4906991\npgscan_direct 603798175\npgscan_khugepaged 10331\npgscan_proactive 0\npgsteal_kswapd 4455530\npgsteal_direct 141468892\npgsteal_khugepaged 10272\npgsteal_proactive 0\npgfault 2195864562\npgmajfault 117701\npgrefill 76555173\npgactivate 46094176\npgdeactivate 72121644\npglazyfree 378\npglazyfreed 0\nswpin_zero 0\nswpout_zero 0\nthp_fault_alloc 12015\nthp_collapse_alloc 194\nthp_swpout 0\nthp_swpout_fallback 0\n",
+  "observed_utc": "2026-10-28T17:47:42.355706+00:00",
+  "source": "/sys/fs/cgroup"
+}

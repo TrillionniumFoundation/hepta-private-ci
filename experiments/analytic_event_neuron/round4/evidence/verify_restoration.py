@@ -21,10 +21,12 @@ def verify_collections(repo, run_dir, descriptors, output):
     started = time.perf_counter_ns()
     frozen_before = verify(run_dir)
     records = []
-    with tempfile.TemporaryDirectory(prefix="aen-r4-restoration-") as temporary:
-        temporary = Path(temporary)
-        destination = temporary / "restored"
-        for descriptor in descriptors:
+    for descriptor in descriptors:
+        # Bound temporary storage to one logical archive. Earlier receipts
+        # remain unchanged; every archive still receives an actual extraction.
+        with tempfile.TemporaryDirectory(prefix="aen-r4-restoration-") as temporary:
+            temporary = Path(temporary)
+            destination = temporary / "restored"
             path = materialize(repo, descriptor, temporary)
             expected = verify_members(path, descriptor["member_manifest"])
             restore(path, destination, descriptor["member_manifest"], expected)
@@ -54,6 +56,7 @@ def verify_collections(repo, run_dir, descriptors, output):
               "source_files_unchanged": len(frozen_after["sources_sha256"]),
               "prepared_artifacts_unchanged": len(frozen_after["artifacts_sha256"]),
               "scientific_data_regenerated": False,
+              "maximum_simultaneously_restored_logical_archives": 1,
               "temporary_duplicates_removed_only_after_byte_verification": True,
               "wall_ns": time.perf_counter_ns() - started}
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -73,7 +76,7 @@ if __name__ == "__main__":
     descriptors = []
     for path in args.descriptors:
         value = json.loads(path.read_text())
-        descriptors.extend(value["archives"] if isinstance(value, dict) else value)
+        descriptors.extend(value.get("archives", [value]) if isinstance(value, dict) else value)
     result = verify_collections(args.repo.resolve(), args.run_dir.resolve(), descriptors, args.output)
     print(json.dumps({"passed": result["passed"], "archives": len(result["archives"]),
                       "data_files": result["data_files"], "wall_ns": result["wall_ns"]}))

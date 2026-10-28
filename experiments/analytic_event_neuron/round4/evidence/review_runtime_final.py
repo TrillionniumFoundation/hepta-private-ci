@@ -5,6 +5,7 @@ No model fitting, dataset generation, native execution, or gate changes.
 """
 
 import argparse
+import ast
 import base64
 from collections import defaultdict
 from datetime import datetime, timezone
@@ -140,47 +141,129 @@ def partial_work_lower_bounds(directory, files):
             "reason_totals_unknown":"Unreturned operations and sparse-feature calls need not be present in durable owner receipts; incomplete ZIP fragments remain preserved. These observed minima are not complete attempt counters."}
 
 
-def interrupted_accounting(check, root):
-    main_path = root/"RUNTIME_INTERRUPTION.json"
+def scoring_recovery_review(check, root, repo, frozen, second):
+    """Independently bind reused worker outputs and the frozen scoring-only slice."""
+    path=root/"runtime_recovery_v2/SCORING_RECOVERY_seed_2017.json"
+    receipt=read_json(path)
+    started_path=root/"runtime_recovery_v2/SCORING_STARTED_seed_2017.json"
+    started=read_json(started_path)
+    directory=root/"runtime_confirmation/seed_2017"
+    attempt=next(a for a in second["attempts"] if a["seed"]==2017 and a["phase"]=="confirm")
+    original_hashes={name:value["sha256"] for name,value in attempt["files"].items()}
+    check.check(receipt["seed"]==2017 and receipt["passed"] and receipt["original_inputs_unchanged"],
+                "completed-worker scoring receipt passed")
+    check.check(receipt["inputs_sha256"]==started["inputs_sha256"]==original_hashes,
+                "scoring inputs equal independently preserved pre-recovery worker inventory")
+    for name,expected in original_hashes.items():
+        check.check(file_sha(directory/name)==expected,"scoring original input byte exact:"+name)
+    for value,label in ((receipt,"completed"),(started,"started")):
+        check.check(value["reused_in_completed_cohort"] is True and value["reexecuted_policy"] is False,
+                    "scoring reuse flags:"+label)
+        check.check(value["original_outer_wall_ns"] is None and value["original_outer_cpu_ns"] is None,
+                    "scoring unknown original parent cost:"+label)
+    check.check(receipt["original_outer_exit_code"] is None and
+                receipt["count_completed_worker_native_cost_once_in_formal_cohort"] is True,
+                "scoring original exit unknown and reused worker charged once")
+    source_relative="experiments/analytic_event_neuron/round4/runtime_study.py"
+    source=repo/source_relative
+    check.check(started["frozen_source"]==source_relative and
+                started["frozen_source_sha256"]==receipt["frozen_source_sha256"]==
+                frozen["sources_sha256"][source_relative]==file_sha(source),"frozen scoring source binding")
+    parsed=ast.parse(source.read_text())
+    function=next(node for node in parsed.body if isinstance(node,ast.FunctionDef) and node.name=="confirm_seed")
+    first=next(i for i,node in enumerate(function.body) if isinstance(node,ast.With) and "PUBLIC_ROWS.json.gz" in ast.unparse(node))
+    last=next(i for i,node in enumerate(function.body) if isinstance(node,ast.Assign) and
+              any(isinstance(target,ast.Name) and target.id=="summary" for target in node.targets))
+    nodes=ast.Module(body=function.body[first:last+1],type_ignores=[])
+    ast_sha=hashlib.sha256(ast.dump(nodes,include_attributes=False).encode()).hexdigest()
+    check.check(started["scoring_ast_sha256"]==receipt["scoring_ast_sha256"]==ast_sha,"exact original scoring AST binding")
+    forbidden={"dataset","evaluate_public","worker","Native","subprocess","fit","prepare_seed"}
+    called={node.func.id for node in ast.walk(nodes) if isinstance(node,ast.Call) and isinstance(node.func,ast.Name)}
+    check.check(not forbidden.intersection(called),"scoring slice contains no dataset generation fitting or policy/native call")
+    with gzip.open(directory/"PUBLIC_ROWS.json.gz","rt") as stream:
+        public_rows=json.load(stream)
+    with gzip.open(directory/"ROWS.json.gz","rt") as stream:
+        scored_rows=json.load(stream)
+    lookup={(row["case"],row["arm"]):row for row in public_rows}
+    check.check(len(public_rows)==len(lookup)==len(scored_rows)==2048,"saved worker complete unique case-arm inventory")
+    for row in scored_rows:
+        identity=(row["case"],row["arm"])
+        stripped={key:value for key,value in row.items() if key not in ("target","squared_error","utility","score_started_ns")}
+        check.check(identity in lookup and stripped==lookup[identity],"recovered scored row preserves every original policy field:"+str(identity))
+        check.check(row["score_started_ns"]>row["final_readback_ns"],"actual recovered score clock follows original readback:"+str(identity))
+    summary=read_json(directory/"SUMMARY.json")
+    worker=read_json(directory/"WORKER.json")
+    check.check(file_sha(directory/"ROWS.json.gz")==receipt["scored_rows_sha256"]==summary["rows_sha256"],"recovered scored rows binding")
+    check.check(file_sha(directory/"SUMMARY.json")==receipt["summary_sha256"],"recovered summary binding")
+    check.check(summary["wall_ns"] is None and summary["cpu_ns"] is None and
+                summary["outer_confirmation_invocation_interrupted"] and summary["outer_confirmation_unknown_costs_must_not_be_zero"],
+                "recovered summary unknown interrupted parent times remain null")
+    check.check(summary["worker"]==worker and receipt["original_worker_costs"]==
+                {key:worker[key] for key in ("wall_ns","cpu_ns","native")},"reused worker costs remain original")
+    check.check(summary["reused_in_completed_cohort"] is True and summary["reexecuted_policy"] is False,
+                "recovered summary reuse represented")
+    cost=receipt["scoring_recovery"]
+    check.check(summary["scoring_recovery"]==cost and cost["native_requests"]==cost["native_ticks"]==0 and
+                cost["wall_ns"]>=0 and cost["cpu_ns"]>=0,"new scoring costs separately measured without native calls")
+    return {"path":str(path.relative_to(root)),"sha256":file_sha(path),"receipt":receipt,
+            "started_path":str(started_path.relative_to(root)),"started_sha256":file_sha(started_path),
+            "independently_compared_original_policy_rows":len(scored_rows),"policy_fields_exact":True,
+            "native_worker_cost_counting":"Already counted once in the completed formal seed 2017 cohort. Do not add this preserved-worker receipt to discarded partial work.",
+            "original_parent_cost_unknown":True,"frozen_scoring_ast_sha256":ast_sha}
+
+
+def interrupted_accounting(check, root, repo, frozen):
+    main_path=root/"RUNTIME_INTERRUPTION.json"
+    second_path=root/"RUNTIME_SECOND_INTERRUPTION.json"
     if not main_path.exists():
-        return {"attempts":[],"additional_work":False}, None
-    main = read_json(main_path)
-    incident_paths = sorted((root/"interrupted_attempts").glob("*/INCIDENT.json"))
-    check.check(any(read_json(path)==main for path in incident_paths),"main interruption matches preserved incident")
-    incident_receipts, attempts = [], []
-    labels = set()
+        return {"attempts":[],"additional_work":False},None,None
+    main,second=read_json(main_path),read_json(second_path)
+    incident_paths=sorted((root/"interrupted_attempts").glob("*/INCIDENT.json"))
+    check.check(len(incident_paths)==2,"two preserved operational interruption incidents")
+    for source_path,value in ((main_path,main),(second_path,second)):
+        check.check(sum(read_json(path)==value for path in incident_paths)==1,
+                    "main interruption matches exactly one preserved incident:"+source_path.name)
+    check.check(file_sha(root/"RUNTIME_INTERRUPTION_02.json")==file_sha(second_path),"second incident aliases byte identical")
+    incident_receipts,attempts=[],[]
+    labels=set()
     for path in incident_paths:
-        incident = read_json(path)
-        check.check(incident["frozen_sha256"]==file_sha(root/"FREEZE.json"),"interruption frozen identity:"+str(path))
+        incident=read_json(path)
+        frozen_sha=incident.get("frozen_sha256",incident.get("freeze_sha256"))
+        check.check(frozen_sha==file_sha(root/"FREEZE.json"),"interruption frozen identity:"+str(path))
         incident_receipts.append({"path":str(path.relative_to(root)),"sha256":file_sha(path)})
+        for evidence in incident["termination_evidence"]:
+            relative=evidence if isinstance(evidence,str) else evidence["path"]
+            check.check((root/relative).is_file(),"termination snapshot retained:"+relative)
+            if isinstance(evidence,dict):
+                check.check(file_sha(root/relative)==evidence["sha256"],"termination snapshot binding:"+relative)
         for attempt in incident["attempts"]:
-            label = attempt["original_label"]
+            label=attempt["original_label"]
             check.check(label not in labels,"distinct interrupted invocation:"+label)
             labels.add(label)
-            start_path,log_path = root/"execution"/(label+"_STARTED.json"),root/"execution"/(label+".log")
+            start_path,log_path=root/"execution"/(label+"_STARTED.json"),root/"execution"/(label+".log")
             check.check(file_sha(start_path)==attempt["started_receipt_sha256"],"interrupted STARTED preserved:"+label)
             check.check(file_sha(log_path)==attempt["log_sha256"],"interrupted log preserved:"+label)
             check.check(not (root/"execution"/(label+"_COMPLETED.json")).exists(),"interrupted invocation has no fabricated completion:"+label)
-            directory = root/attempt["retained_directory"]
+            directory=root/attempt["retained_directory"]
             for relative,expected in attempt["files"].items():
-                saved = directory/relative
+                saved=directory/relative
                 check.check(file_sha(saved)==expected["sha256"] and saved.stat().st_size==expected["bytes"],
                             "preserved interrupted bytes:"+label+":"+relative)
-            start = datetime.fromisoformat(attempt["started_utc"])
-            last = datetime.fromisoformat(attempt["last_retained_write_utc"])
-            stopped = datetime.fromisoformat(incident["recorded_utc"])
-            lower,upper = attempt["observed_lifetime_lower_bound_seconds"],attempt["detected_stopped_lifetime_upper_bound_seconds"]
+            start=datetime.fromisoformat(attempt["started_utc"])
+            last=datetime.fromisoformat(attempt["last_retained_write_utc"])
+            stopped=datetime.fromisoformat(incident["recorded_utc"])
+            lower,upper=attempt["observed_lifetime_lower_bound_seconds"],attempt["detected_stopped_lifetime_upper_bound_seconds"]
             check.close(lower,(last-start).total_seconds(),"interruption lower lifetime:"+label,atol=2e-5,rtol=0)
             check.close(upper,(stopped-start).total_seconds(),"interruption upper lifetime:"+label,atol=2e-5,rtol=0)
             check.check(0<=lower<=upper and attempt["total_cpu_seconds"] is None and attempt["exit_code"] is None,
                         "interruption unknown is not zero:"+label)
-            identity = {}
+            identity={}
             if attempt["phase"]=="confirm":
                 for name in ("DATA.npz","PUBLIC.npz"):
-                    old_path = directory/name
-                    new_path = root/"runtime_confirmation"/f"seed_{attempt['seed']}"/name
+                    old_path=directory/name
+                    new_path=root/"runtime_confirmation"/f"seed_{attempt['seed']}"/name
                     with np.load(old_path,allow_pickle=False) as old,np.load(new_path,allow_pickle=False) as new:
-                        same = set(old.files)==set(new.files)
+                        same=set(old.files)==set(new.files)
                         check.check(same,"recovery original cohort keys:"+label+name)
                         fields={}
                         for key in sorted(set(old.files)&set(new.files)):
@@ -191,47 +274,106 @@ def interrupted_accounting(check, root):
                     identity[name]={"preserved_sha256":file_sha(old_path),"completed_sha256":file_sha(new_path),
                                     "same_arrays_dtype_shape_and_keys":same and all(fields.values()),
                                     "bytes_identical":file_sha(old_path)==file_sha(new_path)}
-            attempts.append({key:attempt[key] for key in ("original_label","phase","seed","retained_directory",
+            reused=bool(attempt.get("reused_in_completed_cohort",False))
+            overlapping=bool(attempt.get("overlapping_parent_scope",False))
+            additional=bool(attempt.get("additional_interrupted_duplicate_work",not reused and not overlapping))
+            if reused:
+                check.check(attempt["seed"]==2017 and attempt["phase"]=="confirm" and not additional and
+                            attempt["reexecuted_policy"] is False,"only complete saved 2017 worker reused")
+                worker=read_json(directory/"WORKER.json")
+                check.check(worker["native"]==attempt["known_completed_worker_native"] and
+                            worker["wall_ns"]==attempt["known_completed_worker_wall_ns"] and
+                            worker["cpu_ns"]==attempt["known_completed_worker_cpu_ns"],"reused completed worker counters exact")
+                observed={"known_completed_worker_native":worker["native"],"known_completed_worker_wall_ns":worker["wall_ns"],
+                          "known_completed_worker_cpu_ns":worker["cpu_ns"],"already_counted_in_formal_cohort":True,
+                          "additional_native_cost_from_preserving_this_worker":0,
+                          "unknown_original_parent_overhead_cpu_seconds":None}
+            elif overlapping:
+                check.check(not additional and attempt.get("do_not_add_parent_scope_to_child_scopes") is True,
+                            "interrupted orchestration parent not added to child scopes")
+                observed={"nested_parent_scope":True,"add_to_child_costs":False,
+                          "total_native_calls":None,"total_native_ticks":None,"total_cpu_seconds":None}
+            else:
+                observed=partial_work_lower_bounds(directory,attempt["files"])
+                observed["additional_discarded_partial_work"]=True
+            retained={key:attempt[key] for key in ("original_label","phase","seed","retained_directory",
                 "started_receipt_sha256","log_sha256","started_utc","last_retained_write_utc",
-                "observed_lifetime_lower_bound_seconds","detected_stopped_lifetime_upper_bound_seconds","exit_code","total_cpu_seconds")} |
-                {"retained_files":len(attempt["files"]),"retained_file_bytes":sum(v["bytes"] for v in attempt["files"].values()),
-                 "full_attempt_wall_seconds":None,"completed_recovery_dataset_identity":identity,
-                 "observed_work_lower_bounds":partial_work_lower_bounds(directory,attempt["files"]),
-                 "exhaustively_replayed":False,"counted_in_registered_sample_size":False})
-    detached_path = root/"RUNTIME_DETACHED_LAUNCH_FAILURE.json"
-    detached = None
+                "observed_lifetime_lower_bound_seconds","detected_stopped_lifetime_upper_bound_seconds","exit_code","total_cpu_seconds")}
+            retained.update(retained_files=len(attempt["files"]),retained_file_bytes=sum(v["bytes"] for v in attempt["files"].values()),
+                full_attempt_wall_seconds=None,completed_recovery_dataset_identity=identity,observed_work_lower_bounds=observed,
+                reused_in_completed_cohort=reused,reexecuted_policy=bool(attempt.get("reexecuted_policy",attempt["phase"]=="confirm")),
+                additional_interrupted_duplicate_work=additional,overlapping_parent_scope=overlapping,
+                native_cost_counting=("Overlapping orchestration parent scope; do not add to child costs; full parent cost remains unknown." if overlapping else
+                                     attempt.get("native_cost_counting","Additional discarded partial work; unknown totals remain null.")),
+                exhaustively_replayed=False,reused_completed_worker_native_calls_replayed_in_formal_audit=reused,
+                original_parent_overhead_exhaustively_accounted=False,additional_registered_samples=0,
+                completed_worker_rows_reused_as_registered_cohort=reused,counted_in_registered_sample_size=reused)
+            attempts.append(retained)
+    detached_path=root/"RUNTIME_DETACHED_LAUNCH_FAILURE.json"
+    detached=None
     if detached_path.exists():
         value=read_json(detached_path)
-        check.check(value["child_cpu_seconds"] is None and value["exit_code"] is None,
-                    "detached failed launch unknown cost not zero")
+        check.check(value["child_cpu_seconds"] is None and value["exit_code"] is None,"detached failed launch unknown cost not zero")
         detached={"path":str(detached_path.relative_to(root)),"sha256":file_sha(detached_path),"receipt":value,
                   "native_call_total":None,"additional_operational_attempt":True}
-    recovery_path=root/"runtime_recovery/COMPLETED.json"
-    recovery=read_json(recovery_path)
-    check.check(recovery["passed"] and recovery["runtime_results_sha256"]==file_sha(root/"RUNTIME_RESULTS.json"),
-                "complete recovery result binding")
-    check.check(recovery["successful_1213_confirmation_bytes_unchanged"],"successful original cohort not rerun or changed")
-    check.check(recovery["successful_1213_confirmation_sha256"]==main["successful_confirmation_1213_completed_receipt_sha256"]
-                ==file_sha(root/"execution/runtime_confirm_1213_COMPLETED.json"),"successful original confirmation receipt binding")
-    for label,item in recovery["completed_wrappers"].items():
+    check.check(not (root/"runtime_recovery/COMPLETED.json").exists(),"interrupted v1 orchestration remains incomplete")
+    recovery_path=root/"runtime_recovery_v2/COMPLETED.json"
+    schedule_path=root/"runtime_recovery_v2/SCHEDULE.json"
+    recovery,schedule=read_json(recovery_path),read_json(schedule_path)
+    check.check(recovery["passed"] and not recovery["failures"] and
+                recovery["runtime_results_sha256"]==file_sha(root/"RUNTIME_RESULTS.json"),"complete serial recovery result binding")
+    check.check(all(status=="complete" for state in recovery["state"].values() for status in state.values()),"all serial recovery phases complete")
+    check.check(file_sha(schedule_path)==recovery["schedule_sha256"] and schedule["freeze_sha256"]==file_sha(root/"FREEZE.json"),"serial recovery schedule binding")
+    check.check(schedule["maximum_simultaneous_heavy_phases"]==1 and schedule["only_full_policy_reexecution_seed"]==1619 and
+                schedule["successful_confirmations_1213_1427_1823_reexecuted"] is False and
+                schedule["complete_2017_worker_reexecuted"] is False,"serial schedule preserved completed policies")
+    check.check(recovery["protected_files_unchanged"] and
+                recovery["protected_files_sha256"]==schedule["protected_files_sha256"],"protected completed outputs inventory binding")
+    for relative,expected in recovery["protected_files_sha256"].items():
+        check.check(file_sha(root/relative)==expected,"protected completed science or old interrupted receipt:"+relative)
+    check.check(recovery["previous_completed_wrappers"]==schedule["previous_completed_wrappers"],"previous completed wrapper inventory binding")
+    check.check(set(recovery["completed_wrappers"])=={item["label"] for item in schedule["plan"]},"every serial planned wrapper complete exactly once")
+    for label,item in (recovery["previous_completed_wrappers"]|recovery["completed_wrappers"]).items():
         actual=read_json(root/item["path"])
-        check.check(file_sha(root/item["path"])==item["sha256"] and actual["returncode"]==0,
-                    "complete recovery wrapper binding:"+label)
+        check.check(file_sha(root/item["path"])==item["sha256"] and actual["returncode"]==0,"complete recovery wrapper binding:"+label)
+    check.check(recovery["previous_completed_wrappers"]["runtime_confirm_1213"]["sha256"]==
+                main["successful_confirmation_1213_completed_receipt_sha256"]==
+                file_sha(root/"execution/runtime_confirm_1213_COMPLETED.json"),"successful original 1213 confirmation receipt binding")
+    prior_finish=datetime.fromisoformat(schedule["created_utc"])
+    for phase in schedule["plan"]:
+        item=recovery["completed_wrappers"][phase["label"]]
+        value=read_json(root/item["path"])
+        current_start,current_finish=map(datetime.fromisoformat,(value["started_utc"],value["finished_utc"]))
+        check.check(prior_finish<=current_start<=current_finish,"serial recovered wrappers do not overlap:"+phase["label"])
+        prior_finish=current_finish
+    check.check(set(recovery["dataset_identity"])=={"1427","1619","1823","2017"},"all four original interrupted cohorts independently bound")
     for item in recovery["dataset_identity"].values():
         actual=read_json(root/item["path"])
         check.check(file_sha(root/item["path"])==item["sha256"] and actual["passed"] and actual["no_replacement_cohort"],
                     "recovery identity receipt:"+item["path"])
-    schedule_path=root/"runtime_recovery/SCHEDULE.json"
-    check.check(file_sha(schedule_path)==recovery["schedule_sha256"],"recovery schedule binding")
+    incident_bindings={str(path.relative_to(root)):file_sha(path) for path in (main_path,second_path)}
+    check.check(recovery["interruption_receipts"]==schedule["interruption_receipts"]==incident_bindings,
+                "serial recovery binds both preserved incidents")
+    check.check(recovery["reused_complete_2017_worker_counted_once_in_formal_cohort"] is True and
+                recovery["discarded_partial_attempts_are_additional_work_not_new_independent_samples"] is True and
+                recovery["original_interrupted_parent_total_wall_ns"] is None and
+                recovery["original_interrupted_parent_total_cpu_ns"] is None,"recovery explicit nonduplicate and unknown cost accounting")
+    score=scoring_recovery_review(check,root,repo,frozen,second)
+    check.check(recovery["scoring_recovery_receipt"]=={key:score[key] for key in ("path","sha256")},"serial recovery scoring-only receipt binding")
+    main_receipts=[{"path":str(path.relative_to(root)),"sha256":file_sha(path)} for path in (main_path,second_path)]
     summaries={"main_receipt_path":str(main_path.relative_to(root)),"main_receipt_sha256":file_sha(main_path),
-               "incident_receipts":incident_receipts,"attempts":attempts,"detached_launch_failure":detached,
-               "additional_work":True,"complete_attempted_native_call_total":None,"complete_attempted_cpu_seconds":None,
+               "main_receipts":main_receipts,"incident_receipts":incident_receipts,"attempts":attempts,"detached_launch_failure":detached,
+               "additional_work":True,"discarded_partial_attempt_count":sum(a["additional_interrupted_duplicate_work"] for a in attempts),
+               "reused_completed_worker_attempt_count":sum(a["reused_in_completed_cohort"] for a in attempts),
+               "overlapping_parent_attempt_count":sum(a["overlapping_parent_scope"] for a in attempts),
+               "complete_attempted_native_call_total":None,"complete_attempted_cpu_seconds":None,
                "lifetime_bounds_require_consistent_wall_clock":True,"overlapping_lifetime_bounds_must_not_be_added_as_elapsed":True,
-               "unreturned_and_partial_attempts_not_exhaustively_replayed":True}
+               "unreturned_and_discarded_partial_attempts_not_exhaustively_replayed":True,
+               "reused_2017_worker_counted_once_in_formal_cohort":True,"additional_registered_samples":0}
     recovery_summary={"path":str(recovery_path.relative_to(root)),"sha256":file_sha(recovery_path),"receipt":recovery,
                       "schedule_path":str(schedule_path.relative_to(root)),"schedule_sha256":file_sha(schedule_path),
-                      "schedule":read_json(schedule_path),"old_and_new_cohort_arrays_independently_compared":True}
-    return summaries,recovery_summary
+                      "schedule":schedule,"old_and_new_cohort_arrays_independently_compared":True}
+    return summaries,recovery_summary,score
 
 
 def archive_member(check, archive, manifest, name):
@@ -685,7 +827,7 @@ def review(run_dir, repo):
                     "confirmation_rows_discarded":0,
                     "zero_discard_claim_basis":"Exact registered case identity and count checks for every seed and every arm in this review."}
     boundary = float_boundary_diagnostic(repo)
-    interrupted,recovery = interrupted_accounting(check,root)
+    interrupted,recovery,score_recovery = interrupted_accounting(check,root,repo,frozen)
     wrapper=[]
     for path in sorted((root/"execution").glob("*_COMPLETED.json")):
         value=read_json(path)
@@ -718,13 +860,15 @@ def review(run_dir, repo):
             "float_transport_corpus_weight_diagnostics":float_corpus,
             "float_complement_boundary_diagnostic":boundary,
             "prior_preparation_replay_review":preparation_replay_summary,
-            "interrupted_attempts":interrupted,"runtime_recovery":recovery,
+            "interrupted_attempts":interrupted,"runtime_recovery":recovery,"scoring_only_recovery2017":score_recovery,
             "native_replay_scope":{"completed_cohort_replay":bool(expected_gates["all_replays_passed"] and prepared_replay["passed"]),
                 "completed_training_development_and_formal_cohort_calls_only":True,
                 "attempted_calls_exhaustively_replayed":False,
                 "qualification_fault_recovery_calls_all_replayed":False,
                 "interrupted_partial_or_unreturned_calls_all_replayed":False,
-                "interrupted_attempts_are_additional_work_not_additional_registered_samples":True},
+                "discarded_partial_attempts_are_additional_work_not_additional_registered_samples":True,
+                "reused_completed_2017_worker_charged_once_in_formal_cohort":True,
+                "overlapping_parent_scopes_not_added_to_children":True},
             "serialized_write_accounting":{"method":"Independent reconstruction of each successful Owner.step pending/state/witness serialization; all final state and witness bytes checked against original ZIP members before aggregation.",
                 "formal_confirmation_per_arm":{arm:dict(v) for arm,v in cost_totals.items()},
                 "shared_preparation":prepared_costs,
@@ -742,7 +886,9 @@ def review(run_dir, repo):
                 "row_cpu":"Python worker process_time; excludes native child CPU.",
                 "worker_wall":"Includes archive compression, verification and cleanup, native startup and shutdown, and worker output persistence.",
                 "phase_wrapper_cpu":"RUSAGE_CHILDREN user+system seconds for the full invoked child process tree as reaped; not a per-arm native CPU measurement.",
-                "concurrency":"Mixed concurrency on a shared host: up to five confirmation workers and two audits, as recorded before additional launches. Latency intervals are descriptive; no isolated hardware latency claim.",
+                "concurrency":"Mixed concurrency on a shared host: initial execution and first recovery used concurrent phases; the second recovery executes one heavy phase at a time. Original/reused workers retain their original timings. Latency intervals span different contention and are descriptive; no isolated hardware latency claim.",
+                "seed2017_original_parent_wall_and_cpu_unknown":True,
+                "seed2017_original_worker_counted_once_and_new_scoring_separate":True,
                 "nested_times_must_not_be_added":True,"simultaneous_wrappers_must_not_be_summed_as_session_elapsed_time":True},
             "review_native_calls":0,"confirmation_generated_by_review":False,"fitting_or_selection_performed":False,
             "wall_ns":time.perf_counter_ns()-started}

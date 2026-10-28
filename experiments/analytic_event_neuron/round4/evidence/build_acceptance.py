@@ -47,6 +47,26 @@ def build(root, output):
     if (not runtime["complete"] or review["results_sha256"] != digest(root / "RUNTIME_RESULTS.json")
             or runtime["acceptance"] != review["acceptance"]):
         raise ValueError("Runtime summary/review binding differs")
+    recovery = load(root, "runtime_recovery_v2/COMPLETED.json")
+    score_recovery = load(root, "runtime_recovery_v2/SCORING_RECOVERY_seed_2017.json")
+    if (recovery["passed"] is not True or recovery["runtime_results_sha256"] != digest(root / "RUNTIME_RESULTS.json")
+            or recovery["protected_files_unchanged"] is not True
+            or review["runtime_recovery"]["sha256"] != digest(root / "runtime_recovery_v2/COMPLETED.json")
+            or review["scoring_only_recovery2017"]["sha256"] != digest(root / "runtime_recovery_v2/SCORING_RECOVERY_seed_2017.json")
+            or score_recovery["passed"] is not True or score_recovery["reexecuted_policy"] is not False
+            or score_recovery["count_completed_worker_native_cost_once_in_formal_cohort"] is not True
+            or recovery["scoring_recovery_receipt"]["sha256"] != digest(root / "runtime_recovery_v2/SCORING_RECOVERY_seed_2017.json")):
+        raise ValueError("Serial recovery or completed-worker reuse is not bound to the final result")
+    if (root / "runtime_recovery/COMPLETED.json").exists():
+        raise ValueError("Interrupted v1 orchestration must retain its missing completion")
+    for relative, expected in recovery["interruption_receipts"].items():
+        if digest(root / relative) != expected:
+            raise ValueError("Interruption evidence differs from recovery binding")
+    for relative, expected in recovery["protected_files_sha256"].items():
+        if digest(root / relative) != expected:
+            raise ValueError("Previously completed evidence changed")
+    if digest(root / "RUNTIME_SECOND_INTERRUPTION.json") != digest(root / "RUNTIME_INTERRUPTION_02.json"):
+        raise ValueError("Second incident aliases must identify the same event")
     for seed in runtime["seeds"]:
         relative = f"runtime_confirmation/seed_{seed}/AUDIT.json"
         if load(root, relative)["passed"] is not True:
@@ -94,15 +114,24 @@ def build(root, output):
         "runtime_gates": runtime["acceptance"],
         "native_replay_scope": review["native_replay_scope"],
         "runtime_interruption_and_recovery": {
-            "interrupted_attempts_receipt_sha256": digest(root / "RUNTIME_INTERRUPTION.json"),
-            "recovery_completion_sha256": digest(root / "runtime_recovery/COMPLETED.json"),
+            "interruption_count": 2,
+            "interrupted_attempts_receipt_sha256": {
+                relative: digest(root / relative) for relative in ("RUNTIME_INTERRUPTION.json", "RUNTIME_SECOND_INTERRUPTION.json")
+            },
+            "second_incident_alias_not_a_third_incident": "RUNTIME_INTERRUPTION_02.json",
+            "recovery_completion_sha256": digest(root / "runtime_recovery_v2/COMPLETED.json"),
+            "scoring_recovery_receipt_sha256": digest(root / "runtime_recovery_v2/SCORING_RECOVERY_seed_2017.json"),
             "failed_detached_launch_receipt_sha256": digest(root / "RUNTIME_DETACHED_LAUNCH_FAILURE.json"),
             "complete_registered_cohorts_only_enter_scientific_statistics": True,
-            "interrupted_attempts_are_additional_work_not_new_independent_samples": True,
+            "interrupted_attempts_are_not_new_independent_samples": True,
+            "discarded_and_reexecuted_partial_attempts_are_additional_work": True,
+            "reused_complete_2017_worker_charged_once_in_formal_cohort": True,
+            "original_interrupted_parent_costs_remain_unknown": True,
+            "new_scoring_cost_recorded_separately": True,
             "interrupted_total_native_calls": None,
             "interrupted_total_cpu_seconds": None,
             "interrupted_full_wall_seconds": None,
-            "scope": "Exact interrupted bytes and observed lifetime bounds are preserved; completed retries use the same frozen cohorts. Unknown costs are not represented as zero.",
+            "scope": "Two incidents, including the incomplete v1 orchestration, remain preserved. Discarded partial work is additional; the complete 2017 worker is reused and counted once in the formal cohort. Frozen scoring alone is recovered. Unknown original parent costs remain null, and overlapping parent/child timings are not added.",
         },
         "runtime_primary_utility_contrasts": {
             key: runtime["utility_contrasts"][key] for key in ("event_vs_direct", "event_vs_float")
