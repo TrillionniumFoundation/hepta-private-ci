@@ -1,0 +1,141 @@
+{
+  "actions": {
+    "keep": "initial frozen natural forward/sample/serialize",
+    "swap": "retry the same frozen forward with the same public context and emission seed"
+  },
+  "canonical_video_remux_arguments": [
+    "-fflags",
+    "+bitexact",
+    "-i",
+    "pipe:0",
+    "-map",
+    "0:v:0",
+    "-map_metadata",
+    "-1",
+    "-c:v",
+    "copy",
+    "-fflags",
+    "+bitexact",
+    "-f",
+    "matroska",
+    "pipe:1"
+  ],
+  "canonicalization": "lossless packet copy; decoded frames must be byte-identical",
+  "checkpoint_sha256": "2c7068783532059479df475bb8c7b8d2c4721560a193a40513e8d0a50ef28617",
+  "checkpoint_training_profile_sha256": "bb9f08dca8ad9e7854990219c695685a05f90d7c711e0418d0dbd0a6df9da273",
+  "container_randomness_probe": {
+    "PNG_WAV_UTF8_equal": true,
+    "frozen_codec_repeated_same_latent_video_bytes_equal": false
+  },
+  "fault": "truncate only the newly generated initial video.mkv to eight bytes in selected scenarios",
+  "feedback": "+1 actual public expected-hash plus codec readback passes; -1 actual truncated transport video fails",
+  "model_input_array_fields": [
+    "context_video",
+    "context_audio"
+  ],
+  "native_calibration_role": "registered scalar encoder validity; no natural-semantic validity claim",
+  "native_scope_objective_unchanged": true,
+  "natural_model_source_sha256": "0fdded638147120bda44273265b38d1ecc06aa1bec0ded1393426ed95eee421e",
+  "new_host_profile_only": true,
+  "new_qualification": false,
+  "new_training": false,
+  "owner_binary_sha256": "ba5fc96e8139e652fd1d7ae0f9713b66ccd879b12e190e4dcc93bca43426143b",
+  "production_promotion": false,
+  "profile_is_original_training_objective": false,
+  "scenarios": [
+    {
+      "budget": 2,
+      "expires": 7,
+      "fault": false
+    },
+    {
+      "budget": 2,
+      "expires": 7,
+      "fault": true
+    },
+    {
+      "budget": 2,
+      "expires": 6,
+      "fault": true
+    },
+    {
+      "budget": 1,
+      "expires": 7,
+      "fault": true
+    },
+    {
+      "budget": 1,
+      "expires": 6,
+      "fault": true
+    },
+    {
+      "budget": 2,
+      "expires": 6,
+      "fault": false
+    },
+    {
+      "budget": 2,
+      "expires": 7,
+      "fault": true
+    },
+    {
+      "budget": 1,
+      "expires": 7,
+      "fault": false
+    }
+  ],
+  "schema": "hepta.ndu.natural-native-transport-diagnostic.v1",
+  "semantic_target_scoring": false,
+  "source_events": [
+    {
+      "event_id": "video_10996-event-0",
+      "source_id": "video_10996",
+      "split": "qualification"
+    },
+    {
+      "event_id": "video_4528-event-0",
+      "source_id": "video_4528",
+      "split": "qualification"
+    },
+    {
+      "event_id": "video_3253-event-0",
+      "source_id": "video_3253",
+      "split": "qualification"
+    },
+    {
+      "event_id": "video_10991-event-0",
+      "source_id": "video_10991",
+      "split": "qualification"
+    },
+    {
+      "event_id": "video_9545-event-0",
+      "source_id": "video_9545",
+      "split": "qualification"
+    },
+    {
+      "event_id": "video_7386-event-0",
+      "source_id": "video_7386",
+      "split": "qualification"
+    },
+    {
+      "event_id": "video_10605-event-0",
+      "source_id": "video_10605",
+      "split": "qualification"
+    },
+    {
+      "event_id": "video_2562-event-0",
+      "source_id": "video_2562",
+      "split": "qualification"
+    }
+  ],
+  "source_sha256": "62d5d2461a45a2c620c2b5e71212d7e8c6819a1d6f6dd9deb88dd693611752cf",
+  "tariff": {
+    "delivery": 0.002,
+    "generator_call": 0.01,
+    "native_cpu_second": 0.0001,
+    "native_kernel": 0.0001,
+    "python_cpu_second": 0.0001,
+    "refused_proposal": 0.005,
+    "wall_second": 0.0001
+  }
+}
