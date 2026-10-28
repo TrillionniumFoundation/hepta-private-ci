@@ -69,7 +69,7 @@ def collect(run, assets, freeze_path, logs):
     expected_sources = dict(freeze["files"])
 
     def bind_source(name, identity):
-        safe_name(name)
+        safe_name("repository/experiments/multimodal_output_portfolio/" + name)
         require((portfolio / name).resolve().is_relative_to(portfolio), "Source path escapes portfolio")
         require(name not in expected_sources or expected_sources[name] == identity, "Conflicting source identities")
         expected_sources[name] = identity
