@@ -149,14 +149,21 @@ impl LearningArtifactOwnerService {
         now: u64,
     ) -> Result<Digest32, LearningArtifactOwnerServiceError> {
         if let Some(blocked) = &self.recovery_required {
-            return Err(LearningArtifactOwnerServiceError::RecoveryRequired(blocked.clone()));
+            return Err(LearningArtifactOwnerServiceError::RecoveryRequired(
+                blocked.clone(),
+            ));
         }
         let transaction = ArtifactPublicationTransactionV1::begin(
-            operation_id, admission, &self.withdrawal_registry, &self.registry,
-            expected_registry_predecessor_head, now,
+            operation_id,
+            admission,
+            &self.withdrawal_registry,
+            &self.registry,
+            expected_registry_predecessor_head,
+            now,
         )?;
         let mut staged = self.registry.clone();
-        self.host.stage_compatibility_registration(&transaction, &mut staged, now)?;
+        self.host
+            .stage_compatibility_registration(&transaction, &mut staged, now)?;
         Ok(staged.snapshot().head_digest)
     }
 

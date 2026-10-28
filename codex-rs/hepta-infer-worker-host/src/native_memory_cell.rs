@@ -29,7 +29,9 @@ impl AppServerModelDriver {
         match self.memory_request.as_ref() {
             None => Ok(prior_digest),
             Some(request) => Ok(super::control::digest(&serde_json::to_vec(&(
-                "hepta.native-memory-request.v1", prior_digest, request,
+                "hepta.native-memory-request.v1",
+                prior_digest,
+                request,
             ))?)),
         }
     }
@@ -38,7 +40,9 @@ impl AppServerModelDriver {
         &self,
         owner: &AgentdClient,
     ) -> Result<Option<MemoryCellEvidenceV1>> {
-        let Some(request) = self.memory_request.as_ref() else { return Ok(None); };
+        let Some(request) = self.memory_request.as_ref() else {
+            return Ok(None);
+        };
         let readout = owner.memory_cell_read(request.clone()).await?;
         Ok(Some(realize_memory_cell_evidence_v1(request, &readout)?))
     }
@@ -48,12 +52,17 @@ impl AppServerModelDriver {
         owner: &AgentdClient,
         attached: &MemoryCellEvidenceV1,
     ) -> Result<()> {
-        let current = self.acquire_memory_evidence(owner).await?
+        let current = self
+            .acquire_memory_evidence(owner)
+            .await?
             .ok_or("native memory request disappeared before final use")?;
         if current.request_digest() != attached.request_digest()
             || current.evidence_digest() != attached.evidence_digest()
-            || current.realized() != attached.realized() {
-            return Err("memory source, selected model or read result changed before final use".into());
+            || current.realized() != attached.realized()
+        {
+            return Err(
+                "memory source, selected model or read result changed before final use".into(),
+            );
         }
         Ok(())
     }
@@ -67,11 +76,15 @@ pub fn load_native_memory_request_v1(path: &Path) -> Result<MemoryRequestV1> {
         return Err("--memory-request-file must be absolute".into());
     }
     let mut bytes = Vec::new();
-    std::fs::File::open(path)?.take(MAX_REQUEST_BYTES + 1).read_to_end(&mut bytes)?;
+    std::fs::File::open(path)?
+        .take(MAX_REQUEST_BYTES + 1)
+        .read_to_end(&mut bytes)?;
     if bytes.len() as u64 > MAX_REQUEST_BYTES {
         return Err("native memory request file exceeds 65536 bytes".into());
     }
-    Ok(codex_hepta_cognitive_types::decode_memory_request_v1(&bytes)?)
+    Ok(codex_hepta_cognitive_types::decode_memory_request_v1(
+        &bytes,
+    )?)
 }
 
 #[cfg(test)]

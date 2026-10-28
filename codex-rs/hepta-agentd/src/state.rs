@@ -232,8 +232,13 @@ impl AgentdState {
         &self,
         cells: Arc<crate::AgentdMemoryCellRuntimeV1>,
     ) -> Result<(), AgentdError> {
-        cells.require_identity(&self.identity.agent_id, self.identity.spawn_generation, &self.identity.workspace)?;
-        self.memory_cells.set(cells)
+        cells.require_identity(
+            &self.identity.agent_id,
+            self.identity.spawn_generation,
+            &self.identity.workspace,
+        )?;
+        self.memory_cells
+            .set(cells)
             .map_err(|_| AgentdError::Protocol("memory cells already attached".to_string()))
     }
 

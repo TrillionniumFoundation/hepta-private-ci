@@ -39,7 +39,9 @@ pub trait MemoryCellAddressResolverV1: Send + Sync {
         &'a self,
         request: &'a MemoryRequestV1,
         snapshot: &'a MemoryCellOwnerSnapshotV1,
-    ) -> Pin<Box<dyn Future<Output = Result<Option<MemoryCellResolvedAddressV1>, String>> + Send + 'a>>;
+    ) -> Pin<
+        Box<dyn Future<Output = Result<Option<MemoryCellResolvedAddressV1>, String>> + Send + 'a>,
+    >;
 }
 
 #[derive(Clone, Debug)]
@@ -71,7 +73,9 @@ impl AgentdMemoryCellRuntimeV1 {
         resolver: Arc<dyn MemoryCellAddressResolverV1>,
     ) -> Result<Self, AgentdError> {
         if spawn_generation == 0 {
-            return Err(AgentdError::Invalid("memory cell host generation is zero".to_string()));
+            return Err(AgentdError::Invalid(
+                "memory cell host generation is zero".to_string(),
+            ));
         }
         let access = match &scope {
             CognitiveScope::AgentPrivate => CognitiveAccess::agent_private(owner_agent_id.clone()),
@@ -80,22 +84,44 @@ impl AgentdMemoryCellRuntimeV1 {
             }
         };
         let resolver_digest = resolver.model_digest();
-        Ok(Self { owner_agent_id, spawn_generation, scope, access, release, resolver, resolver_digest })
+        Ok(Self {
+            owner_agent_id,
+            spawn_generation,
+            scope,
+            access,
+            release,
+            resolver,
+            resolver_digest,
+        })
     }
 
-    pub(crate) fn require_identity(&self, owner: &AgentId, generation: u64, workspace: &std::path::Path) -> Result<(), AgentdError> {
+    pub(crate) fn require_identity(
+        &self,
+        owner: &AgentId,
+        generation: u64,
+        workspace: &std::path::Path,
+    ) -> Result<(), AgentdError> {
         if owner != &self.owner_agent_id || generation != self.spawn_generation {
-            return Err(AgentdError::GenerationFenced("memory cell host identity differs from Agentd".to_string()));
+            return Err(AgentdError::GenerationFenced(
+                "memory cell host identity differs from Agentd".to_string(),
+            ));
         }
         if let CognitiveScope::WorkspacePrivate { workspace_sha256 } = &self.scope
-            && *workspace_sha256 != codex_hepta_memory::workspace_binding_digest(workspace) {
-            return Err(AgentdError::GenerationFenced("memory cell scope differs from Agentd workspace".to_string()));
+            && *workspace_sha256 != codex_hepta_memory::workspace_binding_digest(workspace)
+        {
+            return Err(AgentdError::GenerationFenced(
+                "memory cell scope differs from Agentd workspace".to_string(),
+            ));
         }
         Ok(())
     }
 
-    pub(crate) fn access(&self) -> &CognitiveAccess { &self.access }
-    pub(crate) fn scope(&self) -> &CognitiveScope { &self.scope }
+    pub(crate) fn access(&self) -> &CognitiveAccess {
+        &self.access
+    }
+    pub(crate) fn scope(&self) -> &CognitiveScope {
+        &self.scope
+    }
 
     /// A successful return is checked against the publication owner and the
     /// source owner immediately before exposure. Every failed readout is empty.
@@ -104,14 +130,30 @@ impl AgentdMemoryCellRuntimeV1 {
         store: &DurableCognitiveStore,
         request: &MemoryRequestV1,
     ) -> Result<MemoryReadoutV1, AgentdError> {
-        request.validate().map_err(|error| AgentdError::Invalid(error.to_string()))?;
+        request
+            .validate()
+            .map_err(|error| AgentdError::Invalid(error.to_string()))?;
         if store.owner_agent_id() != &self.owner_agent_id {
-            return Err(AgentdError::GenerationFenced("memory cell store owner differs from host".to_string()));
+            return Err(AgentdError::GenerationFenced(
+                "memory cell store owner differs from host".to_string(),
+            ));
         }
         let started = Instant::now();
-        let bundle = self.release.load_current().map_err(|_| AgentdError::Protocol("selected memory cell release is unavailable".to_string()))?;
-        let mut readout = failed(request, &bundle, MemoryReadStatusV1::Unavailable, "memory cell read unavailable");
-        let result = match tokio::time::timeout(Duration::from_secs(5), self.read_bound(store, request, &bundle)).await {
+        let bundle = self.release.load_current().map_err(|_| {
+            AgentdError::Protocol("selected memory cell release is unavailable".to_string())
+        })?;
+        let mut readout = failed(
+            request,
+            &bundle,
+            MemoryReadStatusV1::Unavailable,
+            "memory cell read unavailable",
+        );
+        let result = match tokio::time::timeout(
+            Duration::from_secs(5),
+            self.read_bound(store, request, &bundle),
+        )
+        .await
+        {
             Ok(result) => result,
             Err(_) => Err(unavailable("memory cell read deadline exceeded")),
         };
@@ -123,7 +165,9 @@ impl AgentdMemoryCellRuntimeV1 {
             }
         }
         readout.elapsed_seconds = started.elapsed().as_secs_f64();
-        readout.validate().map_err(|error| AgentdError::Protocol(error.to_string()))?;
+        readout
+            .validate()
+            .map_err(|error| AgentdError::Protocol(error.to_string()))?;
         Ok(readout)
     }
 
@@ -134,30 +178,68 @@ impl AgentdMemoryCellRuntimeV1 {
         bundle: &LoadedMemoryCellBundleV1,
     ) -> Result<MemoryReadoutV1, ReadFailure> {
         let now = now_unix_seconds().map_err(|_| unavailable("host clock is unavailable"))?;
-        let acquired = store.memory_cell_snapshot(&self.access, &self.scope, now).await
+        let acquired = store
+            .memory_cell_snapshot(&self.access, &self.scope, now)
+            .await
             .map_err(|_| unavailable("canonical memory cell owner is unavailable"))?;
         if request.scope != *acquired.scope() {
-            return Err((MemoryReadStatusV1::Abstain, "request scope differs from authenticated owner scope"));
+            return Err((
+                MemoryReadStatusV1::Abstain,
+                "request scope differs from authenticated owner scope",
+            ));
         }
-        bundle.validate_owner_snapshot(&acquired)
-            .map_err(|_| (MemoryReadStatusV1::Stale, "selected memory cell bundle lineage differs from the owner cut"))?;
+        bundle.validate_owner_snapshot(&acquired).map_err(|_| {
+            (
+                MemoryReadStatusV1::Stale,
+                "selected memory cell bundle lineage differs from the owner cut",
+            )
+        })?;
         if self.resolver.model_digest() != self.resolver_digest {
             return Err(unavailable("configured address resolver changed its model"));
         }
-        let decision = self.resolver.resolve(request, &acquired).await
+        let decision = self
+            .resolver
+            .resolve(request, &acquired)
+            .await
             .map_err(|_| unavailable("configured address resolver is unavailable"))?
-            .ok_or((MemoryReadStatusV1::Abstain, "address resolver declined the request"))?;
-        if decision.request != *request || decision.owner_cut_digest != acquired.owner_cut_digest()
-            || decision.model_digest != self.resolver_digest {
-            return Err(unavailable("address decision differs from its request or owner binding"));
+            .ok_or((
+                MemoryReadStatusV1::Abstain,
+                "address resolver declined the request",
+            ))?;
+        if decision.request != *request
+            || decision.owner_cut_digest != acquired.owner_cut_digest()
+            || decision.model_digest != self.resolver_digest
+        {
+            return Err(unavailable(
+                "address decision differs from its request or owner binding",
+            ));
         }
         let readout = execution::execute(request, decision.operation, bundle, &acquired)?;
-        self.release.revalidate(bundle)
-            .map_err(|_| (MemoryReadStatusV1::Stale, "memory cell publication changed before final use"))?;
+        self.release.revalidate(bundle).map_err(|_| {
+            (
+                MemoryReadStatusV1::Stale,
+                "memory cell publication changed before final use",
+            )
+        })?;
         let now = now_unix_seconds().map_err(|_| unavailable("host clock is unavailable"))?;
-        store.revalidate_memory_cell_readout(&self.access, &self.scope, &acquired, request, &readout,
-            bundle.generation(), bundle.bundle_digest(), now).await
-            .map_err(|_| (MemoryReadStatusV1::Stale, "memory cell source owner changed before final use"))?;
+        store
+            .revalidate_memory_cell_readout(
+                &self.access,
+                &self.scope,
+                &acquired,
+                request,
+                &readout,
+                bundle.generation(),
+                bundle.bundle_digest(),
+                now,
+            )
+            .await
+            .map_err(|_| {
+                (
+                    MemoryReadStatusV1::Stale,
+                    "memory cell source owner changed before final use",
+                )
+            })?;
         Ok(readout)
     }
 }
@@ -168,17 +250,33 @@ fn unavailable(reason: &'static str) -> ReadFailure {
     (MemoryReadStatusV1::Unavailable, reason)
 }
 
-fn failed(request: &MemoryRequestV1, bundle: &LoadedMemoryCellBundleV1, status: MemoryReadStatusV1, reason: &str) -> MemoryReadoutV1 {
+fn failed(
+    request: &MemoryRequestV1,
+    bundle: &LoadedMemoryCellBundleV1,
+    status: MemoryReadStatusV1,
+    reason: &str,
+) -> MemoryReadoutV1 {
     MemoryReadoutV1 {
-        schema: "hepta.memory.readout.v1".to_string(), query_id: request.query_id.clone(),
-        operation: None, status, value: Value::Null, source_ids: Vec::new(), generation: bundle.generation(),
-        snapshot_digest: bundle.bundle_digest(), prediction_kind: MemoryPredictionKindV1::None,
-        cell_digests: Vec::new(), hops: 0, elapsed_seconds: 0.0, reason: Some(reason.to_string()),
+        schema: "hepta.memory.readout.v1".to_string(),
+        query_id: request.query_id.clone(),
+        operation: None,
+        status,
+        value: Value::Null,
+        source_ids: Vec::new(),
+        generation: bundle.generation(),
+        snapshot_digest: bundle.bundle_digest(),
+        prediction_kind: MemoryPredictionKindV1::None,
+        cell_digests: Vec::new(),
+        hops: 0,
+        elapsed_seconds: 0.0,
+        reason: Some(reason.to_string()),
     }
 }
 
 pub(crate) fn now_unix_seconds() -> Result<i64, AgentdError> {
-    SystemTime::now().duration_since(UNIX_EPOCH)
-        .ok().and_then(|time| i64::try_from(time.as_secs()).ok())
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .ok()
+        .and_then(|time| i64::try_from(time.as_secs()).ok())
         .ok_or_else(|| AgentdError::Protocol("memory cell host clock unavailable".to_string()))
 }

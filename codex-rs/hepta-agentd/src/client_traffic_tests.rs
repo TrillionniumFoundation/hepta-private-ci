@@ -21,16 +21,31 @@ async fn traffic_counts_observed_partial_response_bytes_on_protocol_failure() {
         let stream = listener.accept().await.expect("accept");
         let (reader, mut writer) = tokio::io::split(stream);
         let mut frame = Vec::new();
-        BufReader::new(reader).read_until(b'\n', &mut frame).await.expect("request bytes");
+        BufReader::new(reader)
+            .read_until(b'\n', &mut frame)
+            .await
+            .expect("request bytes");
         writer.write_all(partial).await.expect("partial response");
         writer.shutdown().await.expect("close partial frame");
         frame.len()
     });
-    let client = AgentdClient::new(path, AgentId::parse("00000000-0000-4000-8000-000000000099").expect("agent"), /*spawn_generation*/ 1).expect("client");
+    let client = AgentdClient::new(
+        path,
+        AgentId::parse("00000000-0000-4000-8000-000000000099").expect("agent"),
+        /*spawn_generation*/ 1,
+    )
+    .expect("client");
     assert!(client.health().await.is_err());
     let request_bytes = server.await.expect("server join");
     let counts = client.traffic_snapshot();
-    assert_eq!((counts.rpc_attempts, counts.transmitted_bytes, counts.received_bytes), (1, request_bytes as u64, partial.len() as u64));
+    assert_eq!(
+        (
+            counts.rpc_attempts,
+            counts.transmitted_bytes,
+            counts.received_bytes
+        ),
+        (1, request_bytes as u64, partial.len() as u64)
+    );
 }
 
 #[tokio::test]
@@ -45,20 +60,44 @@ async fn cancelling_a_real_pending_socket_read_preserves_its_already_observed_by
         let stream = listener.accept().await.expect("accept");
         let (reader, mut writer) = tokio::io::split(stream);
         let mut frame = Vec::new();
-        BufReader::new(reader).read_until(b'\n', &mut frame).await.expect("request bytes");
+        BufReader::new(reader)
+            .read_until(b'\n', &mut frame)
+            .await
+            .expect("request bytes");
         writer.write_all(partial).await.expect("partial response");
         server_release.notified().await;
         frame.len()
     });
-    let client = Arc::new(AgentdClient::new(path, AgentId::parse("00000000-0000-4000-8000-000000000099").expect("agent"), /*spawn_generation*/ 1).expect("client"));
-    let read = { let client = Arc::clone(&client); tokio::spawn(async move { client.health().await }) };
+    let client = Arc::new(
+        AgentdClient::new(
+            path,
+            AgentId::parse("00000000-0000-4000-8000-000000000099").expect("agent"),
+            /*spawn_generation*/ 1,
+        )
+        .expect("client"),
+    );
+    let read = {
+        let client = Arc::clone(&client);
+        tokio::spawn(async move { client.health().await })
+    };
     tokio::time::timeout(Duration::from_secs(5), async {
-        while client.traffic_snapshot().received_bytes < partial.len() as u64 { tokio::task::yield_now().await; }
-    }).await.expect("partial bytes reached the actual client");
+        while client.traffic_snapshot().received_bytes < partial.len() as u64 {
+            tokio::task::yield_now().await;
+        }
+    })
+    .await
+    .expect("partial bytes reached the actual client");
     read.abort();
     assert!(read.await.expect_err("cancelled reader").is_cancelled());
     release.notify_one();
     let transmitted = server.await.expect("server join");
     let counts = client.traffic_snapshot();
-    assert_eq!((counts.rpc_attempts, counts.transmitted_bytes, counts.received_bytes), (1, transmitted as u64, partial.len() as u64));
+    assert_eq!(
+        (
+            counts.rpc_attempts,
+            counts.transmitted_bytes,
+            counts.received_bytes
+        ),
+        (1, transmitted as u64, partial.len() as u64)
+    );
 }

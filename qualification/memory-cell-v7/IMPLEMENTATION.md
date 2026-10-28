@@ -6,7 +6,7 @@
 文中的“已实现”表示存在执行路径；“已验证”只对应明确保存的运行结果。
 [CI10](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40568534089) 已通过普通 350 项测试和另行执行的 3 项 actual 集成测试；这两组结果分别报告，不与历史套件相加。
 测试来源为 `59b45ccd863cab0fd1ea96f3b4b025715aa814f8`，Git tree 为 `4d7e6d4180e9a8e1a003065eecfccded3b2c9103`，见原始 [`receipt.json`](evidence/ci/ci10-runtime/receipt.json)。
-最终 `just fix` / `just fmt` 尚未执行；本次收据与文档更新仍是待发布补丁，不能把产品测试成功写成全部发布收尾完成。
+最终 scoped `just fix` 与 `just fmt` 已在 [finalizer 40605424672](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40605424672) 成功执行，原始收据见 [`finalization/receipt.json`](evidence/finalization/receipt.json)。实际返回的 75 个文件已逐字节校验并应用；冻结 Python 不变，format 后没有重跑 V7 测试。
 
 ## 1. 六项交付的实际状态
 
@@ -264,9 +264,10 @@ v1/v2 实验没有预 fit 登记；未来 runner 已增加 create-only manifest�
 
 ### 发布收尾状态
 
-最后确认的远端分支 head 为 `d3f0f84905877b84ee5575d0a0ed018b4fff8a9f`；CI10 所测产品代码已经在该分支历史中。
-后续 finalization 请求的远端写入两次未返回结果并被中止，没有确认发布成功；临时工作目录失效后，本文与 CI10 原始 artifact 从远端恢复。
-仓库要求的最终 `just fix -p ...`、`just fmt` **尚未执行**，本次证据与文档更新也尚未提交到远端，不能标记为已完成最终格式化或最终发布。
-交付补丁以该远端 head 为基础，包含绑定 CI10 tested commit 的 `FINALIZE_REQUEST.json`、原始 CI10 证据与本文更新。后续先核对分支 head，再应用并发布这份补丁；不修改 `VERIFY_REQUEST.json`，也不重跑 CI10。
-既有 finalizer workflow 只监听该请求文件的推送，先验证待格式化源码与 tested commit 的受保护路径一致，再针对十个 Hepta package 执行 `just fix --locked -p ...`，随后执行 `just fmt --base 0b0b041b6dd8121050c335cb3be73bb1d8cb7904`。
-finalizer 只生成 receipt 与补丁，不会自动 commit 或 push。完成后须校验 artifact、审阅并应用实际生成的补丁，保存原始 finalization receipt，再提交最终结果。依据 `AGENTS.md`，完成 fix/fmt 后不重跑测试；保留“被测试的源码”和“最终机械修复/格式化后的源码”的明确来源关系。
+CI10 证据与验收说明已发布于 `bad9b4adbb3a57bcc5ad2e29a6289645bb60f051`；finalization 请求提交为 `8df5702d07e54af92706d4b2f2fb6ac86864f44a`。
+[Finalizer 40605424672](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40605424672) 确认受保护源码与 CI10 的 `59b45ccd863cab0fd1ea96f3b4b025715aa814f8` 一致，然后对十个 Hepta package 执行 scoped `just fix --locked`（330.968 秒）和 `just fmt`（2.638 秒），两者均 exit 0。
+实际 artifact ZIP 的 SHA-256 为 `aa7280de68823826597b27c5e1ccb3dc17b849a5f4604272d3685d3eae751ace`，见 [`DOWNLOAD.json`](evidence/finalization/DOWNLOAD.json)。
+返回补丁的 75 个文件已按 [`AFTER_FILES.json`](evidence/finalization/AFTER_FILES.json) 核对字节、模式和 SHA-256；用私有 Git index 从实际执行 source 重建得到相同的 `after_tracked_tree=d214d3bcbba1f67407066ad2c89b6f0c9fd4d3c2`。
+审阅包含六处 Clippy 自动修复：两处测试内冗余 clone、worker 的 let-return、native cancellation 的嵌套 if，以及 population 测试的 method reference/不可变序列化借用。其余为 Rust 格式和 Bazel 属性排序；没有修改 codex-core、sandbox 环境策略或冻结 Python。
+命令成功不表示所有历史 Clippy warning 消失；完整日志保存在原始 [`artifact.zip`](evidence/finalization/artifact.zip)，审阅记录见 [`REVIEW.json`](evidence/finalization/REVIEW.json)。未将警告隐藏或把编译测试 target 当作执行测试。
+原始大补丁保存在 ZIP 和 [`generated.patch.xz`](evidence/finalization/generated.patch.xz)，避免新增超限的未压缩 Git blob。依据 `AGENTS.md`，final fix/fmt 后没有重跑 V7 测试。六项研究验收边界不因机械格式化而改变；V8 是独立的新开发与验证阶段。

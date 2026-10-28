@@ -22,7 +22,8 @@ use sha3::digest::XofReader;
 
 pub const MAX_ASSOCIATIVE_MEMORY_BYTES: usize = 32_000_000;
 pub const ASSOCIATIVE_MEMORY_ADDRESS_PROFILE_V1: &str = "hepta.memory.sha256-shake256-f64.v1";
-pub const ASSOCIATIVE_MEMORY_NUMERIC_PROFILE_V1: &str = "hepta.memory.f32-weights-f64-tanh-softmax.v1";
+pub const ASSOCIATIVE_MEMORY_NUMERIC_PROFILE_V1: &str =
+    "hepta.memory.f32-weights-f64-tanh-softmax.v1";
 const MAX_SOURCES: usize = 65_536;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -102,7 +103,10 @@ pub struct AssociativeMemoryCellV1 {
 }
 
 impl AssociativeMemoryCellV1 {
-    pub fn from_bytes(bytes: &[u8], expected_digest: Digest32) -> Result<Self, AssociativeMemoryError> {
+    pub fn from_bytes(
+        bytes: &[u8],
+        expected_digest: Digest32,
+    ) -> Result<Self, AssociativeMemoryError> {
         if bytes.is_empty() || bytes.len() > MAX_ASSOCIATIVE_MEMORY_BYTES {
             return Err(AssociativeMemoryError::InvalidArtifact);
         }
@@ -110,8 +114,8 @@ impl AssociativeMemoryCellV1 {
         if expected_digest.is_zero() || digest != expected_digest {
             return Err(AssociativeMemoryError::BindingMismatch);
         }
-        let model: AssociativeWire = serde_json::from_slice(bytes)
-            .map_err(|_| AssociativeMemoryError::InvalidArtifact)?;
+        let model: AssociativeWire =
+            serde_json::from_slice(bytes).map_err(|_| AssociativeMemoryError::InvalidArtifact)?;
         if model.schema != "hepta.memory.associative-native.v1"
             || model.address_profile != ASSOCIATIVE_MEMORY_ADDRESS_PROFILE_V1
             || model.numeric_profile != ASSOCIATIVE_MEMORY_NUMERIC_PROFILE_V1
@@ -129,7 +133,8 @@ impl AssociativeMemoryCellV1 {
         for value in &model.catalog {
             validate_memory_cell_value_v1(model.kind, value)
                 .map_err(|_| AssociativeMemoryError::InvalidArtifact)?;
-            let encoded = serde_json::to_vec(value).map_err(|_| AssociativeMemoryError::InvalidArtifact)?;
+            let encoded =
+                serde_json::to_vec(value).map_err(|_| AssociativeMemoryError::InvalidArtifact)?;
             if !catalog.insert(encoded) {
                 return Err(AssociativeMemoryError::InvalidArtifact);
             }
@@ -140,22 +145,36 @@ impl AssociativeMemoryCellV1 {
         for (address, sources) in &model.supports {
             if !valid_digest(address)
                 || !valid_sources(sources, 128)
-                || sources.iter().any(|source| model.lineage_sources.binary_search(source).is_err())
+                || sources
+                    .iter()
+                    .any(|source| model.lineage_sources.binary_search(source).is_err())
             {
                 return Err(AssociativeMemoryError::InvalidArtifact);
             }
         }
         let arrays = &model.arrays;
-        let expected = [model.dimension * model.hidden, model.hidden,
-            model.hidden * model.catalog.len(), model.catalog.len()];
+        let expected = [
+            model.dimension * model.hidden,
+            model.hidden,
+            model.hidden * model.catalog.len(),
+            model.catalog.len(),
+        ];
         let mut parameter_bytes = Vec::with_capacity(expected.iter().sum::<usize>() * 4);
         for (values, length) in [
-            &arrays.input_weights, &arrays.hidden_bias, &arrays.output_weights, &arrays.output_bias,
-        ].into_iter().zip(expected) {
+            &arrays.input_weights,
+            &arrays.hidden_bias,
+            &arrays.output_weights,
+            &arrays.output_bias,
+        ]
+        .into_iter()
+        .zip(expected)
+        {
             if values.len() != length || values.iter().any(|value| !value.is_finite()) {
                 return Err(AssociativeMemoryError::InvalidArtifact);
             }
-            for value in values { parameter_bytes.extend_from_slice(&value.to_le_bytes()); }
+            for value in values {
+                parameter_bytes.extend_from_slice(&value.to_le_bytes());
+            }
         }
         let parameters_digest = Digest32::of_bytes(&parameter_bytes);
         if model.parameter_sha256 != parameters_digest.to_string()
@@ -164,50 +183,97 @@ impl AssociativeMemoryCellV1 {
         {
             return Err(AssociativeMemoryError::BindingMismatch);
         }
-        Ok(Self { model, digest, parameters_digest, serialized_bytes: bytes.len() })
+        Ok(Self {
+            model,
+            digest,
+            parameters_digest,
+            serialized_bytes: bytes.len(),
+        })
     }
 
-    pub fn digest(&self) -> Digest32 { self.digest }
-    pub fn parameters_digest(&self) -> Digest32 { self.parameters_digest }
-    pub fn kind(&self) -> MemoryCellKindV1 { self.model.kind }
-    pub fn input_dimension(&self) -> usize { self.model.dimension }
-    pub fn output_width(&self) -> usize { self.model.catalog.len().max(5) }
-    pub fn serialized_bytes(&self) -> usize { self.serialized_bytes }
-    pub fn lineage_sources(&self) -> &[String] { &self.model.lineage_sources }
-    pub fn supports(&self) -> &BTreeMap<String, Vec<String>> { &self.model.supports }
+    pub fn digest(&self) -> Digest32 {
+        self.digest
+    }
+    pub fn parameters_digest(&self) -> Digest32 {
+        self.parameters_digest
+    }
+    pub fn kind(&self) -> MemoryCellKindV1 {
+        self.model.kind
+    }
+    pub fn input_dimension(&self) -> usize {
+        self.model.dimension
+    }
+    pub fn output_width(&self) -> usize {
+        self.model.catalog.len().max(5)
+    }
+    pub fn serialized_bytes(&self) -> usize {
+        self.serialized_bytes
+    }
+    pub fn lineage_sources(&self) -> &[String] {
+        &self.model.lineage_sources
+    }
+    pub fn supports(&self) -> &BTreeMap<String, Vec<String>> {
+        &self.model.supports
+    }
 
     pub fn head_digest(&self) -> Digest32 {
-        Digest32::of_parts(&[b"hepta.memory.associative-head.v1", self.digest.as_array(),
-            ASSOCIATIVE_MEMORY_NUMERIC_PROFILE_V1.as_bytes()])
+        Digest32::of_parts(&[
+            b"hepta.memory.associative-head.v1",
+            self.digest.as_array(),
+            ASSOCIATIVE_MEMORY_NUMERIC_PROFILE_V1.as_bytes(),
+        ])
     }
 
     /// Value-independent SHA-256/SHAKE-256 features matching the Python trainer.
     pub fn encode_key(&self, key: &str) -> Result<Vec<f64>, AssociativeMemoryError> {
-        if key.is_empty() || key.len() > 4096 { return Err(AssociativeMemoryError::InvalidInput); }
+        if key.is_empty() || key.len() > 4096 {
+            return Err(AssociativeMemoryError::InvalidInput);
+        }
         let mut shake = Shake256::default();
         shake.update(Digest32::of_bytes(key.as_bytes()).as_array());
         let mut bytes = vec![0_u8; self.model.dimension];
         shake.finalize_xof().read(&mut bytes);
         let root = (self.model.dimension as f64).sqrt();
-        Ok(bytes.into_iter().map(|byte| (f64::from(byte) - 127.5) / 73.9002706355 / root).collect())
+        Ok(bytes
+            .into_iter()
+            .map(|byte| (f64::from(byte) - 127.5) / 73.9002706355 / root)
+            .collect())
     }
 
     /// Predict from tensors. Support lookup supplies dependency IDs only.
-    pub fn predict(&self, key: &str) -> Result<AssociativeMemoryPredictionV1, AssociativeMemoryError> {
+    pub fn predict(
+        &self,
+        key: &str,
+    ) -> Result<AssociativeMemoryPredictionV1, AssociativeMemoryError> {
         let features = self.encode_key(key)?;
         let mut output = AssociativeMemoryPredictionV1 {
-            kind: self.kind(), value: None, confidence: 0.0,
-            confidence_kind: "uncalibrated-softmax", source_ids: Vec::new(),
-            artifact_digest: self.digest.to_string(), parameter_digest: self.parameters_digest.to_string(),
+            kind: self.kind(),
+            value: None,
+            confidence: 0.0,
+            confidence_kind: "uncalibrated-softmax",
+            source_ids: Vec::new(),
+            artifact_digest: self.digest.to_string(),
+            parameter_digest: self.parameters_digest.to_string(),
             abstain: Some(AssociativeMemoryAbstentionV1::OutsideWrittenSupport),
         };
-        let Some(sources) = self.model.supports.get(&Digest32::of_bytes(key.as_bytes()).to_string()) else {
+        let Some(sources) = self
+            .model
+            .supports
+            .get(&Digest32::of_bytes(key.as_bytes()).to_string())
+        else {
             return Ok(output);
         };
         let scores = self.logits(&features)?;
         let mut winner = 0;
-        for index in 1..scores.len() { if scores[index] > scores[winner] { winner = index; } }
-        let denominator: f64 = scores.iter().map(|score| (score - scores[winner]).exp()).sum();
+        for index in 1..scores.len() {
+            if scores[index] > scores[winner] {
+                winner = index;
+            }
+        }
+        let denominator: f64 = scores
+            .iter()
+            .map(|score| (score - scores[winner]).exp())
+            .sum();
         output.confidence = 1.0 / denominator;
         output.abstain = Some(AssociativeMemoryAbstentionV1::BelowSelectionThreshold);
         if self.model.acceptance_enabled && output.confidence >= self.model.threshold {
@@ -220,7 +286,9 @@ impl AssociativeMemoryCellV1 {
 
     pub(super) fn logits(&self, features: &[f64]) -> Result<Vec<f64>, AssociativeMemoryError> {
         if features.len() != self.model.dimension
-            || features.iter().any(|value| !value.is_finite() || !(-1.0..=1.0).contains(value))
+            || features
+                .iter()
+                .any(|value| !value.is_finite() || !(-1.0..=1.0).contains(value))
         {
             return Err(AssociativeMemoryError::InvalidInput);
         }
@@ -246,11 +314,14 @@ impl AssociativeMemoryCellV1 {
 }
 
 fn valid_digest(value: &str) -> bool {
-    value.parse::<Digest32>().is_ok_and(|digest| !digest.is_zero())
+    value
+        .parse::<Digest32>()
+        .is_ok_and(|digest| !digest.is_zero())
 }
 
 fn valid_sources(values: &[String], limit: usize) -> bool {
-    !values.is_empty() && values.len() <= limit
+    !values.is_empty()
+        && values.len() <= limit
         && values.iter().all(|value| valid_digest(value))
         && values.windows(2).all(|pair| pair[0] < pair[1])
 }

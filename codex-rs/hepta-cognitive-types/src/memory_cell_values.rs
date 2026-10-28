@@ -24,20 +24,35 @@ pub fn validate_memory_cell_value_v1(
         MemoryCellKindV1::Event => bounded_integer(value, -1_000_000, 1_000_000),
         MemoryCellKindV1::Semantic => value.as_object().is_some_and(|object| {
             object.len() == 2
-                && object.get("factor").is_some_and(|factor| bounded_integer(factor, -1_000_000, 1_000_000))
-                && object.get("label").and_then(Value::as_str).is_some_and(|label| {
-                    !label.is_empty() && label.len() <= 256 && !label.contains('\0')
-                })
+                && object
+                    .get("factor")
+                    .is_some_and(|factor| bounded_integer(factor, -1_000_000, 1_000_000))
+                && object
+                    .get("label")
+                    .and_then(Value::as_str)
+                    .is_some_and(|label| {
+                        !label.is_empty() && label.len() <= 256 && !label.contains('\0')
+                    })
         }),
         MemoryCellKindV1::Procedure => value.as_object().is_some_and(|object| {
             object.len() == 3
-                && matches!(object.get("opcode").and_then(Value::as_str),
-                    Some("identity" | "add_bias" | "multiply" | "affine" | "clamp"))
-                && object.get("bias").is_some_and(|bias| bounded_integer(bias, -1_000_000, 1_000_000))
-                && object.get("limit").is_some_and(|limit| bounded_integer(limit, 0, 1_000_000))
+                && matches!(
+                    object.get("opcode").and_then(Value::as_str),
+                    Some("identity" | "add_bias" | "multiply" | "affine" | "clamp")
+                )
+                && object
+                    .get("bias")
+                    .is_some_and(|bias| bounded_integer(bias, -1_000_000, 1_000_000))
+                && object
+                    .get("limit")
+                    .is_some_and(|limit| bounded_integer(limit, 0, 1_000_000))
         }),
     };
-    if valid { Ok(()) } else { Err(HnmfContractError::Invalid("typed memory value")) }
+    if valid {
+        Ok(())
+    } else {
+        Err(HnmfContractError::Invalid("typed memory value"))
+    }
 }
 
 /// Execute a registered procedure over an event and semantic value. Learning
@@ -51,7 +66,9 @@ pub fn execute_memory_cell_program_v1(
     validate_memory_cell_value_v1(MemoryCellKindV1::Semantic, semantic)?;
     validate_memory_cell_value_v1(MemoryCellKindV1::Procedure, program)?;
     let field = |object: &Value, name: &str| {
-        object.get(name).and_then(Value::as_i64)
+        object
+            .get(name)
+            .and_then(Value::as_i64)
             .ok_or(HnmfContractError::Invalid("typed memory integer"))
     };
     let factor = field(semantic, "factor")?;
@@ -69,7 +86,9 @@ pub fn execute_memory_cell_program_v1(
 }
 
 fn bounded_integer(value: &Value, low: i64, high: i64) -> bool {
-    value.as_i64().is_some_and(|integer| (low..=high).contains(&integer))
+    value
+        .as_i64()
+        .is_some_and(|integer| (low..=high).contains(&integer))
 }
 
 #[cfg(test)]

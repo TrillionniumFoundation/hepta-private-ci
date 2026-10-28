@@ -24,30 +24,64 @@ impl WorkerFixture {
         let encoder_code = qualification.join("memory-cell-v6/v6");
         let model = root_path.join("model");
         let encoder = root_path.join("encoder");
-        for path in [&addressing, &encoder_code, &model, &encoder] { std::fs::create_dir_all(path).unwrap(); }
+        for path in [&addressing, &encoder_code, &model, &encoder] {
+            std::fs::create_dir_all(path).unwrap();
+        }
         let script = addressing.join("worker.py");
         std::fs::write(&script, MOCK_WORKER).unwrap();
         let mut pins = BTreeMap::new();
         pins.insert(script.clone(), hash(MOCK_WORKER.as_bytes()));
-        for path in [addressing.join("__init__.py"), addressing.join("model.py"), addressing.join("contracts.py"),
-            addressing.join("planner.py"), addressing.join("capabilities.py"), encoder_code.join("__init__.py"), encoder_code.join("encoder.py")] {
-            std::fs::write(&path, "# Explicit protocol mock; not production addressing.\n").unwrap();
+        for path in [
+            addressing.join("__init__.py"),
+            addressing.join("model.py"),
+            addressing.join("contracts.py"),
+            addressing.join("planner.py"),
+            addressing.join("capabilities.py"),
+            encoder_code.join("__init__.py"),
+            encoder_code.join("encoder.py"),
+        ] {
+            std::fs::write(
+                &path,
+                "# Explicit protocol mock; not production addressing.\n",
+            )
+            .unwrap();
             pins.insert(path.clone(), hash(&std::fs::read(path).unwrap()));
         }
-        let policy: BTreeMap<_, _> = ["model.py", "contracts.py", "planner.py", "capabilities.py"].into_iter()
-            .map(|name| (name, pins[&addressing.join(name)].to_string())).collect();
+        let policy: BTreeMap<_, _> = ["model.py", "contracts.py", "planner.py", "capabilities.py"]
+            .into_iter()
+            .map(|name| (name, pins[&addressing.join(name)].to_string()))
+            .collect();
         let manifest = canonical(&serde_json::json!({"schema": "hepta.memory.v7.intent-model.v1", "policy_digest": hash(&canonical(&serde_json::to_value(policy).unwrap()).unwrap())})).unwrap();
         std::fs::write(model.join("manifest.json"), &manifest).unwrap();
-        let python: PathBuf = std::env::split_paths(&std::env::var_os("PATH").expect("Python test PATH"))
-            .map(|directory| directory.join("python3")).find(|path| path.is_absolute() && path.is_file())
-            .expect("stdlib Python 3 is required for actual worker transport tests");
+        let python: PathBuf =
+            std::env::split_paths(&std::env::var_os("PATH").expect("Python test PATH"))
+                .map(|directory| directory.join("python3"))
+                .find(|path| path.is_absolute() && path.is_file())
+                .expect("stdlib Python 3 is required for actual worker transport tests");
         let config = MemoryCellAddressWorkerConfigV1 {
-            python, worker_script: script, worker_script_digest: hash(MOCK_WORKER.as_bytes()), code_pins: pins,
-            model_directory: model, model_digest: hash(&manifest), encoder_directory: encoder,
-            aliases: BTreeMap::from([(ContractIdV1::new("meter:agentd-cell").unwrap(), vec!["meter alpha".to_string(), "测试读数".to_string(), "station".to_string(), "station-2025-02-01".to_string()])]),
-            request_timeout: Duration::from_millis(1_500), startup_timeout: Duration::from_secs(5),
+            python,
+            worker_script: script,
+            worker_script_digest: hash(MOCK_WORKER.as_bytes()),
+            code_pins: pins,
+            model_directory: model,
+            model_digest: hash(&manifest),
+            encoder_directory: encoder,
+            aliases: BTreeMap::from([(
+                ContractIdV1::new("meter:agentd-cell").unwrap(),
+                vec![
+                    "meter alpha".to_string(),
+                    "测试读数".to_string(),
+                    "station".to_string(),
+                    "station-2025-02-01".to_string(),
+                ],
+            )]),
+            request_timeout: Duration::from_millis(1_500),
+            startup_timeout: Duration::from_secs(5),
         };
-        Self { _root: root, config }
+        Self {
+            _root: root,
+            config,
+        }
     }
 }
 

@@ -326,9 +326,15 @@ impl AgentdConfig {
         mut self,
         cells: std::sync::Arc<crate::AgentdMemoryCellRuntimeV1>,
     ) -> Result<Self, AgentdError> {
-        cells.require_identity(&self.identity.agent_id, self.identity.spawn_generation, &self.identity.workspace)?;
+        cells.require_identity(
+            &self.identity.agent_id,
+            self.identity.spawn_generation,
+            &self.identity.workspace,
+        )?;
         if self.memory_cells.is_some() {
-            return Err(AgentdError::Invalid("memory cells already configured".to_string()));
+            return Err(AgentdError::Invalid(
+                "memory cells already configured".to_string(),
+            ));
         }
         self.memory_cells = Some(cells);
         Ok(self)

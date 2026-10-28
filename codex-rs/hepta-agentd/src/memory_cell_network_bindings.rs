@@ -46,22 +46,45 @@ pub struct MemoryCellNodeBindingV1 {
 }
 
 impl MemoryCellNodeBindingV1 {
-    pub fn new(node_id: StableId, grant: FederationCapability, spawn_generation: u64,
-        pin: MemoryCellVersionPinV1, probe: MemoryRequestV1) -> Result<Self, String> {
+    pub fn new(
+        node_id: StableId,
+        grant: FederationCapability,
+        spawn_generation: u64,
+        pin: MemoryCellVersionPinV1,
+        probe: MemoryRequestV1,
+    ) -> Result<Self, String> {
         probe.validate().map_err(|error| error.to_string())?;
-        let scope = memory_cell_scope_id(grant.owner_agent_id(), grant.scope().owner_scope()).map_err(|error| error.to_string())?;
-        if spawn_generation == 0 || node_id.as_str() == "memory.network.router"
-            || probe.scope != pin.scope || pin.scope != scope {
+        let scope = memory_cell_scope_id(grant.owner_agent_id(), grant.scope().owner_scope())
+            .map_err(|error| error.to_string())?;
+        if spawn_generation == 0
+            || node_id.as_str() == "memory.network.router"
+            || probe.scope != pin.scope
+            || pin.scope != scope
+        {
             return Err("memory node scope, generation or identity mismatch".to_string());
         }
-        Ok(Self { node_id, grant, spawn_generation, pin, probe })
+        Ok(Self {
+            node_id,
+            grant,
+            spawn_generation,
+            pin,
+            probe,
+        })
     }
 
-    pub fn node_id(&self) -> &StableId { &self.node_id }
-    pub fn owner_agent_id(&self) -> &AgentId { self.grant.owner_agent_id() }
-    pub fn pin(&self) -> &MemoryCellVersionPinV1 { &self.pin }
+    pub fn node_id(&self) -> &StableId {
+        &self.node_id
+    }
+    pub fn owner_agent_id(&self) -> &AgentId {
+        self.grant.owner_agent_id()
+    }
+    pub fn pin(&self) -> &MemoryCellVersionPinV1 {
+        &self.pin
+    }
     pub(super) fn digest(&self) -> Result<Digest32, String> {
-        serde_json::to_vec(self).map(|bytes| Digest32::of_bytes(&bytes)).map_err(|error| error.to_string())
+        serde_json::to_vec(self)
+            .map(|bytes| Digest32::of_bytes(&bytes))
+            .map_err(|error| error.to_string())
     }
 }
 
@@ -76,29 +99,51 @@ pub struct MemoryCellDeploymentV1 {
 }
 
 impl MemoryCellDeploymentV1 {
-    pub fn new(generation: ContractGenerationV1, mut nodes: Vec<MemoryCellNodeBindingV1>) -> Result<Self, String> {
+    pub fn new(
+        generation: ContractGenerationV1,
+        mut nodes: Vec<MemoryCellNodeBindingV1>,
+    ) -> Result<Self, String> {
         if nodes.is_empty() || nodes.len() > MAX_MEMORY_CELL_NETWORK_NODES {
             return Err("memory deployment node budget exceeded".to_string());
         }
         nodes.sort_by(|left, right| left.node_id.cmp(&right.node_id));
-        let owners: BTreeSet<_> = nodes.iter().map(|node| node.grant.owner_agent_id()).collect();
-        if nodes.windows(2).any(|pair| pair[0].node_id == pair[1].node_id)
+        let owners: BTreeSet<_> = nodes
+            .iter()
+            .map(|node| node.grant.owner_agent_id())
+            .collect();
+        if nodes
+            .windows(2)
+            .any(|pair| pair[0].node_id == pair[1].node_id)
             || owners.len() != nodes.len()
-            || nodes.iter().any(|node| node.grant.consumer_agent_id() != nodes[0].grant.consumer_agent_id()) {
+            || nodes
+                .iter()
+                .any(|node| node.grant.consumer_agent_id() != nodes[0].grant.consumer_agent_id())
+        {
             return Err("memory deployment repeats an owner/node or changes consumer".to_string());
         }
-        let bytes = serde_json::to_vec(&("hepta.memory.network.deployment.v1", generation, &nodes)).map_err(|error| error.to_string())?;
+        let bytes = serde_json::to_vec(&("hepta.memory.network.deployment.v1", generation, &nodes))
+            .map_err(|error| error.to_string())?;
         if bytes.len() > codex_hepta_control_plane::MAX_ORGAN_MESSAGE_BYTES {
             return Err("memory deployment metadata exceeds organ bound".to_string());
         }
-        let digest = ContractDigestV1::from_digest(Digest32::of_bytes(&bytes)).map_err(|error| error.to_string())?;
-        Ok(Self { generation, nodes, digest })
+        let digest = ContractDigestV1::from_digest(Digest32::of_bytes(&bytes))
+            .map_err(|error| error.to_string())?;
+        Ok(Self {
+            generation,
+            nodes,
+            digest,
+        })
     }
 
     pub fn version(&self) -> MemoryCellNetworkVersionV1 {
-        MemoryCellNetworkVersionV1 { generation: self.generation, deployment_digest: self.digest }
+        MemoryCellNetworkVersionV1 {
+            generation: self.generation,
+            deployment_digest: self.digest,
+        }
     }
-    pub fn nodes(&self) -> &[MemoryCellNodeBindingV1] { &self.nodes }
+    pub fn nodes(&self) -> &[MemoryCellNodeBindingV1] {
+        &self.nodes
+    }
 }
 
 /// Actual control-transport counts; elapsed time includes validation/probes.
@@ -118,12 +163,19 @@ pub struct MemoryCellNetworkErrorV1 {
 }
 
 impl std::fmt::Display for MemoryCellNetworkErrorV1 {
-    fn fmt(&self, output: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(output, "{}", self.reason) }
+    fn fmt(&self, output: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(output, "{}", self.reason)
+    }
 }
 impl std::error::Error for MemoryCellNetworkErrorV1 {}
 
 impl From<String> for MemoryCellNetworkErrorV1 {
-    fn from(reason: String) -> Self { Self { reason, cost: MemoryCellNetworkCostV1::default() } }
+    fn from(reason: String) -> Self {
+        Self {
+            reason,
+            cost: MemoryCellNetworkCostV1::default(),
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize)]
@@ -153,9 +205,15 @@ pub struct MemoryCellNetworkReadV1 {
 }
 
 impl MemoryCellNetworkReadV1 {
-    pub fn version(&self) -> MemoryCellNetworkVersionV1 { self.version }
-    pub fn readouts(&self) -> &[MemoryCellNodeReadoutV1] { &self.readouts }
-    pub fn cost(&self) -> MemoryCellNetworkCostV1 { self.cost }
+    pub fn version(&self) -> MemoryCellNetworkVersionV1 {
+        self.version
+    }
+    pub fn readouts(&self) -> &[MemoryCellNodeReadoutV1] {
+        &self.readouts
+    }
+    pub fn cost(&self) -> MemoryCellNetworkCostV1 {
+        self.cost
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
