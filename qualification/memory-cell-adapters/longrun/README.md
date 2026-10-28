@@ -11,7 +11,8 @@ native Hepta integration, or an advantage over exact SQL storage.
 [LONGRUN_PROTOCOL.json](LONGRUN_PROTOCOL.json) was locked before training with
 SHA-256 `3f7a09a1158b3e40cd33157e0da727deda13fa6654950b01449d419c6cb9a007`.
 The protocol, original manager, workers and runtime dependencies remained
-unchanged throughout the first execution and its infrastructure recovery.
+unchanged throughout the first execution, its infrastructure recovery and
+the completed clean CI replication.
 
 - `manager.py` owns source truth, versioned SQLite mutations, sequence control,
   independent scoring and cost receipts.
@@ -85,7 +86,7 @@ The interrupted attempt's CPU, gradient-step count and exit status remain
 first sample is **398.263 seconds**. Its resource integral is not reconstructed
 by assuming zero usage or extrapolating nearby samples.
 
-## Costs and their limits
+## First-chain costs and their limits
 
 The completed child processes consumed **1,700.507 CPU seconds**: 1,264.759
 for trainers and 435.749 for readers, including their process startup and
@@ -122,37 +123,107 @@ but 36 sampling-read errors leave about 18.347 seconds of its memory integral
 unknown. Both segments also retain their ordinary sampling gaps. Sampled
 integrals are estimates over observed intervals, not exact continuous costs.
 
-### Separate clean cost replication: running remotely, results pending
+## Separate clean cost replication: completed in GitHub Actions
 
 The proposed local `run-03-clean` was **not started**. After the original
 archive passed its complete verification, the 200 MiB launch-space guard
 failed; a subsequent observation found only 15,626,240 free bytes. No local
 clean-run directory, trainer or monitor was created.
 
-The same frozen protocol was subsequently launched on an independent GitHub
-Actions runner:
+The same frozen protocol subsequently completed successfully on an independent
+GitHub Actions runner:
 
 - [Run 40681620656](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40681620656),
   job `122793476485`, request `clean-cost-20261028-01`.
 - Source commit `773e8c5540521861ab18b1c61268069d6610279a`.
-- Started at `2026-10-28 11:39:17 UTC`; last observed at `11:46:00 UTC` with
-  checkout and Python setup successful and the replication step in progress.
-- Ubuntu 24.04 and Python 3.12, with pinned CPU Torch 2.8.0+cpu and NumPy 2.3.5.
-  The runner hardware differs from the original environment; actual hardware,
-  dependency and preparation receipts will accompany its results.
+- Started at `2026-10-28 11:39:17 UTC`; all steps succeeded and artifact
+  `12814206358` was published at `11:54:18 UTC`.
+- Ubuntu 24.04, Intel Xeon Platinum 8370C with four logical CPUs, Python
+  3.12.15, pinned CPU Torch 2.8.0+cpu and NumPy 2.3.5. This hardware differs
+  from the original local environment; the full receipts are preserved.
 
-**Final remote results and costs are pending.** The requested extra work is
-216 fits, 129,600 gradient steps and 4,147,200 sample presentations under the
-same seeds, source data and budgets. The remote experiment consumes the
-verified canonical cache; it does not rerun the encoder. Historical monotonic
-timestamps are not compared across hosts, and matching final parameter bytes
-across different CPUs is not a success requirement.
+The clean execution completed **192 cycles, 216 fits and 219 fresh readers**,
+with no execution failures. Both parameter memory and exact SQL reproduced
+the table above: active 1,512/1,512, retention 1,305/1,305, changed 207/207 and
+revoked 24/24. The independent
+[CI audit](../evaluation/AUDIT-longrun-ci.json) passed **8,563 checks**, and the
+[cost and tensor-byte audit](../evaluation/AUDIT-longrun-ci-costs.json) passed
+**11,609 checks**. They cover all 435 child receipts, replay inputs and sampling
+schedules, saved parameter bytes, source access, serial process order and raw
+resource samples. These are verification checks, not statistical samples.
 
-The complete remote artifact must retain its outer preparation and hardware
-records as well as the inner `run-03-clean` directory. Its actual costs will be
-reported separately and added to research totals. Repeated work does not
-replace the original interrupted attempt or remove the unknown terms from
-the first execution's costs.
+The remote experiment consumed the verified canonical cache and did not rerun
+the encoder. Historical monotonic timestamps were not compared across hosts.
+All 216 fitted parameter digests happened to match the first chain, but
+cross-hardware bit equality was not a success requirement. The same seeds,
+addresses, targets and schedules make this a reproducibility and cost
+replication, **not a second independent generalization sample**. The two runs'
+quality denominators must not be pooled to imply additional statistical power.
+
+### Clean cost scopes
+
+The detailed ledger is
+[COST_SUMMARY.json](evidence/longrun64x3-clean/COST_SUMMARY.json), backed by the
+unchanged preparation, hardware, lifecycle and packaging receipts.
+
+| Measured scope | Time |
+| --- | ---: |
+| Dependency installation, restore and preparation wall time | 24.251046586 s |
+| Lifecycle observation window | 858.478325932 s |
+| Completed fit and reader child CPU | 852.535687 s |
+| Driver wait4 CPU, including waited descendants | 856.774937 s |
+| Monitor subtree CPU measured by its parent | 954.746828 s |
+| Outer wrapper plus waited children CPU | 977.339552314 s |
+| Separate archive packaging CPU | 4.456184323 s |
+
+The CPU rows are nested accounting scopes. The wrapper already includes its
+waited trainer, reader, driver and monitor descendants; those rows must not be
+added to it again. Packaging is a later, disjoint process, bringing observed
+wrapper-plus-packaging CPU to **981.795736637 seconds**. Checkout/Python setup
+CPU, upload CPU and preparation memory/storage integrals were not measured.
+Hardware differs, so the shorter elapsed time is not an algorithmic speedup
+claim over the first execution.
+
+The uninterrupted lifecycle window contains 3,802 samples and 29 sample-read
+errors. RSS/PSS intervals totaling **11.850252394 seconds** and storage
+intervals totaling **1.344647791 seconds** remain unknown. Sampled peak tree
+RSS is 548,093,952 bytes and peak PSS is 448,604,160 bytes. The monitored storage
+root contains lifecycle output and retained evidence; it excludes installed
+dependencies, restored prior evidence, repository content, remote storage and
+the shared encoder asset. `full_cost_exact` therefore remains **false**.
+
+Each clean reader process runs the parameter loop and then the SQL loop. The
+median eight-address slices are **1.320548 ms** and **0.116704 ms** respectively;
+their nearest-rank p95 values are 1.382287 ms and 0.141080 ms. The median whole
+reader process is 1.344905092 seconds and includes imports, loading, both arms
+and shutdown. Checkpoint-load median is 3.310639 ms and excludes imports and
+process startup. These scopes are not independent deployment latency or an
+uncached storage benchmark. SQL matched correctness with the lower observed
+read slice and did not require parameter fitting.
+
+Clean storage includes 7,906,432 bytes of fitted checkpoints, 96,172 bytes of
+initial copies, 86,016 bytes of current SQLite files, 6,193,152 bytes of
+historical SQLite snapshots and 537,522 bytes of explicit source JSON. The
+23,189-byte canonical cache and **127,536,988-byte shared encoder reference**
+remain separate accounts. Historical parameter and source copies were retained;
+deletion/rebuild does not establish physical erasure.
+
+Across the first chain and clean replication, actual successful work totals
+**432 fits, 259,200 gradient steps and 8,294,400 sample presentations**, plus
+the original interrupted attempt with unknown steps and CPU. The completed
+fit/reader children alone consumed 2,553.042976 CPU seconds across both runs.
+Adding the first chain's completed-child CPU to the disjoint clean wrapper
+and packaging gives an observed lower bound of 2,682.303025637 CPU seconds.
+That lower bound still omits first-chain driver/monitor overhead, interrupted
+work, earlier formal studies, other preparation and validation, checkout/setup
+and upload. It is not total project compute. The first chain's **398.263-second
+unknown interval remains unchanged**, and both executions keep
+`full_cost_exact=false`.
+
+The experiment supplies evidence of bounded repeated maintenance with full
+replay and source controls. It does not establish storage-compression or
+complete-cost advantages over exact SQL, language-access improvement,
+spontaneous cell organization, general memory or native serving.
 
 ## Complete bounded evidence transport
 
@@ -164,14 +235,27 @@ the archive and checks every member's SHA-256 and byte count.
 
 The publication directory also includes unmodified `RAW_FREEZE-run-01.json`
 and `RAW_FREEZE-run-02-resume.json`, allowing source-binding checks without
-unpacking the archive. A clean replication uses the separate
-`evidence/longrun64x3-clean` directory and its own raw FREEZE copy.
+unpacking the archive.
+
+The [clean CI transport](evidence/longrun64x3-clean/README.md) is a separate
+**37-file, 8,086,169-byte delivery**. Its 18 parts preserve the original
+7,089,136-byte tar without recompression; its SHA-256 is
+`20c348466832e026e6d9280ea542f50f252bf9e633f64ea3fec0a0c900442a90`.
+It contains the entire outer CI preparation/hardware output and inner
+`run-03-clean` tree: **4,153 regular files, 633 directories and 21,766,558 raw
+file bytes**, including every actual checkpoint. Three inventory chunks,
+GitHub origin metadata, packaging, `RAW_FREEZE-run-03-clean.json`, core raw
+receipts, cost summary and verification records accompany the archive. Every
+publication file is at most 400,000 bytes. All original ZIP/tar/raw evidence
+and the first-chain archive remain intact.
 
 To verify or restore a published transport:
 
 ```bash
 python -I -B evidence/longrun64x3/restore.py --verify-only
 python -I -B evidence/longrun64x3/restore.py --output /absolute/new/directory
+python -I -B evidence/longrun64x3-clean/restore.py --verify-only
+python -I -B evidence/longrun64x3-clean/restore.py --output /absolute/new/clean-directory
 ```
 
 The restore destination must not already exist. Restoring evidence does not
@@ -202,6 +286,7 @@ output directory. Use the recorded Torch interpreter for the manager and its
 children. `resume.py` is intentionally specific to the documented interruption
 and is not a generic resume command for arbitrary partial runs.
 
-All execution paths here are Python research paths. These receipts do not
-certify a native Agentd runtime, and a CI source-binding check must not be
-described as CI having rerun the long experiment.
+All execution paths here are Python research paths. The named GitHub Actions
+run actually executed the full clean Python experiment; these receipts do not
+certify a native Agentd runtime. A separate native CI job that only checks
+source binding must not be described as having run this maintenance protocol.

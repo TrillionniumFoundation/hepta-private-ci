@@ -156,9 +156,25 @@ wake 核对参数/encoder/typed config、步数上限，以及 owner stop 后的
 [longrun audit](evaluation/AUDIT-longrun-complete.json)。它按固定协议
 串行执行实际更新与每八周期删除重建，使用新进程参数读取和同信息 exact-SQL
 对照，并由外层资源监控记录可观测区间。一次基础设施中断留下了未知的尾部成本和
-监控间隙；恢复后的完整质量结果与成本覆盖分别报告，不能把未知成本补零。
-另一次相同冻结协议的 clean run 用于补齐连续成本测量，不覆盖首次尝试或其成本。
-最终结果单独发布，不与本轮 held 重调参合并。
+**398.263 秒监控间隙**；恢复后的完整质量结果与成本覆盖分别报告，不能把未知成本补零。
+
+相同冻结协议的 clean 成本复现已在
+[GitHub Actions run 40681620656](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40681620656)
+成功完成，job 为 `122793476485`，源码为
+`773e8c5540521861ab18b1c61268069d6610279a`。它在另一台硬件上完整执行了
+192 个周期、216 次 fit、219 个 fresh reader，四类质量计数与首链相同；
+[CI 独立审计](evaluation/AUDIT-longrun-ci.json) 的 **8,563 项**检查和
+[参数字节与成本补充审计](evaluation/AUDIT-longrun-ci-costs.json) 的 **11,609 项**检查均通过。
+这些数字是证据核对项目数，不是独立样本数。两遍使用相同的三个 seeds、固定地址、
+数据和日程，属于复现及成本补测；不能合并质量分母来增加统计把握，也没有重新调 held 门槛。
+
+[完整 clean 证据](longrun/evidence/longrun64x3-clean/README.md) 为 37 文件、
+8,086,169 B 的归档交付，最大文件 400,000 B。18 个 parts 原样保留 CI 的
+7,089,136 B tar，恢复后有 4,153 个普通文件、633 个目录、21,766,558 B 原始文件内容。
+其中包含真实参数、全部请求和响应、SQLite、采样记录，以及外层准备、硬件、依赖、
+GitHub 来源和打包收据；独立 `RAW_FREEZE-run-03-clean.json` 可直接核对源码身份。
+首次链路与原 ZIP/tar/raw 均保留。该 workflow 实际运行的是 Python 研究路径，
+不能据此宣称新 tensor profile 已接入 native Agentd。
 
 长跑仍只有八个固定地址，每次完整重放当前有效 canonical 记录。它检验反复维护，
 没有检验容量随数据增长、单次曝光学习或来源可丢弃。删除检查覆盖服务撤销和当前
@@ -180,8 +196,42 @@ Study wall 为 107.766 秒，全部子进程 CPU 合计 103.562 秒，训练 bod
 58.522 秒。每个 reader 中各臂顺序运行并共享加载，输入 embedding 已预计算；
 各臂的局部计时不能作为独立部署的端到端延迟。缺失的 per-arm RSS 积分保持未知。
 
+长期 clean 复现另有完整账目，见
+[COST_SUMMARY.json](longrun/evidence/longrun64x3-clean/COST_SUMMARY.json)。运行环境为
+Intel Xeon Platinum 8370C、四个逻辑 CPU、Python 3.12.15、CPU Torch 2.8.0+cpu、
+NumPy 2.3.5；与首链硬件不同，耗时差异不能归为算法加速。
+
+| Clean 成本范围 | 实测值 |
+|---|---:|
+| 安装、恢复与准备 wall | 24.251046586 s |
+| 连续维护监控窗口 wall | 858.478325932 s |
+| 完成的训练＋reader 子进程 CPU | 852.535687 s |
+| 外层 wrapper 含已等待子树 CPU | 977.339552314 s |
+| 独立打包 CPU | 4.456184323 s |
+
+子进程、driver 和 monitor 成本已包含在 wrapper 中，不能再次相加。打包是之后的
+独立阶段，wrapper＋打包共 **981.795736637 CPU 秒**。checkout/Python setup 与
+upload CPU、准备阶段内存/存储积分仍未知。3,802 次资源采样有 29 次错误，
+RSS/PSS 的 **11.850252394 秒**和存储的 **1.344647791 秒**没有可用积分；
+`full_cost_exact=false`。采样根只覆盖维护输出及历史证据，安装依赖、恢复的原始 study、
+仓库和共享 encoder 资产另计。127,536,988 B encoder 是共享引用，本次没有重新编码。
+
+Clean reader 的八地址参数/SQL loop 中位数分别为 **1.320548 ms / 0.116704 ms**；
+两个臂固定顺序运行在同一 fresh process 内。包含启动、imports、加载、两臂和退出的
+整个 reader 中位数为 **1.344905092 s**。loop 不含共享加载等成本，新进程也不代表
+文件系统未缓存，因此这些结果不能作为两个独立部署的端到端延迟比较。SQL 正确率
+相同、观测读取片段更快，且不需要参数训练。
+
+两遍长期执行实际完成 **432 次 fit、259,200 步、8,294,400 次样本呈现**，另有首链
+中断尝试的未知工作量。两遍已完成 fit/reader 的 CPU 合计 **2,553.042976 s**；
+按互不重叠的首链已完成子进程，加 clean wrapper 和打包计算，观测成本下界为
+**2,682.303025637 CPU 秒**。该下界仍未包括首链 driver/monitor、中断尾部、之前的
+formal study、其他准备与验证、checkout/setup 和上传，不能当作整个研究的精确总成本。
+Clean 复现没有填补首链 398.263 秒间隙的真实使用历史，两遍均保留 `full_cost_exact=false`。
+
 该小型任务没有存储压缩优势，也没有全生命周期成本优势的证据。127 MB 是共享资产，
 不能计作每 cell 各一份；同样不能忽略它、地址向量、来源、重放、搜索和重建成本。
+长期成功也没有改变学习路由全拒、分裂/合并准入失败和固定图没有自主形成的结论。
 
 ## 复现与证据
 
