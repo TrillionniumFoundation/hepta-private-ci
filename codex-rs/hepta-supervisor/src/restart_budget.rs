@@ -23,7 +23,7 @@ pub struct RestartBudgetState {
 #[derive(Debug, Error)]
 pub enum RestartBudgetError {
     #[error("restart budget exhausted")]
-    Exhausted,
+    Exhausted { attempts: u32 },
     #[error("restart budget state is invalid: {0}")]
     Invalid(String),
     #[error(transparent)]
@@ -82,7 +82,9 @@ pub fn claim_restart(
         });
     }
     if state.attempts >= maximum_attempts {
-        return Err(RestartBudgetError::Exhausted);
+        return Err(RestartBudgetError::Exhausted {
+            attempts: state.attempts,
+        });
     }
     state.attempts = state
         .attempts
@@ -226,6 +228,40 @@ mod tests {
             .expect("second")
             .attempt,
             2
+        );
+    }
+
+    #[test]
+    fn exhaustion_reports_the_persisted_attempt_count_without_mutating_it() {
+        let dir = tempfile::tempdir().expect("temp");
+        for expected_attempt in 1..=2 {
+            let claim = claim_restart(
+                dir.path(),
+                2,
+                Duration::from_secs(60),
+                Duration::from_millis(10),
+            )
+            .expect("claim");
+            assert_eq!(claim.attempt, expected_attempt);
+            complete_restart(dir.path()).expect("complete");
+        }
+        let persisted = read_restart_budget(dir.path())
+            .expect("read budget")
+            .expect("persisted budget");
+        assert_eq!(persisted.attempts, 2);
+        assert!(matches!(
+            claim_restart(
+                dir.path(),
+                2,
+                Duration::from_secs(60),
+                Duration::from_millis(10),
+            ),
+            Err(RestartBudgetError::Exhausted { attempts })
+                if attempts == persisted.attempts
+        ));
+        assert_eq!(
+            read_restart_budget(dir.path()).expect("read unchanged budget"),
+            Some(persisted)
         );
     }
 }

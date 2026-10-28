@@ -135,7 +135,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             self.config.restart_backoff_base,
         )
         .map_err(|error| match error {
-            RestartBudgetError::Exhausted => {
+            RestartBudgetError::Exhausted { .. } => {
                 SupervisorError::RestartBudgetExhausted(agent_id.clone())
             }
             other => SupervisorError::Invalid(other.to_string()),
