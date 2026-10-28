@@ -35,6 +35,10 @@ preflight, addressing, learning and CI Python files, not only package modules.
 Evidence and request commits can follow testing; changes to protected source
 require a new successful verification before finalization.
 
+The complete V8 `evaluation/` directory is protected as well, including its
+non-Python inputs and manifests. The Python inventory alone cannot freeze
+those original authored evaluation materials.
+
 Only the ten listed Hepta packages are passed to `just fix --locked`. Clippy
 compiles test targets because the existing recipe uses `--tests`; it does not
 execute their tests. Fixes outside those packages' Rust files are rejected.

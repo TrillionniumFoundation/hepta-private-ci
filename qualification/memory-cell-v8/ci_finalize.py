@@ -29,6 +29,7 @@ SOURCE_SCOPES = [
     "qualification/memory-cell-v6/v6", "qualification/memory-cell-v7/addressing",
     "qualification/memory-cell-v7/fixtures", "qualification/memory-cell-v8/addressing",
     "qualification/memory-cell-v8/learning", "qualification/memory-cell-v8/fixtures",
+    "qualification/memory-cell-v8/evaluation",
     "evaluation_preflight.py",
 ]
 
