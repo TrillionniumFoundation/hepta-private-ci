@@ -1,0 +1,53 @@
+name: Transfer reviewed NDU Git objects
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/ndu-object-transfer.yml
+      - scripts/ndu_reviewed_object_transfer.py
+      - scripts/test_ndu_reviewed_object_transfer.py
+      - experiments/multimodal_output_portfolio/closure_20261028/ci/object-transfer/**
+
+permissions:
+  contents: read
+
+jobs:
+  transfer-immutable-objects:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.event.pull_request.number == 4155 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Check transfer validation boundaries
+        run: python3 -m unittest discover -s scripts -p 'test_ndu_reviewed_object_transfer.py' -v
+      - name: Download the exact previously verified producer artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          artifact-ids: '12801988362'
+          run-id: '40656660435'
+          repository: TrillionniumFoundation/hepta-private-ci
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/ndu-reviewed-original
+          merge-multiple: true
+      - name: Verify all bytes then create immutable objects
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          python3 scripts/ndu_reviewed_object_transfer.py
+          --repository "$GITHUB_WORKSPACE"
+          --artifact "$RUNNER_TEMP/ndu-reviewed-original"
+          --output "$RUNNER_TEMP/ndu-object-transfer/RESULT.json"
+          --publish
+      - name: Preserve the object identity receipt
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-reviewed-object-transfer-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-object-transfer/
+          if-no-files-found: error
