@@ -85,10 +85,9 @@ pub fn write_hook(home: &Path, script_path: &Path, script: &str) -> String {
     // Preserve the original command literally, including its path quoting.
     // This observation must not silently replace python3 or repair its invocation.
     let original_command = format!("python3 {}", script_path.display());
-    fs::write(script_path, format!("{PYTHON_IDENTITY}{script}"))
-        .unwrap_or_else(|error| {
-            panic!("write original hook with interpreter identity preamble: {error}")
-        });
+    fs::write(script_path, format!("{PYTHON_IDENTITY}{script}")).unwrap_or_else(|error| {
+        panic!("write original hook with interpreter identity preamble: {error}")
+    });
     let launcher = home.join(if cfg!(windows) {
         "queue_hook_diagnostic.cmd"
     } else {

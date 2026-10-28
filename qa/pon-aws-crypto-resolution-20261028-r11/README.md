@@ -220,3 +220,22 @@ still requires fresh evidence; its cause is not inferred from a failed setup.
 The pair Host service, independent future-task model improvement, full PQ
 authorization integration, quantum PoN assumptions and independent multi-day
 WAN acceptance remain outside this dependency repair's claims.
+
+## Workflow context correction after first publication
+
+The first published v2 source (`67562d4`, tree `ff62a77`) produced failed run
+`40742189167` with zero jobs. All five planned native scenarios remain
+unobserved. The source placed `runner.temp` in job-level `env`, where the
+[GitHub context availability table](https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#context-availability)
+does not permit the `runner` context. No server annotation was available to
+this readback; this diagnosis follows from the exact workflow and the official
+context rules.
+
+The correction moves the identical `CARGO_TARGET_DIR` expression to the native
+execution and finalizer step environments, where the context is supported.
+The parsed workflow is otherwise identical. All five scenarios, feature and
+test arguments, deadlines, resource settings, action pins, permissions and
+source checks are unchanged. `workflow-context-review.json` retains the
+failed run denominator and exact before/after workflow hashes. This static
+repair does not claim native acceptance; the corrected head must execute the
+original five scenarios and all full-product gates.
