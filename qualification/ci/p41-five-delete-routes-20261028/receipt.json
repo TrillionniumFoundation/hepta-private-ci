@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.p41-five-delete-native-diagnostic-composition.v1",
+  "observed_at_utc": "2026-10-28",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_parent": {
+    "pr": 4137,
+    "sha": "1e99431e401a081b487fa81dba9dec5eb545dab8",
+    "blob": "ef59cd044725197578847e9b50bb735753305d32"
+  },
+  "tested_donor": {
+    "pr": 3364,
+    "sha": "1ddcff8d35947eb593756d34aff19626063d2448",
+    "blob": "0a39dffbe09b7795e82ffa612a267856fa7c003d",
+    "run": 39901705244,
+    "job": 120244533430,
+    "artifact": 12479282114,
+    "actual_result": "completed/failure",
+    "original_tests": "4 executed; 1 pass, 3 fail",
+    "observations": "All five native routes emitted. Parent FILE_DELETE_CHILD permits outside-file and outside-directory restricted deletes in the tested environment, including preexisting Low-labeled victims; fail-closed assertions reject this."
+  },
+  "current_parent_observation": {
+    "run": 40587005712,
+    "job": 122481569632,
+    "actual_result": "completed/failure",
+    "observation": "The route matrix logged 'neither' then aborted at a control assertion; all five routes were not observed on this exact composed source."
+  },
+  "change": {
+    "file": "codex-rs/windows-sandbox-rs/src/token_delete_diagnostics_tests.rs",
+    "kind": "exact byte-for-byte donor file transplant",
+    "test_only": true,
+    "original_route_expectations_unchanged": true,
+    "original_two_security_regressions_unchanged": true,
+    "production_token_or_acl_unchanged": true,
+    "required_gates_unchanged": true,
+    "dependencies_or_locks_unchanged": true
+  },
+  "validation": {
+    "exact_composed_head_windows_owning_pass": false,
+    "owning_windows_security_regressions_closed": false,
+    "final_ci_closed": false,
+    "donor_run_does_not_qualify_composed_head": true,
+    "source_file_transplant_checked_by_blob": true
+  },
+  "mode": "SHADOW_ONLY",
+  "authority": "DENY_ALL",
+  "promotion": "HOLD_NO_GO"
+}
