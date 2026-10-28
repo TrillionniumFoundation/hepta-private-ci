@@ -85,6 +85,8 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             executable.chmod(0o755)
             self.bash = shutil.which("bash")
         self.assertIsNotNone(self.bash, "Bash is required to exercise the CI wrapper")
+        # Model the pre-created directory from the NTFS setup action.
+        (self.root / "verified ntfs temp").mkdir()
         self.env = {
             key: value
             for key, value in os.environ.items()
