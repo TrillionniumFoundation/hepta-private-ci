@@ -109,6 +109,11 @@ def main():
                 receipt["native_tests_skipped_reason"] = "required same-source App Server build failed"
                 break
         if request["mode"] == "formal":
+            if all((output / name).is_file() for name in (
+                    "baseline-v7-native-held.json", "baseline-v8-native-held.json", "candidate-v9-native-held.json")):
+                execute([python, "-I", "-B", str(PROJECT / "evaluation/native_evidence.py"),
+                         "--reports", str(output), "--output", str(output / "native-language-audit.json")],
+                        output, receipt["executions"], log)
             for stem in ("continual-learning", "structure-learning"):
                 report = output / f"{stem}.json"
                 if report.exists():
@@ -121,7 +126,7 @@ def main():
     required = ["legacy-network-process.json"]
     if request["mode"] == "formal":
         required.extend(name for name in exports.values() if name != "legacy-network-process.json")
-        required.extend(("continual-learning-score.json", "structure-learning-score.json"))
+        required.extend(("native-language-audit.json", "continual-learning-score.json", "structure-learning-score.json"))
     receipt["missing_required_receipts"] = [name for name in required if not (output / name).is_file()]
     receipt["passed"] = (not receipt["final_tracked_changes"] and not receipt["missing_required_receipts"]
                          and len(receipt["executions"]) >= len(commands)
