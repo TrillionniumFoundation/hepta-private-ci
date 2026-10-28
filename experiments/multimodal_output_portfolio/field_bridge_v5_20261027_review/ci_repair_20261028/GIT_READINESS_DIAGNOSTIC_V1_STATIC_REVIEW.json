@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-28T10:58:38.273353+00:00",
+  "state": "SCRATCH_CANDIDATE_QUIESCENT_NOT_APPLIED_NOT_COMPILED",
+  "purpose": "Capture the actual Windows child startup/readiness error on the next existing native test run without changing readiness, timeout-under-test, or production containment.",
+  "reviewed_source_commit": "f20db50ec8f891d286465e635c68e83749b9b3b4",
+  "source_git_blobs": {
+    "0acfd9b27db910c180b0d8911f39aea469b7f864": "1640d626680ed7e2eab9e97f2115f7f27dabdf2f",
+    "49329fbfc3f6b26d653dbcfffa9fdaf467ab444c": "1640d626680ed7e2eab9e97f2115f7f27dabdf2f",
+    "f20db50ec8f891d286465e635c68e83749b9b3b4": "1640d626680ed7e2eab9e97f2115f7f27dabdf2f"
+  },
+  "source_original": {
+    "path": "/workspace/scratch/e8a4dc33549f/git_utils_readiness_diagnostic_candidate_20261028/originals/codex-rs/git-utils/src/git_process_tests.rs",
+    "bytes": 5790,
+    "sha256": "eae41fae1cd9a4811fbef35f74b49d33c256efb46b814e4e56889da24d541297"
+  },
+  "source_replacement": {
+    "path": "/workspace/scratch/e8a4dc33549f/git_utils_readiness_diagnostic_candidate_20261028/replacements/codex-rs/git-utils/src/git_process_tests.rs",
+    "bytes": 14041,
+    "sha256": "458299712434d8acdf6e7dd06eb684f718ab63b6fcb5bc17f556d4c002023979"
+  },
+  "patch": {
+    "path": "/workspace/scratch/e8a4dc33549f/git_utils_readiness_diagnostic_candidate_20261028/git_readiness_diagnostic.patch",
+    "bytes": 9324,
+    "sha256": "1926909a4df9c5d9fce82090d94f7a12bc87603d33d91231c4e31f6775c86fa1"
+  },
+  "production_source_unchanged": {
+    "path": "codex-rs/git-utils/src/git_process.rs",
+    "sha256": "8961e2748659fca01ea0a4b51baff983b76207e3ca3222f6a637a91360288d06"
+  },
+  "normal_path_preservation": [
+    {
+      "name": "fixture_setup_and_command_configuration",
+      "byte_identical": true,
+      "bytes": 3007,
+      "sha256": "95c0e8e3994ecd4e932b004a273c361bc709d9554a7243ad157909960b02b50e"
+    },
+    {
+      "name": "readiness_deadline_and_condition_loop",
+      "byte_identical": true,
+      "bytes": 420,
+      "sha256": "d494dd25674d1f2757977a08aab1b4643e59f5c701dbd6c10d43bad177b4a65d"
+    },
+    {
+      "name": "original_post_readiness_flow_and_both_existing_tests",
+      "byte_identical": true,
+      "bytes": 1870,
+      "sha256": "e573d0df6ab4af9b91078bc836f8257a6d14f57eb82e41a91b7314ba991a59d3"
+    }
+  ],
+  "failure_sequence": [
+    "The existing 30-second timeout has already returned Err. Retain that original Elapsed value for the final panic.",
+    "Capture wrapper.id and wrapper.try_wait Result, including any io::Error; inspect the PID file length and ready-file try_exists Result independently.",
+    "Read no more than 129 PID-file bytes; retain a numeric PID only when UTF-8 parsing succeeds, report trimmed_nonempty, and mark oversized/invalid input without dumping arbitrary file contents.",
+    "Take existing stdout/stderr pipe handles only in this Err branch. No stream is read or reconfigured on the successful path.",
+    "Drop the original process_tree guard and wrapper before reading output. This invokes the existing cleanup behavior rather than adding a new containment implementation.",
+    "Drain both detached read handles concurrently against the same 250-millisecond Tokio deadline. Retain at most 4096 bytes per stream and read one extra byte to distinguish exact-limit EOF from truncation.",
+    "Always panic with the original readiness error plus diagnostic status. Read errors, missing pipes, truncation, and diagnostic deadline expiry explicitly say incomplete; only observed EOF says complete_eof."
+  ],
+  "bounds": {
+    "readiness_deadline_seconds": 30,
+    "timeout_under_test_milliseconds": 100,
+    "unchanged_wrapper_exit_wait_seconds": 10,
+    "unchanged_descendant_survival_wait_seconds": 3,
+    "failure_only_shared_pipe_deadline_milliseconds": 250,
+    "retained_raw_output_bytes_per_stream": 4096,
+    "maximum_raw_output_bytes_read_per_stream": 4097,
+    "pid_file_maximum_bytes_read": 129,
+    "pid_file_printed_raw_content": false,
+    "environment_variables_enumerated_or_printed": false,
+    "output_rendering": "Retained bytes are rendered as debug-escaped String::from_utf8_lossy output; this is bounded startup diagnostics, not a byte-perfect full-stream archive.",
+    "timing_scope": "The 250ms shared Tokio deadline bounds only the post-cleanup asynchronous pipe-read stage. Local PID/metadata/try_wait syscalls and OS scheduling are not a hard real-time bound; no readiness or tested timeout is extended."
+  },
+  "prepared_tests_not_run": [
+    {
+      "name": "readiness_output_distinguishes_exact_limit_from_truncation",
+      "coverage": "0 bytes, exactly 4096 bytes with observed EOF, and 4097 bytes with explicit truncation."
+    },
+    {
+      "name": "readiness_output_preserves_partial_bytes_on_shared_deadline",
+      "coverage": "A partial stream that remains pending does not erase its prefix or prevent the other stream from completing under the shared deadline."
+    },
+    {
+      "name": "readiness_output_preserves_read_error_and_missing_pipe",
+      "coverage": "Preserve the partial prefix and concrete read error; missing pipe is explicitly incomplete."
+    }
+  ],
+  "actual_static_checks": {
+    "source_original_matches_repository": true,
+    "unchanged_sections": [
+      {
+        "name": "fixture_setup_and_command_configuration",
+        "byte_identical": true,
+        "bytes": 3007,
+        "sha256": "95c0e8e3994ecd4e932b004a273c361bc709d9554a7243ad157909960b02b50e"
+      },
+      {
+        "name": "readiness_deadline_and_condition_loop",
+        "byte_identical": true,
+        "bytes": 420,
+        "sha256": "d494dd25674d1f2757977a08aab1b4643e59f5c701dbd6c10d43bad177b4a65d"
+      },
+      {
+        "name": "original_post_readiness_flow_and_both_existing_tests",
+        "byte_identical": true,
+        "bytes": 1870,
+        "sha256": "e573d0df6ab4af9b91078bc836f8257a6d14f57eb82e41a91b7314ba991a59d3"
+      }
+    ],
+    "cleanup_before_output_read_order": true,
+    "single_shared_deadline_used_for_both_streams": true,
+    "git_apply_check": {
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "added_unwrap_calls": 0,
+    "rustfmt_executed": false,
+    "rust_compilation_executed": false,
+    "rust_tests_executed": false,
+    "cargo_dependency_changes": false
+  },
+  "observed_failure_evidence": {
+    "run_id": 40639726155,
+    "run_attempt": 1,
+    "job_id": 122655390371,
+    "source_commit": "49329fbfc3f6b26d653dbcfffa9fdaf467ab444c",
+    "merge_commit": "563463fe85b6ea51a22e7d7b496ef49b4bc47365",
+    "log": {
+      "path": "/workspace/scratch/e8a4dc33549f/ci_49329_windows_shard1.log",
+      "bytes": 851514,
+      "sha256": "5ddb0254c2c731a895d7f1bc5be0a93416ca0fcd1d81518dfae3370cd9b0e9e3"
+    },
+    "failure_lines": [
+      3541,
+      3542,
+      3547,
+      3548
+    ],
+    "both_failed_before_timeout_under_test": true
+  },
+  "single_followup_snapshot_in_this_preparation_pass": {
+    "source_commit": "f20db50ec8f891d286465e635c68e83749b9b3b4",
+    "run_id": 40669844250,
+    "source_tool": "github_fetch_workflow_run_jobs",
+    "exact_fetch_time_not_retained": true,
+    "windows_shard1": {
+      "job_id": 122753976884,
+      "status": "in_progress",
+      "conclusion": null,
+      "active_step": "bazel test shard"
+    },
+    "windows_release": {
+      "job_id": 122753976977,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "windows_clippy": {
+      "job_id": 122753977031,
+      "status": "in_progress",
+      "conclusion": null
+    },
+    "new_completed_shard1_logs_available": false,
+    "further_polling_performed": false,
+    "direct_job_fetch_endpoint": "github_fetch rejected the direct /actions/jobs URL as an unsupported endpoint; no bypass attempted. The purpose-built run-jobs tool supplied the snapshot."
+  },
+  "limitations": [
+    "No Windows native execution or Rust compilation was performed. This candidate does not establish or repair the underlying startup cause.",
+    "Backpressure on the normal path is deliberately unchanged; if a full pipe caused the original readiness failure, the next failure will retain a bounded prefix rather than silently removing that condition.",
+    "Taking and draining output only after failure cannot provide a live child-process status beyond the captured wrapper exit and written child PID.",
+    "If a descendant still holds a pipe open after existing cleanup, the shared read deadline returns an incomplete diagnostic rather than waiting indefinitely.",
+    "Root must perform the canonical formatter and rely on real CI compilation/testing before treating the candidate as validated."
+  ],
+  "repository_mutations": [],
+  "supervisor_candidate_modified": false,
+  "scientific_assets_read": false,
+  "native_or_scientific_qualification": false
+}

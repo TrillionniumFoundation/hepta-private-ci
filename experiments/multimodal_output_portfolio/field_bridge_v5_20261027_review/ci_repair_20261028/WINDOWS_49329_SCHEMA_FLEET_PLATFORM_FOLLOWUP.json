@@ -1,0 +1,390 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-28T10:18:14.733172+00:00",
+  "scope": "Bounded read-only follow-up of actual Windows CI failures, plus one authorized fixture correction. No Rust execution, schema generation, model call, scientific asset read, dependency download, commit or push.",
+  "run": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "run_id": 40639726155,
+    "run_attempt": 1,
+    "source_head": "49329fbfc3f6b26d653dbcfffa9fdaf467ab444c",
+    "source_tree": "b6fe3798e2817c79c87fbb38dca3033f78716e20",
+    "base": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+    "merge_head": "563463fe85b6ea51a22e7d7b496ef49b4bc47365",
+    "job_id": 122655390371,
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40639726155/job/122655390371"
+  },
+  "prior_diagnostic_unchanged": {
+    "path": "/workspace/scratch/e8a4dc33549f/ci_49329_windows_blocking_diagnostic_20261028.json",
+    "bytes": 25347,
+    "sha256": "712ac08fb6f4300cac7af8d16ed85515b6b1d99c9db85ea27dd6fa91835ccc31"
+  },
+  "schema": {
+    "status": "Failure confirmed; current-source generation and full generator differences remain unverified.",
+    "failed_tests": [
+      "schema_fixtures_tests::experimental_precomputed_exports_match_generated",
+      "schema_fixtures_tests::json_schema_fixtures_match_generated",
+      "schema_fixtures_tests::stable_precomputed_exports_match_schema_fixtures"
+    ],
+    "schema_worktree_binding": {
+      "source_head": "49329fbfc3f6b26d653dbcfffa9fdaf467ab444c",
+      "tracked_files_checked": 984,
+      "all_git_blobs_equal": true,
+      "missing": [],
+      "mismatched": [],
+      "method": "git ls-tree of exact source head, SHA-1 git-blob identity from every present regular file; GIT_NO_LAZY_FETCH=1"
+    },
+    "console_observability": {
+      "source_log": {
+        "path": "/workspace/scratch/e8a4dc33549f/ci_49329_windows_shard1.log",
+        "bytes": 851514,
+        "sha256": "5ddb0254c2c731a895d7f1bc5be0a93416ca0fcd1d81518dfae3370cd9b0e9e3"
+      },
+      "exact_excerpts": [
+        {
+          "line": 1079,
+          "text": "2026-10-28T05:47:29.1686241Z BuildBuddy key unavailable; using local Bazel configuration."
+        },
+        {
+          "line": 1144,
+          "text": "2026-10-28T05:47:59.9308447Z BuildBuddy key unavailable; using local Bazel configuration."
+        },
+        {
+          "line": 3946,
+          "text": "2026-10-28T06:15:07.0259958Z stdout (D:/o/execroot/_main/bazel-out/_tmp/actions/stdout-4307) 1126674 exceeds maximum size of --experimental_ui_max_stdouterr_bytes=1048576 bytes; skipping"
+        },
+        {
+          "line": 4701,
+          "text": "2026-10-28T06:18:26.6935970Z ##[group]Bazel test log tail for //codex-rs/app-server-protocol:app-server-protocol-unit-tests"
+        }
+      ],
+      "omitted_stdout_bytes": 1126674,
+      "bazel_console_cap_bytes": 1048576,
+      "wrapper_tail_lines": 200,
+      "wrapper_source": ".github/scripts/run-bazel-ci.sh:147-164",
+      "buildbuddy_key_available": false,
+      "full_generator_stdout_available": false
+    },
+    "artifact_observation": {
+      "artifact_id": 12795784909,
+      "artifact_name": "bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-1",
+      "zip_bytes": 4785299,
+      "zip_sha256": "0368c38d7e324e925f7109e387cc3390f671b567a4ce8bea25e745857178f2b3",
+      "method": "GitHub connector authorized download URL; stdlib urllib bounded to 6 MiB; verified ZIP length/SHA against artifact metadata; ZIP inventory read in memory, no extraction or retained archive copy.",
+      "member_count": 1,
+      "members": [
+        {
+          "name": "execution-log-test-test-windows-shard-2413.zst",
+          "compressed_bytes": 4785093,
+          "member_bytes": 4786921
+        }
+      ],
+      "contains_full_test_log": false,
+      "contains_generated_schema_tree": false,
+      "compact_zstd_payload_decoded": false,
+      "limit": "ZIP inventory does not reconstruct the omitted test stdout or the freshly generated schemas."
+    },
+    "readonly_precomputed_comparison": {
+      "receipt": {
+        "path": "/workspace/scratch/e8a4dc33549f/ci_49329_precomputed_fixture_comparison.json",
+        "bytes": 2807,
+        "sha256": "b0bd8511dd1405746d72fb36d1367289feff2e88be69b18ca50364c3a1bb063b"
+      },
+      "method": "Existing system libzstd via ctypes; decompression bound 32 MiB; compared source-pinned cached stable export maps to existing fixtures, without running a generator.",
+      "stable_typescript_cached": 679,
+      "stable_typescript_fixtures": 688,
+      "stable_typescript_only_in_fixtures": [
+        "v2/HeptaGovernanceEvidenceSummary.ts",
+        "v2/HeptaHistoricalEvidenceFamily.ts",
+        "v2/HeptaHistoricalEvidenceRecord.ts",
+        "v2/HeptaHistoricalEvidenceState.ts",
+        "v2/HeptaProviderEvidenceSummary.ts",
+        "v2/ThreadQueueReconcileMode.ts",
+        "v2/ThreadQueueReconcileOutcome.ts",
+        "v2/TurnRecoverParams.ts",
+        "v2/TurnRecoverResponse.ts"
+      ],
+      "stable_typescript_content_changed": [
+        "ClientRequest.ts",
+        "v2/index.ts"
+      ],
+      "stable_json_cached": 292,
+      "stable_json_fixtures": 294,
+      "stable_json_only_in_fixtures": [
+        "v2/TurnRecoverParams.json",
+        "v2/TurnRecoverResponse.json"
+      ],
+      "stable_json_content_changed": [
+        "ClientRequest.json",
+        "codex_app_server_protocol.schemas.json",
+        "codex_app_server_protocol.v2.schemas.json"
+      ],
+      "bundle_only_files": [],
+      "experimental_inventory_only": {
+        "typescript": 801,
+        "json_schema": 406,
+        "internal_json_schema": 0
+      },
+      "limit": "Proves stable cache/fixture inconsistency. Does not establish whether any JSON or experimental fixture equals fresh current-source generation. Internal stable JSON also requires genuine generation."
+    },
+    "canonical_generation": {
+      "implemented_in": "codex-rs/app-server-protocol/scripts/write_schema_fixtures.py",
+      "just_recipe": "justfile:186-187; working-directory codex-rs",
+      "commands_for_future_isolated_generation": [
+        "just write-app-server-schema --schema-root <fresh-isolated-output-directory>",
+        "just write-app-server-schema --schema-root <same-isolated-output-directory> --experimental"
+      ],
+      "underlying_command": [
+        "cargo",
+        "test",
+        "-p",
+        "codex-app-server-protocol",
+        "--lib",
+        "schema_fixtures_tests::write_schema_fixtures_from_env",
+        "--",
+        "--exact",
+        "--ignored"
+      ],
+      "generator_options": [
+        "CODEX_APP_SERVER_SCHEMA_ROOT",
+        "CODEX_APP_SERVER_SCHEMA_EXPERIMENTAL=0 or 1",
+        "optional CODEX_APP_SERVER_SCHEMA_PRETTIER"
+      ],
+      "executed_here": false,
+      "caution": "Stable canonical writer empties selected output typescript/json directories; use a fresh external root and inspect the generated diff before proposing fixture updates. Recompressing old fixtures does not substitute for generator execution."
+    },
+    "next_minimal_evidence": {
+      "proposal_only": true,
+      "preferred": "On the next failing Windows Bazel attempt, retain this target actual test.log as a bounded failure-only artifact with exact bytes/hash and explicit truncation status; preserve original test exit code. Existing wrapper already resolves the failing test.log but only tails it.",
+      "alternative": "A 2 MiB Bazel UI output cap would fit the observed 1,126,674-byte stdout, but would not guarantee future complete logs.",
+      "source_paths_if_authorized": [
+        ".github/scripts/run-bazel-ci.sh",
+        ".github/workflows/bazel.yml"
+      ],
+      "not_changed": true
+    }
+  },
+  "fleet_fixture": {
+    "status": "One-line source correction ready for root formatting and fresh Windows CI; native execution not performed.",
+    "file": {
+      "path": "codex-rs/hepta-fleet/src/registry_tests.rs",
+      "bytes": 11781,
+      "sha256": "6db82231295c15948fdba723b58776e312741f171a5e146f5618bc5ee3e7610c",
+      "git_blob": "9185ac93bbeaa561ca6d463eda728f15da6201cc",
+      "head_blob": "d462cc845a448c802d32e56ab2de00ee3249ee11",
+      "matches_head": false
+    },
+    "original_bytes": 11736,
+    "original_sha256": "46365d1b8f403c6171814040a73cdff8aed5aeae22d65fad2165d89b3b84a7d9",
+    "change": "After fs::create_dir_all(&path)?, add let path = path.canonicalize()?; before WorkspaceBinding::new.",
+    "line_added": 275,
+    "added_lines": 1,
+    "removed_lines": 0,
+    "removing_added_line_reproduces_original_bytes_sha256": true,
+    "evidence": "Actual CI rejected noncanonical D:\\tmp\\.tmpkSREKS\\sweep\\a. Existing same-file create_workspace helper already canonicalizes created paths.",
+    "preserved": [
+      "Actual directory creation",
+      "Canonical/symlink production gate",
+      "All 8 names",
+      "Every subset and both identity orders",
+      "All original oracle assertions and error propagation"
+    ],
+    "production_code_changed": false,
+    "rustfmt_executed_here": false,
+    "rust_compilation_executed_here": false,
+    "windows_tests_executed_here": false
+  },
+  "windows_private_state_and_recovery": {
+    "status": "Underlying platform implementations remain absent in the relevant Hepta owners. Existing Windows sandbox primitives are partial components, not a drop-in supported recovery implementation.",
+    "final_use": "final_use_store.rs:385-438 retains directory/file handles and validates Unix uid, private modes and single-link files; 441-447 and 476-486 explicitly reject non-Unix operations as UnsafeStateDirectory.",
+    "authority_lease": "authority_lease.rs:1076-1150 provides Unix private open/replace; 1153-1171 explicitly rejects non-Unix operations.",
+    "published_contract": "IMPLEMENTATION_PROFILES.json:205 and 214 specifies locked private Unix state and says equivalent non-Unix ACL storage is not implemented.",
+    "descriptor_admission": "state/src/sqlite_recovery.rs:171-175 rejects ExistingSqliteRecoveryGuard::bind on non-Unix as Indeterminate; Unix identity snapshot includes device/inode, mode, owner, link count, length and timestamps.",
+    "recovery_copy": "state/src/sqlite_recovery_image.rs:158-162 rejects copy materialization on non-Unix as Unavailable. Canonical path spelling alone cannot implement this guarded copy path.",
+    "publication": "hepta-memory/src/cognitive_store_recovery.rs:149 exact canonical spelling can reject first; later retained-descriptor admission and copy still fail closed on Windows. It also requires actual file and directory sync. cognitive_store.rs:1616-1624 writes and syncs pointer, renames it, then opens and syncs the root directory; a PermissionDenied at caller cannot alone locate the failing suboperation.",
+    "existing_windows_components": [
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/no_reparse_dir.rs",
+        "lines": "62-149",
+        "capability": "Provisioning-only pub(super) helper uses NtCreateFile with OBJ_DONT_REPARSE for all path components and returns an owned directory handle kept during security mutation.",
+        "not_supplied": [
+          "Hepta owner/SID trust validation",
+          "Private state file opening and link/identity contract",
+          "Descriptor-bound database/sidecar recovery copy",
+          "Authority lock/replacement and persistence protocol"
+        ],
+        "scope_caution": "Opens with READ_CONTROL|WRITE_DAC, FILE_OPEN_IF and a null security descriptor; not a general private-state or durable writer constructor."
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+        "lines": "67-105",
+        "capability": "Queries a path-opened directory/file DACL using GetSecurityInfo.",
+        "limit": "Requests DACL only, closes handle before returning; does not retain the authoritative object through state use, establish trusted owner identity, or implement recovery."
+      }
+    ],
+    "no_production_changes": true,
+    "no_skip_or_security_gate_relaxation": true,
+    "native_platform_validation_performed": false
+  },
+  "source_identities": [
+    {
+      "path": "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-stable.json.zst",
+      "bytes": 137561,
+      "sha256": "252cd8c5afad894abdc69b67803204de33b2ee445d4d9eabcee0ea9382b280e6",
+      "git_blob": "76ac470aa008f5adcc65b00d1e26b95083841169",
+      "head_blob": "76ac470aa008f5adcc65b00d1e26b95083841169",
+      "matches_head": true
+    },
+    {
+      "path": "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-experimental.json.zst",
+      "bytes": 143060,
+      "sha256": "e6770c2c885a2a4640ae49e137c5efa10cb592f1b59c913ccece4b5d8cc876a1",
+      "git_blob": "4f686dd0da73921d600410537429130bebdca78c",
+      "head_blob": "4f686dd0da73921d600410537429130bebdca78c",
+      "matches_head": true
+    },
+    {
+      "path": "codex-rs/app-server-protocol/src/schema_fixtures_tests.rs",
+      "bytes": 8666,
+      "sha256": "f2f7cb9b756e2eed35cd0df0424381c8d1608575b1e5249d94cc24db3c25b1aa",
+      "git_blob": "d87072b49c322d69b82589d5b493b35392a52ef2",
+      "head_blob": "d87072b49c322d69b82589d5b493b35392a52ef2",
+      "matches_head": true
+    },
+    {
+      "path": "codex-rs/app-server-protocol/src/schema_fixtures.rs",
+      "bytes": 16219,
+      "sha256": "f3b449aac70fbb77158b74f09cf79924046b400c9d4299e909748b01a1e739bd",
+      "git_blob": "d0f36db800a15f0b8842cc520f67e9d686d39238",
+      "head_blob": "d0f36db800a15f0b8842cc520f67e9d686d39238",
+      "matches_head": true
+    },
+    {
+      "path": "codex-rs/app-server-protocol/scripts/write_schema_fixtures.py",
+      "bytes": 1543,
+      "sha256": "d46cb0e036a81dd96ddd0a1bd7942679a6723b0627a21758a71abb89e7c9b269",
+      "git_blob": "69217206cc531fdcda0ad8b9c997064fa4f95f4d",
+      "head_blob": "69217206cc531fdcda0ad8b9c997064fa4f95f4d",
+      "matches_head": true
+    },
+    {
+      "path": ".github/scripts/run-bazel-ci.sh",
+      "bytes": 13699,
+      "sha256": "54a2e8fe8da8253b92986380ae502082354b824759c970c29235c86b3ba291cf",
+      "git_blob": "2bb6994771e1bfaa6b6e9f2824758188f8e454a9",
+      "head_blob": "2bb6994771e1bfaa6b6e9f2824758188f8e454a9",
+      "matches_head": true
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "bytes": 20489,
+      "sha256": "7056008137ed9abbe8f29eae95ac4f1a3d771e7a6dba8fd012c11964ddb4221e",
+      "git_blob": "8d8123c81dabc3cd38c2ef9847c1633e3ff1080c",
+      "head_blob": "8d8123c81dabc3cd38c2ef9847c1633e3ff1080c",
+      "matches_head": true
+    },
+    {
+      "path": "justfile",
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "head_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "matches_head": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
+      "bytes": 17392,
+      "sha256": "88a3438aacc8ff601bd3deed4f2fb5c2bd42623c6390ab2587bed3e40a78a535",
+      "git_blob": "3e5b562ce2ccb12cfff3023e16530c03ec0e8836",
+      "head_blob": "3e5b562ce2ccb12cfff3023e16530c03ec0e8836",
+      "matches_head": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "bytes": 62044,
+      "sha256": "4d009658997801e6e9f23d8a1f6fca26faa39cf177c9996f1060af1d6ae70f94",
+      "git_blob": "d59bb4bf8582502c085253d87c6f81f59823c027",
+      "head_blob": "d59bb4bf8582502c085253d87c6f81f59823c027",
+      "matches_head": true
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery.rs",
+      "bytes": 13642,
+      "sha256": "5c387d97f161a4e688505de9d95763049aef569def307962653598cc33170a02",
+      "git_blob": "7093f94b445e0cf468f1528ceb8a827beaf2d4af",
+      "head_blob": "7093f94b445e0cf468f1528ceb8a827beaf2d4af",
+      "matches_head": true
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery_image.rs",
+      "bytes": 12358,
+      "sha256": "60610912a99967c9055b2275a5d1c0e7b96cd4d769279b630b0d44cbe46d5dac",
+      "git_blob": "af8dea5f59165477866903325c94c3f1742f502e",
+      "head_blob": "af8dea5f59165477866903325c94c3f1742f502e",
+      "matches_head": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "bytes": 27100,
+      "sha256": "9f35667ca2285e66c212b2bad4a0a67202162d64a41e06f161dee4525666282f",
+      "git_blob": "920508b391c30a0b70a236e5f29988ee40206732",
+      "head_blob": "920508b391c30a0b70a236e5f29988ee40206732",
+      "matches_head": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "bytes": 70164,
+      "sha256": "2047486202e04082cc44fd807e5a6d25f1dfa614f523ae0929c75f2c22014e68",
+      "git_blob": "b52e3a1aa275c178a075677f5df9faa832173b41",
+      "head_blob": "b52e3a1aa275c178a075677f5df9faa832173b41",
+      "matches_head": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_path.rs",
+      "bytes": 2134,
+      "sha256": "cf9e8bed3cfe7d8f8169fa6f8f0563973efc1844870cbafa798c240b58c493be",
+      "git_blob": "b084411f8d0fd6352669e8ca8c67bf4bf9f9f2b8",
+      "head_blob": "b084411f8d0fd6352669e8ca8c67bf4bf9f9f2b8",
+      "matches_head": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/no_reparse_dir.rs",
+      "bytes": 5652,
+      "sha256": "ac5a0de15bafe7e7552078cba8bf9dcef199421caad9b181c4e19b14fe19d8bb",
+      "git_blob": "93d983f12f027d43dc959b6d0fea324bbdeed7c4",
+      "head_blob": "93d983f12f027d43dc959b6d0fea324bbdeed7c4",
+      "matches_head": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+      "bytes": 27953,
+      "sha256": "58976c6d1594c116dfd108316bb748b5cf2e9f108785605eaa93c96b77145b83",
+      "git_blob": "755083dd97ef25065692028405412326e4e2ac49",
+      "head_blob": "755083dd97ef25065692028405412326e4e2ac49",
+      "matches_head": true
+    },
+    {
+      "path": "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json",
+      "bytes": 160583,
+      "sha256": "825b130baa8bde73648d2e7afcadbb9486311da26d1fde6aebfb0c7a377b095e",
+      "git_blob": "85afa089c6023b0f88fd76a58cde018c615f709a",
+      "head_blob": "85afa089c6023b0f88fd76a58cde018c615f709a",
+      "matches_head": true
+    }
+  ],
+  "remaining_unresolved": [
+    "Fresh current-source stable JSON and experimental export differences",
+    "New Windows compilation and tests after terminal macro/fleet/other coordinated fixture fixes",
+    "Windows private-state ownership and descriptor-bound recovery implementation",
+    "Previously recorded git-utils readiness timeout, supervisor restart queue mismatch, and federation is_active assertion; no speculative repair"
+  ],
+  "qualification": {
+    "native_product_qualified": false,
+    "all_ci_passed": false,
+    "scientific_qualification_changed": false
+  },
+  "disk_snapshot": {
+    "free_bytes": 3323912192,
+    "available_bytes": 1589149696
+  },
+  "previous_receipt_bytes_unchanged": true
+}

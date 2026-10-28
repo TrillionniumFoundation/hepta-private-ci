@@ -1,0 +1,589 @@
+{
+  "artifact_scope": "Metadata/head bindings inspected; ZIP payloads not yet read in this first receipt. Full app-server test output extraction follows separately.",
+  "authorized_fix": {
+    "all_other_bytes_unchanged": true,
+    "change": "One explicit use pretty_assertions::assert_eq import.",
+    "formatting": "Managed separately by root; diagnostic agent did not invoke formatter.",
+    "local_rust_execution": false,
+    "new": {
+      "bytes": 8957,
+      "path": "/workspace/scratch/e8a4dc33549f/hepta/codex-rs/core/src/session/tests/terminal_event_tests.rs",
+      "sha256": "e591a8e9d512b23869e2b2585e2e876c7c6c22e4103ddb757e428dc5886cf057"
+    },
+    "new_blob": "6d1f9331c8a372007e4674fddfab3b4e8d5f06b3",
+    "old_blob": "2ed38e90bbb6e57670897c2c92f15e88704a6515",
+    "old_bytes": 8923,
+    "old_sha256": "ec51185e184a479c898f788f4ca1cd6c154a2524ffd4320f1a27fbf74b318032",
+    "path": "codex-rs/core/src/session/tests/terminal_event_tests.rs",
+    "production_changes": 0,
+    "removed_assertions": 0,
+    "requires_fresh_ci": true
+  },
+  "base_sha": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+  "confirmed_common_blocker": {
+    "code": "E0659",
+    "compiler_input_files_reported": 466,
+    "limit": "The new source was included in actual compilation, which did not complete. This is not successful execution of terminal tests or proof that all terminal production code passed type checking.",
+    "reason": "use super::* imports the parent pretty_assertions::assert_eq (tests.rs:203), which conflicts with the prelude macro at six new test calls. All three completed Windows logs show this exact error.",
+    "source": "codex-rs/core/src/session/tests/terminal_event_tests.rs",
+    "target": "//codex-rs/core:core-unit-tests-bin"
+  },
+  "created_at_utc": "2026-10-28T10:08:45.906474+00:00",
+  "environment_note": "Default exec failed before Python launch due to ENOSPC creating sandbox synthetic mount; this small receipt-only command used approved escalation without Rust/download/cleanup.",
+  "external_upload_performed": false,
+  "first_page_job_states": [
+    {
+      "conclusion": "success",
+      "id": 122654797709,
+      "name": "Select blocking CI scope",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 122654798080,
+      "name": "Codespell / Check for spelling errors",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 122654798100,
+      "name": "Blob size policy / Blob size policy",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 122655390025,
+      "name": "repo-checks / build-test",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 122655390031,
+      "name": "repo-checks / Native Hepta paths on windows-latest",
+      "status": "completed"
+    },
+    {
+      "conclusion": "cancelled",
+      "id": 122655390068,
+      "name": "sdk / sdks",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 122655390069,
+      "name": "sdk / python-sdk",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 122655390092,
+      "name": "repo-checks / Native Hepta paths on macos-15",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 122655390113,
+      "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 122655390139,
+      "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 122655390173,
+      "name": "rust-ci / Detect changed areas",
+      "status": "completed"
+    },
+    {
+      "conclusion": "failure",
+      "id": 122655390247,
+      "name": "cargo-deny / cargo-deny",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 122655390316,
+      "name": "NDU v6 neural rollout smoke / Python, native NDU, and real rollout",
+      "status": "completed"
+    },
+    {
+      "conclusion": "cancelled",
+      "id": 122655390318,
+      "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "completed"
+    },
+    {
+      "conclusion": "cancelled",
+      "id": 122655390337,
+      "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+      "status": "completed"
+    },
+    {
+      "conclusion": "failure",
+      "id": 122655390371,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+      "status": "completed"
+    },
+    {
+      "conclusion": "cancelled",
+      "id": 122655390373,
+      "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+      "status": "completed"
+    },
+    {
+      "conclusion": "cancelled",
+      "id": 122655390382,
+      "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "completed"
+    },
+    {
+      "conclusion": "cancelled",
+      "id": 122655390385,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+      "status": "completed"
+    },
+    {
+      "conclusion": "cancelled",
+      "id": 122655390394,
+      "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+      "status": "completed"
+    },
+    {
+      "conclusion": "failure",
+      "id": 122655390410,
+      "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+      "status": "completed"
+    },
+    {
+      "conclusion": "cancelled",
+      "id": 122655390434,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "completed"
+    },
+    {
+      "conclusion": "failure",
+      "id": 122655390452,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+      "status": "completed"
+    },
+    {
+      "conclusion": "failure",
+      "id": 122655390477,
+      "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+      "status": "completed"
+    },
+    {
+      "conclusion": "cancelled",
+      "id": 122655390503,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+      "status": "completed"
+    },
+    {
+      "conclusion": "failure",
+      "id": 122655390544,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+      "status": "completed"
+    },
+    {
+      "conclusion": "cancelled",
+      "id": 122655390616,
+      "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+      "status": "completed"
+    },
+    {
+      "conclusion": "skipped",
+      "id": 122655391262,
+      "name": "Lightweight prose and derived checks",
+      "status": "completed"
+    },
+    {
+      "conclusion": "skipped",
+      "id": 122655391459,
+      "name": "Hepta scoped native checks",
+      "status": "completed"
+    },
+    {
+      "conclusion": "skipped",
+      "id": 122655391992,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+      "status": "completed"
+    }
+  ],
+  "full_decoded_logs_bytes": 2547239,
+  "head_sha": "49329fbfc3f6b26d653dbcfffa9fdaf467ab444c",
+  "head_tree": "b6fe3798e2817c79c87fbb38dca3033f78716e20",
+  "jobs": [
+    {
+      "conclusion": "failure",
+      "core_unit_tests_compilation_completed": false,
+      "first_e0659_log_line": 4163,
+      "first_error_excerpt": [
+        "2026-10-28T06:17:15.0546464Z error[E0659]: `assert_eq` is ambiguous",
+        "2026-10-28T06:17:15.0546845Z    --> core/src\\session\\tests\\terminal_event_tests.rs:172:5",
+        "2026-10-28T06:17:15.0547213Z     |",
+        "2026-10-28T06:17:15.0547461Z 172 |     assert_eq!(",
+        "2026-10-28T06:17:15.0547739Z     |     ^^^^^^^^^ ambiguous name",
+        "2026-10-28T06:17:15.0548049Z     |",
+        "2026-10-28T06:17:15.0548556Z     = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution",
+        "2026-10-28T06:17:15.0549340Z note: `assert_eq` could refer to the macro imported here",
+        "2026-10-28T06:17:15.0549765Z    --> core/src\\session\\tests\\terminal_event_tests.rs:1:5",
+        "2026-10-28T06:17:15.0550120Z     |",
+        "2026-10-28T06:17:15.0550391Z   1 | use super::*;",
+        "2026-10-28T06:17:15.0550672Z     |     ^^^^^^^^",
+        "2026-10-28T06:17:15.0551063Z     = help: consider adding an explicit import of `assert_eq` to disambiguate",
+        "2026-10-28T06:17:15.0551600Z     = help: or use `self::assert_eq` to refer to this macro unambiguously",
+        "2026-10-28T06:17:15.0552130Z note: `assert_eq` could also refer to a macro from prelude",
+        "2026-10-28T06:17:15.0552668Z    --> /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library\\std\\src\\prelude\\mod.rs:162:12",
+        "2026-10-28T06:17:15.0553094Z "
+      ],
+      "job_id": 122655390371,
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40639726155/job/122655390371",
+      "label": "windows_shard1",
+      "log_identity": {
+        "bytes": 851514,
+        "job_id": 122655390371,
+        "label": "windows_shard1",
+        "path": "/workspace/scratch/e8a4dc33549f/ci_49329_windows_shard1.log",
+        "repo": "TrillionniumFoundation/hepta-private-ci",
+        "representation": "Exact UTF-8 encoding of connector decoded-log string; includes its BOM and CRLF, not original ZIP bytes",
+        "run_id": 40639726155,
+        "sha256": "5ddb0254c2c731a895d7f1bc5be0a93416ca0fcd1d81518dfae3370cd9b0e9e3",
+        "source": "github_fetch_workflow_job_logs structuredContent.content"
+      },
+      "merge_checkout_in_log_confirmed": true,
+      "new_terminal_unit_tests_executed": false,
+      "source_lines": [
+        172,
+        181,
+        203,
+        204,
+        238,
+        239
+      ]
+    },
+    {
+      "conclusion": "failure",
+      "core_unit_tests_compilation_completed": false,
+      "first_e0659_log_line": 4325,
+      "first_error_excerpt": [
+        "2026-10-28T06:27:11.5956556Z error[E0659]: `assert_eq` is ambiguous",
+        "2026-10-28T06:27:11.6014103Z    --> core/src\\session\\tests\\terminal_event_tests.rs:172:5",
+        "2026-10-28T06:27:11.6030039Z     |",
+        "2026-10-28T06:27:11.6030601Z 172 |     assert_eq!(",
+        "2026-10-28T06:27:11.6036905Z     |     ^^^^^^^^^ ambiguous name",
+        "2026-10-28T06:27:11.6043409Z     |",
+        "2026-10-28T06:27:11.6070458Z     = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution",
+        "2026-10-28T06:27:11.6072808Z note: `assert_eq` could refer to the macro imported here",
+        "2026-10-28T06:27:11.6079575Z    --> core/src\\session\\tests\\terminal_event_tests.rs:1:5",
+        "2026-10-28T06:27:11.6080305Z     |",
+        "2026-10-28T06:27:11.6111898Z   1 | use super::*;",
+        "2026-10-28T06:27:11.6112397Z     |     ^^^^^^^^",
+        "2026-10-28T06:27:11.6116559Z     = help: consider adding an explicit import of `assert_eq` to disambiguate",
+        "2026-10-28T06:27:11.6117761Z     = help: or use `self::assert_eq` to refer to this macro unambiguously",
+        "2026-10-28T06:27:11.6118385Z note: `assert_eq` could also refer to a macro from prelude",
+        "2026-10-28T06:27:11.6123522Z    --> /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library\\std\\src\\prelude\\mod.rs:162:12",
+        "2026-10-28T06:27:11.6124026Z "
+      ],
+      "job_id": 122655390410,
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40639726155/job/122655390410",
+      "label": "release_windows",
+      "log_identity": {
+        "bytes": 672198,
+        "job_id": 122655390410,
+        "label": "release_windows",
+        "path": "/workspace/scratch/e8a4dc33549f/ci_49329_release_windows.log",
+        "repo": "TrillionniumFoundation/hepta-private-ci",
+        "representation": "Exact UTF-8 encoding of connector decoded-log string; includes its BOM and CRLF, not original ZIP bytes",
+        "run_id": 40639726155,
+        "sha256": "41452d5eae604305af052bd9179c8d6c727456286d37f2c73dd5b4f23667e569",
+        "source": "github_fetch_workflow_job_logs structuredContent.content"
+      },
+      "merge_checkout_in_log_confirmed": true,
+      "new_terminal_unit_tests_executed": false,
+      "source_lines": [
+        172,
+        181,
+        203,
+        204,
+        238,
+        239
+      ]
+    },
+    {
+      "conclusion": "failure",
+      "core_unit_tests_compilation_completed": false,
+      "first_e0659_log_line": 5505,
+      "first_error_excerpt": [
+        "2026-10-28T06:30:16.2494562Z error[E0659]: `assert_eq` is ambiguous",
+        "2026-10-28T06:30:16.2499342Z    --> core/src\\session\\tests\\terminal_event_tests.rs:172:5",
+        "2026-10-28T06:30:16.2499793Z     |",
+        "2026-10-28T06:30:16.2503763Z 172 |     assert_eq!(",
+        "2026-10-28T06:30:16.2504153Z     |     ^^^^^^^^^ ambiguous name",
+        "2026-10-28T06:30:16.2504492Z     |",
+        "2026-10-28T06:30:16.2508831Z     = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution",
+        "2026-10-28T06:30:16.2510156Z note: `assert_eq` could refer to the macro imported here",
+        "2026-10-28T06:30:16.2514885Z    --> core/src\\session\\tests\\terminal_event_tests.rs:1:5",
+        "2026-10-28T06:30:16.2515374Z     |",
+        "2026-10-28T06:30:16.2515703Z   1 | use super::*;",
+        "2026-10-28T06:30:16.2519859Z     |     ^^^^^^^^",
+        "2026-10-28T06:30:16.2520326Z     = help: consider adding an explicit import of `assert_eq` to disambiguate",
+        "2026-10-28T06:30:16.2521331Z     = help: or use `self::assert_eq` to refer to this macro unambiguously",
+        "2026-10-28T06:30:16.2530898Z note: `assert_eq` could also refer to a macro from prelude",
+        "2026-10-28T06:30:16.2531563Z    --> /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library\\std\\src\\prelude\\mod.rs:162:12",
+        "2026-10-28T06:30:16.2532261Z "
+      ],
+      "job_id": 122655390477,
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40639726155/job/122655390477",
+      "label": "windows_clippy",
+      "log_identity": {
+        "bytes": 1023527,
+        "job_id": 122655390477,
+        "label": "windows_clippy",
+        "path": "/workspace/scratch/e8a4dc33549f/ci_49329_windows_clippy.log",
+        "repo": "TrillionniumFoundation/hepta-private-ci",
+        "representation": "Exact UTF-8 encoding of connector decoded-log string; includes its BOM and CRLF, not original ZIP bytes",
+        "run_id": 40639726155,
+        "sha256": "efc163c9c374037ec81d125fbfd595e27f4886d73127a32b940e4fb4b8c6390f",
+        "source": "github_fetch_workflow_job_logs structuredContent.content"
+      },
+      "merge_checkout_in_log_confirmed": true,
+      "new_terminal_unit_tests_executed": false,
+      "source_lines": [
+        172,
+        181,
+        203,
+        204,
+        238,
+        239
+      ]
+    }
+  ],
+  "listed_bazel_artifacts": [
+    {
+      "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12796991621/zip",
+      "created_at": "2026-10-28T06:28:38Z",
+      "digest": "sha256:0eb256c25547124d16b4f0124f906e4b8e0314215aadccdfb1104a7c4e3ba026",
+      "expired": false,
+      "expires_at": "2027-01-26T05:44:22Z",
+      "id": 12796991621,
+      "name": "bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-3",
+      "size_in_bytes": 4783405,
+      "updated_at": "2026-10-28T06:28:38Z",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12796991621",
+      "workflow_run": {
+        "head_branch": "research/parameter-field-neuron-v5-20261027",
+        "head_repository_id": 1320694176,
+        "head_sha": "49329fbfc3f6b26d653dbcfffa9fdaf467ab444c",
+        "id": 40639726155,
+        "repository_id": 1320694176
+      }
+    },
+    {
+      "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12796793233/zip",
+      "created_at": "2026-10-28T06:42:26Z",
+      "digest": "sha256:efb373a8f788b34704206469c16fbe036f22eace15944d9090b7df56ba58d78d",
+      "expired": false,
+      "expires_at": "2027-01-26T05:44:22Z",
+      "id": 12796793233,
+      "name": "bazel-execution-logs-clippy-x86_64-pc-windows-msvc",
+      "size_in_bytes": 5115230,
+      "updated_at": "2026-10-28T06:42:26Z",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12796793233",
+      "workflow_run": {
+        "head_branch": "research/parameter-field-neuron-v5-20261027",
+        "head_repository_id": 1320694176,
+        "head_sha": "49329fbfc3f6b26d653dbcfffa9fdaf467ab444c",
+        "id": 40639726155,
+        "repository_id": 1320694176
+      }
+    },
+    {
+      "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12796368556/zip",
+      "created_at": "2026-10-28T06:34:49Z",
+      "digest": "sha256:210a74f5ec9d5a94d1616c5c60ef3fdbcf3b45e266ece9388a8864c803c3078d",
+      "expired": false,
+      "expires_at": "2027-01-26T05:44:22Z",
+      "id": 12796368556,
+      "name": "bazel-execution-logs-verify-release-build-x86_64-pc-windows-msvc",
+      "size_in_bytes": 4905640,
+      "updated_at": "2026-10-28T06:34:49Z",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12796368556",
+      "workflow_run": {
+        "head_branch": "research/parameter-field-neuron-v5-20261027",
+        "head_repository_id": 1320694176,
+        "head_sha": "49329fbfc3f6b26d653dbcfffa9fdaf467ab444c",
+        "id": 40639726155,
+        "repository_id": 1320694176
+      }
+    },
+    {
+      "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12796329374/zip",
+      "created_at": "2026-10-28T06:38:11Z",
+      "digest": "sha256:81f131feff711c4fb63e62d30a4b91cb2f20495ead552a0f94469824ba97e241",
+      "expired": false,
+      "expires_at": "2027-01-26T05:44:22Z",
+      "id": 12796329374,
+      "name": "bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-2",
+      "size_in_bytes": 4602716,
+      "updated_at": "2026-10-28T06:38:11Z",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12796329374",
+      "workflow_run": {
+        "head_branch": "research/parameter-field-neuron-v5-20261027",
+        "head_repository_id": 1320694176,
+        "head_sha": "49329fbfc3f6b26d653dbcfffa9fdaf467ab444c",
+        "id": 40639726155,
+        "repository_id": 1320694176
+      }
+    },
+    {
+      "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12795784909/zip",
+      "created_at": "2026-10-28T06:18:29Z",
+      "digest": "sha256:0368c38d7e324e925f7109e387cc3390f671b567a4ce8bea25e745857178f2b3",
+      "expired": false,
+      "expires_at": "2027-01-26T05:44:22Z",
+      "id": 12795784909,
+      "name": "bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-1",
+      "size_in_bytes": 4785299,
+      "updated_at": "2026-10-28T06:18:29Z",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12795784909",
+      "workflow_run": {
+        "head_branch": "research/parameter-field-neuron-v5-20261027",
+        "head_repository_id": 1320694176,
+        "head_sha": "49329fbfc3f6b26d653dbcfffa9fdaf467ab444c",
+        "id": 40639726155,
+        "repository_id": 1320694176
+      }
+    }
+  ],
+  "merge_sha": "563463fe85b6ea51a22e7d7b496ef49b4bc47365",
+  "metadata_file": {
+    "bytes": 41030,
+    "path": "/workspace/scratch/e8a4dc33549f/ci_49329_completed_metadata.json",
+    "sha256": "855eba597654098648b167698774cc1ccd7524717e21ac65bd3a147ccd83a3f8"
+  },
+  "other_shard1_failures": [
+    {
+      "base_and_head_source_identities": {
+        "0acfd9b27db910c180b0d8911f39aea469b7f864": {
+          "available": true,
+          "bytes": 11736,
+          "sha256": "46365d1b8f403c6171814040a73cdff8aed5aeae22d65fad2165d89b3b84a7d9"
+        },
+        "49329fbfc3f6b26d653dbcfffa9fdaf467ab444c": {
+          "available": true,
+          "bytes": 11736,
+          "sha256": "46365d1b8f403c6171814040a73cdff8aed5aeae22d65fad2165d89b3b84a7d9"
+        }
+      },
+      "failure": "WorkspaceBinding rejected uncanonical newly created D:\\tmp workspace path.",
+      "next_step": "Separate authorized test-fixture canonicalize stage; production canonical gate unchanged.",
+      "path": "codex-rs/hepta-fleet/src/registry_tests.rs",
+      "source_bytes_identical_to_base": true,
+      "test": "workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths"
+    },
+    {
+      "base_and_head_source_identities": {
+        "0acfd9b27db910c180b0d8911f39aea469b7f864": {
+          "available": true,
+          "bytes": 5790,
+          "sha256": "eae41fae1cd9a4811fbef35f74b49d33c256efb46b814e4e56889da24d541297"
+        },
+        "49329fbfc3f6b26d653dbcfffa9fdaf467ab444c": {
+          "available": true,
+          "bytes": 5790,
+          "sha256": "eae41fae1cd9a4811fbef35f74b49d33c256efb46b814e4e56889da24d541297"
+        }
+      },
+      "failure": "Line75: child readiness 30s wait elapsed, before the cleanup assertion.",
+      "next_step": "Underlying cause unresolved; not proof that process termination failed.",
+      "path": "codex-rs/git-utils/src/git_process_tests.rs",
+      "source_bytes_identical_to_base": true,
+      "tests": [
+        "timed_out_exited_git_wrapper_does_not_leave_child_process_running",
+        "timed_out_git_wrapper_does_not_leave_child_process_running"
+      ]
+    },
+    {
+      "base_and_head_source_identities": {
+        "0acfd9b27db910c180b0d8911f39aea469b7f864": {
+          "available": true,
+          "bytes": 10613,
+          "sha256": "7f98a1d45e5d0dabf53dd58f65e05f412f7702c42a3348c4134da65d4f41676a"
+        },
+        "49329fbfc3f6b26d653dbcfffa9fdaf467ab444c": {
+          "available": true,
+          "bytes": 10613,
+          "sha256": "7f98a1d45e5d0dabf53dd58f65e05f412f7702c42a3348c4134da65d4f41676a"
+        }
+      },
+      "failure": "Line251: missing AutomaticRestartQueued{attempt:2} event.",
+      "next_step": "Underlying cause unresolved; no speculative repair.",
+      "path": "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+      "source_bytes_identical_to_base": true,
+      "test": "restart_budget_survives_repeated_supervisord_recovery"
+    },
+    {
+      "base_and_head_source_identities": {
+        "0acfd9b27db910c180b0d8911f39aea469b7f864": {
+          "available": true,
+          "bytes": 54709,
+          "sha256": "9d1fab18becbfbbcbca8f02b6bab72b58b41c55f5822a9a77560c2ae5c7d3c68"
+        },
+        "49329fbfc3f6b26d653dbcfffa9fdaf467ab444c": {
+          "available": true,
+          "bytes": 54709,
+          "sha256": "9d1fab18becbfbbcbca8f02b6bab72b58b41c55f5822a9a77560c2ae5c7d3c68"
+        }
+      },
+      "failure": "Line1309: EphemeralModelInputContributor::is_active false.",
+      "next_step": "Underlying cause unresolved; no speculative repair.",
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "source_bytes_identical_to_base": true,
+      "test": "revoke_removes_prepared_federated_context_from_next_physical_send"
+    },
+    {
+      "base_and_head_source_identities": {
+        "0acfd9b27db910c180b0d8911f39aea469b7f864": {
+          "available": true,
+          "bytes": 8666,
+          "sha256": "f2f7cb9b756e2eed35cd0df0424381c8d1608575b1e5249d94cc24db3c25b1aa"
+        },
+        "49329fbfc3f6b26d653dbcfffa9fdaf467ab444c": {
+          "available": true,
+          "bytes": 8666,
+          "sha256": "f2f7cb9b756e2eed35cd0df0424381c8d1608575b1e5249d94cc24db3c25b1aa"
+        }
+      },
+      "failure": "Actual schema/precomputed-export consistency assertion failures; 200-line tail exposes 15 extra type exports on right-side v2/index.ts.",
+      "next_step": "Full actual-diff/artifact investigation next; no blind snapshot rewrite.",
+      "path": "codex-rs/app-server-protocol/src/schema_fixtures_tests.rs",
+      "source_bytes_identical_to_base": true,
+      "tests": [
+        "experimental_precomputed_exports_match_generated",
+        "json_schema_fixtures_match_generated",
+        "stable_precomputed_exports_match_schema_fixtures"
+      ]
+    }
+  ],
+  "pr": 4145,
+  "raw_scientific_assets_accessed": false,
+  "relevant_source_identity_file": {
+    "bytes": 2890,
+    "path": "/workspace/scratch/e8a4dc33549f/ci_49329_relevant_source_identities.json",
+    "sha256": "783ad114972c54742e27b623e2d9839e508992298572fdfc7fa0a2c4be06b18c"
+  },
+  "remote_rerun_requested": false,
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "run_attempt": 1,
+  "run_conclusion": "failure",
+  "run_id": 40639726155,
+  "run_status": "completed",
+  "run_updated_at_utc": "2026-10-28T06:47:12Z",
+  "schema": "hepta.ci.windows-blocking-diagnostic.1",
+  "scientific_sources_modified": false,
+  "scope": "Jobs wrapper is first-page only. Cancelled/skipped remain cancelled/skipped. No whole-repository-green claim. Architecture source-head proof is handled separately by root."
+}

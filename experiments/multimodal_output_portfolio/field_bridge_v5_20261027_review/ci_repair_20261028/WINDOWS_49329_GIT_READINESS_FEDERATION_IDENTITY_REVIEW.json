@@ -1,0 +1,516 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-28T10:51:08.877404+00:00",
+  "scope": "Read-only diagnosis of two git-utils readiness failures and one ext/hepta-memory federation activation failure. Source review and a tiny synthetic byte-framing calculation only.",
+  "source_commits": {
+    "pr_base": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+    "failed_source": "49329fbfc3f6b26d653dbcfffa9fdaf467ab444c",
+    "reviewed_source": "f20db50ec8f891d286465e635c68e83749b9b3b4"
+  },
+  "local_head_at_review": "f20db50ec8f891d286465e635c68e83749b9b3b4",
+  "ci": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "run_id": 40639726155,
+    "run_attempt": 1,
+    "job_id": 122655390371,
+    "job_conclusion": "failure",
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40639726155/job/122655390371",
+    "checked_out_merge_commit": "563463fe85b6ea51a22e7d7b496ef49b4bc47365",
+    "checkout_identity_evidence": "ci_49329_windows_blocking_diagnostic_20261028.json",
+    "log": {
+      "path": "/workspace/scratch/e8a4dc33549f/ci_49329_windows_shard1.log",
+      "bytes": 851514,
+      "sha256": "5ddb0254c2c731a895d7f1bc5be0a93416ca0fcd1d81518dfae3370cd9b0e9e3",
+      "representation": "Connector-decoded complete UTF-8 job log, including BOM/CRLF; not a raw GitHub log ZIP."
+    }
+  },
+  "source_files": [
+    {
+      "path": "codex-rs/git-utils/src/git_process_tests.rs",
+      "bytes": 5790,
+      "sha256": "eae41fae1cd9a4811fbef35f74b49d33c256efb46b814e4e56889da24d541297",
+      "git_blob": "1640d626680ed7e2eab9e97f2115f7f27dabdf2f",
+      "commit_blobs": {
+        "pr_base": "1640d626680ed7e2eab9e97f2115f7f27dabdf2f",
+        "failed_source": "1640d626680ed7e2eab9e97f2115f7f27dabdf2f",
+        "reviewed_source": "1640d626680ed7e2eab9e97f2115f7f27dabdf2f"
+      },
+      "identical_across_base_failed_and_reviewed_sources": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/git-utils/src/git_process_tests.rs"
+    },
+    {
+      "path": "codex-rs/git-utils/src/git_process.rs",
+      "bytes": 2716,
+      "sha256": "8961e2748659fca01ea0a4b51baff983b76207e3ca3222f6a637a91360288d06",
+      "git_blob": "3ce0431434d0c0e4bbde65eb68bce27cc572d9c6",
+      "commit_blobs": {
+        "pr_base": "3ce0431434d0c0e4bbde65eb68bce27cc572d9c6",
+        "failed_source": "3ce0431434d0c0e4bbde65eb68bce27cc572d9c6",
+        "reviewed_source": "3ce0431434d0c0e4bbde65eb68bce27cc572d9c6"
+      },
+      "identical_across_base_failed_and_reviewed_sources": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/git-utils/src/git_process.rs"
+    },
+    {
+      "path": "codex-rs/protocol/src/shell_environment.rs",
+      "bytes": 10702,
+      "sha256": "e16f61ea96db99307e3d8d2eb2fbb1b6fc703ce0ca7651fa97170dd6e0557da0",
+      "git_blob": "e8bdaa40ca63c29ee23111252a04165e0f1f528e",
+      "commit_blobs": {
+        "pr_base": "e8bdaa40ca63c29ee23111252a04165e0f1f528e",
+        "failed_source": "e8bdaa40ca63c29ee23111252a04165e0f1f528e",
+        "reviewed_source": "e8bdaa40ca63c29ee23111252a04165e0f1f528e"
+      },
+      "identical_across_base_failed_and_reviewed_sources": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/protocol/src/shell_environment.rs"
+    },
+    {
+      "path": "codex-rs/utils/pty/src/win/job.rs",
+      "bytes": 8506,
+      "sha256": "3c904bcd4ac33719bb843639c30be39ca6e9ceda350be311f970aaf3d748a476",
+      "git_blob": "b06035f72d227b4069da677e8104617ae5616283",
+      "commit_blobs": {
+        "pr_base": "b06035f72d227b4069da677e8104617ae5616283",
+        "failed_source": "b06035f72d227b4069da677e8104617ae5616283",
+        "reviewed_source": "b06035f72d227b4069da677e8104617ae5616283"
+      },
+      "identical_across_base_failed_and_reviewed_sources": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/utils/pty/src/win/job.rs"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "bytes": 54709,
+      "sha256": "9d1fab18becbfbbcbca8f02b6bab72b58b41c55f5822a9a77560c2ae5c7d3c68",
+      "git_blob": "61b143142015b17924d9f2804714fb9968b2e9a6",
+      "commit_blobs": {
+        "pr_base": "61b143142015b17924d9f2804714fb9968b2e9a6",
+        "failed_source": "61b143142015b17924d9f2804714fb9968b2e9a6",
+        "reviewed_source": "61b143142015b17924d9f2804714fb9968b2e9a6"
+      },
+      "identical_across_base_failed_and_reviewed_sources": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/ext/hepta-memory/src/cognitive/federation.rs"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/framing.rs",
+      "bytes": 1274,
+      "sha256": "d5ee494b533cfdb8d664932e7d31893e398faa2dfe4c0fa0267773fbef6fd11c",
+      "git_blob": "ac3e6ce3769cd638460e6f636f374ea6c1f78c9b",
+      "commit_blobs": {
+        "pr_base": "ac3e6ce3769cd638460e6f636f374ea6c1f78c9b",
+        "failed_source": "ac3e6ce3769cd638460e6f636f374ea6c1f78c9b",
+        "reviewed_source": "ac3e6ce3769cd638460e6f636f374ea6c1f78c9b"
+      },
+      "identical_across_base_failed_and_reviewed_sources": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/ext/hepta-memory/src/framing.rs"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/framing.rs",
+      "bytes": 1280,
+      "sha256": "95af3ea198d77dfd1012d43d65159ccfedd1d4c668aec738772c4044c3d14483",
+      "git_blob": "cab115c3246c0dfc2f0f262e0cf536c38b0f9878",
+      "commit_blobs": {
+        "pr_base": "cab115c3246c0dfc2f0f262e0cf536c38b0f9878",
+        "failed_source": "cab115c3246c0dfc2f0f262e0cf536c38b0f9878",
+        "reviewed_source": "cab115c3246c0dfc2f0f262e0cf536c38b0f9878"
+      },
+      "identical_across_base_failed_and_reviewed_sources": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/hepta-memory/src/framing.rs"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+      "bytes": 47495,
+      "sha256": "a1078bef3cddf047f6f74b8234b2017f218b84ed9a09bc4c6baec25aa00fb201",
+      "git_blob": "7ad7a60f7832b037819ae1966b25054d048c641f",
+      "commit_blobs": {
+        "pr_base": "7ad7a60f7832b037819ae1966b25054d048c641f",
+        "failed_source": "7ad7a60f7832b037819ae1966b25054d048c641f",
+        "reviewed_source": "7ad7a60f7832b037819ae1966b25054d048c641f"
+      },
+      "identical_across_base_failed_and_reviewed_sources": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/hepta-memory/src/cognitive_runtime.rs"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_federation.rs",
+      "bytes": 44445,
+      "sha256": "cae56a5f31258d6e209045c24384161964bf526713f71922c6739be126220b6b",
+      "git_blob": "6a04c2f7552a0f7f29a9275fce661e49666c795c",
+      "commit_blobs": {
+        "pr_base": "6a04c2f7552a0f7f29a9275fce661e49666c795c",
+        "failed_source": "6a04c2f7552a0f7f29a9275fce661e49666c795c",
+        "reviewed_source": "6a04c2f7552a0f7f29a9275fce661e49666c795c"
+      },
+      "identical_across_base_failed_and_reviewed_sources": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/hepta-memory/src/cognitive_federation.rs"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/model.rs",
+      "bytes": 6311,
+      "sha256": "64ecaff8ecfc2a60129e300eb24f460160f01636a65fe8d9ace4ea6b5a400d4e",
+      "git_blob": "4e8ab6ced19748d22b543a6dbded5d9942ea463c",
+      "commit_blobs": {
+        "pr_base": "4e8ab6ced19748d22b543a6dbded5d9942ea463c",
+        "failed_source": "4e8ab6ced19748d22b543a6dbded5d9942ea463c",
+        "reviewed_source": "4e8ab6ced19748d22b543a6dbded5d9942ea463c"
+      },
+      "identical_across_base_failed_and_reviewed_sources": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/hepta-fleet/src/model.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "bytes": 58121,
+      "sha256": "08cac64fa29ee427e4dd49efce235a7ce9b7e0c1411c8778a29c07868d4be458",
+      "git_blob": "e7c2f88a5dd4c4414ce13a3060b7b8ccea934e28",
+      "commit_blobs": {
+        "pr_base": "e7c2f88a5dd4c4414ce13a3060b7b8ccea934e28",
+        "failed_source": "e7c2f88a5dd4c4414ce13a3060b7b8ccea934e28",
+        "reviewed_source": "e7c2f88a5dd4c4414ce13a3060b7b8ccea934e28"
+      },
+      "identical_across_base_failed_and_reviewed_sources": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/hepta-agentd/src/state_control.rs"
+    },
+    {
+      "path": "codex-rs/utils/absolute-path/src/lib.rs",
+      "bytes": 26629,
+      "sha256": "a6f3553c4aefe49082b6bd8fb671eaaf14cf81cb134940bbd6b769024af01b70",
+      "git_blob": "fc26cc4f56a97659e9c593570a1b847d3bb345e5",
+      "commit_blobs": {
+        "pr_base": "fc26cc4f56a97659e9c593570a1b847d3bb345e5",
+        "failed_source": "fc26cc4f56a97659e9c593570a1b847d3bb345e5",
+        "reviewed_source": "fc26cc4f56a97659e9c593570a1b847d3bb345e5"
+      },
+      "identical_across_base_failed_and_reviewed_sources": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/utils/absolute-path/src/lib.rs"
+    },
+    {
+      "path": "codex-rs/utils/path-uri/src/lib.rs",
+      "bytes": 35915,
+      "sha256": "883cd0cb547512ef0c4845a2a4254be9c24d0e7d76913d2a39955e5706abe1dc",
+      "git_blob": "a4731dfcc7a0ca9f0d93cb018df862039460b306",
+      "commit_blobs": {
+        "pr_base": "a4731dfcc7a0ca9f0d93cb018df862039460b306",
+        "failed_source": "a4731dfcc7a0ca9f0d93cb018df862039460b306",
+        "reviewed_source": "a4731dfcc7a0ca9f0d93cb018df862039460b306"
+      },
+      "identical_across_base_failed_and_reviewed_sources": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/utils/path-uri/src/lib.rs"
+    },
+    {
+      "path": "codex-rs/utils/path-uri/src/api_path_string.rs",
+      "bytes": 13743,
+      "sha256": "6bb02a76fcd6d2fff8471e9f32b5322e0573ec3e9abe041109461a1cd6b63049",
+      "git_blob": "d6753a0a0ee46e62261e7c21d9759433f9be566e",
+      "commit_blobs": {
+        "pr_base": "d6753a0a0ee46e62261e7c21d9759433f9be566e",
+        "failed_source": "d6753a0a0ee46e62261e7c21d9759433f9be566e",
+        "reviewed_source": "d6753a0a0ee46e62261e7c21d9759433f9be566e"
+      },
+      "identical_across_base_failed_and_reviewed_sources": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/utils/path-uri/src/api_path_string.rs"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/receipt.rs",
+      "bytes": 4973,
+      "sha256": "06d7bef52524048e0f9e2577dcc4a0d80b5043bcc780dacadca792e7d5f561eb",
+      "git_blob": "bc8bb81d4e29d54877fb406899aa9269a924c444",
+      "commit_blobs": {
+        "pr_base": "bc8bb81d4e29d54877fb406899aa9269a924c444",
+        "failed_source": "bc8bb81d4e29d54877fb406899aa9269a924c444",
+        "reviewed_source": "bc8bb81d4e29d54877fb406899aa9269a924c444"
+      },
+      "identical_across_base_failed_and_reviewed_sources": true,
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f20db50ec8f891d286465e635c68e83749b9b3b4/codex-rs/hepta-contracts/src/receipt.rs"
+    }
+  ],
+  "git_utils": {
+    "status": "STARTUP_READINESS_CAUSE_UNDETERMINED",
+    "tests": [
+      "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running",
+      "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running"
+    ],
+    "failure_excerpts": [
+      {
+        "line": 3539,
+        "text": "2026-10-28T06:11:56.9982484Z ---- git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running stdout ----"
+      },
+      {
+        "line": 3540,
+        "text": "2026-10-28T06:11:56.9982918Z "
+      },
+      {
+        "line": 3541,
+        "text": "2026-10-28T06:11:56.9983474Z thread 'git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running' (5700) panicked at git-utils/src\\git_process_tests.rs:75:6:"
+      },
+      {
+        "line": 3542,
+        "text": "2026-10-28T06:11:56.9984190Z wait for Git wrapper child readiness: Elapsed(())"
+      },
+      {
+        "line": 3543,
+        "text": "2026-10-28T06:11:56.9984678Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      },
+      {
+        "line": 3544,
+        "text": "2026-10-28T06:11:56.9985005Z "
+      },
+      {
+        "line": 3545,
+        "text": "2026-10-28T06:11:56.9985326Z ---- git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running stdout ----"
+      },
+      {
+        "line": 3546,
+        "text": "2026-10-28T06:11:56.9985707Z "
+      },
+      {
+        "line": 3547,
+        "text": "2026-10-28T06:11:56.9986525Z thread 'git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running' (9132) panicked at git-utils/src\\git_process_tests.rs:75:6:"
+      },
+      {
+        "line": 3548,
+        "text": "2026-10-28T06:11:56.9987535Z wait for Git wrapper child readiness: Elapsed(())"
+      }
+    ],
+    "confirmed": [
+      "Both failures are at the same 30-second child readiness wait, before the 100-millisecond timeout-under-test and descendant survival assertion.",
+      "Readiness requires both a nonempty child.pid file and existence of child-ready. The panic does not identify which condition failed.",
+      "The outer PowerShell process has piped stdout/stderr; these are not consumed until wait_with_output after readiness. No wrapper exit status or child PowerShell error is retained by this assertion.",
+      "The five readiness/release environment variable names are not in NON_INHERITABLE_ENV_VARS; the scrubber removes only explicitly listed restricted names.",
+      "The job-object handle remains owned through the readiness wait. spawn_contained assigns the suspended process, calls NtResumeProcess, and returns. The explicit spawn fallback clears CREATE_SUSPENDED."
+    ],
+    "source_points": [
+      {
+        "path": "codex-rs/git-utils/src/git_process_tests.rs",
+        "first_line": 39,
+        "last_line": 60,
+        "finding": "PowerShell wrapper/child command construction and five fixture environment variables."
+      },
+      {
+        "path": "codex-rs/git-utils/src/git_process_tests.rs",
+        "first_line": 62,
+        "last_line": 98,
+        "finding": "30-second readiness gate precedes actual timeout-under-test."
+      },
+      {
+        "path": "codex-rs/git-utils/src/git_process.rs",
+        "first_line": 32,
+        "last_line": 66,
+        "finding": "Environment scrub, piped output, containment, and fallback."
+      },
+      {
+        "path": "codex-rs/protocol/src/shell_environment.rs",
+        "first_line": 14,
+        "last_line": 49,
+        "finding": "Exact restricted-name scrub; fixture names are retained."
+      },
+      {
+        "path": "codex-rs/utils/pty/src/win/job.rs",
+        "first_line": 169,
+        "last_line": 184,
+        "finding": "Suspended spawn assignment and resume."
+      }
+    ],
+    "unproven_candidates": [
+      "Nested Start-Process argument/PowerShell parsing failure",
+      "Wrapper or child startup/resource delay",
+      "Child output error or output-pipe blocking"
+    ],
+    "not_supported_by_evidence": [
+      "Attributing the failure to process-tree cleanup",
+      "Claiming the environment scrub erased all fixture variables",
+      "Claiming the fallback necessarily leaves the wrapper suspended",
+      "Increasing the timeout as a root-cause repair"
+    ],
+    "minimal_missing_evidence": [
+      "Nonsecret readiness-file existence/length at the existing deadline",
+      "Outer wrapper try_wait result/exit status",
+      "Bounded wrapper stdout and stderr retained while preserving process-tree cleanup",
+      "Child PID if written and child status if safely queryable",
+      "Actual PowerShell version and exact fixture command text"
+    ],
+    "candidate_next_step": "Add failure-only bounded startup diagnostics to the existing fixture and observe one real Windows run, retaining the existing readiness limit and all timeout/cleanup assertions. No production or fixture change was made in this review."
+  },
+  "federation": {
+    "status": "SOURCE_PROVABLE_WINDOWS_PATH_REPRESENTATION_MISMATCH_NATIVE_VERIFICATION_PENDING",
+    "test": "cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send",
+    "failure_excerpts": [
+      {
+        "line": 3902,
+        "text": "2026-10-28T06:14:54.4277745Z ---- cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send stdout ----"
+      },
+      {
+        "line": 3903,
+        "text": "2026-10-28T06:14:54.4278216Z "
+      },
+      {
+        "line": 3904,
+        "text": "2026-10-28T06:14:54.4278783Z thread 'cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send' (8964) panicked at ext/hepta-memory/src\\cognitive\\federation.rs:1309:9:"
+      },
+      {
+        "line": 3905,
+        "text": "2026-10-28T06:14:54.4279704Z assertion failed: EphemeralModelInputContributor::is_active(&extension, &thread_store,"
+      },
+      {
+        "line": 3906,
+        "text": "2026-10-28T06:14:54.4280438Z     &turn_store)"
+      }
+    ],
+    "source_chain": [
+      {
+        "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+        "first_line": 1261,
+        "last_line": 1299,
+        "finding": "Fixture canonicalizes the workspace, hashes that canonical PathBuf in the grant, and then transports the same path through PathUri."
+      },
+      {
+        "path": "codex-rs/utils/absolute-path/src/lib.rs",
+        "first_line": 66,
+        "last_line": 79,
+        "finding": "AbsolutePathBuf::from_absolute_path_checked normalizes platform path spelling."
+      },
+      {
+        "path": "codex-rs/utils/absolute-path/src/lib.rs",
+        "first_line": 155,
+        "last_line": 172,
+        "finding": "Windows verbatim drive/UNC prefixes are stripped; explicit existing tests at 464-497 establish this contract."
+      },
+      {
+        "path": "codex-rs/utils/path-uri/src/lib.rs",
+        "first_line": 175,
+        "last_line": 178,
+        "finding": "PathUri::from_host_native_path always uses that checked normalized absolute path."
+      },
+      {
+        "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+        "first_line": 393,
+        "last_line": 412,
+        "finding": "The contributor reconstructs workspace from the URI and hashes the resulting plain path."
+      },
+      {
+        "path": "codex-rs/ext/hepta-memory/src/framing.rs",
+        "first_line": 7,
+        "last_line": 8,
+        "finding": "The extension delegates its workspace hash to the same common digest function."
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/framing.rs",
+        "first_line": 17,
+        "last_line": 38,
+        "finding": "The common digest frames raw path bytes; on Windows these are the original UTF-16LE code units, with no prefix normalization."
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+        "first_line": 511,
+        "last_line": 518,
+        "finding": "Discovery skips a capability whose stored workspace hash differs from request access."
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_federation.rs",
+        "first_line": 763,
+        "last_line": 767,
+        "finding": "Later capability validation also rejects a workspace digest mismatch as Scope drift."
+      },
+      {
+        "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+        "first_line": 210,
+        "last_line": 218,
+        "finding": "is_active requires a prepared attachment; a skipped capability leaves no matching prepared material."
+      },
+      {
+        "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+        "first_line": 239,
+        "last_line": 243,
+        "finding": "The later physical-send check compares prepared versus input path bytes directly."
+      },
+      {
+        "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+        "first_line": 1315,
+        "last_line": 1324,
+        "finding": "The fixture supplies the original canonical workspace again for physical send, so changing only grant spelling would leave a second inconsistency."
+      },
+      {
+        "path": "codex-rs/hepta-fleet/src/model.rs",
+        "first_line": 27,
+        "last_line": 48,
+        "finding": "Production WorkspaceBinding requires the provided path to equal fs::canonicalize and stores the canonical PathBuf."
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/state_control.rs",
+        "first_line": 783,
+        "last_line": 790,
+        "finding": "The real grant producer hashes the consumer manifest workspace; therefore the mismatch is not confined to this test fixture."
+      }
+    ],
+    "bounded_conclusion": "For an ordinary Windows drive/UNC path, canonicalize produces extended-length spelling, while PathUri normalizes that spelling. Raw workspace identity hashes differ. This provides a deterministic source-level explanation for the Windows fixture and a corresponding real grant/consumer inconsistency. The saved failing log does not print either path or the failed discovery predicate, so this is not a native reproduction of the exact runner values.",
+    "tiny_independent_witness": {
+      "kind": "Python translation of the exact length-framing, UTF-16LE, and double-SHA256 operations on two synthetic strings",
+      "native_rust_executed": false,
+      "scientific_assets_read": false,
+      "values": [
+        {
+          "synthetic_path": "\\\\?\\D:\\fixture\\consumer-workspace",
+          "utf16le_bytes": 66,
+          "source_equivalent_workspace_digest": "135f29dfc7a716955ec80e87b24e4e698aa58b98253fdf40b94ce9e451789369"
+        },
+        {
+          "synthetic_path": "D:\\fixture\\consumer-workspace",
+          "utf16le_bytes": 58,
+          "source_equivalent_workspace_digest": "e06cf2b28029f91107f7f25454d6e585c039951ca4eb5c4f2b65034e915c743b"
+        }
+      ],
+      "digest_equality": false
+    },
+    "repair_constraints": [
+      "Do not fix only the test grant: the production grant producer uses the same canonical workspace representation.",
+      "Choose and validate one workspace identity representation at grant, recall, prepared source binding, and physical-send validation.",
+      "Retain different-workspace, revocation, malformed/unsupported-path, and no-longer-current capability rejection.",
+      "Do not use lossy Unicode conversion, broad case folding, or silently ignore filesystem resolution errors.",
+      "A change to the persistent hash representation needs explicit compatibility and migration or invalidation treatment for existing grants.",
+      "A Windows-native regression should exercise canonical drive and UNC aliases through both turn preparation and physical-send revalidation."
+    ],
+    "production_patch_prepared": false,
+    "fixture_only_patch_recommended": false
+  },
+  "previously_fetched_f20_comparison": {
+    "head_sha": "f20db50ec8f891d286465e635c68e83749b9b3b4",
+    "run_id": 40669844250,
+    "run_attempt": 1,
+    "snapshot_is_current_at_receipt_time": false,
+    "original_fetch_time_not_retained": true,
+    "not_refetched_for_this_receipt": true,
+    "windows_shard1": {
+      "job_id": 122753976884,
+      "status": "in_progress",
+      "conclusion": null,
+      "active_step": "bazel test shard"
+    },
+    "release_windows": {
+      "job_id": 122753976977,
+      "status": "in_progress",
+      "conclusion": null
+    },
+    "windows_clippy": {
+      "job_id": 122753977031,
+      "status": "in_progress",
+      "conclusion": null
+    },
+    "completed_counterpart_logs_available_in_this_review": false
+  },
+  "primary_reference_context": [
+    {
+      "url": "https://doc.rust-lang.org/std/fs/fn.canonicalize.html",
+      "scope": "Official current std documentation says canonicalize uses Windows extended-length path syntax; repository source and tests provide the exact normalization implementation reviewed. The version-specific 1.95 documentation URL was unavailable, so no pinned-doc retrieval is claimed."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/start-process?view=powershell-5.1",
+      "scope": "Official Start-Process documentation describes inherited environment and ArgumentList joining/quoting. This alone does not prove that the current command fails."
+    }
+  ],
+  "preservation": {
+    "repository_files_modified_by_this_review": [],
+    "rust_builds_or_tests_executed": false,
+    "model_calls": 0,
+    "scientific_assets_read": false,
+    "scientific_or_native_qualification_claimed": false,
+    "supervisor_candidate_modified": false,
+    "previous_receipts_modified": false
+  }
+}
