@@ -1,0 +1,81 @@
+{
+  "archive": {
+    "bytes": 7700892,
+    "path": "memory-v9-evidence.tar.xz",
+    "sha256": "1ae9dfbfd321139e398ff3380834bccf1d9395f693aca1d0c86c8eb809047bd7"
+  },
+  "archive_chunks": 26,
+  "attempt": "formal-07",
+  "authority_note": "Suitable original successful evidence; live GitHub authentication and full source/receipt preflight remain separate mandatory gates.",
+  "copied_bytes": 9711039,
+  "copied_files": 51,
+  "expanded_tar_bytes": 99174400,
+  "finalization_authority": false,
+  "github_job_conclusion": "success",
+  "github_run_conclusion": "success",
+  "large_reports_preserved_in_archive": [
+    {
+      "archive_member": "memory-v9-ci-output/baseline-v7-native-held.json",
+      "bytes": 1214015,
+      "local_path": "diagnostics/baseline-v7-native-held.json",
+      "retained_in_original_tar": true,
+      "sha256": "90ac378058469c09dfbc03fa4bb484463a73d8581bfbeba2e72f17c4cf9800ba",
+      "standalone_repository_copy_created": false
+    },
+    {
+      "archive_member": "memory-v9-ci-output/baseline-v8-native-held.json",
+      "bytes": 1303044,
+      "local_path": "diagnostics/baseline-v8-native-held.json",
+      "retained_in_original_tar": true,
+      "sha256": "632d83e79d7de96dc59f796271da8c5b7ad5a2a941aa54a15d09390daf7e7ec1",
+      "standalone_repository_copy_created": false
+    },
+    {
+      "archive_member": "memory-v9-ci-output/candidate-v9-native-held.json",
+      "bytes": 1318925,
+      "local_path": "diagnostics/candidate-v9-native-held.json",
+      "retained_in_original_tar": true,
+      "sha256": "03eedeb56259cd8f54c7918123544a1085662ac4b02a8e8965ea42038bfc6e20",
+      "standalone_repository_copy_created": false
+    },
+    {
+      "archive_member": "memory-v9-ci-output/structure-learning.json",
+      "bytes": 552371,
+      "local_path": "diagnostics/structure-learning.json",
+      "retained_in_original_tar": true,
+      "sha256": "d796d09788243986ea91db4c468649f9d3c30f7e971da9b4e5021fa1fab2f960",
+      "standalone_repository_copy_created": false
+    }
+  ],
+  "native_ci_passed": true,
+  "new_publication_files": [
+    "README.md",
+    "RETENTION.json",
+    "COPY_VERIFICATION.json"
+  ],
+  "original_bytes_modified": false,
+  "original_zip": {
+    "bytes": 7743763,
+    "local_path": "/workspace/scratch/76e2020e4b36/native-ci-artifacts/formal-07/artifact.zip",
+    "repository_copy_created": false,
+    "sha256": "7651e10d2fa7e0b220a34d2bb174757a0f536b764a6c4101f7bfbcd981f8065d"
+  },
+  "original_zip_and_tar_retained_locally": true,
+  "repository_directory": "qualification/memory-cell-completion/evidence/native-formal-07",
+  "schema": "hepta.memory.completion.successful-attempt-retention.v1",
+  "signed_download_url_retained": false,
+  "source": {
+    "commit": "8510464dd7c4bbed20b5dfa81d3b65eaf6671132",
+    "job_id": 122975678245,
+    "run_id": 40733474806,
+    "tree": "71ff3402b3da1ad2d7fa9a39873364fbd9f4f7a5"
+  },
+  "source_directory": "/workspace/scratch/76e2020e4b36/native-ci-artifacts/formal-07",
+  "tests_training_and_scoring_rerun": false,
+  "verification_receipt_pin": {
+    "bytes": 106653,
+    "path": "qualification/memory-cell-completion/evidence/native-formal-07/receipt.json",
+    "sha256": "57a5bd42848344f8c4c93448c55d925000ffb5f9de0e119a54d2a5a32fb2ce31"
+  },
+  "verified_original_regular_members": 487
+}

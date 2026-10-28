@@ -1,0 +1,2585 @@
+{
+  "actual_fit_calls": 36,
+  "actual_training_processes": 6,
+  "artifact_directory": "continual-learning.artifacts",
+  "children": [
+    {
+      "child": {
+        "actual_fit_calls": 18,
+        "actual_training_processes": 3,
+        "code_identity": {
+          "digest": "624a63cd9fa0bd7d714f4de2cb2f261e4bc91aae74432f09746b6f1f7f92c0a8",
+          "files": {
+            "memory-cell-v6/v6/__init__.py": {
+              "bytes": 84,
+              "sha256": "e48c0b6136220a43e666e0616e415b365f4041f4ce1211846d9a144d7073bfed"
+            },
+            "memory-cell-v6/v6/cells.py": {
+              "bytes": 16224,
+              "sha256": "e0b2f7dbf3f280ebf6618c68c60b7799bb945eaf76cc603b6bfcfc3d33de2024"
+            },
+            "memory-cell-v6/v6/contracts.py": {
+              "bytes": 5785,
+              "sha256": "42be7b9d9f0e3afe86c5ad52c58d8d4b8a5ba8972846c0702fc1e42c3b62834f"
+            },
+            "memory-cell-v6/v6/values.py": {
+              "bytes": 1789,
+              "sha256": "5b3d658ce921ec7e91778fa58507091257bba151eb773f515fdf0ad6097dedfb"
+            },
+            "memory-cell-v7/native_export.py": {
+              "bytes": 2976,
+              "sha256": "cbdc28764bd14c9524ce046ea6fd0a1c8043a75225a66def4b8ce23d874a9616"
+            },
+            "memory-cell-v7/training.py": {
+              "bytes": 9763,
+              "sha256": "d6205c6020fb2218a9afb56371482f77fe8a2b49ba42ec9b4f0f516eeb55a0c0"
+            },
+            "memory-cell-v7/training_worker.py": {
+              "bytes": 965,
+              "sha256": "43392c23d00fa1a2c706742c9834fd27b9319f22b05927d796015c9d542cc040"
+            },
+            "memory-cell-v9/learning/PROTOCOL.json": {
+              "bytes": 3519,
+              "sha256": "b6154507a2773fcd0896c7c77ac90bc1b08d3c4460042e3b796637c49efa3feb"
+            },
+            "memory-cell-v9/learning/__init__.py": {
+              "bytes": 75,
+              "sha256": "5aa574f8c0e9a4829f38e83e0b35c006236ef8ba84ecdbb09ebb11775d3ca114"
+            },
+            "memory-cell-v9/learning/byte_model.py": {
+              "bytes": 9217,
+              "sha256": "b53b93eb18b4784000eb7ab3cf09b84a57da2d545928247071960ddccb24b3f3"
+            },
+            "memory-cell-v9/learning/paired.py": {
+              "bytes": 7019,
+              "sha256": "a95abe8a88d420e66649ffbce51bddddabfbf37e3fa358e6f2fca06f4507c61f"
+            },
+            "memory-cell-v9/learning/resource_cleanup.py": {
+              "bytes": 4597,
+              "sha256": "9eb4ed0868da1fe01a568369d9243607ee9bb7de8d4a6c10527c3a9ee7a812d5"
+            },
+            "memory-cell-v9/learning/resource_monitor.py": {
+              "bytes": 14324,
+              "sha256": "541811a934c1ab6319d3d925599fa12fd8e5beadb0a4a4d87cf6a2a7cb22d7bf"
+            },
+            "memory-cell-v9/learning/resource_samples.py": {
+              "bytes": 7857,
+              "sha256": "626447e8fbf4f6f81403ac63dc587a0ec970c41deebddc59c658f213754edc87"
+            },
+            "memory-cell-v9/learning/worker.py": {
+              "bytes": 1766,
+              "sha256": "0201761844731e8f58dd9813e8140509a310b53ec8b378b797aa551eda2c3630"
+            }
+          }
+        },
+        "final_use_authority_granted": false,
+        "fixture_sha256": "750ecabdcdbc0aa9f5bf253615efaff090800c3a96a2958e0d17a4df829c6502",
+        "logical_resident_budget_bytes_per_type": 262144,
+        "natural_language_addressing_evaluated": false,
+        "pid": 42763,
+        "representation": "catalog",
+        "runtime_root": "/tmp/hm9-VctRBK",
+        "schema": "hepta.memory.v9.continual-child.v1",
+        "stages": [
+          {
+            "artifact_owner_logical_bytes": 432854,
+            "artifact_owner_path": "/tmp/hm9-VctRBK/.tmph03ZWX",
+            "before_retention": null,
+            "continuation_selection": {
+              "bundle_digest": "73de978b3a6b9b972583d7f7d12734e18d0dd9dffac0d4dfcd873f51f76116c8",
+              "generation": 5,
+              "intervention": "trained",
+              "procedure_digest": "d8c13c2c58f841e597a24de56ba2bc4f05bfb1f09864d66da5ecc51844273336",
+              "semantic_digest": "4fd419cc3c5452f68efa0b15c78f262bbf4bde41f60fc4e6b5e4a69abb360622",
+              "source_cut": "a4cd657c3cba20dec74eeda13b2b96f3e5b80b7e53911656c814f838d703f6d4"
+            },
+            "directory": "stage-0",
+            "families": {
+              "bridge-old-new": 8,
+              "interleaved-programs": 8,
+              "local-new-domain": 8
+            },
+            "id": "stage-0",
+            "interventions": [
+              {
+                "intervention": "zero",
+                "phases": [
+                  {
+                    "bytes": 299786,
+                    "path": "zero-future.json",
+                    "sha256": "7988a7f287801d4c82271870dcec03ef063a9457e4352a42a0bd965e2dc8ad17"
+                  },
+                  {
+                    "bytes": 101714,
+                    "path": "zero-retention.json",
+                    "sha256": "c87ab23426984566ebb382e8342f34ad3980b320c047d0139804f946c6b1e12d"
+                  }
+                ],
+                "publication": {
+                  "bundle_digest": "99ab9a766f72241b39a4debe384063b07c3f7df95649edb1874977d9671b3a18",
+                  "generation": 1,
+                  "intervention": "zero",
+                  "procedure_digest": "eac122e477b6851fb9b0b9024e7ac3efaf644aee869b076979532c532b56fbb7",
+                  "semantic_digest": "de8715381e4a015059f109be108e615af3ed96d1c5b66ff15c2b6ed7b82dbf22",
+                  "source_cut": "a4cd657c3cba20dec74eeda13b2b96f3e5b80b7e53911656c814f838d703f6d4"
+                }
+              },
+              {
+                "intervention": "frozen",
+                "phases": [
+                  {
+                    "bytes": 299782,
+                    "path": "frozen-future.json",
+                    "sha256": "0709ce3c3446c3be2fe6fa070b086c7074ff1f18e24803919180348642aa202f"
+                  },
+                  {
+                    "bytes": 101724,
+                    "path": "frozen-retention.json",
+                    "sha256": "f43350ef9d8e5b2dfa24915d5ad280e09dded1ca9e23bb4dbf597fffd6d5aa77"
+                  }
+                ],
+                "publication": {
+                  "bundle_digest": "de84e8759c6f9c8310e6548d04f8aed3c0a0576e16484869000bc6b051e97199",
+                  "generation": 2,
+                  "intervention": "frozen",
+                  "procedure_digest": "eac122e477b6851fb9b0b9024e7ac3efaf644aee869b076979532c532b56fbb7",
+                  "semantic_digest": "de8715381e4a015059f109be108e615af3ed96d1c5b66ff15c2b6ed7b82dbf22",
+                  "source_cut": "a4cd657c3cba20dec74eeda13b2b96f3e5b80b7e53911656c814f838d703f6d4"
+                }
+              },
+              {
+                "intervention": "trained",
+                "phases": [
+                  {
+                    "bytes": 365655,
+                    "path": "trained-future.json",
+                    "sha256": "0e85c81930db72652c084cd9a5743184ee081f63ce5493eccac6ea4b4517c375"
+                  },
+                  {
+                    "bytes": 123685,
+                    "path": "trained-retention.json",
+                    "sha256": "0ced2485762f51f173bd903c07f4ff987daaf33187e27b78c22d15d390441a9a"
+                  }
+                ],
+                "publication": {
+                  "bundle_digest": "156fdc32d2763d5687ed45421984c164b404a7a91a46e66d7d9922522d3e1d8e",
+                  "generation": 3,
+                  "intervention": "trained",
+                  "procedure_digest": "d8c13c2c58f841e597a24de56ba2bc4f05bfb1f09864d66da5ecc51844273336",
+                  "semantic_digest": "4fd419cc3c5452f68efa0b15c78f262bbf4bde41f60fc4e6b5e4a69abb360622",
+                  "source_cut": "a4cd657c3cba20dec74eeda13b2b96f3e5b80b7e53911656c814f838d703f6d4"
+                }
+              },
+              {
+                "intervention": "clean",
+                "phases": [
+                  {
+                    "bytes": 365639,
+                    "path": "clean-future.json",
+                    "sha256": "35c87e3fb7aea6b54d4127d98361fb37bcc26fd5ff0409a095a0b61ea6cdf71f"
+                  },
+                  {
+                    "bytes": 123687,
+                    "path": "clean-retention.json",
+                    "sha256": "0ab4658770f5aba75034bd5b57a86050ccd21c8137b16f913ffe64bdb99fb4b0"
+                  }
+                ],
+                "publication": {
+                  "bundle_digest": "60ed896a145aed3348de79874654c7a485377c0572e98b9df1344531cd71707d",
+                  "generation": 4,
+                  "intervention": "clean",
+                  "procedure_digest": "472fc7218b84c4cf3bad91c1207a098fa9ab3463ddcf20debee277ac395f259d",
+                  "semantic_digest": "d3f39bdf2ea5e397a57f20cf070705da18bf471a36bc34b0d0a747079cd586d9",
+                  "source_cut": "a4cd657c3cba20dec74eeda13b2b96f3e5b80b7e53911656c814f838d703f6d4"
+                }
+              }
+            ],
+            "new_records": 24,
+            "owner": {
+              "bytes": 15381,
+              "path": "OWNER_EXPORT.json",
+              "sha256": "9ba90650d381440bf9228faf599001b921536d5ddcc5eeb11e49c38256ac0689"
+            },
+            "source_ledger_logical_bytes": 4935640,
+            "source_ledger_path": "/tmp/hm9-VctRBK/.tmpTErMmD/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c81/cognitive",
+            "stage": 0,
+            "traffic_after_stage": {
+              "received_bytes": 582666,
+              "rpc_attempts": 832,
+              "transmitted_bytes": 360724
+            },
+            "training_receipt": {
+              "actual_fit_calls": 6,
+              "authority": false,
+              "catalog_contains_explicit_values": true,
+              "compression_established": false,
+              "future_requests_seen": false,
+              "parent_rebased_without_gradients": false,
+              "same_support_catalog_threshold": true,
+              "variants": {
+                "clean": {
+                  "procedure": {
+                    "catalog_bytes": 374,
+                    "lineage_bytes": 604,
+                    "native_bytes": 39495,
+                    "native_digest": "472fc7218b84c4cf3bad91c1207a098fa9ab3463ddcf20debee277ac395f259d",
+                    "original_digest": "e64c052b051c65076abe0d273b3a448357f754384d74f1171c8e6ff4c550f9e4",
+                    "parameter_bytes": 7460,
+                    "parameter_digest": "76953890b9b2ccc49810584f124f5aa74c4459445e64623c94fd6cc33c84f18c",
+                    "rebuild_parameter_digest": "76953890b9b2ccc49810584f124f5aa74c4459445e64623c94fd6cc33c84f18c",
+                    "rebuild_parameters_identical": true,
+                    "support_bytes": 1225,
+                    "training": {
+                      "catalog_contains_explicit_values": true,
+                      "catalog_digest": "932b0e8387caec43228f77a495684662a85ae1664b2e35113cd9bcce4c4237ff",
+                      "catalog_fixed_by_caller": false,
+                      "cpu_seconds": 0.043510565,
+                      "dataset_digest": "99174ec2fc4da4a8dcebd0cc55d2d0cee501c867e2f4503adcd2f169917ec96d",
+                      "examples_seen": 5400,
+                      "final_cross_entropy": 5.847914636840517e-05,
+                      "inherited_hidden_units": 0,
+                      "initial_cross_entropy": 2.1902272296170167,
+                      "initial_parameters": "4573b58c8b3e5f7963abff7b2e6477c4f5beba9d6348d2bebd8d3d5fc3e8a41e",
+                      "kind": "actual-numpy-tanh-mlp-adam",
+                      "language_model_finetuning": false,
+                      "parent_parameters": null,
+                      "rows": 9,
+                      "seed": 91317,
+                      "source_bound": true,
+                      "steps": 600,
+                      "training_accuracy": 1.0,
+                      "wall_seconds": 0.043524623999928735
+                    }
+                  },
+                  "semantic": {
+                    "catalog_bytes": 307,
+                    "lineage_bytes": 604,
+                    "native_bytes": 39403,
+                    "native_digest": "d3f39bdf2ea5e397a57f20cf070705da18bf471a36bc34b0d0a747079cd586d9",
+                    "original_digest": "04364a9eb65e9bb15db439bf120d70909ffb369387676315202718ee43c2b40c",
+                    "parameter_bytes": 7460,
+                    "parameter_digest": "89cae24edb47c967336e6e24a85b01bcddb27438f02972048b8c643359cd7386",
+                    "rebuild_parameter_digest": "89cae24edb47c967336e6e24a85b01bcddb27438f02972048b8c643359cd7386",
+                    "rebuild_parameters_identical": true,
+                    "support_bytes": 1225,
+                    "training": {
+                      "catalog_contains_explicit_values": true,
+                      "catalog_digest": "f45280b5c8ee3f8ff7a25cb1f373b73276d6b35e1797c09d982ecd8a738bee26",
+                      "catalog_fixed_by_caller": false,
+                      "cpu_seconds": 0.04369102700000001,
+                      "dataset_digest": "d2276d3c332dfddad16fd1321cdb2a88ae4378caad0305d516144aa531d97720",
+                      "examples_seen": 5400,
+                      "final_cross_entropy": 5.679085672771259e-05,
+                      "inherited_hidden_units": 0,
+                      "initial_cross_entropy": 2.1694529835848417,
+                      "initial_parameters": "4573b58c8b3e5f7963abff7b2e6477c4f5beba9d6348d2bebd8d3d5fc3e8a41e",
+                      "kind": "actual-numpy-tanh-mlp-adam",
+                      "language_model_finetuning": false,
+                      "parent_parameters": null,
+                      "rows": 9,
+                      "seed": 91317,
+                      "source_bound": true,
+                      "steps": 600,
+                      "training_accuracy": 1.0,
+                      "wall_seconds": 0.04368955799998275
+                    }
+                  }
+                },
+                "frozen": {
+                  "procedure": {
+                    "catalog_bytes": 374,
+                    "lineage_bytes": 604,
+                    "native_bytes": 39348,
+                    "native_digest": "eac122e477b6851fb9b0b9024e7ac3efaf644aee869b076979532c532b56fbb7",
+                    "original_digest": "f6eeca06fc5b523968ed351718a8b33a3dd96910a1e406cb5bcd7b0b61de00e3",
+                    "parameter_bytes": 7460,
+                    "parameter_digest": "4573b58c8b3e5f7963abff7b2e6477c4f5beba9d6348d2bebd8d3d5fc3e8a41e",
+                    "support_bytes": 1225,
+                    "training": {
+                      "catalog_contains_explicit_values": true,
+                      "catalog_index_mapping": [],
+                      "cpu_seconds": 0.0,
+                      "initial_parameters": "4573b58c8b3e5f7963abff7b2e6477c4f5beba9d6348d2bebd8d3d5fc3e8a41e",
+                      "kind": "zero-gradient-matched-metadata-v9",
+                      "new_columns_policy": "same seeded initialization, no target-dependent parameter writes",
+                      "new_output_columns": 9,
+                      "parent_parameters": null,
+                      "seed": 91317,
+                      "source_bound": true,
+                      "steps": 0,
+                      "wall_seconds": 0.0
+                    }
+                  },
+                  "semantic": {
+                    "catalog_bytes": 307,
+                    "lineage_bytes": 604,
+                    "native_bytes": 39280,
+                    "native_digest": "de8715381e4a015059f109be108e615af3ed96d1c5b66ff15c2b6ed7b82dbf22",
+                    "original_digest": "0cb2bebf06c470713b0bba15d1555d9dc21527837f8cf37a8e636fd06f2f8de9",
+                    "parameter_bytes": 7460,
+                    "parameter_digest": "4573b58c8b3e5f7963abff7b2e6477c4f5beba9d6348d2bebd8d3d5fc3e8a41e",
+                    "support_bytes": 1225,
+                    "training": {
+                      "catalog_contains_explicit_values": true,
+                      "catalog_index_mapping": [],
+                      "cpu_seconds": 0.0,
+                      "initial_parameters": "4573b58c8b3e5f7963abff7b2e6477c4f5beba9d6348d2bebd8d3d5fc3e8a41e",
+                      "kind": "zero-gradient-matched-metadata-v9",
+                      "new_columns_policy": "same seeded initialization, no target-dependent parameter writes",
+                      "new_output_columns": 9,
+                      "parent_parameters": null,
+                      "seed": 91317,
+                      "source_bound": true,
+                      "steps": 0,
+                      "wall_seconds": 0.0
+                    }
+                  }
+                },
+                "trained": {
+                  "procedure": {
+                    "catalog_bytes": 374,
+                    "lineage_bytes": 604,
+                    "native_bytes": 39495,
+                    "native_digest": "d8c13c2c58f841e597a24de56ba2bc4f05bfb1f09864d66da5ecc51844273336",
+                    "original_digest": "783acca3eef54fd86f21c11c844eacd283805c3bd821ef3d7bde6ccd6bfe875d",
+                    "parameter_bytes": 7460,
+                    "parameter_digest": "76953890b9b2ccc49810584f124f5aa74c4459445e64623c94fd6cc33c84f18c",
+                    "support_bytes": 1225,
+                    "training": {
+                      "catalog_contains_explicit_values": true,
+                      "catalog_digest": "932b0e8387caec43228f77a495684662a85ae1664b2e35113cd9bcce4c4237ff",
+                      "catalog_fixed_by_caller": false,
+                      "cpu_seconds": 0.04316856799999999,
+                      "dataset_digest": "99174ec2fc4da4a8dcebd0cc55d2d0cee501c867e2f4503adcd2f169917ec96d",
+                      "examples_seen": 5400,
+                      "final_cross_entropy": 5.847914636840517e-05,
+                      "inherited_hidden_units": 0,
+                      "initial_cross_entropy": 2.1902272296170167,
+                      "initial_parameters": "4573b58c8b3e5f7963abff7b2e6477c4f5beba9d6348d2bebd8d3d5fc3e8a41e",
+                      "kind": "actual-numpy-tanh-mlp-adam",
+                      "language_model_finetuning": false,
+                      "parent_parameters": null,
+                      "rows": 9,
+                      "seed": 91317,
+                      "source_bound": true,
+                      "steps": 600,
+                      "training_accuracy": 1.0,
+                      "wall_seconds": 0.04316790400002901
+                    }
+                  },
+                  "semantic": {
+                    "catalog_bytes": 307,
+                    "lineage_bytes": 604,
+                    "native_bytes": 39403,
+                    "native_digest": "4fd419cc3c5452f68efa0b15c78f262bbf4bde41f60fc4e6b5e4a69abb360622",
+                    "original_digest": "357830538ee99349ff635dc97976b351788cc10a02a09a8de4bb72f2a3042614",
+                    "parameter_bytes": 7460,
+                    "parameter_digest": "89cae24edb47c967336e6e24a85b01bcddb27438f02972048b8c643359cd7386",
+                    "support_bytes": 1225,
+                    "training": {
+                      "catalog_contains_explicit_values": true,
+                      "catalog_digest": "f45280b5c8ee3f8ff7a25cb1f373b73276d6b35e1797c09d982ecd8a738bee26",
+                      "catalog_fixed_by_caller": false,
+                      "cpu_seconds": 0.043757331999999996,
+                      "dataset_digest": "d2276d3c332dfddad16fd1321cdb2a88ae4378caad0305d516144aa531d97720",
+                      "examples_seen": 5400,
+                      "final_cross_entropy": 5.679085672771259e-05,
+                      "inherited_hidden_units": 0,
+                      "initial_cross_entropy": 2.1694529835848417,
+                      "initial_parameters": "4573b58c8b3e5f7963abff7b2e6477c4f5beba9d6348d2bebd8d3d5fc3e8a41e",
+                      "kind": "actual-numpy-tanh-mlp-adam",
+                      "language_model_finetuning": false,
+                      "parent_parameters": null,
+                      "rows": 9,
+                      "seed": 91317,
+                      "source_bound": true,
+                      "steps": 600,
+                      "training_accuracy": 1.0,
+                      "wall_seconds": 0.043753413999979784
+                    }
+                  }
+                },
+                "zero": {
+                  "procedure": {
+                    "catalog_bytes": 374,
+                    "lineage_bytes": 604,
+                    "native_bytes": 39348,
+                    "native_digest": "eac122e477b6851fb9b0b9024e7ac3efaf644aee869b076979532c532b56fbb7",
+                    "original_digest": "f6eeca06fc5b523968ed351718a8b33a3dd96910a1e406cb5bcd7b0b61de00e3",
+                    "parameter_bytes": 7460,
+                    "parameter_digest": "4573b58c8b3e5f7963abff7b2e6477c4f5beba9d6348d2bebd8d3d5fc3e8a41e",
+                    "support_bytes": 1225,
+                    "training": {
+                      "catalog_contains_explicit_values": true,
+                      "catalog_index_mapping": [],
+                      "cpu_seconds": 0.0,
+                      "initial_parameters": "4573b58c8b3e5f7963abff7b2e6477c4f5beba9d6348d2bebd8d3d5fc3e8a41e",
+                      "kind": "zero-gradient-matched-metadata-v9",
+                      "new_columns_policy": "same seeded initialization, no target-dependent parameter writes",
+                      "new_output_columns": 9,
+                      "parent_parameters": null,
+                      "seed": 91317,
+                      "source_bound": true,
+                      "steps": 0,
+                      "wall_seconds": 0.0
+                    }
+                  },
+                  "semantic": {
+                    "catalog_bytes": 307,
+                    "lineage_bytes": 604,
+                    "native_bytes": 39280,
+                    "native_digest": "de8715381e4a015059f109be108e615af3ed96d1c5b66ff15c2b6ed7b82dbf22",
+                    "original_digest": "0cb2bebf06c470713b0bba15d1555d9dc21527837f8cf37a8e636fd06f2f8de9",
+                    "parameter_bytes": 7460,
+                    "parameter_digest": "4573b58c8b3e5f7963abff7b2e6477c4f5beba9d6348d2bebd8d3d5fc3e8a41e",
+                    "support_bytes": 1225,
+                    "training": {
+                      "catalog_contains_explicit_values": true,
+                      "catalog_index_mapping": [],
+                      "cpu_seconds": 0.0,
+                      "initial_parameters": "4573b58c8b3e5f7963abff7b2e6477c4f5beba9d6348d2bebd8d3d5fc3e8a41e",
+                      "kind": "zero-gradient-matched-metadata-v9",
+                      "new_columns_policy": "same seeded initialization, no target-dependent parameter writes",
+                      "new_output_columns": 9,
+                      "parent_parameters": null,
+                      "seed": 91317,
+                      "source_bound": true,
+                      "steps": 0,
+                      "wall_seconds": 0.0
+                    }
+                  }
+                }
+              },
+              "wall_ns": 282074572
+            }
+          },
+          {
+            "artifact_owner_logical_bytes": 954782,
+            "artifact_owner_path": "/tmp/hm9-VctRBK/.tmph03ZWX",
+            "before_retention": {
+              "bytes": 122278,
+              "path": "before-retention.json",
+              "sha256": "350fbcf4fe509d720ffecea192c14709fdd416b2fd5115d6cda3c7577d18c6da"
+            },
+            "continuation_selection": {
+              "bundle_digest": "142323d3770ebeca7810353b8ee58c580278960ea83e12ac8d1808e973b9dede",
+              "generation": 10,
+              "intervention": "trained",
+              "procedure_digest": "26649b283abff5038df64e01f72edfd230dbd389b356e0c56514864e34bc83b1",
+              "semantic_digest": "23612bcd3522fc172d3672d17d0d233f1f35e863cac33d3935d1c2675c337c2f",
+              "source_cut": "3c870088f474bd5f6e6f3d755b347fd69e8a9dc3880afe9299a31de2c4f4495c"
+            },
+            "directory": "stage-1",
+            "families": {
+              "bridge-old-new": 8,
+              "interleaved-programs": 8,
+              "local-new-domain": 8
+            },
+            "id": "stage-1",
+            "interventions": [
+              {
+                "intervention": "zero",
+                "phases": [
+                  {
+                    "bytes": 299783,
+                    "path": "zero-future.json",
+                    "sha256": "39a8c8a6f2bf2b8c7c8a6d6f86fd09d7aab91d07654f76dd0041da48f9a345d6"
+                  },
+                  {
+                    "bytes": 101718,
+                    "path": "zero-retention.json",
+                    "sha256": "21c095817ce7cc8f71d68cc7b675395855f9daa324b857e706d7b09de09d3f2e"
+                  }
+                ],
+                "publication": {
+                  "bundle_digest": "6e3ca2b92cbe153a4b3f0523ec2b9265edbe29692ed104b67d2da30e8c5afddb",
+                  "generation": 6,
+                  "intervention": "zero",
+                  "procedure_digest": "5b5c0e00f0ab8e297b2d684533762369dfd9ecdd14ed6b04e15c78c20f605ba1",
+                  "semantic_digest": "95ba47769c472351e4c996c6dd37196e48287c5b9b0906c624a155a817e0db59",
+                  "source_cut": "3c870088f474bd5f6e6f3d755b347fd69e8a9dc3880afe9299a31de2c4f4495c"
+                }
+              },
+              {
+                "intervention": "frozen",
+                "phases": [
+                  {
+                    "bytes": 329191,
+                    "path": "frozen-future.json",
+                    "sha256": "0b2dd9e363e841b2ebe8d40c2f32fff4cfe684b3e4592cedfed58daa710cdbf1"
+                  },
+                  {
+                    "bytes": 123701,
+                    "path": "frozen-retention.json",
+                    "sha256": "7cb3ec8e432ec2a08136ee6add309cf8b3748c068b08fc9290c7dc260358cfb0"
+                  }
+                ],
+                "publication": {
+                  "bundle_digest": "4e2610cff517b6272427a837dab02f5b55a6f406ffd3945c768abdb8928133d5",
+                  "generation": 7,
+                  "intervention": "frozen",
+                  "procedure_digest": "6dc0b0a818bd51fc304624eb678817abd755cd6fa30a7232a7eefd7a68ad1677",
+                  "semantic_digest": "72d1e70f07aff4011dadd97a89ef96d2d66d43e3e9282c29ebfdfc0468f341f9",
+                  "source_cut": "3c870088f474bd5f6e6f3d755b347fd69e8a9dc3880afe9299a31de2c4f4495c"
+                }
+              },
+              {
+                "intervention": "trained",
+                "phases": [
+                  {
+                    "bytes": 365644,
+                    "path": "trained-future.json",
+                    "sha256": "c605ce0325f3022f20b35a51d40271d2b9aabea686977a5ec05f8b8bbc15ea82"
+                  },
+                  {
+                    "bytes": 123699,
+                    "path": "trained-retention.json",
+                    "sha256": "39abe2c65357a9e18aac59b7c7a785a7cbbe301f3ccb15c6e203652a3ba03e29"
+                  }
+                ],
+                "publication": {
+                  "bundle_digest": "a01644679ae1857f574355fdd23be04daa8304bc27202c910bb02f8b1b5022f4",
+                  "generation": 8,
+                  "intervention": "trained",
+                  "procedure_digest": "26649b283abff5038df64e01f72edfd230dbd389b356e0c56514864e34bc83b1",
+                  "semantic_digest": "23612bcd3522fc172d3672d17d0d233f1f35e863cac33d3935d1c2675c337c2f",
+                  "source_cut": "3c870088f474bd5f6e6f3d755b347fd69e8a9dc3880afe9299a31de2c4f4495c"
+                }
+              },
+              {
+                "intervention": "clean",
+                "phases": [
+                  {
+                    "bytes": 365652,
+                    "path": "clean-future.json",
+                    "sha256": "b688e2695b60259e727e39e13d0a797b1ba75e8fea4498566d1241ba76837a60"
+                  },
+                  {
+                    "bytes": 123701,
+                    "path": "clean-retention.json",
+                    "sha256": "ef92e29d9260bb3d98d9ba189cc3ebd0178b694cf49365a893206c9b98cc092b"
+                  }
+                ],
+                "publication": {
+                  "bundle_digest": "2ed3a6b706af9a38c7ca221e2f5e01cd8f4bc40820e56d5de98289754dad872a",
+                  "generation": 9,
+                  "intervention": "clean",
+                  "procedure_digest": "feb71c9a5d9bb09f2d5c4c993a5b072241d87d0449270fc55a5b4bb7f8f3013e",
+                  "semantic_digest": "fd4cc6a55dfc3df4afbbc065c2e0452879c4f63883d2cc96d8a8cf8d046a63e0",
+                  "source_cut": "3c870088f474bd5f6e6f3d755b347fd69e8a9dc3880afe9299a31de2c4f4495c"
+                }
+              }
+            ],
+            "new_records": 24,
+            "owner": {
+              "bytes": 28302,
+              "path": "OWNER_EXPORT.json",
+              "sha256": "1dfd72e00a05c6d6693396426df64cf7446d2838e7c78e51cd80187b80747848"
+            },
+            "source_ledger_logical_bytes": 4935640,
+            "source_ledger_path": "/tmp/hm9-VctRBK/.tmpTErMmD/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c81/cognitive",
+            "stage": 1,
+            "traffic_after_stage": {
+              "received_bytes": 1225777,
+              "rpc_attempts": 1712,
+              "transmitted_bytes": 743197
+            },
+            "training_receipt": {
+              "actual_fit_calls": 6,
+              "authority": false,
+              "catalog_contains_explicit_values": true,
+              "compression_established": false,
+              "future_requests_seen": false,
+              "parent_rebased_without_gradients": true,
+              "same_support_catalog_threshold": true,
+              "variants": {
+                "clean": {
+                  "procedure": {
+                    "catalog_bytes": 706,
+                    "lineage_bytes": 1140,
+                    "native_bytes": 46600,
+                    "native_digest": "feb71c9a5d9bb09f2d5c4c993a5b072241d87d0449270fc55a5b4bb7f8f3013e",
+                    "original_digest": "b443a29aa9fa21b8a384a86f67de669a4de9c99140ad2b2d03fc04e76452cdaa",
+                    "parameter_bytes": 8516,
+                    "parameter_digest": "550bd738bcd8e8c71d1c1f283b8caa53afe6a05b264ae6fbacba350b4a5e018f",
+                    "rebuild_parameter_digest": "550bd738bcd8e8c71d1c1f283b8caa53afe6a05b264ae6fbacba350b4a5e018f",
+                    "rebuild_parameters_identical": true,
+                    "support_bytes": 2313,
+                    "training": {
+                      "catalog_contains_explicit_values": true,
+                      "catalog_digest": "56558c2a3a07ea2478b8bc3da96163a0175d9a24a3f4cda346414a29d3ad37f5",
+                      "catalog_fixed_by_caller": false,
+                      "cpu_seconds": 0.047133762999999995,
+                      "dataset_digest": "45f31064bea9e4a9dd8498d9ad10da8286c50a621300aa456fcf1a611f9e566b",
+                      "examples_seen": 10200,
+                      "final_cross_entropy": 8.459926661925949e-05,
+                      "inherited_hidden_units": 0,
+                      "initial_cross_entropy": 2.8439533729195823,
+                      "initial_parameters": "64a9e29a2adffd3600fa319433835264d0a8af42f7cc7059cbddefc527cc2c80",
+                      "kind": "actual-numpy-tanh-mlp-adam",
+                      "language_model_finetuning": false,
+                      "parent_parameters": null,
+                      "rows": 17,
+                      "seed": 91317,
+                      "source_bound": true,
+                      "steps": 600,
+                      "training_accuracy": 1.0,
+                      "wall_seconds": 0.04714527900000576
+                    }
+                  },
+                  "semantic": {
+                    "catalog_bytes": 575,
+                    "lineage_bytes": 1140,
+                    "native_bytes": 46521,
+                    "native_digest": "fd4cc6a55dfc3df4afbbc065c2e0452879c4f63883d2cc96d8a8cf8d046a63e0",
+                    "original_digest": "4c548a4fea8762c28ef9c9ccb2e63ff08d97fdb3bf1f853220f608ab96ea3448",
+                    "parameter_bytes": 8516,
+                    "parameter_digest": "f01932c166305cd4afb7964b2e7e581f5ce3c8b26e4cb557c5bdccb38d155218",
+                    "rebuild_parameter_digest": "f01932c166305cd4afb7964b2e7e581f5ce3c8b26e4cb557c5bdccb38d155218",
+                    "rebuild_parameters_identical": true,
+                    "support_bytes": 2313,
+                    "training": {
+                      "catalog_contains_explicit_values": true,
+                      "catalog_digest": "47c9d5878db145bb6b9bd2c49dceae2b7294f0af35057697d5a3d72842069b75",
+                      "catalog_fixed_by_caller": false,
+                      "cpu_seconds": 0.047173874000000005,
+                      "dataset_digest": "5a50ffe6eef5b52ac798ba9aad4560c41bcbfdb36d8791f61913b140d173d6ed",
+                      "examples_seen": 10200,
+                      "final_cross_entropy": 8.635575418114693e-05,
+                      "inherited_hidden_units": 0,
+                      "initial_cross_entropy": 2.8665549306992966,
+                      "initial_parameters": "64a9e29a2adffd3600fa319433835264d0a8af42f7cc7059cbddefc527cc2c80",
+                      "kind": "actual-numpy-tanh-mlp-adam",
+                      "language_model_finetuning": false,
+                      "parent_parameters": null,
+                      "rows": 17,
+                      "seed": 91317,
+                      "source_bound": true,
+                      "steps": 600,
+                      "training_accuracy": 1.0,
+                      "wall_seconds": 0.047172391999993124
+                    }
+                  }
+                },
+                "frozen": {
+                  "procedure": {
+                    "catalog_bytes": 706,
+                    "lineage_bytes": 1140,
+                    "native_bytes": 46935,
+                    "native_digest": "6dc0b0a818bd51fc304624eb678817abd755cd6fa30a7232a7eefd7a68ad1677",
+                    "original_digest": "7d71575730bd87da7dea72be166a4713fe5214daee3854b3c0a85f3378e567bd",
+                    "parameter_bytes": 8516,
+                    "parameter_digest": "751189f39ba9b8340b10683d5e7b7d0b857a4530dd4c556351e0273cd2d2a39a",
+                    "support_bytes": 2313,
+                    "training": {
+                      "catalog_contains_explicit_values": true,
+                      "catalog_index_mapping": [
+                        [
+                          0,
+                          0
+                        ],
+                        [
+                          1,
+                          3
+                        ],
+                        [
+                          2,
+                          5
+                        ],
+                        [
+                          3,
+                          8
+                        ],
+                        [
+                          4,
+                          9
+                        ],
+                        [
+                          5,
+                          10
+                        ],
+                        [
+                          6,
+                          11
+                        ],
+                        [
+                          7,
+                          13
+                        ],
+                        [
+                          8,
+                          15
+                        ]
+                      ],
+                      "cpu_seconds": 0.0,
+                      "initial_parameters": "751189f39ba9b8340b10683d5e7b7d0b857a4530dd4c556351e0273cd2d2a39a",
+                      "kind": "zero-gradient-matched-metadata-v9",
+                      "new_columns_policy": "same seeded initialization, no target-dependent parameter writes",
+                      "new_output_columns": 8,
+                      "parent_parameters": "76953890b9b2ccc49810584f124f5aa74c4459445e64623c94fd6cc33c84f18c",
+                      "seed": 91317,
+                      "source_bound": true,
+                      "steps": 0,
+                      "wall_seconds": 0.0
+                    }
+                  },
+                  "semantic": {
+                    "catalog_bytes": 575,
+                    "lineage_bytes": 1140,
+                    "native_bytes": 46763,
+                    "native_digest": "72d1e70f07aff4011dadd97a89ef96d2d66d43e3e9282c29ebfdfc0468f341f9",
+                    "original_digest": "25e91e73a32f144e2ba09d895206bbc03cb8e9263c59c71268f1a4192c15c2b5",
+                    "parameter_bytes": 8516,
+                    "parameter_digest": "00328ce321a4eda8625266374dfb15d911b08b8881b50612c4257c2461ad2dd5",
+                    "support_bytes": 2313,
+                    "training": {
+                      "catalog_contains_explicit_values": true,
+                      "catalog_index_mapping": [
+                        [
+                          0,
+                          0
+                        ],
+                        [
+                          1,
+                          3
+                        ],
+                        [
+                          2,
+                          5
+                        ],
+                        [
+                          3,
+                          6
+                        ],
+                        [
+                          4,
+                          8
+                        ],
+                        [
+                          5,
+                          10
+                        ],
+                        [
+                          6,
+                          12
+                        ],
+                        [
+                          7,
+                          14
+                        ],
+                        [
+                          8,
+                          16
+                        ]
+                      ],
+                      "cpu_seconds": 0.0,
+                      "initial_parameters": "00328ce321a4eda8625266374dfb15d911b08b8881b50612c4257c2461ad2dd5",
+                      "kind": "zero-gradient-matched-metadata-v9",
+                      "new_columns_policy": "same seeded initialization, no target-dependent parameter writes",
+                      "new_output_columns": 8,
+                      "parent_parameters": "89cae24edb47c967336e6e24a85b01bcddb27438f02972048b8c643359cd7386",
+                      "seed": 91317,
+                      "source_bound": true,
+                      "steps": 0,
+                      "wall_seconds": 0.0
+                    }
+                  }
+                },
+                "trained": {
+                  "procedure": {
+                    "catalog_bytes": 706,
+                    "lineage_bytes": 1140,
+                    "native_bytes": 46629,
+                    "native_digest": "26649b283abff5038df64e01f72edfd230dbd389b356e0c56514864e34bc83b1",
+                    "original_digest": "3d2cda827ee7cab449e81b6ecfc7d35bcb5c01dcb6b2b106824b00f81271ab47",
+                    "parameter_bytes": 8516,
+                    "parameter_digest": "ab15ee0ec83194b4096dd974256d835102f5fcfca0b4409b59a1e2c43539a581",
+                    "support_bytes": 2313,
+                    "training": {
+                      "catalog_contains_explicit_values": true,
+                      "catalog_digest": "56558c2a3a07ea2478b8bc3da96163a0175d9a24a3f4cda346414a29d3ad37f5",
+                      "catalog_fixed_by_caller": false,
+                      "cpu_seconds": 0.050833056000000015,
+                      "dataset_digest": "45f31064bea9e4a9dd8498d9ad10da8286c50a621300aa456fcf1a611f9e566b",
+                      "examples_seen": 10200,
+                      "final_cross_entropy": 6.264066036266167e-05,
+                      "inherited_hidden_units": 32,
+                      "initial_cross_entropy": 1.827089620048944,
+                      "initial_parameters": "751189f39ba9b8340b10683d5e7b7d0b857a4530dd4c556351e0273cd2d2a39a",
+                      "kind": "actual-numpy-tanh-mlp-adam",
+                      "language_model_finetuning": false,
+                      "parent_parameters": "76953890b9b2ccc49810584f124f5aa74c4459445e64623c94fd6cc33c84f18c",
+                      "rows": 17,
+                      "seed": 91317,
+                      "source_bound": true,
+                      "steps": 600,
+                      "training_accuracy": 1.0,
+                      "wall_seconds": 0.05083202900004835
+                    }
+                  },
+                  "semantic": {
+                    "catalog_bytes": 575,
+                    "lineage_bytes": 1140,
+                    "native_bytes": 46507,
+                    "native_digest": "23612bcd3522fc172d3672d17d0d233f1f35e863cac33d3935d1c2675c337c2f",
+                    "original_digest": "a53601d08f182386515c355891d61706e224b8a63f9187d430be31abe4617da8",
+                    "parameter_bytes": 8516,
+                    "parameter_digest": "aabe1dae51fadfec1e07a349a8b58a270f1b3edba53b0b7aed6736b68fe5a1f9",
+                    "support_bytes": 2313,
+                    "training": {
+                      "catalog_contains_explicit_values": true,
+                      "catalog_digest": "47c9d5878db145bb6b9bd2c49dceae2b7294f0af35057697d5a3d72842069b75",
+                      "catalog_fixed_by_caller": false,
+                      "cpu_seconds": 0.04720005299999999,
+                      "dataset_digest": "5a50ffe6eef5b52ac798ba9aad4560c41bcbfdb36d8791f61913b140d173d6ed",
+                      "examples_seen": 10200,
+                      "final_cross_entropy": 6.401360649163762e-05,
+                      "inherited_hidden_units": 32,
+                      "initial_cross_entropy": 1.874275062686773,
+                      "initial_parameters": "00328ce321a4eda8625266374dfb15d911b08b8881b50612c4257c2461ad2dd5",
+                      "kind": "actual-numpy-tanh-mlp-adam",
+                      "language_model_finetuning": false,
+                      "parent_parameters": "89cae24edb47c967336e6e24a85b01bcddb27438f02972048b8c643359cd7386",
+                      "rows": 17,
+                      "seed": 91317,
+                      "source_bound": true,
+                      "steps": 600,
+                      "training_accuracy": 1.0,
+                      "wall_seconds": 0.04720924000002924
+                    }
+                  }
+                },
+                "zero": {
+                  "procedure": {
+                    "catalog_bytes": 706,
+                    "lineage_bytes": 1140,
+                    "native_bytes": 46760,
+                    "native_digest": "5b5c0e00f0ab8e297b2d684533762369dfd9ecdd14ed6b04e15c78c20f605ba1",
+                    "original_digest": "3077d18009f118af8020508ffe9d15af1c47e388a527e06b2d943112851a34ce",
+                    "parameter_bytes": 8516,
+                    "parameter_digest": "64a9e29a2adffd3600fa319433835264d0a8af42f7cc7059cbddefc527cc2c80",
+                    "support_bytes": 2313,
+                    "training": {
+                      "catalog_contains_explicit_values": true,
+                      "catalog_index_mapping": [],
+                      "cpu_seconds": 0.0,
+                      "initial_parameters": "64a9e29a2adffd3600fa319433835264d0a8af42f7cc7059cbddefc527cc2c80",
+                      "kind": "zero-gradient-matched-metadata-v9",
+                      "new_columns_policy": "same seeded initialization, no target-dependent parameter writes",
+                      "new_output_columns": 17,
+                      "parent_parameters": null,
+                      "seed": 91317,
+                      "source_bound": true,
+                      "steps": 0,
+                      "wall_seconds": 0.0
+                    }
+                  },
+                  "semantic": {
+                    "catalog_bytes": 575,
+                    "lineage_bytes": 1140,
+                    "native_bytes": 46628,
+                    "native_digest": "95ba47769c472351e4c996c6dd37196e48287c5b9b0906c624a155a817e0db59",
+                    "original_digest": "a8430b5b9da4f499d0abae31387483421a1fa901f05c3e8166a3b0eaf6e2bd61",
+                    "parameter_bytes": 8516,
+                    "parameter_digest": "64a9e29a2adffd3600fa319433835264d0a8af42f7cc7059cbddefc527cc2c80",
+                    "support_bytes": 2313,
+                    "training": {
+                      "catalog_contains_explicit_values": true,
+                      "catalog_index_mapping": [],
+                      "cpu_seconds": 0.0,
+                      "initial_parameters": "64a9e29a2adffd3600fa319433835264d0a8af42f7cc7059cbddefc527cc2c80",
+                      "kind": "zero-gradient-matched-metadata-v9",
+                      "new_columns_policy": "same seeded initialization, no target-dependent parameter writes",
+                      "new_output_columns": 17,
+                      "parent_parameters": null,
+                      "seed": 91317,
+                      "source_bound": true,
+                      "steps": 0,
+                      "wall_seconds": 0.0
+                    }
+                  }
+                }
+              },
+              "wall_ns": 309737636
+            }
+          },
+          {
+            "artifact_owner_logical_bytes": 1564603,
+            "artifact_owner_path": "/tmp/hm9-VctRBK/.tmph03ZWX",
+            "before_retention": {
+              "bytes": 122369,
+              "path": "before-retention.json",
+              "sha256": "9e1ce602ec6b4affde0050a992599de6a1af139ea6472170b791e49428c7d6e3"
+            },
+            "continuation_selection": {
+              "bundle_digest": "48144a086d37869505f15baac6f0062b8539984a7bf6d42fcd63371d5cf1e361",
+              "generation": 15,
+              "intervention": "trained",
+              "procedure_digest": "c6743fdb9fbe9f9a01e3ff02428f8371a20140332264435a2529be4069c550ac",
+              "semantic_digest": "81eb5b1d800f26fbc776c0b84b5c2ddca5b23f3a629f283b36d7102a9c2368a2",
+              "source_cut": "160c797c304000b0a31d141467a132677f69678c1adb8d18d4a0d8c739254fed"
+            },
+            "directory": "stage-2",
+            "families": {
+              "bridge-old-new": 8,
+              "interleaved-programs": 8,
+              "local-new-domain": 8
+            },
+            "id": "stage-2",
+            "interventions": [
+              {
+                "intervention": "zero",
+                "phases": [
+                  {
+                    "bytes": 300134,
+                    "path": "zero-future.json",
+                    "sha256": "1606ecf0528643f05f650d46b51a1b2ba41e1cfea4f3a6bf1f492dbdc147dfae"
+                  },
+                  {
+                    "bytes": 101821,
+                    "path": "zero-retention.json",
+                    "sha256": "196b6bafd550204b711b907b48fea0372144d2165be3ab3fd132aecfe60601b4"
+                  }
+                ],
+                "publication": {
+                  "bundle_digest": "eff80599cef6e37305a1a5cf4950fccad33a0c899f406ac4c1557d1dd7fbfa50",
+                  "generation": 11,
+                  "intervention": "zero",
+                  "procedure_digest": "addd4f16bb742fe9012a0bcf85a53c1083713f7782865f57bee08cac8575a6ce",
+                  "semantic_digest": "32100ef83f4d59459fce24f9ddc051f2f7c3c23cbbd0cfc8045f71a902d3d38d",
+                  "source_cut": "160c797c304000b0a31d141467a132677f69678c1adb8d18d4a0d8c739254fed"
+                }
+              },
+              {
+                "intervention": "frozen",
+                "phases": [
+                  {
+                    "bytes": 347383,
+                    "path": "frozen-future.json",
+                    "sha256": "4dea50c09e553e555156a757c45f84eb45feed2009c3ea17cf754884c07fbb19"
+                  },
+                  {
+                    "bytes": 123793,
+                    "path": "frozen-retention.json",
+                    "sha256": "24297ab64417c7f18197336df57227e4be8d947e2b1ae6ca194c778d24b0e0e9"
+                  }
+                ],
+                "publication": {
+                  "bundle_digest": "91e86f0cd367975904ab677fa4b99eec553f60d80ff023a749fef008ee964899",
+                  "generation": 12,
+                  "intervention": "frozen",
+                  "procedure_digest": "64aeeaaa037056e5ae838be4ab5b31026662f6a15c05a27e988a900909060463",
+                  "semantic_digest": "31fea3eb5769707c4b18ccb03140a9a3afdbd0469acaa09f622a6b9ccc6e2d42",
+                  "source_cut": "160c797c304000b0a31d141467a132677f69678c1adb8d18d4a0d8c739254fed"
+                }
+              },
+              {
+                "intervention": "trained",
+                "phases": [
+                  {
+                    "bytes": 366093,
+                    "path": "trained-future.json",
+                    "sha256": "fdf9131f2b7d1eee17dbfde0b5c186d6d72f658a3f111ba5c82baade1153742c"
+                  },
+                  {
+                    "bytes": 123797,
+                    "path": "trained-retention.json",
+                    "sha256": "e85cd38eb8fd6b863d606e4fe024d7f07772d963c2dcbf0c61f6f0179ea25fed"
+                  }
+                ],
+                "publication": {
+                  "bundle_digest": "b345d722e848d3362d9a1d6ff4bbf4fcc34b12c7da9f9dce720c5d3544f924b2",
+                  "generation": 13,
+                  "intervention": "trained",
+                  "procedure_digest": "c6743fdb9fbe9f9a01e3ff02428f8371a20140332264435a2529be4069c550ac",
+                  "semantic_digest": "81eb5b1d800f26fbc776c0b84b5c2ddca5b23f3a629f283b36d7102a9c2368a2",
+                  "source_cut": "160c797c304000b0a31d141467a132677f69678c1adb8d18d4a0d8c739254fed"
+                }
+              },
+              {
+                "intervention": "clean",
+                "phases": [
+                  {
+                    "bytes": 366079,
+                    "path": "clean-future.json",
+                    "sha256": "4961e6050a647391cd5e00b46ce3c0dd177453f6500d73a588fa699923373ec7"
+                  },
+                  {
+                    "bytes": 123799,
+                    "path": "clean-retention.json",
+                    "sha256": "b27ea21a00181652ca18fbd6a311600e3ebcbed502fe94238662c91189d23f5b"
+                  }
+                ],
+                "publication": {
+                  "bundle_digest": "deb1e78754875fa895d200965c150b3118db26f857f1dd990e6774666dc2e6e1",
+                  "generation": 14,
+                  "intervention": "clean",
+                  "procedure_digest": "2944737909af4c5f9902e24d062af30a28b570ccdaafc6fb98248c252f6952f3",
+                  "semantic_digest": "cdd27e38f056a2699ee8b5182bdb5e81fdcedfd8917b5a79fbc4b23c59685440",
+                  "source_cut": "160c797c304000b0a31d141467a132677f69678c1adb8d18d4a0d8c739254fed"
+                }
+              }
+            ],
+            "new_records": 24,
+            "owner": {
+              "bytes": 41225,
+              "path": "OWNER_EXPORT.json",
+              "sha256": "d5faf16488b413fb1c1b9532184d1b26183372d78c884a493bd63b879f2ad576"
+            },
+            "source_ledger_logical_bytes": 5095384,
+            "source_ledger_path": "/tmp/hm9-VctRBK/.tmpTErMmD/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c81/cognitive",
+            "stage": 2,
+            "traffic_after_stage": {
+              "received_bytes": 1877284,
+              "rpc_attempts": 2592,
+              "transmitted_bytes": 1125837
+            },
+            "training_receipt": {
+              "actual_fit_calls": 6,
+              "authority": false,
+              "catalog_contains_explicit_values": true,
+              "compression_established": false,
+              "future_requests_seen": false,
+              "parent_rebased_without_gradients": true,
+              "same_support_catalog_threshold": true,
+              "variants": {
+                "clean": {
+                  "procedure": {
+                    "catalog_bytes": 1043,
+                    "lineage_bytes": 1676,
+                    "native_bytes": 53665,
+                    "native_digest": "2944737909af4c5f9902e24d062af30a28b570ccdaafc6fb98248c252f6952f3",
+                    "original_digest": "f3c5ca47c1681cf754ed7ce3136f883b4829a3a49610e3a0b5ef00451244d9a4",
+                    "parameter_bytes": 9572,
+                    "parameter_digest": "e25bfc7dac3c4799bdeb706a12e499a72403e8527635438070b7237ae8effe49",
+                    "rebuild_parameter_digest": "e25bfc7dac3c4799bdeb706a12e499a72403e8527635438070b7237ae8effe49",
+                    "rebuild_parameters_identical": true,
+                    "support_bytes": 3401,
+                    "training": {
+                      "catalog_contains_explicit_values": true,
+                      "catalog_digest": "b60c113b6dfc807ca3eb42d98c8a6af7c81e054919fd66fdeb80715797491f2b",
+                      "catalog_fixed_by_caller": false,
+                      "cpu_seconds": 0.05107905800000001,
+                      "dataset_digest": "0eb54092198eec4b95c0e74f142990e3d2ed3f6655243486d1e41ec2369bb24a",
+                      "examples_seen": 15000,
+                      "final_cross_entropy": 0.0001222101261238877,
+                      "inherited_hidden_units": 0,
+                      "initial_cross_entropy": 3.213742216897012,
+                      "initial_parameters": "3f7cbcc390f0c4d7ffe5a20d2b2e15d141ef48cd4495feb0df700f8be6a55af9",
+                      "kind": "actual-numpy-tanh-mlp-adam",
+                      "language_model_finetuning": false,
+                      "parent_parameters": null,
+                      "rows": 25,
+                      "seed": 91317,
+                      "source_bound": true,
+                      "steps": 600,
+                      "training_accuracy": 1.0,
+                      "wall_seconds": 0.05107874200007245
+                    }
+                  },
+                  "semantic": {
+                    "catalog_bytes": 842,
+                    "lineage_bytes": 1676,
+                    "native_bytes": 53477,
+                    "native_digest": "cdd27e38f056a2699ee8b5182bdb5e81fdcedfd8917b5a79fbc4b23c59685440",
+                    "original_digest": "e822582dfb0d2a914c2367fbb0fccade03ccda3d89317bd8a566db01d698fe8c",
+                    "parameter_bytes": 9572,
+                    "parameter_digest": "a21ca94d5d0a3f5d0b4ab3ea91a82b48f303ac4ddf8d306f7f37177c84dfdf2c",
+                    "rebuild_parameter_digest": "a21ca94d5d0a3f5d0b4ab3ea91a82b48f303ac4ddf8d306f7f37177c84dfdf2c",
+                    "rebuild_parameters_identical": true,
+                    "support_bytes": 3401,
+                    "training": {
+                      "catalog_contains_explicit_values": true,
+                      "catalog_digest": "4b27b1f605cf368ddc1bd882b0d4fa9ef4ebcb056a28169e1341f4b842629b78",
+                      "catalog_fixed_by_caller": false,
+                      "cpu_seconds": 0.050401484999999996,
+                      "dataset_digest": "84770edfab96e593f486e6781fafbeea7a87a19d8f647da8e3f067becf330704",
+                      "examples_seen": 15000,
+                      "final_cross_entropy": 0.00012197987040161404,
+                      "inherited_hidden_units": 0,
+                      "initial_cross_entropy": 3.2474778697912683,
+                      "initial_parameters": "3f7cbcc390f0c4d7ffe5a20d2b2e15d141ef48cd4495feb0df700f8be6a55af9",
+                      "kind": "actual-numpy-tanh-mlp-adam",
+                      "language_model_finetuning": false,
+                      "parent_parameters": null,
+                      "rows": 25,
+                      "seed": 91317,
+                      "source_bound": true,
+                      "steps": 600,
+                      "training_accuracy": 1.0,
+                      "wall_seconds": 0.050401009000097474
+                    }
+                  }
+                },
+                "frozen": {
+                  "procedure": {
+                    "catalog_bytes": 1043,
+                    "lineage_bytes": 1676,
+                    "native_bytes": 54067,
+                    "native_digest": "64aeeaaa037056e5ae838be4ab5b31026662f6a15c05a27e988a900909060463",
+                    "original_digest": "576160e1c945c2d09fe9836fb4f9daa854f6a36cd16fa9b079137dfb9bf92eca",
+                    "parameter_bytes": 9572,
+                    "parameter_digest": "e5a1f0f2b7678d5f7a57232cb7572e0ac8fee86c57b1f9bdccaad789bfe2f46b",
+                    "support_bytes": 3401,
+                    "training": {
+                      "catalog_contains_explicit_values": true,
+                      "catalog_index_mapping": [
+                        [
+                          0,
+                          0
+                        ],
+                        [
+                          1,
+                          2
+                        ],
+                        [
+                          2,
+                          6
+                        ],
+                        [
+                          3,
+                          7
+                        ],
+                        [
+                          4,
+                          9
+                        ],
+                        [
+                          5,
+                          10
+                        ],
+                        [
+                          6,
+                          12
+                        ],
+                        [
+                          7,
+                          13
+                        ],
+                        [
+                          8,
+                          15
+                        ],
+                        [
+                          9,
+                          16
+                        ],
+                        [
+                          10,
+                          17
+                        ],
+                        [
+                          11,
+                          18
+                        ],
+                        [
+                          12,
+                          19
+                        ],
+                        [
+                          13,
+                          21
+                        ],
+                        [
+                          14,
+                          22
+                        ],
+                        [
+                          15,
+                          23
+                        ],
+                        [
+                          16,
+                          24
+                        ]
+                      ],
+                      "cpu_seconds": 0.0,
+                      "initial_parameters": "e5a1f0f2b7678d5f7a57232cb7572e0ac8fee86c57b1f9bdccaad789bfe2f46b",
+                      "kind": "zero-gradient-matched-metadata-v9",
+                      "new_columns_policy": "same seeded initialization, no target-dependent parameter writes",
+                      "new_output_columns": 8,
+                      "parent_parameters": "ab15ee0ec83194b4096dd974256d835102f5fcfca0b4409b59a1e2c43539a581",
+                      "seed": 91317,
+                      "source_bound": true,
+                      "steps": 0,
+                      "wall_seconds": 0.0
+                    }
+                  },
+                  "semantic": {
+                    "catalog_bytes": 842,
+                    "lineage_bytes": 1676,
+                    "native_bytes": 53874,
+                    "native_digest": "31fea3eb5769707c4b18ccb03140a9a3afdbd0469acaa09f622a6b9ccc6e2d42",
+                    "original_digest": "b85b67d917865d8cf42b6275cb041bfd3f0fab68efdfec86bff21d334c489898",
+                    "parameter_bytes": 9572,
+                    "parameter_digest": "4a8278c204e9edd182a31b90a56f05b8be1a71ec8322d1a8e0124fd533cc61cc",
+                    "support_bytes": 3401,
+                    "training": {
+                      "catalog_contains_explicit_values": true,
+                      "catalog_index_mapping": [
+                        [
+                          0,
+                          0
+                        ],
+                        [
+                          1,
+                          1
+                        ],
+                        [
+                          2,
+                          2
+                        ],
+                        [
+                          3,
+                          4
+                        ],
+                        [
+                          4,
+                          5
+                        ],
+                        [
+                          5,
+                          7
+                        ],
+                        [
+                          6,
+                          8
+                        ],
+                        [
+                          7,
+                          9
+                        ],
+                        [
+                          8,
+                          11
+                        ],
+                        [
+                          9,
+                          12
+                        ],
+                        [
+                          10,
+                          14
+                        ],
+                        [
+                          11,
+                          15
+                        ],
+                        [
+                          12,
+                          18
+                        ],
+                        [
+                          13,
+                          19
+                        ],
+                        [
+                          14,
+                          21
+                        ],
+                        [
+                          15,
+                          22
+                        ],
+                        [
+                          16,
+                          24
+                        ]
+                      ],
+                      "cpu_seconds": 0.0,
+                      "initial_parameters": "4a8278c204e9edd182a31b90a56f05b8be1a71ec8322d1a8e0124fd533cc61cc",
+                      "kind": "zero-gradient-matched-metadata-v9",
+                      "new_columns_policy": "same seeded initialization, no target-dependent parameter writes",
+                      "new_output_columns": 8,
+                      "parent_parameters": "aabe1dae51fadfec1e07a349a8b58a270f1b3edba53b0b7aed6736b68fe5a1f9",
+                      "seed": 91317,
+                      "source_bound": true,
+                      "steps": 0,
+                      "wall_seconds": 0.0
+                    }
+                  }
+                },
+                "trained": {
+                  "procedure": {
+                    "catalog_bytes": 1043,
+                    "lineage_bytes": 1676,
+                    "native_bytes": 53707,
+                    "native_digest": "c6743fdb9fbe9f9a01e3ff02428f8371a20140332264435a2529be4069c550ac",
+                    "original_digest": "2855238c83d78e5310711eb1c6f0c592573160fd823838d61921fead1aed2ad7",
+                    "parameter_bytes": 9572,
+                    "parameter_digest": "162d16aa6aa7a55f221c2c093a25e646ed3bfa12658e93639546577efd3a7e80",
+                    "support_bytes": 3401,
+                    "training": {
+                      "catalog_contains_explicit_values": true,
+                      "catalog_digest": "b60c113b6dfc807ca3eb42d98c8a6af7c81e054919fd66fdeb80715797491f2b",
+                      "catalog_fixed_by_caller": false,
+                      "cpu_seconds": 0.05094046300000002,
+                      "dataset_digest": "0eb54092198eec4b95c0e74f142990e3d2ed3f6655243486d1e41ec2369bb24a",
+                      "examples_seen": 15000,
+                      "final_cross_entropy": 7.519284141225878e-05,
+                      "inherited_hidden_units": 32,
+                      "initial_cross_entropy": 1.8575746138241862,
+                      "initial_parameters": "e5a1f0f2b7678d5f7a57232cb7572e0ac8fee86c57b1f9bdccaad789bfe2f46b",
+                      "kind": "actual-numpy-tanh-mlp-adam",
+                      "language_model_finetuning": false,
+                      "parent_parameters": "ab15ee0ec83194b4096dd974256d835102f5fcfca0b4409b59a1e2c43539a581",
+                      "rows": 25,
+                      "seed": 91317,
+                      "source_bound": true,
+                      "steps": 600,
+                      "training_accuracy": 1.0,
+                      "wall_seconds": 0.05094711800006735
+                    }
+                  },
+                  "semantic": {
+                    "catalog_bytes": 842,
+                    "lineage_bytes": 1676,
+                    "native_bytes": 53552,
+                    "native_digest": "81eb5b1d800f26fbc776c0b84b5c2ddca5b23f3a629f283b36d7102a9c2368a2",
+                    "original_digest": "7cb1207e4b015e034e1a369925f810e2c1ce7f4bff223f44b06cf50cd5c3f755",
+                    "parameter_bytes": 9572,
+                    "parameter_digest": "a30d6efb1383683b99cca175fc1fd2de8481fd17fd3dc513b14d44dce24b235f",
+                    "support_bytes": 3401,
+                    "training": {
+                      "catalog_contains_explicit_values": true,
+                      "catalog_digest": "4b27b1f605cf368ddc1bd882b0d4fa9ef4ebcb056a28169e1341f4b842629b78",
+                      "catalog_fixed_by_caller": false,
+                      "cpu_seconds": 0.050832739000000016,
+                      "dataset_digest": "84770edfab96e593f486e6781fafbeea7a87a19d8f647da8e3f067becf330704",
+                      "examples_seen": 15000,
+                      "final_cross_entropy": 7.109454280132036e-05,
+                      "inherited_hidden_units": 32,
+                      "initial_cross_entropy": 1.9378394562990011,
+                      "initial_parameters": "4a8278c204e9edd182a31b90a56f05b8be1a71ec8322d1a8e0124fd533cc61cc",
+                      "kind": "actual-numpy-tanh-mlp-adam",
+                      "language_model_finetuning": false,
+                      "parent_parameters": "aabe1dae51fadfec1e07a349a8b58a270f1b3edba53b0b7aed6736b68fe5a1f9",
+                      "rows": 25,
+                      "seed": 91317,
+                      "source_bound": true,
+                      "steps": 600,
+                      "training_accuracy": 1.0,
+                      "wall_seconds": 0.050833503000148994
+                    }
+                  }
+                },
+                "zero": {
+                  "procedure": {
+                    "catalog_bytes": 1043,
+                    "lineage_bytes": 1676,
+                    "native_bytes": 54166,
+                    "native_digest": "addd4f16bb742fe9012a0bcf85a53c1083713f7782865f57bee08cac8575a6ce",
+                    "original_digest": "d86e15b7ca459a632a0f4f4309c6d942f63e2baa69e451062f187cda9ef03cd4",
+                    "parameter_bytes": 9572,
+                    "parameter_digest": "3f7cbcc390f0c4d7ffe5a20d2b2e15d141ef48cd4495feb0df700f8be6a55af9",
+                    "support_bytes": 3401,
+                    "training": {
+                      "catalog_contains_explicit_values": true,
+                      "catalog_index_mapping": [],
+                      "cpu_seconds": 0.0,
+                      "initial_parameters": "3f7cbcc390f0c4d7ffe5a20d2b2e15d141ef48cd4495feb0df700f8be6a55af9",
+                      "kind": "zero-gradient-matched-metadata-v9",
+                      "new_columns_policy": "same seeded initialization, no target-dependent parameter writes",
+                      "new_output_columns": 25,
+                      "parent_parameters": null,
+                      "seed": 91317,
+                      "source_bound": true,
+                      "steps": 0,
+                      "wall_seconds": 0.0
+                    }
+                  },
+                  "semantic": {
+                    "catalog_bytes": 842,
+                    "lineage_bytes": 1676,
+                    "native_bytes": 53964,
+                    "native_digest": "32100ef83f4d59459fce24f9ddc051f2f7c3c23cbbd0cfc8045f71a902d3d38d",
+                    "original_digest": "79f344767810094cf6b104c6162a6732278c17000742fc219abb64baf1d780af",
+                    "parameter_bytes": 9572,
+                    "parameter_digest": "3f7cbcc390f0c4d7ffe5a20d2b2e15d141ef48cd4495feb0df700f8be6a55af9",
+                    "support_bytes": 3401,
+                    "training": {
+                      "catalog_contains_explicit_values": true,
+                      "catalog_index_mapping": [],
+                      "cpu_seconds": 0.0,
+                      "initial_parameters": "3f7cbcc390f0c4d7ffe5a20d2b2e15d141ef48cd4495feb0df700f8be6a55af9",
+                      "kind": "zero-gradient-matched-metadata-v9",
+                      "new_columns_policy": "same seeded initialization, no target-dependent parameter writes",
+                      "new_output_columns": 25,
+                      "parent_parameters": null,
+                      "seed": 91317,
+                      "source_bound": true,
+                      "steps": 0,
+                      "wall_seconds": 0.0
+                    }
+                  }
+                }
+              },
+              "wall_ns": 329534350
+            }
+          }
+        ]
+      },
+      "child_identity": {
+        "bytes": 60607,
+        "sha256": "4ce318ceefaa71cd37bc962f1c69d1ebc41154f84711a9eba8ec4d0eb7b5cf59"
+      },
+      "directory": "catalog",
+      "parent_supervision_wall_ns": 384813475402,
+      "representation": "catalog",
+      "resource_identity": {
+        "bytes": 4669,
+        "path": "catalog-resources.json",
+        "sha256": "64e427a3f787f329086c08c75ce232a710009d00f9bae2db5ec1bef9384e9244"
+      }
+    },
+    {
+      "child": {
+        "actual_fit_calls": 18,
+        "actual_training_processes": 3,
+        "code_identity": {
+          "digest": "624a63cd9fa0bd7d714f4de2cb2f261e4bc91aae74432f09746b6f1f7f92c0a8",
+          "files": {
+            "memory-cell-v6/v6/__init__.py": {
+              "bytes": 84,
+              "sha256": "e48c0b6136220a43e666e0616e415b365f4041f4ce1211846d9a144d7073bfed"
+            },
+            "memory-cell-v6/v6/cells.py": {
+              "bytes": 16224,
+              "sha256": "e0b2f7dbf3f280ebf6618c68c60b7799bb945eaf76cc603b6bfcfc3d33de2024"
+            },
+            "memory-cell-v6/v6/contracts.py": {
+              "bytes": 5785,
+              "sha256": "42be7b9d9f0e3afe86c5ad52c58d8d4b8a5ba8972846c0702fc1e42c3b62834f"
+            },
+            "memory-cell-v6/v6/values.py": {
+              "bytes": 1789,
+              "sha256": "5b3d658ce921ec7e91778fa58507091257bba151eb773f515fdf0ad6097dedfb"
+            },
+            "memory-cell-v7/native_export.py": {
+              "bytes": 2976,
+              "sha256": "cbdc28764bd14c9524ce046ea6fd0a1c8043a75225a66def4b8ce23d874a9616"
+            },
+            "memory-cell-v7/training.py": {
+              "bytes": 9763,
+              "sha256": "d6205c6020fb2218a9afb56371482f77fe8a2b49ba42ec9b4f0f516eeb55a0c0"
+            },
+            "memory-cell-v7/training_worker.py": {
+              "bytes": 965,
+              "sha256": "43392c23d00fa1a2c706742c9834fd27b9319f22b05927d796015c9d542cc040"
+            },
+            "memory-cell-v9/learning/PROTOCOL.json": {
+              "bytes": 3519,
+              "sha256": "b6154507a2773fcd0896c7c77ac90bc1b08d3c4460042e3b796637c49efa3feb"
+            },
+            "memory-cell-v9/learning/__init__.py": {
+              "bytes": 75,
+              "sha256": "5aa574f8c0e9a4829f38e83e0b35c006236ef8ba84ecdbb09ebb11775d3ca114"
+            },
+            "memory-cell-v9/learning/byte_model.py": {
+              "bytes": 9217,
+              "sha256": "b53b93eb18b4784000eb7ab3cf09b84a57da2d545928247071960ddccb24b3f3"
+            },
+            "memory-cell-v9/learning/paired.py": {
+              "bytes": 7019,
+              "sha256": "a95abe8a88d420e66649ffbce51bddddabfbf37e3fa358e6f2fca06f4507c61f"
+            },
+            "memory-cell-v9/learning/resource_cleanup.py": {
+              "bytes": 4597,
+              "sha256": "9eb4ed0868da1fe01a568369d9243607ee9bb7de8d4a6c10527c3a9ee7a812d5"
+            },
+            "memory-cell-v9/learning/resource_monitor.py": {
+              "bytes": 14324,
+              "sha256": "541811a934c1ab6319d3d925599fa12fd8e5beadb0a4a4d87cf6a2a7cb22d7bf"
+            },
+            "memory-cell-v9/learning/resource_samples.py": {
+              "bytes": 7857,
+              "sha256": "626447e8fbf4f6f81403ac63dc587a0ec970c41deebddc59c658f213754edc87"
+            },
+            "memory-cell-v9/learning/worker.py": {
+              "bytes": 1766,
+              "sha256": "0201761844731e8f58dd9813e8140509a310b53ec8b378b797aa551eda2c3630"
+            }
+          }
+        },
+        "final_use_authority_granted": false,
+        "fixture_sha256": "750ecabdcdbc0aa9f5bf253615efaff090800c3a96a2958e0d17a4df829c6502",
+        "logical_resident_budget_bytes_per_type": 262144,
+        "natural_language_addressing_evaluated": false,
+        "pid": 42816,
+        "representation": "byte",
+        "runtime_root": "/tmp/hm9-agVICQ",
+        "schema": "hepta.memory.v9.continual-child.v1",
+        "stages": [
+          {
+            "artifact_owner_logical_bytes": 7242553,
+            "artifact_owner_path": "/tmp/hm9-agVICQ/.tmpsOzjtf",
+            "before_retention": null,
+            "continuation_selection": {
+              "bundle_digest": "69013704c33aaa7537a0fad24bbcf92ac6ca6b675b32ddced45baecd191ac69a",
+              "generation": 5,
+              "intervention": "trained",
+              "procedure_digest": "aba9f0ef1c9c5a59619a30a1805e3988484070ef94f00871ec88d3e864d0206e",
+              "semantic_digest": "2f7422d220abc370958ebd054196d9e2343fef5973452c22fcb4716f4ee9dfbc",
+              "source_cut": "a4cd657c3cba20dec74eeda13b2b96f3e5b80b7e53911656c814f838d703f6d4"
+            },
+            "directory": "stage-0",
+            "families": {
+              "bridge-old-new": 8,
+              "interleaved-programs": 8,
+              "local-new-domain": 8
+            },
+            "id": "stage-0",
+            "interventions": [
+              {
+                "intervention": "zero",
+                "phases": [
+                  {
+                    "bytes": 299791,
+                    "path": "zero-future.json",
+                    "sha256": "3da1bf2eebcb9dad0d98ea55bc3f8dd0cbedb7f96d188d4c2be291dff3ebe571"
+                  },
+                  {
+                    "bytes": 101730,
+                    "path": "zero-retention.json",
+                    "sha256": "c336e17f4ec4e0feb2b136864714a35ebee86c22dfbdb1b9ecf75c47978f389c"
+                  }
+                ],
+                "publication": {
+                  "bundle_digest": "ab84b7cc19381aecd2e2014c5a72595af30b9b3c80b9535c58a9abda7c98b032",
+                  "generation": 1,
+                  "intervention": "zero",
+                  "procedure_digest": "8080fb5d789bc0afd11dbf1f6caeacb1608289af288d2c8d00dddb257e3111fb",
+                  "semantic_digest": "f4f11775d39fc9920ed68fe8efa613da3bc9cee27adbb83f5b465f5ee6419b19",
+                  "source_cut": "a4cd657c3cba20dec74eeda13b2b96f3e5b80b7e53911656c814f838d703f6d4"
+                }
+              },
+              {
+                "intervention": "frozen",
+                "phases": [
+                  {
+                    "bytes": 299789,
+                    "path": "frozen-future.json",
+                    "sha256": "b411303af4af248cb96da9d80bc8ed4e189c1778c156c42052abfabb0c275a54"
+                  },
+                  {
+                    "bytes": 101724,
+                    "path": "frozen-retention.json",
+                    "sha256": "188bf227587e16f0c44989f6173edbd717eb688588849d8f8c734c690b121e13"
+                  }
+                ],
+                "publication": {
+                  "bundle_digest": "819030c2711d81cf7f1132e3a95fbc32cff70873fb617d0250d33368af6532a7",
+                  "generation": 2,
+                  "intervention": "frozen",
+                  "procedure_digest": "db0552590df39b2ab10b91cc42d7b1a54f545a0effd7720cbedb16bbe6076e78",
+                  "semantic_digest": "32f45335d623a905783cd453bde0b8a3c5a7065071ad993d7d6bf4a4869114a8",
+                  "source_cut": "a4cd657c3cba20dec74eeda13b2b96f3e5b80b7e53911656c814f838d703f6d4"
+                }
+              },
+              {
+                "intervention": "trained",
+                "phases": [
+                  {
+                    "bytes": 365657,
+                    "path": "trained-future.json",
+                    "sha256": "f206ca4d5f0efe0239b63fda3b92b48117d135a7d10613f1dcb687c338badccd"
+                  },
+                  {
+                    "bytes": 123705,
+                    "path": "trained-retention.json",
+                    "sha256": "4748987af699ec45bd550668c16242a459f1366c635b509f9a155d7a5e1e5d32"
+                  }
+                ],
+                "publication": {
+                  "bundle_digest": "332b0ed19f5c3fd21b5d33e7735a688c3338a9af231b93abe4cc5489ea7f3552",
+                  "generation": 3,
+                  "intervention": "trained",
+                  "procedure_digest": "aba9f0ef1c9c5a59619a30a1805e3988484070ef94f00871ec88d3e864d0206e",
+                  "semantic_digest": "2f7422d220abc370958ebd054196d9e2343fef5973452c22fcb4716f4ee9dfbc",
+                  "source_cut": "a4cd657c3cba20dec74eeda13b2b96f3e5b80b7e53911656c814f838d703f6d4"
+                }
+              },
+              {
+                "intervention": "clean",
+                "phases": [
+                  {
+                    "bytes": 365643,
+                    "path": "clean-future.json",
+                    "sha256": "494c00128af039a0ceac0579885880c7338d0df2de725b754c508ad4b6b5c0e6"
+                  },
+                  {
+                    "bytes": 123697,
+                    "path": "clean-retention.json",
+                    "sha256": "c04edcbd4649bf4ae7b0c6c482e37a68c69916d2678165e1b0f38e39ef88cbcf"
+                  }
+                ],
+                "publication": {
+                  "bundle_digest": "cc9f4925641f62cc1ae886fc6e9bdc61d200cc8b5faecd9d13f08e8450f95c1e",
+                  "generation": 4,
+                  "intervention": "clean",
+                  "procedure_digest": "cd0ea3def3932d8200a7e363f9b5f307fc2aee6f55661c652c90e0fe4be6060b",
+                  "semantic_digest": "199124a117177a62b1945f6e06ebde68f19eb170814a59234f3669a024939d6d",
+                  "source_cut": "a4cd657c3cba20dec74eeda13b2b96f3e5b80b7e53911656c814f838d703f6d4"
+                }
+              }
+            ],
+            "new_records": 24,
+            "owner": {
+              "bytes": 15381,
+              "path": "OWNER_EXPORT.json",
+              "sha256": "5ef1dc704f7d3fe5416a94d9d9c52d8f69bac5d8ffe44b0a57b335f9b9e2e8f1"
+            },
+            "source_ledger_logical_bytes": 4935640,
+            "source_ledger_path": "/tmp/hm9-agVICQ/.tmpPL6lX4/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c81/cognitive",
+            "stage": 0,
+            "traffic_after_stage": {
+              "received_bytes": 582664,
+              "rpc_attempts": 832,
+              "transmitted_bytes": 360724
+            },
+            "training_receipt": {
+              "actual_fit_calls": 6,
+              "authority": false,
+              "catalog_contains_explicit_values": false,
+              "compression_established": false,
+              "future_requests_seen": false,
+              "parent_rebased_without_gradients": false,
+              "same_support_catalog_threshold": true,
+              "variants": {
+                "clean": {
+                  "procedure": {
+                    "catalog_bytes": 0,
+                    "lineage_bytes": 604,
+                    "native_bytes": 705431,
+                    "native_digest": "cd0ea3def3932d8200a7e363f9b5f307fc2aee6f55661c652c90e0fe4be6060b",
+                    "parameter_bytes": 143552,
+                    "parameter_digest": "ded3a273746f0c3552a41f466c64b9db16d894589466ef7ffdb529cc6ca103dd",
+                    "rebuild_parameters_identical": true,
+                    "rebuild_receipt": {
+                      "catalog_contains_explicit_values": false,
+                      "dataset_digest": "45063ed9d641d665ddbbe5367976b77b0125c621cf87d52a9f3eb56473afb0fe",
+                      "exact_training_bit_rows": 9,
+                      "final_cross_entropy": 8.955889155845393e-05,
+                      "final_parameters": "ded3a273746f0c3552a41f466c64b9db16d894589466ef7ffdb529cc6ca103dd",
+                      "initial_cross_entropy": 0.694445361855545,
+                      "initial_parameters": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3",
+                      "kind": "actual-numpy-tanh-binary-adam-v9",
+                      "parent_parameters": null,
+                      "rows": 9,
+                      "steps": 600,
+                      "wall_ns": 268614344
+                    },
+                    "support_bytes": 1225,
+                    "training": {
+                      "catalog_contains_explicit_values": false,
+                      "dataset_digest": "45063ed9d641d665ddbbe5367976b77b0125c621cf87d52a9f3eb56473afb0fe",
+                      "exact_training_bit_rows": 9,
+                      "final_cross_entropy": 8.955889155845393e-05,
+                      "final_parameters": "ded3a273746f0c3552a41f466c64b9db16d894589466ef7ffdb529cc6ca103dd",
+                      "initial_cross_entropy": 0.694445361855545,
+                      "initial_parameters": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3",
+                      "kind": "actual-numpy-tanh-binary-adam-v9",
+                      "parent_parameters": null,
+                      "rows": 9,
+                      "steps": 600,
+                      "wall_ns": 271834660
+                    }
+                  },
+                  "semantic": {
+                    "catalog_bytes": 0,
+                    "lineage_bytes": 604,
+                    "native_bytes": 706810,
+                    "native_digest": "199124a117177a62b1945f6e06ebde68f19eb170814a59234f3669a024939d6d",
+                    "parameter_bytes": 143552,
+                    "parameter_digest": "d59dda700527906f2c00cfe84641a9246becccd521adbddca108affdd363191b",
+                    "rebuild_parameters_identical": true,
+                    "rebuild_receipt": {
+                      "catalog_contains_explicit_values": false,
+                      "dataset_digest": "f20ace32824ccf9825b6fbdc3e7b77fc892d08ea67f4a64f5ae37bb5bef8fe87",
+                      "exact_training_bit_rows": 9,
+                      "final_cross_entropy": 5.150555090122643e-05,
+                      "final_parameters": "d59dda700527906f2c00cfe84641a9246becccd521adbddca108affdd363191b",
+                      "initial_cross_entropy": 0.6943895772171652,
+                      "initial_parameters": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3",
+                      "kind": "actual-numpy-tanh-binary-adam-v9",
+                      "parent_parameters": null,
+                      "rows": 9,
+                      "steps": 600,
+                      "wall_ns": 367092775
+                    },
+                    "support_bytes": 1225,
+                    "training": {
+                      "catalog_contains_explicit_values": false,
+                      "dataset_digest": "f20ace32824ccf9825b6fbdc3e7b77fc892d08ea67f4a64f5ae37bb5bef8fe87",
+                      "exact_training_bit_rows": 9,
+                      "final_cross_entropy": 5.150555090122643e-05,
+                      "final_parameters": "d59dda700527906f2c00cfe84641a9246becccd521adbddca108affdd363191b",
+                      "initial_cross_entropy": 0.6943895772171652,
+                      "initial_parameters": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3",
+                      "kind": "actual-numpy-tanh-binary-adam-v9",
+                      "parent_parameters": null,
+                      "rows": 9,
+                      "steps": 600,
+                      "wall_ns": 367866848
+                    }
+                  }
+                },
+                "frozen": {
+                  "procedure": {
+                    "catalog_bytes": 0,
+                    "lineage_bytes": 604,
+                    "native_bytes": 741897,
+                    "native_digest": "db0552590df39b2ab10b91cc42d7b1a54f545a0effd7720cbedb16bbe6076e78",
+                    "parameter_bytes": 143552,
+                    "parameter_digest": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3",
+                    "support_bytes": 1225,
+                    "training": {
+                      "kind": "frozen-parent-byte-control",
+                      "parameters_identical_to_parent": false,
+                      "parent_parameters": null,
+                      "steps": 0
+                    }
+                  },
+                  "semantic": {
+                    "catalog_bytes": 0,
+                    "lineage_bytes": 604,
+                    "native_bytes": 741896,
+                    "native_digest": "32f45335d623a905783cd453bde0b8a3c5a7065071ad993d7d6bf4a4869114a8",
+                    "parameter_bytes": 143552,
+                    "parameter_digest": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3",
+                    "support_bytes": 1225,
+                    "training": {
+                      "kind": "frozen-parent-byte-control",
+                      "parameters_identical_to_parent": false,
+                      "parent_parameters": null,
+                      "steps": 0
+                    }
+                  }
+                },
+                "trained": {
+                  "procedure": {
+                    "catalog_bytes": 0,
+                    "lineage_bytes": 604,
+                    "native_bytes": 705431,
+                    "native_digest": "aba9f0ef1c9c5a59619a30a1805e3988484070ef94f00871ec88d3e864d0206e",
+                    "parameter_bytes": 143552,
+                    "parameter_digest": "ded3a273746f0c3552a41f466c64b9db16d894589466ef7ffdb529cc6ca103dd",
+                    "support_bytes": 1225,
+                    "training": {
+                      "catalog_contains_explicit_values": false,
+                      "dataset_digest": "45063ed9d641d665ddbbe5367976b77b0125c621cf87d52a9f3eb56473afb0fe",
+                      "exact_training_bit_rows": 9,
+                      "final_cross_entropy": 8.955889155845393e-05,
+                      "final_parameters": "ded3a273746f0c3552a41f466c64b9db16d894589466ef7ffdb529cc6ca103dd",
+                      "initial_cross_entropy": 0.694445361855545,
+                      "initial_parameters": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3",
+                      "kind": "actual-numpy-tanh-binary-adam-v9",
+                      "parent_parameters": null,
+                      "rows": 9,
+                      "steps": 600,
+                      "wall_ns": 273307040
+                    }
+                  },
+                  "semantic": {
+                    "catalog_bytes": 0,
+                    "lineage_bytes": 604,
+                    "native_bytes": 706810,
+                    "native_digest": "2f7422d220abc370958ebd054196d9e2343fef5973452c22fcb4716f4ee9dfbc",
+                    "parameter_bytes": 143552,
+                    "parameter_digest": "d59dda700527906f2c00cfe84641a9246becccd521adbddca108affdd363191b",
+                    "support_bytes": 1225,
+                    "training": {
+                      "catalog_contains_explicit_values": false,
+                      "dataset_digest": "f20ace32824ccf9825b6fbdc3e7b77fc892d08ea67f4a64f5ae37bb5bef8fe87",
+                      "exact_training_bit_rows": 9,
+                      "final_cross_entropy": 5.150555090122643e-05,
+                      "final_parameters": "d59dda700527906f2c00cfe84641a9246becccd521adbddca108affdd363191b",
+                      "initial_cross_entropy": 0.6943895772171652,
+                      "initial_parameters": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3",
+                      "kind": "actual-numpy-tanh-binary-adam-v9",
+                      "parent_parameters": null,
+                      "rows": 9,
+                      "steps": 600,
+                      "wall_ns": 364719346
+                    }
+                  }
+                },
+                "zero": {
+                  "procedure": {
+                    "catalog_bytes": 0,
+                    "lineage_bytes": 604,
+                    "native_bytes": 741897,
+                    "native_digest": "8080fb5d789bc0afd11dbf1f6caeacb1608289af288d2c8d00dddb257e3111fb",
+                    "parameter_bytes": 143552,
+                    "parameter_digest": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3",
+                    "support_bytes": 1225,
+                    "training": {
+                      "kind": "zero-step-byte-control",
+                      "steps": 0
+                    }
+                  },
+                  "semantic": {
+                    "catalog_bytes": 0,
+                    "lineage_bytes": 604,
+                    "native_bytes": 741896,
+                    "native_digest": "f4f11775d39fc9920ed68fe8efa613da3bc9cee27adbb83f5b465f5ee6419b19",
+                    "parameter_bytes": 143552,
+                    "parameter_digest": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3",
+                    "support_bytes": 1225,
+                    "training": {
+                      "kind": "zero-step-byte-control",
+                      "steps": 0
+                    }
+                  }
+                }
+              },
+              "wall_ns": 2046384240
+            }
+          },
+          {
+            "artifact_owner_logical_bytes": 14430333,
+            "artifact_owner_path": "/tmp/hm9-agVICQ/.tmpsOzjtf",
+            "before_retention": {
+              "bytes": 122276,
+              "path": "before-retention.json",
+              "sha256": "36d60f0e655f9fdd5caa4c949bb88109852fe44ac832e0f60370252b8781e38d"
+            },
+            "continuation_selection": {
+              "bundle_digest": "4722baf90a22b122f6ffb6075dfe861509e0e1b8a57079d565a765af667a0b66",
+              "generation": 10,
+              "intervention": "trained",
+              "procedure_digest": "03fa0ed083593e9a0179800da6b1e199efb3510f2b236eb770c106e896a1ecfa",
+              "semantic_digest": "56b14531f66c37b548e3dc314dd2cc65a8ad260d1a469b58e56fcacada516507",
+              "source_cut": "3c870088f474bd5f6e6f3d755b347fd69e8a9dc3880afe9299a31de2c4f4495c"
+            },
+            "directory": "stage-1",
+            "families": {
+              "bridge-old-new": 8,
+              "interleaved-programs": 8,
+              "local-new-domain": 8
+            },
+            "id": "stage-1",
+            "interventions": [
+              {
+                "intervention": "zero",
+                "phases": [
+                  {
+                    "bytes": 299808,
+                    "path": "zero-future.json",
+                    "sha256": "60ba8d1cdc3a54cacfc00d8b501f06e9c7f3866ca6ee2ff6671781dfc4fc1e5a"
+                  },
+                  {
+                    "bytes": 101738,
+                    "path": "zero-retention.json",
+                    "sha256": "ede405d9ad160379b8464f83831235bc794ba3b64fb49ed99068f63b85d6da56"
+                  }
+                ],
+                "publication": {
+                  "bundle_digest": "44eccee109f77057213914be0820a2e01d6bdd051db452a17d8ae73d4a91fcf6",
+                  "generation": 6,
+                  "intervention": "zero",
+                  "procedure_digest": "01cc928c7216283f9ce34bf24492ee08e36624972d8b6cf3f44fec3dff787c4e",
+                  "semantic_digest": "615e3769f723b0005af8ed5f05aee2ca341557fbcb3b331ea46026d36e492679",
+                  "source_cut": "3c870088f474bd5f6e6f3d755b347fd69e8a9dc3880afe9299a31de2c4f4495c"
+                }
+              },
+              {
+                "intervention": "frozen",
+                "phases": [
+                  {
+                    "bytes": 323020,
+                    "path": "frozen-future.json",
+                    "sha256": "90bcae1d594b7107313c588bec8f81c133d9e7bf5fcc1cc9ba9a26796aae2430"
+                  },
+                  {
+                    "bytes": 123710,
+                    "path": "frozen-retention.json",
+                    "sha256": "db93e2fc97b31d57deb86824461385b788855794e061088018a1460ee7aa3b8a"
+                  }
+                ],
+                "publication": {
+                  "bundle_digest": "365097876650dab7351f1046024c925ac5bfedcf6f290d99daf791de71317166",
+                  "generation": 7,
+                  "intervention": "frozen",
+                  "procedure_digest": "0e6e34d2033988a4b30d50a7814634de6e322b05046bce5667ebd0ff3d378fa6",
+                  "semantic_digest": "ce61ebad9ce96401803bc13c4c30d0d11a0d1f906176141374380e9f71b27db8",
+                  "source_cut": "3c870088f474bd5f6e6f3d755b347fd69e8a9dc3880afe9299a31de2c4f4495c"
+                }
+              },
+              {
+                "intervention": "trained",
+                "phases": [
+                  {
+                    "bytes": 365660,
+                    "path": "trained-future.json",
+                    "sha256": "819467d1b782e32a4f7fcda357a00549017758b654c97525a69a4d1a5b6a6667"
+                  },
+                  {
+                    "bytes": 123713,
+                    "path": "trained-retention.json",
+                    "sha256": "274cd10b04a51c1cd61e4e4fa050441aa59e2bc6cda735dd817100e2c289eccc"
+                  }
+                ],
+                "publication": {
+                  "bundle_digest": "f2ecf2d1d2850937e4b24837c2cef3d6da47942ff2b6eec69512a692e2b62e1b",
+                  "generation": 8,
+                  "intervention": "trained",
+                  "procedure_digest": "03fa0ed083593e9a0179800da6b1e199efb3510f2b236eb770c106e896a1ecfa",
+                  "semantic_digest": "56b14531f66c37b548e3dc314dd2cc65a8ad260d1a469b58e56fcacada516507",
+                  "source_cut": "3c870088f474bd5f6e6f3d755b347fd69e8a9dc3880afe9299a31de2c4f4495c"
+                }
+              },
+              {
+                "intervention": "clean",
+                "phases": [
+                  {
+                    "bytes": 365634,
+                    "path": "clean-future.json",
+                    "sha256": "2d7e1218809ef39254478f7a3ef3ee59c20339fa1c72ae89f7451195a0233f9a"
+                  },
+                  {
+                    "bytes": 123707,
+                    "path": "clean-retention.json",
+                    "sha256": "22657fa16b1cb24b1d4cfe4c3b392a859ee0c3a19a962d1a3fabaa821d87e439"
+                  }
+                ],
+                "publication": {
+                  "bundle_digest": "eb1a02c87cfde860fe325599e30dc23bd0f9b8e5bdeff1d869bc85b699966279",
+                  "generation": 9,
+                  "intervention": "clean",
+                  "procedure_digest": "d972632fd90e43fdc143cb33abce3ea15113fd1ae7ec6e04ec63b4c335447865",
+                  "semantic_digest": "d2a2fd32e0bc41e170390913c2a820751d9877933cc3a20dd0a629dc3a491c5e",
+                  "source_cut": "3c870088f474bd5f6e6f3d755b347fd69e8a9dc3880afe9299a31de2c4f4495c"
+                }
+              }
+            ],
+            "new_records": 24,
+            "owner": {
+              "bytes": 28302,
+              "path": "OWNER_EXPORT.json",
+              "sha256": "a7dee203319ca66b3af438123ddd6cad8e888bc2ac495db084e33eebe4e9dc7c"
+            },
+            "source_ledger_logical_bytes": 4935640,
+            "source_ledger_path": "/tmp/hm9-agVICQ/.tmpPL6lX4/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c81/cognitive",
+            "stage": 1,
+            "traffic_after_stage": {
+              "received_bytes": 1223321,
+              "rpc_attempts": 1712,
+              "transmitted_bytes": 743197
+            },
+            "training_receipt": {
+              "actual_fit_calls": 6,
+              "authority": false,
+              "catalog_contains_explicit_values": false,
+              "compression_established": false,
+              "future_requests_seen": false,
+              "parent_rebased_without_gradients": true,
+              "same_support_catalog_threshold": true,
+              "variants": {
+                "clean": {
+                  "procedure": {
+                    "catalog_bytes": 0,
+                    "lineage_bytes": 1140,
+                    "native_bytes": 700932,
+                    "native_digest": "d972632fd90e43fdc143cb33abce3ea15113fd1ae7ec6e04ec63b4c335447865",
+                    "parameter_bytes": 143552,
+                    "parameter_digest": "f9b92346b6fa8fd41c07ce0dfb692fc2cb1c7a87429659a00621e64ebd15766a",
+                    "rebuild_parameters_identical": true,
+                    "rebuild_receipt": {
+                      "catalog_contains_explicit_values": false,
+                      "dataset_digest": "5fa8fb9e88faab471b1e76140127afb1e1ec8e8e7c33ae06c1e1b9ad746ae27f",
+                      "exact_training_bit_rows": 17,
+                      "final_cross_entropy": 0.00011732431661290858,
+                      "final_parameters": "f9b92346b6fa8fd41c07ce0dfb692fc2cb1c7a87429659a00621e64ebd15766a",
+                      "initial_cross_entropy": 0.6945386075397855,
+                      "initial_parameters": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3",
+                      "kind": "actual-numpy-tanh-binary-adam-v9",
+                      "parent_parameters": null,
+                      "rows": 17,
+                      "steps": 600,
+                      "wall_ns": 364878611
+                    },
+                    "support_bytes": 2313,
+                    "training": {
+                      "catalog_contains_explicit_values": false,
+                      "dataset_digest": "5fa8fb9e88faab471b1e76140127afb1e1ec8e8e7c33ae06c1e1b9ad746ae27f",
+                      "exact_training_bit_rows": 17,
+                      "final_cross_entropy": 0.00011732431661290858,
+                      "final_parameters": "f9b92346b6fa8fd41c07ce0dfb692fc2cb1c7a87429659a00621e64ebd15766a",
+                      "initial_cross_entropy": 0.6945386075397855,
+                      "initial_parameters": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3",
+                      "kind": "actual-numpy-tanh-binary-adam-v9",
+                      "parent_parameters": null,
+                      "rows": 17,
+                      "steps": 600,
+                      "wall_ns": 361392731
+                    }
+                  },
+                  "semantic": {
+                    "catalog_bytes": 0,
+                    "lineage_bytes": 1140,
+                    "native_bytes": 701423,
+                    "native_digest": "d2a2fd32e0bc41e170390913c2a820751d9877933cc3a20dd0a629dc3a491c5e",
+                    "parameter_bytes": 143552,
+                    "parameter_digest": "80886a6eb61c7dba807164efdff9f9c3efdb220049697d3687fc2dad031500a6",
+                    "rebuild_parameters_identical": true,
+                    "rebuild_receipt": {
+                      "catalog_contains_explicit_values": false,
+                      "dataset_digest": "7abc9a4b87af23b705cc1d22ccdacbf6ee9550436c84b877a6e1b8b6ccbec60d",
+                      "exact_training_bit_rows": 17,
+                      "final_cross_entropy": 5.550853273610654e-05,
+                      "final_parameters": "80886a6eb61c7dba807164efdff9f9c3efdb220049697d3687fc2dad031500a6",
+                      "initial_cross_entropy": 0.6948604481437239,
+                      "initial_parameters": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3",
+                      "kind": "actual-numpy-tanh-binary-adam-v9",
+                      "parent_parameters": null,
+                      "rows": 17,
+                      "steps": 600,
+                      "wall_ns": 360971847
+                    },
+                    "support_bytes": 2313,
+                    "training": {
+                      "catalog_contains_explicit_values": false,
+                      "dataset_digest": "7abc9a4b87af23b705cc1d22ccdacbf6ee9550436c84b877a6e1b8b6ccbec60d",
+                      "exact_training_bit_rows": 17,
+                      "final_cross_entropy": 5.550853273610654e-05,
+                      "final_parameters": "80886a6eb61c7dba807164efdff9f9c3efdb220049697d3687fc2dad031500a6",
+                      "initial_cross_entropy": 0.6948604481437239,
+                      "initial_parameters": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3",
+                      "kind": "actual-numpy-tanh-binary-adam-v9",
+                      "parent_parameters": null,
+                      "rows": 17,
+                      "steps": 600,
+                      "wall_ns": 360911264
+                    }
+                  }
+                },
+                "frozen": {
+                  "procedure": {
+                    "catalog_bytes": 0,
+                    "lineage_bytes": 1140,
+                    "native_bytes": 707055,
+                    "native_digest": "0e6e34d2033988a4b30d50a7814634de6e322b05046bce5667ebd0ff3d378fa6",
+                    "parameter_bytes": 143552,
+                    "parameter_digest": "ded3a273746f0c3552a41f466c64b9db16d894589466ef7ffdb529cc6ca103dd",
+                    "support_bytes": 2313,
+                    "training": {
+                      "kind": "frozen-parent-byte-control",
+                      "parameters_identical_to_parent": true,
+                      "parent_parameters": "ded3a273746f0c3552a41f466c64b9db16d894589466ef7ffdb529cc6ca103dd",
+                      "steps": 0
+                    }
+                  },
+                  "semantic": {
+                    "catalog_bytes": 0,
+                    "lineage_bytes": 1140,
+                    "native_bytes": 708434,
+                    "native_digest": "ce61ebad9ce96401803bc13c4c30d0d11a0d1f906176141374380e9f71b27db8",
+                    "parameter_bytes": 143552,
+                    "parameter_digest": "d59dda700527906f2c00cfe84641a9246becccd521adbddca108affdd363191b",
+                    "support_bytes": 2313,
+                    "training": {
+                      "kind": "frozen-parent-byte-control",
+                      "parameters_identical_to_parent": true,
+                      "parent_parameters": "d59dda700527906f2c00cfe84641a9246becccd521adbddca108affdd363191b",
+                      "steps": 0
+                    }
+                  }
+                },
+                "trained": {
+                  "procedure": {
+                    "catalog_bytes": 0,
+                    "lineage_bytes": 1140,
+                    "native_bytes": 706376,
+                    "native_digest": "03fa0ed083593e9a0179800da6b1e199efb3510f2b236eb770c106e896a1ecfa",
+                    "parameter_bytes": 143552,
+                    "parameter_digest": "960e9651dd8c6e30cf9e99241746dfc1dae72933b101a9c7933b439ccbb8ad1b",
+                    "support_bytes": 2313,
+                    "training": {
+                      "catalog_contains_explicit_values": false,
+                      "dataset_digest": "5fa8fb9e88faab471b1e76140127afb1e1ec8e8e7c33ae06c1e1b9ad746ae27f",
+                      "exact_training_bit_rows": 17,
+                      "final_cross_entropy": 6.939724466161116e-05,
+                      "final_parameters": "960e9651dd8c6e30cf9e99241746dfc1dae72933b101a9c7933b439ccbb8ad1b",
+                      "initial_cross_entropy": 0.3573926870673882,
+                      "initial_parameters": "ded3a273746f0c3552a41f466c64b9db16d894589466ef7ffdb529cc6ca103dd",
+                      "kind": "actual-numpy-tanh-binary-adam-v9",
+                      "parent_parameters": "ded3a273746f0c3552a41f466c64b9db16d894589466ef7ffdb529cc6ca103dd",
+                      "rows": 17,
+                      "steps": 600,
+                      "wall_ns": 363338602
+                    }
+                  },
+                  "semantic": {
+                    "catalog_bytes": 0,
+                    "lineage_bytes": 1140,
+                    "native_bytes": 707932,
+                    "native_digest": "56b14531f66c37b548e3dc314dd2cc65a8ad260d1a469b58e56fcacada516507",
+                    "parameter_bytes": 143552,
+                    "parameter_digest": "95a419a89d9f6c5e5a8ce35b14ad4d7978f8718df63d8bd9ccdf28bb5254f61f",
+                    "support_bytes": 2313,
+                    "training": {
+                      "catalog_contains_explicit_values": false,
+                      "dataset_digest": "7abc9a4b87af23b705cc1d22ccdacbf6ee9550436c84b877a6e1b8b6ccbec60d",
+                      "exact_training_bit_rows": 17,
+                      "final_cross_entropy": 2.816414266166532e-05,
+                      "final_parameters": "95a419a89d9f6c5e5a8ce35b14ad4d7978f8718df63d8bd9ccdf28bb5254f61f",
+                      "initial_cross_entropy": 0.30350284320361576,
+                      "initial_parameters": "d59dda700527906f2c00cfe84641a9246becccd521adbddca108affdd363191b",
+                      "kind": "actual-numpy-tanh-binary-adam-v9",
+                      "parent_parameters": "d59dda700527906f2c00cfe84641a9246becccd521adbddca108affdd363191b",
+                      "rows": 17,
+                      "steps": 600,
+                      "wall_ns": 360466557
+                    }
+                  }
+                },
+                "zero": {
+                  "procedure": {
+                    "catalog_bytes": 0,
+                    "lineage_bytes": 1140,
+                    "native_bytes": 743521,
+                    "native_digest": "01cc928c7216283f9ce34bf24492ee08e36624972d8b6cf3f44fec3dff787c4e",
+                    "parameter_bytes": 143552,
+                    "parameter_digest": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3",
+                    "support_bytes": 2313,
+                    "training": {
+                      "kind": "zero-step-byte-control",
+                      "steps": 0
+                    }
+                  },
+                  "semantic": {
+                    "catalog_bytes": 0,
+                    "lineage_bytes": 1140,
+                    "native_bytes": 743520,
+                    "native_digest": "615e3769f723b0005af8ed5f05aee2ca341557fbcb3b331ea46026d36e492679",
+                    "parameter_bytes": 143552,
+                    "parameter_digest": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3",
+                    "support_bytes": 2313,
+                    "training": {
+                      "kind": "zero-step-byte-control",
+                      "steps": 0
+                    }
+                  }
+                }
+              },
+              "wall_ns": 2312930395
+            }
+          },
+          {
+            "artifact_owner_logical_bytes": 21637429,
+            "artifact_owner_path": "/tmp/hm9-agVICQ/.tmpsOzjtf",
+            "before_retention": {
+              "bytes": 122369,
+              "path": "before-retention.json",
+              "sha256": "afa642e78adf08b4c24365642ea16e936e94f2e6fb21ca7cc2253c20feda9abc"
+            },
+            "continuation_selection": {
+              "bundle_digest": "90daa494172d1bd847c07f3c5cd8ad5e44c52a33b7b079fe6403887732f3839c",
+              "generation": 15,
+              "intervention": "trained",
+              "procedure_digest": "2aac9d07e9a1eb6b61cea8a491555a8dda320231870c9fe1f798e493aa9ece4c",
+              "semantic_digest": "d8e834c9fb7d67b5319d9fc4a2af1439029fae3ad2fd999c3aa9bbd75012a4e4",
+              "source_cut": "160c797c304000b0a31d141467a132677f69678c1adb8d18d4a0d8c739254fed"
+            },
+            "directory": "stage-2",
+            "families": {
+              "bridge-old-new": 8,
+              "interleaved-programs": 8,
+              "local-new-domain": 8
+            },
+            "id": "stage-2",
+            "interventions": [
+              {
+                "intervention": "zero",
+                "phases": [
+                  {
+                    "bytes": 300115,
+                    "path": "zero-future.json",
+                    "sha256": "4ed1b0dc714bd2459b9976e10d9dfa5edc5ea99f7be1b7f149a3477b1a41be6d"
+                  },
+                  {
+                    "bytes": 101833,
+                    "path": "zero-retention.json",
+                    "sha256": "931e4545afd7c9056ecdce18aba122a1937e084a86e7bc2df3b645d0d76014bf"
+                  }
+                ],
+                "publication": {
+                  "bundle_digest": "670e9d53e9327ebe0b95adb59470952a7ec4cc03af6f426fc1a0b53447995fe2",
+                  "generation": 11,
+                  "intervention": "zero",
+                  "procedure_digest": "0f77e7743c776bb46e441c95a575e2f1d36edfeeeb30df0db143b073d93c960e",
+                  "semantic_digest": "5ee8cc8df1dc33d33f232cccacdb150e51922f7cfc0165e73930723287cb6705",
+                  "source_cut": "160c797c304000b0a31d141467a132677f69678c1adb8d18d4a0d8c739254fed"
+                }
+              },
+              {
+                "intervention": "frozen",
+                "phases": [
+                  {
+                    "bytes": 325592,
+                    "path": "frozen-future.json",
+                    "sha256": "917c53adc8486eb30e80986faaa82a4cc228c9cc551279a23541fdd0f7660836"
+                  },
+                  {
+                    "bytes": 123802,
+                    "path": "frozen-retention.json",
+                    "sha256": "b0eeb8fd56b6a1dfc3e561c4f216e8a59ab215abcfc2f345294b2d9309860a9c"
+                  }
+                ],
+                "publication": {
+                  "bundle_digest": "7e07312257dd6c6102c9f87081de729c82fddda4ae6ca780714385e4cdc4970d",
+                  "generation": 12,
+                  "intervention": "frozen",
+                  "procedure_digest": "982f08bf2bd8e2bdcaa0cd6c412458e05d3d65a469067f7e0358385c746c230c",
+                  "semantic_digest": "88c0c9b27435d43d174e4c113a6c86f3f925da698fd7d92a6e955c6146a68783",
+                  "source_cut": "160c797c304000b0a31d141467a132677f69678c1adb8d18d4a0d8c739254fed"
+                }
+              },
+              {
+                "intervention": "trained",
+                "phases": [
+                  {
+                    "bytes": 366095,
+                    "path": "trained-future.json",
+                    "sha256": "765af2c5d35459dd67211a6a34796e6828de56415aacc5f089fac9b44d6c7aa6"
+                  },
+                  {
+                    "bytes": 123807,
+                    "path": "trained-retention.json",
+                    "sha256": "c20eb99d40e32824a70f86d5ca3b2841a26fb3c17f7432cdf2d65b18eedd9966"
+                  }
+                ],
+                "publication": {
+                  "bundle_digest": "de84e3441a4666c59dd79eb175e206aa735c37cf7fcb523b25648d838e6f437d",
+                  "generation": 13,
+                  "intervention": "trained",
+                  "procedure_digest": "2aac9d07e9a1eb6b61cea8a491555a8dda320231870c9fe1f798e493aa9ece4c",
+                  "semantic_digest": "d8e834c9fb7d67b5319d9fc4a2af1439029fae3ad2fd999c3aa9bbd75012a4e4",
+                  "source_cut": "160c797c304000b0a31d141467a132677f69678c1adb8d18d4a0d8c739254fed"
+                }
+              },
+              {
+                "intervention": "clean",
+                "phases": [
+                  {
+                    "bytes": 366097,
+                    "path": "clean-future.json",
+                    "sha256": "272d6d266d932423a58d9304c8b919f966a4390e66ef585a75fe91601719418b"
+                  },
+                  {
+                    "bytes": 123799,
+                    "path": "clean-retention.json",
+                    "sha256": "c3949e46afa3b01fd9bb08fe6e6bb56bca5569000e835cb1ffee3da5f0d3efb3"
+                  }
+                ],
+                "publication": {
+                  "bundle_digest": "ba21420af7a0ddcc884a6c7e8a01b3a84f4a058b2cb84f0fcc8d88453574096e",
+                  "generation": 14,
+                  "intervention": "clean",
+                  "procedure_digest": "6b9a4081828a3ce7bd87cc6fab8df567379ec673cf50e972208e6e6ab27260f8",
+                  "semantic_digest": "da4b2588423c70445f37d2e087f5f7e367d270771d97e1382ee84bcbb6de72b8",
+                  "source_cut": "160c797c304000b0a31d141467a132677f69678c1adb8d18d4a0d8c739254fed"
+                }
+              }
+            ],
+            "new_records": 24,
+            "owner": {
+              "bytes": 41225,
+              "path": "OWNER_EXPORT.json",
+              "sha256": "fda6a578492820691f919a1fb63a120c99a155eee082a33ed00d2a5a2e6119ea"
+            },
+            "source_ledger_logical_bytes": 5095384,
+            "source_ledger_path": "/tmp/hm9-agVICQ/.tmpPL6lX4/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c81/cognitive",
+            "stage": 2,
+            "traffic_after_stage": {
+              "received_bytes": 1865908,
+              "rpc_attempts": 2592,
+              "transmitted_bytes": 1125837
+            },
+            "training_receipt": {
+              "actual_fit_calls": 6,
+              "authority": false,
+              "catalog_contains_explicit_values": false,
+              "compression_established": false,
+              "future_requests_seen": false,
+              "parent_rebased_without_gradients": true,
+              "same_support_catalog_threshold": true,
+              "variants": {
+                "clean": {
+                  "procedure": {
+                    "catalog_bytes": 0,
+                    "lineage_bytes": 1676,
+                    "native_bytes": 702120,
+                    "native_digest": "6b9a4081828a3ce7bd87cc6fab8df567379ec673cf50e972208e6e6ab27260f8",
+                    "parameter_bytes": 143552,
+                    "parameter_digest": "5d899d8fc96b64697b98ade67471b3b43745f2a5949f53ab9357bf55a2488df6",
+                    "rebuild_parameters_identical": true,
+                    "rebuild_receipt": {
+                      "catalog_contains_explicit_values": false,
+                      "dataset_digest": "1d97dba6e900e42347f19a3c38550a0b27cd4b43af1c5fba41d917dd0ae59ad3",
+                      "exact_training_bit_rows": 25,
+                      "final_cross_entropy": 0.0001469081085924328,
+                      "final_parameters": "5d899d8fc96b64697b98ade67471b3b43745f2a5949f53ab9357bf55a2488df6",
+                      "initial_cross_entropy": 0.6945418227925879,
+                      "initial_parameters": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3",
+                      "kind": "actual-numpy-tanh-binary-adam-v9",
+                      "parent_parameters": null,
+                      "rows": 25,
+                      "steps": 600,
+                      "wall_ns": 479958951
+                    },
+                    "support_bytes": 3401,
+                    "training": {
+                      "catalog_contains_explicit_values": false,
+                      "dataset_digest": "1d97dba6e900e42347f19a3c38550a0b27cd4b43af1c5fba41d917dd0ae59ad3",
+                      "exact_training_bit_rows": 25,
+                      "final_cross_entropy": 0.0001469081085924328,
+                      "final_parameters": "5d899d8fc96b64697b98ade67471b3b43745f2a5949f53ab9357bf55a2488df6",
+                      "initial_cross_entropy": 0.6945418227925879,
+                      "initial_parameters": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3",
+                      "kind": "actual-numpy-tanh-binary-adam-v9",
+                      "parent_parameters": null,
+                      "rows": 25,
+                      "steps": 600,
+                      "wall_ns": 485047249
+                    }
+                  },
+                  "semantic": {
+                    "catalog_bytes": 0,
+                    "lineage_bytes": 1676,
+                    "native_bytes": 702472,
+                    "native_digest": "da4b2588423c70445f37d2e087f5f7e367d270771d97e1382ee84bcbb6de72b8",
+                    "parameter_bytes": 143552,
+                    "parameter_digest": "bad0e5a659f3b490d997d0ed771afc159fac1c3dcf48be1945c624c2dbcbf3cc",
+                    "rebuild_parameters_identical": true,
+                    "rebuild_receipt": {
+                      "catalog_contains_explicit_values": false,
+                      "dataset_digest": "110bc4f9ed0ab5edff1e64683ea318914f0b965b5b3cd4e750f4b464ca5e6a7e",
+                      "exact_training_bit_rows": 25,
+                      "final_cross_entropy": 6.523912218793057e-05,
+                      "final_parameters": "bad0e5a659f3b490d997d0ed771afc159fac1c3dcf48be1945c624c2dbcbf3cc",
+                      "initial_cross_entropy": 0.6947874410016218,
+                      "initial_parameters": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3",
+                      "kind": "actual-numpy-tanh-binary-adam-v9",
+                      "parent_parameters": null,
+                      "rows": 25,
+                      "steps": 600,
+                      "wall_ns": 464126352
+                    },
+                    "support_bytes": 3401,
+                    "training": {
+                      "catalog_contains_explicit_values": false,
+                      "dataset_digest": "110bc4f9ed0ab5edff1e64683ea318914f0b965b5b3cd4e750f4b464ca5e6a7e",
+                      "exact_training_bit_rows": 25,
+                      "final_cross_entropy": 6.523912218793057e-05,
+                      "final_parameters": "bad0e5a659f3b490d997d0ed771afc159fac1c3dcf48be1945c624c2dbcbf3cc",
+                      "initial_cross_entropy": 0.6947874410016218,
+                      "initial_parameters": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3",
+                      "kind": "actual-numpy-tanh-binary-adam-v9",
+                      "parent_parameters": null,
+                      "rows": 25,
+                      "steps": 600,
+                      "wall_ns": 463540700
+                    }
+                  }
+                },
+                "frozen": {
+                  "procedure": {
+                    "catalog_bytes": 0,
+                    "lineage_bytes": 1676,
+                    "native_bytes": 708000,
+                    "native_digest": "982f08bf2bd8e2bdcaa0cd6c412458e05d3d65a469067f7e0358385c746c230c",
+                    "parameter_bytes": 143552,
+                    "parameter_digest": "960e9651dd8c6e30cf9e99241746dfc1dae72933b101a9c7933b439ccbb8ad1b",
+                    "support_bytes": 3401,
+                    "training": {
+                      "kind": "frozen-parent-byte-control",
+                      "parameters_identical_to_parent": true,
+                      "parent_parameters": "960e9651dd8c6e30cf9e99241746dfc1dae72933b101a9c7933b439ccbb8ad1b",
+                      "steps": 0
+                    }
+                  },
+                  "semantic": {
+                    "catalog_bytes": 0,
+                    "lineage_bytes": 1676,
+                    "native_bytes": 709556,
+                    "native_digest": "88c0c9b27435d43d174e4c113a6c86f3f925da698fd7d92a6e955c6146a68783",
+                    "parameter_bytes": 143552,
+                    "parameter_digest": "95a419a89d9f6c5e5a8ce35b14ad4d7978f8718df63d8bd9ccdf28bb5254f61f",
+                    "support_bytes": 3401,
+                    "training": {
+                      "kind": "frozen-parent-byte-control",
+                      "parameters_identical_to_parent": true,
+                      "parent_parameters": "95a419a89d9f6c5e5a8ce35b14ad4d7978f8718df63d8bd9ccdf28bb5254f61f",
+                      "steps": 0
+                    }
+                  }
+                },
+                "trained": {
+                  "procedure": {
+                    "catalog_bytes": 0,
+                    "lineage_bytes": 1676,
+                    "native_bytes": 704654,
+                    "native_digest": "2aac9d07e9a1eb6b61cea8a491555a8dda320231870c9fe1f798e493aa9ece4c",
+                    "parameter_bytes": 143552,
+                    "parameter_digest": "9f4f2f0504c690cb51c5d74da3ce0a921f22ad3ea831bf8d51baa5762f42c29c",
+                    "support_bytes": 3401,
+                    "training": {
+                      "catalog_contains_explicit_values": false,
+                      "dataset_digest": "1d97dba6e900e42347f19a3c38550a0b27cd4b43af1c5fba41d917dd0ae59ad3",
+                      "exact_training_bit_rows": 25,
+                      "final_cross_entropy": 5.040956402605984e-05,
+                      "final_parameters": "9f4f2f0504c690cb51c5d74da3ce0a921f22ad3ea831bf8d51baa5762f42c29c",
+                      "initial_cross_entropy": 0.15710695641703484,
+                      "initial_parameters": "960e9651dd8c6e30cf9e99241746dfc1dae72933b101a9c7933b439ccbb8ad1b",
+                      "kind": "actual-numpy-tanh-binary-adam-v9",
+                      "parent_parameters": "960e9651dd8c6e30cf9e99241746dfc1dae72933b101a9c7933b439ccbb8ad1b",
+                      "rows": 25,
+                      "steps": 600,
+                      "wall_ns": 532912214
+                    }
+                  },
+                  "semantic": {
+                    "catalog_bytes": 0,
+                    "lineage_bytes": 1676,
+                    "native_bytes": 707478,
+                    "native_digest": "d8e834c9fb7d67b5319d9fc4a2af1439029fae3ad2fd999c3aa9bbd75012a4e4",
+                    "parameter_bytes": 143552,
+                    "parameter_digest": "4cae4c11098db2b916bbf78ca875eaf79c5084782b02ed004256f5ef933c8319",
+                    "support_bytes": 3401,
+                    "training": {
+                      "catalog_contains_explicit_values": false,
+                      "dataset_digest": "110bc4f9ed0ab5edff1e64683ea318914f0b965b5b3cd4e750f4b464ca5e6a7e",
+                      "exact_training_bit_rows": 25,
+                      "final_cross_entropy": 1.8505823279577977e-05,
+                      "final_parameters": "4cae4c11098db2b916bbf78ca875eaf79c5084782b02ed004256f5ef933c8319",
+                      "initial_cross_entropy": 0.11160899614702517,
+                      "initial_parameters": "95a419a89d9f6c5e5a8ce35b14ad4d7978f8718df63d8bd9ccdf28bb5254f61f",
+                      "kind": "actual-numpy-tanh-binary-adam-v9",
+                      "parent_parameters": "95a419a89d9f6c5e5a8ce35b14ad4d7978f8718df63d8bd9ccdf28bb5254f61f",
+                      "rows": 25,
+                      "steps": 600,
+                      "wall_ns": 463451667
+                    }
+                  }
+                },
+                "zero": {
+                  "procedure": {
+                    "catalog_bytes": 0,
+                    "lineage_bytes": 1676,
+                    "native_bytes": 745145,
+                    "native_digest": "0f77e7743c776bb46e441c95a575e2f1d36edfeeeb30df0db143b073d93c960e",
+                    "parameter_bytes": 143552,
+                    "parameter_digest": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3",
+                    "support_bytes": 3401,
+                    "training": {
+                      "kind": "zero-step-byte-control",
+                      "steps": 0
+                    }
+                  },
+                  "semantic": {
+                    "catalog_bytes": 0,
+                    "lineage_bytes": 1676,
+                    "native_bytes": 745144,
+                    "native_digest": "5ee8cc8df1dc33d33f232cccacdb150e51922f7cfc0165e73930723287cb6705",
+                    "parameter_bytes": 143552,
+                    "parameter_digest": "bdc7a6b25524a03c465a539e862dbf506183324f1b1ba0dc91d6e8b1b5c04db3",
+                    "support_bytes": 3401,
+                    "training": {
+                      "kind": "zero-step-byte-control",
+                      "steps": 0
+                    }
+                  }
+                }
+              },
+              "wall_ns": 3039123169
+            }
+          }
+        ]
+      },
+      "child_identity": {
+        "bytes": 47995,
+        "sha256": "95ecea57e1b505873555c9e0d2d38cd28629b5854d77311cce48ee37224b844f"
+      },
+      "directory": "byte",
+      "parent_supervision_wall_ns": 400265708750,
+      "representation": "byte",
+      "resource_identity": {
+        "bytes": 4667,
+        "path": "byte-resources.json",
+        "sha256": "5ceec5e4e056af2f01a4a9ad21f577d5e1cb3a9020543248b00bfb7d6219af47"
+      }
+    }
+  ],
+  "code_identity": {
+    "digest": "624a63cd9fa0bd7d714f4de2cb2f261e4bc91aae74432f09746b6f1f7f92c0a8",
+    "files": {
+      "memory-cell-v6/v6/__init__.py": {
+        "bytes": 84,
+        "sha256": "e48c0b6136220a43e666e0616e415b365f4041f4ce1211846d9a144d7073bfed"
+      },
+      "memory-cell-v6/v6/cells.py": {
+        "bytes": 16224,
+        "sha256": "e0b2f7dbf3f280ebf6618c68c60b7799bb945eaf76cc603b6bfcfc3d33de2024"
+      },
+      "memory-cell-v6/v6/contracts.py": {
+        "bytes": 5785,
+        "sha256": "42be7b9d9f0e3afe86c5ad52c58d8d4b8a5ba8972846c0702fc1e42c3b62834f"
+      },
+      "memory-cell-v6/v6/values.py": {
+        "bytes": 1789,
+        "sha256": "5b3d658ce921ec7e91778fa58507091257bba151eb773f515fdf0ad6097dedfb"
+      },
+      "memory-cell-v7/native_export.py": {
+        "bytes": 2976,
+        "sha256": "cbdc28764bd14c9524ce046ea6fd0a1c8043a75225a66def4b8ce23d874a9616"
+      },
+      "memory-cell-v7/training.py": {
+        "bytes": 9763,
+        "sha256": "d6205c6020fb2218a9afb56371482f77fe8a2b49ba42ec9b4f0f516eeb55a0c0"
+      },
+      "memory-cell-v7/training_worker.py": {
+        "bytes": 965,
+        "sha256": "43392c23d00fa1a2c706742c9834fd27b9319f22b05927d796015c9d542cc040"
+      },
+      "memory-cell-v9/learning/PROTOCOL.json": {
+        "bytes": 3519,
+        "sha256": "b6154507a2773fcd0896c7c77ac90bc1b08d3c4460042e3b796637c49efa3feb"
+      },
+      "memory-cell-v9/learning/__init__.py": {
+        "bytes": 75,
+        "sha256": "5aa574f8c0e9a4829f38e83e0b35c006236ef8ba84ecdbb09ebb11775d3ca114"
+      },
+      "memory-cell-v9/learning/byte_model.py": {
+        "bytes": 9217,
+        "sha256": "b53b93eb18b4784000eb7ab3cf09b84a57da2d545928247071960ddccb24b3f3"
+      },
+      "memory-cell-v9/learning/paired.py": {
+        "bytes": 7019,
+        "sha256": "a95abe8a88d420e66649ffbce51bddddabfbf37e3fa358e6f2fca06f4507c61f"
+      },
+      "memory-cell-v9/learning/resource_cleanup.py": {
+        "bytes": 4597,
+        "sha256": "9eb4ed0868da1fe01a568369d9243607ee9bb7de8d4a6c10527c3a9ee7a812d5"
+      },
+      "memory-cell-v9/learning/resource_monitor.py": {
+        "bytes": 14324,
+        "sha256": "541811a934c1ab6319d3d925599fa12fd8e5beadb0a4a4d87cf6a2a7cb22d7bf"
+      },
+      "memory-cell-v9/learning/resource_samples.py": {
+        "bytes": 7857,
+        "sha256": "626447e8fbf4f6f81403ac63dc587a0ec970c41deebddc59c658f213754edc87"
+      },
+      "memory-cell-v9/learning/worker.py": {
+        "bytes": 1766,
+        "sha256": "0201761844731e8f58dd9813e8140509a310b53ec8b378b797aa551eda2c3630"
+      }
+    }
+  },
+  "fixture_sha256": "750ecabdcdbc0aa9f5bf253615efaff090800c3a96a2958e0d17a4df829c6502",
+  "full_cost_gain_established": false,
+  "independent_domains_are_iid_samples": false,
+  "parent_wall_ns_before_final_receipt": 785088933167,
+  "schema": "hepta.memory.v9.actual-continual.v1"
+}
