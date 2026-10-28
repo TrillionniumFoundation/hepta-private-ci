@@ -1,0 +1,2074 @@
+{
+  "all_manifest_integrity_checks_passed": true,
+  "archive_groups": {
+    "calibration": {
+      "compressed_logical_archive_bytes": 65162898,
+      "logical_archives": 5,
+      "names": [
+        "CALIBRATION_CONFIRMATION_607",
+        "CALIBRATION_CONFIRMATION_701",
+        "CALIBRATION_CONFIRMATION_809",
+        "CALIBRATION_CONFIRMATION_907",
+        "CALIBRATION_CONFIRMATION_1009"
+      ],
+      "outer_data_members_excluding_manifests": 185,
+      "outer_manifest_members": 5,
+      "physical_file_bytes": 65162898,
+      "physical_files": 10
+    },
+    "development": {
+      "compressed_logical_archive_bytes": 2910744,
+      "logical_archives": 1,
+      "names": [
+        "DEVELOPMENT_AND_FAILED_ATTEMPTS"
+      ],
+      "outer_data_members_excluding_manifests": 916,
+      "outer_manifest_members": 1,
+      "physical_file_bytes": 2910744,
+      "physical_files": 1
+    },
+    "feedback-runtime": {
+      "compressed_logical_archive_bytes": 150715701,
+      "logical_archives": 6,
+      "names": [
+        "RUNTIME_CONFIRMATION",
+        "FEEDBACK_CONFIRMATION_607",
+        "FEEDBACK_CONFIRMATION_701",
+        "FEEDBACK_CONFIRMATION_809",
+        "FEEDBACK_CONFIRMATION_907",
+        "FEEDBACK_CONFIRMATION_1009"
+      ],
+      "outer_data_members_excluding_manifests": 85,
+      "outer_manifest_members": 6,
+      "physical_file_bytes": 150715701,
+      "physical_files": 21
+    },
+    "main": {
+      "compressed_logical_archive_bytes": 211270461,
+      "logical_archives": 15,
+      "names": [
+        "MAIN_seed_607_gaussian",
+        "MAIN_seed_607_drift_shift",
+        "MAIN_seed_607_student_t",
+        "MAIN_seed_701_gaussian",
+        "MAIN_seed_701_drift_shift",
+        "MAIN_seed_701_student_t",
+        "MAIN_seed_809_gaussian",
+        "MAIN_seed_809_drift_shift",
+        "MAIN_seed_809_student_t",
+        "MAIN_seed_907_gaussian",
+        "MAIN_seed_907_drift_shift",
+        "MAIN_seed_907_student_t",
+        "MAIN_seed_1009_gaussian",
+        "MAIN_seed_1009_drift_shift",
+        "MAIN_seed_1009_student_t"
+      ],
+      "outer_data_members_excluding_manifests": 652859,
+      "outer_manifest_members": 15,
+      "physical_file_bytes": 211270461,
+      "physical_files": 30
+    },
+    "main-analysis": {
+      "compressed_logical_archive_bytes": 9577556,
+      "logical_archives": 1,
+      "names": [
+        "MAIN_ANALYSIS"
+      ],
+      "outer_data_members_excluding_manifests": 16,
+      "outer_manifest_members": 1,
+      "physical_file_bytes": 9577556,
+      "physical_files": 2
+    },
+    "main-operational": {
+      "compressed_logical_archive_bytes": 9084760,
+      "logical_archives": 1,
+      "names": [
+        "main_seed_1009_gaussian_attempt1"
+      ],
+      "outer_data_members_excluding_manifests": 43136,
+      "outer_manifest_members": 1,
+      "physical_file_bytes": 9084760,
+      "physical_files": 2
+    },
+    "preconfirmation": {
+      "compressed_logical_archive_bytes": 76891478,
+      "logical_archives": 7,
+      "names": [
+        "CORE_PREPARED",
+        "CALIBRATION_PREPARED",
+        "FEEDBACK_PREPARED_607",
+        "FEEDBACK_PREPARED_701",
+        "FEEDBACK_PREPARED_809",
+        "FEEDBACK_PREPARED_907",
+        "FEEDBACK_PREPARED_1009"
+      ],
+      "outer_data_members_excluding_manifests": 331,
+      "outer_manifest_members": 7,
+      "physical_file_bytes": 76891478,
+      "physical_files": 12
+    },
+    "report": {
+      "compressed_logical_archive_bytes": 712933,
+      "logical_archives": 1,
+      "names": [
+        "RUN_REPORTS"
+      ],
+      "outer_data_members_excluding_manifests": 194,
+      "outer_manifest_members": 1,
+      "physical_file_bytes": 712933,
+      "physical_files": 1
+    }
+  },
+  "archives": [
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 1044397,
+      "data_members": 35,
+      "member_manifest": "_bundle_manifests/CORE_PREPARED.json",
+      "name": "CORE_PREPARED",
+      "path": "experiments/analytic_event_neuron/round3/evidence/preconfirmation/CORE_PREPARED.tar.gz",
+      "restore_root": "run",
+      "scientific_data_regenerated": false,
+      "sha256": "dea9849388daf24521865d360387d01358cec56a2a06250ea1ad81881052e074"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 4906349,
+      "data_members": 251,
+      "member_manifest": "_bundle_manifests/CALIBRATION_PREPARED.json",
+      "name": "CALIBRATION_PREPARED",
+      "path": "experiments/analytic_event_neuron/round3/evidence/preconfirmation/CALIBRATION_PREPARED.tar.gz",
+      "restore_root": "run",
+      "scientific_data_regenerated": false,
+      "sha256": "bd2354839d8299138496e4c5a905fdc52df4096c4ec234d087c40b8780d3d40c"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 14199160,
+      "data_members": 9,
+      "member_manifest": "_bundle_manifests/FEEDBACK_PREPARED_607.json",
+      "name": "FEEDBACK_PREPARED_607",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_607.tar.gz.part000",
+          "sha256": "e27799be2567ea929fb519c9fefa0e910b839118407f44174a7e51d0f2fd47a0"
+        },
+        {
+          "bytes": 5810552,
+          "path": "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_607.tar.gz.part001",
+          "sha256": "e224bb51bd217cff5fcf721a1fc5f81c7e644242843a82f46f1089d3404a0dbb"
+        }
+      ],
+      "restore_root": "run",
+      "scientific_data_regenerated": false,
+      "sha256": "2f27e31cb5710cc14092dfcbeadb0cad97d55cfd794a58423923a2e1600167dd"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 14176745,
+      "data_members": 9,
+      "member_manifest": "_bundle_manifests/FEEDBACK_PREPARED_701.json",
+      "name": "FEEDBACK_PREPARED_701",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_701.tar.gz.part000",
+          "sha256": "9d786e6f8aedfaa2605aab707e4d3d302035099bee5a40213e5ecb7bcad9859e"
+        },
+        {
+          "bytes": 5788137,
+          "path": "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_701.tar.gz.part001",
+          "sha256": "c624bfa31195c616559a326940019ec0ef4c7d18cd627cd8a702fc25d55f5524"
+        }
+      ],
+      "restore_root": "run",
+      "scientific_data_regenerated": false,
+      "sha256": "5657bf59f636f33bddc33599d20e99a19e3e73085f94957335ade0369542ae43"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 14169653,
+      "data_members": 9,
+      "member_manifest": "_bundle_manifests/FEEDBACK_PREPARED_809.json",
+      "name": "FEEDBACK_PREPARED_809",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_809.tar.gz.part000",
+          "sha256": "3555a7ce22a28d9e8d7540dd799965e9871c042db823b0b779acf8453d7d06fb"
+        },
+        {
+          "bytes": 5781045,
+          "path": "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_809.tar.gz.part001",
+          "sha256": "d0e1f0d5456d512629134e0010b2570973ed0ff42ee12c93685df2a46cdb9234"
+        }
+      ],
+      "restore_root": "run",
+      "scientific_data_regenerated": false,
+      "sha256": "904474ab7cc36e98c60bbd1d0cfc583c77d1d93ca98c215ab40620ca85bc0a82"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 14180618,
+      "data_members": 9,
+      "member_manifest": "_bundle_manifests/FEEDBACK_PREPARED_907.json",
+      "name": "FEEDBACK_PREPARED_907",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_907.tar.gz.part000",
+          "sha256": "441f26204a526274ebea42559ecec07167c78655f03aab83dfb587375004b32d"
+        },
+        {
+          "bytes": 5792010,
+          "path": "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_907.tar.gz.part001",
+          "sha256": "f661c436eda88279caeab7d41d34254ff1340d8d00a7307211a5af8c292fa6c6"
+        }
+      ],
+      "restore_root": "run",
+      "scientific_data_regenerated": false,
+      "sha256": "5f07a08a25f046f1435a91e4e31f2100409bf2e5a428f5ec7c75f4ebea2f8102"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 14214556,
+      "data_members": 9,
+      "member_manifest": "_bundle_manifests/FEEDBACK_PREPARED_1009.json",
+      "name": "FEEDBACK_PREPARED_1009",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_1009.tar.gz.part000",
+          "sha256": "ca4e5935c8032bd7ed61762f0a8babbcd77b72f15cd5abb8f232e99cc527cc32"
+        },
+        {
+          "bytes": 5825948,
+          "path": "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_1009.tar.gz.part001",
+          "sha256": "0769cd390b91cb6d3e1c28bd3c65189faf726442f9674b0b722b7a0c8e2fa672"
+        }
+      ],
+      "restore_root": "run",
+      "scientific_data_regenerated": false,
+      "sha256": "c92f96d6edd921bd30141f816c29a3b7fb72ee09e599161a8fd54575fd7521f1"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 12991636,
+      "data_members": 37,
+      "member_manifest": "_bundle_manifests/CALIBRATION_CONFIRMATION_607.json",
+      "name": "CALIBRATION_CONFIRMATION_607",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_607.tar.gz.part000",
+          "sha256": "417411d8231116155e732532bd6a5ef9d1b08c50e63676f87b0dfb371b2b7729"
+        },
+        {
+          "bytes": 4603028,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_607.tar.gz.part001",
+          "sha256": "67befcf0b9f9ff6dc3d0c40a685a59c15b3e2928d467ae794f9316d3db87c089"
+        }
+      ],
+      "restore_root": "run",
+      "scientific_data_regenerated": false,
+      "sha256": "6fc971c3d1b4f3294c3710bbc873f8ddb46bdb6283c4720e01060ad738e28984"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 13003557,
+      "data_members": 37,
+      "member_manifest": "_bundle_manifests/CALIBRATION_CONFIRMATION_701.json",
+      "name": "CALIBRATION_CONFIRMATION_701",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_701.tar.gz.part000",
+          "sha256": "79142d4c967dd1eca18fc1e8b13215dc29710c4ad1e4b91a98505df93bff74ca"
+        },
+        {
+          "bytes": 4614949,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_701.tar.gz.part001",
+          "sha256": "a971378264adf28f251f66c15aa9154b8c7bf396e43e77a2e693468a6900f102"
+        }
+      ],
+      "restore_root": "run",
+      "scientific_data_regenerated": false,
+      "sha256": "3a8a468a9addf9a783087291fe72c388d04a75128d24fa750092ebee7f65c726"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 13041203,
+      "data_members": 37,
+      "member_manifest": "_bundle_manifests/CALIBRATION_CONFIRMATION_809.json",
+      "name": "CALIBRATION_CONFIRMATION_809",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_809.tar.gz.part000",
+          "sha256": "e4a3b2785cb5168aaf67638f0e023094c1964b2c6e1108161629f99ea3193607"
+        },
+        {
+          "bytes": 4652595,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_809.tar.gz.part001",
+          "sha256": "f4b491469cf10de641645bcfccef3dfb5a81b37a6d42dca9e2303c0e9488239e"
+        }
+      ],
+      "restore_root": "run",
+      "scientific_data_regenerated": false,
+      "sha256": "56dc1112d7c18ac038c11e8285da0b0f36655cb218703d9802897c8f836f9b67"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 13078965,
+      "data_members": 37,
+      "member_manifest": "_bundle_manifests/CALIBRATION_CONFIRMATION_907.json",
+      "name": "CALIBRATION_CONFIRMATION_907",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_907.tar.gz.part000",
+          "sha256": "bc42faf0200aa4044142fb59bdf782fb0e7c44737ebf11a35f040c7013f719de"
+        },
+        {
+          "bytes": 4690357,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_907.tar.gz.part001",
+          "sha256": "22a3a169abc331d27ad56ac80a6a51ebd56a24932e9bfa27d582ab3ff8253946"
+        }
+      ],
+      "restore_root": "run",
+      "scientific_data_regenerated": false,
+      "sha256": "87af2143c15c717d8906dd9212d8da862241ad923ac98398a4b6dfe3522a3297"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 13047537,
+      "data_members": 37,
+      "member_manifest": "_bundle_manifests/CALIBRATION_CONFIRMATION_1009.json",
+      "name": "CALIBRATION_CONFIRMATION_1009",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_1009.tar.gz.part000",
+          "sha256": "913a66ae0a16f51a5653ddaa9ee0923f3508c43e654de8137ef2984589e18c2e"
+        },
+        {
+          "bytes": 4658929,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_1009.tar.gz.part001",
+          "sha256": "33345953daf3ca44b88b83a51576132bc8ada1eafc1e6cb381fdac034451d7b2"
+        }
+      ],
+      "restore_root": "run",
+      "scientific_data_regenerated": false,
+      "sha256": "ccd73594dc62360e991d9e7cb85e9ab06cdda4eef89f6ff02a99c5a4032d47f5"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 759788,
+      "data_members": 40,
+      "member_manifest": "_bundle_manifests/RUNTIME_CONFIRMATION.json",
+      "name": "RUNTIME_CONFIRMATION",
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/RUNTIME_CONFIRMATION.tar.gz",
+      "restore_root": "run",
+      "scientific_data_regenerated": false,
+      "sha256": "65be108f0b6c9a8f5e1e7b3fc8e6d4abca434c65176aa56c70577e054d62be86"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 29777303,
+      "data_members": 9,
+      "member_manifest": "_bundle_manifests/FEEDBACK_CONFIRMATION_607.json",
+      "name": "FEEDBACK_CONFIRMATION_607",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_607.tar.gz.part000",
+          "sha256": "e99323a46d2ce88c49894802e978d2e8026c1dabcd1557e66c2c00f89920e4d0"
+        },
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_607.tar.gz.part001",
+          "sha256": "b6b2465c791106db1d35c6f8e6f52e1ef8b424759a2509eed89f7c92d278af7a"
+        },
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_607.tar.gz.part002",
+          "sha256": "ef6c2cf8b023f194ad3f17f65661403e01ac6f675b18314109a23d706daa815f"
+        },
+        {
+          "bytes": 4611479,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_607.tar.gz.part003",
+          "sha256": "d33e8c0bce791bd567e1fd1e71410e36f8812880e47f3962e45ace4f95f38415"
+        }
+      ],
+      "restore_root": "run",
+      "scientific_data_regenerated": false,
+      "sha256": "742b91cd59167c685e7a7b31e558bc1e38fd3f7fab0eaa901b178d19943384cc"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 29878190,
+      "data_members": 9,
+      "member_manifest": "_bundle_manifests/FEEDBACK_CONFIRMATION_701.json",
+      "name": "FEEDBACK_CONFIRMATION_701",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_701.tar.gz.part000",
+          "sha256": "84ae6c59460bd41c5a5155041732c6121ea202eb4d8d748a8300dd021ce44fd0"
+        },
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_701.tar.gz.part001",
+          "sha256": "80d218badb40cd488a67f4fddacc61e4cd395469f8eb79436d58e7846f142e3a"
+        },
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_701.tar.gz.part002",
+          "sha256": "a2d53969f7a37567bc9642e5dc23369f0f345961ffe7de623bc4f7b63670f5fb"
+        },
+        {
+          "bytes": 4712366,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_701.tar.gz.part003",
+          "sha256": "f41e7c226fc7b3a6f23c50748e72e86780a5e060c7f71719bf89357a1439e233"
+        }
+      ],
+      "restore_root": "run",
+      "scientific_data_regenerated": false,
+      "sha256": "d29875b8cdee5e102ea540a92cfda5b443ba18eef48ab68e7cbd954fdec34944"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 29950832,
+      "data_members": 9,
+      "member_manifest": "_bundle_manifests/FEEDBACK_CONFIRMATION_809.json",
+      "name": "FEEDBACK_CONFIRMATION_809",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_809.tar.gz.part000",
+          "sha256": "8f21caa15dfeb261606cad23ff98925113e4b4b8335a868ba190ddd805b678dc"
+        },
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_809.tar.gz.part001",
+          "sha256": "feb414810d2f7ccd015babf3cae9ecba22f2705b07657f1d91c0c24e786b0bdd"
+        },
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_809.tar.gz.part002",
+          "sha256": "e96cb1cbc0342287fd6f47e473fbccd3d6bb48a0b9159fdcfe2f17990a72037f"
+        },
+        {
+          "bytes": 4785008,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_809.tar.gz.part003",
+          "sha256": "62241828a2193c6fe9e898e1340a251a8701dba7b864feebf8f8d0fcce715067"
+        }
+      ],
+      "restore_root": "run",
+      "scientific_data_regenerated": false,
+      "sha256": "6def37f1d01f0d289264dd1b2245a0f9f4623d7e5910591169e3705719540fd1"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 30247064,
+      "data_members": 9,
+      "member_manifest": "_bundle_manifests/FEEDBACK_CONFIRMATION_907.json",
+      "name": "FEEDBACK_CONFIRMATION_907",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_907.tar.gz.part000",
+          "sha256": "9134bf2ec3535b8f18567935fa399340721393a384ce42a3edf8bc3e3a71a76b"
+        },
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_907.tar.gz.part001",
+          "sha256": "ca1cbfe54ea9b0cba3f0f8dad2a4361cde1c3c389ff15db993d53c2202150d05"
+        },
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_907.tar.gz.part002",
+          "sha256": "8a7aef1f24918e5f355a9c00d00af926f142d9a3b451a5b9171795cf5ab490ad"
+        },
+        {
+          "bytes": 5081240,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_907.tar.gz.part003",
+          "sha256": "540121811cf189a759e2c4c0bf6b2ddd87c983ef76c7486374463af3a1086ce3"
+        }
+      ],
+      "restore_root": "run",
+      "scientific_data_regenerated": false,
+      "sha256": "9f892d6e8a949a9d7f67af1aa78449c812da0f1bfad3f5bb0724cdd2ca2ae758"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 30102524,
+      "data_members": 9,
+      "member_manifest": "_bundle_manifests/FEEDBACK_CONFIRMATION_1009.json",
+      "name": "FEEDBACK_CONFIRMATION_1009",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_1009.tar.gz.part000",
+          "sha256": "d18334b139c974a30ee7db19fb8db97c07db15f59575f22f3ff232af00d5cd10"
+        },
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_1009.tar.gz.part001",
+          "sha256": "b0b21da93ae009fc6f0c41165bd33773973bffffcdf3f96abbf50a579018aa49"
+        },
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_1009.tar.gz.part002",
+          "sha256": "bd44f2e457fddb51570c871d8fe65a448eef076bab506d560e88de377da61443"
+        },
+        {
+          "bytes": 4936700,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_1009.tar.gz.part003",
+          "sha256": "e761814a082c4131a4e2f29e55434e56095f0c0f1dd632e9c12dd77642573599"
+        }
+      ],
+      "restore_root": "run",
+      "scientific_data_regenerated": false,
+      "sha256": "564f600d6d20a8037c98eb29ee76e43c8abd05d8397a0bf9eae4ec6f854ede62"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 14104549,
+      "data_members": 43614,
+      "independent_review_sha256": "91841eab2ce81896f7d96c70e683384755505133dbcc826a227a453e06931fc7",
+      "member_manifest": "ARCHIVE_MANIFEST.json",
+      "name": "MAIN_seed_607_gaussian",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_607_gaussian.tar.gz.part000",
+          "sha256": "90110ea9a5d0f7f1c6a6f4e2067f64d77d42fc4849c78b1c33fd4dd1f42de507"
+        },
+        {
+          "bytes": 5715941,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_607_gaussian.tar.gz.part001",
+          "sha256": "edc2fe16e226e9ecc5986c6604d7c070a6f048fc0bd42b3942d477f2ec005092"
+        }
+      ],
+      "restore_root": "run/main/unpacked/seed_607_gaussian",
+      "scientific_data_regenerated": false,
+      "sha256": "b52f054d9280d70c46ab196a64a9142b07ec174205d0c25337f6e636374edab0"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 13996538,
+      "data_members": 43366,
+      "independent_review_sha256": "933ed81cd9fa1d400d4742c00b57fd6558bca68f9ee507a078dc2af3255b5ce9",
+      "member_manifest": "ARCHIVE_MANIFEST.json",
+      "name": "MAIN_seed_607_drift_shift",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_607_drift_shift.tar.gz.part000",
+          "sha256": "53c19d8e9be960fc207aeee830d336341a4dbbe1ca75baeb0045f0526aa00579"
+        },
+        {
+          "bytes": 5607930,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_607_drift_shift.tar.gz.part001",
+          "sha256": "f3f066917a183ea19f4c373c340c8a72a3ef52df993320a9ae01123d38147c71"
+        }
+      ],
+      "restore_root": "run/main/unpacked/seed_607_drift_shift",
+      "scientific_data_regenerated": false,
+      "sha256": "3747345659cd7e3469f5d7d6820b1eec63ed310d8df99e592adb9de8ea2f6247"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 14015755,
+      "data_members": 43305,
+      "independent_review_sha256": "e1ee40a6fd56d35f5a7e591b49ff6ce708060b5fc02f302defa414b680564f15",
+      "member_manifest": "ARCHIVE_MANIFEST.json",
+      "name": "MAIN_seed_607_student_t",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_607_student_t.tar.gz.part000",
+          "sha256": "a2127412e7988b6a2e17d50b91baeb222e56ee3ecd4c376b987a99f82243b5d6"
+        },
+        {
+          "bytes": 5627147,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_607_student_t.tar.gz.part001",
+          "sha256": "544bb50cb534997ac22529148d87d1b37316e24cea87a8e9df08577bb0703d6a"
+        }
+      ],
+      "restore_root": "run/main/unpacked/seed_607_student_t",
+      "scientific_data_regenerated": false,
+      "sha256": "e9e14b9134f1adf667a47246cddef6ab8ca87a24c283bcc712555eeff18c503e"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 14127298,
+      "data_members": 43638,
+      "independent_review_sha256": "b42a68a90898d79dace45b14fb0b56ea8e2bc24c060c324e2f929b6251e539de",
+      "member_manifest": "ARCHIVE_MANIFEST.json",
+      "name": "MAIN_seed_701_gaussian",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_701_gaussian.tar.gz.part000",
+          "sha256": "dddc25ce26e6cbeaae4aabf9fb7d1a7a2bc9a541e9a1c7f92160d2c37f39ce29"
+        },
+        {
+          "bytes": 5738690,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_701_gaussian.tar.gz.part001",
+          "sha256": "94339bb52e4f04d8e0c59436fb73eaae162a6d5244f555cfca0ed82e2e4c346c"
+        }
+      ],
+      "restore_root": "run/main/unpacked/seed_701_gaussian",
+      "scientific_data_regenerated": false,
+      "sha256": "32592a804c0fedd5be4eb49a6f21ba69160abdfc709522d93d8ba6fcc40c84ea"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 14018852,
+      "data_members": 43462,
+      "independent_review_sha256": "2392c77b9b2adada64f233effe175f4112371cedda5509a95c71323af3b6506f",
+      "member_manifest": "ARCHIVE_MANIFEST.json",
+      "name": "MAIN_seed_701_drift_shift",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_701_drift_shift.tar.gz.part000",
+          "sha256": "23a941656bf6074058f4463da30879dfc4318c5cc4b02686cd2301ec1e244339"
+        },
+        {
+          "bytes": 5630244,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_701_drift_shift.tar.gz.part001",
+          "sha256": "d9762b67cf3bce8883625c6da803859179af724f8c0e5f85f3c3b23864d8d349"
+        }
+      ],
+      "restore_root": "run/main/unpacked/seed_701_drift_shift",
+      "scientific_data_regenerated": false,
+      "sha256": "ea0fc2381b8593a5987e04b45c3aab9b5b5325f4b8fa51e38a29fe469a8e2574"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 14174424,
+      "data_members": 43745,
+      "independent_review_sha256": "d6665883a34be1b8075ee0dedd8f7f5facfe40581548905bde1879b9b7a0189e",
+      "member_manifest": "ARCHIVE_MANIFEST.json",
+      "name": "MAIN_seed_701_student_t",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_701_student_t.tar.gz.part000",
+          "sha256": "9b253df4689541c4f22fe719e30fa6c910a3c0a44cd04b6909f69487a2e59d85"
+        },
+        {
+          "bytes": 5785816,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_701_student_t.tar.gz.part001",
+          "sha256": "ab4c7a0927b0d9f64e73c580231558abda52b420b01db0278b8ba7c29647960d"
+        }
+      ],
+      "restore_root": "run/main/unpacked/seed_701_student_t",
+      "scientific_data_regenerated": false,
+      "sha256": "b731b01d91658cf5769b8fda125f9bde68fc00e5bd05089bb4212ce4a8699968"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 14122680,
+      "data_members": 43709,
+      "independent_review_sha256": "35f57a774f371b42952a66999bab9b5a38f468b1cb4cc076f0e3636b15977d51",
+      "member_manifest": "ARCHIVE_MANIFEST.json",
+      "name": "MAIN_seed_809_gaussian",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_809_gaussian.tar.gz.part000",
+          "sha256": "b477b9a0e3cd144f737a438db8c46e746afb08e5241f343535f6cb6c0692f0d2"
+        },
+        {
+          "bytes": 5734072,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_809_gaussian.tar.gz.part001",
+          "sha256": "9fd5ef40e121b2a4a23fbe8aa0fc239ab7509f85cf44e09cc31d064bd7906474"
+        }
+      ],
+      "restore_root": "run/main/unpacked/seed_809_gaussian",
+      "scientific_data_regenerated": false,
+      "sha256": "0fc774aafb4b78254eeacee3088d29fd429eb104212c807198b894284bca9a2d"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 14081676,
+      "data_members": 43676,
+      "independent_review_sha256": "6812bb24f643fd186fb1095fa996e1aeb97a3c15701cdc70304875f12274b084",
+      "member_manifest": "ARCHIVE_MANIFEST.json",
+      "name": "MAIN_seed_809_drift_shift",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_809_drift_shift.tar.gz.part000",
+          "sha256": "ec402b5fc5dd419e9379bee6283da736d8ac228077393c2d0b8024715a7bef73"
+        },
+        {
+          "bytes": 5693068,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_809_drift_shift.tar.gz.part001",
+          "sha256": "0f0aee40f07e152135bfc7a509883889a9abe313573e07a4e13db3df329b86fe"
+        }
+      ],
+      "restore_root": "run/main/unpacked/seed_809_drift_shift",
+      "scientific_data_regenerated": false,
+      "sha256": "4d63227c49d2dcdd103424f0712cb378340d26427b72528b3e320b10542ccbff"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 14221661,
+      "data_members": 43917,
+      "independent_review_sha256": "2abe5b9cbd0a7721837fcd57636e9badb73a881161a5f9bec04b657cffedcd70",
+      "member_manifest": "ARCHIVE_MANIFEST.json",
+      "name": "MAIN_seed_809_student_t",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_809_student_t.tar.gz.part000",
+          "sha256": "a3f70674665d72cfd2f8c178d8b06dba83a14ada6d3784c2849129c6e9770a77"
+        },
+        {
+          "bytes": 5833053,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_809_student_t.tar.gz.part001",
+          "sha256": "4fc5abb04f4acf8b3c92c70f2c12bfaf1f3933d0a4042b55147f93feffd51144"
+        }
+      ],
+      "restore_root": "run/main/unpacked/seed_809_student_t",
+      "scientific_data_regenerated": false,
+      "sha256": "9b51a683f241ad21669ee54a6a645a84208312376cb466facf11b9748b393587"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 14117564,
+      "data_members": 43489,
+      "independent_review_sha256": "df8fd203f7b866bb096e3680bfda6059cb1a406df86cd052e636827c4d22c008",
+      "member_manifest": "ARCHIVE_MANIFEST.json",
+      "name": "MAIN_seed_907_gaussian",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_907_gaussian.tar.gz.part000",
+          "sha256": "90d7e32a2989ab47a02570bbf5d03cf7ef2c084efbea2f4741b5900658292561"
+        },
+        {
+          "bytes": 5728956,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_907_gaussian.tar.gz.part001",
+          "sha256": "8366438fa3f1814b4f8986fceb15d7985ae2e76486c3eda41b02c5b3bccb702c"
+        }
+      ],
+      "restore_root": "run/main/unpacked/seed_907_gaussian",
+      "scientific_data_regenerated": false,
+      "sha256": "923b66da9ccd993348dfe9e88860283c3bd6d605f564f588ba9b8b441a72da57"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 14086271,
+      "data_members": 43491,
+      "independent_review_sha256": "b12cc47c85f28f83cb24963c9a25448cc7db9ff60f658fe8a55a380051ae3a7a",
+      "member_manifest": "ARCHIVE_MANIFEST.json",
+      "name": "MAIN_seed_907_drift_shift",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_907_drift_shift.tar.gz.part000",
+          "sha256": "c034d9e8d4885c1851a2c36198dd184b68936e9516c532e8eaf2b2aa30db2f40"
+        },
+        {
+          "bytes": 5697663,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_907_drift_shift.tar.gz.part001",
+          "sha256": "b0954510f5c3ca9e2b73b8fd0b4bc7ae1cc22083def4492335088a49a45cdd71"
+        }
+      ],
+      "restore_root": "run/main/unpacked/seed_907_drift_shift",
+      "scientific_data_regenerated": false,
+      "sha256": "258c0d376bc084fe4e7adf65facea8ffaf75390c5d0a1c9952b6d5a476ba0eef"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 13969970,
+      "data_members": 43116,
+      "independent_review_sha256": "563e3712073a8f75033146e3267135c1d990739c4144c4cddcbdd71631524dae",
+      "member_manifest": "ARCHIVE_MANIFEST.json",
+      "name": "MAIN_seed_907_student_t",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_907_student_t.tar.gz.part000",
+          "sha256": "73f3abf6face0f385e17dd7e6410be125909595c4f4bd487be1d851418f0554a"
+        },
+        {
+          "bytes": 5581362,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_907_student_t.tar.gz.part001",
+          "sha256": "1fbe0566b726a21f83fa100c29ab4b0efb55f81bf5c55251503381cfd1272aeb"
+        }
+      ],
+      "restore_root": "run/main/unpacked/seed_907_student_t",
+      "scientific_data_regenerated": false,
+      "sha256": "2428ad48c8fef759a8dd14472ef06416733bf1f8df4dd98d6c798bc94f3de2d8"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 14029935,
+      "data_members": 43275,
+      "independent_review_sha256": "6aa4472a3f40ca4d8bff18914d6a3baffdfb78c0d406b40c5a564c6cbf0877b8",
+      "member_manifest": "ARCHIVE_MANIFEST.json",
+      "name": "MAIN_seed_1009_gaussian",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_1009_gaussian.tar.gz.part000",
+          "sha256": "e10a099fea7b75901559540eb9fed87cf6f236f51a6f0a4e7acf16d45d5cec10"
+        },
+        {
+          "bytes": 5641327,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_1009_gaussian.tar.gz.part001",
+          "sha256": "09174ff08452aa0d32807bca6c8faff6ac546f9ef063a6df0c6e56702e80ddbe"
+        }
+      ],
+      "restore_root": "run/main/unpacked/seed_1009_gaussian",
+      "scientific_data_regenerated": false,
+      "sha256": "8570073c660896e4be66951b7904e7260a52b6ed21b95562791122cc4299219f"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 14024025,
+      "data_members": 43377,
+      "independent_review_sha256": "51bd9579207aefb440dc06a21582439d8c2117e8fa0421d4ecae365fa1596253",
+      "member_manifest": "ARCHIVE_MANIFEST.json",
+      "name": "MAIN_seed_1009_drift_shift",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_1009_drift_shift.tar.gz.part000",
+          "sha256": "75fb059abdcd503f7f147a397fbcc62112d1ed460a6fea0b10917f0c6ab11fbf"
+        },
+        {
+          "bytes": 5635417,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_1009_drift_shift.tar.gz.part001",
+          "sha256": "47a36c41708850e079005e9c7e86f62edf74cf74e2f85a4ba95c27ce068472f6"
+        }
+      ],
+      "restore_root": "run/main/unpacked/seed_1009_drift_shift",
+      "scientific_data_regenerated": false,
+      "sha256": "b3425b03a41859f2fa8c13a35d469ca376a5e76c0f178fc13fa519eb3b217157"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 14179263,
+      "data_members": 43679,
+      "independent_review_sha256": "377c7d6d0c24ebc96448d1d90a4e25fa9efc99251c6f1c10e0ffa2d2f5c39afc",
+      "member_manifest": "ARCHIVE_MANIFEST.json",
+      "name": "MAIN_seed_1009_student_t",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_1009_student_t.tar.gz.part000",
+          "sha256": "bf55ec7dfbc4cc1b7dc0a855ad39ab91b1f42b626c0cb06e1f655143eca0d00a"
+        },
+        {
+          "bytes": 5790655,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_1009_student_t.tar.gz.part001",
+          "sha256": "373b3068bf38ac8a8c39b0e32a56cea76f20961eb2dbacf6b7b33415a305a571"
+        }
+      ],
+      "restore_root": "run/main/unpacked/seed_1009_student_t",
+      "scientific_data_regenerated": false,
+      "sha256": "a447ad9c4ab2e877cbb6fbcfc81734092cdc2ea3fa43fe5ca19662b9d729e399"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 9084760,
+      "data_members": 43136,
+      "member_manifest": "_bundle_manifests/main_seed_1009_gaussian_attempt1.json",
+      "name": "main_seed_1009_gaussian_attempt1",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/operational/main_seed_1009_gaussian_attempt1.tar.gz.part000",
+          "sha256": "5c8df4bbec3319b588a980d4718ff08d139ca96b2b035439af94f771625e7890"
+        },
+        {
+          "bytes": 696152,
+          "path": "experiments/analytic_event_neuron/round3/evidence/operational/main_seed_1009_gaussian_attempt1.tar.gz.part001",
+          "sha256": "136e8075a3ad2e27eee96d1acbd30c77462bd0d219fdc6dc247b8a162478386b"
+        }
+      ],
+      "restore_root": "run",
+      "scientific_data_regenerated": false,
+      "sha256": "816b876b69235048dc4bc0f37c159dc053eebcb5422c994dd8e33b95b9cb4ecf"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 9577556,
+      "data_members": 16,
+      "member_manifest": "_bundle_manifests/MAIN_ANALYSIS.json",
+      "name": "MAIN_ANALYSIS",
+      "parts": [
+        {
+          "bytes": 8388608,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_ANALYSIS.tar.gz.part000",
+          "sha256": "e8a0e389c74456fd0b6b2032c82632eb991c8e96f476213ae9142ad9c7823a30"
+        },
+        {
+          "bytes": 1188948,
+          "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_ANALYSIS.tar.gz.part001",
+          "sha256": "baa09f40ebecc540917c71751b3556b8d1b380a2668296c8030956b1b704e572"
+        }
+      ],
+      "restore_root": "run",
+      "scientific_data_regenerated": false,
+      "sha256": "b161b8bb36365b464209bb03a6b0f6ea85c36885f0a49546c138f6e9a93e2476"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 2910744,
+      "data_members": 916,
+      "member_manifest": "_bundle_manifests/DEVELOPMENT_AND_FAILED_ATTEMPTS.json",
+      "name": "DEVELOPMENT_AND_FAILED_ATTEMPTS",
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/DEVELOPMENT_AND_FAILED_ATTEMPTS.tar.gz",
+      "restore_root": "run",
+      "scientific_data_regenerated": false,
+      "sha256": "b10f374251b0bcca21e9ba88c6947c32b24c82fcf185b4f57684d0e57dbf46a7"
+    },
+    {
+      "all_member_hashes_verified": true,
+      "bytes": 712933,
+      "data_members": 194,
+      "member_manifest": "_bundle_manifests/RUN_REPORTS.json",
+      "name": "RUN_REPORTS",
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/RUN_REPORTS.tar.gz",
+      "restore_root": "run",
+      "scientific_data_regenerated": false,
+      "sha256": "73f5fe6d8c4075d142a32dd456930f16942e985b5cd78e2d5f3fdce8c7881e96"
+    }
+  ],
+  "assembler_repository_path": "experiments/analytic_event_neuron/round3/evidence/assemble_manifest.py",
+  "assembler_sha256": "a8f68143a3f2df4ec73a7413135f0a9faaaa1870d46975062471991768d48b9e",
+  "base_commit": "ecbfadf12a0347919553220fc0684b16e088347b",
+  "created_utc": "2026-10-28T10:06:39.641724+00:00",
+  "descriptor_inputs": [
+    {
+      "descriptor_filename": "aen-r3-preconfirmation-archives.json",
+      "logical_archives": 7,
+      "sha256": "2233c66cd0c7ca957efdfb53ca590c6d7bb981d038582b23fde8dfd462ecd57e"
+    },
+    {
+      "descriptor_filename": "aen-r3-calibration-archives.json",
+      "logical_archives": 5,
+      "sha256": "1bc86fecc597285bbc4fda2d4b752733440defb0e964c1d2cd02a96de2e48990"
+    },
+    {
+      "descriptor_filename": "aen-r3-feedback-runtime-archives.json",
+      "logical_archives": 6,
+      "sha256": "d219046b254d63885d0f82a6d9dffcf0d18829a809061a7cedacab283b16803d"
+    },
+    {
+      "descriptor_filename": "aen-r3-main-archives.json",
+      "logical_archives": 15,
+      "sha256": "37d1a1ea3ce9b3f60112941d4ecaf6f724b0cdf712e0280134aed80727970b7c"
+    },
+    {
+      "descriptor_filename": "aen-r3-main-operational-archives.json",
+      "logical_archives": 1,
+      "sha256": "32fa5d62994e0a6d80bfda0f91b4f448218c6d6097429bfcdfcae11acf86e04f"
+    },
+    {
+      "descriptor_filename": "aen-r3-main-analysis-archives.json",
+      "logical_archives": 1,
+      "sha256": "0c0d1a6b27da25911f30cf7fc892dc0458137e098af8e135402a4b20be06ef4d"
+    },
+    {
+      "descriptor_filename": "aen-r3-development-archives.json",
+      "logical_archives": 1,
+      "sha256": "43b5ff84ccd63a066b560d97de175dabdb67471d48b198c71838c3dcd3656e3b"
+    },
+    {
+      "descriptor_filename": "aen-r3-report-archives.json",
+      "logical_archives": 1,
+      "sha256": "35b91723335ed0c8566e55194b7f22745ca3f62eb29834b4e1930a0315fd06cc"
+    }
+  ],
+  "failed_main_attempt_binding": {
+    "archive": "main_seed_1009_gaussian_attempt1",
+    "failed_attempt_full_cost_is_unknown_not_zero": true,
+    "failed_attempt_included_as_new_independent_sample": false,
+    "operational_metadata_members": 4,
+    "original_failed_files": 43132,
+    "recovery_receipt_restored_path": "run/MAIN_OPERATIONAL_RECOVERY.json",
+    "recovery_receipt_sha256": "dcd0c971eb01e7a75cfcd94fe880774f6f1e48a253e04547180277748ecec7bc",
+    "retry_identity_receipt_restored_path": "run/MAIN_RESUME1_IDENTITY.json",
+    "retry_identity_receipt_sha256": "ca595a14d107f3230653cb1a68a1e4d1d13e95d74e723a06e7105b83f7fc730b",
+    "same_data_model_and_trajectory_identities": true
+  },
+  "freeze_repository_path": "experiments/analytic_event_neuron/round3/evidence/FREEZE.json",
+  "freeze_sha256": "75df6af8ce501e624fd2900f096b7c6a050e5c61cbb200fca4ada5fc54d81146",
+  "frozen_inventory": {
+    "all_current_source_and_prepared_bytes_verified": true,
+    "binding_source": "sources_sha256 and artifacts_sha256 in the immutable FREEZE.json",
+    "prepared_artifacts": 329,
+    "scientific_source_files": 83
+  },
+  "main_review_bindings": {
+    "all_15_frozen_model_and_native_replays_passed": true,
+    "all_15_independent_member_reviews_passed": true,
+    "final_independent_review_path": "experiments/analytic_event_neuron/round3/evidence/MAIN_CONFIRMATION_REVIEW.json",
+    "final_independent_review_sha256": "31d9d54eacd625fbd091a31ec7778f06efb281457c244585fe2a54d16fc2f36d",
+    "native_inference_rerun_by_manifest_assembler": false,
+    "run_index_sha256": "75ae2129a1585a31fa39b6dfb1a4491913c942ac6ace81f1cd8c5564521e7cae",
+    "scopes": [
+      {
+        "analysis_sha256": "bc40933b9f9a957e0c28400300799e135fb485b7c6d70b5a01399b882129e095",
+        "archive_data_members": 43614,
+        "archive_members_including_manifest": 43615,
+        "archive_sha256": "b52f054d9280d70c46ab196a64a9142b07ec174205d0c25337f6e636374edab0",
+        "frozen_audit_sha256": "db964e1b7bf8e83781d20cbbbfac712c428fd6cf27819f9e6b1c7a109f8d60c0",
+        "frozen_native_replay_requests": 1536,
+        "frozen_native_replay_ticks": 10752,
+        "independent_review_sha256": "91841eab2ce81896f7d96c70e683384755505133dbcc826a227a453e06931fc7",
+        "scope": "seed_607_gaussian"
+      },
+      {
+        "analysis_sha256": "26085a5ad51c12fd1b5e4f97224da3d78e6565e00ae92cf587557a25c952bd64",
+        "archive_data_members": 43366,
+        "archive_members_including_manifest": 43367,
+        "archive_sha256": "3747345659cd7e3469f5d7d6820b1eec63ed310d8df99e592adb9de8ea2f6247",
+        "frozen_audit_sha256": "25a4e6494a494e53c5ce1d8993f38c2ca35336c2f4455201bac0dcff74e8a963",
+        "frozen_native_replay_requests": 1536,
+        "frozen_native_replay_ticks": 10752,
+        "independent_review_sha256": "933ed81cd9fa1d400d4742c00b57fd6558bca68f9ee507a078dc2af3255b5ce9",
+        "scope": "seed_607_drift_shift"
+      },
+      {
+        "analysis_sha256": "c1c19ef1e6e98af78407eab9c3c69e8686bff52b113136bcb21309a03d5b3b7e",
+        "archive_data_members": 43305,
+        "archive_members_including_manifest": 43306,
+        "archive_sha256": "e9e14b9134f1adf667a47246cddef6ab8ca87a24c283bcc712555eeff18c503e",
+        "frozen_audit_sha256": "71b8cf2216f965109adf3edb4526c47290020193631a92ae355abf1ea6fe1cea",
+        "frozen_native_replay_requests": 1536,
+        "frozen_native_replay_ticks": 10752,
+        "independent_review_sha256": "e1ee40a6fd56d35f5a7e591b49ff6ce708060b5fc02f302defa414b680564f15",
+        "scope": "seed_607_student_t"
+      },
+      {
+        "analysis_sha256": "c82c4d87c432dbc314bba6cf5337106f40fc9c8a73e0a6df3508d42ff391567e",
+        "archive_data_members": 43638,
+        "archive_members_including_manifest": 43639,
+        "archive_sha256": "32592a804c0fedd5be4eb49a6f21ba69160abdfc709522d93d8ba6fcc40c84ea",
+        "frozen_audit_sha256": "53f3381593256c3aa1957df6890e415f847fd6945f9fe9e42babe2dff8513d6f",
+        "frozen_native_replay_requests": 1536,
+        "frozen_native_replay_ticks": 10752,
+        "independent_review_sha256": "b42a68a90898d79dace45b14fb0b56ea8e2bc24c060c324e2f929b6251e539de",
+        "scope": "seed_701_gaussian"
+      },
+      {
+        "analysis_sha256": "b4a54f1f013b38302e73717e2c773754421eed7a8b26c99ffaa7b3ee7148d17b",
+        "archive_data_members": 43462,
+        "archive_members_including_manifest": 43463,
+        "archive_sha256": "ea0fc2381b8593a5987e04b45c3aab9b5b5325f4b8fa51e38a29fe469a8e2574",
+        "frozen_audit_sha256": "e1ef259555b6ce6a3b6a59782a1caf2852a6b3b69c521866a6c15e89046f072b",
+        "frozen_native_replay_requests": 1536,
+        "frozen_native_replay_ticks": 10752,
+        "independent_review_sha256": "2392c77b9b2adada64f233effe175f4112371cedda5509a95c71323af3b6506f",
+        "scope": "seed_701_drift_shift"
+      },
+      {
+        "analysis_sha256": "01d9e477e8410d1cc34b4575babb9d4e9be8586be870d135d7f3d0bc88e0bc54",
+        "archive_data_members": 43745,
+        "archive_members_including_manifest": 43746,
+        "archive_sha256": "b731b01d91658cf5769b8fda125f9bde68fc00e5bd05089bb4212ce4a8699968",
+        "frozen_audit_sha256": "53e4d330e0abf09dd259f89af17daaec50a694c9d72ca220a44199637dd1e635",
+        "frozen_native_replay_requests": 1536,
+        "frozen_native_replay_ticks": 10752,
+        "independent_review_sha256": "d6665883a34be1b8075ee0dedd8f7f5facfe40581548905bde1879b9b7a0189e",
+        "scope": "seed_701_student_t"
+      },
+      {
+        "analysis_sha256": "cc6758e5ae2d30f36e508634772bfd6c88bc84a7a1f84f8cd5b2e0fb57f29824",
+        "archive_data_members": 43709,
+        "archive_members_including_manifest": 43710,
+        "archive_sha256": "0fc774aafb4b78254eeacee3088d29fd429eb104212c807198b894284bca9a2d",
+        "frozen_audit_sha256": "364537f1ecba6aad4ec01a603b55021b8717ad60f6be145dbf2a111961b3c2c9",
+        "frozen_native_replay_requests": 1536,
+        "frozen_native_replay_ticks": 10752,
+        "independent_review_sha256": "35f57a774f371b42952a66999bab9b5a38f468b1cb4cc076f0e3636b15977d51",
+        "scope": "seed_809_gaussian"
+      },
+      {
+        "analysis_sha256": "8935fffd6b5b6adb30d875c2595f43e6a9684430c0cfda3b8f0455da74428caa",
+        "archive_data_members": 43676,
+        "archive_members_including_manifest": 43677,
+        "archive_sha256": "4d63227c49d2dcdd103424f0712cb378340d26427b72528b3e320b10542ccbff",
+        "frozen_audit_sha256": "d083ebd237f39d7814ec8ae2d96eb50f97c0718f46946c4737e19b01ba142565",
+        "frozen_native_replay_requests": 1536,
+        "frozen_native_replay_ticks": 10752,
+        "independent_review_sha256": "6812bb24f643fd186fb1095fa996e1aeb97a3c15701cdc70304875f12274b084",
+        "scope": "seed_809_drift_shift"
+      },
+      {
+        "analysis_sha256": "aa63f3e89eb13d7fff8e9906df398f6bc6427837dba3467f3a5dd84333f94cd9",
+        "archive_data_members": 43917,
+        "archive_members_including_manifest": 43918,
+        "archive_sha256": "9b51a683f241ad21669ee54a6a645a84208312376cb466facf11b9748b393587",
+        "frozen_audit_sha256": "d183d6c577d2b1b9b49ba53d514f2589758fcb08e7ead0436a9ade9d77da9fdd",
+        "frozen_native_replay_requests": 1536,
+        "frozen_native_replay_ticks": 10752,
+        "independent_review_sha256": "2abe5b9cbd0a7721837fcd57636e9badb73a881161a5f9bec04b657cffedcd70",
+        "scope": "seed_809_student_t"
+      },
+      {
+        "analysis_sha256": "59a45ef481f79401eb911893f2998d52745dc3e4a09b88aab0e0d11854121a25",
+        "archive_data_members": 43489,
+        "archive_members_including_manifest": 43490,
+        "archive_sha256": "923b66da9ccd993348dfe9e88860283c3bd6d605f564f588ba9b8b441a72da57",
+        "frozen_audit_sha256": "fbd2e77d2a47aaab384e5766a74ef793d96a1bca36e2edfd0a1b8a1dd36cb538",
+        "frozen_native_replay_requests": 1536,
+        "frozen_native_replay_ticks": 10752,
+        "independent_review_sha256": "df8fd203f7b866bb096e3680bfda6059cb1a406df86cd052e636827c4d22c008",
+        "scope": "seed_907_gaussian"
+      },
+      {
+        "analysis_sha256": "7815133ee7aa1434a71aa0079f5306182aed9beead637177c2a765780895e04b",
+        "archive_data_members": 43491,
+        "archive_members_including_manifest": 43492,
+        "archive_sha256": "258c0d376bc084fe4e7adf65facea8ffaf75390c5d0a1c9952b6d5a476ba0eef",
+        "frozen_audit_sha256": "acb984ab9a17def7c46eb1e8e7d8100e5bd3e22b65016b8ac89d91431d061a43",
+        "frozen_native_replay_requests": 1536,
+        "frozen_native_replay_ticks": 10752,
+        "independent_review_sha256": "b12cc47c85f28f83cb24963c9a25448cc7db9ff60f658fe8a55a380051ae3a7a",
+        "scope": "seed_907_drift_shift"
+      },
+      {
+        "analysis_sha256": "38200df0c3700f898dd0ee3da3a2debcd56f3a4bdd9ee8a6bc79add0f537de20",
+        "archive_data_members": 43116,
+        "archive_members_including_manifest": 43117,
+        "archive_sha256": "2428ad48c8fef759a8dd14472ef06416733bf1f8df4dd98d6c798bc94f3de2d8",
+        "frozen_audit_sha256": "d9ca7f8dbd0f725ace10acbd0dd2963291c640aeca7e0ee6f17b19a2d56cd70a",
+        "frozen_native_replay_requests": 1536,
+        "frozen_native_replay_ticks": 10752,
+        "independent_review_sha256": "563e3712073a8f75033146e3267135c1d990739c4144c4cddcbdd71631524dae",
+        "scope": "seed_907_student_t"
+      },
+      {
+        "analysis_sha256": "539b39f1ccb50b2f3c4f4ba352eb8a389143e9f830c5a3f5dc484ece3ad1fc77",
+        "archive_data_members": 43275,
+        "archive_members_including_manifest": 43276,
+        "archive_sha256": "8570073c660896e4be66951b7904e7260a52b6ed21b95562791122cc4299219f",
+        "frozen_audit_sha256": "a814b8a2f44c5716282d52274c21961ff8373c4fbad78ee23b45199a18e815d6",
+        "frozen_native_replay_requests": 1536,
+        "frozen_native_replay_ticks": 10752,
+        "independent_review_sha256": "6aa4472a3f40ca4d8bff18914d6a3baffdfb78c0d406b40c5a564c6cbf0877b8",
+        "scope": "seed_1009_gaussian"
+      },
+      {
+        "analysis_sha256": "89954f94c1b8f0caa9df02967fe4c314ff11429d50e186e3353c9f1fa70f2278",
+        "archive_data_members": 43377,
+        "archive_members_including_manifest": 43378,
+        "archive_sha256": "b3425b03a41859f2fa8c13a35d469ca376a5e76c0f178fc13fa519eb3b217157",
+        "frozen_audit_sha256": "cfe00269028fbca6dbfbbaaf08cf000a57deca7bf9dc9e7fbf720ba2dd44f976",
+        "frozen_native_replay_requests": 1536,
+        "frozen_native_replay_ticks": 10752,
+        "independent_review_sha256": "51bd9579207aefb440dc06a21582439d8c2117e8fa0421d4ecae365fa1596253",
+        "scope": "seed_1009_drift_shift"
+      },
+      {
+        "analysis_sha256": "f8d1553dcaaf469ce5147d8508eee22ff5f5d12e4b0eba42f8fbfc05259b9003",
+        "archive_data_members": 43679,
+        "archive_members_including_manifest": 43680,
+        "archive_sha256": "a447ad9c4ab2e877cbb6fbcfc81734092cdc2ea3fa43fe5ca19662b9d729e399",
+        "frozen_audit_sha256": "58f2e8bc81ec1a6f01dc0068658e403d012e3effa1e4abd980047c582f0b4e64",
+        "frozen_native_replay_requests": 1536,
+        "frozen_native_replay_ticks": 10752,
+        "independent_review_sha256": "377c7d6d0c24ebc96448d1d90a4e25fa9efc99251c6f1c10e0ffa2d2f5c39afc",
+        "scope": "seed_1009_student_t"
+      }
+    ]
+  },
+  "physical_files": [
+    {
+      "bytes": 1044397,
+      "git_blob_sha1": "8dbb28a6c09cc6f84854d700c5568b61ad735d62",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/preconfirmation/CORE_PREPARED.tar.gz",
+      "present_in_verified_remote_tree": true,
+      "sha256": "dea9849388daf24521865d360387d01358cec56a2a06250ea1ad81881052e074"
+    },
+    {
+      "bytes": 4906349,
+      "git_blob_sha1": "4ee055be60295ba44e22a8513bf6ed1390ea4052",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/preconfirmation/CALIBRATION_PREPARED.tar.gz",
+      "present_in_verified_remote_tree": true,
+      "sha256": "bd2354839d8299138496e4c5a905fdc52df4096c4ec234d087c40b8780d3d40c"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "444bfd6c3ea0a4cf25ae65fea55f71a1fd08cb6a",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_607.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "e27799be2567ea929fb519c9fefa0e910b839118407f44174a7e51d0f2fd47a0"
+    },
+    {
+      "bytes": 5810552,
+      "git_blob_sha1": "cb3ed5d776437672b797b9a0d3ad1120eb373a0e",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_607.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "e224bb51bd217cff5fcf721a1fc5f81c7e644242843a82f46f1089d3404a0dbb"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "cc89d12f699815025281fcab0045a09d90376cdc",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_701.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "9d786e6f8aedfaa2605aab707e4d3d302035099bee5a40213e5ecb7bcad9859e"
+    },
+    {
+      "bytes": 5788137,
+      "git_blob_sha1": "2609985b6ee2feded92a774f4318bd5ce5d9f081",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_701.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "c624bfa31195c616559a326940019ec0ef4c7d18cd627cd8a702fc25d55f5524"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "8816eedd826588595485a461b357a918d125868f",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_809.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "3555a7ce22a28d9e8d7540dd799965e9871c042db823b0b779acf8453d7d06fb"
+    },
+    {
+      "bytes": 5781045,
+      "git_blob_sha1": "200d7cb0e8e3c8b9f96f8ab402571f62759b418b",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_809.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "d0e1f0d5456d512629134e0010b2570973ed0ff42ee12c93685df2a46cdb9234"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "1e0890050fdc6ac75ef02a147bd1c9b5ae03673b",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_907.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "441f26204a526274ebea42559ecec07167c78655f03aab83dfb587375004b32d"
+    },
+    {
+      "bytes": 5792010,
+      "git_blob_sha1": "806df437d94c506590b2c9d04a45565cfd4bbee7",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_907.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "f661c436eda88279caeab7d41d34254ff1340d8d00a7307211a5af8c292fa6c6"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "146ee9eb662fcccf6ccd7a233490849464d4e7ff",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_1009.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "ca4e5935c8032bd7ed61762f0a8babbcd77b72f15cd5abb8f232e99cc527cc32"
+    },
+    {
+      "bytes": 5825948,
+      "git_blob_sha1": "5d5e26606e1dc2d8664cc9b572d0361538872f49",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_1009.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "0769cd390b91cb6d3e1c28bd3c65189faf726442f9674b0b722b7a0c8e2fa672"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "423ee0e5206151bfcd80ed37b6292b2605ab9071",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_607.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "417411d8231116155e732532bd6a5ef9d1b08c50e63676f87b0dfb371b2b7729"
+    },
+    {
+      "bytes": 4603028,
+      "git_blob_sha1": "9cc64b98afa33c388816e2c967785b62f6cef809",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_607.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "67befcf0b9f9ff6dc3d0c40a685a59c15b3e2928d467ae794f9316d3db87c089"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "8fd0939efffdd9f493ca84f79976ebd82c24e12c",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_701.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "79142d4c967dd1eca18fc1e8b13215dc29710c4ad1e4b91a98505df93bff74ca"
+    },
+    {
+      "bytes": 4614949,
+      "git_blob_sha1": "d21a1e00ba8a85c3f044755d8ed3defec179a969",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_701.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "a971378264adf28f251f66c15aa9154b8c7bf396e43e77a2e693468a6900f102"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "1650e89f6414bb03914809b4d17bf8df093f039a",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_809.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "e4a3b2785cb5168aaf67638f0e023094c1964b2c6e1108161629f99ea3193607"
+    },
+    {
+      "bytes": 4652595,
+      "git_blob_sha1": "84c3f75b22731c1a6cb11445144b438009ec00ae",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_809.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "f4b491469cf10de641645bcfccef3dfb5a81b37a6d42dca9e2303c0e9488239e"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "9b2f9dc7d447033d92bdc0c28d38658ab62dd1b1",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_907.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "bc42faf0200aa4044142fb59bdf782fb0e7c44737ebf11a35f040c7013f719de"
+    },
+    {
+      "bytes": 4690357,
+      "git_blob_sha1": "b281a2c41adb61151882837f0c1cb4b2d0beccbb",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_907.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "22a3a169abc331d27ad56ac80a6a51ebd56a24932e9bfa27d582ab3ff8253946"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "291c724fabaa9426ebc9ffecd490a90ce6f2afdb",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_1009.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "913a66ae0a16f51a5653ddaa9ee0923f3508c43e654de8137ef2984589e18c2e"
+    },
+    {
+      "bytes": 4658929,
+      "git_blob_sha1": "10782e16bf9069a47b74266ccd4a418e763568ad",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_1009.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "33345953daf3ca44b88b83a51576132bc8ada1eafc1e6cb381fdac034451d7b2"
+    },
+    {
+      "bytes": 759788,
+      "git_blob_sha1": "96d6e556db6d87251c12aa02e4a44afffbfe7f20",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/RUNTIME_CONFIRMATION.tar.gz",
+      "present_in_verified_remote_tree": true,
+      "sha256": "65be108f0b6c9a8f5e1e7b3fc8e6d4abca434c65176aa56c70577e054d62be86"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "055993d731a95443dff545680ffd96a052b1a1bb",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_607.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "e99323a46d2ce88c49894802e978d2e8026c1dabcd1557e66c2c00f89920e4d0"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "fa8adf7452d0a6255071e43b02a925b12e081a66",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_607.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "b6b2465c791106db1d35c6f8e6f52e1ef8b424759a2509eed89f7c92d278af7a"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "9b199ba5ea7144f05655c130c12527c29bc94472",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_607.tar.gz.part002",
+      "present_in_verified_remote_tree": true,
+      "sha256": "ef6c2cf8b023f194ad3f17f65661403e01ac6f675b18314109a23d706daa815f"
+    },
+    {
+      "bytes": 4611479,
+      "git_blob_sha1": "11cb3e15b93f014a6ee622dd58350ed72c6cd5eb",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_607.tar.gz.part003",
+      "present_in_verified_remote_tree": true,
+      "sha256": "d33e8c0bce791bd567e1fd1e71410e36f8812880e47f3962e45ace4f95f38415"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "53190a24c31f897d1039c52194fb6ec9859e6ee0",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_701.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "84ae6c59460bd41c5a5155041732c6121ea202eb4d8d748a8300dd021ce44fd0"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "8446cf619fdb00f03c3e665e5c46c44a39c49699",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_701.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "80d218badb40cd488a67f4fddacc61e4cd395469f8eb79436d58e7846f142e3a"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "3006a30527385fe2b265610848b0c1c66c2fb30d",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_701.tar.gz.part002",
+      "present_in_verified_remote_tree": true,
+      "sha256": "a2d53969f7a37567bc9642e5dc23369f0f345961ffe7de623bc4f7b63670f5fb"
+    },
+    {
+      "bytes": 4712366,
+      "git_blob_sha1": "1ccadbe179b038dac1398c398e725297601a5065",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_701.tar.gz.part003",
+      "present_in_verified_remote_tree": true,
+      "sha256": "f41e7c226fc7b3a6f23c50748e72e86780a5e060c7f71719bf89357a1439e233"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "4d9b202b70a0f42424575772dc7c903beaf70186",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_809.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "8f21caa15dfeb261606cad23ff98925113e4b4b8335a868ba190ddd805b678dc"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "a89bb303eae2d6e0c3a12ef34ac9d45d10eab7c2",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_809.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "feb414810d2f7ccd015babf3cae9ecba22f2705b07657f1d91c0c24e786b0bdd"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "749ae7eb11d2d5b114fbf2b78156364c6213d96e",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_809.tar.gz.part002",
+      "present_in_verified_remote_tree": true,
+      "sha256": "e96cb1cbc0342287fd6f47e473fbccd3d6bb48a0b9159fdcfe2f17990a72037f"
+    },
+    {
+      "bytes": 4785008,
+      "git_blob_sha1": "83f61df898421dd0c4b3a5e7195a2255129f4aa8",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_809.tar.gz.part003",
+      "present_in_verified_remote_tree": true,
+      "sha256": "62241828a2193c6fe9e898e1340a251a8701dba7b864feebf8f8d0fcce715067"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "9569a9b9a1731aa9c0ba5c17e203ece6c871e971",
+      "local_sha256_verified_during_assembly": true,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_907.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "9134bf2ec3535b8f18567935fa399340721393a384ce42a3edf8bc3e3a71a76b"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "422fde5c48d18c27823913eab608f47616cf028e",
+      "local_sha256_verified_during_assembly": true,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_907.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "ca1cbfe54ea9b0cba3f0f8dad2a4361cde1c3c389ff15db993d53c2202150d05"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "7d1fcea43b1669fa2b7fbadf6f9063dac7a857ce",
+      "local_sha256_verified_during_assembly": true,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_907.tar.gz.part002",
+      "present_in_verified_remote_tree": true,
+      "sha256": "8a7aef1f24918e5f355a9c00d00af926f142d9a3b451a5b9171795cf5ab490ad"
+    },
+    {
+      "bytes": 5081240,
+      "git_blob_sha1": "3bbce7749284016d0ae2de8b6408297550832384",
+      "local_sha256_verified_during_assembly": true,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_907.tar.gz.part003",
+      "present_in_verified_remote_tree": true,
+      "sha256": "540121811cf189a759e2c4c0bf6b2ddd87c983ef76c7486374463af3a1086ce3"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "4ee04399c3baf01b9265d7515d3c2151fcc058bf",
+      "local_sha256_verified_during_assembly": true,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_1009.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "d18334b139c974a30ee7db19fb8db97c07db15f59575f22f3ff232af00d5cd10"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "f500bc513a77845a2d9d2a85039d80aebcc6ebfc",
+      "local_sha256_verified_during_assembly": true,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_1009.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "b0b21da93ae009fc6f0c41165bd33773973bffffcdf3f96abbf50a579018aa49"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "aae285383a03130bc12e57aed6dc40972a5b46e4",
+      "local_sha256_verified_during_assembly": true,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_1009.tar.gz.part002",
+      "present_in_verified_remote_tree": true,
+      "sha256": "bd44f2e457fddb51570c871d8fe65a448eef076bab506d560e88de377da61443"
+    },
+    {
+      "bytes": 4936700,
+      "git_blob_sha1": "d3a88d6a542a583f539c6974905c5fc19e15667e",
+      "local_sha256_verified_during_assembly": true,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_1009.tar.gz.part003",
+      "present_in_verified_remote_tree": true,
+      "sha256": "e761814a082c4131a4e2f29e55434e56095f0c0f1dd632e9c12dd77642573599"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "01da0e883d06fab9c578bb9e29a6c88f39e7bcb8",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_607_gaussian.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "90110ea9a5d0f7f1c6a6f4e2067f64d77d42fc4849c78b1c33fd4dd1f42de507"
+    },
+    {
+      "bytes": 5715941,
+      "git_blob_sha1": "9f7327b973bcf7669c48d7ad7cf07b397be64724",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_607_gaussian.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "edc2fe16e226e9ecc5986c6604d7c070a6f048fc0bd42b3942d477f2ec005092"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "55227078056d9f3a193b6f5ca0a11e1e543fc378",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_607_drift_shift.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "53c19d8e9be960fc207aeee830d336341a4dbbe1ca75baeb0045f0526aa00579"
+    },
+    {
+      "bytes": 5607930,
+      "git_blob_sha1": "ceea13d96540c2612a7bbbc058198bc6dbe2ab6c",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_607_drift_shift.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "f3f066917a183ea19f4c373c340c8a72a3ef52df993320a9ae01123d38147c71"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "1a938a1b71b07a0e9f6b0bc2258d46afdb6a490a",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_607_student_t.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "a2127412e7988b6a2e17d50b91baeb222e56ee3ecd4c376b987a99f82243b5d6"
+    },
+    {
+      "bytes": 5627147,
+      "git_blob_sha1": "90fc871a994fddf04ea85569a4ba0205dd58c790",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_607_student_t.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "544bb50cb534997ac22529148d87d1b37316e24cea87a8e9df08577bb0703d6a"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "3c6c48f473d977c54963b94a276e70acc90db287",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_701_gaussian.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "dddc25ce26e6cbeaae4aabf9fb7d1a7a2bc9a541e9a1c7f92160d2c37f39ce29"
+    },
+    {
+      "bytes": 5738690,
+      "git_blob_sha1": "8a5a5bf502acc7c597be44742b80688de7a1aae7",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_701_gaussian.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "94339bb52e4f04d8e0c59436fb73eaae162a6d5244f555cfca0ed82e2e4c346c"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "788e2a3430bc8118c83669f6276780a5ef8a02f6",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_701_drift_shift.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "23a941656bf6074058f4463da30879dfc4318c5cc4b02686cd2301ec1e244339"
+    },
+    {
+      "bytes": 5630244,
+      "git_blob_sha1": "2f595482dcb08b0a4bb0a6ef628ceef5e847d011",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_701_drift_shift.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "d9762b67cf3bce8883625c6da803859179af724f8c0e5f85f3c3b23864d8d349"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "dab52da47642c0cc983595c579544115f3253f03",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_701_student_t.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "9b253df4689541c4f22fe719e30fa6c910a3c0a44cd04b6909f69487a2e59d85"
+    },
+    {
+      "bytes": 5785816,
+      "git_blob_sha1": "bfe3ff4e2ff2ec8a8f636d30a08075057a415ae3",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_701_student_t.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "ab4c7a0927b0d9f64e73c580231558abda52b420b01db0278b8ba7c29647960d"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "aaacf1d44233e72b29b9937f2e005e7dc7a070f0",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_809_gaussian.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "b477b9a0e3cd144f737a438db8c46e746afb08e5241f343535f6cb6c0692f0d2"
+    },
+    {
+      "bytes": 5734072,
+      "git_blob_sha1": "146be6489de8c4d1025fc3114d5730748a22eea4",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_809_gaussian.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "9fd5ef40e121b2a4a23fbe8aa0fc239ab7509f85cf44e09cc31d064bd7906474"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "712f074954ffeb9f0cb14311b0dfcf5cac3ad5dd",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_809_drift_shift.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "ec402b5fc5dd419e9379bee6283da736d8ac228077393c2d0b8024715a7bef73"
+    },
+    {
+      "bytes": 5693068,
+      "git_blob_sha1": "97344b4bf9fa2888d709a638dd72fd083c780eaa",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_809_drift_shift.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "0f0aee40f07e152135bfc7a509883889a9abe313573e07a4e13db3df329b86fe"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "68e14f58ddf8bd7c11df5aa9fa9b33e93f276fb1",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_809_student_t.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "a3f70674665d72cfd2f8c178d8b06dba83a14ada6d3784c2849129c6e9770a77"
+    },
+    {
+      "bytes": 5833053,
+      "git_blob_sha1": "d78838498b064abf49af470ad87ee5dc9e57c34d",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_809_student_t.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "4fc5abb04f4acf8b3c92c70f2c12bfaf1f3933d0a4042b55147f93feffd51144"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "001ff4aa91e9aa66786eac0ec5a1409ea779a337",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_907_gaussian.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "90d7e32a2989ab47a02570bbf5d03cf7ef2c084efbea2f4741b5900658292561"
+    },
+    {
+      "bytes": 5728956,
+      "git_blob_sha1": "825552cbec4b115f15011e21a2f89bdcfe34bce1",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_907_gaussian.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "8366438fa3f1814b4f8986fceb15d7985ae2e76486c3eda41b02c5b3bccb702c"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "4b94d859e0e12587a4504bcd82cae91d787a216c",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_907_drift_shift.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "c034d9e8d4885c1851a2c36198dd184b68936e9516c532e8eaf2b2aa30db2f40"
+    },
+    {
+      "bytes": 5697663,
+      "git_blob_sha1": "f989f41a527d040934bd4496b6a649766a6759fc",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_907_drift_shift.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "b0954510f5c3ca9e2b73b8fd0b4bc7ae1cc22083def4492335088a49a45cdd71"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "eaf3873c2f1bbc20de956ed1ff7220aa802b1aa8",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_907_student_t.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "73f3abf6face0f385e17dd7e6410be125909595c4f4bd487be1d851418f0554a"
+    },
+    {
+      "bytes": 5581362,
+      "git_blob_sha1": "6a2fea2523c16a430354a1d23e4bca59f537e0a6",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_907_student_t.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "1fbe0566b726a21f83fa100c29ab4b0efb55f81bf5c55251503381cfd1272aeb"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "f59d2bc5cd6b342e1a7b7b96dbd27f2e9768355e",
+      "local_sha256_verified_during_assembly": true,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_1009_gaussian.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "e10a099fea7b75901559540eb9fed87cf6f236f51a6f0a4e7acf16d45d5cec10"
+    },
+    {
+      "bytes": 5641327,
+      "git_blob_sha1": "6a12d67059eb29f0a19bca75ccad816f2463cf2d",
+      "local_sha256_verified_during_assembly": true,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_1009_gaussian.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "09174ff08452aa0d32807bca6c8faff6ac546f9ef063a6df0c6e56702e80ddbe"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "43321ca327f821523900a9b6424498add76d4ab3",
+      "local_sha256_verified_during_assembly": true,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_1009_drift_shift.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "75fb059abdcd503f7f147a397fbcc62112d1ed460a6fea0b10917f0c6ab11fbf"
+    },
+    {
+      "bytes": 5635417,
+      "git_blob_sha1": "7077aa71438102a82a4526deaff9d63d80a0fe83",
+      "local_sha256_verified_during_assembly": true,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_1009_drift_shift.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "47a36c41708850e079005e9c7e86f62edf74cf74e2f85a4ba95c27ce068472f6"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "6ea03789aa03dc9ec04bf2732ad2ed6ea83bd958",
+      "local_sha256_verified_during_assembly": true,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_1009_student_t.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "bf55ec7dfbc4cc1b7dc0a855ad39ab91b1f42b626c0cb06e1f655143eca0d00a"
+    },
+    {
+      "bytes": 5790655,
+      "git_blob_sha1": "42bf9c5fad44455f0cf1c760abba92578cb22a91",
+      "local_sha256_verified_during_assembly": true,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_1009_student_t.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "373b3068bf38ac8a8c39b0e32a56cea76f20961eb2dbacf6b7b33415a305a571"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "46ae6ea2b941fc4ff42bc3b8df1e9228dae17c4b",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/operational/main_seed_1009_gaussian_attempt1.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "5c8df4bbec3319b588a980d4718ff08d139ca96b2b035439af94f771625e7890"
+    },
+    {
+      "bytes": 696152,
+      "git_blob_sha1": "1a06234133e6950da7efba09d8af8b9102187d28",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/operational/main_seed_1009_gaussian_attempt1.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "136e8075a3ad2e27eee96d1acbd30c77462bd0d219fdc6dc247b8a162478386b"
+    },
+    {
+      "bytes": 8388608,
+      "git_blob_sha1": "246e50698274f402e1dd8027cedc516190df132d",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_ANALYSIS.tar.gz.part000",
+      "present_in_verified_remote_tree": true,
+      "sha256": "e8a0e389c74456fd0b6b2032c82632eb991c8e96f476213ae9142ad9c7823a30"
+    },
+    {
+      "bytes": 1188948,
+      "git_blob_sha1": "f70b7863e7b03b34619aa4db8a7ea1a23b1db5c7",
+      "local_sha256_verified_during_assembly": false,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_ANALYSIS.tar.gz.part001",
+      "present_in_verified_remote_tree": true,
+      "sha256": "baa09f40ebecc540917c71751b3556b8d1b380a2668296c8030956b1b704e572"
+    },
+    {
+      "bytes": 2910744,
+      "git_blob_sha1": "d4f79449e3c9e09f047cae0a44dc7f7f2d227ad3",
+      "local_sha256_verified_during_assembly": true,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/DEVELOPMENT_AND_FAILED_ATTEMPTS.tar.gz",
+      "present_in_verified_remote_tree": true,
+      "sha256": "b10f374251b0bcca21e9ba88c6947c32b24c82fcf185b4f57684d0e57dbf46a7"
+    },
+    {
+      "bytes": 712933,
+      "git_blob_sha1": "b27260344d0fb3afce700229eda598544e8cb9f3",
+      "local_sha256_verified_during_assembly": true,
+      "path": "experiments/analytic_event_neuron/round3/evidence/confirmation/RUN_REPORTS.tar.gz",
+      "present_in_verified_remote_tree": true,
+      "sha256": "73f5fe6d8c4075d142a32dd456930f16942e985b5cd78e2d5f3fdce8c7881e96"
+    }
+  ],
+  "post_snapshot_standalone_receipts": [
+    {
+      "repository_path": "experiments/analytic_event_neuron/round3/evidence/results/restoration/RUN_REPORTS_RESTORE.json",
+      "status_at_assembly": "actual_restore_passed; standalone_receipt_excluded_from_report_snapshot"
+    },
+    {
+      "repository_path": "experiments/analytic_event_neuron/round3/evidence/results/reviews/FINAL_REPORT_QA.json",
+      "status_at_assembly": "issued_after_manifest; no recursive hash binding"
+    },
+    {
+      "repository_path": "experiments/analytic_event_neuron/round3/evidence/FINAL_PUBLICATION_RECEIPT.json",
+      "status_at_assembly": "issued_after_publication; no recursive hash binding"
+    }
+  ],
+  "production_promotion": false,
+  "protocol_sha256": "db2d045c733e892e3beeb1de2bdd2e469837373e9ec9cef35ab4785dfae7cffc",
+  "publication_snapshot": {
+    "final_all_file_publication_verification_is_a_separate_receipt": true,
+    "local_absence_permitted_only_with_recorded_remote_git_identity": true,
+    "physical_files_in_that_verified_tree": 79,
+    "physical_files_rehashed_locally_during_manifest_assembly": 16,
+    "remote_github_requests_performed_by_manifest_assembler": false,
+    "remote_readback_proof_sha256": "b9de840d85cdca8d858f50f234816aea822bf6bc6c71d106e43eba0faf408ad1",
+    "verified_remote_commit_before_final_publication": "202f3f9701a3a9f66d65133df588eb7742a351e3",
+    "verified_remote_tree": "8215cf5047826606f702b3f750bcfc47082f50f8"
+  },
+  "restoration_verification": {
+    "actual_disk_extraction_tested_logical_bundles": 22,
+    "actual_restore_receipts": [
+      {
+        "actual_safe_disk_extraction_verified": true,
+        "archive": "CORE_PREPARED",
+        "data_members": 35,
+        "receipt_restored_path": "run/reviews/PREPARED_RESTORATION.json",
+        "receipt_sha256": "6b9a2328aab99218eb5a4f1568eb973685553c69fe8daf742850bf378f1b97f8"
+      },
+      {
+        "actual_safe_disk_extraction_verified": true,
+        "archive": "CALIBRATION_PREPARED",
+        "data_members": 251,
+        "receipt_restored_path": "run/reviews/PREPARED_RESTORATION.json",
+        "receipt_sha256": "6b9a2328aab99218eb5a4f1568eb973685553c69fe8daf742850bf378f1b97f8"
+      },
+      {
+        "actual_safe_disk_extraction_verified": true,
+        "archive": "FEEDBACK_PREPARED_607",
+        "data_members": 9,
+        "receipt_restored_path": "run/reviews/PREPARED_RESTORATION.json",
+        "receipt_sha256": "6b9a2328aab99218eb5a4f1568eb973685553c69fe8daf742850bf378f1b97f8"
+      },
+      {
+        "actual_safe_disk_extraction_verified": true,
+        "archive": "FEEDBACK_PREPARED_701",
+        "data_members": 9,
+        "receipt_restored_path": "run/reviews/PREPARED_RESTORATION.json",
+        "receipt_sha256": "6b9a2328aab99218eb5a4f1568eb973685553c69fe8daf742850bf378f1b97f8"
+      },
+      {
+        "actual_safe_disk_extraction_verified": true,
+        "archive": "FEEDBACK_PREPARED_809",
+        "data_members": 9,
+        "receipt_restored_path": "run/reviews/PREPARED_RESTORATION.json",
+        "receipt_sha256": "6b9a2328aab99218eb5a4f1568eb973685553c69fe8daf742850bf378f1b97f8"
+      },
+      {
+        "actual_safe_disk_extraction_verified": true,
+        "archive": "FEEDBACK_PREPARED_907",
+        "data_members": 9,
+        "receipt_restored_path": "run/reviews/PREPARED_RESTORATION.json",
+        "receipt_sha256": "6b9a2328aab99218eb5a4f1568eb973685553c69fe8daf742850bf378f1b97f8"
+      },
+      {
+        "actual_safe_disk_extraction_verified": true,
+        "archive": "FEEDBACK_PREPARED_1009",
+        "data_members": 9,
+        "receipt_restored_path": "run/reviews/PREPARED_RESTORATION.json",
+        "receipt_sha256": "6b9a2328aab99218eb5a4f1568eb973685553c69fe8daf742850bf378f1b97f8"
+      },
+      {
+        "actual_safe_disk_extraction_verified": true,
+        "archive": "CALIBRATION_CONFIRMATION_607",
+        "data_members": 37,
+        "receipt_restored_path": "run/reviews/CALIBRATION_RESTORATION.json",
+        "receipt_sha256": "17d29ec09fa2b79863a7d709889ff3bd3c49366daab3a66a933b46279a853dba"
+      },
+      {
+        "actual_safe_disk_extraction_verified": true,
+        "archive": "CALIBRATION_CONFIRMATION_701",
+        "data_members": 37,
+        "receipt_restored_path": "run/reviews/CALIBRATION_RESTORATION.json",
+        "receipt_sha256": "17d29ec09fa2b79863a7d709889ff3bd3c49366daab3a66a933b46279a853dba"
+      },
+      {
+        "actual_safe_disk_extraction_verified": true,
+        "archive": "CALIBRATION_CONFIRMATION_809",
+        "data_members": 37,
+        "receipt_restored_path": "run/reviews/CALIBRATION_RESTORATION.json",
+        "receipt_sha256": "17d29ec09fa2b79863a7d709889ff3bd3c49366daab3a66a933b46279a853dba"
+      },
+      {
+        "actual_safe_disk_extraction_verified": true,
+        "archive": "CALIBRATION_CONFIRMATION_907",
+        "data_members": 37,
+        "receipt_restored_path": "run/reviews/CALIBRATION_RESTORATION.json",
+        "receipt_sha256": "17d29ec09fa2b79863a7d709889ff3bd3c49366daab3a66a933b46279a853dba"
+      },
+      {
+        "actual_safe_disk_extraction_verified": true,
+        "archive": "CALIBRATION_CONFIRMATION_1009",
+        "data_members": 37,
+        "receipt_restored_path": "run/reviews/CALIBRATION_RESTORATION.json",
+        "receipt_sha256": "17d29ec09fa2b79863a7d709889ff3bd3c49366daab3a66a933b46279a853dba"
+      },
+      {
+        "actual_safe_disk_extraction_verified": true,
+        "archive": "RUNTIME_CONFIRMATION",
+        "data_members": 40,
+        "receipt_restored_path": "run/archival_reviews/RUNTIME_CONFIRMATION_RESTORE.json",
+        "receipt_sha256": "ed1e6fb8d5c7aae628d89a649de7afd78858df1461f4b8ed4eb336d4686545f1"
+      },
+      {
+        "actual_safe_disk_extraction_verified": true,
+        "archive": "FEEDBACK_CONFIRMATION_607",
+        "data_members": 9,
+        "receipt_restored_path": "run/archival_reviews/FEEDBACK_CONFIRMATION_607_RESTORE.json",
+        "receipt_sha256": "4014b026f4b4ed605ac5eae30c92d9cda3bcf2b4750ad1fabb8803b2772e3e35"
+      },
+      {
+        "actual_safe_disk_extraction_verified": true,
+        "archive": "FEEDBACK_CONFIRMATION_701",
+        "data_members": 9,
+        "receipt_restored_path": "run/archival_reviews/FEEDBACK_CONFIRMATION_701_RESTORE.json",
+        "receipt_sha256": "f0b3081bbd667950afc24820b7c7f4fe7314c1e31c1db27755348502818aaefe"
+      },
+      {
+        "actual_safe_disk_extraction_verified": true,
+        "archive": "FEEDBACK_CONFIRMATION_809",
+        "data_members": 9,
+        "receipt_restored_path": "run/archival_reviews/FEEDBACK_CONFIRMATION_809_RESTORE.json",
+        "receipt_sha256": "329cebb78474f3a2ef18237beb78c453ee1f20440a780db2b096a1b6b196aa4f"
+      },
+      {
+        "actual_safe_disk_extraction_verified": true,
+        "archive": "FEEDBACK_CONFIRMATION_907",
+        "data_members": 9,
+        "receipt_restored_path": "run/archival_reviews/FEEDBACK_CONFIRMATION_907_RESTORE.json",
+        "receipt_sha256": "191b51a1805282cdfc460762c35a5583427f28d54bda475a0c037b5d4971f97a"
+      },
+      {
+        "actual_safe_disk_extraction_verified": true,
+        "archive": "FEEDBACK_CONFIRMATION_1009",
+        "data_members": 9,
+        "receipt_restored_path": "run/archival_reviews/FEEDBACK_CONFIRMATION_1009_RESTORE.json",
+        "receipt_sha256": "047c8fb3170c14711dea34b4d7f01a2e240cca575ebe75b26080e0323ee384c0"
+      },
+      {
+        "actual_safe_disk_extraction_verified": true,
+        "archive": "MAIN_ANALYSIS",
+        "data_members": 16,
+        "receipt_restored_path": "run/archival_reviews/MAIN_ANALYSIS_RESTORE_AND_RECOMPUTE.json",
+        "receipt_sha256": "e0d5b9e721634e678541bc2b6cc077fd5608f2d7b6bb40cbb4488d4505976c00"
+      },
+      {
+        "actual_safe_disk_extraction_verified": true,
+        "archive": "DEVELOPMENT_AND_FAILED_ATTEMPTS",
+        "data_members": 916,
+        "receipt_restored_path": "run/archival_reviews/DEVELOPMENT_AND_FAILED_ATTEMPTS_RESTORE.json",
+        "receipt_sha256": "7f889e795eb4b8326052e7e76afa363dda35fe2d4766e6dcc30bf9c66278b751"
+      },
+      {
+        "actual_safe_disk_extraction_verified": true,
+        "archive": "MAIN_seed_607_gaussian",
+        "data_members": 43614,
+        "receipt_restored_path": "run/archival_reviews/MAIN_FULL_SCOPE_RESTORE.json",
+        "receipt_sha256": "ef2948143bf6fdc41e375938ac8c6a83e56f16ea38954015e6f6d8d3f4ac7c2a"
+      },
+      {
+        "actual_safe_disk_extraction_verified": true,
+        "archive": "RUN_REPORTS",
+        "data_members": 194,
+        "receipt_digest_intentionally_not_embedded_to_avoid_recursive_publication_bindings": true,
+        "receipt_published_after_report_snapshot": true,
+        "receipt_repository_path": "experiments/analytic_event_neuron/round3/evidence/results/restoration/RUN_REPORTS_RESTORE.json"
+      }
+    ],
+    "all_main_scopes_member_hashes_checked_and_frozen_native_replayed": true,
+    "archive_restoration_regenerated_scientific_data": false,
+    "core_restore_log_restored_path": "run/operational_logs/aen-r3-core-restore.log",
+    "core_restore_log_sha256": "1a3ee3d74858fa9fd1dd832bbbd063b9ae6cdb456eaf0cb580b71bbcb4123df3",
+    "core_restore_records": [
+      {
+        "archive": "CORE_PREPARED",
+        "data_files": 35,
+        "destination": "/tmp/aen-round3-restore-check/run",
+        "member_hashes_verified": true,
+        "restored": true,
+        "sha256": "dea9849388daf24521865d360387d01358cec56a2a06250ea1ad81881052e074"
+      },
+      {
+        "archive": "CALIBRATION_PREPARED",
+        "data_files": 251,
+        "destination": "/tmp/aen-round3-restore-check/run",
+        "member_hashes_verified": true,
+        "restored": true,
+        "sha256": "bd2354839d8299138496e4c5a905fdc52df4096c4ec234d087c40b8780d3d40c"
+      }
+    ],
+    "frozen_prepared_artifacts_verified": 329,
+    "full_bundles_not_separately_disk_extracted_in_this_restore_exercise": [
+      "MAIN_seed_1009_drift_shift",
+      "MAIN_seed_1009_gaussian",
+      "MAIN_seed_1009_student_t",
+      "MAIN_seed_607_drift_shift",
+      "MAIN_seed_607_student_t",
+      "MAIN_seed_701_drift_shift",
+      "MAIN_seed_701_gaussian",
+      "MAIN_seed_701_student_t",
+      "MAIN_seed_809_drift_shift",
+      "MAIN_seed_809_gaussian",
+      "MAIN_seed_809_student_t",
+      "MAIN_seed_907_drift_shift",
+      "MAIN_seed_907_gaussian",
+      "MAIN_seed_907_student_t",
+      "main_seed_1009_gaussian_attempt1"
+    ],
+    "operational_retry_distinction": "The separate recorded MAIN operational retry reran the deterministic generator and produced identical DATA/model bytes; archive restoration did not regenerate data.",
+    "outer_bundle_extraction_does_not_claim_recursive_extraction_of_every_nested_archive": true,
+    "prepared_additional_metadata_members": 2,
+    "prepared_outer_data_members": 331,
+    "registered_logical_bundles": 37,
+    "registered_main_full_scopes": 15,
+    "representative_main_full_scopes_extracted": 1,
+    "restored_main_statistics_byte_identical": true
+  },
+  "restore_tool": "experiments/analytic_event_neuron/round2/restore_evidence.py",
+  "restore_tool_sha256": "1cf39883b9cb4aea03db0ef343edecb04313d9c05cfe53809b7a3f069d2348ed",
+  "schema": "hepta.analytic-event.round3.evidence-manifest.v1",
+  "scientific_data_regenerated_by_assembly_or_archive_restoration": false,
+  "source_commit": "29174619dfc56cef1c16b34fbf98f85a1cd2e4c3",
+  "summary": {
+    "compressed_logical_archive_bytes": 526326531,
+    "counting_scope": "Outer archive entries, with one manifest per logical bundle. Nested archive members are not recursively added. Repeated paths across bundles are not deduplicated. Members, model outputs, controls and horizons are not independent sample counts.",
+    "logical_archives": 37,
+    "main_data_members_excluding_manifests": 652859,
+    "main_members_including_manifests": 652874,
+    "outer_data_members_excluding_manifests": 697722,
+    "outer_manifest_members": 37,
+    "outer_regular_members_including_manifests": 697759,
+    "physical_file_bytes": 526326531,
+    "physical_files": 79
+  }
+}

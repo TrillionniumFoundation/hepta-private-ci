@@ -1,0 +1,3330 @@
+{
+  "actual_extraction_scope": {
+    "all15full_member_and_frozen_native_replay_separate": true,
+    "logical_bundles": 22,
+    "main_full_scopes": 1,
+    "outer_extraction_does_not_claim_all_nested_archives_recursively_extracted": true,
+    "registered_main_full_scopes": 15
+  },
+  "checks": [
+    {
+      "name": "expected final manifest SHA",
+      "passed": true
+    },
+    {
+      "name": "scientific source identity",
+      "passed": true
+    },
+    {
+      "name": "baseline identity",
+      "passed": true
+    },
+    {
+      "name": "freeze bytes",
+      "passed": true
+    },
+    {
+      "name": "protocol binding",
+      "passed": true
+    },
+    {
+      "name": "frozen inventory exact counts",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/FEEDBACK.md",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/MATH.md",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/NATIVE_SOURCE_MANIFEST.json",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/PROTOCOL.json",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/RUNTIME.md",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/SPEC.md",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/TASK.md",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/analytic.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/audit_feedback.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/evidence_audit.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/experiment.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/feedback_chain.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/feedback_driver.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/learners.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/native.rs",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/native_adapter.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/native_head.rs",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/prepare_native.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/reference.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/requirements.txt",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/retention.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/CONTRACT.md",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/FEEDBACK_RUNTIME.md",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/PROTOCOL.json",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/PULSE.md",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/QUANTIZED_GUARD.md",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/RETENTION.md",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/RUNTIME_HARNESS_AMENDMENT.md",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/adaptation.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/adaptation_validation.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/audit.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/evaluation.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/feedback.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/feedback_study.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/feedback_summary.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/independent_validation.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/predictors.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/preflight.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/pulse.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/pulse_validation.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/quantized_guard.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/restore_evidence.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/retention_study.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/run.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/runtime_bridge.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/runtime_confirmation.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round2/statistics.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round3/CALIBRATION_CONTRACT.md",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round3/CONTRACT.md",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round3/EVENT_CONTRACT.md",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round3/FEEDBACK_RUNTIME.md",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round3/PROTOCOL.json",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round3/__init__.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round3/audit.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round3/calibration.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round3/calibration_study.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round3/calibration_validation.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round3/event_codec.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round3/event_study.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round3/event_validation.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round3/feedback.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round3/feedback_audit.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round3/feedback_study.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round3/feedback_summary.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round3/feedback_validation.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round3/freeze.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round3/phases.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round3/prepare.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round3/run.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round3/runtime_feedback.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round3/runtime_feedback_study.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/round3/statistics.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/run.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/runtime.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/statistics.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/summarize_compat.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/task.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/train.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/trained_runtime.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/transport.py",
+      "passed": true
+    },
+    {
+      "name": "frozen scientific source experiments/analytic_event_neuron/validate_runtime.py",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/PREPARED.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/ANCHOR.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/ORIGINAL_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_00_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_00_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_00_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_00_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_01_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_01_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_01_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_01_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_02_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_02_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_02_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_02_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_03_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_03_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_03_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_03_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_04_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_04_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_04_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_04_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_05_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_05_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_05_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_05_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_06_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_06_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_06_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_06_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_07_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_07_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_07_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_07_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_08_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_08_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_08_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_08_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_09_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_09_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_09_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_09_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_10_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_10_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_10_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_10_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_11_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_11_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_11_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_1009/window_11_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/ANCHOR.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/ORIGINAL_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_00_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_00_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_00_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_00_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_01_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_01_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_01_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_01_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_02_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_02_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_02_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_02_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_03_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_03_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_03_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_03_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_04_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_04_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_04_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_04_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_05_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_05_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_05_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_05_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_06_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_06_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_06_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_06_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_07_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_07_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_07_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_07_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_08_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_08_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_08_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_08_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_09_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_09_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_09_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_09_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_10_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_10_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_10_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_10_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_11_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_11_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_11_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_607/window_11_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/ANCHOR.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/ORIGINAL_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_00_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_00_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_00_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_00_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_01_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_01_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_01_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_01_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_02_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_02_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_02_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_02_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_03_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_03_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_03_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_03_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_04_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_04_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_04_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_04_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_05_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_05_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_05_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_05_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_06_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_06_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_06_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_06_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_07_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_07_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_07_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_07_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_08_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_08_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_08_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_08_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_09_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_09_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_09_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_09_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_10_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_10_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_10_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_10_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_11_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_11_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_11_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_701/window_11_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/ANCHOR.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/ORIGINAL_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_00_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_00_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_00_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_00_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_01_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_01_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_01_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_01_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_02_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_02_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_02_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_02_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_03_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_03_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_03_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_03_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_04_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_04_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_04_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_04_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_05_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_05_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_05_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_05_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_06_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_06_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_06_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_06_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_07_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_07_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_07_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_07_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_08_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_08_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_08_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_08_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_09_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_09_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_09_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_09_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_10_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_10_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_10_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_10_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_11_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_11_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_11_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_809/window_11_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/ANCHOR.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/ORIGINAL_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_00_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_00_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_00_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_00_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_01_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_01_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_01_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_01_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_02_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_02_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_02_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_02_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_03_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_03_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_03_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_03_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_04_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_04_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_04_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_04_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_05_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_05_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_05_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_05_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_06_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_06_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_06_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_06_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_07_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_07_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_07_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_07_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_08_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_08_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_08_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_08_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_09_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_09_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_09_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_09_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_10_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_10_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_10_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_10_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_11_CHECKPOINT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_11_NEW_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_11_OLD_DEV.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact calibration_prepared/seed_907/window_11_TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_1009/DEVELOPMENT.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_1009/MODELS.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_1009/TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_1009/TRAINING_RECEIPT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_1009/TRAINING_ROWS.json.gz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_1009/development_owners.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_1009/development_readbacks.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_1009/train_owners.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_1009/train_readbacks.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_607/DEVELOPMENT.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_607/MODELS.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_607/TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_607/TRAINING_RECEIPT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_607/TRAINING_ROWS.json.gz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_607/development_owners.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_607/development_readbacks.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_607/train_owners.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_607/train_readbacks.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_701/DEVELOPMENT.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_701/MODELS.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_701/TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_701/TRAINING_RECEIPT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_701/TRAINING_ROWS.json.gz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_701/development_owners.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_701/development_readbacks.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_701/train_owners.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_701/train_readbacks.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_809/DEVELOPMENT.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_809/MODELS.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_809/TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_809/TRAINING_RECEIPT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_809/TRAINING_ROWS.json.gz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_809/development_owners.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_809/development_readbacks.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_809/train_owners.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_809/train_readbacks.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_907/DEVELOPMENT.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_907/MODELS.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_907/TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_907/TRAINING_RECEIPT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_907/TRAINING_ROWS.json.gz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_907/development_owners.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_907/development_readbacks.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_907/train_owners.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact feedback_prepared/seed_907/train_readbacks.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact native/BUILD_RECEIPT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact native/REUSE_RECEIPT.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact native/analytic_event",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_1009/BASE_MODELS.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_1009/BASE_TRAINING.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_1009/DEVELOPMENT.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_1009/EVENT_SELECTION.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_1009/MODELS.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_1009/TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_607/BASE_MODELS.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_607/BASE_TRAINING.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_607/DEVELOPMENT.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_607/EVENT_SELECTION.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_607/MODELS.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_607/TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_701/BASE_MODELS.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_701/BASE_TRAINING.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_701/DEVELOPMENT.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_701/EVENT_SELECTION.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_701/MODELS.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_701/TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_809/BASE_MODELS.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_809/BASE_TRAINING.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_809/DEVELOPMENT.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_809/EVENT_SELECTION.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_809/MODELS.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_809/TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_907/BASE_MODELS.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_907/BASE_TRAINING.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_907/DEVELOPMENT.npz",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_907/EVENT_SELECTION.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_907/MODELS.json",
+      "passed": true
+    },
+    {
+      "name": "frozen prepared artifact training/seed_907/TRAIN.npz",
+      "passed": true
+    },
+    {
+      "name": "restore helper identity",
+      "passed": true
+    },
+    {
+      "name": "assembler identity and report-only location",
+      "passed": true
+    },
+    {
+      "name": "logical archive unique count",
+      "passed": true
+    },
+    {
+      "name": "physical paths unique count",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths CORE_PREPARED",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration CORE_PREPARED",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination CORE_PREPARED",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/preconfirmation/CORE_PREPARED.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths CALIBRATION_PREPARED",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration CALIBRATION_PREPARED",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination CALIBRATION_PREPARED",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/preconfirmation/CALIBRATION_PREPARED.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths FEEDBACK_PREPARED_607",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration FEEDBACK_PREPARED_607",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination FEEDBACK_PREPARED_607",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_607.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_607.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths FEEDBACK_PREPARED_701",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration FEEDBACK_PREPARED_701",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination FEEDBACK_PREPARED_701",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_701.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_701.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths FEEDBACK_PREPARED_809",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration FEEDBACK_PREPARED_809",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination FEEDBACK_PREPARED_809",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_809.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_809.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths FEEDBACK_PREPARED_907",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration FEEDBACK_PREPARED_907",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination FEEDBACK_PREPARED_907",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_907.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_907.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths FEEDBACK_PREPARED_1009",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration FEEDBACK_PREPARED_1009",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination FEEDBACK_PREPARED_1009",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_1009.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_1009.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths CALIBRATION_CONFIRMATION_607",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration CALIBRATION_CONFIRMATION_607",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination CALIBRATION_CONFIRMATION_607",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_607.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_607.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths CALIBRATION_CONFIRMATION_701",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration CALIBRATION_CONFIRMATION_701",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination CALIBRATION_CONFIRMATION_701",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_701.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_701.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths CALIBRATION_CONFIRMATION_809",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration CALIBRATION_CONFIRMATION_809",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination CALIBRATION_CONFIRMATION_809",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_809.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_809.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths CALIBRATION_CONFIRMATION_907",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration CALIBRATION_CONFIRMATION_907",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination CALIBRATION_CONFIRMATION_907",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_907.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_907.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths CALIBRATION_CONFIRMATION_1009",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration CALIBRATION_CONFIRMATION_1009",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination CALIBRATION_CONFIRMATION_1009",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_1009.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_1009.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths RUNTIME_CONFIRMATION",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration RUNTIME_CONFIRMATION",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination RUNTIME_CONFIRMATION",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/RUNTIME_CONFIRMATION.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths FEEDBACK_CONFIRMATION_607",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration FEEDBACK_CONFIRMATION_607",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination FEEDBACK_CONFIRMATION_607",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_607.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_607.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_607.tar.gz.part002",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_607.tar.gz.part003",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths FEEDBACK_CONFIRMATION_701",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration FEEDBACK_CONFIRMATION_701",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination FEEDBACK_CONFIRMATION_701",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_701.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_701.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_701.tar.gz.part002",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_701.tar.gz.part003",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths FEEDBACK_CONFIRMATION_809",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration FEEDBACK_CONFIRMATION_809",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination FEEDBACK_CONFIRMATION_809",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_809.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_809.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_809.tar.gz.part002",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_809.tar.gz.part003",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths FEEDBACK_CONFIRMATION_907",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration FEEDBACK_CONFIRMATION_907",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination FEEDBACK_CONFIRMATION_907",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_907.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_907.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_907.tar.gz.part002",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_907.tar.gz.part003",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths FEEDBACK_CONFIRMATION_1009",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration FEEDBACK_CONFIRMATION_1009",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination FEEDBACK_CONFIRMATION_1009",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_1009.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_1009.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_1009.tar.gz.part002",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_1009.tar.gz.part003",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths MAIN_seed_607_gaussian",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration MAIN_seed_607_gaussian",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination MAIN_seed_607_gaussian",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_607_gaussian.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_607_gaussian.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths MAIN_seed_607_drift_shift",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration MAIN_seed_607_drift_shift",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination MAIN_seed_607_drift_shift",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_607_drift_shift.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_607_drift_shift.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths MAIN_seed_607_student_t",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration MAIN_seed_607_student_t",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination MAIN_seed_607_student_t",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_607_student_t.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_607_student_t.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths MAIN_seed_701_gaussian",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration MAIN_seed_701_gaussian",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination MAIN_seed_701_gaussian",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_701_gaussian.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_701_gaussian.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths MAIN_seed_701_drift_shift",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration MAIN_seed_701_drift_shift",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination MAIN_seed_701_drift_shift",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_701_drift_shift.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_701_drift_shift.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths MAIN_seed_701_student_t",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration MAIN_seed_701_student_t",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination MAIN_seed_701_student_t",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_701_student_t.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_701_student_t.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths MAIN_seed_809_gaussian",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration MAIN_seed_809_gaussian",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination MAIN_seed_809_gaussian",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_809_gaussian.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_809_gaussian.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths MAIN_seed_809_drift_shift",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration MAIN_seed_809_drift_shift",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination MAIN_seed_809_drift_shift",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_809_drift_shift.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_809_drift_shift.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths MAIN_seed_809_student_t",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration MAIN_seed_809_student_t",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination MAIN_seed_809_student_t",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_809_student_t.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_809_student_t.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths MAIN_seed_907_gaussian",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration MAIN_seed_907_gaussian",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination MAIN_seed_907_gaussian",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_907_gaussian.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_907_gaussian.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths MAIN_seed_907_drift_shift",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration MAIN_seed_907_drift_shift",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination MAIN_seed_907_drift_shift",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_907_drift_shift.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_907_drift_shift.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths MAIN_seed_907_student_t",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration MAIN_seed_907_student_t",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination MAIN_seed_907_student_t",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_907_student_t.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_907_student_t.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths MAIN_seed_1009_gaussian",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration MAIN_seed_1009_gaussian",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination MAIN_seed_1009_gaussian",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_1009_gaussian.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_1009_gaussian.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths MAIN_seed_1009_drift_shift",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration MAIN_seed_1009_drift_shift",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination MAIN_seed_1009_drift_shift",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_1009_drift_shift.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_1009_drift_shift.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths MAIN_seed_1009_student_t",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration MAIN_seed_1009_student_t",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination MAIN_seed_1009_student_t",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_1009_student_t.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_1009_student_t.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths main_seed_1009_gaussian_attempt1",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration main_seed_1009_gaussian_attempt1",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination main_seed_1009_gaussian_attempt1",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/operational/main_seed_1009_gaussian_attempt1.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/operational/main_seed_1009_gaussian_attempt1.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths MAIN_ANALYSIS",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration MAIN_ANALYSIS",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination MAIN_ANALYSIS",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_ANALYSIS.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_ANALYSIS.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths DEVELOPMENT_AND_FAILED_ATTEMPTS",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration DEVELOPMENT_AND_FAILED_ATTEMPTS",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination DEVELOPMENT_AND_FAILED_ATTEMPTS",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/DEVELOPMENT_AND_FAILED_ATTEMPTS.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "archive parts and safe paths RUN_REPORTS",
+      "passed": true
+    },
+    {
+      "name": "archive verification and no regeneration RUN_REPORTS",
+      "passed": true
+    },
+    {
+      "name": "archive restore destination RUN_REPORTS",
+      "passed": true
+    },
+    {
+      "name": "physical metadata experiments/analytic_event_neuron/round3/evidence/confirmation/RUN_REPORTS.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "physical inventory equals archive partition inventory",
+      "passed": true
+    },
+    {
+      "name": "remote proof identity",
+      "passed": true
+    },
+    {
+      "name": "remote proof byte binding",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/preconfirmation/CORE_PREPARED.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/preconfirmation/CALIBRATION_PREPARED.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_607.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_607.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_701.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_701.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_809.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_809.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_907.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_907.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_1009.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/preconfirmation/FEEDBACK_PREPARED_1009.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_607.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_607.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_701.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_701.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_809.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_809.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_907.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_907.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_1009.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/CALIBRATION_CONFIRMATION_1009.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/RUNTIME_CONFIRMATION.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_607.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_607.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_607.tar.gz.part002",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_607.tar.gz.part003",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_701.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_701.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_701.tar.gz.part002",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_701.tar.gz.part003",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_809.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_809.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_809.tar.gz.part002",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_809.tar.gz.part003",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_907.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_907.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_907.tar.gz.part002",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_907.tar.gz.part003",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_1009.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_1009.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_1009.tar.gz.part002",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/FEEDBACK_CONFIRMATION_1009.tar.gz.part003",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_607_gaussian.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_607_gaussian.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_607_drift_shift.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_607_drift_shift.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_607_student_t.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_607_student_t.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_701_gaussian.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_701_gaussian.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_701_drift_shift.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_701_drift_shift.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_701_student_t.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_701_student_t.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_809_gaussian.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_809_gaussian.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_809_drift_shift.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_809_drift_shift.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_809_student_t.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_809_student_t.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_907_gaussian.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_907_gaussian.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_907_drift_shift.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_907_drift_shift.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_907_student_t.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_907_student_t.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_1009_gaussian.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_1009_gaussian.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_1009_drift_shift.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_1009_drift_shift.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_1009_student_t.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_seed_1009_student_t.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/operational/main_seed_1009_gaussian_attempt1.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/operational/main_seed_1009_gaussian_attempt1.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_ANALYSIS.tar.gz.part000",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/MAIN_ANALYSIS.tar.gz.part001",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/DEVELOPMENT_AND_FAILED_ATTEMPTS.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "cached remote Git identity experiments/analytic_event_neuron/round3/evidence/confirmation/RUN_REPORTS.tar.gz",
+      "passed": true
+    },
+    {
+      "name": "descriptor binding aen-r3-preconfirmation-archives.json",
+      "passed": true
+    },
+    {
+      "name": "descriptor binding aen-r3-calibration-archives.json",
+      "passed": true
+    },
+    {
+      "name": "descriptor binding aen-r3-feedback-runtime-archives.json",
+      "passed": true
+    },
+    {
+      "name": "descriptor binding aen-r3-main-archives.json",
+      "passed": true
+    },
+    {
+      "name": "descriptor binding aen-r3-main-operational-archives.json",
+      "passed": true
+    },
+    {
+      "name": "descriptor binding aen-r3-main-analysis-archives.json",
+      "passed": true
+    },
+    {
+      "name": "descriptor binding aen-r3-development-archives.json",
+      "passed": true
+    },
+    {
+      "name": "descriptor binding aen-r3-report-archives.json",
+      "passed": true
+    },
+    {
+      "actual": 37,
+      "name": "summary logical_archives",
+      "passed": true
+    },
+    {
+      "actual": 79,
+      "name": "summary physical_files",
+      "passed": true
+    },
+    {
+      "actual": 526326531,
+      "name": "summary physical_file_bytes",
+      "passed": true
+    },
+    {
+      "actual": 526326531,
+      "name": "summary compressed_logical_archive_bytes",
+      "passed": true
+    },
+    {
+      "actual": 697722,
+      "name": "summary outer_data_members_excluding_manifests",
+      "passed": true
+    },
+    {
+      "actual": 37,
+      "name": "summary outer_manifest_members",
+      "passed": true
+    },
+    {
+      "actual": 697759,
+      "name": "summary outer_regular_members_including_manifests",
+      "passed": true
+    },
+    {
+      "name": "total byte and member scope",
+      "passed": true
+    },
+    {
+      "name": "main data and manifest count",
+      "passed": true
+    },
+    {
+      "name": "group calibration",
+      "passed": true
+    },
+    {
+      "name": "group development",
+      "passed": true
+    },
+    {
+      "name": "group feedback-runtime",
+      "passed": true
+    },
+    {
+      "name": "group main",
+      "passed": true
+    },
+    {
+      "name": "group main-analysis",
+      "passed": true
+    },
+    {
+      "name": "group main-operational",
+      "passed": true
+    },
+    {
+      "name": "group preconfirmation",
+      "passed": true
+    },
+    {
+      "name": "group report",
+      "passed": true
+    },
+    {
+      "name": "group partition",
+      "passed": true
+    },
+    {
+      "name": "actual extraction scope22",
+      "passed": true
+    },
+    {
+      "name": "actual extraction evidence CORE_PREPARED",
+      "passed": true
+    },
+    {
+      "name": "actual extraction evidence CALIBRATION_PREPARED",
+      "passed": true
+    },
+    {
+      "name": "actual extraction evidence FEEDBACK_PREPARED_607",
+      "passed": true
+    },
+    {
+      "name": "actual extraction evidence FEEDBACK_PREPARED_701",
+      "passed": true
+    },
+    {
+      "name": "actual extraction evidence FEEDBACK_PREPARED_809",
+      "passed": true
+    },
+    {
+      "name": "actual extraction evidence FEEDBACK_PREPARED_907",
+      "passed": true
+    },
+    {
+      "name": "actual extraction evidence FEEDBACK_PREPARED_1009",
+      "passed": true
+    },
+    {
+      "name": "actual extraction evidence CALIBRATION_CONFIRMATION_607",
+      "passed": true
+    },
+    {
+      "name": "actual extraction evidence CALIBRATION_CONFIRMATION_701",
+      "passed": true
+    },
+    {
+      "name": "actual extraction evidence CALIBRATION_CONFIRMATION_809",
+      "passed": true
+    },
+    {
+      "name": "actual extraction evidence CALIBRATION_CONFIRMATION_907",
+      "passed": true
+    },
+    {
+      "name": "actual extraction evidence CALIBRATION_CONFIRMATION_1009",
+      "passed": true
+    },
+    {
+      "name": "actual extraction evidence RUNTIME_CONFIRMATION",
+      "passed": true
+    },
+    {
+      "name": "actual extraction evidence FEEDBACK_CONFIRMATION_607",
+      "passed": true
+    },
+    {
+      "name": "actual extraction evidence FEEDBACK_CONFIRMATION_701",
+      "passed": true
+    },
+    {
+      "name": "actual extraction evidence FEEDBACK_CONFIRMATION_809",
+      "passed": true
+    },
+    {
+      "name": "actual extraction evidence FEEDBACK_CONFIRMATION_907",
+      "passed": true
+    },
+    {
+      "name": "actual extraction evidence FEEDBACK_CONFIRMATION_1009",
+      "passed": true
+    },
+    {
+      "name": "actual extraction evidence MAIN_ANALYSIS",
+      "passed": true
+    },
+    {
+      "name": "actual extraction evidence DEVELOPMENT_AND_FAILED_ATTEMPTS",
+      "passed": true
+    },
+    {
+      "name": "actual extraction evidence MAIN_seed_607_gaussian",
+      "passed": true
+    },
+    {
+      "name": "actual extraction evidence RUN_REPORTS",
+      "passed": true
+    },
+    {
+      "name": "representative full MAIN scope1of15",
+      "passed": true
+    },
+    {
+      "name": "non-extracted list exact",
+      "passed": true
+    },
+    {
+      "name": "all15member checks separate from physical extraction",
+      "passed": true
+    },
+    {
+      "name": "main index binding",
+      "passed": true
+    },
+    {
+      "name": "main archive-review-index binding seed_607_gaussian",
+      "passed": true
+    },
+    {
+      "name": "main archive-review-index binding seed_607_drift_shift",
+      "passed": true
+    },
+    {
+      "name": "main archive-review-index binding seed_607_student_t",
+      "passed": true
+    },
+    {
+      "name": "main archive-review-index binding seed_701_gaussian",
+      "passed": true
+    },
+    {
+      "name": "main archive-review-index binding seed_701_drift_shift",
+      "passed": true
+    },
+    {
+      "name": "main archive-review-index binding seed_701_student_t",
+      "passed": true
+    },
+    {
+      "name": "main archive-review-index binding seed_809_gaussian",
+      "passed": true
+    },
+    {
+      "name": "main archive-review-index binding seed_809_drift_shift",
+      "passed": true
+    },
+    {
+      "name": "main archive-review-index binding seed_809_student_t",
+      "passed": true
+    },
+    {
+      "name": "main archive-review-index binding seed_907_gaussian",
+      "passed": true
+    },
+    {
+      "name": "main archive-review-index binding seed_907_drift_shift",
+      "passed": true
+    },
+    {
+      "name": "main archive-review-index binding seed_907_student_t",
+      "passed": true
+    },
+    {
+      "name": "main archive-review-index binding seed_1009_gaussian",
+      "passed": true
+    },
+    {
+      "name": "main archive-review-index binding seed_1009_drift_shift",
+      "passed": true
+    },
+    {
+      "name": "main archive-review-index binding seed_1009_student_t",
+      "passed": true
+    },
+    {
+      "name": "main final independent review bound",
+      "passed": true
+    },
+    {
+      "name": "standalone restoration receipt exact copy DEVELOPMENT_AND_FAILED_ATTEMPTS_RESTORE.json",
+      "passed": true
+    },
+    {
+      "name": "standalone restoration receipt exact copy FEEDBACK_RUNTIME_RESTORATION.json",
+      "passed": true
+    },
+    {
+      "name": "standalone restoration receipt exact copy MAIN_ANALYSIS_RESTORE_AND_RECOMPUTE.json",
+      "passed": true
+    },
+    {
+      "name": "standalone restoration receipt exact copy MAIN_FULL_SCOPE_RESTORE.json",
+      "passed": true
+    },
+    {
+      "name": "standalone restoration receipt exact copy RUN_REPORTS_RESTORE.json",
+      "passed": true
+    },
+    {
+      "name": "RUN_REPORTS actual extraction194",
+      "passed": true
+    },
+    {
+      "name": "final QA after report snapshot",
+      "passed": true
+    },
+    {
+      "name": "final QA separate publication path listed",
+      "passed": true
+    },
+    {
+      "name": "README full-scope counts and allocation",
+      "passed": true
+    },
+    {
+      "name": "README feedback-runtime outer scope",
+      "passed": true
+    },
+    {
+      "name": "README main analysis restoration and statistics",
+      "passed": true
+    },
+    {
+      "name": "prepared331versus329 explicit",
+      "passed": true
+    },
+    {
+      "name": "README relative link evidence/ACCEPTANCE.json",
+      "passed": true
+    },
+    {
+      "name": "README relative link PROTOCOL.json",
+      "passed": true
+    },
+    {
+      "name": "README relative link CONTRACT.md",
+      "passed": true
+    },
+    {
+      "name": "README relative link EVENT_CONTRACT.md",
+      "passed": true
+    },
+    {
+      "name": "README relative link CALIBRATION_CONTRACT.md",
+      "passed": true
+    },
+    {
+      "name": "README relative link FEEDBACK_RUNTIME.md",
+      "passed": true
+    },
+    {
+      "name": "README relative link evidence/MATH_REFERENCE.json",
+      "passed": true
+    },
+    {
+      "name": "README relative link evidence/results/MAIN_RESULTS.json",
+      "passed": true
+    },
+    {
+      "name": "README relative link evidence/figures/primary_effects.png",
+      "passed": true
+    },
+    {
+      "name": "README relative link evidence/results/FEEDBACK_RESULTS.json",
+      "passed": true
+    },
+    {
+      "name": "README relative link evidence/results/reviews/FEEDBACK_STATISTICS_INDEPENDENT.json",
+      "passed": true
+    },
+    {
+      "name": "README relative link evidence/figures/calibration_retention.png",
+      "passed": true
+    },
+    {
+      "name": "README relative link evidence/results/CALIBRATION_RESULTS.json",
+      "passed": true
+    },
+    {
+      "name": "README relative link evidence/results/reviews/CALIBRATION_CONFIRMATION_REVIEW.json",
+      "passed": true
+    },
+    {
+      "name": "README relative link evidence/results/RUNTIME_RESULTS.json",
+      "passed": true
+    },
+    {
+      "name": "README relative link evidence/results/MAIN_EXECUTION_COSTS.json",
+      "passed": true
+    },
+    {
+      "name": "README relative link evidence/results/FEEDBACK_RUNTIME_ACCOUNTING.json",
+      "passed": true
+    },
+    {
+      "name": "README relative link evidence/results/FEEDBACK_EXECUTION_COSTS.json",
+      "passed": true
+    },
+    {
+      "name": "README relative link evidence/results/RUNTIME_EXECUTION_COSTS.json",
+      "passed": true
+    },
+    {
+      "name": "README relative link evidence/MAIN_CONFIRMATION_REVIEW.json",
+      "passed": true
+    },
+    {
+      "name": "README relative link evidence/results/reviews/FEEDBACK_RUNTIME_INDEPENDENT_REVIEW.json",
+      "passed": true
+    },
+    {
+      "name": "README relative link evidence/EVIDENCE_MANIFEST.json",
+      "passed": true
+    },
+    {
+      "name": "README relative link evidence/results/restoration/MAIN_ANALYSIS_RESTORE_AND_RECOMPUTE.json",
+      "passed": true
+    },
+    {
+      "name": "README relative link evidence/results/restoration/MAIN_FULL_SCOPE_RESTORE.json",
+      "passed": true
+    },
+    {
+      "name": "README relative link evidence/results/restoration/FEEDBACK_RUNTIME_RESTORATION.json",
+      "passed": true
+    },
+    {
+      "name": "README relative link evidence/results/restoration/RUN_REPORTS_RESTORE.json",
+      "passed": true
+    },
+    {
+      "name": "README no placeholders",
+      "passed": true
+    },
+    {
+      "name": "README representative recovery scope explicit",
+      "passed": true
+    },
+    {
+      "name": "README nested archive and sample scope explicit",
+      "passed": true
+    },
+    {
+      "name": "README operational retry and missing costs preserved",
+      "passed": true
+    },
+    {
+      "name": "previously reviewed artifact unchanged MAIN_ANALYSIS_RESTORE_AND_RECOMPUTE.json",
+      "passed": true
+    },
+    {
+      "name": "previously reviewed artifact unchanged MAIN_EXECUTION_COSTS.json",
+      "passed": true
+    },
+    {
+      "name": "previously reviewed artifact unchanged MAIN_RESULTS.json",
+      "passed": true
+    },
+    {
+      "name": "previously reviewed artifact unchanged calibration_retention.png",
+      "passed": true
+    },
+    {
+      "name": "previously reviewed artifact unchanged calibration_retention.svg",
+      "passed": true
+    },
+    {
+      "name": "previously reviewed artifact unchanged evidence/build_report.py",
+      "passed": true
+    },
+    {
+      "name": "previously reviewed artifact unchanged primary_effects.png",
+      "passed": true
+    },
+    {
+      "name": "previously reviewed artifact unchanged primary_effects.svg",
+      "passed": true
+    },
+    {
+      "name": "unchanged research acceptance scope",
+      "passed": true
+    },
+    {
+      "name": "inputs unchanged during final QA",
+      "passed": true
+    }
+  ],
+  "checks_count": 815,
+  "created_utc": "2026-10-28T10:09:37.629327+00:00",
+  "failed_checks": [],
+  "freeze_sha256": "75df6af8ce501e624fd2900f096b7c6a050e5c61cbb200fca4ada5fc54d81146",
+  "frozen_source_and_prepared_bytes_rehashed": {
+    "prepared_artifacts": 329,
+    "scientific_sources": 83
+  },
+  "large_archive_materialization_or_inference_rerun_by_this_qa": false,
+  "manifest_independent_totals": {
+    "compressed_logical_archive_bytes": 526326531,
+    "logical_archives": 37,
+    "outer_data_members_excluding_manifests": 697722,
+    "outer_manifest_members": 37,
+    "outer_regular_members_including_manifests": 697759,
+    "physical_file_bytes": 526326531,
+    "physical_files": 79
+  },
+  "manifest_repository_path": "experiments/analytic_event_neuron/round3/evidence/EVIDENCE_MANIFEST.json",
+  "manifest_sha256": "8e70650a3f2b91a15007d1c403b6ababbb3200028c3637afae9905d2ddd297e5",
+  "passed": true,
+  "post_report_snapshot_publication": {
+    "issued_after_snapshot": true,
+    "qa_included_in_run_reports_snapshot": false,
+    "run_reports_snapshot_sha256": "73f5fe6d8c4075d142a32dd456930f16942e985b5cd78e2d5f3fdce8c7881e96",
+    "same_bytes_run_copy": "report_qa/FINAL_REPORT_QA.json",
+    "standalone_repository_path": "experiments/analytic_event_neuron/round3/evidence/results/reviews/FINAL_REPORT_QA.json",
+    "status_at_creation": "Ready for parent publication as a standalone receipt; it is not retroactively inserted into RUN_REPORTS."
+  },
+  "previous_report_qa_sha256": "59ebb882da83aa5b5f61504d0d7d116b9259fa7247465349904c524bd0b7083e",
+  "publication_evidence_scope": {
+    "archive_local_availability_flags_refer_to_manifest_assembly_snapshot": true,
+    "cache_head": "202f3f9701a3a9f66d65133df588eb7742a351e3",
+    "cache_tree": "8215cf5047826606f702b3f750bcfc47082f50f8",
+    "final_all_file_remote_readback_is_separate": true,
+    "github_network_readback_by_this_qa": false,
+    "physical_archive_blob_identities_cross_checked": 79,
+    "remote_proof_sha256": "b9de840d85cdca8d858f50f234816aea822bf6bc6c71d106e43eba0faf408ad1",
+    "subsequent_remote_verified_duplicate_eviction_does_not_change_manifest_historical_snapshot": true,
+    "uses_parent_remote_readback_cache": true
+  },
+  "readme_sha256": "fc5ae280410ccb333b5ac222fdb2372b1316dfcacc1b3ce16a97ee9ae6a4d2f2",
+  "relative_readme_links_checked": 26,
+  "review_scope": "Final restoration text, manifest identity/count/scope and report-link QA; previous142numeric/operational/figure checks remain bound to unchanged result, cost, builder and figure artifacts. This is not a new scientific gate or production approval.",
+  "reviewed_readme_repository_path": "experiments/analytic_event_neuron/round3/README.md",
+  "schema": "hepta.analytic-event.round3.final-report-qa.v1",
+  "scientific_experiments_rerun_by_this_qa": false,
+  "source_commit": "29174619dfc56cef1c16b34fbf98f85a1cd2e4c3",
+  "statistics_rerun_by_this_qa": false,
+  "status": "PASS_REPORT_AND_MANIFEST_QA_FINAL_REMOTE_PUBLICATION_IS_SEPARATE",
+  "successful_checks": 815,
+  "tool_execution_note": "Initial normal read-only commands failed before their bodies at sandbox mount-marker ENOSPC; approved read-only escalation was used. After parent reclaimed remote-verified task duplicates, this final validation used the normal sandbox."
+}
