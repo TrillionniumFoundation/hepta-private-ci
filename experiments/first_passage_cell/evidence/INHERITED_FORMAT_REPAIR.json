@@ -1,0 +1,122 @@
+{
+  "additional_ruff_config": "Root pyproject.toml, ruff.toml, .ruff.toml and scripts/ruff.toml, scripts/.ruff.toml absent at requested head",
+  "after_check": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/uv",
+      "run",
+      "--frozen",
+      "--project",
+      "scripts",
+      "ruff",
+      "format",
+      "--check",
+      "scripts/format.py",
+      "scripts/test_hepta_format_scope.py"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": "2 files already formatted\n"
+  },
+  "ast_equivalence_method": "Python ast.parse(type_comments=True), ast.dump(annotate_fields=True, include_attributes=False); equal entire trees",
+  "base_head_blob_identity_independently_verified": true,
+  "before_check": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/uv",
+      "run",
+      "--frozen",
+      "--project",
+      "scripts",
+      "ruff",
+      "format",
+      "--check",
+      "--diff",
+      "scripts/format.py",
+      "scripts/test_hepta_format_scope.py"
+    ],
+    "exit_code": 1,
+    "stderr": "2 files would be reformatted\n",
+    "stdout": "--- scripts/format.py\n+++ scripts/format.py\n@@ -265,7 +265,9 @@\n                 raise ValueError(\n                     \"Python 3.11+ is required to read standalone Rust formatter configuration\"\n                 )\n-            edition = tomllib.loads(standalone_config.read_text()).get(\"edition\", \"2021\")\n+            edition = tomllib.loads(standalone_config.read_text()).get(\n+                \"edition\", \"2021\"\n+            )\n     if manifest is not None and tomllib is None:\n         metadata = json.loads(\n             subprocess.check_output(\n\n--- scripts/test_hepta_format_scope.py\n+++ scripts/test_hepta_format_scope.py\n@@ -350,9 +350,15 @@\n         for name in (\"rustfmt.toml\", \".rustfmt.toml\"):\n             with self.subTest(name=name):\n                 config = self.write(f\"experiments/native/{name}\", 'edition = \"2024\"\\n')\n-                command = FMT.rust_file_command(str(source.relative_to(self.root)), check=True)\n-                self.assertEqual(command.args[command.args.index(\"--edition\") + 1], \"2024\")\n-                self.assertEqual(command.args[command.args.index(\"--config-path\") + 1], str(config))\n+                command = FMT.rust_file_command(\n+                    str(source.relative_to(self.root)), check=True\n+                )\n+                self.assertEqual(\n+                    command.args[command.args.index(\"--edition\") + 1], \"2024\"\n+                )\n+                self.assertEqual(\n+                    command.args[command.args.index(\"--config-path\") + 1], str(config)\n+                )\n                 self.assertEqual(command.cwd, source.parent)\n                 self.assertIn(\"--check\", command.args)\n                 config.unlink()\n@@ -392,7 +398,13 @@\n                 FMT.rust_file_command(\"../outside.rs\", check=True)\n \n     def test_standalone_invalid_edition_or_malformed_toml_is_rejected(self):\n-        for document in ('edition=\"2027\"\\n', \"edition=2024\\n\", \"edition=true\\n\", \"edition=[]\\n\", 'edition=\"2024'):\n+        for document in (\n+            'edition=\"2027\"\\n',\n+            \"edition=2024\\n\",\n+            \"edition=true\\n\",\n+            \"edition=[]\\n\",\n+            'edition=\"2024',\n+        ):\n             with self.subTest(document=document):\n                 self.write(\"rustfmt.toml\", document)\n                 with self.assertRaises(ValueError):\n@@ -409,12 +421,17 @@\n     def test_python_310_manifest_keeps_cargo_metadata_priority(self):\n         import json\n \n-        manifest = self.write(\"crate/Cargo.toml\", '[package]\\nname=\"fixture\"\\nedition=\"2021\"\\n')\n+        manifest = self.write(\n+            \"crate/Cargo.toml\", '[package]\\nname=\"fixture\"\\nedition=\"2021\"\\n'\n+        )\n         self.write(\"crate/src/rustfmt.toml\", 'edition = \"2024\"\\n')\n         metadata = {\"packages\": [{\"manifest_path\": str(manifest), \"edition\": \"2021\"}]}\n-        with patch.object(FMT, \"tomllib\", None), patch.object(\n-            subprocess, \"check_output\", return_value=json.dumps(metadata)\n-        ) as cargo:\n+        with (\n+            patch.object(FMT, \"tomllib\", None),\n+            patch.object(\n+                subprocess, \"check_output\", return_value=json.dumps(metadata)\n+            ) as cargo,\n+        ):\n             command = FMT.rust_file_command(\"crate/src/example.rs\", check=True)\n         self.assertEqual(command.args[command.args.index(\"--edition\") + 1], \"2021\")\n         self.assertEqual(cargo.call_args.args[0][:2], [\"cargo\", \"metadata\"])\n@@ -431,4 +448,3 @@\n \n if __name__ == \"__main__\":\n     unittest.main()\n-\n\n"
+  },
+  "checked_at_utc": "2026-10-28T11:34:53.755009+00:00",
+  "dependency_files": [
+    {
+      "git_blob_sha": "4340b6b78e83971e0032a7c90852f02791d3acbf",
+      "path": "scripts/pyproject.toml",
+      "sha256": "0b6799e50e7d0e58834615ccd885e23a78acd7b89f43f37b315cdb355cd05fc0",
+      "unchanged": true
+    },
+    {
+      "git_blob_sha": "6c0c3bd0810badf5f901317b61d642d1dc84e026",
+      "path": "scripts/uv.lock",
+      "sha256": "6b8e7a82d1a4f4c5d59ce57cf8be472ea031c6fb0a905506258d434132b3c99c",
+      "unchanged": true
+    }
+  ],
+  "files": [
+    {
+      "after_bytes": 17717,
+      "after_git_blob_sha": "7fe2174ee4abbe8f69839fccd0b9877169a71bd2",
+      "after_sha256": "69cc5ebb60f88a704c98e3a5dfcffccee02bd98b3b3d306acc6e87cdc696a4a6",
+      "ast_after_sha256": "0f6c0f2e6268842a83c33a9694aa511d5e4726045926d3dcd5dd2994d995fd1a",
+      "ast_before_sha256": "0f6c0f2e6268842a83c33a9694aa511d5e4726045926d3dcd5dd2994d995fd1a",
+      "ast_identical": true,
+      "before_bytes": 17687,
+      "before_git_blob_sha": "c7aa797c1cbeb8dcba0af3815c583dc33f984703",
+      "before_sha256": "afbc8f1f16cd807e822ab0dff2df71b4648cecbc0197a0d2be21f6f4cb7dea7c",
+      "diff": "--- scripts/format.py@338ec409\n+++ scripts/format.py (Ruff 0.15.13)\n@@ -265,7 +265,9 @@\n                 raise ValueError(\n                     \"Python 3.11+ is required to read standalone Rust formatter configuration\"\n                 )\n-            edition = tomllib.loads(standalone_config.read_text()).get(\"edition\", \"2021\")\n+            edition = tomllib.loads(standalone_config.read_text()).get(\n+                \"edition\", \"2021\"\n+            )\n     if manifest is not None and tomllib is None:\n         metadata = json.loads(\n             subprocess.check_output(\n",
+      "path": "scripts/format.py"
+    },
+    {
+      "after_bytes": 21014,
+      "after_git_blob_sha": "9d973401bd0b2fc861ae3911d8e6c441c6fe0f61",
+      "after_sha256": "baf4d97594278e906ff69cd34bcd35f888780f44dd4207143f0fa9f4e660ee11",
+      "ast_after_sha256": "dadf7a020270005d6e4922eb79f9e7727e7cceaa2352d18089586143ec69c880",
+      "ast_before_sha256": "dadf7a020270005d6e4922eb79f9e7727e7cceaa2352d18089586143ec69c880",
+      "ast_identical": true,
+      "before_bytes": 20763,
+      "before_git_blob_sha": "c24a8e2148711e4e3d93e44be28b5c9ebc97e3cd",
+      "before_sha256": "43585dbbaad6c8a37f1611b8a0633e2955d8aee411f2763e21891f8d053a9d4e",
+      "diff": "--- scripts/test_hepta_format_scope.py@338ec409\n+++ scripts/test_hepta_format_scope.py (Ruff 0.15.13)\n@@ -350,9 +350,15 @@\n         for name in (\"rustfmt.toml\", \".rustfmt.toml\"):\n             with self.subTest(name=name):\n                 config = self.write(f\"experiments/native/{name}\", 'edition = \"2024\"\\n')\n-                command = FMT.rust_file_command(str(source.relative_to(self.root)), check=True)\n-                self.assertEqual(command.args[command.args.index(\"--edition\") + 1], \"2024\")\n-                self.assertEqual(command.args[command.args.index(\"--config-path\") + 1], str(config))\n+                command = FMT.rust_file_command(\n+                    str(source.relative_to(self.root)), check=True\n+                )\n+                self.assertEqual(\n+                    command.args[command.args.index(\"--edition\") + 1], \"2024\"\n+                )\n+                self.assertEqual(\n+                    command.args[command.args.index(\"--config-path\") + 1], str(config)\n+                )\n                 self.assertEqual(command.cwd, source.parent)\n                 self.assertIn(\"--check\", command.args)\n                 config.unlink()\n@@ -392,7 +398,13 @@\n                 FMT.rust_file_command(\"../outside.rs\", check=True)\n \n     def test_standalone_invalid_edition_or_malformed_toml_is_rejected(self):\n-        for document in ('edition=\"2027\"\\n', \"edition=2024\\n\", \"edition=true\\n\", \"edition=[]\\n\", 'edition=\"2024'):\n+        for document in (\n+            'edition=\"2027\"\\n',\n+            \"edition=2024\\n\",\n+            \"edition=true\\n\",\n+            \"edition=[]\\n\",\n+            'edition=\"2024',\n+        ):\n             with self.subTest(document=document):\n                 self.write(\"rustfmt.toml\", document)\n                 with self.assertRaises(ValueError):\n@@ -409,12 +421,17 @@\n     def test_python_310_manifest_keeps_cargo_metadata_priority(self):\n         import json\n \n-        manifest = self.write(\"crate/Cargo.toml\", '[package]\\nname=\"fixture\"\\nedition=\"2021\"\\n')\n+        manifest = self.write(\n+            \"crate/Cargo.toml\", '[package]\\nname=\"fixture\"\\nedition=\"2021\"\\n'\n+        )\n         self.write(\"crate/src/rustfmt.toml\", 'edition = \"2024\"\\n')\n         metadata = {\"packages\": [{\"manifest_path\": str(manifest), \"edition\": \"2021\"}]}\n-        with patch.object(FMT, \"tomllib\", None), patch.object(\n-            subprocess, \"check_output\", return_value=json.dumps(metadata)\n-        ) as cargo:\n+        with (\n+            patch.object(FMT, \"tomllib\", None),\n+            patch.object(\n+                subprocess, \"check_output\", return_value=json.dumps(metadata)\n+            ) as cargo,\n+        ):\n             command = FMT.rust_file_command(\"crate/src/example.rs\", check=True)\n         self.assertEqual(command.args[command.args.index(\"--edition\") + 1], \"2021\")\n         self.assertEqual(cargo.call_args.args[0][:2], [\"cargo\", \"metadata\"])\n@@ -431,4 +448,3 @@\n \n if __name__ == \"__main__\":\n     unittest.main()\n-\n",
+      "path": "scripts/test_hepta_format_scope.py"
+    }
+  ],
+  "format": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/uv",
+      "run",
+      "--frozen",
+      "--project",
+      "scripts",
+      "ruff",
+      "format",
+      "scripts/format.py",
+      "scripts/test_hepta_format_scope.py"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": "2 files reformatted\n"
+  },
+  "frozen_files_unchanged": 79,
+  "inherited_base_ref": "ad83ccf",
+  "pass": true,
+  "reported_ci_command": "uv run --frozen --project scripts ruff format --check scripts .github",
+  "schema": "HeptaFirstPassageInheritedFormatRepairV1",
+  "scope": "Only repository-pinned Ruff formatting of the two inherited Python scripts; no behavior, native dependency, experimental runtime, data, result or frozen-file changes.",
+  "scripts_agents_md": "GitHub 404 at the requested head; root AGENTS.md read and applied",
+  "source_head_ref": "338ec409",
+  "verification_limit": "The formatter check was scoped to the two changed files; this receipt does not claim the full remote repository CI is complete.",
+  "version": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/uv",
+      "run",
+      "--frozen",
+      "--project",
+      "scripts",
+      "ruff",
+      "--version"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": "ruff 0.15.13\n"
+  }
+}

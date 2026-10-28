@@ -1,0 +1,31 @@
+{
+  "actual_final_manifest_cli": {
+    "command": [
+      "python",
+      "-m",
+      "experiments.first_passage_cell.evidence.audit_helpers.restore_archives",
+      "--verify-only"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "{\"already_exact\": 53, \"files\": 53, \"pass\": true, \"restored_exact\": 0, \"schema\": \"HeptaFirstPassageArchiveRestoreV1\"}\n"
+  },
+  "cold_originals_verified": 53,
+  "cold_restore_counts": {
+    "already_exact": 16,
+    "restored_exact": 37
+  },
+  "corrupt_part_rejected_without_output": true,
+  "differing_existing_file_preserved": true,
+  "fixture_setup": "Parts were linked and direct NPZ files copied into the cold fixture. An initial setup-only cross-filesystem link error was resolved by copying the direct NPZ fixtures.",
+  "frozen_files_unchanged": 79,
+  "helper_sha256": "22659d90a0cbcf6abbbb589833b4a4d264f7e12624e4ea568157a3ecd2a30931",
+  "manifest_sha256": "1b14eb6977d2fae694614763b39bc635fbeb78756b416574af240894e158853d",
+  "max_part_bytes": 500000,
+  "method": "Actual restore_record and CLI on exact archived parts; a cold fixture restored every multipart original. Original bytes, SHA-256 and Git blob identities were checked independently against all retained originals. No scientific data were regenerated or recompressed.",
+  "native_archive_originals": 1,
+  "repository_limit_bytes": 512000,
+  "schema": "HeptaFirstPassageCIArchiveRestoreValidationV1",
+  "scientific_originals": 52,
+  "verify_only_existing_exact": 53
+}

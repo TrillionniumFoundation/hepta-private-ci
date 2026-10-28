@@ -5,6 +5,16 @@ explicit renewal resets, and value-informed maintenance decisions. It is a
 research package beside the existing Hepta neuron work. It does not replace the
 production neuron, Agentd state backend, or native NDU owner algorithms.
 
+Research runtime and experiment changes remain within this package. The
+repository-level CI repair also updates `.codespellrc`, `.codespellignore`, and
+`.codespell-frozen-lines` for binary archive parts and exact historical lines.
+Two inherited scripts, `scripts/format.py` and `scripts/test_hepta_format_scope.py`,
+receive only the repository-pinned Ruff 0.15.13 formatting; their complete Python
+ASTs are identical before and after the repair. The original native owner
+algorithms and all 79 frozen scientific files remain unchanged. See the
+[spelling repair record](evidence/CODESPELL_ARCHIVE_REPAIR.json) and the
+[inherited formatting repair](evidence/INHERITED_FORMAT_REPAIR.json).
+
 All five research work packages have implemented and checked deliverables. The
 registered endogenous renewal controller passed **all three prespecified
 confirmation comparisons** using executed actions and actual subsequent net
@@ -417,12 +427,19 @@ see `NATIVE_REPRODUCE.md`.
 ### 1. Materialize archived evidence, restore the native executable, and run tests
 
 A cold checkout first reconstructs the retained original evidence files. The
-archive manifest `EVIDENCE_ARCHIVE.json` identifies bounded binary parts under
-`evidence/data_parts/<original-sha256>/<index>.bin`. Their representation changes
-only transport and storage: the restore helper verifies each part and the
-reassembled original byte count, SHA-256 and Git blob SHA. It generates no new
-trajectories, loads no pickle, and refuses to overwrite a differing existing
-file. Run restoration before native verification, freeze checks or replay:
+[archive manifest](EVIDENCE_ARCHIVE.json) binds 52 scientific originals containing
+145,319,237 bytes, plus the exact 732,464-byte native gzip: **53 originals and
+146,051,701 bytes in total**. The 37 multipart originals use **310 binary parts**,
+each at most **500,000 bytes**, under
+`evidence/data_parts/<original-sha256>/<index>.bin`. The 16 direct NPZ files bring
+the current layout to **326 stored data objects**.
+
+This representation changes only transport and storage. The restore helper
+verifies each part and the reassembled original byte count, SHA-256 and Git blob
+SHA. It generates no new trajectories, loads no pickle, and refuses to overwrite
+a differing existing file. `restore_archives` also materializes
+`evidence/native/hepta-first-passage-ndu.gz`, so it must run before
+`restore_native`, native verification, freeze checks or replay:
 
 ```bash
 python -m experiments.first_passage_cell.evidence.audit_helpers.restore_archives
@@ -438,18 +455,29 @@ HEPTA_FIRST_PASSAGE_NATIVE="$PWD/experiments/first_passage_cell/NATIVE_BUILD.jso
   experiments.first_passage_cell.tests.test_study -v
 ```
 
-Restoration verifies the compressed executable against the retained binary
-SHA-256 and refuses to replace a different existing binary. The explicit
+After the archive step verifies the original gzip bytes, `restore_native`
+decompresses that file, verifies the executable against the retained binary
+SHA-256, and refuses to replace a different existing binary. The explicit
 manifest environment variable makes the native test dependency unambiguous.
 The original repository formatting gate remains `just fmt`; it is not a
-comprehensive Python lint result. The
-[archive restoration helper](evidence/audit_helpers/restore_archives.py) fails
-on missing or corrupt parts. A layout manifest or a recorded hash alone is not
-a claim that all required bytes have already been remotely published. The final
-[publication receipt](evidence/ARCHIVE_PUBLICATION.json) verifies all 319 stored
-data objects for 52 original artifacts (145,319,237 bytes); the final manifest
-restoration check passed for every original. See [RESULTS.md](RESULTS.md) for the
-registered outcomes and their scientific scope.
+comprehensive Python lint result.
+
+The [current layout record](evidence/CI_ARCHIVE_LAYOUT.json) describes the
+representation above. The [cold restoration validation](evidence/CI_ARCHIVE_RESTORE_VALIDATION.json)
+reassembled all 37 multipart originals, verified all 16 direct NPZ files, and
+then verified all 53 originals with `--verify-only`. All 79 frozen files remained
+unchanged. The [restoration helper](evidence/audit_helpers/restore_archives.py)
+also rejected corrupt parts and preserved differing existing files.
+
+Remote publication status and object-by-object verification for the current
+326-object layout belong in the [publication receipt](evidence/ARCHIVE_PUBLICATION.json).
+A local layout record or hash alone does not establish that every required byte
+has been remotely published. The earlier 303-part, 319-object layout and its
+publication receipt remain historical evidence in
+[INITIAL_EVIDENCE_ARCHIVE.json](evidence/INITIAL_EVIDENCE_ARCHIVE.json) and
+[ARCHIVE_PUBLICATION_INITIAL.json](evidence/ARCHIVE_PUBLICATION_INITIAL.json).
+See [RESULTS.md](RESULTS.md) for the registered outcomes and their scientific
+scope.
 
 For the retained study, use the package's `prepared/` and [FREEZE.json](FREEZE.json)
 after restoration. Audits can be repeated into new receipt paths without

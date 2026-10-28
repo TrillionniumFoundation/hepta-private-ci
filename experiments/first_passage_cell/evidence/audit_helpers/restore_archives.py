@@ -1,7 +1,7 @@
-"""Restore exact frozen synthetic evidence from bounded Git blob parts.
+"""Restore exact frozen evidence and the native archive from bounded Git blob parts.
 
 No data are regenerated, no pickle is loaded, and no existing differing file
-is overwritten. Chunking only accommodates the evidence transfer interface.
+is overwritten. Chunking satisfies the evidence transfer interface and repository size policy.
 """
 
 import argparse
@@ -15,7 +15,8 @@ REPOSITORY = PACKAGE.parents[1]
 PART_ROOT = "experiments/first_passage_cell/evidence/data_parts/"
 OUTPUT_ROOTS = ("experiments/first_passage_cell/prepared/",
                 "experiments/first_passage_cell/runs/",
-                "experiments/first_passage_cell/evidence/aborted_policy_preparation_01/")
+                "experiments/first_passage_cell/evidence/aborted_policy_preparation_01/",
+                "experiments/first_passage_cell/evidence/native/")
 
 
 def safe_path(name, prefixes):
