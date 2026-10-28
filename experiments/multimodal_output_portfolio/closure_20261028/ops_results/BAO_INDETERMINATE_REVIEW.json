@@ -1,0 +1,28 @@
+{
+  "active_lease_trace": [
+    "Start with lease L Active and revoke R Prepared, both durably stored.",
+    "reconcile(R, RevokeApplied) is allowed from Prepared and writes L Revoked/R Applied. Rename succeeds but directory synchronization fails.",
+    "Memory remains L Active/R Prepared; next prepare_renew(N,L) passes require_active and overwrites the disk with stale L Active plus N Prepared."
+  ],
+  "claim_limit": "Confirms metadata rollback and stale operation admission by source logic; no claim of observed external provider grant reissuance.",
+  "finding": "exported durable registry API admits stale-state rollback after ambiguous persistence; not merely a documentation limitation",
+  "method": "read-only production control-flow and complete HEAD Rust caller search; failure sequences are deductions from actual source, not newly executed fault-injection tests",
+  "minimal_trace": [
+    "State memory/disk empty. prepare_issue(A) builds state {A:Prepared}.",
+    "next-file write+sync and rename succeed. Directory open/sync fails. persist returns Unavailable; commit does not assign next to self.state.",
+    "Disk now contains A; memory remains empty; owner has no poisoned marker.",
+    "After the transient filesystem fault clears, prepare_issue(B) clones empty memory and durably overwrites disk with {B:Prepared}. A disappears."
+  ],
+  "outer_fence": "None found. Complete git grep HEAD -- codex-rs for registry/error symbols found only implementation, tests, and lib re-exports. No live provider consumer found.",
+  "required_small_fix": [
+    "Distinguish post-rename Indeterminate from safe pre-rename failures.",
+    "Set an irreversible in-memory poisoned state after any ambiguous commit; require explicit reopen before further service.",
+    "Fence all mutation entry points, including prepare same-ID fast return and expire_at no-change branch, and prevent getters exposing stale Active/Prepared state.",
+    "Fault-injection test real next-file/file-sync/rename then simulated directory-sync error, assert new disk bytes retained, all poisoned owner operations refuse with unchanged bytes, and reopened owner loads new state.",
+    "Preserve safe pre-rename error retry and normal persisted/reopened state behavior."
+  ],
+  "schema": "hepta.bao.lease-postrename-independent-review.v1",
+  "separate_existing_scope": "open has no exclusive-owner/file-lock member either; poisoning fixes same-instance post-rename ambiguity, not multi-instance writer exclusion. Any exclusivity claim needs separate owner binding or an explicit caller contract.",
+  "source_head": "13b691ac922ff25dd116401e1bb93cd1ea219aff",
+  "source_sha256": "9d2a4c743ae79fe13c8b2f4c7ede73a1968027357363412ba5c37b2037e8ccc0"
+}
