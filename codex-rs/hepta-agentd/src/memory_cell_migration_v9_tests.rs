@@ -15,6 +15,9 @@ use pretty_assertions::assert_eq;
 
 use super::*;
 
+#[path = "memory_cell_migration_v9_concurrency_tests.rs"]
+mod concurrency_tests;
+
 fn image(directory: &std::path::Path, generation: u64, previous: Option<Sha256Digest>) -> MemoryCellMigrationImageV9 {
     let path = directory.join(format!("input-{generation}.json"));
     std::fs::write(&path, format!("{{\"memory\":{generation}}}")).expect("input bytes");

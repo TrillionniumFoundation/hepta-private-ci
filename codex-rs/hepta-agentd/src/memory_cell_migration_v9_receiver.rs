@@ -18,7 +18,7 @@ use super::wire::*;
 /// operator-configured source/destination identities and use the TaskFlow
 /// effect owner for dispatch. It never resolves arbitrary filesystem paths.
 pub struct MemoryCellMigrationReceiverV9 {
-    store: MemoryCellMigrationStoreV9,
+    store: Mutex<MemoryCellMigrationStoreV9>,
     destination: String,
     source_key: VerifyingKey,
     receiver_key: SigningKey,
@@ -28,7 +28,8 @@ pub struct MemoryCellMigrationReceiverV9 {
 impl MemoryCellMigrationReceiverV9 {
     pub fn new(store: MemoryCellMigrationStoreV9, destination: String, source_key: VerifyingKey, receiver_key: SigningKey) -> Result<Self, String> {
         if destination != store.expected.destination() { return Err("migration receiver destination differs from its configured image".into()); }
-        Ok(Self { store, destination, source_key, receiver_key, traffic: Arc::new(Mutex::new(MemoryCellMigrationTrafficV9::default())) })
+        Ok(Self { store: Mutex::new(store), destination, source_key, receiver_key,
+            traffic: Arc::new(Mutex::new(MemoryCellMigrationTrafficV9::default())) })
     }
 
     pub fn traffic(&self) -> Result<MemoryCellMigrationTrafficV9, String> {
@@ -55,7 +56,11 @@ impl MemoryCellMigrationReceiverV9 {
         let outcome = match request.action {
             Action::Commit => {
                 let raw = wire.read(usize::try_from(request.payload_bytes).map_err(failure)?)?;
-                let result = match self.store.commit(&request.intent, &raw, observe) {
+                // The filesystem lock fences other store instances. This
+                // lock also serializes calls sharing this receiver instance;
+                // it is acquired only after the bounded body has arrived.
+                let store = self.store.lock().map_err(failure)?;
+                let result = match store.commit(&request.intent, &raw, observe) {
                     Ok(receipt) => ProviderEffectDispatch::Ack(receipt),
                     // A filesystem error can follow the CURRENT fsync. Never
                     // turn an ambiguous committed effect into a rejection.
@@ -65,7 +70,7 @@ impl MemoryCellMigrationReceiverV9 {
             }
             Action::Lookup => {
                 if request.payload_bytes != 0 { return Err("migration lookup contains payload".into()); }
-                Outcome::Lookup(self.store.lookup(&request.intent)?)
+                Outcome::Lookup(self.store.lock().map_err(failure)?.lookup(&request.intent)?)
             }
         };
         wire.send_json(&sign(Response { request_digest, outcome }, &self.receiver_key, RESPONSE_DOMAIN)?)
