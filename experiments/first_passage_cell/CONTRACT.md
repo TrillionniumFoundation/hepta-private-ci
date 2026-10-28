@@ -108,12 +108,22 @@ are not independent training-seed replicates.
 All action policies receive the same public state, inputs, price, horizon and
 fitted cell. Physical failure and voluntary maintenance are different boundaries.
 
-The main mechanism pair has the same six common physical parameters and one
-policy-gap calibration parameter selected from the same frozen grid using the
-same development episodes. The ordinary comparator is cost/horizon-aware and
-uses a first-event continuation approximation. The endogenous-value comparator
-accounts for all renewal events, resets and refractory periods. The comparison
-tests this particular continuation mechanism, not superiority over all SNNs.
+Protocol V2 (see PROTOCOL_AMENDMENT.md) contains three seven-parameter policy
+families: a learned constant distance threshold, a first-event value boundary,
+and the complete renewal-value boundary. Each shares the same six fitted
+physical coefficients and uses one scalar selected from a fixed 17-point grid
+on the same policy-development scenarios. The threshold uses its distance grid;
+the two value families use the same policy-gap grid. Constant-threshold repair
+gates do not explicitly adapt to price or remaining time, although they receive
+the full public observation and share the native negative-continuation STOP
+guard. The first-event family does adapt its values to costs and deadlines, and
+is retained as a stronger ablation of repeated failures and resets.
+
+These comparisons test specified policy classes. They do not establish an
+optimal free boundary, superiority over arbitrary learned boundaries, or
+superiority over all SNNs. All three primary comparisons retain their frozen
+Bonferroni adjustment. Actual task costs and computational costs are reported
+separately; equal parameter counts do not imply equal inference cost.
 
 A fixed-boundary six-parameter arm is a structural reference. A seven-parameter
 fixed-boundary arm fits an additional u1*u2 drift coefficient; this is an active

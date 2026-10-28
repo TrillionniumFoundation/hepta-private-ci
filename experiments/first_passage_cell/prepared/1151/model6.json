@@ -1,0 +1,205 @@
+{
+  "absolute_parameter_change": {
+    "barrier": 0.09456562320652455,
+    "drift": 0.13870027976781873,
+    "log_reset_gap": 0.23595828095751156,
+    "log_sigma": 0.36790235762931667,
+    "weight_0": 0.1542482062474137,
+    "weight_1": 0.12516621454521787
+  },
+  "active_parameter_count": 6,
+  "dataset_sha256": "85882908b00d99bbd2fe0853559d343f3d9f1fd3f1bab285c86c7fca0eff4664",
+  "development_file_sha256": "6117c08ded8148a4d042732a35ff299b2d48c6c7901663108e8b7de4cfa24f0b",
+  "function_evaluations": 23,
+  "hard_spike_backpropagation": false,
+  "heldout_gradient_norm": 0.8917227615053319,
+  "heldout_loss": 1.3928603306027394,
+  "initial_gradient": [
+    2.2899743440598312,
+    0.780997719316409,
+    -0.5857583986501526,
+    -0.4783056737744691,
+    -0.5423195129162318,
+    0.7999427813679989
+  ],
+  "initial_loss": 1.7533069113657778,
+  "initial_vector": [
+    -0.40692471089530735,
+    -0.013745073638616878,
+    0.03573675523500943,
+    -0.7985076962177716,
+    0.02,
+    0.09531017980432493
+  ],
+  "iterations": 18,
+  "likelihood_rows": 1130,
+  "loss_scope": "joint renewal trajectory likelihood, not independent interval samples",
+  "max_function_evaluations": 400,
+  "max_iterations": 120,
+  "model_digest": "773551d0d8005a10af6bebb48d9d2b9aaf0f3a4e01a02b429a6a933685ece62a",
+  "observed_events": 625,
+  "optimizer": "scipy L-BFGS-B with analytic chain-rule gradient",
+  "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+  "optimizer_success": true,
+  "parameter_names": [
+    "drift",
+    "weight_0",
+    "weight_1",
+    "log_sigma",
+    "barrier",
+    "log_reset_gap"
+  ],
+  "profile": "hepta-first-passage-joint-likelihood-v1",
+  "protocol_sha256": "c8108b14830f8cddc200d708e5098044b292d4cfe76da97b0413836121d70ade",
+  "right_censored_rows": 505,
+  "seed": 1151,
+  "selected_gradient": [
+    -4.28887862651689e-07,
+    2.0943438910903112e-07,
+    -3.060881430400064e-07,
+    -1.0191645818268565e-07,
+    1.382162031042522e-07,
+    6.370291921007646e-08
+  ],
+  "selected_loss": 1.3314091020923717,
+  "selected_parameters": {
+    "barrier": 0.11456562320652455,
+    "drift": -0.5456249906631261,
+    "interaction": 0.0,
+    "refractory": 0.06,
+    "reset_gap": 0.8687949858649632,
+    "sigma": 0.3114831442277621,
+    "weights": [
+      -0.16799327988603058,
+      0.1609029697802273
+    ]
+  },
+  "selected_vector": [
+    -0.5456249906631261,
+    -0.16799327988603058,
+    0.1609029697802273,
+    -1.1664100538470883,
+    0.11456562320652455,
+    -0.14064810115318663
+  ],
+  "trace": [
+    {
+      "evaluation": 0,
+      "gradient_norm": 2.712903990327744,
+      "loss": 1.7533069113657778
+    },
+    {
+      "evaluation": 1,
+      "gradient_norm": 7.794737014915332,
+      "loss": 6.038023796464943
+    },
+    {
+      "evaluation": 2,
+      "gradient_norm": 1.0304122448059232,
+      "loss": 1.5145436585731655
+    },
+    {
+      "evaluation": 3,
+      "gradient_norm": 0.8025614205297921,
+      "loss": 1.457788169247392
+    },
+    {
+      "evaluation": 4,
+      "gradient_norm": 0.6202901220009994,
+      "loss": 1.3607715464219063
+    },
+    {
+      "evaluation": 5,
+      "gradient_norm": 0.15287641692762213,
+      "loss": 1.3421532358039199
+    },
+    {
+      "evaluation": 6,
+      "gradient_norm": 0.06316386772163936,
+      "loss": 1.340632562003321
+    },
+    {
+      "evaluation": 7,
+      "gradient_norm": 0.055525690407099745,
+      "loss": 1.3400677180456404
+    },
+    {
+      "evaluation": 8,
+      "gradient_norm": 0.09625526953929991,
+      "loss": 1.3385334409924616
+    },
+    {
+      "evaluation": 9,
+      "gradient_norm": 0.15418602865038175,
+      "loss": 1.3358114360715119
+    },
+    {
+      "evaluation": 10,
+      "gradient_norm": 0.13349732376852588,
+      "loss": 1.3323381047069458
+    },
+    {
+      "evaluation": 11,
+      "gradient_norm": 0.23892743863940324,
+      "loss": 1.3361202454212555
+    },
+    {
+      "evaluation": 12,
+      "gradient_norm": 0.11958738176046933,
+      "loss": 1.3321186697533962
+    },
+    {
+      "evaluation": 13,
+      "gradient_norm": 0.03150635677612927,
+      "loss": 1.331525540900346
+    },
+    {
+      "evaluation": 14,
+      "gradient_norm": 0.014126496377828911,
+      "loss": 1.3314137163764008
+    },
+    {
+      "evaluation": 15,
+      "gradient_norm": 0.017277522174018414,
+      "loss": 1.3314158993518916
+    },
+    {
+      "evaluation": 16,
+      "gradient_norm": 0.0017886388329283274,
+      "loss": 1.3314099853669397
+    },
+    {
+      "evaluation": 17,
+      "gradient_norm": 0.0006169139823416061,
+      "loss": 1.331409129513637
+    },
+    {
+      "evaluation": 18,
+      "gradient_norm": 0.0025601711360164017,
+      "loss": 1.3314094558497889
+    },
+    {
+      "evaluation": 19,
+      "gradient_norm": 0.00027329488839871764,
+      "loss": 1.331409112581804
+    },
+    {
+      "evaluation": 20,
+      "gradient_norm": 3.135159382523706e-05,
+      "loss": 1.3314091021800898
+    },
+    {
+      "evaluation": 21,
+      "gradient_norm": 4.326850693975976e-06,
+      "loss": 1.3314091020935759
+    },
+    {
+      "evaluation": 22,
+      "gradient_norm": 5.958575824356278e-07,
+      "loss": 1.3314091020923717
+    }
+  ],
+  "training_file_sha256": "bda07b286412c351c32e545fbc994619f1c05b480c4a52ebf0f6d732b478c10b",
+  "trajectories": 512,
+  "wall_seconds": 0.23267854799632914
+}
