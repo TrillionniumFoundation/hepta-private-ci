@@ -1,0 +1,30 @@
+{
+  "errors": 0,
+  "failures": 0,
+  "numpy": "2.3.5",
+  "python": "3.12.14",
+  "schema": "hepta.ndu.completed-research-publication-regression.v1",
+  "scope": "objective, aggregation, exact finite stopping, source-aware selected-action tails, actual complete-cost actor fitting contracts; no model training, delivery, qualification or native owner episodes",
+  "skipped": 0,
+  "sources_sha256": {
+    "closure_20261028/control_actor.py": "1bb748cf6791075f6d24df928c35bba7e918b27dc235792fb2d01da22b13f485",
+    "closure_20261028/control_table.py": "5469a69d7a2d5441c392f27e9f01c8f45952c4a4238913f2f0b7728c3f7b03c4",
+    "closure_20261028/control_tests.py": "16d08da3b5d8616a3df6e5813ff5b284475e02c86c85374711dc963d6f5efe15",
+    "closure_20261028/profile_contract.py": "d4cf318b0478bc7cbb09d7fbb654db9740112068da51ada643f2460c049ed71a",
+    "closure_20261028/tail_calibration.py": "f8e725b9fa968c5a78e19f3c5b3315dd0b17d664732380fd2cb4a841061fa410",
+    "unified_20261028/objective_oracle.py": "08470d281b6ba2cd6db93a1f518727357806dec27972df045a2a9613478f87cb",
+    "unified_20261028/profile.py": "bbcc565becb5a1b8d06f9d2a4b4a82d9cded89e8c7ea2fe386c185688c402650",
+    "unified_20261028/profile_tests.py": "f8fbdcbc4fd3574cf4816b902e8cd6133687740c2077b0a9e6c757278c7c5e6a",
+    "unified_20261028/tail.py": "a73ed81cedfc8097e82dabce5c5e471a948fdad5ea74c95480f741a769eef911",
+    "unified_20261028/test_tail.py": "62a8d48bc9a8ccc2aded09ff18efaee938ba3bbedeaac63aef2a95538a6d896d"
+  },
+  "success": true,
+  "test_modules": [
+    "experiments.multimodal_output_portfolio.unified_20261028.profile_tests",
+    "experiments.multimodal_output_portfolio.unified_20261028.test_tail",
+    "experiments.multimodal_output_portfolio.closure_20261028.control_tests"
+  ],
+  "tests_run": 26,
+  "torch_imported": false,
+  "wall_seconds": 2.953417848999379
+}

@@ -297,7 +297,16 @@ fn actual_locked_file_replays_mixed_profiles_and_retains_rollback_anchor() {
     owner
         .consume(&ope("legacy", d("old cohort")))
         .expect("legacy");
+    let legacy_anchor = owner.anchor();
+    drop(owner);
+    // A backup is taken only at an ownership cut. Windows mandatory locks
+    // correctly deny a second handle while the durable owner is alive.
     let backup = fs::read(&path).expect("backup");
+    let store =
+        LockedFileFinalHoldoutCasStoreV1::recover(open(), d("binding"), Some(legacy_anchor))
+            .expect("reopen after backup");
+    let mut owner =
+        FencedFinalHoldoutOwnerV1::recover(store, d("binding"), fence(2)).expect("backup owner");
     let plan = paired("p");
     let receipt = owner.consume_paired(&plan).expect("paired");
     let anchor = owner.anchor();
@@ -305,7 +314,7 @@ fn actual_locked_file_replays_mixed_profiles_and_retains_rollback_anchor() {
     let store = LockedFileFinalHoldoutCasStoreV1::recover(open(), d("binding"), Some(anchor))
         .expect("reopen");
     let mut owner =
-        FencedFinalHoldoutOwnerV1::recover(store, d("binding"), fence(2)).expect("recover owner");
+        FencedFinalHoldoutOwnerV1::recover(store, d("binding"), fence(3)).expect("recover owner");
     assert_eq!(
         owner.consume_paired(&plan).expect("replay").record_digest,
         receipt.record_digest

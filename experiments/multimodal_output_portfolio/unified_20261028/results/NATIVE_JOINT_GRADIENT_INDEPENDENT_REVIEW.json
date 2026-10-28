@@ -1,0 +1,184 @@
+{
+  "actual_emissions_replayed": 20,
+  "additional_native_executions": 0,
+  "all_episodes_charge_preparation_binding_execution_scoring_once": true,
+  "cost_boundary": "charged every episode's public-input tensor/hash/policy preparation, checkpoint binding/verification, owner+dispatch+codec CPU, post-stop readback/scoring; only one-time load and training/checkpoint/report work excluded",
+  "development_deployment_receipts_verified": 4,
+  "independent_density": "normalized torch Normal/Categorical, held actual actions, all parameter gradients",
+  "neural_forward_replays": 40,
+  "new_media_deliveries": 0,
+  "optimizer_updates": 0,
+  "passed": true,
+  "private_score_calls": 0,
+  "profile_sha256": "20adfb58197901642bf7281e9ff8a27426480588d34b70a48af7f377f99c4727",
+  "protocol_sha256": "38f18907c279fab72184d3be611b9d44c92869263b1e943770b0bb4bab192afc",
+  "review_source_sha256": "ecb648bc5a536402769601ab629d98573470a47e998ff62e48e8a090f8b1bd03",
+  "sampler_replay_purpose": "verify original latent hashes and raw gradients; not new random evidence",
+  "schema": "hepta.ndu.native-joint-independent-gradient-review.v2",
+  "scope": "frozen diagnostic training trajectories only; no efficacy, generalization or tail certificate",
+  "timing_assumption": "observed CPU realization conditionally exogenous; estimate stochastic-action LR only; no direct parameter derivative through runtime",
+  "torch_version": "2.8.0+cpu",
+  "training_episodes_replayed": 16,
+  "updates": [
+    {
+      "actual_emissions": 4,
+      "all_13_component_gradients_nonzero": true,
+      "all_13_raw_gradient_records_identical": true,
+      "complete_episodes": 2,
+      "continuation_kinds": [
+        "delivered",
+        "delivered"
+      ],
+      "independent_density_gradient_max_abs_error": 1.239776611328125e-05,
+      "independent_density_gradient_relative_l2_error": 1.6401222268065856e-07,
+      "independent_normalized_joint_log_density_abs_error": 0.015625,
+      "maximum_trajectory_log_density_replay_error": 0.0,
+      "snapshot_sha256": "016de0f80f39ef75df56386818d5677391bfadcdb3e29b16afd8594069844b7a",
+      "step": 0,
+      "terminal_kinds": [
+        "delivered",
+        "delivered"
+      ]
+    },
+    {
+      "actual_emissions": 2,
+      "all_13_component_gradients_nonzero": true,
+      "all_13_raw_gradient_records_identical": true,
+      "complete_episodes": 2,
+      "continuation_kinds": [
+        "delivered",
+        "delivered"
+      ],
+      "independent_density_gradient_max_abs_error": 9.5367431640625e-06,
+      "independent_density_gradient_relative_l2_error": 1.5468836689324693e-07,
+      "independent_normalized_joint_log_density_abs_error": 0.0,
+      "maximum_trajectory_log_density_replay_error": 0.0,
+      "snapshot_sha256": "b82039775529af7e22df00ba671fd9f1006f6e9d487480c717f0a37a84e3b0dd",
+      "step": 1,
+      "terminal_kinds": [
+        "delivered",
+        "delivered"
+      ]
+    },
+    {
+      "actual_emissions": 2,
+      "all_13_component_gradients_nonzero": true,
+      "all_13_raw_gradient_records_identical": true,
+      "complete_episodes": 2,
+      "continuation_kinds": [
+        "refused",
+        "refused"
+      ],
+      "independent_density_gradient_max_abs_error": 1.52587890625e-05,
+      "independent_density_gradient_relative_l2_error": 1.398389405923047e-07,
+      "independent_normalized_joint_log_density_abs_error": 0.0,
+      "maximum_trajectory_log_density_replay_error": 0.0,
+      "snapshot_sha256": "9d8c59dcef1d45e52f147f194d308f402f1115005db7f96f4e1c478cedefe536",
+      "step": 2,
+      "terminal_kinds": [
+        "failed",
+        "failed"
+      ]
+    },
+    {
+      "actual_emissions": 2,
+      "all_13_component_gradients_nonzero": true,
+      "all_13_raw_gradient_records_identical": true,
+      "complete_episodes": 2,
+      "continuation_kinds": [
+        "refused",
+        "refused"
+      ],
+      "independent_density_gradient_max_abs_error": 1.862645149230957e-09,
+      "independent_density_gradient_relative_l2_error": 1.5999735172371385e-07,
+      "independent_normalized_joint_log_density_abs_error": 0.0,
+      "maximum_trajectory_log_density_replay_error": 0.0,
+      "snapshot_sha256": "3de8392f03ab73cdc32647ff54ac808201c2c4c9a41449913b72a482d1d94c7f",
+      "step": 3,
+      "terminal_kinds": [
+        "failed",
+        "failed"
+      ]
+    },
+    {
+      "actual_emissions": 2,
+      "all_13_component_gradients_nonzero": true,
+      "all_13_raw_gradient_records_identical": true,
+      "complete_episodes": 2,
+      "continuation_kinds": [
+        "refused",
+        "refused"
+      ],
+      "independent_density_gradient_max_abs_error": 9.313225746154785e-10,
+      "independent_density_gradient_relative_l2_error": 1.3019114655876353e-07,
+      "independent_normalized_joint_log_density_abs_error": 0.0078125,
+      "maximum_trajectory_log_density_replay_error": 0.0,
+      "snapshot_sha256": "61b54b0a30fdcf9e7f57b575783b8e10418422f109de961ac64a867bad83389c",
+      "step": 4,
+      "terminal_kinds": [
+        "failed",
+        "failed"
+      ]
+    },
+    {
+      "actual_emissions": 4,
+      "all_13_component_gradients_nonzero": true,
+      "all_13_raw_gradient_records_identical": true,
+      "complete_episodes": 2,
+      "continuation_kinds": [
+        "delivered",
+        "delivered"
+      ],
+      "independent_density_gradient_max_abs_error": 2.002716064453125e-05,
+      "independent_density_gradient_relative_l2_error": 1.3179647055387522e-07,
+      "independent_normalized_joint_log_density_abs_error": 0.015625,
+      "maximum_trajectory_log_density_replay_error": 0.0,
+      "snapshot_sha256": "83884903149ba48a4b3283fe1b4760e0b11693f8c83c042eae0206577da6127b",
+      "step": 5,
+      "terminal_kinds": [
+        "delivered",
+        "delivered"
+      ]
+    },
+    {
+      "actual_emissions": 2,
+      "all_13_component_gradients_nonzero": true,
+      "all_13_raw_gradient_records_identical": true,
+      "complete_episodes": 2,
+      "continuation_kinds": [
+        "delivered",
+        "delivered"
+      ],
+      "independent_density_gradient_max_abs_error": 1.9073486328125e-06,
+      "independent_density_gradient_relative_l2_error": 1.391947683889624e-07,
+      "independent_normalized_joint_log_density_abs_error": 0.0,
+      "maximum_trajectory_log_density_replay_error": 0.0,
+      "snapshot_sha256": "99ee0e3c7f3837318671159ffb5852507d25afee32f0f05b819758b89d6799d1",
+      "step": 6,
+      "terminal_kinds": [
+        "delivered",
+        "delivered"
+      ]
+    },
+    {
+      "actual_emissions": 2,
+      "all_13_component_gradients_nonzero": true,
+      "all_13_raw_gradient_records_identical": true,
+      "complete_episodes": 2,
+      "continuation_kinds": [
+        "delivered",
+        "delivered"
+      ],
+      "independent_density_gradient_max_abs_error": 3.814697265625e-06,
+      "independent_density_gradient_relative_l2_error": 1.6611886505115983e-07,
+      "independent_normalized_joint_log_density_abs_error": 0.015625,
+      "maximum_trajectory_log_density_replay_error": 0.0,
+      "snapshot_sha256": "9e1ca83b38c11f6734c4c3356fc692662e6cacd6af9e4d198a9e07e341940441",
+      "step": 7,
+      "terminal_kinds": [
+        "delivered",
+        "delivered"
+      ]
+    }
+  ]
+}

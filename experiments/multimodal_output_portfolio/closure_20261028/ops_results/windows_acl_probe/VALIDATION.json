@@ -1,0 +1,37 @@
+{
+  "schema": "hepta.windows-acl-probe.validation.v1",
+  "baseline_head": "1bdc0098164540c78e4a42fff70238e1632f958f",
+  "python_integrity_tests": {
+    "command": "python3 -m unittest experiments.multimodal_output_portfolio.closure_20261028.ops_windows_acl_probe_tests -v",
+    "returncode": 0,
+    "tests": 4,
+    "incomplete_transcript_counterexamples": 11,
+    "seconds": 0.496,
+    "scope": "Local stdlib behavioral tests; real isolated Git live/index drift, exact dependency checksums, complete synthetic transcript mutation and false-row preservation. No native Windows execution."
+  },
+  "formatter": [
+    {
+      "name": "Rust",
+      "returncode": 0,
+      "output": ""
+    }
+  ],
+  "diff_check": {
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "existing_storage_observe_job_unchanged": true,
+  "native_windows_compile": "pending new acl-observe job",
+  "native_windows_permissions": "unmeasured by this new diagnostic; original three failures remain open",
+  "completion_contract": {
+    "checks": 26,
+    "opens": 84,
+    "acl_groups": 12,
+    "token_group_headers": 9,
+    "ops": 16,
+    "repairs": 4,
+    "flags": 3
+  },
+  "main_production_changes": []
+}

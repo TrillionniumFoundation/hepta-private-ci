@@ -1,0 +1,16 @@
+{
+  "charged_episode_self_plus_child_cpu_seconds": 18.790287865999996,
+  "cpu_direct_parameter_derivative_estimated": false,
+  "excluded_outer_diagnostic_setup": "corpus/model initialization, public input tensor setup, policy manifest assembly and hashing, optimizer/backward/checkpoint writes and report serialization; caller should cache immutable manifest or explicitly charge this setup in a production tariff",
+  "finite_cpu_bound_enforced": false,
+  "generation_calls": 0,
+  "included_snapshot_verification": "inside episode actual checkpoint load, tensor/parameter/vocabulary checks and NativeController construction/verify are timed and charged",
+  "measured_run_self_plus_child_cpu_seconds": 24.735919,
+  "native_cpu_seconds_label": "all child CPU including FFmpeg; not pure original owner CPU",
+  "outside_episode_cpu_seconds": 5.945631134000003,
+  "owner_kernel_calls": 0,
+  "schema": "hepta.ndu.native-joint-gradient-cost-scope-audit.v1",
+  "status": "postrun receipt-only accounting clarification; executed profile and sources unchanged",
+  "tail_certificate_issued": false,
+  "total_episode_normalized_cost": 0.366790287866
+}

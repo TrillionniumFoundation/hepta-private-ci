@@ -20,6 +20,10 @@ concurrency:
   cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
 jobs:
+  unified-invariants:
+    name: Unified profile and executed-policy regressions
+    uses: ./.github/workflows/ndu-unified-research.yml
+
   rollout:
     name: Python, native NDU, and real rollout
     runs-on: ubuntu-24.04

@@ -1,0 +1,49 @@
+{
+  "allowed_reacquired_weights": [
+    {
+      "bytes": 33524997,
+      "name": "s3d-d76dad2f.pth",
+      "sha256": "d76dad2f4b2a6701ad7f64e85b294b2d1989f1ea0d3f8b240446ed2152850bbb",
+      "url": "https://download.pytorch.org/models/s3d-d76dad2f.pth"
+    },
+    {
+      "bytes": 20834417,
+      "name": "MobileNetV2_mAP_0.383.pth",
+      "sha256": "22437af9eb5ed1854b5ad285b4a17d5fc566f1a3b23df40db5541f5705ca340f",
+      "url": "https://zenodo.org/api/records/3987831/files/MobileNetV2_mAP=0.383.pth/content"
+    },
+    {
+      "bytes": 95735374,
+      "name": "TSM_somethingv2_RGB_resnet50_shift8_blockres_avg_segment8_e45.pth",
+      "sha256": "74bb90d6ecf5b03ed78ac6572d2ced7cd3d0f8dc7fdba0bd6ce11400a5908d38",
+      "url": "https://hanlab18.mit.edu/projects/tsm/models/TSM_somethingv2_RGB_resnet50_shift8_blockres_avg_segment8_e45.pth"
+    }
+  ],
+  "amendment_sha256": "f4a4e6ee705804d7caa1ae2d696dafbe9c227e418b2cbbfffff4b5b342d3841c",
+  "created_at_unix": 1793186229.3492365,
+  "development_calibration_policy_qualification_access": false,
+  "feature_decode_codec_or_model_law_modified": false,
+  "fitted_heads_or_generator_updates": 0,
+  "linux_primary_documentation": "https://docs.kernel.org/admin-guide/cgroup-v2.html#memory-interface-files",
+  "original_registration_bytes_modified": false,
+  "original_registration_file_sha256": "dbbe54b0b15e789f4955f020e5a2cbef91c1759810c886400d801308824708b5",
+  "original_registration_sha256": "07152eb03b3df4d98ca97f5cf7b21b884eaac9311e9ece9c82d705c5143e30c2",
+  "portable_pilot_sha256": "bd0c1db20bf48ca74cb65675fa0ca5eb212b871ba0ac802fc265ae03bae083f0",
+  "previous_candidate_status": "Only pure-stdlib seed guards/readback ran; no feature/model execution or holdout access. Its original binding and source bytes remain under ci/initial_resource_assumption/.",
+  "prior_execution_amendment_file_sha256": "8485238cea591e798a4f42f2769f9d5e9002f998c40583bd22c08202c9dd598e",
+  "prior_execution_amendment_sha256": "260e1f67d9b0bff368e2b07402a6e661eb5cec46fe5dbf01898e96de27f382c0",
+  "prior_pilot_sha256": "8224fbe2b3ea6fc841c675953a943058ea21c00df2214a623a94af0a161363e6",
+  "resource_and_seed_guard_receipt_sha256": "29b7e7190646968db6271813e15b58ebdaf12bcd2169553c18e9f088cc255e40",
+  "resource_policy": [
+    "Resolve a unique cgroup-v2 membership and mount mapping from /proc/self/cgroup and mountinfo, including escaped mount paths.",
+    "Take the minimum of host MemAvailable and each finite visible current/ancestor remaining memory limit. A child max value never erases a parent cap.",
+    "Missing both memory interface files is accepted only at a visible hierarchy root whose mount-root field is slash; report host plus other observable limits and explicitly unknown invisible ancestors. A nonroot bind mount with missing files, partial pairs, invalid values, traversal or ambiguous mappings yields zero headroom.",
+    "Neither host-only observation nor cgroup remaining memory is asserted to be a future memory guarantee or physical-CPU support bound."
+  ],
+  "resource_portability_change": "Use a new explicit ci_mechanism module whose nonresource function and CLI ASTs equal the original frozen mechanism. Only resources is imported from the separately pinned ci_runtime module, rather than assuming current-cgroup memory files always exist at the mount root. Original registered source bytes are unchanged; no runtime monkey patch is used.",
+  "runtime_equivalence_receipt_sha256": "1bcb124a21dec6d8af52050cf7697e26d00c534ce78e48379cacf671bc9e91df",
+  "same_weights_reacquisition_exception": "On a clean GitHub Ubuntu runner, permit reacquisition of exactly the same three previously selected pretrained weight files, from their recorded official public URLs, with byte count and full SHA256 checked before any model load. This is a portability exception to the literal download prohibition, not authorization to add or choose another model.",
+  "schema": "hepta.closure.top1-v4-execution-portability-amendment.v2",
+  "source_ids_events_candidates_seeds_update_budget_or_adequacy_thresholds_modified": false,
+  "timing_scope": "The resource observer adds actual portable execution overhead, which remains in measured process costs. AST equivalence of numerical mechanisms does not imply equal CPU distribution across different hosts."
+}

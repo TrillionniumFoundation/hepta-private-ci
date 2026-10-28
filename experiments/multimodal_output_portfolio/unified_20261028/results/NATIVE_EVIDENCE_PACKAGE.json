@@ -1,0 +1,19 @@
+{
+  "schema": "hepta.ndu.native-evidence-package.v1",
+  "archive": "/dev/shm/hepta-ndu-unified-20261028/native-integration-evidence-v2.tar.gz",
+  "sha256": "4d26f070b7957d37548c54561c72854f20ba38c3a69704e45762c12d93b57c58",
+  "bytes": 594196,
+  "native_control_episodes": 48,
+  "native_failure_stress_episodes": 1,
+  "actual_kernel_executions": 1361,
+  "actual_generator_calls": 55,
+  "real_neural_media_bundles": 54,
+  "native_authority": "DENY_ALL",
+  "contains_original_binary": false,
+  "original_binary_from_verified_restoration": "ba5fc96e8139e652fd1d7ae0f9713b66ccd879b12e190e4dcc93bca43426143b",
+  "tail_regressions": {
+    "tests": 7,
+    "result": "passed",
+    "includes_near_zero_gamma_and_duplicate_source_cluster": true
+  }
+}

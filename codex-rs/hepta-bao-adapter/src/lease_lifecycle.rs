@@ -7,12 +7,21 @@
 use std::collections::BTreeMap;
 use std::fs::File;
 use std::io::Read;
-use std::io::Write;
-use std::path::Path;
 use std::path::PathBuf;
 
 use serde::Deserialize;
 use serde::Serialize;
+
+#[path = "lease_lifecycle_persistence.rs"]
+mod persistence;
+
+#[cfg(test)]
+use persistence::PersistFailure;
+use persistence::identifier;
+use persistence::persist;
+use persistence::restore_unknown_lease_state;
+use persistence::validate_lease;
+use persistence::validate_state;
 
 const SCHEMA_VERSION: u32 = 1;
 const MAX_RECORDS: usize = 65_536;
@@ -104,12 +113,16 @@ struct StoredRegistryV1 {
 pub struct DurableLeaseRegistryV1 {
     path: PathBuf,
     state: StoredRegistryV1,
+    poisoned: bool,
+    #[cfg(test)]
+    next_persist_failure: Option<PersistFailure>,
 }
 
 impl std::fmt::Debug for DurableLeaseRegistryV1 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("DurableLeaseRegistryV1")
             .field("path", &self.path)
+            .field("requires_reopen", &self.poisoned)
             .field("operation_count", &self.state.operations.len())
             .field("lease_count", &self.state.leases.len())
             .finish()
@@ -127,6 +140,8 @@ pub enum LeaseRegistryErrorV1 {
     ObservationMismatch,
     CorruptState,
     Unavailable,
+    /// Publication may have succeeded. This owner must be reopened before use.
+    IndeterminateDurability,
 }
 
 impl std::fmt::Display for LeaseRegistryErrorV1 {
@@ -159,15 +174,33 @@ impl DurableLeaseRegistryV1 {
                 leases: BTreeMap::new(),
             }
         };
-        Ok(Self { path, state })
+        Ok(Self {
+            path,
+            state,
+            poisoned: false,
+            #[cfg(test)]
+            next_persist_failure: None,
+        })
     }
 
-    pub fn lease(&self, lease_id: &str) -> Option<&SecretLeaseMetadataV1> {
-        self.state.leases.get(lease_id)
+    pub fn requires_reopen(&self) -> bool {
+        self.poisoned
     }
 
-    pub fn operation(&self, operation_id: &str) -> Option<&LeaseOperationV1> {
-        self.state.operations.get(operation_id)
+    pub fn lease(
+        &self,
+        lease_id: &str,
+    ) -> Result<Option<&SecretLeaseMetadataV1>, LeaseRegistryErrorV1> {
+        self.ensure_available()?;
+        Ok(self.state.leases.get(lease_id))
+    }
+
+    pub fn operation(
+        &self,
+        operation_id: &str,
+    ) -> Result<Option<&LeaseOperationV1>, LeaseRegistryErrorV1> {
+        self.ensure_available()?;
+        Ok(self.state.operations.get(operation_id))
     }
 
     pub fn prepare_issue(
@@ -204,6 +237,7 @@ impl DurableLeaseRegistryV1 {
         lease_id: String,
         semantic_sha256: [u8; 32],
     ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
+        self.ensure_available()?;
         let lease = self
             .state
             .leases
@@ -227,6 +261,7 @@ impl DurableLeaseRegistryV1 {
         &mut self,
         operation_id: &str,
     ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
+        self.ensure_available()?;
         let mut next = self.state.clone();
         let operation = next
             .operations
@@ -249,7 +284,7 @@ impl DurableLeaseRegistryV1 {
             };
         }
         self.commit(next)?;
-        self.operation(operation_id)
+        self.operation(operation_id)?
             .cloned()
             .ok_or(LeaseRegistryErrorV1::OperationNotFound)
     }
@@ -259,6 +294,7 @@ impl DurableLeaseRegistryV1 {
         operation_id: &str,
         observation: ProviderLeaseObservationV1,
     ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
+        self.ensure_available()?;
         let current = self
             .state
             .operations
@@ -350,12 +386,13 @@ impl DurableLeaseRegistryV1 {
             .ok_or(LeaseRegistryErrorV1::OperationNotFound)?
             .state = reconciled_state;
         self.commit(next)?;
-        self.operation(operation_id)
+        self.operation(operation_id)?
             .cloned()
             .ok_or(LeaseRegistryErrorV1::OperationNotFound)
     }
 
     pub fn expire_at(&mut self, now_unix_ms: u64) -> Result<usize, LeaseRegistryErrorV1> {
+        self.ensure_available()?;
         let mut next = self.state.clone();
         let mut changed = 0usize;
         for lease in next.leases.values_mut() {
@@ -378,6 +415,7 @@ impl DurableLeaseRegistryV1 {
         semantic_sha256: [u8; 32],
         lease_id: Option<String>,
     ) -> Result<LeaseOperationV1, LeaseRegistryErrorV1> {
+        self.ensure_available()?;
         if !identifier(&operation_id)
             || semantic_sha256 == [0; 32]
             || lease_id.as_deref().is_some_and(|value| !identifier(value))
@@ -410,6 +448,7 @@ impl DurableLeaseRegistryV1 {
     }
 
     fn require_active(&self, lease_id: &str) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_available()?;
         let lease = self
             .state
             .leases
@@ -422,106 +461,33 @@ impl DurableLeaseRegistryV1 {
     }
 
     fn commit(&mut self, next: StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> {
+        self.ensure_available()?;
         validate_state(&next)?;
-        persist(&self.path, &next)?;
+        if let Err(error) = persist(
+            &self.path,
+            &next,
+            #[cfg(test)]
+            self.next_persist_failure.take(),
+        ) {
+            self.poisoned = error == LeaseRegistryErrorV1::IndeterminateDurability;
+            return Err(error);
+        }
         self.state = next;
         Ok(())
     }
-}
 
-fn restore_unknown_lease_state(
-    state: &mut StoredRegistryV1,
-    operation: &LeaseOperationV1,
-) -> Result<(), LeaseRegistryErrorV1> {
-    let Some(lease_id) = operation.lease_id.as_ref() else {
-        return Ok(());
-    };
-    let lease = state
-        .leases
-        .get_mut(lease_id)
-        .ok_or(LeaseRegistryErrorV1::LeaseNotFound)?;
-    if matches!(
-        lease.state,
-        SecretLeaseStateV1::RenewUnknown | SecretLeaseStateV1::RevokeUnknown
-    ) {
-        lease.state = SecretLeaseStateV1::Active;
-    }
-    Ok(())
-}
-
-fn validate_state(state: &StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> {
-    if state.schema_version != SCHEMA_VERSION
-        || state.operations.len() > MAX_RECORDS
-        || state.leases.len() > MAX_RECORDS
-    {
-        return Err(LeaseRegistryErrorV1::CorruptState);
-    }
-    for (id, operation) in &state.operations {
-        if id != &operation.operation_id
-            || !identifier(id)
-            || operation.semantic_sha256 == [0; 32]
-            || operation
-                .lease_id
-                .as_deref()
-                .is_some_and(|value| !identifier(value))
-        {
-            return Err(LeaseRegistryErrorV1::CorruptState);
+    fn ensure_available(&self) -> Result<(), LeaseRegistryErrorV1> {
+        if self.poisoned {
+            return Err(LeaseRegistryErrorV1::IndeterminateDurability);
         }
+        Ok(())
     }
-    for (id, lease) in &state.leases {
-        if id != &lease.lease_id {
-            return Err(LeaseRegistryErrorV1::CorruptState);
-        }
-        validate_lease(lease).map_err(|_| LeaseRegistryErrorV1::CorruptState)?;
-    }
-    Ok(())
-}
-
-fn validate_lease(lease: &SecretLeaseMetadataV1) -> Result<(), LeaseRegistryErrorV1> {
-    if !identifier(&lease.lease_id)
-        || !identifier(&lease.secret_reference_id)
-        || !identifier(&lease.consumer_id)
-        || lease.scope_sha256 == [0; 32]
-        || lease.provider_metadata_sha256 == [0; 32]
-        || lease.generation == 0
-        || lease.expires_at_unix_ms <= lease.issued_at_unix_ms
-    {
-        return Err(LeaseRegistryErrorV1::InvalidInput);
-    }
-    let encoded = serde_json::to_vec(lease).map_err(|_| LeaseRegistryErrorV1::InvalidInput)?;
-    if encoded.len() > MAX_METADATA_BYTES {
-        return Err(LeaseRegistryErrorV1::InvalidInput);
-    }
-    Ok(())
-}
-
-fn persist(path: &Path, state: &StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> {
-    let parent = path.parent().ok_or(LeaseRegistryErrorV1::Unavailable)?;
-    std::fs::create_dir_all(parent).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    let bytes = serde_json::to_vec(state).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    let file_name = path
-        .file_name()
-        .and_then(|value| value.to_str())
-        .ok_or(LeaseRegistryErrorV1::Unavailable)?;
-    let next = parent.join(format!("{file_name}.next"));
-    let mut file = File::create(&next).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    file.write_all(&bytes)
-        .and_then(|()| file.sync_all())
-        .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    std::fs::rename(&next, path).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    File::open(parent)
-        .and_then(|directory| directory.sync_all())
-        .map_err(|_| LeaseRegistryErrorV1::Unavailable)
-}
-
-fn identifier(value: &str) -> bool {
-    !value.is_empty()
-        && value.len() <= 256
-        && value
-            .bytes()
-            .all(|b| b.is_ascii_alphanumeric() || b"_-.:/".contains(&b))
 }
 
 #[cfg(test)]
 #[path = "lease_lifecycle_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "lease_lifecycle_indeterminate_tests.rs"]
+mod indeterminate_tests;

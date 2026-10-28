@@ -7,7 +7,9 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
+from . import prep_inside
 from .commands import Commands
 from .contract import SCHEMA, TARGET, TOOLS, SYNAPSE_REF, SYNAPSE_ID, SYNAPSE_VERSION
 from .contract import (
@@ -15,6 +17,7 @@ from .contract import (
     PLATFORM,
     load_contract,
     reject_compiler_overrides,
+    validate_synapse_labels,
 )
 from .files import atomic_publish, checksum, copy_file, describe, inventory, relative
 from .files import stage_directory, verify, write_bytes, write_json
@@ -144,6 +147,109 @@ class FileBoundaries(unittest.TestCase):
             (self.root / "logs/000-failure.stderr").read_bytes(), b"reason\n"
         )
         self.assertGreaterEqual(record["child_cpu_seconds"], 0)
+
+    def tool_probe_environment_child(self):
+        # A real controlled child checks the subprocess environment boundary.
+        # This is not Rustup and never produces a native tool qualification.
+        child = self.root / "environment-child"
+        script = """import json
+import os
+import sys
+if os.environ.get("CARGO_HOME") != "/usr/local/cargo":
+    sys.stderr.write("error: failed to determine cargo home: could not find cargo home dir\\n")
+    sys.exit(1)
+print(json.dumps({"arguments": sys.argv[1:], "cwd": os.getcwd(), "environment": dict(os.environ)}))
+"""
+        write_bytes(
+            child, ("#!" + str(Path(sys.executable).resolve()) + "\n" + script).encode()
+        )
+        child.chmod(0o700)
+        return child
+
+    def test_tool_probe_passes_image_cargo_home_without_host_environment(self):
+        child = self.tool_probe_environment_child()
+        output = self.root / "probe"
+
+        class LookupCompleted(Exception):
+            pass
+
+        class StopAfterLookup(Commands):
+            def text(self, tool, args, *, label):
+                super().text(tool, args, label=label)
+                raise LookupCompleted
+
+        with (
+            mock.patch.object(prep_inside.platform, "system", return_value="Linux"),
+            mock.patch.object(prep_inside.platform, "machine", return_value="aarch64"),
+            mock.patch.object(prep_inside, "TOOLS", {"cargo"}),
+            mock.patch.object(prep_inside.shutil, "which", return_value=str(child)),
+            mock.patch.object(prep_inside, "Commands", StopAfterLookup),
+            mock.patch.dict(
+                os.environ,
+                {
+                    "CARGO_HOME": "/host/unmounted-cargo",
+                    "HOME": "/host/unmounted-home",
+                    "HEPTA_CI_HOST_MARKER": "must-not-be-inherited",
+                },
+            ),
+            self.assertRaises(LookupCompleted),
+        ):
+            prep_inside.probe_tools(output)
+        directory = output / "bootstrap-tool-commands"
+        record = json.loads((directory / "000-END.json").read_text())
+        actual = json.loads((directory / "000-actual-cargo.stdout").read_text())
+        self.assertEqual(actual["arguments"], ["which", "cargo"])
+        self.assertEqual(actual["cwd"], "/")
+        self.assertEqual(actual["environment"], record["environment"])
+        self.assertEqual(actual["environment"]["CARGO_HOME"], "/usr/local/cargo")
+        self.assertEqual(actual["environment"]["RUSTUP_HOME"], "/usr/local/rustup")
+        self.assertFalse(
+            {"HOME", "HEPTA_CI_HOST_MARKER"} & actual["environment"].keys()
+        )
+        self.assertEqual(record["exit_code"], 0)
+        self.assertTrue(record["executable_unchanged"])
+        self.assertEqual((directory / "000-actual-cargo.stderr").read_bytes(), b"")
+        self.assertFalse((output / "TOOL_PROBE.json").exists())
+
+    def test_missing_cargo_home_retains_observed_failure_bytes(self):
+        child = self.tool_probe_environment_child()
+        directory = self.root / "failed-probe"
+        commands = Commands(
+            directory,
+            {"rustup": {"path": str(child), **describe(child)}},
+            {"RUSTUP_HOME": "/usr/local/rustup"},
+            Path("/"),
+        )
+        with self.assertRaisesRegex(RuntimeError, "actual-cargo failed with exit 1"):
+            commands.text("rustup", ["which", "cargo"], label="actual-cargo")
+        record = json.loads((directory / "000-END.json").read_text())
+        stderr = directory / "000-actual-cargo.stderr"
+        self.assertEqual(
+            stderr.read_bytes(),
+            b"error: failed to determine cargo home: could not find cargo home dir\n",
+        )
+        self.assertEqual(record["stderr"], {"path": stderr.name, **describe(stderr)})
+        self.assertEqual(record["exit_code"], 1)
+        self.assertTrue(record["executable_unchanged"])
+        self.assertEqual((directory / "000-actual-cargo.stdout").read_bytes(), b"")
+
+    def test_pinned_synapse_publisher_labels_and_mutations(self):
+        # Exact labels observed in the failed native-arm64 preflight artifact.
+        labels = {
+            "org.opencontainers.image.version": "1.159.0",
+            "gitsha1": "7b10e6b9bc2dacc33f0974c999f640b55ef831bc",
+        }
+        expected = example_contract()["synapse"]
+        validate_synapse_labels(labels, expected)
+        for changed in (
+            {**labels, "gitsha1": "0" * 40},
+            {**labels, "org.opencontainers.image.version": "1.158.0"},
+            {"org.opencontainers.image.version": "1.159.0"},
+            {**labels, "org.opencontainers.image.revision": "0" * 40},
+            None,
+        ):
+            with self.subTest(labels=changed), self.assertRaises(ValueError):
+                validate_synapse_labels(changed, expected)
 
     def test_contract_digest_and_platform_rejected_before_execution(self):
         contract = example_contract()

@@ -1,0 +1,53 @@
+{
+  "schema": "hepta.synapse.dependency-link-fix-review.v1",
+  "baseline_head": "792beb14600f9b49b04ed18f9061e11d0e163759",
+  "native_failure_evidence": "../synapse_arm64_792_prefetch/RESULT.json",
+  "source_scope": [
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/dependencies.py",
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/test_dependencies.py",
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/inputs.py",
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/prep_inside.py",
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/orchestrate.py",
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/build.py"
+  ],
+  "explicit_new_contract": "hepta.synapse.linux.seed.v2",
+  "general_evidence_inventory_unchanged": {
+    "path": "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/files.py",
+    "sha256": "3226c9d7981fbaac7722e378e6290b231b678a39cb6172678f7af695aea3bf50"
+  },
+  "independent_review": {
+    "reviewer": "asset_natural",
+    "initial_source_sha256": "cb4070eee7c4ae72da36b218407bc3157e38a761ab3ee16f3ff78d6aefc549a2",
+    "finding": "PurePosixPath.parts normalized file/. to file and could certify an unreadable link.",
+    "resolution": "Walk original slash-separated components, requiring each intermediate component to be a physical directory. Real ENOTDIR fixture rejects file/.; .././LICENSE still copies and reads exactly.",
+    "general_scope_findings": "No other obvious defect observed in directory-link, root-escape, files-first-copy, or unchanged ordinary inventory boundaries."
+  },
+  "verification": {
+    "initial_suite_before_peer_fix": {
+      "tests": 30,
+      "passed": 30,
+      "seconds": 13.473
+    },
+    "final_actual_boundary_suite": {
+      "tests": 21,
+      "passed": 21,
+      "seconds": 0.321,
+      "log": "STDLIB_TESTS.log",
+      "scope": "10 dependency-link cases and 11 general evidence/process boundary cases"
+    },
+    "all_six_source_syntax_compiles": true,
+    "producer_host_and_offline_builder_schema_imports_consistent": true,
+    "codespell": {
+      "tool": "/tmp/hepta-codespell-policy-venv/bin/codespell",
+      "version": "2.4.3",
+      "exit_code": 0
+    },
+    "scoped_diff_check_exit_code": 0,
+    "native_synapse_rerun_completed": false
+  },
+  "limits": [
+    "This fixes the observed post-fetch custody rejection; it does not establish a successful native cold build, Synapse runtime, or qualification.",
+    "No source.py/test_restore.py, generic files.py, dependency pins, main lock, candidate source authority, same-run provenance, or qualification gate was changed.",
+    "The failed v1 attempt and its exact stderr remain preserved."
+  ]
+}

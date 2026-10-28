@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/home/runner/work/_temp/ndu-native-synapse-worktrees/preparation/codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse-linux.py", line 348, in <module>
+    main()
+  File "/home/runner/work/_temp/ndu-native-synapse-worktrees/preparation/codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse-linux.py", line 322, in main
+    fetch_seed(args.plan, args.plan_sha256)
+  File "/home/runner/work/_temp/ndu-native-synapse-worktrees/preparation/codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/prep_inside.py", line 160, in fetch_seed
+    files = dependency_inventory(work / "cargo-home")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/_temp/ndu-native-synapse-worktrees/preparation/codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/inputs.py", line 97, in dependency_inventory
+    entries = inventory(seed)
+              ^^^^^^^^^^^^^^^
+  File "/home/runner/work/_temp/ndu-native-synapse-worktrees/preparation/codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/files.py", line 91, in inventory
+    raise ValueError(f"Symlink in evidence tree: {path}")
+ValueError: Symlink in evidence tree: /hepta-prefetch/cargo-home/git/checkouts/nucleo-425d994cd74b3654/4253de9/matcher/LICENSE

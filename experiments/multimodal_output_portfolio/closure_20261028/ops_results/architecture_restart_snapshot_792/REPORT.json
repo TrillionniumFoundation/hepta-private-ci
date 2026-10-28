@@ -1,0 +1,172 @@
+{
+  "base_merge_claim": "The identical-tree base-merge lane skipped native execution and required source-head success; the required architecture aggregator failed. Its green job is not a separate native pass.",
+  "base_merge_evidence": "remote-lanes.json",
+  "changes": [
+    {
+      "before_bytes": 10556,
+      "before_sha256": "15b844e772c435798fbcd95213156bef04cba6c5d1121a223aea4dd432d666a9",
+      "bytes": 10863,
+      "path": "codex-rs/hepta-supervisor/src/model.rs",
+      "sha256": "eb13df1f452a1a335d9f65536429dd5a4847099f26e14ec0401b4b516900be99"
+    },
+    {
+      "before_bytes": 11528,
+      "before_sha256": "fde0ee26cf35d971d6277a317d2801a9054f218e4ad15f312bd46fa278912e26",
+      "bytes": 11540,
+      "path": "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+      "sha256": "ba288e3e4e8125b981308125c2cd68f0619988b115574d3d8f5c981113fa7870"
+    }
+  ],
+  "created_at_unix": 1793187092.4515877,
+  "diagnosis": "The supervisor module_runtime command compiles the external restart_budget_recovery integration target, which illegally accessed two pub(crate) snapshot fields at six sites. E0616 occurs before any selected supervisor test passes. This is not evidence of a failing migration rollback runtime assertion.",
+  "evidence_files": [
+    {
+      "bytes": 6419,
+      "path": "finalize_evidence.py",
+      "sha256": "60c4f366edf0768342e6568df10d8bddc295f4cc37aa46225722a0cbc1137b7c"
+    },
+    {
+      "bytes": 656,
+      "path": "just-fmt-check-initial-failure.log",
+      "sha256": "956c1f495e77df39bfb2889e628156b1087304a5f52d3d0e85e678ea18e43e88"
+    },
+    {
+      "bytes": 0,
+      "path": "just-fmt-check.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 499,
+      "path": "just-test.log",
+      "sha256": "e81097acc8643f3069b3041813e61895acdcbe6f7ba1de0f55ff96dc4502c670"
+    },
+    {
+      "bytes": 12240,
+      "path": "remote-lanes.json",
+      "sha256": "4654372ecdc517955531df5531f877d59bc6f09d14928463558d1ca565d68cff"
+    },
+    {
+      "bytes": 2150,
+      "path": "repair.patch",
+      "sha256": "0d51167b3008c56970c42a00c13d047889f7ca2e9e70d4633d79e96b1e064616"
+    },
+    {
+      "bytes": 1061,
+      "path": "scoped-format.json",
+      "sha256": "47579511cd42dfad26b1e6e988020fedbf0566d4bc7425c56e5b58130ff9c81e"
+    }
+  ],
+  "retained_decoded_source_log": {
+    "bytes": 331403,
+    "path": "/workspace/scratch/627fa3bea56c/architecture792-source-head-job122778615741.log",
+    "scope": "Locally retained decoded job log; not asserted to be the original GitHub ZIP/member byte stream.",
+    "sha256": "175cb19e6571980f8c90f63de92723d9bd61f20070e9a81dae7943eaede6b8fe"
+  },
+  "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677089531",
+  "schema": "architecture-restart-snapshot-repair/v1",
+  "source_command_receipt": {
+    "after": {
+      "commit": "792beb14600f9b49b04ed18f9061e11d0e163759",
+      "dirty": false,
+      "parents": [
+        "edf37c4524fe2fc8adab78ec38f7b6735be5be8f"
+      ],
+      "tree": "1fc4042c047ae66720ad4c56adeb23a9bc9e679b"
+    },
+    "base_sha": "d3c2d760eca5065fc966820379c35c6e8d56e855",
+    "before": {
+      "commit": "792beb14600f9b49b04ed18f9061e11d0e163759",
+      "dirty": false,
+      "parents": [
+        "edf37c4524fe2fc8adab78ec38f7b6735be5be8f"
+      ],
+      "tree": "1fc4042c047ae66720ad4c56adeb23a9bc9e679b"
+    },
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--manifest-path",
+      "codex-rs/Cargo.toml",
+      "-p",
+      "codex-hepta-supervisor",
+      "module_runtime"
+    ],
+    "command_exit_code": 101,
+    "elapsed_seconds": 81.712648952,
+    "error": "required tests were not observed passing",
+    "exit_code": 101,
+    "finished_at": "2026-10-28T11:12:39.632182+00:00",
+    "job": "qualification",
+    "lane": "source-head",
+    "log_bytes": 9313,
+    "log_file": "runtime-module-supervisor.json.add633839aae441b808e2038f34cff6d.log",
+    "log_sha256": "6fb66feaef79595ae43069cef75b6253abe6dd06023358b2fc6c1c986c9c4b23",
+    "minimum_tests": 1,
+    "observed_failed_tests": 0,
+    "observed_passed_tests": 0,
+    "output_limit_exceeded": false,
+    "returncode": 101,
+    "run_attempt": "1",
+    "run_id": "40677089531",
+    "schema_version": 1,
+    "source_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+    "started_at": "2026-10-28T11:11:17.918018+00:00",
+    "status": "failed",
+    "tested_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+    "timed_out": false,
+    "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+  },
+  "source_job_id": 122778615741,
+  "source_sha": "792beb14600f9b49b04ed18f9061e11d0e163759",
+  "source_tree": "1fc4042c047ae66720ad4c56adeb23a9bc9e679b",
+  "validation": {
+    "codespell_existing_repository_config": {
+      "exit_code": 0
+    },
+    "diff_check": {
+      "exit_code": 0
+    },
+    "field_visibility_unchanged": true,
+    "just_fmt_check": {
+      "exit_code": 0,
+      "log": "just-fmt-check.log"
+    },
+    "just_test": {
+      "blocker": "Sparse local checkout lacks codex-rs/aws-auth/Cargo.toml",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-supervisor",
+        "--test",
+        "restart_budget_recovery"
+      ],
+      "exit_code": 101,
+      "log": "just-test.log",
+      "native_test_execution_passed": false,
+      "phase": "Workspace manifest loading before compilation",
+      "rust_version": "1.96.0"
+    },
+    "natural005_manifest_sha256": "6a9b5206ed48948e08e3e4902b5db6184b065c5bcc3318a2150df43ba1412f41",
+    "natural005_unchanged_files_verified": 76,
+    "original_model_except_getters_exactly_preserved": true,
+    "original_test_except_six_calls_exactly_preserved": true,
+    "required_followup": "Run actual supervisor integration and module_runtime tests in the complete native CI checkout; no test pass is inferred from formatting.",
+    "scope": "Two public read-only snapshot accessors and six integration-test call sites; all original assertion operands and expected tuples retained.",
+    "scoped_format": {
+      "details": "scoped-format.json",
+      "exit_codes": [
+        0,
+        0
+      ],
+      "files": [
+        "codex-rs/hepta-supervisor/src/model.rs",
+        "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs"
+      ],
+      "rustfmt_version": "1.96.0"
+    },
+    "tests_rerun_after_final_format": false
+  }
+}

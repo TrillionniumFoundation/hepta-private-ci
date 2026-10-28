@@ -9,7 +9,8 @@ import time
 from .commands import Commands
 from .contract import TARGET, TEST_BINARY_ID, load_contract
 from .files import copy_file, describe, read_json, verify, write_json
-from .inputs import build_environment, copy_seed, dependency_inventory, elf_closure
+from .dependencies import SEED_SCHEMA, copy_seed, dependency_inventory
+from .inputs import build_environment, elf_closure
 from .inputs import observe_inputs, sealed_path_environment, source_clean
 
 
@@ -88,6 +89,8 @@ def build_inside(plan_path, plan_sha):
         seed = read_json(
             Path(plan["seed_ledger"]["path"]), plan["seed_ledger"]["sha256"]
         )
+        if seed.get("schema") != SEED_SCHEMA:
+            raise ValueError("Unsupported offline dependency seed schema")
         copy_seed(Path("/hepta-seed"), work / "cargo-home", seed["files"])
         profile = ["--locked", "--offline", "--target", TARGET]
         target = work / "cold-test"

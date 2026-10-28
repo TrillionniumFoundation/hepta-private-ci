@@ -29,6 +29,7 @@ use core_test_support::PathBufExt;
 use core_test_support::assert_regex_match;
 use core_test_support::context_snapshot;
 use core_test_support::context_snapshot::ContextSnapshotOptions;
+use core_test_support::first_party::FirstPartyMockServer;
 use core_test_support::hooks::trust_discovered_hooks;
 use core_test_support::responses::ResponsesRequest;
 use core_test_support::responses::ev_assistant_message;
@@ -239,7 +240,7 @@ async fn token_budget_context_is_only_emitted_with_full_context() -> Result<()> 
 async fn token_budget_guidance_precedes_standalone_context_window() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = start_mock_server().await;
+    let server = FirstPartyMockServer::start().await?;
     let response = mount_sse_sequence(
         &server,
         vec![sse(vec![
@@ -249,7 +250,8 @@ async fn token_budget_guidance_precedes_standalone_context_window() -> Result<()
     )
     .await;
     let guidance_message = "Preserve important state before compaction.";
-    let test = test_codex()
+    let test = server
+        .test_codex()
         .with_config(move |config| {
             config.model_context_window = Some(CONFIGURED_CONTEXT_WINDOW);
             config.token_budget = Some(TokenBudgetConfig {

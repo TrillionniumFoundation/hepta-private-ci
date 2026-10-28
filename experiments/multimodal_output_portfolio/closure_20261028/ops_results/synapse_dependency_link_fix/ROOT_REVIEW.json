@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.synapse.link-inventory-independent-review.v1",
+  "manifest_sha256": "4d50370e17558e3dd32080b01329abface2417200eb96de86fc63128e7c586f1",
+  "reviewed_all_six_sources_and_tests": true,
+  "observations": [
+    "Only offline Cargo dependencies use link-aware version2 records.",
+    "Host, producer and offline consumer import the same schema and inventory.",
+    "Link targets preserve exact text, resolve to regular in-root registry/git files, and reject directory links, cycles, dangling links, escapes and special files.",
+    "Regular files are copied before links; source and destination complete inventories are checked after copy.",
+    "General evidence inventory remains unchanged and refuses symlinks.",
+    "Recorded tests cover real ENOTDIR for file/dot and legal relative dot components."
+  ],
+  "scope_limitations": [
+    "No native Synapse rerun yet.",
+    "This is custody of sealed inputs, not a proof against arbitrary concurrent hostile filesystem replacement."
+  ],
+  "no_obvious_source_blocker": true
+}

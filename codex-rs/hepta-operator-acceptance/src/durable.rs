@@ -200,7 +200,7 @@ pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), Accepta
     if parent_after.file_type().is_symlink() || !same_file_identity(&parent_before, &parent_after) {
         return Err(invalid("sidecar parent changed during durable write"));
     }
-    File::open(parent)?.sync_all()?;
+    sync_directory(parent)?;
     Ok(())
 }
 
@@ -238,7 +238,26 @@ pub(crate) fn write_private_atomic_replace(
     if persisted != bytes {
         return Err(invalid("atomic sidecar artifact differs after persistence"));
     }
-    File::open(parent)?.sync_all()?;
+    sync_directory(parent)?;
+    Ok(())
+}
+
+fn sync_directory(path: &Path) -> Result<(), AcceptanceError> {
+    #[cfg(windows)]
+    let directory = {
+        use std::os::windows::fs::OpenOptionsExt;
+
+        // FlushFileBuffers needs write access; opening a directory also needs
+        // FILE_FLAG_BACKUP_SEMANTICS. Preserve failures from either operation.
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(0x0200_0000)
+            .open(path)?
+    };
+    #[cfg(not(windows))]
+    let directory = File::open(path)?;
+    directory.sync_all()?;
     Ok(())
 }
 
@@ -425,3 +444,7 @@ fn sort_value(value: &mut Value) {
 fn invalid(message: impl Into<String>) -> AcceptanceError {
     AcceptanceError::Invalid(message.into())
 }
+
+#[cfg(test)]
+#[path = "durable_sync_tests.rs"]
+mod tests;

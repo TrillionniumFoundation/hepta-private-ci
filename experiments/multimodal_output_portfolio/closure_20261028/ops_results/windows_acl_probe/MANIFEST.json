@@ -1,0 +1,97 @@
+{
+  "schema": "hepta.windows-acl-probe.publish.v1",
+  "baseline_head": "1bdc0098164540c78e4a42fff70238e1632f958f",
+  "source_files": [
+    {
+      "path": ".github/workflows/ndu-windows-storage-probe.yml",
+      "mode": "100644",
+      "bytes": 3520,
+      "sha256": "8c5c3f8f68cbebb3e423524cd9febcd4bb471bc1cd0fe2352a907783e1f099da"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe.py",
+      "mode": "100644",
+      "bytes": 14328,
+      "sha256": "c616d6b9456b72f19f5a718d6d2fef281ca57c6c8fb08f540544be782cdfbc96"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe.rs",
+      "mode": "100644",
+      "bytes": 8119,
+      "sha256": "b8bbc9d7a69f6f00941c03ec28152e4ac90c81e9ea8f0775c9f34dc8a7b2fa3c"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe_support.rs",
+      "mode": "100644",
+      "bytes": 11654,
+      "sha256": "7bfb9f1d113668715f2a36ad22bd0bf42e3a4f0661bd1db7bc5530571e5e9a33"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe_tests.py",
+      "mode": "100644",
+      "bytes": 5454,
+      "sha256": "a2574fc596ec5a4ba174b2a21f773475c15da0a14dd5a8aa720c1e14bd6b136d"
+    }
+  ],
+  "production_and_config_inputs": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+      "sha256": "3fe5daee06868755f298a415864e4087984f95b1d20325a86687638bba4cd8ac",
+      "bytes": 18359
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+      "sha256": "58976c6d1594c116dfd108316bb748b5cf2e9f108785605eaa93c96b77145b83",
+      "bytes": 27953
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/winutil.rs",
+      "sha256": "12e2413a588b62ff3cc91c70c626a20801f4f84c0f4ea858ca7eb41e83a92185",
+      "bytes": 8038
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "sha256": "c335e0649d5d516cadd52d68c1a15ed5c136814d11553ef5c791ea7e5058a478",
+      "bytes": 420227
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "sha256": "6b9741f85cd8bd3b5fab5ac163c69a18ea9dde05c967ae5cb85d8af400b7590e",
+      "bytes": 22366
+    },
+    {
+      "path": "codex-rs/rust-toolchain.toml",
+      "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+      "bytes": 78
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/Cargo.toml",
+      "sha256": "dce261976c1eb7b943da155c6663241b3631e21ff8221df268ff1d104cba33fe",
+      "bytes": 2483
+    },
+    {
+      "path": ".github/workflows/ndu-windows-storage-probe.yml",
+      "sha256": "8c5c3f8f68cbebb3e423524cd9febcd4bb471bc1cd0fe2352a907783e1f099da",
+      "bytes": 3520
+    }
+  ],
+  "evidence": [
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_acl_probe/VALIDATION.json",
+      "bytes": 1186,
+      "sha256": "acefb152f52f220092ca3a4e1169372987d77f98ca415b35df0effdad830d69d"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_acl_probe/REVIEW.md",
+      "bytes": 3339,
+      "sha256": "0f77d0c8e215fde0864c8a84d41d1a9a0400d135bba593bcdd192941c58a13cc"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_acl_probe/PEER_REVIEW.json",
+      "bytes": 2422,
+      "sha256": "a896315b546867f0dbc638b2ad9905734ac9fc29a0f911ca586f7176c505ebf7"
+    }
+  ],
+  "scope": "isolated Windows diagnostic; no production permission change; original failures open",
+  "native_validation": "pending actual Windows job"
+}

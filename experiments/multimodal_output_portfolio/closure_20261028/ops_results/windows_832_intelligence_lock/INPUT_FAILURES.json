@@ -1,0 +1,353 @@
+{
+  "source_path": "/dev/shm/hepta-ndu-unified-20261028/ci-832-readback/root-selected-122730593546.json",
+  "source_sha256": "69418303dc57ac1820f3d48e602e823d4e4764f83bdbc364fa63d0e707be0be0",
+  "workflow_run": 40661665726,
+  "job_id": 122730593546,
+  "scope": "Four exact bounded intelligence failure excerpts selected from the parent supplied JSON; neither source nor this selection is the complete job log.",
+  "excerpts": [
+    {
+      "line": 3702,
+      "lines": [
+        {
+          "line": 3700,
+          "text": "2026-10-28T09:49:12.3903356Z ---- evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port stdout ----\r"
+        },
+        {
+          "line": 3701,
+          "text": "2026-10-28T09:49:12.3904474Z \r"
+        },
+        {
+          "line": 3702,
+          "text": "2026-10-28T09:49:12.3905645Z thread 'evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port' (5080) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:261:38:\r"
+        },
+        {
+          "line": 3703,
+          "text": "2026-10-28T09:49:12.3907960Z called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r"
+        },
+        {
+          "line": 3704,
+          "text": "2026-10-28T09:49:12.3909771Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\r"
+        },
+        {
+          "line": 3705,
+          "text": "2026-10-28T09:49:12.3910515Z \r"
+        },
+        {
+          "line": 3706,
+          "text": "2026-10-28T09:49:12.3911295Z ---- evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes stdout ----\r"
+        },
+        {
+          "line": 3707,
+          "text": "2026-10-28T09:49:12.3912864Z \r"
+        },
+        {
+          "line": 3708,
+          "text": "2026-10-28T09:49:12.3914115Z thread 'evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes' (1372) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:171:42:\r"
+        },
+        {
+          "line": 3709,
+          "text": "2026-10-28T09:49:12.3916618Z called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r"
+        },
+        {
+          "line": 3710,
+          "text": "2026-10-28T09:49:12.3917968Z \r"
+        },
+        {
+          "line": 3711,
+          "text": "2026-10-28T09:49:12.3918797Z ---- evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded stdout ----\r"
+        },
+        {
+          "line": 3712,
+          "text": "2026-10-28T09:49:12.3919863Z \r"
+        },
+        {
+          "line": 3713,
+          "text": "2026-10-28T09:49:12.3921105Z thread 'evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded' (6908) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:366:34:\r"
+        },
+        {
+          "line": 3714,
+          "text": "2026-10-28T09:49:12.3924191Z called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r"
+        },
+        {
+          "line": 3715,
+          "text": "2026-10-28T09:49:12.3925559Z \r"
+        },
+        {
+          "line": 3716,
+          "text": "2026-10-28T09:49:12.3926299Z ---- evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch stdout ----\r"
+        },
+        {
+          "line": 3717,
+          "text": "2026-10-28T09:49:12.3927267Z \r"
+        },
+        {
+          "line": 3718,
+          "text": "2026-10-28T09:49:12.3928446Z thread 'evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch' (1252) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:283:34:\r"
+        },
+        {
+          "line": 3719,
+          "text": "2026-10-28T09:49:12.3931221Z called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r"
+        }
+      ],
+      "scope": "Long lines above 1499 characters omitted explicitly."
+    },
+    {
+      "line": 3708,
+      "lines": [
+        {
+          "line": 3706,
+          "text": "2026-10-28T09:49:12.3911295Z ---- evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes stdout ----\r"
+        },
+        {
+          "line": 3707,
+          "text": "2026-10-28T09:49:12.3912864Z \r"
+        },
+        {
+          "line": 3708,
+          "text": "2026-10-28T09:49:12.3914115Z thread 'evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes' (1372) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:171:42:\r"
+        },
+        {
+          "line": 3709,
+          "text": "2026-10-28T09:49:12.3916618Z called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r"
+        },
+        {
+          "line": 3710,
+          "text": "2026-10-28T09:49:12.3917968Z \r"
+        },
+        {
+          "line": 3711,
+          "text": "2026-10-28T09:49:12.3918797Z ---- evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded stdout ----\r"
+        },
+        {
+          "line": 3712,
+          "text": "2026-10-28T09:49:12.3919863Z \r"
+        },
+        {
+          "line": 3713,
+          "text": "2026-10-28T09:49:12.3921105Z thread 'evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded' (6908) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:366:34:\r"
+        },
+        {
+          "line": 3714,
+          "text": "2026-10-28T09:49:12.3924191Z called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r"
+        },
+        {
+          "line": 3715,
+          "text": "2026-10-28T09:49:12.3925559Z \r"
+        },
+        {
+          "line": 3716,
+          "text": "2026-10-28T09:49:12.3926299Z ---- evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch stdout ----\r"
+        },
+        {
+          "line": 3717,
+          "text": "2026-10-28T09:49:12.3927267Z \r"
+        },
+        {
+          "line": 3718,
+          "text": "2026-10-28T09:49:12.3928446Z thread 'evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch' (1252) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:283:34:\r"
+        },
+        {
+          "line": 3719,
+          "text": "2026-10-28T09:49:12.3931221Z called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r"
+        },
+        {
+          "line": 3720,
+          "text": "2026-10-28T09:49:12.3932922Z \r"
+        },
+        {
+          "line": 3721,
+          "text": "2026-10-28T09:49:12.3933017Z \r"
+        },
+        {
+          "line": 3722,
+          "text": "2026-10-28T09:49:12.3933314Z failures:\r"
+        },
+        {
+          "line": 3723,
+          "text": "2026-10-28T09:49:12.3934327Z     evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes\r"
+        },
+        {
+          "line": 3724,
+          "text": "2026-10-28T09:49:12.3935879Z     evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port\r"
+        },
+        {
+          "line": 3725,
+          "text": "2026-10-28T09:49:12.3937353Z     evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded\r"
+        }
+      ],
+      "scope": "Long lines above 1499 characters omitted explicitly."
+    },
+    {
+      "line": 3713,
+      "lines": [
+        {
+          "line": 3711,
+          "text": "2026-10-28T09:49:12.3918797Z ---- evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded stdout ----\r"
+        },
+        {
+          "line": 3712,
+          "text": "2026-10-28T09:49:12.3919863Z \r"
+        },
+        {
+          "line": 3713,
+          "text": "2026-10-28T09:49:12.3921105Z thread 'evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded' (6908) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:366:34:\r"
+        },
+        {
+          "line": 3714,
+          "text": "2026-10-28T09:49:12.3924191Z called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r"
+        },
+        {
+          "line": 3715,
+          "text": "2026-10-28T09:49:12.3925559Z \r"
+        },
+        {
+          "line": 3716,
+          "text": "2026-10-28T09:49:12.3926299Z ---- evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch stdout ----\r"
+        },
+        {
+          "line": 3717,
+          "text": "2026-10-28T09:49:12.3927267Z \r"
+        },
+        {
+          "line": 3718,
+          "text": "2026-10-28T09:49:12.3928446Z thread 'evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch' (1252) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:283:34:\r"
+        },
+        {
+          "line": 3719,
+          "text": "2026-10-28T09:49:12.3931221Z called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r"
+        },
+        {
+          "line": 3720,
+          "text": "2026-10-28T09:49:12.3932922Z \r"
+        },
+        {
+          "line": 3721,
+          "text": "2026-10-28T09:49:12.3933017Z \r"
+        },
+        {
+          "line": 3722,
+          "text": "2026-10-28T09:49:12.3933314Z failures:\r"
+        },
+        {
+          "line": 3723,
+          "text": "2026-10-28T09:49:12.3934327Z     evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes\r"
+        },
+        {
+          "line": 3724,
+          "text": "2026-10-28T09:49:12.3935879Z     evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port\r"
+        },
+        {
+          "line": 3725,
+          "text": "2026-10-28T09:49:12.3937353Z     evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded\r"
+        },
+        {
+          "line": 3726,
+          "text": "2026-10-28T09:49:12.3938783Z     evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch\r"
+        },
+        {
+          "line": 3727,
+          "text": "2026-10-28T09:49:12.3939573Z \r"
+        },
+        {
+          "line": 3728,
+          "text": "2026-10-28T09:49:12.3940221Z test result: FAILED. 68 passed; 4 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.38s\r"
+        },
+        {
+          "line": 3729,
+          "text": "2026-10-28T09:49:12.3941060Z \r"
+        },
+        {
+          "line": 3730,
+          "text": "2026-10-28T09:49:12.3941446Z ================================================================================\r"
+        }
+      ],
+      "scope": "Long lines above 1499 characters omitted explicitly."
+    },
+    {
+      "line": 3718,
+      "lines": [
+        {
+          "line": 3716,
+          "text": "2026-10-28T09:49:12.3926299Z ---- evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch stdout ----\r"
+        },
+        {
+          "line": 3717,
+          "text": "2026-10-28T09:49:12.3927267Z \r"
+        },
+        {
+          "line": 3718,
+          "text": "2026-10-28T09:49:12.3928446Z thread 'evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch' (1252) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:283:34:\r"
+        },
+        {
+          "line": 3719,
+          "text": "2026-10-28T09:49:12.3931221Z called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r"
+        },
+        {
+          "line": 3720,
+          "text": "2026-10-28T09:49:12.3932922Z \r"
+        },
+        {
+          "line": 3721,
+          "text": "2026-10-28T09:49:12.3933017Z \r"
+        },
+        {
+          "line": 3722,
+          "text": "2026-10-28T09:49:12.3933314Z failures:\r"
+        },
+        {
+          "line": 3723,
+          "text": "2026-10-28T09:49:12.3934327Z     evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes\r"
+        },
+        {
+          "line": 3724,
+          "text": "2026-10-28T09:49:12.3935879Z     evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port\r"
+        },
+        {
+          "line": 3725,
+          "text": "2026-10-28T09:49:12.3937353Z     evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded\r"
+        },
+        {
+          "line": 3726,
+          "text": "2026-10-28T09:49:12.3938783Z     evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch\r"
+        },
+        {
+          "line": 3727,
+          "text": "2026-10-28T09:49:12.3939573Z \r"
+        },
+        {
+          "line": 3728,
+          "text": "2026-10-28T09:49:12.3940221Z test result: FAILED. 68 passed; 4 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.38s\r"
+        },
+        {
+          "line": 3729,
+          "text": "2026-10-28T09:49:12.3941060Z \r"
+        },
+        {
+          "line": 3730,
+          "text": "2026-10-28T09:49:12.3941446Z ================================================================================\r"
+        },
+        {
+          "line": 3731,
+          "text": "2026-10-28T09:49:13.4713850Z [3,395 / 3,697] 27 / 146 tests, 1 failed; Compiling Rust rlib //codex-rs/network-proxy:network-proxy (38 files); 14s local ... (3 actions running)\r"
+        },
+        {
+          "line": 3732,
+          "text": "2026-10-28T09:49:14.5062481Z [3,396 / 3,697] 27 / 146 tests, 1 failed; Compiling Rust rlib //codex-rs/network-proxy:network-proxy (38 files); 15s local ... (2 actions running)\r"
+        },
+        {
+          "line": 3733,
+          "text": "2026-10-28T09:49:15.5809331Z [3,397 / 3,697] 27 / 146 tests, 1 failed; Compiling Rust rlib //codex-rs/network-proxy:network-proxy (38 files); 16s local ... (2 actions running)\r"
+        },
+        {
+          "line": 3734,
+          "text": "2026-10-28T09:49:20.0874053Z [3,398 / 3,697] 27 / 146 tests, 1 failed; Compiling Rust rlib @@rules_rs++crate+crates__gix-0.81.0//:gix v0.81.0 (176 files); 5s local ... (2 actions, 1 running)\r"
+        },
+        {
+          "line": 3735,
+          "text": "2026-10-28T09:49:21.6358076Z [3,398 / 3,697] 27 / 146 tests, 1 failed; Compiling Rust rlib @@rules_rs++crate+crates__gix-0.81.0//:gix v0.81.0 (176 files); 6s local ... (2 actions running)\r"
+        }
+      ],
+      "scope": "Long lines above 1499 characters omitted explicitly."
+    }
+  ]
+}

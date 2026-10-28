@@ -1,0 +1,24 @@
+{
+  "schema": "hepta.ndu.native-integration-continuation.v1",
+  "horizon": "four prefix + feedback + hold + decision",
+  "actions": [
+    "keep",
+    "swap"
+  ],
+  "cold_recovery": true,
+  "code_sha256": {
+    "control.py": "84abf089a939c82b34ca2aa4f73b9d1410790683b1568a20c7768ef12364f304",
+    "native_check.py": "37429d9ac9e4cfacab5e9f8fad52e2754be9b4ca593fde9e59e861897dea78a9"
+  },
+  "tariff": {
+    "native_kernel": 0.0001,
+    "generator_call": 0.01,
+    "delivery": 0.002,
+    "refused_proposal": 0.005,
+    "python_cpu_second": 0.0001,
+    "native_cpu_second": 0.0001,
+    "wall_second": 0.0001
+  },
+  "role": "integration-only; native continuation is not the single-stop training continuation",
+  "owner_scope_unchanged": true
+}

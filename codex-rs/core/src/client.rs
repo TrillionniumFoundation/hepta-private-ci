@@ -249,6 +249,13 @@ fn session_telemetry_for_request(
     )
 }
 
+pub(crate) mod test_transport;
+mod transport;
+#[cfg(test)]
+mod transport_tests;
+use test_transport::FirstPartyTestTransport;
+use transport::ModelApiTransport;
+
 /// Session-scoped state shared by all [`ModelClient`] clones.
 ///
 /// This is intentionally kept minimal so `ModelClient` does not need to hold a full `Config`. Most
@@ -312,6 +319,7 @@ pub struct ModelClient {
     agent_identity_policy: AgentIdentityAuthPolicy,
     prompt_cache_key_override: Option<String>,
     http_client_factory: HttpClientFactory,
+    first_party_test_transport: Option<Arc<FirstPartyTestTransport>>,
 }
 
 /// A turn-scoped streaming session created from a [`ModelClient`].
@@ -658,7 +666,19 @@ impl ModelClient {
             agent_identity_policy,
             prompt_cache_key_override: None,
             http_client_factory,
+            first_party_test_transport: None,
         }
+    }
+
+    pub(crate) fn with_first_party_test_transport(
+        mut self,
+        fixture: Option<Arc<FirstPartyTestTransport>>,
+    ) -> Result<Self> {
+        if let Some(fixture) = &fixture {
+            fixture.validate_provider(self.state.provider.info())?;
+        }
+        self.first_party_test_transport = fixture;
+        Ok(self)
     }
 
     pub(crate) fn with_prompt_cache_key_override(
@@ -1364,30 +1384,42 @@ impl ModelClient {
         &self,
         api_provider: &ApiProvider,
         endpoint: &str,
-    ) -> Result<ReqwestTransport> {
+    ) -> Result<ModelApiTransport> {
         let request_url = api_provider.url_for_path(endpoint);
+        if let Some(fixture) = &self.first_party_test_transport {
+            return ModelApiTransport::for_fixture(Arc::clone(fixture), &request_url)
+                .map_err(Into::into);
+        }
         let client = create_client_for_route(
             &self.http_client_factory,
             &request_url,
             ClientRouteClass::Api,
         )
         .map_err(std::io::Error::from)?;
-        Ok(ReqwestTransport::from_http_client(client))
+        Ok(ModelApiTransport::production(
+            ReqwestTransport::from_http_client(client),
+        ))
     }
 
     fn build_sensitive_api_transport(
         &self,
         api_provider: &ApiProvider,
         endpoint: &str,
-    ) -> Result<ReqwestTransport> {
+    ) -> Result<ModelApiTransport> {
         let request_url = api_provider.url_for_path(endpoint);
+        if let Some(fixture) = &self.first_party_test_transport {
+            return ModelApiTransport::for_fixture(Arc::clone(fixture), &request_url)
+                .map_err(Into::into);
+        }
         let client = create_client_for_sensitive_route(
             &self.http_client_factory,
             &request_url,
             ClientRouteClass::Api,
         )
         .map_err(std::io::Error::from)?;
-        Ok(ReqwestTransport::from_http_client(client))
+        Ok(ModelApiTransport::production(
+            ReqwestTransport::from_http_client(client),
+        ))
     }
 
     pub(crate) async fn prewarm_auth(&self) -> Result<()> {

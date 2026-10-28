@@ -1,0 +1,16 @@
+{
+  "schema": "hepta.source-amendment-independent-review.v1",
+  "base_head": "792beb14600f9b49b04ed18f9061e11d0e163759",
+  "manifest_sha256": "3437153d5502cd0cae6fe8e5176e5e2ba6aba61006d8625698e8d129ac297a82",
+  "read_all_python_diffs": true,
+  "all_18_source_identities_verified": true,
+  "findings": [
+    "Original integration manifest, recipe, patch, policies and locks remain historical inputs.",
+    "Six payload source files and one vendor source are linked by explicit predecessor and new identity.",
+    "Effective vendor inventory, committed HEAD, index, mode and producer-consumer amendment artifact remain checked.",
+    "The exact thirteen Bazel targets include the previously omitted local workspace alias.",
+    "An identity guard does not prove arbitrary source changes semantically equivalent; this reviewed seven-file amendment is backed by actual Rust 1.96 formatter replay."
+  ],
+  "no_obvious_source_blocker": true,
+  "native_compilation_or_qualification_claimed": false
+}

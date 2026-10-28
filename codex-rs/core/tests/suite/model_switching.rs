@@ -36,6 +36,7 @@ use codex_protocol::protocol::ThreadSettingsOverrides;
 use codex_protocol::request_user_input::RequestUserInputAnswer;
 use codex_protocol::request_user_input::RequestUserInputResponse;
 use codex_protocol::user_input::UserInput;
+use core_test_support::first_party::FirstPartyMockServer;
 use core_test_support::responses::ev_assistant_message;
 use core_test_support::responses::ev_completed;
 use core_test_support::responses::ev_completed_with_tokens;
@@ -377,14 +378,14 @@ async fn rollback_first_turn_model_change_removes_its_instructions(
 async fn model_change_appends_model_instructions_developer_message() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = MockServer::start().await;
+    let server = FirstPartyMockServer::start().await?;
     let resp_mock = mount_sse_sequence(
         &server,
         vec![sse_completed("resp-1"), sse_completed("resp-2")],
     )
     .await;
 
-    let mut builder = test_codex().with_model("gpt-5.2");
+    let mut builder = server.test_codex().with_model("gpt-5.2");
     let test = builder.build(&server).await?;
     let next_model = "gpt-5.4";
 
@@ -906,7 +907,7 @@ async fn null_service_tier_override_is_omitted_from_http_turn_with_catalog_defau
 async fn model_change_from_multimodal_to_text_strips_prior_media_content() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = MockServer::start().await;
+    let server = FirstPartyMockServer::start().await?;
     let multimodal_model_slug = "test-multimodal-model";
     let text_model_slug = "test-text-only-model";
     let multimodal_model = test_model_info(
@@ -925,13 +926,9 @@ async fn model_change_from_multimodal_to_text_strips_prior_media_content() -> Re
         "text only",
         vec![InputModality::Text],
     );
-    mount_models_once(
-        &server,
-        ModelsResponse {
-            models: vec![multimodal_model, text_model],
-        },
-    )
-    .await;
+    let model_catalog = ModelsResponse {
+        models: vec![multimodal_model, text_model],
+    };
 
     let responses = mount_sse_sequence(
         &server,
@@ -939,10 +936,12 @@ async fn model_change_from_multimodal_to_text_strips_prior_media_content() -> Re
     )
     .await;
 
-    let mut builder = test_codex()
+    let mut builder = server
+        .test_codex()
         .with_auth(CodexAuth::create_dummy_chatgpt_auth_for_testing())
         .with_config(move |config| {
             config.model = Some(multimodal_model_slug.to_string());
+            config.model_catalog = Some(model_catalog);
         });
     let test = builder.build(&server).await?;
     let models_manager = test.thread_manager.get_models_manager();

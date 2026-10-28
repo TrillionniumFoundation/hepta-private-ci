@@ -25,6 +25,7 @@ use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::Op;
 use codex_protocol::user_input::UserInput;
 use core_test_support::assert_regex_match;
+use core_test_support::first_party::FirstPartyMockServer;
 use core_test_support::responses::ResponsesRequest;
 use core_test_support::responses::ev_assistant_message;
 use core_test_support::responses::ev_completed;
@@ -122,7 +123,7 @@ fn enable_current_time_reminder(
 async fn environment_context_uses_external_current_time_on_each_turn() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = start_mock_server().await;
+    let server = FirstPartyMockServer::start().await?;
     let responses = mount_sse_sequence(
         &server,
         vec![
@@ -132,7 +133,8 @@ async fn environment_context_uses_external_current_time_on_each_turn() -> Result
     )
     .await;
     let time_provider = Arc::new(TestTimeProvider::default());
-    let test = test_codex()
+    let test = server
+        .test_codex()
         .with_config(|config| {
             enable_current_time_reminder(config, /*interval*/ 0, CurrentTimeSource::External);
             config.include_environment_context = true;
@@ -327,13 +329,14 @@ async fn current_time_reminders_can_follow_only_user_or_tool_outputs() -> Result
 async fn system_time_source_adds_current_time_reminder() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = start_mock_server().await;
+    let server = FirstPartyMockServer::start().await?;
     let responses = mount_sse_once(
         &server,
         sse(vec![ev_response_created("resp-1"), ev_completed("resp-1")]),
     )
     .await;
-    let test = test_codex()
+    let test = server
+        .test_codex()
         .with_config(|config| {
             enable_current_time_reminder(config, /*interval*/ 1, CurrentTimeSource::System)
         })

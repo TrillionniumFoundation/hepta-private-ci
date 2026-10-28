@@ -207,7 +207,7 @@ mod tests {
                     accelerator_millis: 1_000,
                 },
             })
-            .unwrap();
+            .expect("fixture host observation is valid for the fleet ledger");
         ledger
     }
 

@@ -1,0 +1,112 @@
+{
+  "changes_production_policy": false,
+  "extraction": "Exact JSON stdout from completed native Windows job",
+  "filesystem": "NTFS",
+  "interpretation": "API success/error observations only; no ignored sync failures or authority grants",
+  "interpretation_limits": [
+    "NTFS on the recorded Windows runner only",
+    "API success does not establish power-failure behavior or other filesystems",
+    "No production sync failure may be ignored"
+  ],
+  "observations": [
+    {
+      "access": "read",
+      "backup_semantics": false,
+      "flush_error": 5,
+      "flush_succeeded": false,
+      "kind": "regular_file",
+      "open_error": 0,
+      "open_reparse_point": true,
+      "open_succeeded": true,
+      "share_read_write_delete": true
+    },
+    {
+      "access": "read",
+      "backup_semantics": true,
+      "flush_error": 5,
+      "flush_succeeded": false,
+      "kind": "regular_file",
+      "open_error": 0,
+      "open_reparse_point": true,
+      "open_succeeded": true,
+      "share_read_write_delete": true
+    },
+    {
+      "access": "read_write",
+      "backup_semantics": false,
+      "flush_error": 0,
+      "flush_succeeded": true,
+      "kind": "regular_file",
+      "open_error": 0,
+      "open_reparse_point": true,
+      "open_succeeded": true,
+      "share_read_write_delete": true
+    },
+    {
+      "access": "read_write",
+      "backup_semantics": true,
+      "flush_error": 0,
+      "flush_succeeded": true,
+      "kind": "regular_file",
+      "open_error": 0,
+      "open_reparse_point": true,
+      "open_succeeded": true,
+      "share_read_write_delete": true
+    },
+    {
+      "access": "read",
+      "backup_semantics": false,
+      "kind": "directory",
+      "open_error": 5,
+      "open_reparse_point": true,
+      "open_succeeded": false,
+      "share_read_write_delete": true
+    },
+    {
+      "access": "read",
+      "backup_semantics": true,
+      "flush_error": 5,
+      "flush_succeeded": false,
+      "kind": "directory",
+      "open_error": 0,
+      "open_reparse_point": true,
+      "open_succeeded": true,
+      "post_rename_flush_error": 5,
+      "post_rename_flush_succeeded": false,
+      "renamed_payload_exact": true,
+      "share_read_write_delete": true
+    },
+    {
+      "access": "read_write",
+      "backup_semantics": false,
+      "kind": "directory",
+      "open_error": 5,
+      "open_reparse_point": true,
+      "open_succeeded": false,
+      "share_read_write_delete": true
+    },
+    {
+      "access": "read_write",
+      "backup_semantics": true,
+      "flush_error": 0,
+      "flush_succeeded": true,
+      "kind": "directory",
+      "open_error": 0,
+      "open_reparse_point": true,
+      "open_succeeded": true,
+      "post_rename_flush_error": 0,
+      "post_rename_flush_succeeded": true,
+      "renamed_payload_exact": true,
+      "share_read_write_delete": true
+    }
+  ],
+  "platform": "Windows-2025Server-10.0.26100-SP0",
+  "power_failure_durability_proved": false,
+  "regular_file_controls_passed": true,
+  "schema": "hepta.windows.directory-flush-observation.v1",
+  "source_commit": "13b691ac922ff25dd116401e1bb93cd1ea219aff",
+  "source_sha256": "a4e3e54b9a5fe9deaa90957bcdfda42437ec7af6b3e5cabff4612378268343db",
+  "workflow_job_id": 122697960477,
+  "workflow_run_id": 40653213586,
+  "workflow_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40653213586"
+}

@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.http-redirect-fixture-repair.v1",
+  "observed_job": 122730593645,
+  "parent_commit": "832b2a382a155bc840df0d255b2c183a43b0d219",
+  "cause": "The fixture accepts on a nonblocking listener and immediately calls Read without normalizing the accepted stream; the Windows run returned WouldBlock before receiving the request.",
+  "repair": "Explicitly use blocking reads on the accepted fixture stream, bounded by the remaining original two-second request deadline. Preserve both redirect hops, exact request lines, response status and final URL. Production transport unchanged.",
+  "file": {
+    "path": "codex-rs/http-client/src/route_aware_client_pool_tests.rs",
+    "bytes": 33530,
+    "sha256": "9d065bfd0f867b75e07da10433f93411a732230c6a981ab24f362e3528a9ea7a"
+  },
+  "native_pass_claimed": false,
+  "commands": [
+    {
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-http-client",
+        "reqwest_default_route_preserves_transport_redirects"
+      ],
+      "exit_code": 101,
+      "stdout": "",
+      "stderr": "RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py \"$@\"\nerror: failed to load manifest for workspace member `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth`\nreferenced by workspace at `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/Cargo.toml`\n\nCaused by:\n  failed to read `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth/Cargo.toml`\n\nCaused by:\n  No such file or directory (os error 2)\nerror: recipe `test` failed on line 89 with exit code 101\n"
+    },
+    {
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-http-client"
+      ],
+      "exit_code": 101,
+      "stdout": "",
+      "stderr": "cargo clippy --fix --tests --allow-dirty {args}\nerror: failed to load manifest for workspace member `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth`\nreferenced by workspace at `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/Cargo.toml`\n\nCaused by:\n  failed to read `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth/Cargo.toml`\n\nCaused by:\n  No such file or directory (os error 2)\nerror: recipe `fix` failed on line 58 with exit code 101\n"
+    }
+  ],
+  "format": [
+    {
+      "name": "Rust",
+      "exit_code": 0,
+      "output": ""
+    }
+  ],
+  "earlier_format_attempt": "Failed before formatting because the sparse checkout lacked this package manifest; exact tracked manifest then materialized without changes."
+}

@@ -1,3 +1,4 @@
+mod cleanup;
 mod compact;
 mod lifecycle;
 mod regular;
@@ -1705,9 +1706,11 @@ impl Session {
         &self,
         turn_context: &TurnContext,
         event: EventMsg,
+        completion: &Arc<StartTransitionCompletion>,
     ) -> Option<u64> {
         let before = self.rollout_persistence_failure_generation();
-        self.send_event(turn_context, event).await;
+        self.send_event_with_completion(turn_context, event, Some(Arc::clone(completion)))
+            .await;
         let after_append = self.rollout_persistence_failure_generation();
         let flush_succeeded = match self.flush_rollout().await {
             Ok(()) => true,
@@ -3457,7 +3460,7 @@ impl Session {
         };
         handoff.phase = TaskFinishHandoffPhase::PersistencePublishing;
         let terminal_persistence_generation = self
-            .send_terminal_event_and_flush(turn_context.as_ref(), event)
+            .send_terminal_event_and_flush(turn_context.as_ref(), event, &handoff.completion)
             .await;
         self.services
             .guardian_rejection_circuit_breaker
@@ -3654,6 +3657,7 @@ impl Session {
                 handoff.reason.clone(),
                 handoff.recovery_seed.clone(),
                 handoff.recovery_authority.clone(),
+                &handoff.completion,
             )
             .await;
         handoff.task_quiesced = outcome.task_quiesced;
@@ -3915,12 +3919,23 @@ impl Session {
             _diagnostics_guard: ACTIVE_TURNS.track(),
             _timer: None,
         };
+        let completion = self
+            .pending_start_transition_completions
+            .lock()
+            .unwrap_or_else(|error| panic!("start transition registry mutex poisoned: {error:?}"))
+            .iter()
+            .find(|(identity, _, _)| Arc::ptr_eq(identity, &transition_identity))
+            .map(|(_, completion, _)| Arc::clone(completion));
+        let Some(completion) = completion else {
+            return false;
+        };
         let abort_outcome = self
             .handle_task_abort(
                 &mut placeholder,
                 reason.clone(),
                 /*recovery_seed*/ None,
                 /*recovery_authority*/ None,
+                &completion,
             )
             .await;
         self.emit_turn_abort_lifecycle(reason.clone(), turn_context.extension_data.as_ref())
@@ -4201,6 +4216,7 @@ impl Session {
         reason: TurnAbortReason,
         recovery_seed: Option<RecoverySeed>,
         recovery_authority: Option<Arc<TurnRecoveryAuthority>>,
+        completion: &Arc<StartTransitionCompletion>,
     ) -> TaskAbortOutcome {
         let sub_id = task.turn_context.sub_id.clone();
         // The caller already persisted Unready while holding the active-turn
@@ -4322,7 +4338,7 @@ impl Session {
             duration_ms,
         });
         let terminal_persistence_generation = self
-            .send_terminal_event_and_flush(task.turn_context.as_ref(), event)
+            .send_terminal_event_and_flush(task.turn_context.as_ref(), event, completion)
             .await;
         self.services
             .guardian_rejection_circuit_breaker

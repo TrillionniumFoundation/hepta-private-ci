@@ -36,6 +36,7 @@ use codex_protocol::protocol::TurnEnvironmentSelection;
 use codex_protocol::user_input::UserInput;
 use codex_utils_path_uri::PathUri;
 use core_test_support::PathExt;
+use core_test_support::first_party::FirstPartyMockServer;
 use core_test_support::is_remote_test_environment;
 use core_test_support::responses;
 use core_test_support::responses::ev_assistant_message;
@@ -221,11 +222,12 @@ async fn assert_user_turn_local_image_resizes_to(
     image_budget_policy: ImageBudgetPolicy,
     resize_notice_expectation: ResizeNoticeExpectation,
 ) -> anyhow::Result<()> {
-    let server = start_mock_server().await;
+    let server = FirstPartyMockServer::start().await?;
 
     let builder = match image_budget_policy {
-        ImageBudgetPolicy::DetailBased | ImageBudgetPolicy::Unified => test_codex(),
-        ImageBudgetPolicy::UnifiedResponsesLiteWithoutOriginalSupport => test_codex()
+        ImageBudgetPolicy::DetailBased | ImageBudgetPolicy::Unified => server.test_codex(),
+        ImageBudgetPolicy::UnifiedResponsesLiteWithoutOriginalSupport => server
+            .test_codex()
             .with_model_info_override("gpt-5.4", |model_info| {
                 model_info.supports_image_detail_original = false;
                 model_info.use_responses_lite = true;

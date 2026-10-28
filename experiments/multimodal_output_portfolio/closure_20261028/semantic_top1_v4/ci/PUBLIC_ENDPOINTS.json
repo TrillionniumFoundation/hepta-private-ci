@@ -1,0 +1,66 @@
+{
+  "observed_at_unix": 1793185843.3789175,
+  "requests": [
+    {
+      "content_length": "33524997",
+      "etag": "\"1059e0ba57e5fa5ec0001cda8874e515-2\"",
+      "expected_bytes": 33524997,
+      "final_host": "download.pytorch.org",
+      "generation": null,
+      "http_status": 200,
+      "name": "s3d-d76dad2f.pth",
+      "payload_bytes_read": 0,
+      "url": "https://download.pytorch.org/models/s3d-d76dad2f.pth",
+      "wall_seconds": 0.08853211600217037
+    },
+    {
+      "content_length": "20834417",
+      "etag": null,
+      "expected_bytes": 20834417,
+      "final_host": "zenodo.org",
+      "generation": null,
+      "http_status": 200,
+      "name": "MobileNetV2_mAP_0.383.pth",
+      "payload_bytes_read": 0,
+      "url": "https://zenodo.org/api/records/3987831/files/MobileNetV2_mAP=0.383.pth/content",
+      "wall_seconds": 0.588240812998265
+    },
+    {
+      "content_length": "95735374",
+      "etag": "\"61e0d4ed-5b4ce4e\"",
+      "expected_bytes": 95735374,
+      "final_host": "hanlab18.mit.edu",
+      "generation": null,
+      "http_status": 200,
+      "name": "TSM_somethingv2_RGB_resnet50_shift8_blockres_avg_segment8_e45.pth",
+      "payload_bytes_read": 0,
+      "url": "https://hanlab18.mit.edu/projects/tsm/models/TSM_somethingv2_RGB_resnet50_shift8_blockres_avg_segment8_e45.pth",
+      "wall_seconds": 0.2732039100010297
+    },
+    {
+      "content_length": "28404087974",
+      "etag": "\"-CJXz5tD4nP8CEAE=\"",
+      "expected_bytes": 28404087974,
+      "final_host": "storage.googleapis.com",
+      "generation": "1685446268139925",
+      "http_status": 200,
+      "name": "official-training-archive",
+      "payload_bytes_read": 0,
+      "url": "https://storage.googleapis.com/dm-perception-test/zip_data/train_videos.zip",
+      "wall_seconds": 0.12639197200041963
+    },
+    {
+      "content_length": "95088884",
+      "etag": "\"0x8DEF8E5ED594086\"",
+      "final_host": "release-assets.githubusercontent.com",
+      "generation": null,
+      "http_status": 200,
+      "name": "python31214-ubuntu2404-x64",
+      "payload_bytes_read": 0,
+      "url": "https://github.com/actions/python-versions/releases/download/3.12.14-31661455385/python-3.12.14-linux-24.04-x64.tar.gz",
+      "wall_seconds": 0.2883617250045063
+    }
+  ],
+  "schema": "hepta.closure.top1-v4-public-head-availability.v1",
+  "scope": "Metadata-only HEAD requests, no model/media payload read and no held-out source access. Reachability now is not a future availability guarantee."
+}

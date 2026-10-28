@@ -57,6 +57,8 @@ impl MatrixSdkPaths {
         config: &MatrixSidecarConfig,
     ) -> Result<Self, MatrixSidecarConfigError> {
         config.validate(layout)?;
+        // This is the existing on-disk identity, not a dependency-version selector.
+        // Keep it stable so SDK upgrades reopen the same session and encryption keys.
         let root = layout.matrix_root().join("matrix-sdk-0.18");
         let state = root.join("state");
         let cache = root.join("cache");

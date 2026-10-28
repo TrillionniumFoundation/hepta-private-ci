@@ -18,6 +18,15 @@ codex_rust_crate(
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
 )
 
+# Both writer qualification and process integration require the existing Unix
+# durable owner. Other platforms exercise actual admission refusal in the
+# default unit target; they must not pass a qualification filter with zero tests.
+_DURABLE_OWNER_COMPATIBILITY = select({
+    "@platforms//os:linux": [],
+    "@platforms//os:macos": [],
+    "//conditions:default": ["@platforms//:incompatible"],
+})
+
 # Compile the local writer qualification separately from the default product
 # library. These unit fixtures need only temporary registry and SQLite state;
 # they do not start Agentd, an App Server, or a provider process.
@@ -29,6 +38,7 @@ rust_library(
     crate_name = "codex_hepta_agentd",
     crate_root = "src/lib.rs",
     edition = "2024",
+    target_compatible_with = _DURABLE_OWNER_COMPATIBILITY,
     visibility = ["//visibility:private"],
     deps = rust_test_dependencies(_UNIT_TEST_DEPENDENCIES),
 )
@@ -42,6 +52,7 @@ rust_test(
         "--remap-path-prefix=codex-rs=",
     ],
     tags = ["manual"],
+    target_compatible_with = _DURABLE_OWNER_COMPATIBILITY,
     visibility = ["//visibility:private"],
     deps = rust_test_dependencies(
         _UNIT_TEST_DEPENDENCIES,
@@ -52,18 +63,13 @@ rust_test(
 workspace_root_test(
     name = "hepta-agentd-cognitive-write-qualification-test",
     args = ["runtime::tests::qualification_"],
+    target_compatible_with = _DURABLE_OWNER_COMPATIBILITY,
     test_bin = ":hepta-agentd-cognitive-write-qualification-test-bin",
     workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
 )
 
 # The process suite uses UnixProcessDriver and Unix sockets. Compile both the
 # spawned Agentd and its test harness with the explicit qualification profile.
-_COGNITIVE_E2E_COMPATIBILITY = select({
-    "@platforms//os:linux": [],
-    "@platforms//os:macos": [],
-    "//conditions:default": ["@platforms//:incompatible"],
-})
-
 rust_binary(
     name = "hepta-agentd-cognitive-product-qualification-bin",
     testonly = True,
@@ -80,7 +86,7 @@ rust_binary(
         "--remap-path-prefix=codex-rs=",
     ],
     tags = ["manual"],
-    target_compatible_with = _COGNITIVE_E2E_COMPATIBILITY,
+    target_compatible_with = _DURABLE_OWNER_COMPATIBILITY,
     visibility = ["//visibility:private"],
     deps = [":hepta-agentd-cognitive-write-qualification-lib"] + all_crate_deps(),
 )
@@ -98,7 +104,7 @@ rust_test(
         "--remap-path-prefix=codex-rs=",
     ],
     tags = ["manual"],
-    target_compatible_with = _COGNITIVE_E2E_COMPATIBILITY,
+    target_compatible_with = _DURABLE_OWNER_COMPATIBILITY,
     visibility = ["//visibility:private"],
     deps = [":hepta-agentd-cognitive-write-qualification-lib"] + all_crate_deps(
         normal = True,
@@ -112,7 +118,7 @@ workspace_root_test(
     runfile_env = {
         ":hepta-agentd-cognitive-product-qualification-bin": "CARGO_BIN_EXE_codex-hepta-agentd",
     },
-    target_compatible_with = _COGNITIVE_E2E_COMPATIBILITY,
+    target_compatible_with = _DURABLE_OWNER_COMPATIBILITY,
     test_bin = ":hepta-agentd-cognitive-product-qualification-test-bin",
     test_threads = 1,
     visibility = ["//visibility:public"],

@@ -8,13 +8,20 @@ import unittest
 
 from .commands import Commands
 from .files import describe, read_json
-from .source import prepare_source, restore_source
+from .source import prepare_source, replay_candidate_tree, restore_source
 
 
 class ProducerRestore(unittest.TestCase):
-    def test_original_restore_guards_then_identical_private_tree_without_host_rust(
-        self,
-    ):
+    def test_original_restore_guards_then_identical_private_tree_without_host_rust(self):
+        self.exercise_restore("patched")
+
+    def test_integrated_restore_preserves_committed_tree_and_independent_replay(self):
+        self.exercise_restore("integrated")
+
+    def test_amended_integrated_restore_carries_the_exact_source_revision(self):
+        self.exercise_restore("integrated", amendment=True)
+
+    def exercise_restore(self, source_mode, *, amendment=False):
         # Reuse the existing synthetic artifact fixture, not a relaxed copy of
         # the production port guard. Its setup exercises actual Git patching.
         repo = Path(__file__).resolve().parents[5]
@@ -27,6 +34,7 @@ class ProducerRestore(unittest.TestCase):
                 "ndu_port_candidate_common",
                 "ndu_port_candidate",
                 "test_ndu_port_candidate",
+                "ndu_port_integration_test_support",
             ):
                 loaded[name] = sys.modules.pop(name, None)
             name = "test_ndu_port_candidate"
@@ -71,6 +79,22 @@ class ProducerRestore(unittest.TestCase):
             )
             fixture.record["source_commit"] = fixture.source
             fixture.seal()
+            if source_mode == "integrated":
+                from ndu_port_integration_test_support import integrate_fixture
+
+                fixture.restore(fixture.runner("original-patch-restore"))
+                fixture.record, fixture.result_sha = integrate_fixture(
+                    fixture.root, fixture.recipe, fixture.record, fixture.artifact
+                )
+                fixture.source = fixture.record["source_commit"]
+                if amendment:
+                    from ndu_port_integration_test_support import amend_fixture
+
+                    fixture.record, fixture.result_sha = amend_fixture(
+                        fixture.root, fixture.recipe, fixture.record, fixture.artifact,
+                        {fixture.source_file: b"reviewed source  \n"},
+                    )
+                    fixture.source = fixture.record["source_commit"]
             output = fixture.base / "linux-restore"
             output.mkdir()
             git = Path(shutil.which("git")).resolve()
@@ -118,6 +142,20 @@ class ProducerRestore(unittest.TestCase):
             self.assertEqual(
                 (seal["candidate_tree"], seal["qualification_tree"]), (tree, tree)
             )
+            self.assertEqual(seal["producer_source_mode"], source_mode)
+            if amendment:
+                self.assertEqual(
+                    (evidence / "producer/source-amendment.json").read_bytes(),
+                    (fixture.root / "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/SOURCE_AMENDMENT.v7.1.json").read_bytes(),
+                )
+            if source_mode == "integrated":
+                wrong = {**fixture.record, "source_tree": "f" * 40}
+                rejected = fixture.base / "wrong-replay"
+                rejected.mkdir()
+                with self.assertRaisesRegex(ValueError, "committed source tree"):
+                    replay_candidate_tree(
+                        commands, fixture.artifact, wrong, fixture.source, rejected
+                    )
             self.assertNotEqual(seal["qualification_commit"], fixture.source)
             self.assertTrue(seal["original_head_unchanged"])
             self.assertEqual(describe(fixture.root / ".git/index"), original_index)

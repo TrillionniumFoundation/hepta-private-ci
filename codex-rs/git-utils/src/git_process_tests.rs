@@ -37,19 +37,21 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     };
     #[cfg(windows)]
     let mut command = {
-        let mut command = Command::new("powershell.exe");
-        let child_command = "Set-Content -LiteralPath $env:CHILD_READY_FILE -Value ready; while (-not (Test-Path $env:RELEASE_CHILD_FILE)) { Start-Sleep -Milliseconds 25 }; Start-Sleep -Seconds 1; Set-Content -LiteralPath $env:CHILD_SURVIVED_FILE -Value survived; Start-Sleep -Seconds 60";
-        let wrapper_command = match wrapper_lifetime {
-            GitWrapperLifetime::WaitForChild => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); Wait-Process -Id $child.Id"
-            ),
-            GitWrapperLifetime::ExitBeforeTimeout => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
-            ),
-        };
-        command
-            .args(["-NoProfile", "-NonInteractive", "-Command"])
-            .arg(wrapper_command);
+        // Re-enter only the fixture test so the process-tree assertion does not
+        // depend on PowerShell startup, command quoting, or profile policy.
+        let mut command = Command::new(std::env::current_exe().expect("current test executable"));
+        command.args([
+            "--exact",
+            "git_process::tests::git_process_wrapper_fixture",
+            "--nocapture",
+        ]);
+        command.env(
+            "HEPTA_GIT_PROCESS_FIXTURE_ROLE",
+            match wrapper_lifetime {
+                GitWrapperLifetime::WaitForChild => "wait",
+                GitWrapperLifetime::ExitBeforeTimeout => "exit",
+            },
+        );
         command
     };
     command
@@ -131,4 +133,54 @@ async fn timed_out_exited_git_wrapper_does_not_leave_child_process_running() {
         GitWrapperLifetime::ExitBeforeTimeout,
     )
     .await;
+}
+
+#[cfg(windows)]
+#[test]
+fn git_process_wrapper_fixture() {
+    let Ok(role) = std::env::var("HEPTA_GIT_PROCESS_FIXTURE_ROLE") else {
+        return;
+    };
+    if role == "child" {
+        let ready = std::env::var_os("CHILD_READY_FILE").expect("child ready file");
+        let release = std::env::var_os("RELEASE_CHILD_FILE").expect("child release file");
+        let survived = std::env::var_os("CHILD_SURVIVED_FILE").expect("child survived file");
+        std::fs::write(ready, "ready").expect("publish child readiness");
+        while !std::path::Path::new(&release).exists() {
+            std::thread::sleep(Duration::from_millis(25));
+        }
+        std::thread::sleep(Duration::from_secs(1));
+        std::fs::write(survived, "survived").expect("publish child survival");
+        std::thread::sleep(Duration::from_secs(60));
+        return;
+    }
+    assert!(matches!(role.as_str(), "wait" | "exit"));
+    let mut child =
+        std::process::Command::new(std::env::current_exe().expect("current test executable"))
+            .args([
+                "--exact",
+                "git_process::tests::git_process_wrapper_fixture",
+                "--nocapture",
+            ])
+            .env("HEPTA_GIT_PROCESS_FIXTURE_ROLE", "child")
+            .stdin(Stdio::null())
+            .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit())
+            .spawn()
+            .expect("spawn contained child fixture");
+    std::fs::write(
+        std::env::var_os("CHILD_PID_FILE").expect("child PID file"),
+        child.id().to_string(),
+    )
+    .expect("publish child PID");
+    if role == "wait" {
+        child.wait().expect("wait for contained child");
+    } else {
+        let release = std::env::var_os("RELEASE_WRAPPER_FILE").expect("wrapper release file");
+        while !std::path::Path::new(&release).exists() {
+            std::thread::sleep(Duration::from_millis(25));
+        }
+        // The child intentionally outlives this wrapper and keeps its inherited
+        // output pipes open, exercising cleanup after the wrapper has exited.
+    }
 }

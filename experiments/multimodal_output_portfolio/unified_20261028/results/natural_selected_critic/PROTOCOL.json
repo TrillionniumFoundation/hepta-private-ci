@@ -1,0 +1,53 @@
+{
+  "schema": "hepta.natural.selected-policy-moment-repair.v1",
+  "status": "post-study diagnostic; no new policy/checkpoint selection; no fresh qualification",
+  "training_split": "original development only, 8 original sources / 27 events",
+  "draw_ids": [
+    2000,
+    2001
+  ],
+  "calibration_split": "already consumed expanded calibration, 16 independent video sources",
+  "target": "exp(-gamma * actual_complete_actor_net_return), including online feature, selection, generation, codec, readback and scoring CPU",
+  "source_weight": "equal original source mass, equal event mass within source, equal draw mass within event",
+  "critic": "softplus(linear normalized public-context features), fit direct weighted moment squared error",
+  "optimizer": "Adam",
+  "learning_rate": 0.01,
+  "steps": 400,
+  "ridge": 0.001,
+  "bootstrap_source_resamples": 5000,
+  "bootstrap_seed": 170188,
+  "policy_changes_allowed": false,
+  "rigorous_tail_certificate_allowed": false,
+  "tail_reason": "No enforced future upper bound on complete CPU cost; empirical sample bounds are not a future support proof.",
+  "profile_sha256": "12ca5adbc8829ef063984e6c0c0f3006c6616cf2965eb515a56b63ddba87d9e7",
+  "objective_sha256": "eaebb1f04ea6ce8b8dac80abeade9af11a920d8987d45c742076d9860dea1f5e",
+  "observer_sha256": "0fdded638147120bda44273265b38d1ecc06aa1bec0ded1393426ed95eee421e",
+  "continuation_sha256": "4abf66314111744789a6fb75cff2e063816e36f872432b9933c48f4b87f044dd",
+  "actor_sha256": "87b0e6c3fcbe93a462fd610bfa00e91420eb27eb62b819335f451846f2ce8ff8",
+  "qualification_freeze_file_sha256": "94cfeed2ef0c287f4bb7c967f8088d9f529f4d4313930000fb3f33cc26fcd3b5",
+  "models": {
+    "fixed_neural": {
+      "checkpoint_sha256": "3428833b70a233b313b92e9f3d25972d1a6f2918895847bcd38463899a45e09f",
+      "model_sha256": "ad03251a8a0e60faa0aff1f10c8c5a0b755ee932a2c9d10d9915978f69ef6ae6"
+    },
+    "uniform_8": {
+      "checkpoint_sha256": "60c541a1eb73c70be06ac5511791113f7779492fdaf0aed07739af8b3d5124bf",
+      "model_sha256": "89301108fc27b4e9155493e132cebab5bcaebb7c376b9708112ed98f0f264d9b"
+    },
+    "ndu_8": {
+      "checkpoint_sha256": "2c7068783532059479df475bb8c7b8d2c4721560a193a40513e8d0a50ef28617",
+      "model_sha256": "48f217de812ebcc4a85f0363994eb708b342c6e9d72a6021ca79126f7f0c894f"
+    },
+    "uniform_64": {
+      "checkpoint_sha256": "1407fcbac45a10bc41efe8555019cb1f9449d8b89c7d9b7a181aed952030ba2d",
+      "model_sha256": "e79a7d46e402d0a69524c9116c664ac726b3464ed35f7ec262e9b8ae78a6218c"
+    },
+    "ndu_64": {
+      "checkpoint_sha256": "d44294d366af5bf2946e84600af6c437826b59b04f978d9c9e01ac5c112df163",
+      "model_sha256": "7d032462c4c91b5f880c02b7930cd494bd40001072be3363aa9c998a92c7d668"
+    }
+  },
+  "source_protocol_sha256": "ac8861da9884414983f8adce055bfd5352b658680f6a86cfc4bbccc599d05473",
+  "code_sha256": "3ed314cb89350c043e67cfc3aaaf7defa27024c445e6e3b3a9cd9405fec1112e",
+  "sha256": "68ac3b150dcddece7a043176ae2321e2a988e522b28fa5298a9613340327e747"
+}

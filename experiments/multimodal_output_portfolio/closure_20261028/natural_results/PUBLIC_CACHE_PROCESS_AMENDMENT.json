@@ -1,0 +1,21 @@
+{
+  "created_at_unix": 1793178377.6333976,
+  "current_sha256": {
+    "natural_proxy_data.py": "40488e5932ec820e29d64193e66225232fd4124e503e1512982230e5159d7490",
+    "natural_train_microbatch.py": "bdaf16ea7a6b48481cdf2d361639d2b7743211e993caa69a70c24369bef6db70"
+  },
+  "no_new_development_calibration_qualification_predictions": true,
+  "old128source_cache_reused": false,
+  "only_small_pinned_feature_arrays_resident_during_optimization": true,
+  "previous_published_snapshot_sha256": {
+    "natural_proxy_data.py": "dbea63aa64facd6d87f483aab0ec5044f64d394c6c594be164513d9fa3d7763f",
+    "natural_train_microbatch.py": "aa6e2226ea2450a9591b0736939e9399c2fe678bf2c97e93d4513011707812fd"
+  },
+  "reason": "Avoid retained pretrained allocator/model memory sharing the warmstart backward process under the observed shared-memory limit.",
+  "same_public_inputs_features_and_loss": true,
+  "same_seed_batch_sampler_and2048optimizer_updates": true,
+  "schema": "hepta.closure.pretrained-cache-process-amendment.v1",
+  "separate_v3_cache_process_required": true,
+  "source_protocol_sha256": "ad58bf5529af473f722c8e48a44f34ae07e364356b664a3a79458fecf1405b9d",
+  "whole_cache_process_cpu_reported_separately_and_added_to_training_resource_audit": true
+}

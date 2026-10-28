@@ -387,6 +387,16 @@ async fn persist_thread_for_tree_resume(thread: &Arc<CodexThread>, message: &str
         .session
         .abort_all_tasks(TurnAbortReason::Interrupted)
         .await;
+    // An existing start or terminalization owner may still be completing.
+    // Observe its exact completion rather than bypassing the injection fence.
+    if let Some((_, ready)) = thread.pending_turn_cleanup() {
+        assert!(
+            timeout(Duration::from_secs(5), ready)
+                .await
+                .expect("resume fixture cleanup should complete"),
+            "resume fixture must retain its live thread generation"
+        );
+    }
     thread
         .inject_response_items(vec![user_message(message)])
         .await
@@ -2585,27 +2595,38 @@ async fn spawn_agent_fork_last_n_turns_drops_parent_startup_prefix_when_under_li
         .await
         .expect("parent rollout should flush");
 
-    let child_thread_id = harness
-        .control
-        .spawn_agent_with_metadata(
-            harness.config.clone(),
-            text_input("child task"),
-            Some(SessionSource::SubAgent(SubAgentSource::ThreadSpawn {
-                parent_thread_id,
-                depth: 1,
-                agent_path: None,
-                agent_nickname: None,
-                agent_role: None,
-            })),
-            SpawnAgentOptions {
-                fork_parent_spawn_call_id: Some(parent_spawn_call_id),
-                fork_mode: Some(SpawnAgentForkMode::LastNTurns(2)),
-                ..Default::default()
-            },
-        )
+    // Inspect the fork before its first prompt can rebuild the baseline.
+    let delivery = harness.manager.pause_next_startup_before_delivery();
+    let spawn = harness.control.spawn_agent_with_metadata(
+        harness.config.clone(),
+        text_input("child task"),
+        Some(SessionSource::SubAgent(SubAgentSource::ThreadSpawn {
+            parent_thread_id,
+            depth: 1,
+            agent_path: None,
+            agent_nickname: None,
+            agent_role: None,
+        })),
+        SpawnAgentOptions {
+            fork_parent_spawn_call_id: Some(parent_spawn_call_id),
+            fork_mode: Some(SpawnAgentForkMode::LastNTurns(2)),
+            ..Default::default()
+        },
+    );
+    tokio::pin!(spawn);
+    tokio::select! {
+        result = &mut spawn => panic!("fork must pause before prompt submission: {result:?}"),
+        () = delivery.wait_until_entered() => {},
+    }
+    let child_ids = harness
+        .manager
+        .list_thread_ids()
         .await
-        .expect("bounded forked spawn should drop startup prefix")
-        .thread_id;
+        .into_iter()
+        .filter(|thread_id| *thread_id != parent_thread_id)
+        .collect::<Vec<_>>();
+    assert_eq!(child_ids.len(), 1);
+    let child_thread_id = child_ids[0];
 
     let child_thread = harness
         .manager
@@ -2634,6 +2655,14 @@ async fn spawn_agent_fork_last_n_turns_drops_parent_startup_prefix_when_under_li
         "bounded forked child should still rebuild context after truncating the cached prefix"
     );
 
+    delivery.release();
+    assert_eq!(
+        spawn
+            .await
+            .expect("bounded forked spawn should drop startup prefix")
+            .thread_id,
+        child_thread_id
+    );
     let _ = harness
         .control
         .shutdown_live_agent(child_thread_id)

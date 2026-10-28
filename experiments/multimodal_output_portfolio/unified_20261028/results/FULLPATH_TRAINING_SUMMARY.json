@@ -1,0 +1,1575 @@
+{
+  "completed_runs": 6,
+  "independent_base_initializations": 1,
+  "native_continuation_trained": false,
+  "profile_sha256": "af6b4ad5009f0c00c6a2be3a9dbb9e442a892bc7505b6bf7d0e3b2a8561f384c",
+  "qualification_or_audit_observer_used_for_selection": false,
+  "risk_actual_output_gradient_covers_all_four_stages": true,
+  "runs": [
+    {
+      "actual_output_stream_sha256": "27026d5591d62a0b4be18854505a9a00194e71fa47be602ece1219e1db9ba325",
+      "arm": "fullpath_mean",
+      "cpu_ns": 56339754007,
+      "profile_sha256": "f799c313acaf5d56c870cc1d318240549306b37dce003c0d3d544c5bfa1e098b",
+      "schedule_sha256": "cf6c162c12c8dbd8f3a0a4ee23416bd4f71556a9ecbb89c92456d50032c65bda",
+      "seed": 17,
+      "stages": [
+        {
+          "actual_output_gradient_norm_sum": {
+            "coupling_cell": 3670.989771942714,
+            "semantic_cell": 2044.7209193914882
+          },
+          "changed_modules": {
+            "command_embedding": false,
+            "command_film": false,
+            "coupling_cell": true,
+            "digit_head": false,
+            "fuse": false,
+            "image_cell": false,
+            "initial_image": false,
+            "initial_text": false,
+            "pixel_decoder": false,
+            "pixel_encoder": false,
+            "semantic_cell": true,
+            "text_cell": false,
+            "text_decoder": false,
+            "text_encoder": false,
+            "text_initial": false,
+            "text_projection": false,
+            "token_embedding": false
+          },
+          "checkpoint_sha256": "826b2676a6b74438d3ffef5ae972dbd0cf8ae41b82471ea9b31c0e937c33a7d3",
+          "enabled_modules": [
+            "semantic_cell",
+            "coupling_cell"
+          ],
+          "stage": "transition",
+          "trainable_parameters": 147840
+        },
+        {
+          "actual_output_gradient_norm_sum": {
+            "coupling_cell": 2822.252292918157,
+            "image_cell": 2111.596306173291,
+            "initial_image": 9064.973107689508,
+            "initial_text": 516.5638635234872,
+            "semantic_cell": 1890.4939558833653,
+            "text_cell": 2.294301415306172
+          },
+          "changed_modules": {
+            "command_embedding": false,
+            "command_film": false,
+            "coupling_cell": true,
+            "digit_head": false,
+            "fuse": false,
+            "image_cell": true,
+            "initial_image": true,
+            "initial_text": true,
+            "pixel_decoder": false,
+            "pixel_encoder": false,
+            "semantic_cell": true,
+            "text_cell": true,
+            "text_decoder": false,
+            "text_encoder": false,
+            "text_initial": false,
+            "text_projection": false,
+            "token_embedding": false
+          },
+          "checkpoint_sha256": "6657b37476345e07aacc3473fa89b9245c713d79aec6535765aa9da89139da11",
+          "enabled_modules": [
+            "semantic_cell",
+            "coupling_cell",
+            "initial_image",
+            "initial_text",
+            "image_cell",
+            "text_cell"
+          ],
+          "stage": "adapter",
+          "trainable_parameters": 221952
+        },
+        {
+          "actual_output_gradient_norm_sum": {
+            "coupling_cell": 3274.558072773184,
+            "image_cell": 2091.5795568115086,
+            "initial_image": 9116.263929910016,
+            "initial_text": 560.655897510487,
+            "pixel_decoder": 26898.81341878292,
+            "semantic_cell": 1919.8230314243604,
+            "text_cell": 1.763237280717953,
+            "text_decoder": 12.609624914710619,
+            "text_initial": 22.68156063030005,
+            "text_projection": 14.019814482051666
+          },
+          "changed_modules": {
+            "command_embedding": false,
+            "command_film": false,
+            "coupling_cell": true,
+            "digit_head": false,
+            "fuse": false,
+            "image_cell": true,
+            "initial_image": true,
+            "initial_text": true,
+            "pixel_decoder": true,
+            "pixel_encoder": false,
+            "semantic_cell": true,
+            "text_cell": true,
+            "text_decoder": true,
+            "text_encoder": false,
+            "text_initial": true,
+            "text_projection": true,
+            "token_embedding": false
+          },
+          "checkpoint_sha256": "6953ee276ee43e9e6459d3a778c0dfcd760e50a703785dd30c4f5d8e6af51b81",
+          "enabled_modules": [
+            "semantic_cell",
+            "coupling_cell",
+            "initial_image",
+            "initial_text",
+            "image_cell",
+            "text_cell",
+            "pixel_decoder",
+            "text_initial",
+            "text_decoder",
+            "text_projection"
+          ],
+          "stage": "emission",
+          "trainable_parameters": 730328
+        },
+        {
+          "actual_output_gradient_norm_sum": {
+            "command_embedding": 71.8157380530714,
+            "command_film": 1127.0400143622064,
+            "coupling_cell": 3583.069521682202,
+            "fuse": 33110.79818275889,
+            "image_cell": 1931.9562325319885,
+            "initial_image": 9490.465888822822,
+            "initial_text": 636.0953158619825,
+            "pixel_decoder": 26177.37728708771,
+            "pixel_encoder": 42014.59938388339,
+            "semantic_cell": 2102.3642510570803,
+            "text_cell": 1.9760559308580596,
+            "text_decoder": 15.071992564190102,
+            "text_encoder": 9636.649357271384,
+            "text_initial": 23.74148047429282,
+            "text_projection": 13.844795894211996,
+            "token_embedding": 1271.6399440525884
+          },
+          "changed_modules": {
+            "command_embedding": true,
+            "command_film": true,
+            "coupling_cell": true,
+            "digit_head": false,
+            "fuse": true,
+            "image_cell": true,
+            "initial_image": true,
+            "initial_text": true,
+            "pixel_decoder": true,
+            "pixel_encoder": true,
+            "semantic_cell": true,
+            "text_cell": true,
+            "text_decoder": true,
+            "text_encoder": true,
+            "text_initial": true,
+            "text_projection": true,
+            "token_embedding": true
+          },
+          "checkpoint_sha256": "93efe16f899faf1acada033c254f9c11a4c2246403205c773b5fd3d546af14fc",
+          "enabled_modules": [
+            "semantic_cell",
+            "coupling_cell",
+            "initial_image",
+            "initial_text",
+            "image_cell",
+            "text_cell",
+            "pixel_decoder",
+            "text_initial",
+            "text_decoder",
+            "text_projection",
+            "token_embedding",
+            "text_encoder",
+            "pixel_encoder",
+            "fuse",
+            "command_embedding",
+            "command_film"
+          ],
+          "stage": "encoder",
+          "trainable_parameters": 1005524
+        }
+      ],
+      "training_counts": {
+        "actual_bundle_roundtrips": 15360,
+        "current_encoder_examples": 3840,
+        "current_transition_examples": 7680,
+        "frozen_reference_encoder_examples": 3840,
+        "gate_examples": 3840,
+        "observer_digit_examples": 30720,
+        "optimizer_steps": 320,
+        "pixel_emissions": 15360,
+        "token_emissions": 107520
+      },
+      "wall_ns": 37100645065
+    },
+    {
+      "actual_output_stream_sha256": "1da76fdf784a8ef9c978a36ec0922a427f9489139f3761beb909b9db50a038e9",
+      "arm": "fullpath_risk",
+      "cpu_ns": 55284186999,
+      "profile_sha256": "af6b4ad5009f0c00c6a2be3a9dbb9e442a892bc7505b6bf7d0e3b2a8561f384c",
+      "schedule_sha256": "cf6c162c12c8dbd8f3a0a4ee23416bd4f71556a9ecbb89c92456d50032c65bda",
+      "seed": 17,
+      "stages": [
+        {
+          "actual_output_gradient_norm_sum": {
+            "coupling_cell": 1960.157377286539,
+            "semantic_cell": 1105.3944380491612
+          },
+          "changed_modules": {
+            "command_embedding": false,
+            "command_film": false,
+            "coupling_cell": true,
+            "digit_head": false,
+            "fuse": false,
+            "image_cell": false,
+            "initial_image": false,
+            "initial_text": false,
+            "pixel_decoder": false,
+            "pixel_encoder": false,
+            "semantic_cell": true,
+            "text_cell": false,
+            "text_decoder": false,
+            "text_encoder": false,
+            "text_initial": false,
+            "text_projection": false,
+            "token_embedding": false
+          },
+          "checkpoint_sha256": "5cb52af8d619f1529e0a135a79454db481753cfd969c20e4b0eb3d78bc8c1b1f",
+          "enabled_modules": [
+            "semantic_cell",
+            "coupling_cell"
+          ],
+          "stage": "transition",
+          "trainable_parameters": 147840
+        },
+        {
+          "actual_output_gradient_norm_sum": {
+            "coupling_cell": 1455.8606241417212,
+            "image_cell": 1065.958837108938,
+            "initial_image": 4817.163277932991,
+            "initial_text": 262.74995499362694,
+            "semantic_cell": 959.3946397240832,
+            "text_cell": 1.1805740744389268
+          },
+          "changed_modules": {
+            "command_embedding": false,
+            "command_film": false,
+            "coupling_cell": true,
+            "digit_head": false,
+            "fuse": false,
+            "image_cell": true,
+            "initial_image": true,
+            "initial_text": true,
+            "pixel_decoder": false,
+            "pixel_encoder": false,
+            "semantic_cell": true,
+            "text_cell": true,
+            "text_decoder": false,
+            "text_encoder": false,
+            "text_initial": false,
+            "text_projection": false,
+            "token_embedding": false
+          },
+          "checkpoint_sha256": "fa62d957f1f2fdc02ea4b19c6655492af0d6a211ecf67df3afca944ee04d4b96",
+          "enabled_modules": [
+            "semantic_cell",
+            "coupling_cell",
+            "initial_image",
+            "initial_text",
+            "image_cell",
+            "text_cell"
+          ],
+          "stage": "adapter",
+          "trainable_parameters": 221952
+        },
+        {
+          "actual_output_gradient_norm_sum": {
+            "coupling_cell": 1539.4950762909018,
+            "image_cell": 899.2387104648534,
+            "initial_image": 4235.116328411903,
+            "initial_text": 270.9523134716405,
+            "pixel_decoder": 12282.535534947345,
+            "semantic_cell": 967.4262608657997,
+            "text_cell": 0.8457773004373115,
+            "text_decoder": 5.418569630349115,
+            "text_initial": 10.302367982601654,
+            "text_projection": 6.415390779791699
+          },
+          "changed_modules": {
+            "command_embedding": false,
+            "command_film": false,
+            "coupling_cell": true,
+            "digit_head": false,
+            "fuse": false,
+            "image_cell": true,
+            "initial_image": true,
+            "initial_text": true,
+            "pixel_decoder": true,
+            "pixel_encoder": false,
+            "semantic_cell": true,
+            "text_cell": true,
+            "text_decoder": true,
+            "text_encoder": false,
+            "text_initial": true,
+            "text_projection": true,
+            "token_embedding": false
+          },
+          "checkpoint_sha256": "390c5dbd4c90a2a698045fd9e2b6b7b6fc44b1907b68cca6a232acb0e8455c25",
+          "enabled_modules": [
+            "semantic_cell",
+            "coupling_cell",
+            "initial_image",
+            "initial_text",
+            "image_cell",
+            "text_cell",
+            "pixel_decoder",
+            "text_initial",
+            "text_decoder",
+            "text_projection"
+          ],
+          "stage": "emission",
+          "trainable_parameters": 730328
+        },
+        {
+          "actual_output_gradient_norm_sum": {
+            "command_embedding": 29.143027785330947,
+            "command_film": 456.0316356924565,
+            "coupling_cell": 1447.936437222163,
+            "fuse": 13661.670400980624,
+            "image_cell": 774.7098794861711,
+            "initial_image": 3908.199717944752,
+            "initial_text": 257.8104497156558,
+            "pixel_decoder": 11154.522031868086,
+            "pixel_encoder": 17018.312867837984,
+            "semantic_cell": 865.08121895636,
+            "text_cell": 0.8896558983489447,
+            "text_decoder": 7.117173498832877,
+            "text_encoder": 3889.9718731270896,
+            "text_initial": 10.822517765002855,
+            "text_projection": 6.0241200881196235,
+            "token_embedding": 513.5739151393592
+          },
+          "changed_modules": {
+            "command_embedding": true,
+            "command_film": true,
+            "coupling_cell": true,
+            "digit_head": false,
+            "fuse": true,
+            "image_cell": true,
+            "initial_image": true,
+            "initial_text": true,
+            "pixel_decoder": true,
+            "pixel_encoder": true,
+            "semantic_cell": true,
+            "text_cell": true,
+            "text_decoder": true,
+            "text_encoder": true,
+            "text_initial": true,
+            "text_projection": true,
+            "token_embedding": true
+          },
+          "checkpoint_sha256": "64767fa80e65097389a69957b313eb5e7567f486c6ba8f60c6e48fa8953b1e3f",
+          "enabled_modules": [
+            "semantic_cell",
+            "coupling_cell",
+            "initial_image",
+            "initial_text",
+            "image_cell",
+            "text_cell",
+            "pixel_decoder",
+            "text_initial",
+            "text_decoder",
+            "text_projection",
+            "token_embedding",
+            "text_encoder",
+            "pixel_encoder",
+            "fuse",
+            "command_embedding",
+            "command_film"
+          ],
+          "stage": "encoder",
+          "trainable_parameters": 1005524
+        }
+      ],
+      "training_counts": {
+        "actual_bundle_roundtrips": 15360,
+        "current_encoder_examples": 3840,
+        "current_transition_examples": 7680,
+        "frozen_reference_encoder_examples": 3840,
+        "gate_examples": 3840,
+        "observer_digit_examples": 30720,
+        "optimizer_steps": 320,
+        "pixel_emissions": 15360,
+        "token_emissions": 107520
+      },
+      "wall_ns": 36517653527
+    },
+    {
+      "actual_output_stream_sha256": "4badb32c1432ea381b911fd5724799fdf38551613d489b1a943bcaf2d0d94c74",
+      "arm": "fullpath_mean",
+      "cpu_ns": 48793242185,
+      "profile_sha256": "f799c313acaf5d56c870cc1d318240549306b37dce003c0d3d544c5bfa1e098b",
+      "schedule_sha256": "cf8fe7fcfd2991cd48d406422b2813b412c9eefe65cf294b9e804fd1ac7e01b3",
+      "seed": 29,
+      "stages": [
+        {
+          "actual_output_gradient_norm_sum": {
+            "coupling_cell": 3229.9436976318684,
+            "semantic_cell": 1895.0560952579433
+          },
+          "changed_modules": {
+            "command_embedding": false,
+            "command_film": false,
+            "coupling_cell": true,
+            "digit_head": false,
+            "fuse": false,
+            "image_cell": false,
+            "initial_image": false,
+            "initial_text": false,
+            "pixel_decoder": false,
+            "pixel_encoder": false,
+            "semantic_cell": true,
+            "text_cell": false,
+            "text_decoder": false,
+            "text_encoder": false,
+            "text_initial": false,
+            "text_projection": false,
+            "token_embedding": false
+          },
+          "checkpoint_sha256": "0231d8559c922f60e82fa358318cd58e8e7d570ea82dcd64d8a8a0efe7c23960",
+          "enabled_modules": [
+            "semantic_cell",
+            "coupling_cell"
+          ],
+          "stage": "transition",
+          "trainable_parameters": 147840
+        },
+        {
+          "actual_output_gradient_norm_sum": {
+            "coupling_cell": 3126.8916401108063,
+            "image_cell": 1908.3140639143185,
+            "initial_image": 9379.75000764494,
+            "initial_text": 561.7781689927722,
+            "semantic_cell": 1921.043101033039,
+            "text_cell": 1.9236479747698774
+          },
+          "changed_modules": {
+            "command_embedding": false,
+            "command_film": false,
+            "coupling_cell": true,
+            "digit_head": false,
+            "fuse": false,
+            "image_cell": true,
+            "initial_image": true,
+            "initial_text": true,
+            "pixel_decoder": false,
+            "pixel_encoder": false,
+            "semantic_cell": true,
+            "text_cell": true,
+            "text_decoder": false,
+            "text_encoder": false,
+            "text_initial": false,
+            "text_projection": false,
+            "token_embedding": false
+          },
+          "checkpoint_sha256": "4f990b5e699cd3c93cb8cdb6dd9fbf595147f5f6829a60c22d2625831a1736cd",
+          "enabled_modules": [
+            "semantic_cell",
+            "coupling_cell",
+            "initial_image",
+            "initial_text",
+            "image_cell",
+            "text_cell"
+          ],
+          "stage": "adapter",
+          "trainable_parameters": 221952
+        },
+        {
+          "actual_output_gradient_norm_sum": {
+            "coupling_cell": 3527.039785031725,
+            "image_cell": 2053.816386250474,
+            "initial_image": 9417.319787524402,
+            "initial_text": 619.7998526965239,
+            "pixel_decoder": 27439.082738399644,
+            "semantic_cell": 1956.3735971181409,
+            "text_cell": 2.361187505610577,
+            "text_decoder": 12.73922534563244,
+            "text_initial": 23.64055446623692,
+            "text_projection": 14.026245855632691
+          },
+          "changed_modules": {
+            "command_embedding": false,
+            "command_film": false,
+            "coupling_cell": true,
+            "digit_head": false,
+            "fuse": false,
+            "image_cell": true,
+            "initial_image": true,
+            "initial_text": true,
+            "pixel_decoder": true,
+            "pixel_encoder": false,
+            "semantic_cell": true,
+            "text_cell": true,
+            "text_decoder": true,
+            "text_encoder": false,
+            "text_initial": true,
+            "text_projection": true,
+            "token_embedding": false
+          },
+          "checkpoint_sha256": "b7f33b185367fa94a19c5d58348db1bec1af55ff6a9c7c9d3ac6f848aa6a77b3",
+          "enabled_modules": [
+            "semantic_cell",
+            "coupling_cell",
+            "initial_image",
+            "initial_text",
+            "image_cell",
+            "text_cell",
+            "pixel_decoder",
+            "text_initial",
+            "text_decoder",
+            "text_projection"
+          ],
+          "stage": "emission",
+          "trainable_parameters": 730328
+        },
+        {
+          "actual_output_gradient_norm_sum": {
+            "command_embedding": 64.19722008691551,
+            "command_film": 1009.3281113445433,
+            "coupling_cell": 2827.3932237402455,
+            "fuse": 29382.325425363862,
+            "image_cell": 2029.1684882297534,
+            "initial_image": 8326.24739614527,
+            "initial_text": 501.2126755792394,
+            "pixel_decoder": 24108.182062170043,
+            "pixel_encoder": 36541.188722516745,
+            "semantic_cell": 1567.493575536922,
+            "text_cell": 2.132353022924329,
+            "text_decoder": 11.09123100146668,
+            "text_encoder": 8156.596224479642,
+            "text_initial": 20.665657429409862,
+            "text_projection": 12.659168275317068,
+            "token_embedding": 1109.5628871077545
+          },
+          "changed_modules": {
+            "command_embedding": true,
+            "command_film": true,
+            "coupling_cell": true,
+            "digit_head": false,
+            "fuse": true,
+            "image_cell": true,
+            "initial_image": true,
+            "initial_text": true,
+            "pixel_decoder": true,
+            "pixel_encoder": true,
+            "semantic_cell": true,
+            "text_cell": true,
+            "text_decoder": true,
+            "text_encoder": true,
+            "text_initial": true,
+            "text_projection": true,
+            "token_embedding": true
+          },
+          "checkpoint_sha256": "0e376f1f9249d3da3f6af5fa6d20de1077807d7faf8fdc9139ea7358c56b36d4",
+          "enabled_modules": [
+            "semantic_cell",
+            "coupling_cell",
+            "initial_image",
+            "initial_text",
+            "image_cell",
+            "text_cell",
+            "pixel_decoder",
+            "text_initial",
+            "text_decoder",
+            "text_projection",
+            "token_embedding",
+            "text_encoder",
+            "pixel_encoder",
+            "fuse",
+            "command_embedding",
+            "command_film"
+          ],
+          "stage": "encoder",
+          "trainable_parameters": 1005524
+        }
+      ],
+      "training_counts": {
+        "actual_bundle_roundtrips": 15360,
+        "current_encoder_examples": 3840,
+        "current_transition_examples": 7680,
+        "frozen_reference_encoder_examples": 3840,
+        "gate_examples": 3840,
+        "observer_digit_examples": 30720,
+        "optimizer_steps": 320,
+        "pixel_emissions": 15360,
+        "token_emissions": 107520
+      },
+      "wall_ns": 32579631054
+    },
+    {
+      "actual_output_stream_sha256": "2847b7ee8d1c89296ea04d984dd1c1ea25b2c9a30598969e6e9b8aba1c633919",
+      "arm": "fullpath_risk",
+      "cpu_ns": 47002912913,
+      "profile_sha256": "af6b4ad5009f0c00c6a2be3a9dbb9e442a892bc7505b6bf7d0e3b2a8561f384c",
+      "schedule_sha256": "cf8fe7fcfd2991cd48d406422b2813b412c9eefe65cf294b9e804fd1ac7e01b3",
+      "seed": 29,
+      "stages": [
+        {
+          "actual_output_gradient_norm_sum": {
+            "coupling_cell": 1773.3074050860623,
+            "semantic_cell": 1091.121987763685
+          },
+          "changed_modules": {
+            "command_embedding": false,
+            "command_film": false,
+            "coupling_cell": true,
+            "digit_head": false,
+            "fuse": false,
+            "image_cell": false,
+            "initial_image": false,
+            "initial_text": false,
+            "pixel_decoder": false,
+            "pixel_encoder": false,
+            "semantic_cell": true,
+            "text_cell": false,
+            "text_decoder": false,
+            "text_encoder": false,
+            "text_initial": false,
+            "text_projection": false,
+            "token_embedding": false
+          },
+          "checkpoint_sha256": "45beb5a825ceef706e8171bc12b34504e1d0a46c4fc9f6ecd9dd38db28a1b7c3",
+          "enabled_modules": [
+            "semantic_cell",
+            "coupling_cell"
+          ],
+          "stage": "transition",
+          "trainable_parameters": 147840
+        },
+        {
+          "actual_output_gradient_norm_sum": {
+            "coupling_cell": 1563.091904043552,
+            "image_cell": 983.4808708038828,
+            "initial_image": 4844.9196596286265,
+            "initial_text": 272.83488125612877,
+            "semantic_cell": 908.7335845585832,
+            "text_cell": 1.0516477715185435
+          },
+          "changed_modules": {
+            "command_embedding": false,
+            "command_film": false,
+            "coupling_cell": true,
+            "digit_head": false,
+            "fuse": false,
+            "image_cell": true,
+            "initial_image": true,
+            "initial_text": true,
+            "pixel_decoder": false,
+            "pixel_encoder": false,
+            "semantic_cell": true,
+            "text_cell": true,
+            "text_decoder": false,
+            "text_encoder": false,
+            "text_initial": false,
+            "text_projection": false,
+            "token_embedding": false
+          },
+          "checkpoint_sha256": "0a1f168420e8ff639b0e4f1abf9741b49379ce65e07935121118423d1f4fcad3",
+          "enabled_modules": [
+            "semantic_cell",
+            "coupling_cell",
+            "initial_image",
+            "initial_text",
+            "image_cell",
+            "text_cell"
+          ],
+          "stage": "adapter",
+          "trainable_parameters": 221952
+        },
+        {
+          "actual_output_gradient_norm_sum": {
+            "coupling_cell": 1520.780638475285,
+            "image_cell": 969.6747363780331,
+            "initial_image": 4353.753976929759,
+            "initial_text": 270.2869957005943,
+            "pixel_decoder": 12663.156387155192,
+            "semantic_cell": 900.0823297813902,
+            "text_cell": 1.1133749583055341,
+            "text_decoder": 6.051457104037642,
+            "text_initial": 10.863052917826892,
+            "text_projection": 6.693671023889617
+          },
+          "changed_modules": {
+            "command_embedding": false,
+            "command_film": false,
+            "coupling_cell": true,
+            "digit_head": false,
+            "fuse": false,
+            "image_cell": true,
+            "initial_image": true,
+            "initial_text": true,
+            "pixel_decoder": true,
+            "pixel_encoder": false,
+            "semantic_cell": true,
+            "text_cell": true,
+            "text_decoder": true,
+            "text_encoder": false,
+            "text_initial": true,
+            "text_projection": true,
+            "token_embedding": false
+          },
+          "checkpoint_sha256": "34bea78a6b48537ff7a7483b3fb733b92103250773908f0bd5691bd584cbbfad",
+          "enabled_modules": [
+            "semantic_cell",
+            "coupling_cell",
+            "initial_image",
+            "initial_text",
+            "image_cell",
+            "text_cell",
+            "pixel_decoder",
+            "text_initial",
+            "text_decoder",
+            "text_projection"
+          ],
+          "stage": "emission",
+          "trainable_parameters": 730328
+        },
+        {
+          "actual_output_gradient_norm_sum": {
+            "command_embedding": 33.9621226797485,
+            "command_film": 521.7917928691003,
+            "coupling_cell": 1469.2164477311605,
+            "fuse": 16230.05804262883,
+            "image_cell": 1127.2699697371463,
+            "initial_image": 4655.584022244636,
+            "initial_text": 276.45570156375106,
+            "pixel_decoder": 12824.568231899168,
+            "pixel_encoder": 20116.679249197347,
+            "semantic_cell": 876.1724747112225,
+            "text_cell": 1.2827819965550475,
+            "text_decoder": 5.992438886617734,
+            "text_encoder": 4489.686971158856,
+            "text_initial": 11.106032542072768,
+            "text_projection": 6.962564233401968,
+            "token_embedding": 601.2291054448942
+          },
+          "changed_modules": {
+            "command_embedding": true,
+            "command_film": true,
+            "coupling_cell": true,
+            "digit_head": false,
+            "fuse": true,
+            "image_cell": true,
+            "initial_image": true,
+            "initial_text": true,
+            "pixel_decoder": true,
+            "pixel_encoder": true,
+            "semantic_cell": true,
+            "text_cell": true,
+            "text_decoder": true,
+            "text_encoder": true,
+            "text_initial": true,
+            "text_projection": true,
+            "token_embedding": true
+          },
+          "checkpoint_sha256": "aec7377dff66b7e435f86b07fac4422caa3807a53f7852b17d03f784f1f087b1",
+          "enabled_modules": [
+            "semantic_cell",
+            "coupling_cell",
+            "initial_image",
+            "initial_text",
+            "image_cell",
+            "text_cell",
+            "pixel_decoder",
+            "text_initial",
+            "text_decoder",
+            "text_projection",
+            "token_embedding",
+            "text_encoder",
+            "pixel_encoder",
+            "fuse",
+            "command_embedding",
+            "command_film"
+          ],
+          "stage": "encoder",
+          "trainable_parameters": 1005524
+        }
+      ],
+      "training_counts": {
+        "actual_bundle_roundtrips": 15360,
+        "current_encoder_examples": 3840,
+        "current_transition_examples": 7680,
+        "frozen_reference_encoder_examples": 3840,
+        "gate_examples": 3840,
+        "observer_digit_examples": 30720,
+        "optimizer_steps": 320,
+        "pixel_emissions": 15360,
+        "token_emissions": 107520
+      },
+      "wall_ns": 30981465002
+    },
+    {
+      "actual_output_stream_sha256": "7651f88eb3868b54660258a05503d0a4a4d2c7838e1e1eae3d4588a346e35170",
+      "arm": "fullpath_mean",
+      "cpu_ns": 43070225495,
+      "profile_sha256": "f799c313acaf5d56c870cc1d318240549306b37dce003c0d3d544c5bfa1e098b",
+      "schedule_sha256": "78504dcb161ac641283e8c30f85ffba5da25fb2852cd449430556c5a8bbbd7d7",
+      "seed": 43,
+      "stages": [
+        {
+          "actual_output_gradient_norm_sum": {
+            "coupling_cell": 3866.3954470991666,
+            "semantic_cell": 2307.451618198947
+          },
+          "changed_modules": {
+            "command_embedding": false,
+            "command_film": false,
+            "coupling_cell": true,
+            "digit_head": false,
+            "fuse": false,
+            "image_cell": false,
+            "initial_image": false,
+            "initial_text": false,
+            "pixel_decoder": false,
+            "pixel_encoder": false,
+            "semantic_cell": true,
+            "text_cell": false,
+            "text_decoder": false,
+            "text_encoder": false,
+            "text_initial": false,
+            "text_projection": false,
+            "token_embedding": false
+          },
+          "checkpoint_sha256": "65a939c50a5057dcb84b8e859a5f908169ffa00f04d85cddb84dc90158e33494",
+          "enabled_modules": [
+            "semantic_cell",
+            "coupling_cell"
+          ],
+          "stage": "transition",
+          "trainable_parameters": 147840
+        },
+        {
+          "actual_output_gradient_norm_sum": {
+            "coupling_cell": 3314.996916863358,
+            "image_cell": 2108.604673063993,
+            "initial_image": 9282.0255461423,
+            "initial_text": 575.0237539922107,
+            "semantic_cell": 1838.5049080130498,
+            "text_cell": 1.7217169246899058
+          },
+          "changed_modules": {
+            "command_embedding": false,
+            "command_film": false,
+            "coupling_cell": true,
+            "digit_head": false,
+            "fuse": false,
+            "image_cell": true,
+            "initial_image": true,
+            "initial_text": true,
+            "pixel_decoder": false,
+            "pixel_encoder": false,
+            "semantic_cell": true,
+            "text_cell": true,
+            "text_decoder": false,
+            "text_encoder": false,
+            "text_initial": false,
+            "text_projection": false,
+            "token_embedding": false
+          },
+          "checkpoint_sha256": "c14be7574da69fcadc850cc0845e52c9132149b274c584795ebe02db4a1f0fe5",
+          "enabled_modules": [
+            "semantic_cell",
+            "coupling_cell",
+            "initial_image",
+            "initial_text",
+            "image_cell",
+            "text_cell"
+          ],
+          "stage": "adapter",
+          "trainable_parameters": 221952
+        },
+        {
+          "actual_output_gradient_norm_sum": {
+            "coupling_cell": 3023.3022124829104,
+            "image_cell": 2052.2683699588606,
+            "initial_image": 8738.843270813451,
+            "initial_text": 549.7420091606266,
+            "pixel_decoder": 24396.19563685212,
+            "semantic_cell": 1805.8267765637186,
+            "text_cell": 2.014183101536538,
+            "text_decoder": 12.292167178611734,
+            "text_initial": 21.41218927549947,
+            "text_projection": 12.436011570234108
+          },
+          "changed_modules": {
+            "command_embedding": false,
+            "command_film": false,
+            "coupling_cell": true,
+            "digit_head": false,
+            "fuse": false,
+            "image_cell": true,
+            "initial_image": true,
+            "initial_text": true,
+            "pixel_decoder": true,
+            "pixel_encoder": false,
+            "semantic_cell": true,
+            "text_cell": true,
+            "text_decoder": true,
+            "text_encoder": false,
+            "text_initial": true,
+            "text_projection": true,
+            "token_embedding": false
+          },
+          "checkpoint_sha256": "da2167604458ef3686894fa51d910b56845e30441abd17e1d994f3618b1ed01a",
+          "enabled_modules": [
+            "semantic_cell",
+            "coupling_cell",
+            "initial_image",
+            "initial_text",
+            "image_cell",
+            "text_cell",
+            "pixel_decoder",
+            "text_initial",
+            "text_decoder",
+            "text_projection"
+          ],
+          "stage": "emission",
+          "trainable_parameters": 730328
+        },
+        {
+          "actual_output_gradient_norm_sum": {
+            "command_embedding": 68.4049727707361,
+            "command_film": 1108.6521199936126,
+            "coupling_cell": 3754.1109789363604,
+            "fuse": 31291.678206399585,
+            "image_cell": 2085.2442020932644,
+            "initial_image": 9146.936771214556,
+            "initial_text": 651.833886846041,
+            "pixel_decoder": 25424.025404681794,
+            "pixel_encoder": 40088.64764938948,
+            "semantic_cell": 2100.1156233313695,
+            "text_cell": 1.9700831115865414,
+            "text_decoder": 12.935970211758633,
+            "text_encoder": 9004.091593553734,
+            "text_initial": 22.724415794977993,
+            "text_projection": 12.94693728780617,
+            "token_embedding": 1214.0395888252203
+          },
+          "changed_modules": {
+            "command_embedding": true,
+            "command_film": true,
+            "coupling_cell": true,
+            "digit_head": false,
+            "fuse": true,
+            "image_cell": true,
+            "initial_image": true,
+            "initial_text": true,
+            "pixel_decoder": true,
+            "pixel_encoder": true,
+            "semantic_cell": true,
+            "text_cell": true,
+            "text_decoder": true,
+            "text_encoder": true,
+            "text_initial": true,
+            "text_projection": true,
+            "token_embedding": true
+          },
+          "checkpoint_sha256": "dbe7b04d8f89d05fd85c87216fb733e5fed7bda132c185a4b8f24b0f05c2f2e8",
+          "enabled_modules": [
+            "semantic_cell",
+            "coupling_cell",
+            "initial_image",
+            "initial_text",
+            "image_cell",
+            "text_cell",
+            "pixel_decoder",
+            "text_initial",
+            "text_decoder",
+            "text_projection",
+            "token_embedding",
+            "text_encoder",
+            "pixel_encoder",
+            "fuse",
+            "command_embedding",
+            "command_film"
+          ],
+          "stage": "encoder",
+          "trainable_parameters": 1005524
+        }
+      ],
+      "training_counts": {
+        "actual_bundle_roundtrips": 15360,
+        "current_encoder_examples": 3840,
+        "current_transition_examples": 7680,
+        "frozen_reference_encoder_examples": 3840,
+        "gate_examples": 3840,
+        "observer_digit_examples": 30720,
+        "optimizer_steps": 320,
+        "pixel_emissions": 15360,
+        "token_emissions": 107520
+      },
+      "wall_ns": 28744858669
+    },
+    {
+      "actual_output_stream_sha256": "4e08062df4b6dee5de6bb9b97ada8452eb32cfdb1af6cd137a1ecde649caed7b",
+      "arm": "fullpath_risk",
+      "cpu_ns": 46439391032,
+      "profile_sha256": "af6b4ad5009f0c00c6a2be3a9dbb9e442a892bc7505b6bf7d0e3b2a8561f384c",
+      "schedule_sha256": "78504dcb161ac641283e8c30f85ffba5da25fb2852cd449430556c5a8bbbd7d7",
+      "seed": 43,
+      "stages": [
+        {
+          "actual_output_gradient_norm_sum": {
+            "coupling_cell": 2213.4951795037823,
+            "semantic_cell": 1365.7458554070492
+          },
+          "changed_modules": {
+            "command_embedding": false,
+            "command_film": false,
+            "coupling_cell": true,
+            "digit_head": false,
+            "fuse": false,
+            "image_cell": false,
+            "initial_image": false,
+            "initial_text": false,
+            "pixel_decoder": false,
+            "pixel_encoder": false,
+            "semantic_cell": true,
+            "text_cell": false,
+            "text_decoder": false,
+            "text_encoder": false,
+            "text_initial": false,
+            "text_projection": false,
+            "token_embedding": false
+          },
+          "checkpoint_sha256": "3e0621ecf5856ab24e2c50ca0d800ba25654b33fa741f9439650f7bc6a49c5d2",
+          "enabled_modules": [
+            "semantic_cell",
+            "coupling_cell"
+          ],
+          "stage": "transition",
+          "trainable_parameters": 147840
+        },
+        {
+          "actual_output_gradient_norm_sum": {
+            "coupling_cell": 1910.8588809890641,
+            "image_cell": 957.0571806276749,
+            "initial_image": 4828.678726392282,
+            "initial_text": 334.0290024405606,
+            "semantic_cell": 1010.9127609904031,
+            "text_cell": 0.7640956392933824
+          },
+          "changed_modules": {
+            "command_embedding": false,
+            "command_film": false,
+            "coupling_cell": true,
+            "digit_head": false,
+            "fuse": false,
+            "image_cell": true,
+            "initial_image": true,
+            "initial_text": true,
+            "pixel_decoder": false,
+            "pixel_encoder": false,
+            "semantic_cell": true,
+            "text_cell": true,
+            "text_decoder": false,
+            "text_encoder": false,
+            "text_initial": false,
+            "text_projection": false,
+            "token_embedding": false
+          },
+          "checkpoint_sha256": "083ec9c0b86ca04164f28ac8d1088f2d5499e8738ac3b21ed414c3e17102bb6e",
+          "enabled_modules": [
+            "semantic_cell",
+            "coupling_cell",
+            "initial_image",
+            "initial_text",
+            "image_cell",
+            "text_cell"
+          ],
+          "stage": "adapter",
+          "trainable_parameters": 221952
+        },
+        {
+          "actual_output_gradient_norm_sum": {
+            "coupling_cell": 1653.1315889929954,
+            "image_cell": 1004.5748902551368,
+            "initial_image": 4818.942392717329,
+            "initial_text": 313.3057729406893,
+            "pixel_decoder": 13156.494176439573,
+            "semantic_cell": 1047.1822674138518,
+            "text_cell": 1.0042823430899122,
+            "text_decoder": 6.62020253599692,
+            "text_initial": 11.578066874384636,
+            "text_projection": 6.913861885656802
+          },
+          "changed_modules": {
+            "command_embedding": false,
+            "command_film": false,
+            "coupling_cell": true,
+            "digit_head": false,
+            "fuse": false,
+            "image_cell": true,
+            "initial_image": true,
+            "initial_text": true,
+            "pixel_decoder": true,
+            "pixel_encoder": false,
+            "semantic_cell": true,
+            "text_cell": true,
+            "text_decoder": true,
+            "text_encoder": false,
+            "text_initial": true,
+            "text_projection": true,
+            "token_embedding": false
+          },
+          "checkpoint_sha256": "45186a8fb9c35b881a6b7b5b626773b5601b932a21ba44b1f8b530176e577c8c",
+          "enabled_modules": [
+            "semantic_cell",
+            "coupling_cell",
+            "initial_image",
+            "initial_text",
+            "image_cell",
+            "text_cell",
+            "pixel_decoder",
+            "text_initial",
+            "text_decoder",
+            "text_projection"
+          ],
+          "stage": "emission",
+          "trainable_parameters": 730328
+        },
+        {
+          "actual_output_gradient_norm_sum": {
+            "command_embedding": 34.794106825339995,
+            "command_film": 569.8957937178972,
+            "coupling_cell": 1900.648030956699,
+            "fuse": 15667.542027077228,
+            "image_cell": 1063.9250426884785,
+            "initial_image": 4627.979107959683,
+            "initial_text": 327.6853150241901,
+            "pixel_decoder": 12484.512867098623,
+            "pixel_encoder": 19786.643428924835,
+            "semantic_cell": 998.2619604019777,
+            "text_cell": 0.8792366908641733,
+            "text_decoder": 6.146961872843133,
+            "text_encoder": 4354.409710886459,
+            "text_initial": 11.168493009748525,
+            "text_projection": 6.580110251769939,
+            "token_embedding": 582.1274210198117
+          },
+          "changed_modules": {
+            "command_embedding": true,
+            "command_film": true,
+            "coupling_cell": true,
+            "digit_head": false,
+            "fuse": true,
+            "image_cell": true,
+            "initial_image": true,
+            "initial_text": true,
+            "pixel_decoder": true,
+            "pixel_encoder": true,
+            "semantic_cell": true,
+            "text_cell": true,
+            "text_decoder": true,
+            "text_encoder": true,
+            "text_initial": true,
+            "text_projection": true,
+            "token_embedding": true
+          },
+          "checkpoint_sha256": "43eb6689ecfce6fa235d4c6a9367bae314b58ccf4cb2371bfef9bc3bb6fb530f",
+          "enabled_modules": [
+            "semantic_cell",
+            "coupling_cell",
+            "initial_image",
+            "initial_text",
+            "image_cell",
+            "text_cell",
+            "pixel_decoder",
+            "text_initial",
+            "text_decoder",
+            "text_projection",
+            "token_embedding",
+            "text_encoder",
+            "pixel_encoder",
+            "fuse",
+            "command_embedding",
+            "command_film"
+          ],
+          "stage": "encoder",
+          "trainable_parameters": 1005524
+        }
+      ],
+      "training_counts": {
+        "actual_bundle_roundtrips": 15360,
+        "current_encoder_examples": 3840,
+        "current_transition_examples": 7680,
+        "frozen_reference_encoder_examples": 3840,
+        "gate_examples": 3840,
+        "observer_digit_examples": 30720,
+        "optimizer_steps": 320,
+        "pixel_emissions": 15360,
+        "token_emissions": 107520
+      },
+      "wall_ns": 31031485531
+    }
+  ],
+  "selections": [
+    {
+      "arm": "fullpath_mean",
+      "audit_observer_used": false,
+      "candidates": [
+        {
+          "eligible": true,
+          "path": null,
+          "quality_ce": 0.7841237489976565,
+          "retention_ce": 0.8920804931312456,
+          "stage": "original"
+        },
+        {
+          "checkpoint_sha256": "826b2676a6b74438d3ffef5ae972dbd0cf8ae41b82471ea9b31c0e937c33a7d3",
+          "eligible": false,
+          "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-17-fullpath_mean/transition.pt",
+          "quality_ce": 0.7965655979421606,
+          "retention_ce": 0.8868152689779571,
+          "stage": "transition"
+        },
+        {
+          "checkpoint_sha256": "6657b37476345e07aacc3473fa89b9245c713d79aec6535765aa9da89139da11",
+          "eligible": false,
+          "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-17-fullpath_mean/adapter.pt",
+          "quality_ce": 0.7965656576783657,
+          "retention_ce": 0.8868157047814468,
+          "stage": "adapter"
+        },
+        {
+          "checkpoint_sha256": "6953ee276ee43e9e6459d3a778c0dfcd760e50a703785dd30c4f5d8e6af51b81",
+          "eligible": false,
+          "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-17-fullpath_mean/emission.pt",
+          "quality_ce": 0.7965654913322067,
+          "retention_ce": 0.8868154785082663,
+          "stage": "emission"
+        },
+        {
+          "checkpoint_sha256": "93efe16f899faf1acada033c254f9c11a4c2246403205c773b5fd3d546af14fc",
+          "eligible": false,
+          "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-17-fullpath_mean/encoder.pt",
+          "quality_ce": 0.7909085216359152,
+          "retention_ce": 0.8868135698974539,
+          "stage": "encoder"
+        }
+      ],
+      "primary_profile_sha256": "af6b4ad5009f0c00c6a2be3a9dbb9e442a892bc7505b6bf7d0e3b2a8561f384c",
+      "qualification_used": false,
+      "seed": 17,
+      "selected": {
+        "eligible": true,
+        "path": null,
+        "quality_ce": 0.7841237489976565,
+        "retention_ce": 0.8920804931312456,
+        "stage": "original"
+      },
+      "training_profile_sha256": "f799c313acaf5d56c870cc1d318240549306b37dce003c0d3d544c5bfa1e098b"
+    },
+    {
+      "arm": "fullpath_risk",
+      "audit_observer_used": false,
+      "candidates": [
+        {
+          "eligible": true,
+          "path": null,
+          "quality_ce": 0.7841237489976565,
+          "retention_ce": 0.8920804931312456,
+          "stage": "original"
+        },
+        {
+          "checkpoint_sha256": "5cb52af8d619f1529e0a135a79454db481753cfd969c20e4b0eb3d78bc8c1b1f",
+          "eligible": false,
+          "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-17-fullpath_risk/transition.pt",
+          "quality_ce": 0.7965656181841401,
+          "retention_ce": 0.8868151508403896,
+          "stage": "transition"
+        },
+        {
+          "checkpoint_sha256": "fa62d957f1f2fdc02ea4b19c6655492af0d6a211ecf67df3afca944ee04d4b96",
+          "eligible": false,
+          "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-17-fullpath_risk/adapter.pt",
+          "quality_ce": 0.7965658292443373,
+          "retention_ce": 0.8868156246663685,
+          "stage": "adapter"
+        },
+        {
+          "checkpoint_sha256": "390c5dbd4c90a2a698045fd9e2b6b7b6fc44b1907b68cca6a232acb0e8455c25",
+          "eligible": false,
+          "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-17-fullpath_risk/emission.pt",
+          "quality_ce": 0.7965656981463899,
+          "retention_ce": 0.8868155824708203,
+          "stage": "emission"
+        },
+        {
+          "checkpoint_sha256": "64767fa80e65097389a69957b313eb5e7567f486c6ba8f60c6e48fa8953b1e3f",
+          "eligible": false,
+          "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-17-fullpath_risk/encoder.pt",
+          "quality_ce": 0.7889819715137099,
+          "retention_ce": 0.8868139262010032,
+          "stage": "encoder"
+        }
+      ],
+      "primary_profile_sha256": "af6b4ad5009f0c00c6a2be3a9dbb9e442a892bc7505b6bf7d0e3b2a8561f384c",
+      "qualification_used": false,
+      "seed": 17,
+      "selected": {
+        "eligible": true,
+        "path": null,
+        "quality_ce": 0.7841237489976565,
+        "retention_ce": 0.8920804931312456,
+        "stage": "original"
+      },
+      "training_profile_sha256": "af6b4ad5009f0c00c6a2be3a9dbb9e442a892bc7505b6bf7d0e3b2a8561f384c"
+    },
+    {
+      "arm": "fullpath_mean",
+      "audit_observer_used": false,
+      "candidates": [
+        {
+          "eligible": true,
+          "path": null,
+          "quality_ce": 0.7603668587025373,
+          "retention_ce": 0.8950440566326798,
+          "stage": "original"
+        },
+        {
+          "checkpoint_sha256": "0231d8559c922f60e82fa358318cd58e8e7d570ea82dcd64d8a8a0efe7c23960",
+          "eligible": false,
+          "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-29-fullpath_mean/transition.pt",
+          "quality_ce": 0.7672539342212353,
+          "retention_ce": 0.8743548411219653,
+          "stage": "transition"
+        },
+        {
+          "checkpoint_sha256": "4f990b5e699cd3c93cb8cdb6dd9fbf595147f5f6829a60c22d2625831a1736cd",
+          "eligible": false,
+          "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-29-fullpath_mean/adapter.pt",
+          "quality_ce": 0.7690955776623739,
+          "retention_ce": 0.8743543201198318,
+          "stage": "adapter"
+        },
+        {
+          "checkpoint_sha256": "b7f33b185367fa94a19c5d58348db1bec1af55ff6a9c7c9d3ac6f848aa6a77b3",
+          "eligible": false,
+          "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-29-fullpath_mean/emission.pt",
+          "quality_ce": 0.7672520130293267,
+          "retention_ce": 0.8743547704328999,
+          "stage": "emission"
+        },
+        {
+          "checkpoint_sha256": "0e376f1f9249d3da3f6af5fa6d20de1077807d7faf8fdc9139ea7358c56b36d4",
+          "eligible": false,
+          "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-29-fullpath_mean/encoder.pt",
+          "quality_ce": 0.7723841495798686,
+          "retention_ce": 0.8834069223924975,
+          "stage": "encoder"
+        }
+      ],
+      "primary_profile_sha256": "af6b4ad5009f0c00c6a2be3a9dbb9e442a892bc7505b6bf7d0e3b2a8561f384c",
+      "qualification_used": false,
+      "seed": 29,
+      "selected": {
+        "eligible": true,
+        "path": null,
+        "quality_ce": 0.7603668587025373,
+        "retention_ce": 0.8950440566326798,
+        "stage": "original"
+      },
+      "training_profile_sha256": "f799c313acaf5d56c870cc1d318240549306b37dce003c0d3d544c5bfa1e098b"
+    },
+    {
+      "arm": "fullpath_risk",
+      "audit_observer_used": false,
+      "candidates": [
+        {
+          "eligible": true,
+          "path": null,
+          "quality_ce": 0.7603668587025373,
+          "retention_ce": 0.8950440566326798,
+          "stage": "original"
+        },
+        {
+          "checkpoint_sha256": "45beb5a825ceef706e8171bc12b34504e1d0a46c4fc9f6ecd9dd38db28a1b7c3",
+          "eligible": false,
+          "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-29-fullpath_risk/transition.pt",
+          "quality_ce": 0.7672539814395036,
+          "retention_ce": 0.8743547158760284,
+          "stage": "transition"
+        },
+        {
+          "checkpoint_sha256": "0a1f168420e8ff639b0e4f1abf9741b49379ce65e07935121118423d1f4fcad3",
+          "eligible": false,
+          "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-29-fullpath_risk/adapter.pt",
+          "quality_ce": 0.7690958400355896,
+          "retention_ce": 0.8743540666435664,
+          "stage": "adapter"
+        },
+        {
+          "checkpoint_sha256": "34bea78a6b48537ff7a7483b3fb733b92103250773908f0bd5691bd584cbbfad",
+          "eligible": false,
+          "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-29-fullpath_risk/emission.pt",
+          "quality_ce": 0.7672520489975581,
+          "retention_ce": 0.8698913846025922,
+          "stage": "emission"
+        },
+        {
+          "checkpoint_sha256": "aec7377dff66b7e435f86b07fac4422caa3807a53f7852b17d03f784f1f087b1",
+          "eligible": false,
+          "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-29-fullpath_risk/encoder.pt",
+          "quality_ce": 0.7723839902806763,
+          "retention_ce": 0.8834060779683238,
+          "stage": "encoder"
+        }
+      ],
+      "primary_profile_sha256": "af6b4ad5009f0c00c6a2be3a9dbb9e442a892bc7505b6bf7d0e3b2a8561f384c",
+      "qualification_used": false,
+      "seed": 29,
+      "selected": {
+        "eligible": true,
+        "path": null,
+        "quality_ce": 0.7603668587025373,
+        "retention_ce": 0.8950440566326798,
+        "stage": "original"
+      },
+      "training_profile_sha256": "af6b4ad5009f0c00c6a2be3a9dbb9e442a892bc7505b6bf7d0e3b2a8561f384c"
+    },
+    {
+      "arm": "fullpath_mean",
+      "audit_observer_used": false,
+      "candidates": [
+        {
+          "eligible": true,
+          "path": null,
+          "quality_ce": 0.7874651330095648,
+          "retention_ce": 0.8768444294589373,
+          "stage": "original"
+        },
+        {
+          "checkpoint_sha256": "65a939c50a5057dcb84b8e859a5f908169ffa00f04d85cddb84dc90158e33494",
+          "eligible": true,
+          "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-43-fullpath_mean/transition.pt",
+          "quality_ce": 0.7877062969260078,
+          "retention_ce": 0.8749559448898994,
+          "stage": "transition"
+        },
+        {
+          "checkpoint_sha256": "c14be7574da69fcadc850cc0845e52c9132149b274c584795ebe02db4a1f0fe5",
+          "eligible": true,
+          "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-43-fullpath_mean/adapter.pt",
+          "quality_ce": 0.7877055808748389,
+          "retention_ce": 0.8749554829966938,
+          "stage": "adapter"
+        },
+        {
+          "checkpoint_sha256": "da2167604458ef3686894fa51d910b56845e30441abd17e1d994f3618b1ed01a",
+          "eligible": true,
+          "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-43-fullpath_mean/emission.pt",
+          "quality_ce": 0.7849597105358336,
+          "retention_ce": 0.8749568729373892,
+          "stage": "emission"
+        },
+        {
+          "checkpoint_sha256": "dbe7b04d8f89d05fd85c87216fb733e5fed7bda132c185a4b8f24b0f05c2f2e8",
+          "eligible": true,
+          "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-43-fullpath_mean/encoder.pt",
+          "quality_ce": 0.7877047236502382,
+          "retention_ce": 0.8749572161786506,
+          "stage": "encoder"
+        }
+      ],
+      "primary_profile_sha256": "af6b4ad5009f0c00c6a2be3a9dbb9e442a892bc7505b6bf7d0e3b2a8561f384c",
+      "qualification_used": false,
+      "seed": 43,
+      "selected": {
+        "checkpoint_sha256": "65a939c50a5057dcb84b8e859a5f908169ffa00f04d85cddb84dc90158e33494",
+        "eligible": true,
+        "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-43-fullpath_mean/transition.pt",
+        "quality_ce": 0.7877062969260078,
+        "retention_ce": 0.8749559448898994,
+        "stage": "transition"
+      },
+      "training_profile_sha256": "f799c313acaf5d56c870cc1d318240549306b37dce003c0d3d544c5bfa1e098b"
+    },
+    {
+      "arm": "fullpath_risk",
+      "audit_observer_used": false,
+      "candidates": [
+        {
+          "eligible": true,
+          "path": null,
+          "quality_ce": 0.7874651330095648,
+          "retention_ce": 0.8768444294589373,
+          "stage": "original"
+        },
+        {
+          "checkpoint_sha256": "3e0621ecf5856ab24e2c50ca0d800ba25654b33fa741f9439650f7bc6a49c5d2",
+          "eligible": true,
+          "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-43-fullpath_risk/transition.pt",
+          "quality_ce": 0.787706277913299,
+          "retention_ce": 0.8749560142910939,
+          "stage": "transition"
+        },
+        {
+          "checkpoint_sha256": "083ec9c0b86ca04164f28ac8d1088f2d5499e8738ac3b21ed414c3e17102bb6e",
+          "eligible": true,
+          "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-43-fullpath_risk/adapter.pt",
+          "quality_ce": 0.7877057482530422,
+          "retention_ce": 0.874955389166481,
+          "stage": "adapter"
+        },
+        {
+          "checkpoint_sha256": "45186a8fb9c35b881a6b7b5b626773b5601b932a21ba44b1f8b530176e577c8c",
+          "eligible": true,
+          "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-43-fullpath_risk/emission.pt",
+          "quality_ce": 0.7849596896856404,
+          "retention_ce": 0.8749567328130065,
+          "stage": "emission"
+        },
+        {
+          "checkpoint_sha256": "43eb6689ecfce6fa235d4c6a9367bae314b58ccf4cb2371bfef9bc3bb6fb530f",
+          "eligible": true,
+          "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-43-fullpath_risk/encoder.pt",
+          "quality_ce": 0.7877020559304626,
+          "retention_ce": 0.8749552904474892,
+          "stage": "encoder"
+        }
+      ],
+      "primary_profile_sha256": "af6b4ad5009f0c00c6a2be3a9dbb9e442a892bc7505b6bf7d0e3b2a8561f384c",
+      "qualification_used": false,
+      "seed": 43,
+      "selected": {
+        "checkpoint_sha256": "3e0621ecf5856ab24e2c50ca0d800ba25654b33fa741f9439650f7bc6a49c5d2",
+        "eligible": true,
+        "path": "/dev/shm/hepta-ndu-unified-20261028/fullpath-development-003/seed-43-fullpath_risk/transition.pt",
+        "quality_ce": 0.787706277913299,
+        "retention_ce": 0.8749560142910939,
+        "stage": "transition"
+      },
+      "training_profile_sha256": "af6b4ad5009f0c00c6a2be3a9dbb9e442a892bc7505b6bf7d0e3b2a8561f384c"
+    }
+  ],
+  "strong_prior_fallback_is_explicitly_deterministic": true,
+  "total_training_counts": {
+    "actual_bundle_roundtrips": 92160,
+    "current_encoder_examples": 23040,
+    "current_transition_examples": 46080,
+    "frozen_reference_encoder_examples": 23040,
+    "gate_examples": 23040,
+    "observer_digit_examples": 184320,
+    "optimizer_steps": 1920,
+    "pixel_emissions": 92160,
+    "token_emissions": 645120
+  },
+  "train_and_qualification_density_equal_for_selected_stochastic_checkpoints": true
+}

@@ -400,6 +400,7 @@ async fn sqlite_read_consumer_uses_fitted_order_before_limit_and_rechecks_deleti
 
 /// Exercises the actual control socket and lifecycle transition. This is not a
 /// provider/App Server startup test or an independent task-benefit experiment.
+#[cfg(unix)]
 #[tokio::test]
 async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation() {
     use codex_hepta_fleet::AgentLifecycle;

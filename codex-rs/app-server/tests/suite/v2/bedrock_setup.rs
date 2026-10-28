@@ -1,10 +1,15 @@
 use anyhow::Result;
+use app_test_support::DEFAULT_CLIENT_NAME;
 use app_test_support::TestAppServer;
 use codex_app_server_protocol::BedrockDiscoverParams;
 use codex_app_server_protocol::BedrockDiscoverResponse;
 use codex_app_server_protocol::BedrockSetupParams;
 use codex_app_server_protocol::BedrockSetupResponse;
+use codex_app_server_protocol::ClientInfo;
 use codex_app_server_protocol::ClientRequest;
+use codex_app_server_protocol::InitializeCapabilities;
+use codex_app_server_protocol::JSONRPCErrorError;
+use codex_app_server_protocol::JSONRPCMessage;
 use codex_app_server_protocol::RequestId;
 use codex_config::types::AuthCredentialsStoreMode;
 use codex_login::AuthKeyringBackendKind;
@@ -319,5 +324,58 @@ async fn setup_bedrock_rejects_invalid_or_conflicting_credentials() -> Result<()
     );
     assert!(!home.path().join(".env").exists());
 
+    Ok(())
+}
+
+#[tokio::test]
+async fn bedrock_endpoints_require_experimental_opt_in_before_discovery_or_setup() -> Result<()> {
+    let codex_home = TempDir::new()?;
+    let mut app_server = TestAppServer::builder()
+        .with_codex_home(codex_home.path())
+        .without_auto_env()
+        .build()
+        .await?;
+    let initialized = app_server
+        .initialize_with_capabilities(
+            ClientInfo {
+                name: DEFAULT_CLIENT_NAME.to_string(),
+                title: None,
+                version: "0.1.0".to_string(),
+            },
+            Some(InitializeCapabilities {
+                experimental_api: false,
+                ..Default::default()
+            }),
+        )
+        .await?;
+    let JSONRPCMessage::Response(_) = initialized else {
+        anyhow::bail!("expected initialize response, got {initialized:?}");
+    };
+
+    for (method, params) in [
+        ("account/bedrock/discover", json!({})),
+        (
+            "account/bedrock/setup",
+            json!({"type": "environment", "region": "us-west-2"}),
+        ),
+    ] {
+        let request_id = app_server.send_raw_request(method, Some(params)).await?;
+        let error = timeout(
+            READ_TIMEOUT,
+            app_server.read_stream_until_error_message(RequestId::Integer(request_id)),
+        )
+        .await??;
+        assert_eq!(
+            error.error,
+            JSONRPCErrorError {
+                code: -32600,
+                message: format!("{method} requires experimentalApi capability"),
+                data: None,
+            }
+        );
+    }
+    for name in ["config.toml", "auth.json", ".env"] {
+        assert!(!codex_home.path().join(name).exists());
+    }
     Ok(())
 }

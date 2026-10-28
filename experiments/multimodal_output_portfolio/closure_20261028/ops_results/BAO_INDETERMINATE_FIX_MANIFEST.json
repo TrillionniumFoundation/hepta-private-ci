@@ -1,0 +1,62 @@
+{
+  "base_commit": "943768d41de711ef888d8c21c1466aa783885307",
+  "behavior_tests_added": [
+    "real file sync and rename followed by injected directory-sync acknowledgement loss: revoked state remains published, old Active/Prepared reads and all mutations reject without changing file bytes, reopen reads the new state",
+    "real pre-rename staged-file failure: original file unchanged, owner remains available, same operation retries and persists successfully"
+  ],
+  "changes": [
+    "Distinguish IndeterminateDurability after successful rename and failed directory synchronization from safe pre-rename Unavailable.",
+    "Permanently poison the affected owner; every getter and mutator, including duplicate operation and no-change expiration fast paths, rejects until explicit reopen.",
+    "Getter signatures become Result<Option<&T>, LeaseRegistryErrorV1>; unknown cannot masquerade as known absence.",
+    "Extract private validation/persistence helpers to keep production modules below 500 lines and preserve the published Windows directory handle fix."
+  ],
+  "files": [
+    {
+      "bytes": 15892,
+      "lines": 493,
+      "old_sha256": "9d2a4c743ae79fe13c8b2f4c7ede73a1968027357363412ba5c37b2037e8ccc0",
+      "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+      "sha256": "ea9a836c545947f3e0eb7dae8ffc4e38a6e646d34268a57d38c8a96d8e303fe0"
+    },
+    {
+      "bytes": 4689,
+      "lines": 140,
+      "old_sha256": null,
+      "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle_persistence.rs",
+      "sha256": "451449102bb5da965f7aaeb1a79cc1135b9f1146e7f3445174e13452c7e2bb41"
+    },
+    {
+      "bytes": 7397,
+      "lines": 240,
+      "old_sha256": "19202b1442351f9f7e7e3f5983c47f1d0713f9f4f397d728daef6ea83fe00d53",
+      "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs",
+      "sha256": "35616accd876822f356e1202e32d1da595af6387a2c42c32f46375282302d5a2"
+    },
+    {
+      "bytes": 5557,
+      "lines": 148,
+      "old_sha256": null,
+      "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle_indeterminate_tests.rs",
+      "sha256": "a551f5394d9d0ded91e06d6326923fdfc569f4dff2e63c20f38c43a54023a5f2"
+    }
+  ],
+  "getter_callers": {
+    "existing_tests": 9,
+    "internal": 2,
+    "production_external": 0,
+    "search": "complete HEAD git grep plus working-tree rg"
+  },
+  "patch_path": "/workspace/scratch/627fa3bea56c/bao-lease-indeterminate-20261028.patch",
+  "patch_sha256": "cdea9e8314be521e067488b7a11ba1f7ab93b6e2a61d1529986571b8a1f9431c",
+  "publication": "parent reviews and includes in a separate subsequent batch; reviewer has not committed or pushed",
+  "schema": "hepta.bao.lease-indeterminate-fix-manifest.v1",
+  "scope": "same-instance fail-closed behavior after a potentially committed rename; no broader multi-writer or power-failure guarantee",
+  "validation": {
+    "just_fmt": "PASS",
+    "just_test_command": "just test -p codex-hepta-bao-adapter --lib",
+    "just_test_status": "BLOCKED before compilation: sparse workspace lacks codex-rs/aws-auth/Cargo.toml; exit101",
+    "native_ci_required": true,
+    "native_test_success_claimed": false,
+    "rustfmt_parse": "PASS, Rust 1.95.0 edition2024"
+  }
+}

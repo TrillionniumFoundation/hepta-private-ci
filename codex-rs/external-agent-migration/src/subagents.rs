@@ -1,7 +1,6 @@
 use crate::RewriteProfile;
 use crate::invalid_data_error;
 use crate::scope::is_redirected_destination;
-use serde_yaml::Value as YamlValue;
 use std::collections::BTreeMap;
 use std::fs;
 use std::io;
@@ -164,11 +163,11 @@ fn frontmatter_end(rest: &str) -> Option<(usize, usize)> {
 fn parse_frontmatter(
     raw_frontmatter: &str,
 ) -> (BTreeMap<String, FrontmatterValue>, Option<String>) {
-    let parsed: YamlValue = match serde_yaml::from_str(raw_frontmatter) {
+    let mapping = match codex_utils_yaml::scalar_mapping(raw_frontmatter) {
         Ok(parsed) => parsed,
         Err(err) => return (BTreeMap::new(), Some(err.to_string())),
     };
-    let Some(mapping) = parsed.as_mapping() else {
+    let Some(mapping) = mapping else {
         return (
             BTreeMap::new(),
             Some("frontmatter is not a YAML mapping".to_string()),
@@ -177,24 +176,19 @@ fn parse_frontmatter(
 
     let mut frontmatter = BTreeMap::new();
     for (key, value) in mapping {
-        let Some(key) = key.as_str().map(str::trim).filter(|key| !key.is_empty()) else {
+        let key = key.trim();
+        if key.is_empty() {
             continue;
-        };
-        frontmatter.insert(key.to_string(), frontmatter_value_from_yaml(value));
+        }
+        frontmatter.insert(
+            key.to_string(),
+            value
+                .map(FrontmatterValue::Scalar)
+                .unwrap_or(FrontmatterValue::Other),
+        );
     }
 
     (frontmatter, None)
-}
-
-fn frontmatter_value_from_yaml(value: &YamlValue) -> FrontmatterValue {
-    match value {
-        YamlValue::String(value) => FrontmatterValue::Scalar(value.trim().to_string()),
-        YamlValue::Bool(value) => FrontmatterValue::Scalar(value.to_string()),
-        YamlValue::Number(value) => FrontmatterValue::Scalar(value.to_string()),
-        YamlValue::Null | YamlValue::Sequence(_) | YamlValue::Mapping(_) | YamlValue::Tagged(_) => {
-            FrontmatterValue::Other
-        }
-    }
 }
 
 pub(crate) fn agent_metadata(document: &ParsedDocument) -> Option<AgentMetadata> {

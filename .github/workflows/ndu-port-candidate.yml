@@ -6,6 +6,10 @@ on:
       - .github/workflows/ndu-port-candidate.yml
       - scripts/ndu_port_candidate.py
       - scripts/ndu_port_candidate_common.py
+      - scripts/ndu_port_integrated.py
+      - scripts/ndu_port_integration_test_support.py
+      - experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/**
+      - scripts/ndu_synapse_diagnostics.py
       - scripts/ndu_port_matrix_fixture.py
       - scripts/ndu_port_fixture_layout.py
       - scripts/ndu_port_aws_upstream.py
@@ -64,7 +68,7 @@ jobs:
           -t codex-rs/hepta-matrixd/tests/fixtures -p 'test_*.py' -v
 
       - name: Test post-qualification fix evidence and source separation
-        run: python3 -m unittest discover -s scripts -p 'test_ndu_post_qualification_fix.py' -v
+        run: python3 -m unittest discover -s scripts -p 'test_ndu_post_qualification*.py' -v
 
       - name: Prepare pinned Bazel tooling
         uses: ./.github/actions/prepare-bazel-ci
@@ -77,12 +81,12 @@ jobs:
         with:
           toolchain: 1.96.0
 
-      - name: Verify recipe and generate source plus both locks
+      - name: Verify integrated source and zero-drift Cargo and Bazel locks
         id: generate
         env:
           EXPECTED_SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
         run: >-
-          python3 scripts/ndu_port_candidate.py --mode generate
+          python3 scripts/ndu_port_candidate.py --mode generate --source-mode integrated
           --repository "$GITHUB_WORKSPACE" --expected-source "$EXPECTED_SOURCE"
           --output "$RUNNER_TEMP/ndu-port-candidate"
 
@@ -557,6 +561,104 @@ jobs:
               --restored-root "$GITHUB_WORKSPACE" --source-commit "$EXPECTED_SOURCE" \
               --output "$RUNNER_TEMP/ndu-native-synapse" --docker-socket /var/run/docker.sock
           fi
+
+      - name: Package complete diagnostics separately from large build inputs
+        id: synapse-diagnostics
+        if: always()
+        run: >-
+          python3 scripts/ndu_synapse_diagnostics.py
+          --source "$RUNNER_TEMP/ndu-native-synapse"
+          --output "$RUNNER_TEMP/ndu-native-synapse-diagnostics"
+
+      - name: Retain diagnostic inventory and exact failed-command paths
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-native-synapse-diagnostics-arm64-${{ github.run_id }}-${{ github.run_attempt }}-manifest
+          path: ${{ runner.temp }}/ndu-native-synapse-diagnostics/DIAGNOSTICS.json
+          if-no-files-found: error
+          retention-days: 21
+          compression-level: 0
+
+      - name: Retain complete diagnostic part 1
+        if: always() && fromJSON(steps.synapse-diagnostics.outputs.part_count || '0') >= 1
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-native-synapse-diagnostics-arm64-${{ github.run_id }}-${{ github.run_attempt }}-part-01
+          path: ${{ runner.temp }}/ndu-native-synapse-diagnostics/part-01.tar.part
+          if-no-files-found: error
+          retention-days: 21
+          compression-level: 0
+
+      - name: Retain complete diagnostic part 2
+        if: always() && fromJSON(steps.synapse-diagnostics.outputs.part_count || '0') >= 2
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-native-synapse-diagnostics-arm64-${{ github.run_id }}-${{ github.run_attempt }}-part-02
+          path: ${{ runner.temp }}/ndu-native-synapse-diagnostics/part-02.tar.part
+          if-no-files-found: error
+          retention-days: 21
+          compression-level: 0
+
+      - name: Retain complete diagnostic part 3
+        if: always() && fromJSON(steps.synapse-diagnostics.outputs.part_count || '0') >= 3
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-native-synapse-diagnostics-arm64-${{ github.run_id }}-${{ github.run_attempt }}-part-03
+          path: ${{ runner.temp }}/ndu-native-synapse-diagnostics/part-03.tar.part
+          if-no-files-found: error
+          retention-days: 21
+          compression-level: 0
+
+      - name: Retain complete diagnostic part 4
+        if: always() && fromJSON(steps.synapse-diagnostics.outputs.part_count || '0') >= 4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-native-synapse-diagnostics-arm64-${{ github.run_id }}-${{ github.run_attempt }}-part-04
+          path: ${{ runner.temp }}/ndu-native-synapse-diagnostics/part-04.tar.part
+          if-no-files-found: error
+          retention-days: 21
+          compression-level: 0
+
+      - name: Retain complete diagnostic part 5
+        if: always() && fromJSON(steps.synapse-diagnostics.outputs.part_count || '0') >= 5
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-native-synapse-diagnostics-arm64-${{ github.run_id }}-${{ github.run_attempt }}-part-05
+          path: ${{ runner.temp }}/ndu-native-synapse-diagnostics/part-05.tar.part
+          if-no-files-found: error
+          retention-days: 21
+          compression-level: 0
+
+      - name: Retain complete diagnostic part 6
+        if: always() && fromJSON(steps.synapse-diagnostics.outputs.part_count || '0') >= 6
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-native-synapse-diagnostics-arm64-${{ github.run_id }}-${{ github.run_attempt }}-part-06
+          path: ${{ runner.temp }}/ndu-native-synapse-diagnostics/part-06.tar.part
+          if-no-files-found: error
+          retention-days: 21
+          compression-level: 0
+
+      - name: Retain complete diagnostic part 7
+        if: always() && fromJSON(steps.synapse-diagnostics.outputs.part_count || '0') >= 7
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-native-synapse-diagnostics-arm64-${{ github.run_id }}-${{ github.run_attempt }}-part-07
+          path: ${{ runner.temp }}/ndu-native-synapse-diagnostics/part-07.tar.part
+          if-no-files-found: error
+          retention-days: 21
+          compression-level: 0
+
+      - name: Retain complete diagnostic part 8
+        if: always() && fromJSON(steps.synapse-diagnostics.outputs.part_count || '0') >= 8
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-native-synapse-diagnostics-arm64-${{ github.run_id }}-${{ github.run_attempt }}-part-08
+          path: ${{ runner.temp }}/ndu-native-synapse-diagnostics/part-08.tar.part
+          if-no-files-found: error
+          retention-days: 21
+          compression-level: 0
 
       - name: Retain sealed images, seeds, actual binaries, runtime receipts and failures
         if: always()

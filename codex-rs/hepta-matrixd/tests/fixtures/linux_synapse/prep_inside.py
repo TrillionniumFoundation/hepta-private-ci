@@ -7,11 +7,11 @@ import platform
 import shutil
 
 from .commands import Commands
+from .dependencies import SEED_SCHEMA, dependency_inventory
 from .contract import TARGET, TOOLS, load_contract, verify_tools
 from .files import describe, inventory, read_json, write_json
 from .inputs import (
     build_environment,
-    dependency_inventory,
     sealed_path_environment,
     source_clean,
 )
@@ -25,6 +25,7 @@ def probe_tools(output):
         "LANG": "C.UTF-8",
         "LC_ALL": "C.UTF-8",
         "RUSTUP_HOME": "/usr/local/rustup",
+        "CARGO_HOME": "/usr/local/cargo",
     }
     tools = {}
     bootstrap_commands = None
@@ -160,7 +161,7 @@ def fetch_seed(plan_path, plan_sha):
         write_json(
             work / "SEED_LEDGER.json",
             {
-                "schema": "hepta.synapse.linux.seed.v1",
+                "schema": SEED_SCHEMA,
                 "producer_result_sha256": source["producer_result_sha256"],
                 "candidate_tree": source["candidate_tree"],
                 "cargo_lock": source["bound_files"]["codex-rs/Cargo.lock"],
@@ -171,7 +172,8 @@ def fetch_seed(plan_path, plan_sha):
         record.update(
             status="prepared_not_qualified",
             seed_files=len(files),
-            seed_payload_bytes=sum(item["bytes"] for item in files.values()),
+            seed_payload_bytes=sum(item["bytes"] for item in files.values() if item["kind"] == "regular"),
+            seed_symlink_count=sum(item["kind"] == "symlink" for item in files.values()),
             seed_ledger=describe(work / "SEED_LEDGER.json"),
             source_clean=True,
         )

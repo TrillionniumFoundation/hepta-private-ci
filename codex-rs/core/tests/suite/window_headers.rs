@@ -129,6 +129,10 @@ async fn window_id_advances_after_compact_persists_on_resume_and_resets_on_fork(
         metadata[2]["context_window_id"],
         metadata[3]["context_window_id"]
     );
+    assert_ne!(
+        metadata[3]["context_window_id"],
+        metadata[4]["context_window_id"]
+    );
 
     Ok(())
 }

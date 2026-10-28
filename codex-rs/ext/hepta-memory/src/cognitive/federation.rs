@@ -43,6 +43,7 @@ use super::secret_like;
 use crate::extension::HeptaMemoryThreadState;
 use crate::framing::digest_many;
 use crate::framing::path_identity_bytes;
+use crate::framing::registered_workspace_path;
 use crate::framing::workspace_digest;
 
 #[path = "combined_digest_table.rs"]
@@ -236,9 +237,11 @@ impl FederatedCognitiveExtension {
             return None;
         }
         let prepared = input.turn_store.get::<PreparedFederatedAttachment>()?;
+        let workspace = registered_workspace_path(input.cwd)?;
         if prepared.thread_id != input.thread_id
             || prepared.turn_id != input.turn_id
-            || path_identity_bytes(prepared.workspace.as_path()) != path_identity_bytes(input.cwd)
+            || path_identity_bytes(prepared.workspace.as_path())
+                != path_identity_bytes(workspace.as_path())
         {
             return None;
         }
@@ -253,7 +256,7 @@ impl FederatedCognitiveExtension {
         }
         let now = now_unix_seconds()?;
         let access =
-            FederationConsumerAccess::new(self.consumer_agent_id()?, workspace_digest(input.cwd));
+            FederationConsumerAccess::new(self.consumer_agent_id()?, workspace_digest(&workspace));
         let Ok(statuses) = self.revalidate_many(&access, &prepared.bindings, now).await else {
             return None;
         };
@@ -283,7 +286,7 @@ impl FederatedCognitiveExtension {
         let source_binding_sha256 = federation_source_binding(
             input.thread_id,
             input.turn_id,
-            input.cwd,
+            workspace.as_path(),
             &prepared.query_sha256,
             &prepared.coverage,
             &prepared.bindings,
@@ -390,10 +393,9 @@ impl TurnInputContributor for FederatedCognitiveExtension {
             if primary_environments.next().is_some() {
                 return Vec::new();
             }
-            let workspace = primary.cwd.to_path_buf();
-            if !workspace.is_absolute() {
+            let Some(workspace) = registered_workspace_path(&primary.cwd.to_path_buf()) else {
                 return Vec::new();
-            }
+            };
             let capture = capture_directive(&input.user_input);
             let Some(query) = capture.query else {
                 return Vec::new();

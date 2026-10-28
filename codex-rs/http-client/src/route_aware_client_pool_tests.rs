@@ -402,6 +402,15 @@ async fn reqwest_default_route_preserves_transport_redirects() {
                     Err(error) => panic!("redirect server should accept: {error}"),
                 }
             };
+            stream
+                .set_nonblocking(false)
+                .expect("accepted redirect stream should use blocking reads");
+            let remaining = deadline
+                .checked_duration_since(Instant::now())
+                .expect("redirect request should arrive before the deadline");
+            stream
+                .set_read_timeout(Some(remaining))
+                .expect("redirect read should retain the request deadline");
             let mut buffer = [0_u8; 1024];
             let size = stream
                 .read(&mut buffer)

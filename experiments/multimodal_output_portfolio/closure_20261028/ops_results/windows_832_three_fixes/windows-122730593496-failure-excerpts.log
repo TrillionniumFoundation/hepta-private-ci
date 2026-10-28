@@ -1,0 +1,124 @@
+2026-10-28T09:46:47.8270024Z INFO: From Testing //codex-rs/hepta-supervisor:hepta-supervisor-restart_budget_recovery-test:
+2026-10-28T09:46:47.8453243Z ==================== Test output for //codex-rs/hepta-supervisor:hepta-supervisor-restart_budget_recovery-test:
+2026-10-28T09:46:47.8565026Z 
+2026-10-28T09:46:47.8568822Z running 1 test
+2026-10-28T09:46:47.8571951Z test restart_budget_survives_repeated_supervisord_recovery ... FAILED
+2026-10-28T09:46:47.8590017Z 
+2026-10-28T09:46:47.8609759Z failures:
+2026-10-28T09:46:47.8612777Z 
+2026-10-28T09:46:47.8614329Z ---- restart_budget_survives_repeated_supervisord_recovery stdout ----
+2026-10-28T09:46:47.8618205Z 
+2026-10-28T09:46:47.8636500Z thread 'restart_budget_survives_repeated_supervisord_recovery' (4976) panicked at hepta-supervisor/tests/restart_budget_recovery.rs:318:5:
+2026-10-28T09:46:47.8648806Z assertion failed: snapshot.events.iter().any(|event|
+2026-10-28T09:46:47.8659485Z         matches!(&event.kind,
+2026-10-28T09:46:47.8795102Z             SupervisorEventKind::AutomaticRestartBudgetExhausted
+2026-10-28T09:46:47.8801105Z             { attempts: 3 }))
+2026-10-28T09:46:47.8802152Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-10-28T09:46:47.8839018Z 
+2026-10-28T09:46:47.8851422Z 
+2026-10-28T09:46:47.8853015Z failures:
+2026-10-28T09:46:47.8854155Z     restart_budget_survives_repeated_supervisord_recovery
+2026-10-28T09:46:47.8854692Z 
+2026-10-28T09:46:47.8855167Z test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s
+2026-10-28T09:46:47.8855982Z 
+2026-10-28T09:46:47.8856277Z ================================================================================
+2026-10-28T09:47:30.5452610Z test extension::tests::scope_drift_source_disable_and_backend_failure_never_attach ... ok
+2026-10-28T09:47:30.5453081Z test cognitive::tools::tests::stale_correction_cas_leaves_no_source_event ... ok
+2026-10-28T09:47:30.5453544Z test extension::tests::secret_query_is_digest_only_observed_without_querying_state ... ok
+2026-10-28T09:47:30.5454041Z test framing::tests::transported_workspace_retains_its_registered_grant_identity ... ok
+2026-10-28T09:47:30.5454559Z test framing::tests::unregistered_path_shapes_do_not_produce_a_workspace_identity ... FAILED
+2026-10-28T09:47:30.5455157Z test cognitive::tools::tests::unavailable_deferred_runtime_keeps_only_read_tools_visible_without_a_witness ... ok
+2026-10-28T09:47:30.5455767Z test extension::tests::policy_gated_runtime_never_registers_legacy_turn_callback ... ok
+2026-10-28T09:47:30.5456257Z test local_development_owner::tests::explicit_owner_rejects_unbound_lease_expiry ... ok
+2026-10-28T09:47:30.5456991Z test local_development_owner::tests::owner_is_explicit_and_caller_zero ... ok
+2026-10-28T09:47:30.5457435Z test local_development_owner::tests::owner_rejects_production_policy ... ok
+2026-10-28T09:47:30.5457969Z test local_development_owner::tests::explicit_owner_writes_bound_witness_and_replays_without_registration ... ok
+2026-10-28T09:47:30.5458547Z test local_lifecycle::tests::acquire_before_admit_replays_and_retries_local_admission ... ok
+2026-10-28T09:47:30.5459037Z test local_lifecycle::tests::active_lease_replays_after_host_store_restart ... ok
+2026-10-28T09:47:30.5459770Z test local_lifecycle::tests::process_local_auto_compact_ids_are_not_durable_bindings ... ok
+2026-10-28T09:47:30.5460605Z test local_lifecycle::tests::duplicate_start_is_one_local_intent_and_stop_is_idempotent ... ok
+2026-10-28T09:47:30.5461258Z test local_development_owner::tests::explicit_owner_expires_bound_lease_and_fences_old_witness ... ok
+2026-10-28T09:47:30.5461816Z test local_lifecycle::tests::indeterminate_crash_window_replays_as_terminal_and_releases ... ok
+2026-10-28T09:47:30.5462312Z test local_rehydration::tests::explicit_host_read_is_pure_and_unregistered ... ok
+2026-10-28T09:47:30.5468088Z test local_replay::tests::expired_active_bound_lease_rejects_h14_and_h16_without_writes ... ok
+2026-10-28T09:47:30.5468595Z 
+2026-10-28T09:47:30.5468682Z failures:
+2026-10-28T09:47:30.5468828Z 
+2026-10-28T09:47:30.5469242Z ---- framing::tests::unregistered_path_shapes_do_not_produce_a_workspace_identity stdout ----
+2026-10-28T09:47:30.5469577Z 
+2026-10-28T09:47:30.5469983Z thread 'framing::tests::unregistered_path_shapes_do_not_produce_a_workspace_identity' (6908) panicked at ext/hepta-memory/src\framing_tests.rs:32:9:
+2026-10-28T09:47:30.5470900Z assertion `left == right` failed
+2026-10-28T09:47:30.5471304Z   left: Some("\\\\?\\D:\\tmp")
+2026-10-28T09:47:30.5471558Z  right: None
+2026-10-28T09:47:30.5471880Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-10-28T09:47:30.5472158Z 
+2026-10-28T09:47:30.5472161Z 
+2026-10-28T09:47:30.5472240Z failures:
+2026-10-28T09:47:30.5472569Z     framing::tests::unregistered_path_shapes_do_not_produce_a_workspace_identity
+2026-10-28T09:47:30.5473002Z 
+2026-10-28T09:47:30.5473366Z test result: FAILED. 79 passed; 1 failed; 0 ignored; 0 measured; 22 filtered out; finished in 4.27s
+2026-10-28T09:47:30.5473663Z 
+2026-10-28T09:47:30.5473665Z 
+2026-10-28T09:47:30.5473783Z running 22 tests
+2026-10-28T09:55:51.1442410Z test extension::tests::scope_drift_source_disable_and_backend_failure_never_attach ... ok
+2026-10-28T09:55:51.1443120Z test cognitive::tools::tests::stale_correction_cas_leaves_no_source_event ... ok
+2026-10-28T09:55:51.1443805Z test extension::tests::secret_query_is_digest_only_observed_without_querying_state ... ok
+2026-10-28T09:55:51.1444535Z test framing::tests::transported_workspace_retains_its_registered_grant_identity ... ok
+2026-10-28T09:55:51.1445430Z test framing::tests::unregistered_path_shapes_do_not_produce_a_workspace_identity ... FAILED
+2026-10-28T09:55:51.1446245Z test cognitive::tools::tests::unavailable_deferred_runtime_keeps_only_read_tools_visible_without_a_witness ... ok
+2026-10-28T09:55:51.1447041Z test extension::tests::policy_gated_runtime_never_registers_legacy_turn_callback ... ok
+2026-10-28T09:55:51.1447751Z test local_development_owner::tests::explicit_owner_rejects_unbound_lease_expiry ... ok
+2026-10-28T09:55:51.1448433Z test local_development_owner::tests::owner_is_explicit_and_caller_zero ... ok
+2026-10-28T09:55:51.1449071Z test local_development_owner::tests::owner_rejects_production_policy ... ok
+2026-10-28T09:55:51.1449847Z test local_development_owner::tests::explicit_owner_writes_bound_witness_and_replays_without_registration ... ok
+2026-10-28T09:55:51.1450705Z test local_lifecycle::tests::acquire_before_admit_replays_and_retries_local_admission ... ok
+2026-10-28T09:55:51.1451417Z test local_lifecycle::tests::active_lease_replays_after_host_store_restart ... ok
+2026-10-28T09:55:51.1452126Z test local_lifecycle::tests::process_local_auto_compact_ids_are_not_durable_bindings ... ok
+2026-10-28T09:55:51.1452867Z test local_lifecycle::tests::duplicate_start_is_one_local_intent_and_stop_is_idempotent ... ok
+2026-10-28T09:55:51.1453647Z test local_development_owner::tests::explicit_owner_expires_bound_lease_and_fences_old_witness ... ok
+2026-10-28T09:55:51.1454444Z test local_lifecycle::tests::indeterminate_crash_window_replays_as_terminal_and_releases ... ok
+2026-10-28T09:55:51.1455354Z test local_rehydration::tests::explicit_host_read_is_pure_and_unregistered ... ok
+2026-10-28T09:55:51.1462432Z test local_replay::tests::expired_active_bound_lease_rejects_h14_and_h16_without_writes ... ok
+2026-10-28T09:55:51.1462856Z 
+2026-10-28T09:55:51.1462948Z failures:
+2026-10-28T09:55:51.1463070Z 
+2026-10-28T09:55:51.1463388Z ---- framing::tests::unregistered_path_shapes_do_not_produce_a_workspace_identity stdout ----
+2026-10-28T09:55:51.1463840Z 
+2026-10-28T09:55:51.1464385Z thread 'framing::tests::unregistered_path_shapes_do_not_produce_a_workspace_identity' (6908) panicked at ext/hepta-memory/src\framing_tests.rs:32:9:
+2026-10-28T09:55:51.1465493Z assertion `left == right` failed
+2026-10-28T09:55:51.1465786Z   left: Some("\\\\?\\D:\\tmp")
+2026-10-28T09:55:51.1466036Z  right: None
+2026-10-28T09:55:51.1466405Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-10-28T09:55:51.1466760Z 
+2026-10-28T09:55:51.1466764Z 
+2026-10-28T09:55:51.1466864Z failures:
+2026-10-28T09:55:51.1467245Z     framing::tests::unregistered_path_shapes_do_not_produce_a_workspace_identity
+2026-10-28T09:55:51.1467628Z 
+2026-10-28T09:55:51.1467934Z test result: FAILED. 79 passed; 1 failed; 0 ignored; 0 measured; 22 filtered out; finished in 4.27s
+2026-10-28T09:55:51.1468376Z 
+2026-10-28T09:55:51.1468380Z 
+2026-10-28T09:55:51.1468461Z running 22 tests
+2026-10-28T09:55:51.2647925Z Executing tests from //codex-rs/hepta-supervisor:hepta-supervisor-restart_budget_recovery-test
+2026-10-28T09:55:51.2648697Z -----------------------------------------------------------------------------
+2026-10-28T09:55:51.2649034Z 
+2026-10-28T09:55:51.2649128Z running 1 test
+2026-10-28T09:55:51.2649486Z test restart_budget_survives_repeated_supervisord_recovery ... FAILED
+2026-10-28T09:55:51.2649845Z 
+2026-10-28T09:55:51.2649925Z failures:
+2026-10-28T09:55:51.2650056Z 
+2026-10-28T09:55:51.2650285Z ---- restart_budget_survives_repeated_supervisord_recovery stdout ----
+2026-10-28T09:55:51.2650649Z 
+2026-10-28T09:55:51.2651182Z thread 'restart_budget_survives_repeated_supervisord_recovery' (4976) panicked at hepta-supervisor/tests/restart_budget_recovery.rs:318:5:
+2026-10-28T09:55:51.2652331Z assertion failed: snapshot.events.iter().any(|event|
+2026-10-28T09:55:51.2652709Z         matches!(&event.kind,
+2026-10-28T09:55:51.2653301Z             SupervisorEventKind::AutomaticRestartBudgetExhausted
+2026-10-28T09:55:51.2653714Z             { attempts: 3 }))
+2026-10-28T09:55:51.2654139Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-10-28T09:55:51.2654517Z 
+2026-10-28T09:55:51.2654521Z 
+2026-10-28T09:55:51.2654595Z failures:
+2026-10-28T09:55:51.2654875Z     restart_budget_survives_repeated_supervisord_recovery
+2026-10-28T09:55:51.2655169Z 
+2026-10-28T09:55:51.2655489Z test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s
+2026-10-28T09:55:51.2656117Z 
+2026-10-28T09:55:51.2656454Z ##[endgroup]

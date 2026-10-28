@@ -1,0 +1,49 @@
+{
+  "schema": "hepta.ndu.closure-prepublication-regressions.v1",
+  "parent_commit": "943768d41de711ef888d8c21c1466aa783885307",
+  "workflow_shell_parse": [
+    {
+      "path": ".github/workflows/ndu-port-candidate.yml",
+      "blocks": 23,
+      "exit_code": 0
+    },
+    {
+      "path": ".github/workflows/ndu-unified-research.yml",
+      "blocks": 6,
+      "exit_code": 0
+    },
+    {
+      "path": ".github/workflows/ndu-v6.yml",
+      "blocks": 17,
+      "exit_code": 0
+    }
+  ],
+  "sources": {
+    ".github/workflows/ndu-port-candidate.yml": "e6ada0093e2b66f134d7bf776212e8e00b9ffdb1424ab6c7da77066405a669e2",
+    ".github/workflows/ndu-unified-research.yml": "fd074c785a2add27a5ef802510b6dbbe718ba1ece3a5bc8f5e42e72c6a9baa67",
+    ".github/workflows/ndu-v6.yml": "4500b7e84f760af09eb656b3d396d691b740145c44eb535022da89c05b3bfca8",
+    "scripts/ndu_synapse_diagnostics.py": "47867b1e884c29993524558020b4dcf3800910ae33dc00feb11b435081be0761",
+    "scripts/test_ndu_port_diagnostics.py": "ec8aee6cc7050c11fedcf613456a7ef8be65aedf1422c85788d7353eb864ed49"
+  },
+  "initial_local_validation": "The initial YAML parse caught an unquoted inline pip --only-binary=:all: scalar. Fixed to a block scalar before the rerun; no remote execution was attempted with the invalid local YAML.",
+  "exact_workflow_test_step": {
+    "exit_code": 0,
+    "elapsed_seconds": 2.747670441000082,
+    "stdout": "test_complete_finite_policy_oracle_with_stopping (experiments.multimodal_output_portfolio.unified_20261028.profile_tests.UnifiedProfileTests.test_complete_finite_policy_oracle_with_stopping) ... ok\ntest_conditional_and_population_are_different_objectives (experiments.multimodal_output_portfolio.unified_20261028.profile_tests.UnifiedProfileTests.test_conditional_and_population_are_different_objectives) ... ok\ntest_invalid_probability_support_is_not_silently_normalized (experiments.multimodal_output_portfolio.unified_20261028.profile_tests.UnifiedProfileTests.test_invalid_probability_support_is_not_silently_normalized) ... ok\ntest_log_domain_large_tail_and_translation (experiments.multimodal_output_portfolio.unified_20261028.profile_tests.UnifiedProfileTests.test_log_domain_large_tail_and_translation) ... ok\ntest_outcome_binds_actual_observer_and_complete_terminal_bundle (experiments.multimodal_output_portfolio.unified_20261028.profile_tests.UnifiedProfileTests.test_outcome_binds_actual_observer_and_complete_terminal_bundle) ... ok\ntest_profile_roundtrip_and_semantic_identity (experiments.multimodal_output_portfolio.unified_20261028.profile_tests.UnifiedProfileTests.test_profile_roundtrip_and_semantic_identity) ... ok\ntest_random_cost_stays_inside_joint_expectation (experiments.multimodal_output_portfolio.unified_20261028.profile_tests.UnifiedProfileTests.test_random_cost_stays_inside_joint_expectation) ... ok\ntest_real_cost_events_are_idempotent_and_conflicts_reject (experiments.multimodal_output_portfolio.unified_20261028.profile_tests.UnifiedProfileTests.test_real_cost_events_are_idempotent_and_conflicts_reject) ... ok\ntest_risk_neutral_continuity_against_decimal (experiments.multimodal_output_portfolio.unified_20261028.profile_tests.UnifiedProfileTests.test_risk_neutral_continuity_against_decimal) ... ok\ntest_sample_moment_gradient_has_correct_direction (experiments.multimodal_output_portfolio.unified_20261028.profile_tests.UnifiedProfileTests.test_sample_moment_gradient_has_correct_direction) ... ok\ntest_conditional_risk_cannot_pool_opposite_public_contexts (experiments.multimodal_output_portfolio.unified_20261028.test_tail.SelectedTailTests.test_conditional_risk_cannot_pool_opposite_public_contexts) ... ok\ntest_declared_support_and_family_correction (experiments.multimodal_output_portfolio.unified_20261028.test_tail.SelectedTailTests.test_declared_support_and_family_correction) ... ok\ntest_duplicate_event_is_idempotent_but_shared_source_is_not_independent (experiments.multimodal_output_portfolio.unified_20261028.test_tail.SelectedTailTests.test_duplicate_event_is_idempotent_but_shared_source_is_not_independent) ... ok\ntest_failure_and_variable_cost_stay_in_selected_action_law (experiments.multimodal_output_portfolio.unified_20261028.test_tail.SelectedTailTests.test_failure_and_variable_cost_stay_in_selected_action_law) ... ok\ntest_near_zero_risk_empty_evidence_retains_worst_case (experiments.multimodal_output_portfolio.unified_20261028.test_tail.SelectedTailTests.test_near_zero_risk_empty_evidence_retains_worst_case) ... ok\ntest_seventy_successes_do_not_certify_entropic_commit (experiments.multimodal_output_portfolio.unified_20261028.test_tail.SelectedTailTests.test_seventy_successes_do_not_certify_entropic_commit) ... ok\ntest_stale_policy_profile_or_action_selection_is_rejected (experiments.multimodal_output_portfolio.unified_20261028.test_tail.SelectedTailTests.test_stale_policy_profile_or_action_selection_is_rejected) ... ok\ntest_zero_risk_limit_and_nontrivial_exact_binomial_bound (experiments.multimodal_output_portfolio.unified_20261028.test_tail.SelectedTailTests.test_zero_risk_limit_and_nontrivial_exact_binomial_bound) ... ok\ntest_complete_return_probability_has_bound_but_ndu_moment_does_not (experiments.multimodal_output_portfolio.closure_20261028.control_tests.ActualTailTests.test_complete_return_probability_has_bound_but_ndu_moment_does_not) ... ok\ntest_large_real_cpu_cost_is_retained_without_clipping_or_omission (experiments.multimodal_output_portfolio.closure_20261028.control_tests.ActualTailTests.test_large_real_cpu_cost_is_retained_without_clipping_or_omission) ... ok\ntest_selected_policy_and_conditional_scope_cannot_be_swapped (experiments.multimodal_output_portfolio.closure_20261028.control_tests.ActualTailTests.test_selected_policy_and_conditional_scope_cannot_be_swapped) ... ok\ntest_unseen_rare_cost_defeats_any_data_only_finite_moment_limit (experiments.multimodal_output_portfolio.closure_20261028.control_tests.ActualTailTests.test_unseen_rare_cost_defeats_any_data_only_finite_moment_limit) ... ok\ntest_actual_cost_tail_changes_plan_even_when_average_cost_is_unchanged (experiments.multimodal_output_portfolio.closure_20261028.control_tests.CompleteMomentTests.test_actual_cost_tail_changes_plan_even_when_average_cost_is_unchanged) ... ok\ntest_profile_and_independent_source_guards_are_active (experiments.multimodal_output_portfolio.closure_20261028.control_tests.CompleteMomentTests.test_profile_and_independent_source_guards_are_active) ... ok\ntest_risk_actor_reverses_mean_choice_from_whole_outcome_law (experiments.multimodal_output_portfolio.closure_20261028.control_tests.CompleteMomentTests.test_risk_actor_reverses_mean_choice_from_whole_outcome_law) ... ok\ntest_extra_rollouts_do_not_turn_one_source_into_more_population_mass (experiments.multimodal_output_portfolio.closure_20261028.control_tests.SourceTableTests.test_extra_rollouts_do_not_turn_one_source_into_more_population_mass) ... ok\n\n----------------------------------------------------------------------\nRan 26 tests in 2.546s\n\nOK\n",
+    "stderr": "",
+    "asserts_torch_not_imported": true
+  },
+  "diagnostic_collector_behavior_tests": {
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "test_complete_logs_reconstruct_across_parts_without_changing_inputs (test_ndu_port_diagnostics.DiagnosticExportTests.test_complete_logs_reconstruct_across_parts_without_changing_inputs) ... ok\ntest_export_limit_is_a_recorded_failure_and_preserves_complete_original (test_ndu_port_diagnostics.DiagnosticExportTests.test_export_limit_is_a_recorded_failure_and_preserves_complete_original) ... ok\ntest_export_must_not_add_files_to_the_original_artifact (test_ndu_port_diagnostics.DiagnosticExportTests.test_export_must_not_add_files_to_the_original_artifact) ... ok\ntest_link_to_external_evidence_is_not_followed (test_ndu_port_diagnostics.DiagnosticExportTests.test_link_to_external_evidence_is_not_followed) ... ok\ntest_missing_evidence_has_an_explicit_failed_manifest (test_ndu_port_diagnostics.DiagnosticExportTests.test_missing_evidence_has_an_explicit_failed_manifest) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 0.010s\n\nOK\n"
+  },
+  "frozen_research_manifest": {
+    "sha256": "9d8d31f44f87981187dee37837ecbff21db14f18eaf985b34608a85e9ceff8f0",
+    "verified_file_count": 66,
+    "verified_bytes": 962691
+  },
+  "limitations": [
+    "Only the exact lightweight workflow test step and diagnostic export behaviors ran; no neural training, native Rust compilation, held-out evaluation, or remote CI success is inferred."
+  ]
+}

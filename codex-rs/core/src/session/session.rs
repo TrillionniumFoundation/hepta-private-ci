@@ -60,6 +60,7 @@ pub(crate) struct Session {
     pub(crate) thread_id: ThreadId,
     pub(crate) installation_id: String,
     pub(super) tx_event: Sender<Event>,
+    pub(crate) terminal_publications: super::terminal_events::TerminalPublications,
     pub(super) agent_status: watch::Sender<AgentStatus>,
     pub(super) state: Mutex<SessionState>,
     /// Serializes rebuild/apply cycles for the running proxy; each cycle
@@ -1462,6 +1463,8 @@ impl Session {
                 .features
                 .enabled(Feature::ExecutedToolCallMetadata)
                 .then(|| Arc::new(crate::state::ExecutedToolCallRecorder::default()));
+            let first_party_test_transport = thread_extension_data
+                .get::<crate::client::test_transport::FirstPartyTestTransport>();
             let services = SessionServices {
                 // Start with an empty connection set. The initialized set is
                 // published after SessionConfigured so MCP events follow it.
@@ -1533,6 +1536,7 @@ impl Session {
                     attestation_provider,
                     config.http_client_factory(),
                 )
+                .with_first_party_test_transport(first_party_test_transport)?
                 .with_prompt_cache_key_override(
                     crate::guardian::prompt_cache_key_override_for_review_session(
                         &session_configuration.session_source,
@@ -1552,6 +1556,7 @@ impl Session {
                 thread_id,
                 installation_id,
                 tx_event: tx_event.clone(),
+                terminal_publications: Default::default(),
                 agent_status,
                 state: Mutex::new(state),
                 managed_network_proxy_refresh_lock: Semaphore::new(/*permits*/ 1),

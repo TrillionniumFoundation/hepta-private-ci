@@ -1,0 +1,59 @@
+{
+  "schema": "hepta.windows-optimizer-test-import-fix.v1",
+  "baseline_head": "792beb14600f9b49b04ed18f9061e11d0e163759",
+  "native_job_id": 122779282009,
+  "full_log_sha256": "1fefd0beacc5fe01751c3bde9f4b8fcfb091e40a9e6be22333811145e1a169b4",
+  "full_log_bytes": 466232,
+  "excerpt_note": "Exact first E0432 block, not the complete job log.",
+  "cause": "New platform fixture imported a crate absent from the owning manifest and Bazel test dependencies.",
+  "change": "Remove only the pretty_assertions import; the same two tree-byte equality assertions resolve to std::assert_eq.",
+  "tests_or_production_assertions_removed": 0,
+  "cargo_or_bazel_dependencies_changed": false,
+  "windows_execution_after_fix": false,
+  "validation": {
+    "test": {
+      "command": [
+        "/tmp/hepta-just-1.51.0/just",
+        "test",
+        "-p",
+        "codex-hepta-prompt-optimizer"
+      ],
+      "exit_code": 101,
+      "precompile_blocker": "Missing codex-rs/aws-auth/Cargo.toml"
+    },
+    "fix": {
+      "command": [
+        "/tmp/hepta-just-1.51.0/just",
+        "fix",
+        "-p",
+        "codex-hepta-prompt-optimizer"
+      ],
+      "exit_code": 101,
+      "precompile_blocker": "Missing codex-rs/aws-auth/Cargo.toml"
+    },
+    "format": {
+      "name": "Rust",
+      "output": "",
+      "returncode": 0
+    },
+    "format_check": {
+      "name": "Rust",
+      "output": "",
+      "returncode": 0
+    },
+    "diff_check": {
+      "exit_code": 0
+    },
+    "codespell": {
+      "exit_code": 0
+    }
+  },
+  "files": {
+    "codex-rs/hepta-prompt-optimizer/src/canonical_platform_tests.rs": {
+      "mode": "100644",
+      "base_sha256": "2ffa01b227cbbde62d4c2dd4ebd488f78afe22adfdfe6c632713cbb338891cf7",
+      "bytes": 3109,
+      "sha256": "83a660c7c0864973078cff80dea46acbcbe6aefe4cd091208222d223b4870eff"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "hepta.windows-acl-normalization-validation.v1",
+  "probe_integrity_tests": {
+    "command": "python3 -m unittest experiments.multimodal_output_portfolio.closure_20261028.ops_windows_acl_probe_tests",
+    "tests": 4,
+    "passed": 4,
+    "seconds": 0.529,
+    "scope": "Source identity/index drift and exact complete observation parsing; no native emulation."
+  },
+  "original_acl_test_bytes_preserved_as_exact_prefix": true,
+  "new_rust_tests": 3,
+  "new_rust_test_scope": [
+    "Every missing mapped right in either half of native normalized denies remains rejected.",
+    "Wrong SID, incomplete inheritance, no-propagate, inherited or allow-separated coverage remains rejected.",
+    "Actual Windows directory and file read/write deny repair must repeat with false and unchanged complete DACL bytes."
+  ],
+  "required_scoped_commands": {
+    "just_test": {
+      "exit_code": 101,
+      "blocker": "Precompile missing workspace aws-auth/Cargo.toml"
+    },
+    "just_fix": {
+      "exit_code": 101,
+      "blocker": "Precompile missing workspace aws-auth/Cargo.toml"
+    }
+  },
+  "rust_compilation_succeeded_locally": false,
+  "rustfmt_and_scoped_check_exit_codes": [
+    0,
+    0
+  ],
+  "codespell_2_4_3_exit_code": 0,
+  "diff_check_exit_code": 0,
+  "native_26_check_expectations_unchanged": true,
+  "native_fix_rerun_completed": false,
+  "delete_child_bypass_fixed": false
+}

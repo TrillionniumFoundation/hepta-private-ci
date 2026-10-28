@@ -1,0 +1,34 @@
+{
+  "head": "792beb14600f9b49b04ed18f9061e11d0e163759",
+  "commands": [
+    {
+      "name": "targeted_test",
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-app-server",
+        "bedrock_setup"
+      ],
+      "returncode": 101,
+      "seconds": 0.1928547239949694,
+      "output_sha256": "e81097acc8643f3069b3041813e61895acdcbe6f7ba1de0f55ff96dc4502c670",
+      "tail": "RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py \"$@\"\nerror: failed to load manifest for workspace member `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth`\nreferenced by workspace at `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/Cargo.toml`\n\nCaused by:\n  failed to read `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth/Cargo.toml`\n\nCaused by:\n  No such file or directory (os error 2)\nerror: recipe `test` failed on line 89 with exit code 101\n"
+    },
+    {
+      "name": "targeted_fix",
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-app-server"
+      ],
+      "returncode": 101,
+      "seconds": 0.16947544099821243,
+      "output_sha256": "73c71fa32cb474620f4b6e0ddc8130068b59aef2a10d663afa9aab8964785d83",
+      "tail": "cargo clippy --fix --tests --allow-dirty {args}\nerror: failed to load manifest for workspace member `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth`\nreferenced by workspace at `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/Cargo.toml`\n\nCaused by:\n  failed to read `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth/Cargo.toml`\n\nCaused by:\n  No such file or directory (os error 2)\nerror: recipe `fix` failed on line 58 with exit code 101\n"
+    }
+  ],
+  "local_toolchain": "1.95.0 explicitly reused to avoid another installation; actual candidate CI uses committed1.96.0",
+  "native_qualification": false
+}

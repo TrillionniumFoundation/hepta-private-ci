@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.bedrock-dispatch-repair.v1",
+  "source_head": "792beb14600f9b49b04ed18f9061e11d0e163759",
+  "root_cause": "Existing experimental request variants were dispatched to method-not-found despite implemented account handlers and integration expectations.",
+  "change": "Route each variant to its existing account handler, retaining experimental capability checks, global account-auth serialization, forced-login restriction and configuration precedence.",
+  "existing_tests_retained": [
+    "discover_bedrock_profiles_and_environment_credentials",
+    "setup_bedrock_profile_and_environment",
+    "setup_bedrock_rejects_invalid_or_conflicting_credentials"
+  ],
+  "original_test_bodies_byte_equal": true,
+  "new_integration_test": "bedrock_endpoints_require_experimental_opt_in_before_discovery_or_setup",
+  "new_test_scope": "Both public JSON-RPC endpoints return exact capability errors without creating config.toml, auth.json or .env when experimental opt-in is absent.",
+  "schema_and_dependency_changes": false,
+  "limitations": [
+    "No external AWS request or actual customer credential access was performed. Existing handler validates local credential selection and supported region, not Bedrock service authorization.",
+    "Required local just test/fix stop before compilation at missing sparse-workspace aws-auth manifest. Native new-head execution is still required."
+  ],
+  "files": [
+    {
+      "path": "codex-rs/app-server/src/message_processor.rs",
+      "bytes": 74411,
+      "sha256": "60e0a0dc84aa9cf192e7b09dc5590148d9ceeaaa429f6bfe1a48974939347504"
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+      "bytes": 5606,
+      "sha256": "af9ceab5047c7ee06bba84d47684748b38bfbb32e287db4a6fca84b2b45fa6fa"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/bedrock_setup.rs",
+      "bytes": 13550,
+      "sha256": "18236a1c5d2f9f8690c98125199e54770d5402dac04e8ecd813871e7d6669706"
+    },
+    {
+      "path": "codex-rs/app-server/README.md",
+      "bytes": 187009,
+      "sha256": "35524cb85544195551ecf282d10adccdc20b155d797c50222efabe28246a998c"
+    }
+  ]
+}

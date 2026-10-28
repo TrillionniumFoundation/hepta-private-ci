@@ -1,0 +1,35 @@
+{
+  "all_historical_global_usage_known": false,
+  "allocation_sha256": "070c1d052b74475be623758b157504a3013a0fd4343def8060bcb0badc782758",
+  "known_excluded_pool_sizes": {
+    "CONTROL_ADMISSION_SOURCE_ALLOCATION.json": 2048,
+    "SOURCE_ALLOCATION.json": 1792,
+    "historical": 25000,
+    "prior_fresh": 2048,
+    "prior_heldout": 180
+  },
+  "model_predictions_performed": 0,
+  "mutually_disjoint": true,
+  "overlap_counts": {
+    "retention": {
+      "CONTROL_ADMISSION_SOURCE_ALLOCATION.json": 0,
+      "SOURCE_ALLOCATION.json": 0,
+      "historical": 0,
+      "prior_fresh": 0,
+      "prior_heldout": 0
+    },
+    "test": {
+      "CONTROL_ADMISSION_SOURCE_ALLOCATION.json": 0,
+      "SOURCE_ALLOCATION.json": 0,
+      "historical": 0,
+      "prior_fresh": 0,
+      "prior_heldout": 0
+    }
+  },
+  "recreated_prior_fresh_manifest_sha256": "f3880a2eec68b6d061dc5fcb41612543cef1b6e3bccee5769d5a9e526a3dac91",
+  "source_counts": {
+    "retention": 128,
+    "test": 256
+  },
+  "writer_independence_established": false
+}

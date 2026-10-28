@@ -198,6 +198,7 @@ def codex_rust_crate(
         deps_extra = [],
         integration_compile_data_extra = [],
         integration_test_args = [],
+        integration_test_runfiles_launcher = False,
         unit_test_args = [],
         unit_test_dependency_replacements = {},
         unit_test_features = [],
@@ -247,6 +248,9 @@ def codex_rust_crate(
             Typically only needed when features add additional deps.
         integration_compile_data_extra: Extra compile_data for integration tests.
         integration_test_args: Optional args for integration test binaries.
+        integration_test_runfiles_launcher: Resolve helper-binary environment
+            paths through the existing workspace launcher even without sharding.
+            This does not enable sharding or flaky retries.
         unit_test_args: Optional args for the unit test binary.
         binary_test_target_compatible_with: Platform constraints for binary unit tests.
         integration_test_timeout: Optional Bazel timeout for integration test
@@ -543,11 +547,13 @@ def codex_rust_crate(
             test_kwargs["flaky"] = True
 
         integration_test_binary = test_name + "-bin"
+        use_workspace_root_launcher = bool(test_shard_count) or integration_test_runfiles_launcher
 
         # There are four generated integration-test shapes:
         #
-        # 1. Unsharded native tests keep the plain rust_test label for minimal
-        #    churn and the usual rules_rust Cargo-like environment.
+        # 1. Unsharded native tests normally keep the plain rust_test label.
+        #    Tests needing absolute helper-binary runfiles can opt into the
+        #    existing launcher without adding sharding or flaky retries.
         # 2. Sharded native tests split into a manual rust_test binary plus an
         #    outer workspace_root_test. The outer test action receives Bazel's
         #    sharding environment, resolves the real binary through the
@@ -561,10 +567,11 @@ def codex_rust_crate(
         #    owns cleanup. The outer workspace_root_test resolves the runner,
         #    test, and server from runfiles, sets a Cargo-like cwd, and applies
         #    the native test's shard count.
-        if test_shard_count:
+        if use_workspace_root_launcher:
             # This target is intentionally a binary-like helper, not the public
-            # test target. The wrapper below owns cwd setup, runfile env
-            # materialization, sharding, and flaky retry behavior.
+            # test target. The wrapper below owns cwd setup and runfile env
+            # materialization. Sharding and retries remain conditional on the
+            # separate test_shard_count setting above.
             rust_test(
                 name = integration_test_binary,
                 crate_name = test_crate_name,
@@ -629,7 +636,7 @@ def codex_rust_crate(
 
         if run_tests_with_wine_exec:
             wine_test_name = test_name.removesuffix("-test") + "-wine-exec-test"
-            native_test_binary = ":" + (integration_test_binary if test_shard_count else test_name)
+            native_test_binary = ":" + (integration_test_binary if use_workspace_root_launcher else test_name)
             wine_test_binaries = dict(wine_host_binaries)
 
             wine_exec_server = wine_test_name + "-windows-exec-server"

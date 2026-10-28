@@ -1,0 +1,22 @@
+{
+  "actual_proxy_loss_dense": 7.538637161254883,
+  "actual_proxy_loss_micro_mean": 7.538637280464172,
+  "gradient_scale": 0.3222815692424774,
+  "limits": "independent-example proxy fixture and architecture inspection; production floating-point trajectories need not be bit-identical under a different reduction order",
+  "maximum_gradient_absolute_difference": 7.776543498039246e-08,
+  "maximum_gradient_relative_to_global_scale": 2.4129656301221336e-07,
+  "maximum_one_adam_update_parameter_difference": 1.5795230865478516e-06,
+  "model_and_optimizer_resume_bit_exact_on_stochastic_fixture": true,
+  "passed": true,
+  "production_batchnorm_or_dropout_modules": [],
+  "production_parameter_count": 945091,
+  "qualification_or_development_data_access": false,
+  "schema": "hepta.closure.microbatch-recovery-check.v1",
+  "source_sha256": {
+    "natural_model.py": "5d179d588ff170494373d81d0bccb544a6c42e537f022415578a29fe235fe7c0",
+    "natural_proxy_data.py": "40488e5932ec820e29d64193e66225232fd4124e503e1512982230e5159d7490",
+    "natural_recovery_check.py": "72ec5e6e9e6f8b9e9971ad254e7b50f22be7a3554436271a56113a04c0b3f699",
+    "natural_train_microbatch.py": "bdaf16ea7a6b48481cdf2d361639d2b7743211e993caa69a70c24369bef6db70",
+    "semantic_observer.py": "4d34eceb37a498f6b8699fd8d30e69b3f4fb5504fd68adff283764f149bc06c5"
+  }
+}

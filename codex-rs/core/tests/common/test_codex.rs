@@ -23,11 +23,13 @@ use codex_core::config::Config;
 use codex_core::resolve_installation_id;
 use codex_core::shell::Shell;
 use codex_core::shell::get_shell_by_model_provided_path;
+use codex_core::test_support::FirstPartyTestTransport;
 use codex_core::thread_store_from_config;
 use codex_exec_server::CreateDirectoryOptions;
 use codex_exec_server::ExecutorFileSystem;
 use codex_exec_server::RemoveOptions;
 use codex_extension_api::ExtensionRegistry;
+use codex_extension_api::ExtensionRegistryBuilder;
 use codex_extension_api::LoadUserInstructionsFuture;
 use codex_extension_api::UserInstructionsProvider;
 use codex_extension_api::empty_extension_registry;
@@ -35,6 +37,7 @@ use codex_features::Feature;
 use codex_home::CodexHomeUserInstructionsProvider;
 use codex_login::CodexAuth;
 use codex_model_provider_info::ModelProviderInfo;
+use codex_model_provider_info::OPENAI_API_BASE_URL;
 use codex_model_provider_info::built_in_model_providers;
 use codex_models_manager::bundled_models_response;
 use codex_models_manager::manager::SharedModelsManager;
@@ -338,9 +341,18 @@ pub struct TestCodexBuilder {
     code_mode_host_program: Option<PathBuf>,
     history_mode: Option<ThreadHistoryMode>,
     models_manager: Option<SharedModelsManager>,
+    first_party_http_fixture: Option<Arc<FirstPartyTestTransport>>,
 }
 
 impl TestCodexBuilder {
+    pub(crate) fn with_first_party_http_fixture(
+        mut self,
+        fixture: Arc<FirstPartyTestTransport>,
+    ) -> Self {
+        self.first_party_http_fixture = Some(fixture);
+        self
+    }
+
     pub fn with_config<T>(mut self, mutator: T) -> Self
     where
         T: FnOnce(&mut Config) + Send + 'static,
@@ -685,6 +697,13 @@ impl TestCodexBuilder {
             .models_manager
             .clone()
             .unwrap_or_else(|| codex_core::build_models_manager(&config, auth_manager.clone()));
+        let extensions = if let Some(fixture) = &self.first_party_http_fixture {
+            let mut builder = ExtensionRegistryBuilder::from_registry(self.extensions.as_ref());
+            builder.thread_lifecycle_contributor(fixture.clone());
+            Arc::new(builder.build())
+        } else {
+            Arc::clone(&self.extensions)
+        };
         let thread_manager = ThreadManager::new(
             &config,
             auth_manager.clone(),
@@ -692,7 +711,7 @@ impl TestCodexBuilder {
             codex_core::CodexAppsToolsCache::default(),
             SessionSource::Exec,
             Arc::clone(&environment_manager),
-            Arc::clone(&self.extensions),
+            extensions,
             user_instructions_provider,
             /*analytics_events_client*/ None,
             Arc::clone(&thread_store),
@@ -831,6 +850,12 @@ impl TestCodexBuilder {
         config.model = Some("gpt-5.5".to_string());
         config.cwd = cwd_override;
         config.model_provider = model_provider;
+        if self.first_party_http_fixture.is_some() {
+            config.model_provider.base_url = Some(OPENAI_API_BASE_URL.to_string());
+            config.model_provider.supports_websockets = false;
+            config.model_catalog = Some(bundled_models_response()?);
+            config.features.enable(Feature::ContentItemKinds)?;
+        }
         if let Ok(path) = codex_utils_cargo_bin::cargo_bin("codex") {
             config.codex_self_exe = Some(path);
         } else if let Ok(path) = codex_utils_cargo_bin::cargo_bin("codex-exec") {
@@ -1358,6 +1383,7 @@ pub fn test_codex() -> TestCodexBuilder {
         code_mode_host_program: None,
         history_mode: None,
         models_manager: None,
+        first_party_http_fixture: None,
     }
 }
 

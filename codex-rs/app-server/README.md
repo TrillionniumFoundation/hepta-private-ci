@@ -2435,6 +2435,13 @@ requests. This limitation will be addressed in a follow-up.
 
 ### Discover and configure AWS-managed Amazon Bedrock credentials
 
+These methods require the client's `experimentalApi` capability. Requests use the
+same account-auth serialization and forced-login restrictions as other account
+operations. Setup validates the selected local credential path and supported
+region; it does not call Bedrock to verify service authorization. Discovery
+returns profile names, credential kinds and regions without exposing credential
+values. Setup preserves unrelated configuration and does not rewrite `.env`.
+
 These experimental methods require the client to initialize with `experimentalApi: true`.
 
 Discover AWS profiles and credentials already visible to the app-server process:

@@ -297,6 +297,10 @@ impl fmt::Display for PromptRegistryCompilationErrorV2 {
 
 impl std::error::Error for PromptRegistryCompilationErrorV2 {}
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 #[path = "prompt_delivery_tests.rs"]
 pub(crate) mod tests;
+
+#[cfg(all(test, not(unix)))]
+#[path = "prompt_delivery_unsupported_tests.rs"]
+mod unsupported_tests;

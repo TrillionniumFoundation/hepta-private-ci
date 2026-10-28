@@ -6,30 +6,18 @@ from pathlib import Path
 import platform
 import re
 import shutil
-import stat
 import time
 
 from .commands import Commands
 from .contract import IMAGE_ROOTS, TARGET, verify_tools
 from .files import (
     checksum,
-    copy_file,
     describe,
     inventory,
     physical,
     verify,
     write_json,
 )
-
-
-CACHE_BOOKKEEPING = {
-    ".package-cache",
-    ".package-cache-mutate",
-    ".global-cache",
-    ".global-cache-journal",
-    ".global-cache-wal",
-    ".global-cache-shm",
-}
 
 
 def source_clean(commands, seal):
@@ -91,47 +79,6 @@ def build_environment(contract, work, closed_path):
         "MAKE": tools["make"]["path"],
         "PKG_CONFIG": tools["pkg-config"]["path"],
     }
-
-
-def dependency_inventory(seed):
-    entries = inventory(seed)
-    forbidden = [
-        name
-        for name in entries
-        if Path(name).parts[0] not in {"registry", "git", *CACHE_BOOKKEEPING}
-    ]
-    if forbidden:
-        raise ValueError(
-            "Offline seed may contain only registry/git and known Cargo bookkeeping; no credentials/config/bin"
-        )
-    return {
-        name: {**identity, "mode": stat.S_IMODE((seed / name).stat().st_mode)}
-        for name, identity in entries.items()
-        if name not in CACHE_BOOKKEEPING
-    }
-
-
-def copy_seed(seed, destination, expected):
-    seed, destination = physical(seed), physical(destination)
-    before = dependency_inventory(seed)
-    if before != expected or not before:
-        raise ValueError(
-            "Complete offline dependency seed differs from its frozen ledger"
-        )
-    destination.mkdir(parents=True, mode=0o700, exist_ok=False)
-    for name, item in before.items():
-        copy_file(
-            seed / name, destination / name, executable=bool(item["mode"] & 0o111)
-        )
-        os.chmod(destination / name, item["mode"])
-    if (
-        dependency_inventory(destination) != before
-        or dependency_inventory(seed) != before
-    ):
-        raise ValueError(
-            "Dependency seed copy failed complete write/readback verification"
-        )
-    return before
 
 
 def image_file_tree(root):

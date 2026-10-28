@@ -1,0 +1,49 @@
+{
+  "checks": {
+    "fixture_lifetime": "Both direct LocalFileSystem and remote ExecServerHarness retain TestCodexHelperPaths including the owned TempDir through test use.",
+    "native_and_wine_selection": "Native wrapper selects the manual Rust test binary; Wine uses the same underlying Rust test binary when the opt-in is enabled, not the wrapper script.",
+    "no_added_skip_retry_or_sharding": "shard_count/flaky remain conditional only on existing test_shard_count; public target names, args, tags and timeout routing preserved.",
+    "original_rlocation_path_gap_fixed": "Unsharded exec-server integration explicitly opts into the existing runfiles launcher; both helper environment variables resolve through merged runfiles before spawning the test process.",
+    "production_authority": "No production helper resolver, sandbox policy, environment enforcement or dispatch authorization changed.",
+    "real_helpers_and_failures": "Both actual helper binaries must exist; missing declared env paths fail explicitly; current test binary is hard-linked or copied beside copied helpers."
+  },
+  "inputs": [
+    {
+      "path": "defs.bzl",
+      "sha256": "25607396a768f78d02cafdbda536ddd34440f00f209198699ab4066f7cdca0dc"
+    },
+    {
+      "path": "codex-rs/exec-server/BUILD.bazel",
+      "sha256": "a2672b343cce11065a90de102ba23cfdde9107ca765a0a9605f387f47173b269"
+    },
+    {
+      "path": "codex-rs/exec-server/tests/common/mod.rs",
+      "sha256": "0b65756dd0b76bb1d420f0c623829698e68f0bba5b0f7fa4fccd5e17b6c7f2bb"
+    },
+    {
+      "path": "codex-rs/exec-server/tests/common/exec_server.rs",
+      "sha256": "cf62610c29dec612ce343c06df8f0640dbe0dd5867f6378f1adb5d49b1533513"
+    },
+    {
+      "path": "codex-rs/exec-server/tests/common/windows_helpers.rs",
+      "sha256": "9b9d9ec760f43f58680cecb1387f80d5dfe5f4fc305c7b9092a9e5124b787932"
+    },
+    {
+      "path": "workspace_root_test_launcher.bat.tpl",
+      "sha256": "4d509f1a57ffb4a890a96b775468af8e2d0d83538af76d358d10628d8b442dae"
+    },
+    {
+      "path": "codex-rs/exec-server/tests/file_system/support.rs",
+      "sha256": "b5bb84d9f6af9a7b34ebd17f2a3949b93b23d50e53074f94d4cf11d7d60fa295"
+    }
+  ],
+  "limits": [
+    "Static source review only; no Rust compilation, Windows execution, sandbox capability or test pass claimed.",
+    "Existing launcher consumes manifest physical-path mappings and absolute runfiles roots from Bazel; this patch does not redesign manifest parsing.",
+    "Existing asynchronous child teardown and pathname-based staging lifetime are unchanged beyond retaining the directory; no stronger process cleanup or filesystem security guarantee claimed.",
+    "The original eight Windows failure cases remain the execution gate."
+  ],
+  "result": "No blocking defect found in the revised scoped patch; actual Windows execution still required.",
+  "reviewed_head": "832b2a382a155bc840df0d255b2c183a43b0d219",
+  "schema": "windows-exec-server-independent-static-review/v1"
+}

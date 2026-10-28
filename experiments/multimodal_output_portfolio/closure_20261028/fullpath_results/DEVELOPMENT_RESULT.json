@@ -1,0 +1,834 @@
+{
+  "admission_checks": {
+    "at_least_one_learned_risk_selection": true,
+    "not_smoke": true,
+    "retention_all_selected": true,
+    "risk_gain_vs_greedy": true,
+    "risk_gain_vs_matched_mean": false,
+    "risk_gain_vs_same_law": true
+  },
+  "all_matched_work_and_module_gradient_checks_passed": true,
+  "complete_physical_CPU_cost_certificate": false,
+  "completed_arms_inherited_without_retraining": 2,
+  "development_seal_sha256": "3410a22d5d3928fd661a237c45b021b336d8b8f1c0cc7c08441be723df9285e0",
+  "effective_training_cpu_seconds": 2485.739549596,
+  "fresh_qualification_success_established": false,
+  "global_optimality_established": false,
+  "mean_selected_risk_development_gains": {
+    "greedy": 0.0022456657712922232,
+    "matched_mean": -0.005546490863992393,
+    "same_law": 0.004188176421009326
+  },
+  "new_qualification_predictions": 0,
+  "per_seed_arm": [
+    {
+      "all_opened_generation_modules_changed": true,
+      "all_opened_module_gradient_sums_positive": true,
+      "arm": "lax_mean",
+      "auxiliary_parameters_unchanged": true,
+      "candidates": [
+        {
+          "deterministic": true,
+          "eligible": true,
+          "path": null,
+          "quality_ce": 0.7942405032547595,
+          "retention_ce": 0.8819427856419054,
+          "stage": "prior_greedy"
+        },
+        {
+          "deterministic": false,
+          "eligible": false,
+          "path": null,
+          "quality_ce": 0.7942035107342037,
+          "retention_ce": 0.8631956157828816,
+          "stage": "prior_stochastic"
+        },
+        {
+          "checkpoint_sha256": "0b35a33aac7a5be7370878e0c9662c92ff934e6a82e06e635f1022b0d69d036a",
+          "deterministic": false,
+          "eligible": false,
+          "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001/seed-17-lax_mean/transition.pt",
+          "quality_ce": 0.7990342772914105,
+          "retention_ce": 0.8587912513838046,
+          "stage": "transition"
+        },
+        {
+          "checkpoint_sha256": "82602eaebfcdcc89df9d211ddf25e1ba900112d453a5623c989b9e2d24943daf",
+          "deterministic": false,
+          "eligible": false,
+          "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001/seed-17-lax_mean/adapter.pt",
+          "quality_ce": 0.7970949195457555,
+          "retention_ce": 0.8631838982940784,
+          "stage": "adapter"
+        },
+        {
+          "checkpoint_sha256": "c58efe41d0488a7e6581120d4f9054ed23ae66cce3a22c05d6f0b0fb836f0f3e",
+          "deterministic": false,
+          "eligible": true,
+          "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001/seed-17-lax_mean/emission.pt",
+          "quality_ce": 0.8107024711938844,
+          "retention_ce": 0.8809885111192741,
+          "stage": "emission"
+        },
+        {
+          "checkpoint_sha256": "8ba8b3ddee4176f42b1c0b432006b39285a86b7616a845c91e9b371ef6328603",
+          "deterministic": false,
+          "eligible": true,
+          "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001/seed-17-lax_mean/encoder.pt",
+          "quality_ce": 0.8175894309446742,
+          "retention_ce": 0.8873494607195759,
+          "stage": "encoder"
+        }
+      ],
+      "opened_generation_module_count": 16,
+      "quality_ce": 0.8175894309446742,
+      "quality_gain_vs_same_law": 0.02338592021047048,
+      "quality_gain_vs_strong": 0.0233489276899147,
+      "retention_ce": 0.8873494607195759,
+      "retention_difference_vs_strong": 0.005406675077670453,
+      "seed": 17,
+      "selected_checkpoint_sha256": "8ba8b3ddee4176f42b1c0b432006b39285a86b7616a845c91e9b371ef6328603",
+      "selected_emission_mode": "stochastic",
+      "selected_stage": "encoder",
+      "stage_gradients": [
+        {
+          "module_norm_sums": {
+            "coupling_cell": 922.6896582203286,
+            "semantic_cell": 514.7376438780243
+          },
+          "stage": "transition"
+        },
+        {
+          "module_norm_sums": {
+            "coupling_cell": 1195.7745211328631,
+            "image_cell": 317.2237954207084,
+            "initial_image": 2718.776348091047,
+            "initial_text": 219.14206066754554,
+            "semantic_cell": 782.0182442685035,
+            "text_cell": 4.883176599929764
+          },
+          "stage": "adapter"
+        },
+        {
+          "module_norm_sums": {
+            "coupling_cell": 904.8920864063398,
+            "image_cell": 593.6836488677571,
+            "initial_image": 3052.400891598519,
+            "initial_text": 194.37034394547237,
+            "pixel_decoder": 8313.027957353743,
+            "semantic_cell": 616.1531194490985,
+            "text_cell": 6.1645897335967135,
+            "text_decoder": 49.83862506040214,
+            "text_initial": 93.57806600629053,
+            "text_projection": 46.91994898158366
+          },
+          "stage": "emission"
+        },
+        {
+          "module_norm_sums": {
+            "command_embedding": 26.731989024108962,
+            "command_film": 428.2271943546384,
+            "coupling_cell": 963.4256384739697,
+            "fuse": 12760.683150313525,
+            "image_cell": 926.9876394010801,
+            "initial_image": 3804.800483425878,
+            "initial_text": 200.3062279643299,
+            "pixel_decoder": 10442.8436658436,
+            "pixel_encoder": 15661.174260930089,
+            "semantic_cell": 620.9336468877524,
+            "text_cell": 5.650712458336939,
+            "text_decoder": 45.92796246895138,
+            "text_encoder": 3234.7148448876023,
+            "text_initial": 86.39020496336055,
+            "text_projection": 46.938196612315025,
+            "token_embedding": 434.8426146438836
+          },
+          "stage": "encoder"
+        }
+      ],
+      "total_model_module_count": 17,
+      "training_record_sha256": "d0f77db7755ab2413cd31a285bcd0027529fc7bb05d47202e491fbc92e356234",
+      "unopened_auxiliary_modules": [
+        "digit_head"
+      ]
+    },
+    {
+      "all_opened_generation_modules_changed": true,
+      "all_opened_module_gradient_sums_positive": true,
+      "arm": "lax_risk",
+      "auxiliary_parameters_unchanged": true,
+      "candidates": [
+        {
+          "deterministic": true,
+          "eligible": true,
+          "path": null,
+          "quality_ce": 0.7942405032547595,
+          "retention_ce": 0.8819427856419054,
+          "stage": "prior_greedy"
+        },
+        {
+          "deterministic": false,
+          "eligible": false,
+          "path": null,
+          "quality_ce": 0.7942035107342037,
+          "retention_ce": 0.8631956157828816,
+          "stage": "prior_stochastic"
+        },
+        {
+          "checkpoint_sha256": "8fb36cb67dbd28706b50f63f751173630cc0ac192a2fd9061abbbf628befbd8d",
+          "deterministic": false,
+          "eligible": false,
+          "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001/seed-17-lax_risk/transition.pt",
+          "quality_ce": 0.7990338116788122,
+          "retention_ce": 0.8632005811939208,
+          "stage": "transition"
+        },
+        {
+          "checkpoint_sha256": "fb68ee29b2137209254bc41e9c01a5f9f2d9c37f95eefa5777430d52248def50",
+          "deterministic": false,
+          "eligible": false,
+          "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001/seed-17-lax_risk/adapter.pt",
+          "quality_ce": 0.7989162995026517,
+          "retention_ce": 0.8631925153528988,
+          "stage": "adapter"
+        },
+        {
+          "checkpoint_sha256": "f715a90a2eaaa420eb64fbe6ced4944798061b17e8ca63e8dcf0cd4dd89f7044",
+          "deterministic": false,
+          "eligible": false,
+          "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001/seed-17-lax_risk/emission.pt",
+          "quality_ce": 0.7993168561885239,
+          "retention_ce": 0.8675400197058586,
+          "stage": "emission"
+        },
+        {
+          "checkpoint_sha256": "c98b7826ba0044bc15f09a14a36b33e03ad6a217f4dbd05ef2a622e0aa6debf1",
+          "deterministic": false,
+          "eligible": true,
+          "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-001/seed-17-lax_risk/encoder.pt",
+          "quality_ce": 0.8009775005686361,
+          "retention_ce": 0.9077351825694396,
+          "stage": "encoder"
+        }
+      ],
+      "opened_generation_module_count": 16,
+      "quality_ce": 0.8009775005686361,
+      "quality_gain_vs_same_law": 0.006773989834432448,
+      "quality_gain_vs_strong": 0.006736997313876669,
+      "retention_ce": 0.9077351825694396,
+      "retention_difference_vs_strong": 0.02579239692753421,
+      "seed": 17,
+      "selected_checkpoint_sha256": "c98b7826ba0044bc15f09a14a36b33e03ad6a217f4dbd05ef2a622e0aa6debf1",
+      "selected_emission_mode": "stochastic",
+      "selected_stage": "encoder",
+      "stage_gradients": [
+        {
+          "module_norm_sums": {
+            "coupling_cell": 117.04940527624667,
+            "semantic_cell": 75.69574255587635
+          },
+          "stage": "transition"
+        },
+        {
+          "module_norm_sums": {
+            "coupling_cell": 305.0744294186639,
+            "image_cell": 140.40528305793188,
+            "initial_image": 796.6538841686225,
+            "initial_text": 68.84391117305924,
+            "semantic_cell": 193.3493224465514,
+            "text_cell": 2.5561637533686468
+          },
+          "stage": "adapter"
+        },
+        {
+          "module_norm_sums": {
+            "coupling_cell": 274.515581102912,
+            "image_cell": 176.6864094771525,
+            "initial_image": 807.7033641915287,
+            "initial_text": 67.5791014769752,
+            "pixel_decoder": 2307.9745176320525,
+            "semantic_cell": 163.54774535210703,
+            "text_cell": 2.55253256160129,
+            "text_decoder": 24.257681893782426,
+            "text_initial": 46.4701713248522,
+            "text_projection": 25.31415605345058
+          },
+          "stage": "emission"
+        },
+        {
+          "module_norm_sums": {
+            "command_embedding": 5.616054714733803,
+            "command_film": 89.57743221121723,
+            "coupling_cell": 223.5157108240207,
+            "fuse": 2915.6357922220495,
+            "image_cell": 209.25807334138932,
+            "initial_image": 806.0736071058463,
+            "initial_text": 58.124351335895,
+            "pixel_decoder": 2080.4616321533513,
+            "pixel_encoder": 3441.152577516173,
+            "semantic_cell": 133.44326364523207,
+            "text_cell": 2.358335277679494,
+            "text_decoder": 21.326337412142827,
+            "text_encoder": 869.9699183368166,
+            "text_initial": 41.648745918327556,
+            "text_projection": 23.174796296802477,
+            "token_embedding": 113.15479780609701
+          },
+          "stage": "encoder"
+        }
+      ],
+      "total_model_module_count": 17,
+      "training_record_sha256": "f0d30515c44bebc0e918f88e14e34b8f6ce42e1ed9d3c9b1c59e90e5e711240b",
+      "unopened_auxiliary_modules": [
+        "digit_head"
+      ]
+    },
+    {
+      "all_opened_generation_modules_changed": true,
+      "all_opened_module_gradient_sums_positive": true,
+      "arm": "lax_mean",
+      "auxiliary_parameters_unchanged": true,
+      "candidates": [
+        {
+          "deterministic": true,
+          "eligible": true,
+          "path": null,
+          "quality_ce": 0.8500426720639798,
+          "retention_ce": 0.8665961115546477,
+          "stage": "prior_greedy"
+        },
+        {
+          "deterministic": false,
+          "eligible": true,
+          "path": null,
+          "quality_ce": 0.8460997726596388,
+          "retention_ce": 0.8665953074511047,
+          "stage": "prior_stochastic"
+        },
+        {
+          "checkpoint_sha256": "6cb35191bfaff28571b01a8a1d34ae41f1d8f922350b2faac9b6537d79de3685",
+          "deterministic": false,
+          "eligible": true,
+          "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-29-lax_mean/transition.pt",
+          "quality_ce": 0.8460981082437707,
+          "retention_ce": 0.8665903705285746,
+          "stage": "transition"
+        },
+        {
+          "checkpoint_sha256": "80d86841947e66ae27a6022bfe95df931b3f924ecb5bc59057094d99656e430b",
+          "deterministic": false,
+          "eligible": true,
+          "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-29-lax_mean/adapter.pt",
+          "quality_ce": 0.8396737939239225,
+          "retention_ce": 0.8665883340489857,
+          "stage": "adapter"
+        },
+        {
+          "checkpoint_sha256": "01c9534bd48cefd6c16f6a5a2e26013607f9dbf65613e246087b731f4a74dc9a",
+          "deterministic": false,
+          "eligible": false,
+          "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-29-lax_mean/emission.pt",
+          "quality_ce": 0.8329752109462661,
+          "retention_ce": 0.8483937916942071,
+          "stage": "emission"
+        },
+        {
+          "checkpoint_sha256": "091a418d270751a118b9fdd0f7fe10cd477dd58ee6163504e056367b69cae934",
+          "deterministic": false,
+          "eligible": false,
+          "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-29-lax_mean/encoder.pt",
+          "quality_ce": 0.8091824724562177,
+          "retention_ce": 0.8145695968342641,
+          "stage": "encoder"
+        }
+      ],
+      "opened_generation_module_count": 16,
+      "quality_ce": 0.8500426720639798,
+      "quality_gain_vs_same_law": 0.003942899404341005,
+      "quality_gain_vs_strong": 0.0,
+      "retention_ce": 0.8665961115546477,
+      "retention_difference_vs_strong": 0.0,
+      "seed": 29,
+      "selected_checkpoint_sha256": null,
+      "selected_emission_mode": "greedy_prior",
+      "selected_stage": "prior_greedy",
+      "stage_gradients": [
+        {
+          "module_norm_sums": {
+            "coupling_cell": 1106.6804703549228,
+            "semantic_cell": 741.5870885189634
+          },
+          "stage": "transition"
+        },
+        {
+          "module_norm_sums": {
+            "coupling_cell": 555.5662832412987,
+            "image_cell": 954.9384887653364,
+            "initial_image": 2943.5113163923215,
+            "initial_text": 124.84362238523207,
+            "semantic_cell": 351.7998965536528,
+            "text_cell": 4.415078717793387
+          },
+          "stage": "adapter"
+        },
+        {
+          "module_norm_sums": {
+            "coupling_cell": 745.0467786144841,
+            "image_cell": 518.0595706322013,
+            "initial_image": 2213.3005264016965,
+            "initial_text": 152.97312052423516,
+            "pixel_decoder": 6272.235890639045,
+            "semantic_cell": 407.4846985945765,
+            "text_cell": 2.811306827021603,
+            "text_decoder": 40.375052233732355,
+            "text_initial": 79.0923636559592,
+            "text_projection": 45.04593025734397
+          },
+          "stage": "emission"
+        },
+        {
+          "module_norm_sums": {
+            "command_embedding": 18.908760974067064,
+            "command_film": 311.07352418391235,
+            "coupling_cell": 849.7774350606478,
+            "fuse": 7999.202130584087,
+            "image_cell": 414.551982419261,
+            "initial_image": 2233.7702935764555,
+            "initial_text": 176.13601961391925,
+            "pixel_decoder": 6479.492614075046,
+            "pixel_encoder": 8659.815932034187,
+            "semantic_cell": 475.13591216433764,
+            "text_cell": 5.758356430112731,
+            "text_decoder": 39.45020402594924,
+            "text_encoder": 2369.723264477209,
+            "text_initial": 73.06954733063917,
+            "text_projection": 44.902068369214575,
+            "token_embedding": 322.9293084204983
+          },
+          "stage": "encoder"
+        }
+      ],
+      "total_model_module_count": 17,
+      "training_record_sha256": "3d4585d903952a6dd70fd23215ea8160676c775b44678b833589d401ab06e689",
+      "unopened_auxiliary_modules": [
+        "digit_head"
+      ]
+    },
+    {
+      "all_opened_generation_modules_changed": true,
+      "all_opened_module_gradient_sums_positive": true,
+      "arm": "lax_risk",
+      "auxiliary_parameters_unchanged": true,
+      "candidates": [
+        {
+          "deterministic": true,
+          "eligible": true,
+          "path": null,
+          "quality_ce": 0.8500426720639798,
+          "retention_ce": 0.8665961115546477,
+          "stage": "prior_greedy"
+        },
+        {
+          "deterministic": false,
+          "eligible": true,
+          "path": null,
+          "quality_ce": 0.8460997726596388,
+          "retention_ce": 0.8665953074511047,
+          "stage": "prior_stochastic"
+        },
+        {
+          "checkpoint_sha256": "dc7a99469d5be90a84b60cb8343799fcac3d6d11186fb7188419b56bec667eba",
+          "deterministic": false,
+          "eligible": true,
+          "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-29-lax_risk/transition.pt",
+          "quality_ce": 0.8460970943357042,
+          "retention_ce": 0.8665931347616489,
+          "stage": "transition"
+        },
+        {
+          "checkpoint_sha256": "248294951a608baa3af0e8d2fc7dca0ae548fb6b9536028a447dd4e2faca430f",
+          "deterministic": false,
+          "eligible": true,
+          "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-29-lax_risk/adapter.pt",
+          "quality_ce": 0.8405891859146686,
+          "retention_ce": 0.8665809789251402,
+          "stage": "adapter"
+        },
+        {
+          "checkpoint_sha256": "1c51c96915b9ece4df0dab6f90dc890ad044de1d166ffeba269eaf38d7272f17",
+          "deterministic": false,
+          "eligible": false,
+          "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-29-lax_risk/emission.pt",
+          "quality_ce": 0.8406170446344565,
+          "retention_ce": 0.84838489526959,
+          "stage": "emission"
+        },
+        {
+          "checkpoint_sha256": "1adeae7e7aa129a244b7760d5d2d753dcdeb0590535929a859dc42f6741f509e",
+          "deterministic": false,
+          "eligible": false,
+          "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-29-lax_risk/encoder.pt",
+          "quality_ce": 0.839634842996711,
+          "retention_ce": 0.8098864007110751,
+          "stage": "encoder"
+        }
+      ],
+      "opened_generation_module_count": 16,
+      "quality_ce": 0.8500426720639798,
+      "quality_gain_vs_same_law": 0.003942899404341005,
+      "quality_gain_vs_strong": 0.0,
+      "retention_ce": 0.8665961115546477,
+      "retention_difference_vs_strong": 0.0,
+      "seed": 29,
+      "selected_checkpoint_sha256": null,
+      "selected_emission_mode": "greedy_prior",
+      "selected_stage": "prior_greedy",
+      "stage_gradients": [
+        {
+          "module_norm_sums": {
+            "coupling_cell": 350.0231752138673,
+            "semantic_cell": 229.83144444277147
+          },
+          "stage": "transition"
+        },
+        {
+          "module_norm_sums": {
+            "coupling_cell": 136.50858359737794,
+            "image_cell": 369.40804533010265,
+            "initial_image": 1003.8744665212708,
+            "initial_text": 32.737081623994854,
+            "semantic_cell": 84.45949531592186,
+            "text_cell": 1.995869774085826
+          },
+          "stage": "adapter"
+        },
+        {
+          "module_norm_sums": {
+            "coupling_cell": 224.99849532277852,
+            "image_cell": 124.59596117911717,
+            "initial_image": 667.3833528011644,
+            "initial_text": 53.26529144159751,
+            "pixel_decoder": 1978.225714841651,
+            "semantic_cell": 140.36177482171868,
+            "text_cell": 2.1224809122081725,
+            "text_decoder": 19.663732751635727,
+            "text_initial": 40.30420871211511,
+            "text_projection": 22.875438009876397
+          },
+          "stage": "emission"
+        },
+        {
+          "module_norm_sums": {
+            "command_embedding": 7.492847534433614,
+            "command_film": 120.04441200029895,
+            "coupling_cell": 276.0030268288765,
+            "fuse": 3234.270830952005,
+            "image_cell": 235.69253952167412,
+            "initial_image": 931.46368446093,
+            "initial_text": 63.14394768379555,
+            "pixel_decoder": 2574.978468975839,
+            "pixel_encoder": 3874.384078704452,
+            "semantic_cell": 141.56986082722378,
+            "text_cell": 2.6037165894326213,
+            "text_decoder": 28.494700727461694,
+            "text_encoder": 832.3028787305637,
+            "text_initial": 40.234683783245934,
+            "text_projection": 25.775924690934954,
+            "token_embedding": 108.41173663628359
+          },
+          "stage": "encoder"
+        }
+      ],
+      "total_model_module_count": 17,
+      "training_record_sha256": "cd3b39e37865959b64b6dcc6859ead6e9941b456e7be36fbe21dcb25bce113e3",
+      "unopened_auxiliary_modules": [
+        "digit_head"
+      ]
+    },
+    {
+      "all_opened_generation_modules_changed": true,
+      "all_opened_module_gradient_sums_positive": true,
+      "arm": "lax_mean",
+      "auxiliary_parameters_unchanged": true,
+      "candidates": [
+        {
+          "deterministic": true,
+          "eligible": true,
+          "path": null,
+          "quality_ce": 0.8116653914979941,
+          "retention_ce": 0.8848193545593894,
+          "stage": "prior_greedy"
+        },
+        {
+          "deterministic": false,
+          "eligible": true,
+          "path": null,
+          "quality_ce": 0.8098177514737396,
+          "retention_ce": 0.8848163969944564,
+          "stage": "prior_stochastic"
+        },
+        {
+          "checkpoint_sha256": "54f7cba9cd0dbb52a962e8f5bb1877c35aba1831d0fd6833da9cde3036fa8c26",
+          "deterministic": false,
+          "eligible": true,
+          "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-43-lax_mean/transition.pt",
+          "quality_ce": 0.8098216664604454,
+          "retention_ce": 0.8848205795317562,
+          "stage": "transition"
+        },
+        {
+          "checkpoint_sha256": "06af432d998513a23c0a49fab8f45a6c758c0b2220ffde465dfe03cbadd21ac2",
+          "deterministic": false,
+          "eligible": true,
+          "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-43-lax_mean/adapter.pt",
+          "quality_ce": 0.8116929337139333,
+          "retention_ce": 0.8848227461792049,
+          "stage": "adapter"
+        },
+        {
+          "checkpoint_sha256": "2878c59af384e5ea7e18b06bd7a811156b7391e4e430625ab0293be181ef5708",
+          "deterministic": false,
+          "eligible": true,
+          "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-43-lax_mean/emission.pt",
+          "quality_ce": 0.8099504357533532,
+          "retention_ce": 0.8912608571422257,
+          "stage": "emission"
+        },
+        {
+          "checkpoint_sha256": "69abd3ef789b429dffc7e2fe31028584640a551ad57e7b1ed476fa464c2d8b19",
+          "deterministic": false,
+          "eligible": true,
+          "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-43-lax_mean/encoder.pt",
+          "quality_ce": 0.7919394820092482,
+          "retention_ce": 0.8951037397014265,
+          "stage": "encoder"
+        }
+      ],
+      "opened_generation_module_count": 16,
+      "quality_ce": 0.8116929337139333,
+      "quality_gain_vs_same_law": 0.0018751822401936735,
+      "quality_gain_vs_strong": 2.7542215939146963e-05,
+      "retention_ce": 0.8848227461792049,
+      "retention_difference_vs_strong": 3.3916198154404498e-06,
+      "seed": 43,
+      "selected_checkpoint_sha256": "06af432d998513a23c0a49fab8f45a6c758c0b2220ffde465dfe03cbadd21ac2",
+      "selected_emission_mode": "stochastic",
+      "selected_stage": "adapter",
+      "stage_gradients": [
+        {
+          "module_norm_sums": {
+            "coupling_cell": 694.4294952386253,
+            "semantic_cell": 369.1560588579504
+          },
+          "stage": "transition"
+        },
+        {
+          "module_norm_sums": {
+            "coupling_cell": 1151.8205760651663,
+            "image_cell": 563.2767399384678,
+            "initial_image": 3138.831258364954,
+            "initial_text": 224.72043130065498,
+            "semantic_cell": 668.0652527194457,
+            "text_cell": 4.851743518950994
+          },
+          "stage": "adapter"
+        },
+        {
+          "module_norm_sums": {
+            "coupling_cell": 1537.6995155821494,
+            "image_cell": 412.2880074343501,
+            "initial_image": 3600.8969560800997,
+            "initial_text": 302.8246628387561,
+            "pixel_decoder": 10315.159249154776,
+            "semantic_cell": 977.3374325164713,
+            "text_cell": 4.1830997176859475,
+            "text_decoder": 29.968697533067125,
+            "text_initial": 56.62998681511326,
+            "text_projection": 29.130067623234662
+          },
+          "stage": "emission"
+        },
+        {
+          "module_norm_sums": {
+            "command_embedding": 18.8154875896527,
+            "command_film": 308.0050797837491,
+            "coupling_cell": 711.7803206464105,
+            "fuse": 8953.15632395668,
+            "image_cell": 688.2620327883698,
+            "initial_image": 2556.671145891194,
+            "initial_text": 162.10724184266692,
+            "pixel_decoder": 6721.133168228524,
+            "pixel_encoder": 9991.174271430167,
+            "semantic_cell": 362.8501126598934,
+            "text_cell": 9.300073636790225,
+            "text_decoder": 50.44039115499931,
+            "text_encoder": 2401.557578260312,
+            "text_initial": 93.0393175311931,
+            "text_projection": 50.670653374713176,
+            "token_embedding": 307.02718796326224
+          },
+          "stage": "encoder"
+        }
+      ],
+      "total_model_module_count": 17,
+      "training_record_sha256": "3a00a48de4ae1c69b40597d0b14cd1d2a5c88791473e915dea6df7c7a58c9728",
+      "unopened_auxiliary_modules": [
+        "digit_head"
+      ]
+    },
+    {
+      "all_opened_generation_modules_changed": true,
+      "all_opened_module_gradient_sums_positive": true,
+      "arm": "lax_risk",
+      "auxiliary_parameters_unchanged": true,
+      "candidates": [
+        {
+          "deterministic": true,
+          "eligible": true,
+          "path": null,
+          "quality_ce": 0.8116653914979941,
+          "retention_ce": 0.8848193545593894,
+          "stage": "prior_greedy"
+        },
+        {
+          "deterministic": false,
+          "eligible": true,
+          "path": null,
+          "quality_ce": 0.8098177514737396,
+          "retention_ce": 0.8848163969944564,
+          "stage": "prior_stochastic"
+        },
+        {
+          "checkpoint_sha256": "c860f360322ab96c71ca00f24d7c9491a813ffaa3a29c21f213bc39ba5225914",
+          "deterministic": false,
+          "eligible": true,
+          "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-43-lax_risk/transition.pt",
+          "quality_ce": 0.8098229089565532,
+          "retention_ce": 0.8802619014148417,
+          "stage": "transition"
+        },
+        {
+          "checkpoint_sha256": "31becc93f7eca169e8525305c31bd999d9901190ff3d4b6075df4607d84d1d50",
+          "deterministic": false,
+          "eligible": true,
+          "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-43-lax_risk/adapter.pt",
+          "quality_ce": 0.8087052861027468,
+          "retention_ce": 0.8848190622644837,
+          "stage": "adapter"
+        },
+        {
+          "checkpoint_sha256": "1dd35d15e02ac18036b09cca938e8752303cfa5d3179aaedf09cc49096936d3d",
+          "deterministic": false,
+          "eligible": true,
+          "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-43-lax_risk/emission.pt",
+          "quality_ce": 0.8111233012441025,
+          "retention_ce": 0.8912580819072096,
+          "stage": "emission"
+        },
+        {
+          "checkpoint_sha256": "ca7f6155ae7d793ce322b3245e69cdb26565c149f13f5dc41cd17a9e54b3aea6",
+          "deterministic": false,
+          "eligible": true,
+          "path": "/workspace/scratch/627fa3bea56c/runs/closure-fullpath-lax-development-002/seed-43-lax_risk/encoder.pt",
+          "quality_ce": 0.8055876279461569,
+          "retention_ce": 0.9109832660517522,
+          "stage": "encoder"
+        }
+      ],
+      "opened_generation_module_count": 16,
+      "quality_ce": 0.8116653914979941,
+      "quality_gain_vs_same_law": 0.0018476400242545266,
+      "quality_gain_vs_strong": 0.0,
+      "retention_ce": 0.8848193545593894,
+      "retention_difference_vs_strong": 0.0,
+      "seed": 43,
+      "selected_checkpoint_sha256": null,
+      "selected_emission_mode": "greedy_prior",
+      "selected_stage": "prior_greedy",
+      "stage_gradients": [
+        {
+          "module_norm_sums": {
+            "coupling_cell": 307.85288551479977,
+            "semantic_cell": 202.76760982609161
+          },
+          "stage": "transition"
+        },
+        {
+          "module_norm_sums": {
+            "coupling_cell": 338.15990231856625,
+            "image_cell": 210.28889485456207,
+            "initial_image": 1046.05737076256,
+            "initial_text": 71.13884722712679,
+            "semantic_cell": 156.2482300366007,
+            "text_cell": 2.056151320622789
+          },
+          "stage": "adapter"
+        },
+        {
+          "module_norm_sums": {
+            "coupling_cell": 221.81608859595505,
+            "image_cell": 290.9100386435979,
+            "initial_image": 835.9306997633311,
+            "initial_text": 46.78332022506088,
+            "pixel_decoder": 2275.480714593109,
+            "semantic_cell": 90.90266541716032,
+            "text_cell": 1.89336798308522,
+            "text_decoder": 15.598222305680661,
+            "text_initial": 28.14976703985251,
+            "text_projection": 14.118948841280032
+          },
+          "stage": "emission"
+        },
+        {
+          "module_norm_sums": {
+            "command_embedding": 5.506152157416596,
+            "command_film": 86.23609648591837,
+            "coupling_cell": 294.21030701750954,
+            "fuse": 2751.497802306524,
+            "image_cell": 164.0292974033386,
+            "initial_image": 852.2195298138432,
+            "initial_text": 84.93025172453795,
+            "pixel_decoder": 2009.4631512110204,
+            "pixel_encoder": 3306.172177608623,
+            "semantic_cell": 193.48402536356414,
+            "text_cell": 4.6863823337983215,
+            "text_decoder": 27.493046676193718,
+            "text_encoder": 759.2255371491082,
+            "text_initial": 53.41182896163949,
+            "text_projection": 28.925364238593506,
+            "token_embedding": 103.14109267286673
+          },
+          "stage": "encoder"
+        }
+      ],
+      "total_model_module_count": 17,
+      "training_record_sha256": "4b710d303018954604aab914ff122140c9448540f24b361955351f39ddd98df5",
+      "unopened_auxiliary_modules": [
+        "digit_head"
+      ]
+    }
+  ],
+  "profile_sha256": "797184c42f56386af8de9f5b973d224953dce27798450eecf1ce5cd264682626",
+  "protocol_sha256": "007d1cc4b5577be90d7ebe5cccd090be1e776e637d308d99c205dacebee20aa3",
+  "proxy_used_as_reward_or_selection_metric": false,
+  "qualification_admitted": false,
+  "resource_interrupted_partial_work_counted_as_completed_training": false,
+  "schema": "hepta.ndu.fullpath-lax-development-summary.v1",
+  "scope": "consumed development data under the frozen primary observer and work tariff; fresh qualification is separate and gated",
+  "source_allocation_sha256": "1fa0fe6e5140f72c70c0129adfbe609a14c25a6255485608ad0a3d4e9b511b93",
+  "sum_arm_training_wall_seconds": 1822.537267214,
+  "summary_source_sha256": "f7c4ceaee3a72323ecd4c5c846eb771e773b90fd05c92b99f0a4d6a2b3acb5eb",
+  "total_effective_training_counts": {
+    "actual_control_variate_bundle_roundtrips": 294912,
+    "actual_primary_bundle_roundtrips": 147456,
+    "current_encoder_examples": 73728,
+    "current_transition_examples": 147456,
+    "frozen_gate_examples": 73728,
+    "frozen_reference_encoder_examples": 73728,
+    "greedy_text_baseline_emissions": 147456,
+    "optimizer_steps": 6144,
+    "primary_joint_emissions": 147456,
+    "proxy_digit_forward_examples": 589824
+  },
+  "training_includes_actual_control_variate_roundtrips": true
+}

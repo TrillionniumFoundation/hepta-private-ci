@@ -151,9 +151,13 @@ pub(crate) async fn run_codex_thread_interactive(
     let cancel_token_events = cancel_token.child_token();
     let cancel_token_ops = cancel_token.child_token();
 
-    // Forward public events from the sub-agent to the consumer.
+    // Forward public events from the sub-agent to the consumer. The inner
+    // next_event already observes exact cleanup, so each bridge uses a fresh
+    // receipt registry instead of consuming those inner receipts a second time.
     let io = Arc::new(io);
     let caller_io = SessionIo {
+        terminal_publications: Default::default(),
+        event_delivery: Default::default(),
         tx_sub: tx_ops,
         rx_event: rx_sub,
         agent_status: io.agent_status.clone(),
@@ -267,6 +271,8 @@ pub(crate) async fn run_codex_thread_one_shot(
     Ok((
         session,
         SessionIo {
+            terminal_publications: Default::default(),
+            event_delivery: Default::default(),
             rx_event: rx_bridge,
             tx_sub: tx_closed,
             agent_status,

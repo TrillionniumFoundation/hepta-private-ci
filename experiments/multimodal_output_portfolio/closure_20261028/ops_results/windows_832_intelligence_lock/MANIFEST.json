@@ -1,0 +1,89 @@
+{
+  "schema": "windows-intelligence-lock-fixture-manifest/v1",
+  "created_utc": "2026-10-28T10:40:17.079224+00:00",
+  "base_commit": "832b2a382a155bc840df0d255b2c183a43b0d219",
+  "observed_head": "911965cddb3df6dc372099d943989c3a14b9d9e0",
+  "status": "test_only_lifecycle_fix_formatted_pending_real_platform_CI",
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+      "bytes": 17894,
+      "sha256": "13f2ad5620f237d5229cfbe7f6e76e276633803e0d9d4ff56d5a246c2b616188",
+      "mode": "100644",
+      "base_sha256": "acc845fbbf33730f47f3885cac1b5419e4e47434bf080b1e4ce5a0b55998a778"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_lock_tests.rs",
+      "bytes": 3646,
+      "sha256": "cc130adf209ed424a3b7d7698c57460aa6eb13bf460b18039ccf02c4a87b38b0",
+      "mode": "100644",
+      "base_sha256": null
+    }
+  ],
+  "unchanged_production_and_fixture_references": [
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/durable.rs",
+      "sha256": "598041d22b9b61d900372058f6181c48edfba5e04463b49f834414c24a3aa4fc",
+      "equals_base_blob": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/durable_lock.rs",
+      "sha256": "9b205d7397a167d59adfb6e9e40dfd251e91a476b0b071309905930a5f635805",
+      "equals_base_blob": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "sha256": "182ebc861129278f517278cefe66df3fb369c3b892ae3d73046ebd8be6341f7c",
+      "equals_base_blob": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/witness.rs",
+      "sha256": "925e75ec7daabc2fbfd067b5e61253650118644f3a2444879ea91c714bdba107",
+      "equals_base_blob": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
+      "sha256": "aa094bf710f9ab2e882dc2db8765faa05a255351c3a77154807dcfc310f8e577",
+      "equals_base_blob": true
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_test_support.rs",
+      "sha256": "3099b3af3bdd3c4251b9e4b410ea17510476d0b434a46ec1c345954d55dc810f",
+      "equals_base_blob": true
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_832_intelligence_lock/INPUT_FAILURES.json",
+      "bytes": 15816,
+      "sha256": "c92e1f69fe381ac11a2c8ddf959fdc69eb87c3f912e1c1611e781c33a4f93f87",
+      "mode": "100644"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_832_intelligence_lock/REVIEW.md",
+      "bytes": 4365,
+      "sha256": "bf6f09a1cc8bfc8d95654e119cb1c7907c05c7f9fe7d0b258731006e70650e7d",
+      "mode": "100644"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_832_intelligence_lock/VALIDATION.json",
+      "bytes": 2737,
+      "sha256": "c5c9d82ec608cae79c596a5c7422db2ef27dcdd463944951294d8804860d9807",
+      "mode": "100644"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_832_intelligence_lock/just-fix.log",
+      "bytes": 462,
+      "sha256": "73c71fa32cb474620f4b6e0ddc8130068b59aef2a10d663afa9aab8964785d83",
+      "mode": "100644"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_832_intelligence_lock/just-test.log",
+      "bytes": 499,
+      "sha256": "e81097acc8643f3069b3041813e61895acdcbe6f7ba1de0f55ff96dc4502c670",
+      "mode": "100644"
+    }
+  ],
+  "scope": "Only two intelligence test files and this separate evidence directory. Previous six-file manifest and production lock API are unchanged.",
+  "remaining_gate": "Actual Windows and Unix Rust compilation and tests."
+}

@@ -1,0 +1,172 @@
+{
+  "actual_full_size_draws": 2,
+  "cpu_seconds": 4.026476000000001,
+  "development_or_holdout_access": false,
+  "efficient_interpolation_exact": {
+    "action_logits": true,
+    "audio": true,
+    "image": true,
+    "sound_logits": true,
+    "video": true
+  },
+  "finite_actual_score_gradient": true,
+  "implementation_sha256": {
+    "natural_execution_check.py": "7c3f19f5e860e38a22c7a6cc6294a0ec3bd93e6729f76ed26ed91e56247ed814",
+    "natural_media.py": "bbdc5f8f7f7049da0df5c1ef609a9a8480be153eeab7167490819479be21e2c2",
+    "natural_model.py": "5d179d588ff170494373d81d0bccb544a6c42e537f022415578a29fe235fe7c0",
+    "natural_port.py": "3d90f9a9f789ef8dd8d757474979797a5ef3751a63cc1eb9fc58f8881ebabafd",
+    "natural_proxy_data.py": "40488e5932ec820e29d64193e66225232fd4124e503e1512982230e5159d7490"
+  },
+  "law": {
+    "audio_sample_rate": 16000,
+    "audio_samples": 32000,
+    "audio_sigma": 0.0005,
+    "base": "linear context-boundary video/image interpolation, adjacent context audio concatenation; unavailable boundary repeats the available opposite boundary",
+    "caption": "independent categorical action and sound labels given shared state; exact published template rendering",
+    "caption_temperature": 0.25,
+    "density": "normalized joint Gaussian pre-codec actions plus both normalized categorical probabilities",
+    "deterministic_routes": "strong fixed interpolation and frozen neural means/argmax are declared separate laws",
+    "frozen_context_features": [
+      "TSM Something-Something V2",
+      "PANN MobileNetV2"
+    ],
+    "image_shape": [
+      3,
+      112,
+      112
+    ],
+    "image_sigma": 0.001,
+    "residual": "dense trainable spatial/temporal and waveform emission, bounded 0.1*tanh residual",
+    "schema": "hepta.closure.natural-emission.v1",
+    "transitions": 2,
+    "video_shape": [
+      16,
+      3,
+      112,
+      112
+    ],
+    "video_sigma": 0.001
+  },
+  "parameter_sha256": "d823d6b5f44a8744b9534f6383c8d99f05aa84fdd6ccb07986644361a584e96a",
+  "passed": true,
+  "physical_four_media_receipts": [
+    {
+      "artifact_refs": {
+        "audio": "/dev/shm/hepta-ndu-closure-20261028/natural_execution_check_001/draw-0/audio.wav",
+        "image": "/dev/shm/hepta-ndu-closure-20261028/natural_execution_check_001/draw-0/image.png",
+        "text": "/dev/shm/hepta-ndu-closure-20261028/natural_execution_check_001/draw-0/text.txt",
+        "video": "/dev/shm/hepta-ndu-closure-20261028/natural_execution_check_001/draw-0/video.mkv"
+      },
+      "artifact_sha256": {
+        "audio": "854a4eee54dd2bcbd56c5ec4ad590ba65ef1613022a5e54c6de64bf5c8a7905a",
+        "image": "db92353cd7b921136b51ad5746369d6303b8f327f3d2698dfc85ca3af2bdf4a5",
+        "text": "0d5ee05131960ed375555aa3db30e93cc2e9b858cad842ba84d94116b6128aaa",
+        "video": "1a5274b4df18a1e563dd670e3c2b89069434ecc170b89f24e858ed88efe6bb19"
+      },
+      "final_state_digest": "469b6a58715943d5f2723f3ac2c14cf1b89c8de547b2a75b53f00f4b7378a295",
+      "public_features": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "public_feedback": 1,
+      "stochastic": true,
+      "terminal_kind": "delivered"
+    },
+    {
+      "artifact_refs": {
+        "audio": "/dev/shm/hepta-ndu-closure-20261028/natural_execution_check_001/draw-1/audio.wav",
+        "image": "/dev/shm/hepta-ndu-closure-20261028/natural_execution_check_001/draw-1/image.png",
+        "text": "/dev/shm/hepta-ndu-closure-20261028/natural_execution_check_001/draw-1/text.txt",
+        "video": "/dev/shm/hepta-ndu-closure-20261028/natural_execution_check_001/draw-1/video.mkv"
+      },
+      "artifact_sha256": {
+        "audio": "9b9131aeda62cf3509082477b09c285fece4568116c479f353065522a2a585b3",
+        "image": "2d3fba532e33006c5b67a5cb68e5d8c1eabd6f22478307915009566071f0e06c",
+        "text": "630b567827bab08a65ccf8fbe131e74b95ed6c092b8dc53d57bcf2ecb58db498",
+        "video": "df123245801f71787d8120a18fa9ae4ee148a793fa92c3c1a2d0acdd06225f89"
+      },
+      "final_state_digest": "05ab383777a1673e099054c3d602cefdc184a18c86b7ca965434681e8e88a0fe",
+      "public_features": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "public_feedback": 1,
+      "stochastic": true,
+      "terminal_kind": "delivered"
+    }
+  ],
+  "pretrained_backbones_exercised": false,
+  "public_tensor_identity_lazy_vs_prepare": true,
+  "real_native_episode": false,
+  "registered_samples": [
+    {
+      "log_probability": 3709071.2091763057,
+      "rng_after_sha256": "234dfe657c034ffa6d1e6cd96617135737ce6f6c2176049723612092edaa2ebc",
+      "rng_before_sha256": "a6cef6fe80578247f0ccdd0d79183c65c0e36eb23facb87857cb46cac7a18c29",
+      "sampled_sha256": "9ca8f5ff06b2a82b4da31f4bad789e3262a2fc20404d1cb4d7af13224623277d"
+    },
+    {
+      "log_probability": 3708646.6507289778,
+      "rng_after_sha256": "bf4e407d03634bc3f622c955cbe9387fe1b00d71c8f2c9c09a0c6e86f1ac4898",
+      "rng_before_sha256": "234dfe657c034ffa6d1e6cd96617135737ce6f6c2176049723612092edaa2ebc",
+      "sampled_sha256": "f08cdbe0e318e4f5dc3c7f6a7b22e3c553f89003915a479033c524038b5f8d15"
+    }
+  ],
+  "replay": {
+    "checks": [
+      {
+        "log_probability_absolute_error": 0.0,
+        "mean_sha256": "2f87904928852eab86b459cd6037e8ef7b784054a73cc824c7d97b876dacade2",
+        "registered_tolerance": 0.0003809071209176306,
+        "sampled_sha256": "9ca8f5ff06b2a82b4da31f4bad789e3262a2fc20404d1cb4d7af13224623277d"
+      },
+      {
+        "log_probability_absolute_error": 0.0,
+        "mean_sha256": "2f87904928852eab86b459cd6037e8ef7b784054a73cc824c7d97b876dacade2",
+        "registered_tolerance": 0.0003808646650728978,
+        "sampled_sha256": "f08cdbe0e318e4f5dc3c7f6a7b22e3c553f89003915a479033c524038b5f8d15"
+      }
+    ],
+    "draws_replayed": 2,
+    "no_replanning_or_delivery": true,
+    "no_resampling": true,
+    "replay_forward_evaluations": 1,
+    "same_parameter_sha256": "d823d6b5f44a8744b9534f6383c8d99f05aa84fdd6ccb07986644361a584e96a",
+    "shared_forward_only_after_all_actual_means_match": true
+  },
+  "schema": "hepta.closure.natural-mechanism-check.v1",
+  "semantic_or_generation_efficacy_claim": false,
+  "source_protocol_sha256": "ad58bf5529af473f722c8e48a44f34ae07e364356b664a3a79458fecf1405b9d",
+  "target_tensor_identity_lazy_vs_source": true,
+  "training_event_npz_sha256": "55954b2de0b0ac0ba372712afdb4f84eaa9b65c2a94476d8c884c33447454b4f",
+  "training_source_id": "video_10003",
+  "wall_seconds": 2.6907503769980394
+}

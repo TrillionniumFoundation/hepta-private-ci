@@ -1,0 +1,17 @@
+{
+  "schema": "independent-static-review/v1",
+  "created_utc": "2026-10-28T10:41:06.597167+00:00",
+  "reviewer": "/root/native_tail",
+  "subject_manifest": "windows_832_three_fixes/MANIFEST.json",
+  "manifest_sha256": "1ff06e33f03f8f75e4832f95bc6fc429b5cb4131a86a56c64b26b454df417a46",
+  "decision": "no new blocking finding from static review",
+  "findings": [
+    "OsString preserves the raw parent step without changing production workspace identity guards.",
+    "One canonical read restores completed attempts and pending state; strengthened snapshots cover attempts 1, 2, 3.",
+    "The unsupported matrixd bind never constructs a server, so Drop cannot delete the existing path.",
+    "Real cross-platform health and Unix socket positives remain; required async I/O traits remain imported through the production parent module."
+  ],
+  "scope_limits": [
+    "No Rust compilation or actual Windows execution was performed by the independent reviewer."
+  ]
+}

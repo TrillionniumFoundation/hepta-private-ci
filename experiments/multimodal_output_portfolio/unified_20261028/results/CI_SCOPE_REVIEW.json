@@ -1,0 +1,253 @@
+{
+  "schema": "hepta.ndu.unified-ci-scope-review.v1",
+  "reviewed_commit": "49145833648ff28cc4a9f2fe54622efa8802a0b5",
+  "parent_commit": "d3c2d760eca5065fc966820379c35c6e8d56e855",
+  "workflow_run_id": 40636767454,
+  "workflow_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40636767454",
+  "scope": "Observed pre-final remote CI; subsequent commits require their own checks",
+  "own_spelling_revision": {
+    "affected_file": "natural_calibration_audit.py",
+    "recomputed_report": "results/NATURAL_SELECTED_ACTION_AUDIT.json",
+    "only_changed_fields": [
+      "audit_source_sha256",
+      "interpretation"
+    ],
+    "all_other_statistics_identical": true,
+    "checkpoints_unchanged": true,
+    "model_calls": 0,
+    "scoped_codespell_version": "2.4.3",
+    "scoped_codespell_exit_code": 0
+  },
+  "inherited_paths": [
+    {
+      "path": "codex-rs/Cargo.lock",
+      "sha256": "56ed52d9789f01abda5bad96f25dd9d48b837108653cb2f3474ee5e0dbc790de",
+      "unchanged_from_pinned_parent": true
+    },
+    {
+      "path": ".codespellrc",
+      "sha256": "80805b9340dbdd76645a25929f56c96606e187db8e9d16b75a4a47dcdd248c04",
+      "unchanged_from_pinned_parent": true
+    },
+    {
+      "path": ".codespell-exclude-lines",
+      "sha256": "0271554439803456b4c5c84dd9d027c292834aa7856597bf7c9937f3d79f5620",
+      "unchanged_from_pinned_parent": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/remote-v2-matrix/21-test-codex-hepta-matrix-sdk.log",
+      "sha256": "de6885129fb8fdee901613367d26f3ef398d31021bb9ac158eb7d7545cb068b8",
+      "unchanged_from_pinned_parent": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v4-evidence/remote-v2-matrix/25-test-codex-hepta-matrixd.log",
+      "sha256": "5b6c3a779f2e6b6a0e586e35f1046a3fe9db9a6b89a9a548b33b56dc5b4e078f",
+      "unchanged_from_pinned_parent": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/v5-evidence/CODESPELL_FILENAME_REVIEW.json",
+      "sha256": "82fc29e25a17edbc007049d6768b0fe35b69bf85a704a8513b08434b10da86ec",
+      "unchanged_from_pinned_parent": true
+    }
+  ],
+  "observed_jobs": [
+    {
+      "name": "Select blocking CI scope",
+      "id": 122645424453,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Codespell / Check for spelling errors",
+      "id": 122645424709,
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "name": "Blob size policy / Blob size policy",
+      "id": 122645424742,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+      "id": 122645874892,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "repo-checks / build-test",
+      "id": 122645875006,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "repo-checks / Native Hepta paths on windows-latest",
+      "id": 122645875050,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "sdk / python-sdk",
+      "id": 122645875068,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "rust-ci / Detect changed areas",
+      "id": 122645875095,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "repo-checks / Native Hepta paths on macos-15",
+      "id": 122645875147,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "cargo-deny / cargo-deny",
+      "id": 122645875150,
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "name": "sdk / sdks",
+      "id": 122645875172,
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+      "id": 122645875202,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "NDU v6 neural rollout smoke / Python, native NDU, and real rollout",
+      "id": 122645875319,
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+      "id": 122645875335,
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+      "id": 122645875338,
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "id": 122645875395,
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+      "id": 122645875411,
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "id": 122645875436,
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+      "id": 122645875461,
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+      "id": 122645875480,
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+      "id": 122645875515,
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+      "id": 122645875543,
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "id": 122645875569,
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+      "id": 122645875600,
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+      "id": 122645875630,
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+      "id": 122645875650,
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+      "id": 122645875713,
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "name": "Lightweight prose and derived checks",
+      "id": 122645876798,
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+      "id": 122645876930,
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Hepta scoped native checks",
+      "id": 122645877007,
+      "status": "completed",
+      "conclusion": "skipped"
+    }
+  ],
+  "cargo_deny_diagnostic": {
+    "artifact_id": 12793574312,
+    "zip_sha256": "1b0c2fe257fe918f5a199c070fdad4c06355a34912dfb6c39cd0c979a428914a",
+    "log_sha256": "c06d8173c2b75ed9c0210d095be86124d8851096fa458564b80908b8e8fffdf7",
+    "tool_version": "0.19.0",
+    "exit_code": 1,
+    "error_count": 15,
+    "advisories": "failed",
+    "licenses": "ok",
+    "bans": "ok",
+    "sources": "ok",
+    "scope": "Same pinned version and arguments on host; original action job failed, but its redirected log endpoint was unavailable",
+    "lock_unchanged_during_check": true,
+    "lock_unchanged_from_parent": true
+  },
+  "remaining_scope": "Parent frozen evidence spelling and existing locked-dependency advisory failures are not waived or rewritten by this research package. Other broad jobs were still running at this observation.",
+  "aggregate_ci_passed": false,
+  "merge_or_promotion_approved": false
+}

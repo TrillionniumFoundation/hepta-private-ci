@@ -57,6 +57,7 @@ BAZEL_TARGETS = (
     "@crates//:matrix-sdk-0.19.1",
     "@crates//:matrix-sdk-sqlite-0.19.1",
     "@crates//:starlark-0.14.2",
+    "@crates//:i18n-config-0.4.8",
 )
 
 
@@ -210,6 +211,9 @@ def main():
         choices=("generate", "test", "restore", "verify", "bazel", "upstream-aws"),
         required=True,
     )
+    parser.add_argument(
+        "--source-mode", choices=("patched", "integrated"), default="patched"
+    )
     parser.add_argument("--repository", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--expected-source", required=True)
@@ -223,7 +227,12 @@ def main():
     success = False
     try:
         if args.mode == "generate":
-            generate(runner, args.expected_source)
+            if args.source_mode == "integrated":
+                from ndu_port_integrated import generate_integrated
+
+                generate_integrated(runner, args.expected_source)
+            else:
+                generate(runner, args.expected_source)
             success = True
         else:
             if not args.candidate or not args.expected_result_sha256:
@@ -242,7 +251,13 @@ def main():
                     source_commit=args.expected_source,
                     candidate_result_sha256=args.expected_result_sha256,
                     recipe_sha256=record["recipe_sha256"],
+                    source_mode=record.get("source_mode", "patched"),
                 )
+                if record.get("source_mode") == "integrated":
+                    runner.record.update(
+                        integration=record["integration"],
+                        source_tree=record["source_tree"],
+                    )
             else:
                 record, recipe = restore_candidate(
                     runner,

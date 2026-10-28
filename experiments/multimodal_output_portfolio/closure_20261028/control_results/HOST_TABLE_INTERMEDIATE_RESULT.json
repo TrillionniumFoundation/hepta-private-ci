@@ -1,0 +1,77 @@
+{
+  "actor_sha256": "5237184a8bd3d1cd8498c86c892401e0d6be390006b050da4de892a328e7c0d0",
+  "actual_development_episodes": 24,
+  "actual_emissions": 72,
+  "actual_failed_terminal_episodes": 20,
+  "actual_native_kernels": 952,
+  "actual_training_episodes": 32,
+  "checks": {
+    "actual_owner_and_work_caps": true,
+    "all_actual_generations_have_one_density": true,
+    "deployed_selected_action_is_predicted_moment_minimum": true,
+    "every_physical_CPU_charge_once": true,
+    "failure_costs_retained": true,
+    "learned_actor_controls_real_path": true,
+    "no_qualification_sources_consumed": true,
+    "one_profile_training_planning_deployment_scoring": true,
+    "only_observer_after_actual_stop": true,
+    "original_owner_authority_unchanged": true
+  },
+  "development_comparisons_descriptive_only": {
+    "always_keep": {
+      "actual_cost": 0.10751646699999999,
+      "actual_cpu_seconds": 5.793643999999993,
+      "actual_episodes": 8,
+      "descriptive_ce": 0.17832660148427296,
+      "descriptive_log_moment": -0.3566532029685459,
+      "executed_retries": 0,
+      "failed_terminal": 4,
+      "mean_net_return": 0.24192377774306345,
+      "selected_swaps": 0
+    },
+    "always_swap": {
+      "actual_cost": 0.176931086,
+      "actual_cpu_seconds": 7.127694999999985,
+      "actual_episodes": 8,
+      "descriptive_ce": 0.2650463033715226,
+      "descriptive_log_moment": -0.5300926067430451,
+      "executed_retries": 4,
+      "failed_terminal": 2,
+      "mean_net_return": 0.3147386457542975,
+      "selected_swaps": 8
+    },
+    "ndu_host": {
+      "actual_cost": 0.157110354,
+      "actual_cpu_seconds": 7.306963000000003,
+      "actual_episodes": 8,
+      "descriptive_ce": 0.26791769242603064,
+      "descriptive_log_moment": -0.5358353848520613,
+      "executed_retries": 4,
+      "failed_terminal": 2,
+      "mean_net_return": 0.3172162372542975,
+      "selected_swaps": 4
+    }
+  },
+  "efficacy_claim": false,
+  "host_selections_differing_from_legacy_proposal": 4,
+  "new_qualification": false,
+  "outside_episode_training_setup_reporting_cpu_seconds": 0.45828000000002334,
+  "profile_sha256": "42fb1a280bc5b26fb686dba0637ecb596dfafd9f8a0a271cf166714615f29590",
+  "remaining_blockers": [
+    "future physical CPU cost has no proved support or tail moment envelope",
+    "fresh source-disjoint selected-policy calibration required",
+    "natural semantic observer and generation capability need the separate new study"
+  ],
+  "resource_support": {
+    "bounded_discrete_work_charge": 0.044088608,
+    "clipped_charges": false,
+    "finite_total_physical_cost_support_proved": false,
+    "ndu_moment_certificate_eligible": false,
+    "net_return_lower_bound": null,
+    "reason": "a post-stage CPU admission threshold is not a hard limit on complete future CPU"
+  },
+  "schema": "hepta.ndu.learned-host-implementation-result.v1",
+  "strict_NDU_tail_certificate": false,
+  "total_episode_cpu_seconds": 46.001740999999974,
+  "total_wall_seconds": 44.28289074199711
+}

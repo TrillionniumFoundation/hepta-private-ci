@@ -1,0 +1,137 @@
+{
+  "any_capability_gate_recomputed_or_overridden": false,
+  "any_policy_or_checkpoint_changed": false,
+  "audit_source_sha256": "2a0c302be0c84cf906d635a9599b5ba4fe7c2b70d4f12fabe85be72450e4b6ff",
+  "expanded": {
+    "acceptance_unchanged": false,
+    "all_selected_actions_reproduced": true,
+    "calibration_failure_rows": 0,
+    "diagnostic_source_weighted": {
+      "actual": 0.41358914207411235,
+      "bias": -0.02274104843203015,
+      "bootstrap_draws": 5000,
+      "finite_sample_confidence_guarantee": false,
+      "predicted": 0.3908480936420822,
+      "source_cluster_bootstrap_percentile_95": [
+        -0.12066892296658505,
+        0.0794561977753242
+      ]
+    },
+    "draw_count": 104,
+    "event_count": 52,
+    "events_per_video_distribution": {
+      "2": 3,
+      "3": 6,
+      "4": 7
+    },
+    "generic_tail_calibrator_used_by_runner": false,
+    "independent_video_sources": 16,
+    "ledger_sha256": "5de776537e41b8b0cc89038d95195b1cbebe4c33e7c42f2b91afcd2d78261c19",
+    "profile_sha256": "12ca5adbc8829ef063984e6c0c0f3006c6616cf2965eb515a56b63ddba87d9e7",
+    "qualification_freeze_sha256": "94cfeed2ef0c287f4bb7c967f8088d9f529f4d4313930000fb3f33cc26fcd3b5",
+    "recorded_event_weighted": {
+      "actual": 0.4283449071991887,
+      "bias": -0.031919234586585965,
+      "predicted": 0.39642567261260275
+    },
+    "results_sha256": "bd2a046f670ddb8c4ab55dc5d812d5d55e95ee2b8da698f66938f407827b91ba",
+    "selected_arm_counts": {
+      "fixed_neural": 6,
+      "interpolation": 70,
+      "source_nearest": 28
+    },
+    "source_split_overlap_counts": {
+      "calibration/qualification": 0,
+      "development/calibration": 0,
+      "development/qualification": 0,
+      "train/calibration": 0,
+      "train/development": 0,
+      "train/qualification": 0
+    },
+    "tail_risk_certified": false
+  },
+  "findings": [
+    {
+      "code": "event_vs_source_estimand",
+      "finding": "Calibration's recorded point means weight events/draws equally, while declared final population CE weights original source videos equally. Unequal events per video make these different estimands.",
+      "next_change": "Freeze source-balanced selected-action moment calibration and cluster uncertainty before obtaining new calibration data."
+    },
+    {
+      "code": "point_gate_not_tail_certificate",
+      "finding": "Absolute empirical moment bias below 0.1 and positive softplus predictions are point checks. Neither is an upper confidence bound on selected-policy exponential loss. The generic tail calibrator is not called.",
+      "next_change": "Do not claim certified tail control from passed point gates; independent source units and a valid future net-return support are needed."
+    },
+    {
+      "code": "actor_incremental_cost",
+      "finding": "The head predicts candidate-alone development moments; actual actor execution additionally pays its online decision cost. That increment is not explicitly included in the forecast, and the ledger does not separate its measured component.",
+      "next_change": "Log actor/candidate costs separately and forecast the same complete cost-augmented selected action."
+    },
+    {
+      "code": "unbounded_future_cpu_cost",
+      "finding": "Gross utility is bounded, but observed CPU cost has no enforced finite future cap. An arbitrary finite net-return lower bound would not justify a distribution-free bounded-moment certificate.",
+      "next_change": "State the support assumption or implement and verify an operational cost cap with failure accounting before using that certificate."
+    },
+    {
+      "code": "timing_and_objective_scope",
+      "finding": "The first actor used precomputed features; the expansion explicitly charges online features. Training times model.forward but not the subsequent draw call, and shared batch forward time is charged to both emission replicates. These receipts do not prove exact per-output physical-cost identity with deployment.",
+      "next_change": "Retain the measured total-run CPU separately; freeze a consistent execution-cost scope before a future study."
+    },
+    {
+      "code": "fixed_terminal_continuation",
+      "finding": "Natural policies choose one complete four-modal bundle and stop after the fixed two-transition generator. They do not learn native-owner feedback/replanning, adaptive stopping or an optimal multimodal allocation policy.",
+      "next_change": "Describe this as a fixed-horizon candidate-choice pilot and treat any native transport diagnostic as a distinct frozen host profile."
+    }
+  ],
+  "first": {
+    "acceptance_unchanged": false,
+    "all_selected_actions_reproduced": true,
+    "calibration_failure_rows": 0,
+    "diagnostic_source_weighted": {
+      "actual": 0.38749966923441365,
+      "bias": -0.05366466035829456,
+      "bootstrap_draws": 5000,
+      "finite_sample_confidence_guarantee": false,
+      "predicted": 0.33383500887611905,
+      "source_cluster_bootstrap_percentile_95": [
+        -0.13104267870583922,
+        0.03681704923978435
+      ]
+    },
+    "draw_count": 46,
+    "event_count": 23,
+    "events_per_video_distribution": {
+      "2": 4,
+      "3": 1,
+      "4": 3
+    },
+    "generic_tail_calibrator_used_by_runner": false,
+    "independent_video_sources": 8,
+    "ledger_sha256": "3a82554833803d77c9e112655e1a38df02345757bc5b826d2b8fd8d6429110ca",
+    "profile_sha256": "bb9f08dca8ad9e7854990219c695685a05f90d7c711e0418d0dbd0a6df9da273",
+    "qualification_freeze_sha256": "f5296d884a1e4f29f6bcf09bbeebb558d7e5b94dfb465b25e05bc9f94aea8b07",
+    "recorded_event_weighted": {
+      "actual": 0.3887403011737132,
+      "bias": -0.05782526447500558,
+      "predicted": 0.33091503669870764
+    },
+    "results_sha256": "bcd4db4d02b5374541c0bf110a63624dbf77b8c25f63f6514792b717ddae4253",
+    "selected_arm_counts": {
+      "interpolation": 38,
+      "source_nearest": 8
+    },
+    "source_split_overlap_counts": {
+      "calibration/qualification": 0,
+      "development/calibration": 0,
+      "development/qualification": 0,
+      "train/calibration": 0,
+      "train/development": 0,
+      "train/qualification": 0
+    },
+    "tail_risk_certified": false
+  },
+  "generic_tail_certificate_applied": false,
+  "interpretation": "Both natural capability decisions remain false. This diagnostic narrows the interpretation of passing calibration point gates. Acceptance rules were not changed after calibration.",
+  "new_model_calls": 0,
+  "schema": "hepta.ndu.natural-selected-action-audit.v1",
+  "tail_risk_certified": false
+}

@@ -1,0 +1,81 @@
+{
+  "schema": "hepta.natural-top1-v4-pilot.independent-review.v1",
+  "reviewer": "/root/unified_profile",
+  "method": "Read-only source and exact SHA manifest comparison; no Torch, media decode, fitting or holdout access.",
+  "sources": [
+    {
+      "path": ".github/workflows/ndu-natural-observer-v4.yml",
+      "sha256": "51fabeb4721859203b2f8348e439a3a430e22ea749cdcb54d441e5da55fed41d",
+      "bytes": 3104
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci_pilot.py",
+      "sha256": "491f6e53ae3f3fd21d0d3453fa44bc93f9b6463b88c651e5acbd6fd74cab0c65",
+      "bytes": 15386
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci_tests.py",
+      "sha256": "f6e716e7d2534e9635a21c25b4eb07549d58910f31296eddfff89cef190cc881",
+      "bytes": 2711
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/seed_pack.py",
+      "sha256": "e667bd336ac90271cf603927a7773a212255fce1d0b4671f39b6e71f3b39cd1c",
+      "bytes": 6294
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/mechanism.py",
+      "sha256": "1d41eb5d3bf9764cab4d029f2ba7b7164b079eb04b981e23193ad0c903f52c20",
+      "bytes": 12013
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/registration.py",
+      "sha256": "ee45ccfd437988f717ebd644814cdd4a7217fa7ba1fac19c459f63a1728163a0",
+      "bytes": 13548
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/features.py",
+      "sha256": "25bbc36d35886c26a4fc9942174334d88ce38b1e5a020fd17e096156bed68176",
+      "bytes": 2401
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/PILOT.json",
+      "sha256": "a9d68c3071921907813c8edeea152eabea8af874669a8e5ae6e5f706df5a6c84",
+      "bytes": 19169
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/REGISTRATION.json",
+      "sha256": "dbbe54b0b15e789f4955f020e5a2cbef91c1759810c886400d801308824708b5",
+      "bytes": 31365
+    }
+  ],
+  "pilot_sha256": "8224fbe2b3ea6fc841c675953a943058ea21c00df2214a623a94af0a161363e6",
+  "verified": {
+    "implementation_hash_mismatches": [],
+    "fixed_original_observer_train_sources": 8,
+    "retained_events": 43,
+    "training_updates": 0,
+    "holdout_media_or_predictions": 0,
+    "seed_regular_members": 24,
+    "seed_jsonl_parts": 47,
+    "official_pretrained_weight_bytes": 150094788
+  },
+  "findings": [
+    "PILOT, parent registration, source protocol bytes, implementation hashes and prepared observer_train-only role/source/event receipts form an explicit identity chain.",
+    "Unpacking uses a fresh directory, exact regular-member allowlist, per-member sizes/SHA and total budget; no tar symlinks, duplicates, unexpected members or path traversal are accepted.",
+    "Frozen eight source IDs are chosen by registered source-only hashing, and all their 43 retained events are exercised. No new source selection based on mechanism results is present.",
+    "Original source archive generation/ETag/length and per-video SHA are checked before feature/codec observations. Official weights have exact size/SHA and HTTPS transport checks.",
+    "The wrapper exits nonzero on incomplete or resource-blocked execution; its success label explicitly excludes semantic qualification, generator efficacy and native-owner execution.",
+    "Self and completed-child CPU is reported, with administrative checkout/setup/upload and physical-tail guarantees explicitly outside the claimed scope."
+  ],
+  "open_findings": [
+    {
+      "severity": "runtime portability blocker to verify/correct before claiming portable CI execution",
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/mechanism.py",
+      "detail": "resources() assumes memory.current and memory.max exist at /sys/fs/cgroup. Linux cgroup v2 specifies them for non-root cgroups; a hosted VM may expose the real hierarchy root rather than the current container namespace. The actual process cgroup and ancestor limits must be resolved, or unsupported observation must remain an explicit failure. Missing files must not be silently treated as unlimited. The pre-ENTRY wrapper read can fail before structured result creation.",
+      "primary_source": "https://docs.kernel.org/admin-guide/cgroup-v2.html",
+      "owner_notified": true
+    }
+  ],
+  "native_run_status": "Not executed by reviewer. No semantic accuracy, new-data adequacy, cost support or policy efficacy conclusion."
+}

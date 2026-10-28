@@ -15,6 +15,7 @@ use std::os::unix::fs::symlink;
 use super::*;
 use crate::CognitiveAccess;
 use crate::CognitiveScope;
+#[cfg(unix)]
 use crate::ForgetMemoryDraft;
 use crate::KgFactSetDraft;
 use crate::MemoryDraft;
@@ -29,6 +30,12 @@ use crate::cognitive_test_support::source;
 #[cfg(unix)]
 #[path = "cognitive_store_recovery_read_only_tests.rs"]
 mod cold_read_only;
+
+// Descriptor-bound recovery is implemented only by codex-state's Unix guard.
+// Other targets must deny without changing source bytes or publication state.
+#[cfg(not(unix))]
+#[path = "cognitive_store_recovery_unsupported_platform_tests.rs"]
+mod unsupported_platform;
 
 struct RecoveryVerifier;
 
@@ -135,6 +142,7 @@ enum EntryPayload {
     Symlink(PathBuf),
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn exact_current_cut_recovers_writable_generation_and_persists_activation() {
     let temp = TempDir::new().expect("temp dir");
@@ -197,6 +205,7 @@ async fn exact_current_cut_recovers_writable_generation_and_persists_activation(
     );
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn post_rename_publication_failure_is_indeterminate_and_retains_candidate() {
     let temp = TempDir::new().expect("temp");
@@ -238,6 +247,7 @@ async fn post_rename_publication_failure_is_indeterminate_and_retains_candidate(
     );
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn writable_recovery_requires_exclusive_store_fence() {
     let temp = TempDir::new().expect("temp dir");
@@ -257,6 +267,7 @@ async fn writable_recovery_requires_exclusive_store_fence() {
     ));
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn predecessor_witness_is_rejected_and_current_witness_recovers() {
     let temp = TempDir::new().expect("temp dir");
@@ -360,18 +371,24 @@ async fn revoked_owner_profile_and_witness_checks_precede_recovery_admission() {
 
     store.pool.close().await;
     drop(store);
-    let mut tampered = anchor;
-    tampered.state_digest = Sha256Digest::for_bytes(b"altered witness");
-    assert!(matches!(
-        CognitiveStore::open_with_recovery(
-            &layout(&temp, &owner),
-            CognitiveRecoveryRequirement::ExactCurrentCut(&tampered),
-            &authority,
-            &RecoveryVerifier,
-        )
-        .await,
-        Err(CognitiveRecoveryError::AccessDenied(_))
-    ));
+    // A bad content witness can be classified only after supported identity
+    // binding. Non-Unix rejection is checked separately without weakening the
+    // Unix AccessDenied contract.
+    #[cfg(unix)]
+    {
+        let mut tampered = anchor;
+        tampered.state_digest = Sha256Digest::for_bytes(b"altered witness");
+        assert!(matches!(
+            CognitiveStore::open_with_recovery(
+                &layout(&temp, &owner),
+                CognitiveRecoveryRequirement::ExactCurrentCut(&tampered),
+                &authority,
+                &RecoveryVerifier,
+            )
+            .await,
+            Err(CognitiveRecoveryError::AccessDenied(_))
+        ));
+    }
 }
 
 #[cfg(unix)]

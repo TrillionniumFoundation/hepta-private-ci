@@ -1,0 +1,21 @@
+{
+  "aggregation": "population",
+  "continuation_sha256": "716949c09711485bc9cb186f9128cd959b5f2bc5f53f7e0bab5aabf6717f0f1c",
+  "cost_treatment": "actual_joint_increment_once",
+  "cost_unit": "normalized_utility",
+  "gamma": 0.0,
+  "objective_sha256": "2fd311e51a80ad43de44f9ba3a6ab6c773bd790eaa0e27471ef61469776579b5",
+  "observer_sha256": "f765449fcaa002f82abd366620e3e111fc4514dde3773822dd0eb1e6eb7bd617",
+  "required_modalities": [
+    "text",
+    "image"
+  ],
+  "reward_source": "bound_external_post_codec_observer",
+  "schema": "hepta.ndu.unified-profile.v1",
+  "stopping": "explicit_delivered_terminal_outcome",
+  "time_discount": 1.0,
+  "utility_bounds": [
+    -1.0,
+    1.0
+  ]
+}

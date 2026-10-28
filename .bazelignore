@@ -2,6 +2,16 @@
 # .git/sl/origbackups (which can be populated by Sapling SCM).
 .git
 codex-rs/target
-# Cargo patch dependencies are materialized by @crates, not workspace targets.
-# Vendored BUILD files cannot consume the workspace DEP_DATA table.
-codex-rs/third_party
+# Keep the existing ignore scope for the other vendored dependencies.
+# i18n-config is an explicit Cargo workspace member with a production BUILD
+# target, so it must remain visible to the generated workspace alias.
+codex-rs/third_party/aws-config-1.8.12
+codex-rs/third_party/imbl-6.1.0
+codex-rs/third_party/keyring-3.6.3
+codex-rs/third_party/matrix-sdk-0.19.1
+codex-rs/third_party/matrix-sdk-sqlite-0.18.0
+codex-rs/third_party/matrix-sdk-sqlite-0.19.1
+codex-rs/third_party/secret-service-4.0.0
+codex-rs/third_party/serde-saphyr-2.0.0
+codex-rs/third_party/starlark-0.14.2
+codex-rs/third_party/zip-9.1.3

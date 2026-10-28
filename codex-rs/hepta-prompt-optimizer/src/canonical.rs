@@ -1386,3 +1386,7 @@ impl StdError for CanonicalPromptError {}
 #[cfg(test)]
 #[path = "canonical_tests.rs"]
 mod tests;
+
+#[cfg(all(test, not(unix)))]
+#[path = "canonical_platform_tests.rs"]
+mod platform_tests;

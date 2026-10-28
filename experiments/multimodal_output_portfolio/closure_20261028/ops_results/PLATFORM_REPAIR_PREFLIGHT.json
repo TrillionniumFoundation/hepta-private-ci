@@ -1,0 +1,134 @@
+{
+  "schema": "hepta.platform-repair.preflight.v1",
+  "base_head": "13b691ac922ff25dd116401e1bb93cd1ea219aff",
+  "source_files": {
+    "codex-rs/hepta-agentd/src/automation.rs": {
+      "sha256": "3c7060cd738906be6eff4f0e8747128900c260a704100106d8dc2aa352de87e1",
+      "bytes": 18074
+    },
+    "codex-rs/hepta-agentd/src/browser_servo.rs": {
+      "sha256": "3cf8b81bfdda994cfeb2be21f081ed15db89f43dfa0a44631afa1b3335f6174e",
+      "bytes": 40462
+    },
+    "codex-rs/hepta-agentd/src/browser_servo_unsupported_tests.rs": {
+      "sha256": "dc095e73bd3bab29641113d091a4ddf97941b2155c694d8fd1e0319aedde0f90",
+      "bytes": 964
+    },
+    "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs": {
+      "sha256": "442064defb4f5d87eb487cf7e579e3885cd88e1de154085046504afca3dadcbf",
+      "bytes": 23007
+    },
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs": {
+      "sha256": "cd4f0f0eb0c63d20d521c5b38414e5528575563e937da5bec7536d043d1b1a08",
+      "bytes": 10323
+    },
+    "codex-rs/hepta-agentd/src/plasticity_runtime.rs": {
+      "sha256": "bb270c11eabc3a28b13084cbdb3924a06889e24bba259f418221a1b13311af48",
+      "bytes": 12764
+    },
+    "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs": {
+      "sha256": "1115e0249b6054b29332ee0792f53ddee30aa031427de15f59a1786f8fb1784a",
+      "bytes": 29155
+    },
+    "codex-rs/hepta-agentd/src/runtime.rs": {
+      "sha256": "b56b983a1d80a23601645e262189b607a0ca14df5b129179445f6abd977c4920",
+      "bytes": 21363
+    },
+    "codex-rs/hepta-agentd/src/runtime_config_tests.rs": {
+      "sha256": "6cb471fb9c2bb58cfd8f4d77ea78820f1bcd87b8eb20be3130e37ec56b5dafe3",
+      "bytes": 2361
+    },
+    "codex-rs/hepta-agentd/src/runtime_tests.rs": {
+      "sha256": "60671ee69a60b5ed204cf897b160f46d470cf3b1732c8f73da781af3829be663",
+      "bytes": 34730
+    },
+    "codex-rs/hepta-agentd/src/state_isolation_tests.rs": {
+      "sha256": "521df9937477d58081febb379083112dcee11fa2103438bccf64229bf7b174ab",
+      "bytes": 25568
+    },
+    "codex-rs/hepta-agentd/tests/support/terminal_cell_owner.rs": {
+      "sha256": "699f2a84d71a8eaed86496ce76daab8a73751d8c91284338aed5dea42370f02a",
+      "bytes": 9536
+    },
+    "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs": {
+      "sha256": "9d2a4c743ae79fe13c8b2f4c7ede73a1968027357363412ba5c37b2037e8ccc0",
+      "bytes": 18040
+    },
+    "codex-rs/hepta-intelligence/src/directory_test_support.rs": {
+      "sha256": "92994bc3b0c40642394417884e576d2a3f9541033b53f74d74a00978efe66fc6",
+      "bytes": 630
+    },
+    "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs": {
+      "sha256": "051e7bd2d8defa4468b43e421b2d18e89903bc57c030e2299c1e517e2feff4de",
+      "bytes": 5259
+    },
+    "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs": {
+      "sha256": "acc845fbbf33730f47f3885cac1b5419e4e47434bf080b1e4ce5a0b55998a778",
+      "bytes": 16960
+    },
+    "codex-rs/hepta-intelligence/src/lib.rs": {
+      "sha256": "b71c7f25dafe7df6db827cd97bf8dd893f89bc122ea4932827cc744860c87bff",
+      "bytes": 12415
+    },
+    "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs": {
+      "sha256": "a0b54efa64543e3c09dfaa58791e1576e0c482543df1db08e4b82199f7896e09",
+      "bytes": 23646
+    },
+    "codex-rs/hepta-intelligence/src/prompt_delivery.rs": {
+      "sha256": "09723b122563dc17aed52be7f9c98b69f974569f501a99c8299614b9980f8b11",
+      "bytes": 12271
+    },
+    "codex-rs/hepta-intelligence/src/prompt_delivery_unsupported_tests.rs": {
+      "sha256": "753473df5650944f2ae223316c21ca70bf66a7ecb6e968ddaa4a953a66895759",
+      "bytes": 638
+    },
+    "codex-rs/hepta-intelligence/src/prompt_pipeline.rs": {
+      "sha256": "2f201e3e20f4c06ded22d0cfd4fc5aebf8eae8fbea6638e33667f7bc6cd412c5",
+      "bytes": 27407
+    },
+    "codex-rs/hepta-agentd/BUILD.bazel": {
+      "sha256": "a6f45806a69ac9085080c0b05c4f61b01786f44fa796d4e589aeff2643fb46ec",
+      "bytes": 5577
+    }
+  },
+  "windows_probe": {
+    "run_id": 40653213586,
+    "job_id": 122697960477,
+    "record": "ops_results/WINDOWS_STORAGE_OBSERVATION.json",
+    "claim": "The observed Windows 2025 NTFS host successfully flushed a directory handle with read/write access and backup semantics after a real rename. No power-loss durability or all-filesystem support claim.",
+    "path_semantics": "The observed directory was an ordinary non-reparse temporary directory. Probe OPEN_REPARSE_POINT does not affect it. Helpers retain the existing follow behavior for junctions/symlinks; no new non-redirection or crash-recovery claim is made."
+  },
+  "native_directory_fix": "Preserves actual sync_all and propagates failure; no permission bypass or success fallback.",
+  "explicit_platform_contracts": [
+    "DurablePromptRegistry::prepare_directory returns UnsafeStateDirectory outside Unix.",
+    "FinalUseAuthority private state store returns UnsafeStateDirectory outside Unix.",
+    "Existing success-path tests remain on supported Unix hosts; non-Unix tests exercise real failure before authority or socket publication.",
+    "Pure runtime mode checks remain on all host platforms."
+  ],
+  "scoped_repository_formatter": {
+    "exit_code": 0,
+    "files": 22,
+    "frozen_experiment_sources_modified": false
+  },
+  "diff_check": {
+    "exit_code": 0
+  },
+  "targeted_just_test": {
+    "packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-intelligence",
+      "codex-hepta-bao-adapter"
+    ],
+    "exit_code": 101,
+    "phase": "workspace manifest loading",
+    "reason": "sparse checkout lacks codex-rs/aws-auth/Cargo.toml; compilation and tests did not run"
+  },
+  "targeted_just_fix": {
+    "exit_code": 101,
+    "phase": "workspace manifest loading",
+    "reason": "sparse checkout lacks codex-rs/aws-auth/Cargo.toml; Clippy did not run"
+  },
+  "native_ci_required": true,
+  "all_ci_passed": false,
+  "qualification_target_contract": "The dedicated writer qualification library, test binary and wrapper are explicitly compatible with Linux/macOS only, matching the actual Unix durable-owner contract. The default Windows unit target exercises real unsupported admission; a zero-test qualification filter is not allowed to stand in for success."
+}

@@ -9,6 +9,7 @@ use codex_protocol::user_input::UserInput;
 use core_test_support::context_snapshot;
 use core_test_support::context_snapshot::ContextSnapshotOptions;
 use core_test_support::context_snapshot::ContextSnapshotRenderMode;
+use core_test_support::first_party::FirstPartyMockServer;
 use core_test_support::responses::ev_completed;
 use core_test_support::responses::ev_response_created;
 use core_test_support::responses::mount_sse_once;
@@ -24,13 +25,14 @@ use std::collections::BTreeMap;
 async fn additional_context_is_model_visible_but_not_a_user_message_item() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = start_mock_server().await;
+    let server = FirstPartyMockServer::start().await?;
     let request = mount_sse_once(
         &server,
         sse(vec![ev_response_created("resp-1"), ev_completed("resp-1")]),
     )
     .await;
-    let test = test_codex()
+    let test = server
+        .test_codex()
         .with_config(|config| config.include_environment_context = false)
         .build(&server)
         .await?;

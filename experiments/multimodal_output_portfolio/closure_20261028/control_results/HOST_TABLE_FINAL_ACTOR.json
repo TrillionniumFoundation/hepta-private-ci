@@ -1,0 +1,80 @@
+{
+  "actions": [
+    "keep",
+    "swap"
+  ],
+  "cells": [
+    [
+      "feedback=-1;abstained=0;slots=0",
+      [
+        1.0244986049704825,
+        1.0348441877630061
+      ]
+    ],
+    [
+      "feedback=-1;abstained=0;slots=1",
+      [
+        1.0247417200487334,
+        0.4769426297766399
+      ]
+    ],
+    [
+      "feedback=-1;abstained=1;slots=1",
+      [
+        1.024565919031331,
+        1.0349280755941233
+      ]
+    ],
+    [
+      "feedback=1;abstained=0;slots=0",
+      [
+        0.34944799865247755,
+        0.35297778821369974
+      ]
+    ],
+    [
+      "feedback=1;abstained=0;slots=1",
+      [
+        0.7355623880023064,
+        0.7149489586607021
+      ]
+    ],
+    [
+      "feedback=1;abstained=1;slots=1",
+      [
+        0.5679758909216586,
+        0.5736707918002095
+      ]
+    ]
+  ],
+  "confidence_bound_claim": false,
+  "estimation": "within-action equal original-source weight, then equal draws per source",
+  "fallback": [
+    0.8108870787097536,
+    0.6725255025307153
+  ],
+  "profile_sha256": "afa45bd07bf835815d2117eea90d37606ddc20089a7a991c465fcbe3340f3437",
+  "schema": "hepta.ndu.source-uniform-complete-moment-table.v1",
+  "selection": "minimum complete estimated moment; ties keep",
+  "strata": "arrived transport feedback, unchanged owner abstention and remaining media slots",
+  "training_record_sha256": "89416269095a9fde7f23237eeac5f4a6ae988a75bf29b15d0b86213c6f139df0",
+  "training_source_ids": [
+    "video_10263",
+    "video_10301",
+    "video_10631",
+    "video_11008",
+    "video_1232",
+    "video_3507",
+    "video_3598",
+    "video_4189",
+    "video_5374",
+    "video_563",
+    "video_5694",
+    "video_6692",
+    "video_6856",
+    "video_6867",
+    "video_7105",
+    "video_9820"
+  ],
+  "unseen_stratum": "pooled actual training-source complete moment for each action"
+}

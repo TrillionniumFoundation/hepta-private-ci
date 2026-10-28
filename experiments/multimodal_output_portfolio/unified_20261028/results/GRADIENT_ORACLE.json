@@ -1,0 +1,158 @@
+{
+  "actual_generator": {
+    "actual_leave_one_out": [
+      {
+        "K": 4,
+        "exact_gradient": -0.23585575604352002,
+        "expected_gradient": -0.23585575604352002
+      },
+      {
+        "K": 8,
+        "exact_gradient": -0.23585575604352002,
+        "expected_gradient": -0.23585575604352005
+      }
+    ],
+    "all_parameter_gradient_max_error": 8.86757334228605e-12,
+    "architecture": "public-command-film-layernorm-v1",
+    "categorical_log_density_max_error": 3.552713678800501e-15,
+    "default_and_explicit_stochastic_deployment_match": true,
+    "executed": true,
+    "finite_difference_probes": [
+      {
+        "actual_score_gradient": -45.931975762920196,
+        "fixed_action_finite_difference": -45.93197573967699,
+        "flat_index": 28,
+        "parameter": "coupling_cell.0.bias",
+        "stage": "transition"
+      },
+      {
+        "actual_score_gradient": -175.4256641693105,
+        "fixed_action_finite_difference": -175.4256642508759,
+        "flat_index": 12,
+        "parameter": "initial_image.bias",
+        "stage": "adapter"
+      },
+      {
+        "actual_score_gradient": -194.01207800596077,
+        "fixed_action_finite_difference": -194.01207799395095,
+        "flat_index": 5,
+        "parameter": "pixel_decoder.0.bias",
+        "stage": "emission"
+      },
+      {
+        "actual_score_gradient": -1996.67195898744,
+        "fixed_action_finite_difference": -1996.6719589850372,
+        "flat_index": 10,
+        "parameter": "pixel_encoder.5.bias",
+        "stage": "encoder"
+      }
+    ],
+    "fixture": "untrained inherited command-conditioned architecture with all four frozen plans",
+    "gaussian_log_density_max_error": 9.094947017729282e-13,
+    "latent_tokens_including_BOS": 8,
+    "module": "experiments.multimodal_output_portfolio.unified_20261028.generator",
+    "module_gradient_norms": {
+      "command_embedding": 72.09712033812407,
+      "command_film": 489.57585533119885,
+      "coupling_cell": 383.25157778413364,
+      "fuse": 2523.8101126034817,
+      "image_cell": 140.39695889245036,
+      "initial_image": 679.9948668407912,
+      "initial_text": 57.98392491111613,
+      "pixel_decoder": 6690.456426747742,
+      "pixel_encoder": 23876.232747733047,
+      "semantic_cell": 79.59909411513998,
+      "text_cell": 0.20599002273453473,
+      "text_decoder": 9.810068244694895,
+      "text_encoder": 838.1915865805472,
+      "text_initial": 2.3739055118877994,
+      "text_projection": 9.479372738275638,
+      "token_embedding": 158.61556696747405
+    },
+    "source_sha256": "781cec9ce1726918e794a3820f115b5d98c50bf042d8e8b6fe7fdae4717aec95"
+  },
+  "all_passed": true,
+  "categorical_temperature": 0.7,
+  "delivered_gradients": [
+    {
+      "context": -1.0,
+      "gamma": 0.0,
+      "image_finite_difference": -1.8360513815145658,
+      "image_score_gradient": -1.836051381524166,
+      "moment_objective": -0.5966148993595075,
+      "omitted_eos_gradient": -0.24716802152387318,
+      "text_finite_difference": -0.05155588494916893,
+      "text_score_gradient": -0.05155588494927531
+    },
+    {
+      "context": 1.0,
+      "gamma": 0.0,
+      "image_finite_difference": -1.5847617633843456,
+      "image_score_gradient": -1.584761763382153,
+      "moment_objective": -0.6828087312205127,
+      "omitted_eos_gradient": -0.2666737535139601,
+      "text_finite_difference": -0.06889707541350247,
+      "text_score_gradient": -0.0688970754141321
+    },
+    {
+      "context": -1.0,
+      "gamma": 2.0,
+      "image_finite_difference": -0.4017198214896489,
+      "image_score_gradient": -0.4017198214920349,
+      "moment_objective": -0.33852323025714026,
+      "omitted_eos_gradient": -0.1320432488506824,
+      "text_finite_difference": -0.018457454268686984,
+      "text_score_gradient": -0.018457454268775382
+    },
+    {
+      "context": 1.0,
+      "gamma": 2.0,
+      "image_finite_difference": -0.3315317482713298,
+      "image_score_gradient": -0.33153174827087206,
+      "moment_objective": -0.3576161603353882,
+      "omitted_eos_gradient": -0.13211987680076834,
+      "text_finite_difference": -0.024892026617475322,
+      "text_score_gradient": -0.024892026617969104
+    }
+  ],
+  "gamma_profiles": [
+    0.0,
+    2.0
+  ],
+  "latent_sigma": 0.03,
+  "leave_one_out": [
+    {
+      "context_mixture_gradient": -0.22019332199731192,
+      "enumerated_paths_per_context": 16,
+      "identical_emission_noise_gradient": 0.0,
+      "iid_emissions_per_context": 4,
+      "self_baseline_multiplier": 0.75
+    },
+    {
+      "context_mixture_gradient": -0.22019332199731195,
+      "enumerated_paths_per_context": 256,
+      "identical_emission_noise_gradient": 0.0,
+      "iid_emissions_per_context": 8,
+      "self_baseline_multiplier": 0.875
+    }
+  ],
+  "oracle_source_sha256": "0e2ac09bfc671c87d360cf290b6666ce02cff725da772f493aad363d28beb64c",
+  "partitions": {
+    "ar_terminal_paths": 40,
+    "max_image_mass_error": 0.0,
+    "max_text_mass_error": 0.0,
+    "max_zero_score_error": 7.04929279830536e-16,
+    "pixel_bins": 256,
+    "serialized_texts": 15
+  },
+  "schema": "hepta.ndu.full-output-gradient-oracle.v1",
+  "scope": "exhaustive toy AR law and analytic sigmoid/8-bit Gaussian codec; not neural global optimality",
+  "torch_autograd": {
+    "categorical_gradient": -0.022091039162449828,
+    "detached_latent_gradient": 22.222222222222225,
+    "executed": true,
+    "gaussian_gradient": -0.44574840604479,
+    "torch_version": "2.8.0+cpu",
+    "undetached_latent_gradient": 0.0
+  }
+}

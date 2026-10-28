@@ -1,0 +1,66 @@
+{
+  "original": {
+    "profile_sha256": "bb9f08dca8ad9e7854990219c695685a05f90d7c711e0418d0dbd0a6df9da273",
+    "event_array_sha256": "e21187f994c49fcc650a347102e96c87b7f5a18100eaf5a786f970db46b8d652",
+    "split_source_counts": {
+      "train": 32,
+      "development": 8,
+      "calibration": 8,
+      "qualification": 16
+    },
+    "qualification_saved_artifacts_verified": 2256,
+    "stored_media_rescored_arms": [
+      "actor",
+      "fixed_neural",
+      "interpolation",
+      "ndu_neural",
+      "source_nearest",
+      "uniform_neural"
+    ],
+    "checkpoint_file_and_parameter_identities_verified": {
+      "fixed_neural": "3428833b70a233b313b92e9f3d25972d1a6f2918895847bcd38463899a45e09f",
+      "uniform_neural": "60c541a1eb73c70be06ac5511791113f7779492fdaf0aed07739af8b3d5124bf",
+      "ndu_neural": "2c7068783532059479df475bb8c7b8d2c4721560a193a40513e8d0a50ef28617"
+    },
+    "executed_source_snapshots_match_frozen_hashes": true,
+    "costs_charged_exactly_once": true,
+    "passed": true
+  },
+  "expanded": {
+    "profile_sha256": "12ca5adbc8829ef063984e6c0c0f3006c6616cf2965eb515a56b63ddba87d9e7",
+    "event_array_sha256": "c2a67755305410d3423a4b36eceab34f23fc05ad0937df486b2f8dffafca8b3d",
+    "split_source_counts": {
+      "train": 32,
+      "development": 8,
+      "calibration": 16,
+      "qualification": 32
+    },
+    "qualification_saved_artifacts_verified": 5952,
+    "stored_media_rescored_arms": [
+      "actor",
+      "fixed_neural",
+      "interpolation",
+      "ndu_64",
+      "ndu_8",
+      "source_nearest",
+      "uniform_64",
+      "uniform_8"
+    ],
+    "checkpoint_file_and_parameter_identities_verified": {
+      "fixed_neural": "3428833b70a233b313b92e9f3d25972d1a6f2918895847bcd38463899a45e09f",
+      "uniform_8": "60c541a1eb73c70be06ac5511791113f7779492fdaf0aed07739af8b3d5124bf",
+      "ndu_8": "2c7068783532059479df475bb8c7b8d2c4721560a193a40513e8d0a50ef28617",
+      "uniform_64": "1407fcbac45a10bc41efe8555019cb1f9449d8b89c7d9b7a181aed952030ba2d",
+      "ndu_64": "d44294d366af5bf2946e84600af6c437826b59b04f978d9c9e01ac5c112df163"
+    },
+    "executed_source_snapshots_match_frozen_hashes": true,
+    "costs_charged_exactly_once": true,
+    "passed": true
+  },
+  "unique_original_source_byte_hashes": 112,
+  "ignored_range_rejected_before_body_read": true,
+  "all_original_sources_excluded_from_fresh_holdouts": true,
+  "fresh_holdout_sources": 48,
+  "inherited_train_development_bitwise_identical": true,
+  "passed": true
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "hepta.fleet-fixture-clippy-repair.v1",
+  "observed_job": 122730593367,
+  "parent_commit": "832b2a382a155bc840df0d255b2c183a43b0d219",
+  "repair": "Give the fixture host admission expect a contextual failure. Production code and original test assertions are unchanged.",
+  "file": {
+    "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+    "bytes": 10281,
+    "sha256": "53a286a7c180da3f0710b7db4766920adb0739fe2b2b734d1bfb20d1ecad7529"
+  },
+  "native_pass_claimed": false,
+  "commands": [
+    {
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-fleet",
+        "--lib"
+      ],
+      "exit_code": 101,
+      "stdout": "",
+      "stderr": "RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py \"$@\"\nerror: failed to load manifest for workspace member `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth`\nreferenced by workspace at `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/Cargo.toml`\n\nCaused by:\n  failed to read `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth/Cargo.toml`\n\nCaused by:\n  No such file or directory (os error 2)\nerror: recipe `test` failed on line 89 with exit code 101\n"
+    },
+    {
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-fleet"
+      ],
+      "exit_code": 101,
+      "stdout": "",
+      "stderr": "cargo clippy --fix --tests --allow-dirty {args}\nerror: failed to load manifest for workspace member `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth`\nreferenced by workspace at `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/Cargo.toml`\n\nCaused by:\n  failed to read `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth/Cargo.toml`\n\nCaused by:\n  No such file or directory (os error 2)\nerror: recipe `fix` failed on line 58 with exit code 101\n"
+    }
+  ]
+}

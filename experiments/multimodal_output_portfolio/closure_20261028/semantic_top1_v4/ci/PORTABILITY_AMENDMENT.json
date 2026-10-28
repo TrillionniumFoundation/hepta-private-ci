@@ -1,0 +1,39 @@
+{
+  "allowed_reacquired_weights": [
+    {
+      "bytes": 33524997,
+      "name": "s3d-d76dad2f.pth",
+      "sha256": "d76dad2f4b2a6701ad7f64e85b294b2d1989f1ea0d3f8b240446ed2152850bbb",
+      "url": "https://download.pytorch.org/models/s3d-d76dad2f.pth"
+    },
+    {
+      "bytes": 20834417,
+      "name": "MobileNetV2_mAP_0.383.pth",
+      "sha256": "22437af9eb5ed1854b5ad285b4a17d5fc566f1a3b23df40db5541f5705ca340f",
+      "url": "https://zenodo.org/api/records/3987831/files/MobileNetV2_mAP=0.383.pth/content"
+    },
+    {
+      "bytes": 95735374,
+      "name": "TSM_somethingv2_RGB_resnet50_shift8_blockres_avg_segment8_e45.pth",
+      "sha256": "74bb90d6ecf5b03ed78ac6572d2ced7cd3d0f8dc7fdba0bd6ce11400a5908d38",
+      "url": "https://hanlab18.mit.edu/projects/tsm/models/TSM_somethingv2_RGB_resnet50_shift8_blockres_avg_segment8_e45.pth"
+    }
+  ],
+  "amendment_sha256": "260e1f67d9b0bff368e2b07402a6e661eb5cec46fe5dbf01898e96de27f382c0",
+  "cost": "The portable wrapper reports self plus completed-child CPU for dependency installation, weight reacquisition, preparation and the actual mechanism. GitHub checkout/setup/upload administrative CPU is separately outside this process scope; timeout overshoot is not a rigorous CPU tail bound.",
+  "created_at_unix": 1793185820.1494935,
+  "evidence_class": "Execution portability and resource mechanism only; no head fitting, candidate selection, original-dev/cal rereading, policy calibration or qualification.",
+  "explicit_execution_exception": "On a clean GitHub Ubuntu runner, permit reacquisition of exactly the same three previously selected pretrained weight files, from their recorded official public URLs, with byte count and full SHA256 checked before any model load. This is a portability exception to the literal download prohibition, not authorization to add or choose another model.",
+  "original_registration_bytes_modified": false,
+  "original_registration_file_sha256": "dbbe54b0b15e789f4955f020e5a2cbef91c1759810c886400d801308824708b5",
+  "original_registration_sha256": "07152eb03b3df4d98ca97f5cf7b21b884eaac9311e9ece9c82d705c5143e30c2",
+  "original_specification_flag": {
+    "feature_law.no_new_pretrained_model_download": true
+  },
+  "original_task_or_candidates_or_seed_or_source_ids_or_thresholds_modified": false,
+  "portable_pilot_sha256": "8224fbe2b3ea6fc841c675953a943058ea21c00df2214a623a94af0a161363e6",
+  "qualification_or_new_adequacy_access": false,
+  "runtime": "Exact registered Python3.12.14 is present for Ubuntu24.04/x64 in the official actions/python-versions manifest; this platform-specific fact does not imply a Windows build exists.",
+  "runtime_availability_receipt_sha256": "c2ad3f401b77e25d6e1875154aa41cb6b1d4b91f2b74a02fc82e7fa1ef7c0f51",
+  "schema": "hepta.closure.top1-v4-execution-portability-amendment.v1"
+}

@@ -844,7 +844,7 @@ pub enum BrowserServoError {
     Authority(#[from] FinalUseError),
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 mod tests {
     use std::collections::BTreeSet;
     use std::sync::Arc;
@@ -1135,3 +1135,7 @@ mod tests {
         assert_eq!(result["origin"], "https://example.com");
     }
 }
+
+#[cfg(all(test, not(unix)))]
+#[path = "browser_servo_unsupported_tests.rs"]
+mod unsupported_tests;

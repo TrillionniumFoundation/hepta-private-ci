@@ -1,0 +1,78 @@
+{
+  "schema": "hepta.synapse.arm64-prefetch-independent-review.v1",
+  "run_id": 40677089497,
+  "job_id": 122779227082,
+  "requested_source": "792beb14600f9b49b04ed18f9061e11d0e163759",
+  "manifest_artifact_id": 12810484244,
+  "manifest_archive_sha256": "0932afdc96daa1aa4511acf4cfcbb2d9045d54a8b2eb137631da31e41480405d",
+  "part_artifact_id": 12810783910,
+  "part_archive_bytes": 114503826,
+  "part_archive_sha256": "5a55a324760319fe62ce76bd4f14a225cbdaf165beda6a1e997bef3a1ce99779",
+  "tar_sha256": "266d85e913c9d3a2799b1d8a789400dfdef86aac78b2053dd737d74b660d5718",
+  "zip_crc_passed": true,
+  "all_member_identity_verified": true,
+  "verified_members": 4727,
+  "verified_bytes": 106398305,
+  "cargo_home_selection_members": 4153,
+  "cargo_home_selection_bytes": 105083837,
+  "large_full_cache_artifact_downloaded": false,
+  "qualification": false,
+  "cargo_fetch_exit_code": 0,
+  "wrapper_exit_code": 1,
+  "actual_failure": {
+    "stage": "post-fetch dependency custody inventory",
+    "exception": "ValueError",
+    "path": "/hepta-prefetch/cargo-home/git/checkouts/nucleo-425d994cd74b3654/4253de9/matcher/LICENSE",
+    "reason": "Generic evidence inventory rejects all symlinks; Cargo git checkout contains this symlink."
+  },
+  "conclusions": [
+    "The native tool probe completed; its empty stdout/stderr are not the failed command.",
+    "The complete locked Cargo fetch succeeded. No network, permissions, resolver, or compilation failure is established by this record.",
+    "The subsequent dependency inventory rejected a symlink before publishing SEED_LEDGER.json.",
+    "Source clean checks before and after fetch passed; no tests/build/qualification ran.",
+    "The current diagnostic suffix selector included 4,153 Cargo cache files (105,083,837 bytes). This explains nearly all of the 106,398,305 selected bytes."
+  ],
+  "minimal_fix_boundary": [
+    "Keep generic evidence inventory strict. Add a dependency-only symlink contract and version its seed schema.",
+    "Bind link kind, exact relative target text, and actual resolved in-root regular file identity; reject dangling, escaping, directory, cyclic and special links.",
+    "copy_seed must preserve links without following or chmod through them, verify full source and destination ledgers before/after, and retain all credentials/config/bin exclusions.",
+    "Do not delete a legitimate locked dependency LICENSE or call a changed ledger the original v1 contract."
+  ],
+  "selected_original_bytes": {
+    "057-start-online-cargo-prefetch.stderr": {
+      "original_member": "preparation/controller-commands/057-start-online-cargo-prefetch.stderr",
+      "bytes": 1263,
+      "sha256": "55086458cd33d4f2a251f14aa74ae9835e46bc3d8086acfc435764baf15ca315"
+    },
+    "003-START.json": {
+      "original_member": "preparation/prefetch/commands/003-START.json",
+      "bytes": 1802,
+      "sha256": "36787e67d3e51b581864b5a4635a347cab5c55cca3694e5919b1bba4ca403911"
+    },
+    "003-END.json": {
+      "original_member": "preparation/prefetch/commands/003-END.json",
+      "bytes": 2246,
+      "sha256": "3a635ed35f92906269054b5adb25ba5abcadcedbdfd337f99cad5d42cf123932"
+    },
+    "PREFETCH_RESULT.json": {
+      "original_member": "preparation/prefetch/PREFETCH_RESULT.json",
+      "bytes": 16885,
+      "sha256": "11003599142e326172172d40201ff406f57687eda825baf724f69919d71624ef"
+    },
+    "CI_RESULT.json": {
+      "original_member": "CI_RESULT.json",
+      "bytes": 541,
+      "sha256": "47219136358b49bfefbd036c08a851c3272f76fa2ae56f947b51394fe02f767a"
+    },
+    "CI_STARTED.json": {
+      "original_member": "CI_STARTED.json",
+      "bytes": 428,
+      "sha256": "b8455dcdfb1bbb91cf4747985363b88eba235000b5630e9633956ec6b8c9d030"
+    }
+  },
+  "source_paths": [
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/prep_inside.py",
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/inputs.py",
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/files.py"
+  ]
+}

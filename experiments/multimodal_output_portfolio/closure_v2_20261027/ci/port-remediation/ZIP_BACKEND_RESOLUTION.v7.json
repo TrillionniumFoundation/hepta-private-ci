@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.zip-backend-resolution.v1",
+  "scope": "Real local Cargo graph probe only; full workspace policy, locks and platform qualification still required.",
+  "official_archive_sha256": "1156b39d142a34b999c2310a50455e0cb3760bf7efad0122f796d813bee26ccb",
+  "failed_workspace_run_id": 40650932298,
+  "failed_generator_job_id": 122690568310,
+  "v6_metadata_sha256": "047eda73a98ef79518753185f11c5e0c0fd34b81595c6d87966e5b485cf1028d",
+  "v6_features": {
+    "zip": [
+      "bzip2",
+      "bzip2-rs"
+    ],
+    "bzip2": [
+      "bzip2-sys",
+      "default"
+    ],
+    "libbz2-rs-sys": [
+      "rust-allocator"
+    ]
+  },
+  "patch": "bzip2-rs forwards bzip2?/bzip2-sys and retains dep:bzip2.",
+  "real_cargo_command": [
+    "cargo",
+    "metadata",
+    "--manifest-path",
+    "zip-production-probe/Cargo.toml",
+    "--format-version",
+    "1"
+  ],
+  "probe_manifest": "[package]\nname = \"hepta-zip-production-feature-probe\"\nversion = \"0.0.0\"\nedition = \"2024\"\n[workspace]\n[dependencies]\nzip = { path = \"/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/third_party/zip-9.1.3\", default-features = false, features = [\"aes-crypto\", \"bzip2-rs\", \"deflate64\", \"deflate\", \"lzma\", \"ppmd\", \"time\", \"zstd\", \"xz\"] }\n",
+  "real_packages": [
+    {
+      "name": "bzip2",
+      "version": "0.6.1",
+      "features": [
+        "bzip2-sys"
+      ]
+    },
+    {
+      "name": "bzip2-sys",
+      "version": "0.1.13+1.0.8",
+      "features": []
+    },
+    {
+      "name": "zip",
+      "version": "9.1.3",
+      "features": [
+        "_bzip2_any",
+        "_deflate-any",
+        "aes-crypto",
+        "bzip2-rs",
+        "deflate",
+        "deflate-flate2",
+        "deflate-flate2-zlib-rs",
+        "deflate-zopfli",
+        "deflate64",
+        "lzma",
+        "ppmd",
+        "time",
+        "xz",
+        "zstd"
+      ]
+    }
+  ],
+  "forbidden_absent_in_lock": true,
+  "forbidden_absent_in_metadata": true,
+  "raw_probe_metadata_sha256": "622e321cf4311266d2712f2229a8f313ae67f42a82f76d8450f2b96288c5a611",
+  "raw_probe_lock_sha256": "de015d4ef13b20cedfb5d31c9d2dc2b3857db49b7a7f519cd5cfbf7bf7a5e644",
+  "full_workspace_qualification_claim": false
+}

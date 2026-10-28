@@ -1,0 +1,459 @@
+{
+  "blocking_findings": [],
+  "checks": [
+    {
+      "evidence": "All 35 actual working-tree payloads match the committed integration manifest proposal byte lengths, SHA256 digests and executable modes. The three original policy inputs and recipe digest also match.",
+      "name": "real_payload_identity",
+      "status": "pass"
+    },
+    {
+      "evidence": "verify_integrated_source reads git ls-tree HEAD, verifies every payload plus INTEGRATION as a regular committed blob, independently hashes actual Git blob contents and checks declared/current executable mode. Independent probes show a reviewed-looking worktree cannot hide a different committed payload or manifest.",
+      "name": "committed_blob_and_mode",
+      "status": "pass"
+    },
+    {
+      "evidence": "Any whole-index cached delta from HEAD is refused, including a policy-only executable mode change outside the payload set. Producer and consumer bind HEAD^{tree}; a resealed new source_commit cannot reuse the previous whole-tree identity.",
+      "name": "index_and_full_tree",
+      "status": "pass"
+    },
+    {
+      "evidence": "Candidate receipt must declare no changed paths and the exact zero-byte SHA256 for candidate.patch; the actual transported patch must also be empty. integration.json bytes must equal the committed manifest. Unknown modes are refused.",
+      "name": "empty_integrated_delta",
+      "status": "pass"
+    },
+    {
+      "evidence": "Default patched mode remains real Git check/apply. An empty integrated receipt cannot masquerade as a complete legacy source delta. Independent probe executed git apply --check --index against an already integrated historical patch and observed exit 1 before compiler dispatch.",
+      "name": "historical_patched_mode",
+      "status": "pass"
+    },
+    {
+      "evidence": "CI checkouts and expected_source bind the exact workflow head; candidate RESULT is hashed via same-job output and artifact names include run and attempt. load_candidate checks both GITHUB_RUN_ID and GITHUB_RUN_ATTEMPT when supplied by CI. Post-qualification checks candidate-consumer run/attempt plus source_mode, source_tree and integration. Local fixture mode is not a CI qualification.",
+      "name": "same_run_attempt",
+      "status": "pass"
+    },
+    {
+      "evidence": "Production integrated generation invokes the pinned compiler check, bazel --version, cargo metadata --locked before and after, and actual just bazel-lock-update/check. It forbids changed metadata, locks, source, index, policy and recipe before setting candidate_generated. Controlled logs exercise drift and failure paths; this review did not run Cargo or Bazel.",
+      "name": "real_resolver_invocation",
+      "status": "pass_by_source_review"
+    },
+    {
+      "evidence": "Synapse loads the exact HEAD-bound common guard, preserves independent private-index replay and source tree, retains exact helper pre-import and ignored/untracked guards, and copies integration provenance. Integrated mode only avoids applying an explicitly verified empty delta. Native build, JUnit, no-rerun, old-store, readiness and business-delivery gates remain separate and unchanged.",
+      "name": "synapse_source_and_qualification",
+      "status": "pass"
+    },
+    {
+      "evidence": "Post-qualification requires the original same-candidate consumer evidence and exact test commands/old-store phase. Replayed private tree must equal the source index. Nonempty Clippy changes remain review_required and cannot inherit the prior behavioral pass.",
+      "name": "post_qualification_separation",
+      "status": "pass"
+    }
+  ],
+  "decision": "ready_for_commit_with_existing_CI_gates",
+  "independent_probes": {
+    "cases": [
+      {
+        "case": "exact_committed_positive",
+        "passed": true
+      },
+      {
+        "actual_commands": [
+          {
+            "command": [
+              "git",
+              "rev-parse",
+              "HEAD"
+            ],
+            "exit_code": 0
+          },
+          {
+            "command": [
+              "git",
+              "diff",
+              "--no-renames",
+              "--name-only",
+              "-z",
+              "HEAD"
+            ],
+            "exit_code": 0
+          },
+          {
+            "command": [
+              "git",
+              "ls-files",
+              "--others",
+              "--exclude-standard",
+              "-z"
+            ],
+            "exit_code": 0
+          },
+          {
+            "command": [
+              "git",
+              "diff",
+              "--cached",
+              "--name-only",
+              "-z",
+              "HEAD"
+            ],
+            "exit_code": 0
+          }
+        ],
+        "case": "index_only_policy_mode_outside_payload",
+        "passed": true,
+        "rejection": "Integrated index differs from the committed HEAD",
+        "rejection_type": "ValueError"
+      },
+      {
+        "actual_commands": [
+          {
+            "command": [
+              "git",
+              "diff",
+              "--cached",
+              "--name-only",
+              "-z",
+              "HEAD"
+            ],
+            "exit_code": 0
+          },
+          {
+            "command": [
+              "git",
+              "ls-tree",
+              "-z",
+              "HEAD",
+              "--",
+              "MODULE.bazel.lock",
+              "codex-rs/Cargo.lock",
+              "codex-rs/binary.fixture",
+              "codex-rs/fixture.rs",
+              "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/INTEGRATION.v7.json"
+            ],
+            "exit_code": 0
+          }
+        ],
+        "case": "reviewed_worktree_hides_different_head_payload",
+        "passed": true,
+        "rejection": "Integrated bytes or modes differ from the committed HEAD",
+        "rejection_type": "ValueError"
+      },
+      {
+        "actual_commands": [
+          {
+            "command": [
+              "git",
+              "diff",
+              "--cached",
+              "--name-only",
+              "-z",
+              "HEAD"
+            ],
+            "exit_code": 0
+          },
+          {
+            "command": [
+              "git",
+              "ls-tree",
+              "-z",
+              "HEAD",
+              "--",
+              "MODULE.bazel.lock",
+              "codex-rs/Cargo.lock",
+              "codex-rs/binary.fixture",
+              "codex-rs/fixture.rs",
+              "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/INTEGRATION.v7.json"
+            ],
+            "exit_code": 0
+          }
+        ],
+        "case": "reviewed_worktree_hides_different_head_manifest",
+        "passed": true,
+        "rejection": "Integrated bytes or modes differ from the committed HEAD",
+        "rejection_type": "ValueError"
+      },
+      {
+        "actual_commands": [
+          {
+            "command": [
+              "git",
+              "rev-parse",
+              "HEAD"
+            ],
+            "exit_code": 0
+          },
+          {
+            "command": [
+              "git",
+              "status",
+              "--porcelain",
+              "--untracked-files=all"
+            ],
+            "exit_code": 0
+          },
+          {
+            "command": [
+              "git",
+              "diff",
+              "--cached",
+              "--name-only",
+              "-z",
+              "HEAD"
+            ],
+            "exit_code": 0
+          },
+          {
+            "command": [
+              "git",
+              "ls-tree",
+              "-z",
+              "HEAD",
+              "--",
+              "MODULE.bazel.lock",
+              "codex-rs/Cargo.lock",
+              "codex-rs/binary.fixture",
+              "codex-rs/fixture.rs",
+              "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/INTEGRATION.v7.json"
+            ],
+            "exit_code": 0
+          },
+          {
+            "command": [
+              "git",
+              "rev-parse",
+              "HEAD^{tree}"
+            ],
+            "exit_code": 0
+          }
+        ],
+        "case": "resealed_new_head_cannot_reuse_old_full_source_tree",
+        "passed": true,
+        "rejection": "Integrated candidate receipt differs from committed binding",
+        "rejection_type": "ValueError"
+      },
+      {
+        "actual_commands": [
+          {
+            "command": [
+              "git",
+              "rev-parse",
+              "HEAD"
+            ],
+            "exit_code": 0
+          },
+          {
+            "command": [
+              "git",
+              "status",
+              "--porcelain",
+              "--untracked-files=all"
+            ],
+            "exit_code": 0
+          },
+          {
+            "command": [
+              "git",
+              "apply",
+              "--numstat",
+              "-z",
+              "/tmp/tmp27xvj2h5/legacy-on-integrated/source.patch"
+            ],
+            "exit_code": 0
+          },
+          {
+            "command": [
+              "git",
+              "apply",
+              "--check",
+              "--index",
+              "/tmp/tmp27xvj2h5/legacy-on-integrated/source.patch"
+            ],
+            "exit_code": 1
+          }
+        ],
+        "case": "legacy_generator_rejects_already_applied_historical_patch",
+        "passed": true,
+        "rejection": "check-source-patch failed with exit 1; see 03-check-source-patch.log",
+        "rejection_type": "RuntimeError"
+      },
+      {
+        "actual_commands": [
+          {
+            "command": [
+              "git",
+              "rev-parse",
+              "HEAD"
+            ],
+            "exit_code": 0
+          },
+          {
+            "command": [
+              "git",
+              "status",
+              "--porcelain",
+              "--untracked-files=all"
+            ],
+            "exit_code": 0
+          }
+        ],
+        "case": "other_workflow_run_id_rejected",
+        "passed": true,
+        "rejection": "Candidate came from a different workflow run/attempt",
+        "rejection_type": "ValueError"
+      }
+    ],
+    "frozen_13_files_unchanged": true,
+    "log_sha256": "4a1c3193098752a5f82ee4e4c37710a2c9e72501da95f54d9b65a57af761d5c3",
+    "manifest_sha256": "aeb8a6054b19de07d9cbc16a63b522ccea9d837cab4c66f3846c17b1c77e6bec",
+    "passed": true,
+    "review_source_sha256": "a675d4235394ccde654075bbd81b9adeec4e696d9150ffe397fc27cccdf536c7",
+    "schema": "hepta.integrated-v7.independent-git-probes.v1",
+    "scope": "Actual Git in tiny disposable repositories. Existing fixture construction reused; seven independent probes. No Rust/Bazel/model processes or qualification."
+  },
+  "integration_manifest": {
+    "path": "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/INTEGRATION.v7.json",
+    "payload_files": 35,
+    "policy_files": 3,
+    "recipe_sha256": "8c655b7b3c539527e6506869a52d0e98a88ed37e334e9d34d13be83713bce03f",
+    "sha256": "ef1fc0a4cfd8c2621eeb82e413555c1ea1780020a1f74f7c666253b62a5bfde2"
+  },
+  "limits": [
+    "The current shared HEAD precedes integration. All 35 payloads, the integration manifest and the tool changes must be committed together before integrated CI can produce a valid result.",
+    "Historical origin hashes are committed provenance, not a replacement for fresh same-run policy/build/test/native qualification. This review verified the local frozen identity contract, not a new download of the historical artifact.",
+    "The 81 recorded behavior cases and seven new Git probes establish guard behavior only. No compiler, full-workspace, Windows, native ARM64 Synapse or capability-gain pass is inferred.",
+    "The original policy scope, vendor inventory, graph constraints, upstream AWS inventory/ignore, old-store fixture and subsequent qualification gates remain in force."
+  ],
+  "probe_result_sha256": "7f31c9a93efedd26c68a0ea93b9171c0dda76c91bd5aac671a516f2bec5a6c23",
+  "read_only_boundary": {
+    "frozen_three_crate_10_files_untouched": true,
+    "only_small_temporary_Git_fixture_writes": true,
+    "production_git_index_refs_untouched": true,
+    "reviewed_13_code_files_unchanged": true,
+    "rust_bazel_torch_or_qualification_execution": false
+  },
+  "recorded_behavior_suites": {
+    "logs_verified": [
+      {
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "scripts",
+          "-p",
+          "test_ndu_port*.py",
+          "-v"
+        ],
+        "exit_code": 0,
+        "log_bytes": 33600,
+        "log_sha256": "5491c414cb72b48127257f3dbaa26bb9d7909efc33e2699feea7999aa9f68591",
+        "suite": "port",
+        "tests": 47
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "scripts",
+          "-p",
+          "test_ndu_post_qualification*.py",
+          "-v"
+        ],
+        "exit_code": 0,
+        "log_bytes": 31472,
+        "log_sha256": "fdb09ac3634b161d268a84c378bc2e1e439959cd13141be73b0e518bdef48bb7",
+        "suite": "post",
+        "tests": 15
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "linux_synapse.test_boundaries",
+          "linux_synapse.test_cleanup",
+          "linux_synapse.test_execution",
+          "linux_synapse.test_restore",
+          "linux_synapse.test_source",
+          "-v"
+        ],
+        "exit_code": 0,
+        "log_bytes": 3767,
+        "log_sha256": "9da5df7cd4f113a9a3a06a4b0c6cf373c7ade36f28abcb8e2907f650c8119b2d",
+        "suite": "linux",
+        "tests": 19
+      }
+    ],
+    "timing_scope": "Author-recorded controlled behavior before scoped formatting; no Rust/Bazel execution claimed.",
+    "total": 81
+  },
+  "reviewed_files": {
+    ".github/workflows/ndu-port-candidate.yml": {
+      "bytes": 30462,
+      "sha256": "6c5a6140ad215a10dda6fe4a64b97c128678821b9528ad87109432bd884d2659"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/source.py": {
+      "bytes": 13589,
+      "sha256": "e209239bd87302e96005b1c07643f037c1af6d3a4fda03a1f3acde5265c75060"
+    },
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/test_restore.py": {
+      "bytes": 6692,
+      "sha256": "450de506ac65ee8e3e5b18834333bf9910dbf5d035c99748780e1cb94480439a"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/INTEGRATION.v7.json": {
+      "bytes": 9120,
+      "sha256": "ef1fc0a4cfd8c2621eeb82e413555c1ea1780020a1f74f7c666253b62a5bfde2"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_results/V7_INTEGRATION_SOURCE_SUMMARY.md": {
+      "bytes": 6818,
+      "sha256": "683d31cc4bd9700f0fad8e63a1f4d284919c622b8a1b1f683e47bc850f60b510"
+    },
+    "scripts/ndu_port_candidate.py": {
+      "bytes": 14740,
+      "sha256": "006a70bd9fb7d5fe61f381b33890de30eea1252827c85b25de653c3f2d5b8f3c"
+    },
+    "scripts/ndu_port_candidate_common.py": {
+      "bytes": 29535,
+      "sha256": "d138c8e20141ac68e16d2fe213ecd5896b0cd318b37e331285fdc23f9bf1c39d"
+    },
+    "scripts/ndu_port_integrated.py": {
+      "bytes": 3559,
+      "sha256": "1195d6c69a971e6fdb4bd7b73d08c5711a2d52a8fad04e13ea92a27330146d32"
+    },
+    "scripts/ndu_port_integration_test_support.py": {
+      "bytes": 2683,
+      "sha256": "72d89d12e2da818e4b8ff3781434b47fd121c3d9499364fb41e4687c19cec19c"
+    },
+    "scripts/ndu_post_qualification_evidence.py": {
+      "bytes": 7506,
+      "sha256": "eb8bf8cfa56e233fbe456ff2afad851f2810c52172f0a919eaf022e0128ca959"
+    },
+    "scripts/ndu_post_qualification_fix.py": {
+      "bytes": 13153,
+      "sha256": "b9e521a92e62e71ed9e4cc321c2f8ea3e3e23762241cddbec7daf02d4d0092ab"
+    },
+    "scripts/test_ndu_port_integrated.py": {
+      "bytes": 9868,
+      "sha256": "23cdb32195fb34a991fdddd56cb5c0c36f4d2f0ba3c61d6bfa1d67c0116273b3"
+    },
+    "scripts/test_ndu_post_qualification_integrated.py": {
+      "bytes": 2381,
+      "sha256": "305654cb4614ffbe8d66fec4b37cce6920a330a790bcea3e3c0fa18e489ed6bb"
+    }
+  },
+  "reviewed_head_before_publication": "832b2a382a155bc840df0d255b2c183a43b0d219",
+  "reviewed_manifest_sha256": "aeb8a6054b19de07d9cbc16a63b522ccea9d837cab4c66f3846c17b1c77e6bec",
+  "schema": "hepta.ci.integrated-v7-independent-review.v1",
+  "verbatim_reports_added": [
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/WINDOWS_EXEC_SERVER_INDEPENDENT_REVIEW.json",
+      "sha256": "f703b378040a30231f02fce0e3c31a1fe808c4155507769c621e616904a9c830"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/HOST16_ORIGINAL_VIDEO_HASHES.json",
+      "sha256": "cd42ff25aebc82090f4fc6021ab58874450784b0aa895ae3fa401f0e89474e74"
+    }
+  ]
+}

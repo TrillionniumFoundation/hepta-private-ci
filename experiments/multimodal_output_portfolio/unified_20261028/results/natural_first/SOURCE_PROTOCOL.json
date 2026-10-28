@@ -1,0 +1,2726 @@
+{
+  "schema": "hepta.natural.sources.v1",
+  "dataset": "DeepMind Perception Test",
+  "license": "CC-BY-4.0",
+  "attribution": "Patraucean et al., Perception Test: A Diagnostic Benchmark for Multimodal Video Models, NeurIPS 2023",
+  "official_repository": "https://github.com/google-deepmind/perception_test",
+  "official_split": "train",
+  "task": "same-event natural 0.5-second missing-segment reconstruction with action/sound label caption",
+  "seed": "hepta-natural-joint-20261028-v1",
+  "counts": {
+    "train": 32,
+    "development": 8,
+    "calibration": 8,
+    "qualification": 16
+  },
+  "selection": "SHA256 order of seed/source among <=5MB official train MP4s with >=2 visible annotated sound/action overlap events; no quality outcomes used",
+  "source_unit": "original video_id",
+  "participant_disjoint_verified": false,
+  "limitations": [
+    "Participant identity is unavailable; video-source separation is not participant separation.",
+    "Size-bounded source subset is not representative of all natural video.",
+    "Captions are templated action/sound annotations, not open-domain fluent narration.",
+    "Qualification annotations are read only to freeze event windows; qualification media and metrics are not used for fitting or selection.",
+    "All sources are from the official train split; these are new project-level partitions, not official benchmark results."
+  ],
+  "archive": {
+    "url": "https://storage.googleapis.com/dm-perception-test/zip_data/train_videos.zip",
+    "bytes": 28404087974,
+    "generation": "1685446268139925",
+    "etag": "\"-CJXz5tD4nP8CEAE=\"",
+    "index_range_receipts": [
+      {
+        "start": 28404087952,
+        "bytes": 22,
+        "sha256": "5937649362fa87e12e5ab97d419429a09324ee11f3b17c961e626b971b744bc1"
+      },
+      {
+        "start": 28404087932,
+        "bytes": 20,
+        "sha256": "efb4f572faf8fdcbe1e53a51ed024838c7d6223aaf226a8d0c2883455ba872b0"
+      },
+      {
+        "start": 28404087876,
+        "bytes": 56,
+        "sha256": "74b2d61270aa3c8adf23d3115926ee001f005b17ccf9729e97babe9d9a4fe293"
+      },
+      {
+        "start": 28403916776,
+        "bytes": 171100,
+        "sha256": "505019446df7a796909c8f00a63bd55a2e214d3ba533de00104001f0a30aac82"
+      }
+    ]
+  },
+  "annotation_archives": {
+    "action": {
+      "url": "https://storage.googleapis.com/dm-perception-test/zip_data/action_localisation_train_annotations.zip",
+      "bytes": 222956,
+      "sha256": "5b27beaa97df0a1ea258437b179ed17092981a93501a22a572d64dd46fb12575"
+    },
+    "sound": {
+      "url": "https://storage.googleapis.com/dm-perception-test/zip_data/sound_localisation_train_annotations.zip",
+      "bytes": 372121,
+      "sha256": "0200a50644ab9d36a2dd80e5239e709cabeeaf2e4274eca201c90743b89cc6f5"
+    }
+  },
+  "vocabulary": [
+    "<pad>",
+    "<unk>",
+    "(with",
+    ";",
+    "a",
+    "against/with",
+    "and",
+    "animal:other",
+    "animal:sound",
+    "animal:walking",
+    "around",
+    "back",
+    "break",
+    "breaking",
+    "browsing",
+    "but",
+    "button",
+    "buttoning",
+    "camera",
+    "clap",
+    "clapping",
+    "clicking",
+    "close",
+    "closing",
+    "computer",
+    "cover",
+    "covering",
+    "crumpling",
+    "cut",
+    "cutting",
+    "down",
+    "draw",
+    "drawing",
+    "drink",
+    "drinking",
+    "dropping",
+    "dunking",
+    "fingers",
+    "fluid",
+    "folding",
+    "from",
+    "hand",
+    "hands",
+    "hitting",
+    "holding",
+    "human:other",
+    "human:sound(clapping)",
+    "human:speech",
+    "in",
+    "indicating",
+    "interaction:",
+    "interaction:dropping",
+    "interaction:hitting",
+    "interaction:rolling",
+    "into",
+    "iron",
+    "ironing",
+    "it",
+    "jingling",
+    "juggling",
+    "knife",
+    "launching",
+    "lifting",
+    "mix",
+    "mixing",
+    "moving",
+    "music",
+    "muted",
+    "not",
+    "object(s)",
+    "object:breaking",
+    "object:opening/closing",
+    "object:sound",
+    "objects",
+    "of",
+    "off",
+    "on",
+    "open",
+    "opening",
+    "or",
+    "other",
+    "other:background",
+    "out",
+    "paper",
+    "piece",
+    "pieces",
+    "placing",
+    "plugging",
+    "pour",
+    "pouring",
+    "pretending",
+    "prevents",
+    "pulling",
+    "pushing",
+    "put",
+    "putting",
+    "region",
+    "rotating",
+    "scissors)",
+    "showing",
+    "shuffling",
+    "snapping",
+    "something",
+    "sound",
+    "spreading",
+    "state",
+    "taking",
+    "tearing",
+    "that",
+    "the",
+    "through",
+    "tie",
+    "to",
+    "top",
+    "trying",
+    "turn",
+    "turning",
+    "tying",
+    "unfolding",
+    "unplug",
+    "unplugging",
+    "up",
+    "with",
+    "working",
+    "write",
+    "writing"
+  ],
+  "decode": {
+    "side": 32,
+    "fps": 8,
+    "audio_sample_rate": 8000,
+    "duration_seconds": 1.0,
+    "context_frames": [
+      0,
+      1,
+      6,
+      7
+    ],
+    "target_frames": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "context_audio_samples": [
+      [
+        0,
+        2000
+      ],
+      [
+        6000,
+        8000
+      ]
+    ],
+    "target_audio_samples": [
+      2000,
+      6000
+    ],
+    "image_target_frame": 4
+  },
+  "selected": [
+    {
+      "source_id": "video_563",
+      "member": "videos/video_563.mp4",
+      "compressed_bytes": 2779096,
+      "bytes": 2788611,
+      "zip_crc32": "97158e84",
+      "events": [
+        {
+          "start_seconds": 5.481423,
+          "action_id": 22,
+          "action": "Moving object(s) around",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "moving object(s) around; interaction:hitting",
+          "overlap_seconds": 0.49984
+        },
+        {
+          "start_seconds": 9.030289,
+          "action_id": 20,
+          "action": "Launching something",
+          "sound_id": 8,
+          "sound": "Interaction:rolling",
+          "caption": "launching something; interaction:rolling",
+          "overlap_seconds": 0.266582
+        }
+      ],
+      "priority": "00979cc88bb17406fb542222dbecb4f8b00d87767fc8583f7a5bd6ddf619033a",
+      "split": "train"
+    },
+    {
+      "source_id": "video_10631",
+      "member": "videos/video_10631.mp4",
+      "compressed_bytes": 4254486,
+      "bytes": 4280953,
+      "zip_crc32": "c98ec11d",
+      "events": [
+        {
+          "start_seconds": 13.548071,
+          "action_id": 48,
+          "action": "Showing something to the camera",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "showing something to the camera; interaction:hitting",
+          "overlap_seconds": 0.693325
+        },
+        {
+          "start_seconds": 26.473616,
+          "action_id": 48,
+          "action": "Showing something to the camera",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "showing something to the camera; interaction:hitting",
+          "overlap_seconds": 1.386648
+        },
+        {
+          "start_seconds": 18.632449,
+          "action_id": 56,
+          "action": "Trying to turn something on but not working",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "trying to turn something on but not working; object:sound",
+          "overlap_seconds": 0.495231
+        },
+        {
+          "start_seconds": 24.740305,
+          "action_id": 48,
+          "action": "Showing something to the camera",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "showing something to the camera; interaction:hitting",
+          "overlap_seconds": 1.089509
+        }
+      ],
+      "priority": "00d2e395c54901825ffb2b517009d0f71c74970b13143ca8be790bc15908a272",
+      "split": "train"
+    },
+    {
+      "source_id": "video_6856",
+      "member": "videos/video_6856.mp4",
+      "compressed_bytes": 4895693,
+      "bytes": 4894585,
+      "zip_crc32": "b016ea84",
+      "events": [
+        {
+          "start_seconds": 8.7,
+          "action_id": 48,
+          "action": "Showing something to the camera",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "showing something to the camera; interaction:hitting",
+          "overlap_seconds": 0.333334
+        },
+        {
+          "start_seconds": 13.766666,
+          "action_id": 48,
+          "action": "Showing something to the camera",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "showing something to the camera; interaction:hitting",
+          "overlap_seconds": 0.333333
+        },
+        {
+          "start_seconds": 6.616667,
+          "action_id": 48,
+          "action": "Showing something to the camera",
+          "sound_id": 15,
+          "sound": "Human:other",
+          "caption": "showing something to the camera; human:other",
+          "overlap_seconds": 0.433333
+        }
+      ],
+      "priority": "00de2c36b1932416ab8c2eb69ad34bfd4de785f83eedf03da8782c26a5742e45",
+      "split": "train"
+    },
+    {
+      "source_id": "video_3598",
+      "member": "videos/video_3598.mp4",
+      "compressed_bytes": 2820160,
+      "bytes": 2818676,
+      "zip_crc32": "d267949c",
+      "events": [
+        {
+          "start_seconds": 5.148142,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "putting something on top of something; object:sound",
+          "overlap_seconds": 2.099309
+        },
+        {
+          "start_seconds": 6.780938,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.499835
+        },
+        {
+          "start_seconds": 2.149128,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.69977
+        }
+      ],
+      "priority": "00ee4b8edfbde0143422a3c5d1f8dd07d86bdd4e8f26cd462244be0268442403",
+      "split": "train"
+    },
+    {
+      "source_id": "video_6692",
+      "member": "videos/video_6692.mp4",
+      "compressed_bytes": 4842969,
+      "bytes": 4869948,
+      "zip_crc32": "426f8233",
+      "events": [
+        {
+          "start_seconds": 16.394738,
+          "action_id": 23,
+          "action": "Opening something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "opening something; interaction:hitting",
+          "overlap_seconds": 0.26398
+        },
+        {
+          "start_seconds": 5.241571,
+          "action_id": 23,
+          "action": "Opening something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "opening something; interaction:hitting",
+          "overlap_seconds": 0.26398
+        }
+      ],
+      "priority": "011229911678a4f9ed3db89a8bf35c2384d710cf4db3c5cd4e722799540abbe1",
+      "split": "train"
+    },
+    {
+      "source_id": "video_7105",
+      "member": "videos/video_7105.mp4",
+      "compressed_bytes": 2342740,
+      "bytes": 2352571,
+      "zip_crc32": "5129fae1",
+      "events": [
+        {
+          "start_seconds": 8.945283,
+          "action_id": 22,
+          "action": "Moving object(s) around",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "moving object(s) around; interaction:hitting",
+          "overlap_seconds": 0.534009
+        },
+        {
+          "start_seconds": 10.730875,
+          "action_id": 22,
+          "action": "Moving object(s) around",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "moving object(s) around; interaction:hitting",
+          "overlap_seconds": 0.634135
+        }
+      ],
+      "priority": "0333157ec0c0d010c0d44ecdfde0dcc933ef4c623b6932a11703ca6e17f52aa2",
+      "split": "train"
+    },
+    {
+      "source_id": "video_3507",
+      "member": "videos/video_3507.mp4",
+      "compressed_bytes": 4047558,
+      "bytes": 4055233,
+      "zip_crc32": "982e1cdd",
+      "events": [
+        {
+          "start_seconds": 6.270909,
+          "action_id": 29,
+          "action": "Pretending to cover something",
+          "sound_id": 6,
+          "sound": "Interaction:dropping",
+          "caption": "pretending to cover something; interaction:dropping",
+          "overlap_seconds": 0.266834
+        },
+        {
+          "start_seconds": 11.340753,
+          "action_id": 7,
+          "action": "Covering something with something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "covering something with something; interaction:hitting",
+          "overlap_seconds": 0.400251
+        },
+        {
+          "start_seconds": 3.252351,
+          "action_id": 7,
+          "action": "Covering something with something",
+          "sound_id": 10,
+          "sound": "Object:opening/closing of something",
+          "caption": "covering something with something; object:opening/closing of something",
+          "overlap_seconds": 0.967272
+        },
+        {
+          "start_seconds": 8.839185,
+          "action_id": 7,
+          "action": "Covering something with something",
+          "sound_id": 10,
+          "sound": "Object:opening/closing of something",
+          "caption": "covering something with something; object:opening/closing of something",
+          "overlap_seconds": 0.800502
+        }
+      ],
+      "priority": "035b30f6ed835aaacb4ac3dc8d05c0ddd5af4fac9f45d1283aaaadc181f490be",
+      "split": "train"
+    },
+    {
+      "source_id": "video_11008",
+      "member": "videos/video_11008.mp4",
+      "compressed_bytes": 4334880,
+      "bytes": 4345123,
+      "zip_crc32": "b672e1e7",
+      "events": [
+        {
+          "start_seconds": 2.924253,
+          "action_id": 7,
+          "action": "Covering something with something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "covering something with something; interaction:hitting",
+          "overlap_seconds": 0.640993
+        },
+        {
+          "start_seconds": 4.729155,
+          "action_id": 7,
+          "action": "Covering something with something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "covering something with something; interaction:hitting",
+          "overlap_seconds": 0.47231
+        },
+        {
+          "start_seconds": 8.069067,
+          "action_id": 7,
+          "action": "Covering something with something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "covering something with something; interaction:hitting",
+          "overlap_seconds": 1.012094
+        }
+      ],
+      "priority": "03e088c7c3368351b6539c728f183227f2a20cc912d41404ea9ab01649bbb681",
+      "split": "train"
+    },
+    {
+      "source_id": "video_1232",
+      "member": "videos/video_1232.mp4",
+      "compressed_bytes": 4131250,
+      "bytes": 4120835,
+      "zip_crc32": "ff3d787a",
+      "events": [
+        {
+          "start_seconds": 3.166666,
+          "action_id": 15,
+          "action": "Holding something in a state",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "holding something in a state; interaction:hitting",
+          "overlap_seconds": 0.733333
+        },
+        {
+          "start_seconds": 8.266667,
+          "action_id": 55,
+          "action": "Trying to close something but something prevents that",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "trying to close something but something prevents that; interaction:hitting",
+          "overlap_seconds": 2.8
+        },
+        {
+          "start_seconds": 4.366667,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.266667
+        },
+        {
+          "start_seconds": 1.716667,
+          "action_id": 15,
+          "action": "Holding something in a state",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "holding something in a state; interaction:hitting",
+          "overlap_seconds": 0.5
+        }
+      ],
+      "priority": "04cd6bc3963db413cbaf8e5890496a1273b8f40e0d1db2d1d1c815c33fab8fa8",
+      "split": "train"
+    },
+    {
+      "source_id": "video_6867",
+      "member": "videos/video_6867.mp4",
+      "compressed_bytes": 3359496,
+      "bytes": 3385430,
+      "zip_crc32": "103944a9",
+      "events": [
+        {
+          "start_seconds": 14.334847,
+          "action_id": 7,
+          "action": "Covering something with something",
+          "sound_id": 10,
+          "sound": "Object:opening/closing of something",
+          "caption": "covering something with something; object:opening/closing of something",
+          "overlap_seconds": 0.334119
+        },
+        {
+          "start_seconds": 15.537672,
+          "action_id": 7,
+          "action": "Covering something with something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "covering something with something; interaction:hitting",
+          "overlap_seconds": 0.267294
+        },
+        {
+          "start_seconds": 19.563795,
+          "action_id": 48,
+          "action": "Showing something to the camera",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "showing something to the camera; object:sound",
+          "overlap_seconds": 0.568001
+        },
+        {
+          "start_seconds": 23.773685,
+          "action_id": 15,
+          "action": "Holding something in a state",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "holding something in a state; interaction:hitting",
+          "overlap_seconds": 0.501177
+        }
+      ],
+      "priority": "0737304de54ba9348671dadfa434ec00ac9f0fca53d753532b147918789e1985",
+      "split": "train"
+    },
+    {
+      "source_id": "video_4189",
+      "member": "videos/video_4189.mp4",
+      "compressed_bytes": 4968729,
+      "bytes": 4968445,
+      "zip_crc32": "2d8ad3ef",
+      "events": [
+        {
+          "start_seconds": 11.114809,
+          "action_id": 48,
+          "action": "Showing something to the camera",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "showing something to the camera; interaction:hitting",
+          "overlap_seconds": 0.966512
+        },
+        {
+          "start_seconds": 3.366048,
+          "action_id": 48,
+          "action": "Showing something to the camera",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "showing something to the camera; interaction:hitting",
+          "overlap_seconds": 0.466592
+        },
+        {
+          "start_seconds": 19.063537,
+          "action_id": 48,
+          "action": "Showing something to the camera",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "showing something to the camera; interaction:hitting",
+          "overlap_seconds": 2.266304
+        }
+      ],
+      "priority": "080192a98721afb9692afa99073436031def0d9898cdedbc805cead82c5f85e6",
+      "split": "train"
+    },
+    {
+      "source_id": "video_10301",
+      "member": "videos/video_10301.mp4",
+      "compressed_bytes": 3385694,
+      "bytes": 3378175,
+      "zip_crc32": "9020f1db",
+      "events": [
+        {
+          "start_seconds": 2.825144,
+          "action_id": 4,
+          "action": "Clapping hands",
+          "sound_id": 4,
+          "sound": "Human:Sound(clapping)",
+          "caption": "clapping hands; human:sound(clapping)",
+          "overlap_seconds": 0.470223
+        },
+        {
+          "start_seconds": 4.403749,
+          "action_id": 4,
+          "action": "Clapping hands",
+          "sound_id": 1,
+          "sound": "Animal:sound",
+          "caption": "clapping hands; animal:sound",
+          "overlap_seconds": 0.403048
+        },
+        {
+          "start_seconds": 7.090734,
+          "action_id": 14,
+          "action": "Hitting something against/with something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "hitting something against/with something; interaction:hitting",
+          "overlap_seconds": 0.268699
+        }
+      ],
+      "priority": "087f30837f4e7de36f72ac0548cea615595b39dc07fe2b2bcaf242f6bf638e08",
+      "split": "train"
+    },
+    {
+      "source_id": "video_5694",
+      "member": "videos/video_5694.mp4",
+      "compressed_bytes": 2310528,
+      "bytes": 2322387,
+      "zip_crc32": "db4ccbdb",
+      "events": [
+        {
+          "start_seconds": 5.265785,
+          "action_id": 4,
+          "action": "Clapping hands",
+          "sound_id": 4,
+          "sound": "Human:Sound(clapping)",
+          "caption": "clapping hands; human:sound(clapping)",
+          "overlap_seconds": 0.333282
+        },
+        {
+          "start_seconds": 6.332289,
+          "action_id": 4,
+          "action": "Clapping hands",
+          "sound_id": 4,
+          "sound": "Human:Sound(clapping)",
+          "caption": "clapping hands; human:sound(clapping)",
+          "overlap_seconds": 0.533252
+        }
+      ],
+      "priority": "097da15a164bd26a0182159c13510b5f513bfb19fa6549fd2563f22b8f1c9c46",
+      "split": "train"
+    },
+    {
+      "source_id": "video_10263",
+      "member": "videos/video_10263.mp4",
+      "compressed_bytes": 3585630,
+      "bytes": 3579544,
+      "zip_crc32": "030fe371",
+      "events": [
+        {
+          "start_seconds": 3.66522,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.399862
+        },
+        {
+          "start_seconds": 1.715897,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "putting something on top of something; object:sound",
+          "overlap_seconds": 0.36654
+        }
+      ],
+      "priority": "0a9dcc48947049d9564d423057c75dab7c51d5a2e4bc6ec3d8c11699eec23e91",
+      "split": "train"
+    },
+    {
+      "source_id": "video_9820",
+      "member": "videos/video_9820.mp4",
+      "compressed_bytes": 3904372,
+      "bytes": 3895549,
+      "zip_crc32": "15a59d58",
+      "events": [
+        {
+          "start_seconds": 7.265086,
+          "action_id": 22,
+          "action": "Moving object(s) around",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "moving object(s) around; interaction:hitting",
+          "overlap_seconds": 0.999796
+        },
+        {
+          "start_seconds": 2.24944,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "putting something on top of something; object:sound",
+          "overlap_seconds": 0.299939
+        },
+        {
+          "start_seconds": 4.932227,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.599877
+        },
+        {
+          "start_seconds": 5.96535,
+          "action_id": 22,
+          "action": "Moving object(s) around",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "moving object(s) around; interaction:hitting",
+          "overlap_seconds": 0.466571
+        }
+      ],
+      "priority": "0ca875a0dabe2e64324988721ac3f56e0ed9f85804368ad3ace82a54659bb9fe",
+      "split": "train"
+    },
+    {
+      "source_id": "video_5374",
+      "member": "videos/video_5374.mp4",
+      "compressed_bytes": 4146876,
+      "bytes": 4173133,
+      "zip_crc32": "7d3046eb",
+      "events": [
+        {
+          "start_seconds": 2.982372,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.891223
+        },
+        {
+          "start_seconds": 13.776073,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.825206
+        },
+        {
+          "start_seconds": 9.584024,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.495124
+        },
+        {
+          "start_seconds": 6.101653,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.594149
+        }
+      ],
+      "priority": "0d6ba8387c18c0f798748b059ac5d10ef42a7bd7b43c29d4d2ee2993774e4f65",
+      "split": "train"
+    },
+    {
+      "source_id": "video_2006",
+      "member": "videos/video_2006.mp4",
+      "compressed_bytes": 3174822,
+      "bytes": 3182679,
+      "zip_crc32": "4f8f01e5",
+      "events": [
+        {
+          "start_seconds": 3.895696,
+          "action_id": 46,
+          "action": "Putting something into something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something into something; interaction:hitting",
+          "overlap_seconds": 0.599413
+        },
+        {
+          "start_seconds": 7.558776,
+          "action_id": 46,
+          "action": "Putting something into something",
+          "sound_id": 6,
+          "sound": "Interaction:dropping",
+          "caption": "putting something into something; interaction:dropping",
+          "overlap_seconds": 0.266406
+        },
+        {
+          "start_seconds": 11.355059,
+          "action_id": 18,
+          "action": "Jingling something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "jingling something; interaction:hitting",
+          "overlap_seconds": 0.266406
+        },
+        {
+          "start_seconds": 10.256135,
+          "action_id": 18,
+          "action": "Jingling something",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "jingling something; object:sound",
+          "overlap_seconds": 0.266406
+        }
+      ],
+      "priority": "0e48aea050f43c667c99ce5b3582302ecf04e600693b9820e3e8d0a52fe1d0f1",
+      "split": "train"
+    },
+    {
+      "source_id": "video_9071",
+      "member": "videos/video_9071.mp4",
+      "compressed_bytes": 3803131,
+      "bytes": 3806801,
+      "zip_crc32": "dba8c27f",
+      "events": [
+        {
+          "start_seconds": 6.126027,
+          "action_id": 7,
+          "action": "Covering something with something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "covering something with something; interaction:hitting",
+          "overlap_seconds": 0.405675
+        },
+        {
+          "start_seconds": 8.509368,
+          "action_id": 7,
+          "action": "Covering something with something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "covering something with something; interaction:hitting",
+          "overlap_seconds": 0.304256
+        }
+      ],
+      "priority": "0f92d3a5e6cf7243c6d009c7b9fe169896a9bf00a3b032ac7bb9e5ce1e5c2bdd",
+      "split": "train"
+    },
+    {
+      "source_id": "video_10977",
+      "member": "videos/video_10977.mp4",
+      "compressed_bytes": 1640017,
+      "bytes": 1647299,
+      "zip_crc32": "061e898f",
+      "events": [
+        {
+          "start_seconds": 6.897787,
+          "action_id": 22,
+          "action": "Moving object(s) around",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "moving object(s) around; object:sound",
+          "overlap_seconds": 0.575571
+        },
+        {
+          "start_seconds": 8.032002,
+          "action_id": 15,
+          "action": "Holding something in a state",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "holding something in a state; object:sound",
+          "overlap_seconds": 1.015714
+        },
+        {
+          "start_seconds": 9.064646,
+          "action_id": 15,
+          "action": "Holding something in a state",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "holding something in a state; object:sound",
+          "overlap_seconds": 0.914143
+        },
+        {
+          "start_seconds": 2.716429,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "putting something on top of something; object:sound",
+          "overlap_seconds": 1.828286
+        }
+      ],
+      "priority": "0fa63a9dbb07ac1ecdafe44e347ceec18517089b405f96eac7116a6e434e499b",
+      "split": "train"
+    },
+    {
+      "source_id": "video_7681",
+      "member": "videos/video_7681.mp4",
+      "compressed_bytes": 3209703,
+      "bytes": 3219950,
+      "zip_crc32": "13fe013b",
+      "events": [
+        {
+          "start_seconds": 3.932514,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.46658
+        },
+        {
+          "start_seconds": 12.74755,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.433253
+        }
+      ],
+      "priority": "10246250400e2a31fda68a2288133688c66f620e783135cb52ebc1cdf754c401",
+      "split": "train"
+    },
+    {
+      "source_id": "video_8348",
+      "member": "videos/video_8348.mp4",
+      "compressed_bytes": 2901078,
+      "bytes": 2913076,
+      "zip_crc32": "2901dbe6",
+      "events": [
+        {
+          "start_seconds": 6.21598,
+          "action_id": 7,
+          "action": "Covering something with something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "covering something with something; interaction:hitting",
+          "overlap_seconds": 0.36663
+        },
+        {
+          "start_seconds": 5.066097,
+          "action_id": 7,
+          "action": "Covering something with something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "covering something with something; interaction:hitting",
+          "overlap_seconds": 0.399959
+        },
+        {
+          "start_seconds": 2.499694,
+          "action_id": 29,
+          "action": "Pretending to cover something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "pretending to cover something; interaction:hitting",
+          "overlap_seconds": 0.266639
+        },
+        {
+          "start_seconds": 8.582404,
+          "action_id": 7,
+          "action": "Covering something with something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "covering something with something; interaction:hitting",
+          "overlap_seconds": 0.299969
+        }
+      ],
+      "priority": "102ee457ea83460939f1cc15f9d36c4c9366aa40ee7a9b2652ea1c8874ee2ece",
+      "split": "train"
+    },
+    {
+      "source_id": "video_9416",
+      "member": "videos/video_9416.mp4",
+      "compressed_bytes": 3583767,
+      "bytes": 3608125,
+      "zip_crc32": "8c9546e0",
+      "events": [
+        {
+          "start_seconds": 1.502746,
+          "action_id": 23,
+          "action": "Opening something",
+          "sound_id": 10,
+          "sound": "Object:opening/closing of something",
+          "caption": "opening something; object:opening/closing of something",
+          "overlap_seconds": 0.267033
+        },
+        {
+          "start_seconds": 17.074094,
+          "action_id": 48,
+          "action": "Showing something to the camera",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "showing something to the camera; object:sound",
+          "overlap_seconds": 0.76772
+        },
+        {
+          "start_seconds": 19.711043,
+          "action_id": 48,
+          "action": "Showing something to the camera",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "showing something to the camera; interaction:hitting",
+          "overlap_seconds": 0.901235
+        },
+        {
+          "start_seconds": 23.566328,
+          "action_id": 15,
+          "action": "Holding something in a state",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "holding something in a state; interaction:hitting",
+          "overlap_seconds": 0.667582
+        }
+      ],
+      "priority": "1195b2b610c5ee09942b606437f56adc0226664786a2a48059d74d7de5abadd7",
+      "split": "train"
+    },
+    {
+      "source_id": "video_6369",
+      "member": "videos/video_6369.mp4",
+      "compressed_bytes": 4372896,
+      "bytes": 4380454,
+      "zip_crc32": "a288ef4b",
+      "events": [
+        {
+          "start_seconds": 4.865807,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.266624
+        },
+        {
+          "start_seconds": 2.216231,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.299952
+        }
+      ],
+      "priority": "12acfbf606ae12883b337f3eacb6270d58fda59f9c1a3d8be5b55ba993003984",
+      "split": "train"
+    },
+    {
+      "source_id": "video_2558",
+      "member": "videos/video_2558.mp4",
+      "compressed_bytes": 4675181,
+      "bytes": 4685014,
+      "zip_crc32": "2b1c20af",
+      "events": [
+        {
+          "start_seconds": 21.6151,
+          "action_id": 53,
+          "action": "Taking something out of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "taking something out of something; interaction:hitting",
+          "overlap_seconds": 0.499964
+        },
+        {
+          "start_seconds": 18.631979,
+          "action_id": 53,
+          "action": "Taking something out of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "taking something out of something; interaction:hitting",
+          "overlap_seconds": 1.066591
+        },
+        {
+          "start_seconds": 24.331575,
+          "action_id": 6,
+          "action": "Closing something",
+          "sound_id": 10,
+          "sound": "Object:opening/closing of something",
+          "caption": "closing something; object:opening/closing of something",
+          "overlap_seconds": 0.933267
+        }
+      ],
+      "priority": "12f08d637cf9656414f117c0d449c828d1671c78590950655cb49a23e3a0e281",
+      "split": "train"
+    },
+    {
+      "source_id": "video_5925",
+      "member": "videos/video_5925.mp4",
+      "compressed_bytes": 3697416,
+      "bytes": 3725604,
+      "zip_crc32": "62109fa4",
+      "events": [
+        {
+          "start_seconds": 10.775899,
+          "action_id": 14,
+          "action": "Hitting something against/with something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "hitting something against/with something; interaction:hitting",
+          "overlap_seconds": 1.252878
+        },
+        {
+          "start_seconds": 9.358169,
+          "action_id": 4,
+          "action": "Clapping hands",
+          "sound_id": 4,
+          "sound": "Human:Sound(clapping)",
+          "caption": "clapping hands; human:sound(clapping)",
+          "overlap_seconds": 0.329705
+        },
+        {
+          "start_seconds": 12.968436,
+          "action_id": 14,
+          "action": "Hitting something against/with something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "hitting something against/with something; interaction:hitting",
+          "overlap_seconds": 1.022085
+        },
+        {
+          "start_seconds": 7.511823,
+          "action_id": 4,
+          "action": "Clapping hands",
+          "sound_id": 4,
+          "sound": "Human:Sound(clapping)",
+          "caption": "clapping hands; human:sound(clapping)",
+          "overlap_seconds": 0.527528
+        }
+      ],
+      "priority": "12fa50aac53b308d6f158ad96b0eef006f24afc385d9d5b8eb8db59bd1808432",
+      "split": "train"
+    },
+    {
+      "source_id": "video_3256",
+      "member": "videos/video_3256.mp4",
+      "compressed_bytes": 4000354,
+      "bytes": 3994676,
+      "zip_crc32": "cf884e3f",
+      "events": [
+        {
+          "start_seconds": 12.627037,
+          "action_id": 43,
+          "action": "Pulling something",
+          "sound_id": 8,
+          "sound": "Interaction:rolling",
+          "caption": "pulling something; interaction:rolling",
+          "overlap_seconds": 0.49661
+        },
+        {
+          "start_seconds": 4.101912,
+          "action_id": 43,
+          "action": "Pulling something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "pulling something; interaction:hitting",
+          "overlap_seconds": 0.264858
+        },
+        {
+          "start_seconds": 8.587949,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.36418
+        },
+        {
+          "start_seconds": 0.807738,
+          "action_id": 43,
+          "action": "Pulling something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "pulling something; interaction:hitting",
+          "overlap_seconds": 0.36418
+        }
+      ],
+      "priority": "13de8dca121c50e4a1e0b30014ec448f5b5895dff174c4a978f604d082f30324",
+      "split": "train"
+    },
+    {
+      "source_id": "video_2904",
+      "member": "videos/video_2904.mp4",
+      "compressed_bytes": 3490375,
+      "bytes": 3515463,
+      "zip_crc32": "c1e2f3da",
+      "events": [
+        {
+          "start_seconds": 11.527625,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.428968
+        },
+        {
+          "start_seconds": 2.65127,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.428969
+        },
+        {
+          "start_seconds": 5.720047,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.428969
+        },
+        {
+          "start_seconds": 8.871319,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.395971
+        }
+      ],
+      "priority": "14b1719e6288275bb10aa311c96a84733d87992b9f2b27c6e0c876db3f996695",
+      "split": "train"
+    },
+    {
+      "source_id": "video_9785",
+      "member": "videos/video_9785.mp4",
+      "compressed_bytes": 4896279,
+      "bytes": 4903846,
+      "zip_crc32": "7cec6234",
+      "events": [
+        {
+          "start_seconds": 4.120595,
+          "action_id": 46,
+          "action": "Putting something into something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something into something; interaction:hitting",
+          "overlap_seconds": 0.433702
+        },
+        {
+          "start_seconds": 10.209105,
+          "action_id": 38,
+          "action": "Pretending to put something into something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "pretending to put something into something; interaction:hitting",
+          "overlap_seconds": 0.333617
+        },
+        {
+          "start_seconds": 6.122298,
+          "action_id": 46,
+          "action": "Putting something into something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something into something; interaction:hitting",
+          "overlap_seconds": 0.300255
+        },
+        {
+          "start_seconds": 14.562807,
+          "action_id": 38,
+          "action": "Pretending to put something into something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "pretending to put something into something; interaction:hitting",
+          "overlap_seconds": 1.234383
+        }
+      ],
+      "priority": "1583bd6a5dd334211a0e871d38bb6018918b24671d669929be3d5ac7d4cea840",
+      "split": "train"
+    },
+    {
+      "source_id": "video_7673",
+      "member": "videos/video_7673.mp4",
+      "compressed_bytes": 3140276,
+      "bytes": 3144058,
+      "zip_crc32": "f6c6b3ec",
+      "events": [
+        {
+          "start_seconds": 6.036575,
+          "action_id": 20,
+          "action": "Launching something",
+          "sound_id": 8,
+          "sound": "Interaction:rolling",
+          "caption": "launching something; interaction:rolling",
+          "overlap_seconds": 0.776958
+        },
+        {
+          "start_seconds": 3.215883,
+          "action_id": 20,
+          "action": "Launching something",
+          "sound_id": 8,
+          "sound": "Interaction:rolling",
+          "caption": "launching something; interaction:rolling",
+          "overlap_seconds": 0.743177
+        },
+        {
+          "start_seconds": 9.786238,
+          "action_id": 20,
+          "action": "Launching something",
+          "sound_id": 6,
+          "sound": "Interaction:dropping",
+          "caption": "launching something; interaction:dropping",
+          "overlap_seconds": 0.43915
+        }
+      ],
+      "priority": "16717acf52d59a05ef1b77e8ea849647003ca46b489f083fad7dd4ba2c81573f",
+      "split": "train"
+    },
+    {
+      "source_id": "video_310",
+      "member": "videos/video_310.mp4",
+      "compressed_bytes": 3933722,
+      "bytes": 3929189,
+      "zip_crc32": "4ad2a4d4",
+      "events": [
+        {
+          "start_seconds": 12.309324,
+          "action_id": 58,
+          "action": "Turning something on",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "turning something on; object:sound",
+          "overlap_seconds": 0.504967
+        },
+        {
+          "start_seconds": 4.027869,
+          "action_id": 14,
+          "action": "Hitting something against/with something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "hitting something against/with something; interaction:hitting",
+          "overlap_seconds": 1.110927
+        }
+      ],
+      "priority": "17661007aa41f9a829f416247c903a90407fbf406ee91993a1d1268105f5a4c0",
+      "split": "train"
+    },
+    {
+      "source_id": "video_1749",
+      "member": "videos/video_1749.mp4",
+      "compressed_bytes": 4534276,
+      "bytes": 4556129,
+      "zip_crc32": "836d0594",
+      "events": [
+        {
+          "start_seconds": 16.713499,
+          "action_id": 49,
+          "action": "Shuffling objects",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "shuffling objects; interaction:hitting",
+          "overlap_seconds": 0.369461
+        },
+        {
+          "start_seconds": 19.434071,
+          "action_id": 49,
+          "action": "Shuffling objects",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "shuffling objects; interaction:hitting",
+          "overlap_seconds": 0.36946
+        },
+        {
+          "start_seconds": 8.854067,
+          "action_id": 60,
+          "action": "Working on a computer",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "working on a computer; object:sound",
+          "overlap_seconds": 0.50381
+        },
+        {
+          "start_seconds": 13.254005,
+          "action_id": 60,
+          "action": "Working on a computer",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "working on a computer; object:sound",
+          "overlap_seconds": 1.108382
+        }
+      ],
+      "priority": "180945f91db7892e48755b4fa386351a5dda6ee38771b2cdc0808a2032cccf15",
+      "split": "train"
+    },
+    {
+      "source_id": "video_955",
+      "member": "videos/video_955.mp4",
+      "compressed_bytes": 4674412,
+      "bytes": 4678913,
+      "zip_crc32": "3f86ea03",
+      "events": [
+        {
+          "start_seconds": 1.37691,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.304364
+        },
+        {
+          "start_seconds": 4.606547,
+          "action_id": 59,
+          "action": "Tying something",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "tying something; object:sound",
+          "overlap_seconds": 4.66691
+        },
+        {
+          "start_seconds": 10.507822,
+          "action_id": 40,
+          "action": "Pretending to tie something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "pretending to tie something; interaction:hitting",
+          "overlap_seconds": 0.642546
+        }
+      ],
+      "priority": "184ab9b8705865704562a790f467f6ca0abbd3c61909b7a04c7dae0238b7a60f",
+      "split": "train"
+    },
+    {
+      "source_id": "video_5422",
+      "member": "videos/video_5422.mp4",
+      "compressed_bytes": 3952913,
+      "bytes": 3977333,
+      "zip_crc32": "96c92591",
+      "events": [
+        {
+          "start_seconds": 15.430079,
+          "action_id": 21,
+          "action": "Lifting something and placing it back down",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "lifting something and placing it back down; interaction:hitting",
+          "overlap_seconds": 0.266612
+        },
+        {
+          "start_seconds": 13.79708,
+          "action_id": 21,
+          "action": "Lifting something and placing it back down",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "lifting something and placing it back down; interaction:hitting",
+          "overlap_seconds": 0.266613
+        }
+      ],
+      "priority": "19211197c05df9154761b93e0305960ce39accf0df95a2a97200aa8537c2d984",
+      "split": "development"
+    },
+    {
+      "source_id": "video_2383",
+      "member": "videos/video_2383.mp4",
+      "compressed_bytes": 4805006,
+      "bytes": 4803227,
+      "zip_crc32": "88c020a7",
+      "events": [
+        {
+          "start_seconds": 8.522654,
+          "action_id": 46,
+          "action": "Putting something into something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something into something; interaction:hitting",
+          "overlap_seconds": 0.865642
+        },
+        {
+          "start_seconds": 11.469167,
+          "action_id": 22,
+          "action": "Moving object(s) around",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "moving object(s) around; interaction:hitting",
+          "overlap_seconds": 0.299646
+        },
+        {
+          "start_seconds": 6.275315,
+          "action_id": 46,
+          "action": "Putting something into something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something into something; interaction:hitting",
+          "overlap_seconds": 0.565997
+        },
+        {
+          "start_seconds": 10.387114,
+          "action_id": 15,
+          "action": "Holding something in a state",
+          "sound_id": 8,
+          "sound": "Interaction:rolling",
+          "caption": "holding something in a state; interaction:rolling",
+          "overlap_seconds": 0.399527
+        }
+      ],
+      "priority": "193bb4285ccae0bb79b189cce892fd00dd1feacc4e9317727632d019083f3cb9",
+      "split": "development"
+    },
+    {
+      "source_id": "video_1182",
+      "member": "videos/video_1182.mp4",
+      "compressed_bytes": 4605472,
+      "bytes": 4610266,
+      "zip_crc32": "9c90d2f3",
+      "events": [
+        {
+          "start_seconds": 15.241795,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.608053
+        },
+        {
+          "start_seconds": 2.253125,
+          "action_id": 11,
+          "action": "Dropping something on top of something",
+          "sound_id": 6,
+          "sound": "Interaction:dropping",
+          "caption": "dropping something on top of something; interaction:dropping",
+          "overlap_seconds": 0.439148
+        },
+        {
+          "start_seconds": 12.826476,
+          "action_id": 46,
+          "action": "Putting something into something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something into something; interaction:hitting",
+          "overlap_seconds": 0.371587
+        },
+        {
+          "start_seconds": 4.888018,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 1.047201
+        }
+      ],
+      "priority": "196c263958403201c563b5a56a98c6d84c2bc87076db217f725857da76c34484",
+      "split": "development"
+    },
+    {
+      "source_id": "video_6115",
+      "member": "videos/video_6115.mp4",
+      "compressed_bytes": 4595037,
+      "bytes": 4628958,
+      "zip_crc32": "521b2254",
+      "events": [
+        {
+          "start_seconds": 10.950124,
+          "action_id": 48,
+          "action": "Showing something to the camera",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "showing something to the camera; interaction:hitting",
+          "overlap_seconds": 0.26398
+        },
+        {
+          "start_seconds": 14.497352,
+          "action_id": 48,
+          "action": "Showing something to the camera",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "showing something to the camera; interaction:hitting",
+          "overlap_seconds": 0.362973
+        },
+        {
+          "start_seconds": 6.363475,
+          "action_id": 48,
+          "action": "Showing something to the camera",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "showing something to the camera; interaction:hitting",
+          "overlap_seconds": 0.329975
+        }
+      ],
+      "priority": "1a12bc71425b8756eb8a6454702f41c97d0463d32018b2321457d031777fd31c",
+      "split": "development"
+    },
+    {
+      "source_id": "video_11085",
+      "member": "videos/video_11085.mp4",
+      "compressed_bytes": 4048851,
+      "bytes": 4063718,
+      "zip_crc32": "d0855d7d",
+      "events": [
+        {
+          "start_seconds": 21.064068,
+          "action_id": 6,
+          "action": "Closing something",
+          "sound_id": 10,
+          "sound": "Object:opening/closing of something",
+          "caption": "closing something; object:opening/closing of something",
+          "overlap_seconds": 0.999879
+        },
+        {
+          "start_seconds": 7.632353,
+          "action_id": 46,
+          "action": "Putting something into something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something into something; interaction:hitting",
+          "overlap_seconds": 1.266514
+        },
+        {
+          "start_seconds": 17.914448,
+          "action_id": 38,
+          "action": "Pretending to put something into something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "pretending to put something into something; interaction:hitting",
+          "overlap_seconds": 0.833233
+        },
+        {
+          "start_seconds": 11.098602,
+          "action_id": 38,
+          "action": "Pretending to put something into something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "pretending to put something into something; interaction:hitting",
+          "overlap_seconds": 0.599928
+        }
+      ],
+      "priority": "1a700ebae7901504e25f718715c110f462890f894e94f339970d1383b82e843f",
+      "split": "development"
+    },
+    {
+      "source_id": "video_9690",
+      "member": "videos/video_9690.mp4",
+      "compressed_bytes": 3713754,
+      "bytes": 3725297,
+      "zip_crc32": "b99d0a93",
+      "events": [
+        {
+          "start_seconds": 3.959034,
+          "action_id": 46,
+          "action": "Putting something into something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something into something; interaction:hitting",
+          "overlap_seconds": 0.540489
+        },
+        {
+          "start_seconds": 11.931248,
+          "action_id": 46,
+          "action": "Putting something into something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something into something; interaction:hitting",
+          "overlap_seconds": 0.878295
+        },
+        {
+          "start_seconds": 14.295887,
+          "action_id": 46,
+          "action": "Putting something into something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something into something; interaction:hitting",
+          "overlap_seconds": 0.60805
+        },
+        {
+          "start_seconds": 7.505994,
+          "action_id": 46,
+          "action": "Putting something into something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something into something; interaction:hitting",
+          "overlap_seconds": 0.60805
+        }
+      ],
+      "priority": "1b315a5d8304c3dfb3d4100e22b039e3c0542d46609bc7b5f861e46c9f672448",
+      "split": "development"
+    },
+    {
+      "source_id": "video_11277",
+      "member": "videos/video_11277.mp4",
+      "compressed_bytes": 2232172,
+      "bytes": 2260843,
+      "zip_crc32": "bd0e0043",
+      "events": [
+        {
+          "start_seconds": 5.628312,
+          "action_id": 48,
+          "action": "Showing something to the camera",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "showing something to the camera; interaction:hitting",
+          "overlap_seconds": 0.500952
+        },
+        {
+          "start_seconds": 11.856814,
+          "action_id": 48,
+          "action": "Showing something to the camera",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "showing something to the camera; interaction:hitting",
+          "overlap_seconds": 0.667936
+        }
+      ],
+      "priority": "1b3a3c8926f02137806acd56d755b7de2453f815ef7b55979f83b22fcd3d6ed1",
+      "split": "development"
+    },
+    {
+      "source_id": "video_513",
+      "member": "videos/video_513.mp4",
+      "compressed_bytes": 4864437,
+      "bytes": 4865811,
+      "zip_crc32": "bad47602",
+      "events": [
+        {
+          "start_seconds": 7.116667,
+          "action_id": 48,
+          "action": "Showing something to the camera",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "showing something to the camera; object:sound",
+          "overlap_seconds": 2.366667
+        },
+        {
+          "start_seconds": 4.316667,
+          "action_id": 48,
+          "action": "Showing something to the camera",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "showing something to the camera; interaction:hitting",
+          "overlap_seconds": 0.366667
+        },
+        {
+          "start_seconds": 2.35,
+          "action_id": 48,
+          "action": "Showing something to the camera",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "showing something to the camera; object:sound",
+          "overlap_seconds": 0.9
+        },
+        {
+          "start_seconds": 13.716667,
+          "action_id": 48,
+          "action": "Showing something to the camera",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "showing something to the camera; interaction:hitting",
+          "overlap_seconds": 0.5
+        }
+      ],
+      "priority": "1e1e8bf947b2bda524f4d581bb7c7ea557a1aba55a062c7e3dc520f1764c1af7",
+      "split": "development"
+    },
+    {
+      "source_id": "video_2758",
+      "member": "videos/video_2758.mp4",
+      "compressed_bytes": 4273576,
+      "bytes": 4268559,
+      "zip_crc32": "f75396c6",
+      "events": [
+        {
+          "start_seconds": 9.65044,
+          "action_id": 59,
+          "action": "Tying something",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "tying something; object:sound",
+          "overlap_seconds": 6.7447
+        },
+        {
+          "start_seconds": 3.139467,
+          "action_id": 59,
+          "action": "Tying something",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "tying something; object:sound",
+          "overlap_seconds": 5.141999
+        }
+      ],
+      "priority": "1e7cd4475eb35e7f09d4b88f8dfa7107ddb60040ea1f897297bc6a269333b9ca",
+      "split": "calibration"
+    },
+    {
+      "source_id": "video_6113",
+      "member": "videos/video_6113.mp4",
+      "compressed_bytes": 3305018,
+      "bytes": 3320089,
+      "zip_crc32": "7b13d688",
+      "events": [
+        {
+          "start_seconds": 1.247834,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.299629
+        },
+        {
+          "start_seconds": 4.776796,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.499382
+        }
+      ],
+      "priority": "23c21a285f819288f2a742a6988d9f1308bfd9fe40f02c9132a01b1d07f598e1",
+      "split": "calibration"
+    },
+    {
+      "source_id": "video_11571",
+      "member": "videos/video_11571.mp4",
+      "compressed_bytes": 3563912,
+      "bytes": 3577714,
+      "zip_crc32": "4a81e60c",
+      "events": [
+        {
+          "start_seconds": 5.342281,
+          "action_id": 59,
+          "action": "Tying something",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "tying something; object:sound",
+          "overlap_seconds": 6.213755
+        },
+        {
+          "start_seconds": 11.741772,
+          "action_id": 59,
+          "action": "Tying something",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "tying something; object:sound",
+          "overlap_seconds": 3.748515
+        }
+      ],
+      "priority": "253f9224d0d31957dbfdfff7c610e02521707316b96a2edf1f2217e2da01adce",
+      "split": "calibration"
+    },
+    {
+      "source_id": "video_2326",
+      "member": "videos/video_2326.mp4",
+      "compressed_bytes": 4719842,
+      "bytes": 4713140,
+      "zip_crc32": "5db0cabd",
+      "events": [
+        {
+          "start_seconds": 5.209631,
+          "action_id": 59,
+          "action": "Tying something",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "tying something; object:sound",
+          "overlap_seconds": 0.400676
+        },
+        {
+          "start_seconds": 8.965967,
+          "action_id": 59,
+          "action": "Tying something",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "tying something; object:sound",
+          "overlap_seconds": 0.901521
+        },
+        {
+          "start_seconds": 6.611997,
+          "action_id": 59,
+          "action": "Tying something",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "tying something; object:sound",
+          "overlap_seconds": 2.404055
+        },
+        {
+          "start_seconds": 1.870665,
+          "action_id": 59,
+          "action": "Tying something",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "tying something; object:sound",
+          "overlap_seconds": 1.135248
+        }
+      ],
+      "priority": "256a8169020f42157eb6666da7867a5ac53ce7cb3dda761aff3c4189a0ca71ed",
+      "split": "calibration"
+    },
+    {
+      "source_id": "video_9671",
+      "member": "videos/video_9671.mp4",
+      "compressed_bytes": 4375730,
+      "bytes": 4414646,
+      "zip_crc32": "2e6e0906",
+      "events": [
+        {
+          "start_seconds": 17.137203,
+          "action_id": 6,
+          "action": "Closing something",
+          "sound_id": 10,
+          "sound": "Object:opening/closing of something",
+          "caption": "closing something; object:opening/closing of something",
+          "overlap_seconds": 2.936784
+        },
+        {
+          "start_seconds": 14.794376,
+          "action_id": 46,
+          "action": "Putting something into something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something into something; interaction:hitting",
+          "overlap_seconds": 0.692949
+        },
+        {
+          "start_seconds": 3.492706,
+          "action_id": 23,
+          "action": "Opening something",
+          "sound_id": 10,
+          "sound": "Object:opening/closing of something",
+          "caption": "opening something; object:opening/closing of something",
+          "overlap_seconds": 4.421675
+        },
+        {
+          "start_seconds": 6.643975,
+          "action_id": 46,
+          "action": "Putting something into something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something into something; interaction:hitting",
+          "overlap_seconds": 0.428968
+        }
+      ],
+      "priority": "25b2997ae48b34b102f5ce66e23eb7f9c75a5f609f4fe7cb31f6f36bb6190aa3",
+      "split": "calibration"
+    },
+    {
+      "source_id": "video_108",
+      "member": "videos/video_108.mp4",
+      "compressed_bytes": 2221588,
+      "bytes": 2231958,
+      "zip_crc32": "be207fe7",
+      "events": [
+        {
+          "start_seconds": 3.169608,
+          "action_id": 20,
+          "action": "Launching something",
+          "sound_id": 8,
+          "sound": "Interaction:rolling",
+          "caption": "launching something; interaction:rolling",
+          "overlap_seconds": 0.264476
+        },
+        {
+          "start_seconds": 6.111906,
+          "action_id": 20,
+          "action": "Launching something",
+          "sound_id": 8,
+          "sound": "Interaction:rolling",
+          "caption": "launching something; interaction:rolling",
+          "overlap_seconds": 0.330595
+        }
+      ],
+      "priority": "27088aa26a55dfcdd96eb756a41d16cf0939e0a14b8b7aba5e2e6ce593475928",
+      "split": "calibration"
+    },
+    {
+      "source_id": "video_2021",
+      "member": "videos/video_2021.mp4",
+      "compressed_bytes": 4930229,
+      "bytes": 4924413,
+      "zip_crc32": "3f7869de",
+      "events": [
+        {
+          "start_seconds": 7.898652,
+          "action_id": 23,
+          "action": "Opening something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "opening something; interaction:hitting",
+          "overlap_seconds": 0.33328
+        },
+        {
+          "start_seconds": 6.515541,
+          "action_id": 23,
+          "action": "Opening something",
+          "sound_id": 10,
+          "sound": "Object:opening/closing of something",
+          "caption": "opening something; object:opening/closing of something",
+          "overlap_seconds": 0.499919
+        },
+        {
+          "start_seconds": 13.214465,
+          "action_id": 47,
+          "action": "Rotating something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "rotating something; interaction:hitting",
+          "overlap_seconds": 0.366608
+        },
+        {
+          "start_seconds": 5.499037,
+          "action_id": 23,
+          "action": "Opening something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "opening something; interaction:hitting",
+          "overlap_seconds": 0.466592
+        }
+      ],
+      "priority": "28186145eb915f152b4ad89c1b36da2d41022633043490bbeb5eea2a4718ca9b",
+      "split": "calibration"
+    },
+    {
+      "source_id": "video_5756",
+      "member": "videos/video_5756.mp4",
+      "compressed_bytes": 2415817,
+      "bytes": 2435603,
+      "zip_crc32": "6b5cdea7",
+      "events": [
+        {
+          "start_seconds": 6.481677,
+          "action_id": 7,
+          "action": "Covering something with something",
+          "sound_id": 10,
+          "sound": "Object:opening/closing of something",
+          "caption": "covering something with something; object:opening/closing of something",
+          "overlap_seconds": 2.145669
+        },
+        {
+          "start_seconds": 3.015597,
+          "action_id": 7,
+          "action": "Covering something with something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "covering something with something; interaction:hitting",
+          "overlap_seconds": 0.561175
+        },
+        {
+          "start_seconds": 9.469109,
+          "action_id": 7,
+          "action": "Covering something with something",
+          "sound_id": 10,
+          "sound": "Object:opening/closing of something",
+          "caption": "covering something with something; object:opening/closing of something",
+          "overlap_seconds": 1.386433
+        }
+      ],
+      "priority": "2840b9bb9fba53c19db90282484e7b52ed185c501ab2ea317814d913e6f41ba0",
+      "split": "calibration"
+    },
+    {
+      "source_id": "video_1649",
+      "member": "videos/video_1649.mp4",
+      "compressed_bytes": 3340856,
+      "bytes": 3354631,
+      "zip_crc32": "9339ca21",
+      "events": [
+        {
+          "start_seconds": 3.677926,
+          "action_id": 21,
+          "action": "Lifting something and placing it back down",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "lifting something and placing it back down; interaction:hitting",
+          "overlap_seconds": 0.429353
+        },
+        {
+          "start_seconds": 11.538373,
+          "action_id": 21,
+          "action": "Lifting something and placing it back down",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "lifting something and placing it back down; interaction:hitting",
+          "overlap_seconds": 1.089894
+        }
+      ],
+      "priority": "286d7e715127ac910c7c2f44e90ff5aa93900730b07ba021707825ea7f35851f",
+      "split": "qualification"
+    },
+    {
+      "source_id": "video_3120",
+      "member": "videos/video_3120.mp4",
+      "compressed_bytes": 3413074,
+      "bytes": 3404940,
+      "zip_crc32": "6d1c2cac",
+      "events": [
+        {
+          "start_seconds": 1.7,
+          "action_id": 46,
+          "action": "Putting something into something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something into something; interaction:hitting",
+          "overlap_seconds": 0.466666
+        },
+        {
+          "start_seconds": 4.433333,
+          "action_id": 15,
+          "action": "Holding something in a state",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "holding something in a state; interaction:hitting",
+          "overlap_seconds": 1.6
+        },
+        {
+          "start_seconds": 9.883333,
+          "action_id": 15,
+          "action": "Holding something in a state",
+          "sound_id": 6,
+          "sound": "Interaction:dropping",
+          "caption": "holding something in a state; interaction:dropping",
+          "overlap_seconds": 0.3
+        }
+      ],
+      "priority": "28a7184e51025ce365c1db90c2c2a6a380c48b9397b65a896a5f45551699c764",
+      "split": "qualification"
+    },
+    {
+      "source_id": "video_2853",
+      "member": "videos/video_2853.mp4",
+      "compressed_bytes": 4081568,
+      "bytes": 4071981,
+      "zip_crc32": "d822dc5e",
+      "events": [
+        {
+          "start_seconds": 11.430824,
+          "action_id": 22,
+          "action": "Moving object(s) around",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "moving object(s) around; interaction:hitting",
+          "overlap_seconds": 0.533221
+        },
+        {
+          "start_seconds": 4.149023,
+          "action_id": 15,
+          "action": "Holding something in a state",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "holding something in a state; interaction:hitting",
+          "overlap_seconds": 0.499895
+        },
+        {
+          "start_seconds": 2.299412,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.866485
+        },
+        {
+          "start_seconds": 8.598087,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.533222
+        }
+      ],
+      "priority": "2a9779ebe1abc8ab8db87e4e885c334d323344fbc3d0e3c5b8cf322b69f0af36",
+      "split": "qualification"
+    },
+    {
+      "source_id": "video_2276",
+      "member": "videos/video_2276.mp4",
+      "compressed_bytes": 3610521,
+      "bytes": 3604055,
+      "zip_crc32": "373459d5",
+      "events": [
+        {
+          "start_seconds": 1.05,
+          "action_id": 23,
+          "action": "Opening something",
+          "sound_id": 10,
+          "sound": "Object:opening/closing of something",
+          "caption": "opening something; object:opening/closing of something",
+          "overlap_seconds": 1.9
+        },
+        {
+          "start_seconds": 8.233334,
+          "action_id": 22,
+          "action": "Moving object(s) around",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "moving object(s) around; interaction:hitting",
+          "overlap_seconds": 0.266667
+        },
+        {
+          "start_seconds": 2.85,
+          "action_id": 23,
+          "action": "Opening something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "opening something; interaction:hitting",
+          "overlap_seconds": 0.5
+        },
+        {
+          "start_seconds": 4.983333,
+          "action_id": 23,
+          "action": "Opening something",
+          "sound_id": 10,
+          "sound": "Object:opening/closing of something",
+          "caption": "opening something; object:opening/closing of something",
+          "overlap_seconds": 1.766667
+        }
+      ],
+      "priority": "2b99267357f64f2b4276f29ee420d5705bdd0f5b2ff21346d0285e976210cdcb",
+      "split": "qualification"
+    },
+    {
+      "source_id": "video_8089",
+      "member": "videos/video_8089.mp4",
+      "compressed_bytes": 2340338,
+      "bytes": 2361632,
+      "zip_crc32": "0a2f55e7",
+      "events": [
+        {
+          "start_seconds": 5.054333,
+          "action_id": 20,
+          "action": "Launching something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "launching something; interaction:hitting",
+          "overlap_seconds": 0.330615
+        },
+        {
+          "start_seconds": 1.896959,
+          "action_id": 20,
+          "action": "Launching something",
+          "sound_id": 8,
+          "sound": "Interaction:rolling",
+          "caption": "launching something; interaction:rolling",
+          "overlap_seconds": 0.562046
+        },
+        {
+          "start_seconds": 9.501104,
+          "action_id": 20,
+          "action": "Launching something",
+          "sound_id": 8,
+          "sound": "Interaction:rolling",
+          "caption": "launching something; interaction:rolling",
+          "overlap_seconds": 1.09103
+        }
+      ],
+      "priority": "2cd141e9147fd6abb61581c17457e23321f75380181f7837b4ec3e75a09209c8",
+      "split": "qualification"
+    },
+    {
+      "source_id": "video_10126",
+      "member": "videos/video_10126.mp4",
+      "compressed_bytes": 2281916,
+      "bytes": 2303462,
+      "zip_crc32": "b803c2e9",
+      "events": [
+        {
+          "start_seconds": 3.668335,
+          "action_id": 7,
+          "action": "Covering something with something",
+          "sound_id": 8,
+          "sound": "Interaction:rolling",
+          "caption": "covering something with something; interaction:rolling",
+          "overlap_seconds": 0.66164
+        },
+        {
+          "start_seconds": 10.185494,
+          "action_id": 7,
+          "action": "Covering something with something",
+          "sound_id": 8,
+          "sound": "Interaction:rolling",
+          "caption": "covering something with something; interaction:rolling",
+          "overlap_seconds": 3.10971
+        },
+        {
+          "start_seconds": 5.504387,
+          "action_id": 7,
+          "action": "Covering something with something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "covering something with something; interaction:hitting",
+          "overlap_seconds": 0.496231
+        },
+        {
+          "start_seconds": 8.283278,
+          "action_id": 7,
+          "action": "Covering something with something",
+          "sound_id": 10,
+          "sound": "Object:opening/closing of something",
+          "caption": "covering something with something; object:opening/closing of something",
+          "overlap_seconds": 0.297739
+        }
+      ],
+      "priority": "2d605a067c871e8c2c5cdc4c7626b74f42f2685feb118b01b74caf5321e56ce0",
+      "split": "qualification"
+    },
+    {
+      "source_id": "video_6512",
+      "member": "videos/video_6512.mp4",
+      "compressed_bytes": 4916819,
+      "bytes": 4919045,
+      "zip_crc32": "495b9ca0",
+      "events": [
+        {
+          "start_seconds": 9.031855,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.466594
+        },
+        {
+          "start_seconds": 15.930785,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.399938
+        }
+      ],
+      "priority": "2fdd08526c46b061bdf5a6a76c974e75101ce68c452bd1838b55eff5b7e47f7d",
+      "split": "qualification"
+    },
+    {
+      "source_id": "video_3888",
+      "member": "videos/video_3888.mp4",
+      "compressed_bytes": 4149136,
+      "bytes": 4146606,
+      "zip_crc32": "87847ab5",
+      "events": [
+        {
+          "start_seconds": 6.765498,
+          "action_id": 23,
+          "action": "Opening something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "opening something; interaction:hitting",
+          "overlap_seconds": 0.266624
+        },
+        {
+          "start_seconds": 1.54967,
+          "action_id": 23,
+          "action": "Opening something",
+          "sound_id": 10,
+          "sound": "Object:opening/closing of something",
+          "caption": "opening something; object:opening/closing of something",
+          "overlap_seconds": 1.63307
+        }
+      ],
+      "priority": "300114b1ed25911e7b2c0497988f06f0624297429b34f74c9ab5f08e84bc5371",
+      "split": "qualification"
+    },
+    {
+      "source_id": "video_3639",
+      "member": "videos/video_3639.mp4",
+      "compressed_bytes": 3264871,
+      "bytes": 3283162,
+      "zip_crc32": "aae748b7",
+      "events": [
+        {
+          "start_seconds": 3.746752,
+          "action_id": 23,
+          "action": "Opening something",
+          "sound_id": 10,
+          "sound": "Object:opening/closing of something",
+          "caption": "opening something; object:opening/closing of something",
+          "overlap_seconds": 2.431473
+        },
+        {
+          "start_seconds": 5.562029,
+          "action_id": 23,
+          "action": "Opening something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "opening something; interaction:hitting",
+          "overlap_seconds": 0.732772
+        },
+        {
+          "start_seconds": 10.075243,
+          "action_id": 23,
+          "action": "Opening something",
+          "sound_id": 10,
+          "sound": "Object:opening/closing of something",
+          "caption": "opening something; object:opening/closing of something",
+          "overlap_seconds": 2.098394
+        },
+        {
+          "start_seconds": 11.557442,
+          "action_id": 23,
+          "action": "Opening something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "opening something; interaction:hitting",
+          "overlap_seconds": 0.399694
+        }
+      ],
+      "priority": "315267f663b7ac4e5719ece4eabf5a8e986dd2a5d99d44df8bc2ba6d4ff7080e",
+      "split": "qualification"
+    },
+    {
+      "source_id": "video_236",
+      "member": "videos/video_236.mp4",
+      "compressed_bytes": 2824873,
+      "bytes": 2840930,
+      "zip_crc32": "384790db",
+      "events": [
+        {
+          "start_seconds": 14.157692,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.36355
+        },
+        {
+          "start_seconds": 10.869213,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.2644
+        }
+      ],
+      "priority": "325234a0aca597a0a6e1d5ac52db191781ec45d7cb4e7e7a99128725cf7403f1",
+      "split": "qualification"
+    },
+    {
+      "source_id": "video_8434",
+      "member": "videos/video_8434.mp4",
+      "compressed_bytes": 3663226,
+      "bytes": 3681410,
+      "zip_crc32": "459c9e95",
+      "events": [
+        {
+          "start_seconds": 4.303992,
+          "action_id": 4,
+          "action": "Clapping hands",
+          "sound_id": 4,
+          "sound": "Human:Sound(clapping)",
+          "caption": "clapping hands; human:sound(clapping)",
+          "overlap_seconds": 0.333611
+        },
+        {
+          "start_seconds": 3.069634,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.600499
+        }
+      ],
+      "priority": "32ad5c7b8be78287abf68c5fb11b61cda923c2f6d482be847966711d89a310db",
+      "split": "qualification"
+    },
+    {
+      "source_id": "video_2655",
+      "member": "videos/video_2655.mp4",
+      "compressed_bytes": 3532745,
+      "bytes": 3562445,
+      "zip_crc32": "5473f541",
+      "events": [
+        {
+          "start_seconds": 24.200748,
+          "action_id": 15,
+          "action": "Holding something in a state",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "holding something in a state; interaction:hitting",
+          "overlap_seconds": 0.801106
+        },
+        {
+          "start_seconds": 25.585992,
+          "action_id": 15,
+          "action": "Holding something in a state",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "holding something in a state; interaction:hitting",
+          "overlap_seconds": 0.634209
+        },
+        {
+          "start_seconds": 15.805832,
+          "action_id": 48,
+          "action": "Showing something to the camera",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "showing something to the camera; interaction:hitting",
+          "overlap_seconds": 0.300415
+        },
+        {
+          "start_seconds": 26.871099,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something on top of something; interaction:hitting",
+          "overlap_seconds": 0.734346
+        }
+      ],
+      "priority": "3363ebb5e8ca474cea677fc2afd67b2f4ff42386bcf6f49edaeb619b22176419",
+      "split": "qualification"
+    },
+    {
+      "source_id": "video_140",
+      "member": "videos/video_140.mp4",
+      "compressed_bytes": 4350613,
+      "bytes": 4375294,
+      "zip_crc32": "0cf219eb",
+      "events": [
+        {
+          "start_seconds": 21.200071,
+          "action_id": 52,
+          "action": "Mixing something with something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "mixing something with something; interaction:hitting",
+          "overlap_seconds": 0.63285
+        },
+        {
+          "start_seconds": 3.796714,
+          "action_id": 46,
+          "action": "Putting something into something",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "putting something into something; object:sound",
+          "overlap_seconds": 0.333078
+        },
+        {
+          "start_seconds": 11.540792,
+          "action_id": 46,
+          "action": "Putting something into something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "putting something into something; interaction:hitting",
+          "overlap_seconds": 0.632849
+        },
+        {
+          "start_seconds": 15.571043,
+          "action_id": 37,
+          "action": "Pretending to pour from something into something",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "pretending to pour from something into something; interaction:hitting",
+          "overlap_seconds": 0.699465
+        }
+      ],
+      "priority": "37b8ff7c823d8a990eb0426d77b6535ce90afa394a9395f7f1ea888459a2c592",
+      "split": "qualification"
+    },
+    {
+      "source_id": "video_8784",
+      "member": "videos/video_8784.mp4",
+      "compressed_bytes": 3445778,
+      "bytes": 3441123,
+      "zip_crc32": "f8c31ba8",
+      "events": [
+        {
+          "start_seconds": 1.815595,
+          "action_id": 22,
+          "action": "Moving object(s) around",
+          "sound_id": 8,
+          "sound": "Interaction:rolling",
+          "caption": "moving object(s) around; interaction:rolling",
+          "overlap_seconds": 0.633041
+        },
+        {
+          "start_seconds": 3.031699,
+          "action_id": 45,
+          "action": "Putting something on top of something",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "putting something on top of something; object:sound",
+          "overlap_seconds": 1.199445
+        }
+      ],
+      "priority": "39ae881c5f6032d1cc4f291159f4cb51d7ea3c40acc373d8196e8d8a55f2d09e",
+      "split": "qualification"
+    },
+    {
+      "source_id": "video_90",
+      "member": "videos/video_90.mp4",
+      "compressed_bytes": 3485708,
+      "bytes": 3511916,
+      "zip_crc32": "12ebb550",
+      "events": [
+        {
+          "start_seconds": 4.562793,
+          "action_id": 48,
+          "action": "Showing something to the camera",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "showing something to the camera; interaction:hitting",
+          "overlap_seconds": 0.399695
+        },
+        {
+          "start_seconds": 17.702741,
+          "action_id": 48,
+          "action": "Showing something to the camera",
+          "sound_id": 7,
+          "sound": "Interaction:hitting",
+          "caption": "showing something to the camera; interaction:hitting",
+          "overlap_seconds": 0.832696
+        }
+      ],
+      "priority": "39b8c9b0b87fc8a07c51c38f00a773d475cbc7ee6a5bda422dcc7ce05e38c923",
+      "split": "qualification"
+    },
+    {
+      "source_id": "video_6363",
+      "member": "videos/video_6363.mp4",
+      "compressed_bytes": 4952647,
+      "bytes": 4947809,
+      "zip_crc32": "36c8c5f8",
+      "events": [
+        {
+          "start_seconds": 8.715184,
+          "action_id": 7,
+          "action": "Covering something with something",
+          "sound_id": 8,
+          "sound": "Interaction:rolling",
+          "caption": "covering something with something; interaction:rolling",
+          "overlap_seconds": 2.96619
+        },
+        {
+          "start_seconds": 4.332556,
+          "action_id": 7,
+          "action": "Covering something with something",
+          "sound_id": 11,
+          "sound": "Object:sound",
+          "caption": "covering something with something; object:sound",
+          "overlap_seconds": 1.733054
+        },
+        {
+          "start_seconds": 13.281116,
+          "action_id": 7,
+          "action": "Covering something with something",
+          "sound_id": 8,
+          "sound": "Interaction:rolling",
+          "caption": "covering something with something; interaction:rolling",
+          "overlap_seconds": 2.63291
+        }
+      ],
+      "priority": "39d728aab92650a8a3f5cb4dee51bfcda0f70321cc540e49c741ebe336c988b1",
+      "split": "qualification"
+    }
+  ],
+  "created_at_unix": 1793161251.8802462,
+  "protocol_sha256": "4c6565de42a45ffa55ca150baee9053eb7c8efb246db1dfd98920b5e29b34394"
+}

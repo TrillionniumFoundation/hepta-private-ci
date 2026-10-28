@@ -1,0 +1,208 @@
+{
+  "annotation_splits_read": [
+    "train"
+  ],
+  "created_at_unix": 1793182321.1018727,
+  "development_or_holdout_media_or_predictions_read": false,
+  "existing_study_file_modified": false,
+  "full_report": {
+    "archive_member": "TRAINING_NEXT_STUDY_DIAGNOSTIC_001.json",
+    "bytes": 3708539,
+    "library_file_id": "libfile_7de6144db67c8191acc379edbe7625f3",
+    "sha256": "648ea80a8e955626c3977f221450ac8118c83b9eb0f3207ca36b94f5fad05c28"
+  },
+  "implementation_sha256": "c19a26fadcf10ff3046b76c7f44c8f04dffb047a2bcdc8a6a671d7338e8bfc13",
+  "interpretation": [
+    "Multiple labels within a window do not establish a selected-top1 accuracy ceiling. The exact cached-input agreement diagnostics are only finite-table checks, not population ceilings.",
+    "Temporal feature retention and auxiliary complete-window training labels are an empirical candidate for the original task; no observer adequacy improvement is yet established.",
+    "The separate set-label task proposal remains unregistered. Its training-only constant-set baseline is reported for diagnosis and is not used to change the original60percent gate."
+  ],
+  "limits": [
+    "Exact repeated-input agreement concerns only the inspected finite training table.",
+    "No label-multiplicity percentage proves a population top-one accuracy ceiling.",
+    "Shared annotation parent IDs do not establish acoustic causation.",
+    "Full-window sets and their training-only constant baselines describe a different proposed task; they do not replace the failed original top-one gate.",
+    "No candidate, threshold, source role, task or run is registered by this diagnostic."
+  ],
+  "new_training_updates": 0,
+  "prepared_roles_read": [
+    "observer_train"
+  ],
+  "roles": {
+    "generator_train": {
+      "action": {
+        "constant_set_prefix_baseline_best_training_f1": {
+          "label_count": 5,
+          "labels": [
+            22,
+            45,
+            46,
+            48,
+            59
+          ],
+          "source_uniform_f1": 0.15248325892857137,
+          "source_uniform_precision": 0.09609374999999981,
+          "source_uniform_recall": 0.40234375000000006
+        },
+        "full_window_class_coverage": 54,
+        "published_classes": 63,
+        "same_source_exact_window_agreement": {
+          "conflicting_label_groups": 0,
+          "maximum_agreement_on_this_finite_table": 1.0,
+          "repeated_groups": 0,
+          "scope": "Best deterministic label per exact inspected input identity on this finite weighted training table; not a population accuracy limit or a claim about new representations.",
+          "source_uniform_weight_in_conflicting_groups": 0,
+          "unique_input_groups": 256
+        },
+        "selected_class_coverage": 54,
+        "source_uniform_multiple_label_fraction": 0.2109375,
+        "source_uniform_nonlongest_selected_label_fraction": 0.046875
+      },
+      "events": 256,
+      "sound": {
+        "constant_set_prefix_baseline_best_training_f1": {
+          "label_count": 3,
+          "labels": [
+            7,
+            12,
+            13
+          ],
+          "source_uniform_f1": 0.5573288690476196,
+          "source_uniform_precision": 0.49609375000000006,
+          "source_uniform_recall": 0.6895833333333334
+        },
+        "full_window_class_coverage": 15,
+        "published_classes": 17,
+        "same_source_exact_window_agreement": {
+          "conflicting_label_groups": 0,
+          "maximum_agreement_on_this_finite_table": 1.0,
+          "repeated_groups": 0,
+          "scope": "Best deterministic label per exact inspected input identity on this finite weighted training table; not a population accuracy limit or a claim about new representations.",
+          "source_uniform_weight_in_conflicting_groups": 0,
+          "unique_input_groups": 256
+        },
+        "selected_class_coverage": 14,
+        "source_uniform_multiple_label_fraction": 0.7734375,
+        "source_uniform_nonlongest_selected_label_fraction": 0.58203125
+      },
+      "source_uniform_both_selected_annotations_known_parent_fraction": 0.98046875,
+      "source_uniform_selected_annotations_shared_known_parent_fraction": 0.890625,
+      "source_uniform_selected_sound_visible_fraction": 1.0,
+      "sources": 256
+    },
+    "observer_train": {
+      "action": {
+        "constant_set_prefix_baseline_best_training_f1": {
+          "label_count": 3,
+          "labels": [
+            22,
+            45,
+            48
+          ],
+          "source_uniform_f1": 0.19843920510912658,
+          "source_uniform_precision": 0.14047076512896964,
+          "source_uniform_recall": 0.36263854011656704
+        },
+        "full_window_class_coverage": 55,
+        "published_classes": 63,
+        "same_source_exact_window_agreement": {
+          "conflicting_label_groups": 0,
+          "maximum_agreement_on_this_finite_table": 1.0,
+          "repeated_groups": 0,
+          "scope": "Best deterministic label per exact inspected input identity on this finite weighted training table; not a population accuracy limit or a claim about new representations.",
+          "source_uniform_weight_in_conflicting_groups": 0,
+          "unique_input_groups": 2517
+        },
+        "selected_class_coverage": 55,
+        "source_uniform_multiple_label_fraction": 0.17963634672619047,
+        "source_uniform_nonlongest_selected_label_fraction": 0.0384184337797619
+      },
+      "events": 2517,
+      "pann_exact_cached_row_agreement": {
+        "conflicting_label_groups": 2,
+        "maximum_agreement_on_this_finite_table": 0.9992187499999999,
+        "repeated_groups": 2,
+        "scope": "Best deterministic label per exact inspected input identity on this finite weighted training table; not a population accuracy limit or a claim about new representations.",
+        "source_uniform_weight_in_conflicting_groups": 0.00205078125,
+        "unique_input_groups": 2514
+      },
+      "recorded_feature_cpu_seconds": {
+        "mean": 11.082147791667962,
+        "scope": "Per-source values recorded by historical extraction; excludes costs outside that measurement and is not a total end-to-end preparation bill.",
+        "sources": 512,
+        "sum": 5674.059669333997
+      },
+      "s3d_exact_cached_row_agreement": {
+        "conflicting_label_groups": 0,
+        "maximum_agreement_on_this_finite_table": 1.0,
+        "repeated_groups": 0,
+        "scope": "Best deterministic label per exact inspected input identity on this finite weighted training table; not a population accuracy limit or a claim about new representations.",
+        "source_uniform_weight_in_conflicting_groups": 0,
+        "unique_input_groups": 2517
+      },
+      "sound": {
+        "constant_set_prefix_baseline_best_training_f1": {
+          "label_count": 3,
+          "labels": [
+            7,
+            12,
+            13
+          ],
+          "source_uniform_f1": 0.5277346739477051,
+          "source_uniform_precision": 0.4633525545634924,
+          "source_uniform_recall": 0.6683807663690458
+        },
+        "full_window_class_coverage": 16,
+        "published_classes": 17,
+        "same_source_exact_window_agreement": {
+          "conflicting_label_groups": 0,
+          "maximum_agreement_on_this_finite_table": 1.0,
+          "repeated_groups": 0,
+          "scope": "Best deterministic label per exact inspected input identity on this finite weighted training table; not a population accuracy limit or a claim about new representations.",
+          "source_uniform_weight_in_conflicting_groups": 0,
+          "unique_input_groups": 2517
+        },
+        "selected_class_coverage": 14,
+        "source_uniform_multiple_label_fraction": 0.7434337797619047,
+        "source_uniform_nonlongest_selected_label_fraction": 0.5887811569940476
+      },
+      "source_uniform_both_selected_annotations_known_parent_fraction": 0.9938290550595238,
+      "source_uniform_selected_annotations_shared_known_parent_fraction": 0.8911504836309524,
+      "source_uniform_selected_sound_visible_fraction": 1.0,
+      "sources": 512,
+      "tsm_exact_cached_row_agreement": {
+        "conflicting_label_groups": 0,
+        "maximum_agreement_on_this_finite_table": 1.0,
+        "repeated_groups": 0,
+        "scope": "Best deterministic label per exact inspected input identity on this finite weighted training table; not a population accuracy limit or a claim about new representations.",
+        "source_uniform_weight_in_conflicting_groups": 0,
+        "unique_input_groups": 2517
+      }
+    }
+  },
+  "schema": "hepta.closure.training-only-observer-diagnostic-summary.v1",
+  "source_allocation_manifest_read_for_roles_and_exclusions": true,
+  "source_protocol_file_sha256": "27fe1c30e95216d68b1be2d20855188db468472be85ef1839666dd2f57dacd40",
+  "source_protocol_sha256": "ad58bf5529af473f722c8e48a44f34ae07e364356b664a3a79458fecf1405b9d",
+  "source_register_sha256": "59b91f554034db64086bebc7872aa89ca961c7095429dca8a29c06392bb02fad",
+  "training_annotation_inventory": {
+    "action": {
+      "official_training_class_coverage": 60,
+      "official_training_videos": 2135,
+      "scope": "Annotation inventory only; no duration, maximum-source-byte, joint-window eligibility or media availability claim.",
+      "unallocated_annotated_training_videos": 1175,
+      "unallocated_training_class_coverage": 59
+    },
+    "sound": {
+      "official_training_class_coverage": 17,
+      "official_training_videos": 2149,
+      "scope": "Annotation inventory only; no duration, maximum-source-byte, joint-window eligibility or media availability claim.",
+      "unallocated_annotated_training_videos": 1189,
+      "unallocated_training_class_coverage": 17
+    }
+  },
+  "training_annotation_sha256": {
+    "action": "5b27beaa97df0a1ea258437b179ed17092981a93501a22a572d64dd46fb12575",
+    "sound": "0200a50644ab9d36a2dd80e5239e709cabeeaf2e4274eca201c90743b89cc6f5"
+  }
+}

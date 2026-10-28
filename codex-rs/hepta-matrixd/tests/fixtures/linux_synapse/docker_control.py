@@ -15,6 +15,7 @@ from .contract import (
     SYNAPSE_ID,
     SYNAPSE_REF,
     validate_image_inspect,
+    validate_synapse_labels,
 )
 from .files import describe, physical, read_json, write_json
 
@@ -120,14 +121,10 @@ class DockerControl:
                 "architecture": "arm64",
             },
         )
+        # This digest-pinned publisher records its source revision as gitsha1,
+        # matching the existing hermetic Synapse harness.
         labels = synapse[0]["Config"].get("Labels", {})
-        if (
-            labels.get("org.opencontainers.image.version")
-            != self.contract["synapse"]["version"]
-            or labels.get("org.opencontainers.image.revision")
-            != self.contract["synapse"]["revision"]
-        ):
-            raise ValueError("Actual Synapse OCI labels differ from the original pin")
+        validate_synapse_labels(labels, self.contract["synapse"])
         receipt = {
             "schema": "hepta.synapse.linux.controller.v1",
             "scope": "native-linux-arm64",
@@ -143,6 +140,7 @@ class DockerControl:
             ),
             "builder_inspect": builder,
             "synapse_inspect": synapse,
+            "synapse_revision_label": "gitsha1",
             "authority_boundary": "Trusted controller and transport sidecar have broad Docker authority. Build and business containers receive no socket or Docker client mount.",
             "mac_or_windows_qualification": False,
             "promotion_allowed": False,

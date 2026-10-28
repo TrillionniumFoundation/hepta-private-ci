@@ -1,0 +1,114 @@
+name: Hepta unified NDU research invariants
+
+on:
+  # Existing aggregate checks own automatic PR/main fan-out.
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ndu-unified-research-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  invariants:
+    name: Objective, continuation, and selected-policy invariants
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: bash
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONHASHSEED: "0"
+      TESTED_SHA: ${{ github.sha }}
+
+    steps:
+      - name: Initialize evidence directory
+        run: mkdir -p "$RUNNER_TEMP/ndu-unified-research"
+
+      - name: Check out the exact tested commit without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Install pinned Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12.14"
+
+      - name: Install the pinned lightweight numerical dependency
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: numpy==2.3.5
+
+      - name: Record the tested source and runtime
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import platform
+          from pathlib import Path
+          import numpy
+          roots = (
+              Path("experiments/multimodal_output_portfolio/unified_20261028"),
+              Path("experiments/multimodal_output_portfolio/closure_20261028"),
+          )
+          record = {
+              "tested_sha": os.environ["TESTED_SHA"],
+              "python": platform.python_version(),
+              "numpy": numpy.__version__,
+              "scope": "objective and selected-policy invariants; no Torch, training, native owner episode, or model qualification",
+              "sources": {str(p): hashlib.sha256(p.read_bytes()).hexdigest()
+                          for root in roots for p in sorted(root.glob("*.py"))},
+          }
+          target = Path(os.environ["RUNNER_TEMP"]) / "ndu-unified-research" / "source.json"
+          target.write_text(json.dumps(record, sort_keys=True, indent=2) + "\n")
+          PY
+
+      - name: Check profile semantics and selected-policy tails
+        run: |
+          set -euo pipefail
+          python - <<'PY' 2>&1 | tee "$RUNNER_TEMP/ndu-unified-research/tests.log"
+          import sys
+          import unittest
+          modules = (
+              "experiments.multimodal_output_portfolio.unified_20261028.profile_tests",
+              "experiments.multimodal_output_portfolio.unified_20261028.test_tail",
+              "experiments.multimodal_output_portfolio.closure_20261028.control_tests",
+          )
+          suite = unittest.defaultTestLoader.loadTestsFromNames(modules)
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          if "torch" in sys.modules:
+              raise RuntimeError("The lightweight invariant suite must not load Torch")
+          if result.testsRun == 0:
+              raise RuntimeError("An empty invariant suite is not validation")
+          raise SystemExit(0 if result.wasSuccessful() else 1)
+          PY
+
+      - name: Enumerate finite stopping policies and delivered-output gradients
+        run: |
+          set -euo pipefail
+          python -m experiments.multimodal_output_portfolio.unified_20261028.objective_oracle \
+            > "$RUNNER_TEMP/ndu-unified-research/objective-oracle.json"
+          python -m experiments.multimodal_output_portfolio.unified_20261028.gradient_oracle \
+            --output "$RUNNER_TEMP/ndu-unified-research/gradient-oracle.json"
+
+      - name: Preserve the checked-out source
+        run: |
+          git diff --check
+          git diff --exit-code
+
+      - name: Retain evidence, including partial failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ndu-unified-research-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-unified-research/
+          if-no-files-found: error
+          retention-days: 14

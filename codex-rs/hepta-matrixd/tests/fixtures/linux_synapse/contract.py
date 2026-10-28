@@ -273,3 +273,17 @@ def reject_compiler_overrides(environment):
         raise ValueError(
             f"Inherited compiler/loader/profile overrides are forbidden: {sorted(bad)}"
         )
+
+
+def validate_synapse_labels(labels, expected):
+    """Validate the pinned publisher's revision label without a tag fallback."""
+    if (
+        not isinstance(labels, dict)
+        or labels.get("org.opencontainers.image.version") != expected["version"]
+        or labels.get("gitsha1") != expected["revision"]
+        or (
+            "org.opencontainers.image.revision" in labels
+            and labels["org.opencontainers.image.revision"] != expected["revision"]
+        )
+    ):
+        raise ValueError("Actual Synapse OCI labels differ from the original pin")

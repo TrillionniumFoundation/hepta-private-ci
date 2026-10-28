@@ -83,22 +83,28 @@ def replay_candidate_tree(commands, producer_dir, candidate, source_sha, output)
         label="independent-base-index",
         environment=environment,
     )
-    commands.run(
-        "git",
-        ["apply", "--check", "--cached", str(patch)],
-        label="check-exact-producer-patch",
-        environment=environment,
-    )
-    commands.run(
-        "git",
-        ["apply", "--cached", str(patch)],
-        label="replay-exact-producer-patch",
-        environment=environment,
-    )
+    mode = candidate.get("source_mode", "patched")
+    if mode == "patched":
+        commands.run(
+            "git",
+            ["apply", "--check", "--cached", str(patch)],
+            label="check-exact-producer-patch",
+            environment=environment,
+        )
+        commands.run(
+            "git",
+            ["apply", "--cached", str(patch)],
+            label="replay-exact-producer-patch",
+            environment=environment,
+        )
+    elif mode != "integrated" or patch.read_bytes() != b"" or candidate["changed_paths"]:
+        raise ValueError("Integrated replay requires a declared exactly empty delta")
     _, expected_path = commands.run(
         "git", ["write-tree"], label="producer-patch-tree", environment=environment
     )
     expected = expected_path.read_text().strip()
+    if mode == "integrated" and expected != candidate["source_tree"]:
+        raise ValueError("Integrated replay differs from the committed source tree")
     original_index = Path(
         commands.text(
             "git", ["rev-parse", "--git-path", "index"], label="original-index-path"
@@ -298,7 +304,12 @@ def prepare_source(
         raise ValueError("Original restore worktree HEAD changed")
     common.verify_tree(guard, candidate, recipe)
     provenance = output / "producer"
-    for name in ("RESULT.json", "candidate.patch", "source.patch", "recipe.json"):
+    producer_names = ["RESULT.json", "candidate.patch", "source.patch", "recipe.json"]
+    if candidate.get("source_mode") == "integrated":
+        producer_names.append("integration.json")
+        if "source_amendment" in candidate["integration"]:
+            producer_names.append("source-amendment.json")
+    for name in producer_names:
         copy_file(producer_dir / name, provenance / name)
     seal = {
         "schema": "hepta.synapse.linux.source-seal.v1",
@@ -309,6 +320,8 @@ def prepare_source(
         "producer_source_patch": describe(provenance / "source.patch"),
         "producer_recipe_sha256": candidate["recipe_sha256"],
         "producer_helper": describe(helper),
+        "producer_source_mode": candidate.get("source_mode", "patched"),
+        "producer_integration": candidate.get("integration"),
         "candidate_tree": candidate_tree,
         "qualification_commit": commit,
         "qualification_tree": candidate_tree,

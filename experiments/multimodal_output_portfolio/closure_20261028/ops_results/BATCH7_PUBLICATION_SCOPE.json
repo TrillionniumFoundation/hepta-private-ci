@@ -1,0 +1,85 @@
+{
+  "schema": "hepta.batch7.publication-scope.v1",
+  "parent_head": "792beb14600f9b49b04ed18f9061e11d0e163759",
+  "reviewed_scope_before_status_files": {
+    "NATURAL": {
+      "files": 77,
+      "bytes": 2055496
+    },
+    "BEDROCK": {
+      "files": 13,
+      "bytes": 300554
+    },
+    "METADATA": {
+      "files": 29,
+      "bytes": 934071
+    },
+    "FOUNDATION": {
+      "files": 18,
+      "bytes": 83551
+    },
+    "FORMAT": {
+      "files": 20,
+      "bytes": 232594
+    },
+    "SYMLINK": {
+      "files": 24,
+      "bytes": 153099
+    },
+    "WINDOWS": {
+      "files": 16,
+      "bytes": 96017
+    },
+    "ACL": {
+      "files": 17,
+      "bytes": 78090
+    }
+  },
+  "commits_before_status": [
+    {
+      "scope": "natural005",
+      "head": "c84405403b212d4fee24ed86b7aa0222013f8e4f",
+      "tree": "2b56c73d7fd2a332f496d9bd0d79f7f43b2123a8"
+    },
+    {
+      "scope": "BEDROCK",
+      "head": "9ae6474d1e5ce2d17056c31c97a1f7901b026e81",
+      "tree": "d71e5c5e13263ecf061aee6ae3cfe5f7b23d7df4"
+    },
+    {
+      "scope": "METADATA",
+      "head": "44054400e78509c43cd29d1ade76a6193ba3f6c7",
+      "tree": "894d8b3f178eb5f3415b95c82ce6ed50a505c901"
+    },
+    {
+      "scope": "FOUNDATION",
+      "head": "e9e35f59f748116158a0aafaba08965be088c2df",
+      "tree": "f0414d43263d611f3c46d837e121d39f86aced95"
+    },
+    {
+      "scope": "FORMAT",
+      "head": "6b76d7a536685c2512acd7d31f5067017a1e428f",
+      "tree": "01209a6e0cf62350e3c68c7278c50c162cd4f83f"
+    },
+    {
+      "scope": "SYMLINK",
+      "head": "c13024c5185f6df9d2bfebc833165781ca1d6410",
+      "tree": "232a8d6f87673fca0b1ff407b25ef3084fa456bd"
+    },
+    {
+      "scope": "WINDOWS",
+      "head": "548bb348c89705566d9d2729d44d3e5aa6b35ca3",
+      "tree": "d1403d02ff03d77af73a50af89e2c27af990c643"
+    },
+    {
+      "scope": "ACL",
+      "head": "fbee905c11d1c478cec773fa8f962ebd937362e5",
+      "tree": "c443e591db6aaf757fc3e653aefb2d23fd9590f2"
+    }
+  ],
+  "all_blockers_closed": false,
+  "native_new_source_qualification": false,
+  "global_optimality_established": false,
+  "promotion_authorized": false,
+  "scope_note": "Exact file bytes are frozen in the immutable Git tree. After branch publication each intended blob and mode is read back independently. The later readback receipt cannot be included in the commit it verifies."
+}

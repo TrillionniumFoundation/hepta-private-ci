@@ -27,6 +27,7 @@ use codex_protocol::protocol::SubAgentSource;
 use codex_protocol::protocol::ThreadHistoryMode;
 use codex_protocol::protocol::ThreadSettingsOverrides;
 use codex_protocol::user_input::UserInput;
+use core_test_support::first_party::FirstPartyMockServer;
 use core_test_support::hooks::trust_discovered_hooks;
 use core_test_support::responses::ResponsesRequest;
 use core_test_support::responses::assert_parent_turn;
@@ -867,9 +868,15 @@ async fn subagent_stop_replaces_stop_and_skips_internal_subagents() -> Result<()
 async fn subagent_notification_is_included_without_wait() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = start_mock_server().await;
-    let (test, _spawned_id) =
-        setup_turn_one_with_spawned_child(&server, /*child_response_delay*/ None).await?;
+    let server = FirstPartyMockServer::start().await?;
+    let (test, _spawned_id, _child_requests) = setup_turn_one_with_custom_spawned_child(
+        &server,
+        json!({"message": CHILD_PROMPT}),
+        /*child_response_delay*/ None,
+        /*wait_for_parent_notification*/ true,
+        |builder| server.attach(builder),
+    )
+    .await?;
 
     let turn2 = mount_sse_once_match(
         &server,
@@ -1084,7 +1091,7 @@ async fn spawned_full_history_v2_child_uses_model_precedence_without_dropping_co
 ) -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = start_mock_server().await;
+    let server = FirstPartyMockServer::start().await?;
     let seed_turn = mount_sse_once_match(
         &server,
         |req: &wiremock::Request| body_contains(req, TURN_0_FORK_PROMPT),
@@ -1187,7 +1194,7 @@ async fn spawned_full_history_v2_child_uses_model_precedence_without_dropping_co
         ]),
     )
     .await;
-    let mut builder = test_codex().with_config(move |config| {
+    let mut builder = server.test_codex().with_config(move |config| {
         config
             .features
             .enable(Feature::Collab)

@@ -24,6 +24,7 @@ use core_test_support::apps_test_server::AppsTestServer;
 use core_test_support::apps_test_server::SEARCH_CALENDAR_CREATE_TOOL;
 use core_test_support::apps_test_server::SEARCH_CALENDAR_NAMESPACE;
 use core_test_support::apps_test_server::apps_enabled_builder;
+use core_test_support::first_party::FirstPartyMockServer;
 use core_test_support::responses;
 use core_test_support::skip_if_no_network;
 use core_test_support::test_codex::test_codex;
@@ -236,7 +237,7 @@ async fn responses_lite_includes_tool_namespaces_info_when_enabled() -> Result<(
 async fn responses_lite_prepares_images() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = responses::start_mock_server().await;
+    let server = FirstPartyMockServer::start().await?;
     let response_mock = responses::mount_sse_once(
         &server,
         responses::sse(vec![
@@ -247,10 +248,12 @@ async fn responses_lite_prepares_images() -> Result<()> {
     .await;
     let image_url = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/iZk9HQAAAABJRU5ErkJggg==";
     let remote_image_url = "https://example.com/image.png";
-    let mut builder = test_codex().with_model_info_override("gpt-5.4", |model_info| {
-        model_info.use_responses_lite = true;
-        configure_image_capable_model(model_info);
-    });
+    let mut builder = server
+        .test_codex()
+        .with_model_info_override("gpt-5.4", |model_info| {
+            model_info.use_responses_lite = true;
+            configure_image_capable_model(model_info);
+        });
     let test = builder.build(&server).await?;
 
     test.codex

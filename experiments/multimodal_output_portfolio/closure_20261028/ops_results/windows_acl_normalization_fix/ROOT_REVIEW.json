@@ -1,0 +1,17 @@
+{
+  "schema": "hepta.acl-normalization-root-review.v1",
+  "manifest_sha256": "cabeb265ff7676566a9b82f652d06f1a8886508563865da2e08d69cbb36c9c50",
+  "reviewed_complete_new_module_all_diffs_and_original_assertions": true,
+  "checks": [
+    "Directory completeness requires effective, recursive directory and recursive file scopes for every required right.",
+    "Unknown/inherited/out-of-order ACEs cannot certify a later explicit deny.",
+    "File scope is obtained from the same open object as the ACL; repair reopens that handle rather than a pathname.",
+    "An existing complete deny does not require WRITE_DAC.",
+    "ACL allocations and opened handles retain RAII cleanup on errors.",
+    "Original permission masks, token flags and all prior assertions are unchanged.",
+    "Probe source identity now covers the new production module; observation assertions are unchanged."
+  ],
+  "source_review_obvious_blocker": false,
+  "native_execution_verified": false,
+  "delete_child_isolation_closed": false
+}

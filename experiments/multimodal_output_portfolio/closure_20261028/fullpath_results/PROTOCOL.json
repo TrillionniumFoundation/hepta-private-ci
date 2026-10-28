@@ -1,0 +1,124 @@
+{
+  "arms": [
+    "lax_mean",
+    "lax_risk"
+  ],
+  "baseline_cost": "extra physical roundtrips/proxy forwards are training overhead; all counted and timed separately",
+  "batch_size": 12,
+  "conditions": [
+    "clean",
+    "occlusion",
+    "missing",
+    "heavy_noise"
+  ],
+  "confidence": "paired original pixel-pair cluster bootstrap of seed-averaged contrasts; training seeds are not independent datasets",
+  "emission": {
+    "image_logit_sigma": 0.03,
+    "latent_token_steps": 7,
+    "latent_tokens_after_EOS": "sampled_and_density_accounted_fixed_horizon",
+    "render": "sigmoid_round_uint8_PNG_and_unrepaired_UTF8",
+    "sampling": "independent_normal_logits_and_autoregressive_categorical",
+    "text_temperature": 0.2
+  },
+  "emissions_per_context": 2,
+  "estimator": "conditional same-text actual mean-image baseline + image LAX; same-image actual greedy-text baseline + text score",
+  "finite_physical_CPU_tail_certificate": false,
+  "global_optimizer_claim": false,
+  "gradient_clip": 5.0,
+  "image_text_conditionally_independent": true,
+  "independent_base_initializations": 1,
+  "learning_rate": 5e-05,
+  "native_runtime": false,
+  "no_proxy_reward_or_regularizer": true,
+  "original_histories_preserved": true,
+  "physical_CPU_cost_profile": false,
+  "proxy": "frozen independent recognizer softmax replaces hard image argmax only inside a zero-mean LAX correction",
+  "qualification_acceptance": {
+    "bootstrap_draws": 10000,
+    "family_alpha": 0.05,
+    "finite_sample_coverage_proved": false,
+    "one_sided_comparisons": 4,
+    "positive_familywise_bootstrap_lower_bound": true,
+    "risk_quality_vs_each": [
+      "prior_strong",
+      "stochastic_frozen",
+      "lax_mean"
+    ],
+    "risk_retention_vs_strong_lower_bound_at_least": -0.005
+  },
+  "qualification_access": "only after all frozen development selections meet the predeclared admission gate",
+  "qualification_admission": {
+    "at_least_one_risk_checkpoint_is_learned": true,
+    "each_selected_risk_retention_tolerance": 0.005,
+    "mean_risk_quality_gain_vs_frozen_same_law_prior_at_least": 0.002,
+    "mean_risk_quality_gain_vs_greedy_prior_at_least": 0.002,
+    "mean_risk_quality_gain_vs_matched_mean_at_least": 0.0
+  },
+  "qualification_emissions": 4,
+  "qualification_pairs": 128,
+  "reference_checkpoint_sha256": "508931a0cb780d413bc39de83b8de91aeab68b33cfe1b384f176cb8e8f004ee6",
+  "reference_training_seed": 17,
+  "retention_pairs": 64,
+  "retention_tolerance": 0.005,
+  "schema": "hepta.ndu.fullpath-lax-study.v1",
+  "smoke_only": false,
+  "stages": [
+    [
+      "transition",
+      [
+        "semantic_cell",
+        "coupling_cell"
+      ]
+    ],
+    [
+      "adapter",
+      [
+        "initial_image",
+        "initial_text",
+        "image_cell",
+        "text_cell"
+      ]
+    ],
+    [
+      "emission",
+      [
+        "pixel_decoder",
+        "text_initial",
+        "text_decoder",
+        "text_projection"
+      ]
+    ],
+    [
+      "encoder",
+      [
+        "token_embedding",
+        "text_encoder",
+        "pixel_encoder",
+        "fuse",
+        "command_embedding",
+        "command_film"
+      ]
+    ]
+  ],
+  "steps_per_stage": 256,
+  "tariffs": {
+    "encoder": 0.00015,
+    "gate": 5e-05,
+    "observer": 0.00015,
+    "pixel_emission": 0.0003,
+    "read": 5e-05,
+    "token_emission": 2e-05,
+    "transition": 0.0001,
+    "write": 5e-05
+  },
+  "threads": 2,
+  "training_seeds": [
+    17,
+    29,
+    43
+  ],
+  "training_target": "complete actual reopened PNG/UTF8 reward minus registered per-deployment work tariff",
+  "validation_pairs": 32,
+  "validation_retention_pairs": 32,
+  "validation_selection": "max primary population CE among retention-eligible stage checkpoints and exact greedy and stochastic priors"
+}
