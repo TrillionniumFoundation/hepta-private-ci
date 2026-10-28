@@ -1,0 +1,37 @@
+name: NDU native Windows storage observation
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/ndu-windows-storage-probe.yml"
+      - "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_storage_probe.py"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ndu-windows-storage-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  observe:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Observe native file and directory flush results
+        shell: pwsh
+        run: |
+          python experiments/multimodal_output_portfolio/closure_20261028/ops_windows_storage_probe.py --output "$env:RUNNER_TEMP/hepta-windows-storage.json"
+          exit $LASTEXITCODE
+      - name: Preserve observations
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-windows-storage-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/hepta-windows-storage.json
+          if-no-files-found: error
