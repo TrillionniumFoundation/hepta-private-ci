@@ -72,35 +72,7 @@ impl ReleaseFixture {
     fn from_payloads_with_training_code(snapshot: &MemoryCellOwnerSnapshotV1, semantic: &[u8], procedure: &[u8], training_code_digest: Digest32, population: bool) -> Self {
         let directory = TempDir::new().expect("artifact root");
         let now = super::now().expect("test clock");
-        let withdrawals = DatasetWithdrawalRegistry::new_scoped(DatasetWithdrawalScopeV1 {
-            authority_domain_id: id("memory-dataset-owner"), registry_id: id("memory-withdrawals"),
-            scope_id: snapshot.scope().as_stable_id().clone(),
-        });
-        let scope_digest = withdrawals.scope_digest().expect("withdrawal scope");
-        let key = owner_key();
-        let signer = TrustedArtifactSignerV1 {
-            signer_id: id("memory-artifact-owner"), verifying_key: key.verifying_key().to_bytes(),
-            minimum_authority_epoch: 1, maximum_authority_epoch: 1,
-            valid_from: now.saturating_sub(5), expires_at: now + 3_600, revoked_at: None,
-        };
-        let trust = ArtifactOwnerTrustV1 {
-            registry_id: id("memory-parameter-registry"), withdrawal_scope_digest: scope_digest,
-            minimum_registry_generation: Generation::new(1).expect("generation"),
-            genesis_predecessor_head_digest: Digest32::ZERO, minimum_authority_epoch: 1,
-            writer_signers: vec![signer.clone()], head_signers: vec![signer],
-        };
-        let mut lease = SignedArtifactWriterLeaseV1 {
-            lease_id: id("memory-writer-lease"), producer_id: id("memory-trainer"),
-            registry_id: trust.registry_id.clone(), withdrawal_scope_digest: scope_digest,
-            signer_id: id("memory-artifact-owner"), signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
-            authority_epoch: 1, lease_generation: 1, issued_at: now.saturating_sub(5), expires_at: now + 3_600,
-            signature: [0; 64],
-        };
-        lease.signature = key.sign(&lease.signing_bytes()).to_bytes();
-        let config = LearningArtifactOwnerServiceConfigV1 {
-            root: directory.path().to_path_buf(), trust, writer_lease: lease,
-            required_current_head: None, withdrawal_registry: withdrawals, storage_binding: digest("memory-artifact-storage"), now,
-        };
+        let config = fixture_config(snapshot, directory.path().to_path_buf(), now);
         let service = Arc::new(Mutex::new(LearningArtifactOwnerService::open(config.clone()).expect("actual artifact owner")));
         let verifier = ArtifactSelectionVerifierV1::new(selection_trust(&config), &config.trust).expect("configured independent selector");
         let host = Arc::new(MemoryCellReleaseHostV1::new(Arc::clone(&service), verifier));
@@ -135,24 +107,7 @@ impl ReleaseFixture {
     }
 
     pub(crate) fn signed_selection(&self, request: &LearningArtifactPublishRequestV1, current: &VerifiedCurrentRegistryViewV1) -> SignedArtifactSelectionV1 {
-        let service = self.service.lock().expect("service");
-        let manifest = service.registry().manifest(&request.admission.validated_manifest.manifest.artifact_id).expect("published manifest");
-        let mut signed = SignedArtifactSelectionV1 {
-            selection_id: id(&format!("memory-selection:{}", manifest.generation.get())),
-            artifact_id: manifest.artifact_id.clone(), registry_id: self.config.trust.registry_id.clone(),
-            withdrawal_scope_digest: self.config.trust.withdrawal_scope_digest,
-            registry_head_digest: current.receipt().head_digest, current_witness_digest: current.witness_digest(),
-            current_trust_digest: current.trust_digest(), artifact_kind: manifest.kind,
-            artifact_generation: manifest.generation, predecessor_id: manifest.predecessor_id.clone(),
-            content_digest: manifest.content_digest, objective_digest: manifest.objective_digest,
-            support_digest: manifest.support_digest, compatibility_digest: manifest.compatibility_digest,
-            encoded_size_bytes: manifest.encoded_size_bytes, selector_id: id("memory-reader-selector"),
-            selector_credential_digest: digest("memory-selector-credential"),
-            signing_key_digest: Digest32::of_bytes(&selector_key().verifying_key().to_bytes()),
-            authority_epoch: 1, issued_at: self.config.now, expires_at: self.config.now + 3_600, signature: [0; 64],
-        };
-        signed.signature = selector_key().sign(&signed.signing_bytes()).to_bytes();
-        signed
+        fixture_selection(&self.service, &self.config, request, current)
     }
 
     pub(crate) fn install(&self, request: &LearningArtifactPublishRequestV1) -> Result<(), String> {
@@ -192,17 +147,7 @@ impl ReleaseFixture {
 
 fn prepare_request(service: &Mutex<LearningArtifactOwnerService>, config: &LearningArtifactOwnerServiceConfigV1, candidate: &MemoryCellBundleCandidateV1, generation: u64, training_code_digest: Digest32) -> LearningArtifactPublishRequestV1 {
     let now = super::now().expect("publication clock");
-    let manifest = candidate.bind_manifest(LearningArtifactManifestV2 {
-        artifact_id: id(&format!("memory-bundle:{generation}")), kind: ArtifactKind::Parameters,
-        generation: Generation::new(generation).expect("generation"), provenance_mode: ProvenanceModeV1::DatasetDerived,
-        source_dataset_digests: vec![], lineage_digests: vec![],
-        predecessor_ids: if generation == 1 { vec![] } else { vec![id(&format!("memory-bundle:{}", generation - 1))] },
-        rollback_predecessor: None, bytes_digest: Digest32::ZERO, encoded_size_bytes: 0,
-        training_code_digest, runtime_tuple_digest: Digest32::ZERO,
-        device_profile_digest: digest("test-cpu-f64"), objective_class_digest: Digest32::ZERO,
-        compatibility_digest: Digest32::ZERO, schema_profile_digest: Digest32::ZERO, normalization_digest: Digest32::ZERO,
-        producer_id: id("memory-trainer"), created_at: config.now, expires_at: config.now + 3_600,
-    }).expect("manifest binding");
+    let manifest = fixture_manifest(config, candidate, generation, training_code_digest);
     let service = service.lock().expect("service");
     let withdrawals = service.withdrawal_registry();
     let admission = admit_manifest_at_withdrawal_head_v3(withdrawals, withdrawals.head_digest(), manifest, now).expect("real admission");
@@ -241,4 +186,73 @@ pub(crate) fn single_value_model(snapshot: &MemoryCellOwnerSnapshotV1, kind: Mem
         "training_receipt_sha256":digest("synthetic-integration-no-fit").to_string(),
         "arrays":{"input_weights":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"hidden_bias":[0.0],"output_weights":[0.0],"output_bias":[1.5]}
     })).expect("synthetic parameter bytes")
+}
+
+// These fixture constructors retain the original explicit test signers. Process
+// tests reuse them to reopen the same durable owner, never to decode authority.
+pub(crate) fn fixture_config(snapshot: &MemoryCellOwnerSnapshotV1, root: PathBuf, now: u64) -> LearningArtifactOwnerServiceConfigV1 {
+    let withdrawals = DatasetWithdrawalRegistry::new_scoped(DatasetWithdrawalScopeV1 {
+        authority_domain_id: id("memory-dataset-owner"), registry_id: id("memory-withdrawals"),
+        scope_id: snapshot.scope().as_stable_id().clone(),
+    });
+    let scope_digest = withdrawals.scope_digest().expect("withdrawal scope");
+    let key = owner_key();
+    let signer = TrustedArtifactSignerV1 {
+        signer_id: id("memory-artifact-owner"), verifying_key: key.verifying_key().to_bytes(),
+        minimum_authority_epoch: 1, maximum_authority_epoch: 1,
+        valid_from: now.saturating_sub(5), expires_at: now + 3_600, revoked_at: None,
+    };
+    let trust = ArtifactOwnerTrustV1 {
+        registry_id: id("memory-parameter-registry"), withdrawal_scope_digest: scope_digest,
+        minimum_registry_generation: Generation::new(1).expect("generation"),
+        genesis_predecessor_head_digest: Digest32::ZERO, minimum_authority_epoch: 1,
+        writer_signers: vec![signer.clone()], head_signers: vec![signer],
+    };
+    let mut lease = SignedArtifactWriterLeaseV1 {
+        lease_id: id("memory-writer-lease"), producer_id: id("memory-trainer"),
+        registry_id: trust.registry_id.clone(), withdrawal_scope_digest: scope_digest,
+        signer_id: id("memory-artifact-owner"), signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
+        authority_epoch: 1, lease_generation: 1, issued_at: now.saturating_sub(5), expires_at: now + 3_600,
+        signature: [0; 64],
+    };
+    lease.signature = key.sign(&lease.signing_bytes()).to_bytes();
+    LearningArtifactOwnerServiceConfigV1 {
+        root, trust, writer_lease: lease,
+        required_current_head: None, withdrawal_registry: withdrawals, storage_binding: digest("memory-artifact-storage"), now,
+    }
+}
+
+pub(crate) fn fixture_manifest(config: &LearningArtifactOwnerServiceConfigV1, candidate: &MemoryCellBundleCandidateV1, generation: u64, training_code_digest: Digest32) -> LearningArtifactManifestV2 {
+    candidate.bind_manifest(LearningArtifactManifestV2 {
+        artifact_id: id(&format!("memory-bundle:{generation}")), kind: ArtifactKind::Parameters,
+        generation: Generation::new(generation).expect("generation"), provenance_mode: ProvenanceModeV1::DatasetDerived,
+        source_dataset_digests: vec![], lineage_digests: vec![],
+        predecessor_ids: if generation == 1 { vec![] } else { vec![id(&format!("memory-bundle:{}", generation - 1))] },
+        rollback_predecessor: None, bytes_digest: Digest32::ZERO, encoded_size_bytes: 0,
+        training_code_digest, runtime_tuple_digest: Digest32::ZERO,
+        device_profile_digest: digest("test-cpu-f64"), objective_class_digest: Digest32::ZERO,
+        compatibility_digest: Digest32::ZERO, schema_profile_digest: Digest32::ZERO, normalization_digest: Digest32::ZERO,
+        producer_id: id("memory-trainer"), created_at: config.now, expires_at: config.now + 3_600,
+    }).expect("manifest binding")
+}
+
+pub(crate) fn fixture_selection(service: &Mutex<LearningArtifactOwnerService>, config: &LearningArtifactOwnerServiceConfigV1, request: &LearningArtifactPublishRequestV1, current: &VerifiedCurrentRegistryViewV1) -> SignedArtifactSelectionV1 {
+    let service = service.lock().expect("service");
+    let manifest = service.registry().manifest(&request.admission.validated_manifest.manifest.artifact_id).expect("published manifest");
+    let mut signed = SignedArtifactSelectionV1 {
+        selection_id: id(&format!("memory-selection:{}", manifest.generation.get())),
+        artifact_id: manifest.artifact_id.clone(), registry_id: config.trust.registry_id.clone(),
+        withdrawal_scope_digest: config.trust.withdrawal_scope_digest,
+        registry_head_digest: current.receipt().head_digest, current_witness_digest: current.witness_digest(),
+        current_trust_digest: current.trust_digest(), artifact_kind: manifest.kind,
+        artifact_generation: manifest.generation, predecessor_id: manifest.predecessor_id.clone(),
+        content_digest: manifest.content_digest, objective_digest: manifest.objective_digest,
+        support_digest: manifest.support_digest, compatibility_digest: manifest.compatibility_digest,
+        encoded_size_bytes: manifest.encoded_size_bytes, selector_id: id("memory-reader-selector"),
+        selector_credential_digest: digest("memory-selector-credential"),
+        signing_key_digest: Digest32::of_bytes(&selector_key().verifying_key().to_bytes()),
+        authority_epoch: 1, issued_at: config.now, expires_at: config.now + 3_600, signature: [0; 64],
+    };
+    signed.signature = selector_key().sign(&signed.signing_bytes()).to_bytes();
+    signed
 }
