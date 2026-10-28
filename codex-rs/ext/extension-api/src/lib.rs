@@ -80,6 +80,7 @@ pub use contributors::SkillInvocationInput;
 pub use contributors::SkillInvocationKind;
 pub use contributors::TURN_START_GATE_SCHEMA_VERSION;
 pub use contributors::ThreadIdleCause;
+pub use contributors::ThreadIdleContinuations;
 pub use contributors::ThreadIdleInput;
 pub use contributors::ThreadLifecycleContributor;
 pub use contributors::ThreadOriginator;

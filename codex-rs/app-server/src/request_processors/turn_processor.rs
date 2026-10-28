@@ -480,6 +480,17 @@ impl TurnRequestProcessor {
                 .inspect_err(|error| {
                     self.track_error_response(&request_id, error, /*error_type*/ None);
                 })?;
+        // Keep the event pump free to process approvals for owner-driven
+        // pending work. Waiting belongs to this request, before resolving new
+        // permission/settings snapshots, and does not replace atomic admission.
+        thread
+            .wait_for_pending_admission_transitions()
+            .await
+            .map_err(|err| {
+                let error = internal_error(format!("failed to await turn readiness: {err}"));
+                self.track_error_response(&request_id, &error, /*error_type*/ None);
+                error
+            })?;
         self.ensure_direct_input_allowed(&request_id, thread.as_ref())
             .await?;
         if let Err(error) = Self::validate_v2_input_limit(&params.input) {

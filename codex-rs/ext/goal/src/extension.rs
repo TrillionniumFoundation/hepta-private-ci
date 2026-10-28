@@ -151,12 +151,18 @@ where
                 return;
             };
 
-            if let Err(err) = runtime.continue_if_idle().await {
-                tracing::warn!(
-                    "failed to continue active goal for idle thread {}: {err}",
-                    runtime.thread_id()
-                );
-            }
+            // Core retains the terminalization fence until this callback
+            // returns. A deferred wake observes completion before acquiring the
+            // goal-state permit or attempting the ordinary atomic admission.
+            let runtime = runtime.as_ref().clone();
+            input.continuations.push(Box::pin(async move {
+                if let Err(err) = runtime.continue_if_idle().await {
+                    tracing::warn!(
+                        "failed to continue active goal for idle thread {}: {err}",
+                        runtime.thread_id()
+                    );
+                }
+            }));
         })
     }
 

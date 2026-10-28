@@ -1,3 +1,4 @@
+mod admission_readiness;
 mod compact;
 mod lifecycle;
 mod regular;

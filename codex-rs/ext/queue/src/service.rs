@@ -1,3 +1,5 @@
+mod idle_dispatch;
+
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::path::Path;
@@ -1347,10 +1349,12 @@ where
                 );
                 return;
             };
-            let _guard = self.dispatch_guard(thread_id).await;
-            if let Err(error) = self.dispatch_if_idle(thread_id).await {
-                tracing::warn!(%thread_id, %error, "failed to dispatch queued user input");
-            }
+            // This callback still belongs to Core's terminalizer. Register
+            // new work in host order so queue priority over goals is preserved.
+            let service = self.clone();
+            input.continuations.push(Box::pin(async move {
+                service.dispatch_after_pending_admission(thread_id).await;
+            }));
         })
     }
 }

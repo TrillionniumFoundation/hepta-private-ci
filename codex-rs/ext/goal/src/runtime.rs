@@ -364,6 +364,20 @@ impl GoalRuntimeHandle {
             self.inner.accounting_state.clear_active_goal();
             return Ok(());
         }
+        let Some(thread_manager) = self.inner.thread_manager.upgrade() else {
+            tracing::debug!("skipping goal continuation because thread manager is unavailable");
+            return Ok(());
+        };
+        let Ok(thread) = thread_manager.get_thread(self.inner.thread_id).await else {
+            tracing::debug!("skipping goal continuation because live thread is unavailable");
+            return Ok(());
+        };
+
+        thread
+            .wait_for_pending_admission_transitions()
+            .await
+            .map_err(|error| error.to_string())?;
+
         // Hold this through the read/start window so external set/clear cannot
         // change the goal after we read it but before the continuation launches.
         let _goal_state_permit = self.goal_state_permit().await?;
@@ -378,15 +392,6 @@ impl GoalRuntimeHandle {
         {
             return Ok(());
         }
-
-        let Some(thread_manager) = self.inner.thread_manager.upgrade() else {
-            tracing::debug!("skipping goal continuation because thread manager is unavailable");
-            return Ok(());
-        };
-        let Ok(thread) = thread_manager.get_thread(self.inner.thread_id).await else {
-            tracing::debug!("skipping goal continuation because live thread is unavailable");
-            return Ok(());
-        };
 
         let Some(goal) = self
             .inner
