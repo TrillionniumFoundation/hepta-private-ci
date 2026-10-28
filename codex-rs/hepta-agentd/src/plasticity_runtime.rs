@@ -336,7 +336,7 @@ impl PlasticityRuntimeOwnerV1 {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 #[path = "plasticity_runtime_lifetime_tests.rs"]
 mod lifetime_tests;
 

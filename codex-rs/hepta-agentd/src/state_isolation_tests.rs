@@ -3,6 +3,7 @@ use std::fs;
 use std::fs::OpenOptions;
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
+#[cfg(unix)]
 use std::sync::Arc;
 
 use super::*;
@@ -38,11 +39,14 @@ use ed25519_dalek::Signer;
 #[cfg(unix)]
 use ed25519_dalek::SigningKey;
 
+#[cfg(unix)]
 use crate::AgentdPayload;
+#[cfg(unix)]
 use crate::LifecycleSnapshot;
+#[cfg(unix)]
 use crate::RunPhase;
 
-fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
+fn identity_fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdIdentity)> {
     let temp = tempfile::tempdir()?;
     let root = temp.path().canonicalize()?;
     #[cfg(unix)]
@@ -76,6 +80,12 @@ fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> 
         control_socket: record.layout.agentd_control_socket().to_path_buf(),
         app_server_socket: record.layout.app_server_socket().to_path_buf(),
     };
+    Ok((temp, registry, identity))
+}
+
+#[cfg(unix)]
+fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
+    let (temp, registry, identity) = identity_fixture()?;
     let state = AgentdState::new(identity, registry.clone(), /*event_capacity*/ 16)?;
     registry.compare_and_transition(
         &state.identity.agent_id,
@@ -87,6 +97,7 @@ fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> 
     Ok((temp, registry, state))
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn serving_agent_survives_unrelated_registry_corruption() {
     let (_temp, registry, state) = fixture().expect("runtime fixture");
@@ -118,6 +129,7 @@ async fn serving_agent_survives_unrelated_registry_corruption() {
     );
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn configured_intelligence_runner_is_not_advertised_without_daemon_ingress() {
     let (temp, _registry, state) = fixture().expect("runtime fixture");
@@ -158,6 +170,7 @@ async fn configured_intelligence_runner_is_not_advertised_without_daemon_ingress
     );
 }
 
+#[cfg(unix)]
 #[test]
 fn missing_local_record_immediately_fences_the_serving_agent() {
     let (_temp, _registry, state) = fixture().expect("runtime fixture");
@@ -169,6 +182,7 @@ fn missing_local_record_immediately_fences_the_serving_agent() {
     assert!(state.is_fenced().expect("fenced state"));
 }
 
+#[cfg(unix)]
 #[test]
 fn targeted_read_preserves_lifecycle_and_resource_fences() {
     let (_temp, registry, state) = fixture().expect("runtime fixture");
@@ -201,10 +215,12 @@ fn targeted_read_preserves_lifecycle_and_resource_fences() {
     ));
 }
 
+#[cfg(unix)]
 fn digest(byte: char) -> String {
     byte.to_string().repeat(64)
 }
 
+#[cfg(unix)]
 fn run_fence(state: &AgentdState, current_generation: u64) -> String {
     let mut material = b"hepta:agentd:objective-fence:v1\0".to_vec();
     material.extend_from_slice(state.identity.agent_id.as_str().as_bytes());
@@ -215,6 +231,7 @@ fn run_fence(state: &AgentdState, current_generation: u64) -> String {
         .to_string()
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn daemon_control_owns_the_run_lifecycle_and_advertises_it() {
     let (_temp, _registry, state) = fixture().expect("runtime fixture");
@@ -634,6 +651,7 @@ async fn current_durable_run_start_requires_live_owner_trust() {
     );
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn final_use_revalidation_rejects_stale_spawn_generation_before_store_access() {
     let (_temp, _registry, state) = fixture().expect("runtime fixture");
@@ -656,9 +674,9 @@ async fn final_use_revalidation_rejects_stale_spawn_generation_before_store_acce
 #[cfg(not(unix))]
 #[test]
 fn private_owner_trust_refuses_unsupported_platform_ownership() {
-    let (_temp, _registry, state) = fixture().expect("runtime fixture");
-    let path = state.identity.home_root.join("run-start-trust.json");
-    let error = crate::authbus_trust::read_private_owner_file(&path, state.identity(), 16_384)
+    let (_temp, _registry, identity) = identity_fixture().expect("identity fixture");
+    let path = identity.home_root.join("run-start-trust.json");
+    let error = crate::authbus_trust::read_private_owner_file(&path, &identity, 16_384)
         .expect_err("Unix ownership proof must not be synthesized on another platform");
     let AgentdError::Invalid(message) = error else {
         panic!("unsupported ownership checks must reject configuration");
@@ -667,4 +685,26 @@ fn private_owner_trust_refuses_unsupported_platform_ownership() {
         message,
         "AuthBus text: private owner configuration currently requires Unix ownership checks"
     );
+}
+
+#[cfg(not(unix))]
+#[test]
+fn unsupported_prompt_owner_prevents_daemon_admission_and_socket_publication() {
+    let (_temp, registry, identity) = identity_fixture().expect("identity fixture");
+    let before = registry.load().expect("registered starting agent");
+    let control_socket = identity.control_socket.clone();
+    let app_socket = identity.app_server_socket.clone();
+    let registry_root = identity.home_root.join("prompt-registry");
+    let runtime_root = identity.run_root.join("prompt-runtime");
+    let result = AgentdState::new(identity, registry.clone(), /*event_capacity*/ 16);
+    assert!(matches!(
+        result,
+        Err(AgentdError::Protocol(message))
+            if message == r#"prompt pipeline durable owners failed to open: RegistryOpen("UnsafeStateDirectory")"#
+    ));
+    assert_eq!(registry.load().expect("unchanged registry"), before);
+    assert!(!control_socket.exists());
+    assert!(!app_socket.exists());
+    assert!(!registry_root.exists());
+    assert!(!runtime_root.exists());
 }

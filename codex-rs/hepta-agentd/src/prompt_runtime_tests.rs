@@ -1,29 +1,49 @@
 use super::*;
 use codex_hepta_prompt_optimizer::canonical::*;
+#[cfg(unix)]
 use codex_hepta_types::AuthorityPosture;
 
+#[cfg(unix)]
 use std::collections::BTreeSet;
+#[cfg(unix)]
 use std::time::SystemTime;
+#[cfg(unix)]
 use std::time::UNIX_EPOCH;
 
+#[cfg(unix)]
 use codex_hepta_context_compiler::ContextModelProfileV2;
+#[cfg(unix)]
 use codex_hepta_contracts::FinalUseAuthority;
+#[cfg(unix)]
 use codex_hepta_contracts::FinalUseGrant;
+#[cfg(unix)]
 use codex_hepta_contracts::FinalUseRevocations;
+#[cfg(unix)]
 use codex_hepta_contracts::SignedFinalUseGrant;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::FactorSource;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::Lifecycle;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::PromptFactor;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::PromptModelTupleV2;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::PromptRealizationBindingV2;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::PromptRoleV2;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::final_use_admission_binding;
+#[cfg(unix)]
 use codex_hepta_prompt_registry::final_use_realization_binding;
 use codex_hepta_types::Digest32;
+#[cfg(unix)]
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::PromptDeliveryObservationV1;
 use codex_hepta_types::StableId;
+#[cfg(unix)]
 use ed25519_dalek::Signer;
+#[cfg(unix)]
 use ed25519_dalek::SigningKey;
 
 fn id(value: &str) -> StableId {
@@ -501,6 +521,7 @@ fn post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent() {
     );
 }
 
+#[cfg(unix)]
 #[test]
 fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
     let temporary = tempfile::tempdir().unwrap_or_else(|error| panic!("tempdir: {error}"));

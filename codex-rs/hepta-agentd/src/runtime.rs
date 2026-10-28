@@ -550,6 +550,10 @@ async fn shutdown_signal() -> Result<(), AgentdError> {
     tokio::signal::ctrl_c().await.map_err(Into::into)
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 #[path = "runtime_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "runtime_config_tests.rs"]
+mod config_tests;

@@ -477,6 +477,6 @@ mod tests {
 mod service;
 pub(crate) use service::spawn_automation_service;
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 #[path = "automation_service_tests.rs"]
 mod service_tests;

@@ -1,0 +1,62 @@
+{
+  "findings": [
+    {
+      "description": "runtime::tests is Unix-only; the dedicated Bazel qualification filter previously became empty on Windows. Current BUILD attaches Unix compatibility to qualification lib, test binary and wrapper; default unit target retains exact unsupported admission tests.",
+      "id": "zero-test-windows-qualification",
+      "severity": "material",
+      "status": "fixed in inspected working tree"
+    },
+    {
+      "description": "DurablePromptRegistry::prepare_directory and FinalUseAuthority store prepare_directory return exact UnsafeStateDirectory before writing on non-Unix. All gated integration fixtures require one of these owners. Pure runtime configuration tests remain cross-platform.",
+      "id": "secure-owner-contract",
+      "severity": "informational",
+      "status": "verified in production source"
+    },
+    {
+      "description": "Windows helper requests read/write plus BACKUP_SEMANTICS; actual sync_all propagates errors. Ordinary NTFS directory probe agrees; it used OPEN_REPARSE_POINT which official CreateFile contract ignores for non-reparse objects. Existing follow behavior is retained and no anti-redirection guarantee is added.",
+      "id": "directory-sync",
+      "severity": "informational",
+      "status": "no noop or swallowed error found"
+    },
+    {
+      "description": "After successful rename but failed directory sync, persist returns Unavailable and commit retains old memory state without poisoning. The handle patch does not prove crash consistency or repair this pre-existing ambiguity.",
+      "id": "bao-postrename-indeterminate",
+      "severity": "existing limitation, not introduced by patch",
+      "status": "open existing behavior"
+    }
+  ],
+  "imports_and_cfg": "No newly orphaned cross-module test imports found; cfg-local Windows OpenOptionsExt and extracted runtime config imports are coherent by inspection. No compilation success claim.",
+  "method": "read-only production-path/cfg/reference/build-filter inspection; no native Windows compilation by this reviewer",
+  "official_flag_contract": "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilea",
+  "other_filtered_targets": "Only .github/workflows/hepta-gap-agentd-process.yml uses affected filters; its matrix is Ubuntu/macOS only. scripts/test_hepta_agentd_ci.py merely checks that workflow text. No further Windows zero-test filter found in checked-in BUILD/bzl/workflows/scripts.",
+  "production_files_modified_by_reviewer": [],
+  "reviewed_files": {
+    "codex-rs/hepta-agentd/BUILD.bazel": "a6f45806a69ac9085080c0b05c4f61b01786f44fa796d4e589aeff2643fb46ec",
+    "codex-rs/hepta-agentd/src/automation.rs": "3c7060cd738906be6eff4f0e8747128900c260a704100106d8dc2aa352de87e1",
+    "codex-rs/hepta-agentd/src/browser_servo.rs": "3cf8b81bfdda994cfeb2be21f081ed15db89f43dfa0a44631afa1b3335f6174e",
+    "codex-rs/hepta-agentd/src/browser_servo_unsupported_tests.rs": "dc095e73bd3bab29641113d091a4ddf97941b2155c694d8fd1e0319aedde0f90",
+    "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs": "442064defb4f5d87eb487cf7e579e3885cd88e1de154085046504afca3dadcbf",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs": "cd4f0f0eb0c63d20d521c5b38414e5528575563e937da5bec7536d043d1b1a08",
+    "codex-rs/hepta-agentd/src/plasticity_runtime.rs": "bb270c11eabc3a28b13084cbdb3924a06889e24bba259f418221a1b13311af48",
+    "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs": "1115e0249b6054b29332ee0792f53ddee30aa031427de15f59a1786f8fb1784a",
+    "codex-rs/hepta-agentd/src/runtime.rs": "b56b983a1d80a23601645e262189b607a0ca14df5b129179445f6abd977c4920",
+    "codex-rs/hepta-agentd/src/runtime_config_tests.rs": "6cb471fb9c2bb58cfd8f4d77ea78820f1bcd87b8eb20be3130e37ec56b5dafe3",
+    "codex-rs/hepta-agentd/src/runtime_tests.rs": "60671ee69a60b5ed204cf897b160f46d470cf3b1732c8f73da781af3829be663",
+    "codex-rs/hepta-agentd/src/state_isolation_tests.rs": "521df9937477d58081febb379083112dcee11fa2103438bccf64229bf7b174ab",
+    "codex-rs/hepta-agentd/tests/support/terminal_cell_owner.rs": "699f2a84d71a8eaed86496ce76daab8a73751d8c91284338aed5dea42370f02a",
+    "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs": "9d2a4c743ae79fe13c8b2f4c7ede73a1968027357363412ba5c37b2037e8ccc0",
+    "codex-rs/hepta-intelligence/src/directory_test_support.rs": "92994bc3b0c40642394417884e576d2a3f9541033b53f74d74a00978efe66fc6",
+    "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs": "051e7bd2d8defa4468b43e421b2d18e89903bc57c030e2299c1e517e2feff4de",
+    "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs": "acc845fbbf33730f47f3885cac1b5419e4e47434bf080b1e4ce5a0b55998a778",
+    "codex-rs/hepta-intelligence/src/lib.rs": "b71c7f25dafe7df6db827cd97bf8dd893f89bc122ea4932827cc744860c87bff",
+    "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs": "a0b54efa64543e3c09dfaa58791e1576e0c482543df1db08e4b82199f7896e09",
+    "codex-rs/hepta-intelligence/src/prompt_delivery.rs": "09723b122563dc17aed52be7f9c98b69f974569f501a99c8299614b9980f8b11",
+    "codex-rs/hepta-intelligence/src/prompt_delivery_unsupported_tests.rs": "753473df5650944f2ae223316c21ca70bf66a7ecb6e968ddaa4a953a66895759",
+    "codex-rs/hepta-intelligence/src/prompt_pipeline.rs": "2f201e3e20f4c06ded22d0cfd4fc5aebf8eae8fbea6638e33667f7bc6cd412c5"
+  },
+  "reviewer": "unified_profile",
+  "schema": "hepta.ndu.platform-independent-code-review.v1",
+  "source_head": "13b691ac922ff25dd116401e1bb93cd1ea219aff",
+  "windows_evidence": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/WINDOWS_STORAGE_OBSERVATION.json",
+  "windows_evidence_sha256": "ca4fbc05ee8921b739295e5e6542ab89bd68d4aeb04d7f39f70c816798179bdd"
+}
