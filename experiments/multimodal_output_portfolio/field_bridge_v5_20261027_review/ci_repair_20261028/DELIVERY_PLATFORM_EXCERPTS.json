@@ -1,0 +1,714 @@
+{
+  "schema_version": 1,
+  "head": "5b7bef4e5788f2cea2546f0cb620af471b4fbcf7",
+  "run_id": 40620519468,
+  "logs": [
+    {
+      "job_id": 122593677372,
+      "unique_findings": [
+        {
+          "test": "automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen",
+          "location": "hepta-agentd/src\\automation_service_tests.rs:81:76",
+          "error": "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+          "excerpt": [
+            "2026-10-28T03:03:54.1329344Z thread 'automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen' (1680) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:",
+            "2026-10-28T03:03:54.1330749Z Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-10-28T03:03:54.1331692Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "2026-10-28T03:03:54.1332187Z "
+          ]
+        },
+        {
+          "test": "automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit",
+          "location": "hepta-agentd/src\\automation_service_tests.rs:81:76",
+          "error": "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+          "excerpt": [
+            "2026-10-28T03:03:54.1357579Z thread 'automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit' (8304) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:",
+            "2026-10-28T03:03:54.1359119Z Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-10-28T03:03:54.1359878Z ",
+            "2026-10-28T03:03:54.1364020Z ---- automation::service_tests::production_constructor_never_resumes_a_draining_owner stdout ----"
+          ]
+        },
+        {
+          "test": "automation::service_tests::production_constructor_never_resumes_a_draining_owner",
+          "location": "hepta-agentd/src\\automation_service_tests.rs:81:76",
+          "error": "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+          "excerpt": [
+            "2026-10-28T03:03:54.1375399Z thread 'automation::service_tests::production_constructor_never_resumes_a_draining_owner' (7248) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:",
+            "2026-10-28T03:03:54.1386500Z Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-10-28T03:03:54.1391748Z ",
+            "2026-10-28T03:03:54.1394299Z ---- automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement stdout ----"
+          ]
+        },
+        {
+          "test": "automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement",
+          "location": "hepta-agentd/src\\automation_service_tests.rs:81:76",
+          "error": "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+          "excerpt": [
+            "2026-10-28T03:03:54.1398185Z thread 'automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement' (1340) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:",
+            "2026-10-28T03:03:54.1399757Z Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-10-28T03:03:54.1400681Z ",
+            "2026-10-28T03:03:54.1402833Z ---- automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn stdout ----"
+          ]
+        },
+        {
+          "test": "automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn",
+          "location": "hepta-agentd/src\\automation_service_tests.rs:81:76",
+          "error": "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+          "excerpt": [
+            "2026-10-28T03:03:54.1405164Z thread 'automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn' (2532) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:",
+            "2026-10-28T03:03:54.1406639Z Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-10-28T03:03:54.1407361Z ",
+            "2026-10-28T03:03:54.1407791Z ---- browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding stdout ----"
+          ]
+        },
+        {
+          "test": "browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding",
+          "location": "hepta-agentd/src\\browser_servo.rs:906:10",
+          "error": "authority: UnsafeStateDirectory",
+          "excerpt": [
+            "2026-10-28T03:03:54.1409165Z thread 'browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding' (4108) panicked at hepta-agentd/src\\browser_servo.rs:906:10:",
+            "2026-10-28T03:03:54.1410175Z authority: UnsafeStateDirectory",
+            "2026-10-28T03:03:54.1410464Z ",
+            "2026-10-28T03:03:54.1410866Z ---- browser_servo::tests::non_effect_calls_never_enter_final_use_authority stdout ----"
+          ]
+        },
+        {
+          "test": "browser_servo::tests::non_effect_calls_never_enter_final_use_authority",
+          "location": "hepta-agentd/src\\browser_servo.rs:906:10",
+          "error": "authority: UnsafeStateDirectory",
+          "excerpt": [
+            "2026-10-28T03:03:54.1412446Z thread 'browser_servo::tests::non_effect_calls_never_enter_final_use_authority' (3932) panicked at hepta-agentd/src\\browser_servo.rs:906:10:",
+            "2026-10-28T03:03:54.1413448Z authority: UnsafeStateDirectory",
+            "2026-10-28T03:03:54.1413765Z ",
+            "2026-10-28T03:03:54.1414256Z ---- browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary stdout ----"
+          ]
+        },
+        {
+          "test": "browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary",
+          "location": "hepta-agentd/src\\browser_servo.rs:906:10",
+          "error": "authority: UnsafeStateDirectory",
+          "excerpt": [
+            "2026-10-28T03:03:54.1415674Z thread 'browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary' (2320) panicked at hepta-agentd/src\\browser_servo.rs:906:10:",
+            "2026-10-28T03:03:54.1416701Z authority: UnsafeStateDirectory",
+            "2026-10-28T03:03:54.1417022Z ",
+            "2026-10-28T03:03:54.1417759Z ---- automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen stdout ----"
+          ]
+        },
+        {
+          "test": "automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen",
+          "location": "hepta-agentd/src\\automation_service_tests.rs:81:76",
+          "error": "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+          "excerpt": [
+            "2026-10-28T03:03:54.1419320Z thread 'automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen' (8224) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:",
+            "2026-10-28T03:03:54.1421117Z Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-10-28T03:03:54.1421764Z ",
+            "2026-10-28T03:03:54.1422380Z ---- automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation stdout ----"
+          ]
+        },
+        {
+          "test": "automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation",
+          "location": "hepta-agentd/src\\automation_service_tests.rs:81:76",
+          "error": "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+          "excerpt": [
+            "2026-10-28T03:03:54.1424086Z thread 'automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation' (2456) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:",
+            "2026-10-28T03:03:54.1425437Z Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-10-28T03:03:54.1426147Z ",
+            "2026-10-28T03:03:54.1426684Z ---- cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation stdout ----"
+          ]
+        },
+        {
+          "test": "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation",
+          "location": "hepta-agentd/src\\cognitive_ranker_tests.rs:506:74",
+          "error": "called `Result::unwrap()` on an `Err` value: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+          "excerpt": [
+            "2026-10-28T03:03:54.1428119Z thread 'cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation' (6896) panicked at hepta-agentd/src\\cognitive_ranker_tests.rs:506:74:",
+            "2026-10-28T03:03:54.1429517Z called `Result::unwrap()` on an `Err` value: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-10-28T03:03:54.1430292Z ",
+            "2026-10-28T03:03:54.1430763Z ---- cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records stdout ----"
+          ]
+        },
+        {
+          "test": "cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records",
+          "location": "hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52",
+          "error": "ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "excerpt": [
+            "2026-10-28T03:03:54.1432258Z thread 'cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records' (4492) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:",
+            "2026-10-28T03:03:54.1433983Z ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "2026-10-28T03:03:54.1435352Z ",
+            "2026-10-28T03:03:54.1440634Z ---- cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends stdout ----"
+          ]
+        },
+        {
+          "test": "cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends",
+          "location": "hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52",
+          "error": "ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "excerpt": [
+            "2026-10-28T03:03:54.1454867Z thread 'cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends' (3516) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:",
+            "2026-10-28T03:03:54.1467411Z ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "2026-10-28T03:03:54.1472139Z ",
+            "2026-10-28T03:03:54.1473401Z ---- cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment stdout ----"
+          ]
+        },
+        {
+          "test": "cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment",
+          "location": "hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52",
+          "error": "ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "excerpt": [
+            "2026-10-28T03:03:54.1481548Z thread 'cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment' (1660) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:",
+            "2026-10-28T03:03:54.1484303Z ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "2026-10-28T03:03:54.1485197Z ",
+            "2026-10-28T03:03:54.1489458Z ---- cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict stdout ----"
+          ]
+        },
+        {
+          "test": "cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict",
+          "location": "hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52",
+          "error": "ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "excerpt": [
+            "2026-10-28T03:03:54.1491919Z thread 'cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict' (8916) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:",
+            "2026-10-28T03:03:54.1493430Z ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "2026-10-28T03:03:54.1493967Z ",
+            "2026-10-28T03:03:54.1494444Z ---- cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently stdout ----"
+          ]
+        },
+        {
+          "test": "cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently",
+          "location": "hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52",
+          "error": "ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "excerpt": [
+            "2026-10-28T03:03:54.1495830Z thread 'cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently' (1192) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:",
+            "2026-10-28T03:03:54.1497328Z ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "2026-10-28T03:03:54.1497843Z ",
+            "2026-10-28T03:03:54.1497904Z "
+          ]
+        },
+        {
+          "test": "prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host",
+          "location": "hepta-agentd/src\\prompt_runtime_tests.rs:511:33",
+          "error": "pipeline owner: RegistryOpen(\"UnsafeStateDirectory\")",
+          "excerpt": [
+            "2026-10-28T03:06:03.5421954Z thread 'prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host' (7312) panicked at hepta-agentd/src\\prompt_runtime_tests.rs:511:33:",
+            "2026-10-28T03:06:03.5422857Z pipeline owner: RegistryOpen(\"UnsafeStateDirectory\")",
+            "2026-10-28T03:06:03.5423130Z ",
+            "2026-10-28T03:06:03.5423449Z ---- runtime::tests::automation_generation_change_during_open_remains_fail_closed stdout ----"
+          ]
+        },
+        {
+          "test": "runtime::tests::automation_generation_change_during_open_remains_fail_closed",
+          "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+          "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+          "excerpt": [
+            "2026-10-28T03:06:03.5424440Z thread 'runtime::tests::automation_generation_change_during_open_remains_fail_closed' (1176) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "2026-10-28T03:06:03.5425542Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-10-28T03:06:03.5426081Z ",
+            "2026-10-28T03:06:03.5426542Z ---- plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently stdout ----"
+          ]
+        },
+        {
+          "test": "plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently",
+          "location": "hepta-agentd/src\\plasticity_runtime_lifetime_tests.rs:249:80",
+          "error": "state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+          "excerpt": [
+            "2026-10-28T03:06:03.5427894Z thread 'plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently' (3132) panicked at hepta-agentd/src\\plasticity_runtime_lifetime_tests.rs:249:80:",
+            "2026-10-28T03:06:03.5429005Z state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-10-28T03:06:03.5429312Z ",
+            "2026-10-28T03:06:03.5429504Z ---- runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor stdout ----"
+          ]
+        },
+        {
+          "test": "runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor",
+          "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+          "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+          "excerpt": [
+            "2026-10-28T03:06:03.5430484Z thread 'runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor' (5748) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "2026-10-28T03:06:03.5431502Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-10-28T03:06:03.5432037Z ",
+            "2026-10-28T03:06:03.5432295Z ---- runtime::tests::automation_owner_mismatch_remains_fail_closed stdout ----"
+          ]
+        },
+        {
+          "test": "runtime::tests::automation_owner_mismatch_remains_fail_closed",
+          "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+          "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+          "excerpt": [
+            "2026-10-28T03:06:03.5433036Z thread 'runtime::tests::automation_owner_mismatch_remains_fail_closed' (6932) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "2026-10-28T03:06:03.5433630Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-10-28T03:06:03.5433943Z ",
+            "2026-10-28T03:06:03.5434131Z ---- runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation stdout ----"
+          ]
+        },
+        {
+          "test": "runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation",
+          "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+          "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+          "excerpt": [
+            "2026-10-28T03:06:03.5434720Z thread 'runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation' (1336) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "2026-10-28T03:06:03.5435439Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-10-28T03:06:03.5435743Z ",
+            "2026-10-28T03:06:03.5435980Z ---- runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation stdout ----"
+          ]
+        },
+        {
+          "test": "runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation",
+          "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+          "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+          "excerpt": [
+            "2026-10-28T03:06:03.5436638Z thread 'runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation' (1732) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "2026-10-28T03:06:03.5437291Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-10-28T03:06:03.5437599Z ",
+            "2026-10-28T03:06:03.5437770Z ---- runtime::tests::generation_change_during_open_is_fenced_before_serving stdout ----"
+          ]
+        },
+        {
+          "test": "runtime::tests::generation_change_during_open_is_fenced_before_serving",
+          "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+          "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+          "excerpt": [
+            "2026-10-28T03:06:03.5438322Z thread 'runtime::tests::generation_change_during_open_is_fenced_before_serving' (5616) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "2026-10-28T03:06:03.5439010Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-10-28T03:06:03.5439317Z ",
+            "2026-10-28T03:06:03.5439523Z ---- runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store stdout ----"
+          ]
+        },
+        {
+          "test": "runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store",
+          "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+          "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+          "excerpt": [
+            "2026-10-28T03:06:03.5440330Z thread 'runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store' (4088) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "2026-10-28T03:06:03.5440959Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-10-28T03:06:03.5441271Z ",
+            "2026-10-28T03:06:03.5441631Z ---- runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe stdout ----"
+          ]
+        },
+        {
+          "test": "runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe",
+          "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+          "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+          "excerpt": [
+            "2026-10-28T03:06:03.5442529Z thread 'runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe' (7504) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "2026-10-28T03:06:03.5443191Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-10-28T03:06:03.5443499Z ",
+            "2026-10-28T03:06:03.5443703Z ---- runtime::tests::stale_generation_is_fenced_before_cognitive_store_open stdout ----"
+          ]
+        },
+        {
+          "test": "runtime::tests::stale_generation_is_fenced_before_cognitive_store_open",
+          "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+          "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+          "excerpt": [
+            "2026-10-28T03:06:03.5444253Z thread 'runtime::tests::stale_generation_is_fenced_before_cognitive_store_open' (4060) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "2026-10-28T03:06:03.5444934Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-10-28T03:06:03.5445440Z ",
+            "2026-10-28T03:06:03.5445775Z ---- runtime::tests::unavailable_automation_store_degrades_without_startup_failure stdout ----"
+          ]
+        },
+        {
+          "test": "runtime::tests::unavailable_automation_store_degrades_without_startup_failure",
+          "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+          "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+          "excerpt": [
+            "2026-10-28T03:06:03.5446807Z thread 'runtime::tests::unavailable_automation_store_degrades_without_startup_failure' (7524) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "2026-10-28T03:06:03.5447718Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-10-28T03:06:03.5448033Z ",
+            "2026-10-28T03:06:03.5448234Z ---- runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error stdout ----"
+          ]
+        },
+        {
+          "test": "runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error",
+          "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+          "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+          "excerpt": [
+            "2026-10-28T03:06:03.5449013Z thread 'runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error' (7884) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "2026-10-28T03:06:03.5449644Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-10-28T03:06:03.5450167Z ",
+            "2026-10-28T03:06:03.5450506Z ---- runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane stdout ----"
+          ]
+        },
+        {
+          "test": "runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane",
+          "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+          "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+          "excerpt": [
+            "2026-10-28T03:06:03.5451432Z thread 'runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane' (4352) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "2026-10-28T03:06:03.5452403Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-10-28T03:06:03.5452887Z ",
+            "2026-10-28T03:06:03.5452890Z "
+          ]
+        },
+        {
+          "test": "state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress",
+          "location": "hepta-agentd/src\\state_isolation_tests.rs:123:46",
+          "error": "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+          "excerpt": [
+            "2026-10-28T03:06:03.5470636Z thread 'state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress' (2276) panicked at hepta-agentd/src\\state_isolation_tests.rs:123:46:",
+            "2026-10-28T03:06:03.5471468Z runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+            "2026-10-28T03:06:03.5472001Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "2026-10-28T03:06:03.5472372Z "
+          ]
+        },
+        {
+          "test": "state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it",
+          "location": "hepta-agentd/src\\state_isolation_tests.rs:220:47",
+          "error": "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+          "excerpt": [
+            "2026-10-28T03:06:03.5473226Z thread 'state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it' (1312) panicked at hepta-agentd/src\\state_isolation_tests.rs:220:47:",
+            "2026-10-28T03:06:03.5473926Z runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+            "2026-10-28T03:06:03.5474275Z ",
+            "2026-10-28T03:06:03.5474529Z ---- state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access stdout ----"
+          ]
+        },
+        {
+          "test": "state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access",
+          "location": "hepta-agentd/src\\state_isolation_tests.rs:639:47",
+          "error": "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+          "excerpt": [
+            "2026-10-28T03:06:03.5475250Z thread 'state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access' (2868) panicked at hepta-agentd/src\\state_isolation_tests.rs:639:47:",
+            "2026-10-28T03:06:03.5476090Z runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+            "2026-10-28T03:06:03.5476529Z ",
+            "2026-10-28T03:06:03.5476741Z ---- state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent stdout ----"
+          ]
+        },
+        {
+          "test": "state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent",
+          "location": "hepta-agentd/src\\state_isolation_tests.rs:163:47",
+          "error": "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+          "excerpt": [
+            "2026-10-28T03:06:03.5477378Z thread 'state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent' (3236) panicked at hepta-agentd/src\\state_isolation_tests.rs:163:47:",
+            "2026-10-28T03:06:03.5478068Z runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+            "2026-10-28T03:06:03.5478408Z ",
+            "2026-10-28T03:06:03.5478609Z ---- state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership stdout ----"
+          ]
+        },
+        {
+          "test": "state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership",
+          "location": "hepta-agentd/src\\state_isolation_tests.rs:659:47",
+          "error": "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+          "excerpt": [
+            "2026-10-28T03:06:03.5479245Z thread 'state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership' (6928) panicked at hepta-agentd/src\\state_isolation_tests.rs:659:47:",
+            "2026-10-28T03:06:03.5480008Z runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+            "2026-10-28T03:06:03.5480475Z ",
+            "2026-10-28T03:06:03.5480744Z ---- state::isolation_tests::serving_agent_survives_unrelated_registry_corruption stdout ----"
+          ]
+        },
+        {
+          "test": "state::isolation_tests::serving_agent_survives_unrelated_registry_corruption",
+          "location": "hepta-agentd/src\\state_isolation_tests.rs:92:46",
+          "error": "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+          "excerpt": [
+            "2026-10-28T03:06:03.5481444Z thread 'state::isolation_tests::serving_agent_survives_unrelated_registry_corruption' (4324) panicked at hepta-agentd/src\\state_isolation_tests.rs:92:46:",
+            "2026-10-28T03:06:03.5482132Z runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+            "2026-10-28T03:06:03.5482483Z ",
+            "2026-10-28T03:06:03.5482676Z ---- state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences stdout ----"
+          ]
+        },
+        {
+          "test": "state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences",
+          "location": "hepta-agentd/src\\state_isolation_tests.rs:174:46",
+          "error": "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+          "excerpt": [
+            "2026-10-28T03:06:03.5483291Z thread 'state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences' (1600) panicked at hepta-agentd/src\\state_isolation_tests.rs:174:46:",
+            "2026-10-28T03:06:03.5483975Z runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+            "2026-10-28T03:06:03.5484310Z ",
+            "2026-10-28T03:06:03.5484313Z "
+          ]
+        }
+      ]
+    },
+    {
+      "job_id": 122593677696,
+      "unique_findings": [
+        {
+          "test": "evaluated_shadow::tests::abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome",
+          "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72",
+          "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "excerpt": [
+            "2026-10-28T03:22:41.8883490Z thread 'evaluated_shadow::tests::abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome' (5756) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72:",
+            "2026-10-28T03:22:41.8886194Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "2026-10-28T03:22:41.8887358Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "2026-10-28T03:22:41.8887906Z "
+          ]
+        },
+        {
+          "test": "evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes",
+          "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72",
+          "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "excerpt": [
+            "2026-10-28T03:22:41.8890818Z thread 'evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes' (5748) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72:",
+            "2026-10-28T03:22:41.8893051Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "2026-10-28T03:22:41.8893776Z ",
+            "2026-10-28T03:22:41.8894363Z ---- evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port stdout ----"
+          ]
+        },
+        {
+          "test": "evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port",
+          "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72",
+          "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "excerpt": [
+            "2026-10-28T03:22:41.8896149Z thread 'evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port' (6444) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72:",
+            "2026-10-28T03:22:41.8898637Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "2026-10-28T03:22:41.8899253Z ",
+            "2026-10-28T03:22:41.8900170Z ---- evaluated_shadow::tests::host_failure_or_substituted_intuition_never_reaches_the_durable_stage stdout ----"
+          ]
+        },
+        {
+          "test": "evaluated_shadow::tests::host_failure_or_substituted_intuition_never_reaches_the_durable_stage",
+          "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72",
+          "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "excerpt": [
+            "2026-10-28T03:22:41.8903896Z thread 'evaluated_shadow::tests::host_failure_or_substituted_intuition_never_reaches_the_durable_stage' (9088) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72:",
+            "2026-10-28T03:22:41.8905717Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "2026-10-28T03:22:41.8906464Z ",
+            "2026-10-28T03:22:41.8907055Z ---- evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch stdout ----"
+          ]
+        },
+        {
+          "test": "evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch",
+          "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72",
+          "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "excerpt": [
+            "2026-10-28T03:22:41.8908829Z thread 'evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch' (8472) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72:",
+            "2026-10-28T03:22:41.8910607Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "2026-10-28T03:22:41.8911913Z ",
+            "2026-10-28T03:22:41.8912575Z ---- evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded stdout ----"
+          ]
+        },
+        {
+          "test": "evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded",
+          "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72",
+          "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "excerpt": [
+            "2026-10-28T03:22:41.8914508Z thread 'evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded' (1440) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72:",
+            "2026-10-28T03:22:41.8916339Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "2026-10-28T03:22:41.8917603Z ",
+            "2026-10-28T03:22:41.8918300Z ---- evaluated_shadow::tests::segmented::bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal stdout ----"
+          ]
+        },
+        {
+          "test": "evaluated_shadow::tests::segmented::bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal",
+          "location": "hepta-intelligence/src\\evaluated_shadow_segment_tests.rs:21:31",
+          "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "excerpt": [
+            "2026-10-28T03:22:41.8920367Z thread 'evaluated_shadow::tests::segmented::bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal' (7104) panicked at hepta-intelligence/src\\evaluated_shadow_segment_tests.rs:21:31:",
+            "2026-10-28T03:22:41.8922571Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "2026-10-28T03:22:41.8923317Z ",
+            "2026-10-28T03:22:41.8923830Z ---- outcome_credit_v2::tests::credit_failure_preserves_outcome_for_exact_reconciliation stdout ----"
+          ]
+        },
+        {
+          "test": "outcome_credit_v2::tests::credit_failure_preserves_outcome_for_exact_reconciliation",
+          "location": "hepta-intelligence/src\\outcome_credit_v2.rs:378:43",
+          "error": "directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "excerpt": [
+            "2026-10-28T03:22:41.8925441Z thread 'outcome_credit_v2::tests::credit_failure_preserves_outcome_for_exact_reconciliation' (2820) panicked at hepta-intelligence/src\\outcome_credit_v2.rs:378:43:",
+            "2026-10-28T03:22:41.8926942Z directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "2026-10-28T03:22:41.8927487Z ",
+            "2026-10-28T03:22:41.8929283Z ---- outcome_credit_v2::tests::product_path_records_outcome_correction_then_conserved_credit stdout ----"
+          ]
+        },
+        {
+          "test": "outcome_credit_v2::tests::product_path_records_outcome_correction_then_conserved_credit",
+          "location": "hepta-intelligence/src\\outcome_credit_v2.rs:378:43",
+          "error": "directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "excerpt": [
+            "2026-10-28T03:22:41.8931041Z thread 'outcome_credit_v2::tests::product_path_records_outcome_correction_then_conserved_credit' (7492) panicked at hepta-intelligence/src\\outcome_credit_v2.rs:378:43:",
+            "2026-10-28T03:22:41.8932567Z directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "2026-10-28T03:22:41.8933338Z ",
+            "2026-10-28T03:22:41.8933862Z ---- outcome_credit_v2::tests::run_episode_mismatch_rejects_before_any_outcome_append stdout ----"
+          ]
+        },
+        {
+          "test": "outcome_credit_v2::tests::run_episode_mismatch_rejects_before_any_outcome_append",
+          "location": "hepta-intelligence/src\\outcome_credit_v2.rs:378:43",
+          "error": "directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "excerpt": [
+            "2026-10-28T03:22:41.8935611Z thread 'outcome_credit_v2::tests::run_episode_mismatch_rejects_before_any_outcome_append' (3104) panicked at hepta-intelligence/src\\outcome_credit_v2.rs:378:43:",
+            "2026-10-28T03:22:41.8937316Z directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "2026-10-28T03:22:41.8937835Z ",
+            "2026-10-28T03:22:41.8938392Z ---- evaluated_shadow::tests::tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports stdout ----"
+          ]
+        },
+        {
+          "test": "evaluated_shadow::tests::tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports",
+          "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72",
+          "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "excerpt": [
+            "2026-10-28T03:22:41.8940178Z thread 'evaluated_shadow::tests::tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports' (2008) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72:",
+            "2026-10-28T03:22:41.8941892Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "2026-10-28T03:22:41.8942590Z ",
+            "2026-10-28T03:22:41.8943473Z ---- evaluated_shadow::tests::segmented::existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery stdout ----"
+          ]
+        },
+        {
+          "test": "evaluated_shadow::tests::segmented::existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery",
+          "location": "hepta-intelligence/src\\evaluated_shadow_segment_tests.rs:21:31",
+          "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "excerpt": [
+            "2026-10-28T03:22:41.8945559Z thread 'evaluated_shadow::tests::segmented::existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery' (1248) panicked at hepta-intelligence/src\\evaluated_shadow_segment_tests.rs:21:31:",
+            "2026-10-28T03:22:41.8948568Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "2026-10-28T03:22:41.8949264Z ",
+            "2026-10-28T03:22:41.8949820Z ---- prompt_delivery::tests::exercised_registry_payload_is_the_exact_context_attachment_input stdout ----"
+          ]
+        },
+        {
+          "test": "prompt_delivery::tests::exercised_registry_payload_is_the_exact_context_attachment_input",
+          "location": "hepta-intelligence/src\\prompt_delivery_tests.rs:43:57",
+          "error": "open durable registry: UnsafeStateDirectory",
+          "excerpt": [
+            "2026-10-28T03:22:41.8951940Z thread 'prompt_delivery::tests::exercised_registry_payload_is_the_exact_context_attachment_input' (5740) panicked at hepta-intelligence/src\\prompt_delivery_tests.rs:43:57:",
+            "2026-10-28T03:22:41.8953355Z open durable registry: UnsafeStateDirectory",
+            "2026-10-28T03:22:41.8953729Z ",
+            "2026-10-28T03:22:41.8954190Z ---- prompt_delivery::tests::compiler_rejects_registry_and_context_model_drift stdout ----"
+          ]
+        },
+        {
+          "test": "prompt_delivery::tests::compiler_rejects_registry_and_context_model_drift",
+          "location": "hepta-intelligence/src\\prompt_delivery_tests.rs:43:57",
+          "error": "open durable registry: UnsafeStateDirectory",
+          "excerpt": [
+            "2026-10-28T03:22:41.8955727Z thread 'prompt_delivery::tests::compiler_rejects_registry_and_context_model_drift' (7180) panicked at hepta-intelligence/src\\prompt_delivery_tests.rs:43:57:",
+            "2026-10-28T03:22:41.8957271Z open durable registry: UnsafeStateDirectory",
+            "2026-10-28T03:22:41.8957640Z ",
+            "2026-10-28T03:22:41.8958271Z ---- prompt_delivery::tests::revocation_after_exercise_prevents_delivery_of_the_selected_realization stdout ----"
+          ]
+        },
+        {
+          "test": "prompt_delivery::tests::revocation_after_exercise_prevents_delivery_of_the_selected_realization",
+          "location": "hepta-intelligence/src\\prompt_delivery_tests.rs:43:57",
+          "error": "open durable registry: UnsafeStateDirectory",
+          "excerpt": [
+            "2026-10-28T03:22:41.8960145Z thread 'prompt_delivery::tests::revocation_after_exercise_prevents_delivery_of_the_selected_realization' (5024) panicked at hepta-intelligence/src\\prompt_delivery_tests.rs:43:57:",
+            "2026-10-28T03:22:41.8961598Z open durable registry: UnsafeStateDirectory",
+            "2026-10-28T03:22:41.8961965Z ",
+            "2026-10-28T03:22:41.8962489Z ---- prompt_pipeline::tests::revocation_after_compilation_blocks_attachment_preparation stdout ----"
+          ]
+        },
+        {
+          "test": "prompt_pipeline::tests::revocation_after_compilation_blocks_attachment_preparation",
+          "location": "hepta-intelligence/src\\prompt_delivery_tests.rs:43:57",
+          "error": "open durable registry: UnsafeStateDirectory",
+          "excerpt": [
+            "2026-10-28T03:22:41.8964167Z thread 'prompt_pipeline::tests::revocation_after_compilation_blocks_attachment_preparation' (4124) panicked at hepta-intelligence/src\\prompt_delivery_tests.rs:43:57:",
+            "2026-10-28T03:22:41.8965528Z open durable registry: UnsafeStateDirectory",
+            "2026-10-28T03:22:41.8965879Z ",
+            "2026-10-28T03:22:41.8968261Z ---- prompt_pipeline::tests::materialization_drift_after_compilation_blocks_attachment_preparation stdout ----"
+          ]
+        },
+        {
+          "test": "prompt_pipeline::tests::materialization_drift_after_compilation_blocks_attachment_preparation",
+          "location": "hepta-intelligence/src\\prompt_delivery_tests.rs:43:57",
+          "error": "open durable registry: UnsafeStateDirectory",
+          "excerpt": [
+            "2026-10-28T03:22:41.8970253Z thread 'prompt_pipeline::tests::materialization_drift_after_compilation_blocks_attachment_preparation' (8856) panicked at hepta-intelligence/src\\prompt_delivery_tests.rs:43:57:",
+            "2026-10-28T03:22:41.8972339Z open durable registry: UnsafeStateDirectory",
+            "2026-10-28T03:22:41.8972715Z ",
+            "2026-10-28T03:22:41.8973303Z ---- prompt_pipeline::tests::exercised_portfolio_compiles_attaches_and_observes_exact_delivery stdout ----"
+          ]
+        },
+        {
+          "test": "prompt_pipeline::tests::exercised_portfolio_compiles_attaches_and_observes_exact_delivery",
+          "location": "hepta-intelligence/src\\prompt_delivery_tests.rs:43:57",
+          "error": "open durable registry: UnsafeStateDirectory",
+          "excerpt": [
+            "2026-10-28T03:22:41.8976239Z thread 'prompt_pipeline::tests::exercised_portfolio_compiles_attaches_and_observes_exact_delivery' (1436) panicked at hepta-intelligence/src\\prompt_delivery_tests.rs:43:57:",
+            "2026-10-28T03:22:41.8978449Z open durable registry: UnsafeStateDirectory",
+            "2026-10-28T03:22:41.8978822Z ",
+            "2026-10-28T03:22:41.8979345Z ---- prompt_pipeline::tests::serialization_without_selected_prompt_bytes_fails_closed stdout ----"
+          ]
+        },
+        {
+          "test": "prompt_pipeline::tests::serialization_without_selected_prompt_bytes_fails_closed",
+          "location": "hepta-intelligence/src\\prompt_delivery_tests.rs:43:57",
+          "error": "open durable registry: UnsafeStateDirectory",
+          "excerpt": [
+            "2026-10-28T03:22:41.8981359Z thread 'prompt_pipeline::tests::serialization_without_selected_prompt_bytes_fails_closed' (7504) panicked at hepta-intelligence/src\\prompt_delivery_tests.rs:43:57:",
+            "2026-10-28T03:22:41.8982738Z open durable registry: UnsafeStateDirectory",
+            "2026-10-28T03:22:41.8983094Z ",
+            "2026-10-28T03:22:41.8983101Z "
+          ]
+        },
+        {
+          "test": "authority_schema::tests::missing_and_replaced_authority_triggers_fail_closed_on_reopen",
+          "location": "hepta-authbus/src\\authority_schema_tests.rs:29:60",
+          "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "excerpt": [
+            "2026-10-28T03:22:41.4563156Z thread 'authority_schema::tests::missing_and_replaced_authority_triggers_fail_closed_on_reopen' (1448) panicked at hepta-authbus/src\\authority_schema_tests.rs:29:60:",
+            "2026-10-28T03:22:41.4564609Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "2026-10-28T03:22:41.4565821Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "2026-10-28T03:22:41.4566322Z "
+          ]
+        },
+        {
+          "test": "cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate",
+          "location": "hepta-memory/src\\cognitive_store_recovery_tests.rs:214:48",
+          "error": "pointer rename: Unavailable(\"Access is denied. (os error 5)\")",
+          "excerpt": [
+            "2026-10-28T02:58:49.6649144Z thread 'cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate' (3208) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:214:48:",
+            "2026-10-28T02:58:49.7128095Z pointer rename: Unavailable(\"Access is denied. (os error 5)\")",
+            "2026-10-28T02:58:49.7677737Z ",
+            "2026-10-28T02:58:49.8168488Z ---- cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers stdout ----"
+          ]
+        },
+        {
+          "test": "subset_rejects_missing_support_bad_grammar_and_omitted_observed_actions",
+          "location": "hepta-agentd/tests\\support\\terminal_cell_owner.rs:198:32",
+          "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "excerpt": [
+            "2026-10-28T03:22:41.3399169Z thread 'subset_rejects_missing_support_bad_grammar_and_omitted_observed_actions' (5848) panicked at hepta-agentd/tests\\support\\terminal_cell_owner.rs:198:32:",
+            "2026-10-28T03:22:41.3400807Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "2026-10-28T03:22:41.3401830Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "2026-10-28T03:22:41.3402369Z "
+          ]
+        },
+        {
+          "test": "observed_subset_keeps_complete_grammar_without_inventing_abstain_target",
+          "location": "hepta-agentd/tests\\support\\terminal_cell_owner.rs:198:32",
+          "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+          "excerpt": [
+            "2026-10-28T03:22:41.3404777Z thread 'observed_subset_keeps_complete_grammar_without_inventing_abstain_target' (11532) panicked at hepta-agentd/tests\\support\\terminal_cell_owner.rs:198:32:",
+            "2026-10-28T03:22:41.3406383Z called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "2026-10-28T03:22:41.3407097Z ",
+            "2026-10-28T03:22:41.3407103Z "
+          ]
+        },
+        {
+          "test": "runtime::tests::qualification_host_binds_one_local_turn_and_replays_exactly_once",
+          "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+          "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+          "excerpt": [
+            "2026-10-28T03:22:41.2425421Z thread 'runtime::tests::qualification_host_binds_one_local_turn_and_replays_exactly_once' (3448) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "2026-10-28T03:22:41.2427371Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-10-28T03:22:41.2427833Z ",
+            "2026-10-28T03:22:41.2428179Z ---- runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence stdout ----"
+          ]
+        },
+        {
+          "test": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+          "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+          "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+          "excerpt": [
+            "2026-10-28T03:22:41.2429243Z thread 'runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence' (11276) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "2026-10-28T03:22:41.2430297Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-10-28T03:22:41.2430941Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "2026-10-28T03:22:41.2431780Z "
+          ]
+        },
+        {
+          "test": "runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence",
+          "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+          "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+          "excerpt": [
+            "2026-10-28T03:22:41.2433807Z thread 'runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence' (9328) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "2026-10-28T03:22:41.2436156Z agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "2026-10-28T03:22:41.2436993Z ",
+            "2026-10-28T03:22:41.2437001Z "
+          ]
+        }
+      ]
+    },
+    {
+      "job_id": 122593677366,
+      "unique_findings": []
+    }
+  ]
+}

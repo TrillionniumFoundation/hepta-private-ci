@@ -1,0 +1,689 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-28T05:08:42.712468+00:00",
+  "kind": "windows_platform_boundary_baseline_evidence",
+  "base_source_head": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+  "delivery_head": "5b7bef4e5788f2cea2546f0cb620af471b4fbcf7",
+  "base_tested_merge": "246c974a33169f74db527fada9809965183ec6c6",
+  "delivery_tested_merge": "786bdcf50b76fa7fc782941543c937dadf8a76af",
+  "source_identity": {
+    "base_codex_rs_tree": "346caa752c4443bb1e2837e195aba2736c354d4b",
+    "delivery_codex_rs_tree": "346caa752c4443bb1e2837e195aba2736c354d4b",
+    "codex_rs_entire_tree_identical": true,
+    "base_bazel_workflow_blob": "8d8123c81dabc3cd38c2ef9847c1633e3ff1080c",
+    "delivery_bazel_workflow_blob": "8d8123c81dabc3cd38c2ef9847c1633e3ff1080c"
+  },
+  "base_ci": {
+    "pull_request": 4086,
+    "run_id": 40541734166,
+    "jobs": [
+      {
+        "id": 122330645731,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40541734166/job/122330645731"
+      },
+      {
+        "id": 122330645897,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40541734166/job/122330645897"
+      }
+    ],
+    "logs_retrieved_successfully_this_round": true,
+    "checkout_evidence": "Both logs show HEAD at 246c974a33169f74db527fada9809965183ec6c6, merging 0acfd9b27db910c180b0d8911f39aea469b7f864 into f8c9419df6ddeb36ff8b522a50219981fb8d9345."
+  },
+  "delivery_ci": {
+    "pull_request": 4145,
+    "run_id": 40620519468,
+    "jobs": [
+      {
+        "id": 122593677372,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40620519468/job/122593677372"
+      },
+      {
+        "id": 122593677696,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40620519468/job/122593677696"
+      },
+      {
+        "id": 122593677366,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40620519468/job/122593677366"
+      }
+    ]
+  },
+  "comparison": {
+    "matching_key": [
+      "test name",
+      "source path:line:column",
+      "first panic error line"
+    ],
+    "base_unique_platform_findings": 63,
+    "delivery_unique_platform_findings": 63,
+    "all_delivery_findings_exactly_present_in_base": true,
+    "base_and_delivery_sets_identical": true,
+    "new_delivery_platform_findings": 0,
+    "category_counts": {
+      "explicit_non_unix_private_state_refusal": 42,
+      "direct_directory_open_permission_denied": 19,
+      "read_only_regular_file_sync_all_permission_denied": 1,
+      "active_pointer_publication_permission_denied_suboperation_unresolved": 1
+    },
+    "current_round_test_fixture_patch_pending_windows_ci": 1,
+    "remaining_findings_without_new_targeted_fix": 62
+  },
+  "categories": {
+    "explicit_non_unix_private_state_refusal": [
+      {
+        "test": "automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen",
+        "location": "hepta-agentd/src\\automation_service_tests.rs:81:76",
+        "error": "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit",
+        "location": "hepta-agentd/src\\automation_service_tests.rs:81:76",
+        "error": "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "automation::service_tests::production_constructor_never_resumes_a_draining_owner",
+        "location": "hepta-agentd/src\\automation_service_tests.rs:81:76",
+        "error": "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement",
+        "location": "hepta-agentd/src\\automation_service_tests.rs:81:76",
+        "error": "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn",
+        "location": "hepta-agentd/src\\automation_service_tests.rs:81:76",
+        "error": "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding",
+        "location": "hepta-agentd/src\\browser_servo.rs:906:10",
+        "error": "authority: UnsafeStateDirectory",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "browser_servo::tests::non_effect_calls_never_enter_final_use_authority",
+        "location": "hepta-agentd/src\\browser_servo.rs:906:10",
+        "error": "authority: UnsafeStateDirectory",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary",
+        "location": "hepta-agentd/src\\browser_servo.rs:906:10",
+        "error": "authority: UnsafeStateDirectory",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen",
+        "location": "hepta-agentd/src\\automation_service_tests.rs:81:76",
+        "error": "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation",
+        "location": "hepta-agentd/src\\automation_service_tests.rs:81:76",
+        "error": "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation",
+        "location": "hepta-agentd/src\\cognitive_ranker_tests.rs:506:74",
+        "error": "called `Result::unwrap()` on an `Err` value: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host",
+        "location": "hepta-agentd/src\\prompt_runtime_tests.rs:511:33",
+        "error": "pipeline owner: RegistryOpen(\"UnsafeStateDirectory\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "runtime::tests::automation_generation_change_during_open_remains_fail_closed",
+        "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+        "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently",
+        "location": "hepta-agentd/src\\plasticity_runtime_lifetime_tests.rs:249:80",
+        "error": "state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor",
+        "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+        "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "runtime::tests::automation_owner_mismatch_remains_fail_closed",
+        "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+        "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation",
+        "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+        "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation",
+        "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+        "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "runtime::tests::generation_change_during_open_is_fenced_before_serving",
+        "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+        "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store",
+        "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+        "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe",
+        "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+        "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "runtime::tests::stale_generation_is_fenced_before_cognitive_store_open",
+        "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+        "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "runtime::tests::unavailable_automation_store_degrades_without_startup_failure",
+        "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+        "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error",
+        "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+        "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane",
+        "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+        "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress",
+        "location": "hepta-agentd/src\\state_isolation_tests.rs:123:46",
+        "error": "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it",
+        "location": "hepta-agentd/src\\state_isolation_tests.rs:220:47",
+        "error": "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access",
+        "location": "hepta-agentd/src\\state_isolation_tests.rs:639:47",
+        "error": "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent",
+        "location": "hepta-agentd/src\\state_isolation_tests.rs:163:47",
+        "error": "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership",
+        "location": "hepta-agentd/src\\state_isolation_tests.rs:659:47",
+        "error": "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "state::isolation_tests::serving_agent_survives_unrelated_registry_corruption",
+        "location": "hepta-agentd/src\\state_isolation_tests.rs:92:46",
+        "error": "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences",
+        "location": "hepta-agentd/src\\state_isolation_tests.rs:174:46",
+        "error": "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "prompt_delivery::tests::exercised_registry_payload_is_the_exact_context_attachment_input",
+        "location": "hepta-intelligence/src\\prompt_delivery_tests.rs:43:57",
+        "error": "open durable registry: UnsafeStateDirectory",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "prompt_delivery::tests::compiler_rejects_registry_and_context_model_drift",
+        "location": "hepta-intelligence/src\\prompt_delivery_tests.rs:43:57",
+        "error": "open durable registry: UnsafeStateDirectory",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "prompt_delivery::tests::revocation_after_exercise_prevents_delivery_of_the_selected_realization",
+        "location": "hepta-intelligence/src\\prompt_delivery_tests.rs:43:57",
+        "error": "open durable registry: UnsafeStateDirectory",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "prompt_pipeline::tests::revocation_after_compilation_blocks_attachment_preparation",
+        "location": "hepta-intelligence/src\\prompt_delivery_tests.rs:43:57",
+        "error": "open durable registry: UnsafeStateDirectory",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "prompt_pipeline::tests::materialization_drift_after_compilation_blocks_attachment_preparation",
+        "location": "hepta-intelligence/src\\prompt_delivery_tests.rs:43:57",
+        "error": "open durable registry: UnsafeStateDirectory",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "prompt_pipeline::tests::exercised_portfolio_compiles_attaches_and_observes_exact_delivery",
+        "location": "hepta-intelligence/src\\prompt_delivery_tests.rs:43:57",
+        "error": "open durable registry: UnsafeStateDirectory",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "prompt_pipeline::tests::serialization_without_selected_prompt_bytes_fails_closed",
+        "location": "hepta-intelligence/src\\prompt_delivery_tests.rs:43:57",
+        "error": "open durable registry: UnsafeStateDirectory",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "runtime::tests::qualification_host_binds_one_local_turn_and_replays_exactly_once",
+        "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+        "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+        "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+        "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence",
+        "location": "hepta-agentd/src\\runtime_tests.rs:113:78",
+        "error": "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      }
+    ],
+    "direct_directory_open_permission_denied": [
+      {
+        "test": "cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records",
+        "location": "hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52",
+        "error": "ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends",
+        "location": "hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52",
+        "error": "ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment",
+        "location": "hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52",
+        "error": "ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict",
+        "location": "hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52",
+        "error": "ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently",
+        "location": "hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52",
+        "error": "ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "head_job_id": 122593677372,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "evaluated_shadow::tests::abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome",
+        "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72",
+        "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes",
+        "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72",
+        "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port",
+        "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72",
+        "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "evaluated_shadow::tests::host_failure_or_substituted_intuition_never_reaches_the_durable_stage",
+        "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72",
+        "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch",
+        "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72",
+        "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded",
+        "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72",
+        "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "evaluated_shadow::tests::segmented::bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal",
+        "location": "hepta-intelligence/src\\evaluated_shadow_segment_tests.rs:21:31",
+        "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "outcome_credit_v2::tests::credit_failure_preserves_outcome_for_exact_reconciliation",
+        "location": "hepta-intelligence/src\\outcome_credit_v2.rs:378:43",
+        "error": "directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "outcome_credit_v2::tests::product_path_records_outcome_correction_then_conserved_credit",
+        "location": "hepta-intelligence/src\\outcome_credit_v2.rs:378:43",
+        "error": "directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "outcome_credit_v2::tests::run_episode_mismatch_rejects_before_any_outcome_append",
+        "location": "hepta-intelligence/src\\outcome_credit_v2.rs:378:43",
+        "error": "directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "evaluated_shadow::tests::tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports",
+        "location": "hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72",
+        "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "evaluated_shadow::tests::segmented::existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery",
+        "location": "hepta-intelligence/src\\evaluated_shadow_segment_tests.rs:21:31",
+        "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "subset_rejects_missing_support_bad_grammar_and_omitted_observed_actions",
+        "location": "hepta-agentd/tests\\support\\terminal_cell_owner.rs:198:32",
+        "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      },
+      {
+        "test": "observed_subset_keeps_complete_grammar_without_inventing_abstain_target",
+        "location": "hepta-agentd/tests\\support\\terminal_cell_owner.rs:198:32",
+        "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open"
+      }
+    ],
+    "read_only_regular_file_sync_all_permission_denied": [
+      {
+        "test": "authority_schema::tests::missing_and_replaced_authority_triggers_fail_closed_on_reopen",
+        "location": "hepta-authbus/src\\authority_schema_tests.rs:29:60",
+        "error": "called `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "test-only read/write handle patch by root; pending Windows CI"
+      }
+    ],
+    "active_pointer_publication_permission_denied_suboperation_unresolved": [
+      {
+        "test": "cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate",
+        "location": "hepta-memory/src\\cognitive_store_recovery_tests.rs:214:48",
+        "error": "pointer rename: Unavailable(\"Access is denied. (os error 5)\")",
+        "head_job_id": 122593677696,
+        "same_exact_finding_in_base_ci": true,
+        "current_round_fix_status": "no new targeted fix in this round; remains open",
+        "interpretation": "Active-pointer publication returned PermissionDenied. The expect label \"pointer rename\" does not identify the failing suboperation.",
+        "source_operation_scope": "publish_active_database includes temporary-file creation/write/flush, rename, and then File::open(root).sync_all(); the log does not isolate which operation returned PermissionDenied.",
+        "unresolved_boundary": "The fixture was not patched. Canonical-path fixture adjustments alone would not establish Windows directory durability."
+      }
+    ]
+  },
+  "explicit_contract": {
+    "kernel_authority_profile_identical_in_base_and_delivery": true,
+    "state_and_recovery": "open_state_dir owns locked private Unix state; claim verifies Ed25519 and syncs nonce consumption before dispatch, while with_verified_use rechecks live epoch/revocation under the same lock before callback entry. Uncertain persistence fences the handle.",
+    "remaining_work": [
+      "Host trust, current revocation distribution and backup anti-rollback remain external owner responsibilities; equivalent non-Unix ACL storage is not implemented."
+    ],
+    "productTestsExecuted": false,
+    "deploymentQualified": false,
+    "source_non_unix_behavior": "The non-Unix prepare_directory/open_private/entry_exists/replace functions in prompt-registry durable state, final-use state and authority leases explicitly return UnsafeStateDirectory. This behavior must not be changed into success merely to satisfy CI.",
+    "directory_durability": "GAP_CLOSURE_IMPLEMENTATION says Windows parent-directory durability remains unresolved and cannot be inferred from a no-op or a file-only flush. NDU_SYSTEM_EXECUTION and OBJECTIVE_TARGET_HOST_MEASUREMENT separately retain non-Unix target-host qualification boundaries."
+  },
+  "source_references": [
+    {
+      "path": "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json",
+      "base_blob": "0c241233fe131eafffec0f17aaba988d4c582cd3",
+      "delivery_blob": "85afa089c6023b0f88fd76a58cde018c615f709a",
+      "delivery_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/5b7bef4e5788f2cea2546f0cb620af471b4fbcf7/qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
+    },
+    {
+      "path": "docs/readiness/NDU_SYSTEM_EXECUTION.md",
+      "base_blob": "9e21bd587e229de3a0b51d11c3d6e8de81505c6b",
+      "delivery_blob": "9e21bd587e229de3a0b51d11c3d6e8de81505c6b",
+      "delivery_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/5b7bef4e5788f2cea2546f0cb620af471b4fbcf7/docs/readiness/NDU_SYSTEM_EXECUTION.md"
+    },
+    {
+      "path": "docs/readiness/GAP_CLOSURE_IMPLEMENTATION.md",
+      "base_blob": "d044ae658bc18a473540786dad8ebbdd6223e7c7",
+      "delivery_blob": "d044ae658bc18a473540786dad8ebbdd6223e7c7",
+      "delivery_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/5b7bef4e5788f2cea2546f0cb620af471b4fbcf7/docs/readiness/GAP_CLOSURE_IMPLEMENTATION.md"
+    },
+    {
+      "path": "docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md",
+      "base_blob": "1ec89394bc0eb9164d520af51b3e46d9b90317d7",
+      "delivery_blob": "1ec89394bc0eb9164d520af51b3e46d9b90317d7",
+      "delivery_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/5b7bef4e5788f2cea2546f0cb620af471b4fbcf7/docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "base_blob": "3664b6c697a2af1f38befe00d899d3ed4754e5ee",
+      "delivery_blob": "3664b6c697a2af1f38befe00d899d3ed4754e5ee",
+      "delivery_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/5b7bef4e5788f2cea2546f0cb620af471b4fbcf7/codex-rs/hepta-prompt-registry/src/durable.rs"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
+      "base_blob": "3e5b562ce2ccb12cfff3023e16530c03ec0e8836",
+      "delivery_blob": "3e5b562ce2ccb12cfff3023e16530c03ec0e8836",
+      "delivery_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/5b7bef4e5788f2cea2546f0cb620af471b4fbcf7/codex-rs/hepta-contracts/src/final_use_store.rs"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "base_blob": "d59bb4bf8582502c085253d87c6f81f59823c027",
+      "delivery_blob": "d59bb4bf8582502c085253d87c6f81f59823c027",
+      "delivery_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/5b7bef4e5788f2cea2546f0cb620af471b4fbcf7/codex-rs/hepta-contracts/src/authority_lease.rs"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "base_blob": "b52e3a1aa275c178a075677f5df9faa832173b41",
+      "delivery_blob": "b52e3a1aa275c178a075677f5df9faa832173b41",
+      "delivery_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/5b7bef4e5788f2cea2546f0cb620af471b4fbcf7/codex-rs/hepta-memory/src/cognitive_store.rs"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+      "base_blob": "72eaa499826321a2564614706a38d91dff149b72",
+      "delivery_blob": "72eaa499826321a2564614706a38d91dff149b72",
+      "delivery_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/5b7bef4e5788f2cea2546f0cb620af471b4fbcf7/codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs"
+    }
+  ],
+  "distinct_fixture_fix": {
+    "path": "codex-rs/hepta-authbus/src/authority_schema_tests.rs",
+    "line_at_delivery_head": 29,
+    "observed_operation": "File::open(&path).unwrap().sync_all().unwrap() on an ordinary copied SQLite file",
+    "current_round_change": "Root changed only the fixture to OpenOptions.read(true).write(true).open followed by sync_all. All corruption/trigger assertions remain; production owner code is unchanged.",
+    "native_windows_validation": "pending CI; no success claimed",
+    "primary_reference": "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-flushfilebuffers",
+    "documented_requirement": "FlushFileBuffers requires GENERIC_WRITE on the file handle.",
+    "patched_by_reviewer": false,
+    "working_file_identity": {
+      "path": "codex-rs/hepta-authbus/src/authority_schema_tests.rs",
+      "bytes": 3907,
+      "sha256": "ba517459cffde0cabbb87fc593cee22fb1b1e4d384744d1008ec93b94db1985b"
+    }
+  },
+  "receipts": [
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/ci_r2_base_windows_platform_excerpts.json",
+      "bytes": 57729,
+      "sha256": "da67564ea73deb6e2d9f321f1a18f018af0520934dd22a7c0ab355391a3c6f76"
+    },
+    {
+      "path": "/workspace/scratch/e8a4dc33549f/ci_r2_head_windows_platform_excerpts.json",
+      "bytes": 57092,
+      "sha256": "e33ac908fd7405bc8a360081cd55ee2591a5efcd2352e061b9da4a31e3392752"
+    }
+  ],
+  "preservation": {
+    "production_security_files_modified": false,
+    "tests_skipped": false,
+    "gates_weakened": false,
+    "rust_compilation_performed": false,
+    "new_qualification_claimed": false
+  },
+  "scope_limit": "This comparison establishes these 63 platform-related findings at delivery head 5b were already observed on base PR4086. It does not classify every other Windows failure or claim all platforms are qualified."
+}

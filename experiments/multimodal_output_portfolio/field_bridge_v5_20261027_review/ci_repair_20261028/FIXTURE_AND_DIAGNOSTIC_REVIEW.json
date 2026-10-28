@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-28T04:55:38.147252+00:00",
+  "kind": "working_tree_patch_review_before_coordinated_registration",
+  "source_head": "5b7bef4e5788f2cea2546f0cb620af471b4fbcf7",
+  "owned_paths": [
+    {
+      "path": ".github/workflows/cargo-deny.yml",
+      "bytes": 2036,
+      "sha256": "61c86b33375212bb428ed3673bbfed492a41c1a2d132d124f7b2840a452cc3dc"
+    },
+    {
+      "path": "scripts/capture_cargo_deny_diagnostic.py",
+      "bytes": 12693,
+      "sha256": "632978b8306a7fd7d5f3dcee65b9abfc55c34ad045992bc3b1f14a84984679cb"
+    },
+    {
+      "path": "scripts/test_capture_cargo_deny_diagnostic.py",
+      "bytes": 10525,
+      "sha256": "bfb252a1abcf597a47923d8aa66b669cd6f4601de07fc2bc7d3cb893b02a8465"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+      "bytes": 8033,
+      "sha256": "0a0f483e1d188e651d595fc03e26c9c1d4e40679af4bd74d1f9703470b113bf4"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_schema_tests.rs",
+      "bytes": 2207,
+      "sha256": "c99646a38854d84d2d781eb040b70487e3805e8e7cf6302b1859a240e1a0f2d4"
+    }
+  ],
+  "fixture_changes": {
+    "direct_sqlx_connection_calls_removed": 2,
+    "existing_codex_state_shim_used": true,
+    "new_cargo_dependencies": false,
+    "all_original_migration_schema_and_rollback_assertions_preserved": true,
+    "temporary_databases_kept_until_explicit_pool_close": true,
+    "positive_automation_reopen_fixture_uses_canonical_absolute_root": true,
+    "production_code_changed": false
+  },
+  "diagnostic_change": {
+    "original_docker_action_and_failure_preserved": true,
+    "trigger": "original cargo_deny step outcome == failure",
+    "artifact_uploaded_only_after_diagnostic_attempt": true,
+    "pinned_cargo_deny_version": "0.19.0",
+    "pinned_rust_version": "1.95.0",
+    "manifest": "codex-rs/Cargo.toml",
+    "config": "codex-rs/deny.toml",
+    "features": "all-features",
+    "check_set": "all default checks",
+    "additional_lockfile_guard": "--locked",
+    "scope_difference_disclosed": "Ubuntu host, explicit lock guard, JSON output, and later registry/advisory data; not a substitute for the original Docker result.",
+    "per_stream_retained_cap_bytes": 8388608,
+    "raw_observed_stream_hashes_and_lengths_retained": true,
+    "timeout_seconds": 600,
+    "raw_scientific_assets_uploaded": false,
+    "cargo_root_cause_closed": false,
+    "explicit_platform_required": {
+      "sys_platform": "linux",
+      "machine": "x86_64"
+    },
+    "initial_receipt": "atomic status=in_progress before preflight or download",
+    "checkpoints": [
+      "source",
+      "worktree_before",
+      "toolchain_preflight",
+      "downloading_tool",
+      "running_diagnostic",
+      "diagnostic_captured",
+      "worktree_after",
+      "postflight"
+    ],
+    "final_statuses": [
+      "completed",
+      "capture_error"
+    ],
+    "worktree_clean_before_after": "Includes untracked files; null means not observed successfully.",
+    "future_import_removed": true
+  },
+  "validation": [
+    {
+      "command": "python -B -m unittest discover -s scripts -p 'test_capture_cargo_deny_diagnostic.py' -v",
+      "result": "PASS",
+      "tests": 8,
+      "when": "before Ruff format",
+      "includes_checkpoint_subcases": [
+        "interrupted download retains in_progress receipt",
+        "completed capture preserves diagnostic exit23 and qualification=false",
+        "atomic replacement failure preserves prior complete receipt",
+        "non-x86_64 rejected before any process or download"
+      ]
+    },
+    {
+      "command": "UV_CACHE_DIR=/tmp/hepta-ruff-cache uv run --offline --frozen --project scripts ruff check scripts/capture_cargo_deny_diagnostic.py scripts/test_capture_cargo_deny_diagnostic.py",
+      "result": "PASS"
+    },
+    {
+      "command": "UV_CACHE_DIR=/tmp/hepta-ruff-cache uv run --offline --frozen --project scripts ruff format scripts/capture_cargo_deny_diagnostic.py scripts/test_capture_cargo_deny_diagnostic.py",
+      "result": "PASS",
+      "files_formatted": 2
+    },
+    {
+      "command": "rustfmt --check --edition 2024 on the two owned Rust fixture files using existing Rust 1.95.0",
+      "result": "PASS",
+      "warning": "imports_granularity=Item is unstable on the stable channel"
+    },
+    {
+      "command": "PyYAML safe_load of .github/workflows/cargo-deny.yml and inspection of the three relevant step objects",
+      "result": "PASS"
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    },
+    {
+      "command": "New unpack_verified helper against the existing official 0.19.0 archive, then captured --version",
+      "result": "PASS",
+      "version": "cargo-deny 0.19.0",
+      "exit_code": 0,
+      "binary_sha256": "06f9d1a0ba92b201bff1215b6dc24e669b212c151ecd52cae5d38aab73931d3c"
+    }
+  ],
+  "not_executed": [
+    "Rust package tests",
+    "Rust Clippy compilation",
+    "full cargo-deny graph/check locally",
+    "new host diagnostic workflow on GitHub"
+  ],
+  "final_repository_formatter": "Root will coordinate just fmt after all parallel patches are complete; no tests rerun after formatting.",
+  "local_metadata_attempt": {
+    "no_deps_json": "/tmp/hepta-ci-r2-metadata-nodeps.json",
+    "bytes": 895210,
+    "sha256": "606a3e51eef52b6461d435b813a1ccb5af49db03217365455ffe47bb50ddc67b",
+    "workspace_package_count": 193,
+    "resolve_is_null": true,
+    "full_locked_all_features_metadata_exit_code": 101,
+    "error_excerpt": "failed to unpack windows-sys v0.48.0 src/Windows/Win32/Devices/ImageAcquisition/mod.rs: No space left on device (os error 28)",
+    "full_resolved_graph_obtained": false,
+    "compilation_performed": false,
+    "resource_failure_is_remote_cargo_deny_root_cause": false,
+    "reclaimed_only": "/tmp/hepta-ci-r2-cargo/registry/src",
+    "compressed_archives_index_and_git_sources_retained": true,
+    "no_large_metadata_retry_planned": true
+  },
+  "remote_cargo_log": {
+    "job_id": 122593676917,
+    "fresh_attempt_this_round": "Transport closed",
+    "repeated_same_failed_request": false,
+    "root_cause": "undetermined"
+  },
+  "terminal_head_snapshot": {
+    "observed_at_utc": "2026-10-28T04:29:35Z",
+    "head": "5b7bef4e5788f2cea2546f0cb620af471b4fbcf7",
+    "merge": "786bdcf50b76fa7fc782941543c937dadf8a76af",
+    "checks": 44,
+    "success": 21,
+    "failure": 7,
+    "cancelled": 10,
+    "skipped": 6,
+    "in_progress": 0,
+    "source_head": "success",
+    "ndu_smoke": "success",
+    "codespell_policy": "success",
+    "raw_codespell_findings": 9,
+    "frozen_historical_findings": 9,
+    "new_findings": 0,
+    "all_three_native_jobs": "success",
+    "repository_globally_green": false
+  },
+  "root_patch_static_review": "Checked public migration trait calls and Bazel integration compile data, same-fence holdout recovery branch, authbus issuer TEXT schema and capacity/replay ordering, and platform absolute test paths. No obvious API/feature compile problem found; no Rust runtime validation claimed."
+}

@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-28T05:06:28.236026+00:00",
+  "kind": "independent_read_only_core_terminal_review",
+  "reviewer": "hepta_architecture",
+  "source_head": "5b7bef4e5788f2cea2546f0cb620af471b4fbcf7",
+  "working_tree_snapshot": "After paper agent final parameter comments and scoped rustfmt; before root coordinated commit. All seven file hashes independently read from the current worktree.",
+  "files": [
+    {
+      "path": "codex-rs/core/src/session/mod.rs",
+      "bytes": 215795,
+      "sha256": "d16ad51556a4f4f481cccea9fc21cbb04649d7595dcd62fbb2a6c58d4dee6967"
+    },
+    {
+      "path": "codex-rs/core/src/session/terminal_event.rs",
+      "bytes": 4419,
+      "sha256": "9b4db5911927bd477f842bbdc901517d3f55199df4c9fe7b7f6f98dc220f49f1"
+    },
+    {
+      "path": "codex-rs/core/src/session/tests.rs",
+      "bytes": 497138,
+      "sha256": "d14491483442d936deb921218e637d7bd7ae4cad83da27f4372e0936648f192e"
+    },
+    {
+      "path": "codex-rs/core/src/session/tests/terminal_event_tests.rs",
+      "bytes": 8923,
+      "sha256": "ec51185e184a479c898f788f4ca1cd6c154a2524ffd4320f1a27fbf74b318032"
+    },
+    {
+      "path": "codex-rs/core/src/tasks/mod.rs",
+      "bytes": 179917,
+      "sha256": "9c8be7d120e58bef5ffe8958dbb06ca8efd94f2d4e7330dc645e49f7696c009a"
+    },
+    {
+      "path": "codex-rs/core/src/tasks/mod_tests.rs",
+      "bytes": 12206,
+      "sha256": "2b02ca07cf67a981b591bd49100b41a55829795de453cd00b49af33af7e143cc"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "bytes": 23473,
+      "sha256": "06e168f88662514c6f338f00c2e845fd51b9f826b57df6043d4cb97cf7117400"
+    }
+  ],
+  "blocking_findings": [],
+  "conclusion": "No new semantic or lock-order blocking issue identified by static review; compilation and runtime validation remain outstanding.",
+  "evidence": [
+    {
+      "topic": "exact ownership",
+      "finding": "Publication helpers require a registry entry matching both Arc identity and completion pointers. Missing/retired identity returns false without publication or signalling. Ordinary no-publication completion fallback retains its existing stale-witness behavior."
+    },
+    {
+      "topic": "lock order",
+      "finding": "Commit holds active_turn, then the short synchronous registry lock. Enqueue and completion signalling have no await. Drain helpers clone registry snapshots and release their mutex before waiting; no newly introduced reverse order found."
+    },
+    {
+      "topic": "cancellation and watchdog",
+      "finding": "Before commit, owner Drop keeps incomplete witnesses and marks crossed side-effect phases failed_closed. After commit, is_complete handling and Drop do not resurrect a retired witness. A cancelled PreparedTerminalEvent is not replayed after non-idempotent side effects."
+    },
+    {
+      "topic": "shutdown and parent notification",
+      "finding": "Parent notification borrows prepared state and is awaited under the old completion fence before commit. Shutdown cannot pass that fence before synchronous event enqueue. Only a fresh pending-work reservation may start after commit."
+    },
+    {
+      "topic": "protocol compatibility",
+      "finding": "TurnComplete/TurnAborted have no legacy event expansion and no realtime text payload. The new prepare path preserves MCP observation, trace records and rollout append, and completes realtime handoff mutation before publication. Captured MultiAgentV2 error status is delivered without a later old callback overwriting a successor status."
+    },
+    {
+      "topic": "test structure",
+      "finding": "Checked FnMut wait_for_event support, test-module helper visibility, FutureExt import, persisted terminal exact equality/counts, gate-held shutdown pending state, exact registry rejection cases, and public [start1,complete1,start2,complete2] assertions. These tests were read, not executed by this reviewer."
+    }
+  ],
+  "limits": [
+    "No Rust compilation, Clippy or runtime tests were executed.",
+    "Receiving a parent completion envelope is not a new promise that the child is already available for admission; parent delivery remains inside the old fence.",
+    "A legitimate successor mailbox owner may already occupy the session when a later caller acts; the guarantee releases the completed owner, not all future ownership.",
+    "Persistence failures keep the existing generation=None/recovery-confirmation refusal behavior; this patch does not claim failed flushes were durable.",
+    "Windows private owner ACL and directory durability boundaries remain open and were not weakened or skipped."
+  ],
+  "changes_by_reviewer": false,
+  "qualification": false
+}
