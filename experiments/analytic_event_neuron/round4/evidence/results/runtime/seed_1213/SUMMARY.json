@@ -1,0 +1,119 @@
+{
+  "cpu_ns": 5619354182,
+  "data_sha256": "73e55deec5412a6d60e0e9ad68836b30b316e47ab4d8af885531e9ca3b07c5c8",
+  "executions": 2048,
+  "independent_trajectories": 256,
+  "model_file_sha256": "e53192ddc263a4c6a8c94cb7764a418fe87bd444f2270aea1ef38a7170309730",
+  "rows_sha256": "a2fa04283de2b85f6b0bc53c75dd2183e5a3af43ce55b0e33b88e500a1fb9dad",
+  "same_uid_hostile_isolation_claimed": false,
+  "seed": 1213,
+  "summary": {
+    "analytic": {
+      "cost": 0.089609375,
+      "cpu_ns": 26443133.046875,
+      "native_requests": 6.484375,
+      "native_roundtrip_ns": 21686205.265625,
+      "native_ticks": 10.375,
+      "packet_bytes": 47.7890625,
+      "squared_error": 0.16956243250851072,
+      "utility": 0.7408281924914892,
+      "wall_ns": 62896193.8828125
+    },
+    "direct": {
+      "cost": 0.08875000000000001,
+      "cpu_ns": 26494919.62890625,
+      "native_requests": 2.921875,
+      "native_roundtrip_ns": 17090494.0390625,
+      "native_ticks": 2.921875,
+      "packet_bytes": 54.35546875,
+      "squared_error": 0.14060727469564488,
+      "utility": 0.7706427253043551,
+      "wall_ns": 62714430.62109375
+    },
+    "event": {
+      "cost": 0.08875000000000001,
+      "cpu_ns": 27885280.1328125,
+      "native_requests": 2.921875,
+      "native_roundtrip_ns": 19906832.9609375,
+      "native_ticks": 2.921875,
+      "packet_bytes": 53.703125,
+      "squared_error": 0.14060727469564488,
+      "utility": 0.7706427253043551,
+      "wall_ns": 69405506.640625
+    },
+    "float": {
+      "cost": 0.08875000000000001,
+      "cpu_ns": 29117791.359375,
+      "native_requests": 2.921875,
+      "native_roundtrip_ns": 19984875.58984375,
+      "native_ticks": 2.921875,
+      "packet_bytes": 93.5,
+      "squared_error": 0.14060650994637902,
+      "utility": 0.7706434900536209,
+      "wall_ns": 71118929.35546875
+    },
+    "gaussian": {
+      "cost": 0.1022265625,
+      "cpu_ns": 24562003.015625,
+      "native_requests": 1.54296875,
+      "native_roundtrip_ns": 10421353.18359375,
+      "native_ticks": 1.54296875,
+      "packet_bytes": 61.71875,
+      "squared_error": 0.13455069691369692,
+      "utility": 0.763222740586303,
+      "wall_ns": 51555569.76171875
+    },
+    "history": {
+      "cost": 0.09863281250000001,
+      "cpu_ns": 29007954.0703125,
+      "native_requests": 2.953125,
+      "native_roundtrip_ns": 16279506.421875,
+      "native_ticks": 2.953125,
+      "packet_bytes": 54.13671875,
+      "squared_error": 0.14845517017436433,
+      "utility": 0.7529120173256356,
+      "wall_ns": 61630548.56640625
+    },
+    "numeric": {
+      "cost": 0.1006640625,
+      "cpu_ns": 27593026.57421875,
+      "native_requests": 7.5,
+      "native_roundtrip_ns": 17329427.4765625,
+      "native_ticks": 12.0,
+      "packet_bytes": 54.90625,
+      "squared_error": 0.187128643995901,
+      "utility": 0.712207293504099,
+      "wall_ns": 59372906.23828125
+    },
+    "probit": {
+      "cost": 0.1022265625,
+      "cpu_ns": 24233413.8828125,
+      "native_requests": 1.54296875,
+      "native_roundtrip_ns": 9202201.33203125,
+      "native_ticks": 1.54296875,
+      "packet_bytes": 61.71875,
+      "squared_error": 0.13455069691369692,
+      "utility": 0.763222740586303,
+      "wall_ns": 49247151.83984375
+    }
+  },
+  "target_only_in_scoring_process_after_final_readback": true,
+  "wall_ns": 1060625197564,
+  "worker": {
+    "archive": {
+      "all_entries_reopened_before_source_removal": true,
+      "bytes": 24741839,
+      "manifest_sha256": "bd136f672f616336924074f6415cf98f56ce5483e40af7168fb3d4a70577965d",
+      "path": "execution.zip",
+      "sha256": "d1f7c5d7a34cf7b96ea33411b991bff02f0a0f4eebf4940c003b286f8d49f8b3",
+      "verified_files": 43768
+    },
+    "cpu_ns": 956053810198,
+    "native": {
+      "requests": 7370,
+      "roundtrip_ns": 33766629445,
+      "ticks": 9518
+    },
+    "wall_ns": 1053254617712
+  }
+}
