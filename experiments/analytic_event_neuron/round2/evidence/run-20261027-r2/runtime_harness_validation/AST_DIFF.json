@@ -1,0 +1,29 @@
+{
+  "schema": "hepta.runtime-qualification-operational-amendment.v1",
+  "original_function_sha256": "0ba2ad3955d9e5f22a0a292a50491a776ddd08338444e380b52d8be4b044f25b",
+  "new_driver_sha256": "ca68ba58cece2639de96d75c11e82802dbe6fbd255ed05923f37ab11e8831392",
+  "frozen_engine_sha256": "b1cac1179e8fdab0380be2b9f619fdfac0ae3ee0c30a89f542ed785bcbf41194",
+  "main_freeze_sha256": "db5aa2ff983e27bc0009562acb7b095cd6c06aabf3ddea1378eb4b75e0354f68",
+  "reversible_qualification_only_source_replacements": [
+    {
+      "before": "def qualify(models_file, model_key, dataset_file, output, native_binary, native_receipt, runtime_mode=\"count_only\"):",
+      "after": "def qualify_confirmation(models_file, model_key, dataset_file, output, native_binary, native_receipt, runtime_mode=\"count_only\", *, parity_only=False):"
+    },
+    {
+      "before": "\"\"\"Use a frozen model and developmental histories; never confirmation labels.\"\"\"",
+      "after": "\"\"\"Qualify frozen engines on the registered fresh split, or explicit development parity.\"\"\""
+    },
+    {
+      "before": "        check(\"development split only\", str(source[\"split\"].item()) == \"development\")",
+      "after": "        required_split = \"development\" if parity_only else \"runtime_confirmation\"\n        check(\"explicit qualification split only\", type(parity_only) is bool and str(source[\"split\"].item()) == required_split)"
+    },
+    {
+      "before": "               \"source_sha256\": file_sha(__file__), \"production_agentd_owner\": False,",
+      "after": "               \"source_sha256\": file_sha(__file__), \"production_agentd_owner\": False,\n               \"qualification_data_role\": required_split, \"parity_only\": parity_only,\n               \"frozen_engine_source_sha256\": file_sha(frozen_engine.__file__),"
+    }
+  ],
+  "normalized_ast_identical_after_exact_admission_and_provenance_reversal": true,
+  "predictor_model_native_guard_worker_code_changed": false,
+  "dataset_relabeling": false,
+  "formal_runtime_data_generated": false
+}

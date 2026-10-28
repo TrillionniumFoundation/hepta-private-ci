@@ -1,0 +1,31 @@
+{
+  "schema": "hepta.runtime-harness-parity.v1",
+  "passed": true,
+  "runtime_confirmation_trajectories_generated": 0,
+  "dataset_relabeling": false,
+  "native_inference_source_unchanged": true,
+  "checks_each": 92,
+  "compared_nodes": 3898,
+  "maximum_compared_float_error": 0.0,
+  "nonidentical_float_nodes_within_declared_tolerance": 0,
+  "records": {
+    "FORECAST_RECEIPTS.json": {
+      "records": 12,
+      "normalized_sha256_original": "0da88757c88a9d088d4a69da780b4ee98f2413b534eb7cff3b382b5ed3f3489d",
+      "normalized_sha256_amended": "0da88757c88a9d088d4a69da780b4ee98f2413b534eb7cff3b382b5ed3f3489d"
+    },
+    "RECOVERY_RECEIPTS.json": {
+      "records": 2,
+      "normalized_sha256_original": "b8e3b72d1b43c09651eb48930878569ba4c6dc28645e57c6f57fcf3b04b9f217",
+      "normalized_sha256_amended": "b8e3b72d1b43c09651eb48930878569ba4c6dc28645e57c6f57fcf3b04b9f217"
+    },
+    "STRESS_RECEIPTS.json": {
+      "records": 1,
+      "normalized_sha256_original": "e16bbf70ea92e6b422f1bfcdd2a045454d1bed6b953db428f17150aa52ac203e",
+      "normalized_sha256_amended": "e16bbf70ea92e6b422f1bfcdd2a045454d1bed6b953db428f17150aa52ac203e"
+    }
+  },
+  "normalization_plan_sha256": "56e8a1ce6c89b54da7aa943eed53452a23bf86be55c0ac80d9049d2cf4c28f2a",
+  "driver_sha256": "ca68ba58cece2639de96d75c11e82802dbe6fbd255ed05923f37ab11e8831392",
+  "frozen_source_check": true
+}
