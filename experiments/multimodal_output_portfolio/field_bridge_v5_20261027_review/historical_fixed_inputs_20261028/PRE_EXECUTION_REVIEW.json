@@ -1,0 +1,177 @@
+{
+  "blocking_issues": [],
+  "decision": "PASS_FOR_SEPARATELY_REGISTERED_BOUNDED_DIAGNOSTIC_ONLY",
+  "external_reference": {
+    "scope": "Primary documentation independently opened: mathematically equivalent floating-point calculations and differing platforms need not be bitwise equal. This fact does not relax the registered exact-equality gate.",
+    "url": "https://docs.pytorch.org/docs/2.8/notes/numerical_accuracy.html"
+  },
+  "fixed_inputs": {
+    "arrays_per_batch": 7,
+    "batch_size": 128,
+    "batches": 20,
+    "identity_contract": "Unset preparation must equal all frozen current V5 panel identities; per-array dtype/shape/bytes/SHA, whole-NPZ identity, ordered metadata and whole-manifest SHA are bound before any inference case. Each case reads the same snapshot, cannot reconstruct panels, and verifies input tensors and disk bytes afterward.",
+    "inventory": [
+      "observation_pixels",
+      "observation_mask",
+      "observation_text_tokens",
+      "target_pixels",
+      "target_text_tokens",
+      "target_labels",
+      "latent_noise"
+    ],
+    "numeric_bytes": 49520640,
+    "rows": 2560
+  },
+  "forward_equivalence": {
+    "controls": "Both unset cases require all four outputs bitwise equal to original frozen forward on every batch; inventory drift and signed-zero differences are rejected. Unset raw/components must reproduce first-attempt/current-V5 bytes; new unset output records must match each other. No numerical tolerance.",
+    "operation": "decode(step(encode(observation, saved_noise), couple), None)",
+    "original_source": "field_bridge_20261027/adaptation.py::fixed_output, action=0, teacher=False; field_bridge_v3_20261027/learning.py::forward",
+    "returned_fields": [
+      "image_logits",
+      "text_logits",
+      "token_ids",
+      "digit_logits"
+    ]
+  },
+  "independent_review_corrections_closed": [
+    "Cap at generator encode entry, not only after decode or at postflight.",
+    "Treat missing and schema-invalid child receipts as unknown usage, never zero.",
+    "Bind child parent-record SHA, protocol, case order, preparation receipt and snapshot identity.",
+    "Preserve model/observer state_dict and configuration identities before/after; compare initial model configuration with frozen current assets.",
+    "Measure parent SUMMARY storage before publication and retain compact FAIL on overflow.",
+    "Report three inference roots without claiming only three model constructors; frozen asset loading may create auxiliary modules."
+  ],
+  "mathematical_interpretation": [
+    "The intervention fixes public inputs x, targets y, latent noise z, batch ordering and model/observer state theta. It removes regenerated input/noise values as differences between these five cases.",
+    "Unset parity demonstrates the saved-noise replacement at the two unset controls only. Explicit cases intentionally test a conditional fixed-input computation, not the original per-dispatch RNG-generating end-to-end program.",
+    "The post-decoding fixed-pixel probe holds uint8 bytes and target tensors fixed but executes float()/255 and MSE jointly. It does not isolate an individual reduction operator.",
+    "Finite replay deltas characterize this host/runtime, seed17 frozen original action0 and these already consumed panels. Two bracketed unset controls are not a population-level reproducibility or causal-identification guarantee.",
+    "No explicit case is selected as closest or best; every outcome is retained. Utility equality differs from complete historical raw-file byte identity.",
+    "Even a full historical file SHA match is a newly reconstructed byte identity, not recovery of the original stored copy, proof of historical CPU configuration, or a replay result for learned ordinary48 paths or other seeds.",
+    "Original historical FAIL, V5 candidate rejection, scientific admission=false, closed holdout and raw-upload approval block remain unchanged."
+  ],
+  "pure_tests": {
+    "command": [
+      "/workspace/scratch/e8a4dc33549f/runtime_v5/bin/python",
+      "-I",
+      "-B",
+      "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/historical_fixed_inputs_20261028/tests.py",
+      "-v"
+    ],
+    "exit_code": 0,
+    "names": [
+      "test_no_torch_import_or_real_preparation",
+      "test_exact_static_input_size_and_shape_inventory",
+      "test_snapshot_roundtrip_covers_every_input",
+      "test_snapshot_rejects_changed_latent_noise_bytes",
+      "test_snapshot_rejects_mutated_loaded_public_or_target_or_noise",
+      "test_snapshot_rejects_changed_manifest_or_unknown_file",
+      "test_snapshot_rejects_reordered_batches_even_with_rehashed_manifest",
+      "test_array_schema_rejects_missing_wrong_dtype_shape_and_nan",
+      "test_bitwise_parity_detects_signed_zero_and_each_output_field",
+      "test_parity_rejects_missing_output_field",
+      "test_exact_comparison_retains_single_ulp",
+      "test_missing_child_receipt_is_unknown_usage_not_zero",
+      "test_json_valid_but_invalid_result_schema_is_unknown",
+      "test_oversized_summary_preserves_child_files_and_fails_compactly",
+      "test_small_summary_counts_existing_parent_and_preparation_metadata",
+      "test_mse_uses_python_float_and_retains_observer_order",
+      "test_disk_gate_does_not_treat_zero_bavail_as_positive",
+      "test_ledger_stops_before_extra_generator_or_observer_call",
+      "test_independent_profile_limits_at_encode_before_decode",
+      "test_profile_forbids_preparation_model_and_child_input_reconstruction",
+      "test_protocol_budget_separates_previous_attempt_and_reserve"
+    ],
+    "stderr": "test_array_schema_rejects_missing_wrong_dtype_shape_and_nan (__main__.FixedInputTests.test_array_schema_rejects_missing_wrong_dtype_shape_and_nan) ... ok\ntest_bitwise_parity_detects_signed_zero_and_each_output_field (__main__.FixedInputTests.test_bitwise_parity_detects_signed_zero_and_each_output_field) ... ok\ntest_disk_gate_does_not_treat_zero_bavail_as_positive (__main__.FixedInputTests.test_disk_gate_does_not_treat_zero_bavail_as_positive) ... ok\ntest_exact_comparison_retains_single_ulp (__main__.FixedInputTests.test_exact_comparison_retains_single_ulp) ... ok\ntest_exact_static_input_size_and_shape_inventory (__main__.FixedInputTests.test_exact_static_input_size_and_shape_inventory) ... ok\ntest_independent_profile_limits_at_encode_before_decode (__main__.FixedInputTests.test_independent_profile_limits_at_encode_before_decode) ... ok\ntest_json_valid_but_invalid_result_schema_is_unknown (__main__.FixedInputTests.test_json_valid_but_invalid_result_schema_is_unknown) ... ok\ntest_ledger_stops_before_extra_generator_or_observer_call (__main__.FixedInputTests.test_ledger_stops_before_extra_generator_or_observer_call) ... ok\ntest_missing_child_receipt_is_unknown_usage_not_zero (__main__.FixedInputTests.test_missing_child_receipt_is_unknown_usage_not_zero) ... ok\ntest_mse_uses_python_float_and_retains_observer_order (__main__.FixedInputTests.test_mse_uses_python_float_and_retains_observer_order) ... ok\ntest_no_torch_import_or_real_preparation (__main__.FixedInputTests.test_no_torch_import_or_real_preparation) ... ok\ntest_oversized_summary_preserves_child_files_and_fails_compactly (__main__.FixedInputTests.test_oversized_summary_preserves_child_files_and_fails_compactly) ... ok\ntest_parity_rejects_missing_output_field (__main__.FixedInputTests.test_parity_rejects_missing_output_field) ... ok\ntest_profile_forbids_preparation_model_and_child_input_reconstruction (__main__.FixedInputTests.test_profile_forbids_preparation_model_and_child_input_reconstruction) ... ok\ntest_protocol_budget_separates_previous_attempt_and_reserve (__main__.FixedInputTests.test_protocol_budget_separates_previous_attempt_and_reserve) ... ok\ntest_small_summary_counts_existing_parent_and_preparation_metadata (__main__.FixedInputTests.test_small_summary_counts_existing_parent_and_preparation_metadata) ... ok\ntest_snapshot_rejects_changed_latent_noise_bytes (__main__.FixedInputTests.test_snapshot_rejects_changed_latent_noise_bytes) ... ok\ntest_snapshot_rejects_changed_manifest_or_unknown_file (__main__.FixedInputTests.test_snapshot_rejects_changed_manifest_or_unknown_file) ... ok\ntest_snapshot_rejects_mutated_loaded_public_or_target_or_noise (__main__.FixedInputTests.test_snapshot_rejects_mutated_loaded_public_or_target_or_noise) ... ok\ntest_snapshot_rejects_reordered_batches_even_with_rehashed_manifest (__main__.FixedInputTests.test_snapshot_rejects_reordered_batches_even_with_rehashed_manifest) ... ok\ntest_snapshot_roundtrip_covers_every_input (__main__.FixedInputTests.test_snapshot_roundtrip_covers_every_input) ... ok\n\n----------------------------------------------------------------------\nRan 21 tests in 0.095s\n\nOK\n",
+    "stdout": "",
+    "tests_passed": 21,
+    "wall_ns": 339905819
+  },
+  "read_only_input_preflight": {
+    "first_attempt_summary": {
+      "bytes": 2712231,
+      "sha256": "555ab819d5d3215fc34b901db7a70aa89c4e4363719c5bc8eadfbffadd786642"
+    },
+    "frozen_scientific_source_bindings_verified": 64,
+    "input_bindings_verified": 36,
+    "original_failed_audit": {
+      "bytes": 213,
+      "sha256": "35af3341f3fc283c41beda469e5c9ff2531f7bf01d537cb4dcc9c4a7fd6b42df"
+    }
+  },
+  "registration_required_before_prepare_or_model": true,
+  "remaining_execution_conditions": [
+    "Register these exact six sources and verify Git blobs before preparation.",
+    "Re-evaluate the prospective disk gate at parent and child launch; this review does not reserve disk.",
+    "Execute the fixed cases once with no adaptive retry, no new holdout and no training.",
+    "Any execution/control/accounting failure remains a diagnostic failure; preserve prior and current evidence."
+  ],
+  "resource_review": {
+    "failure_accounting": "Failed cases retain attempted ledger and actual function-entry profile separately. Missing or schema-invalid RESULT means actual_totals=null, resource_accounting_complete=false, original receipt bytes preserved, sealed-subset totals and reserved per-case ceilings explicit. Counts are not FLOPs or latency.",
+    "final_summary_bound": "Complete UTF-8 bytes plus existing metadata are measured before write. Overflow writes compact FAIL with child references and unwritten-full-summary identity; no child evidence is deleted and diagnostic completion is false.",
+    "new_call_upper_bounds": {
+      "generator_examples": 17920,
+      "generator_panel_calls": 140,
+      "observer_calls": 400,
+      "observer_digit_examples": 51200
+    },
+    "precall_guards": "LimitedCosts bounds generator/observer invocation and example budgets before work. Independent profile checks generator encode entry, decode entry and observer forward entry; successful counts must agree exactly.",
+    "previous_attempt_accounted_separately": {
+      "generator_examples": 10240,
+      "generator_panel_calls": 80,
+      "observer_calls": 320,
+      "observer_digit_examples": 40960
+    },
+    "storage": {
+      "final_metadata_check": "Before SUMMARY is written, serialize its complete annotated UTF-8 bytes and add existing parent/preparation metadata bytes (exclude separately bounded case/snapshot directories). If total exceeds 16MiB, retain all child evidence and write only compact FAIL summary with child receipts, actual/unknown counts, full unwritten summary length/hash and measured metadata usage; execution_complete=false and diagnostic_interpretable=false. If existing metadata already exceeded the bound, the compact failure still reports within_bound=false; no successful bound claim. No model retry.",
+      "maximum_new_outputs_bytes": 167772160,
+      "minimum_before_preparation_bytes": 436207616,
+      "parent_metadata_bytes": 16777216,
+      "per_case_bytes": 16777216,
+      "reserve_bytes": 268435456,
+      "rule": "Before preparation and before each child, record f_bfree, f_bavail, effective UID and remaining output bound. Only effective UID 0 uses f_bfree as allocatable; other users use f_bavail. Require allocatable >= remaining output bound + 256MiB reserve. Preserve failure and launch no further stage when insufficient. Do not claim f_bavail is positive. Recheck inside every child to reduce shared-filesystem races; remaining filesystem races remain possible.",
+      "snapshot_bytes": 67108864
+    }
+  },
+  "reviewed_utc": "2026-10-28T05:17:17.052428+00:00",
+  "reviewer": "paper_analysis",
+  "schema": "hepta.v5.fixed-input-independent-preexecution-review.1",
+  "scientific_execution_by_reviewer": {
+    "generator_calls": 0,
+    "model_instances": 0,
+    "new_holdout_access": false,
+    "observer_calls": 0,
+    "prepare_calls": 0,
+    "torch_imported": false,
+    "training_calls": 0
+  },
+  "source_directory": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/historical_fixed_inputs_20261028",
+  "source_files": {
+    "PROTOCOL.json": {
+      "bytes": 25238,
+      "sha256": "7cb77b9bf7ce7c901eb13d73389eb20b46fb40dcd44e99241aa3033f39127449"
+    },
+    "fixed_inputs_common.py": {
+      "bytes": 15790,
+      "sha256": "9e0db9f44cd7fac60822572b103c4d33a1df770e7c6e4024079f249f69317784"
+    },
+    "fixed_inputs_score.py": {
+      "bytes": 10807,
+      "sha256": "61f25fa42fbefc9baf8ab5e519fd3ac0e9a4fce153e958bacc59c1395f7b58a2"
+    },
+    "fixed_inputs_snapshot.py": {
+      "bytes": 9391,
+      "sha256": "59d0005f2ca14172bc228ca38688674f32ca2c74328a2643c4a006b3073b4441"
+    },
+    "run.py": {
+      "bytes": 19974,
+      "sha256": "a920ac7616e25caef02a5dc7969ce3d395593edd9034fc0c2265f6ca4ce84a14"
+    },
+    "tests.py": {
+      "bytes": 17320,
+      "sha256": "2ff7c95b3a250d1dc126e26dc40b4433e6792f6a09557883ccd784ba87ce26ee"
+    }
+  },
+  "sources_unchanged_during_verification": true,
+  "study_id": "hepta.field-bridge.v5.historical-fixed-inputs.20261028.seed17.1"
+}
