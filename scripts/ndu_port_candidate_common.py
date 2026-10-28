@@ -13,7 +13,7 @@ import tomllib
 
 
 SCHEMA = "hepta.ci.port-candidate.v1"
-RECIPE = "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v5.json"
+RECIPE = "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v6.json"
 LOCKS = ("codex-rs/Cargo.lock", "MODULE.bazel.lock")
 POLICIES = (
     "codex-rs/deny.toml",
