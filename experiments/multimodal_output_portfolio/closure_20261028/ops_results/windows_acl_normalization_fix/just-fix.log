@@ -1,0 +1,10 @@
+cargo clippy --fix --tests --allow-dirty {args}
+error: failed to load manifest for workspace member `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth`
+referenced by workspace at `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/Cargo.toml`
+
+Caused by:
+  failed to read `/dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/aws-auth/Cargo.toml`
+
+Caused by:
+  No such file or directory (os error 2)
+error: recipe `fix` failed on line 58 with exit code 101

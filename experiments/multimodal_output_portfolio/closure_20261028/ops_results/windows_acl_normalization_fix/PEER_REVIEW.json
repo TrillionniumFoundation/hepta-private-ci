@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.windows-acl-normalization-independent-source-review.v1",
+  "reviewer": "native_tail",
+  "reviewed_preformat_new_module_sha256": "5b7bc3a867eb432fbafb413dbdc9be905e52ecdf15a94666601782a082b14108",
+  "formatted_new_module_sha256": "21951cb454c3424e6467553b34c36d96e820bac12df0de88daf7d04759282805",
+  "scope": "Read-only source and official API contract review; no Windows compilation or execution.",
+  "findings": [
+    "Same READ_CONTROL File supplies GetFileInformationByHandle and GetSecurityInfo. ReOpenFile requests READ_CONTROL|WRITE_DAC only for a real repair, and the current DACL is reread before SetSecurityInfo on that same object.",
+    "LocalFree allocations and File::from_raw_handle ownership are paired; API errors propagate.",
+    "Only matching-SID leading explicit denies contribute. NO_PROPAGATE, inherited or unsupported ACEs do not certify coverage. Directory coverage requires every effective/container/object bit; file scope requires effective coverage.",
+    "No token flags, access masks or permission expectations were loosened. MAXIMUM_ALLOWED is not used."
+  ],
+  "conclusion": "No evident new source/API blocker; native compilation and unchanged 26-check observation remain pending.",
+  "primary_api_sources": [
+    "https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-reopenfile",
+    "https://learn.microsoft.com/en-us/windows/win32/api/aclapi/nf-aclapi-setsecurityinfo"
+  ]
+}

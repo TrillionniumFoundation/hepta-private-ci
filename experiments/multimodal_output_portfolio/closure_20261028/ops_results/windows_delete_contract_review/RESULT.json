@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.windows-delete-isolation-review.v1",
+  "status": "open",
+  "evidence": "../windows_acl_native_b076/RESULT.json",
+  "native_artifact_sha256": "727f4f5628793ffcbb359bef20b30d96feddfb107f5ea699b086473df84ad698",
+  "observed_scope": "Exact original legacy workspace-write production token and ACL functions; owned temporary fixtures only.",
+  "observations": [
+    "Ordinary outside writes are refused while full reads and authorized workspace writes succeed.",
+    "Outside/protected parent FILE_DELETE_CHILD-only opens succeed; adding FILE_WRITE_DATA is refused. Actual outside file/directory and protected .git deletion succeeds.",
+    "The partial root DELETE-only open is refused. Do not generalize that all DELETE checks bypass restricting SIDs."
+  ],
+  "inference": [
+    "Fixing ACE representation and repeated repair cannot remove the independent parent deletion authorization path.",
+    "Removing FILE_DELETE_CHILD from capability allow masks is insufficient: this is already done, and the successful path remains under broad normal identity grants.",
+    "An added child capability deny alone cannot certify refusal through every parent-delete route shown by the actual native probe. No same-token/same-full-read contract repair has been established."
+  ],
+  "rejected_shortcuts": [
+    "Removing WRITE_RESTRICTED or adding broad identity restricting SIDs changes the access contract.",
+    "Full-disk ACL rewrites, weakening outside-deletion tests, or changing a failed native expectation to success do not close this blocker.",
+    "A user-space wrapper or syscall hook is not an enforcement boundary for arbitrary native child processes.",
+    "A lower integrity label alone is not a proof covering outside resources at equal/lower integrity."
+  ],
+  "concrete_next_options": [
+    {
+      "option": "Explicit unsupported legacy admission until an enforcing backend exists",
+      "scope": "A containment measure before capability SID creation or ACL mutation, with precise policy/backend error and no side effects.",
+      "claim_limit": "Retain original functional positive/negative gates as unresolved; rejection is not implementation of full-read/workspace-write semantics."
+    },
+    {
+      "option": "Kernel-enforced namespace or filesystem mediation",
+      "scope": "Keep original host path semantics only if a trusted enforcement layer controls all child file operations and target/parent identities.",
+      "required_cases": [
+        "Open with DELETE and FILE_DELETE_CHILD, delete-on-close, rename/replace, hard-link replacement, and disposition/ex variants.",
+        "Reparse points, junctions, hard-link aliases, preexisting/inherited handles, child-process identity, policy lifetime and PID reuse.",
+        "Inside writes/deletes and full permitted reads continue working; outside and protected-child effects remain refused."
+      ],
+      "claim_limit": "No such backend was implemented or executed in this change."
+    },
+    {
+      "option": "Isolated guest with explicit read-only host mappings and separately admitted writable data",
+      "scope": "Windows Sandbox supports read-only host mappings; a new adapter must test exact namespace and exclusion semantics.",
+      "claim_limit": "Read-only mapping documentation does not prove nested protected-path behavior or equivalence to the legacy host-path API. This is a new backend contract, not a one-flag replacement."
+    }
+  ],
+  "appcontainer_boundary": "AppContainer requires an additional application/capability principal for resource access; substituting it does not automatically preserve the legacy full-user-readable host namespace.",
+  "primary_sources": {
+    "create_restricted_token": "https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-createrestrictedtoken",
+    "delete_file": "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-deletefilew",
+    "rename_replace_delete_authorization": "https://learn.microsoft.com/en-us/windows-hardware/drivers/ifs/irp-mj-set-information3",
+    "appcontainer_launch": "https://learn.microsoft.com/en-us/windows/win32/secauthz/implementing-an-appcontainer",
+    "sandbox_readonly_mappings": "https://learn.microsoft.com/en-us/windows/security/application-security/application-isolation/windows-sandbox/windows-sandbox-configure-using-wsb-file",
+    "filter_file_information": "https://learn.microsoft.com/en-us/windows-hardware/drivers/ifs/flt-parameters-for-irp-mj-set-information"
+  },
+  "production_policy_changed": false,
+  "additional_native_experiments": 0,
+  "sandbox_security_qualification": false
+}

@@ -1,0 +1,72 @@
+{
+  "schema": "hepta.windows-acl-normalization-publish.v1",
+  "baseline_head": "792beb14600f9b49b04ed18f9061e11d0e163759",
+  "files": {
+    "codex-rs/windows-sandbox-rs/src/acl.rs": {
+      "mode": "100644",
+      "bytes": 23412,
+      "sha256": "4e4f1d0ad6fc21f1fa92234ed3dbe027fc314dfe6171b3d74a2405e122383e29",
+      "base_sha256": "58976c6d1594c116dfd108316bb748b5cf2e9f108785605eaa93c96b77145b83"
+    },
+    "codex-rs/windows-sandbox-rs/src/acl_deny.rs": {
+      "mode": "100644",
+      "bytes": 9517,
+      "sha256": "21951cb454c3424e6467553b34c36d96e820bac12df0de88daf7d04759282805",
+      "base_sha256": null
+    },
+    "codex-rs/windows-sandbox-rs/src/acl_tests.rs": {
+      "mode": "100644",
+      "bytes": 13241,
+      "sha256": "6dab89d8198dc6429b3dca4d0e7525d560e37969523c73768f7717b0e1da36ee",
+      "base_sha256": "45c313a55741e798af7efc3ef3d9b3878f6ffa092ad77fe2457dacab777db06b"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe.py": {
+      "mode": "100644",
+      "bytes": 14340,
+      "sha256": "1a902f310c72a7578d042a765ed928ccc2d641671894e4aa924c55d0a59d1c5f",
+      "base_sha256": "c616d6b9456b72f19f5a718d6d2fef281ca57c6c8fb08f540544be782cdfbc96"
+    }
+  },
+  "evidence_files": {
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_acl_normalization_fix/CODESPELL.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_acl_normalization_fix/CODESPELL_BASE_PYTHON_ATTEMPT.log": {
+      "bytes": 101,
+      "sha256": "2c32b7495996d60c964e7ecd3df1f9b98f849662b154a8dfe1fa68f956223489"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_acl_normalization_fix/DIFF_CHECK.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_acl_normalization_fix/FORMAT.json": {
+      "bytes": 232,
+      "sha256": "237a40fc79329760828823127b1250b7a15de9b0950fbf6f62b53beef80b8183"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_acl_normalization_fix/PEER_REVIEW.json": {
+      "bytes": 1448,
+      "sha256": "a395e871d027c9044e313e918d53575d04113e6e8df734f37528892eb82ef9b7"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_acl_normalization_fix/README.md": {
+      "bytes": 2196,
+      "sha256": "1b58eccf88bb2b97daa43d743e9a8d0b391aa0a88f1cffe1c237e210b8e3958c"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_acl_normalization_fix/VALIDATION.json": {
+      "bytes": 1393,
+      "sha256": "1f8c56d1eeb20f150bff8ea61b4f9ecba5a3fe8d13430dccfc903f2ce5d3eb76"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_acl_normalization_fix/just-fix.log": {
+      "bytes": 462,
+      "sha256": "73c71fa32cb474620f4b6e0ddc8130068b59aef2a10d663afa9aab8964785d83"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ops_results/windows_acl_normalization_fix/just-test.log": {
+      "bytes": 499,
+      "sha256": "e81097acc8643f3069b3041813e61895acdcbe6f7ba1de0f55ff96dc4502c670"
+    }
+  },
+  "token_flags_or_permission_masks_changed": false,
+  "historical_evidence_changed": false,
+  "native_security_qualification": false,
+  "remaining_blocker": "Real parent DELETE_CHILD outside-deletion bypass remains open."
+}
