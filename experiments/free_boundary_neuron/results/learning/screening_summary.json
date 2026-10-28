@@ -1,0 +1,542 @@
+{
+  "arm_means": {
+    "id_test": {
+      "direct:first_passage": {
+        "active_cell_updates_until_decision": 47240,
+        "active_spikes_until_decision": 19970.4,
+        "actual_dense_neural_cell_updates": 131072,
+        "coverage": 0.99765625,
+        "inference_seconds": 0.004115763799200067,
+        "mean_observations": 5.7666015625,
+        "mean_utility": 0.49301562499999996
+      },
+      "direct:standard": {
+        "active_cell_updates_until_decision": 50721.6,
+        "active_spikes_until_decision": 29010.8,
+        "actual_dense_neural_cell_updates": 131072,
+        "coverage": 0.9984375,
+        "inference_seconds": 0.0036114761991484557,
+        "mean_observations": 6.1916015625,
+        "mean_utility": 0.509814453125
+      },
+      "fixed:first_passage": {
+        "active_cell_updates_until_decision": 44451.2,
+        "active_spikes_until_decision": 28123.2,
+        "actual_dense_neural_cell_updates": 131072,
+        "coverage": 0.9857421875,
+        "inference_seconds": 0.0034203666014946065,
+        "mean_observations": 5.426171875,
+        "mean_utility": 0.508478515625
+      },
+      "fixed:standard": {
+        "active_cell_updates_until_decision": 39508.8,
+        "active_spikes_until_decision": 24569.2,
+        "actual_dense_neural_cell_updates": 131072,
+        "coverage": 0.97890625,
+        "inference_seconds": 0.003084481999394484,
+        "mean_observations": 4.8228515625,
+        "mean_utility": 0.5014101562500001
+      },
+      "free:first_passage": {
+        "active_cell_updates_until_decision": 37721.6,
+        "active_spikes_until_decision": 23682.6,
+        "actual_dense_neural_cell_updates": 131072,
+        "coverage": 0.99765625,
+        "inference_seconds": 0.005124674400576623,
+        "mean_observations": 4.6046875,
+        "mean_utility": 0.506697265625
+      },
+      "free:standard": {
+        "active_cell_updates_until_decision": 42316.8,
+        "active_spikes_until_decision": 26950.2,
+        "actual_dense_neural_cell_updates": 131072,
+        "coverage": 0.9966796875,
+        "inference_seconds": 0.004445200599730015,
+        "mean_observations": 5.165625,
+        "mean_utility": 0.5116601562499999
+      }
+    },
+    "ood_test": {
+      "direct:first_passage": {
+        "active_cell_updates_until_decision": 54998.4,
+        "active_spikes_until_decision": 21771.8,
+        "actual_dense_neural_cell_updates": 131072,
+        "coverage": 0.9916015625,
+        "inference_seconds": 0.003580839200003538,
+        "mean_observations": 6.713671875,
+        "mean_utility": 0.1777138671875
+      },
+      "direct:standard": {
+        "active_cell_updates_until_decision": 61147.2,
+        "active_spikes_until_decision": 30016.4,
+        "actual_dense_neural_cell_updates": 131072,
+        "coverage": 0.994921875,
+        "inference_seconds": 0.004204479399777483,
+        "mean_observations": 7.4642578125,
+        "mean_utility": 0.16461718750000004
+      },
+      "fixed:first_passage": {
+        "active_cell_updates_until_decision": 52182.4,
+        "active_spikes_until_decision": 28321.2,
+        "actual_dense_neural_cell_updates": 131072,
+        "coverage": 0.977734375,
+        "inference_seconds": 0.0031556146015645934,
+        "mean_observations": 6.369921875,
+        "mean_utility": 0.1922021484375
+      },
+      "fixed:standard": {
+        "active_cell_updates_until_decision": 44504,
+        "active_spikes_until_decision": 24053.6,
+        "actual_dense_neural_cell_updates": 131072,
+        "coverage": 0.9759765625,
+        "inference_seconds": 0.003111830599664245,
+        "mean_observations": 5.4326171875,
+        "mean_utility": 0.2132607421875
+      },
+      "free:first_passage": {
+        "active_cell_updates_until_decision": 25827.2,
+        "active_spikes_until_decision": 13937.2,
+        "actual_dense_neural_cell_updates": 131072,
+        "coverage": 0.9748046875,
+        "inference_seconds": 0.004759680001006928,
+        "mean_observations": 3.152734375,
+        "mean_utility": 0.255837890625
+      },
+      "free:standard": {
+        "active_cell_updates_until_decision": 28371.2,
+        "active_spikes_until_decision": 15682.6,
+        "actual_dense_neural_cell_updates": 131072,
+        "coverage": 0.9326171875,
+        "inference_seconds": 0.004608313399512553,
+        "mean_observations": 3.46328125,
+        "mean_utility": 0.26842675781249997
+      }
+    }
+  },
+  "limits": [
+    "Secondary intervals are descriptive and are not extra confirmatory tests.",
+    "The neural free-boundary arm uses a known task model; raw-belief DP isolates this advantage.",
+    "Dense measured inference work is separate from hypothetical stopped-prefix work.",
+    "Surrogate parameters stay fixed to isolate the six-arm comparison."
+  ],
+  "phase": "screening",
+  "predeclared_secondary_contrasts": {
+    "id_test": {
+      "boundary_gradient_interaction_free_vs_direct": {
+        "confirmatory_claim": false,
+        "descriptive_95_ci": [
+          -0.0012463110118937169,
+          0.024918186011893773
+        ],
+        "mean_difference": 0.011835937500000027,
+        "n_independent_seeds": 5,
+        "paired_differences": [
+          0.0050000000000000044,
+          0.0062207031250000044,
+          0.030439453125000182,
+          0.009374999999999911,
+          0.008144531250000031
+        ]
+      },
+      "fpt_minus_standard:direct": {
+        "confirmatory_claim": false,
+        "descriptive_95_ci": [
+          -0.02181648148364743,
+          -0.011781174766352657
+        ],
+        "mean_difference": -0.016798828125000043,
+        "n_independent_seeds": 5,
+        "paired_differences": [
+          -0.01907226562500003,
+          -0.016572265625000138,
+          -0.019775390625,
+          -0.009892578124999996,
+          -0.01868164062500005
+        ]
+      },
+      "fpt_minus_standard:fixed": {
+        "confirmatory_claim": false,
+        "descriptive_95_ci": [
+          -0.009025027559056976,
+          0.023161746309056885
+        ],
+        "mean_difference": 0.007068359374999955,
+        "n_independent_seeds": 5,
+        "paired_differences": [
+          0.0005859374999999667,
+          0.00570312499999992,
+          -0.005429687500000058,
+          0.028749999999999942,
+          0.0057324218750000044
+        ]
+      },
+      "fpt_minus_standard:free": {
+        "confirmatory_claim": false,
+        "descriptive_95_ci": [
+          -0.017488518611180663,
+          0.007562737361180654
+        ],
+        "mean_difference": -0.004962890625000005,
+        "n_independent_seeds": 5,
+        "paired_differences": [
+          -0.014072265625000024,
+          -0.010351562500000133,
+          0.010664062500000182,
+          -0.0005175781250000844,
+          -0.010537109374999964
+        ]
+      },
+      "free_minus_direct:first_passage": {
+        "confirmatory_claim": false,
+        "descriptive_95_ci": [
+          -0.007480960492683642,
+          0.03484424174268372
+        ],
+        "mean_difference": 0.013681640625000036,
+        "n_independent_seeds": 5,
+        "paired_differences": [
+          0.005634765625000038,
+          -0.0017187499999999911,
+          0.0426171875000001,
+          0.008974609374999942,
+          0.012900390625000091
+        ]
+      },
+      "free_minus_direct:standard": {
+        "confirmatory_claim": false,
+        "descriptive_95_ci": [
+          -0.007309842338825386,
+          0.01100124858882538
+        ],
+        "mean_difference": 0.0018457031249999977,
+        "n_independent_seeds": 5,
+        "paired_differences": [
+          0.0006347656250000333,
+          -0.007939453124999996,
+          0.012177734374999916,
+          -0.0004003906249999689,
+          0.0047558593750000044
+        ]
+      },
+      "free_minus_fixed:first_passage": {
+        "confirmatory_claim": false,
+        "descriptive_95_ci": [
+          -0.023571790259586656,
+          0.02000929025958661
+        ],
+        "mean_difference": -0.001781250000000023,
+        "n_independent_seeds": 5,
+        "paired_differences": [
+          0.009033203125,
+          -0.0027832031250001332,
+          0.021679687500000044,
+          -0.01618164062500005,
+          -0.020654296874999978
+        ]
+      },
+      "free_minus_fixed:standard": {
+        "confirmatory_claim": false,
+        "descriptive_95_ci": [
+          -0.0026802055566367885,
+          0.023180205556636663
+        ],
+        "mean_difference": 0.010249999999999936,
+        "n_independent_seeds": 5,
+        "paired_differences": [
+          0.02369140624999999,
+          0.01327148437499992,
+          0.005585937499999805,
+          0.013085937499999978,
+          -0.004384765625000009
+        ]
+      },
+      "neural_free_minus_raw_belief_dp:first_passage": {
+        "confirmatory_claim": false,
+        "descriptive_95_ci": [
+          -0.04750014795487766,
+          -0.012023289545122356
+        ],
+        "mean_difference": -0.02976171875000001,
+        "n_independent_seeds": 5,
+        "paired_differences": [
+          -0.04617187500000003,
+          -0.04070312500000006,
+          -0.011933593749999916,
+          -0.019335937500000067,
+          -0.030664062499999978
+        ]
+      },
+      "neural_free_minus_raw_belief_dp:standard": {
+        "confirmatory_claim": false,
+        "descriptive_95_ci": [
+          -0.03231504619958902,
+          -0.01728261005041099
+        ],
+        "mean_difference": -0.024798828125000005,
+        "n_independent_seeds": 5,
+        "paired_differences": [
+          -0.032099609375000004,
+          -0.03035156249999993,
+          -0.022597656250000098,
+          -0.018818359374999982,
+          -0.020126953125000013
+        ]
+      }
+    },
+    "ood_test": {
+      "boundary_gradient_interaction_free_vs_direct": {
+        "confirmatory_claim": false,
+        "descriptive_95_ci": [
+          -0.08644975540107715,
+          0.03507866165107716
+        ],
+        "mean_difference": -0.025685546874999993,
+        "n_independent_seeds": 5,
+        "paired_differences": [
+          -0.058017578125,
+          -0.03213378906249992,
+          -0.08208984375000003,
+          0.041669921875000016,
+          0.0021435546874999656
+        ]
+      },
+      "fpt_minus_standard:direct": {
+        "confirmatory_claim": false,
+        "descriptive_95_ci": [
+          -0.03682247402021646,
+          0.06301583339521645
+        ],
+        "mean_difference": 0.013096679687499991,
+        "n_independent_seeds": 5,
+        "paired_differences": [
+          0.05710937499999999,
+          0.01509765624999998,
+          0.048193359374999994,
+          -0.026249999999999996,
+          -0.028666992187500018
+        ]
+      },
+      "fpt_minus_standard:fixed": {
+        "confirmatory_claim": false,
+        "descriptive_95_ci": [
+          -0.03464243466185986,
+          -0.007474752838140131
+        ],
+        "mean_difference": -0.021058593749999993,
+        "n_independent_seeds": 5,
+        "paired_differences": [
+          -0.010786132812499988,
+          -0.02926269531250003,
+          -0.011489257812499987,
+          -0.018315429687499968,
+          -0.03543945312499999
+        ]
+      },
+      "fpt_minus_standard:free": {
+        "confirmatory_claim": false,
+        "descriptive_95_ci": [
+          -0.03733581901618836,
+          0.012158084641188359
+        ],
+        "mean_difference": -0.012588867187500002,
+        "n_independent_seeds": 5,
+        "paired_differences": [
+          -0.0009082031250000067,
+          -0.017036132812499938,
+          -0.033896484375000036,
+          0.01541992187500002,
+          -0.026523437500000052
+        ]
+      },
+      "free_minus_direct:first_passage": {
+        "confirmatory_claim": false,
+        "descriptive_95_ci": [
+          0.05428932106903624,
+          0.1019587258059637
+        ],
+        "mean_difference": 0.07812402343749997,
+        "n_independent_seeds": 5,
+        "paired_differences": [
+          0.05843261718749995,
+          0.09565429687499999,
+          0.06350097656249995,
+          0.071953125,
+          0.10107910156249994
+        ]
+      },
+      "free_minus_direct:standard": {
+        "confirmatory_claim": false,
+        "descriptive_95_ci": [
+          0.04859281894183791,
+          0.159026321683162
+        ],
+        "mean_difference": 0.10380957031249996,
+        "n_independent_seeds": 5,
+        "paired_differences": [
+          0.11645019531249995,
+          0.1277880859374999,
+          0.14559082031249998,
+          0.03028320312499999,
+          0.09893554687499997
+        ]
+      },
+      "free_minus_fixed:first_passage": {
+        "confirmatory_claim": false,
+        "descriptive_95_ci": [
+          0.035481405078810105,
+          0.09179007929618986
+        ],
+        "mean_difference": 0.06363574218749998,
+        "n_independent_seeds": 5,
+        "paired_differences": [
+          0.04062499999999997,
+          0.08216308593750005,
+          0.07541503906249997,
+          0.03742187500000002,
+          0.08255371093749991
+        ]
+      },
+      "free_minus_fixed:standard": {
+        "confirmatory_claim": false,
+        "descriptive_95_ci": [
+          0.008602169086719812,
+          0.10172986216328017
+        ],
+        "mean_difference": 0.055166015624999995,
+        "n_independent_seeds": 5,
+        "paired_differences": [
+          0.030747070312499986,
+          0.06993652343749995,
+          0.09782226562500002,
+          0.0036865234375000333,
+          0.07363769531249997
+        ]
+      },
+      "neural_free_minus_raw_belief_dp:first_passage": {
+        "confirmatory_claim": false,
+        "descriptive_95_ci": [
+          -0.07021870698557826,
+          0.019433550735578276
+        ],
+        "mean_difference": -0.025392578124999992,
+        "n_independent_seeds": 5,
+        "paired_differences": [
+          0.004741210937500018,
+          -0.02421386718749996,
+          -0.033017578125,
+          0.007290039062500031,
+          -0.08176269531250005
+        ]
+      },
+      "neural_free_minus_raw_belief_dp:standard": {
+        "confirmatory_claim": false,
+        "descriptive_95_ci": [
+          -0.04310389832139742,
+          0.017496476446397437
+        ],
+        "mean_difference": -0.01280371093749999,
+        "n_independent_seeds": 5,
+        "paired_differences": [
+          0.005649414062500024,
+          -0.007177734375000022,
+          0.0008789062500000333,
+          -0.008129882812499989,
+          -0.0552392578125
+        ]
+      }
+    }
+  },
+  "registered_primary": {
+    "joint_superiority": false,
+    "primary_comparisons": [
+      {
+        "confirmatory_superiority": false,
+        "descriptive_95_ci": [
+          0.04859281894183791,
+          0.159026321683162
+        ],
+        "family_adjusted_97_5_ci": [
+          0.03429443386914936,
+          0.17332470675585054
+        ],
+        "gradient": "standard",
+        "mean_difference": 0.10380957031249996,
+        "minimum_practical_effect": 0.005,
+        "n_independent_seeds": 5,
+        "paired_differences": [
+          0.11645019531249995,
+          0.1277880859374999,
+          0.14559082031249998,
+          0.03028320312499999,
+          0.09893554687499997
+        ]
+      },
+      {
+        "confirmatory_superiority": false,
+        "descriptive_95_ci": [
+          0.05428932106903624,
+          0.1019587258059637
+        ],
+        "family_adjusted_97_5_ci": [
+          0.04811732173735716,
+          0.10813072513764277
+        ],
+        "gradient": "first_passage",
+        "mean_difference": 0.07812402343749997,
+        "minimum_practical_effect": 0.005,
+        "n_independent_seeds": 5,
+        "paired_differences": [
+          0.05843261718749995,
+          0.09565429687499999,
+          0.06350097656249995,
+          0.071953125,
+          0.10107910156249994
+        ]
+      }
+    ],
+    "scope": "Synthetic task only. Model-informed stopping benefit is not uniquely a neural/SNN contribution."
+  },
+  "results_sha256": "ced8a42c51bfec818534bfde39ad51a47271aa7cca274378aa00e773aeb8a8e3",
+  "same_information_model_informed_references": {
+    "id_test": {
+      "raw_belief_dp": {
+        "coverage": 0.9642578125,
+        "inference_seconds": 0.002290857599291485,
+        "mean_observations": 5.941015625,
+        "mean_utility": 0.536458984375
+      },
+      "raw_belief_myopic_voc": {
+        "coverage": 0.98828125,
+        "inference_seconds": 0.002080872600345174,
+        "mean_observations": 2.266015625,
+        "mean_utility": 0.41878515625
+      }
+    },
+    "ood_test": {
+      "raw_belief_dp": {
+        "coverage": 0.9951171875,
+        "inference_seconds": 0.0019618315986008384,
+        "mean_observations": 3.591015625,
+        "mean_utility": 0.28123046874999996
+      },
+      "raw_belief_myopic_voc": {
+        "coverage": 1.0,
+        "inference_seconds": 0.002245331399899442,
+        "mean_observations": 1.0,
+        "mean_utility": 0.17859374999999994
+      }
+    }
+  },
+  "schema": "hepta.free-boundary.factorial-summary.v1",
+  "source": {
+    "environment": {
+      "numpy": "2.3.5",
+      "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+      "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+      "scipy": "1.17.0"
+    },
+    "seal_sha256": "5876ab602e03e4c1f324342f8e046246c2162d4e9a07d1016d7d2edfcffa162c",
+    "source_commit": "95b0d6668892868a4a19268a2fb707f2dca586ba",
+    "verified_inputs": 105
+  }
+}
