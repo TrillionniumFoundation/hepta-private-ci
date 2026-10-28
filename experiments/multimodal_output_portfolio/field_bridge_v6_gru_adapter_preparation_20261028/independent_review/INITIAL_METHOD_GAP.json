@@ -1,0 +1,27 @@
+{
+  "kind": "independent_zero_forward_stock_method_gap_probe",
+  "contract_sha256": "bcb46da4f278470db0bd33eb1d9022d9fbf60502cd48ed216fc9b1e89e8cb79f",
+  "expected_method_count": 13,
+  "overridden_class_method": "torch.nn.GRU.permute_hidden",
+  "observed_validator_accepted": true,
+  "replacement_was_not_executed": true,
+  "validation": {
+    "contract": "stock-cpu-gru-derived-cache-v1",
+    "source_sha256": "10f560ff680379df780263dd0b09051390359e879e9a2ad6bcffb68dd2ff8d70",
+    "cached_parameter_names": [
+      "weight_ih_l0",
+      "weight_hh_l0",
+      "bias_ih_l0",
+      "bias_hh_l0"
+    ],
+    "weakrefs_are_derived_only": true
+  },
+  "actual_counts": {
+    "toy_gru_constructions": 1,
+    "model_forwards": 0,
+    "backwards": 0,
+    "optimizer_steps": 0,
+    "scientific_calls": 0
+  },
+  "interpretation": "A class method called by stock GRU.forward is not bound by this revision; validator acceptance does not establish stock forward collaborators. No numeric result is claimed."
+}
