@@ -1,6 +1,7 @@
 //! Bounded V9 population fitting and completed-prefix-only selection.
 
 use std::collections::BTreeSet;
+use std::collections::BTreeMap;
 use std::path::Path;
 
 use codex_hepta_memory::MemoryCellOwnerSnapshotV1;
@@ -27,7 +28,8 @@ pub(super) fn code(config: &MemoryCellTrainerConfigV1) -> Value {
         let raw = std::fs::read(config.qualification_root.join(name)).unwrap();
         result["files"][name] = json!({"bytes":raw.len(),"sha256":Digest32::of_bytes(&raw).to_string()});
     }
-    result["digest"] = json!(Digest32::of_bytes(&serde_json::to_vec(&result["files"]).unwrap()).to_string());
+    let files: BTreeMap<_, _> = result["files"].as_object().unwrap().iter().collect();
+    result["digest"] = json!(Digest32::of_bytes(&serde_json::to_vec(&files).unwrap()).to_string());
     result
 }
 

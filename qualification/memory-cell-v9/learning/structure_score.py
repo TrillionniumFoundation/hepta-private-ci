@@ -98,7 +98,8 @@ def stage_score(root, claimed, independent, code, previous):
         require(phases["future"]["request_digests"] == requests, "role future requests differ")
         scored[name] = phases
         summaries[name] = {phase: {key: value for key, value in score.items() if key not in {"items", "decisions", "request_digests"}} for phase, score in phases.items()}
-    verify_gate(claimed["structure_gate"], claimed["roles"], code, export["owner_cut_digest"])
+    verify_gate(claimed["structure_gate"], claimed["roles"], code, export["owner_cut_digest"], independent,
+                fit_costs, claimed["source_ledger_logical_bytes"])
     require(claimed["structure_gate"]["selected_generation_unchanged"] == generation, "NoChange changed the selected version")
     best_fixed = max((f"fixed-{count}" for count in range(1, 9)), key=lambda name: (scored[name]["future"]["correct_reads"], scored[name]["future"]["correct_decisions"]))
     learned = scored["prefix-selected-learned"]["future"]

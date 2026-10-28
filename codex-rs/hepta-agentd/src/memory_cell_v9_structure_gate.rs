@@ -20,7 +20,8 @@ fn sum(costs: &Value, field: &str) -> u64 {
 pub(super) fn evaluate(release: &ReleaseFixture, snapshot: &MemoryCellOwnerSnapshotV1,
     stage: &data::Stage, roles: &[Value], directory: &Path, code: Digest32, ledger_bytes: u64) -> Value {
     let keep = roles.iter().find(|role|role["role"] == "keep-fixed-2").unwrap();
-    let task_digest = Digest32::of_bytes(&serde_json::to_vec(&json!({"future":stage.future,"retention":stage.retention})).unwrap());
+    let task_set_json = serde_json::to_string(&json!({"future":stage.future,"retention":stage.retention})).unwrap();
+    let task_digest = Digest32::of_bytes(task_set_json.as_bytes());
     let budget = MemoryStructureBudgetV1 {required_fixed_shards:(1..=8).collect(),max_artifact_bytes:16_777_216,
         max_resident_payload_bytes:32_768,forecast_queries:100_000,max_retention_error_permyriad:0,
         error_weight:1_000_000_000,byte_weight:1,wall_ns_weight:1,communication_byte_weight:1};
@@ -83,7 +84,7 @@ pub(super) fn evaluate(release: &ReleaseFixture, snapshot: &MemoryCellOwnerSnaps
     let outcome = stage_memory_structure_v9(&release.host,snapshot,&decision,request,None).unwrap();
     assert!(outcome.publication.is_none() && !outcome.proposal.authority.grants_any());
     assert_eq!(release.host.load_current().unwrap().generation().get(),baseline);
-    json!({"measurements":wires,"reference_roles_outside_split_merge_gate":exclusions,
+    json!({"measurements":wires,"task_set_json":task_set_json,"reference_roles_outside_split_merge_gate":exclusions,
         "reason":format!("{:?}",decision.reason()),"evidence_digest":decision.evidence_digest(),
         "proposed_digest":decision.proposed_digest(),"best_fixed_digest":decision.best_fixed_digest(),
         "proposal_digest":outcome.proposal.proposal_digest,"proposal_candidates":outcome.proposal.candidates.len(),

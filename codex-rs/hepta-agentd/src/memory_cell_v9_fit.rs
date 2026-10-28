@@ -1,6 +1,7 @@
 //! Pinned, bounded worker execution retains original paired-model byte strings.
 
 use std::path::Path;
+use std::collections::BTreeMap;
 use std::process::Stdio;
 use std::time::Duration;
 use std::time::Instant;
@@ -20,7 +21,7 @@ use super::data::save;
 pub(super) const RESIDENT_BUDGET: u64 = 262_144;
 
 pub(super) fn code_identity(config: &MemoryCellTrainerConfigV1) -> Value {
-    let mut files = serde_json::Map::new();
+    let mut files = BTreeMap::new();
     for name in CODE_FILES.into_iter().chain([
         "memory-cell-v9/learning/__init__.py", "memory-cell-v9/learning/paired.py",
         "memory-cell-v9/learning/byte_model.py", "memory-cell-v9/learning/worker.py",

@@ -85,8 +85,10 @@ def population(directory, code, export, count, selected=None):
     return report, cost
 
 
-def verify_gate(gate, roles, code, cut):
+def verify_gate(gate, roles, code, cut, independent, fit_costs, ledger_bytes):
     rows = gate["measurements"]
+    require(decode(gate["task_set_json"]) == {"future": independent["future"], "retention": independent["retention"]}, "gate task set changed")
+    task_digest = digest(gate["task_set_json"].encode())
     require([row["shards"] for row in rows if row["role"] == "Fixed"] == list(range(1, 9))
             and sum(row["role"] == "KeepFixed" for row in rows) == 1, "native gate lost strong fixed inventory")
     raw = bytearray(b"hepta.memory.structure-cost.v1")
@@ -96,9 +98,21 @@ def verify_gate(gate, roles, code, cut):
     required = ("source_ledger_bytes", "search_wall_ns", "training_wall_ns", "replay_wall_ns", "read_compute_wall_ns",
                 "wake_wall_ns", "communication_wall_ns", "communication_bytes")
     for row in rows:
-        require(row["source_cut_digest"] == cut and row["training_profile_digest"] == code["digest"]
+        require(row["source_cut_digest"] == cut and row["task_set_digest"] == task_digest and row["training_profile_digest"] == code["digest"]
                 and row["independent_evaluation"] is True, "gate measured source/profile")
         actual = next(item for item in roles if item["publication"].get("bundle_digest") == row["artifact_digest"])
+        native = actual["phases"][1]["native_cost"]
+        total = lambda field: sum(item[field] for item in native)
+        expected_cost = {"artifact_bytes": actual["publication"]["bundle_bytes"], "raw_cache_bytes": total("raw_payload_bytes"),
+            "resident_payload_bytes": sum(total("resident_" + field + "_bytes") for field in ("parameter", "catalog", "support", "lineage")),
+            "resident_metadata_bytes": sum(total(field) for field in ("aggregate_support_bytes", "route_bytes", "lineage_bytes")),
+            "catalog_bytes": total("catalog_bytes"), "route_bytes": total("route_bytes"), "source_ledger_bytes": ledger_bytes,
+            "search_wall_ns": None, "training_wall_ns": fit_costs[actual["fit_directory"]]["whole_worker_wall_ns"], "replay_wall_ns": None,
+            "read_compute_wall_ns": total("read_wall_ns") - total("wake_wall_ns"), "wake_wall_ns": total("wake_wall_ns"),
+            "communication_wall_ns": None, "communication_bytes": sum(item["traffic"]["transmitted_bytes"] + item["traffic"]["received_bytes"] for item in actual["phases"])}
+        if expected_cost["read_compute_wall_ns"] < 0:
+            expected_cost["read_compute_wall_ns"] = None
+        require(row["cost"] == expected_cost, "budget measurements differ from retained runtime/search cost")
         require(row["shards"] == actual["shards"] and row["queries"] == actual["phases"][0]["queries"]
                 and row["errors"] == actual["phases"][0]["queries"] - actual["phases"][0]["correct"]
                 and row["retention_queries"] == actual["phases"][1]["queries"]
