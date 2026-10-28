@@ -304,5 +304,11 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
         TickReport::default()
     );
     assert_eq!(control.spawn_count(&agent_id), 4);
+    assert!(
+        !supervisor
+            .snapshot(&agent_id)
+            .expect("snapshot after budget exhaustion")
+            .active
+    );
     Ok(())
 }
