@@ -20,7 +20,10 @@ def assemble(run_dir, repo, descriptor_paths, result_paths, output):
     archives = []
     for path in descriptor_paths:
         value = json.loads(path.read_text())
-        archives.extend(value["archives"] if isinstance(value, dict) else value)
+        if isinstance(value, dict):
+            archives.extend(value["archives"] if "archives" in value else [value])
+        else:
+            archives.extend(value)
     if len({row["name"] for row in archives}) != len(archives):
         raise ValueError("Duplicate logical archive names")
     physical = []
