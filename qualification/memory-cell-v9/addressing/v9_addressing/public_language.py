@@ -29,7 +29,7 @@ TRAIN_POSITIVE = {
     "history": {
         "en": (
             "Take the event snapshot for entity at the supplied cutoff.",
-            "Retrieve the observation entity had on file when date ended at the cutoff instant.",
+            "Retrieve the observation entity had on file at the date cutoff instant.",
             "Use the specified past boundary to select entity's last already-recorded event.",
             "What sample was available for entity at date?",
             "Rewind entity's event stream to the requested instant and read its value.",
