@@ -1,0 +1,30 @@
+{
+  "command": [
+    "just",
+    "fmt"
+  ],
+  "returncode": 1,
+  "wall_ns": 6361445572,
+  "log_sha256": "374cd8070b1d0968130228d8a493a53736697622214d1c9260177191c1833b27",
+  "before": {
+    "scripts/hepta_smollm_metadata_artifact_v1.py": {
+      "sha256": "818b6e855743e95ce8b770c1bae3e2e45982eb31063d0df0331c77a188a6e149",
+      "ast_sha256": "f893097564e6b385ce8ababcac14df6c042a8d7a887872ae5e2c062013fe72db"
+    },
+    "scripts/test_hepta_smollm_metadata_artifact_v1.py": {
+      "sha256": "2a9988abaac8646011cb54fab5231d0c58ebe316a5acfc1602ff8b5c9383e8a4",
+      "ast_sha256": "0984dc6fc3e0eca3e2dd88c9a213e74390bd6f59f996a4e68a58b50b6eb99911"
+    }
+  },
+  "after": {
+    "scripts/hepta_smollm_metadata_artifact_v1.py": {
+      "sha256": "818b6e855743e95ce8b770c1bae3e2e45982eb31063d0df0331c77a188a6e149",
+      "ast_sha256": "f893097564e6b385ce8ababcac14df6c042a8d7a887872ae5e2c062013fe72db"
+    },
+    "scripts/test_hepta_smollm_metadata_artifact_v1.py": {
+      "sha256": "2a9988abaac8646011cb54fab5231d0c58ebe316a5acfc1602ff8b5c9383e8a4",
+      "ast_sha256": "0984dc6fc3e0eca3e2dd88c9a213e74390bd6f59f996a4e68a58b50b6eb99911"
+    }
+  },
+  "source_AST_unchanged": true
+}

@@ -515,7 +515,21 @@ jobs:
         if: always()
         with:
           name: hepta-pon-pair-${{ matrix.runner }}-${{ matrix.lane }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/pon-pair/
+          # Keep the original execution unchanged. Root command records, their
+          # bounded logs and source hashes are metadata; source archives and the
+          # nested learning-study payload directory remain on the runner only.
+          path: |
+            ${{ runner.temp }}/pon-pair/*.json
+            ${{ runner.temp }}/pon-pair/*.json.*.log
+            ${{ runner.temp }}/pon-pair/chain-retained-delta-cost.jsonl
+            ${{ runner.temp }}/pon-pair/*.sha256
+            ${{ runner.temp }}/pon-pair/*-identity.txt
+            ${{ runner.temp }}/pon-pair/tuple.txt
+            ${{ runner.temp }}/pon-pair/SCOPE.txt
+            ${{ runner.temp }}/pon-pair/prior-windows-*.log
+            ${{ runner.temp }}/pon-pair/prior-windows-*.fetch-exit
+            ${{ runner.temp }}/pon-pair/prior-windows-SCOPE.txt
+          include-hidden-files: false
           if-no-files-found: error
           retention-days: 14
 
@@ -664,6 +678,16 @@ jobs:
         if: always()
         with:
           name: hepta-windows-ledger-${{ matrix.lane }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/windows-ledger/
+          path: |
+            ${{ runner.temp }}/windows-ledger/rustc.txt
+            ${{ runner.temp }}/windows-ledger/check.py
+            ${{ runner.temp }}/windows-ledger/source-before.json
+            ${{ runner.temp }}/windows-ledger/source-after.json
+            ${{ runner.temp }}/windows-ledger/result.json
+            ${{ runner.temp }}/windows-ledger/witness.json
+            ${{ runner.temp }}/windows-ledger/witness.log
+            ${{ runner.temp }}/windows-ledger/evaluated-shadow.json
+            ${{ runner.temp }}/windows-ledger/evaluated-shadow.log
+          include-hidden-files: false
           if-no-files-found: error
           retention-days: 14

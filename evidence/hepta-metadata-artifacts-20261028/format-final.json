@@ -1,0 +1,31 @@
+{
+  "command": [
+    "just",
+    "fmt"
+  ],
+  "returncode": 0,
+  "wall_ns": 341441170,
+  "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "before": {
+    "scripts/hepta_smollm_metadata_artifact_v1.py": {
+      "sha256": "43fd02d7e115874c614ad80f7f553322ea1ad4ee9dae2276dabbd8b2ba48b5e3",
+      "ast_sha256": "78c5ef0977c79074c9a38e2b81c76d30a14641e076cd564500bfc304d08a8e86"
+    },
+    "scripts/test_hepta_smollm_metadata_artifact_v1.py": {
+      "sha256": "9b1b7ab5f0a6ff6ba578d177451b74b66ecb6a38b05ee770439a2091b002eec6",
+      "ast_sha256": "26b5fdf6e36c306194f04647af5f60e0e9e5f5a8921ae998b437f17be70ea9a7"
+    }
+  },
+  "after": {
+    "scripts/hepta_smollm_metadata_artifact_v1.py": {
+      "sha256": "43fd02d7e115874c614ad80f7f553322ea1ad4ee9dae2276dabbd8b2ba48b5e3",
+      "ast_sha256": "78c5ef0977c79074c9a38e2b81c76d30a14641e076cd564500bfc304d08a8e86"
+    },
+    "scripts/test_hepta_smollm_metadata_artifact_v1.py": {
+      "sha256": "ba278f4c990150b663f8fd307e6dc5f0e3d50f6c5af3b7ee1c1edce46aa57fa0",
+      "ast_sha256": "26b5fdf6e36c306194f04647af5f60e0e9e5f5a8921ae998b437f17be70ea9a7"
+    }
+  },
+  "source_AST_unchanged": true,
+  "source_bytes_unchanged": false
+}

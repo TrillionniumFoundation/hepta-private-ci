@@ -1,0 +1,19 @@
+test_binary_data_cannot_borrow_declared_log_name (__main__.MetadataArtifactTests.test_binary_data_cannot_borrow_declared_log_name) ... ok
+test_binary_patch_cannot_be_uploaded_as_source_text (__main__.MetadataArtifactTests.test_binary_patch_cannot_be_uploaded_as_source_text) ... ok
+test_cost_event_jsonl_requires_every_line_to_be_metadata (__main__.MetadataArtifactTests.test_cost_event_jsonl_requires_every_line_to_be_metadata) ... ok
+test_declared_failed_records_retained_without_tensor_archive_or_hidden_payload (__main__.MetadataArtifactTests.test_declared_failed_records_retained_without_tensor_archive_or_hidden_payload) ... ok
+test_duplicate_json_key_refuses_without_silent_last_value_selection (__main__.MetadataArtifactTests.test_duplicate_json_key_refuses_without_silent_last_value_selection) ... ok
+test_fifo_is_not_opened_as_an_unbounded_log (__main__.MetadataArtifactTests.test_fifo_is_not_opened_as_an_unbounded_log) ... ok
+test_file_and_export_bounds_refuse_without_partial_publication (__main__.MetadataArtifactTests.test_file_and_export_bounds_refuse_without_partial_publication) ... ok
+test_omitted_checkpoint_hash_does_not_require_payload_read_or_claim_retention (__main__.MetadataArtifactTests.test_omitted_checkpoint_hash_does_not_require_payload_read_or_claim_retention) ... ok
+test_output_is_create_only_and_cannot_be_the_original_run (__main__.MetadataArtifactTests.test_output_is_create_only_and_cannot_be_the_original_run) ... ok
+test_symbolic_link_file_refuses_external_payload (__main__.MetadataArtifactTests.test_symbolic_link_file_refuses_external_payload) ... ok
+test_symbolic_link_parent_refuses_even_matching_metadata_bytes (__main__.MetadataArtifactTests.test_symbolic_link_parent_refuses_even_matching_metadata_bytes) ... ok
+test_tensor_serialization_in_declared_json_refuses (__main__.MetadataArtifactTests.test_tensor_serialization_in_declared_json_refuses) ... ok
+test_wrong_index_hash_aborts_without_publishing_partial_directory (__main__.MetadataArtifactTests.test_wrong_index_hash_aborts_without_publishing_partial_directory) ... ok
+test_wrong_source_or_true_qualification_refuses_before_output_creation (__main__.MetadataArtifactTests.test_wrong_source_or_true_qualification_refuses_before_output_creation) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.037s
+
+OK

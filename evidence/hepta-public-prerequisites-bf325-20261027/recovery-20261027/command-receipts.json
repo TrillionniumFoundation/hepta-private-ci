@@ -1,0 +1,64 @@
+[
+  {
+    "label": "material-controls",
+    "command": [
+      "python3",
+      "-B",
+      "scripts/test_hepta_smollm_public_initial_v2.py",
+      "-v"
+    ],
+    "cwd": "/workspace/scratch/3d4ec372c488/hepta-ordinary-prerequisites",
+    "returncode": 0,
+    "wall_ns": 175522783,
+    "log": "material-controls.log",
+    "log_bytes": 442,
+    "log_sha256": "7c454cad20919382a2ea35a19a6f940a49fe6b0f576ddf299268ca7969120276"
+  },
+  {
+    "label": "descendant-controls",
+    "command": [
+      "python3",
+      "-B",
+      "scripts/test_hepta_smollm_descendant_v2.py",
+      "-v"
+    ],
+    "cwd": "/workspace/scratch/3d4ec372c488/hepta-ordinary-prerequisites",
+    "returncode": 0,
+    "wall_ns": 201236327,
+    "log": "descendant-controls.log",
+    "log_bytes": 756,
+    "log_sha256": "b642a86045ff661c5330026fcbea73214bfc1509d2e06905f3564eb701021447"
+  },
+  {
+    "label": "research-controls",
+    "command": [
+      "python3",
+      "-B",
+      "scripts/test_hepta_smollm_answer_eos_research_v3.py",
+      "-v"
+    ],
+    "cwd": "/workspace/scratch/3d4ec372c488/hepta-ordinary-prerequisites",
+    "returncode": 0,
+    "wall_ns": 411412704,
+    "log": "research-controls.log",
+    "log_bytes": 1428,
+    "log_sha256": "1aa9ac6b6649ea8a2218a12467d54fe37ad009dcdd39bfc22f8fb2f1c502672a"
+  },
+  {
+    "label": "host-capacity",
+    "command": [
+      "/workspace/scratch/301262829a43/pon-hepta-impl/model-env-3123-offline/bin/python",
+      "-I",
+      "-B",
+      "scripts/hepta_smollm_host_resources.py",
+      "--output",
+      "/workspace/scratch/3d4ec372c488/hepta-ordinary-prerequisites/evidence/hepta-public-prerequisites-bf325-20261027/recovery-20261027/host-observation.json"
+    ],
+    "cwd": "/workspace/scratch/3d4ec372c488/hepta-ordinary-prerequisites",
+    "returncode": 1,
+    "wall_ns": 135214654,
+    "log": "host-capacity.log",
+    "log_bytes": 60,
+    "log_sha256": "79838dc30ece8429f90b6f540c300891c74bbdc3933bc620066f615e257e1944"
+  }
+]

@@ -1,0 +1,96 @@
+{
+  "schema": "hepta-prerequisite-exact-recovery-readback-v1",
+  "parent": "bf32538ccb9b52e3e0a8e089983eea7e3940b6a5",
+  "original_recovered_tree": "a6bdae3707fc5d248343552b3ed8b3b998d05c63",
+  "original_manifest_sha256": "1c04b6306a9947a086b3eb16e7acd600338d04aab54065f64329a34345496470",
+  "verified_files": [
+    {
+      "path": ".github/workflows/hepta-public-initial-v2.yml",
+      "bytes": 20027,
+      "sha256": "288411a82ea15c17090f1c77c8363e0a5d122005a7d8ec256c8b9b55262d6108"
+    },
+    {
+      "path": "evidence/hepta-public-prerequisites-bf325-20261027/README.md",
+      "bytes": 3275,
+      "sha256": "ccbbd01f6cef2decadcd82bb20207eb11850a36fdb7218c7f448a1e93f243ebe"
+    },
+    {
+      "path": "evidence/hepta-public-prerequisites-bf325-20261027/actual-just-fmt.json",
+      "bytes": 578,
+      "sha256": "0eeeffd9e8d937d7fe87033f9fb6c81977fbff124d2a8d75b336fba502702420"
+    },
+    {
+      "path": "evidence/hepta-public-prerequisites-bf325-20261027/actual-just-fmt.log",
+      "bytes": 73,
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+    },
+    {
+      "path": "evidence/hepta-public-prerequisites-bf325-20261027/formatter-attempt.json",
+      "bytes": 109,
+      "sha256": "0e60330ba7c1e1d9acbd434c0165d305004c733d8a7ddf5b0afee628dd7c9cca"
+    },
+    {
+      "path": "evidence/hepta-public-prerequisites-bf325-20261027/raw-manifest.json",
+      "bytes": 3584,
+      "sha256": "9d0147034e9f7545cd4bfe4d26cb14e87eb55580aea7b450cdc6b60307e7456b"
+    },
+    {
+      "path": "evidence/hepta-public-prerequisites-bf325-20261027/raw-part-000.bin",
+      "bytes": 262144,
+      "sha256": "4c65b1cf7808427d6d73f3587fb1e74a827ef33acb25047c253eed77deb9ffc7"
+    },
+    {
+      "path": "evidence/hepta-public-prerequisites-bf325-20261027/raw-part-001.bin",
+      "bytes": 262144,
+      "sha256": "583154b9ce4e83689beaf4618655a1dbff5bec42d12a80f41137c806c4a2cb4d"
+    },
+    {
+      "path": "evidence/hepta-public-prerequisites-bf325-20261027/raw-part-002.bin",
+      "bytes": 195838,
+      "sha256": "375db618c0df6a81e3b6966b6ede942033a28933c47c734493b4de7c66335ff2"
+    },
+    {
+      "path": "evidence/hepta-public-prerequisites-bf325-20261027/test_hepta_smollm_answer_eos_research_v3.log",
+      "bytes": 1428,
+      "sha256": "9580c9cc014328e50102232ef785a2355c2a3b7423b3912f50a9d5868a501db1"
+    },
+    {
+      "path": "evidence/hepta-public-prerequisites-bf325-20261027/test_hepta_smollm_descendant_v2.log",
+      "bytes": 756,
+      "sha256": "60af2c6463b05f23c1a90d2daf700ee1427efd630bd404b869267bb1798e0ab8"
+    },
+    {
+      "path": "evidence/hepta-public-prerequisites-bf325-20261027/test_hepta_smollm_public_initial_v2.log",
+      "bytes": 442,
+      "sha256": "b5eb8c564ee53c7f9c49934371ca0efe6c63e5b930a164324c8b0cb9fff6303d"
+    },
+    {
+      "path": "evidence/hepta-public-prerequisites-bf325-20261027/validation.json",
+      "bytes": 1534,
+      "sha256": "630074be85cd424aedf1d8f3f5a86722f0a0d11ea2dfa85f544f41d5d1198a10"
+    }
+  ],
+  "verified_raw_members": 14,
+  "raw_archive_sha256": "6e938fa2a6506b92642db9cacd270e3ed2872b86149c7b0cd327843e97b168e6",
+  "workflow_delta_only_declared_dependencies": true,
+  "changed_workflow_steps": [
+    6,
+    8
+  ],
+  "original_gate_conditions_selectors_and_deadlines_unchanged": true,
+  "bash_syntax": [
+    {
+      "step_index": 6,
+      "returncode": 0
+    },
+    {
+      "step_index": 8,
+      "returncode": 0
+    }
+  ],
+  "rust_source_changes": 0,
+  "cargo_graph_and_lock_changes": 0,
+  "native_rerun": false,
+  "new_model_training": false,
+  "ordinary_installation_completed": false
+}

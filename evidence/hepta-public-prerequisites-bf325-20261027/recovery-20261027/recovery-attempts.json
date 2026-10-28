@@ -1,0 +1,25 @@
+{
+  "schema": "hepta-local-source-recovery-attempts-v1",
+  "observations": [
+    {
+      "command": [
+        "git",
+        "clone",
+        "--shared",
+        "--no-checkout",
+        "/workspace/scratch/301262829a43/pon-hepta-impl/hepta-native-e153/.git",
+        "/workspace/scratch/3d4ec372c488/hepta-ordinary-prerequisites"
+      ],
+      "exit_code": 128,
+      "observed_error": "remote: fatal: bad tree object 69db9e38ce8448aab6d7c99c250b02fb32896d50; fatal: early EOF; fatal: fetch-pack: invalid index-pack output",
+      "record_scope": "transcription of the actual command tool result; not a native model observation"
+    },
+    {
+      "method": "new independent Git metadata, read-only objects alternate, exact known tree read-tree -mu",
+      "recovered_tree": "a6bdae3707fc5d248343552b3ed8b3b998d05c63",
+      "original_source_worktree_unchanged": true,
+      "sparse_source_checkout": true,
+      "full_source_gate_qualified": false
+    }
+  ]
+}

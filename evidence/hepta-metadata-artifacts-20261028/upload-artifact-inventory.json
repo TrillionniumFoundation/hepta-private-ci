@@ -1,0 +1,2615 @@
+{
+  "schema": "hepta-artifact-declaration-inventory-v1",
+  "base": "894704474237b8771695be88dc115c9a4887fd2b",
+  "workflow_count": 82,
+  "upload_steps": 100,
+  "scope": "Every declared upload-artifact action in this source tree; runtime model export closure reviewed separately below.",
+  "workflows": [
+    {
+      "path": ".github/workflows/automation-taskflow-focused.yml",
+      "sha256": "d3f1a50e4e3d9e7f665092e236382f64f50d766d989be796f2d6dae167662e93",
+      "triggers": {
+        "push": {
+          "branches": [
+            "work/automation-taskflow-durable-causal-chain"
+          ],
+          "paths": [
+            "codex-rs/hepta-automation/**",
+            "codex-rs/hepta-agentd/**",
+            "codex-rs/hepta-contracts/**",
+            "codex-rs/hepta-operations/**",
+            "codex-rs/hepta-types/**",
+            "codex-rs/Cargo.lock",
+            ".github/workflows/automation-taskflow-focused.yml"
+          ]
+        },
+        "workflow_dispatch": ""
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "sha256": "153f22a7dd230ca58a795c05826f632591fe83838dffc9e0e4310fcb96ff1556",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [
+        {
+          "job": "test",
+          "name": "Upload Bazel execution logs",
+          "condition": "always() && !cancelled()",
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "bazel-execution-logs-test-${{ matrix.target }}",
+            "path": "${{ runner.temp }}/bazel-execution-logs",
+            "if-no-files-found": "ignore"
+          }
+        },
+        {
+          "job": "test-windows-shard",
+          "name": "Upload Bazel execution logs",
+          "condition": "always() && !cancelled()",
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-${{ matrix.shard }}",
+            "path": "${{ runner.temp }}/bazel-execution-logs",
+            "if-no-files-found": "ignore"
+          }
+        },
+        {
+          "job": "test-windows-native-main",
+          "name": "Upload Bazel execution logs",
+          "condition": "always() && !cancelled()",
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "bazel-execution-logs-test-windows-native-x86_64-pc-windows-msvc",
+            "path": "${{ runner.temp }}/bazel-execution-logs",
+            "if-no-files-found": "ignore"
+          }
+        },
+        {
+          "job": "clippy",
+          "name": "Upload Bazel execution logs",
+          "condition": "always() && !cancelled()",
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "bazel-execution-logs-clippy-${{ matrix.target }}",
+            "path": "${{ runner.temp }}/bazel-execution-logs",
+            "if-no-files-found": "ignore"
+          }
+        },
+        {
+          "job": "verify-release-build",
+          "name": "Upload Bazel execution logs",
+          "condition": "always() && !cancelled()",
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "bazel-execution-logs-verify-release-build-${{ matrix.target }}",
+            "path": "${{ runner.temp }}/bazel-execution-logs",
+            "if-no-files-found": "ignore"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/blob-size-policy.yml",
+      "sha256": "f0860d9723edf6d6a0a701bac787582c7998fd920eb91b23de4288b30ac5a53a",
+      "triggers": {
+        "workflow_call": ""
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "sha256": "948571f133ca44df83f97aa81045458ca5dbb74bd10bb675d557283fefda302f",
+      "triggers": {
+        "pull_request": {},
+        "push": {
+          "branches": [
+            "main"
+          ]
+        }
+      },
+      "uploads": [
+        {
+          "job": "hepta-scoped",
+          "name": "Retain dependency plan and real command output",
+          "condition": "always()",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-cargo-impact-${{ github.run_id }}-${{ github.run_attempt }}",
+            "path": "${{ runner.temp }}/cargo-impact.json\n${{ runner.temp }}/impact-test.json*\n",
+            "if-no-files-found": "error",
+            "retention-days": "14"
+          }
+        }
+      ],
+      "reusable_calls": [
+        {
+          "job": "hepta-contract-gate",
+          "uses": "./.github/workflows/hepta-contract-gate.yml",
+          "condition": "needs.scope.outputs.native == 'true' || needs.scope.outputs.full_repo == 'true'"
+        },
+        {
+          "job": "bazel",
+          "uses": "./.github/workflows/bazel.yml",
+          "condition": "needs.scope.outputs.full_repo == 'true'"
+        },
+        {
+          "job": "blob-size-policy",
+          "uses": "./.github/workflows/blob-size-policy.yml",
+          "condition": null
+        },
+        {
+          "job": "cargo-deny",
+          "uses": "./.github/workflows/cargo-deny.yml",
+          "condition": "needs.scope.outputs.full_repo == 'true'"
+        },
+        {
+          "job": "codespell",
+          "uses": "./.github/workflows/codespell.yml",
+          "condition": null
+        },
+        {
+          "job": "repo-checks",
+          "uses": "./.github/workflows/repo-checks.yml",
+          "condition": "needs.scope.outputs.full_repo == 'true'"
+        },
+        {
+          "job": "rust-ci",
+          "uses": "./.github/workflows/rust-ci.yml",
+          "condition": "needs.scope.outputs.full_repo == 'true'"
+        },
+        {
+          "job": "sdk",
+          "uses": "./.github/workflows/sdk.yml",
+          "condition": "needs.scope.outputs.full_repo == 'true'"
+        }
+      ],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/cargo-deny.yml",
+      "sha256": "c881216f6c2ddb1c7ba2f2a218ab8b6fcac96667d724510b18b25fe98f5dfbad",
+      "triggers": {
+        "workflow_call": ""
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/cla.yml",
+      "sha256": "ed68d940a662a74dd2566442089e29e958d21192d1728ff81d1ed0e0aea36d3f",
+      "triggers": {
+        "issue_comment": {
+          "types": [
+            "created"
+          ]
+        },
+        "pull_request_target": {
+          "types": [
+            "opened",
+            "closed",
+            "synchronize"
+          ]
+        }
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/close-stale-contributor-prs.yml",
+      "sha256": "e28059bb98c7abb8517bf3565353a23684031c6ff50d5830656bfb0a3dded32b",
+      "triggers": {
+        "workflow_dispatch": "",
+        "schedule": [
+          {
+            "cron": "0 6 * * *"
+          }
+        ]
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/codespell.yml",
+      "sha256": "4bc889fafcd9d8437d16be7e79a3f15b928039a775df26338c759a41a00809c2",
+      "triggers": {
+        "workflow_call": ""
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-algorithm-docs.yml",
+      "sha256": "dccde05c593074f71011bb0df2af6207e02a204e51027fea4ac566c825b93813",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [
+        {
+          "job": "source-head",
+          "name": "Retain source receipt",
+          "condition": null,
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-algorithm-source-${{ github.event.pull_request.head.sha || github.sha }}",
+            "path": ".hepta-evidence/algorithm-source-head.json",
+            "include-hidden-files": "true",
+            "if-no-files-found": "error",
+            "retention-days": "30"
+          }
+        },
+        {
+          "job": "merge-candidate",
+          "name": "Retain merge receipt",
+          "condition": null,
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-algorithm-merge-${{ steps.merge.outputs.sha }}",
+            "path": ".hepta-evidence/algorithm-merge-candidate.json",
+            "include-hidden-files": "true",
+            "if-no-files-found": "error",
+            "retention-days": "30"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "sha256": "2b14452c19f406a1e0407e76417f498a3f21fc012d55f1fa32c43c0c946bcaca",
+      "triggers": {
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [
+        {
+          "job": "qualification",
+          "name": "Retain command records and bounded stdout stderr",
+          "condition": "always()",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-architecture-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}",
+            "path": "${{ runner.temp }}/hepta-command-records/*.json\n${{ runner.temp }}/hepta-command-records/*.json.*.log\n",
+            "include-hidden-files": "false",
+            "if-no-files-found": "error",
+            "retention-days": "30"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": true
+    },
+    {
+      "path": ".github/workflows/hepta-artifact-storage.yml",
+      "sha256": "8ed36d944999cc62e3923d93c66b11f8f3611f138aea047a9b54838f26c1711b",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-assimilation-discovery.yml",
+      "sha256": "7dc9d4f101ff3ded42f5350941299fbb4153fba809cf518a7795d5b041dd0976",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-audit-remediation.yml",
+      "sha256": "2d4464847cf0fead16ff4e58615f8168ace59df3096d53726a37e8091aa0be07",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [
+        {
+          "job": "rust-evaluation",
+          "name": "Retain diagnostic artifacts, not acceptance receipts",
+          "condition": "always()",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-eval-${{ matrix.lane }}-${{ env.SOURCE_SHA }}",
+            "path": "${{ runner.temp }}/hepta-rust-evaluation/",
+            "if-no-files-found": "error",
+            "retention-days": "7"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-bazel-download.yml",
+      "sha256": "c40853afb357dac0a59c99a6d2d33ba2f7ac969ae2ee0419c8c2359803e01118",
+      "triggers": {
+        "pull_request": {
+          "paths": [
+            ".bazelrc",
+            ".bazelversion",
+            ".bazel_downloader_config",
+            "scripts/hepta_bazel_download_probe.py",
+            ".github/workflows/hepta-bazel-download.yml"
+          ]
+        }
+      },
+      "uploads": [
+        {
+          "job": "download",
+          "name": null,
+          "condition": "always()",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "zlib-probe-${{ matrix.runner }}-${{ matrix.source }}-${{ github.event.pull_request.head.sha }}",
+            "path": "${{ runner.temp }}/pinned-bazel-version.txt\n${{ runner.temp }}/zlib-probe/report.json\n${{ runner.temp }}/zlib-probe/source.txt\n${{ runner.temp }}/zlib-probe/format-inputs.sha256\n${{ runner.temp }}/zlib-probe/formatter-version.txt\n${{ runner.temp }}/zlib-probe/formatter-candidate.py\n${{ runner.temp }}/zlib-probe/formatter.diff\n${{ runner.temp }}/zlib-probe/*/bazel.log\n${{ runner.temp }}/zlib-probe/*/downloader.config\n",
+            "if-no-files-found": "error",
+            "retention-days": "30"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-browser-agentd-composition.yml",
+      "sha256": "ec1f4d93dd894edc4a72e55033c8da935b2765d0c8b6d02799852e6a6db0734f",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-browser-servo-deployment-qualification.yml",
+      "sha256": "71411665d8b355eec9381b1c9e317bf872f7e94fe758142b2c3c2032a1d93387",
+      "triggers": {
+        "workflow_call": {
+          "inputs": {
+            "build_run_id": {
+              "description": "GitHub Actions run ID containing the exact worker evidence artifact",
+              "required": "true",
+              "type": "string"
+            },
+            "worker_sha256": {
+              "description": "Expected SHA-256 of the worker binary from the reviewed build receipt",
+              "required": "true",
+              "type": "string"
+            }
+          }
+        },
+        "workflow_dispatch": {
+          "inputs": {
+            "build_run_id": {
+              "description": "GitHub Actions run ID containing the exact worker evidence artifact",
+              "required": "true",
+              "type": "string"
+            },
+            "worker_sha256": {
+              "description": "Expected SHA-256 of the worker binary from the reviewed build receipt",
+              "required": "true",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "uploads": [
+        {
+          "job": "linux-target",
+          "name": "Preserve target evidence",
+          "condition": "always()",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-browser-servo-linux-target-${{ github.sha }}",
+            "path": "deployment-evidence",
+            "if-no-files-found": "error",
+            "retention-days": "14"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-browser-servo-worker-dev.yml",
+      "sha256": "4c785c2a5fc5d04735e0562765a14316534d43fe876f90b3be5279ea4485c837",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [
+        {
+          "job": "worker-evidence",
+          "name": "Preserve worker evidence",
+          "condition": "always()",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-browser-servo-worker-evidence-${{ github.sha }}",
+            "path": "worker-evidence",
+            "if-no-files-found": "error",
+            "retention-days": "7"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-cns-embodiment.yml",
+      "sha256": "c60b59754a81121a70e0ef9eb405dc14215c629a93a3ab387c00a40cc8882561",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [
+        {
+          "job": "source-head",
+          "name": "Retain exact source receipt",
+          "condition": null,
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-cns-source-${{ github.event.pull_request.head.sha || github.sha }}",
+            "path": ".hepta-evidence/cns-source.json",
+            "include-hidden-files": "true",
+            "if-no-files-found": "error",
+            "retention-days": "30"
+          }
+        },
+        {
+          "job": "merge-candidate",
+          "name": "Retain exact merge receipt",
+          "condition": null,
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-cns-merge-${{ steps.merge.outputs.sha }}",
+            "path": ".hepta-evidence/cns-merge.json",
+            "include-hidden-files": "true",
+            "if-no-files-found": "error",
+            "retention-days": "30"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-consolidated-source.yml",
+      "sha256": "769b27482d6466d2bbf2a8a82b8f2945df9576f0098a8a8324d416906c598593",
+      "triggers": {
+        "workflow_call": {
+          "inputs": {
+            "full_qualification": {
+              "type": "boolean",
+              "default": "false"
+            }
+          }
+        },
+        "workflow_dispatch": {
+          "inputs": {
+            "full_qualification": {
+              "description": "Execute all workspace owners and revalidate historical qualification gates.",
+              "type": "boolean",
+              "default": "true"
+            }
+          }
+        }
+      },
+      "uploads": [
+        {
+          "job": "workspace-regression",
+          "name": "Retain real command records",
+          "condition": "always() && steps.scope.outputs.required == 'true'",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-commands-${{ github.run_id }}-${{ github.run_attempt }}-workspace",
+            "path": "${{ runner.temp }}/hepta-command-records/*",
+            "if-no-files-found": "error",
+            "retention-days": "30"
+          }
+        },
+        {
+          "job": "engineering-sandbox",
+          "name": "Retain host qualification profile",
+          "condition": null,
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "control-engineering-host-profile-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}",
+            "path": "${{ runner.temp }}/control-engineering-host-profile.json",
+            "if-no-files-found": "error",
+            "retention-days": "30"
+          }
+        },
+        {
+          "job": "engineering-sandbox",
+          "name": "Retain real command records",
+          "condition": "always()",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-commands-${{ github.run_id }}-${{ github.run_attempt }}-engineering-${{ matrix.lane }}",
+            "path": "${{ runner.temp }}/hepta-command-records/*",
+            "if-no-files-found": "error",
+            "retention-days": "30"
+          }
+        },
+        {
+          "job": "os-evidence",
+          "name": "Retain real command records",
+          "condition": "always()",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-commands-${{ github.run_id }}-${{ github.run_attempt }}-os",
+            "path": "${{ runner.temp }}/hepta-command-records/*",
+            "if-no-files-found": "error",
+            "retention-days": "30"
+          }
+        },
+        {
+          "job": "qualification",
+          "name": "Retain real command records",
+          "condition": "always()",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-commands-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}",
+            "path": "${{ runner.temp }}/hepta-command-records/*",
+            "if-no-files-found": "error",
+            "retention-days": "30"
+          }
+        },
+        {
+          "job": "engineering-product-gate",
+          "name": "Retain product execution receipt",
+          "condition": null,
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "control-engineering-product-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}",
+            "path": "${{ runner.temp }}/control-engineering-product.json",
+            "if-no-files-found": "error",
+            "retention-days": "30"
+          }
+        },
+        {
+          "job": "engineering-product-evidence",
+          "name": "Retain dual-lane product evidence",
+          "condition": null,
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "control-engineering-product-pair-${{ github.run_id }}-${{ github.run_attempt }}",
+            "path": "${{ runner.temp }}/control-engineering-product-pair.json\n${{ runner.temp }}/control-engineering-reviews.json\n",
+            "if-no-files-found": "error",
+            "retention-days": "30"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-contract-gate.yml",
+      "sha256": "61faff97c373308ded3cde266cad512c3f8795db2646f1a77779a7c8b46aa7f9",
+      "triggers": {
+        "workflow_call": {
+          "inputs": {
+            "profile": {
+              "type": "string",
+              "default": "qualification"
+            }
+          }
+        },
+        "workflow_dispatch": {
+          "inputs": {
+            "profile": {
+              "type": "choice",
+              "options": [
+                "qualification",
+                "development"
+              ],
+              "default": "qualification"
+            }
+          }
+        }
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-converged-learning.yml",
+      "sha256": "036a29631f8ed4a508085deed537ebd105ce6f2487b429760efd1ccce2c9c88f",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [
+        {
+          "job": "formatting",
+          "name": "Retain actionable formatting diagnostics",
+          "condition": "always() && steps.formatting.outcome == 'failure'",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-learning-rustfmt-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}",
+            "path": "${{ runner.temp }}/hepta-learning-rustfmt.txt",
+            "if-no-files-found": "error",
+            "retention-days": "7"
+          }
+        },
+        {
+          "job": "qualification",
+          "name": "Retain real-file measurements",
+          "condition": "always() && steps.ledger_measure.outcome != 'skipped'",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-long-horizon-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}",
+            "path": "${{ runner.temp }}/hepta-long-horizon-measurement/",
+            "if-no-files-found": "error",
+            "retention-days": "7"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-deployment-handoff.yml",
+      "sha256": "d5da56cd0876a8b749cb595d278b1590ba99b99fac9c041d8b153703d55e1f8b",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-development-docs.yml",
+      "sha256": "6622d6b75446f70a30a90f3a9f34a7f047b134feadffb7b9ebb33b80ea0d0a43",
+      "triggers": {
+        "workflow_call": {
+          "inputs": {
+            "profile": {
+              "type": "string",
+              "default": "development"
+            }
+          }
+        },
+        "workflow_dispatch": {
+          "inputs": {
+            "profile": {
+              "description": "Qualification additionally renews historical source evidence and receipts.",
+              "type": "choice",
+              "options": [
+                "qualification",
+                "development"
+              ],
+              "default": "qualification"
+            }
+          }
+        }
+      },
+      "uploads": [
+        {
+          "job": "source-head",
+          "name": "Retain exact source receipts",
+          "condition": "env.VERIFICATION_PROFILE == 'qualification'",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-v8-source-${{ github.event.pull_request.head.sha || github.sha }}",
+            "path": ".hepta-evidence/*.json",
+            "include-hidden-files": "true",
+            "if-no-files-found": "error",
+            "retention-days": "30"
+          }
+        },
+        {
+          "job": "merge-candidate",
+          "name": "Retain exact merge receipts",
+          "condition": "env.VERIFICATION_PROFILE == 'qualification'",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-v8-merge-${{ steps.synthetic.outputs.sha }}",
+            "path": ".hepta-evidence/*.json",
+            "include-hidden-files": "true",
+            "if-no-files-found": "error",
+            "retention-days": "30"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-diagnostic-source-export.yml",
+      "sha256": "b31fac796b0ceca9957e8e0c91989c8c4cae191125212c7d7845cca55e2bfc6c",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [
+        {
+          "job": "export-exact-source",
+          "name": "Retain diagnostic snapshot",
+          "condition": null,
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-diagnostic-source-${{ github.sha }}",
+            "path": "${{ env.archive }}\n${{ env.archive }}.sha256\n",
+            "if-no-files-found": "error",
+            "retention-days": "1"
+          }
+        },
+        {
+          "job": "rust-policy-diagnostics",
+          "name": "Retain Rust policy diagnostics",
+          "condition": null,
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-rust-policy-diagnostics-${{ github.sha }}",
+            "path": ".hepta-diagnostics",
+            "include-hidden-files": "true",
+            "if-no-files-found": "error",
+            "retention-days": "1"
+          }
+        },
+        {
+          "job": "bazel-lock-diagnostics",
+          "name": "Retain Bazel lock diagnostics",
+          "condition": null,
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-bazel-lock-diagnostics-${{ github.sha }}",
+            "path": ".hepta-diagnostics",
+            "include-hidden-files": "true",
+            "if-no-files-found": "error",
+            "retention-days": "1"
+          }
+        },
+        {
+          "job": "python-sdk-diagnostics",
+          "name": "Retain Python SDK diagnostics",
+          "condition": null,
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-python-sdk-diagnostics-${{ github.sha }}",
+            "path": ".hepta-diagnostics",
+            "include-hidden-files": "true",
+            "if-no-files-found": "error",
+            "retention-days": "1"
+          }
+        },
+        {
+          "job": "python-format-candidate",
+          "name": "Retain formatter candidate",
+          "condition": null,
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-python-format-candidate-${{ github.sha }}",
+            "path": ".hepta-diagnostics/formatted-scripts.tar.gz\n.hepta-diagnostics/formatted-scripts.stat\n",
+            "include-hidden-files": "true",
+            "if-no-files-found": "error",
+            "retention-days": "1"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-durable-learning-roundtrip.yml",
+      "sha256": "2a509955792e8be3bde4dd5b57c623837c1756c31d844291f23af206d4301f56",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-gap-agentd-process.yml",
+      "sha256": "f52889571fa8722f0845eb797756e0dfeaf7d50c2fa2b1d992c8408b3e70ae42",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-implementation-readiness.yml",
+      "sha256": "fbbd9cdd0033ef5323d83b7ea407f027758ab35e12248c239ce47701f127ab9d",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-inference-maintenance.yml",
+      "sha256": "d26062aa88984c1c979653c46dde32b40b4b0acdfd7fadcc6d5bce4ba225a59d",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": {
+          "inputs": {
+            "qualify_scale": {
+              "description": "Run the shipped 32/256/1024 record filesystem history measurement",
+              "type": "boolean",
+              "default": "false"
+            }
+          }
+        }
+      },
+      "uploads": [
+        {
+          "job": "owner-regression",
+          "name": "Retain real command evidence and source input",
+          "condition": "always()",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-inference-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}",
+            "path": "${{ runner.temp }}/hepta-inference-records/*",
+            "if-no-files-found": "error",
+            "retention-days": "14"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": true
+    },
+    {
+      "path": ".github/workflows/hepta-integration-diagnostics.yml",
+      "sha256": "07aadb97d7def2d0045cc45d7a1008ee230a7e3d2943c6af1b358c1adf360449",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [
+        {
+          "job": "source-preflight",
+          "name": "Retain source diagnostic output",
+          "condition": "${{ always() }}",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-integration-preflight-${{ github.sha }}",
+            "path": "${{ runner.temp }}/hepta-source-preflight/",
+            "if-no-files-found": "warn",
+            "retention-days": "7"
+          }
+        },
+        {
+          "job": "merge-diagnostics",
+          "name": "Retain conflicts even when integration fails",
+          "condition": "${{ always() }}",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-integration-inputs-${{ github.sha }}",
+            "path": "${{ runner.temp }}/hepta-integration/",
+            "if-no-files-found": "warn",
+            "retention-days": "7"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-intuition-qualification.yml",
+      "sha256": "b3e244d902bc5adc1c970ce026cb40c4e41d3e73b3e4fa87772b05043f830807",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [
+        {
+          "job": "source-head",
+          "name": "Retain fast-policy measurements",
+          "condition": null,
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "intuition-fast-${{ github.event.pull_request.head.sha || github.sha }}",
+            "path": "intuition-kernel-fast-gate.csv\nintuition-authenticated-fast-gate.csv\nintuition-source-host-profile.txt\n",
+            "if-no-files-found": "error",
+            "retention-days": "30"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-kernel-evidence-qualification.yml",
+      "sha256": "0cc079f1c017249d3af25683b3981d28cf3a96f37b6ded7e3c6ea2c441f362bf",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [
+        {
+          "job": "source-head",
+          "name": "Retain exact-source receipts",
+          "condition": null,
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "kernel-evidence-source-${{ github.event.pull_request.head.sha || github.sha }}",
+            "path": "${{ runner.temp }}/kernel-evidence/*.json",
+            "if-no-files-found": "error",
+            "retention-days": "90"
+          }
+        },
+        {
+          "job": "merge-candidate",
+          "name": "Retain synthetic-merge receipts",
+          "condition": null,
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "kernel-evidence-merge-${{ steps.merge.outputs.sha }}",
+            "path": "${{ runner.temp }}/kernel-evidence/*.json",
+            "if-no-files-found": "error",
+            "retention-days": "90"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-knowledge-graph-qualification.yml",
+      "sha256": "e928ec8825ab0b7fac3a8f7642ea324d8316a7a58e000df3e5e7594940aa4edd",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-lane-b-truth.yml",
+      "sha256": "3e021f13cb695220f15d3b0f07e9896d1e426982795d8146f07e6b8e55df7a86",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-lane-d-semantic-conformance.yml",
+      "sha256": "479465eda2593e3e8f58b68a1447748b073f38a5c5feeecb720015c44cce8b2b",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-lane-e-gap-closure.yml",
+      "sha256": "c33dd37b2a0de21d6e1c1af705b750e3da63fed76880fa10602a897030bf035f",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [
+        {
+          "job": "rust-closure",
+          "name": "Retain exact-source learning.eval evidence",
+          "condition": null,
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "learning-eval-exact-source-${{ env.SOURCE_SHA }}",
+            "path": ".hepta-evidence/learning-eval/",
+            "if-no-files-found": "error",
+            "retention-days": "30"
+          }
+        },
+        {
+          "job": "learning-eval-qualification",
+          "name": "Retain learning eval qualification evidence",
+          "condition": null,
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "learning-eval-qualification-${{ env.SOURCE_SHA }}",
+            "path": ".hepta-evidence/learning-eval/",
+            "if-no-files-found": "error",
+            "retention-days": "30"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-lane-f-shadow-qualification.yml",
+      "sha256": "b9d139c0cf98cccbd08011bb73cd8dc163a393482e0d45e0e4ce6f3855694dd6",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-learning-ledger-durable.yml",
+      "sha256": "d69d22fe8b2d4764142b564575c4bebd30817f7026e666aca5f5ce937e725510",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
+      "sha256": "de965b37c80134f33f8007234242c101fc22b2c0a04235df61b2a99c8b1e6376",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [
+        {
+          "job": "qualification-host",
+          "name": "Retain raw qualification-host evidence",
+          "condition": "always()",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "memory-retrieval-qualification-host-${{ github.run_id }}-${{ github.run_attempt }}",
+            "path": "${{ runner.temp }}/memory-retrieval-target-host/**",
+            "if-no-files-found": "error",
+            "retention-days": "30"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-ndu-recursion.yml",
+      "sha256": "669497f104c4b0da94122d9427ef8d8d7d75a1a6d020483b0fb38e95f21a780c",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [
+        {
+          "job": "ndu",
+          "name": "Retain named-host NDU receipt",
+          "condition": "always()",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "ndu-named-host-${{ matrix.lane }}-${{ env.SOURCE_SHA }}",
+            "path": "${{ runner.temp }}/ndu-named-host-${{ matrix.lane }}.json",
+            "if-no-files-found": "ignore"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-objective-admission.yml",
+      "sha256": "6c59dd41c8e21917bea5202279cdb7219298a02c8821fcfdbe74efa385a5267a",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-objective-product-composition.yml",
+      "sha256": "37871e409d7a53a59a9a53fdc49945f3ed1fd7b21102a1df69f08cab8386dd89",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-offline-build-inputs.yml",
+      "sha256": "f7135d311e96728da029fba302e374e5b7b7258b80cf06e2372ec56ff6e49c8c",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [
+        {
+          "job": "inputs",
+          "name": "Retain failure diagnostics without changing the failed verdict",
+          "condition": "failure()",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-repair-diagnostics-${{ github.sha }}",
+            "path": "${{ runner.temp }}/hepta-repair-evidence/",
+            "retention-days": "3",
+            "if-no-files-found": "error"
+          }
+        },
+        {
+          "job": "inputs",
+          "name": null,
+          "condition": null,
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-offline-build-inputs-${{ github.sha }}",
+            "path": "${{ runner.temp }}/hepta-offline-inputs/compiler.tar.gz\n${{ runner.temp }}/hepta-offline-inputs/dependencies.tar.gz\n${{ runner.temp }}/hepta-offline-inputs/source.tar.gz\n${{ runner.temp }}/hepta-offline-inputs/source-sha.txt\n${{ runner.temp }}/hepta-offline-inputs/source-tree.txt\n${{ runner.temp }}/hepta-offline-inputs/test-tools.tar.gz\n${{ runner.temp }}/hepta-offline-inputs/SHA256SUMS\n",
+            "retention-days": "3",
+            "compression-level": "0",
+            "if-no-files-found": "error"
+          }
+        },
+        {
+          "job": "inputs",
+          "name": null,
+          "condition": null,
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-offline-source-git-${{ github.sha }}",
+            "path": "${{ runner.temp }}/hepta-offline-inputs/source.bundle\n${{ runner.temp }}/hepta-offline-inputs/GIT_SHA256SUMS\n${{ runner.temp }}/hepta-offline-inputs/source-sha.txt\n${{ runner.temp }}/hepta-offline-inputs/source-tree.txt\n",
+            "retention-days": "3",
+            "compression-level": "0",
+            "if-no-files-found": "error"
+          }
+        },
+        {
+          "job": "inputs",
+          "name": null,
+          "condition": null,
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-offline-v8-${{ github.sha }}",
+            "path": "${{ runner.temp }}/hepta-offline-v8/*",
+            "retention-days": "3",
+            "compression-level": "0",
+            "if-no-files-found": "error"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": true
+    },
+    {
+      "path": ".github/workflows/hepta-organ-implementation.yml",
+      "sha256": "9d9020e6645ed6de008bcdf4dce7e2ed0a0f67bc6e0e1661939ce13a50e7799b",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [
+        {
+          "job": "neuron",
+          "name": "Retain exact tracked source",
+          "condition": "matrix.profile.name == 'Hierarchy and live consumer'",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-organ-source-${{ matrix.lane }}-${{ env.SOURCE_SHA }}",
+            "path": "${{ runner.temp }}/hepta-organ-source",
+            "if-no-files-found": "error",
+            "retention-days": "3"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": true
+    },
+    {
+      "path": ".github/workflows/hepta-pon-native-pair.yml",
+      "sha256": "fce7c3b670cd0fc3137c9ca8b3769e2a2958038f28552f202c5e3208714cfd21",
+      "triggers": {
+        "pull_request": {
+          "paths": [
+            "codex-rs/**",
+            "scripts/**",
+            "qualification/learning-generations/**",
+            "justfile",
+            "AGENTS.md",
+            ".github/workflows/hepta-pon-native-pair.yml"
+          ]
+        }
+      },
+      "uploads": [
+        {
+          "job": "pair",
+          "name": null,
+          "condition": "always()",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-pon-pair-${{ matrix.runner }}-${{ matrix.lane }}-${{ github.run_attempt }}",
+            "path": "${{ runner.temp }}/pon-pair/*.json\n${{ runner.temp }}/pon-pair/*.json.*.log\n${{ runner.temp }}/pon-pair/chain-retained-delta-cost.jsonl\n${{ runner.temp }}/pon-pair/*.sha256\n${{ runner.temp }}/pon-pair/*-identity.txt\n${{ runner.temp }}/pon-pair/tuple.txt\n${{ runner.temp }}/pon-pair/SCOPE.txt\n${{ runner.temp }}/pon-pair/prior-windows-*.log\n${{ runner.temp }}/pon-pair/prior-windows-*.fetch-exit\n${{ runner.temp }}/pon-pair/prior-windows-SCOPE.txt\n",
+            "include-hidden-files": "false",
+            "if-no-files-found": "error",
+            "retention-days": "14"
+          }
+        },
+        {
+          "job": "windows-ledger",
+          "name": null,
+          "condition": "always()",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-windows-ledger-${{ matrix.lane }}-${{ github.run_attempt }}",
+            "path": "${{ runner.temp }}/windows-ledger/rustc.txt\n${{ runner.temp }}/windows-ledger/check.py\n${{ runner.temp }}/windows-ledger/source-before.json\n${{ runner.temp }}/windows-ledger/source-after.json\n${{ runner.temp }}/windows-ledger/result.json\n${{ runner.temp }}/windows-ledger/witness.json\n${{ runner.temp }}/windows-ledger/witness.log\n${{ runner.temp }}/windows-ledger/evaluated-shadow.json\n${{ runner.temp }}/windows-ledger/evaluated-shadow.log\n",
+            "include-hidden-files": "false",
+            "if-no-files-found": "error",
+            "retention-days": "14"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": true
+    },
+    {
+      "path": ".github/workflows/hepta-public-initial-v2.yml",
+      "sha256": "96a21602358f21e257d0c4fd5f0e4ce8f79155c31df7ccc1d8f09f956fb034a6",
+      "triggers": {
+        "pull_request": {
+          "paths": [
+            ".github/workflows/hepta-public-initial-v2.yml",
+            "codex-rs/.config/nextest.toml",
+            "codex-rs/hepta-agentd/**",
+            "codex-rs/hepta-agent-protocol/**",
+            "codex-rs/app-server/**",
+            "codex-rs/hepta-infer-worker-host/**",
+            "codex-rs/hepta-learning-artifacts/**",
+            "scripts/hepta_smollm_*.py",
+            "scripts/test_hepta_smollm_*.py"
+          ]
+        },
+        "workflow_dispatch": ""
+      },
+      "uploads": [
+        {
+          "job": "cold-ordinary-three-rounds",
+          "name": "Retain filtered metadata and logs, including failed outcomes",
+          "condition": "${{ always() && steps.metadata_export.outcome == 'success' }}",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-public-v2-metadata-${{ env.SOURCE_SHA }}",
+            "retention-days": "14",
+            "include-hidden-files": "false",
+            "if-no-files-found": "error",
+            "path": "${{ runner.temp }}/hepta-public-initial-v2-metadata/"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-repository-integrity.yml",
+      "sha256": "01251fd151cf4cca8f87f56b3e2d4ac1cfc1371487447829a1e2f85feea133d0",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [
+        {
+          "job": "source-integrity",
+          "name": "Retain integrity receipt",
+          "condition": null,
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-repository-integrity-${{ steps.identity.outputs.head }}",
+            "path": ".hepta-evidence/repository-integrity.json",
+            "include-hidden-files": "true",
+            "if-no-files-found": "error",
+            "retention-days": "30"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-safe-yaml-rustsec-qualification.yml",
+      "sha256": "83dc04fb98559ea3de3bc2250028be51c2ce62968a5eb1522530b9e7ebf8830b",
+      "triggers": {
+        "workflow_dispatch": "",
+        "pull_request": {
+          "paths": [
+            "codex-rs/Cargo.toml",
+            "codex-rs/Cargo.lock",
+            "codex-rs/skills/**",
+            "codex-rs/ext/skills/**",
+            "MODULE.bazel",
+            "MODULE.bazel.lock",
+            ".github/actions/setup-bazel-ci/**",
+            "codex-rs/core/src/client*.rs",
+            "codex-rs/core-plugins/**",
+            "codex-rs/external-agent-migration/**",
+            ".github/workflows/hepta-safe-yaml-rustsec-qualification.yml"
+          ]
+        }
+      },
+      "uploads": [
+        {
+          "job": "resolve-reviewed-lockfile",
+          "name": "Retain exact dependency solver output as a reproducible review artifact",
+          "condition": null,
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "safe-yaml-solver-lockfile",
+            "path": "codex-rs/Cargo.lock",
+            "retention-days": "7"
+          }
+        },
+        {
+          "job": "yaml-compile-and-test",
+          "name": "Retain actual native results including failures",
+          "condition": "always()",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "safe-yaml-native-${{ github.run_id }}-${{ github.run_attempt }}",
+            "path": "${{ runner.temp }}/safe-yaml-native/",
+            "if-no-files-found": "error",
+            "retention-days": "7"
+          }
+        },
+        {
+          "job": "bazel-lock-proposal",
+          "name": "Retain Bazel output including failures or lock drift",
+          "condition": "always()",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "safe-yaml-bazel-lock-${{ github.run_id }}-${{ github.run_attempt }}",
+            "path": "${{ runner.temp }}/safe-yaml-bazel/",
+            "if-no-files-found": "error",
+            "retention-days": "7"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-self-iteration-activation.yml",
+      "sha256": "5d423ac4c07d70c5d01e724f89b7a76a7c5b1b010282ac9c799f821e3fa55d66",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-v8-windows-sandbox.yml",
+      "sha256": "629513c924b7607923cfcfb1dfe21f070839568ae2fe7ed7bba9df01ff799edb",
+      "triggers": {
+        "pull_request": {
+          "paths": [
+            "codex-rs/v8-poc/**",
+            ".github/workflows/hepta-v8-windows-sandbox.yml"
+          ]
+        },
+        "workflow_dispatch": ""
+      },
+      "uploads": [
+        {
+          "job": "windows-msvc",
+          "name": "Retain exact failure logs",
+          "condition": "always()",
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "hepta-v8-sandbox-msvc-${{ github.run_id }}-${{ github.run_attempt }}",
+            "path": "${{ runner.temp }}/bazel-execution-logs",
+            "if-no-files-found": "warn",
+            "retention-days": "14"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-vnext-qualification.yml",
+      "sha256": "0454e38cf612f9e1abbbfeef4e7ddf583e8e0926e962a7d5aa56ebbe5508f791",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [
+        {
+          "job": "authbus-local-qualification",
+          "name": "Upload AuthBus qualification evidence",
+          "condition": "always()",
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "authbus-local-qualification",
+            "path": "${{ runner.temp }}/authbus-local-qualification",
+            "if-no-files-found": "error"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hepta-windows-delete-boundary.yml",
+      "sha256": "5957af19f9513b0e8c1cf335b4e94280f3e93381bbb363e28fd869ab4836fabd",
+      "triggers": {
+        "pull_request": {
+          "paths": [
+            "codex-rs/windows-sandbox-rs/**",
+            "codex-rs/utils/windows-private-state/**",
+            "codex-rs/hepta-contracts/**",
+            "codex-rs/hepta-prompt-registry/**",
+            "scripts/test_hepta_windows_boundary_receipts.py",
+            "scripts/test_hepta_windows_terminal_receipts.py",
+            ".github/workflows/hepta-windows-delete-boundary.yml"
+          ]
+        }
+      },
+      "uploads": [
+        {
+          "job": "delete-boundary",
+          "name": null,
+          "condition": "always()",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-windows-delete-boundary-${{ matrix.runner }}-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}",
+            "path": "${{ runner.temp }}/windows-delete-boundary/",
+            "if-no-files-found": "error",
+            "retention-days": "14"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/hnmf-qualification.yml",
+      "sha256": "9fb0efb9240a242323e5a06259d82b2464e4f47698480df3b0ea373354979dbd",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/issue-deduplicator.yml",
+      "sha256": "ba5a4bef1ad9eb973130f8cdcd27f7e51d09db6b33c773573153871b956deadb",
+      "triggers": {
+        "issues": {
+          "types": [
+            "opened",
+            "labeled"
+          ]
+        }
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/issue-labeler.yml",
+      "sha256": "d021126359a00770ea5d701830213b094435935632849ce6cb0ab4df50e20dbb",
+      "triggers": {
+        "issues": {
+          "types": [
+            "opened",
+            "labeled"
+          ]
+        }
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/issue-translator.yml",
+      "sha256": "cf4f9034b3928012b179be39ff3e2a66cc742731f4cd707aab5a0e1cba0feac1",
+      "triggers": {
+        "issues": {
+          "types": [
+            "opened"
+          ]
+        }
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/lane-a-foundation.yml",
+      "sha256": "b35d9372299f53a34222942d559cb6b51504fcb8fe4dceae8ab3e29f79875fdd",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [
+        {
+          "job": "source-head",
+          "name": "Retain exact source receipts",
+          "condition": null,
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "lane-a-source-native-${{ github.event.pull_request.head.sha || github.sha }}",
+            "path": ".hepta-evidence/lane-a-*.json",
+            "include-hidden-files": "true",
+            "if-no-files-found": "error",
+            "retention-days": "90"
+          }
+        },
+        {
+          "job": "merge-candidate",
+          "name": "Retain synthetic merge receipts",
+          "condition": null,
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "lane-a-merge-native-${{ steps.merge.outputs.sha }}",
+            "path": ".hepta-evidence/lane-a-*.json",
+            "include-hidden-files": "true",
+            "if-no-files-found": "error",
+            "retention-days": "90"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/matrix-sdk-upgrade.yml",
+      "sha256": "d1b3992c2c2a459b28887e1f0d320fc8616badb41dbbca96076e035b89dd2b8f",
+      "triggers": {
+        "pull_request": {
+          "paths": [
+            "codex-rs/hepta-matrix*/**",
+            "codex-rs/third_party/**",
+            "codex-rs/Cargo.*",
+            "codex-rs/rust-toolchain.toml",
+            "qualification/matrix-sdk-019/**",
+            "MODULE.bazel",
+            "MODULE.bazel.lock",
+            "scripts/hepta_ci_exec.py",
+            ".github/workflows/matrix-sdk-upgrade.yml"
+          ]
+        },
+        "workflow_dispatch": ""
+      },
+      "uploads": [
+        {
+          "job": "sdk-protocol",
+          "name": "Preserve protocol evidence",
+          "condition": "always()",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "matrix-sdk-${{ matrix.qualification }}-${{ matrix.source }}-${{ github.run_attempt }}",
+            "path": "${{ runner.temp }}/sdk-qualification-artifacts",
+            "if-no-files-found": "error"
+          }
+        },
+        {
+          "job": "current-main",
+          "name": "Preserve source and all package outcomes",
+          "condition": "always()",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "matrix-sdk-packages-${{ matrix.source }}-${{ github.run_attempt }}",
+            "path": "${{ runner.temp }}/matrix-source-artifacts",
+            "if-no-files-found": "error"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/memory-federation-v2-final-verify.yml",
+      "sha256": "056d1a9431bb2b0f9141c1d8fbcec25372c7ce235e4ec6e935eb7ecf0663073d",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/openbao-compatibility.yml",
+      "sha256": "6d56c3614a44bd7dfe96472648acc8262ea818cbb4e4c120efd112d66c4d49c5",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/postmerge-ci.yml",
+      "sha256": "e68ef60919f1d5c73455903092faea02b03921b803c12e547070a1f5816a7c4b",
+      "triggers": {
+        "push": {
+          "branches": [
+            "main"
+          ]
+        }
+      },
+      "uploads": [],
+      "reusable_calls": [
+        {
+          "job": "rust-ci-full",
+          "uses": "./.github/workflows/rust-ci-full.yml",
+          "condition": null
+        },
+        {
+          "job": "v8-canary",
+          "uses": "./.github/workflows/v8-canary.yml",
+          "condition": null
+        }
+      ],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/python-runtime-build.yml",
+      "sha256": "3ed05402dff33f620ae4321e4f30989af9ee337563b7b231cb464698cefa6d2c",
+      "triggers": {
+        "workflow_call": {
+          "inputs": {
+            "runtime_version": {
+              "description": "Runtime version to build, for example 0.136.0, 0.136.0a2, or 0.136.0a2.post1.",
+              "required": "true",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "uploads": [
+        {
+          "job": "build-python-runtime",
+          "name": "Upload Python runtime wheels",
+          "condition": null,
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "python-runtime-wheels",
+            "path": "dist/python-runtime/*",
+            "if-no-files-found": "error"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/python-runtime-release.yml",
+      "sha256": "0cb41b3804598f06e6cae3f393c74bb4c1f5a8e54925b27263d5f5ca75c21bfb",
+      "triggers": {
+        "workflow_dispatch": {
+          "inputs": {
+            "runtime_version": {
+              "description": "Runtime version to publish before updating the SDK pin, for example 0.136.0, 0.136.0a2, or 0.136.0a2.post1.",
+              "required": "true",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "uploads": [],
+      "reusable_calls": [
+        {
+          "job": "prepare-python-runtime",
+          "uses": "./.github/workflows/python-runtime-build.yml",
+          "condition": null
+        }
+      ],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/python-sdk-release.yml",
+      "sha256": "a78ff42d81fa709818feaf307a8438a9cae0fad87e4f8f6ca53c614ec345f832",
+      "triggers": {
+        "push": {
+          "tags": [
+            "python-v*"
+          ]
+        }
+      },
+      "uploads": [
+        {
+          "job": "build-python-sdk",
+          "name": "Upload Python SDK package",
+          "condition": null,
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "python-sdk-package",
+            "path": "dist/python-sdk/*",
+            "if-no-files-found": "error"
+          }
+        }
+      ],
+      "reusable_calls": [
+        {
+          "job": "prepare-python-runtime",
+          "uses": "./.github/workflows/python-runtime-build.yml",
+          "condition": null
+        }
+      ],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/r2-release.yml",
+      "sha256": "5e33593a64238d54500700f2c48a4690291b14a0173956f423c6d454dda85670",
+      "triggers": {
+        "workflow_call": {
+          "inputs": {
+            "tag": {
+              "required": "true",
+              "type": "string"
+            },
+            "make_latest": {
+              "required": "true",
+              "type": "boolean"
+            },
+            "prerelease": {
+              "required": "true",
+              "type": "boolean"
+            },
+            "stage": {
+              "required": "true",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/repo-checks.yml",
+      "sha256": "11a4f87cb482742ce9654fbe189530da5c7d94fd1da4386bc0dedb50ee2c143f",
+      "triggers": {
+        "workflow_call": ""
+      },
+      "uploads": [
+        {
+          "job": "native-paths",
+          "name": "Retain original native Fleet results",
+          "condition": "always()",
+          "action": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "parameters": {
+            "name": "hepta-fleet-native-${{ matrix.os }}-${{ github.sha }}-${{ github.run_attempt }}",
+            "path": "${{ runner.temp }}/hepta-fleet-native",
+            "if-no-files-found": "error",
+            "retention-days": "14"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/rust-ci-full-nextest-platform.yml",
+      "sha256": "f6a36c24388cfda7c23e9977a47a97c7696ccb4db16df05a9ab5446736f6a16e",
+      "triggers": {
+        "workflow_call": {
+          "inputs": {
+            "runner": {
+              "required": "true",
+              "type": "string"
+            },
+            "runner_group": {
+              "required": "false",
+              "default": "",
+              "type": "string"
+            },
+            "runner_labels": {
+              "required": "false",
+              "default": "",
+              "type": "string"
+            },
+            "archive_runner": {
+              "required": "false",
+              "default": "",
+              "type": "string"
+            },
+            "archive_runner_group": {
+              "required": "false",
+              "default": "",
+              "type": "string"
+            },
+            "archive_runner_labels": {
+              "required": "false",
+              "default": "",
+              "type": "string"
+            },
+            "target": {
+              "required": "true",
+              "type": "string"
+            },
+            "profile": {
+              "required": "true",
+              "type": "string"
+            },
+            "artifact_id": {
+              "required": "true",
+              "type": "string"
+            },
+            "remote_env": {
+              "required": "false",
+              "default": "false",
+              "type": "boolean"
+            },
+            "test_threads": {
+              "required": "false",
+              "default": "0",
+              "type": "number"
+            },
+            "use_sccache": {
+              "required": "false",
+              "default": "false",
+              "type": "boolean"
+            },
+            "archive_ci_test_no_debug": {
+              "required": "false",
+              "default": "false",
+              "type": "boolean"
+            }
+          }
+        }
+      },
+      "uploads": [
+        {
+          "job": "archive",
+          "name": "Upload macOS archive disk observations",
+          "condition": "${{ always() && runner.os == 'macOS' }}",
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "nextest-disk-${{ inputs.artifact_id }}",
+            "path": "${{ runner.temp }}/nextest-disk-*.log",
+            "if-no-files-found": "warn"
+          }
+        },
+        {
+          "job": "archive",
+          "name": "Upload Cargo timings (nextest)",
+          "condition": "always()",
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "cargo-timings-rust-ci-nextest-${{ inputs.target }}-${{ inputs.profile }}",
+            "path": "${{ env.CARGO_TARGET_DIR }}/**/cargo-timings/cargo-timing.html",
+            "if-no-files-found": "warn"
+          }
+        },
+        {
+          "job": "archive",
+          "name": "Upload nextest archive",
+          "condition": null,
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "nextest-archive-${{ inputs.artifact_id }}",
+            "path": "${{ runner.temp }}/nextest-archive/${{ env.NEXTEST_ARCHIVE_FILE }}",
+            "if-no-files-found": "error",
+            "retention-days": "1"
+          }
+        },
+        {
+          "job": "archive",
+          "name": "Upload runtime test helpers",
+          "condition": "${{ runner.os == 'Linux' || runner.os == 'Windows' }}",
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "${{ env.TEST_HELPERS_ARTIFACT }}",
+            "path": "${{ runner.temp }}/${{ env.TEST_HELPERS_ARTIFACT }}/*",
+            "if-no-files-found": "error",
+            "retention-days": "1"
+          }
+        },
+        {
+          "job": "shard",
+          "name": "Upload nextest JUnit report",
+          "condition": "always()",
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "nextest-junit-rust-ci-${{ inputs.artifact_id }}-shard-${{ matrix.shard }}",
+            "path": "${{ env.CARGO_TARGET_DIR }}/nextest/default/junit.xml",
+            "if-no-files-found": "warn"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/rust-ci-full.yml",
+      "sha256": "630e3e95ee605ce94591d8c61b2f3e369663c2a469fe014c001cb416bfbe281c",
+      "triggers": {
+        "workflow_call": "",
+        "push": {
+          "branches": [
+            "**full-ci**"
+          ]
+        },
+        "workflow_dispatch": ""
+      },
+      "uploads": [
+        {
+          "job": "lint_build",
+          "name": "Upload Cargo timings (clippy)",
+          "condition": "always()",
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "cargo-timings-rust-ci-clippy-${{ matrix.target }}-${{ matrix.profile }}",
+            "path": "${{ env.CARGO_TARGET_DIR }}/**/cargo-timings/cargo-timing.html",
+            "if-no-files-found": "warn"
+          }
+        }
+      ],
+      "reusable_calls": [
+        {
+          "job": "tests_macos_aarch64",
+          "uses": "./.github/workflows/rust-ci-full-nextest-platform.yml",
+          "condition": null
+        },
+        {
+          "job": "tests_linux_x64_remote",
+          "uses": "./.github/workflows/rust-ci-full-nextest-platform.yml",
+          "condition": null
+        },
+        {
+          "job": "tests_linux_arm64",
+          "uses": "./.github/workflows/rust-ci-full-nextest-platform.yml",
+          "condition": null
+        },
+        {
+          "job": "tests_windows_x64",
+          "uses": "./.github/workflows/rust-ci-full-nextest-platform.yml",
+          "condition": null
+        },
+        {
+          "job": "tests_windows_arm64",
+          "uses": "./.github/workflows/rust-ci-full-nextest-platform.yml",
+          "condition": null
+        }
+      ],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/rust-ci.yml",
+      "sha256": "d5dde11e1a5e93befaab6c9427a647d50f3cc87d8841cf75562222fa4c3ff376",
+      "triggers": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/rust-release-argument-comment-lint.yml",
+      "sha256": "34b41b0f2847120c8b6b658a3e8d2255804f6f2792cfdd0e7262d74e332acbcd",
+      "triggers": {
+        "workflow_call": {
+          "inputs": {
+            "publish": {
+              "required": "true",
+              "type": "boolean"
+            }
+          }
+        }
+      },
+      "uploads": [
+        {
+          "job": "build",
+          "name": null,
+          "condition": null,
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "argument-comment-lint-${{ matrix.target }}",
+            "path": "dist/argument-comment-lint/${{ matrix.target }}/*"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/rust-release-prepare.yml",
+      "sha256": "2176116b8b984e4422c3d07dffdb0b7b81114b5d0fa1fdd59af635f46c8bc5ad",
+      "triggers": {
+        "workflow_dispatch": "",
+        "schedule": [
+          {
+            "cron": "0 */4 * * *"
+          }
+        ]
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/rust-release-windows.yml",
+      "sha256": "b81d30ce91ae3ea49719709269041b7b1420366e13472e3519e0c442449a9b43",
+      "triggers": {
+        "workflow_call": ""
+      },
+      "uploads": [
+        {
+          "job": "build-windows-binaries",
+          "name": "Upload Cargo timings",
+          "condition": null,
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "cargo-timings-rust-release-windows-${{ matrix.target }}-${{ matrix.bundle }}",
+            "path": "${{ env.CARGO_TARGET_DIR }}/**/cargo-timings/cargo-timing.html",
+            "if-no-files-found": "warn"
+          }
+        },
+        {
+          "job": "build-windows-binaries",
+          "name": "Upload Windows binaries",
+          "condition": null,
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "windows-binaries-${{ matrix.target }}-${{ matrix.bundle }}",
+            "path": "${{ env.CARGO_TARGET_DIR }}/${{ matrix.target }}/release/staged-${{ matrix.bundle }}/*\n"
+          }
+        },
+        {
+          "job": "build-windows-symbols",
+          "name": "Upload symbols archive",
+          "condition": null,
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "${{ matrix.target }}-symbols",
+            "path": "codex-rs/symbols-dist/${{ matrix.target }}/*",
+            "if-no-files-found": "error"
+          }
+        },
+        {
+          "job": "build-windows",
+          "name": "Upload Python runtime wheel",
+          "condition": null,
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "python-runtime-wheel-${{ matrix.target }}",
+            "path": "python-runtime-dist/${{ matrix.target }}/*.whl",
+            "if-no-files-found": "error"
+          }
+        },
+        {
+          "job": "build-windows",
+          "name": null,
+          "condition": null,
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "${{ matrix.target }}",
+            "path": "codex-rs/dist/${{ matrix.target }}/*\n"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/rust-release-zsh.yml",
+      "sha256": "83831f162f8c675bea841aa4030a84986b61026aa5424daf9798d111896acc74",
+      "triggers": {
+        "push": {
+          "tags": [
+            "codex-zsh-v*.*.*"
+          ]
+        }
+      },
+      "uploads": [
+        {
+          "job": "linux",
+          "name": null,
+          "condition": null,
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "codex-zsh-${{ matrix.target }}",
+            "path": "dist/zsh/${{ matrix.target }}/*"
+          }
+        },
+        {
+          "job": "darwin",
+          "name": null,
+          "condition": null,
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "codex-zsh-${{ matrix.target }}",
+            "path": "dist/zsh/${{ matrix.target }}/*"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/rust-release.yml",
+      "sha256": "6fcfd1ae70f8b9f8ba410e4c7ea5a9973441bd7899e347f9f411a2e3cfebc886",
+      "triggers": {
+        "push": {
+          "tags": [
+            "rust-v*.*.*"
+          ]
+        }
+      },
+      "uploads": [
+        {
+          "job": "build",
+          "name": "Upload Cargo timings",
+          "condition": null,
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "cargo-timings-rust-release-${{ matrix.target }}-${{ matrix.bundle }}",
+            "path": "codex-rs/target/**/cargo-timings/cargo-timing.html",
+            "if-no-files-found": "warn"
+          }
+        },
+        {
+          "job": "build",
+          "name": "Upload symbols archive",
+          "condition": null,
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "${{ matrix.artifact_name }}-symbols",
+            "path": "codex-rs/symbols-dist/${{ matrix.artifact_name }}/*",
+            "if-no-files-found": "error"
+          }
+        },
+        {
+          "job": "build",
+          "name": "Upload unsigned macOS artifacts",
+          "condition": "${{ runner.os == 'macOS' }}",
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "${{ matrix.artifact_name }}-unsigned",
+            "path": "codex-rs/unsigned-dist/${{ matrix.target }}/*",
+            "if-no-files-found": "error"
+          }
+        },
+        {
+          "job": "build",
+          "name": "Upload Python runtime wheel",
+          "condition": "${{ matrix.bundle == 'primary' && runner.os != 'macOS' }}",
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "python-runtime-wheel-${{ matrix.target }}",
+            "path": "python-runtime-dist/${{ matrix.target }}/*.whl",
+            "if-no-files-found": "error"
+          }
+        },
+        {
+          "job": "build",
+          "name": null,
+          "condition": "${{ runner.os != 'macOS' }}",
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "${{ matrix.artifact_name }}",
+            "path": "codex-rs/dist/${{ matrix.target }}/*\n"
+          }
+        },
+        {
+          "job": "sign-macos-binaries",
+          "name": "Upload signed macOS binaries",
+          "condition": null,
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "${{ matrix.artifact_name }}-signed-binaries",
+            "path": "signed-macos/${{ matrix.target }}/*",
+            "if-no-files-found": "error"
+          }
+        },
+        {
+          "job": "sign-macos-binaries",
+          "name": "Upload signed macOS helpers",
+          "condition": "${{ matrix.bundle == 'primary' }}",
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "${{ matrix.target }}-signed-resources",
+            "path": "signed-resources/${{ matrix.target }}/*",
+            "if-no-files-found": "error"
+          }
+        },
+        {
+          "job": "sign-macos-binaries",
+          "name": "Upload binary signing verification",
+          "condition": "${{ always() }}",
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "${{ matrix.artifact_name }}-binary-signing-verification",
+            "path": "macos-binary-signing-verification/${{ matrix.target }}/",
+            "if-no-files-found": "warn"
+          }
+        },
+        {
+          "job": "package-macos",
+          "name": "Upload unsigned macOS DMG",
+          "condition": "${{ matrix.build_dmg == 'true' }}",
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "${{ matrix.artifact_name }}-unsigned-dmg",
+            "path": "codex-rs/target/${{ matrix.target }}/release/codex-${{ matrix.target }}.dmg",
+            "if-no-files-found": "error"
+          }
+        },
+        {
+          "job": "package-macos",
+          "name": "Upload Python runtime wheel",
+          "condition": "${{ matrix.bundle == 'primary' }}",
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "python-runtime-wheel-${{ matrix.target }}",
+            "path": "python-runtime-dist/${{ matrix.target }}/*.whl",
+            "if-no-files-found": "error"
+          }
+        },
+        {
+          "job": "package-macos",
+          "name": "Upload packaged macOS artifacts",
+          "condition": null,
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "${{ matrix.artifact_name }}-packaged",
+            "path": "codex-rs/dist/${{ matrix.target }}/*",
+            "if-no-files-found": "error"
+          }
+        },
+        {
+          "job": "sign-macos-dmg",
+          "name": "Upload signed macOS DMG",
+          "condition": null,
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "${{ matrix.artifact_name }}-signed-dmg",
+            "path": "${{ runner.temp }}/unsigned-dmg/codex-${{ matrix.target }}.dmg",
+            "if-no-files-found": "error"
+          }
+        },
+        {
+          "job": "sign-macos-dmg",
+          "name": "Upload DMG signing verification",
+          "condition": "${{ always() }}",
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "${{ matrix.artifact_name }}-dmg-signing-verification",
+            "path": "macos-dmg-signing-verification/${{ matrix.target }}/",
+            "if-no-files-found": "warn"
+          }
+        },
+        {
+          "job": "finalize-macos",
+          "name": "Upload verified macOS artifacts",
+          "condition": null,
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "${{ matrix.artifact_name }}",
+            "path": "codex-rs/dist/${{ matrix.target }}/*",
+            "if-no-files-found": "error"
+          }
+        }
+      ],
+      "reusable_calls": [
+        {
+          "job": "build-windows",
+          "uses": "./.github/workflows/rust-release-windows.yml",
+          "condition": null
+        },
+        {
+          "job": "argument-comment-lint-release-assets",
+          "uses": "./.github/workflows/rust-release-argument-comment-lint.yml",
+          "condition": null
+        },
+        {
+          "job": "publish-r2-assets",
+          "uses": "./.github/workflows/r2-release.yml",
+          "condition": null
+        },
+        {
+          "job": "publish-r2",
+          "uses": "./.github/workflows/r2-release.yml",
+          "condition": null
+        }
+      ],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/rusty-v8-release.yml",
+      "sha256": "1e9a616874bbd96bd6141a21c6d017a08c4cb67f1324aaeacf9edadc47152c55",
+      "triggers": {
+        "push": {
+          "tags": [
+            "rusty-v8-v*.*.*"
+          ]
+        }
+      },
+      "uploads": [
+        {
+          "job": "build",
+          "name": "Upload staged artifacts",
+          "condition": null,
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "rusty-v8-${{ needs.metadata.outputs.v8_version }}-${{ matrix.variant }}-${{ matrix.target }}",
+            "path": "dist/${{ matrix.target }}/*"
+          }
+        },
+        {
+          "job": "build-windows-source",
+          "name": "Upload staged artifacts",
+          "condition": null,
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "rusty-v8-${{ needs.metadata.outputs.v8_version }}-ptrcomp-sandbox-${{ matrix.target }}",
+            "path": "dist/${{ matrix.target }}/*"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/sdk.yml",
+      "sha256": "7a435333cc02fc781f823bb38f9f88adf13dfe4f2f2e29e09ef270fd70104a0b",
+      "triggers": {
+        "workflow_call": ""
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/self-hosted-desktop-availability.yml",
+      "sha256": "228d2c0cf5c87ff7ae791a6b22a93e8dfbe7849caa5d9a0c10efcb7b2cde8606",
+      "triggers": {
+        "workflow_dispatch": {
+          "inputs": {
+            "reason": {
+              "description": "Why this bounded runner probe is being requested",
+              "required": "false",
+              "default": "operator-check",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/self-hosted-fleet-availability.yml",
+      "sha256": "25de5bf36e21d196a6ea222a2a84d91cd225be53635ee5ed72bf48b8f9ddd084",
+      "triggers": {
+        "workflow_dispatch": {
+          "inputs": {
+            "reason": {
+              "description": "Why this bounded runner probe is being requested",
+              "required": "false",
+              "default": "operator-check",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/single-main-consolidation.yml",
+      "sha256": "8d61412df3db638f0ac33ac4db5a49ff3f895362d856ef56c9970d4f3b04a210",
+      "triggers": {
+        "push": {
+          "branches": [
+            "integration/single-main-20260922"
+          ],
+          "paths": [
+            ".github/workflows/single-main-consolidation.yml"
+          ]
+        }
+      },
+      "uploads": [
+        {
+          "job": "validate",
+          "name": null,
+          "condition": "always()",
+          "action": "actions/upload-artifact@v4",
+          "parameters": {
+            "name": "single-main-foundation-evidence-${{ github.run_id }}",
+            "path": "${{ runner.temp }}/foundation-evidence/",
+            "retention-days": "30"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/single-main-foundation.yml",
+      "sha256": "0e6c06e8b99fa07f1543e6eb1c0f6c00fb416254f549d6892e70eaa91a30e10e",
+      "triggers": {
+        "push": {
+          "branches": [
+            "integration/single-main-20260922"
+          ],
+          "paths": [
+            ".github/workflows/single-main-foundation.yml"
+          ]
+        }
+      },
+      "uploads": [
+        {
+          "job": "source-and-format",
+          "name": null,
+          "condition": "always()",
+          "action": "actions/upload-artifact@v4",
+          "parameters": {
+            "name": "single-main-foundation-source-${{ github.run_id }}",
+            "path": "${{ runner.temp }}/foundation-source/",
+            "retention-days": "30"
+          }
+        },
+        {
+          "job": "focused-rust",
+          "name": null,
+          "condition": "always()",
+          "action": "actions/upload-artifact@v4",
+          "parameters": {
+            "name": "single-main-foundation-rust-${{ github.run_id }}",
+            "path": "${{ runner.temp }}/foundation-rust/",
+            "retention-days": "30"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/single-main-maintenance.yml",
+      "sha256": "4aa3fa03f2438aebd52264f0779cf96faaf6817985994168d8b05b6142ad4805",
+      "triggers": {
+        "push": {
+          "branches": [
+            "integration/single-main-20260922"
+          ],
+          "paths": [
+            ".github/workflows/single-main-maintenance.yml"
+          ]
+        }
+      },
+      "uploads": [
+        {
+          "job": "compiler-tools",
+          "name": null,
+          "condition": null,
+          "action": "actions/upload-artifact@v4",
+          "parameters": {
+            "name": "single-main-compiler-${{ github.run_id }}",
+            "path": "${{ runner.temp }}/compiler-tools/",
+            "compression-level": "0",
+            "retention-days": "3"
+          }
+        },
+        {
+          "job": "focused-rust",
+          "name": null,
+          "condition": "always()",
+          "action": "actions/upload-artifact@v4",
+          "parameters": {
+            "name": "single-main-foundation-rust-${{ github.run_id }}",
+            "path": "${{ runner.temp }}/foundation-rust/",
+            "retention-days": "30"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/trillionnium-os-attestation-handoff-check.yml",
+      "sha256": "ace90464faa80d769a93a82bee10659a5fe61e1938462c53564b383383f03bb9",
+      "triggers": {
+        "pull_request": {
+          "types": [
+            "opened",
+            "reopened",
+            "synchronize",
+            "ready_for_review"
+          ],
+          "branches": [
+            "main"
+          ],
+          "paths": [
+            ".g1/requests/trillionnium-os/**",
+            ".github/workflows/self-hosted-desktop-availability.yml",
+            ".github/workflows/self-hosted-fleet-availability.yml",
+            ".github/workflows/trillionnium-os-attestation-handoff-check.yml"
+          ]
+        }
+      },
+      "uploads": [],
+      "reusable_calls": [],
+      "has_git_archive": false
+    },
+    {
+      "path": ".github/workflows/v8-canary.yml",
+      "sha256": "60853f7da5413d8e701917cc7d1aade1220e2cc21c8b04ffdc58979260787f9a",
+      "triggers": {
+        "workflow_call": "",
+        "pull_request": {},
+        "workflow_dispatch": ""
+      },
+      "uploads": [
+        {
+          "job": "build",
+          "name": "Upload staged artifacts",
+          "condition": null,
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "v8-canary-${{ needs.metadata.outputs.v8_version }}-${{ matrix.variant }}-${{ matrix.target }}",
+            "path": "dist/${{ matrix.target }}/*"
+          }
+        },
+        {
+          "job": "build-windows-source",
+          "name": "Upload staged artifacts",
+          "condition": null,
+          "action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f",
+          "parameters": {
+            "name": "v8-canary-${{ needs.metadata.outputs.v8_version }}-ptrcomp-sandbox-${{ matrix.target }}",
+            "path": "dist/${{ matrix.target }}/*"
+          }
+        }
+      ],
+      "reusable_calls": [],
+      "has_git_archive": false
+    }
+  ],
+  "model_export_closure": {
+    "direct_model_workflow": "hepta-public-initial-v2.yml",
+    "automatic_pr_companions": [
+      "blocking-ci.yml",
+      "hepta-architecture-convergence.yml",
+      "v8-canary.yml",
+      "hepta-pon-native-pair.yml"
+    ],
+    "output_changes": [
+      "public-initial removes both full run directory and checkpoint payload uploader; validated create-only metadata destination",
+      "architecture excludes generated source-input.tar.gz and every non-text root output",
+      "PoN pair excludes source archives and nested learning-study payload directories; Windows ledger uses exact filenames"
+    ],
+    "unchanged_other_automatic_outputs": [
+      "blocking-ci cargo-impact/impact-test command metadata and bounded logs",
+      "blocking-ci reusable Bazel execution log roots and Fleet native output root; no path into public model RUNNER_TEMP",
+      "v8-canary staged V8 build distribution; no trained-model inputs or model output root"
+    ],
+    "manual_and_release_boundary": "Other inventory entries are not newly dispatched. Inventory records them, but does not certify arbitrary future manual runs or nested archive contents."
+  }
+}

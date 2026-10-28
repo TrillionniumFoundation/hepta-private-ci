@@ -277,7 +277,12 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-architecture-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
-          path: ${{ runner.temp }}/hepta-command-records/*
+          # Only original execution records and their bounded logs leave this
+          # job. Do not upload a source archive containing nested payloads.
+          path: |
+            ${{ runner.temp }}/hepta-command-records/*.json
+            ${{ runner.temp }}/hepta-command-records/*.json.*.log
+          include-hidden-files: false
           if-no-files-found: error
           retention-days: 30
 
