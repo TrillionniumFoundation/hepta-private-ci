@@ -13,7 +13,6 @@ use codex_exec_server::HttpClient;
 use rmcp::transport::AuthorizationManager;
 use rmcp::transport::AuthorizationSession;
 use rmcp::transport::auth::OAuthClientConfig;
-use rmcp::transport::auth::OAuthHttpClient;
 use rmcp::transport::auth::OAuthState;
 use sha2::Digest;
 use sha2::Sha256;
@@ -702,15 +701,17 @@ impl OauthLoginFlow {
 
 async fn start_authorization(
     server_url: &str,
-    http_client: Arc<dyn OAuthHttpClient>,
+    http_client: Arc<OAuthHttpClientAdapter>,
     scopes: &[&str],
     redirect_uri: &str,
     oauth_client_id: &str,
 ) -> Result<PreparedOAuthLogin> {
     let mut auth_manager =
-        AuthorizationManager::new_with_oauth_http_client(server_url, http_client).await?;
+        AuthorizationManager::new_with_oauth_http_client(server_url, http_client.clone()).await?;
     auth_manager.set_allow_missing_issuer(true);
-    let metadata = auth_manager.resolve_metadata().await?.metadata;
+    let metadata = http_client
+        .resolve_authorization_metadata(&auth_manager, server_url)
+        .await?;
     validate_authorization_server_endpoints(&metadata)?;
     let authorization_server_issuer = metadata.issuer.clone();
     auth_manager.set_metadata(metadata);

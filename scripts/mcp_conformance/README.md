@@ -5,9 +5,12 @@ Context Protocol client conformance suite. It exercises the shipping legacy,
 intermediate `2025-11-25`, and modern `2026-07-28` protocols, localhost HTTP,
 stdio, OAuth, and additional transport and security regression fixtures.
 
-The official upstream suite is pinned to
+The historical scenario policy and baseline refer to
 `modelcontextprotocol/conformance@49103de6ed70804e940637bf3e9e29e4a3f54e64`.
-Use Node.js 22 and Python 3.10 or later.
+The installed vendor is c37 with two reviewed SDK 1.32 compatibility patches.
+These are separate execution profiles; see [CONFORMANCE_PROFILES.md](CONFORMANCE_PROFILES.md)
+for the verified vendor identity and baseline migration. Use Node.js 22 and
+Python 3.10 or later.
 
 ## Run the conformance gate
 
@@ -18,23 +21,25 @@ pnpm install --frozen-lockfile
 cargo build --locked --manifest-path codex-rs/Cargo.toml -p codex-cli --bin codex
 ```
 
-From a published Codex checkout, run:
+To run the current explicitly verified local-network derivative without relabeling the historical baseline:
 
 ```bash
 python3 scripts/mcp_conformance/run_codex_compliance.py \
   codex-rs/target/debug/codex \
-  --conformance-cli node_modules/@modelcontextprotocol/conformance/dist/index.js \
-  --baseline-report scripts/mcp_conformance/regression-baseline-v1.json \
+  --conformance-profile vendor-c37-sdk132-localnet-v2 \
+  --conformance-cli third_party/mcp-conformance/dist/index.js \
   --report /tmp/codex-mcp-conformance.json
 ```
 
 The positional executable can also point to an already built Codex binary.
-`--conformance-cli` selects the exact, lockfile-installed upstream JavaScript
-runner instead of downloading a moving version during a test.
+The vendor's source, dependencies, and rebuilt output are checked before and
+after execution. To run the historical pinned bootstrap, explicitly choose
+`--conformance-profile legacy491`, omit the CLI override, and select the original
+`regression-baseline-v1.json`. The profiles cannot share a baseline implicitly.
 
 ## What the baseline means
 
-`regression-baseline-v1.json` is a compact, reviewed snapshot of the upstream
+Each regression baseline is a compact, reviewed snapshot of its upstream
 revision, required protocol versions, HTTP and stdio transports, enabled modern
 feature, OAuth coverage, and individual passing and failing check identities.
 
@@ -57,11 +62,12 @@ the upstream suite again:
 ```bash
 python3 scripts/mcp_conformance/run_codex_compliance.py \
   /absolute/path/to/codex \
+  --conformance-profile vendor-c37-sdk132-v1 \
   --baseline-report /absolute/path/to/full-conformance-report.json \
-  --extract-baseline /tmp/mcp-conformance-regression-baseline-v1.json
+  --extract-baseline /tmp/mcp-conformance-regression-baseline-c37-sdk132-v1.json
 ```
 
-Alternatively, add `--write-baseline /tmp/mcp-conformance-regression-baseline-v1.json`
+Alternatively, add `--write-baseline /tmp/mcp-conformance-regression-baseline-c37-sdk132-v1.json`
 to a complete conformance run. Review every baseline change; do not regenerate
 it to conceal a regression.
 
@@ -119,3 +125,25 @@ CODEX_EXEC_PATH=/absolute/path/to/codex \
   pnpm --filter @openai/codex-sdk test -- \
   --runInBand tests/mcpConformance.test.ts
 ```
+
+
+## Local-network v2 product baseline gate
+
+Current source CI explicitly verifies `vendor-c37-sdk132-localnet-v2`. The SDK
+caller names that profile and requires the separately reviewed
+`regression-baseline-c37-sdk132-localnet-v2.json`. That baseline is deliberately
+not fabricated from the historical v1 descriptor or fixture tests. Until a
+complete v2 product capture and explicit preservation review close migration,
+the SDK conformance case fails the missing-baseline precondition rather than
+skipping the case or accepting a cross-profile comparison. The raw v2 command
+above remains runnable and records real protocol failures. Historical v1
+reports, descriptor, measured golden and matching tool snapshot stay intact.
+
+
+The separate migration candidate and complete raw capture now exist for review;
+no reference-client result is used as a product golden. The proposed v2
+code-owned reference keeps the same 634 passes and 18 measured failures, and
+would let the existing explicit v2 SDK caller exercise its original assertions.
+It must be admitted as a reviewed source change before the missing-baseline
+precondition closes. See the full open-check inventory in
+[the network contract](../../third_party/MCP_CONFORMANCE_NETWORK.md).

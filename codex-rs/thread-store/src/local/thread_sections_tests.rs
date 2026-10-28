@@ -11,7 +11,7 @@ use pretty_assertions::assert_eq;
 
 #[tokio::test]
 async fn local_thread_sections_require_sqlite_and_preserve_section_identity() {
-    let home = tempfile::TempDir::new().expect("temp dir");
+    let home = crate::local::test_support::private_temp_dir().expect("temp dir");
     let config = test_config(home.path());
     let unsupported_store = LocalThreadStore::new(config.clone(), /*state_db*/ None);
     assert!(!unsupported_store.supports_thread_sections());

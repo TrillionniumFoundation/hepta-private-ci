@@ -149,7 +149,6 @@ mod tests {
     use codex_protocol::protocol::SessionSource;
     use codex_utils_absolute_path::test_support::PathExt;
     use pretty_assertions::assert_eq;
-    use tempfile::TempDir;
     use uuid::Uuid;
 
     use super::*;
@@ -160,7 +159,7 @@ mod tests {
 
     #[tokio::test]
     async fn unarchive_thread_restores_rollout_and_returns_updated_thread() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let uuid = Uuid::from_u128(203);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -190,7 +189,7 @@ mod tests {
 
     #[tokio::test]
     async fn unarchive_thread_rejects_a_cross_process_writer() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let owner = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
         let uuid = Uuid::from_u128(205);
@@ -218,7 +217,7 @@ mod tests {
 
     #[tokio::test]
     async fn unarchive_thread_deduplicates_rollout_paths_and_updates_sqlite_metadata() {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::local::test_support::private_temp_dir().expect("temp dir");
         let config = test_config(home.path());
         let uuid = Uuid::from_u128(204);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");

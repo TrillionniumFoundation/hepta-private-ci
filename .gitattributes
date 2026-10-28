@@ -6,3 +6,6 @@ codex-rs/hepta-shadow-qualification/fixtures/live_product_oracle_v2_2f704.json t
 codex-rs/hepta-evidence/migrations/*.sql text eol=lf
 codex-rs/hepta-memory/migrations/*.sql text eol=lf
 codex-rs/hepta-supervisor/fixtures/robrix-control-v2/** text eol=lf
+# The vendored conformance provenance and reviewed lock are byte-hashed.
+third_party/mcp-conformance-upstream.json text eol=lf
+third_party/mcp-conformance-upstream-package-lock.json text eol=lf

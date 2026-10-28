@@ -2,7 +2,6 @@ use std::fs;
 use std::sync::Arc;
 
 use codex_protocol::ThreadId;
-use tempfile::TempDir;
 
 use super::COORDINATION_LOCK_FILE;
 use super::WRITER_LOCK_DIR;
@@ -11,7 +10,7 @@ use crate::ThreadStoreError;
 
 #[test]
 fn writer_locks_reject_competing_owners_and_release_their_files() {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::local::test_support::private_temp_dir().expect("temp dir");
     let primary = Arc::new(WriterLockCoordinator::new(home.path()));
     let secondary = Arc::new(WriterLockCoordinator::new(home.path()));
     let thread_id = ThreadId::default();
@@ -50,7 +49,7 @@ fn writer_locks_reject_competing_owners_and_release_their_files() {
 
 #[test]
 fn first_acquisition_removes_stale_locks_without_removing_active_locks() {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::local::test_support::private_temp_dir().expect("temp dir");
     let primary = Arc::new(WriterLockCoordinator::new(home.path()));
     let active_thread_id = ThreadId::default();
     let active_owner = primary

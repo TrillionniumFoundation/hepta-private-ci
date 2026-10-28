@@ -117,6 +117,21 @@ class CallerProofTests(unittest.TestCase):
         receipt = MODULE.verify(root, root / "CALLERS.toml")
         self.assertEqual(receipt["boundaries"][0]["productCallers"], ["codex-rs/caller/src/lib.rs"])
 
+    def test_external_fixture_impl_requires_its_own_test_guard(self) -> None:
+        root = self.make_fixture()
+        extra = root / "codex-rs/extra/src"
+        extra.mkdir(parents=True)
+        helper = extra / "fixture_support.rs"
+        body = "impl Fixture { fn new() { Gate::enter(); } }\n"
+        helper.write_text("#[cfg(test)]\n" + body, encoding="utf-8")
+        receipt = MODULE.verify(root, root / "CALLERS.toml")
+        self.assertEqual(receipt["boundaries"][0]["productCallers"], ["codex-rs/caller/src/lib.rs"])
+        for guard in ("", "#[cfg(any(test, unix))]\n"):
+            with self.subTest(guard=guard):
+                helper.write_text(guard + body, encoding="utf-8")
+                with self.assertRaisesRegex(MODULE.VerificationFailure, "unexpected=.*fixture_support"):
+                    MODULE.verify(root, root / "CALLERS.toml")
+
     def test_cfg_test_fields_preserve_the_production_suffix(self) -> None:
         root = self.make_fixture()
         extra = root / "codex-rs/extra/src"

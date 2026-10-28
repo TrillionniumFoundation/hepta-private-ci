@@ -5,6 +5,109 @@
 //! It does not implement a second runtime kernel or a fleet-wide message bus.
 
 mod app_runtime;
+#[cfg(target_os = "linux")]
+mod authority_host_consumer_frontier;
+#[cfg(target_os = "linux")]
+pub use authority_host_consumer_frontier::HostConsumerFrontier;
+#[cfg(target_os = "linux")]
+mod authority_host_checkpoint;
+#[cfg(target_os = "linux")]
+pub use authority_host_checkpoint::HostCognitiveCheckpoint;
+#[cfg(target_os = "linux")]
+pub use authority_host_checkpoint::HostCognitiveCheckpointRegistration;
+#[cfg(target_os = "linux")]
+pub use authority_host_checkpoint::RetainedCheckpointPublisher;
+#[cfg(target_os = "linux")]
+mod authority_host_wire;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HOST_AUTHORITY_OBSERVATION_V2;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HOST_WRITER_AUTHORIZATION_V1;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostAuthorityObservationRequestV2;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostAuthorityObservationResponseV2;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostAuthorityWriterObservationV2;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostConsumerFrontierRequestV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostConsumerFrontierResponseV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostConsumerFrontierStatusV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostSignedWriterAuthorizationV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostWriterAuthorizationClaimsV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostWriterAuthorizationReadRequestV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_wire::HostWriterAuthorizationReadResponseV1;
+
+#[cfg(target_os = "linux")]
+mod authority_host_bootstrap;
+#[cfg(target_os = "linux")]
+mod authority_host_config;
+#[cfg(target_os = "linux")]
+pub use authority_host_bootstrap::HOST_AUTHORITY_BOOTSTRAP_BOUND;
+#[cfg(target_os = "linux")]
+pub use authority_host_bootstrap::HOST_AUTHORITY_BOOTSTRAP_V1;
+#[cfg(target_os = "linux")]
+pub use authority_host_bootstrap::HostAuthorityFiveLanePathsV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_bootstrap::HostAuthorityPublicBootstrapV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_bootstrap::HostAuthorityPublicConsumerV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_bootstrap::HostAuthorityPublicConsumersV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_bootstrap::HostAuthorityPublicIssuerKeyV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_config::HostAuthorityConsumerConfig;
+#[cfg(target_os = "linux")]
+pub use authority_host_config::HostAuthorityConsumersConfig;
+#[cfg(target_os = "linux")]
+pub use authority_host_config::HostAuthorityRegisteredIdentity;
+#[cfg(target_os = "linux")]
+mod authority_host_runtime;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::launch::HostAuthorityLocalConsumers;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::launch::capture_host_authority_bootstrap;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::launch::initialize_host_authority_owners;
+#[cfg(target_os = "linux")]
+mod authority_host_service;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::initialize_host_authority;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::register_host_writer_authorization;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::serve_host_authority_session;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::HostAuthorityLane;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::HostAuthorityService;
+#[cfg(target_os = "linux")]
+mod root_authority_session;
+#[cfg(target_os = "linux")]
+mod root_failure_report;
+#[cfg(target_os = "linux")]
+mod root_observation_cache;
+#[cfg(target_os = "linux")]
+mod root_observation_diagnostic;
+#[cfg(target_os = "linux")]
+mod root_observation_stream;
+#[cfg(target_os = "linux")]
+pub use root_authority_session::AgentdRootAuthoritySession;
+#[cfg(target_os = "linux")]
+mod root_writer_proof;
+#[cfg(target_os = "linux")]
+pub use root_observation_stream::AgentdRootAuthorityPeer;
+#[cfg(target_os = "linux")]
+pub use root_writer_proof::AgentdRootAuthorityError;
+#[cfg(target_os = "linux")]
+pub use root_writer_proof::AgentdRootWriterTrust;
 mod authbus_checkpoint;
 mod authbus_dispatch;
 mod authbus_ingress;
@@ -14,22 +117,49 @@ mod automation_effect_host;
 mod automation_recovery;
 mod browser_servo;
 mod client;
+#[cfg(target_os = "linux")]
+mod cognitive_checkpoint_unix;
 mod cognitive_context;
 mod cognitive_ranker;
 mod cognitive_retrieval_context;
 mod cognitive_retrieval_learning;
 mod config;
 mod control;
+#[cfg(target_os = "linux")]
+mod deployment_frontier;
+#[cfg(target_os = "linux")]
+pub use deployment_frontier::DeploymentFrontierStore;
+#[cfg(target_os = "linux")]
+mod deployment_issuer;
+#[cfg(target_os = "linux")]
+pub use deployment_issuer::DeploymentFinalUseIssuer;
+#[cfg(target_os = "linux")]
+pub use deployment_issuer::DeploymentGrantPolicy;
+#[cfg(target_os = "linux")]
+pub use deployment_issuer::DeploymentIssuerObserver;
+#[cfg(target_os = "linux")]
+pub use deployment_issuer::HostAuthorityWriterRegistration;
 mod error;
 mod event_buffer;
 mod evidence_frontier;
 mod evidence_host;
 mod evidence_trust;
+#[cfg(target_os = "linux")]
+mod final_use_issuer;
+mod grant_provider_worker;
+#[cfg(target_os = "linux")]
+mod hos2_device;
 mod intelligence_ingress;
 mod intelligence_product;
 mod intuition_policy;
 mod lane_b_runtime;
 mod neuron_runtime;
+#[cfg(target_os = "linux")]
+mod notes_bootstrap;
+#[cfg(target_os = "linux")]
+pub use notes_bootstrap::AgentdRecoveredNotesSession;
+#[cfg(unix)]
+mod notes_channel;
 mod objective_runtime;
 mod plasticity_anchor_journal;
 mod plasticity_host;
@@ -37,6 +167,12 @@ mod plasticity_learning_producer;
 mod plasticity_owner_evidence;
 mod plasticity_process_bootstrap;
 mod plasticity_runtime;
+#[cfg(target_os = "linux")]
+mod production_authority;
+#[cfg(target_os = "linux")]
+mod production_composition;
+#[cfg(target_os = "linux")]
+mod production_root_composition;
 mod production_writer_host;
 mod prompt_runtime;
 mod qualification_writer;
@@ -117,6 +253,12 @@ pub use codex_hepta_agent_protocol::MemoryFederationCapabilityId;
 pub use codex_hepta_agent_protocol::MemoryFederationCapabilitySnapshot;
 pub use codex_hepta_agent_protocol::MemoryFederationCapabilityState;
 pub use codex_hepta_agent_protocol::MemoryFederationScopeKind;
+pub use codex_hepta_agent_protocol::ObjectiveAdmissionOutcome;
+pub use codex_hepta_agent_protocol::ObjectiveAdmissionPublication;
+pub use codex_hepta_agent_protocol::ObjectiveAdmissionQuery;
+pub use codex_hepta_agent_protocol::ObjectiveAdmissionUnknownReason;
+pub use codex_hepta_agent_protocol::ObjectiveJournalAnchor;
+pub use codex_hepta_agent_protocol::ObjectivePublicationOutcome;
 pub use codex_hepta_agent_protocol::ObjectiveRunAdmission;
 pub use codex_hepta_agent_protocol::ObjectiveStartOutcome;
 pub use codex_hepta_agent_protocol::ReadinessSnapshot;
@@ -134,6 +276,10 @@ pub use codex_hepta_automation::AutomationTaskId;
 pub use codex_hepta_automation::AutomationTimeZoneProfileV1;
 pub use codex_hepta_automation::AutomationTimezoneTransitionV1;
 pub use codex_hepta_memory::RetrievalExecutionContextV1;
+#[cfg(target_os = "linux")]
+pub use cognitive_checkpoint_unix::AgentdCognitiveCheckpointPeer;
+#[cfg(target_os = "linux")]
+pub use cognitive_checkpoint_unix::AgentdUnixCognitiveCheckpointTransport;
 pub use cognitive_ranker::CurrentCognitiveRegistry;
 pub use cognitive_ranker::PinnedCognitiveRanker;
 pub use cognitive_ranker::cognitive_action_id;
@@ -152,6 +298,16 @@ pub use error::AgentdError;
 pub use evidence_frontier::EvidenceRecoveryFrontierV1;
 pub use evidence_frontier::evidence_recovery_frontier_signing_bytes;
 pub use evidence_host::kernel_evidence_claims;
+#[cfg(target_os = "linux")]
+pub use final_use_issuer::AgentdFinalUseIssuerError;
+#[cfg(target_os = "linux")]
+pub use final_use_issuer::AgentdFinalUseIssuerPeer;
+#[cfg(target_os = "linux")]
+pub use final_use_issuer::AgentdUnixFinalUseGrantProvider;
+#[cfg(target_os = "linux")]
+pub use hos2_device::AgentdHos2Device;
+#[cfg(target_os = "linux")]
+pub use hos2_device::AgentdHos2Usage;
 pub use intelligence_ingress::AgentdIntelligenceInvocationProviderV1;
 pub use intelligence_ingress::AgentdIntelligenceInvocationV1;
 pub use intelligence_product::AgentdEvaluationBindingV1;
@@ -183,6 +339,8 @@ pub use lane_b_runtime::RunRecovery;
 pub use lane_b_runtime::RunSnapshot;
 pub use lane_b_runtime::RuntimeComposition;
 pub use neuron_runtime::AgentdNeuronOwner;
+#[cfg(unix)]
+pub use notes_channel::AgentdNotesChannel;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
 pub use plasticity_host::AgentdPlasticityAnchorStoreV1;
 pub use plasticity_host::AgentdPlasticityHostErrorV1;
@@ -215,9 +373,32 @@ pub use plasticity_runtime::PlasticityRuntimeCallErrorV1;
 pub use plasticity_runtime::PlasticityRuntimeHandleV1;
 pub use plasticity_runtime::PlasticityRuntimeOwnerV1;
 pub use plasticity_runtime::plasticity_runtime_channel_v1;
+#[cfg(target_os = "linux")]
+pub use production_authority::AgentdFinalUseHostInputs;
+#[cfg(target_os = "linux")]
+pub use production_composition::AgentdProductionHostInputs;
+#[cfg(target_os = "linux")]
+pub use production_composition::AgentdProductionNotesHostInputs;
+#[cfg(target_os = "linux")]
+pub use production_composition::AgentdProductionNotesInputs;
+#[cfg(target_os = "linux")]
+pub use production_composition::attach_production_notes_host;
+#[cfg(target_os = "linux")]
+pub use production_composition::attach_production_operation_host;
+#[cfg(target_os = "linux")]
+pub use production_root_composition::AgentdRootAuthorityLanes;
+#[cfg(target_os = "linux")]
+pub use production_root_composition::AgentdRootPrimaryTarget;
+#[cfg(target_os = "linux")]
+pub use production_root_composition::AgentdRootProductionAttachment;
+#[cfg(target_os = "linux")]
+pub use production_root_composition::AgentdRootProductionInputs;
+#[cfg(target_os = "linux")]
+pub use production_root_composition::attach_root_production_host;
 pub use production_writer_host::AgentdFinalUseGrantProvider;
 pub use production_writer_host::AgentdProductionOperationRuntimeConfig;
 pub use production_writer_host::AgentdProductionWriterHost;
+pub use production_writer_host::AgentdProtectedCheckpointInputs;
 pub use prompt_runtime::AgentdPromptPipelineError;
 pub use prompt_runtime::AgentdPromptPipelineOwner;
 pub use prompt_runtime::AgentdPromptRuntimeError;
@@ -241,3 +422,12 @@ pub use topology_plasticity_host::rollover_agentd_topology_writer_v1;
 use control::AgentdControlServer;
 use event_buffer::EventBuffer;
 use state::AgentdState;
+
+#[cfg(target_os = "linux")]
+mod desktop_bootstrap;
+#[cfg(target_os = "linux")]
+mod desktop_channel;
+#[cfg(target_os = "linux")]
+pub use desktop_bootstrap::receive_desktop_session;
+
+pub use objective_runtime::authbus_objective_claims;

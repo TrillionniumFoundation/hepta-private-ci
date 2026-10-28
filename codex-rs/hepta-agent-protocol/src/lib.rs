@@ -5,6 +5,7 @@
 mod authbus;
 mod capabilities;
 mod evidence;
+mod objective_history;
 pub use authbus::AuthBusObjectiveBody;
 pub use authbus::AuthBusObjectiveIngress;
 pub use authbus::AuthBusTextBody;
@@ -28,6 +29,12 @@ pub use evidence::KernelEvidenceResult;
 pub use evidence::KernelEvidenceVerifyV1;
 pub use evidence::MAX_KERNEL_EVIDENCE_ENVELOPE_BYTES;
 pub use evidence::MAX_KERNEL_EVIDENCE_REQUIRED_ROLES;
+pub use objective_history::ObjectiveAdmissionOutcome;
+pub use objective_history::ObjectiveAdmissionPublication;
+pub use objective_history::ObjectiveAdmissionQuery;
+pub use objective_history::ObjectiveAdmissionUnknownReason;
+pub use objective_history::ObjectiveJournalAnchor;
+pub use objective_history::ObjectivePublicationOutcome;
 
 use std::path::PathBuf;
 
@@ -580,6 +587,9 @@ pub enum AgentdMethod {
     ObjectiveStart {
         request: AuthBusObjectiveIngress,
     },
+    ObjectiveAdmission {
+        query: ObjectiveAdmissionQuery,
+    },
     AuthBusText {
         request: AuthBusTextIngress,
     },
@@ -741,6 +751,9 @@ pub enum AgentdPayload {
     Drain(DrainSnapshot),
     SessionIngress(SessionIngress),
     ObjectiveRun(ObjectiveRunAdmission),
+    ObjectiveAdmission {
+        outcome: ObjectiveAdmissionOutcome,
+    },
     ObjectiveConflict {
         run_id: String,
         conflict_digest: String,
@@ -1072,7 +1085,7 @@ mod tests {
                 read_digest: snapshot.read_digest.clone(),
                 omitted_records: snapshot.omitted_records,
                 items: snapshot.items.clone(),
-                plan: snapshot.plan.clone(),
+                plan: snapshot.plan,
             },
         };
         let bytes = serde_json::to_vec(&request).expect("serialize revalidation request");
@@ -1318,13 +1331,8 @@ mod tests {
             attach
         );
 
-        let cancel = AgentdRequest::run_cancel(
-            14,
-            3,
-            snapshot.run_id.clone(),
-            2,
-            "operator_request".to_string(),
-        );
+        let cancel =
+            AgentdRequest::run_cancel(14, 3, snapshot.run_id, 2, "operator_request".to_string());
         let cancel_bytes = serde_json::to_vec(&cancel).expect("serialize cancellation");
         assert!(cancel_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
         assert_eq!(

@@ -14,7 +14,6 @@ use codex_protocol::protocol::SessionMetaLine;
 use codex_protocol::protocol::SessionSource;
 use codex_protocol::protocol::UserMessageEvent;
 use pretty_assertions::assert_eq;
-use tempfile::TempDir;
 use uuid::Uuid;
 
 use super::*;
@@ -30,7 +29,7 @@ use crate::search_rollout_matches;
 
 #[tokio::test]
 async fn load_rollout_items_reads_compressed_rollout() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let uuid = Uuid::from_u128(1);
     let thread_id = ThreadId::from_string(&uuid.to_string())?;
     let rollout_path = rollout_path(home.path(), "2025-01-03T12-00-00", uuid);
@@ -50,7 +49,7 @@ async fn load_rollout_items_reads_compressed_rollout() -> anyhow::Result<()> {
 
 #[tokio::test]
 async fn read_session_meta_line_stops_before_invalid_utf8_tail() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let uuid = Uuid::from_u128(16);
     let thread_id = ThreadId::from_string(&uuid.to_string())?;
     let rollout_path = rollout_path(home.path(), "2025-01-03T12-00-00", uuid);
@@ -67,7 +66,7 @@ async fn read_session_meta_line_stops_before_invalid_utf8_tail() -> anyhow::Resu
 
 #[tokio::test]
 async fn read_session_meta_line_stops_before_invalid_utf8_compressed_tail() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let uuid = Uuid::from_u128(17);
     let thread_id = ThreadId::from_string(&uuid.to_string())?;
     let rollout_path = rollout_path(home.path(), "2025-01-03T12-00-00", uuid);
@@ -87,7 +86,7 @@ async fn read_session_meta_line_stops_before_invalid_utf8_compressed_tail() -> a
 
 #[tokio::test]
 async fn read_session_meta_line_preserves_pre_header_and_error_semantics() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let uuid = Uuid::from_u128(18);
     let thread_id = ThreadId::from_string(&uuid.to_string())?;
     let rollout_path = rollout_path(home.path(), "2025-01-03T12-00-00", uuid);
@@ -180,7 +179,7 @@ async fn read_session_meta_line_preserves_pre_header_and_error_semantics() -> an
 
 #[test]
 fn rollout_file_from_path_normalizes_compressed_file_names() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let uuid = Uuid::from_u128(7);
     let rollout_path = rollout_path(home.path(), "2025-01-03T12-00-00", uuid);
     let compressed_path = compressed_rollout_path(&rollout_path);
@@ -197,7 +196,7 @@ fn rollout_file_from_path_normalizes_compressed_file_names() -> anyhow::Result<(
 
 #[test]
 fn rollout_file_from_path_hides_compressed_sibling_when_plain_exists() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let uuid = Uuid::from_u128(8);
     let thread_id = ThreadId::from_string(&uuid.to_string())?;
     let rollout_path = rollout_path(home.path(), "2025-01-03T12-00-00", uuid);
@@ -212,7 +211,7 @@ fn rollout_file_from_path_hides_compressed_sibling_when_plain_exists() -> anyhow
 
 #[tokio::test]
 async fn append_rollout_item_materializes_compressed_rollout() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let uuid = Uuid::from_u128(2);
     let thread_id = ThreadId::from_string(&uuid.to_string())?;
     let rollout_path = rollout_path(home.path(), "2025-01-03T12-00-00", uuid);
@@ -240,7 +239,7 @@ async fn append_rollout_item_materializes_compressed_rollout() -> anyhow::Result
 
 #[tokio::test]
 async fn search_rollout_matches_uses_logical_path_for_compressed_rollout() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let uuid = Uuid::from_u128(15);
     let thread_id = ThreadId::from_string(&uuid.to_string())?;
     let rollout_path = rollout_path(home.path(), "2025-01-03T12-00-00", uuid);
@@ -264,7 +263,7 @@ async fn search_rollout_matches_uses_logical_path_for_compressed_rollout() -> an
 
 #[tokio::test]
 async fn worker_compresses_old_active_and_archived_rollouts() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let active_uuid = Uuid::from_u128(3);
     let active_id = ThreadId::from_string(&active_uuid.to_string())?;
     let active_path = rollout_path(home.path(), "2025-01-03T12-00-00", active_uuid);
@@ -310,7 +309,7 @@ async fn worker_compresses_old_active_and_archived_rollouts() -> anyhow::Result<
 
 #[tokio::test]
 async fn worker_waits_for_rollout_maintenance_before_compressing() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let uuid = Uuid::from_u128(26);
     let thread_id = ThreadId::from_string(&uuid.to_string())?;
     let path = rollout_path(home.path(), "2025-01-03T12-00-00", uuid);
@@ -332,7 +331,7 @@ async fn worker_waits_for_rollout_maintenance_before_compressing() -> anyhow::Re
 
 #[tokio::test]
 async fn worker_skips_archived_paginated_fork_pointer_chain() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let thread_id = ThreadId::from_string(&Uuid::from_u128(15).to_string())?;
     let source_uuid = Uuid::from_u128(16);
     let source_rollout_id = ThreadId::from_string(&source_uuid.to_string())?;
@@ -362,7 +361,7 @@ async fn worker_skips_archived_paginated_fork_pointer_chain() -> anyhow::Result<
 
 #[tokio::test]
 async fn worker_skips_source_referenced_by_archived_compressed_rollout() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let source_uuid = Uuid::from_u128(18);
     let source_id = ThreadId::from_string(&source_uuid.to_string())?;
     let source_path = rollout_path(home.path(), "2025-01-03T12-00-00", source_uuid);
@@ -392,7 +391,7 @@ async fn worker_skips_source_referenced_by_archived_compressed_rollout() -> anyh
 #[tokio::test]
 async fn worker_skips_unreadable_metadata_without_blocking_other_compression() -> anyhow::Result<()>
 {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let source_uuid = Uuid::from_u128(20);
     let source_id = ThreadId::from_string(&source_uuid.to_string())?;
     let source_path = rollout_path(home.path(), "2025-01-03T12-00-00", source_uuid);
@@ -412,7 +411,7 @@ async fn worker_skips_unreadable_metadata_without_blocking_other_compression() -
 
 #[tokio::test]
 async fn resume_materializes_compressed_rollout_path() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let config = RolloutConfig {
         codex_home: home.path().to_path_buf(),
         sqlite: codex_state::SqliteConfig::new_for_testing(home.path().abs()),
@@ -468,7 +467,7 @@ async fn resume_materializes_compressed_rollout_path() -> anyhow::Result<()> {
 #[cfg(unix)]
 #[tokio::test]
 async fn compression_preserves_rollout_permissions() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let uuid = Uuid::from_u128(6);
     let thread_id = ThreadId::from_string(&uuid.to_string())?;
     let rollout_path = archived_rollout_path(home.path(), "2025-01-03T12-00-00", uuid);
@@ -490,7 +489,7 @@ async fn compression_preserves_rollout_permissions() -> anyhow::Result<()> {
 #[cfg(unix)]
 #[tokio::test]
 async fn append_materialization_preserves_compressed_rollout_permissions() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let uuid = Uuid::from_u128(6);
     let thread_id = ThreadId::from_string(&uuid.to_string())?;
     let rollout_path = rollout_path(home.path(), "2025-01-03T12-00-00", uuid);
@@ -519,7 +518,7 @@ async fn append_materialization_preserves_compressed_rollout_permissions() -> an
 
 #[test]
 fn persist_temp_file_noclobber_installs_completed_temp() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let temp_path = home.path().join("rollout.jsonl.tmp");
     let destination = home.path().join("rollout.jsonl");
     fs::write(&temp_path, "completed rollout")?;
@@ -533,7 +532,7 @@ fn persist_temp_file_noclobber_installs_completed_temp() -> anyhow::Result<()> {
 
 #[test]
 fn persist_temp_file_noclobber_does_not_replace_existing_destination() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let temp_path = home.path().join("rollout.jsonl.tmp");
     let destination = home.path().join("rollout.jsonl");
     fs::write(&temp_path, "candidate rollout")?;
@@ -549,7 +548,7 @@ fn persist_temp_file_noclobber_does_not_replace_existing_destination() -> anyhow
 #[cfg(unix)]
 #[tokio::test]
 async fn compression_preserves_read_only_rollout_permissions() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let uuid = Uuid::from_u128(7);
     let thread_id = ThreadId::from_string(&uuid.to_string())?;
     let rollout_path = archived_rollout_path(home.path(), "2025-01-03T12-00-00", uuid);
@@ -570,7 +569,7 @@ async fn compression_preserves_read_only_rollout_permissions() -> anyhow::Result
 
 #[tokio::test]
 async fn worker_skips_existing_compressed_archived_rollouts() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let uuid = Uuid::from_u128(10);
     let thread_id = ThreadId::from_string(&uuid.to_string())?;
     let rollout_path = archived_rollout_path(home.path(), "2025-01-03T12-00-00", uuid);
@@ -593,7 +592,7 @@ async fn worker_skips_existing_compressed_archived_rollouts() -> anyhow::Result<
 
 #[tokio::test]
 async fn worker_skips_when_fresh_run_marker_exists() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let uuid = Uuid::from_u128(11);
     let thread_id = ThreadId::from_string(&uuid.to_string())?;
     let rollout_path = archived_rollout_path(home.path(), "2025-01-03T12-00-00", uuid);
@@ -612,7 +611,7 @@ async fn worker_skips_when_fresh_run_marker_exists() -> anyhow::Result<()> {
 
 #[test]
 fn run_marker_is_removed_unless_persisted() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let marker_path = home.path().join(".tmp").join("rollout-compression.lock");
 
     {
@@ -633,7 +632,7 @@ fn run_marker_is_removed_unless_persisted() -> anyhow::Result<()> {
 
 #[tokio::test]
 async fn find_thread_path_by_id_handles_compressed_rollout_filenames() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let uuid = Uuid::from_u128(8);
     let thread_id = ThreadId::from_string(&uuid.to_string())?;
     let rollout_path = rollout_path(home.path(), "2025-01-03T12-00-00", uuid);
@@ -659,7 +658,7 @@ async fn find_thread_path_by_id_handles_compressed_rollout_filenames() -> anyhow
 
 #[tokio::test]
 async fn find_thread_path_by_id_ignores_compression_temp_matches() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let uuid = Uuid::from_u128(9);
     let thread_id = ThreadId::from_string(&uuid.to_string())?;
     let temp_path = rollout_path(home.path(), "2025-01-03T12-00-00", uuid).with_file_name(format!(

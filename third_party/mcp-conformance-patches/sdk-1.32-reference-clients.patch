@@ -1,0 +1,64 @@
+diff --git a/third_party/mcp-conformance/examples/clients/typescript/auth-test-reuse-credentials.ts b/third_party/mcp-conformance/examples/clients/typescript/auth-test-reuse-credentials.ts
+index 842950e3..a9cf8df6 100644
+--- a/third_party/mcp-conformance/examples/clients/typescript/auth-test-reuse-credentials.ts
++++ b/third_party/mcp-conformance/examples/clients/typescript/auth-test-reuse-credentials.ts
+@@ -4,29 +4,10 @@
+  * client_id at the new AS. Expected to trigger
+  * sep-2352-no-reuse-on-as-change / sep-2352-reregister-on-as-change FAILURE.
+  */
+-import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+-import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
+-import { withOAuthRetry, handle401 } from './helpers/withOAuthRetry';
+ import { runAsCli } from './helpers/cliRunner';
++import { runNegativeOAuthReuse } from '../../../../../scripts/mcp_conformance/sdk132_negative_oauth_reuse';
+ 
+-export async function runClient(serverUrl: string): Promise<void> {
+-  const oauthFetch = withOAuthRetry(
+-    'auth-test-reuse-credentials',
+-    new URL(serverUrl),
+-    handle401
+-  )(fetch);
+-  const client = new Client(
+-    { name: 'auth-test-reuse-credentials', version: '1.0.0' },
+-    { capabilities: {} }
+-  );
+-  const transport = new StreamableHTTPClientTransport(new URL(serverUrl), {
+-    fetch: oauthFetch
+-  });
+-  await client.connect(transport);
+-  await client.listTools();
+-  await client.callTool({ name: 'test-tool', arguments: {} });
+-  await transport.close();
+-}
++export const runClient = runNegativeOAuthReuse;
+ 
+ runAsCli(
+   runClient,
+diff --git a/third_party/mcp-conformance/src/scenarios/client/auth/index.test.ts b/third_party/mcp-conformance/src/scenarios/client/auth/index.test.ts
+index 41c84ae8..496c85e8 100644
+--- a/third_party/mcp-conformance/src/scenarios/client/auth/index.test.ts
++++ b/third_party/mcp-conformance/src/scenarios/client/auth/index.test.ts
+@@ -69,19 +69,11 @@ const allowClientErrorScenarios = new Set<string>([
+ ]);
+ 
+ /**
+- * Checks the everything-client is known to fail because of a bug in the SDK
+- * release it depends on. Each entry is asserted to still fail, so the entry
+- * must be removed as soon as the pinned SDK passes.
+- *
+- * - `resource-parameter-matches-prm` on the root-PRM scenario:
+- *   @modelcontextprotocol/sdk 1.x re-serializes a pathless PRM `resource`
+- *   through `URL.href`, adding a trailing slash (typescript-sdk#1968, fixed
+- *   on 2.x by #2581; 1.x backport #1972). Remove once the example's SDK
+- *   dependency includes the backport.
++ * Local SDK 1.32 compatibility: the pathless-resource backport now sends the
++ * exact PRM identifier. Positive clients must have no known auth failures.
++ * The original raw resource-slash negative case below remains unchanged.
+  */
+-const knownExampleClientFailures: Record<string, string[]> = {
+-  'auth/metadata-var2': ['resource-parameter-matches-prm']
+-};
++const knownExampleClientFailures: Record<string, string[]> = {};
+ 
+ describe('Client Auth Scenarios', () => {
+   // Generate individual test for each auth scenario

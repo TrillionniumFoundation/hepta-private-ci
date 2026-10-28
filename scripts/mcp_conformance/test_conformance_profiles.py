@@ -1,0 +1,375 @@
+"""Profile tests mutate copied baseline fixtures, not execution attestations."""
+
+from copy import deepcopy
+import json
+from pathlib import Path
+from types import SimpleNamespace
+
+import pytest
+
+import conformance_profiles as profiles
+import run_codex_compliance as runner
+from run_codex_compliance import (
+    _compact_regression_baseline,
+    _evaluate_regression_gate,
+    _write_compact_regression_baseline,
+    main,
+)
+
+
+def vendor_candidate() -> dict[str, object]:
+    return deepcopy(profiles.measured_baseline())
+
+
+def executable(tmp_path: Path) -> Path:
+    binary = tmp_path / "codex"
+    binary.write_text("#!/bin/sh\nexit 99\n", encoding="utf-8")
+    binary.chmod(0o755)
+    return binary
+
+
+def test_historical_metadata_keeps_its_original_profile() -> None:
+    original = profiles.legacy_baseline()
+    assert profiles.validate_metadata(original) == profiles.LEGACY_PROFILE
+    assert "conformanceProfile" not in original
+    assert "executionIdentity" not in original
+
+
+def test_cli_requires_an_explicit_profile_before_starting_a_binary(
+    tmp_path, capsys
+) -> None:
+    assert main([str(executable(tmp_path))]) == 2
+    assert "must be selected explicitly" in capsys.readouterr().err
+
+
+def test_legacy_execution_rejects_an_unverified_cli_override(tmp_path) -> None:
+    with pytest.raises(ValueError, match="arbitrary CLI overrides"):
+        profiles.verify_execution(profiles.LEGACY_PROFILE, tmp_path / "cli.js")
+
+
+def test_vendor_execution_rejects_a_missing_cli_before_starting_a_binary(
+    tmp_path, capsys
+) -> None:
+    assert (
+        main(
+            [
+                str(executable(tmp_path)),
+                "--conformance-profile",
+                profiles.VENDOR_PROFILE,
+            ]
+        )
+        == 2
+    )
+    assert "requires --conformance-cli" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize(
+    "mutation", ["profile", "ref", "dist", "lock", "patch", "missing_identity"]
+)
+def test_report_rejects_mixed_or_changed_execution_identity(mutation) -> None:
+    report = vendor_candidate()
+    if mutation == "profile":
+        report["conformanceProfile"] = profiles.LEGACY_PROFILE
+    elif mutation == "ref":
+        report["officialConformance"]["gitRef"] = profiles.LEGACY_REF
+    elif mutation == "missing_identity":
+        del report["executionIdentity"]
+    elif mutation == "dist":
+        report["executionIdentity"]["identity"]["dist"]["index.js"] = "0" * 64
+    else:
+        pins = report["executionIdentity"]["identity"]["sourcePins"]
+        name = (
+            "pnpm-lock.yaml"
+            if mutation == "lock"
+            else "third_party/mcp-conformance-patches/sdk-1.32-reference-clients.patch"
+        )
+        pins[name] = "0" * 64
+    assert _evaluate_regression_gate(report, vendor_candidate())["success"] is False
+
+
+def test_profile_change_is_not_an_implicit_baseline_migration() -> None:
+    gate = _evaluate_regression_gate(vendor_candidate(), profiles.legacy_baseline())
+    assert gate["success"] is False
+    assert "different conformance execution profiles" in gate["configurationErrors"][0]
+
+
+def test_baseline_writer_preserves_the_original_historical_file() -> None:
+    path = Path(profiles.__file__).with_name("regression-baseline-v1.json")
+    before = path.read_bytes()
+    with pytest.raises(ValueError, match="must remain unchanged"):
+        _write_compact_regression_baseline(vendor_candidate(), path)
+    assert path.read_bytes() == before
+
+
+def test_baseline_writer_preserves_the_code_owned_measured_vendor_file() -> None:
+    path = Path(profiles.__file__).with_name("regression-baseline-c37-sdk132-v1.json")
+    before = path.read_bytes()
+    with pytest.raises(ValueError, match="must remain unchanged"):
+        _write_compact_regression_baseline(vendor_candidate(), path)
+    assert path.read_bytes() == before
+
+
+def test_changed_measured_reference_is_not_an_authoritative_lower_bound(
+    monkeypatch,
+) -> None:
+    reference = Path(profiles.__file__).with_name(
+        "regression-baseline-c37-sdk132-v1.json"
+    )
+    original_read = Path.read_bytes
+
+    def changed_read(path):
+        data = original_read(path)
+        return data + b"\n" if path == reference else data
+
+    monkeypatch.setattr(Path, "read_bytes", changed_read)
+    with pytest.raises(ValueError, match="measured vendor baseline changed"):
+        profiles.measured_baseline()
+
+
+def test_a_measured_failure_can_be_repaired_without_disappearing() -> None:
+    report = vendor_candidate()
+    repaired = report["checks"]["failing"].pop()
+    report["checks"]["passing"].append(repaired)
+    compact = _compact_regression_baseline(report)
+    assert repaired in compact["checks"]["passing"]
+    assert repaired not in compact["checks"]["failing"]
+    gate = _evaluate_regression_gate(compact, profiles.measured_baseline())
+    assert gate["success"] is True
+    assert repaired in gate["fixedChecks"]
+
+
+def test_cli_rejects_a_cross_profile_baseline_before_starting_conformance(
+    tmp_path, capsys
+) -> None:
+    baseline = tmp_path / "baseline.json"
+    baseline.write_text(json.dumps(profiles.legacy_baseline()), encoding="utf-8")
+    assert (
+        main(
+            [
+                str(executable(tmp_path)),
+                "--conformance-profile",
+                profiles.VENDOR_PROFILE,
+                "--baseline-report",
+                str(baseline),
+            ]
+        )
+        == 2
+    )
+    assert "different conformance execution profile" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        "missing_old_pass",
+        "missing_fixed_pass",
+        "missing_case",
+        "missing_scenario",
+        "new_failure",
+        "missing_known_failure",
+        "cross_profile",
+        "missing_vendor_only_pass",
+    ],
+)
+def test_vendor_input_baseline_is_strictly_checked_before_any_product_process(
+    mutation,
+    tmp_path,
+    monkeypatch,
+    capsys,
+) -> None:
+    report = vendor_candidate()
+    if mutation == "missing_vendor_only_pass":
+        report = json.loads(
+            Path(profiles.__file__)
+            .with_name("regression-baseline-c37-sdk132-v1.json")
+            .read_bytes()
+        )
+        old_records = profiles.legacy_baseline()["checks"]
+        old = old_records["passing"] + old_records["failing"]
+        record = next(
+            record for record in report["checks"]["passing"] if record not in old
+        )
+        report["checks"]["passing"].remove(record)
+    elif mutation == "missing_old_pass":
+        report["checks"]["passing"].remove(
+            profiles.legacy_baseline()["checks"]["passing"][0]
+        )
+    elif mutation == "missing_fixed_pass":
+        report["checks"]["passing"].remove(profiles.required_fixed_checks()[0])
+    elif mutation == "missing_case":
+        report["checks"]["passing"] = [
+            record
+            for record in report["checks"]["passing"]
+            if not (record["mode"] == "2025-06-18" and record["transport"] == "stdio")
+        ]
+    elif mutation == "missing_scenario":
+        report["officialConformance"]["scenarios"]["2026-07-28"].pop()
+    elif mutation == "new_failure":
+        record = deepcopy(report["checks"]["failing"][0])
+        record["check_id"] += "-unreviewed"
+        report["checks"]["failing"].append(record)
+    elif mutation == "missing_known_failure":
+        report["checks"]["failing"].pop()
+    else:
+        report = profiles.legacy_baseline()
+    baseline = tmp_path / "baseline.json"
+    baseline.write_text(json.dumps(report), encoding="utf-8")
+    marker = tmp_path / "product-started"
+    binary = executable(tmp_path)
+    binary.write_text(
+        f"#!/bin/sh\nprintf started > '{marker}'\nexit 99\n", encoding="utf-8"
+    )
+
+    def unexpected_verification(*_args, **_kwargs):
+        raise AssertionError(
+            "an invalid baseline must fail before executing any verification or product child"
+        )
+
+    monkeypatch.setattr(runner, "verify_execution", unexpected_verification)
+    assert (
+        main(
+            [
+                str(binary),
+                "--conformance-profile",
+                profiles.VENDOR_PROFILE,
+                "--baseline-report",
+                str(baseline),
+            ]
+        )
+        == 2
+    )
+    assert "invalid baseline report" in capsys.readouterr().err
+    assert not marker.exists()
+
+
+def test_vendor_baseline_preserves_every_legacy_pass_and_requires_the_ten_repairs() -> (
+    None
+):
+    compact = _compact_regression_baseline(vendor_candidate())
+    original = profiles.legacy_baseline()
+    assert compact["conformanceProfile"] == profiles.VENDOR_PROFILE
+    assert compact["officialConformance"]["gitRef"] == profiles.descriptor()["gitRef"]
+    assert all(
+        record in compact["checks"]["passing"]
+        for record in original["checks"]["passing"]
+    )
+    assert all(
+        record in compact["checks"]["passing"]
+        for record in profiles.required_fixed_checks()
+    )
+    assert len(compact["checks"]["failing"]) == len(original["checks"]["failing"]) - 10
+    assert _evaluate_regression_gate(vendor_candidate(), compact)["success"] is True
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        "missing_pass",
+        "regressed_pass",
+        "new_failure",
+        "repaired_failure",
+        "missing_repair",
+        "identity_changed",
+    ],
+)
+def test_vendor_baseline_migration_fails_closed(mutation) -> None:
+    report = vendor_candidate()
+    if mutation in {"missing_pass", "regressed_pass"}:
+        record = profiles.legacy_baseline()["checks"]["passing"][0]
+        report["checks"]["passing"].remove(record)
+        if mutation == "regressed_pass":
+            report["checks"]["failing"].append(record)
+    elif mutation == "new_failure":
+        record = deepcopy(report["checks"]["failing"][0])
+        record["check_id"] += "-new"
+        report["checks"]["failing"].append(record)
+    elif mutation in {"repaired_failure", "missing_repair"}:
+        record = profiles.required_fixed_checks()[0]
+        report["checks"]["passing"].remove(record)
+        if mutation == "repaired_failure":
+            report["checks"]["failing"].append(record)
+    else:
+        report["executionIdentityError"] = "source changed during run"
+    with pytest.raises(ValueError):
+        _compact_regression_baseline(report)
+
+
+@pytest.mark.parametrize(
+    "flag",
+    ["sourceVerified", "canonicalRebuildMatched", "selectedCli", "descriptorSha256"],
+)
+def test_execution_rejects_an_incomplete_verifier_result(
+    monkeypatch, tmp_path, flag
+) -> None:
+    cli = tmp_path / "index.js"
+    verified = {
+        "identity": profiles.descriptor(profiles.LOCAL_NETWORK_PROFILE),
+        "descriptorSha256": profiles.LOCAL_NETWORK_DESCRIPTOR_SHA256,
+        "sourceVerified": True,
+        "canonicalRebuildMatched": True,
+        "selectedCli": str(cli),
+    }
+    verified[flag] = False
+    monkeypatch.setattr(profiles.shutil, "which", lambda _: "/owned/node")
+    monkeypatch.setattr(
+        profiles.subprocess,
+        "run",
+        lambda *a, **kw: SimpleNamespace(returncode=0, stdout=json.dumps(verified)),
+    )
+    with pytest.raises(ValueError, match="unexpected execution identity"):
+        profiles.verify_execution(profiles.LOCAL_NETWORK_PROFILE, cli)
+
+
+def test_local_network_profile_cannot_relabel_or_extract_a_v1_golden() -> None:
+    historical = vendor_candidate()
+    assert profiles.validate_metadata(historical) == profiles.VENDOR_PROFILE
+    candidate = deepcopy(historical)
+    candidate["conformanceProfile"] = profiles.LOCAL_NETWORK_PROFILE
+    with pytest.raises(ValueError, match="vendor execution identity differs"):
+        profiles.validate_metadata(candidate)
+    with pytest.raises(ValueError, match="vendor execution identity differs"):
+        _compact_regression_baseline(candidate)
+    gate = _evaluate_regression_gate(profiles.local_network_baseline(), historical)
+    assert gate["success"] is False
+    assert "different conformance execution profiles" in gate["configurationErrors"][0]
+
+
+def test_current_execution_refuses_v1_before_starting_a_verifier(tmp_path, monkeypatch) -> None:
+    def unexpected_run(*args, **kwargs):
+        pytest.fail("historical v1 must not launch a current tool")
+    monkeypatch.setattr(profiles.subprocess, "run", unexpected_run)
+    with pytest.raises(ValueError, match="matching historical tool/source snapshot"):
+        profiles.verify_execution(profiles.VENDOR_PROFILE, tmp_path / "index.js")
+
+
+@pytest.mark.parametrize(
+    "mutation", ["missing_pass", "regressed_pass", "missing_failure", "new_failure", "missing_scenario"]
+)
+def test_local_network_baseline_preservation_refuses_changed_facts(mutation) -> None:
+    report = deepcopy(profiles.local_network_baseline())  # Metadata fixture only.
+    if mutation in {"missing_pass", "regressed_pass"}:
+        identity = report["checks"]["passing"].pop(0)
+        if mutation == "regressed_pass":
+            report["checks"]["failing"].append(identity)
+    elif mutation == "missing_failure":
+        report["checks"]["failing"].pop(0)
+    elif mutation == "new_failure":
+        identity = deepcopy(report["checks"]["failing"][0])
+        identity["check_id"] += "-unknown-failure"
+        report["checks"]["failing"].append(identity)
+    else:
+        report["officialConformance"]["scenarios"]["2026-07-28"].pop()
+    with pytest.raises(ValueError):
+        _compact_regression_baseline(report)
+
+
+def test_local_network_reference_cannot_be_overwritten_or_widened(tmp_path, monkeypatch) -> None:
+    path = Path(profiles.__file__).with_name("regression-baseline-c37-sdk132-localnet-v2.json")
+    original = path.read_bytes()
+    with pytest.raises(ValueError, match="must remain unchanged"):
+        _write_compact_regression_baseline(profiles.local_network_baseline(), path)
+    assert path.read_bytes() == original
+    original_read = Path.read_bytes
+    monkeypatch.setattr(Path, "read_bytes", lambda current: original + b"\n" if current == path else original_read(current))
+    with pytest.raises(ValueError, match="code-owned local-network baseline changed"):
+        profiles.local_network_baseline()

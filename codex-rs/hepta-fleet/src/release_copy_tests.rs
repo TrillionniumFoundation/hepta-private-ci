@@ -25,6 +25,24 @@ fn readonly_source_is_copied_synced_and_preserved_on_duplicate_install()
         assert_eq!(std::fs::read(path)?, content);
         validate_immutable_regular_file(path, /*executable*/ true)?;
     }
+    let release_root = installed
+        .program
+        .parent()
+        .and_then(Path::parent)
+        .ok_or("release root")?;
+    validate_physical_directory(release_root, /*immutable*/ true)?;
+    validate_physical_directory(&release_root.join("bin"), /*immutable*/ true)?;
+    // A final catalog name alone must not admit a root that is not sealed.
+    set_mode(release_root, /*mode*/ 0o755)?;
+    assert!(matches!(
+        resolve_catalog_release(registry.layout().releases_root(), &release_id),
+        Err(FleetRegistryError::Corrupt(_))
+    ));
+    set_mode(release_root, /*mode*/ 0o555)?;
+    assert_eq!(
+        resolve_catalog_release(registry.layout().releases_root(), &release_id)?,
+        installed
+    );
     let reopened = FleetRegistry::open_existing(root)?;
     assert!(matches!(
         reopened.install_release(release_id, &source, Vec::new()),
@@ -32,13 +50,7 @@ fn readonly_source_is_copied_synced_and_preserved_on_duplicate_install()
     ));
     assert_eq!(std::fs::read(&installed.program)?, content);
     // Windows read-only attributes also affect cleanup; restore only fixtures.
-    make_tree_removable(
-        installed
-            .program
-            .parent()
-            .and_then(Path::parent)
-            .ok_or("release root")?,
-    );
+    make_tree_removable(release_root);
     set_mode(&source, /*mode*/ 0o700)?;
     Ok(())
 }

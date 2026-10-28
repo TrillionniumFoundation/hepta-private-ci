@@ -38,6 +38,7 @@ function createEarlyExitChild(exitCode = 2): FakeChildProcess {
     setImmediate(() => {
       child.stdout.end();
       child.stderr.end();
+      child.emit("close", exitCode, null);
     });
   });
   return child;
@@ -83,6 +84,7 @@ describe("CodexExec", () => {
       child.stdout.end();
       child.stderr.end();
       child.emit("exit", 0, null);
+      child.emit("close", 0, null);
     });
 
     const exec = new CodexExec("codex");
@@ -169,6 +171,7 @@ describe("CodexExec", () => {
         child.stdout.end();
         child.stderr.end();
         child.emit("exit", 0, null);
+        child.emit("close", 0, null);
       });
 
       const exec = new CodexExec("codex", undefined, config, configOverrides);
@@ -195,6 +198,7 @@ describe("CodexExec", () => {
       child.stdout.end();
       child.stderr.end();
       child.emit("exit", 0, null);
+      child.emit("close", 0, null);
     });
 
     const exec = new CodexExec("codex");
@@ -220,6 +224,7 @@ describe("CodexExec", () => {
       child.stdout.end();
       child.stderr.end();
       child.emit("exit", 0, null);
+      child.emit("close", 0, null);
     });
 
     const exec = new CodexExec("codex", undefined, { approval_policy: "never" }, [
@@ -271,6 +276,7 @@ describe("CodexExec", () => {
       child.stdout.end();
       child.stderr.end();
       child.emit("exit", 0, null);
+      child.emit("close", 0, null);
     });
 
     process.env.CODEX_ENV_SHOULD_NOT_LEAK = "leak";

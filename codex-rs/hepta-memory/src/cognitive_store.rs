@@ -47,12 +47,27 @@ use crate::cognitive_model::SourceRevisionId;
 use crate::cognitive_path::canonical_path_without_redirection;
 use crate::framing::frame_part;
 
+#[path = "cognitive_store_sync.rs"]
+mod sync;
+use sync::sync_cognitive_directory;
+
+#[path = "cognitive_store_gate.rs"]
+mod gate;
+pub(crate) use gate::CognitiveCommitGate;
+
+#[path = "cognitive_checkpoint_bind.rs"]
+mod checkpoint_bind;
+
+#[path = "cognitive_current.rs"]
+mod current;
+
 #[path = "cognitive_store_recovery.rs"]
 mod recovery;
 pub use recovery::CognitiveRecoveryAnchor;
 pub use recovery::CognitiveRecoveryError;
 pub use recovery::CognitiveRecoveryRequirement;
 pub use recovery::RecoveredCognitiveReadOnly;
+pub(crate) use recovery::capture as capture_recovery_anchor;
 
 const COGNITIVE_DB_FILENAME: &str = "cognitive_1.sqlite3";
 const COGNITIVE_ACTIVE_DB_POINTER: &str = ".cognitive-active-v1";
@@ -61,6 +76,13 @@ const COGNITIVE_RECOVERED_DB_PREFIX: &str = "cognitive_recovered_v1_";
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
+    ("cognitive_objective_sender_requests", "table"),
+    ("cognitive_objective_sender_requests_no_update", "trigger"),
+    ("cognitive_objective_sender_requests_no_delete", "trigger"),
+    ("cognitive_objective_sender_events", "table"),
+    ("cognitive_objective_sender_events_no_update", "trigger"),
+    ("cognitive_objective_sender_events_no_delete", "trigger"),
+    ("cognitive_objective_sender_events_append", "trigger"),
     ("shared_experience_use_events", "table"),
     ("shared_experience_use_no_update", "trigger"),
     ("shared_experience_use_no_delete", "trigger"),
@@ -198,9 +220,19 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("cognitive_operation_dispatch_claims_no_delete", "trigger"),
     ("cognitive_operation_dispatch_claims_active_lookup", "index"),
     ("cognitive_operation_dispatch_claims_expiry_lookup", "index"),
+    ("cognitive_operation_pre_boundary_rejections", "table"),
+    (
+        "cognitive_operation_pre_boundary_rejections_no_update",
+        "trigger",
+    ),
+    (
+        "cognitive_operation_pre_boundary_rejections_no_delete",
+        "trigger",
+    ),
+    ("cognitive_local_outbox_hos2_delivery", "index"),
 ];
 const REQUIRED_SCHEMA_ORACLE_SHA256: &str =
-    "046f23bab5d4c779735c762159c79e61cfe3a6a8a35e18ff8ec4f40e5c4e2be2";
+    "55a697816bedf97c5fa3ef36a4d9d39d98f6f572d825a38541afe62e19203773";
 
 #[derive(Debug, thiserror::Error)]
 pub enum CognitiveStoreError {
@@ -219,8 +251,11 @@ pub enum CognitiveStoreError {
 #[derive(Clone)]
 pub struct CognitiveStore {
     pub(crate) pool: SqlitePool,
+    observation_pool: Option<SqlitePool>,
+    pub(crate) current_publisher: Option<current::BoundCurrentPublisher>,
     pub(crate) owner_agent_id: AgentId,
     path: PathBuf,
+    pub(crate) commit_gate: CognitiveCommitGate,
     _open_guard: Option<Arc<CognitiveStoreOpenGuard>>,
 }
 
@@ -228,6 +263,7 @@ pub struct CognitiveStore {
 pub(crate) struct CognitiveStoreOpenGuard {
     _file: File,
     _path: PathBuf,
+    exclusive: bool,
 }
 
 impl CognitiveStoreOpenGuard {
@@ -278,6 +314,7 @@ impl CognitiveStoreOpenGuard {
         Ok(Arc::new(Self {
             _file: file,
             _path: path,
+            exclusive: false,
         }))
     }
 
@@ -291,6 +328,7 @@ impl CognitiveStoreOpenGuard {
         Ok(Self {
             _file: file,
             _path: path,
+            exclusive: true,
         })
     }
 }
@@ -303,8 +341,11 @@ impl CognitiveStore {
     ) -> Self {
         Self {
             pool,
+            observation_pool: None,
+            current_publisher: None,
             owner_agent_id,
             path,
+            commit_gate: CognitiveCommitGate::default(),
             _open_guard: None,
         }
     }
@@ -319,8 +360,10 @@ impl CognitiveStore {
         let path = resolve_active_database_path(&root)?;
         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+        let commit_gate = CognitiveCommitGate::default();
+        let connection_gate = commit_gate.clone();
         let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-            .open_durable_evidence_pool(&path)
+            .open_durable_evidence_pool_guarded(&path, move || connection_gate.commit_allowed())
             .await
             .map_err(unavailable)?;
         MIGRATOR.run(&pool).await.map_err(classify_migrate_error)?;
@@ -337,14 +380,39 @@ impl CognitiveStore {
         verify_store(&pool, layout.agent_id()).await?;
         Ok(Self {
             pool,
+            observation_pool: None,
+            current_publisher: None,
             owner_agent_id: layout.agent_id().clone(),
             path,
+            commit_gate,
             _open_guard: Some(open_guard),
         })
     }
 
+    /// On completion, close the shared SQLite pool before releasing this
+    /// handle's store fence.
+    ///
+    /// Await this to completion before starting recovery. Cancelling this
+    /// future or dropping a store does not provide a shutdown barrier for
+    /// SQLx's connection-return tasks or SQLite's final WAL/SHM cleanup. The
+    /// pool is shared by all clones; other store handles must also be dropped
+    /// before recovery can obtain the exclusive fence.
+    pub async fn close(self) {
+        if let Some(pool) = &self.observation_pool {
+            pool.close().await;
+        }
+        self.pool.close().await;
+        drop(self);
+    }
+
     pub fn path(&self) -> &Path {
         &self.path
+    }
+
+    /// Managed owners share their exclusive recovery guard with this physically
+    /// READONLY pool. Qualification/legacy stores retain their original pool.
+    pub(crate) fn observation_pool(&self) -> &SqlitePool {
+        self.observation_pool.as_ref().unwrap_or(&self.pool)
     }
 
     pub fn owner_agent_id(&self) -> &AgentId {
@@ -806,6 +874,7 @@ async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), Cognitiv
     crate::logical_turn_registry::verify_logical_turn_registry(pool, owner).await?;
     crate::local_lease_outbox::verify_local_lease_outbox(pool, owner).await?;
     crate::local_compact_executor::verify_local_compact_events(pool, owner).await?;
+    crate::production_writer::verify_sender_store(pool, owner).await?;
     Ok(())
 }
 
@@ -1604,23 +1673,40 @@ pub(crate) fn publish_active_database(
             .mode(0o600)
             .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
             .open(&temporary)
-            .map_err(unavailable)?
+            .map_err(|error| {
+                unavailable(format!(
+                    "open cognitive active pointer temporary file: {error}"
+                ))
+            })?
     };
     #[cfg(not(unix))]
     let mut file = OpenOptions::new()
         .write(true)
         .create_new(true)
         .open(&temporary)
-        .map_err(unavailable)?;
+        .map_err(|error| {
+            unavailable(format!(
+                "open cognitive active pointer temporary file: {error}"
+            ))
+        })?;
 
     let result = (|| {
-        file.write_all(file_name.as_bytes()).map_err(unavailable)?;
-        file.write_all(b"\n").map_err(unavailable)?;
-        file.sync_all().map_err(unavailable)?;
-        fs::rename(&temporary, &pointer).map_err(unavailable)?;
-        File::open(root)
-            .and_then(|directory| directory.sync_all())
-            .map_err(unavailable)?;
+        file.write_all(file_name.as_bytes()).map_err(|error| {
+            unavailable(format!("write cognitive active pointer payload: {error}"))
+        })?;
+        file.write_all(b"\n").map_err(|error| {
+            unavailable(format!(
+                "write cognitive active pointer terminator: {error}"
+            ))
+        })?;
+        file.sync_all().map_err(|error| {
+            unavailable(format!(
+                "sync cognitive active pointer temporary file: {error}"
+            ))
+        })?;
+        fs::rename(&temporary, &pointer)
+            .map_err(|error| unavailable(format!("rename cognitive active pointer: {error}")))?;
+        sync_cognitive_directory(root)?;
         Ok(())
     })();
     if result.is_err() {

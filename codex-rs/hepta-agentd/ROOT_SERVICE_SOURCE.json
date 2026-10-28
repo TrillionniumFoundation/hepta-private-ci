@@ -1,0 +1,302 @@
+{
+  "source_commit": "f02d0a259a96fde8bb2fa989f41b1f36ef802ef2",
+  "source_is_local_candidate": true,
+  "files": [
+    {
+      "path": "hepta-agentd/src/authority_host_bootstrap.rs",
+      "lines": 104,
+      "new": true,
+      "sha256": "779b30c44a4788b3cb0138acdcbc212db32d342ac2aac3b00fe9f69a61e52e38"
+    },
+    {
+      "path": "hepta-agentd/src/authority_host_checkpoint.rs",
+      "lines": 317,
+      "new": true,
+      "sha256": "a518862cf791ddffc06426abd3934a6c687ea1bc7df34deafbeb6d9f8d6cfeab"
+    },
+    {
+      "path": "hepta-agentd/src/authority_host_checkpoint_adoption.rs",
+      "lines": 106,
+      "new": true,
+      "sha256": "d6890966e67a4e682671ffad6222907aa7d314196f84b1d157495c69fe39602b"
+    },
+    {
+      "path": "hepta-agentd/src/authority_host_checkpoint_adoption_tests.rs",
+      "lines": 414,
+      "new": true,
+      "sha256": "b239e87900c739af725a561f31147f602995a695dffc3022d49b20981adf22ef"
+    },
+    {
+      "path": "hepta-agentd/src/authority_host_checkpoint_fresh_tests.rs",
+      "lines": 136,
+      "new": true,
+      "sha256": "0e46dff67231981f65b7becdcb8cddd697bb437bd41e63e7ab275ddb7c62ed5a"
+    },
+    {
+      "path": "hepta-agentd/src/authority_host_checkpoint_lane.rs",
+      "lines": 88,
+      "new": true,
+      "sha256": "3ca5845e868b8f465e8801d19e75df0fc5f8fa50f45bf663965f988cd0f0a4bc"
+    },
+    {
+      "path": "hepta-agentd/src/authority_host_checkpoint_publisher.rs",
+      "lines": 117,
+      "new": true,
+      "sha256": "c7dbe12566b2645b7df9991b9b4317fa9252dc9ad2b57bce9bddcc99ec444482"
+    },
+    {
+      "path": "hepta-agentd/src/authority_host_checkpoint_state.rs",
+      "lines": 218,
+      "new": true,
+      "sha256": "b97572056e516016bc0b82e092e800a5e75616f75fe8f843e51bffbef86df08f"
+    },
+    {
+      "path": "hepta-agentd/src/authority_host_checkpoint_tests.rs",
+      "lines": 486,
+      "new": true,
+      "sha256": "e38c3e2822711e7a8c0d5caf25b481b198affcb4e67dd90cdb10f6807092825e"
+    },
+    {
+      "path": "hepta-agentd/src/authority_host_config.rs",
+      "lines": 194,
+      "new": true,
+      "sha256": "57543149a69c00b075e45fe22769797dcd8910cd76c7a8bebd6b41905e75149c"
+    },
+    {
+      "path": "hepta-agentd/src/authority_host_consumer_frontier.rs",
+      "lines": 209,
+      "new": true,
+      "sha256": "14285cb05f6021d1a4be072028f3c25ade23306225814d5155cc712ab4906445"
+    },
+    {
+      "path": "hepta-agentd/src/authority_host_consumer_frontier_tests.rs",
+      "lines": 306,
+      "new": true,
+      "sha256": "aac7dbfae1eb4b06512ff773a30a3ebfef28705cb65898751aa4a04c91bc47f4"
+    },
+    {
+      "path": "hepta-agentd/src/authority_host_consumers.rs",
+      "lines": 62,
+      "new": true,
+      "sha256": "4a28b4cfafebf25c5746c52585ddb2385f52407ecd1a43372fb30ec35d51a077"
+    },
+    {
+      "path": "hepta-agentd/src/authority_host_listeners.rs",
+      "lines": 128,
+      "new": true,
+      "sha256": "d1bef919bec9a8d0de41c1515a4fdd134fc9007f7cd6fb041ed60b8119e19a91"
+    },
+    {
+      "path": "hepta-agentd/src/authority_host_runtime.rs",
+      "lines": 382,
+      "new": true,
+      "sha256": "e6816a52b55765f0e61be57d38f30c2f7ab9db1136b12ea5c4761d2fd219d12e"
+    },
+    {
+      "path": "hepta-agentd/src/authority_host_service.rs",
+      "lines": 398,
+      "new": true,
+      "sha256": "cf1314fe841dce98814aeecee84692a08235605d63bde5491adaf9e97d6be4bc"
+    },
+    {
+      "path": "hepta-agentd/src/authority_host_service_bootstrap_root.rs",
+      "lines": 126,
+      "new": true,
+      "sha256": "deb4b4a07dcebccf6a512f09a841e63e4efa50a9db580542d004fc81cbb5df90"
+    },
+    {
+      "path": "hepta-agentd/src/authority_host_service_consumers_root.rs",
+      "lines": 144,
+      "new": true,
+      "sha256": "1501a8dd4997e17fa3579e4629919cb8efafdf067ec482883e31f06bf52a5e34"
+    },
+    {
+      "path": "hepta-agentd/src/authority_host_service_root_tests.rs",
+      "lines": 668,
+      "new": true,
+      "sha256": "8ade4962d5fdcad606a82b145cf8c2e4b5c41d67d2cabc24e9f1f597805708e7"
+    },
+    {
+      "path": "hepta-agentd/src/authority_host_service_tests.rs",
+      "lines": 104,
+      "new": true,
+      "sha256": "0a98f5487e01b9060b8387fe8da6b8f2326b070b6f39b4bf5d82ed7a50336098"
+    },
+    {
+      "path": "hepta-agentd/src/authority_host_wire.rs",
+      "lines": 132,
+      "new": true,
+      "sha256": "883e027576397f02e681535b79fa5ec0e3f97682eb5c13e807c145380c8b2810"
+    },
+    {
+      "path": "hepta-agentd/src/authority_host_wire_tests.rs",
+      "lines": 108,
+      "new": true,
+      "sha256": "7f06a263aa3347713c255529d3c8438daa7435f1d793a30912946c02952614b6"
+    },
+    {
+      "path": "hepta-agentd/src/authority_host_writer.rs",
+      "lines": 172,
+      "new": true,
+      "sha256": "b369e543cbe163404b81dfb9de3c38a0e5ab358f6602c56c9db38b2f3022ed37"
+    },
+    {
+      "path": "hepta-agentd/src/bin/hepta-authority-host.rs",
+      "lines": 65,
+      "new": true,
+      "sha256": "3bba1e3f63b66d4aec819426725f2cb7639a119f39da3ad093291b58559e7435"
+    },
+    {
+      "path": "hepta-agentd/src/cognitive_checkpoint_unix.rs",
+      "lines": 226,
+      "new": true,
+      "sha256": "f397bc0b9ddf098b8382ec7de76ee681ce64af0ea69f58f5e409f818820f1523"
+    },
+    {
+      "path": "hepta-agentd/src/cognitive_checkpoint_unix_tests.rs",
+      "lines": 267,
+      "new": true,
+      "sha256": "697186c64aeeb0dfe31af0ba10887fe7eaec244ad3fe1a303a7dcc8ce6960551"
+    },
+    {
+      "path": "hepta-agentd/src/deployment_authbus.rs",
+      "lines": 147,
+      "new": true,
+      "sha256": "9817066c793056c4b2d254595e961fe7c5afa876d099f877edc88cd72f1a0922"
+    },
+    {
+      "path": "hepta-agentd/src/deployment_authbus_tests.rs",
+      "lines": 357,
+      "new": true,
+      "sha256": "1d8cdbe7c8792d4e9ca902af257c880f3ac98788e8c54974b2530671391faf07"
+    },
+    {
+      "path": "hepta-agentd/src/deployment_authbus_writer_tests.rs",
+      "lines": 159,
+      "new": true,
+      "sha256": "9f0ea73fd3926c12425247cf7b6a1f38b8595ff6599e715156329b32f0abbf8a"
+    },
+    {
+      "path": "hepta-agentd/src/deployment_frontier.rs",
+      "lines": 335,
+      "new": true,
+      "sha256": "c7a0d4123052ab5858d4f8d0204f25695f6ef1b05126852e34d733703bf77543"
+    },
+    {
+      "path": "hepta-agentd/src/deployment_frontier_tests.rs",
+      "lines": 98,
+      "new": true,
+      "sha256": "9d7a5b03ef2911cf1a32566f3297f69cf414cf053269bfe7c25faefe34fd339c"
+    },
+    {
+      "path": "hepta-agentd/src/deployment_issuer.rs",
+      "lines": 473,
+      "new": true,
+      "sha256": "bee1f6758cf999858fc6f5dcc576e231d9533594de75b3b26739f9b6a6151051"
+    },
+    {
+      "path": "hepta-agentd/src/deployment_issuer_root.rs",
+      "lines": 167,
+      "new": true,
+      "sha256": "1d8832033a182bad435984eb6c9277878944c3216e8b8e563bff50b34581dd8f"
+    },
+    {
+      "path": "hepta-agentd/src/deployment_issuer_root_tests.rs",
+      "lines": 447,
+      "new": true,
+      "sha256": "a01ee55fcde0a77911fef55a5baeb35a25d2cc6c5535a82e4673332f108155be"
+    },
+    {
+      "path": "hepta-agentd/src/deployment_issuer_tests.rs",
+      "lines": 205,
+      "new": true,
+      "sha256": "ff5640880832ad70aa7d6a5fd8608c2719dfeb993ddc3198b7394d6ab24783e3"
+    },
+    {
+      "path": "hepta-agentd/src/deployment_writer.rs",
+      "lines": 231,
+      "new": true,
+      "sha256": "025ccc0d3ec673d67c542093ceebe236f38e9126c0ec665eefb47c5f59ec6e86"
+    },
+    {
+      "path": "hepta-agentd/src/deployment_writer_tests.rs",
+      "lines": 298,
+      "new": true,
+      "sha256": "5c6b63f2d8b09169f7e78730aedbef99d98399d34a79a18b8ddbdd81158be94d"
+    },
+    {
+      "path": "hepta-agentd/src/objective_sender_host_tests.rs",
+      "lines": 208,
+      "new": true,
+      "sha256": "182e01e52cd09a5308d879e8809c76f7e87d6ea0a0dc16b7ca03a23d3f1e4466"
+    },
+    {
+      "path": "hepta-agentd/src/production_protected_host.rs",
+      "lines": 75,
+      "new": true,
+      "sha256": "910eeea313f7948f7cb1b830475c2dd2b26b13c65b60b7abb23ebb340d6284f8"
+    },
+    {
+      "path": "hepta-agentd/src/root_authority_session.rs",
+      "lines": 326,
+      "new": true,
+      "sha256": "ae5ccd12a282ff440f09565179998af6897d74ac68a7331c53a5b40b167f2b66"
+    },
+    {
+      "path": "hepta-agentd/src/root_authority_session_tests.rs",
+      "lines": 282,
+      "new": true,
+      "sha256": "be825dd3af1cfdfa9c865a7fc7b30df07417f38551cc3a2d19996f53b12664f1"
+    },
+    {
+      "path": "hepta-agentd/src/root_issuer_client.rs",
+      "lines": 143,
+      "new": true,
+      "sha256": "39ec530f0798cff1635e21ade577b8891473888927c5d31a9cb4e77cae21809d"
+    },
+    {
+      "path": "hepta-agentd/src/root_issuer_client_tests.rs",
+      "lines": 238,
+      "new": true,
+      "sha256": "770cfce7447886aa2472a06a1354bea5ae3d35715672cbefd43b9ff04796700b"
+    },
+    {
+      "path": "hepta-agentd/src/root_observation_cache.rs",
+      "lines": 246,
+      "new": true,
+      "sha256": "d52c214a953085d8402766620aaf044351f371717f868e4b0f9513bb5eea401e"
+    },
+    {
+      "path": "hepta-agentd/src/root_observation_cache_tests.rs",
+      "lines": 151,
+      "new": true,
+      "sha256": "e2b6c9e6c255a310136a2e80c3aace6f4b0094a27821f869454ac3fdd20482f8"
+    },
+    {
+      "path": "hepta-agentd/src/root_observation_stream.rs",
+      "lines": 225,
+      "new": true,
+      "sha256": "e4c9ca9fdaf3b94be0c4472ac41d6df36fbe83d4efcce4a49358ab6c709609be"
+    },
+    {
+      "path": "hepta-agentd/src/root_observation_stream_tests.rs",
+      "lines": 223,
+      "new": true,
+      "sha256": "fdbf1bde614b28cb391fa2fa751fd73854a746272132e5e71c86619294503b16"
+    },
+    {
+      "path": "hepta-agentd/src/root_writer_proof.rs",
+      "lines": 167,
+      "new": true,
+      "sha256": "946c423dd263ef528d8629592b1f8ab42c3640e9708c21e4fb101e365400ba4e"
+    },
+    {
+      "path": "hepta-agentd/src/root_writer_proof_tests.rs",
+      "lines": 222,
+      "new": true,
+      "sha256": "04d058ff48e5f41aed90d5f1e583211e8e38b9eb2bda78a16922f0075bbbb6a1"
+    }
+  ],
+  "excluded": "Notes Objective executor, previous-receipt wire, prior acceptance reports",
+  "production_authority_created": false
+}

@@ -1,4 +1,5 @@
 use std::path::Path;
+use std::process::Command;
 use std::time::Duration;
 use std::time::Instant;
 
@@ -121,8 +122,9 @@ fn write_intent_raw(
     Ok(())
 }
 
-#[test]
-fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorError> {
+#[tokio::test]
+async fn legacy_exact_digest_abort_keeps_ambiguous_production_intent_quarantined()
+-> Result<(), SupervisorError> {
     let fleet = fleet()?;
     let starting =
         fleet
@@ -153,30 +155,105 @@ fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorE
     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_intent_raw(record.layout.run_root(), &intent)?;
 
-    let first = Supervisor::recover(
+    let (first, report) = Supervisor::recover(
         fleet.registry.clone(),
         NoProcessDriver,
         config(),
         Instant::now(),
-    );
-    assert!(matches!(
-        first,
-        Err(SupervisorError::SignedIntentRecoveryRequired(agent_id))
-            if agent_id == fleet.agent_id
-    ));
+    )?;
+    assert!(report.faults.is_empty());
+    assert!(first.production_recovery_required(&fleet.agent_id)?);
 
-    let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256)
+    let inspected = Command::new(env!("CARGO_BIN_EXE_hepta-supervisor-intent-recovery"))
+        .arg("inspect")
+        .arg(record.layout.run_root())
+        .output()?;
+    assert!(inspected.status.success());
+    let inspected: SignedSupervisorIntent = serde_json::from_slice(&inspected.stdout)
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    assert_eq!(inspected, intent);
+    let refused = Command::new(env!("CARGO_BIN_EXE_hepta-supervisor-intent-recovery"))
+        .arg("abort")
+        .arg(record.layout.run_root())
+        .arg(intent.intent_sha256.as_str())
+        .output()?;
+    assert!(!refused.status.success());
+    assert!(String::from_utf8_lossy(&refused.stderr).contains("independently signed"));
+    assert!(
+        !record
+            .layout
+            .run_root()
+            .join(codex_hepta_supervisor::SIGNED_INTENT_RECOVERY_FILE)
+            .exists()
+    );
+
+    // Historical files remain readable but are not a signed outcome witness.
+    // Even an exact digest cannot turn an unknown effect into a terminal result.
+    let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256.clone())
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_signed_intent_recovery_directive(record.layout.run_root(), &directive)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
 
-    let (_recovered, report) =
+    let fleet_root = fleet.registry.layout().fleet_root().clone();
+    let socket = fleet.registry.layout().supervisor_socket().to_path_buf();
+    let (recovered, report) =
         Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now())?;
     assert!(report.faults.is_empty());
-    let terminal = read_signed_intent(record.layout.run_root())
+    assert!(recovered.production_recovery_required(&fleet.agent_id)?);
+    let retained = read_signed_intent(record.layout.run_root())
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?
-        .expect("terminal intent");
-    assert_eq!(terminal.status, SignedIntentStatus::Aborted);
-    assert_eq!(terminal.target_release, "target-release");
+        .expect("unresolved intent remains available for signed recovery");
+    assert_eq!(retained, intent);
+
+    #[cfg(unix)]
+    {
+        drop(first);
+        drop(recovered);
+        let cancellation = tokio_util::sync::CancellationToken::new();
+        let daemon = tokio::spawn(codex_hepta_supervisor::run_supervisord(
+            fleet_root,
+            cancellation.clone(),
+        ));
+        let checks = async {
+            let client = codex_hepta_supervisor::SupervisordClient::new(socket)?;
+            let deadline = Instant::now() + Duration::from_secs(2);
+            let health = loop {
+                match client.health().await {
+                    Ok(health) => break health,
+                    Err(error) if Instant::now() >= deadline => {
+                        return Err(SupervisorError::Invalid(error.to_string()));
+                    }
+                    Err(_) => tokio::time::sleep(Duration::from_millis(10)).await,
+                }
+            };
+            if health.ready {
+                return Err(SupervisorError::Invalid(
+                    "quarantined daemon reported ready".into(),
+                ));
+            }
+            let status = client
+                .snapshot(fleet.agent_id.clone())
+                .await
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            match client.restart(status.control_fence).await {
+                Err(error)
+                    if error
+                        .to_string()
+                        .contains("signed_intent_recovery_required") =>
+                {
+                    Ok(())
+                }
+                result => Err(SupervisorError::Invalid(format!(
+                    "quarantined daemon did not reject ordinary mutation: {result:?}"
+                ))),
+            }
+        }
+        .await;
+        cancellation.cancel();
+        daemon
+            .await
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))??;
+        checks?;
+    }
     Ok(())
 }
