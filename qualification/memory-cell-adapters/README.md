@@ -149,7 +149,7 @@ RSS 尚未测量，不能从唯一参数数目推断部署内存相等。见
 Python 研究 owner 验证了旧版本拒绝、依赖撤销后停止参数/事件读取、sleep 移除缓存引用、
 wake 核对参数/encoder/typed config、步数上限，以及 owner stop 后的请求不再读取。
 
-额外的 64 周期 × 3 seeds 持续维护实验见 [longrun](longrun/)。首链已完成
+额外的 64 周期 × 3 seeds 语义记忆持续维护实验见 [longrun](longrun/)。该长跑不包含技能 cell 的同周期维护。首链已完成
 192 次更新、24 次 clean rebuild 和 219 次新进程读取，独立审计 7,198 项通过。
 按每周期最终状态计，参数与 exact-SQL 两臂均为 active 1,512/1,512、changed
 207/207、retention 1,305/1,305、revoked 24/24。完整核对见
