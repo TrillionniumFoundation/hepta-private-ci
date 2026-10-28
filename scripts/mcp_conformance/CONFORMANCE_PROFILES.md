@@ -100,3 +100,20 @@ separately reviewed complete v2 product capture and preservation mapping exists.
 The v2 Node reference-client validation is an independent fixture fact, not that
 product baseline or a new SDK50 qualification. Use matching historical tools and
 source when reproducing historical v1 execution.
+
+
+### Proposed v2 reference admission
+
+The local-network successor is prepared from an actual full capture, retaining
+all three protocol modes, six transport groups and 55 scenario executions. The
+proposed code-owned v2 reference preserves exactly 634 passing and 18 failing
+identities. Its migration evidence binds the actual report, failed capture exit,
+source head/tree, retained normal Codex SHA, new descriptor/dist and observed
+Node/pnpm runtime. The failed groups remain failed; the baseline is a regression
+lower bound and is not full MCP compliance. Unknown/new failures, missing checks,
+changed scenario coverage or source identity fail preservation.
+
+Landing this candidate requires reviewing those concrete facts and its exact
+SHA. It does not make a v1/v2 comparison pass. The historical v1 references and
+both upstream manifests stay unchanged. The baseline writer rejects all three
+code-owned baseline destinations; improved captures must be written separately.

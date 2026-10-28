@@ -44,6 +44,7 @@ from conformance_profiles import (  # noqa: E402
     execution_metadata,
     legacy_baseline,
     measured_baseline,
+    local_network_baseline,
     report_profile,
     required_fixed_checks,
     validate_metadata,
@@ -1726,7 +1727,13 @@ def _compact_regression_baseline(report: Mapping[str, object]) -> dict[str, obje
         errors.append("baseline contains a shipping MCP regression")
     profile = report_profile(report)
     if profile == LOCAL_NETWORK_PROFILE:
-        raise ValueError("localnet-v2 baseline extraction requires a separately reviewed complete v2 capture; historical v1 is not a v2 golden")
+        # The fixed v2 reference is a separately reviewed capture, not a v1
+        # report relabeled through the regression-comparison path.
+        preserved = _evaluate_regression_gate(report, local_network_baseline())
+        if preserved["success"] is not True:
+            errors.append(
+                f"local-network baseline preservation failed: {json.dumps(preserved, sort_keys=True)}"
+            )
     if profile == VENDOR_PROFILE:
         migration = _evaluate_regression_gate(
             report, legacy_baseline(), allow_legacy_migration=True
@@ -1801,6 +1808,7 @@ def _write_compact_regression_baseline(
         for name in (
             "regression-baseline-v1.json",
             "regression-baseline-c37-sdk132-v1.json",
+            "regression-baseline-c37-sdk132-localnet-v2.json",
         )
     }:
         raise ValueError("the code-owned baseline reference must remain unchanged")

@@ -138,3 +138,12 @@ the SDK conformance case fails the missing-baseline precondition rather than
 skipping the case or accepting a cross-profile comparison. The raw v2 command
 above remains runnable and records real protocol failures. Historical v1
 reports, descriptor, measured golden and matching tool snapshot stay intact.
+
+
+The separate migration candidate and complete raw capture now exist for review;
+no reference-client result is used as a product golden. The proposed v2
+code-owned reference keeps the same 634 passes and 18 measured failures, and
+would let the existing explicit v2 SDK caller exercise its original assertions.
+It must be admitted as a reviewed source change before the missing-baseline
+precondition closes. See the full open-check inventory in
+[the network contract](../../third_party/MCP_CONFORMANCE_NETWORK.md).

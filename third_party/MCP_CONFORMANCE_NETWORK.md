@@ -71,3 +71,83 @@ execution must use its matching historical source/tool snapshot, not a v2 CLI
 with a rewritten v1 identity. CI CodeQL conclusions are pending actual CI; local
 behavior tests are not evidence that a static analyzer recognizes a custom
 admission function.
+
+
+## Open MCP product and reference gaps
+
+The complete localnet-v2 capture used the original retained normal Codex from
+310c (Rust source unchanged), the new canonical CLI, all 55 original scenario
+executions across three modes, and all six HTTP/stdio groups. Four groups passed
+and two failed. The 18 failing identities below remain open. They are measured
+failures, not expected-success changes. The shipping mode passed. Every one of
+the 634 required passing identities remains observed; no failure or scenario is
+removed by profile migration. Full MCP conformance is not green.
+
+| Mode | Source | Scenario | Open check ID |
+|---|---|---|---|
+| 2025-11-25 | harness | auth/pre-registration | harness/auth/pre-registration/codex-adapter |
+| 2025-11-25 | harness | auth/scope-from-www-authenticate | harness/auth/scope-from-www-authenticate/codex-adapter |
+| 2025-11-25 | harness | auth/scope-step-up | harness/auth/scope-step-up/codex-adapter |
+| 2025-11-25 | official | auth/pre-registration | pre-registration-auth |
+| 2025-11-25 | official | auth/scope-from-www-authenticate | scope-from-www-authenticate |
+| 2025-11-25 | official | auth/scope-step-up | scope-step-up-initial |
+| 2025-11-25 | official | elicitation-sep1034-client-defaults | client-elicitation-sep1034-boolean-default |
+| 2025-11-25 | official | elicitation-sep1034-client-defaults | client-elicitation-sep1034-enum-default |
+| 2025-11-25 | official | elicitation-sep1034-client-defaults | client-elicitation-sep1034-integer-default |
+| 2025-11-25 | official | elicitation-sep1034-client-defaults | client-elicitation-sep1034-number-default |
+| 2025-11-25 | official | elicitation-sep1034-client-defaults | client-elicitation-sep1034-string-default |
+| 2026-07-28 | harness | auth/pre-registration | harness/auth/pre-registration/codex-adapter |
+| 2026-07-28 | harness | auth/scope-from-www-authenticate | harness/auth/scope-from-www-authenticate/codex-adapter |
+| 2026-07-28 | harness | auth/scope-step-up | harness/auth/scope-step-up/codex-adapter |
+| 2026-07-28 | official | auth/pre-registration | pre-registration-auth |
+| 2026-07-28 | official | auth/scope-from-www-authenticate | scope-from-www-authenticate |
+| 2026-07-28 | official | auth/scope-step-up | scope-step-up-initial |
+| 2026-07-28 | official | auth/scope-step-up | sep-2350-scope-union-on-reauth |
+
+Raw v1 and v2 captures each observe 654 unique identities with identical status
+sets. The compact v1 golden stores 634 passing and 18 failing identities, and
+omits pure SKIP observations. Both raw captures retain two optional
+request-metadata SKIPs (roots and sampling not declared), plus a standard-header
+identity with both PASS and SKIP observations. Those raw observations remain in
+the evidence; migration does not relabel them or count them as new passes.
+
+The separate Node EverythingClient run exited 0 for 30 of 55 scenario executions
+and exited 1 for 25, without timeouts. Its gaps below are reference-client facts,
+not new Codex failures or a product baseline. The original 641 unit/scenario
+cases, their negative producers and all protocol oracles remain intact.
+
+| Mode | Reference scenario | Actual failure family |
+|---|---|---|
+| 2025-11-25 | elicitation-sep1034-client-defaults | Reference client has no matching registered handler |
+| 2025-11-25 | sse-retry | Reference client has no matching registered handler |
+| 2026-07-28 | http-standard-headers | Reference client has no matching registered handler |
+| 2026-07-28 | http-custom-headers | Reference client has no matching registered handler |
+| 2026-07-28 | http-invalid-tool-headers | Reference client has no matching registered handler |
+| 2026-07-28 | json-schema-ref-no-deref | Reference stateless client attempts JSON parsing of an SSE response |
+| 2026-07-28 | auth/metadata-default | SDK 1.32 transport omits required version header on this modern path |
+| 2026-07-28 | auth/metadata-var1 | SDK 1.32 transport omits required version header on this modern path |
+| 2026-07-28 | auth/metadata-var2 | SDK 1.32 transport omits required version header on this modern path |
+| 2026-07-28 | auth/metadata-var3 | SDK 1.32 transport omits required version header on this modern path |
+| 2026-07-28 | auth/basic-cimd | SDK 1.32 transport omits required version header on this modern path |
+| 2026-07-28 | auth/scope-from-www-authenticate | SDK 1.32 transport omits required version header on this modern path |
+| 2026-07-28 | auth/scope-from-scopes-supported | SDK 1.32 transport omits required version header on this modern path |
+| 2026-07-28 | auth/scope-omitted-when-undefined | SDK 1.32 transport omits required version header on this modern path |
+| 2026-07-28 | auth/scope-step-up | SDK 1.32 transport omits required version header on this modern path |
+| 2026-07-28 | auth/scope-retry-limit | SDK 1.32 transport omits required version header on this modern path |
+| 2026-07-28 | auth/token-endpoint-auth-basic | SDK 1.32 transport omits required version header on this modern path |
+| 2026-07-28 | auth/token-endpoint-auth-post | SDK 1.32 transport omits required version header on this modern path |
+| 2026-07-28 | auth/token-endpoint-auth-none | SDK 1.32 transport omits required version header on this modern path |
+| 2026-07-28 | auth/pre-registration | SDK 1.32 transport omits required version header on this modern path |
+| 2026-07-28 | auth/offline-access-scope | SDK 1.32 transport omits required version header on this modern path |
+| 2026-07-28 | auth/offline-access-not-supported | SDK 1.32 transport omits required version header on this modern path |
+| 2026-07-28 | auth/authorization-server-migration | SDK 1.32 transport omits required version header on this modern path |
+| 2026-07-28 | auth/iss-supported | SDK 1.32 transport omits required version header on this modern path |
+| 2026-07-28 | auth/iss-not-advertised | SDK 1.32 transport omits required version header on this modern path |
+
+CodeQL recognition of the custom admission function still needs actual new-head
+CI. The local negative and resource tests are not a scanner result. The v2
+baseline candidate is derived from the complete actual report and preserves
+exactly the existing pass/failure vectors; it requires explicit review before
+code-owned admission. Cross-profile comparison remains an error even after
+migration. No production authorization or Asterinas native-device qualification
+follows from these host captures.

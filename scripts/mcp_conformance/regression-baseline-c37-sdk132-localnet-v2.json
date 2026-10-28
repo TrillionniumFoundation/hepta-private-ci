@@ -1,0 +1,4791 @@
+{
+  "automaticAuthRequired": false,
+  "baselineKind": "mcp-conformance-regression-baseline-v1",
+  "checks": {
+    "failing": [
+      {
+        "check_id": "harness/auth/pre-registration/codex-adapter",
+        "mode": "2025-11-25",
+        "scenario": "auth/pre-registration",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/scope-from-www-authenticate/codex-adapter",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-from-www-authenticate",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/scope-step-up/codex-adapter",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-step-up",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pre-registration-auth",
+        "mode": "2025-11-25",
+        "scenario": "auth/pre-registration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "scope-from-www-authenticate",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-from-www-authenticate",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "scope-step-up-initial",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-elicitation-sep1034-boolean-default",
+        "mode": "2025-11-25",
+        "scenario": "elicitation-sep1034-client-defaults",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-elicitation-sep1034-enum-default",
+        "mode": "2025-11-25",
+        "scenario": "elicitation-sep1034-client-defaults",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-elicitation-sep1034-integer-default",
+        "mode": "2025-11-25",
+        "scenario": "elicitation-sep1034-client-defaults",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-elicitation-sep1034-number-default",
+        "mode": "2025-11-25",
+        "scenario": "elicitation-sep1034-client-defaults",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-elicitation-sep1034-string-default",
+        "mode": "2025-11-25",
+        "scenario": "elicitation-sep1034-client-defaults",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/pre-registration/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "auth/pre-registration",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/scope-from-www-authenticate/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-www-authenticate",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/scope-step-up/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-step-up",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pre-registration-auth",
+        "mode": "2026-07-28",
+        "scenario": "auth/pre-registration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "scope-from-www-authenticate",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-www-authenticate",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "scope-step-up-initial",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2350-scope-union-on-reauth",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      }
+    ],
+    "passing": [
+      {
+        "check_id": "harness/auth/token-endpoint-auth-basic/codex-adapter",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/token-endpoint-auth-none/codex-adapter",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/token-endpoint-auth-post/codex-adapter",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/initialize/codex-adapter",
+        "mode": "2025-06-18",
+        "scenario": "initialize",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/tools_call/codex-adapter",
+        "mode": "2025-06-18",
+        "scenario": "tools_call",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-consistency",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-authorization",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-token",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-matches-prm",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-valid-uri",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-endpoint-auth-method",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-consistency",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-authorization",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-token",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-matches-prm",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-valid-uri",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-endpoint-auth-method",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-consistency",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-authorization",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-token",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-matches-prm",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-valid-uri",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-endpoint-auth-method",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2025-06-18",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "mcp-client-initialization",
+        "mode": "2025-06-18",
+        "scenario": "initialize",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "tool-add-numbers",
+        "mode": "2025-06-18",
+        "scenario": "tools_call",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "wire-schema-valid",
+        "mode": "2025-06-18",
+        "scenario": "tools_call",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "app_server_initialize",
+        "mode": "2025-06-18",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "echo_tool",
+        "mode": "2025-06-18",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "ephemeral_thread",
+        "mode": "2025-06-18",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "inventory",
+        "mode": "2025-06-18",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "isolated_config_cleanup",
+        "mode": "2025-06-18",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "mcp_add",
+        "mode": "2025-06-18",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "mcp_get",
+        "mode": "2025-06-18",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "mcp_remove",
+        "mode": "2025-06-18",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "unicode_resource_read",
+        "mode": "2025-06-18",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "harness/auth/basic-cimd/codex-adapter",
+        "mode": "2025-11-25",
+        "scenario": "auth/basic-cimd",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/metadata-default/codex-adapter",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-default",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/metadata-var1/codex-adapter",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var1",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/metadata-var2/codex-adapter",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var2",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/metadata-var3/codex-adapter",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var3",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/scope-from-scopes-supported/codex-adapter",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-from-scopes-supported",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/scope-omitted-when-undefined/codex-adapter",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-omitted-when-undefined",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/scope-retry-limit/codex-adapter",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-retry-limit",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/token-endpoint-auth-basic/codex-adapter",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/token-endpoint-auth-none/codex-adapter",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/token-endpoint-auth-post/codex-adapter",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/elicitation-sep1034-client-defaults/codex-adapter",
+        "mode": "2025-11-25",
+        "scenario": "elicitation-sep1034-client-defaults",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/initialize/codex-adapter",
+        "mode": "2025-11-25",
+        "scenario": "initialize",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/sse-retry/codex-adapter",
+        "mode": "2025-11-25",
+        "scenario": "sse-retry",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/tools_call/codex-adapter",
+        "mode": "2025-11-25",
+        "scenario": "tools_call",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/basic-cimd",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2025-11-25",
+        "scenario": "auth/basic-cimd",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "cimd-client-id-used",
+        "mode": "2025-11-25",
+        "scenario": "auth/basic-cimd",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/basic-cimd",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/basic-cimd",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2025-11-25",
+        "scenario": "auth/basic-cimd",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2025-11-25",
+        "scenario": "auth/basic-cimd",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2025-11-25",
+        "scenario": "auth/basic-cimd",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/basic-cimd",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2025-11-25",
+        "scenario": "auth/basic-cimd",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-consistency",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-authorization",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-token",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-matches-prm",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-valid-uri",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-consistency",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-authorization",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-token",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-matches-prm",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-valid-uri",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-consistency",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-authorization",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-token",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-matches-prm",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-valid-uri",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-consistency",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-authorization",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-token",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-matches-prm",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-valid-uri",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2025-11-25",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/pre-registration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2025-11-25",
+        "scenario": "auth/pre-registration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/pre-registration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/pre-registration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2025-11-25",
+        "scenario": "auth/pre-registration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2025-11-25",
+        "scenario": "auth/pre-registration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2025-11-25",
+        "scenario": "auth/pre-registration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/pre-registration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-from-scopes-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-from-scopes-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-from-scopes-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-from-scopes-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-from-scopes-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-from-scopes-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-from-scopes-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-from-scopes-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "scope-from-scopes-supported",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-from-scopes-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-from-scopes-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-from-scopes-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-from-www-authenticate",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-from-www-authenticate",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-from-www-authenticate",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-from-www-authenticate",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-from-www-authenticate",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-from-www-authenticate",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-from-www-authenticate",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-from-www-authenticate",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-from-www-authenticate",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-from-www-authenticate",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-omitted-when-undefined",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-omitted-when-undefined",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-omitted-when-undefined",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-omitted-when-undefined",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-omitted-when-undefined",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-omitted-when-undefined",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-omitted-when-undefined",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-omitted-when-undefined",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "scope-omitted-when-undefined",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-omitted-when-undefined",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-omitted-when-undefined",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-omitted-when-undefined",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-retry-limit",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-retry-limit",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-retry-limit",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-retry-limit",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-retry-limit",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-retry-limit",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-retry-limit",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-retry-limit",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "scope-retry-limit",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-retry-limit",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-retry-limit",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "scope-step-up-escalation",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2025-11-25",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-consistency",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-authorization",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-token",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-matches-prm",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-valid-uri",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-endpoint-auth-method",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-consistency",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-authorization",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-token",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-matches-prm",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-valid-uri",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-endpoint-auth-method",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-consistency",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-authorization",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-token",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-matches-prm",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-valid-uri",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-endpoint-auth-method",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2025-11-25",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "mcp-client-initialization",
+        "mode": "2025-11-25",
+        "scenario": "initialize",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-sse-graceful-reconnect",
+        "mode": "2025-11-25",
+        "scenario": "sse-retry",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-sse-last-event-id",
+        "mode": "2025-11-25",
+        "scenario": "sse-retry",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-sse-retry-timing",
+        "mode": "2025-11-25",
+        "scenario": "sse-retry",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "tool-add-numbers",
+        "mode": "2025-11-25",
+        "scenario": "tools_call",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "wire-schema-valid",
+        "mode": "2025-11-25",
+        "scenario": "tools_call",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "app_server_initialize",
+        "mode": "2025-11-25",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "echo_tool",
+        "mode": "2025-11-25",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "ephemeral_thread",
+        "mode": "2025-11-25",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "inventory",
+        "mode": "2025-11-25",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "isolated_config_cleanup",
+        "mode": "2025-11-25",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "mcp_add",
+        "mode": "2025-11-25",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "mcp_get",
+        "mode": "2025-11-25",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "mcp_remove",
+        "mode": "2025-11-25",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "unicode_resource_read",
+        "mode": "2025-11-25",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "harness/auth/authorization-server-migration/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "auth/authorization-server-migration",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/basic-cimd/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "auth/basic-cimd",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/iss-normalized/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-normalized",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/iss-not-advertised/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-not-advertised",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/iss-supported/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-supported",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/iss-supported-missing/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-supported-missing",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/iss-unexpected/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-unexpected",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/iss-wrong-issuer/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-wrong-issuer",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/metadata-default/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-default",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/metadata-issuer-mismatch/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-issuer-mismatch",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/metadata-var1/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var1",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/metadata-var2/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var2",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/metadata-var3/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var3",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/offline-access-not-supported/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-not-supported",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/offline-access-scope/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-scope",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/resource-mismatch/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "auth/resource-mismatch",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/scope-from-scopes-supported/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-scopes-supported",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/scope-omitted-when-undefined/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-omitted-when-undefined",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/scope-retry-limit/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-retry-limit",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/token-endpoint-auth-basic/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/token-endpoint-auth-none/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/auth/token-endpoint-auth-post/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/http-custom-headers/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "http-custom-headers",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/http-invalid-tool-headers/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "http-invalid-tool-headers",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/http-standard-headers/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "http-standard-headers",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/json-schema-ref-no-deref/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "json-schema-ref-no-deref",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/request-metadata/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "request-metadata",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/sep-2322-client-request-state/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "sep-2322-client-request-state",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "harness/tools_call/codex-adapter",
+        "mode": "2026-07-28",
+        "scenario": "tools_call",
+        "source": "harness",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/authorization-server-migration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2026-07-28",
+        "scenario": "auth/authorization-server-migration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2026-07-28",
+        "scenario": "auth/authorization-server-migration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/authorization-server-migration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/authorization-server-migration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2026-07-28",
+        "scenario": "auth/authorization-server-migration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2026-07-28",
+        "scenario": "auth/authorization-server-migration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/authorization-server-migration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2352-no-cross-as-credential-reuse",
+        "mode": "2026-07-28",
+        "scenario": "auth/authorization-server-migration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2352-no-reuse-on-as-change",
+        "mode": "2026-07-28",
+        "scenario": "auth/authorization-server-migration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2352-reregister-on-as-change",
+        "mode": "2026-07-28",
+        "scenario": "auth/authorization-server-migration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-837-application-type-present",
+        "mode": "2026-07-28",
+        "scenario": "auth/authorization-server-migration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/authorization-server-migration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2026-07-28",
+        "scenario": "auth/authorization-server-migration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/basic-cimd",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2026-07-28",
+        "scenario": "auth/basic-cimd",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "cimd-client-id-used",
+        "mode": "2026-07-28",
+        "scenario": "auth/basic-cimd",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/basic-cimd",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/basic-cimd",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2026-07-28",
+        "scenario": "auth/basic-cimd",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2026-07-28",
+        "scenario": "auth/basic-cimd",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/basic-cimd",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/basic-cimd",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2026-07-28",
+        "scenario": "auth/basic-cimd",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-normalized",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-normalized",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-normalized",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-normalized",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-normalized",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-normalized",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2468-client-no-normalization",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-normalized",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-837-application-type-present",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-normalized",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-not-advertised",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-not-advertised",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-not-advertised",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-not-advertised",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-not-advertised",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-not-advertised",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-not-advertised",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-not-advertised",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2468-client-proceed-no-iss",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-not-advertised",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-837-application-type-present",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-not-advertised",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-not-advertised",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-not-advertised",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2468-client-compare-iss-supported",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-837-application-type-present",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-supported-missing",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-supported-missing",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-supported-missing",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-supported-missing",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-supported-missing",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-supported-missing",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2468-client-reject-missing-iss",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-supported-missing",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-837-application-type-present",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-supported-missing",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-unexpected",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-unexpected",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-unexpected",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-unexpected",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-unexpected",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-unexpected",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2468-client-compare-iss-unadvertised",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-unexpected",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-837-application-type-present",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-unexpected",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-wrong-issuer",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-wrong-issuer",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-wrong-issuer",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-wrong-issuer",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-wrong-issuer",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-wrong-issuer",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2468-client-compare-iss-supported",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-wrong-issuer",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-837-application-type-present",
+        "mode": "2026-07-28",
+        "scenario": "auth/iss-wrong-issuer",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-consistency",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-authorization",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-token",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-matches-prm",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-valid-uri",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-837-application-type-present",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-default",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-issuer-mismatch",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-issuer-mismatch",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2468-client-validate-metadata-issuer",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-issuer-mismatch",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-consistency",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-authorization",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-token",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-matches-prm",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-valid-uri",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-837-application-type-present",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var1",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-consistency",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-authorization",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-token",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-matches-prm",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-valid-uri",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-837-application-type-present",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var2",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-consistency",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-authorization",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-token",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-matches-prm",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-valid-uri",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-837-application-type-present",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2026-07-28",
+        "scenario": "auth/metadata-var3",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-not-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-not-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-not-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-not-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-not-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-not-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-not-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-not-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2207-offline-access-not-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-not-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-837-application-type-present",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-not-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-not-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-not-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-scope",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-scope",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-scope",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-scope",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-scope",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-scope",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-scope",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-scope",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2207-client-metadata-grant-types",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-scope",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2207-offline-access-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-scope",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-837-application-type-present",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-scope",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-scope",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-scope",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/pre-registration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2026-07-28",
+        "scenario": "auth/pre-registration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/pre-registration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/pre-registration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2026-07-28",
+        "scenario": "auth/pre-registration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2026-07-28",
+        "scenario": "auth/pre-registration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/pre-registration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/pre-registration",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/resource-mismatch",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-mismatch-rejected",
+        "mode": "2026-07-28",
+        "scenario": "auth/resource-mismatch",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-scopes-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-scopes-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-scopes-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-scopes-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-scopes-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-scopes-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-scopes-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-scopes-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "scope-from-scopes-supported",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-scopes-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-837-application-type-present",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-scopes-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-scopes-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-scopes-supported",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-www-authenticate",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-www-authenticate",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-www-authenticate",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-www-authenticate",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-www-authenticate",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-www-authenticate",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-www-authenticate",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-www-authenticate",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-837-application-type-present",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-www-authenticate",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-www-authenticate",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-from-www-authenticate",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-omitted-when-undefined",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-omitted-when-undefined",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-omitted-when-undefined",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-omitted-when-undefined",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-omitted-when-undefined",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-omitted-when-undefined",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-omitted-when-undefined",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-omitted-when-undefined",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "scope-omitted-when-undefined",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-omitted-when-undefined",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-837-application-type-present",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-omitted-when-undefined",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-omitted-when-undefined",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-omitted-when-undefined",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-retry-limit",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-retry-limit",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-retry-limit",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-retry-limit",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-retry-limit",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-retry-limit",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-retry-limit",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-retry-limit",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "scope-retry-limit",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-retry-limit",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-837-application-type-present",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-retry-limit",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-retry-limit",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "scope-step-up-escalation",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-837-application-type-present",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2026-07-28",
+        "scenario": "auth/scope-step-up",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-consistency",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-authorization",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-token",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-matches-prm",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-valid-uri",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-837-application-type-present",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-endpoint-auth-method",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-basic",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-consistency",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-authorization",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-token",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-matches-prm",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-valid-uri",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-837-application-type-present",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-endpoint-auth-method",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-none",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "authorization-server-metadata",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "client-registration",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-challenge-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-code-verifier-sent",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-s256-method-used",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "pkce-verifier-matches-challenge",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "prm-pathbased-requested",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-consistency",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-authorization",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-in-token",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-matches-prm",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "resource-parameter-valid-uri",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-837-application-type-present",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-endpoint-auth-method",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "token-request",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "valid-bearer-token",
+        "mode": "2026-07-28",
+        "scenario": "auth/token-endpoint-auth-post",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2243-client-base64-unsafe",
+        "mode": "2026-07-28",
+        "scenario": "http-custom-headers",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2243-client-encode-values",
+        "mode": "2026-07-28",
+        "scenario": "http-custom-headers",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2243-client-mirrors-designated-params",
+        "mode": "2026-07-28",
+        "scenario": "http-custom-headers",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2243-client-omit-null",
+        "mode": "2026-07-28",
+        "scenario": "http-custom-headers",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2243-client-supports-custom-headers",
+        "mode": "2026-07-28",
+        "scenario": "http-custom-headers",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2243-client-reject-invalid-tool",
+        "mode": "2026-07-28",
+        "scenario": "http-invalid-tool-headers",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2243-x-mcp-header-charset",
+        "mode": "2026-07-28",
+        "scenario": "http-invalid-tool-headers",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2243-x-mcp-header-not-empty",
+        "mode": "2026-07-28",
+        "scenario": "http-invalid-tool-headers",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2243-x-mcp-header-primitive-only",
+        "mode": "2026-07-28",
+        "scenario": "http-invalid-tool-headers",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2243-x-mcp-header-unique",
+        "mode": "2026-07-28",
+        "scenario": "http-invalid-tool-headers",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2243-client-includes-standard-headers",
+        "mode": "2026-07-28",
+        "scenario": "http-standard-headers",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2106-no-network-ref-deref",
+        "mode": "2026-07-28",
+        "scenario": "json-schema-ref-no-deref",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2575-client-declares-elicitation-capability",
+        "mode": "2026-07-28",
+        "scenario": "request-metadata",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2575-client-populates-meta",
+        "mode": "2026-07-28",
+        "scenario": "request-metadata",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2575-client-retry-supported-version",
+        "mode": "2026-07-28",
+        "scenario": "request-metadata",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2575-client-sends-client-info",
+        "mode": "2026-07-28",
+        "scenario": "request-metadata",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2575-http-client-sends-version-header",
+        "mode": "2026-07-28",
+        "scenario": "request-metadata",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2575-http-version-header-matches-meta",
+        "mode": "2026-07-28",
+        "scenario": "request-metadata",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2322-client-jsonrpc-id-different",
+        "mode": "2026-07-28",
+        "scenario": "sep-2322-client-request-state",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2322-client-no-state-omitted",
+        "mode": "2026-07-28",
+        "scenario": "sep-2322-client-request-state",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2322-client-parallel-isolation",
+        "mode": "2026-07-28",
+        "scenario": "sep-2322-client-request-state",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2322-client-request-state-echoed",
+        "mode": "2026-07-28",
+        "scenario": "sep-2322-client-request-state",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "sep-2322-default-result-type-complete",
+        "mode": "2026-07-28",
+        "scenario": "sep-2322-client-request-state",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "tool-add-numbers",
+        "mode": "2026-07-28",
+        "scenario": "tools_call",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "wire-schema-valid",
+        "mode": "2026-07-28",
+        "scenario": "tools_call",
+        "source": "official",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "auto_cimd",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-scope",
+        "source": "supplemental",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "forced_cimd",
+        "mode": "2026-07-28",
+        "scenario": "auth/offline-access-scope",
+        "source": "supplemental",
+        "transport": "official-http"
+      },
+      {
+        "check_id": "app_server_initialize",
+        "mode": "2026-07-28",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "echo_tool",
+        "mode": "2026-07-28",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "ephemeral_thread",
+        "mode": "2026-07-28",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "inventory",
+        "mode": "2026-07-28",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "isolated_config_cleanup",
+        "mode": "2026-07-28",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "mcp_add",
+        "mode": "2026-07-28",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "mcp_get",
+        "mode": "2026-07-28",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "mcp_remove",
+        "mode": "2026-07-28",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "modern_feature_enablement",
+        "mode": "2026-07-28",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "multi_round_trip_request",
+        "mode": "2026-07-28",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "per_request_metadata",
+        "mode": "2026-07-28",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "request_scoped_notifications",
+        "mode": "2026-07-28",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      },
+      {
+        "check_id": "unicode_resource_read",
+        "mode": "2026-07-28",
+        "scenario": "",
+        "source": "supplemental",
+        "transport": "stdio"
+      }
+    ]
+  },
+  "conformanceProfile": "vendor-c37-sdk132-localnet-v2",
+  "executionIdentity": {
+    "descriptorSha256": "81c9d77c66f68c5c12cc8392e1793c1e358a80334d3bff6dfd398b066d98aaa6",
+    "identity": {
+      "buildScript": "tsdown src/index.ts --minify --clean --target node20 --no-fixed-extension",
+      "dist": {
+        "index.js": "ff7ea0d4b8e3aba32684d7fb61a0f7d209a1d8d732aec997fc4efc763662492d"
+      },
+      "gitRef": "c37eec888e1c6ff140af79987a40008548b7cc5f",
+      "localNetworkPatch": {
+        "addedFiles": [
+          "src/fixture-network.ts",
+          "src/fixture-network.test.ts"
+        ],
+        "path": "third_party/mcp-conformance-patches/local-network-boundary.patch",
+        "semantics": "loopback and bounded local request admission; original protocol cases unchanged",
+        "sha256": "6a00eb547b040b8737482eb41007777c08a854a6c02f0fc356f734d3bace4a3d",
+        "upstreamFiles": 291
+      },
+      "nodeMajor": 22,
+      "packageManager": "pnpm@10.34.5+sha512.a4ee05f2f73658255bd6a89859c065a45c28a57daefae2c893a168ee2b73168c37b91e83e57ea67654ad03f03031746430e8bce38e362e042605fb8abc80192e",
+      "peerGraph": [
+        {
+          "scope": "third_party/mcp-conformance",
+          "sdkEntry": "node_modules/.pnpm/@modelcontextprotocol+sdk@1.32.0_zod@4.4.3/node_modules/@modelcontextprotocol/sdk/dist/cjs/client/index.js",
+          "sdkPackage": "node_modules/.pnpm/@modelcontextprotocol+sdk@1.32.0_zod@4.4.3/node_modules/@modelcontextprotocol/sdk/package.json",
+          "sdkVersion": "1.32.0",
+          "zodPackage": "node_modules/.pnpm/zod@4.4.3/node_modules/zod/package.json",
+          "zodVersion": "4.4.3"
+        },
+        {
+          "scope": "sdk/typescript",
+          "sdkEntry": "node_modules/.pnpm/@modelcontextprotocol+sdk@1.32.0_zod@3.25.76/node_modules/@modelcontextprotocol/sdk/dist/cjs/client/index.js",
+          "sdkPackage": "node_modules/.pnpm/@modelcontextprotocol+sdk@1.32.0_zod@3.25.76/node_modules/@modelcontextprotocol/sdk/package.json",
+          "sdkVersion": "1.32.0",
+          "zodPackage": "node_modules/.pnpm/zod@3.25.76/node_modules/zod/package.json",
+          "zodVersion": "3.25.76"
+        }
+      ],
+      "profile": "vendor-c37-sdk132-localnet-v2",
+      "repository": "modelcontextprotocol/conformance",
+      "schemaVersion": 1,
+      "sourcePins": {
+        ".npmrc": "13059b0ced8d64cf848c9b1419b17de40fb8e30a5b6d67929b0b8814f229c41b",
+        "package.json": "94413176fd205eaf3b714813338bd23fa23497d0bbefe5db48a276b9febb4d9a",
+        "pnpm-lock.yaml": "a6d7783e5c3e1f4f87f08e674170f6f12157d11c6946af669ac3b8d92c33eba8",
+        "scripts/mcp_conformance/sdk132_negative_oauth_reuse.ts": "af46e13d70e2dd3eb0008df1d8e343925ee7438860b34489728fc2cbab162ad3",
+        "scripts/verify-mcp-conformance-vendor.mjs": "31ce7c7772ea704de4f496a3a37f434f109bf0865f0fddee26e6f9f6abe028c6",
+        "third_party/mcp-conformance-patches/local-network-boundary.patch": "6a00eb547b040b8737482eb41007777c08a854a6c02f0fc356f734d3bace4a3d",
+        "third_party/mcp-conformance-patches/sdk-1.32-reference-clients.patch": "da28bd53e955eb7a5efb3826a8395c12603bc41e04e773176f3e3ac7ff30ebc3",
+        "third_party/mcp-conformance-upstream.json": "12f2449790c63fb674c27c2fd58cbbfc87dea10be963aa8908aa9f351e7e49e4",
+        "third_party/mcp-conformance/package-lock.json": "0bcde31f680dacec39d1f1105712ce7d252bde888da58b8db85dc48b116c2ffe",
+        "third_party/mcp-conformance/src/fixture-network.test.ts": "25dc708ba11e4473592f933538e12c63de6e1203ccb9b81e70546462bc28262c",
+        "third_party/mcp-conformance/src/fixture-network.ts": "3a3ca2fd1ac10a0da57afb153ca02c2a4773ddbdd240676f03a6482baf6a1d38"
+      },
+      "tree": "22eb98b99b522401dd1911dc2c2a55bee3547b50"
+    }
+  },
+  "migrationEvidence": {
+    "actualCaptureExit": 1,
+    "actualCaptureResultSha256": "2cec3ba589c904c0c633d061e9dd18a7acafdb1b8c0353a8d4f7c00a948caa3f",
+    "actualOutputSha256": "b93d2f42bc9e714d7bc04bcad032fc6756ab7ced29cd7d208b5ab99f625c4900",
+    "actualRawProductReportSha256": "8793a3d6785a1129a4ab3886585197348d1c1851bc7352ac3d3490e38c966f23",
+    "actualRawV1ProductReportSha256": "549604cc097cf565e8271a972037a38f36fa75876f3022d9e5ab40f88d0e23b1",
+    "actualTerminalSha256": "77a6f4f6e5dd88e5ac9751c74833064e19d5049b7ff4f9fd1d3c4d480a86b7fa",
+    "allRawIdentityStatusSetsEqualToActualV1": true,
+    "automaticApproval": false,
+    "canonicalDist": {
+      "index.js": "ff7ea0d4b8e3aba32684d7fb61a0f7d209a1d8d732aec997fc4efc763662492d"
+    },
+    "captureCompleted": true,
+    "captureJobId": "1a1841d7e0a-96a-3703",
+    "descriptorSha256": "81c9d77c66f68c5c12cc8392e1793c1e358a80334d3bff6dfd398b066d98aaa6",
+    "fullMcpGreen": false,
+    "historicalV1BaselineSha256": "c5045d5682f920bd9eca25a81f5d0d5160c12a0cd647d6c67ca88367365fd079",
+    "knownFailingIds": 18,
+    "normalCodexBytes": 378964384,
+    "normalCodexSha256": "077c9bda3b1b5ed76f8ead905f62e43f4659c5463b8b487895febb932c79e951",
+    "normalCodexSourceHead": "310c3c86a59472665c2bb4cf4fb1d515def9dd37",
+    "observedRuntime": {
+      "node": "v22.23.4",
+      "pnpm": "10.34.5"
+    },
+    "originalCaseCountsByMode": {
+      "2025-06-18": 5,
+      "2025-11-25": 18,
+      "2026-07-28": 32
+    },
+    "originalV1CompactPassingAndFailingListsExact": true,
+    "rawSkipObservations": [
+      {
+        "identity": {
+          "check_id": "sep-2243-client-includes-standard-headers",
+          "mode": "2026-07-28",
+          "scenario": "http-standard-headers",
+          "source": "official",
+          "transport": "official-http"
+        },
+        "statuses": [
+          "PASS",
+          "SKIP"
+        ]
+      },
+      {
+        "identity": {
+          "check_id": "sep-2575-client-declares-roots-capability",
+          "mode": "2026-07-28",
+          "scenario": "request-metadata",
+          "source": "official",
+          "transport": "official-http"
+        },
+        "statuses": [
+          "SKIP"
+        ]
+      },
+      {
+        "identity": {
+          "check_id": "sep-2575-client-declares-sampling-capability",
+          "mode": "2026-07-28",
+          "scenario": "request-metadata",
+          "source": "official",
+          "transport": "official-http"
+        },
+        "statuses": [
+          "SKIP"
+        ]
+      }
+    ],
+    "rawUniqueIds": 654,
+    "requiredPassingIds": 634,
+    "sourceHead": "06a7c9cac4d79d3b7655176e1a1e84e3f71ce878",
+    "sourcePaths": 9228,
+    "sourceRustIdenticalToNormalProducer": true,
+    "sourceTree": "5ce0eb34beec1486161e84e5464f1111ccdc0cc4"
+  },
+  "modernFeatureEnablement": true,
+  "officialConformance": {
+    "authenticationIncluded": true,
+    "gitRef": "c37eec888e1c6ff140af79987a40008548b7cc5f",
+    "repository": "modelcontextprotocol/conformance",
+    "scenarios": {
+      "2025-06-18": [
+        "initialize",
+        "tools_call",
+        "auth/token-endpoint-auth-basic",
+        "auth/token-endpoint-auth-post",
+        "auth/token-endpoint-auth-none"
+      ],
+      "2025-11-25": [
+        "initialize",
+        "tools_call",
+        "elicitation-sep1034-client-defaults",
+        "sse-retry",
+        "auth/metadata-default",
+        "auth/metadata-var1",
+        "auth/metadata-var2",
+        "auth/metadata-var3",
+        "auth/basic-cimd",
+        "auth/scope-from-www-authenticate",
+        "auth/scope-from-scopes-supported",
+        "auth/scope-omitted-when-undefined",
+        "auth/scope-step-up",
+        "auth/scope-retry-limit",
+        "auth/token-endpoint-auth-basic",
+        "auth/token-endpoint-auth-post",
+        "auth/token-endpoint-auth-none",
+        "auth/pre-registration"
+      ],
+      "2026-07-28": [
+        "tools_call",
+        "request-metadata",
+        "sep-2322-client-request-state",
+        "http-standard-headers",
+        "http-custom-headers",
+        "http-invalid-tool-headers",
+        "json-schema-ref-no-deref",
+        "auth/metadata-default",
+        "auth/metadata-var1",
+        "auth/metadata-var2",
+        "auth/metadata-var3",
+        "auth/basic-cimd",
+        "auth/scope-from-www-authenticate",
+        "auth/scope-from-scopes-supported",
+        "auth/scope-omitted-when-undefined",
+        "auth/scope-step-up",
+        "auth/scope-retry-limit",
+        "auth/token-endpoint-auth-basic",
+        "auth/token-endpoint-auth-post",
+        "auth/token-endpoint-auth-none",
+        "auth/pre-registration",
+        "auth/resource-mismatch",
+        "auth/offline-access-scope",
+        "auth/offline-access-not-supported",
+        "auth/authorization-server-migration",
+        "auth/iss-supported",
+        "auth/iss-not-advertised",
+        "auth/iss-supported-missing",
+        "auth/iss-wrong-issuer",
+        "auth/iss-unexpected",
+        "auth/iss-normalized",
+        "auth/metadata-issuer-mismatch"
+      ]
+    }
+  },
+  "requiredModes": [
+    "2025-06-18",
+    "2025-11-25",
+    "2026-07-28"
+  ],
+  "schemaVersion": 4,
+  "transports": [
+    "stdio",
+    "official-http"
+  ],
+  "versionCheck": {
+    "success": true
+  }
+}

@@ -323,18 +323,15 @@ def test_execution_rejects_an_incomplete_verifier_result(
 def test_local_network_profile_cannot_relabel_or_extract_a_v1_golden() -> None:
     historical = vendor_candidate()
     assert profiles.validate_metadata(historical) == profiles.VENDOR_PROFILE
-    candidate = deepcopy(historical)  # Metadata fixture, never an execution claim.
+    candidate = deepcopy(historical)
     candidate["conformanceProfile"] = profiles.LOCAL_NETWORK_PROFILE
-    candidate["executionIdentity"] = {
-        "identity": profiles.descriptor(profiles.LOCAL_NETWORK_PROFILE),
-        "descriptorSha256": profiles.LOCAL_NETWORK_DESCRIPTOR_SHA256,
-    }
-    assert profiles.validate_metadata(candidate) == profiles.LOCAL_NETWORK_PROFILE
-    gate = _evaluate_regression_gate(candidate, historical)
+    with pytest.raises(ValueError, match="vendor execution identity differs"):
+        profiles.validate_metadata(candidate)
+    with pytest.raises(ValueError, match="vendor execution identity differs"):
+        _compact_regression_baseline(candidate)
+    gate = _evaluate_regression_gate(profiles.local_network_baseline(), historical)
     assert gate["success"] is False
     assert "different conformance execution profiles" in gate["configurationErrors"][0]
-    with pytest.raises(ValueError, match="separately reviewed complete v2 capture"):
-        _compact_regression_baseline(candidate)
 
 
 def test_current_execution_refuses_v1_before_starting_a_verifier(tmp_path, monkeypatch) -> None:
@@ -343,3 +340,36 @@ def test_current_execution_refuses_v1_before_starting_a_verifier(tmp_path, monke
     monkeypatch.setattr(profiles.subprocess, "run", unexpected_run)
     with pytest.raises(ValueError, match="matching historical tool/source snapshot"):
         profiles.verify_execution(profiles.VENDOR_PROFILE, tmp_path / "index.js")
+
+
+@pytest.mark.parametrize(
+    "mutation", ["missing_pass", "regressed_pass", "missing_failure", "new_failure", "missing_scenario"]
+)
+def test_local_network_baseline_preservation_refuses_changed_facts(mutation) -> None:
+    report = deepcopy(profiles.local_network_baseline())  # Metadata fixture only.
+    if mutation in {"missing_pass", "regressed_pass"}:
+        identity = report["checks"]["passing"].pop(0)
+        if mutation == "regressed_pass":
+            report["checks"]["failing"].append(identity)
+    elif mutation == "missing_failure":
+        report["checks"]["failing"].pop(0)
+    elif mutation == "new_failure":
+        identity = deepcopy(report["checks"]["failing"][0])
+        identity["check_id"] += "-unknown-failure"
+        report["checks"]["failing"].append(identity)
+    else:
+        report["officialConformance"]["scenarios"]["2026-07-28"].pop()
+    with pytest.raises(ValueError):
+        _compact_regression_baseline(report)
+
+
+def test_local_network_reference_cannot_be_overwritten_or_widened(tmp_path, monkeypatch) -> None:
+    path = Path(profiles.__file__).with_name("regression-baseline-c37-sdk132-localnet-v2.json")
+    original = path.read_bytes()
+    with pytest.raises(ValueError, match="must remain unchanged"):
+        _write_compact_regression_baseline(profiles.local_network_baseline(), path)
+    assert path.read_bytes() == original
+    original_read = Path.read_bytes
+    monkeypatch.setattr(Path, "read_bytes", lambda current: original + b"\n" if current == path else original_read(current))
+    with pytest.raises(ValueError, match="code-owned local-network baseline changed"):
+        profiles.local_network_baseline()

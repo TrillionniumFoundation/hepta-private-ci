@@ -18,6 +18,7 @@ LOCAL_NETWORK_DESCRIPTOR_SHA256 = "81c9d77c66f68c5c12cc8392e1793c1e358a80334d3bf
 LEGACY_BASELINE_SHA256 = (
     "896630ee5f2c890152634e84a39d433f68eede8fff0b4ff99317800453b048ca"
 )
+LOCAL_NETWORK_BASELINE_SHA256 = "b05e4313172b5586bc24e362e0a959818bf5c93e714e1a1495f22015b7d3c7ee"
 MEASURED_BASELINE_SHA256 = (
     "c5045d5682f920bd9eca25a81f5d0d5160c12a0cd647d6c67ca88367365fd079"
 )
@@ -150,3 +151,10 @@ def required_fixed_checks() -> list[dict[str, str]]:
             ("official", "token-request"),
         )
     ]
+
+
+def local_network_baseline() -> dict[str, object]:
+    data = (_DIRECTORY / "regression-baseline-c37-sdk132-localnet-v2.json").read_bytes()
+    if hashlib.sha256(data).hexdigest() != LOCAL_NETWORK_BASELINE_SHA256:
+        raise ValueError("the code-owned local-network baseline changed")
+    return json.loads(data)
