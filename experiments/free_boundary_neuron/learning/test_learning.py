@@ -219,7 +219,9 @@ class LearningTests(unittest.TestCase):
                 (directory / "seed_900001_fixed_standard_scores.json").is_file()
             )
             self.assertTrue(
-                (directory / "seed_900001_fixed_fpt_checkpoint.json").is_file()
+                (
+                    directory / "seed_900001_fixed_first_passage_checkpoint.json"
+                ).is_file()
             )
             invalid = json.loads((directory / "INVALID_ATTEMPT.json").read_text())
             self.assertEqual(len(invalid["completed_arms"]), 1)
