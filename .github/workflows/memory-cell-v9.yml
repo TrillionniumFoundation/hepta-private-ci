@@ -1,0 +1,74 @@
+name: Memory cell V9 continual learning and migration
+
+on:
+  push:
+    branches:
+      - research/memory-cell-v9-generalization-20261028
+    paths:
+      - qualification/memory-cell-v9/VERIFY_REQUEST.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-v9-verification-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_TARGET_DIR: ${{ github.workspace }}/memory-v7-target
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest@0.9.131
+      - uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ${{ env.CARGO_TARGET_DIR }}
+          key: memory-v9-rust-1.95-${{ hashFiles('codex-rs/Cargo.lock') }}-${{ github.sha }}
+          restore-keys: |
+            memory-v9-rust-1.95-${{ hashFiles('codex-rs/Cargo.lock') }}-
+            memory-v8-rust-1.95-finalize-${{ hashFiles('codex-rs/Cargo.lock') }}-
+            memory-v8-rust-1.95-${{ hashFiles('codex-rs/Cargo.lock') }}-
+      - name: Prepare pinned runtime and frozen model transports
+        run: |
+          python3 qualification/memory-cell-v9/prepare_ci.py "$RUNNER_TEMP/memory-v9-runtime"
+          cat "$RUNNER_TEMP/memory-v9-runtime/github.env" >> "$GITHUB_ENV"
+      - name: Verify exact V9 source before final fix and format
+        run: python3 -B qualification/memory-cell-v9/ci_verify.py
+      - uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        if: always()
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ${{ env.CARGO_TARGET_DIR }}
+          key: memory-v9-rust-1.95-${{ hashFiles('codex-rs/Cargo.lock') }}-${{ github.sha }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-v9-verification-${{ github.sha }}
+          path: |
+            memory-v9-ci-output/
+            ${{ runner.temp }}/memory-v9-runtime/PREPARATION.json
+            ${{ runner.temp }}/memory-v9-runtime/V8_PREPARATION.json
+            ${{ runner.temp }}/memory-v9-runtime/V9_PREPARATION.json
+          if-no-files-found: error
+          retention-days: 30
