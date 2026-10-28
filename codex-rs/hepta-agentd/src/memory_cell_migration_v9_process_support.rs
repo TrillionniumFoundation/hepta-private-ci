@@ -135,7 +135,8 @@ pub(super) fn spec() -> Spec {
 pub(super) fn receiver_child() {
     let Spec::Receiver { root, manifest, crash } = spec() else { panic!("receiver spec") };
     let store = MemoryCellMigrationStoreV9::open(root, manifest).expect("receiver durable recovery");
-    let receiver = MemoryCellMigrationReceiverV9::new(store, DESTINATION.into(), source_key().verifying_key(), receiver_key());
+    let receiver = MemoryCellMigrationReceiverV9::new(store, DESTINATION.into(), source_key().verifying_key(), receiver_key())
+        .expect("receiver identity matches independently configured image destination");
     let listener = TcpListener::bind("127.0.0.1:0").expect("real loopback TCP listener");
     listener.set_nonblocking(true).expect("bounded accept loop");
     let stopped = Arc::new(AtomicBool::new(false));

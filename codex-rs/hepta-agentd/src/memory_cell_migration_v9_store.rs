@@ -46,7 +46,7 @@ struct Current {
 /// witness; this store does not manufacture one or grant reader admission.
 pub struct MemoryCellMigrationStoreV9 {
     root: PathBuf,
-    expected: MemoryCellMigrationManifestV9,
+    pub(super) expected: MemoryCellMigrationManifestV9,
     _lock: File,
 }
 

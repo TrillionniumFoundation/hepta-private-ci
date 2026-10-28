@@ -26,8 +26,9 @@ pub struct MemoryCellMigrationReceiverV9 {
 }
 
 impl MemoryCellMigrationReceiverV9 {
-    pub fn new(store: MemoryCellMigrationStoreV9, destination: String, source_key: VerifyingKey, receiver_key: SigningKey) -> Self {
-        Self { store, destination, source_key, receiver_key, traffic: Arc::new(Mutex::new(MemoryCellMigrationTrafficV9::default())) }
+    pub fn new(store: MemoryCellMigrationStoreV9, destination: String, source_key: VerifyingKey, receiver_key: SigningKey) -> Result<Self, String> {
+        if destination != store.expected.destination() { return Err("migration receiver destination differs from its configured image".into()); }
+        Ok(Self { store, destination, source_key, receiver_key, traffic: Arc::new(Mutex::new(MemoryCellMigrationTrafficV9::default())) })
     }
 
     pub fn traffic(&self) -> Result<MemoryCellMigrationTrafficV9, String> {

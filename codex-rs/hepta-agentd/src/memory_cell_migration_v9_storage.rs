@@ -41,6 +41,7 @@ pub(super) fn regular_or_absent(path: &Path) -> Result<(), String> {
 
 pub(super) fn read_bounded(path: &Path, maximum: usize) -> Result<Vec<u8>, String> {
     regular_or_absent(path)?;
+    if std::fs::canonicalize(path).map_err(failure)? != path { return Err("migration retained path has redirected parents".into()); }
     let mut raw = Vec::new();
     File::open(path).map_err(failure)?.take((maximum + 1) as u64).read_to_end(&mut raw).map_err(failure)?;
     if raw.len() > maximum { return Err("migration file bound exceeded".into()); }
