@@ -1,0 +1,313 @@
+{
+  "pending_commit": "8e09fee8a59f2de40acbb2595f01f648fe8b1ed8",
+  "verified_files": 51,
+  "all_exact": true,
+  "files": [
+    {
+      "path": ".github/workflows/cargo-deny.yml",
+      "bytes": 2036,
+      "git_blob": "9c9d1359d66c3e9e10618eccc0e914b981e3a88f",
+      "sha256": "61c86b33375212bb428ed3673bbfed492a41c1a2d132d124f7b2840a452cc3dc"
+    },
+    {
+      "path": "codex-rs/app-server/src/lib.rs",
+      "bytes": 78728,
+      "git_blob": "e26cae7122ef49023677fae310d8f817f96b2350",
+      "sha256": "d4919df3681bc06930864e64ba12e6f4002a9c5e92e24f25d4abffcf9ce41989"
+    },
+    {
+      "path": "codex-rs/core/src/session/mod.rs",
+      "bytes": 215795,
+      "git_blob": "24c3375a79eb058748d69f3ef39fed751b674919",
+      "sha256": "d16ad51556a4f4f481cccea9fc21cbb04649d7595dcd62fbb2a6c58d4dee6967"
+    },
+    {
+      "path": "codex-rs/core/src/session/terminal_event.rs",
+      "bytes": 4419,
+      "git_blob": "68a0a4afe29e8f20b8f125ff8238979bf93bd63d",
+      "sha256": "9b4db5911927bd477f842bbdc901517d3f55199df4c9fe7b7f6f98dc220f49f1"
+    },
+    {
+      "path": "codex-rs/core/src/session/tests.rs",
+      "bytes": 497138,
+      "git_blob": "065325ce3dd21801d0c241f1be20c59e478113a8",
+      "sha256": "d14491483442d936deb921218e637d7bd7ae4cad83da27f4372e0936648f192e"
+    },
+    {
+      "path": "codex-rs/core/src/session/tests/terminal_event_tests.rs",
+      "bytes": 8923,
+      "git_blob": "2ed38e90bbb6e57670897c2c92f15e88704a6515",
+      "sha256": "ec51185e184a479c898f788f4ca1cd6c154a2524ffd4320f1a27fbf74b318032"
+    },
+    {
+      "path": "codex-rs/core/src/tasks/mod.rs",
+      "bytes": 179917,
+      "git_blob": "19d71ea291ea2a052c3ba91efb965f3e21daee99",
+      "sha256": "9c8be7d120e58bef5ffe8958dbb06ca8efd94f2d4e7330dc645e49f7696c009a"
+    },
+    {
+      "path": "codex-rs/core/src/tasks/mod_tests.rs",
+      "bytes": 12206,
+      "git_blob": "2d5346fbeae84d1ee2c0d45ed3d71996cb5fc1ef",
+      "sha256": "2b02ca07cf67a981b591bd49100b41a55829795de453cd00b49af33af7e143cc"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "bytes": 23473,
+      "git_blob": "2ca3aacbba0bbf2eaee22e474c0dc7a99dd43c33",
+      "sha256": "06e168f88662514c6f338f00c2e845fd51b9f826b57df6043d4cb97cf7117400"
+    },
+    {
+      "path": "codex-rs/hepta-authbus/src/authority_schema_tests.rs",
+      "bytes": 3907,
+      "git_blob": "5066fb6ba4f2dbd025d593b6a0555de7ad82dec5",
+      "sha256": "ba517459cffde0cabbb87fc593cee22fb1b1e4d384744d1008ec93b94db1985b"
+    },
+    {
+      "path": "codex-rs/hepta-automation/BUILD.bazel",
+      "bytes": 2737,
+      "git_blob": "8545046b41b681f2990a9486fa69cd21d112a875",
+      "sha256": "9aef6ef59546619f224bfba4ae053fba2d50e63674d41c547eabf4c21875b5fc"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+      "bytes": 8033,
+      "git_blob": "fe6e7e8457e48af8dc248f8af36664df8296239c",
+      "sha256": "0a0f483e1d188e651d595fc03e26c9c1d4e40679af4bd74d1f9703470b113bf4"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/automation.rs",
+      "bytes": 51795,
+      "git_blob": "f141551e3ec6b153f20c746c20568b4cc2edcbc7",
+      "sha256": "8ac05ff635d5a351f091221eec2b2536137185095e1368e4325a55850112559b"
+    },
+    {
+      "path": "codex-rs/hepta-codex-adapter/src/lib_tests.rs",
+      "bytes": 19992,
+      "git_blob": "bbc93b4b665d4c3cf6d75a9bee1b57fe596b2a45",
+      "sha256": "f652eb77679b20dbb403020452b4eaf75d2709f345fbe8c63a828ea8e113b770"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs",
+      "bytes": 20757,
+      "git_blob": "317ae1550e17083641b1a2fefe94275d0bd43c03",
+      "sha256": "0e17db1b931ad42d13941502cf57ab1951ec9a442b00150b390701f778b09ea3"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/paired_owner_tests.rs",
+      "bytes": 12659,
+      "git_blob": "dc518cc072e3334d443b714dd49599221d6cf8b7",
+      "sha256": "b63eb970d03084af691c9fa9ba56daf37b2c1518cc2f42c5203deec0a6a0967e"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_schema_tests.rs",
+      "bytes": 2207,
+      "git_blob": "c7d3364dc894273164eac452726fdc505b53c429",
+      "sha256": "c99646a38854d84d2d781eb040b70487e3805e8e7cf6302b1859a240e1a0f2d4"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+      "bytes": 40711,
+      "git_blob": "4373abad74b9ee121d01b4cc606c1d390997fcc1",
+      "sha256": "abb813f058c24c4b36beefc60f60c507d8896368e22553787de3eed6be48315e"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/NEXT_FIELD_CANDIDATE_PROPOSAL_20261028.md",
+      "bytes": 11326,
+      "git_blob": "7c5d542bb7d156e6a08c575e130d3518087f2d70",
+      "sha256": "5ab58266401ebd12d9ffa4a2d1c1dab11a5d052a6a5ca6d143a0813eab202ed0"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/ci_repair_20261028/BASELINE_COMPARISON_CHECK.json",
+      "bytes": 269,
+      "git_blob": "35f9731f802ccee586d45446b0b262336715bdf4",
+      "sha256": "80e6fce90ad2efdfa3e14b7966d8d0f2946515a23a1e21f7fb5423bc17a9489c"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/ci_repair_20261028/BASE_PLATFORM_EXCERPTS.json",
+      "bytes": 57729,
+      "git_blob": "80b2ddd61179dd76c5f3829ac1f04e1c0d8ef6ad",
+      "sha256": "da67564ea73deb6e2d9f321f1a18f018af0520934dd22a7c0ab355391a3c6f76"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/ci_repair_20261028/CORE_TERMINAL_INDEPENDENT_REVIEW.json",
+      "bytes": 4692,
+      "git_blob": "68b5c85cfc69b0fa6a086477464ba3f05c729523",
+      "sha256": "b7aec041b7dc704070a05b0ac1b049904e91817651b89ec21753fe0ca6dcee5f"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/ci_repair_20261028/CORE_TERMINAL_PUBLICATION_REVIEW.md",
+      "bytes": 9680,
+      "git_blob": "23293dc30e6dddf46805f03c2b070bf36273c858",
+      "sha256": "e8f1d1347a49134610f1e4975f5fb0964d1fcd1cb823005020f100b38d31a0cc"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/ci_repair_20261028/DELIVERY_PLATFORM_EXCERPTS.json",
+      "bytes": 57092,
+      "git_blob": "48d2783ec8ca28e4db5e8d3262b86cab370d8218",
+      "sha256": "e33ac908fd7405bc8a360081cd55ee2591a5efcd2352e061b9da4a31e3392752"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/ci_repair_20261028/ENGINEERING_STAGES.json",
+      "bytes": 8814,
+      "git_blob": "4815d63c396c7c0959c0225118430d7e6b764df2",
+      "sha256": "b9634d2dae56738a7133c57e215df42fdc5accdb16ed515e4c9702989b16f03c"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/ci_repair_20261028/FINAL_FORMAT_AND_DIFF_CHECK.json",
+      "bytes": 344,
+      "git_blob": "3a1c244f28020d034a114c66dfe2fe7b74bcf27f",
+      "sha256": "624b0022a3dce6db3120ce8804414baa04636efc40b9f364a5e6a1e81ae98b4e"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/ci_repair_20261028/FIXTURE_AND_DIAGNOSTIC_REVIEW.json",
+      "bytes": 7002,
+      "git_blob": "9b1d5c63c60e2f724b35dd140926f1e935cc6669",
+      "sha256": "e3dd2e21bad4ae319a1ca6b4e6853a0af04b80dc789e072ac1570004ddb5633f"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/ci_repair_20261028/JUST_FMT_RECEIPT.json",
+      "bytes": 376,
+      "git_blob": "38efda9488301bdd7ba78aa2bb3b5b4f117a0342",
+      "sha256": "44053b3e5d99e7fb9035bf333b7b284c411e41c4887de90de91b2332782bf5de"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/ci_repair_20261028/LOCAL_METADATA_CACHE_RECLAIM.json",
+      "bytes": 407,
+      "git_blob": "f37d8e38c069d046d278ffdd64ea35f2b6bef986",
+      "sha256": "2727ba83d8c2d7cdb3844e9edf028be4f9f9f7adde810f176c7be1cb05330d03"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/ci_repair_20261028/REMAINING_METADATA_CACHE_RECLAIM.json",
+      "bytes": 672,
+      "git_blob": "d089d57e7a1e50535d93cbff81a6031bdc5717d5",
+      "sha256": "a0b0a8825c62eca81d60fdc5adfc8128338591f8b311feaeaaad3dcecea1f0e7"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/ci_repair_20261028/RETRIEVED_LOG_IDENTITIES.json",
+      "bytes": 1354,
+      "git_blob": "1e1200b51a0c1a02d6ffdac1d6047f267e038476",
+      "sha256": "35fe736f239767047f9288b0825b8df89ccb00274cea8a8e7ef80e4e184c0ecf"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/ci_repair_20261028/TERMINAL_CHECKS_AT_5B7BEF4.json",
+      "bytes": 14716,
+      "git_blob": "04d608fc1f03d34706c5e5242168a94e2373a2b8",
+      "sha256": "d7fb1e9de161357f418540ab5ac675de4948d79bf44ef108568b6ca955b5345b"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/ci_repair_20261028/TERMINAL_WINDOWS_FAILURES.json",
+      "bytes": 35745,
+      "git_blob": "4fffa281d92b87d7487b983f4aaab0d35a9c4d04",
+      "sha256": "0bbb539ccc6514941f85bb6138cab722bfd1169ca305d477622642f58eece798"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/ci_repair_20261028/V1_MIGRATION_SQL_CHECK.json",
+      "bytes": 371,
+      "git_blob": "62be01c42836c90551f40972afe2ec7fef2d007e",
+      "sha256": "4e89dc98feefc8359d60ab54883d8e4ca264d43c9eab237d7778968a04bd8cb3"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/ci_repair_20261028/VERIFIED_RESTORED_DUPLICATE_RECLAIM.json",
+      "bytes": 1147,
+      "git_blob": "2c3b3b8e270f664a79a6ed6cd833518555b17a99",
+      "sha256": "9d4fccd237de07ef8b5450f65259a7e29f7b9062b2a98db4adf9338f4aeb50f7"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/ci_repair_20261028/WINDOWS_PLATFORM_BOUNDARY_REVIEW.json",
+      "bytes": 41027,
+      "git_blob": "92a1ef693e59448647b94712ae93c53a1733c0ea",
+      "sha256": "7e30947bed10fe8d2ab16c4b38608f68110baf22d1e0478c485e1faa85fa1e8a"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/historical_dispatch_20261028/FIRST_EXECUTION_REVIEW.json",
+      "bytes": 26510,
+      "git_blob": "78992a3c8b79e276cce72b4941273b683b439823",
+      "sha256": "c34dd0e58b58c0949ebda52b4c42828514fa4dd907251ef3956dd77139608b23"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/historical_dispatch_20261028/PRE_EXECUTION_INVESTIGATION.json",
+      "bytes": 19420,
+      "git_blob": "f1992bfe5547d9f11b9c0a2f36ec1f8d8d5b969a",
+      "sha256": "a31270cd09468b6604117d03aedf48575b27721b2ad13290c747046e2551af14"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/historical_dispatch_20261028/PRE_EXECUTION_REVIEW.json",
+      "bytes": 1797,
+      "git_blob": "2dd68c65bb0a8872fbada22eebabc03d6cba937f",
+      "sha256": "d38f48c563e2439402acc329256c8203308aac3627ecbbf8b70386860016d0ed"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/historical_dispatch_20261028/PROTOCOL.json",
+      "bytes": 14302,
+      "git_blob": "d99ecd1f6fcee597d0dc655c2e82b8009f4e6d32",
+      "sha256": "667be947b7929a9fdaf97296f07362266014967fef1832abb424f9a10cb3c23d"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/historical_dispatch_20261028/run.py",
+      "bytes": 24038,
+      "git_blob": "2b6858d06b29577f58ec06f17c942f5bfda86be2",
+      "sha256": "51fc2fbe5552a0921f7f3fc23297581dacd8dcc115a2d85671bdefe9280d72d0"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/historical_dispatch_20261028/tests.py",
+      "bytes": 4793,
+      "git_blob": "03b6b8234a195e78c4c59e0bc819bddf9b0ecf5e",
+      "sha256": "83e39701b818bb806ff7174b25bcf7773d8fdaac10767ad76555827c92beda80"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/historical_fixed_inputs_20261028/PRE_EXECUTION_REVIEW.json",
+      "bytes": 13858,
+      "git_blob": "127816b2f094dea67251f0099eda6e6d873bb4cc",
+      "sha256": "538d58ee58e93a5baea4d202d0a2a00764b224aebfe9469cc2682fee05e63a0a"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/historical_fixed_inputs_20261028/PROTOCOL.json",
+      "bytes": 25238,
+      "git_blob": "dd85764e515bb189926e920d0f6e516ca9188af7",
+      "sha256": "7cb77b9bf7ce7c901eb13d73389eb20b46fb40dcd44e99241aa3033f39127449"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/historical_fixed_inputs_20261028/fixed_inputs_common.py",
+      "bytes": 15790,
+      "git_blob": "dcfb8a6d9cc3897bc054f38e5344833a104aa529",
+      "sha256": "9e0db9f44cd7fac60822572b103c4d33a1df770e7c6e4024079f249f69317784"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/historical_fixed_inputs_20261028/fixed_inputs_score.py",
+      "bytes": 10807,
+      "git_blob": "13469174cf09c9d143a0bb89efd192f1c72c42a2",
+      "sha256": "61f25fa42fbefc9baf8ab5e519fd3ac0e9a4fce153e958bacc59c1395f7b58a2"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/historical_fixed_inputs_20261028/fixed_inputs_snapshot.py",
+      "bytes": 9391,
+      "git_blob": "445d82ee5f1209c798094867ea2803158149273c",
+      "sha256": "59d0005f2ca14172bc228ca38688674f32ca2c74328a2643c4a006b3073b4441"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/historical_fixed_inputs_20261028/run.py",
+      "bytes": 19974,
+      "git_blob": "0542d54573185470b97f377304a889c8428ee2a2",
+      "sha256": "a920ac7616e25caef02a5dc7969ce3d395593edd9034fc0c2265f6ca4ce84a14"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/historical_fixed_inputs_20261028/tests.py",
+      "bytes": 17320,
+      "git_blob": "dffe9259dd595dcb1ca96a140d84f8b07beb5feb",
+      "sha256": "2ff7c95b3a250d1dc126e26dc40b4433e6792f6a09557883ccd784ba87ce26ee"
+    },
+    {
+      "path": "scripts/capture_cargo_deny_diagnostic.py",
+      "bytes": 12693,
+      "git_blob": "f7ec2bbd63b81a11b083b874ae7d439da89e8574",
+      "sha256": "632978b8306a7fd7d5f3dcee65b9abfc55c34ad045992bc3b1f14a84984679cb"
+    },
+    {
+      "path": "scripts/test_capture_cargo_deny_diagnostic.py",
+      "bytes": 10525,
+      "git_blob": "5697d0da9ed41c5ab3ddedb16fd6af02e1503d79",
+      "sha256": "bfb252a1abcf597a47923d8aa66b669cd6f4601de07fc2bc7d3cb893b02a8465"
+    }
+  ]
+}

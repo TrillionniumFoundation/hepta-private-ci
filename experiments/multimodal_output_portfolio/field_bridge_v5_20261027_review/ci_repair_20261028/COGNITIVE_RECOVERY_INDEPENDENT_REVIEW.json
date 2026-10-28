@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "independent_cognitive_recovery_reconciliation_review",
+  "recorded_at_utc": "2026-10-28T05:43:03.330114+00:00",
+  "reviewer": "hepta_architecture",
+  "worktree_base_commit": "5b7bef4e5788f2cea2546f0cb620af471b4fbcf7",
+  "files": [
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "bytes": 27100,
+      "sha256": "9f35667ca2285e66c212b2bad4a0a67202162d64a41e06f161dee4525666282f"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+      "bytes": 23396,
+      "sha256": "aad8d09ce18bfadd56dbd78d0ebb824f76cb1483af7e159e81dba968fe27eba5"
+    }
+  ],
+  "result": "PASS_STATIC_SCOPED",
+  "blocking_findings": [],
+  "scope": "Review of failed-recovery active-pointer reconciliation, exclusive guard lifetime, focused regression tests, and the production caller error conversion.",
+  "branch_review": [
+    {
+      "resolution": "Ok(candidate)",
+      "result": "Indeterminate",
+      "effect": "Preserves candidate and sidecars; retains existing post-rename uncertainty behavior."
+    },
+    {
+      "resolution": "Ok(other)",
+      "result": "Original recovery error",
+      "effect": "Uses the existing best-effort candidate/sidecar cleanup policy; active database is not changed."
+    },
+    {
+      "resolution": "Err(resolution_error)",
+      "result": "Indeterminate including both original recovery error and resolution error",
+      "effect": "No candidate, sidecar or pointer mutation; an unreadable or invalid pointer is not treated as proof that publication never occurred."
+    }
+  ],
+  "guard_lifetime": {
+    "previous_finding": "The prior inner async block moved the sole exclusive guard into its eventual successful store; an error could finish/drop that future before the outer reconciliation ran.",
+    "resolution": "The outer scope now owns Arc<CognitiveStoreOpenGuard>. The inner future borrows that Arc and clones it only into a successful store. The outer match completes real reconciliation before an explicit drop(exclusive_guard).",
+    "error_path": "The same underlying File-backed exclusive lock remains held through pointer resolution and any existing cleanup; no second lock or changed lock order is introduced.",
+    "success_path": "The returned store retains an Arc clone of the same guard after the outer reference is dropped.",
+    "early_question_mark": "Early errors after acquisition unwind the outer Arc normally; no forget, leaked reference or permanent extra ownership is introduced.",
+    "conclusion_basis": "Static Rust ownership and scope analysis; the synchronous reconciliation interval was not dynamically probed."
+  },
+  "caller_review": {
+    "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+    "operation": "AgentdProductionWriterHost::open_with_recovery",
+    "finding": "CognitiveStore returns the typed Indeterminate error. Agentd converts its Display text to AgentdError::Protocol and returns via ?, before cloning a store or constructing the production writer. The path has no ordinary writable CognitiveStore::open fallback."
+  },
+  "tests_reviewed": [
+    {
+      "name": "corrupt_active_pointer_preserves_candidate_and_pointer_bytes",
+      "finding": "Creates a real private pointer with invalid content, verifies the specific Corrupt resolution error, and compares the full RecoveryTreeImage before/after reconciliation. Snapshot covers candidate, three sidecars, pointer bytes and captured metadata."
+    },
+    {
+      "name": "known_unpublished_candidate_is_removed_without_changing_active_database",
+      "finding": "Verifies known-active original path, normal cleanup of the candidate and three sidecars, unchanged original bytes, absence of a newly created pointer, and preservation of the original error."
+    },
+    {
+      "name": "post_rename_publication_failure_is_indeterminate_and_retains_candidate",
+      "finding": "Verifies the original active path before publication and requires the real active path to equal the candidate afterward. Only then may an actual late error or injected post-rename error exercise reconciliation; an earlier failure cannot satisfy the test."
+    },
+    {
+      "name": "predecessor_witness_is_rejected_and_current_witness_recovers",
+      "finding": "Existing failed stale-cut recovery followed by valid-current recovery checks that an error does not permanently retain the recovery fence, when executed."
+    },
+    {
+      "name": "exact_current_cut_recovers_writable_generation_and_persists_activation",
+      "finding": "Existing successful recovered writes and reopening after drop remain unchanged. It does not separately assert that a second open is blocked while the recovered store is live."
+    },
+    {
+      "name": "writable_recovery_requires_exclusive_store_fence",
+      "finding": "Existing test requires recovery to be rejected while an ordinary store holds its shared fence; it is not an observation of the inner failure-cleanup interval."
+    }
+  ],
+  "validation": {
+    "independent_final_file_hashes": "MATCH",
+    "root_reported_coordinated_just_fmt": {
+      "observed_by": "root",
+      "at_utc": "2026-10-28T05:41:37Z",
+      "exit_code": 0
+    },
+    "root_reported_diff_check_exit_code": 0,
+    "reviewer_compilation_executed": false,
+    "reviewer_native_tests_executed": false,
+    "model_calls": 0,
+    "source_edits_by_reviewer": false
+  },
+  "primary_language_references": [
+    {
+      "url": "https://doc.rust-lang.org/reference/expressions/block-expr.html#async-blocks",
+      "relevance": "Async block capture modes are inferred from body usage; ? returns from the generated future."
+    },
+    {
+      "url": "https://doc.rust-lang.org/reference/destructors.html#drop-scopes",
+      "relevance": "Owned values and their fields are dropped on leaving their scopes."
+    }
+  ],
+  "limits": [
+    "This is a static scoped approval, not a successful Rust build or native test run.",
+    "Windows ACL/private-owner qualification and general directory-durability equivalence are unchanged.",
+    "The old best-effort cleanup policy for a known different active database is retained; this patch does not redesign cleanup.",
+    "Final native CI must validate the registered source before claiming execution closure."
+  ],
+  "qualification": false,
+  "all_platform_blockers_closed": false
+}
