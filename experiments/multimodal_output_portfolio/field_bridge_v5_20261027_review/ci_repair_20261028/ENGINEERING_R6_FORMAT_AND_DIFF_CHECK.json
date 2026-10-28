@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-28T10:39:37.599827+00:00",
+  "source_head": "f20db50ec8f891d286465e635c68e83749b9b3b4",
+  "format_command": "just fmt",
+  "cwd": "/workspace/scratch/e8a4dc33549f/hepta/codex-rs",
+  "format_exit_code": 0,
+  "format_stdout_bytes": 0,
+  "format_stderr_bytes": 0,
+  "format_tool_result_chunk": "d12dcb",
+  "pre_format_validation_sha256": "23b5e7096e2f6882ee3116110b71e352196a15ae032c05a770b569451a9a5ee2",
+  "pre_format_small_tests_passed": 17,
+  "post_format_tests_executed": 0,
+  "sources": {
+    ".github/workflows/hepta-field-maintenance.yml": {
+      "before_sha256": "cc571cbf9cdefa4240153b158fe4d51b7176801fbd3f785c449b23ea9f3fae13",
+      "after_sha256": "cc571cbf9cdefa4240153b158fe4d51b7176801fbd3f785c449b23ea9f3fae13",
+      "bytes": 4187,
+      "bytes_unchanged": true,
+      "yaml_semantics_unchanged": true
+    },
+    "scripts/run_hepta_field_maintenance.py": {
+      "before_sha256": "f5bee76ac44652f9802530a22af572cde80b044aff24f32097c82ed07b713948",
+      "after_sha256": "f5bee76ac44652f9802530a22af572cde80b044aff24f32097c82ed07b713948",
+      "bytes": 18856,
+      "bytes_unchanged": true,
+      "ast_unchanged": true,
+      "ast_sha256": "d84055fd322901befa90d7b88c2f8f8b2a80899cd92a39a0dd2912ef8eb4175b"
+    },
+    "scripts/test_run_hepta_field_maintenance.py": {
+      "before_sha256": "0014e5e15f90d034bb3fea2ec0af4acec8bc8cef63f7e2902e595c57c81db32b",
+      "after_sha256": "0014e5e15f90d034bb3fea2ec0af4acec8bc8cef63f7e2902e595c57c81db32b",
+      "bytes": 15264,
+      "bytes_unchanged": true,
+      "ast_unchanged": true,
+      "ast_sha256": "f64bf6ef1b21a35b16933df3a9344011fba12e7b8754c0e8f23fdedff457ae77"
+    },
+    "codex-rs/hepta-fleet/src/registry_tests.rs": {
+      "before_sha256": "6db82231295c15948fdba723b58776e312741f171a5e146f5618bc5ee3e7610c",
+      "after_sha256": "6db82231295c15948fdba723b58776e312741f171a5e146f5618bc5ee3e7610c",
+      "bytes": 11781,
+      "bytes_unchanged": true
+    }
+  },
+  "collector_unchanged": {
+    "path": "scripts/capture_cargo_deny_diagnostic.py",
+    "bytes": 15062,
+    "sha256": "c040903cab7a58bcab1c690958555ace26a33c7ce41290d92216b5b68684e34f"
+  },
+  "git_diff_check_exit_code": 0,
+  "git_diff_check_stdout_bytes": 0,
+  "git_diff_check_stderr_bytes": 0,
+  "native_generation": "PENDING",
+  "scientific_candidate_status": "NOT_REGISTERED_NOT_EXECUTED",
+  "scientific_admission": false
+}

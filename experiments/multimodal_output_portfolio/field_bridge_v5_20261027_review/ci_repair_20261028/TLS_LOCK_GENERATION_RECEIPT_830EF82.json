@@ -1,0 +1,1122 @@
+{
+  "schema_version": 1,
+  "mode": "locks",
+  "source_head": "830ef82a76050814e5a131079c021ab566a5abcf",
+  "ref": "refs/heads/research/parameter-field-maintenance-20261028",
+  "run_id": "40673973359",
+  "run_attempt": "1",
+  "commands": [
+    {
+      "label": "identity",
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "retention": {
+        "strategy": "nonoverlapping_prefix_and_tail",
+        "offsets": "zero_based_half_open_bytes",
+        "limit_bytes_per_stream": 65536,
+        "prefix_limit_bytes_per_stream": 49152,
+        "tail_limit_bytes_per_stream": 16384,
+        "combined_limit_bytes": 131072,
+        "combined_retained_bytes": 82
+      },
+      "streams": {
+        "stdout": {
+          "observed_bytes": 82,
+          "observed_sha256": "5bf3dd5417e1419cf56781cf11cbdcbee41f4f3a563b7119c90ac12ec7c73caa",
+          "retained_bytes": 82,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 82,
+            "end": 82
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "identity.stdout.log",
+            "start": 0,
+            "end": 82,
+            "bytes": 82,
+            "sha256": "5bf3dd5417e1419cf56781cf11cbdcbee41f4f3a563b7119c90ac12ec7c73caa"
+          },
+          "tail": {
+            "path": "identity.stdout.tail.log",
+            "start": 82,
+            "end": 82,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "stderr": {
+          "observed_bytes": 0,
+          "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "retained_bytes": 0,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 0,
+            "end": 0
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "identity.stderr.log",
+            "start": 0,
+            "end": 0,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "tail": {
+            "path": "identity.stderr.tail.log",
+            "start": 0,
+            "end": 0,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      }
+    },
+    {
+      "label": "before_status",
+      "command": [
+        "git",
+        "status",
+        "--porcelain",
+        "-uall"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "retention": {
+        "strategy": "nonoverlapping_prefix_and_tail",
+        "offsets": "zero_based_half_open_bytes",
+        "limit_bytes_per_stream": 65536,
+        "prefix_limit_bytes_per_stream": 49152,
+        "tail_limit_bytes_per_stream": 16384,
+        "combined_limit_bytes": 131072,
+        "combined_retained_bytes": 0
+      },
+      "streams": {
+        "stdout": {
+          "observed_bytes": 0,
+          "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "retained_bytes": 0,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 0,
+            "end": 0
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "before_status.stdout.log",
+            "start": 0,
+            "end": 0,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "tail": {
+            "path": "before_status.stdout.tail.log",
+            "start": 0,
+            "end": 0,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "stderr": {
+          "observed_bytes": 0,
+          "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "retained_bytes": 0,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 0,
+            "end": 0
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "before_status.stderr.log",
+            "start": 0,
+            "end": 0,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "tail": {
+            "path": "before_status.stderr.tail.log",
+            "start": 0,
+            "end": 0,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      }
+    },
+    {
+      "label": "rustc_version",
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "retention": {
+        "strategy": "nonoverlapping_prefix_and_tail",
+        "offsets": "zero_based_half_open_bytes",
+        "limit_bytes_per_stream": 1048576,
+        "prefix_limit_bytes_per_stream": 786432,
+        "tail_limit_bytes_per_stream": 262144,
+        "combined_limit_bytes": 2097152,
+        "combined_retained_bytes": 36
+      },
+      "streams": {
+        "stdout": {
+          "observed_bytes": 36,
+          "observed_sha256": "f4d034f5660bb49f22bfcba3f3445be67e25b704c193ff421b53863b4faee148",
+          "retained_bytes": 36,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 36,
+            "end": 36
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "rustc_version.stdout.log",
+            "start": 0,
+            "end": 36,
+            "bytes": 36,
+            "sha256": "f4d034f5660bb49f22bfcba3f3445be67e25b704c193ff421b53863b4faee148"
+          },
+          "tail": {
+            "path": "rustc_version.stdout.tail.log",
+            "start": 36,
+            "end": 36,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "stderr": {
+          "observed_bytes": 0,
+          "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "retained_bytes": 0,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 0,
+            "end": 0
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "rustc_version.stderr.log",
+            "start": 0,
+            "end": 0,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "tail": {
+            "path": "rustc_version.stderr.tail.log",
+            "start": 0,
+            "end": 0,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      }
+    },
+    {
+      "label": "cargo_version",
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "retention": {
+        "strategy": "nonoverlapping_prefix_and_tail",
+        "offsets": "zero_based_half_open_bytes",
+        "limit_bytes_per_stream": 1048576,
+        "prefix_limit_bytes_per_stream": 786432,
+        "tail_limit_bytes_per_stream": 262144,
+        "combined_limit_bytes": 2097152,
+        "combined_retained_bytes": 36
+      },
+      "streams": {
+        "stdout": {
+          "observed_bytes": 36,
+          "observed_sha256": "c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5",
+          "retained_bytes": 36,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 36,
+            "end": 36
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "cargo_version.stdout.log",
+            "start": 0,
+            "end": 36,
+            "bytes": 36,
+            "sha256": "c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5"
+          },
+          "tail": {
+            "path": "cargo_version.stdout.tail.log",
+            "start": 36,
+            "end": 36,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "stderr": {
+          "observed_bytes": 0,
+          "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "retained_bytes": 0,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 0,
+            "end": 0
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "cargo_version.stderr.log",
+            "start": 0,
+            "end": 0,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "tail": {
+            "path": "cargo_version.stderr.tail.log",
+            "start": 0,
+            "end": 0,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      }
+    },
+    {
+      "label": "just_version",
+      "command": [
+        "just",
+        "--version"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "retention": {
+        "strategy": "nonoverlapping_prefix_and_tail",
+        "offsets": "zero_based_half_open_bytes",
+        "limit_bytes_per_stream": 1048576,
+        "prefix_limit_bytes_per_stream": 786432,
+        "tail_limit_bytes_per_stream": 262144,
+        "combined_limit_bytes": 2097152,
+        "combined_retained_bytes": 12
+      },
+      "streams": {
+        "stdout": {
+          "observed_bytes": 12,
+          "observed_sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87",
+          "retained_bytes": 12,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 12,
+            "end": 12
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "just_version.stdout.log",
+            "start": 0,
+            "end": 12,
+            "bytes": 12,
+            "sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87"
+          },
+          "tail": {
+            "path": "just_version.stdout.tail.log",
+            "start": 12,
+            "end": 12,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "stderr": {
+          "observed_bytes": 0,
+          "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "retained_bytes": 0,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 0,
+            "end": 0
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "just_version.stderr.log",
+            "start": 0,
+            "end": 0,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "tail": {
+            "path": "just_version.stderr.tail.log",
+            "start": 0,
+            "end": 0,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      }
+    },
+    {
+      "label": "bazel_version",
+      "command": [
+        "bazel",
+        "--version"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "retention": {
+        "strategy": "nonoverlapping_prefix_and_tail",
+        "offsets": "zero_based_half_open_bytes",
+        "limit_bytes_per_stream": 1048576,
+        "prefix_limit_bytes_per_stream": 786432,
+        "tail_limit_bytes_per_stream": 262144,
+        "combined_limit_bytes": 2097152,
+        "combined_retained_bytes": 115
+      },
+      "streams": {
+        "stdout": {
+          "observed_bytes": 12,
+          "observed_sha256": "f4da09040965d6a7e4fd0a6f9c4a494322acd34f2669c158c0abddac576718e8",
+          "retained_bytes": 12,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 12,
+            "end": 12
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "bazel_version.stdout.log",
+            "start": 0,
+            "end": 12,
+            "bytes": 12,
+            "sha256": "f4da09040965d6a7e4fd0a6f9c4a494322acd34f2669c158c0abddac576718e8"
+          },
+          "tail": {
+            "path": "bazel_version.stdout.tail.log",
+            "start": 12,
+            "end": 12,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "stderr": {
+          "observed_bytes": 103,
+          "observed_sha256": "7c791a29d7a999c525ffdcc19a11a47a0ef0c65a400a4e356576f370f5ed8742",
+          "retained_bytes": 103,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 103,
+            "end": 103
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "bazel_version.stderr.log",
+            "start": 0,
+            "end": 103,
+            "bytes": 103,
+            "sha256": "7c791a29d7a999c525ffdcc19a11a47a0ef0c65a400a4e356576f370f5ed8742"
+          },
+          "tail": {
+            "path": "bazel_version.stderr.tail.log",
+            "start": 103,
+            "end": 103,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      }
+    },
+    {
+      "label": "update_rustls",
+      "command": [
+        "cargo",
+        "update",
+        "-p",
+        "rustls@0.23.45",
+        "--precise",
+        "0.23.46"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "retention": {
+        "strategy": "nonoverlapping_prefix_and_tail",
+        "offsets": "zero_based_half_open_bytes",
+        "limit_bytes_per_stream": 1048576,
+        "prefix_limit_bytes_per_stream": 786432,
+        "tail_limit_bytes_per_stream": 262144,
+        "combined_limit_bytes": 2097152,
+        "combined_retained_bytes": 1649
+      },
+      "streams": {
+        "stdout": {
+          "observed_bytes": 0,
+          "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "retained_bytes": 0,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 0,
+            "end": 0
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "update_rustls.stdout.log",
+            "start": 0,
+            "end": 0,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "tail": {
+            "path": "update_rustls.stdout.tail.log",
+            "start": 0,
+            "end": 0,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "stderr": {
+          "observed_bytes": 1649,
+          "observed_sha256": "22d8bbe80ebcd0e20d84d0aac393fe9bef5c3c4c5c2f388eebcc72b0ab5b6a22",
+          "retained_bytes": 1649,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 1649,
+            "end": 1649
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "update_rustls.stderr.log",
+            "start": 0,
+            "end": 1649,
+            "bytes": 1649,
+            "sha256": "22d8bbe80ebcd0e20d84d0aac393fe9bef5c3c4c5c2f388eebcc72b0ab5b6a22"
+          },
+          "tail": {
+            "path": "update_rustls.stderr.tail.log",
+            "start": 1649,
+            "end": 1649,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      }
+    },
+    {
+      "label": "update_rustls-webpki",
+      "command": [
+        "cargo",
+        "update",
+        "-p",
+        "rustls-webpki@0.103.15",
+        "--precise",
+        "0.103.16"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "retention": {
+        "strategy": "nonoverlapping_prefix_and_tail",
+        "offsets": "zero_based_half_open_bytes",
+        "limit_bytes_per_stream": 1048576,
+        "prefix_limit_bytes_per_stream": 786432,
+        "tail_limit_bytes_per_stream": 262144,
+        "combined_limit_bytes": 2097152,
+        "combined_retained_bytes": 189
+      },
+      "streams": {
+        "stdout": {
+          "observed_bytes": 0,
+          "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "retained_bytes": 0,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 0,
+            "end": 0
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "update_rustls-webpki.stdout.log",
+            "start": 0,
+            "end": 0,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "tail": {
+            "path": "update_rustls-webpki.stdout.tail.log",
+            "start": 0,
+            "end": 0,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "stderr": {
+          "observed_bytes": 189,
+          "observed_sha256": "c44d1c381643cd09b95b0ea3e62a9d63d3563eb467fa77429ecbbbda869ce031",
+          "retained_bytes": 189,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 189,
+            "end": 189
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "update_rustls-webpki.stderr.log",
+            "start": 0,
+            "end": 189,
+            "bytes": 189,
+            "sha256": "c44d1c381643cd09b95b0ea3e62a9d63d3563eb467fa77429ecbbbda869ce031"
+          },
+          "tail": {
+            "path": "update_rustls-webpki.stderr.tail.log",
+            "start": 189,
+            "end": 189,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      }
+    },
+    {
+      "label": "update_webpki-root-certs",
+      "command": [
+        "cargo",
+        "update",
+        "-p",
+        "webpki-root-certs@1.0.5",
+        "--precise",
+        "1.0.10"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "retention": {
+        "strategy": "nonoverlapping_prefix_and_tail",
+        "offsets": "zero_based_half_open_bytes",
+        "limit_bytes_per_stream": 1048576,
+        "prefix_limit_bytes_per_stream": 786432,
+        "tail_limit_bytes_per_stream": 262144,
+        "combined_limit_bytes": 2097152,
+        "combined_retained_bytes": 188
+      },
+      "streams": {
+        "stdout": {
+          "observed_bytes": 0,
+          "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "retained_bytes": 0,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 0,
+            "end": 0
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "update_webpki-root-certs.stdout.log",
+            "start": 0,
+            "end": 0,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "tail": {
+            "path": "update_webpki-root-certs.stdout.tail.log",
+            "start": 0,
+            "end": 0,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "stderr": {
+          "observed_bytes": 188,
+          "observed_sha256": "cbea429c330679fafed2b9e48c30ce9d9f34541fbfac8af1d1262fe27e32653d",
+          "retained_bytes": 188,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 188,
+            "end": 188
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "update_webpki-root-certs.stderr.log",
+            "start": 0,
+            "end": 188,
+            "bytes": 188,
+            "sha256": "cbea429c330679fafed2b9e48c30ce9d9f34541fbfac8af1d1262fe27e32653d"
+          },
+          "tail": {
+            "path": "update_webpki-root-certs.stderr.tail.log",
+            "start": 188,
+            "end": 188,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      }
+    },
+    {
+      "label": "update_webpki-roots",
+      "command": [
+        "cargo",
+        "update",
+        "-p",
+        "webpki-roots@1.0.9",
+        "--precise",
+        "1.0.10"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "retention": {
+        "strategy": "nonoverlapping_prefix_and_tail",
+        "offsets": "zero_based_half_open_bytes",
+        "limit_bytes_per_stream": 1048576,
+        "prefix_limit_bytes_per_stream": 786432,
+        "tail_limit_bytes_per_stream": 262144,
+        "combined_limit_bytes": 2097152,
+        "combined_retained_bytes": 183
+      },
+      "streams": {
+        "stdout": {
+          "observed_bytes": 0,
+          "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "retained_bytes": 0,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 0,
+            "end": 0
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "update_webpki-roots.stdout.log",
+            "start": 0,
+            "end": 0,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "tail": {
+            "path": "update_webpki-roots.stdout.tail.log",
+            "start": 0,
+            "end": 0,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "stderr": {
+          "observed_bytes": 183,
+          "observed_sha256": "fafba4d6bd05fc8a4d3aaad28820bb62e367a5379359faf25ee70fa21b8936d9",
+          "retained_bytes": 183,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 183,
+            "end": 183
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "update_webpki-roots.stderr.log",
+            "start": 0,
+            "end": 183,
+            "bytes": 183,
+            "sha256": "fafba4d6bd05fc8a4d3aaad28820bb62e367a5379359faf25ee70fa21b8936d9"
+          },
+          "tail": {
+            "path": "update_webpki-roots.stderr.tail.log",
+            "start": 183,
+            "end": 183,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      }
+    },
+    {
+      "label": "bazel_lock_update",
+      "command": [
+        "just",
+        "bazel-lock-update"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "retention": {
+        "strategy": "nonoverlapping_prefix_and_tail",
+        "offsets": "zero_based_half_open_bytes",
+        "limit_bytes_per_stream": 1048576,
+        "prefix_limit_bytes_per_stream": 786432,
+        "tail_limit_bytes_per_stream": 262144,
+        "combined_limit_bytes": 2097152,
+        "combined_retained_bytes": 2105
+      },
+      "streams": {
+        "stdout": {
+          "observed_bytes": 18,
+          "observed_sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3",
+          "retained_bytes": 18,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 18,
+            "end": 18
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "bazel_lock_update.stdout.log",
+            "start": 0,
+            "end": 18,
+            "bytes": 18,
+            "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3"
+          },
+          "tail": {
+            "path": "bazel_lock_update.stdout.tail.log",
+            "start": 18,
+            "end": 18,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "stderr": {
+          "observed_bytes": 2087,
+          "observed_sha256": "0c3b34de5b9f45a99c5724d35b4522c87da5efb01fcce6e3faa1324b8114b159",
+          "retained_bytes": 2087,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 2087,
+            "end": 2087
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "bazel_lock_update.stderr.log",
+            "start": 0,
+            "end": 2087,
+            "bytes": 2087,
+            "sha256": "0c3b34de5b9f45a99c5724d35b4522c87da5efb01fcce6e3faa1324b8114b159"
+          },
+          "tail": {
+            "path": "bazel_lock_update.stderr.tail.log",
+            "start": 2087,
+            "end": 2087,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      }
+    },
+    {
+      "label": "bazel_lock_check",
+      "command": [
+        "just",
+        "bazel-lock-check"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "retention": {
+        "strategy": "nonoverlapping_prefix_and_tail",
+        "offsets": "zero_based_half_open_bytes",
+        "limit_bytes_per_stream": 1048576,
+        "prefix_limit_bytes_per_stream": 786432,
+        "tail_limit_bytes_per_stream": 262144,
+        "combined_limit_bytes": 2097152,
+        "combined_retained_bytes": 1012
+      },
+      "streams": {
+        "stdout": {
+          "observed_bytes": 18,
+          "observed_sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3",
+          "retained_bytes": 18,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 18,
+            "end": 18
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "bazel_lock_check.stdout.log",
+            "start": 0,
+            "end": 18,
+            "bytes": 18,
+            "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3"
+          },
+          "tail": {
+            "path": "bazel_lock_check.stdout.tail.log",
+            "start": 18,
+            "end": 18,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "stderr": {
+          "observed_bytes": 994,
+          "observed_sha256": "f730ef51e7da9807a79a30bccffdd38c0013957f78889da9eb784ebeadbf09e0",
+          "retained_bytes": 994,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 994,
+            "end": 994
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "bazel_lock_check.stderr.log",
+            "start": 0,
+            "end": 994,
+            "bytes": 994,
+            "sha256": "f730ef51e7da9807a79a30bccffdd38c0013957f78889da9eb784ebeadbf09e0"
+          },
+          "tail": {
+            "path": "bazel_lock_check.stderr.tail.log",
+            "start": 994,
+            "end": 994,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      }
+    },
+    {
+      "label": "final_identity",
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "retention": {
+        "strategy": "nonoverlapping_prefix_and_tail",
+        "offsets": "zero_based_half_open_bytes",
+        "limit_bytes_per_stream": 65536,
+        "prefix_limit_bytes_per_stream": 49152,
+        "tail_limit_bytes_per_stream": 16384,
+        "combined_limit_bytes": 131072,
+        "combined_retained_bytes": 82
+      },
+      "streams": {
+        "stdout": {
+          "observed_bytes": 82,
+          "observed_sha256": "5bf3dd5417e1419cf56781cf11cbdcbee41f4f3a563b7119c90ac12ec7c73caa",
+          "retained_bytes": 82,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 82,
+            "end": 82
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "final_identity.stdout.log",
+            "start": 0,
+            "end": 82,
+            "bytes": 82,
+            "sha256": "5bf3dd5417e1419cf56781cf11cbdcbee41f4f3a563b7119c90ac12ec7c73caa"
+          },
+          "tail": {
+            "path": "final_identity.stdout.tail.log",
+            "start": 82,
+            "end": 82,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "stderr": {
+          "observed_bytes": 0,
+          "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "retained_bytes": 0,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 0,
+            "end": 0
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "final_identity.stderr.log",
+            "start": 0,
+            "end": 0,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "tail": {
+            "path": "final_identity.stderr.tail.log",
+            "start": 0,
+            "end": 0,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      }
+    },
+    {
+      "label": "after_status",
+      "command": [
+        "git",
+        "status",
+        "--porcelain",
+        "-uall"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "retention": {
+        "strategy": "nonoverlapping_prefix_and_tail",
+        "offsets": "zero_based_half_open_bytes",
+        "limit_bytes_per_stream": 65536,
+        "prefix_limit_bytes_per_stream": 49152,
+        "tail_limit_bytes_per_stream": 16384,
+        "combined_limit_bytes": 131072,
+        "combined_retained_bytes": 44
+      },
+      "streams": {
+        "stdout": {
+          "observed_bytes": 44,
+          "observed_sha256": "09d55541ac8247234d6ead05655309636b8843b654286c3335ded66ee7fcf92e",
+          "retained_bytes": 44,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 44,
+            "end": 44
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "after_status.stdout.log",
+            "start": 0,
+            "end": 44,
+            "bytes": 44,
+            "sha256": "09d55541ac8247234d6ead05655309636b8843b654286c3335ded66ee7fcf92e"
+          },
+          "tail": {
+            "path": "after_status.stdout.tail.log",
+            "start": 44,
+            "end": 44,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "stderr": {
+          "observed_bytes": 0,
+          "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "retained_bytes": 0,
+          "omitted_bytes": 0,
+          "omitted_range": {
+            "start": 0,
+            "end": 0
+          },
+          "truncated": false,
+          "complete": true,
+          "prefix": {
+            "path": "after_status.stderr.log",
+            "start": 0,
+            "end": 0,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "tail": {
+            "path": "after_status.stderr.tail.log",
+            "start": 0,
+            "end": 0,
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      }
+    }
+  ],
+  "generation_passed": true,
+  "qualification": false,
+  "resource_environment": {
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0"
+  },
+  "bounds": {
+    "file_bytes": 16777216,
+    "payload_and_tar_bytes": 67108864,
+    "archive_bytes": 33554432,
+    "compressed_plus_uncompressed_bytes": 100663296,
+    "file_count": 4096,
+    "log_bytes_per_stream": 1048576
+  },
+  "phase": "finalize_finished",
+  "status": "completed",
+  "updated_at_utc": "2026-10-28T10:41:48.488939+00:00",
+  "source_tree": "5e87ba59c31594099381171cf7209167f77183db",
+  "worktree_clean_before": true,
+  "source_inputs": {
+    "codex-rs/Cargo.lock": {
+      "bytes": 418038,
+      "sha256": "8354b4cbdf14389db7aa5508e2ed5b524fc2d4c4ea0ecb475955c933f8bea389"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1658169,
+      "sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0"
+    },
+    "justfile": {
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    "scripts/run_hepta_field_maintenance.py": {
+      "bytes": 18856,
+      "sha256": "f5bee76ac44652f9802530a22af572cde80b044aff24f32097c82ed07b713948"
+    },
+    "scripts/capture_cargo_deny_diagnostic.py": {
+      "bytes": 15062,
+      "sha256": "c040903cab7a58bcab1c690958555ace26a33c7ce41290d92216b5b68684e34f"
+    },
+    ".github/workflows/hepta-field-maintenance.yml": {
+      "bytes": 4187,
+      "sha256": "cc571cbf9cdefa4240153b158fe4d51b7176801fbd3f785c449b23ea9f3fae13"
+    }
+  },
+  "tls_update_scope_verified": true,
+  "workflow_generation_step_outcome": "success",
+  "source_identity_after": [
+    "830ef82a76050814e5a131079c021ab566a5abcf",
+    "5e87ba59c31594099381171cf7209167f77183db"
+  ],
+  "source_identity_unchanged": true,
+  "worktree_clean_after": false,
+  "changed_paths": [
+    "MODULE.bazel.lock",
+    "codex-rs/Cargo.lock"
+  ],
+  "lock_outputs": {
+    "Cargo.lock": {
+      "bytes": 418040,
+      "sha256": "56ed52d9789f01abda5bad96f25dd9d48b837108653cb2f3474ee5e0dbc790de"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1658174,
+      "sha256": "1fa8234aa094436e6f645a73d692c1346d1ccea858676b56c5026aa5baeff75f"
+    }
+  },
+  "archive": {
+    "bytes": 629415,
+    "sha256": "af62f372834128894acbd6d596b867eeaa9b039f59d54d3674c34b3e72c35f79",
+    "uncompressed_tar_bytes": 4249600,
+    "member_count": 62,
+    "input_bytes_verified": true
+  },
+  "manifest": {
+    "bytes": 9558,
+    "sha256": "04cdd574cb4699d46bed35366a073d73e2fbf5390617995862ad85f0bcfa34a2"
+  }
+}

@@ -1,0 +1,374 @@
+{
+  "schema_version": 1,
+  "at_utc": "2026-10-28T10:56:22.884662+00:00",
+  "run_id": 40673973359,
+  "job_id": 122767538954,
+  "artifact_id": 12809214782,
+  "source_head": "830ef82a76050814e5a131079c021ab566a5abcf",
+  "source_tree": "5e87ba59c31594099381171cf7209167f77183db",
+  "source_identity_unchanged": true,
+  "worktree_clean_before_and_after": true,
+  "generation_passed": true,
+  "actual_canonical_writer_tests_observed": 2,
+  "all_command_streams_complete_and_verified": true,
+  "all_2253_archive_members_verified": true,
+  "commands": [
+    {
+      "label": "identity",
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "bytes": 82,
+          "sha256": "5bf3dd5417e1419cf56781cf11cbdcbee41f4f3a563b7119c90ac12ec7c73caa",
+          "complete": true
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "complete": true
+        }
+      }
+    },
+    {
+      "label": "before_status",
+      "command": [
+        "git",
+        "status",
+        "--porcelain",
+        "-uall"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "complete": true
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "complete": true
+        }
+      }
+    },
+    {
+      "label": "rustc_version",
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "bytes": 36,
+          "sha256": "f4d034f5660bb49f22bfcba3f3445be67e25b704c193ff421b53863b4faee148",
+          "complete": true
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "complete": true
+        }
+      }
+    },
+    {
+      "label": "cargo_version",
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "bytes": 36,
+          "sha256": "c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5",
+          "complete": true
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "complete": true
+        }
+      }
+    },
+    {
+      "label": "just_version",
+      "command": [
+        "just",
+        "--version"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "bytes": 12,
+          "sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87",
+          "complete": true
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "complete": true
+        }
+      }
+    },
+    {
+      "label": "schema_stable",
+      "command": [
+        "just",
+        "write-app-server-schema",
+        "--schema-root",
+        "/home/runner/work/_temp/hepta-field-maintenance-schemas/generated"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "bytes": 180,
+          "sha256": "cd5b159f76484d46e84448ee5f8013073b33612e77109f57feced93d3fb5c3f5",
+          "complete": true
+        },
+        "stderr": {
+          "bytes": 67706,
+          "sha256": "980f6c800f2e1132556f8a6d1aa04187c22d15b8086261ee9c0fd17ed1206442",
+          "complete": true
+        }
+      }
+    },
+    {
+      "label": "schema_experimental",
+      "command": [
+        "just",
+        "write-app-server-schema",
+        "--schema-root",
+        "/home/runner/work/_temp/hepta-field-maintenance-schemas/generated",
+        "--experimental"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "bytes": 180,
+          "sha256": "bde4359f71eb1498fd59e3b717b4c321cceb61513ca99c8ce70de01c80dedffd",
+          "complete": true
+        },
+        "stderr": {
+          "bytes": 375,
+          "sha256": "4f8b83d827dede27821b04b85671ede906ced6915392362cab4afaaa319e5723",
+          "complete": true
+        }
+      }
+    },
+    {
+      "label": "final_identity",
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "bytes": 82,
+          "sha256": "5bf3dd5417e1419cf56781cf11cbdcbee41f4f3a563b7119c90ac12ec7c73caa",
+          "complete": true
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "complete": true
+        }
+      }
+    },
+    {
+      "label": "after_status",
+      "command": [
+        "git",
+        "status",
+        "--porcelain",
+        "-uall"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "complete": true
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "complete": true
+        }
+      }
+    }
+  ],
+  "schema_inventory_before": 984,
+  "schema_inventory_after": 984,
+  "unchanged_schema_files": 981,
+  "changed_schema_files": [
+    {
+      "path": "codex-rs/app-server-protocol/schema/json/v2/TurnRecoverResponse.json",
+      "before": {
+        "bytes": 48946,
+        "sha256": "c936ea82106b4f19470ef40f593eef80f268e12b210e5c1f2dcf10c1b54b95fa"
+      },
+      "after": {
+        "bytes": 48967,
+        "sha256": "46831c10079913c27de4bb02cb0df199030150aaa3a0b218ae5133d8f5f82509",
+        "git_blob": "9536c5d39cb1d15618bd86d419a4c482f514b9c3"
+      }
+    },
+    {
+      "path": "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-experimental.json.zst",
+      "before": {
+        "bytes": 143060,
+        "sha256": "e6770c2c885a2a4640ae49e137c5efa10cb592f1b59c913ccece4b5d8cc876a1"
+      },
+      "after": {
+        "bytes": 145385,
+        "sha256": "2ca64026eba6ae9fb9d0d7b1bd7901d31a0cb0715b1e33918b99a1402b74a967",
+        "git_blob": "e9485c5cdb789860af9b72a80ef2d83d6f9a9c01"
+      }
+    },
+    {
+      "path": "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-stable.json.zst",
+      "before": {
+        "bytes": 137561,
+        "sha256": "252cd8c5afad894abdc69b67803204de33b2ee445d4d9eabcee0ea9382b280e6"
+      },
+      "after": {
+        "bytes": 139671,
+        "sha256": "ae5edc54372651ff430ad70729b97f8139bef6562f7a773df2ca3f571edb2964",
+        "git_blob": "8a3d1486049b2925d784bc18915d6762c7dd1fd3"
+      }
+    }
+  ],
+  "removed_schema_files": [],
+  "stable_and_experimental_bundle_review": {
+    "stable": {
+      "delta": {
+        "typescript": {
+          "before": 679,
+          "after": 688,
+          "added": [
+            "v2/HeptaGovernanceEvidenceSummary.ts",
+            "v2/HeptaHistoricalEvidenceFamily.ts",
+            "v2/HeptaHistoricalEvidenceRecord.ts",
+            "v2/HeptaHistoricalEvidenceState.ts",
+            "v2/HeptaProviderEvidenceSummary.ts",
+            "v2/ThreadQueueReconcileMode.ts",
+            "v2/ThreadQueueReconcileOutcome.ts",
+            "v2/TurnRecoverParams.ts",
+            "v2/TurnRecoverResponse.ts"
+          ],
+          "removed": [],
+          "changed": [
+            "ClientRequest.ts",
+            "v2/index.ts"
+          ]
+        },
+        "json_schema": {
+          "before": 292,
+          "after": 294,
+          "added": [
+            "v2/TurnRecoverParams.json",
+            "v2/TurnRecoverResponse.json"
+          ],
+          "removed": [],
+          "changed": [
+            "ClientRequest.json",
+            "codex_app_server_protocol.schemas.json",
+            "codex_app_server_protocol.v2.schemas.json"
+          ]
+        },
+        "internal_json_schema": {
+          "before": 1,
+          "after": 1,
+          "added": [],
+          "removed": [],
+          "changed": [
+            "RolloutLine.json"
+          ]
+        }
+      },
+      "exports_verified_against_literal_generated_files": true
+    },
+    "experimental": {
+      "delta": {
+        "typescript": {
+          "before": 801,
+          "after": 816,
+          "added": [
+            "v2/HeptaEvidenceSummaryReadParams.ts",
+            "v2/HeptaEvidenceSummaryReadResponse.ts",
+            "v2/HeptaGovernanceEvidenceSummary.ts",
+            "v2/HeptaHistoricalEvidenceFamily.ts",
+            "v2/HeptaHistoricalEvidenceReadParams.ts",
+            "v2/HeptaHistoricalEvidenceReadResponse.ts",
+            "v2/HeptaHistoricalEvidenceRecord.ts",
+            "v2/HeptaHistoricalEvidenceState.ts",
+            "v2/HeptaProviderEvidenceSummary.ts",
+            "v2/ThreadQueueReconcileMode.ts",
+            "v2/ThreadQueueReconcileOutcome.ts",
+            "v2/ThreadQueueReconcileParams.ts",
+            "v2/ThreadQueueReconcileResponse.ts",
+            "v2/TurnRecoverParams.ts",
+            "v2/TurnRecoverResponse.ts"
+          ],
+          "removed": [],
+          "changed": [
+            "ClientRequest.ts",
+            "v2/index.ts"
+          ]
+        },
+        "json_schema": {
+          "before": 406,
+          "after": 414,
+          "added": [
+            "v2/HeptaEvidenceSummaryReadParams.json",
+            "v2/HeptaEvidenceSummaryReadResponse.json",
+            "v2/HeptaHistoricalEvidenceReadParams.json",
+            "v2/HeptaHistoricalEvidenceReadResponse.json",
+            "v2/ThreadQueueReconcileParams.json",
+            "v2/ThreadQueueReconcileResponse.json",
+            "v2/TurnRecoverParams.json",
+            "v2/TurnRecoverResponse.json"
+          ],
+          "removed": [],
+          "changed": [
+            "ClientRequest.json",
+            "codex_app_server_protocol.schemas.json",
+            "codex_app_server_protocol.v2.schemas.json"
+          ]
+        },
+        "internal_json_schema": {
+          "before": 0,
+          "after": 0,
+          "added": [],
+          "removed": [],
+          "changed": []
+        }
+      },
+      "exports_verified_against_literal_generated_files": true
+    }
+  },
+  "experimental_full_expanded_file_count": 1230,
+  "retained_command_evidence_subset": {
+    "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/ci_repair_20261028/SCHEMA_GENERATION_COMMAND_EVIDENCE_830EF82.tar.gz",
+    "bytes": 356509,
+    "sha256": "5a152306d4ad9724f3654472d7fc42b845361063fcfa5dacc0a5d565aa1f6099",
+    "member_count": 40
+  },
+  "original_artifact_sha256": "b3efb94def10ffb2139ef399324795e8c1bec082352a4b8053ae4ae65e00f4d9",
+  "original_artifact_bytes": 1786586,
+  "git_diff_check_exit_code": 0,
+  "consumer_regression_tests": "PENDING on a published candidate containing these generated files",
+  "qualification": false,
+  "scientific_admission": false,
+  "original_scientific_status": "FAIL"
+}

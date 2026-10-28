@@ -1,0 +1,406 @@
+{
+  "schema_version": 1,
+  "at_utc": "2026-10-28T10:45:57.974959+00:00",
+  "run_id": 40673973359,
+  "job_id": 122767538534,
+  "artifact_id": 12809692622,
+  "source_head": "830ef82a76050814e5a131079c021ab566a5abcf",
+  "source_tree": "5e87ba59c31594099381171cf7209167f77183db",
+  "source_identity_unchanged": true,
+  "generation_passed": true,
+  "artifact_bytes": 633128,
+  "artifact_sha256": "92b95520dcde4b3c579d7e572c6ad85ca2307849a035742b7bc89e599541bc04",
+  "archive_sha256": "af62f372834128894acbd6d596b867eeaa9b039f59d54d3674c34b3e72c35f79",
+  "all_manifest_members_verified": true,
+  "all_command_streams_complete_and_verified": true,
+  "commands": [
+    {
+      "label": "identity",
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "bytes": 82,
+          "sha256": "5bf3dd5417e1419cf56781cf11cbdcbee41f4f3a563b7119c90ac12ec7c73caa",
+          "complete": true
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "complete": true
+        }
+      }
+    },
+    {
+      "label": "before_status",
+      "command": [
+        "git",
+        "status",
+        "--porcelain",
+        "-uall"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "complete": true
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "complete": true
+        }
+      }
+    },
+    {
+      "label": "rustc_version",
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "bytes": 36,
+          "sha256": "f4d034f5660bb49f22bfcba3f3445be67e25b704c193ff421b53863b4faee148",
+          "complete": true
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "complete": true
+        }
+      }
+    },
+    {
+      "label": "cargo_version",
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "bytes": 36,
+          "sha256": "c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5",
+          "complete": true
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "complete": true
+        }
+      }
+    },
+    {
+      "label": "just_version",
+      "command": [
+        "just",
+        "--version"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "bytes": 12,
+          "sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87",
+          "complete": true
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "complete": true
+        }
+      }
+    },
+    {
+      "label": "bazel_version",
+      "command": [
+        "bazel",
+        "--version"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "bytes": 12,
+          "sha256": "f4da09040965d6a7e4fd0a6f9c4a494322acd34f2669c158c0abddac576718e8",
+          "complete": true
+        },
+        "stderr": {
+          "bytes": 103,
+          "sha256": "7c791a29d7a999c525ffdcc19a11a47a0ef0c65a400a4e356576f370f5ed8742",
+          "complete": true
+        }
+      }
+    },
+    {
+      "label": "update_rustls",
+      "command": [
+        "cargo",
+        "update",
+        "-p",
+        "rustls@0.23.45",
+        "--precise",
+        "0.23.46"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "complete": true
+        },
+        "stderr": {
+          "bytes": 1649,
+          "sha256": "22d8bbe80ebcd0e20d84d0aac393fe9bef5c3c4c5c2f388eebcc72b0ab5b6a22",
+          "complete": true
+        }
+      }
+    },
+    {
+      "label": "update_rustls-webpki",
+      "command": [
+        "cargo",
+        "update",
+        "-p",
+        "rustls-webpki@0.103.15",
+        "--precise",
+        "0.103.16"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "complete": true
+        },
+        "stderr": {
+          "bytes": 189,
+          "sha256": "c44d1c381643cd09b95b0ea3e62a9d63d3563eb467fa77429ecbbbda869ce031",
+          "complete": true
+        }
+      }
+    },
+    {
+      "label": "update_webpki-root-certs",
+      "command": [
+        "cargo",
+        "update",
+        "-p",
+        "webpki-root-certs@1.0.5",
+        "--precise",
+        "1.0.10"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "complete": true
+        },
+        "stderr": {
+          "bytes": 188,
+          "sha256": "cbea429c330679fafed2b9e48c30ce9d9f34541fbfac8af1d1262fe27e32653d",
+          "complete": true
+        }
+      }
+    },
+    {
+      "label": "update_webpki-roots",
+      "command": [
+        "cargo",
+        "update",
+        "-p",
+        "webpki-roots@1.0.9",
+        "--precise",
+        "1.0.10"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "complete": true
+        },
+        "stderr": {
+          "bytes": 183,
+          "sha256": "fafba4d6bd05fc8a4d3aaad28820bb62e367a5379359faf25ee70fa21b8936d9",
+          "complete": true
+        }
+      }
+    },
+    {
+      "label": "bazel_lock_update",
+      "command": [
+        "just",
+        "bazel-lock-update"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "bytes": 18,
+          "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3",
+          "complete": true
+        },
+        "stderr": {
+          "bytes": 2087,
+          "sha256": "0c3b34de5b9f45a99c5724d35b4522c87da5efb01fcce6e3faa1324b8114b159",
+          "complete": true
+        }
+      }
+    },
+    {
+      "label": "bazel_lock_check",
+      "command": [
+        "just",
+        "bazel-lock-check"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "bytes": 18,
+          "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3",
+          "complete": true
+        },
+        "stderr": {
+          "bytes": 994,
+          "sha256": "f730ef51e7da9807a79a30bccffdd38c0013957f78889da9eb784ebeadbf09e0",
+          "complete": true
+        }
+      }
+    },
+    {
+      "label": "final_identity",
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "bytes": 82,
+          "sha256": "5bf3dd5417e1419cf56781cf11cbdcbee41f4f3a563b7119c90ac12ec7c73caa",
+          "complete": true
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "complete": true
+        }
+      }
+    },
+    {
+      "label": "after_status",
+      "command": [
+        "git",
+        "status",
+        "--porcelain",
+        "-uall"
+      ],
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "bytes": 44,
+          "sha256": "09d55541ac8247234d6ead05655309636b8843b654286c3335ded66ee7fcf92e",
+          "complete": true
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "complete": true
+        }
+      }
+    }
+  ],
+  "cargo_package_count": 1517,
+  "changed_cargo_packages": [
+    {
+      "name": "rustls",
+      "old": "0.23.45",
+      "new": "0.23.46",
+      "checksum": "48e13bd8c0e9365c43cfa5c9e8f9ad49d3c8444926c9aac819e0e4dc503c8fdf",
+      "only_version_and_checksum_changed": true
+    },
+    {
+      "name": "rustls-webpki",
+      "old": "0.103.15",
+      "new": "0.103.16",
+      "checksum": "4443b1b6d39d7c663139942cc4558262562d2c84123bb6282ef177009ca8b281",
+      "only_version_and_checksum_changed": true
+    },
+    {
+      "name": "webpki-root-certs",
+      "old": "1.0.5",
+      "new": "1.0.10",
+      "checksum": "58ec80e73fd8baf57bf0d9615554c75348bda990d6d5bbeab964dd068319fecb",
+      "only_version_and_checksum_changed": true
+    },
+    {
+      "name": "webpki-roots",
+      "old": "1.0.9",
+      "new": "1.0.10",
+      "checksum": "1c1c8e20c8a38fc7d65abfe74eb7280e4aa667e8eec8bc84996d2874810748d9",
+      "only_version_and_checksum_changed": true
+    }
+  ],
+  "other_cargo_packages_unchanged": true,
+  "bazel_facts_removed": [
+    "rustls-webpki_0.103.15",
+    "rustls_0.23.45",
+    "webpki-root-certs_1.0.5",
+    "webpki-roots_1.0.9"
+  ],
+  "bazel_facts_added": [
+    "rustls-webpki_0.103.16",
+    "rustls_0.23.46",
+    "webpki-root-certs_1.0.10",
+    "webpki-roots_1.0.10"
+  ],
+  "all_other_bazel_content_unchanged": true,
+  "lock_files": {
+    "codex-rs/Cargo.lock": {
+      "before_sha256": "8354b4cbdf14389db7aa5508e2ed5b524fc2d4c4ea0ecb475955c933f8bea389",
+      "after_sha256": "56ed52d9789f01abda5bad96f25dd9d48b837108653cb2f3474ee5e0dbc790de",
+      "bytes": 418040,
+      "git_blob": "cce00c581bed8f27508db1769be6c4f0bd4f05fd",
+      "applied_literal_generated_bytes": true
+    },
+    "MODULE.bazel.lock": {
+      "before_sha256": "94f6143d2e1f68d59fa9cbfd223a676a8dddf61fe8ec92b5219ecd0ac67f29d0",
+      "after_sha256": "1fa8234aa094436e6f645a73d692c1346d1ccea858676b56c5026aa5baeff75f",
+      "bytes": 1658174,
+      "git_blob": "42c81bc19e21627d642c88fa753d530aa27eab4b",
+      "applied_literal_generated_bytes": true
+    }
+  },
+  "git_diff_check_exit_code": 0,
+  "advisory_reaudit": "PENDING on a published candidate containing these locks",
+  "runtime_compatibility_ci": "PENDING on a published candidate containing these locks",
+  "qualification": false,
+  "scientific_admission": false,
+  "original_scientific_status": "FAIL",
+  "retained_command_evidence_subset": {
+    "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/ci_repair_20261028/TLS_LOCK_GENERATION_COMMAND_EVIDENCE_830EF82.tar.gz",
+    "bytes": 9958,
+    "sha256": "50bd769e0c7d42e621483ac7d64dae3593f8c9a3c3c9324188a3ed26b96511c9",
+    "member_count": 60,
+    "all_selected_payloads_literal": true,
+    "original_provider_zip_retained_locally": "/workspace/scratch/e8a4dc33549f/ci_tls_maintenance_830ef82.zip",
+    "duplicate_lock_members_excluded": [
+      "evidence/before/Cargo.lock",
+      "evidence/before/MODULE.bazel.lock",
+      "evidence/after/Cargo.lock",
+      "evidence/after/MODULE.bazel.lock"
+    ],
+    "before_lock_commit": "830ef82a76050814e5a131079c021ab566a5abcf",
+    "after_lock_commit": "61f01d804914494f34be98edc784984fbada0f33",
+    "collection_note": "Initial final move refused an already-present identical original ZIP; verified both SHA-256 identities, retained the workspace original and removed only the new untracked repository duplicate."
+  }
+}

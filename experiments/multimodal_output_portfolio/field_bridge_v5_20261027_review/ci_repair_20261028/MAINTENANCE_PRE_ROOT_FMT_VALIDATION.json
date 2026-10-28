@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-10-28T10:38:31.978392+00:00",
+  "workspace_head_at_validation": "f20db50ec8f891d286465e635c68e83749b9b3b4",
+  "status": "local_engineering_boundary_tests_passed_remote_generation_not_executed",
+  "source_files": {
+    ".github/workflows/hepta-field-maintenance.yml": {
+      "bytes": 4187,
+      "sha256": "cc571cbf9cdefa4240153b158fe4d51b7176801fbd3f785c449b23ea9f3fae13"
+    },
+    "scripts/run_hepta_field_maintenance.py": {
+      "bytes": 18856,
+      "sha256": "f5bee76ac44652f9802530a22af572cde80b044aff24f32097c82ed07b713948"
+    },
+    "scripts/test_run_hepta_field_maintenance.py": {
+      "bytes": 15264,
+      "sha256": "0014e5e15f90d034bb3fea2ec0af4acec8bc8cef63f7e2902e595c57c81db32b"
+    },
+    "codex-rs/hepta-fleet/src/registry_tests.rs": {
+      "bytes": 11781,
+      "sha256": "6db82231295c15948fdba723b58776e312741f171a5e146f5618bc5ee3e7610c"
+    }
+  },
+  "pre_root_fmt_directory": "/workspace/scratch/e8a4dc33549f/ci_maintenance_pre_root_fmt_20261028",
+  "python_ast_sha256": {
+    "scripts/run_hepta_field_maintenance.py": "d84055fd322901befa90d7b88c2f8f8b2a80899cd92a39a0dd2912ef8eb4175b",
+    "scripts/test_run_hepta_field_maintenance.py": "f64bf6ef1b21a35b16933df3a9344011fba12e7b8754c0e8f23fdedff457ae77"
+  },
+  "workflow_yaml_base_loader_canonical_sha256": "a3812edf8349c3cf12916d6c788c13c3f2405a08a8db9b6af5c370423fd75c4f",
+  "collector_source_unchanged": {
+    "path": "scripts/capture_cargo_deny_diagnostic.py",
+    "bytes": 15062,
+    "sha256": "c040903cab7a58bcab1c690958555ace26a33c7ce41290d92216b5b68684e34f"
+  },
+  "validation_commands": [
+    {
+      "command": [
+        "scripts/.venv/bin/ruff",
+        "format",
+        "--check",
+        "scripts/run_hepta_field_maintenance.py",
+        "scripts/test_run_hepta_field_maintenance.py"
+      ],
+      "cwd": "/workspace/scratch/e8a4dc33549f/hepta",
+      "started_at_utc": "2026-10-28T10:38:30.885216+00:00",
+      "exit_code": 0,
+      "stdout": {
+        "path": "/workspace/scratch/e8a4dc33549f/ci_maintenance_pre_root_fmt_20261028/command_1.stdout.log",
+        "bytes": 26,
+        "sha256": "3bc53bf3e981a98a34a852e175bf9b77af841edea74fca595d9aedcbaf9a4938"
+      },
+      "stderr": {
+        "path": "/workspace/scratch/e8a4dc33549f/ci_maintenance_pre_root_fmt_20261028/command_1.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": [
+        "scripts/.venv/bin/ruff",
+        "check",
+        "scripts/run_hepta_field_maintenance.py",
+        "scripts/test_run_hepta_field_maintenance.py"
+      ],
+      "cwd": "/workspace/scratch/e8a4dc33549f/hepta",
+      "started_at_utc": "2026-10-28T10:38:30.912800+00:00",
+      "exit_code": 0,
+      "stdout": {
+        "path": "/workspace/scratch/e8a4dc33549f/ci_maintenance_pre_root_fmt_20261028/command_2.stdout.log",
+        "bytes": 19,
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "stderr": {
+        "path": "/workspace/scratch/e8a4dc33549f/ci_maintenance_pre_root_fmt_20261028/command_2.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "scripts/test_run_hepta_field_maintenance.py"
+      ],
+      "cwd": "/workspace/scratch/e8a4dc33549f/hepta",
+      "started_at_utc": "2026-10-28T10:38:30.928554+00:00",
+      "exit_code": 0,
+      "stdout": {
+        "path": "/workspace/scratch/e8a4dc33549f/ci_maintenance_pre_root_fmt_20261028/command_3.stdout.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/workspace/scratch/e8a4dc33549f/ci_maintenance_pre_root_fmt_20261028/command_3.stderr.log",
+        "bytes": 116,
+        "sha256": "40ab0c916d76219dc7745a548681a251e76d53ebc5d249b81df40b26eaf659d6"
+      }
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "codex-rs/hepta-fleet/src/registry_tests.rs"
+      ],
+      "cwd": "/workspace/scratch/e8a4dc33549f/hepta",
+      "started_at_utc": "2026-10-28T10:38:31.919277+00:00",
+      "exit_code": 0,
+      "stdout": {
+        "path": "/workspace/scratch/e8a4dc33549f/ci_maintenance_pre_root_fmt_20261028/command_4.stdout.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/workspace/scratch/e8a4dc33549f/ci_maintenance_pre_root_fmt_20261028/command_4.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "small_unittest_count": 17,
+  "workflow_static_checks": [
+    "Only push on exact maintenance branch",
+    "contents:read only",
+    "Two independent 45-minute jobs",
+    "Checkout github.sha, persist-credentials:false",
+    "No secrets references or remote write commands",
+    "Pinned existing setup/Rust/upload actions",
+    "Low-debug Cargo jobs=2 and incremental=0",
+    "Always-attempt evidence finalization/upload"
+  ],
+  "generation_design": {
+    "tls_targets": {
+      "rustls": "0.23.46",
+      "rustls-webpki": "0.103.16",
+      "webpki-root-certs": "1.0.10",
+      "webpki-roots": "1.0.10"
+    },
+    "tls_intermediate_identity": "Select current package version from real intermediate Cargo.lock; accept only its registered original or requested version; still run exact cargo update for each target.",
+    "tls_nonapproved_resolver_changes": "FAIL with original/actual updated lock artifacts retained. No automatic transitive allowance.",
+    "canonical_commands": [
+      "cargo update -p <actual single allowed name@version> --precise <exact target>",
+      "just bazel-lock-update",
+      "just bazel-lock-check",
+      "just write-app-server-schema --schema-root <fresh external output>",
+      "just write-app-server-schema --schema-root <same external output> --experimental"
+    ],
+    "experimental_tree": "Bounded lossless expansion of newly generated experimental bundle into separate expanded-experimental directory. Existing repository bundle is never repacked as a substitute.",
+    "source_guard": "Initial clean checkout and head/tree recorded; final head/tree must exactly equal initial values even if worktree clean.",
+    "archive_caps": {
+      "individual_file_bytes": 16777216,
+      "uncompressed_tar_bytes": 67108864,
+      "compressed_archive_bytes": 33554432,
+      "archive_file_count": 4096,
+      "command_log_retention_bytes_per_stream": 1048576
+    },
+    "logging": "Reuse original collector unchanged; retain prefix/tail, whole observed-stream SHA, omitted byte counts, exit_code and timeout.",
+    "failure": "Generation remains false on every failed command, pin/scope violation or artifact bound. Oversize collection falls back to bounded logs/provenance and explicitly lists omitted generated roots."
+  },
+  "boundaries": {
+    "cargo_or_bazel_invocations_executed_locally": 0,
+    "real_schema_generator_invocations_executed_locally": 0,
+    "scientific_calls": 0,
+    "scientific_assets_read": 0,
+    "remote_dispatch_or_push_by_this_agent": 0,
+    "existing_blocking_gates_changed": false,
+    "native_execution_qualification": false,
+    "actual_remote_generation_success": "pending"
+  },
+  "helper_physical_lines": 462,
+  "helper_nonblank_lines": 425,
+  "source_bytes_unchanged_through_validation": true,
+  "disk_snapshot": {
+    "bfree": 1739079680,
+    "bavail": 4317184
+  }
+}
