@@ -151,8 +151,10 @@ impl CognitiveStore {
                 "cognitive recovery root is redirected".to_string(),
             ));
         }
-        let exclusive_guard = CognitiveStoreOpenGuard::acquire_exclusive(&canonical_root)
-            .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+        let exclusive_guard = std::sync::Arc::new(
+            CognitiveStoreOpenGuard::acquire_exclusive(&canonical_root)
+                .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?,
+        );
         let source_path = resolve_active_database_path(&canonical_root)
             .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
         let sqlite_home = AbsolutePathBuf::try_from(canonical_root.clone())
@@ -269,19 +271,21 @@ impl CognitiveStore {
                 pool,
                 owner_agent_id: layout.agent_id().clone(),
                 path: candidate.clone(),
-                _open_guard: Some(std::sync::Arc::new(exclusive_guard)),
+                _open_guard: Some(std::sync::Arc::clone(&exclusive_guard)),
             })
         }
         .await;
 
-        match result {
+        let outcome = match result {
             Ok(store) => Ok(store),
             Err(error) => Err(reconcile_failed_recovery_candidate(
                 &canonical_root,
                 &candidate,
                 error,
             )),
-        }
+        };
+        drop(exclusive_guard);
+        outcome
     }
 }
 
@@ -294,14 +298,19 @@ fn reconcile_failed_recovery_candidate(
     // an error. In that state publication durability is unknown: never launder
     // it into ordinary Unavailable and never delete the possibly-active
     // generation. A later trusted recovery ceremony must reconcile it.
-    let active = resolve_active_database_path(root).ok();
-    if active.as_deref() == Some(candidate) {
-        return CognitiveRecoveryError::Indeterminate(format!(
+    match resolve_active_database_path(root) {
+        Ok(active) if active == candidate => CognitiveRecoveryError::Indeterminate(format!(
             "active generation publication became ambiguous after pointer rename: {error}"
-        ));
+        )),
+        Ok(_) => {
+            cleanup_recovery_candidate(candidate);
+            error
+        }
+        // A failed read cannot prove the candidate was never published.
+        Err(resolution_error) => CognitiveRecoveryError::Indeterminate(format!(
+            "active generation could not be resolved after recovery failure: {error}; active pointer resolution failed: {resolution_error}"
+        )),
     }
-    cleanup_recovery_candidate(candidate);
-    error
 }
 
 fn cleanup_candidate_sidecars(path: &std::path::Path) -> Result<(), CognitiveRecoveryError> {
