@@ -305,7 +305,14 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
     def test_windows_tests_reject_missing_verified_volume_environment(self) -> None:
         del self.env["CODEX_TEST_REFS_VOLUME"]
         result = subprocess.run(
-            [self.bash, str(SCRIPTS / "run-bazel-ci.sh"), "--", "test", "--", "//fake:target"],
+            [
+                self.bash,
+                str(SCRIPTS / "run-bazel-ci.sh"),
+                "--",
+                "test",
+                "--",
+                "//fake:target",
+            ],
             env=self.env,
             check=False,
             capture_output=True,
@@ -317,7 +324,9 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             "Missing verified Windows test volume environment: CODEX_TEST_REFS_VOLUME",
             result.stderr,
         )
-        self.assertFalse(self.log.exists(), "Bazel must not run with unverified test volumes")
+        self.assertFalse(
+            self.log.exists(), "Bazel must not run with unverified test volumes"
+        )
 
     def test_native_windows_rejects_missing_required_msvc_environment(self) -> None:
         del self.env["LIB"]
