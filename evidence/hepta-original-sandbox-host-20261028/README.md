@@ -50,3 +50,36 @@ The new workflow parsed as YAML and all four Bash blocks passed syntax checks.
 Source, arguments and original failure evidence are bound in `readback.json`
 and the publication manifest. Existing local executor controls remain at the
 exact #4147 source that passed 77 tests; this workflow changes no Python code.
+
+## First actual matrix and exact-version prerequisite repair
+
+Run `40621425121` at `80ce9e5a95e8f2195f82276cddc29068eebc03af`
+did not qualify a new host. The Ubuntu 26.04 job `122596121738` failed before
+the probe: setup-python has no exact 3.12.3 build for that operating system.
+Its finalizer then also lacked OUT because evidence initialization happened
+after runtime setup. The Ubuntu 24.04 job `122596122007` reached the original
+probe and failed. Both complete job logs are retained unchanged in gzip form;
+neither failure becomes a pass in this successor.
+
+The successor initializes the evidence directory and source identity before
+runtime setup. Ubuntu 24.04 still uses the original setup-python step. Only
+Ubuntu 26.04 builds exact CPython 3.12.3 from the official
+[source release](https://www.python.org/downloads/release/python-3123/), under a
+new, separately recorded 420-second build budget within the unchanged 600-second
+job. Configure, make and installation use the existing command owner and retain
+their real terminal record. The build is installed in the job's temporary
+directory; the system interpreter is not replaced.
+
+The 20,625,068-byte source archive has SHA-256
+`56bfef1fdfc1221ce6720e43a661e3eb41785dd914ce99698d8c7896af4bdaa1`.
+The actual official download matches the release-page MD5 and the SHA-256 digest
+inside the official Sigstore metadata. The metadata and source-pin record are
+retained; no independent Sigstore signature verification is claimed. Every
+hosted download must match this exact size and SHA-256 before extraction.
+
+The new build must report version 3.12.3 and import the SSL, compression, ctypes
+and SQLite modules. Its executable hash and version are retained. It is an
+explicit source build on 26.04, not a claim of byte identity with the 24.04
+prebuilt interpreter. The unchanged host-resource and sandbox checks run only
+after that exact-version prerequisite succeeds. AppArmor requirements, namespace
+flags and the 0.5-second probe budget remain unchanged.

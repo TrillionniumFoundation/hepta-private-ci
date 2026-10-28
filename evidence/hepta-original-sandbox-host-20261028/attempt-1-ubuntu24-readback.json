@@ -1,0 +1,123 @@
+{
+  "schema": "hepta-original-sandbox-attempt1-readback-v1",
+  "run": 40621425121,
+  "job": 122596122007,
+  "source": "80ce9e5a95e8f2195f82276cddc29068eebc03af",
+  "original_probe": "ACTUAL_FAILURE",
+  "exact_log_sha256": "ed3471f7900377f86150471417911309833a36d664cb5af7409e139103f67ddf",
+  "command": [
+    "bwrap",
+    "--unshare-user",
+    "--unshare-net",
+    "--ro-bind",
+    "/",
+    "/",
+    "/bin/true"
+  ],
+  "AppArmor_enabled": true,
+  "unprivileged_userns_restriction": 1,
+  "artifact_bytes": 7635,
+  "artifact_sha256": "a0d7c7e1434c620effa2d65117c52437b86b2a7db7983ba95f65d0c2e1b92d88",
+  "members": [
+    {
+      "path": "hepta-original-sandbox-host/SCOPE.txt",
+      "bytes": 190,
+      "sha256": "85ac0afba95bfff1b7564b33163c07eb55c844748eae11deaf5831c3572ee782"
+    },
+    {
+      "path": "hepta-original-sandbox-host/apparmor-enabled.txt",
+      "bytes": 2,
+      "sha256": "d08c5f95ebb8581ee4e5c0a2ee534d5a10d3c8e7f3a18d961adf902602bbd8a3"
+    },
+    {
+      "path": "hepta-original-sandbox-host/apparmor_restrict_unprivileged_userns.txt",
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "path": "hepta-original-sandbox-host/bwrap-path.txt",
+      "bytes": 15,
+      "sha256": "a4d836bbc701cc2edf11414a1dca7105edec73a6e3bb5878b78c7986f51648d2"
+    },
+    {
+      "path": "hepta-original-sandbox-host/bwrap-version.txt",
+      "bytes": 17,
+      "sha256": "3a0618bed56bc5ced74eea5965def37047e2b879a25ceb85bbc964efbe00489e"
+    },
+    {
+      "path": "hepta-original-sandbox-host/bwrap.sha256",
+      "bytes": 81,
+      "sha256": "3070f1891aa7fab4f966d2c031df4381c1926519c294e82201971bc4cb6206f1"
+    },
+    {
+      "path": "hepta-original-sandbox-host/host.json",
+      "bytes": 4646,
+      "sha256": "8128de540c1ab80f18f8269e6bc2d312ee6f667998b3a7c08c35e8b9b06c3887"
+    },
+    {
+      "path": "hepta-original-sandbox-host/kernel.txt",
+      "bytes": 113,
+      "sha256": "40e1b96798b16f24a59a712a1088b111fc257a3b3f4b48594a8c7995e6a0c523"
+    },
+    {
+      "path": "hepta-original-sandbox-host/os-release.txt",
+      "bytes": 400,
+      "sha256": "87458b3b1f1ca0e5c693ade771de7007c3783bdc692fa6b39eb6414bf2af2763"
+    },
+    {
+      "path": "hepta-original-sandbox-host/package-versions.txt",
+      "bytes": 71,
+      "sha256": "9f76249521148a80549ad86ad37cbff60d94726621458088429044415068a10a"
+    },
+    {
+      "path": "hepta-original-sandbox-host/runner-image.txt",
+      "bytes": 24,
+      "sha256": "428d86593927d14b8c39b4ac2853ed4f747fc72f3ddd3893e01187e657fd6b36"
+    },
+    {
+      "path": "hepta-original-sandbox-host/sandbox-host-capability.json",
+      "bytes": 1514,
+      "sha256": "39069dc286a582b69c3171724dae114d6fe892fd26e4db53c4c64f0398b050e7"
+    },
+    {
+      "path": "hepta-original-sandbox-host/sandbox-host-capability.json.caaf8bf2c9ea4592b22325e3ff7bb019.log",
+      "bytes": 61,
+      "sha256": "ed3471f7900377f86150471417911309833a36d664cb5af7409e139103f67ddf"
+    },
+    {
+      "path": "hepta-original-sandbox-host/source-after.txt",
+      "bytes": 82,
+      "sha256": "4f7cb248272e9164d33d93529af6f528e27fa5c07d85317937dcaa6fd22bb638"
+    },
+    {
+      "path": "hepta-original-sandbox-host/source-status-after.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "hepta-original-sandbox-host/source-status.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "hepta-original-sandbox-host/source.txt",
+      "bytes": 82,
+      "sha256": "4f7cb248272e9164d33d93529af6f528e27fa5c07d85317937dcaa6fd22bb638"
+    },
+    {
+      "path": "hepta-original-sandbox-host/uid.txt",
+      "bytes": 5,
+      "sha256": "d6a1a767319c3bf2a337b16e3a14916f63e432872e0f8df1cb73b32a8b338ae4"
+    },
+    {
+      "path": "hepta-original-sandbox-host/unprivileged_userns_clone.txt",
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "path": "hepta-original-sandbox-host.sha256",
+      "bytes": 2638,
+      "sha256": "e64eaa627124a6240d4f81c27ebb608b7648f2d74acac808797b8c548694959a"
+    }
+  ]
+}

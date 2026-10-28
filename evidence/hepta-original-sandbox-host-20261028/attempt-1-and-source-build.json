@@ -1,0 +1,20 @@
+{
+  "schema": "hepta-host-capability-attempt-1-v1",
+  "source": "80ce9e5a95e8f2195f82276cddc29068eebc03af",
+  "run": 40621425121,
+  "ubuntu26_job": 122596121738,
+  "ubuntu26_result": "FAILED_BEFORE_PROBE: setup-python lacks exact3.12.3 for ubuntu26.04; finalizer also lacked OUT because initialization was too late",
+  "ubuntu24_job": 122596122007,
+  "ubuntu24_result": "ACTUAL_ORIGINAL_PROBE_FAILURE: identical61byteRTM_NEWADDR log, source before/after equal, AppArmor enabled and userns restriction1",
+  "success_claimed": false,
+  "successor_change": "initialize evidence before runtime setup; exact original CPython source build on26 only",
+  "new_source_build_seconds": 420,
+  "original_job_seconds": 600,
+  "original_probe_seconds": 0.5,
+  "old_image_runtime_version_unchanged": "3.12.3",
+  "new_image_runtime_version_required": "3.12.3",
+  "source_sha256": "56bfef1fdfc1221ce6720e43a661e3eb41785dd914ce99698d8c7896af4bdaa1",
+  "official_sigstore_message_digest_matches": true,
+  "sigstore_signature_verification_performed": false,
+  "new_host_capability": "NOT_RUN_AT_SOURCE_FREEZE"
+}

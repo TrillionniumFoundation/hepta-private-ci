@@ -1,0 +1,19 @@
+{
+  "schema": "hepta-host-source-build-validation-v1",
+  "yaml": "PASS",
+  "bash_steps": [
+    "Initialize evidence before runtime prerequisites",
+    "Build the exact original Python on the new hosted image",
+    "Preserve actual host and exact source metadata",
+    "Install the original distribution sandbox prerequisite",
+    "Require the actual original 500ms user and network namespace probe",
+    "Recheck unchanged source and preserve bounded metadata"
+  ],
+  "just_fmt_exit_code": 0,
+  "original_job_seconds": 600,
+  "original_probe_seconds": 0.5,
+  "new_source_build_seconds": 420,
+  "changed_python_source": false,
+  "native_source_build_status": "NOT_RUN",
+  "new_host_capability": "NOT_RUN"
+}
