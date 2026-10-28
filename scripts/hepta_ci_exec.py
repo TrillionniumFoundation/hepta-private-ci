@@ -273,6 +273,8 @@ def execute_logged(
     success. This owner must be its direct child's sole reaper. Escaped sessions
     require an external sandbox and are not claimed to be terminated. Signals,
     scheduling, reaping and filesystem I/O are not hard real-time guarantees.
+    Diagnostics go to the retained raw log only: forwarding them to a console
+    pipe can block this owner before its next deadline check.
     """
     if (
         not command
@@ -360,9 +362,6 @@ def execute_logged(
                         kept = chunk[:remaining]
                         stream.write(kept)
                         data.extend(kept)
-                        print(
-                            kept.decode("utf-8", errors="replace"), end="", flush=True
-                        )
                         if len(chunk) > remaining:
                             exceeded = True
                             break
@@ -516,7 +515,9 @@ def run(
             pending.replace(output)
         finally:
             pending.unlink(missing_ok=True)
-        print(json.dumps(record, sort_keys=True), flush=True)
+        # The durable JSON file is the result channel. Printing an arbitrarily
+        # large command/receipt here could block after cleanup on the same
+        # unread console pipe that must not suspend the command deadline.
     return exit_code
 
 
