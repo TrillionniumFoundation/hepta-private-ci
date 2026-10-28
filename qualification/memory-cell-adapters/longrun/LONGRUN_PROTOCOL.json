@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.memory.adapter-longrun-protocol.v1",
+  "scope": "Bounded canonical-address semantic memory maintenance; no held language, native runtime, or superiority claim",
+  "seeds": [731, 732, 733],
+  "cycles_per_seed": 64,
+  "stage_indexing": "1 through 64 inclusive",
+  "initial_study": "/workspace/scratch/76e2020e4b36/memory-adapter-formal-01",
+  "start_gate": "models/TRAINING.json exists and training.process.json has exit_code 0 with matching trainer PID",
+  "update_entity": "stage % 8",
+  "new_policy": {
+    "reserve": "2 + ((5*stage + 3*entity + seed%7) % 12)",
+    "pack": "1 + ((stage + entity) % 7)",
+    "limit": "8 + ((3*stage + entity) % 8)"
+  },
+  "source_versioning": "Increment entity version for each new active source; identity is SHA256(canonical([hepta.adapter.longrun.source.v1, seed, entity, version, stage]))",
+  "reentry": "At the following cycle, reactivate the previously deleted entity with a newly versioned independent source. Coalesce with that cycle's regular mutation if both address the same entity. The final-cycle deletion remains inactive at the horizon.",
+  "stale_probe": "Before every update fit, load actual previous checkpoint in manager, deny SQL payload access, and require each changed active source to return stale_source without any model forward. The manager separately owns source truth and is not claimed target-blind.",
+  "fit": {"steps": 600, "batch_size": 32, "lr": 0.01, "train_head": true, "threads": 1, "sample_seed": "seed + stage", "replay": "all and only currently active canonical semantic rows", "support": "replace authorized source_ids with the current active set after fit"},
+  "deletion": {"frequency": 8, "entity": "(stage // 8) % 8", "timing": "after regular update and its fresh read", "operation": "mark source inactive, verify old model returns revoked before prediction, then rebuild from initial architecture and seed without loading any prior parameters", "rebuild_fit": "same fixed 600 steps, batch 32, lr .01, all and only active sources"},
+  "expected_fits": {"updates": 192, "clean_rebuilds": 24, "total_steps": 129600, "total_sample_presentations": 4147200},
+  "fresh_reads": {"initial": 3, "after_update": 192, "after_rebuild": 24, "sequence": "each trainer process exits before its fresh reader starts; that reader exits before any next trainer", "addresses": "all eight declared semantic entities, including inactive ones", "parameter_guard": "SQLite authorizer denies sources.payload and query_only forbids writes", "baseline": "actual exact-SQL lookup through the same owner, source state, addresses, and stop contract", "truth": "scored only by manager; reader imports no target generator, corpus, evaluator, or trainer"},
+  "metrics": ["exact active-value quality", "retention on unchanged active entities", "updated-entity quality", "revoked refusal", "stale refusal before fit", "owner stop without subsequent reads", "raw results and parameter identities", "full process wall and CPU including startup and failures", "peak RSS", "logical writes and process IO counters", "current and historical checkpoint bytes", "source SQLite and logical payload bytes", "shared encoder reference and canonical feature bytes"],
+  "failure_policy": "One fixed-budget attempt per phase. Preserve stdout, stderr, request, exit status and timing. A failed fit keeps the previous checkpoint for the ensuing read and counts as failure; later scheduled cycles still replay current sources. No retuning, selective omission, early success stop, or best-checkpoint selection.",
+  "resource_policy": {"simultaneous_training_workers": 1, "child_timeout_seconds": 180, "minimum_free_bytes_before_cycle": 20971520, "low_space_action": "persist pause marker and wait for operator-provided space; never delete evidence", "outer_monitor": "qualification/memory-cell-v9/learning/resource_monitor.py", "monitor_interval_ms": 200, "monitor_timeout_seconds": 3600, "monitor_watch": "complete actual longrun output directory including retained evidence", "accounting": "retain raw samples, unknown intervals, RSS/PSS/CPU and storage integrals; do not add independent process peaks"},
+  "cost_interpretation": "Exact SQL is a same-information lookup baseline. The workload has only eight entities, synthetic policy changes, and 64 bounded cycles; neither global memory emergence nor superiority over traditional storage is established. Shared encoder was previously trained and is not rerun; its referenced storage is accounted separately from incremental local writes. Historical checkpoints retain evidence of old sources and are not a physical-erasure guarantee."
+}
