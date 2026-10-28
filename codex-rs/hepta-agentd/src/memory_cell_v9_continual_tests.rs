@@ -24,6 +24,8 @@ mod data;
 mod fit;
 #[path = "memory_cell_prospective_direct.rs"]
 mod direct;
+#[path = "memory_cell_v9_structure_tests.rs"]
+mod structure;
 
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
