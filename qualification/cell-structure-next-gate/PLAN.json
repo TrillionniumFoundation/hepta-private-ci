@@ -1,0 +1,142 @@
+{
+  "schema": "hepta.cell-structure.gate-plan.v1",
+  "gate_id": "cell-structure-next-gate",
+  "version": 1,
+  "scope": "Prospective bounded adaptive cell structure evidence; no universal intelligence, autonomous neuron genesis, production selection or native runtime resource claim.",
+  "protocol_frozen": true,
+  "execution_registration_required": true,
+  "execution_registration_status": "pending: no new corpus, source freeze, budget registration or measured run is supplied",
+  "seeds": [
+    9101,
+    9102,
+    9103,
+    9104,
+    9105,
+    9106,
+    9107,
+    9108
+  ],
+  "arms": [
+    "dynamic_cells",
+    "static_typed_graph",
+    "fixed_experts",
+    "equal_parameter_monolith",
+    "exact_typed_lookup",
+    "distributed_dynamic_cells",
+    "distributed_static_graph"
+  ],
+  "primary_candidate": "dynamic_cells",
+  "primary_baselines": [
+    "static_typed_graph",
+    "fixed_experts",
+    "equal_parameter_monolith"
+  ],
+  "network_candidate": "distributed_dynamic_cells",
+  "network_baselines": [
+    "distributed_static_graph",
+    "dynamic_cells"
+  ],
+  "reference_arm": "exact_typed_lookup",
+  "families": [
+    "inventory_policy",
+    "bounded_program_transfer",
+    "relational_query"
+  ],
+  "axes": [
+    "wording_ood",
+    "entity_ood",
+    "task_ood",
+    "joint_ood"
+  ],
+  "minimum_cases_per_family_axis": 64,
+  "minimum_unknown_cases_per_family": 64,
+  "minimum_distinct_wording_groups": 16,
+  "minimum_new_entities": 32,
+  "minimum_new_tasks": 12,
+  "retention_cycles": [
+    0,
+    1,
+    8,
+    16,
+    32,
+    64
+  ],
+  "minimum_retained_capabilities": 64,
+  "metrics": {
+    "known_coverage_min": 0.9,
+    "accepted_error_rate_max": 0.01,
+    "unknown_acceptances_max": 0,
+    "quality_gain_min": 0.02,
+    "quality_noninferiority_tolerance": 0.005,
+    "cost_gain_ratio_max": 0.9,
+    "quality_gain_cost_ratio_max": 1.05,
+    "retention_drop_max": 0.01,
+    "deletion_counterfactual_agreement_min": 0.99
+  },
+  "matching_fields": [
+    "available_information_sha256",
+    "input_contract_sha256",
+    "output_contract_sha256",
+    "base_assets_sha256",
+    "training_row_exposure_sha256",
+    "target_presentations",
+    "feature_presentations",
+    "trainable_parameters",
+    "unique_total_parameters",
+    "training_compute_cap",
+    "search_trial_cap"
+  ],
+  "cost_phases": [
+    "preparation",
+    "representation",
+    "search",
+    "training",
+    "selection",
+    "evaluation",
+    "serving",
+    "maintenance",
+    "migration",
+    "deletion",
+    "recovery",
+    "retention"
+  ],
+  "cost_weights": {
+    "cpu_ns": 1e-09,
+    "gpu_ns": 1e-08,
+    "energy_joules": 0.0002777777777777778,
+    "pss_byte_ns": 9.313225746154786e-19,
+    "storage_byte_ns": 9.094947017729283e-22,
+    "network_bytes": 9.313225746154786e-11
+  },
+  "cost_semantics": "Frozen dimensionless research resource index, not money. Compare candidate upper bounds to control lower bounds. Preserve every raw resource, global wall interval, failed attempt, shared asset once per deployment, duplicated checkpoint, route/encoder/source/cache, and unknown interval. Unbounded missing costs hold the claim. CPU and energy are deliberately separate charged terms. Per-stage child wall sums are never global wall time.",
+  "decision_rule": "All registered seeds, task families and OOD axes must meet coverage/error limits and beat every primary control: quality gain >=0.02 with total lifecycle cost upper <=1.05*control lower, or quality within 0.005 with cost upper <=0.90*control lower. Network comparison uses the same rule against distributed static and single-node dynamic, plus real distinct physical hosts. No IID query-row p-value or universal extrapolation.",
+  "data_policy": "Train/calibration/held expressions are independently frozen; entity/task OOD is disjoint from train and calibration on its axis. All arms receive identical information and input/output contracts. The evaluator alone opens held gold after all training/selection processes exit. No easier decomposition contract for cells; exact typed lookup is a reference rather than an invented general RAG benchmark.",
+  "structure_policy": "At least one executed split or merge changes the graph per seed for each dynamic arm; all decisions use train/calibration only and every accepted/rejected candidate and its cost remains in receipts. Tensor parameter identities and independent reload must be verified; no named-node-only simulation.",
+  "retention_policy": "Score the same registered pre-existing capability set before/after 1,8,16,32,64 updates; new entities/tasks must grow beyond the prior eight addresses. Compare every control and own initial capability. Permissions, emergency stop, source revocation and device privacy remain exact external authority, never learned.",
+  "deletion_policy": "Separate immediate access revocation, retained-data clean rebuild agreement, continuing ability retention and historical artifact retention. No claim of universal machine unlearning or physical erasure from finite output agreement. All rebuild/audit/storage costs are charged.",
+  "migration_policy": "Require independent physical-machine inventory, different machine fingerprints, non-loopback transport, exact source/destination artifact hashes, fresh receiver observations, full transfer/synchronization/recovery costs and same aggregate parameters/information/budget. Loopback TCP, processes, containers or node labels on one physical machine do not meet this axis.",
+  "prohibited_substitutes": [
+    "native_agent_pss",
+    "native_agent_latency",
+    "ndu_single_task",
+    "queue_contract_tests",
+    "loopback_only_migration",
+    "prior_evidence_only"
+  ],
+  "required_artifact_kinds": [
+    "registration",
+    "source_manifest",
+    "split_manifest",
+    "training_receipts",
+    "evaluation_observations",
+    "cost_ledger",
+    "structure_trace",
+    "retention_observations",
+    "deletion_observations",
+    "physical_host_inventory",
+    "migration_observations",
+    "independent_audit"
+  ],
+  "production_authority": false,
+  "general_intelligence_claim_supported": false
+}
