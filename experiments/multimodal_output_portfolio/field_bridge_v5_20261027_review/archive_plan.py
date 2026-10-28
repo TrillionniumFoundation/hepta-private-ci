@@ -77,9 +77,13 @@ def collect(run, assets, freeze_path, logs):
     for name, identity in media["independent_arithmetic_sources"].items():
         bind_source(name, identity)
     bind_source("field_bridge_v5_20261027_review/media_reaudit.py", media["script_sha256"])
+    report_names = ["AUDIT.json", "MEDIA_AUDIT.json"]
     if audit["integrity_status"] == "FAIL":
         for name, identity in diagnostic["diagnostic_sources"].items():
             bind_source("field_bridge_v5_20261027_review/" + name, identity)
+        report_names.append("WITHIN_RUN_AUDIT.json")
+    for name in report_names:
+        bind_source("field_bridge_v5_20261027_review/evidence/" + name, file_hash(run / name))
     sources = {portfolio / name for name in expected_sources}
     sources.update([Path(__file__).resolve(), Path(__file__).with_name("media_reaudit.py").resolve(),
                     portfolio / "field_bridge_v3_20261027_review/archive_build.py",
