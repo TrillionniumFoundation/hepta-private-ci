@@ -7,6 +7,8 @@ mod audio;
 mod authbus_fixture;
 #[path = "support/hmi_product.rs"]
 mod hmi_fixture;
+#[path = "hmi_owner_v3/interleaving_tests.rs"]
+mod interleaving;
 #[path = "hmi_owner_v3/lifecycle_tests.rs"]
 mod lifecycle;
 #[path = "hmi_owner_v3/pressure_tests.rs"]

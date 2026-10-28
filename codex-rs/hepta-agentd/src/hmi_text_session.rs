@@ -12,6 +12,7 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 use serde::Deserialize;
 use std::future::Future;
 use std::pin::Pin;
+use std::sync::Mutex;
 use tokio::io::AsyncBufRead;
 use tokio::io::AsyncBufReadExt;
 
@@ -43,6 +44,53 @@ enum Command {
     Stop,
 }
 type Pending = Pin<Box<dyn Future<Output = Value> + Send>>;
+#[derive(Clone)]
+struct OwnedSubmission {
+    delivery: String,
+    text: String,
+}
+type OwnedInput = Arc<Mutex<Option<OwnedSubmission>>>;
+
+// External AuthBus admission does not install Core's queued ID in HmiRequests.
+// Retain only the input this connection actually armed, never a duplicate or a
+// rejected competing input, and reconcile its original identity when retiring.
+async fn cancel_owned(
+    requests: &HmiRequestsV1,
+    authority: &OwnerAuthority,
+    owned: &OwnedInput,
+) -> Value {
+    let original = match owned.lock() {
+        Ok(input) => input.clone(),
+        Err(_) => return json!({"status":"unknown","error":"original input lock poisoned","terminalObserved":false}),
+    };
+    let Some(original) = original else { return Value::Null; };
+    // AuthBus acknowledgement can precede the relay's Core receipt. A single
+    // Missing lookup cannot cancel that durable input. Keep reconciling its
+    // original identity within the cleanup budget; never create a replacement.
+    let result = tokio::time::timeout(Duration::from_secs(3), async {
+        loop {
+            authority.check_current(requests.binding()).map_err(invalid)?;
+            let receipt = requests.cancel_owner_submission(
+                requests.binding().organ_generation,
+                &format!("hepta.authbus:{}", original.delivery),
+                &original.text,
+            ).await.map_err(invalid)?;
+            if !matches!(receipt.outcome, codex_app_server_protocol::ThreadQueueReconcileOutcome::Missing) {
+                return Ok::<_, AgentdError>(receipt);
+            }
+            tokio::time::sleep(Duration::from_millis(25)).await;
+        }
+    }).await.unwrap_or_else(|_| Err(invalid("Core cancellation receipt timed out; reconcile the original delivery ID")));
+    match result {
+        Ok(receipt) => {
+            let missing = matches!(receipt.outcome, codex_app_server_protocol::ThreadQueueReconcileOutcome::Missing);
+            json!({"deliveryId":original.delivery,"status":if missing {"unknown"} else {"requested"},
+                "reconciliation":receipt,"terminalObserved":false,
+                "error":missing.then_some("original input has no Core receipt; cancellation must reconcile the original delivery ID")})
+        }
+        Err(error) => json!({"deliveryId":original.delivery,"status":"unknown","error":error.to_string(),"terminalObserved":false}),
+    }
+}
 fn args(state: &AgentdState) -> Result<RemoteAppServerConnectArgs, AgentdError> {
     Ok(RemoteAppServerConnectArgs {
         endpoint: RemoteAppServerEndpoint::UnixSocket {
@@ -149,6 +197,7 @@ fn submit(
     input: SignedInput,
     tx: &Sender,
     authority: &OwnerAuthority,
+    owned: &OwnedInput,
 ) -> Result<Pending, AgentdError> {
     let delivery = input.authenticate(&state)?;
     if input.key_epoch() != authority.key_epoch || input.audio_policy() != authority.audio_policy {
@@ -163,6 +212,7 @@ fn submit(
     }
     let fence = requests.owner_admission_fence().map_err(invalid)?;
     let context = input.context(&delivery);
+    let owned = owned.clone();
     emit(tx, json!({"type":"admissionPending","input":context}))?;
     Ok(Box::pin(async move {
         let lookup = async {
@@ -170,15 +220,20 @@ fn submit(
             let id = delivery.parse().map_err(invalid)?;
             match host.evidence.authbus_delivery_status(id).await {
                 Ok(_) => Ok(()), // Existing durable input never rearms presentation after reconnect.
-                Err(codex_hepta_evidence::AuthBusOutboxError::NotFound) => requests
-                    .observe_owner_submission(
+                Err(codex_hepta_evidence::AuthBusOutboxError::NotFound) => {
+                    requests.observe_owner_submission(
                         fence,
                         requests.binding().organ_generation,
                         input.sequence(),
                         &format!("hepta.authbus:{delivery}"),
                         input.text(),
                     )
-                    .map_err(invalid),
+                    .map_err(invalid)?;
+                    *owned.lock().map_err(|_|invalid("original input lock poisoned"))? = Some(OwnedSubmission {
+                        delivery: delivery.clone(), text: input.text().to_owned(),
+                    });
+                    Ok(())
+                }
                 Err(error) => Err(invalid(error)),
             }
         }
@@ -243,6 +298,8 @@ pub(super) async fn serve<R: AsyncBufRead + Unpin>(
         authority.clone(),
         tx.clone(),
     )?;
+    let mut owned: OwnedInput = Arc::new(Mutex::new(None));
+    let mut cancel_after_pending = false;
     let mut pending = if admit {
         Some(submit(
             state.clone(),
@@ -250,6 +307,7 @@ pub(super) async fn serve<R: AsyncBufRead + Unpin>(
             input,
             tx,
             &authority,
+            &owned,
         )?)
     } else {
         None
@@ -270,6 +328,12 @@ pub(super) async fn serve<R: AsyncBufRead + Unpin>(
             result=async {match &mut pending {Some(future)=>future.await,None=>std::future::pending().await}}=>{
                 pending.take();
 
+                if cancel_after_pending {
+                    cancel_after_pending=false;
+                    let cancellation=cancel_owned(&requests,&authority,&owned).await;
+                    if let Err(error)=emit(tx,json!({"type":"originalCancellation","outcome":cancellation})){break Err(error);}
+                }
+
                 if let Err(error)=authority.check_current(requests.binding()){last_diagnostic=Some(result);break Err(invalid(error));}
                 if let Err(error)=emit(tx,result){break Err(error);}
             }
@@ -281,11 +345,11 @@ pub(super) async fn serve<R: AsyncBufRead + Unpin>(
                     Command::Stop=>break Ok(()),
                     Command::Submit {request}=>{
                         if pending.is_some(){if let Err(error)=emit(tx,json!({"type":"inputError","error":"input slot busy"})){break Err(error);}continue;}
-                        match submit(state.clone(),requests.clone(),SignedInput::Text(request),tx,&authority){Ok(future)=>pending=Some(future),Err(error)=>{if let Err(error)=emit(tx,json!({"type":"inputError","error":error.to_string()})){break Err(error);}}}
+                        match submit(state.clone(),requests.clone(),SignedInput::Text(request),tx,&authority,&owned){Ok(future)=>pending=Some(future),Err(error)=>{if let Err(error)=emit(tx,json!({"type":"inputError","error":error.to_string()})){break Err(error);}}}
                     }
                     Command::SubmitAudio {request}=>{
                         if pending.is_some(){if let Err(error)=emit(tx,json!({"type":"inputError","error":"input slot busy"})){break Err(error);}continue;}
-                        match submit(state.clone(),requests.clone(),SignedInput::Audio(request),tx,&authority){Ok(future)=>pending=Some(future),Err(error)=>{if let Err(error)=emit(tx,json!({"type":"inputError","error":error.to_string()})){break Err(error);}}}
+                        match submit(state.clone(),requests.clone(),SignedInput::Audio(request),tx,&authority,&owned){Ok(future)=>pending=Some(future),Err(error)=>{if let Err(error)=emit(tx,json!({"type":"inputError","error":error.to_string()})){break Err(error);}}}
                     }
                     Command::Attach {..}=>{if let Err(error)=emit(tx,json!({"type":"inputError","error":"attach is only valid as the first command"})){break Err(error);}}
                     Command::ReconcileAudio {request}=>{
@@ -317,14 +381,26 @@ pub(super) async fn serve<R: AsyncBufRead + Unpin>(
                             Err(error)=>json!({"type":"inputError","deliveryId":delivery_id,"error":error.to_string()}),
                         }}));
                     }
-                    Command::Interrupt=>{let outcome=owner.interrupt().await;if let Err(error)=emit(tx,json!({"type":"interruptRequested","outcome":outcome})){break Err(error);}}
+                    Command::Interrupt=>{
+                        let outcome=owner.interrupt().await;
+                        let cancellation=if pending.is_some(){
+                            cancel_after_pending=true;
+                            json!({"status":"pending","deliveryId":owned.lock().ok().and_then(|input|input.as_ref().map(|input|input.delivery.clone())),"terminalObserved":false})
+                        }else{cancel_owned(&requests,&authority,&owned).await};
+                        if let Err(error)=emit(tx,json!({"type":"interruptRequested","outcome":outcome,"originalCancellation":cancellation})){break Err(error);}
+                    }
                     Command::Reconnect=>{
                         if pending.is_some(){if let Err(error)=emit(tx,json!({"type":"inputError","error":"input slot busy"})){break Err(error);}continue;}
                         let _=owner.interrupt().await;
+                        let cancellation=cancel_owned(&requests,&authority,&owned).await;
+                        if cancellation["status"]=="unknown" {
+                            if let Err(error)=emit(tx,json!({"type":"inputError","error":"original cancellation remains unknown; reconcile the original delivery ID before reconnecting","originalCancellation":cancellation})){break Err(error);}
+                            continue;
+                        }
                         let Some(old)=connection.take() else{break Err(invalid("connection missing"));};
                         match old.reconnect(args(state)?,32).await {
-                            Ok(new)=>{requests=new.requests.clone();owner=bridge(&new,authority.clone(),tx.clone())?;connection=Some(new);
-                                if let Err(error)=emit(tx,json!({"type":"reconnected","connectionId":requests.connection_id(),"binding":requests.binding()})){break Err(error);}},
+                            Ok(new)=>{requests=new.requests.clone();owner=bridge(&new,authority.clone(),tx.clone())?;connection=Some(new);owned=Arc::new(Mutex::new(None));
+                                if let Err(error)=emit(tx,json!({"type":"reconnected","connectionId":requests.connection_id(),"binding":requests.binding(),"originalCancellation":cancellation})){break Err(error);}},
                             Err(error)=>break Err(invalid(error)),
                         }
                     }
@@ -343,6 +419,7 @@ pub(super) async fn serve<R: AsyncBufRead + Unpin>(
     };
     let interrupted = owner.interrupt().await;
     let pending_outcome=match pending {Some(future)=>Some(tokio::time::timeout(Duration::from_secs(5),future).await.unwrap_or_else(|_|json!({"type":"unknown","error":"original admission still ambiguous; reconcile original delivery ID"}))),None=>None};
+    let original_cancellation=cancel_owned(&requests,&authority,&owned).await;
     let _ = requests.revoke();
     let shutdown = match connection {
         Some(connection) => connection
@@ -356,7 +433,7 @@ pub(super) async fn serve<R: AsyncBufRead + Unpin>(
     emit(
         tx,
         json!({"type":"sessionTerminal","error":result.as_ref().err().map(std::string::ToString::to_string),"interruption":interrupted,
-        "pendingOutcome":pending_outcome,"shutdownError":shutdown,"binding":requests.binding(),"lastDiagnostic":last_diagnostic}),
+        "pendingOutcome":pending_outcome,"originalCancellation":original_cancellation,"shutdownError":shutdown,"binding":requests.binding(),"lastDiagnostic":last_diagnostic}),
     )?;
     result
 }
