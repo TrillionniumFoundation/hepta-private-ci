@@ -1,5 +1,13 @@
 use super::*;
 
+pub(super) struct TextSubmission<'a> {
+    pub current_generation: u64,
+    pub sequence: u64,
+    pub request_id: &'a str,
+    pub text: &'a str,
+    pub mode: ThreadQueueReconcileMode,
+}
+
 impl HmiRequestsV1 {
     pub(super) fn id(&self) -> RequestId {
         RequestId::Integer(self.shared.request_id.fetch_add(1, Ordering::Relaxed))
@@ -42,6 +50,17 @@ impl HmiRequestsV1 {
         text: &str,
         mode: ThreadQueueReconcileMode,
     ) -> Result<ThreadQueueReconcileResponse, HmiError> {
+        self.submit_text_scoped(TextSubmission {current_generation,sequence,request_id,text,mode},None).await
+    }
+
+    /// Validate the ingress epoch under the same lock that arms Core admission.
+    /// A prior check alone leaves a cross-thread interrupt-to-arm race.
+    pub(super) async fn submit_text_scoped(
+        &self,
+        input: TextSubmission<'_>,
+        fence: Option<HmiOwnerAdmissionFenceV1>,
+    ) -> Result<ThreadQueueReconcileResponse, HmiError> {
+        let TextSubmission {current_generation,sequence,request_id,text,mode}=input;
         if text.trim().is_empty() || text.len() > MAX_TEXT_BYTES {
             return Err(HmiError::Invalid("text"));
         }
@@ -62,6 +81,7 @@ impl HmiRequestsV1 {
             if state.fenced || current_generation != self.shared.binding.organ_generation {
                 return Err(HmiError::Fenced);
             }
+            if let Some(fence)=&fence {fence.validate(&self.shared,&state)?;}
             if mode == ThreadQueueReconcileMode::AllowIfAbsent {
                 let identical =
                     state.pending.as_ref() == Some(&(client_id.clone(), digest.clone()));

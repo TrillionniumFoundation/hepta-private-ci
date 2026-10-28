@@ -1,4 +1,6 @@
 //! Synthetic owner/media peers exercise wiring, not real authority or devices.
+#[path = "hmi_owner_interleaving_tests.rs"]
+mod interleaving;
 use super::*;
 use crate::hmi::tests::*;
 use futures::StreamExt;

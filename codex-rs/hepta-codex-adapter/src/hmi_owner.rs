@@ -440,9 +440,16 @@ impl<A: HmiOwnerAuthorityV1, M: HmiOwnerMediaV1, O: HmiOwnerObservationsV1>
                 }
                 hepta_sequence = state.sequence.checked_add(1).ok_or(HmiError::Fenced)?;
             }
+            let admission_fence = if effective_mode == ThreadQueueReconcileMode::AllowIfAbsent {
+                Some(self.requests.owner_admission_fence()?)
+            } else { None };
             outcome.stage = "verifyMedia".into();
             self.media.verify_source(source).await?;
             self.current()?;
+            if let Some(fence)=&admission_fence {
+                let state=self.requests.shared.state.lock().map_err(|_|HmiError::Fenced)?;
+                fence.validate(&self.requests.shared,&state)?;
+            }
             self.input.lock().map_err(|_| HmiError::Fenced)?.last =
                 Some((key.0, key.1, digest.clone(), hepta_sequence));
             outcome.stage = "observeFinal".into();
@@ -462,13 +469,13 @@ impl<A: HmiOwnerAuthorityV1, M: HmiOwnerMediaV1, O: HmiOwnerObservationsV1>
             outcome.stage = "coreAdmission".into();
             outcome.admission = Some(
                 self.requests
-                    .submit_text(
-                        binding.organ_generation,
-                        hepta_sequence,
-                        &request_id,
-                        &outcome.input.text,
-                        effective_mode,
-                    )
+                    .submit_text_scoped(super::requests::TextSubmission {
+                        current_generation:binding.organ_generation,
+                        sequence:hepta_sequence,
+                        request_id:&request_id,
+                        text:&outcome.input.text,
+                        mode:effective_mode,
+                    },admission_fence)
                     .await?,
             );
             Ok(())
