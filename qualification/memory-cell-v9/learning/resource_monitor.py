@@ -12,7 +12,6 @@ import json
 import os
 from pathlib import Path
 import resource
-import signal
 import subprocess
 import sys
 import time
@@ -20,6 +19,7 @@ import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from resource_samples import process_inventory, process_stat, storage_snapshot, validate_roots, visible_pid
+from resource_cleanup import cleanup_tree, reap_child
 
 
 def encoded(value):
@@ -92,20 +92,24 @@ def run(args):
     totals = {name: {'trapezoid_numerator_byte_ns': 0, 'observed_interval_ns': 0,
                      'unobserved_interval_ns': 0} for name in metrics}
     peaks = {name: None for name in metrics}
-    previous, samples, child_usage, exited, timed_out = None, 0, None, False, False
+    previous, first_sample_at, samples, child_usage, exited, timed_out = None, None, 0, None, False, False
     root_pid, root_visible_pid, status, sample_hash = 0, None, None, hashlib.sha256()
     sample_bytes, sample_errors, max_gap, spawned_at, exited_at = 0, 0, 0, None, None
+    monitor_error, launch_error, process = None, None, None
+    cleanup = {'requested': False, 'signals': [], 'residual_live': [], 'residual_identity_errors': [],
+               'observed_tree_stopped': True}
     with stdout_path.open('xb') as stdout, stderr_path.open('xb') as stderr, sample_path.open('xb') as sample_log:
-        # A new session bounds timeout cleanup to this explicitly launched command.
-        process = subprocess.Popen(command, stdout=stdout, stderr=stderr, start_new_session=True)
-        root_pid = process.pid
-        spawned_at = time.monotonic_ns()
-        monitor_error = None
         try:
+            # The fresh session and unreaped direct child anchor group cleanup.
+            process = subprocess.Popen(command, stdout=stdout, stderr=stderr, start_new_session=True)
+            root_pid = process.pid
+            spawned_at = time.monotonic_ns()
             root_visible_pid = visible_pid(root_pid)
             known[root_visible_pid] = process_stat(root_visible_pid)['start_ticks']
             while True:
                 current = observe(root_visible_pid, known, roots, began)
+                if first_sample_at is None:
+                    first_sample_at = current['monotonic_ns']
                 if previous is not None:
                     max_gap = max(max_gap, current['monotonic_ns'] - previous['monotonic_ns'])
                     integrate(previous, current, totals)
@@ -134,33 +138,33 @@ def run(args):
                 if (elapsed > int(args.timeout_seconds * 1e9) or sample_bytes > 64 * 1024 * 1024
                         or stdout_path.stat().st_size + stderr_path.stat().st_size > 64 * 1024 * 1024):
                     timed_out = True
-                    try:
-                        os.killpg(root_pid, signal.SIGKILL)
-                    except ProcessLookupError:
-                        pass
-                    if not exited:
-                        _, raw_status, resources = os.wait4(root_pid, 0)
+                    break
+                time.sleep(args.interval_ms / 1000)
+        except BaseException as error:
+            monitor_error = f'{type(error).__name__}: {error}'
+            if process is None:
+                launch_error = monitor_error
+        finally:
+            if process is not None:
+                if monitor_error is not None or timed_out or not exited:
+                    cleanup = cleanup_tree(root_pid, root_visible_pid, exited, known, monitor_visible_pid)
+                if not exited:
+                    waited, raw_status, resources = reap_child(root_pid)
+                    if waited:
                         exited, status, child_usage = True, os.waitstatus_to_exitcode(raw_status), usage(resources)
                         exited_at = time.monotonic_ns()
                         process.returncode = status
-                    break
-                time.sleep(args.interval_ms / 1000)
-        except Exception as error:
-            monitor_error = f'{type(error).__name__}: {error}'
-        finally:
-            if not exited:
-                try:
-                    os.killpg(root_pid, signal.SIGKILL)
-                except ProcessLookupError:
-                    pass
-                _, raw_status, resources = os.wait4(root_pid, 0)
-                exited, status, child_usage = True, os.waitstatus_to_exitcode(raw_status), usage(resources)
-                exited_at = time.monotonic_ns()
-                process.returncode = status
+                    else:
+                        monitor_error = monitor_error or 'direct child did not exit within bounded cleanup'
         os.fsync(sample_log.fileno())
     observation_ended = time.monotonic_ns()
+    pre_gap = (first_sample_at if first_sample_at is not None else observation_ended) - began
+    post_gap = observation_ended - previous['monotonic_ns'] if previous is not None else 0
     for value in totals.values():
-        value['sampled_byte_ns_estimate'] = value['trapezoid_numerator_byte_ns'] // 2
+        value['unobserved_interval_ns'] += pre_gap + post_gap
+        value['sampled_byte_ns_estimate'] = (value['trapezoid_numerator_byte_ns'] // 2
+                                           if value['observed_interval_ns'] > 0 else None)
+        value['estimate_scope'] = 'observed inter-sample intervals only; unknown intervals excluded'
         value['exact_continuous_integral'] = False
     receipt = {'schema': 'hepta.memory.v9.sampled-lifecycle.v1', 'command': command,
         'monitor_pid': os.getpid(), 'child_pid': root_pid,
@@ -169,6 +173,8 @@ def run(args):
         'started_monotonic_ns': began, 'child_spawned_monotonic_ns': spawned_at,
         'child_reaped_monotonic_ns': exited_at, 'observations_ended_monotonic_ns': observation_ended,
         'wall_ns_through_observation_close': observation_ended - began,
+        'sampling_gaps': {'before_first_sample_ns': pre_gap, 'after_last_sample_ns': post_gap,
+                          'included_in_unobserved_intervals': True},
         'child_exit_rusage': child_usage, 'monitor_rusage_before_final_receipt': usage(resource.getrusage(resource.RUSAGE_SELF)),
         'ru_maxrss_unit': 'KiB on this Linux profile',
         'rusage_scope': 'Kernel wait4 accounting for the directly waited command; not a per-descendant sum.',
@@ -187,8 +193,10 @@ def run(args):
             'Only registered regular file data stocks are measured; filesystem metadata and remote storage are not.',
             'Final receipt serialization/fsync and monitor exit follow the last sample; parent must measure that tail.',
         ], 'full_cost_exact': False,
-        'monitor_error': monitor_error, 'all_sample_points_complete': sample_errors == 0,
-        'passed': monitor_error is None and exited and status == 0 and not timed_out and samples > 0 and child_usage is not None}
+        'monitor_error': monitor_error, 'launch_error': launch_error, 'cleanup': cleanup,
+        'all_sample_points_complete': monitor_error is None and samples > 0 and sample_errors == 0,
+        'passed': monitor_error is None and exited and status == 0 and not timed_out and samples > 0
+                  and child_usage is not None and cleanup['observed_tree_stopped']}
     with output.open('xb') as handle:
         handle.write(encoded(receipt))
         handle.flush()
