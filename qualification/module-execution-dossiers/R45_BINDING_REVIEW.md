@@ -57,12 +57,21 @@ qualification dependencies of the sparse checkout. Its
 `historicalEvidenceRevalidated` result remains `false`. The algorithm document
 registry and generated status checks also passed.
 
-The stronger `verify-repository` command now passes the complete current source,
-entrypoint, test-file, runtime-document and native binding checks. Its final
-committed-document check correctly rejects the uncommitted candidate
-`IMPLEMENTATION_PROFILES.json`. The full repository attestation therefore still
-requires the reviewed changes to be committed and this command rerun on that
-exact candidate; no cleanliness check was bypassed for local validation.
+The stronger `verify-repository` command passed on committed candidate
+`4cea2e109446115b12246952a0fdacb3a43e1281`, tree
+`4d4030ea7a8578268a16b5f2ec9f462eedef327d`. It checked 40 modules and source
+observations, 177 entrypoints, 97 runtime documents and 165 test-file references,
+including the final committed-document byte comparisons.
+`repositoryBindingsChecked=true`; `nativeProductTestsExecuted`,
+`independentReview` and `allGapsClosed` remain `false`.
+
+A separate comparison against the original Hepta base confirmed that all 40
+profile states, mapping requirements, product/deployment flags and the global
+claim boundary are unchanged. Apart from the two explicitly updated entrypoint
+lists, every profile value is identical. Both historical native observation
+manifests remain byte-identical to the base. No tests were rerun after final
+formatting; the committed-candidate check establishes source/document binding,
+not Rust execution or product qualification.
 
 ## Original raw archive custody remains distinct
 
