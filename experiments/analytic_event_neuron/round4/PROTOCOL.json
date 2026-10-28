@@ -1,0 +1,208 @@
+{
+  "base_commit": "ad83ccf383baaca8a346a871d51dbbac51c9873d",
+  "branch": "research/analytic-event-neuron-20261027",
+  "calibration": {
+    "anchor_rows": 512,
+    "arms": [
+      "frozen",
+      "replay",
+      "mixture_zero",
+      "moment_zero",
+      "mixture_context",
+      "moment_context",
+      "same_weight_moment",
+      "mixture_classical",
+      "mixture_q24",
+      "mixture_q24_classical"
+    ],
+    "bootstrap_replicates": 4000,
+    "bootstrap_seed": 28102844,
+    "calibration_coverage_max": 0.98,
+    "calibration_coverage_min": 0.92,
+    "calibration_ece_max": 0.04,
+    "confirmation_generated_after_freeze_only": true,
+    "confirmation_rows_per_domain": 256,
+    "confirmation_seed_offset": 500000000,
+    "context_block_unit": "8 distinct prior public-only trajectories and one query; shared regime, independent conditional paths",
+    "development_rows_per_domain": 256,
+    "diagnostic_interval_alpha": 0.05,
+    "matched_train_and_development_labels": true,
+    "new_nll_improvement_min": 0.005,
+    "old_confirm_blocks_reused_across_windows": true,
+    "old_nll_margin": 0.02,
+    "phase": "confirmation",
+    "pointwise_retention_guarantee": false,
+    "primary_family_size": 2,
+    "primary_interval_alpha": 0.025,
+    "primary_profiles": [
+      "mixture_zero",
+      "mixture_context"
+    ],
+    "public_context_histories_per_block": 8,
+    "query_regime_window_or_targets_are_not_features": true,
+    "replay_rows": 256,
+    "same_query_and_context_information_except_declared_zero_context_ablation": true,
+    "schema": "hepta.analytic-event.calibration-registration.v4",
+    "seed_rule": "offset+10000*seed+100*window+code; newtrain1,olddev2,newdev3,newconfirm4; window99 anchor1/oldconfirm5; context=correspondingqueryseed+50",
+    "seeds": [
+      1213,
+      1427,
+      1619,
+      1823,
+      2017
+    ],
+    "selection_candidates_per_trained_head": 21,
+    "selector": "old-dev exact density NLL difference mean+1.645 pairedSE<=.02; minimize new-dev densityNLL; anchor feasible",
+    "train_seed_offset": 400000000,
+    "training_rows": 256,
+    "windows": [
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift"
+    ]
+  },
+  "execution": {
+    "actual_feedback_artifacts_and_native_states_retained": true,
+    "all_source_and_prepared_models_published_before_confirmation": true,
+    "authority": "confidence0,abstain,DENY_ALL",
+    "confirmation_created_only_after_immutable_freeze": true,
+    "native_replay_scope": "All training/development and formal feedback cohort native calls are replayed; qualification failure/recovery calls are separately counted and not all replayed.",
+    "negative_and_equivalent_outcomes_retained": true,
+    "old_rounds_unchanged": true,
+    "prior_confirmation_not_reused_for_fitting": true,
+    "production_promotion": false
+  },
+  "phase": "preconfirmation",
+  "quantization": {
+    "category_count": 3,
+    "coordinate_absolute_error_bound": 1.7881393432617188e-07,
+    "denominator": 16777216,
+    "minimum_released_probability": 5.960464477539063e-08,
+    "native_parameter_rounding_error_separate_from_release_error": true,
+    "probability_sum_exact": true,
+    "release_rule": "one integer unit per category plus largest remainder allocation of the remaining denominator-3 units",
+    "tail_probability_is_not_the_floor": true
+  },
+  "runtime_feedback": {
+    "all_actual_native_calls_replayed": true,
+    "all_seed_means_above_negative_margin": true,
+    "arms": [
+      "event",
+      "direct",
+      "float",
+      "gaussian",
+      "probit",
+      "analytic",
+      "numeric",
+      "history"
+    ],
+    "bootstrap_replicates": 4000,
+    "bootstrap_seed": 641028,
+    "codec_mean_logvariance_bits": 12,
+    "codec_mixture_weight_bits": 24,
+    "confirmation_rows": 256,
+    "data_offset": 640000000,
+    "development_rows": 128,
+    "family_alpha": 0.05,
+    "gauss_hermite_wait_nodes": 64,
+    "latency_and_byte_results_separate": true,
+    "native_components": "K2 event/direct/float/analytic/numeric/history; K1 gaussian/probit",
+    "noninferiority_margin": 0.01,
+    "positive_release_minimum_count": 1,
+    "primary_family_size": 2,
+    "primary_noninferiority": [
+      [
+        "event",
+        "direct"
+      ],
+      [
+        "event",
+        "float"
+      ]
+    ],
+    "production_promotion": false,
+    "release_absolute_error_bound_relative_to_native_mixture": 1.7881393432617188e-07,
+    "secondary": [
+      [
+        "analytic",
+        "numeric"
+      ],
+      [
+        "analytic",
+        "history"
+      ],
+      [
+        "event",
+        "gaussian"
+      ],
+      [
+        "gaussian",
+        "probit"
+      ]
+    ],
+    "secondary_intervals": "descriptive95percent",
+    "seed_rule": "offset+1000*seed+split; train1,development2,confirmation3,qualification4",
+    "seeds": [
+      1213,
+      1427,
+      1619,
+      1823,
+      2017
+    ],
+    "superiority_not_required_of_equivalent_codec": true,
+    "train_rows": 256
+  },
+  "runtime_qualification": {
+    "bridge_source": "actual newly prepared calibration window01 NEW_DEV distributions, physical horizon1.0",
+    "clock_semantics": "static residual task observation-stage1or2; bridge retains separate physical forecast horizon",
+    "cross_owner_atomicity_claimed": false,
+    "cross_track_calibration_fixtures_per_seed": 10,
+    "fresh_processes_per_seed": 6,
+    "hardware_energy_claimed": false,
+    "histories_per_seed": 16,
+    "modes": [
+      "event",
+      "direct",
+      "float"
+    ],
+    "ordinary_forecasts_per_seed": 96,
+    "qualification_data_split_code": 4,
+    "recovery_scope": "fresh process, lost-acknowledgement idempotence, fail-closed partial native/adapter commits; no cross-owner atomicity",
+    "tail_fixture_laws": 4
+  },
+  "schema": "hepta.analytic-event.round4.protocol.v1",
+  "scientific_question": "Can exact conditional mixture propagation improve calibration and retention, and can positive Q24 releases with compact stateful event transport preserve downstream utility at measured cost?",
+  "scope_limits": {
+    "dqn_updates_performed": false,
+    "end_to_end_hard_spike_gradient_claimed": false,
+    "first_passage_reset_cell_trained": false,
+    "general_dqn_convergence_transferred": false,
+    "new_function_class_established": false
+  },
+  "seeds": [
+    1213,
+    1427,
+    1619,
+    1823,
+    2017
+  ],
+  "semantics": {
+    "call": "P(X(t+h)>upper | actually available public observations)",
+    "communication_event": "versioned encoded state change; not a first-passage event",
+    "missing_observation": "no likelihood update; elapsed time still propagates",
+    "neutral": "P(lower<X(t+h)<=upper | actually available public observations)",
+    "physical_and_released_laws_distinct": true,
+    "physical_law": "conditional terminal diffusion mixture",
+    "put": "P(X(t+h)<=lower | actually available public observations)",
+    "reset": "explicit start of an independent episode; not a trained biological reset"
+  }
+}
