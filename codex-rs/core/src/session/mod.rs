@@ -2487,10 +2487,16 @@ impl Session {
         self.services
             .rollout_thread_trace
             .record_protocol_event(&event.msg);
-        self.deliver_event_raw(event, completion).await;
+        self.deliver_event_raw_with_completion(event, completion)
+            .await;
     }
 
-    async fn deliver_event_raw(
+    async fn deliver_event_raw(&self, event: Event) {
+        self.deliver_event_raw_with_completion(event, /*completion*/ None)
+            .await;
+    }
+
+    async fn deliver_event_raw_with_completion(
         &self,
         event: Event,
         completion: Option<Arc<crate::state::StartTransitionCompletion>>,

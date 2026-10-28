@@ -165,7 +165,7 @@ fn exact_digest_legacy_directive_does_not_bypass_signed_recovery() -> Result<(),
     assert!(!first.snapshot(&fleet.agent_id).expect("snapshot").active);
     drop(first);
 
-    let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256)
+    let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256.clone())
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_signed_intent_recovery_directive(record.layout.run_root(), &directive)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
