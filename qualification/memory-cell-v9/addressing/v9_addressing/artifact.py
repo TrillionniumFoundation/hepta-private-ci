@@ -3,6 +3,7 @@
 import hashlib
 import io
 import json
+import math
 from pathlib import Path
 import zipfile
 
@@ -75,6 +76,20 @@ def load(model_class, directory, encoder, expected_digest):
         if (len(entries) not in (4, 6) or len({item.filename for item in entries}) != len(entries)
                 or sum(item.file_size for item in entries) > MAX_ARTIFACT_BYTES):
             raise ValueError("expanded model tensors exceed bounds")
+        for entry in entries:
+            with archive.open(entry) as handle:
+                version = np.lib.format.read_magic(handle)
+                if version == (1, 0):
+                    shape, _, dtype = np.lib.format.read_array_header_1_0(handle)
+                elif version == (2, 0):
+                    shape, _, dtype = np.lib.format.read_array_header_2_0(handle)
+                else:
+                    raise ValueError("unregistered array header version")
+                if (dtype != np.dtype(np.float64) or not 1 <= len(shape) <= 2
+                        or any(type(size) is not int or size <= 0 for size in shape)
+                        or math.prod(shape) * 8 > MAX_ARTIFACT_BYTES
+                        or handle.tell() + math.prod(shape) * 8 != entry.file_size):
+                    raise ValueError("array header dimensions exceed its bounded payload")
     with np.load(io.BytesIO(weights), allow_pickle=False) as saved:
         arrays = {name: saved[name].copy() for name in saved.files}
     result = model_class(encoder, manifest["kind"], manifest["C"])
