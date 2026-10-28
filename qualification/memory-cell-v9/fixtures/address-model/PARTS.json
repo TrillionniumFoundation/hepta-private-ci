@@ -1,0 +1,35 @@
+{
+  "calibration_gate_passed": true,
+  "final_use_authority": false,
+  "held_language_quality_gate_passed": false,
+  "manifest": {
+    "bytes": 161921,
+    "path": "manifest.json",
+    "sha256": "36bf40924f93fdc47ab569b02132adb1edef659338d4b82ea1bd695fdfdb40bf"
+  },
+  "native_fixture": {
+    "bytes": 99564,
+    "path": "native-fixture.json",
+    "sha256": "cb1dabcd85fe5dd7ec1b3e4246d6b4cb51c25d408bc2d295ce155088b4cac357"
+  },
+  "parts": [
+    {
+      "bytes": 400000,
+      "path": "weights.npz.part-000",
+      "sha256": "1a5bc6d1c1f97d89d77ad93e6676fdda529947450af9ecbc97b1da968ad8a4d3"
+    },
+    {
+      "bytes": 246063,
+      "path": "weights.npz.part-001",
+      "sha256": "6adb086e8f2d1d5ffda0c8502f386c3019874e326a2f1b874e1a371df05961d4"
+    }
+  ],
+  "reconstruction": "concatenate weight parts in index order; exact frozen model bytes, no fitting",
+  "schema": "hepta.memory.v9.model-transport.v1",
+  "serving_admitted_scope": "The original model flag describes calibration only. Independent held quality failed.",
+  "source_commit": "00d386c9b45b59fa84841871d48e07baf0bef384",
+  "weights": {
+    "bytes": 646063,
+    "sha256": "ac10c0edbf3d09cbff0fb1188012792dd7bbcef1fcb225c4bb4a5861963a1b8b"
+  }
+}
