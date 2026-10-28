@@ -65,10 +65,38 @@ class StructureEvidenceTests(unittest.TestCase):
             wall = time.perf_counter_ns() - began
             self.assertEqual(completed.returncode, 0, completed.stderr.decode())
             receipt = read_json(root / "output.json")
-            verify_resources(root, receipt, receipt["child_pid"], wall)
-            receipt["integrals"]["tree_rss_bytes"]["unobserved_interval_ns"] += 1
+            checked = verify_resources(root, receipt, receipt["child_pid"], wall)
+            self.assertTrue(checked["observation_wall_coverage_verified"])
+            corrupt = deepcopy(receipt)
+            corrupt["integrals"]["tree_rss_bytes"]["unobserved_interval_ns"] += 1
             with self.assertRaisesRegex(ValueError, "integral mismatch"):
-                verify_resources(root, receipt, receipt["child_pid"], wall)
+                verify_resources(root, corrupt, receipt["child_pid"], wall)
+            # Preserve the summed gap and every integral while misplacing the
+            # unknown interval. Raw endpoints must still reject this receipt.
+            corrupt = deepcopy(receipt)
+            corrupt["sampling_gaps"]["before_first_sample_ns"] -= 1
+            corrupt["sampling_gaps"]["after_last_sample_ns"] += 1
+            with self.assertRaisesRegex(ValueError, "sampling gaps"):
+                verify_resources(root, corrupt, receipt["child_pid"], wall)
+            corrupt = deepcopy(receipt)
+            corrupt["wall_ns_through_observation_close"] += 1
+            with self.assertRaisesRegex(ValueError, "observation endpoints"):
+                verify_resources(root, corrupt, receipt["child_pid"], wall)
+            corrupt = deepcopy(receipt)
+            corrupt["observations_ended_monotonic_ns"] += 1
+            corrupt["wall_ns_through_observation_close"] += 1
+            with self.assertRaisesRegex(ValueError, "sampling gaps"):
+                verify_resources(root, corrupt, receipt["child_pid"], wall)
+            sample_path = root / "samples.jsonl"
+            original_samples = sample_path.read_bytes()
+            samples = [decode(line) for line in original_samples.splitlines()]
+            samples[0]["elapsed_ns"] += 1
+            changed = b"".join(canonical(sample) + b"\n" for sample in samples)
+            sample_path.write_bytes(changed)
+            corrupt = deepcopy(receipt)
+            corrupt["samples"].update(bytes=len(changed), sha256=digest(changed))
+            with self.assertRaisesRegex(ValueError, "sample elapsed time"):
+                verify_resources(root, corrupt, receipt["child_pid"], wall)
 
 
 if __name__ == "__main__":
