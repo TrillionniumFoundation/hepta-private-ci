@@ -122,7 +122,7 @@ fn write_intent_raw(
 }
 
 #[test]
-fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorError> {
+fn unsigned_abort_directive_cannot_terminalize_unresolved_intent() -> Result<(), SupervisorError> {
     let fleet = fleet()?;
     let starting =
         fleet
@@ -153,30 +153,42 @@ fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorE
     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_intent_raw(record.layout.run_root(), &intent)?;
 
-    let first = Supervisor::recover(
+    let (first, report) = Supervisor::recover(
         fleet.registry.clone(),
         NoProcessDriver,
         config(),
         Instant::now(),
+    )?;
+    assert!(report.faults.is_empty());
+    assert!(first.production_recovery_required(&fleet.agent_id)?);
+    assert!(
+        !first
+            .snapshot(&fleet.agent_id)
+            .expect("quarantined agent")
+            .active
     );
-    assert!(matches!(
-        first,
-        Err(SupervisorError::SignedIntentRecoveryRequired(agent_id))
-            if agent_id == fleet.agent_id
-    ));
+    drop(first);
 
-    let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256)
+    let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256.clone())
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_signed_intent_recovery_directive(record.layout.run_root(), &directive)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
 
-    let (_recovered, report) =
+    // The daemon remains reachable for the signed recovery ceremony. A legacy
+    // digest-only file carries no authority to resolve the ambiguous effect.
+    let (recovered, report) =
         Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now())?;
     assert!(report.faults.is_empty());
-    let terminal = read_signed_intent(record.layout.run_root())
+    assert!(recovered.production_recovery_required(&fleet.agent_id)?);
+    assert!(
+        !recovered
+            .snapshot(&fleet.agent_id)
+            .expect("quarantined agent")
+            .active
+    );
+    let retained = read_signed_intent(record.layout.run_root())
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?
-        .expect("terminal intent");
-    assert_eq!(terminal.status, SignedIntentStatus::Aborted);
-    assert_eq!(terminal.target_release, "target-release");
+        .expect("unresolved intent");
+    assert_eq!(retained, intent);
     Ok(())
 }

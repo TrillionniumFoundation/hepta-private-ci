@@ -31,7 +31,6 @@ use codex_hepta_supervisor::SpawnedProcess;
 use codex_hepta_supervisor::Supervisor;
 use codex_hepta_supervisor::SupervisorConfig;
 use codex_hepta_supervisor::SupervisorError;
-use codex_hepta_supervisor::SupervisorEventKind;
 use codex_hepta_supervisor::TickReport;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
@@ -248,17 +247,9 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     now += Duration::from_millis(1);
     control.crash(&agent_id);
     assert_eq!(supervisor.tick(now), TickReport::default());
-    assert!(
-        supervisor
-            .snapshot(&agent_id)
-            .expect("snapshot")
-            .events
-            .iter()
-            .any(|event| matches!(
-                &event.kind,
-                SupervisorEventKind::AutomaticRestartQueued { attempt: 2 }
-            ))
-    );
+    let pending = supervisor.snapshot(&agent_id).expect("snapshot");
+    assert!(pending.restart_pending);
+    assert_eq!(pending.restart_attempt, 2);
     assert_eq!(
         supervisor.tick(now + Duration::from_millis(499)),
         TickReport::default()
@@ -278,17 +269,9 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     now += Duration::from_millis(1);
     control.crash(&agent_id);
     assert_eq!(supervisor.tick(now), TickReport::default());
-    assert!(
-        supervisor
-            .snapshot(&agent_id)
-            .expect("snapshot")
-            .events
-            .iter()
-            .any(|event| matches!(
-                &event.kind,
-                SupervisorEventKind::AutomaticRestartQueued { attempt: 3 }
-            ))
-    );
+    let pending = supervisor.snapshot(&agent_id).expect("snapshot");
+    assert!(pending.restart_pending);
+    assert_eq!(pending.restart_attempt, 3);
     now += Duration::from_secs(1);
     assert_eq!(supervisor.tick(now), TickReport::default());
     assert_eq!(control.spawn_count(&agent_id), 4);
@@ -303,13 +286,14 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     assert_eq!(recovered, TickReport::default());
     now += Duration::from_millis(1);
     control.crash(&agent_id);
-    assert_eq!(supervisor.tick(now), TickReport::default());
+    let exhausted = supervisor.tick(now);
+    assert_eq!(exhausted.faults.len(), 1);
+    assert_eq!(exhausted.faults[0].agent_id, agent_id);
+    assert!(exhausted.faults[0].message.contains("restart budget"));
     let snapshot = supervisor.snapshot(&agent_id).expect("snapshot");
     assert!(!snapshot.active);
-    assert!(snapshot.events.iter().any(|event| matches!(
-        &event.kind,
-        SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts: 3 }
-    )));
+    assert!(!snapshot.restart_pending);
+    assert_eq!(snapshot.restart_attempt, 3);
     assert_eq!(control.spawn_count(&agent_id), 4);
     Ok(())
 }

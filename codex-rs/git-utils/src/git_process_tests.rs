@@ -1,6 +1,7 @@
 use super::spawn_git_command;
 use super::wait_for_git_command_with_timeout_output;
 use pretty_assertions::assert_eq;
+use std::path::PathBuf;
 #[cfg(windows)]
 use std::process::Stdio;
 use std::time::Duration;
@@ -12,47 +13,78 @@ enum GitWrapperLifetime {
     ExitBeforeTimeout,
 }
 
+const PROCESS_ROLE: &str = "CODEX_GIT_TIMEOUT_TEST_ROLE";
+
 async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     wrapper_lifetime: GitWrapperLifetime,
 ) {
+    // Re-execute this Rust fixture so readiness does not depend on nested
+    // PowerShell startup or Start-Process command-line re-parsing.
+    let fixture = match wrapper_lifetime {
+        GitWrapperLifetime::WaitForChild => {
+            "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running"
+        }
+        GitWrapperLifetime::ExitBeforeTimeout => {
+            "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running"
+        }
+    };
+    if let Ok(role) = std::env::var(PROCESS_ROLE) {
+        let release_child =
+            PathBuf::from(std::env::var_os("RELEASE_CHILD_FILE").expect("release child path"));
+        if role == "child" {
+            std::fs::write(
+                std::env::var_os("CHILD_READY_FILE").expect("ready path"),
+                "ready",
+            )
+            .expect("signal child readiness");
+            while !release_child.exists() {
+                tokio::time::sleep(Duration::from_millis(25)).await;
+            }
+            tokio::time::sleep(Duration::from_secs(1)).await;
+            std::fs::write(
+                std::env::var_os("CHILD_SURVIVED_FILE").expect("survival path"),
+                "survived",
+            )
+            .expect("signal surviving child");
+            tokio::time::sleep(Duration::from_secs(60)).await;
+        } else {
+            assert_eq!(role, "wrapper");
+            let mut child = Command::new(std::env::current_exe().expect("test executable"))
+                .args(["--exact", fixture, "--nocapture"])
+                .env(PROCESS_ROLE, "child")
+                .spawn()
+                .expect("spawn fixture child");
+            std::fs::write(
+                std::env::var_os("CHILD_PID_FILE").expect("child PID path"),
+                child.id().expect("child PID").to_string(),
+            )
+            .expect("publish child PID");
+            match wrapper_lifetime {
+                GitWrapperLifetime::WaitForChild => {
+                    child.wait().await.expect("wait for fixture child");
+                }
+                GitWrapperLifetime::ExitBeforeTimeout => {
+                    let release = PathBuf::from(
+                        std::env::var_os("RELEASE_WRAPPER_FILE").expect("release wrapper path"),
+                    );
+                    while !release.exists() {
+                        tokio::time::sleep(Duration::from_millis(25)).await;
+                    }
+                }
+            }
+        }
+        return;
+    }
     let temp_dir = tempfile::tempdir().expect("create temp dir");
     let child_pid_file = temp_dir.path().join("child.pid");
     let child_ready_file = temp_dir.path().join("child-ready");
     let release_child_file = temp_dir.path().join("release-child");
     let child_survived_file = temp_dir.path().join("child-survived");
     let release_wrapper_file = temp_dir.path().join("release-wrapper");
-    #[cfg(unix)]
-    let mut command = {
-        let mut command = Command::new("/bin/sh");
-        let wrapper_command = match wrapper_lifetime {
-            GitWrapperLifetime::WaitForChild => {
-                r#"( : > "$CHILD_READY_FILE"; while [ ! -f "$RELEASE_CHILD_FILE" ]; do sleep 0.01; done; sleep 1; : > "$CHILD_SURVIVED_FILE"; sleep 60 ) & child_pid=$!; printf '%s\n' "$child_pid" > "$CHILD_PID_FILE"; wait "$child_pid""#
-            }
-            GitWrapperLifetime::ExitBeforeTimeout => {
-                r#"( : > "$CHILD_READY_FILE"; while [ ! -f "$RELEASE_CHILD_FILE" ]; do sleep 0.01; done; sleep 1; : > "$CHILD_SURVIVED_FILE"; sleep 60 ) & child_pid=$!; printf '%s\n' "$child_pid" > "$CHILD_PID_FILE"; while [ ! -f "$RELEASE_WRAPPER_FILE" ]; do sleep 0.01; done"#
-            }
-        };
-        command.args(["-c", wrapper_command]);
-        command
-    };
-    #[cfg(windows)]
-    let mut command = {
-        let mut command = Command::new("powershell.exe");
-        let child_command = "Set-Content -LiteralPath $env:CHILD_READY_FILE -Value ready; while (-not (Test-Path $env:RELEASE_CHILD_FILE)) { Start-Sleep -Milliseconds 25 }; Start-Sleep -Seconds 1; Set-Content -LiteralPath $env:CHILD_SURVIVED_FILE -Value survived; Start-Sleep -Seconds 60";
-        let wrapper_command = match wrapper_lifetime {
-            GitWrapperLifetime::WaitForChild => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); Wait-Process -Id $child.Id"
-            ),
-            GitWrapperLifetime::ExitBeforeTimeout => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
-            ),
-        };
-        command
-            .args(["-NoProfile", "-NonInteractive", "-Command"])
-            .arg(wrapper_command);
-        command
-    };
+    let mut command = Command::new(std::env::current_exe().expect("test executable"));
     command
+        .args(["--exact", fixture, "--nocapture"])
+        .env(PROCESS_ROLE, "wrapper")
         .env("CHILD_PID_FILE", &child_pid_file)
         .env("CHILD_READY_FILE", &child_ready_file)
         .env("RELEASE_CHILD_FILE", &release_child_file)
