@@ -1,0 +1,38 @@
+{
+  "attempt": 1,
+  "child_cpu_seconds": 10.277019,
+  "child_pid": 1443884,
+  "child_start_ticks": "6299355",
+  "child_system_cpu_seconds": 0.627846,
+  "child_user_cpu_seconds": 9.649173,
+  "command": [
+    "/workspace/scratch/9bbd63a0445f/hcsn-venv/bin/python",
+    "-m",
+    "experiments.continuous_spiking_followup.boundary_online",
+    "--output",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/boundary/seed4401",
+    "--seed",
+    "4401",
+    "--base-results",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_network/results/study001"
+  ],
+  "controller_sha256": "00ec56ead8a7080e414c4befd5569e0d78517304f193f99c1a63d46300e944c7",
+  "cpu_scope": "exact direct child PID from POSIX wait4; nested descendants may be included when the child waits for them",
+  "ended_unix": 1793193681.8348358,
+  "exit_code": 0,
+  "failed_marker_exists": false,
+  "id": "boundary/seed4401",
+  "interrupted": false,
+  "max_rss_platform_units": 301176,
+  "result_exists": true,
+  "result_sha256": "15b5110ab7a5de84d223abbcc35e98ceeda4ba2625d92e056c4b433b1a1b604b",
+  "rss_units": "KiB on Linux; bytes on macOS",
+  "source_seals": {
+    "base": "bb0d2eda33c34785da9563a84a06ed4c5d2391826e52173452ee43924723de02",
+    "followup": "52ce70744a2659e6f2690fc24e68f651d48f57d4a5064680e71d2694b0a2f673"
+  },
+  "started_unix": 1793193671.534356,
+  "wait_status": 0,
+  "wall_scope": "launch through reaping the exact direct child, including interpreter startup/shutdown and logging",
+  "wall_seconds": 10.29983789200196
+}

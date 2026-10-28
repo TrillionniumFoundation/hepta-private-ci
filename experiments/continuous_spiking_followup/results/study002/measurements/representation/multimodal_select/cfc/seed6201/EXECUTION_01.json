@@ -1,0 +1,42 @@
+{
+  "attempt": 1,
+  "child_cpu_seconds": 4.481205,
+  "child_pid": 1444266,
+  "child_start_ticks": "6319102",
+  "child_system_cpu_seconds": 0.445832,
+  "child_user_cpu_seconds": 4.035373,
+  "command": [
+    "/workspace/scratch/9bbd63a0445f/hcsn-venv/bin/python",
+    "-m",
+    "experiments.continuous_spiking_followup.stream_measure",
+    "--output",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/measurements/representation/multimodal_select/cfc/seed6201",
+    "--run",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/representation/multimodal_select/cfc/seed6201",
+    "--cache-dir",
+    "/workspace/scratch/9bbd63a0445f/hcsn-data",
+    "--batch-size",
+    "16",
+    "--repeats",
+    "7"
+  ],
+  "controller_sha256": "00ec56ead8a7080e414c4befd5569e0d78517304f193f99c1a63d46300e944c7",
+  "cpu_scope": "exact direct child PID from POSIX wait4; nested descendants may be included when the child waits for them",
+  "ended_unix": 1793193873.4975493,
+  "exit_code": 0,
+  "failed_marker_exists": false,
+  "id": "measurements/representation/multimodal_select/cfc/seed6201",
+  "interrupted": false,
+  "max_rss_platform_units": 307256,
+  "result_exists": true,
+  "result_sha256": "bb82ae2debe7bff57bc91472ae3d0387ea93b5f3702cbd2f7514e283b8f03a4b",
+  "rss_units": "KiB on Linux; bytes on macOS",
+  "source_seals": {
+    "base": "bb0d2eda33c34785da9563a84a06ed4c5d2391826e52173452ee43924723de02",
+    "followup": "52ce70744a2659e6f2690fc24e68f651d48f57d4a5064680e71d2694b0a2f673"
+  },
+  "started_unix": 1793193869.0093105,
+  "wait_status": 0,
+  "wall_scope": "launch through reaping the exact direct child, including interpreter startup/shutdown and logging",
+  "wall_seconds": 4.488075490997289
+}
