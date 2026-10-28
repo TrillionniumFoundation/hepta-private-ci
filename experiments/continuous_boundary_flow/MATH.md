@@ -152,12 +152,16 @@ it is not a substitute for the recurrent native policies' sampled executions.
 
 ## 6. Information and parameter accounting
 
-The 11 shared raw context fields are `x/2`, `remaining/horizon`, `mu/0.6`,
+The 11 shared raw context fields are `x/2`, `remaining_windows/16`, `mu/0.6`,
 `sigma/0.6`, maintenance cost, `failure_cost/6`, `u/1.5`, `q/0.2`,
 `maintenance_reset/2`, `failure_reset/2`, and `dt`. Six adapter fields complete
 17 raw inputs; typed margin/risk/flow produce a 20-dimensional encoder input.
 Raw inputs and margin are clipped to `[-4,4]`; current risk lies in `[0,1]`.
 Margin is normalized by `sigma*sqrt(dt)` before clipping and causal feedback.
+The common deadline encoding exposes absolute remaining windows under different
+OOD horizons; together with `dt`, every arm can recover the remaining duration.
+This replaced a per-episode remaining fraction before any confirmation outcomes
+were generated; the interrupted training-only run was retained separately.
 
 The boundary panel is `fixed_margin`, `learned_margin`, and `value_margin`.
 All three mask C/P/current-risk fields and differ by boundary source. Fixed and

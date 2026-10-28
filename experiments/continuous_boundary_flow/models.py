@@ -40,7 +40,7 @@ ARMS = (
 )
 FEATURE_NAMES = (
     "x_scaled",
-    "remaining_fraction",
+    "remaining_windows_scaled",
     "mu_scaled",
     "sigma_scaled",
     "maintenance_cost",
@@ -59,7 +59,7 @@ FEATURE_NAMES = (
 )
 BOUNDARY_FEATURE_NAMES = (
     "intercept",
-    "remaining_fraction",
+    "remaining_windows_scaled",
     "time_scaled",
     "mu_scaled",
     "sigma_scaled",
@@ -100,7 +100,7 @@ def boundary_features(spec, remaining):
     constant = lambda value: np.full(rem.shape, value, dtype=float)
     cols = [
         constant(1),
-        rem / spec.horizon,
+        rem / 16.0,
         time,
         constant(mu),
         constant(sigma),
@@ -354,7 +354,7 @@ class ActorAdapter:
         context = np.column_stack(
             (
                 x / 2,
-                rem / self.spec.horizon,
+                rem / 16.0,
                 np.full(batch, self.spec.mu / 0.6),
                 np.full(batch, self.spec.sigma / 0.6),
                 np.full(batch, self.spec.maintenance_cost),

@@ -111,6 +111,8 @@ class CostWindow:
 def protocol():
     return {
         "schema": "hepta.continuous-boundary.protocol.v1",
+        "revision": 2,
+        "deadline_encoding": "remaining windows / 16; all arms can recover remaining physical time from public dt",
         "base_commit": BASE,
         "seeds": SEEDS,
         "phase_ids": {

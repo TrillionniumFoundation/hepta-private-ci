@@ -36,6 +36,16 @@ model for their context; fixed/direct boundaries do not read DP values.
 That planning cost is measured, never treated as an information-free gain.
 The model is known; OOD changes public task parameters, not the laws secretly.
 
+## Preconfirmation deadline amendment
+
+Revision 2 replaces `remaining / initial_horizon` by `remaining / 16` in
+the shared public input and direct-boundary regressor. Together with public
+`dt`, every arm can recover the same absolute remaining task time. The first
+run was stopped during training; no confirmation contexts or outcomes existed.
+Its partial training artifacts and costs are retained separately. Seeds,
+objectives, dimensions, candidates and acceptance thresholds are unchanged.
+See `preflight/DEADLINE_AMENDMENT.json` and the preserved first source seal.
+
 ## Registered experiment
 
 Eight independent training/environment seeds, nine learned arms, and four
