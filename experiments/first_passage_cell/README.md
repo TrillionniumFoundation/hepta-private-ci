@@ -445,9 +445,11 @@ The original repository formatting gate remains `just fmt`; it is not a
 comprehensive Python lint result. The
 [archive restoration helper](evidence/audit_helpers/restore_archives.py) fails
 on missing or corrupt parts. A layout manifest or a recorded hash alone is not
-a claim that all required bytes have already been remotely published; archive
-availability is established by the final publication receipt and this actual
-restoration check.
+a claim that all required bytes have already been remotely published. The final
+[publication receipt](evidence/ARCHIVE_PUBLICATION.json) verifies all 319 stored
+data objects for 52 original artifacts (145,319,237 bytes); the final manifest
+restoration check passed for every original. See [RESULTS.md](RESULTS.md) for the
+registered outcomes and their scientific scope.
 
 For the retained study, use the package's `prepared/` and [FREEZE.json](FREEZE.json)
 after restoration. Audits can be repeated into new receipt paths without

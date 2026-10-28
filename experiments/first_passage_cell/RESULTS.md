@@ -157,7 +157,7 @@ The evidence preserves implementation and infrastructure failures rather than si
 
 ## Reproduction and artifact availability
 
-The complete source/parameter/contract freeze and all local raw outputs were available for the audits above. At report creation, publication of the large synthetic raw files was still being handled separately; this report does **not** assert that all large artifacts are already remotely archived. The final publication/archival receipt must establish that status. A hash alone is not a claim that a remote reader can already download the underlying bytes.
+The complete source/parameter/contract freeze and all retained raw outputs are now archived on the research branch. The [archive manifest](EVIDENCE_ARCHIVE.json) binds **52 original artifacts (145,319,237 bytes)**, represented losslessly by **303 binary parts and 16 direct NPZ files**. The [publication receipt](evidence/ARCHIVE_PUBLICATION.json) records remote path, size, mode and Git blob identity verification for all 319 data objects, the final evidence payload, and the preserved frozen source. The [restoration validation](evidence/ARCHIVE_RESTORE_VALIDATION.json) covers exact reconstruction and rejection of corrupt parts or differing existing files; the [final manifest check](evidence/FINAL_ARCHIVE_LOCAL_VERIFICATION.json) verified all 52 originals against the actual final manifest. No trajectories were regenerated or recompressed for archival.
 
 After obtaining the complete package and materializing the retained raw artifacts, run from the repository root. Use fresh output paths because the independent audit receipts are create-only:
 
