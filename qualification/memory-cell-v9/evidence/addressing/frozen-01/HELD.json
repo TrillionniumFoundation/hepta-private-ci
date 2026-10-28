@@ -1,0 +1,239 @@
+{
+  "actual_head_fits": 0,
+  "classifier_wordings": 120,
+  "contract_comparison": {
+    "after_contract_with_same_frozen_policy": {
+      "by_operation": {
+        "apply": {
+          "correct": 9,
+          "rows": 12
+        },
+        "change": {
+          "correct": 9,
+          "rows": 12
+        },
+        "current": {
+          "correct": 7,
+          "rows": 12
+        },
+        "history": {
+          "correct": 4,
+          "rows": 12
+        },
+        "procedure": {
+          "correct": 11,
+          "rows": 12
+        },
+        "semantic": {
+          "correct": 7,
+          "rows": 12
+        }
+      },
+      "known": 72,
+      "known_abstained": 25,
+      "known_correct": 47,
+      "known_correct_coverage": 0.6527777777777778,
+      "known_wrong_accepted": 0,
+      "ood": 48,
+      "ood_acceptance_rate": 0.08333333333333333,
+      "ood_accepted": 4
+    },
+    "explicit_contract_rejections": {
+      "known": 0,
+      "ood": 23
+    },
+    "interpretation": "Diagnostic contract ablation on the same rows; not an independently admitted raw-model policy.",
+    "raw_learned_argmax_known_correct": 70,
+    "raw_learned_argmax_ood_routes": 28,
+    "raw_learned_with_same_frozen_policy": {
+      "by_operation": {
+        "apply": {
+          "correct": 9,
+          "rows": 12
+        },
+        "change": {
+          "correct": 9,
+          "rows": 12
+        },
+        "current": {
+          "correct": 7,
+          "rows": 12
+        },
+        "history": {
+          "correct": 4,
+          "rows": 12
+        },
+        "procedure": {
+          "correct": 11,
+          "rows": 12
+        },
+        "semantic": {
+          "correct": 7,
+          "rows": 12
+        }
+      },
+      "known": 72,
+      "known_abstained": 25,
+      "known_correct": 47,
+      "known_correct_coverage": 0.6527777777777778,
+      "known_wrong_accepted": 0,
+      "ood": 48,
+      "ood_acceptance_rate": 0.20833333333333334,
+      "ood_accepted": 10
+    },
+    "weights_and_thresholds_identical": true
+  },
+  "cpu_seconds": 2.391838281,
+  "final_use_authority": false,
+  "frozen_baselines": {
+    "v7": {
+      "identity": "90c231694a32addf7ba63492649eb97d69081edf65900a272dbcd611db599be0",
+      "interpretation": "Public fitting data and policies differ; this does not isolate architecture causality.",
+      "kind": "frozen-existing-v7",
+      "metrics": {
+        "by_operation": {
+          "apply": {
+            "correct": 7,
+            "rows": 12
+          },
+          "change": {
+            "correct": 1,
+            "rows": 12
+          },
+          "current": {
+            "correct": 3,
+            "rows": 12
+          },
+          "history": {
+            "correct": 3,
+            "rows": 12
+          },
+          "procedure": {
+            "correct": 5,
+            "rows": 12
+          },
+          "semantic": {
+            "correct": 7,
+            "rows": 12
+          }
+        },
+        "known": 72,
+        "known_abstained": 46,
+        "known_correct": 26,
+        "known_correct_coverage": 0.3611111111111111,
+        "known_wrong_accepted": 0,
+        "ood": 48,
+        "ood_acceptance_rate": 0.0625,
+        "ood_accepted": 3
+      },
+      "same_information_architecture_ablation": false
+    },
+    "v8": {
+      "identity": "0182aebb86e3f2ed7dd089864762970791b70cff2240861602ef15be2461ac86",
+      "interpretation": "Public fitting data and policies differ; this does not isolate architecture causality.",
+      "kind": "frozen-existing-v8",
+      "metrics": {
+        "by_operation": {
+          "apply": {
+            "correct": 10,
+            "rows": 12
+          },
+          "change": {
+            "correct": 6,
+            "rows": 12
+          },
+          "current": {
+            "correct": 3,
+            "rows": 12
+          },
+          "history": {
+            "correct": 2,
+            "rows": 12
+          },
+          "procedure": {
+            "correct": 7,
+            "rows": 12
+          },
+          "semantic": {
+            "correct": 11,
+            "rows": 12
+          }
+        },
+        "known": 72,
+        "known_abstained": 33,
+        "known_correct": 39,
+        "known_correct_coverage": 0.5416666666666666,
+        "known_wrong_accepted": 0,
+        "ood": 48,
+        "ood_acceptance_rate": 0.10416666666666667,
+        "ood_accepted": 5
+      },
+      "same_information_architecture_ablation": false
+    }
+  },
+  "held_language_quality_gate_passed": false,
+  "identity": {
+    "base_bytes": 127538960,
+    "deployment_bytes_excluding_base": 807984,
+    "manifest_sha256": "36bf40924f93fdc47ab569b02132adb1edef659338d4b82ea1bd695fdfdb40bf"
+  },
+  "interpretation": "47/72 known and 4/48 unsupported accepted fail the preregistered 80% / 5% gate. No post-held retuning.",
+  "metrics": {
+    "by_operation": {
+      "apply": {
+        "correct": 9,
+        "rows": 12
+      },
+      "change": {
+        "correct": 9,
+        "rows": 12
+      },
+      "current": {
+        "correct": 7,
+        "rows": 12
+      },
+      "history": {
+        "correct": 4,
+        "rows": 12
+      },
+      "procedure": {
+        "correct": 11,
+        "rows": 12
+      },
+      "semantic": {
+        "correct": 7,
+        "rows": 12
+      }
+    },
+    "known": 72,
+    "known_abstained": 25,
+    "known_correct": 47,
+    "known_correct_coverage": 0.6527777777777778,
+    "known_wrong_accepted": 0,
+    "ood": 48,
+    "ood_acceptance_rate": 0.08333333333333333,
+    "ood_accepted": 4
+  },
+  "native_execution_required_even_when_not_admitted": true,
+  "native_fixture": "native-fixture.json",
+  "native_fixture_sha256": "cb1dabcd85fe5dd7ec1b3e4246d6b4cb51c25d408bc2d295ce155088b4cac357",
+  "native_rows_executed_by_this_python_stage": 0,
+  "native_rows_required": 272,
+  "offline_feature_sha256": "366de6e4f19a79b20a2330209d141569bb9b5f5cfbd4f37cb4a6dac725621b80",
+  "original_receipt": {
+    "bytes": 27100,
+    "sha256": "99ce1cedb03acaf922f9c8924287582f05ea3a8f43500bc4df82824be10e5a26"
+  },
+  "population_risk_established": false,
+  "qualification_only": true,
+  "quality_gate_passed": false,
+  "schema": "hepta.memory.v9.held-language-result.v1",
+  "serving_admitted": true,
+  "serving_admitted_scope": "inherited calibration-only flag; independent held quality failed",
+  "source": {
+    "source_commit": "00d386c9b45b59fa84841871d48e07baf0bef384",
+    "source_files_verified_against_git": 43,
+    "source_inventory_sha256": "c206caf1ab074e9282813897ed817a81341b96239e9e45f0dd1dab79aebcde5c"
+  },
+  "wall_seconds": 2.4015724460005003
+}
