@@ -265,3 +265,12 @@ mod test_support;
 #[cfg(test)]
 #[path = "memory_cell_network_anchor_tests.rs"]
 mod anchor_tests;
+#[cfg(all(test, unix))]
+#[path = "memory_cell_network_process_test_support.rs"]
+mod process_test_support;
+#[cfg(all(test, unix))]
+#[path = "memory_cell_network_process_release_test_support.rs"]
+mod process_release_test_support;
+#[cfg(all(test, unix))]
+#[path = "memory_cell_network_process_tests.rs"]
+mod process_tests;
