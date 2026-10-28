@@ -75,17 +75,20 @@ pub fn write_hook(home: &Path, script_path: &Path, script: &str) -> String {
         .or_else(|| std::env::var_os("TEST_UNDECLARED_OUTPUTS_DIR"))
         .map(PathBuf::from)
         .unwrap_or_else(std::env::temp_dir);
-    fs::create_dir_all(&parent).expect("create hook diagnostic artifact parent");
+    fs::create_dir_all(&parent)
+        .unwrap_or_else(|error| panic!("create hook diagnostic artifact parent: {error}"));
     let root = tempfile::Builder::new()
         .prefix("queue-hook-")
         .tempdir_in(parent)
-        .expect("create unique hook diagnostic directory")
+        .unwrap_or_else(|error| panic!("create unique hook diagnostic directory: {error}"))
         .keep();
     // Preserve the original command literally, including its path quoting.
     // This observation must not silently replace python3 or repair its invocation.
     let original_command = format!("python3 {}", script_path.display());
     fs::write(script_path, format!("{PYTHON_IDENTITY}{script}"))
-        .expect("write original hook with interpreter identity preamble");
+        .unwrap_or_else(|error| {
+            panic!("write original hook with interpreter identity preamble: {error}")
+        });
     let launcher = home.join(if cfg!(windows) {
         "queue_hook_diagnostic.cmd"
     } else {
@@ -97,13 +100,14 @@ pub fn write_hook(home: &Path, script_path: &Path, script: &str) -> String {
         UNIX_LAUNCHER.replace("@ROOT@", &shell_quote(&root))
     }
     .replace("@COMMAND@", &original_command);
-    fs::write(&launcher, wrapper).expect("write hook diagnostic launcher");
+    fs::write(&launcher, wrapper)
+        .unwrap_or_else(|error| panic!("write hook diagnostic launcher: {error}"));
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
 
         fs::set_permissions(&launcher, fs::Permissions::from_mode(/*mode*/ 0o700))
-            .expect("make test diagnostic launcher executable");
+            .unwrap_or_else(|error| panic!("make test diagnostic launcher executable: {error}"));
     }
     let command = if cfg!(windows) {
         format!("\"{}\"", launcher.display())
@@ -119,9 +123,12 @@ pub fn write_hook(home: &Path, script_path: &Path, script: &str) -> String {
         "missing_exit_means": "running_or_interrupted_unknown",
     });
     fs::write(root.join("descriptor.json"), descriptor.to_string())
-        .expect("retain hook diagnostic command identity");
-    fs::write(home.join("queue_hook_diagnostics.json"), descriptor.to_string())
-        .expect("retain hook diagnostic artifact location");
+        .unwrap_or_else(|error| panic!("retain hook diagnostic command identity: {error}"));
+    fs::write(
+        home.join("queue_hook_diagnostics.json"),
+        descriptor.to_string(),
+    )
+    .unwrap_or_else(|error| panic!("retain hook diagnostic artifact location: {error}"));
     eprintln!("QUEUE_HOOK_DIAGNOSTIC_LOCATION {descriptor}");
     command
 }
@@ -134,12 +141,12 @@ impl HookDiagnostics {
     pub fn attach(home: &Path) -> Self {
         let descriptor: Value = serde_json::from_slice(
             &fs::read(home.join("queue_hook_diagnostics.json"))
-                .expect("read hook diagnostic artifact location"),
+                .unwrap_or_else(|error| panic!("read hook diagnostic artifact location: {error}")),
         )
-        .expect("decode hook diagnostic artifact location");
+        .unwrap_or_else(|error| panic!("decode hook diagnostic artifact location: {error}"));
         let root = descriptor["root"]
             .as_str()
-            .expect("diagnostic directory must be a path");
+            .unwrap_or_else(|| panic!("diagnostic directory must be a path"));
         Self {
             root: PathBuf::from(root),
         }
@@ -196,10 +203,15 @@ fn diagnostic_snapshot(root: &Path) -> Value {
                 let size = file.metadata()?.len();
                 let mut bytes = Vec::new();
                 let limit = remaining_console_bytes.min(4096);
-                file.take(u64::try_from(limit).expect("bounded console limit"))
-                    .read_to_end(&mut bytes)?;
+                file.take(
+                    u64::try_from(limit)
+                        .unwrap_or_else(|error| panic!("bounded console limit: {error}")),
+                )
+                .read_to_end(&mut bytes)?;
                 remaining_console_bytes -= bytes.len();
-                let truncated = size > u64::try_from(bytes.len()).expect("bounded console bytes");
+                let truncated = size
+                    > u64::try_from(bytes.len())
+                        .unwrap_or_else(|error| panic!("bounded console bytes: {error}"));
                 Ok(json!({"bytes": bytes, "observed_size": size, "console_truncated": truncated}))
             })();
             files.insert(

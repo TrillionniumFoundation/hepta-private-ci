@@ -8,6 +8,7 @@ import json
 from pathlib import PurePosixPath
 import tarfile
 import tomllib
+import zipfile
 
 from hepta_pon_dependency_proposal import ROOT, sha256
 
@@ -23,6 +24,16 @@ INPUTS = ("codex-rs/Cargo.toml", "codex-rs/Cargo.lock", "MODULE.bazel.lock")
 
 REGISTRY = "registry+https://github.com/rust-lang/crates.io-index"
 
+TRANSPORT = ROOT / "qa/pon-aws-crypto-resolution-20261028-r11/source-inputs.zip"
+TRANSPORT_SHA256 = "30985518acf4714a613407650a0a4ffeda6ff1dca3cdf8dd43c3bc5ab84e9cc0"
+TRANSPORT_NAMES = {
+    "overrides/BUILD.bazel",
+    "overrides/src/login/dpop.rs",
+    "upstream/index-records.json",
+    "upstream/aws-config-main-c975.Cargo.toml.txt",
+    *("original/" + name for name in INPUTS),
+}
+
 
 def require(condition, message):
     if not condition:
@@ -31,6 +42,34 @@ def require(condition, message):
 
 def identity(raw):
     return {"bytes": len(raw), "sha256": sha256(raw)}
+
+
+def retained_evidence(name):
+    """Read original bytes without making an archived template an active package."""
+    if name not in TRANSPORT_NAMES:
+        path = EVIDENCE / safe_relative(name)
+        require(path.is_file() and not path.is_symlink(), "missing retained input")
+        return path.read_bytes()
+    require(
+        TRANSPORT.is_file() and not TRANSPORT.is_symlink(), "missing source transport"
+    )
+    raw = TRANSPORT.read_bytes()
+    require(
+        len(raw) == 335041 and sha256(raw) == TRANSPORT_SHA256,
+        "source transport identity mismatch",
+    )
+    with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+        require(
+            len(archive.infolist()) == len(TRANSPORT_NAMES)
+            and set(archive.namelist()) == TRANSPORT_NAMES,
+            "source transport member mismatch",
+        )
+        return archive.read(name)
+
+
+def frozen_inputs():
+    """Return actual pre-import hosted inputs for historical proposal controls."""
+    return {name: retained_evidence("original/" + name) for name in INPUTS}
 
 
 def safe_relative(name):
@@ -117,11 +156,8 @@ def source_proposal():
         set(specification["overrides"]) == expected_overrides, "unreviewed override set"
     )
     for name, expected in specification["overrides"].items():
-        path = EVIDENCE / "overrides" / safe_relative(name)
-        require(
-            path.is_file() and not path.is_symlink(), "override must be a regular file"
-        )
-        raw = path.read_bytes()
+        safe_relative(name)
+        raw = retained_evidence("overrides/" + name)
         require(identity(raw) == expected, "source override identity mismatch: " + name)
         proposed[name] = raw
 
@@ -239,9 +275,9 @@ def retain_files(destination, files):
         target.write_bytes(raw)
 
 
-def static_review():
+def static_review(baseline=None):
     specification, original, proposed = source_proposal()
-    records = json.loads((EVIDENCE / "upstream/index-records.json").read_text())
+    records = json.loads(retained_evidence("upstream/index-records.json"))
     registry = {
         entry["record"]["name"] + "-" + entry["record"]["vers"] + ".crate": entry[
             "record"
@@ -283,12 +319,15 @@ def static_review():
             and identity(raw) == {key: entry[key] for key in ("bytes", "sha256")},
             "original SigV4 fixture changed: " + entry["path"],
         )
+    if baseline is None:
+        baseline = {name: (ROOT / name).read_bytes() for name in INPUTS}
+    require(set(baseline) == set(INPUTS), "original input coverage differs")
     for name, expected in specification["baseline_files"].items():
         require(
-            identity((ROOT / name).read_bytes()) == expected,
+            identity(baseline[name]) == expected,
             "source baseline differs: " + name,
         )
-    workspace = change_workspace((ROOT / INPUTS[0]).read_bytes())
+    workspace = change_workspace(baseline[INPUTS[0]])
     patch = []
     for name in sorted(set(original) | set(proposed)):
         before, after = original.get(name, b""), proposed.get(name, b"")
@@ -309,7 +348,7 @@ def static_review():
     )
     expected_workspace_patch = "".join(
         difflib.unified_diff(
-            (ROOT / INPUTS[0]).read_text().splitlines(True),
+            baseline[INPUTS[0]].decode().splitlines(True),
             workspace.decode().splitlines(True),
             fromfile="a/codex-rs/Cargo.toml",
             tofile="b/codex-rs/Cargo.toml",

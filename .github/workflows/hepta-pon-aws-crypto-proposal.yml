@@ -3,15 +3,6 @@ name: Hepta PoN AWS crypto source and lock proposal (non-qualifying)
 # One-shot source/lock generation only. The artifact must be reviewed and
 # committed coherently before the original native qualification can apply.
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-    paths:
-      - ".github/workflows/hepta-pon-aws-crypto-proposal.yml"
-      - "scripts/hepta_pon_aws_crypto_proposal.py"
-      - "scripts/hepta_pon_aws_crypto_source.py"
-      - "scripts/test_hepta_pon_aws_crypto_proposal.py"
-      - "scripts/test_hepta_pon_aws_crypto_source.py"
-      - "qa/pon-aws-crypto-proposal-20261028-r9/**"
   workflow_dispatch:
     inputs:
       source_sha:

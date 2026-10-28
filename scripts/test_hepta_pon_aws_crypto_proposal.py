@@ -12,6 +12,7 @@ from unittest.mock import patch
 from types import SimpleNamespace
 
 import hepta_pon_aws_crypto_proposal as hosted
+import hepta_pon_aws_crypto_source as source
 from hepta_pon_dependency_proposal import source_from_event
 
 
@@ -98,7 +99,7 @@ class HostedControls(unittest.TestCase):
             for name in hosted.INPUTS:
                 destination = checkout / name
                 destination.parent.mkdir(parents=True, exist_ok=True)
-                destination.write_bytes((hosted.ROOT / name).read_bytes())
+                destination.write_bytes(source.frozen_inputs()[name])
 
             def failed_command(_args, **kwargs):
                 kwargs["stderr"].write(b"synthetic command failure control\n")
@@ -106,6 +107,11 @@ class HostedControls(unittest.TestCase):
 
             with (
                 patch.object(hosted, "ROOT", checkout),
+                patch.object(
+                    hosted,
+                    "static_review",
+                    side_effect=lambda: source.static_review(source.frozen_inputs()),
+                ),
                 patch.object(hosted, "require_hosted"),
                 patch.object(hosted, "git", return_value=""),
                 patch.object(
@@ -140,7 +146,7 @@ class HostedControls(unittest.TestCase):
             for name in hosted.INPUTS:
                 destination = checkout / name
                 destination.parent.mkdir(parents=True, exist_ok=True)
-                destination.write_bytes((hosted.ROOT / name).read_bytes())
+                destination.write_bytes(source.frozen_inputs()[name])
 
             def interrupted_command(_args, **kwargs):
                 kwargs["stderr"].write(b"synthetic interruption control\n")
@@ -148,6 +154,11 @@ class HostedControls(unittest.TestCase):
 
             with (
                 patch.object(hosted, "ROOT", checkout),
+                patch.object(
+                    hosted,
+                    "static_review",
+                    side_effect=lambda: source.static_review(source.frozen_inputs()),
+                ),
                 patch.object(hosted, "require_hosted"),
                 patch.object(hosted, "git", return_value=""),
                 patch.object(hosted.subprocess, "run", side_effect=interrupted_command),

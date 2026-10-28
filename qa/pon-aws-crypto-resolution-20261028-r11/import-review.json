@@ -1,0 +1,1668 @@
+{
+  "schema": "hepta-aws-coherent-import-v1",
+  "original_source": "ec3171c55848c3ebef5558119b9238b3120c6e1f",
+  "original_actual_merge": "e3e663727ff824b5935792cc19ea3d69d615a3f4",
+  "original_run": 40640050932,
+  "artifact_id": 12794934188,
+  "original_artifact": {
+    "bytes": 2558468,
+    "sha256": "15da6c22f053c2352c407b61aaac5932b8cc66e8b15bcfbcebd5891daa44e50a"
+  },
+  "original_archive_incomplete": true,
+  "recovered_missing_entries": 146,
+  "recovered_distinct_original_sources": 73,
+  "all_original_generated_files": 324,
+  "installed_files": [
+    {
+      "path": "MODULE.bazel.lock",
+      "bytes": 1718800,
+      "sha256": "c832e546e4236249f2cf5dca9602f36e75cbc331651a1e72be2e1414c54e7672"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "bytes": 426443,
+      "sha256": "ffa9f799ee35f5fcbe48d8172b94f53eec9b3a5f6ce874068dd32cbc9f17bcc6"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "bytes": 22198,
+      "sha256": "ce69b71ab8f3383e1ad34c7000d1c97ef356a72b6c1615c96d8917441746fb00"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/.cargo_vcs_info.json",
+      "bytes": 108,
+      "sha256": "b7e428e377a5a33a8130413ab432b8c4374dc0928777cfc5e274cfce9313f7e5"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/BUILD.bazel",
+      "bytes": 1136,
+      "sha256": "a6167fd9c40bf7758c1a3e1667b5d96576b58e5d1688a89ba679db540a7b3999"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/Cargo.toml",
+      "bytes": 4986,
+      "sha256": "ca14f92236c035fe094883b6bd611f2fbaae74539f6f086cd066938e4eece060"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/Cargo.toml.orig",
+      "bytes": 4341,
+      "sha256": "81719efb68459169be6cd60062eaffcca722fb51aebfd48fecf5fe89e2e76389"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/HEPTA_PATCH.md",
+      "bytes": 3485,
+      "sha256": "ca90e91a3a997fded9c51f34d011c33e40f2df7d739c6086cbfa14becd3d7cea"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/LICENSE",
+      "bytes": 10142,
+      "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/README.md",
+      "bytes": 2633,
+      "sha256": "02591e51c687f1f88eab596badf38f619abb886779f3a8e75eae5360fc2be95b"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/clippy.toml",
+      "bytes": 377,
+      "sha256": "d96f25817440495d0f0d90cb8372c7565d3b1d1755ea309986445d5bafed1d2a"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/examples/imds.rs",
+      "bytes": 769,
+      "sha256": "2eb7ee9e858e9fa2e76415449d9364a5ba4eb85e499b5f4ccf97c8d7dd3ebe47"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/external-types.toml",
+      "bytes": 2204,
+      "sha256": "30c1b34836875c8e10d92015acb93c930cd5bcad45738d1be650fa8216c910b1"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/fuzz/Cargo.toml",
+      "bytes": 562,
+      "sha256": "b7f4289fe4b478e1ab953a3308df6a1cf1be1787ecca63185f343b98d65d36f0"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/fuzz/fuzz_targets/profile-parser.rs",
+      "bytes": 870,
+      "sha256": "b94a82170476476ec3c787b2210a3b4f08852d3d50d7cd38de26a06efa53c397"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/integration-tests/eks-credentials/.npmignore",
+      "bytes": 65,
+      "sha256": "8610ff2e37f5501913393f902e5bb07d0c0da081604f606945e1129b6f17367f"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/integration-tests/eks-credentials/README.md",
+      "bytes": 710,
+      "sha256": "4b65bb1f2e967e14097fbf51627b86582378de544e486fdc3b9ea80f6064f065"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/integration-tests/eks-credentials/bin/eks-credentials.ts",
+      "bytes": 1090,
+      "sha256": "1163994406017b47fa9f12aa41197e951d02403f8950a9a24b27cfd15083c87b"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/integration-tests/eks-credentials/cdk.json",
+      "bytes": 87,
+      "sha256": "32d1da15348417626e759607873a2c197b0490fb28e30b7b41ee7fa4551f178b"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/integration-tests/eks-credentials/jest.config.js",
+      "bytes": 276,
+      "sha256": "2457265280327d5bdb02a7135080764d41a5daa7adce659194e1371b49fd13d3"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/integration-tests/eks-credentials/lib/eks-credentials-stack.ts",
+      "bytes": 3869,
+      "sha256": "6a8d5c533222a608d31276aed1b6941c132d2a7f8a3460fa4110d7463f9c225e"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/integration-tests/eks-credentials/package-lock.json",
+      "bytes": 18027,
+      "sha256": "58319039c3c17d8bdcb4ab057a92ad1480e095e1b29fe8d784c11d52fa008e23"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/integration-tests/eks-credentials/package.json",
+      "bytes": 491,
+      "sha256": "9eb4ef48ac3d0e4e12cf1a21a1d1269046af45640d4c84177e4c5da31f84bd68"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/integration-tests/eks-credentials/test.rs",
+      "bytes": 537,
+      "sha256": "6a108dda45a5a78a7cc318b345c83353e89ec2b3f83bbe0ff3a1981c4e322e60"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/integration-tests/eks-credentials/tsconfig.json",
+      "bytes": 650,
+      "sha256": "d0d12209e4c7f93d0ad3412455403789e80e8530767692056e6eece915dd0c3c"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/credential_process.rs",
+      "bytes": 14610,
+      "sha256": "ec42d356bae5ad78926c69105c6d6f2d280044cadd4653a025f35a6024389505"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/default_provider.rs",
+      "bytes": 3117,
+      "sha256": "c89e08ae70b9f81e6cf5625e35c90b716229f37f6f8eb796827e61d158f97504"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/default_provider/account_id_endpoint_mode.rs",
+      "bytes": 3316,
+      "sha256": "fee30a0b1709817d84720b57c6ca97c2057a21506fe4784d099c084f692d2e49"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/default_provider/app_name.rs",
+      "bytes": 6029,
+      "sha256": "8be99574a25e853dadf6bfed0b6eb85a7827cdc11ea981d77c17b313c966296a"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/default_provider/auth_scheme_preference.rs",
+      "bytes": 7096,
+      "sha256": "7ca64c9a82e1ceeafb2c3b8b38bfcb091bacf43f950f366559e6a1113d80afac"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/default_provider/checksums.rs",
+      "bytes": 9360,
+      "sha256": "a90a19d6669dc7cf59df4488cab290b7208acac7e563b279299bdca7b231d36a"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/default_provider/credentials.rs",
+      "bytes": 14424,
+      "sha256": "f8bd9b3f942b72ab625f2635c6202890161b3cbb2db1cd2e9a4fbce3dfb7e721"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/default_provider/disable_request_compression.rs",
+      "bytes": 4100,
+      "sha256": "4a3e8f6f1be19dbfbdfbbb8e66c9770a462d22ed0c0f651150e6828c55bcf16e"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/default_provider/endpoint_url.rs",
+      "bytes": 3835,
+      "sha256": "70ddbe9f944cb012d057a61897674c065dab2a0c081ca409d5fd5e4622938f67"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/default_provider/ignore_configured_endpoint_urls.rs",
+      "bytes": 3376,
+      "sha256": "c467954cd4d244d5485686525fd7271f75a1c9b8d82c9fe79e37cc3805e044cf"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/default_provider/region.rs",
+      "bytes": 2445,
+      "sha256": "ba9d1848f82b99d8622ff5280132a1e241e4cd427db61fe0472cc30b11a4c5c9"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/default_provider/request_min_compression_size_bytes.rs",
+      "bytes": 4285,
+      "sha256": "a9537f3ea5663cbb10af627afef5f91ffa93824e9b6ea4ae2f5a0e5f51818c20"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/default_provider/retry_config.rs",
+      "bytes": 12370,
+      "sha256": "71bd2eecceccd83d7b442e609245507d1c4ee97aa275938b255f766a64f6a70e"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/default_provider/timeout_config.rs",
+      "bytes": 1314,
+      "sha256": "658f2475f9f696f364702431807ec62b74877bffdbe814d50149b3858a66771e"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/default_provider/token.rs",
+      "bytes": 4244,
+      "sha256": "a2096fa414f8a5bc937a06be365746c0f489139e919dc41ec08adcc8d17bdfbf"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/default_provider/use_dual_stack.rs",
+      "bytes": 3766,
+      "sha256": "f2725455d70992d590a1471479d9a37f805525eea4165b1758e443c4688622ab"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/default_provider/use_fips.rs",
+      "bytes": 2889,
+      "sha256": "8afac7b077f9df3b163c870f5739cab68583a850c1ff92261b81d7d740606e65"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/ecs.rs",
+      "bytes": 36435,
+      "sha256": "781376b96e3e41207daeba78f031bd0fe23b710b2e62e82ccfac2694e6559035"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/env_service_config.rs",
+      "bytes": 877,
+      "sha256": "2d7fcc28695efc95b092dcf6f86c3b00cacce2b62f253589011bebdb6e55c648"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/environment/credentials.rs",
+      "bytes": 9139,
+      "sha256": "66f08d7fe977415cc23f91507bd9a58321c0999ea9c2234e34d9fe56b3ef17bf"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/environment/mod.rs",
+      "bytes": 2111,
+      "sha256": "4c24ed0dc22a121854dba1f5c6986b762cee511725f4e6b0e8ebe647ee38eb23"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/environment/region.rs",
+      "bytes": 2592,
+      "sha256": "98f166e417eae6ac9edcfbc7ab0f777c5ac60d19342e15fd63cb20b1f039a36a"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/http_credential_provider.rs",
+      "bytes": 14379,
+      "sha256": "c4580b68ac20c46f973a2ee68720bdee1c8251be0eb65d63226c16370104799e"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/imds/client.rs",
+      "bytes": 48828,
+      "sha256": "89ef3bd35d992e60a713ee274a3281c03206c44d7844c7bcd8da90ffb7d91250"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/imds/client/error.rs",
+      "bytes": 7860,
+      "sha256": "bd57e80523b7fff263432d21eb258df43d0deed908ff448b855d7497397e848b"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/imds/client/token.rs",
+      "bytes": 9916,
+      "sha256": "1d4adbbc8bed528ac83a3cd4dcd42126ccc4559fda9638193a5d85b597563a9b"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/imds/credentials.rs",
+      "bytes": 26120,
+      "sha256": "0ede95561a7da62216f5084daa6ad413071dff1d7210dbad81dabddc59cffb80"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/imds/mod.rs",
+      "bytes": 400,
+      "sha256": "f93ea52649615a9dc64dec3a7f1e8e14739847920a2babf131c45bed67539bef"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/imds/region.rs",
+      "bytes": 5887,
+      "sha256": "7462d842f75334551287259edae9899e1d1d7b83cd54b1385e8b3ceacf53d208"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/json_credentials.rs",
+      "bytes": 16917,
+      "sha256": "0444cabe0fb25a675fad196ff4fcf941fa8b286e0f00fd52a6ad1cc16ec50718"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/lib.rs",
+      "bytes": 58165,
+      "sha256": "ceb8c296fcf4e8c053fb3677a389d1ba46c6417cd93582fe0e5ad0071c678759"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/login.rs",
+      "bytes": 20873,
+      "sha256": "7346473127dc11ba15cbf68a9117e34b9c798f6af14115e2eeff3443792d59f0"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/login/cache.rs",
+      "bytes": 19022,
+      "sha256": "b109d4659c1301f3491ad96402a222a446b3bf75bea170aa388256668c1b6503"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/login/dpop.rs",
+      "bytes": 11439,
+      "sha256": "6f20f7aedc399f1750c80fc787e91edb46443d5c113838f5257c8ef0e7a64dcc"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/login/dpop_migration_tests.rs",
+      "bytes": 5064,
+      "sha256": "ca10b3a9f135c6299800491fa3fbc518605c0bca8e6fa4d9057829c6353dff7a"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/login/token.rs",
+      "bytes": 7122,
+      "sha256": "47fee902ea27d81fed1d3ff7b02979fdb5079e1bdd3c72e45d92630528b3180e"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/meta/credentials/chain.rs",
+      "bytes": 8600,
+      "sha256": "072a854c3aa40bb370ee0acc9818a7d080bdd2629bdf72c73433ea7bf1be05d5"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/meta/credentials/mod.rs",
+      "bytes": 263,
+      "sha256": "7e1948ede841eaeb123b7182053f670d73ccb828cbea3ab87dc6092990f776d7"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/meta/mod.rs",
+      "bytes": 239,
+      "sha256": "cb074f95d8b84b1f6ed562e4e9105fad235e9de79dec1d3c72e33daded09fd56"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/meta/region.rs",
+      "bytes": 5778,
+      "sha256": "37ba28d776cbe4707dcf0d3e28208ff8ee7fbcad63650390117ff8d1f4432302"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/meta/token.rs",
+      "bytes": 3904,
+      "sha256": "6ee80e980e68a102e282fd3f543f1bddfa497cd0c5d58399bfff41ba4255c17f"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/profile.rs",
+      "bytes": 4271,
+      "sha256": "a529c073835c150f0d56d38c01ce6a18e53334ebd84eeb868807f022cd487755"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/profile/credentials.rs",
+      "bytes": 38499,
+      "sha256": "845776ae979da0231a27dcb39c6cc75991f9dd3bb2d9177066377b5e2048cc6a"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/profile/credentials/exec.rs",
+      "bytes": 11342,
+      "sha256": "c2cec9385bfac88d1685904cf01c7df3794ea8e46be836f93316814c065c7fb8"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/profile/credentials/repr.rs",
+      "bytes": 25964,
+      "sha256": "a630d8608be5ee807ad0302460519c2c9e21882bdaa43e7925d6aebc48d448b4"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/profile/location_of_profile_files.md",
+      "bytes": 997,
+      "sha256": "2486beab9d3409c667a3a2114cd03f9eace30c44e0b7f3d37e77722218b93077"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/profile/parser.rs",
+      "bytes": 2227,
+      "sha256": "8def6a8a21188d849b21a0ef6f91abea74ae288445c61bb69dc6ac6e5bf0e081"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/profile/profile_file.rs",
+      "bytes": 878,
+      "sha256": "23af94d712cdbba5e50537e61a14d6f5ddef77ae9104f12bba3dfb95369ec308"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/profile/region.rs",
+      "bytes": 8294,
+      "sha256": "d881290f4fef027abcabeb54b1dc6265cb677b0274ae814d2614940b41c54501"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/profile/token.rs",
+      "bytes": 8278,
+      "sha256": "5fa8862e80d46610f5c1efb01db039cdf9aa0ce3235771e555205e9c35718df6"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/provider_config.rs",
+      "bytes": 14267,
+      "sha256": "0ad0f3cd54014ef5eb4b3ed5b22ca93bee13a362768db23e5b9f65ca48061764"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/retry.rs",
+      "bytes": 2633,
+      "sha256": "ebe0bbd2fcad5f272757ef7ee59347ea0d348b0f095ad40e854a771ab3886bda"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/sensitive_command.rs",
+      "bytes": 1279,
+      "sha256": "d35fa08df7a9ac493e7d04112a213ddef42bd46a15640c1cacd20b59e2696aed"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/sso.rs",
+      "bytes": 287,
+      "sha256": "a09486d3edbc9b9e73ff44f497f5a45aa9478d68d4e391c06a8d009b2822d1e8"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/sso/cache.rs",
+      "bytes": 22543,
+      "sha256": "42d5f9fb895f6bfa11517c00aa3253ccb45c6d304c45ef3141e8c25edd3d654d"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/sso/credentials.rs",
+      "bytes": 10009,
+      "sha256": "3359bab126a715bf7ffbf7c4780f883209b7a27103861559fc2e5c5dd7e6d5fb"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/sso/token.rs",
+      "bytes": 33775,
+      "sha256": "973992a9da1101d6650fc4d197157c723b324024c1bbfa96daf97b232391dc5e"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/stalled_stream_protection.rs",
+      "bytes": 295,
+      "sha256": "49b8f97bc6fc9d0373b51c61728a651bf3697ccb4eb7e9c62e52219268382a29"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/sts.rs",
+      "bytes": 329,
+      "sha256": "bbb533a492a9bde56c2c9df7b8b4b0914ad4e0c3be1ad42d34f87d2e0aa37f0c"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/sts/assume_role.rs",
+      "bytes": 24850,
+      "sha256": "d667968f6d26e9c3a650c6232a8be4f58971db1d3f08acba5df6b9f90e8f5015"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/sts/util.rs",
+      "bytes": 2952,
+      "sha256": "7779f8a54c05584fee4614ed54db39efdffda8d1dc449f6381eb370eb67d31f3"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/test_case.rs",
+      "bytes": 15217,
+      "sha256": "0b248622827b8e356a33b22e66105de5815e53f7e7971f68d0a3c2ab193d234f"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/timeout.rs",
+      "bytes": 345,
+      "sha256": "834c8a0a82a953082642ea082f6225611643fc7681945967f3ce208913d65e3b"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/src/web_identity_token.rs",
+      "bytes": 13992,
+      "sha256": "7280f019fa650c69844dd9c161b3da7337d70c3bdb274d64b680c4765e0ecdbb"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/assume-role-tests.json",
+      "bytes": 15236,
+      "sha256": "bf9bf7a8c19f3edc6be616f7cb73a23239546edd08d68b62a6af875d4d6c6511"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/e2e_fips_and_dual_stack_sso/env.json",
+      "bytes": 155,
+      "sha256": "c257cc2ab0af51031e15e862f926b208f254893e4cd18536cf3abb211274ba4f"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/e2e_fips_and_dual_stack_sso/fs/home/.aws/config",
+      "bytes": 164,
+      "sha256": "de549e51ee893e2294c81cdbd204198a1419d804dafbd80990869c0ec6d3ea1c"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/e2e_fips_and_dual_stack_sso/fs/home/.aws/sso/cache/dace00cba5f8355ec9d274ceb2bcebdfbeed0e12.json",
+      "bytes": 121,
+      "sha256": "d946831b9c6151ad28a3a008502cddec93f54218b732a6fd1b27990d4f3f7e96"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/e2e_fips_and_dual_stack_sso/http-traffic.json",
+      "bytes": 2202,
+      "sha256": "c505cf45471ec3854cc2347fdc6d867b21b74585b90f3ac3e2033e8917c34dd9"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/e2e_fips_and_dual_stack_sso/test-case.json",
+      "bytes": 332,
+      "sha256": "edf65f5aafb55479ad5776d00cc27ba233ef613afe206024bcd82408723c69fd"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/ecs_assume_role/env.json",
+      "bytes": 122,
+      "sha256": "6fabfc6fa54d8f94acaf889d7f5b76f5184539d4ac0f6c2a6c93274199459385"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/ecs_assume_role/fs/home/.aws/config",
+      "bytes": 127,
+      "sha256": "10a5db0cf4a27111f4b6830f6bb01b8aca5d86a371355ccb060e767bb6a6ad9a"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/ecs_assume_role/http-traffic.json",
+      "bytes": 6421,
+      "sha256": "f4068c6d4f25a38f6e8967fcd3cb959ab6e667d64a1f7402b269a42e06b95d05"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/ecs_assume_role/test-case.json",
+      "bytes": 339,
+      "sha256": "c51b12d515483f748bc7919a79b0e34703ef4d36d7b3ee7ae3c72fd2b3ed848f"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/ecs_credentials/env.json",
+      "bytes": 151,
+      "sha256": "c4a50e8b0a8be3f393a9d521ebb3ad0275b836ccbc39a5a7194e7b3122b1a1e3"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/ecs_credentials/http-traffic.json",
+      "bytes": 2071,
+      "sha256": "34efaacdeecbcbf8101a6b05e425690d058c29924baafa1c5b2fa9ee3c8bf0b1"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/ecs_credentials/test-case.json",
+      "bytes": 305,
+      "sha256": "4ea08990c0952e8a7d27a1991cbca057bc941ccbe307acd6acce0c993c7dc90e"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/ecs_credentials_invalid_profile/env.json",
+      "bytes": 151,
+      "sha256": "c4a50e8b0a8be3f393a9d521ebb3ad0275b836ccbc39a5a7194e7b3122b1a1e3"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/ecs_credentials_invalid_profile/fs/home/.aws/config",
+      "bytes": 72,
+      "sha256": "a7bfc371860fd2103b66e8ba05aeaddcbadf0b38011b03c9c891dcd3a2700ef8"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/ecs_credentials_invalid_profile/http-traffic.json",
+      "bytes": 2071,
+      "sha256": "34efaacdeecbcbf8101a6b05e425690d058c29924baafa1c5b2fa9ee3c8bf0b1"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/ecs_credentials_invalid_profile/test-case.json",
+      "bytes": 305,
+      "sha256": "4ea08990c0952e8a7d27a1991cbca057bc941ccbe307acd6acce0c993c7dc90e"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/eks_pod_identity_credentials/env.json",
+      "bytes": 189,
+      "sha256": "af2e8ce84f1bae916dae822721da30da1109a07e93923cb3e25aa97965d206c5"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/eks_pod_identity_credentials/fs/token.jwt",
+      "bytes": 9,
+      "sha256": "9c928547a5dce2fcc2788de34fe163942f64e50fea570d33774822d5eacbf1ec"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/eks_pod_identity_credentials/http-traffic.json",
+      "bytes": 2056,
+      "sha256": "44776cbf475e4496084098a38d1031d6c10ec51b451d8a8d7a7b4b51f62adbd0"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/eks_pod_identity_credentials/test-case.json",
+      "bytes": 331,
+      "sha256": "7cddf6d7a511ab29d891d8542f5140692378d12ecba311db52c2e03efdfed40f"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/eks_pod_identity_no_token_file/env.json",
+      "bytes": 189,
+      "sha256": "af2e8ce84f1bae916dae822721da30da1109a07e93923cb3e25aa97965d206c5"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/eks_pod_identity_no_token_file/http-traffic.json",
+      "bytes": 82,
+      "sha256": "cdc385c0c7788716ac286b1f8d3070e0519f97dd9e43448bc911dc907e69b07a"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/eks_pod_identity_no_token_file/test-case.json",
+      "bytes": 209,
+      "sha256": "3811a8d283b65dba946d0461f368eb3cffe457a251d6f4159809e0041e51a10f"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/environment_variables/env.json",
+      "bytes": 156,
+      "sha256": "0ff7e8be3dd10bd31e5db2c43f513149d1f74dbb1233cbaa7dc86311cd707cb8"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/environment_variables/http-traffic.json",
+      "bytes": 109,
+      "sha256": "ba6d06c1fcdc6757836e1606ce918f17b30c9db7c5b92978368820cae9bd5053"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/environment_variables/test-case.json",
+      "bytes": 262,
+      "sha256": "20557810f998e6182049e6d918bef4105bf1b8c5427b27ab0034cfdcbba67213"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/environment_variables_blank/env.json",
+      "bytes": 115,
+      "sha256": "c19d7249161ad76ea025630ea8e60038155d3839990af9f27e7a5c0408220987"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/environment_variables_blank/fs/home/.aws/config",
+      "bytes": 218,
+      "sha256": "480ddd77c5fbc72ff0bd731735bc9d3661342491aa84d666fc5b8e9e280acbda"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/environment_variables_blank/http-traffic.json",
+      "bytes": 100,
+      "sha256": "bc57c91d8b4df11700d7255c95260be8cf0bac4db863b97e484f87a44a9aaa11"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/environment_variables_blank/test-case.json",
+      "bytes": 286,
+      "sha256": "f07f8cb178ef772e1fc7ad6d5a1b01ce195b6e3ce1e5d62d233ca22c59d4f7ff"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_assume_role/env.json",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_assume_role/fs/home/.aws/config",
+      "bytes": 134,
+      "sha256": "8cac568829de6742c390182dcb58c034fa3bff34842f6c554d38338e2bcdd871"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_assume_role/http-traffic.json",
+      "bytes": 13732,
+      "sha256": "6d5faee4bc4bd3dc944eae60d66cc10958bc0687675713659dd8681fe44ec71f"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_assume_role/test-case.json",
+      "bytes": 331,
+      "sha256": "b5f32749a8318ae097854b1b8dd8ae3589fa6eb37fb512c3ca13f1ec308444b8"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_config_with_no_creds/env.json",
+      "bytes": 51,
+      "sha256": "2d8ad36e541bbb8536b150b7356fd34a5bcb67d5fb92a26ee7dd0ea2bdf85122"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_config_with_no_creds/fs/home/.aws/config",
+      "bytes": 27,
+      "sha256": "33b1002a3c56c0c12279290f14325a59dfd82e4e8ab10e2d8275c0ee3da21bb5"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_config_with_no_creds/http-traffic.json",
+      "bytes": 9461,
+      "sha256": "461ea943c4d34406a3752173134ce33fa95283c16dfc54f554cbaf0d7e982a2b"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_config_with_no_creds/test-case.json",
+      "bytes": 319,
+      "sha256": "63504f271cf65d4f25a949cf3989dd2057da87e298ad94cee14598ce6dc5b834"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_default_chain_error/env.json",
+      "bytes": 51,
+      "sha256": "2d8ad36e541bbb8536b150b7356fd34a5bcb67d5fb92a26ee7dd0ea2bdf85122"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_default_chain_error/fs/home/.aws/config",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_default_chain_error/http-traffic.json",
+      "bytes": 5985,
+      "sha256": "2a4a3e650b6a7caee4a54a5c82439d74cf09eeb18585d13fc6b081330e26fc36"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_default_chain_error/test-case.json",
+      "bytes": 288,
+      "sha256": "b9c4c4ae33a3205cc25561e8194507abaa5aab67e38b83ba1965de8daf44070b"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_default_chain_retries/env.json",
+      "bytes": 51,
+      "sha256": "2d8ad36e541bbb8536b150b7356fd34a5bcb67d5fb92a26ee7dd0ea2bdf85122"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_default_chain_retries/fs/home/.aws/config",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_default_chain_retries/http-traffic.json",
+      "bytes": 14269,
+      "sha256": "7a0b14e6472179d8202a20b8bd0c3f9acdeb9c0db3cf1fea4502588ce1719048"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_default_chain_retries/test-case.json",
+      "bytes": 383,
+      "sha256": "bf7382c0f1c8ef562923d66160f7554eed8708af2c37fd32fd626541658b4489"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_default_chain_success/env.json",
+      "bytes": 51,
+      "sha256": "2d8ad36e541bbb8536b150b7356fd34a5bcb67d5fb92a26ee7dd0ea2bdf85122"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_default_chain_success/fs/home/.aws/config",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_default_chain_success/http-traffic.json",
+      "bytes": 9421,
+      "sha256": "c75e0928855bf5f21c6d331a8aeb135d920dec4bb75d164156057051a90ba654"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_default_chain_success/test-case.json",
+      "bytes": 383,
+      "sha256": "9328c79c8bd8310ae2094937eaea4880754750a8cdf1940dc18d27f32b56992c"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_disabled/env.json",
+      "bytes": 61,
+      "sha256": "0a795fba4bc0ea8b470f1bb8148a505bd1daf9ba791d5075e3112f5c289dbef2"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_disabled/http-traffic.json",
+      "bytes": 69,
+      "sha256": "29a4c5138fbc1e087f7390f4ae348a1f48c4848af0ff32ae2f80bf5e0fa48649"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_disabled/test-case.json",
+      "bytes": 225,
+      "sha256": "27870707bacc86bb6a5c8a74146b023ab1395e1a8067567001dcc078857e820d"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_no_iam_role/env.json",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_no_iam_role/fs/home/.aws/config",
+      "bytes": 125,
+      "sha256": "cb6ab89b87b9bc7a21947121c4454ab934abf3429b0d01d6bd6738deac4bd965"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_no_iam_role/http-traffic.json",
+      "bytes": 5985,
+      "sha256": "2a4a3e650b6a7caee4a54a5c82439d74cf09eeb18585d13fc6b081330e26fc36"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_no_iam_role/test-case.json",
+      "bytes": 210,
+      "sha256": "fcd07bbf77cc9c3eb56648c64af148597e0a69980dae10d915b0d0aa6e8c416b"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_token_fail/env.json",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_token_fail/fs/home/.aws/config",
+      "bytes": 125,
+      "sha256": "cb6ab89b87b9bc7a21947121c4454ab934abf3429b0d01d6bd6738deac4bd965"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_token_fail/http-traffic.json",
+      "bytes": 1437,
+      "sha256": "ce050734738a43a205f4b3a6e5d203ac9660642027072281fd71538ac1b260bf"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/imds_token_fail/test-case.json",
+      "bytes": 180,
+      "sha256": "1ea516ff10a39e21b7e7bbf3b5216a34fa9988f6b8c166d4a17e679402e7a37f"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/prefer_environment/env.json",
+      "bytes": 105,
+      "sha256": "9ef53043224069ad82af40cf981e9ab3cc306be920d0b17e80d4ccd0345b2572"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/prefer_environment/fs/home/.aws/config",
+      "bytes": 142,
+      "sha256": "85c0097b8234c69964eb83856a25295d531a6096518b30ac0136c056d82c7e45"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/prefer_environment/fs/home/.aws/credentials",
+      "bytes": 65,
+      "sha256": "ab9bfb26b1b72153fc3a46584b939a35ceab9a7031844b8038967ba06d241c0e"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/prefer_environment/http-traffic.json",
+      "bytes": 69,
+      "sha256": "29a4c5138fbc1e087f7390f4ae348a1f48c4848af0ff32ae2f80bf5e0fa48649"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/prefer_environment/test-case.json",
+      "bytes": 209,
+      "sha256": "a9c8eb1de5107112e1a076cf2ffc3a8345d3d5136ee59c7e366ad4d49653fd5f"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/profile_name/env.json",
+      "bytes": 80,
+      "sha256": "f2a15360a2b4953a736b3e5aed9917d50bb3e9ccc5a4e0a11e84331d4e8712cc"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/profile_name/fs/home/.aws/config",
+      "bytes": 243,
+      "sha256": "fb2f2f31542da0bf9bd489168ed8afdbf6c8386070a21d2f985319d3b46bb299"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/profile_name/http-traffic.json",
+      "bytes": 100,
+      "sha256": "bc57c91d8b4df11700d7255c95260be8cf0bac4db863b97e484f87a44a9aaa11"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/profile_name/test-case.json",
+      "bytes": 238,
+      "sha256": "65be6b8a7a3504691282f17f8545314458ae066487cf976d71fb49590717c420"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/profile_overrides_web_identity/env.json",
+      "bytes": 146,
+      "sha256": "eb814ac9730262cb69f83ee9dbd7952ceac909829f6d7181c4882d7e54641084"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/profile_overrides_web_identity/fs/home/.aws/config",
+      "bytes": 89,
+      "sha256": "05b3bf1742ab0874f176e3af86d40111bb7d4f5dd0dceace6b7e4eb3cab06a84"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/profile_overrides_web_identity/fs/token.jwt",
+      "bytes": 16,
+      "sha256": "e8f3e92d0076e8516e58ad544b00d49a15f64285f9bed313fa281aef038cfb75"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/profile_overrides_web_identity/http-traffic.json",
+      "bytes": 100,
+      "sha256": "bc57c91d8b4df11700d7255c95260be8cf0bac4db863b97e484f87a44a9aaa11"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/profile_overrides_web_identity/test-case.json",
+      "bytes": 281,
+      "sha256": "6a039535def1ad507c7fad8e0260a758c3aae9c2d12c95d743073767e17a80f2"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/profile_static_keys/env.json",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/profile_static_keys/fs/home/.aws/config",
+      "bytes": 231,
+      "sha256": "862ce887e24a2d1cf261ffcd74f0be12ca504fb213cc406dffb9421ac40ea135"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/profile_static_keys/fs/home/.aws/credentials",
+      "bytes": 81,
+      "sha256": "04dff4d34f2f61376d2aa5dfb00591d1e80c441b7d6ac77898c162e2c5840acb"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/profile_static_keys/http-traffic.json",
+      "bytes": 100,
+      "sha256": "bc57c91d8b4df11700d7255c95260be8cf0bac4db863b97e484f87a44a9aaa11"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/profile_static_keys/test-case.json",
+      "bytes": 200,
+      "sha256": "5e11fbebb04ce369bfff772ea9dd9b1e04614510dd10bb9a6e10c2ea5f32c6a6"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/profile_static_keys_case_insensitive/env.json",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/profile_static_keys_case_insensitive/fs/home/.aws/config",
+      "bytes": 29,
+      "sha256": "a3199a68b921c4cdb3c3e431a6449c9936ae9d82cebc0998e74a56f0ee2cc128"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/profile_static_keys_case_insensitive/fs/home/.aws/credentials",
+      "bytes": 81,
+      "sha256": "3b7e388ab2d536fdcf5bfa17a38010c14b73214ad263f4600a1e04e437fd40a4"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/profile_static_keys_case_insensitive/http-traffic.json",
+      "bytes": 100,
+      "sha256": "bc57c91d8b4df11700d7255c95260be8cf0bac4db863b97e484f87a44a9aaa11"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/profile_static_keys_case_insensitive/test-case.json",
+      "bytes": 200,
+      "sha256": "5e11fbebb04ce369bfff772ea9dd9b1e04614510dd10bb9a6e10c2ea5f32c6a6"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/sso_assume_role/env.json",
+      "bytes": 80,
+      "sha256": "c647c15ba06c14f0e622378037de35e1f39bfa38e79c62bda8b77841a81e3cab"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/sso_assume_role/fs/home/.aws/config",
+      "bytes": 164,
+      "sha256": "de549e51ee893e2294c81cdbd204198a1419d804dafbd80990869c0ec6d3ea1c"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/sso_assume_role/fs/home/.aws/sso/cache/dace00cba5f8355ec9d274ceb2bcebdfbeed0e12.json",
+      "bytes": 121,
+      "sha256": "d946831b9c6151ad28a3a008502cddec93f54218b732a6fd1b27990d4f3f7e96"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/sso_assume_role/http-traffic.json",
+      "bytes": 2204,
+      "sha256": "7be7e3bb2803832e8886927661015081dd4555229cbe847a3867edecfc09ded4"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/sso_assume_role/test-case.json",
+      "bytes": 285,
+      "sha256": "8020c0e968614e9c05446cfdc959b4e57779c927c519d57005f27e5b1931deb6"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/sso_no_token_file/env.json",
+      "bytes": 80,
+      "sha256": "c647c15ba06c14f0e622378037de35e1f39bfa38e79c62bda8b77841a81e3cab"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/sso_no_token_file/fs/home/.aws/config",
+      "bytes": 164,
+      "sha256": "de549e51ee893e2294c81cdbd204198a1419d804dafbd80990869c0ec6d3ea1c"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/sso_no_token_file/fs/home/.aws/sso/cache/differenthashthatdoesntmatch.json",
+      "bytes": 121,
+      "sha256": "d946831b9c6151ad28a3a008502cddec93f54218b732a6fd1b27990d4f3f7e96"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/sso_no_token_file/http-traffic.json",
+      "bytes": 82,
+      "sha256": "cdc385c0c7788716ac286b1f8d3070e0519f97dd9e43448bc911dc907e69b07a"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/sso_no_token_file/test-case.json",
+      "bytes": 229,
+      "sha256": "7538f2ffdc094a6b180fe7c7c88c168e1b0386d5ffde95b7b1bea64a80a57726"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/sso_server_error/env.json",
+      "bytes": 80,
+      "sha256": "c647c15ba06c14f0e622378037de35e1f39bfa38e79c62bda8b77841a81e3cab"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/sso_server_error/fs/home/.aws/config",
+      "bytes": 164,
+      "sha256": "de549e51ee893e2294c81cdbd204198a1419d804dafbd80990869c0ec6d3ea1c"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/sso_server_error/fs/home/.aws/sso/cache/dace00cba5f8355ec9d274ceb2bcebdfbeed0e12.json",
+      "bytes": 121,
+      "sha256": "d946831b9c6151ad28a3a008502cddec93f54218b732a6fd1b27990d4f3f7e96"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/sso_server_error/http-traffic.json",
+      "bytes": 1165,
+      "sha256": "f2622b905bd6737a79ec5a21afb639da160bb586cb88f75fc8f46f15ce106fef"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/sso_server_error/test-case.json",
+      "bytes": 247,
+      "sha256": "95396553ea2e9eb864385228f6685375ac8c2809345830ef194cd43a1cf4739d"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/web_identity_source_profile_no_env/env.json",
+      "bytes": 99,
+      "sha256": "07ded18a7071c74b78582cc510789f8eda9e03f6fe2b248b53c0063f981ae819"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/web_identity_source_profile_no_env/fs/home/.aws/config",
+      "bytes": 126,
+      "sha256": "a0a13cfc7848b19bebec9729a5aed4925ef72bb35d41d92f40048c2207254f78"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/web_identity_source_profile_no_env/fs/token.jwt",
+      "bytes": 10,
+      "sha256": "1bc6594e9a313bf218da910b0244d07d58f6a0e8ce0a1148cd376db876f315c7"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/web_identity_source_profile_no_env/http-traffic.json",
+      "bytes": 87,
+      "sha256": "90deff84633e14dc387926742ce58924335447d54d96ba42e2c3016fa9c03419"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/web_identity_source_profile_no_env/test-case.json",
+      "bytes": 323,
+      "sha256": "5c274159c42578e7a85a9649bde98737ec6ac575dd9dfa8d565db9dbbbe89610"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/web_identity_token_env/env.json",
+      "bytes": 184,
+      "sha256": "4f27e81bd5c9676de5639dd36e11b05f148ab6c289cd1227a32e660fdc7f2763"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/web_identity_token_env/fs/token.jwt",
+      "bytes": 266,
+      "sha256": "fb50ec635043715d9927381d53968d6c3fbf1e184f3407354687473b55f18ea3"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/web_identity_token_env/http-traffic.json",
+      "bytes": 3734,
+      "sha256": "f00bc93927a4eb63939ba06e86c6e1b19d50af74b65d4f0b5c9f40e374ac33a7"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/web_identity_token_env/test-case.json",
+      "bytes": 339,
+      "sha256": "75669dc6a1ab22d9d213d325029cddbe13fd9b3039ce71a66b2e80289010129a"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/web_identity_token_invalid_jwt/env.json",
+      "bytes": 73,
+      "sha256": "12fe94e8229e867dac94a00c5df10323955912939910ba0e6fa0ce381b4e4352"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/web_identity_token_invalid_jwt/fs/home/.aws/config",
+      "bytes": 170,
+      "sha256": "062482ce9483a885eece20cd194635a0c590e56cb89654262004b48d29b2b56d"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/web_identity_token_invalid_jwt/fs/token.jwt",
+      "bytes": 834,
+      "sha256": "ff6af3a020cf6b10e8ebe0b261673f79ba80c976f476713f0380e4ea22f9aac4"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/web_identity_token_invalid_jwt/http-traffic.json",
+      "bytes": 3703,
+      "sha256": "090bc9acbf54e382317d5d2ba7f94201235ed1e4fa0eab9574bd71d632d14e8f"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/web_identity_token_invalid_jwt/test-case.json",
+      "bytes": 253,
+      "sha256": "a2d89b6a54fc8fb709e2114bbaf3fe364af8e30d6db4d8e162b105d86e4f37c6"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/web_identity_token_profile/env.json",
+      "bytes": 73,
+      "sha256": "12fe94e8229e867dac94a00c5df10323955912939910ba0e6fa0ce381b4e4352"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/web_identity_token_profile/fs/home/.aws/config",
+      "bytes": 98,
+      "sha256": "a5ecfb2e9ba60f72584a177f334ae2044c29a6e750fefc7e17288a3dda909166"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/web_identity_token_profile/fs/token.jwt",
+      "bytes": 10,
+      "sha256": "1bc6594e9a313bf218da910b0244d07d58f6a0e8ce0a1148cd376db876f315c7"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/web_identity_token_profile/http-traffic.json",
+      "bytes": 4434,
+      "sha256": "237b0a29778d67d4678f054712cf62678197d98eb8211f2eb30b4a42535e1a1e"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/web_identity_token_profile/test-case.json",
+      "bytes": 346,
+      "sha256": "0c8aabfa308aabb7ade95ee58011d86bc15041d3b39a32cb348e57229aa84c31"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/web_identity_token_source_profile/env.json",
+      "bytes": 73,
+      "sha256": "12fe94e8229e867dac94a00c5df10323955912939910ba0e6fa0ce381b4e4352"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/web_identity_token_source_profile/fs/home/.aws/config",
+      "bytes": 177,
+      "sha256": "71668c8cd3b88506c446641232d5b80bbba94eae494d5bfd41ff95cd3da4c82b"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/web_identity_token_source_profile/fs/token.jwt",
+      "bytes": 10,
+      "sha256": "1bc6594e9a313bf218da910b0244d07d58f6a0e8ce0a1148cd376db876f315c7"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/web_identity_token_source_profile/http-traffic.json",
+      "bytes": 9069,
+      "sha256": "be3703fab02eeb904bb6affb47f00ad1bde5e6b61db665a1c30c8bcabcf6adad"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-credential-provider-chain/web_identity_token_source_profile/test-case.json",
+      "bytes": 336,
+      "sha256": "e3e71723bbf512f4b3e633e09f689f77f053622f4052bf060c9ff3f3d2d0c144"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-token-provider-chain/profile_keys/env.json",
+      "bytes": 24,
+      "sha256": "9fc2210b628ac14eb64d6582f53eb0f89a2a5125c681b3e66bee49a36a7a4cc8"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-token-provider-chain/profile_keys/fs/home/.aws/config",
+      "bytes": 155,
+      "sha256": "e51d2bac311c5b3a2e5b24fa0f3b3b026d79d650f23a1637157cac3e05280bb9"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-token-provider-chain/profile_keys/fs/home/.aws/sso/cache/d12208e38164f558a1d06c99432ab77dbb346c45.json",
+      "bytes": 123,
+      "sha256": "b59fa4209aa33f6a1dcc9fa7e1d02d5ed991bf633879169313796e0b102b05b1"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-token-provider-chain/profile_keys/http-traffic.json",
+      "bytes": 106,
+      "sha256": "13e44cbcc57ed74180fde867d94f0a3a71570bfeee657540118bb1b0fd3611c6"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-token-provider-chain/profile_keys/test-case.json",
+      "bytes": 199,
+      "sha256": "4f1a1e57d7724b10aa2543a89c4719cc2d03667f8383a71555ff737c391025c2"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-token-provider-chain/profile_keys_case_insensitive/env.json",
+      "bytes": 24,
+      "sha256": "9fc2210b628ac14eb64d6582f53eb0f89a2a5125c681b3e66bee49a36a7a4cc8"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-token-provider-chain/profile_keys_case_insensitive/fs/home/.aws/config",
+      "bytes": 155,
+      "sha256": "7a3d3bab7a878e38334611282503dd6728ffed5b1c05d3e81218888d7d95e8ce"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-token-provider-chain/profile_keys_case_insensitive/fs/home/.aws/sso/cache/d12208e38164f558a1d06c99432ab77dbb346c45.json",
+      "bytes": 123,
+      "sha256": "b59fa4209aa33f6a1dcc9fa7e1d02d5ed991bf633879169313796e0b102b05b1"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-token-provider-chain/profile_keys_case_insensitive/http-traffic.json",
+      "bytes": 133,
+      "sha256": "b3b01db8474843db4e0376e1c09cba7acdca8f3f621591c592f8e5466bfffd0d"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-token-provider-chain/profile_keys_case_insensitive/test-case.json",
+      "bytes": 243,
+      "sha256": "e019cfd6e12a28bbb46405df84ba5166e5b79f86fde91c51cb1caab35fe04902"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-token-provider-chain/profile_name/env.json",
+      "bytes": 58,
+      "sha256": "350ad030817b7fd23c7025cc021da69a8fa8fbc4e880f6a2b3dfb0251b419d01"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-token-provider-chain/profile_name/fs/home/.aws/config",
+      "bytes": 347,
+      "sha256": "258d157a02a69002385a856df3895893e3be6a5baaf4d91deec76ce37366ceb1"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-token-provider-chain/profile_name/fs/home/.aws/sso/cache/29faa2f70ab0f58f60e284d585d95865572f5cbd.json",
+      "bytes": 123,
+      "sha256": "b59fa4209aa33f6a1dcc9fa7e1d02d5ed991bf633879169313796e0b102b05b1"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-token-provider-chain/profile_name/http-traffic.json",
+      "bytes": 114,
+      "sha256": "a8da8cbc15ea0c73694327cdf6ca7a911570e89da80eab58b05797926046bd7f"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/default-token-provider-chain/profile_name/test-case.json",
+      "bytes": 207,
+      "sha256": "00e892014113ca8cc5e5be8b7f06e2aab2166e5b870b793e6414d5cd5958352b"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/ecs-tests.json",
+      "bytes": 2580,
+      "sha256": "a8c3c6c81e4c2b6cec0351bd87d242e54eab3dfcb726416771eeece3d8129e2b"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/imds-config/imds-endpoint-tests.json",
+      "bytes": 3827,
+      "sha256": "3b534d0bfa4f392a37ddd4b01897f071ec29c2102b16c1e4dd87382be70dc2f4"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/login-provider-test-cases.json",
+      "bytes": 15006,
+      "sha256": "5290e7cbb9b8735816275356c39de2a106a273d5b829142285e346df90f575a5"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/assume_role_override_global_env_url/env.json",
+      "bytes": 78,
+      "sha256": "e2368552fcd26b2f4bbdc8b811a3a01c3715401fc81b57a2a9cadf0f2f0e5692"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/assume_role_override_global_env_url/fs/home/.aws/config",
+      "bytes": 142,
+      "sha256": "85c0097b8234c69964eb83856a25295d531a6096518b30ac0136c056d82c7e45"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/assume_role_override_global_env_url/fs/home/.aws/credentials",
+      "bytes": 65,
+      "sha256": "ab9bfb26b1b72153fc3a46584b939a35ceab9a7031844b8038967ba06d241c0e"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/assume_role_override_global_env_url/http-traffic.json",
+      "bytes": 3427,
+      "sha256": "5c2d48f113d4645488d4e11cf01dd04ea79bd3d80ac7fd8ba7646fa3768cbadc"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/assume_role_override_global_env_url/test-case.json",
+      "bytes": 332,
+      "sha256": "83aef6210c93f90ce7a25683b73a460f384bfc4bdb5ccdd869d9073a7d01fef0"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/assume_role_override_global_profile_url/env.json",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/assume_role_override_global_profile_url/fs/home/.aws/config",
+      "bytes": 192,
+      "sha256": "56f37abf98c2fc929389a2977c2b2110a27cab9fe4757899ad4d5336e5833121"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/assume_role_override_global_profile_url/fs/home/.aws/credentials",
+      "bytes": 65,
+      "sha256": "ab9bfb26b1b72153fc3a46584b939a35ceab9a7031844b8038967ba06d241c0e"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/assume_role_override_global_profile_url/http-traffic.json",
+      "bytes": 3435,
+      "sha256": "7ff7b72838a69a2ff80e55317af149553b96997960409cdaa84d06facaa0d19d"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/assume_role_override_global_profile_url/test-case.json",
+      "bytes": 328,
+      "sha256": "2c688f97c0793313d7e813fc0c24030eb8d2e699d2dda7cfb9530c465f4e47f7"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/assume_role_override_service_env_url/env.json",
+      "bytes": 79,
+      "sha256": "62c11ab956eef207f0441acba2e16a0a170ffe94ebddba54bf05dcac35d53017"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/assume_role_override_service_env_url/fs/home/.aws/config",
+      "bytes": 142,
+      "sha256": "85c0097b8234c69964eb83856a25295d531a6096518b30ac0136c056d82c7e45"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/assume_role_override_service_env_url/fs/home/.aws/credentials",
+      "bytes": 65,
+      "sha256": "ab9bfb26b1b72153fc3a46584b939a35ceab9a7031844b8038967ba06d241c0e"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/assume_role_override_service_env_url/http-traffic.json",
+      "bytes": 3421,
+      "sha256": "b259d1880bbba733296e6bd3aefe9c57986699c7b2c6bb9d2f5c78f282673c1a"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/assume_role_override_service_env_url/test-case.json",
+      "bytes": 337,
+      "sha256": "ae6cc42be5d4cf36856e2ba9f9d3831e71c1938e3dfd47fc9812248ba85c04c4"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/assume_role_override_service_profile_url/env.json",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/assume_role_override_service_profile_url/fs/home/.aws/config",
+      "bytes": 246,
+      "sha256": "bb34a0b5accd7b09635c7e03387771a2af7007b5a72ead6d1c8d749cc16aee3b"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/assume_role_override_service_profile_url/fs/home/.aws/credentials",
+      "bytes": 65,
+      "sha256": "ab9bfb26b1b72153fc3a46584b939a35ceab9a7031844b8038967ba06d241c0e"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/assume_role_override_service_profile_url/http-traffic.json",
+      "bytes": 3444,
+      "sha256": "e9d9cde4c3b66f55cd68760f0363cb632c5af74e1f2ff0f555d0d0a2b487b45d"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/assume_role_override_service_profile_url/test-case.json",
+      "bytes": 338,
+      "sha256": "7385f210c0b80f88b19635298eb181c62a2101007d95ad809eb09baa4b0b365f"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/credential_process/env.json",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/credential_process/fs/home/.aws/config",
+      "bytes": 571,
+      "sha256": "57899dfdc264179640c99c7869a7f1ffd484c668c94ad14e5fc9dda2a3118171"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/credential_process/fs/home/.aws/credentials",
+      "bytes": 65,
+      "sha256": "ab9bfb26b1b72153fc3a46584b939a35ceab9a7031844b8038967ba06d241c0e"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/credential_process/http-traffic.json",
+      "bytes": 86,
+      "sha256": "ff39994341f2b7136a4c34070f05da03bad4a49b1c6f0b239d2e152dd4d70c66"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/credential_process/test-case.json",
+      "bytes": 332,
+      "sha256": "5a5d1aa6827244b2255d596ce4a38e91e41e14f4df0a449b44a37ac510bc9267"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/credential_process_account_id_fallback/env.json",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/credential_process_account_id_fallback/fs/home/.aws/config",
+      "bytes": 478,
+      "sha256": "0e8a57e55b884513b5dc70fbb019dab7edc8f1e9bfdb8df8e9612db7d6fd887b"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/credential_process_account_id_fallback/fs/home/.aws/credentials",
+      "bytes": 65,
+      "sha256": "ab9bfb26b1b72153fc3a46584b939a35ceab9a7031844b8038967ba06d241c0e"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/credential_process_account_id_fallback/http-traffic.json",
+      "bytes": 106,
+      "sha256": "0d2e96c1389da08d009bfa641e8f75a008d481372f820e6cbfea8199fc571047"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/credential_process_account_id_fallback/test-case.json",
+      "bytes": 391,
+      "sha256": "208d7936e46c171d0ae04f727f140f928870ea0f8d349f32169ecf6dd54c2e76"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/credential_process_failure/env.json",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/credential_process_failure/fs/home/.aws/config",
+      "bytes": 95,
+      "sha256": "4e16bc9a750ccd5ce59ffefdac2c4d9f81da2183fd4281954caf44d9806f2e2c"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/credential_process_failure/fs/home/.aws/credentials",
+      "bytes": 65,
+      "sha256": "ab9bfb26b1b72153fc3a46584b939a35ceab9a7031844b8038967ba06d241c0e"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/credential_process_failure/http-traffic.json",
+      "bytes": 86,
+      "sha256": "ff39994341f2b7136a4c34070f05da03bad4a49b1c6f0b239d2e152dd4d70c66"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/credential_process_failure/test-case.json",
+      "bytes": 304,
+      "sha256": "4c321c208af7c674a5a6234b31054428e8a245173c440427a89b9c46a321d7de"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/credential_process_invalid/env.json",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/credential_process_invalid/fs/home/.aws/config",
+      "bytes": 108,
+      "sha256": "de914ca034c7027fd9f90e96b683f5831de2cb268220ba8b575049bf7a40dd06"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/credential_process_invalid/fs/home/.aws/credentials",
+      "bytes": 65,
+      "sha256": "ab9bfb26b1b72153fc3a46584b939a35ceab9a7031844b8038967ba06d241c0e"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/credential_process_invalid/http-traffic.json",
+      "bytes": 86,
+      "sha256": "ff39994341f2b7136a4c34070f05da03bad4a49b1c6f0b239d2e152dd4d70c66"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/credential_process_invalid/test-case.json",
+      "bytes": 272,
+      "sha256": "cf3e297f47f16390b96be8f14064df395dca2c422fdcea27c4646fb126889a84"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/e2e_assume_role/env.json",
+      "bytes": 122,
+      "sha256": "71458260cea6d8238cfbe20bcb39ec3d33e105f830958aea7c4077b2f218c584"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/e2e_assume_role/fs/home/.aws/config",
+      "bytes": 142,
+      "sha256": "85c0097b8234c69964eb83856a25295d531a6096518b30ac0136c056d82c7e45"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/e2e_assume_role/fs/home/.aws/credentials",
+      "bytes": 95,
+      "sha256": "cad261edb0131559457aec809fe6b91eaeb3b3161b46eda255319b3ac6951c5b"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/e2e_assume_role/http-traffic.json",
+      "bytes": 3437,
+      "sha256": "80a4b7292bd207b99c24233d1d592e8cf8950d1cfc82fec728dfa580d80b89df"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/e2e_assume_role/test-case.json",
+      "bytes": 308,
+      "sha256": "d3b84bae9a0f47e5afe8d0c3a210140c53b92399f820150b2023b25cd009a803"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/e2e_fips_and_dual_stack_sts/env.json",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/e2e_fips_and_dual_stack_sts/fs/home/.aws/config",
+      "bytes": 197,
+      "sha256": "116dfb2210bab3460777a1bdf8b9903c6ad6a960bc24b7d3fb3f3278b37b83bd"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/e2e_fips_and_dual_stack_sts/fs/home/.aws/credentials",
+      "bytes": 65,
+      "sha256": "ab9bfb26b1b72153fc3a46584b939a35ceab9a7031844b8038967ba06d241c0e"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/e2e_fips_and_dual_stack_sts/http-traffic.json",
+      "bytes": 3435,
+      "sha256": "c60775ed1f0fe66956d9b05ec05d819f10863b5505ed68631a1af78377874847"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/e2e_fips_and_dual_stack_sts/test-case.json",
+      "bytes": 351,
+      "sha256": "b69b1cca5b295636f390b9f2a8fac56ea29a877e460eccdfd46914d4c8620b6f"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/empty_config/env.json",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/empty_config/http-traffic.json",
+      "bytes": 119,
+      "sha256": "88ca6792a373fd5f8d8c0b626a2b1a7b9d4ee49a8a9a03736eebad7a3d5c4f3d"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/empty_config/test-case.json",
+      "bytes": 146,
+      "sha256": "ddeaa1f57553e6c2fddd008337ca43b3f6cd8421777dcd13f047cfa95f206d2b"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/invalid_config/env.json",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/invalid_config/fs/home/.aws/config",
+      "bytes": 57,
+      "sha256": "08f09e0148923a0e3deae49299950efbef8a72ab316d42b3b09c27d5e32aee1d"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/invalid_config/http-traffic.json",
+      "bytes": 121,
+      "sha256": "3db11be0204d28295a63da1cfdd3556cd4cdb413a89759a3cd2bb71841c3c3d4"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/invalid_config/test-case.json",
+      "bytes": 134,
+      "sha256": "f376df761d08556c62b558ac80f3bbc5dbf6f528162b9f925efa79085c39dba8"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/invalid_sso_credentials_config/env.json",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/invalid_sso_credentials_config/fs/home/.aws/config",
+      "bytes": 148,
+      "sha256": "e75c036367e40ff337ca83c462dc1c6e5d67ef5d4c9160915fb0e450dd18ec3b"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/invalid_sso_credentials_config/http-traffic.json",
+      "bytes": 121,
+      "sha256": "3db11be0204d28295a63da1cfdd3556cd4cdb413a89759a3cd2bb71841c3c3d4"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/invalid_sso_credentials_config/test-case.json",
+      "bytes": 238,
+      "sha256": "cab21b3cd61a2725e0858ac9b3571809b97605d638099aacb897f4107bc7d67b"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/region_override/env.json",
+      "bytes": 51,
+      "sha256": "e64a30a71a7c6b28ff99bdacbd69344ae440a3ee63a81a28602bda482a318347"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/region_override/fs/home/.aws/config",
+      "bytes": 197,
+      "sha256": "7ea989633662efae8be2367e7490854b660421873bee0b54054e5892f653ed52"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/region_override/fs/home/.aws/credentials",
+      "bytes": 65,
+      "sha256": "ab9bfb26b1b72153fc3a46584b939a35ceab9a7031844b8038967ba06d241c0e"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/region_override/http-traffic.json",
+      "bytes": 3446,
+      "sha256": "ca002ddd5788d8819293653ab0d36c1b08276d48004c0f690cd132b6115979f0"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/region_override/test-case.json",
+      "bytes": 347,
+      "sha256": "479b96756608bf273e0f96c637898747467979e0ed78bbe83973bda002ced4e7"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/retry_on_error/env.json",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/retry_on_error/fs/home/.aws/config",
+      "bytes": 142,
+      "sha256": "85c0097b8234c69964eb83856a25295d531a6096518b30ac0136c056d82c7e45"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/retry_on_error/fs/home/.aws/credentials",
+      "bytes": 65,
+      "sha256": "ab9bfb26b1b72153fc3a46584b939a35ceab9a7031844b8038967ba06d241c0e"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/retry_on_error/http-traffic.json",
+      "bytes": 5903,
+      "sha256": "fb487c1bf36350feb51c8d40a8372fc32ed7f40695652acaf110f0bb6de9cc1d"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/retry_on_error/test-case.json",
+      "bytes": 307,
+      "sha256": "4ee80c9677233bed74d650bb038ee743e43bcd6e8726a3c5a9866e19dbd71f1d"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/sso_credentials/env.json",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/sso_credentials/fs/home/.aws/config",
+      "bytes": 205,
+      "sha256": "b00752fa7dc3e01d91e5c2502edbd648ece5a9f5e87af9d47852393e1a5fe412"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/sso_credentials/fs/home/.aws/credentials",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/sso_credentials/fs/home/.aws/sso/cache/34c6fceca75e456f25e7e99531e2425c6c1de443.json",
+      "bytes": 350,
+      "sha256": "2703361dcbacaeb8212e650e8b2f91b4e303bb67457fb76d439c9393c05b4d41"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/sso_credentials/http-traffic.json",
+      "bytes": 2074,
+      "sha256": "6631a618a116ce878fcc9b836a2371bbda73d7f2fce0ad82f0d8829972d721e3"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/sso_credentials/test-case.json",
+      "bytes": 334,
+      "sha256": "af1048a964863acf2c775d500557e0099aed7e014ac6c6e8ef9150a652d3068b"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/sso_override_global_env_url/env.json",
+      "bytes": 78,
+      "sha256": "e2368552fcd26b2f4bbdc8b811a3a01c3715401fc81b57a2a9cadf0f2f0e5692"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/sso_override_global_env_url/fs/home/.aws/config",
+      "bytes": 205,
+      "sha256": "b00752fa7dc3e01d91e5c2502edbd648ece5a9f5e87af9d47852393e1a5fe412"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/sso_override_global_env_url/fs/home/.aws/credentials",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/sso_override_global_env_url/fs/home/.aws/sso/cache/34c6fceca75e456f25e7e99531e2425c6c1de443.json",
+      "bytes": 350,
+      "sha256": "2703361dcbacaeb8212e650e8b2f91b4e303bb67457fb76d439c9393c05b4d41"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/sso_override_global_env_url/http-traffic.json",
+      "bytes": 2051,
+      "sha256": "58da916147fb173913c82301a8a06336cdced8069d676196c24d500be259abf0"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/sso_override_global_env_url/test-case.json",
+      "bytes": 371,
+      "sha256": "34e3e2d7b3dfb4cb61bfd128fd990528e56a18686af91a2e63e11060f12c35c1"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/sso_token/env.json",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/sso_token/fs/env.json",
+      "bytes": 22,
+      "sha256": "cc3b91e85f15cb3326251931157511d6a809314ddae021442a25556a0e12fd24"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/sso_token/fs/home/.aws/config",
+      "bytes": 148,
+      "sha256": "e75c036367e40ff337ca83c462dc1c6e5d67ef5d4c9160915fb0e450dd18ec3b"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/sso_token/fs/home/.aws/credentials",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/sso_token/fs/home/.aws/sso/cache/34c6fceca75e456f25e7e99531e2425c6c1de443.json",
+      "bytes": 350,
+      "sha256": "2703361dcbacaeb8212e650e8b2f91b4e303bb67457fb76d439c9393c05b4d41"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/sso_token/fs/http-traffic.json",
+      "bytes": 2074,
+      "sha256": "6631a618a116ce878fcc9b836a2371bbda73d7f2fce0ad82f0d8829972d721e3"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/sso_token/fs/test-case.json",
+      "bytes": 232,
+      "sha256": "a61ddf8758b6b50eb66ea6447706c1b78ff52d6ef004cb310e41f3260c108e2a"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/sso_token/http-traffic.json",
+      "bytes": 77,
+      "sha256": "3286d4bbc67e04942af657b22f2107ac4b37147430d3e590cd3d5650e4ed7bab"
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/test-data/profile-provider/sso_token/test-case.json",
+      "bytes": 371,
+      "sha256": "db964f61a1d41498df78a6e755a25020c7c212f34d8b571ff327537f177a82a5"
+    }
+  ],
+  "derived_formatter_files": [
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/BUILD.bazel",
+      "original_hosted": {
+        "bytes": 1078,
+        "sha256": "e24dd83532b0db7450611a9fec2a42fc3a910d96ccf8f13e433ea668aa176050"
+      },
+      "installed": {
+        "bytes": 1136,
+        "sha256": "a6167fd9c40bf7758c1a3e1667b5d96576b58e5d1688a89ba679db540a7b3999"
+      },
+      "static_review": "Python AST exact equality after layout normalization",
+      "native_semantics_qualified": false
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.8.12-hepta-p256014/integration-tests/eks-credentials/jest.config.js",
+      "original_hosted": {
+        "bytes": 274,
+        "sha256": "6c8c109f8856fc54d3d1ae4af843dcb95c47ea9f3a317749cc431e60ce323f5d"
+      },
+      "installed": {
+        "bytes": 276,
+        "sha256": "2457265280327d5bdb02a7135080764d41a5daa7adce659194e1371b49fd13d3"
+      },
+      "static_review": "Acorn 8.15.0 AST and comments exact equality after source location/raw-literal removal",
+      "native_semantics_qualified": false
+    }
+  ],
+  "native_qualified": false,
+  "bigint_blocker_closed": false,
+  "old_lost_candidate_not_recovered": "05588010b20a27698a3ca14b9033dfb1e6b76393"
+}

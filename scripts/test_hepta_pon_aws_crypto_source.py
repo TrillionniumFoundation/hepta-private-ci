@@ -71,7 +71,7 @@ class SourceControls(unittest.TestCase):
         self.assertEqual(verified, 310)
         self.assertEqual(proposed["LICENSE"], original["LICENSE"])
         self.assertEqual(
-            source.static_review()["existing_files_changed"],
+            source.static_review(source.frozen_inputs())["existing_files_changed"],
             ["Cargo.toml", "src/login/dpop.rs"],
         )
 
@@ -99,7 +99,7 @@ class SourceControls(unittest.TestCase):
                 source.archive_members(raw, "aws-config-1.8.12")
 
     def test_workspace_mutation_is_exact_and_cannot_reapply(self):
-        original = (source.ROOT / source.INPUTS[0]).read_bytes()
+        original = source.frozen_inputs()[source.INPUTS[0]]
         proposed = source.change_workspace(original)
         with self.assertRaises(ValueError):
             source.change_workspace(proposed)
@@ -125,6 +125,7 @@ class SourceControls(unittest.TestCase):
     def test_feature_trimming_and_original_test_removal_remain_rejected_even_with_new_hashes(
         self,
     ):
+        retained = source.retained_evidence
         for relative, before, after in [
             ("Cargo.toml", b'    "dep:rand",\n', b""),
             ("BUILD.bazel", b'        "credentials-login",\n', b""),
@@ -138,7 +139,10 @@ class SourceControls(unittest.TestCase):
                 evidence = Path(temporary) / "evidence"
                 shutil.copytree(source.EVIDENCE, evidence)
                 target = evidence / "overrides" / relative
-                raw = target.read_bytes().replace(before, after, 1)
+                raw = source.retained_evidence("overrides/" + relative).replace(
+                    before, after, 1
+                )
+                target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(raw)
                 spec_path = evidence / "source-spec.json"
                 spec = json.loads(spec_path.read_text())
@@ -146,6 +150,13 @@ class SourceControls(unittest.TestCase):
                 spec_path.write_text(json.dumps(spec))
                 with (
                     patch.object(source, "EVIDENCE", evidence),
+                    patch.object(
+                        source,
+                        "retained_evidence",
+                        side_effect=lambda name: (
+                            raw if name == "overrides/" + relative else retained(name)
+                        ),
+                    ),
                     self.assertRaises(ValueError),
                 ):
                     source.source_proposal()

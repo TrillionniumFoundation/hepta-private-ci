@@ -1,0 +1,4398 @@
+{
+  "source_commit": "d81bdb3483af17165174bb94e0a2aca7353f24cc",
+  "records": [
+    {
+      "name": "aws-credential-types",
+      "version": "1.3.1",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/aw/s-/aws-credential-types",
+      "index_file_bytes": 49622,
+      "index_file_sha256": "49b754339cc54756264b6ce2b21e0f62b1e7a15322d4aa9a901872931390b1ab",
+      "index_git_blob": "202f9522ff9b8edb37931c2d10d21a8749acbbd5",
+      "record": {
+        "name": "aws-credential-types",
+        "vers": "1.3.1",
+        "deps": [
+          {
+            "name": "async-trait",
+            "req": "^0.1.74",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "aws-smithy-async",
+            "req": "^1.3.1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "aws-smithy-runtime-api",
+            "req": "^1.19.1",
+            "features": [
+              "client",
+              "http-auth"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "aws-smithy-runtime-api",
+            "req": "^1.19.1",
+            "features": [
+              "test-util"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "aws-smithy-types",
+            "req": "^1.9.0",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "tokio",
+            "req": "^1.49.0",
+            "features": [
+              "full",
+              "test-util",
+              "rt"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "zeroize",
+            "req": "^1.8.0",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          }
+        ],
+        "cksum": "576e8da35751dc85409ec1cd15999f692c277a1fbe9336780fe6f15e49dd637d",
+        "features": {
+          "hardcoded-credentials": [],
+          "test-util": [
+            "aws-smithy-runtime-api/test-util"
+          ]
+        },
+        "yanked": false,
+        "rust_version": "1.94.1",
+        "pubtime": "2026-10-20T19:06:27Z"
+      },
+      "seconds": 0.2571225020001293
+    },
+    {
+      "name": "aws-sigv4",
+      "version": "1.6.4",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/aw/s-/aws-sigv4",
+      "index_file_bytes": 363579,
+      "index_file_sha256": "683607e2328282046e169b70c8a13f28467c7754b403e436a4ebbf59e32301de",
+      "index_git_blob": "d2a4f5a6e008fb8b86c58eeec6bb731eefd6ac3f",
+      "record": {
+        "name": "aws-sigv4",
+        "vers": "1.6.4",
+        "deps": [
+          {
+            "name": "aws-credential-types",
+            "req": "^1.3.1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "aws-credential-types",
+            "req": "^1.3.1",
+            "features": [
+              "test-util",
+              "hardcoded-credentials"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "aws-smithy-eventstream",
+            "req": "^0.61.6",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "aws-smithy-http",
+            "req": "^0.64.3",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "aws-smithy-runtime-api",
+            "req": "^1.19.2",
+            "features": [
+              "client"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "aws-smithy-runtime-api",
+            "req": "^1.19.2",
+            "features": [
+              "client",
+              "test-util"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "aws-smithy-types",
+            "req": "^1.9.1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "bytes",
+            "req": "^1.11.1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "bytes",
+            "req": "^1.11.1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "criterion",
+            "req": "^0.8.2",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "crypto-bigint",
+            "req": "^0.7.10",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "ecdsa",
+            "req": "^0.17.0",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "form_urlencoded",
+            "req": "^1.2.1",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "hex",
+            "req": "^0.4.3",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "hex-literal",
+            "req": "^0.4.1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "hmac",
+            "req": "^0.13",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "http",
+            "req": "^1.3.1",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "http0",
+            "req": "^0.2.12",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal",
+            "package": "http"
+          },
+          {
+            "name": "httparse",
+            "req": "^1.10.1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "p256",
+            "req": "^0.14.0",
+            "features": [
+              "ecdsa"
+            ],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "percent-encoding",
+            "req": "^2.3.1",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "pretty_assertions",
+            "req": "^1.3",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "proptest",
+            "req": "^1.2",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "serde",
+            "req": "^1.0.228",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "serde_derive",
+            "req": "^1.0.228",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "serde_json",
+            "req": "^1.0.146",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "sha2",
+            "req": "^0.11",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "subtle",
+            "req": "^2.6.0",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "time",
+            "req": "^0.3.35",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "time",
+            "req": "^0.3.35",
+            "features": [
+              "parsing"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "tracing",
+            "req": "^0.1.44",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "zeroize",
+            "req": "^1.8.0",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          }
+        ],
+        "cksum": "f385da9b7757ed4c8214797ad663ff534fb622006143530aa80e21f8e06ff85c",
+        "features": {},
+        "features2": {
+          "default": [
+            "sign-http",
+            "http1"
+          ],
+          "http0-compat": [
+            "dep:http0"
+          ],
+          "http1": [
+            "dep:http"
+          ],
+          "sign-eventstream": [
+            "dep:aws-smithy-eventstream"
+          ],
+          "sign-http": [
+            "dep:percent-encoding",
+            "dep:form_urlencoded"
+          ],
+          "sigv4a": [
+            "dep:p256",
+            "dep:ecdsa",
+            "dep:crypto-bigint",
+            "dep:subtle",
+            "dep:zeroize"
+          ]
+        },
+        "yanked": false,
+        "rust_version": "1.94.1",
+        "pubtime": "2026-10-28T01:07:56Z",
+        "v": 2
+      },
+      "seconds": 0.4006721279984049
+    },
+    {
+      "name": "aws-smithy-async",
+      "version": "1.3.1",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/aw/s-/aws-smithy-async",
+      "index_file_bytes": 71426,
+      "index_file_sha256": "e050ec98331ac07bf50c3e7335e837943eae6e684502c5fdc385c5541a674a6d",
+      "index_git_blob": "40cf641b68686ee221fc5bbca4fc0719f27d61ce",
+      "record": {
+        "name": "aws-smithy-async",
+        "vers": "1.3.1",
+        "deps": [
+          {
+            "name": "futures-util",
+            "req": "^0.3.29",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "pin-project-lite",
+            "req": "^0.2.14",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "tokio",
+            "req": "^1.49.0",
+            "features": [
+              "sync"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "tokio",
+            "req": "^1.49.0",
+            "features": [
+              "rt",
+              "macros",
+              "test-util"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "tokio-test",
+            "req": "^0.4.2",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          }
+        ],
+        "cksum": "de681a9df7ff79823b759ee17061076ec049cd61a8fa28ece4293d89c9f6964e",
+        "features": {
+          "rt-tokio": [
+            "tokio/time"
+          ],
+          "test-util": [
+            "rt-tokio",
+            "tokio/rt"
+          ]
+        },
+        "yanked": false,
+        "rust_version": "1.94.1",
+        "pubtime": "2026-10-19T19:35:12Z"
+      },
+      "seconds": 0.1982603399992513
+    },
+    {
+      "name": "aws-smithy-http",
+      "version": "0.64.3",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/aw/s-/aws-smithy-http",
+      "index_file_bytes": 227327,
+      "index_file_sha256": "4840b9499f43682a5f33c9abd2bc43c54a73074f01e0a350364afc7eceda27c0",
+      "index_git_blob": "4a54067d50a22295cc8fc179055d8b4f783f44dc",
+      "record": {
+        "name": "aws-smithy-http",
+        "vers": "0.64.3",
+        "deps": [
+          {
+            "name": "async-stream",
+            "req": "^0.3",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "aws-smithy-eventstream",
+            "req": "^0.61.6",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "aws-smithy-runtime-api",
+            "req": "^1.19.2",
+            "features": [
+              "client",
+              "http-1x"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "aws-smithy-types",
+            "req": "^1.9.1",
+            "features": [
+              "byte-stream-poll-next",
+              "http-body-1-x"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "bytes",
+            "req": "^1.11.1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "bytes-utils",
+            "req": "^0.1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "futures-core",
+            "req": "^0.3.31",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "futures-util",
+            "req": "^0.3.29",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "futures-util",
+            "req": "^0.3.29",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "http-1x",
+            "req": "^1.3.1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal",
+            "package": "http"
+          },
+          {
+            "name": "http-body-1x",
+            "req": "^1.0.1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal",
+            "package": "http-body"
+          },
+          {
+            "name": "http-body-util",
+            "req": "^0.1.3",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "hyper",
+            "req": "^1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "percent-encoding",
+            "req": "^2.3.1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "pin-project-lite",
+            "req": "^0.2.14",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "proptest",
+            "req": "^1.11.0",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "tokio",
+            "req": "^1.49.0",
+            "features": [
+              "macros",
+              "rt",
+              "rt-multi-thread"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "tracing",
+            "req": "^0.1.44",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          }
+        ],
+        "cksum": "19af609dd5edf8b056cd0bb001c706c8b3b1458055328b334ec13d7f46f6aaa8",
+        "features": {
+          "event-stream": [
+            "aws-smithy-eventstream"
+          ],
+          "rt-tokio": [
+            "aws-smithy-types/rt-tokio"
+          ]
+        },
+        "yanked": false,
+        "rust_version": "1.94.1",
+        "pubtime": "2026-10-27T13:01:24Z"
+      },
+      "seconds": 0.4058779359984328
+    },
+    {
+      "name": "aws-smithy-protocol-test",
+      "version": "0.63.14",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/aw/s-/aws-smithy-protocol-test",
+      "index_file_bytes": 88581,
+      "index_file_sha256": "e9594e0fd921da4919683180d176d4e5e77b65191590b6cc4b5c287cd37126de",
+      "index_git_blob": "366fc22a24660880b82df1fb53c0c37f08f462cd",
+      "record": {
+        "name": "aws-smithy-protocol-test",
+        "vers": "0.63.14",
+        "deps": [
+          {
+            "name": "assert-json-diff",
+            "req": "^2",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "aws-smithy-runtime-api",
+            "req": "^1.11.6",
+            "features": [
+              "client"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "base64-simd",
+            "req": "^0.8",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "cbor-diag",
+            "req": "^0.1.12",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "ciborium",
+            "req": "^0.2",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "http-0x",
+            "req": "^0.2.12",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal",
+            "package": "http"
+          },
+          {
+            "name": "http-1x",
+            "req": "^1.3.1",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal",
+            "package": "http"
+          },
+          {
+            "name": "pretty_assertions",
+            "req": "^1.3",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "regex-lite",
+            "req": "^0.1.5",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "roxmltree",
+            "req": "^0.14.1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "serde_json",
+            "req": "^1.0.146",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "thiserror",
+            "req": "^2",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          }
+        ],
+        "cksum": "5b227aa94af99a8e5ee52551cc7e3ee30a217019ef99207b6f0b7a1527685941",
+        "features": {},
+        "features2": {
+          "default": [
+            "http-02x"
+          ],
+          "http-02x": [
+            "dep:http-0x"
+          ],
+          "http-1x": [
+            "dep:http-1x"
+          ]
+        },
+        "yanked": false,
+        "rust_version": "1.91.1",
+        "pubtime": "2026-03-02T20:38:45Z",
+        "v": 2
+      },
+      "seconds": 0.16652990000147838
+    },
+    {
+      "name": "aws-smithy-runtime-api",
+      "version": "1.19.2",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/aw/s-/aws-smithy-runtime-api",
+      "index_file_bytes": 111812,
+      "index_file_sha256": "be4dbc4163d64c47a7574a1450833aeb43686334b9435e24270ac8c8c856baea",
+      "index_git_blob": "0e9222b9ca5e896fd578a1c180ebd8ef45b4e78c",
+      "record": {
+        "name": "aws-smithy-runtime-api",
+        "vers": "1.19.2",
+        "deps": [
+          {
+            "name": "aws-smithy-async",
+            "req": "^1.3.1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "aws-smithy-runtime-api-macros",
+            "req": "^1.2.0",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "aws-smithy-types",
+            "req": "^1.9.1",
+            "features": [
+              "http-body-1-x"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "bytes",
+            "req": "^1.11.1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "http-02x",
+            "req": "^0.2.12",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal",
+            "package": "http"
+          },
+          {
+            "name": "http-1x",
+            "req": "^1.3.1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal",
+            "package": "http"
+          },
+          {
+            "name": "pin-project-lite",
+            "req": "^0.2.14",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "proptest",
+            "req": "^1.11.0",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "tokio",
+            "req": "^1.49.0",
+            "features": [
+              "sync"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "tokio",
+            "req": "^1.49.0",
+            "features": [
+              "macros",
+              "rt",
+              "rt-multi-thread"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "tracing",
+            "req": "^0.1.44",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "zeroize",
+            "req": "^1.7.0",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          }
+        ],
+        "cksum": "8c4e85cffe9944b10d576b075432bd8f98dbc081e8681cb37d5b2d87dc27bc84",
+        "features": {
+          "client": [],
+          "default": [],
+          "http-1x": [],
+          "legacy-client": [
+            "client"
+          ],
+          "test-util": [
+            "aws-smithy-types/test-util",
+            "http-1x"
+          ]
+        },
+        "features2": {
+          "http-02x": [
+            "dep:http-02x"
+          ],
+          "http-auth": [
+            "dep:zeroize"
+          ]
+        },
+        "yanked": false,
+        "rust_version": "1.94.1",
+        "pubtime": "2026-10-27T13:00:51Z",
+        "v": 2
+      },
+      "seconds": 0.20202599600088433
+    },
+    {
+      "name": "aws-smithy-runtime-api-macros",
+      "version": "1.2.0",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/aw/s-/aws-smithy-runtime-api-macros",
+      "index_file_bytes": 1979,
+      "index_file_sha256": "b9b0721d44bc964be43baba27cd4a5d5cfe3cb1cdbda070e02150ef462c488d2",
+      "index_git_blob": "693f6674d2c8e5a7b48a2daa9d2989e816e97b37",
+      "record": {
+        "name": "aws-smithy-runtime-api-macros",
+        "vers": "1.2.0",
+        "deps": [
+          {
+            "name": "proc-macro2",
+            "req": "^1.0.106",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "quote",
+            "req": "^1.0.44",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "syn",
+            "req": "^2.0.114",
+            "features": [
+              "full"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          }
+        ],
+        "cksum": "ce237f890a2283c9b328955c3b0918d2d5bf66a1cb6ceccd36a0047246fbc6e6",
+        "features": {},
+        "yanked": false,
+        "rust_version": "1.94.1",
+        "pubtime": "2026-10-27T13:00:15Z"
+      },
+      "seconds": 0.16641478599922266
+    },
+    {
+      "name": "aws-smithy-types",
+      "version": "1.9.1",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/aw/s-/aws-smithy-types",
+      "index_file_bytes": 310104,
+      "index_file_sha256": "c6938ddbca79b3a1ff7fb8998403fb0b3f7331f63c6e8a94651ab36f35041084",
+      "index_git_blob": "a566ab83047d7549f6fdedadc809bdff7183aa87",
+      "record": {
+        "name": "aws-smithy-types",
+        "vers": "1.9.1",
+        "deps": [
+          {
+            "name": "base64",
+            "req": "^0.13.0",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "base64-simd",
+            "req": "^0.8",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "bytes",
+            "req": "^1.11.1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "bytes-utils",
+            "req": "^0.1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "ciborium",
+            "req": "^0.2.1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "criterion",
+            "req": "^0.8.2",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "futures-core",
+            "req": "^0.3.31",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "http",
+            "req": "^0.2.12",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "http-1x",
+            "req": "^1.3.1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal",
+            "package": "http"
+          },
+          {
+            "name": "http-body-0-4",
+            "req": "^0.4.6",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal",
+            "package": "http-body"
+          },
+          {
+            "name": "http-body-1-0",
+            "req": "^1.0.1",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal",
+            "package": "http-body"
+          },
+          {
+            "name": "http-body-util",
+            "req": "^0.1.3",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "hyper-0-14",
+            "req": "^0.14.26",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal",
+            "package": "hyper"
+          },
+          {
+            "name": "itoa",
+            "req": "^1.0.17",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "lazy_static",
+            "req": "^1.4",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "num-integer",
+            "req": "^0.1.46",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "pin-project-lite",
+            "req": "^0.2.14",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "proptest",
+            "req": "^1.11.0",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "rand",
+            "req": "^0.8.4",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "ryu",
+            "req": "^1.0.22",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "serde",
+            "req": "^1.0.229",
+            "features": [
+              "derive"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": "cfg(aws_sdk_unstable)",
+            "kind": "normal"
+          },
+          {
+            "name": "serde",
+            "req": "^1.0.229",
+            "features": [
+              "derive"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "serde_json",
+            "req": "^1.0.146",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "tempfile",
+            "req": "^3.16.0",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "time",
+            "req": "^0.3.4",
+            "features": [
+              "parsing"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "tokio",
+            "req": "^1.49.0",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "tokio",
+            "req": "^1.49.0",
+            "features": [
+              "macros",
+              "rt",
+              "rt-multi-thread",
+              "fs",
+              "io-util"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "tokio-stream",
+            "req": "^0.1.5",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "tokio-util",
+            "req": "^0.7.18",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          }
+        ],
+        "cksum": "cf183d70774ea2cfcc101ca74a8884e4c76be8b9df65cd303f6a1175c88e8f80",
+        "features": {
+          "byte-stream-poll-next": [],
+          "serde-deserialize": [],
+          "serde-serialize": [],
+          "test-util": []
+        },
+        "features2": {
+          "http-body-0-4-x": [
+            "dep:http-body-0-4",
+            "dep:http"
+          ],
+          "http-body-1-x": [
+            "dep:http-body-1-0",
+            "dep:http-body-util"
+          ],
+          "hyper-0-14-x": [
+            "dep:hyper-0-14"
+          ],
+          "rt-tokio": [
+            "http-body-1-x",
+            "dep:tokio-util",
+            "dep:tokio",
+            "tokio?/rt",
+            "tokio?/fs",
+            "tokio?/io-util",
+            "tokio-util?/io",
+            "dep:futures-core"
+          ]
+        },
+        "yanked": false,
+        "rust_version": "1.94.1",
+        "pubtime": "2026-10-27T13:00:18Z",
+        "v": 2
+      },
+      "seconds": 0.2204126440010441
+    },
+    {
+      "name": "cbor-diag",
+      "version": "0.1.12",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/cb/or/cbor-diag",
+      "index_file_bytes": 26261,
+      "index_file_sha256": "634c931fbf907f5c410adc3acf4d1cdf2d54bc2aab23187c4888f79d2f2740e6",
+      "index_git_blob": "6cdbd4d1f0309886727ac1035318a379bd02bf7d",
+      "record": {
+        "name": "cbor-diag",
+        "vers": "0.1.12",
+        "deps": [
+          {
+            "name": "bs58",
+            "req": "^0.5.0",
+            "features": [
+              "alloc"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "chrono",
+            "req": "^0.4.22",
+            "features": [
+              "alloc"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "data-encoding",
+            "req": "^2.3.2",
+            "features": [
+              "alloc"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "data-encoding-macro",
+            "req": "^0.1.12",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "half",
+            "req": "^2.1.0",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "indoc",
+            "req": "^2.0.1",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "nom",
+            "req": "^7.1.3",
+            "features": [
+              "std"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "num-bigint",
+            "req": "^0.4.3",
+            "features": [
+              "std"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "num-rational",
+            "req": "^0.4.1",
+            "features": [
+              "num-bigint"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "num-traits",
+            "req": "^0.2.15",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "pretty_assertions",
+            "req": "^1.3.0",
+            "features": [
+              "std"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "proptest",
+            "req": "^1.0.0",
+            "features": [
+              "std"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "separator",
+            "req": "^0.4.1",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "url",
+            "req": "^2.3.1",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "uuid",
+            "req": "^1.1.2",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          }
+        ],
+        "cksum": "dc245b6ecd09b23901a4fbad1ad975701fd5061ceaef6afa93a2d70605a64429",
+        "features": {},
+        "yanked": false,
+        "pubtime": "2023-05-26T20:58:35Z"
+      },
+      "seconds": 0.15353674300058628
+    },
+    {
+      "name": "ciborium",
+      "version": "0.2.2",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/ci/bo/ciborium",
+      "index_file_bytes": 3960,
+      "index_file_sha256": "510fd07e5e039a37f5ba8485c2d84303f3e61503f7f02ca52606907e1f4b8d4e",
+      "index_git_blob": "8ec4503771b3b6b73df437f84337bc8b95dee02a",
+      "record": {
+        "name": "ciborium",
+        "vers": "0.2.2",
+        "deps": [
+          {
+            "name": "ciborium-io",
+            "req": "^0.2.2",
+            "features": [
+              "alloc"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "ciborium-ll",
+            "req": "^0.2.2",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "hex",
+            "req": "^0.4",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "rand",
+            "req": "^0.8",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "rstest",
+            "req": "^0.11",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "serde",
+            "req": "^1.0.100",
+            "features": [
+              "alloc",
+              "derive"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "serde_bytes",
+            "req": "^0.11",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          }
+        ],
+        "cksum": "42e69ffd6f0917f5c029256a24d0161db17cea3997d185db0d35926308770f0e",
+        "features": {
+          "default": [
+            "std"
+          ],
+          "std": [
+            "ciborium-io/std",
+            "serde/std"
+          ]
+        },
+        "yanked": false,
+        "rust_version": "1.58",
+        "pubtime": "2024-01-24T03:04:25Z"
+      },
+      "seconds": 0.1305094729978009
+    },
+    {
+      "name": "ciborium-io",
+      "version": "0.2.2",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/ci/bo/ciborium-io",
+      "index_file_bytes": 677,
+      "index_file_sha256": "94fb57f76e321ba1086012aa0bb07b730ac2a7a1c9df476a2dde00da620509cf",
+      "index_git_blob": "ab173b96998a94fafdd1b7455f50d0b685fd2c15",
+      "record": {
+        "name": "ciborium-io",
+        "vers": "0.2.2",
+        "deps": [],
+        "cksum": "05afea1e0a06c9be33d539b876f1ce3692f4afea2cb41f740e7743225ed1c757",
+        "features": {
+          "alloc": [],
+          "std": [
+            "alloc"
+          ]
+        },
+        "yanked": false,
+        "rust_version": "1.58",
+        "pubtime": "2024-01-24T03:02:36Z"
+      },
+      "seconds": 0.1605046949989628
+    },
+    {
+      "name": "ciborium-ll",
+      "version": "0.2.2",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/ci/bo/ciborium-ll",
+      "index_file_bytes": 1727,
+      "index_file_sha256": "08e9d45178ca69239ffed907084bb30a46f1368bc76a72b639e5534012672879",
+      "index_git_blob": "08f83e8f5502d333903d58e7dc5b6749cbec86ed",
+      "record": {
+        "name": "ciborium-ll",
+        "vers": "0.2.2",
+        "deps": [
+          {
+            "name": "ciborium-io",
+            "req": "^0.2.2",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "half",
+            "req": "^2.2",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "hex",
+            "req": "^0.4",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          }
+        ],
+        "cksum": "57663b653d948a338bfb3eeba9bb2fd5fcfaecb9e199e87e1eda4d9e8b240fd9",
+        "features": {
+          "alloc": [],
+          "std": [
+            "alloc",
+            "half/std"
+          ]
+        },
+        "yanked": false,
+        "rust_version": "1.58",
+        "pubtime": "2024-01-24T03:03:42Z"
+      },
+      "seconds": 0.1764975330006564
+    },
+    {
+      "name": "crypto-bigint",
+      "version": "0.7.10",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/cr/yp/crypto-bigint",
+      "index_file_bytes": 242502,
+      "index_file_sha256": "a14f3432559176bc907fd2d60e526fc9d060191313f1715a2c3b67a7595666af",
+      "index_git_blob": "5149715b1eaf124cd3306be6cbb8f770f56fd5fe",
+      "record": {
+        "name": "crypto-bigint",
+        "vers": "0.7.10",
+        "deps": [
+          {
+            "name": "chacha20",
+            "req": "^0.10",
+            "features": [
+              "rng"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "cpubits",
+            "req": "^0.1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "criterion",
+            "req": "^0.7",
+            "features": [
+              "html_reports"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": "cfg(any(unix, windows))",
+            "kind": "dev"
+          },
+          {
+            "name": "ctutils",
+            "req": "^0.4.6",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "der",
+            "req": "^0.8",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "getrandom",
+            "req": "^0.4",
+            "features": [
+              "sys_rng"
+            ],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "hex-literal",
+            "req": "^1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "hybrid-array",
+            "req": "^0.4.12",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "num-bigint",
+            "req": "^0.5",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "num-integer",
+            "req": "^0.1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "num-modular",
+            "req": "^0.7",
+            "features": [
+              "num-bigint",
+              "num-traits"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "num-traits",
+            "req": "^0.2.19",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "proptest",
+            "req": "^1.11",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": "cfg(any(unix, windows))",
+            "kind": "dev"
+          },
+          {
+            "name": "rand_core",
+            "req": "^0.10",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "rand_core",
+            "req": "^0.10",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "rlp",
+            "req": "^0.6",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "serdect",
+            "req": "^0.4",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "subtle",
+            "req": "^2.6",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "zeroize",
+            "req": "^1",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          }
+        ],
+        "cksum": "9c035cb64cba03dad2fb921f3e218785e8cf9a41790da5eb3a1400f62fa2be11",
+        "features": {
+          "extra-sizes": []
+        },
+        "features2": {
+          "alloc": [
+            "serdect?/alloc"
+          ],
+          "default": [
+            "rand_core"
+          ],
+          "der": [
+            "dep:der",
+            "hybrid-array"
+          ],
+          "getrandom": [
+            "dep:getrandom",
+            "rand_core"
+          ],
+          "rand_core": [
+            "dep:rand_core"
+          ],
+          "serde": [
+            "dep:serdect"
+          ],
+          "subtle": [
+            "dep:subtle",
+            "ctutils/subtle",
+            "hybrid-array?/subtle"
+          ]
+        },
+        "yanked": false,
+        "rust_version": "1.87",
+        "pubtime": "2026-10-26T04:00:33Z",
+        "v": 2
+      },
+      "seconds": 0.19009671899766545
+    },
+    {
+      "name": "der",
+      "version": "0.8.3",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/3/d/der",
+      "index_file_bytes": 80113,
+      "index_file_sha256": "51a1195d23b5fb97d71e420d69e01a551f3cf8c5505b1bf3aac2e2695bf9863b",
+      "index_git_blob": "44191db4ef69cba1b0e9bed5f7040b098171d00c",
+      "record": {
+        "name": "der",
+        "vers": "0.8.3",
+        "deps": [
+          {
+            "name": "arbitrary",
+            "req": "^1.4.2",
+            "features": [
+              "derive"
+            ],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "bytes",
+            "req": "^1",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "const-oid",
+            "req": "^0.10",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "der_derive",
+            "req": "^0.8",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "derive_arbitrary",
+            "req": "^1.4.2",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "flagset",
+            "req": "^0.4.7",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "heapless",
+            "req": "^0.9",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "hex-literal",
+            "req": "^1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "pem-rfc7468",
+            "req": "^1",
+            "features": [
+              "alloc"
+            ],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "proptest",
+            "req": "^1.10",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": "cfg(any(unix, windows))",
+            "kind": "dev"
+          },
+          {
+            "name": "time",
+            "req": "^0.3.4",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "zeroize",
+            "req": "^1.8",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          }
+        ],
+        "cksum": "6a996a108feb8b427a6e12fcf6af4aa83409b79d72c15337d7741368131ee004",
+        "features": {
+          "ber": [],
+          "real": []
+        },
+        "features2": {
+          "alloc": [
+            "zeroize?/alloc"
+          ],
+          "arbitrary": [
+            "dep:arbitrary",
+            "dep:derive_arbitrary",
+            "const-oid?/arbitrary",
+            "std"
+          ],
+          "bytes": [
+            "dep:bytes",
+            "alloc"
+          ],
+          "derive": [
+            "dep:der_derive"
+          ],
+          "oid": [
+            "dep:const-oid"
+          ],
+          "pem": [
+            "dep:pem-rfc7468",
+            "alloc",
+            "zeroize"
+          ],
+          "std": [
+            "alloc"
+          ]
+        },
+        "yanked": false,
+        "rust_version": "1.85",
+        "pubtime": "2026-10-25T22:03:44Z",
+        "v": 2
+      },
+      "seconds": 0.16919375300130923
+    },
+    {
+      "name": "ecdsa",
+      "version": "0.17.0",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/ec/ds/ecdsa",
+      "index_file_bytes": 188462,
+      "index_file_sha256": "3dcae36cb110f4441df62a8cbf5a2fb0b9764bfa655bb3b579b0c2d6f0865aa8",
+      "index_git_blob": "a12c71c45d7fa08b4c7816ba328445783b1c5a9e",
+      "record": {
+        "name": "ecdsa",
+        "vers": "0.17.0",
+        "deps": [
+          {
+            "name": "der",
+            "req": "^0.8",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "digest",
+            "req": "^0.11",
+            "features": [
+              "oid"
+            ],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "elliptic-curve",
+            "req": "^0.14",
+            "features": [
+              "sec1"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "elliptic-curve",
+            "req": "^0.14",
+            "features": [
+              "dev"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "rfc6979",
+            "req": "^0.6",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "serdect",
+            "req": "^0.4",
+            "features": [
+              "alloc"
+            ],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "sha2",
+            "req": "^0.11",
+            "features": [
+              "oid"
+            ],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "sha2",
+            "req": "^0.11",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "signature",
+            "req": "^3",
+            "features": [
+              "rand_core"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "spki",
+            "req": "^0.8",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "zeroize",
+            "req": "^1.5",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          }
+        ],
+        "cksum": "c0681a4fc24c767085329728d8dfba959af91228aa4610cca4f8ce317ba46ae0",
+        "features": {
+          "alloc": [
+            "elliptic-curve/alloc",
+            "signature/alloc",
+            "spki/alloc"
+          ],
+          "getrandom": [
+            "elliptic-curve/getrandom"
+          ],
+          "std": [
+            "alloc",
+            "elliptic-curve/std"
+          ]
+        },
+        "features2": {
+          "algorithm": [
+            "dep:rfc6979",
+            "digest",
+            "elliptic-curve/arithmetic"
+          ],
+          "default": [
+            "digest"
+          ],
+          "der": [
+            "dep:der"
+          ],
+          "dev": [
+            "algorithm",
+            "digest/dev",
+            "elliptic-curve/dev"
+          ],
+          "digest": [
+            "dep:digest",
+            "elliptic-curve/digest",
+            "signature/digest"
+          ],
+          "pem": [
+            "elliptic-curve/pem",
+            "pkcs8"
+          ],
+          "pkcs8": [
+            "der",
+            "digest",
+            "elliptic-curve/pkcs8"
+          ],
+          "serde": [
+            "dep:serdect",
+            "elliptic-curve/serde",
+            "pkcs8"
+          ]
+        },
+        "yanked": false,
+        "rust_version": "1.85",
+        "pubtime": "2026-07-02T14:36:09Z",
+        "v": 2
+      },
+      "seconds": 0.15892821099987486
+    },
+    {
+      "name": "elliptic-curve",
+      "version": "0.14.3",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/el/li/elliptic-curve",
+      "index_file_bytes": 343184,
+      "index_file_sha256": "502346641f481648d0c87c42c6914bed6d1fa3f96c4c75130e9801bb0e58decb",
+      "index_git_blob": "664c6b963fbbd8c8e81adaa5323c7c6555d91b0c",
+      "record": {
+        "name": "elliptic-curve",
+        "vers": "0.14.3",
+        "deps": [
+          {
+            "name": "array",
+            "req": "^0.4.13",
+            "features": [
+              "zeroize"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal",
+            "package": "hybrid-array"
+          },
+          {
+            "name": "base16ct",
+            "req": "^1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "bigint",
+            "req": "^0.7.8",
+            "features": [
+              "hybrid-array",
+              "rand_core",
+              "subtle",
+              "zeroize"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal",
+            "package": "crypto-bigint"
+          },
+          {
+            "name": "common",
+            "req": "^0.2",
+            "features": [
+              "rand_core"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal",
+            "package": "crypto-common"
+          },
+          {
+            "name": "digest",
+            "req": "^0.11",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "ff",
+            "req": "^0.14",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "group",
+            "req": "^0.14",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "hex-literal",
+            "req": "^1",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "hex-literal",
+            "req": "^1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "hkdf",
+            "req": "^0.13",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "pem-rfc7468",
+            "req": "^1",
+            "features": [
+              "alloc"
+            ],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "pkcs8",
+            "req": "^0.11",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "rand_core",
+            "req": "^0.10",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "sec1",
+            "req": "^0.8",
+            "features": [
+              "ctutils",
+              "subtle",
+              "zeroize"
+            ],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "serdect",
+            "req": "^0.4",
+            "features": [
+              "alloc"
+            ],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "subtle",
+            "req": "^2.6",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "zeroize",
+            "req": "^1.7",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          }
+        ],
+        "cksum": "900f37e7e18d74a2347389af6cd69e3a30d5cc9e697f40004865679aa75e9c7c",
+        "features": {},
+        "features2": {
+          "alloc": [
+            "base16ct/alloc",
+            "ff?/alloc",
+            "group?/alloc",
+            "array/alloc",
+            "pkcs8?/alloc",
+            "sec1?/alloc",
+            "zeroize/alloc"
+          ],
+          "arithmetic": [
+            "group"
+          ],
+          "default": [
+            "arithmetic"
+          ],
+          "dev": [
+            "arithmetic",
+            "dep:hex-literal",
+            "pem",
+            "pkcs8"
+          ],
+          "ecdh": [
+            "arithmetic",
+            "digest",
+            "dep:hkdf"
+          ],
+          "getrandom": [
+            "arithmetic",
+            "bigint/getrandom",
+            "common/getrandom"
+          ],
+          "group": [
+            "dep:group",
+            "ff"
+          ],
+          "pem": [
+            "dep:pem-rfc7468",
+            "alloc",
+            "arithmetic",
+            "pkcs8/pem",
+            "sec1/pem"
+          ],
+          "pkcs8": [
+            "dep:pkcs8",
+            "sec1"
+          ],
+          "serde": [
+            "dep:serdect",
+            "alloc",
+            "pkcs8",
+            "sec1/serde"
+          ],
+          "std": [
+            "alloc",
+            "pkcs8?/std",
+            "sec1?/std"
+          ]
+        },
+        "yanked": false,
+        "rust_version": "1.87",
+        "pubtime": "2026-10-25T15:50:54Z",
+        "v": 2
+      },
+      "seconds": 0.17117113699714537
+    },
+    {
+      "name": "ff",
+      "version": "0.14.0",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/2/ff",
+      "index_file_bytes": 17941,
+      "index_file_sha256": "93c65d65b43eb29e467a401c83f2c523b782ab9c8acf6c521665e3125c6ac62d",
+      "index_git_blob": "2a417e746cd07baa59da93b15bb5b8d4204f200d",
+      "record": {
+        "name": "ff",
+        "vers": "0.14.0",
+        "deps": [
+          {
+            "name": "bitvec",
+            "req": "^1",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "blake2b_simd",
+            "req": "^1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "byteorder",
+            "req": "^1",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "ff_derive",
+            "req": "^0.14",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "getrandom",
+            "req": "^0.4",
+            "features": [
+              "sys_rng"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "rand_core",
+            "req": "^0.10",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "subtle",
+            "req": "^2.2.1",
+            "features": [
+              "i128"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          }
+        ],
+        "cksum": "a1f686ab92a9fb0eaf188f6c6c87b89490baa6fdb0db4544ba4dc47f7942489f",
+        "features": {
+          "alloc": [],
+          "derive": [
+            "byteorder",
+            "ff_derive"
+          ],
+          "std": [
+            "alloc"
+          ]
+        },
+        "features2": {
+          "bits": [
+            "bitvec",
+            "ff_derive?/bits"
+          ],
+          "default": [
+            "bits",
+            "std"
+          ]
+        },
+        "yanked": false,
+        "rust_version": "1.85",
+        "pubtime": "2026-05-30T04:23:29Z",
+        "v": 2
+      },
+      "seconds": 0.27376429899959476
+    },
+    {
+      "name": "group",
+      "version": "0.14.0",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/gr/ou/group",
+      "index_file_bytes": 12267,
+      "index_file_sha256": "520d4c29e78b218c902a86a88c836845de35eb62fb904a982e01db96a4515c1d",
+      "index_git_blob": "e03befd3fc2739471f5292215d24e19830a55878",
+      "record": {
+        "name": "group",
+        "vers": "0.14.0",
+        "deps": [
+          {
+            "name": "ff",
+            "req": "^0.14",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "memuse",
+            "req": "^0.2",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "rand",
+            "req": "^0.10",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "rand_core",
+            "req": "^0.10",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "rand_xorshift",
+            "req": "^0.5",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "subtle",
+            "req": "^2.2.1",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          }
+        ],
+        "cksum": "7fd1a1c7a5206c5b7a3f5a0d7ccd3ff85d0c8f5133d62a02680255b0004af5f4",
+        "features": {
+          "alloc": [],
+          "default": [
+            "alloc"
+          ],
+          "tests": [
+            "alloc",
+            "rand",
+            "rand_xorshift"
+          ],
+          "wnaf-memuse": [
+            "alloc",
+            "memuse"
+          ]
+        },
+        "yanked": false,
+        "rust_version": "1.85",
+        "pubtime": "2026-06-01T21:35:19Z"
+      },
+      "seconds": 0.1443894719996024
+    },
+    {
+      "name": "h2",
+      "version": "0.3.27",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/2/h2",
+      "index_file_bytes": 246050,
+      "index_file_sha256": "84f2dec56d9536e5a32a17ccdc67a7d7157ef4c7adfab60e15e97f12a70d90a8",
+      "index_git_blob": "06ad5cd5cd0024a6ed0f9c9c1a6aeeaefe1e0d1b",
+      "record": {
+        "name": "h2",
+        "vers": "0.3.27",
+        "deps": [
+          {
+            "name": "bytes",
+            "req": "^1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "env_logger",
+            "req": "^0.10",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "fnv",
+            "req": "^1.0.5",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "futures-core",
+            "req": "^0.3",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "futures-sink",
+            "req": "^0.3",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "futures-util",
+            "req": "^0.3",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "hex",
+            "req": "^0.4.3",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "http",
+            "req": "^0.2",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "indexmap",
+            "req": "^2",
+            "features": [
+              "std"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "quickcheck",
+            "req": "^1.0.3",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "rand",
+            "req": "^0.8.4",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "serde",
+            "req": "^1.0.0",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "serde_json",
+            "req": "^1.0.0",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "slab",
+            "req": "^0.4.2",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "tokio",
+            "req": "^1",
+            "features": [
+              "io-util"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "tokio",
+            "req": "^1",
+            "features": [
+              "rt-multi-thread",
+              "macros",
+              "sync",
+              "net"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "tokio-rustls",
+            "req": "^0.24",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "tokio-util",
+            "req": "^0.7.1",
+            "features": [
+              "codec",
+              "io"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "tracing",
+            "req": "^0.1.35",
+            "features": [
+              "std"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "walkdir",
+            "req": "^2.3.2",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "webpki-roots",
+            "req": "^0.25",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          }
+        ],
+        "cksum": "0beca50380b1fc32983fc1cb4587bfa4bb9e78fc259aad4a0032d2080309222d",
+        "features": {
+          "stream": [],
+          "unstable": []
+        },
+        "yanked": false,
+        "rust_version": "1.63",
+        "pubtime": "2025-07-11T12:09:19Z"
+      },
+      "seconds": 0.18820528899959754
+    },
+    {
+      "name": "hyper",
+      "version": "0.14.32",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/hy/pe/hyper",
+      "index_file_bytes": 714097,
+      "index_file_sha256": "fbb72c77a585684696207ea241bb13c4aab395b7024e4540e90d0dc4719e9d2c",
+      "index_git_blob": "eaf91096ea522fc9e35b343528667565cfdd94e6",
+      "record": {
+        "name": "hyper",
+        "vers": "0.14.32",
+        "deps": [
+          {
+            "name": "bytes",
+            "req": "^1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "futures-channel",
+            "req": "^0.3",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "futures-core",
+            "req": "^0.3",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "futures-util",
+            "req": "^0.3",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "futures-util",
+            "req": "^0.3",
+            "features": [
+              "alloc"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "h2",
+            "req": "^0.3.24",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "http",
+            "req": "^0.2",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "http-body",
+            "req": "^0.4",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "httparse",
+            "req": "^1.8",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "httpdate",
+            "req": "^1.0",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "itoa",
+            "req": "^1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "libc",
+            "req": "^0.2",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "matches",
+            "req": "^0.1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "num_cpus",
+            "req": "^1.0",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "pin-project-lite",
+            "req": "^0.2.4",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "pnet_datalink",
+            "req": "^0.27.2",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": "cfg(any(target_os = \"linux\", target_os = \"macos\"))",
+            "kind": "dev"
+          },
+          {
+            "name": "pretty_env_logger",
+            "req": "^0.4",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "serde",
+            "req": "^1.0",
+            "features": [
+              "derive"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "serde_json",
+            "req": "^1.0",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "socket2",
+            "req": ">=0.4.7, <0.6.0",
+            "features": [
+              "all"
+            ],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "spmc",
+            "req": "^0.3",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "tokio",
+            "req": "^1.27",
+            "features": [
+              "sync"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "tokio",
+            "req": "^1.27",
+            "features": [
+              "fs",
+              "macros",
+              "io-std",
+              "io-util",
+              "rt",
+              "rt-multi-thread",
+              "sync",
+              "time",
+              "test-util"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "tokio-test",
+            "req": "^0.4",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "tokio-util",
+            "req": "^0.7",
+            "features": [
+              "codec"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "tower",
+            "req": "^0.4",
+            "features": [
+              "make",
+              "util"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "tower-service",
+            "req": "^0.3",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "tracing",
+            "req": "^0.1",
+            "features": [
+              "std"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "url",
+            "req": "^2.2",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "want",
+            "req": "^0.3",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          }
+        ],
+        "cksum": "41dfc780fdec9373c01bae43289ea34c972e40ee3c9f6b3c8801a35f35586ce7",
+        "features": {
+          "__internal_happy_eyeballs_tests": [],
+          "backports": [],
+          "client": [],
+          "default": [],
+          "deprecated": [],
+          "ffi": [
+            "libc"
+          ],
+          "full": [
+            "client",
+            "http1",
+            "http2",
+            "server",
+            "stream",
+            "runtime"
+          ],
+          "http1": [],
+          "http2": [
+            "h2"
+          ],
+          "nightly": [],
+          "runtime": [
+            "tcp",
+            "tokio/rt",
+            "tokio/time"
+          ],
+          "server": [],
+          "stream": [],
+          "tcp": [
+            "socket2",
+            "tokio/net",
+            "tokio/rt",
+            "tokio/time"
+          ]
+        },
+        "yanked": false,
+        "pubtime": "2024-12-16T15:59:55Z"
+      },
+      "seconds": 0.19903963100296096
+    },
+    {
+      "name": "p256",
+      "version": "0.14.0",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/p2/56/p256",
+      "index_file_bytes": 143126,
+      "index_file_sha256": "f87ae4179b04bfd3b78341b6bc592b9795a80ff2f105f9fc3b95d82d837bc134",
+      "index_git_blob": "fc4a78b03fa80f90cba0c9fe3651790e50302cdf",
+      "record": {
+        "name": "p256",
+        "vers": "0.14.0",
+        "deps": [
+          {
+            "name": "criterion",
+            "req": "^0.7",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "ecdsa-core",
+            "req": "^0.17",
+            "features": [
+              "der"
+            ],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal",
+            "package": "ecdsa"
+          },
+          {
+            "name": "ecdsa-core",
+            "req": "^0.17",
+            "features": [
+              "dev"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "dev",
+            "package": "ecdsa"
+          },
+          {
+            "name": "elliptic-curve",
+            "req": "^0.14.1",
+            "features": [
+              "sec1"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "hash2curve",
+            "req": "^0.14",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "hex-literal",
+            "req": "^1",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "hex-literal",
+            "req": "^1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "primefield",
+            "req": "^0.14",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "primefield",
+            "req": "^0.14",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "primeorder",
+            "req": "^0.14",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "primeorder",
+            "req": "^0.14",
+            "features": [
+              "dev"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "proptest",
+            "req": "^1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "serdect",
+            "req": "^0.4",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "sha2",
+            "req": "^0.11",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          }
+        ],
+        "cksum": "d2c9239b2dbc807adbbe147e8cf72ea7450c3a0aabe62cb8e75ff4ec22e1f72a",
+        "features": {
+          "digest": [
+            "ecdsa-core/digest"
+          ],
+          "getrandom": [
+            "elliptic-curve/getrandom"
+          ],
+          "sha256": [
+            "digest",
+            "sha2"
+          ]
+        },
+        "features2": {
+          "alloc": [
+            "ecdsa-core?/alloc",
+            "elliptic-curve/alloc",
+            "primeorder?/alloc"
+          ],
+          "arithmetic": [
+            "dep:primefield",
+            "dep:primeorder",
+            "elliptic-curve/arithmetic"
+          ],
+          "default": [
+            "arithmetic",
+            "ecdsa",
+            "pem",
+            "precomputed-tables",
+            "std"
+          ],
+          "ecdh": [
+            "arithmetic",
+            "elliptic-curve/ecdh"
+          ],
+          "ecdsa": [
+            "arithmetic",
+            "ecdsa-core/algorithm",
+            "sha256"
+          ],
+          "group-digest": [
+            "hash2curve",
+            "sha2"
+          ],
+          "hash2curve": [
+            "arithmetic",
+            "dep:hash2curve",
+            "primeorder/hash2curve"
+          ],
+          "oprf": [
+            "group-digest"
+          ],
+          "pem": [
+            "elliptic-curve/pem",
+            "ecdsa-core/pem",
+            "pkcs8"
+          ],
+          "pkcs8": [
+            "ecdsa-core?/pkcs8",
+            "elliptic-curve/pkcs8"
+          ],
+          "precomputed-tables": [
+            "arithmetic",
+            "primeorder/basepoint-table"
+          ],
+          "serde": [
+            "ecdsa-core?/serde",
+            "elliptic-curve/serde",
+            "primeorder?/serde",
+            "serdect"
+          ],
+          "std": [
+            "alloc",
+            "ecdsa-core?/std",
+            "elliptic-curve/std",
+            "getrandom",
+            "primeorder?/std"
+          ],
+          "test-vectors": [
+            "dep:hex-literal"
+          ]
+        },
+        "yanked": false,
+        "rust_version": "1.85",
+        "pubtime": "2026-07-03T17:56:52Z",
+        "v": 2
+      },
+      "seconds": 0.30383125899970764
+    },
+    {
+      "name": "pem-rfc7468",
+      "version": "1.0.0",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/pe/m-/pem-rfc7468",
+      "index_file_bytes": 8137,
+      "index_file_sha256": "7e0c13ce7fa2becb25628dc7a6826e0f38d3f7df6a192466cc278a1c474cd086",
+      "index_git_blob": "0b6cb9b0590db2e5da4a982ea2dde99a3e1e6354",
+      "record": {
+        "name": "pem-rfc7468",
+        "vers": "1.0.0",
+        "deps": [
+          {
+            "name": "base64ct",
+            "req": "^1.4",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          }
+        ],
+        "cksum": "a6305423e0e7738146434843d1694d621cce767262b2a86910beab705e4493d9",
+        "features": {
+          "alloc": [
+            "base64ct/alloc"
+          ],
+          "std": [
+            "alloc",
+            "base64ct/std"
+          ]
+        },
+        "yanked": false,
+        "rust_version": "1.85",
+        "pubtime": "2025-11-08T17:42:28Z"
+      },
+      "seconds": 0.13342920699869865
+    },
+    {
+      "name": "pkcs8",
+      "version": "0.11.0",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/pk/cs/pkcs8",
+      "index_file_bytes": 58639,
+      "index_file_sha256": "31f6a3eedd574ad2614956421f07c18d5671dd9508ad8f090ea5a7ef6ef8c4f4",
+      "index_git_blob": "cf322887439c8123e5dacb9cd68cd80f1e61538e",
+      "record": {
+        "name": "pkcs8",
+        "vers": "0.11.0",
+        "deps": [
+          {
+            "name": "ctutils",
+            "req": "^0.4",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "der",
+            "req": "^0.8.0-rc.12",
+            "features": [
+              "oid"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "getrandom",
+            "req": "^0.4",
+            "features": [
+              "sys_rng"
+            ],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "hex-literal",
+            "req": "^1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "pkcs5",
+            "req": "^0.8",
+            "features": [
+              "rand_core"
+            ],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "rand_core",
+            "req": "^0.10",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "spki",
+            "req": "^0.8",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "tempfile",
+            "req": "^3",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          }
+        ],
+        "cksum": "451913da69c775a56034ea8d9003d27ee8948e12443eae7c038ba100a4f21cb7",
+        "features": {
+          "alloc": [
+            "der/alloc",
+            "der/zeroize",
+            "spki/alloc"
+          ],
+          "pem": [
+            "alloc",
+            "der/pem",
+            "spki/pem"
+          ],
+          "std": [
+            "alloc",
+            "der/std",
+            "spki/std"
+          ]
+        },
+        "features2": {
+          "3des": [
+            "encryption",
+            "pkcs5/3des"
+          ],
+          "des-insecure": [
+            "encryption",
+            "pkcs5/des-insecure"
+          ],
+          "encryption": [
+            "alloc",
+            "pkcs5/alloc",
+            "pkcs5/pbes2",
+            "dep:rand_core"
+          ],
+          "getrandom": [
+            "encryption",
+            "pkcs5/getrandom",
+            "dep:getrandom"
+          ],
+          "sha1-insecure": [
+            "encryption",
+            "pkcs5/sha1-insecure"
+          ]
+        },
+        "yanked": false,
+        "rust_version": "1.85",
+        "pubtime": "2026-04-27T20:07:44Z",
+        "v": 2
+      },
+      "seconds": 0.15395805799926165
+    },
+    {
+      "name": "primefield",
+      "version": "0.14.0",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/pr/im/primefield",
+      "index_file_bytes": 20663,
+      "index_file_sha256": "5e3e6cac6931081716a6b6452d533b1cac30b0b383d78e85aad460e245127572",
+      "index_git_blob": "ee5fea985b25134930acd5c36412d802f67a3f5e",
+      "record": {
+        "name": "primefield",
+        "vers": "0.14.0",
+        "deps": [
+          {
+            "name": "bigint",
+            "req": "^0.7.5",
+            "features": [
+              "rand_core",
+              "hybrid-array",
+              "subtle"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal",
+            "package": "crypto-bigint"
+          },
+          {
+            "name": "common",
+            "req": "^0.2",
+            "features": [
+              "rand_core"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal",
+            "package": "crypto-common"
+          },
+          {
+            "name": "ff",
+            "req": "^0.14",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "rand_core",
+            "req": "^0.10",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "subtle",
+            "req": "^2.6",
+            "features": [
+              "const-generics"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "zeroize",
+            "req": "^1.7",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          }
+        ],
+        "cksum": "c555a6e4eb7d4e158fcb028c835c3b8642206ddc279b5c6b202ef9a8bdb592f4",
+        "features": {},
+        "yanked": false,
+        "rust_version": "1.85",
+        "pubtime": "2026-06-24T02:51:18Z"
+      },
+      "seconds": 0.14508980499886093
+    },
+    {
+      "name": "primeorder",
+      "version": "0.14.0",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/pr/im/primeorder",
+      "index_file_bytes": 25127,
+      "index_file_sha256": "f58117b0e0e715cb3b1e4b0cee49705b0e4832adaf428eaf2f3b72b1f60a0017",
+      "index_git_blob": "d1ffc19a3720084de742f51404a50a04fee3f2a1",
+      "record": {
+        "name": "primeorder",
+        "vers": "0.14.0",
+        "deps": [
+          {
+            "name": "elliptic-curve",
+            "req": "^0.14.1",
+            "features": [
+              "arithmetic",
+              "sec1"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "once_cell",
+            "req": "^1.21",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "primefield",
+            "req": "^0.14",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "serdect",
+            "req": "^0.4",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "wnaf",
+            "req": "^0.14",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          }
+        ],
+        "cksum": "5c9f42978c78a00e3d68f69fc03e57a234debae69da4020a4fb588fcdcd07b06",
+        "features": {
+          "basepoint-table": [],
+          "critical-section": [
+            "basepoint-table",
+            "once_cell/critical-section"
+          ],
+          "dev": [],
+          "hash2curve": [],
+          "serde": [
+            "elliptic-curve/serde",
+            "serdect"
+          ]
+        },
+        "features2": {
+          "alloc": [
+            "elliptic-curve/alloc",
+            "serdect?/alloc"
+          ],
+          "std": [
+            "alloc",
+            "elliptic-curve/std",
+            "once_cell?/std"
+          ]
+        },
+        "yanked": false,
+        "rust_version": "1.85",
+        "pubtime": "2026-07-03T00:18:00Z",
+        "v": 2
+      },
+      "seconds": 0.17532878900237847
+    },
+    {
+      "name": "rfc6979",
+      "version": "0.6.0",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/rf/c6/rfc6979",
+      "index_file_bytes": 15487,
+      "index_file_sha256": "b1d4debeab7d6cdda02c6b66af8d69a79e6099e0c44d44f64643922d17e90650",
+      "index_git_blob": "193f78e81efe32fbd1e822ee8529a6fcbc2b196c",
+      "record": {
+        "name": "rfc6979",
+        "vers": "0.6.0",
+        "deps": [
+          {
+            "name": "bigint",
+            "req": "^0.7.5",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal",
+            "package": "crypto-bigint"
+          },
+          {
+            "name": "bigint",
+            "req": "^0.7.5",
+            "features": [
+              "alloc"
+            ],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "dev",
+            "package": "crypto-bigint"
+          },
+          {
+            "name": "hex-literal",
+            "req": "^1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "hmac",
+            "req": "^0.13",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "sha2",
+            "req": "^0.11",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "sha3",
+            "req": "^0.12",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          }
+        ],
+        "cksum": "b4a459cddafb3fe76b31fd8f1108007566c40301feb64dc7b54656eb7388172b",
+        "features": {},
+        "yanked": false,
+        "rust_version": "1.85",
+        "pubtime": "2026-06-30T02:21:44Z"
+      },
+      "seconds": 0.15888436399836792
+    },
+    {
+      "name": "roxmltree",
+      "version": "0.14.1",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/ro/xm/roxmltree",
+      "index_file_bytes": 15917,
+      "index_file_sha256": "d50ae0bc4a108ae457d8bc1b01b982be57b1e083a2c62c4251b4f3bd6b8b8498",
+      "index_git_blob": "33734f2dc3756b7a4347aaf057be959e07391e5f",
+      "record": {
+        "name": "roxmltree",
+        "vers": "0.14.1",
+        "deps": [
+          {
+            "name": "pretty_assertions",
+            "req": "^0.5",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "xmlparser",
+            "req": "^0.13.3",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          }
+        ],
+        "cksum": "921904a62e410e37e215c40381b7117f830d9d89ba60ab5236170541dd25646b",
+        "features": {
+          "default": [
+            "std"
+          ],
+          "std": []
+        },
+        "yanked": false,
+        "pubtime": "2021-04-01T10:08:13Z"
+      },
+      "seconds": 0.15433657900211983
+    },
+    {
+      "name": "sec1",
+      "version": "0.8.1",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/se/c1/sec1",
+      "index_file_bytes": 42516,
+      "index_file_sha256": "d967de2d63e00ba90efc5b881489911daf18cdb0b40b6b5487734c253d2dfcb1",
+      "index_git_blob": "e678540aa051fba7a1e39e59b6aeea4c4923f8e1",
+      "record": {
+        "name": "sec1",
+        "vers": "0.8.1",
+        "deps": [
+          {
+            "name": "base16ct",
+            "req": "^1",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "ctutils",
+            "req": "^0.4",
+            "features": [],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "der",
+            "req": "^0.8",
+            "features": [
+              "oid"
+            ],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "hex-literal",
+            "req": "^1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "hybrid-array",
+            "req": "^0.4.6",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "serdect",
+            "req": "^0.4",
+            "features": [
+              "alloc"
+            ],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "subtle",
+            "req": "^2",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "tempfile",
+            "req": "^3",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "zeroize",
+            "req": "^1",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          }
+        ],
+        "cksum": "d56d437c2f19203ce5f7122e507831de96f3d2d4d3be5af44a0b0a09d8a80e4d",
+        "features": {},
+        "features2": {
+          "alloc": [
+            "der?/alloc",
+            "zeroize?/alloc"
+          ],
+          "default": [
+            "der",
+            "point"
+          ],
+          "der": [
+            "dep:der",
+            "zeroize"
+          ],
+          "pem": [
+            "alloc",
+            "der/pem"
+          ],
+          "point": [
+            "dep:base16ct",
+            "dep:hybrid-array"
+          ],
+          "serde": [
+            "dep:serdect"
+          ],
+          "std": [
+            "alloc",
+            "der?/std"
+          ],
+          "zeroize": [
+            "dep:zeroize",
+            "der?/zeroize"
+          ]
+        },
+        "yanked": false,
+        "rust_version": "1.85",
+        "pubtime": "2026-03-31T21:47:09Z",
+        "v": 2
+      },
+      "seconds": 0.19458276699879207
+    },
+    {
+      "name": "separator",
+      "version": "0.4.1",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/se/pa/separator",
+      "index_file_bytes": 1098,
+      "index_file_sha256": "ee165ee5c35567a4a1450f61e674c1932e002618aeb8c0a89089f8747e1f13d9",
+      "index_git_blob": "7dd9bba08e58224cc49315e4b9e80b4ca295d750",
+      "record": {
+        "name": "separator",
+        "vers": "0.4.1",
+        "deps": [],
+        "cksum": "f97841a747eef040fcd2e7b3b9a220a7205926e60488e673d9e4926d27772ce5",
+        "features": {},
+        "yanked": false,
+        "pubtime": "2019-03-29T00:11:19Z"
+      },
+      "seconds": 0.1520827439999266
+    },
+    {
+      "name": "spki",
+      "version": "0.8.1",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/sp/ki/spki",
+      "index_file_bytes": 24261,
+      "index_file_sha256": "d4f7358ae46f387e08ac07d5507b68d0154a91733ca76b4cdfa1a544a3fdec5f",
+      "index_git_blob": "a44e559cbefdb6cd3a3af64aec4634f6a629ffb7",
+      "record": {
+        "name": "spki",
+        "vers": "0.8.1",
+        "deps": [
+          {
+            "name": "arbitrary",
+            "req": "^1.4",
+            "features": [
+              "derive"
+            ],
+            "optional": true,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "base64ct",
+            "req": "^1",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "der",
+            "req": "^0.8.2",
+            "features": [
+              "oid"
+            ],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "digest",
+            "req": "^0.11",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "hex-literal",
+            "req": "^1",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          },
+          {
+            "name": "sha2",
+            "req": "^0.11",
+            "features": [],
+            "optional": true,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "tempfile",
+            "req": "^3",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "dev"
+          }
+        ],
+        "cksum": "7ef958a98b9d5da290cfc78946e9f3e61e1e62a18db0d92cac0b83cc161491a9",
+        "features": {
+          "fingerprint": [
+            "digest",
+            "sha2"
+          ]
+        },
+        "features2": {
+          "alloc": [
+            "base64ct?/alloc",
+            "der/alloc"
+          ],
+          "arbitrary": [
+            "std",
+            "dep:arbitrary",
+            "der/arbitrary"
+          ],
+          "base64": [
+            "dep:base64ct"
+          ],
+          "pem": [
+            "alloc",
+            "der/pem"
+          ],
+          "std": [
+            "der/std",
+            "alloc"
+          ]
+        },
+        "yanked": false,
+        "rust_version": "1.85",
+        "pubtime": "2026-10-05T22:12:26Z",
+        "v": 2
+      },
+      "seconds": 0.153932925000845
+    },
+    {
+      "name": "wnaf",
+      "version": "0.14.1",
+      "url": "https://raw.githubusercontent.com/rust-lang/crates.io-index/d81bdb3483af17165174bb94e0a2aca7353f24cc/wn/af/wnaf",
+      "index_file_bytes": 3783,
+      "index_file_sha256": "8e74206a0e5607e194799006136e44d72228f6354676d073af07aa9709660dd1",
+      "index_git_blob": "12ed5c953d3163c6613aee28d35f387e7ced16d2",
+      "record": {
+        "name": "wnaf",
+        "vers": "0.14.1",
+        "deps": [
+          {
+            "name": "array",
+            "req": "^0.4.13",
+            "features": [],
+            "optional": false,
+            "default_features": true,
+            "target": null,
+            "kind": "normal",
+            "package": "hybrid-array"
+          },
+          {
+            "name": "ff",
+            "req": "^0.14",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "group",
+            "req": "^0.14",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          },
+          {
+            "name": "primefield",
+            "req": "^0.14",
+            "features": [],
+            "optional": false,
+            "default_features": false,
+            "target": null,
+            "kind": "normal"
+          }
+        ],
+        "cksum": "795ca18b3fdb5e62bf982199278341ddcf7ebf7d32e25e212ad05d496e95f6fa",
+        "features": {
+          "alloc": [
+            "array/alloc",
+            "ff/alloc",
+            "group/alloc"
+          ],
+          "default": [
+            "alloc"
+          ]
+        },
+        "yanked": false,
+        "rust_version": "1.85",
+        "pubtime": "2026-09-03T19:10:50Z"
+      },
+      "seconds": 0.2581433069972263
+    }
+  ]
+}
