@@ -1,0 +1,159 @@
+{
+  "checkpoint_manifest_sha256": "ddbabde74f9669ef56ef568d7e660ae7bef43784a01a23ade3e427f4584df2ee",
+  "checkpoint_reload_max_error": 0.0,
+  "checkpoint_scope": "exact model state for inference; optimizer is not retained",
+  "environment": {
+    "cuda": false,
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "python": "3.12.14",
+    "threads": 1,
+    "timing": "process CPU and elapsed wall; CPU is not hardware energy",
+    "torch": "2.8.0+cpu"
+  },
+  "gradient_groups": {
+    "backbone.blocks.0.cell.candidate.bias": {
+      "finite": true,
+      "l1": 0.3031962513923645
+    },
+    "backbone.blocks.0.cell.candidate.weight": {
+      "finite": true,
+      "l1": 7.373589992523193
+    },
+    "backbone.blocks.0.cell.log_rate": {
+      "finite": true,
+      "l1": 0.006153505761176348
+    },
+    "backbone.input_proj.bias": {
+      "finite": true,
+      "l1": 0.10710941255092621
+    },
+    "backbone.input_proj.weight": {
+      "finite": true,
+      "l1": 1.8848230838775635
+    },
+    "backbone.output_proj.bias": {
+      "finite": true,
+      "l1": 0.3758472204208374
+    },
+    "backbone.output_proj.weight": {
+      "finite": true,
+      "l1": 2.6974525451660156
+    },
+    "frontend.0.bias": {
+      "finite": true,
+      "l1": 0.1385492980480194
+    },
+    "frontend.0.weight": {
+      "finite": true,
+      "l1": 0.7169134616851807
+    },
+    "frontend.1.bias": {
+      "finite": true,
+      "l1": 0.022654114291071892
+    },
+    "frontend.1.weight": {
+      "finite": true,
+      "l1": 0.01182944979518652
+    },
+    "readout.bias": {
+      "finite": true,
+      "l1": 0.21817603707313538
+    },
+    "readout.weight": {
+      "finite": true,
+      "l1": 0.8038132190704346
+    }
+  },
+  "history": [
+    {
+      "last_grad_norm": 0.7452505826950073,
+      "train_loss": 1.3689838171005249,
+      "training_cpu_seconds": 1.656577763999998,
+      "training_wall_seconds": 1.8486167870287318,
+      "update": 40,
+      "validation": {
+        "accuracy": 0.3203125,
+        "brier": 0.7236406207084656,
+        "cases": 512,
+        "cross_entropy": 1.333357334136963
+      }
+    },
+    {
+      "last_grad_norm": 0.5173497200012207,
+      "train_loss": 1.3531318187713623,
+      "training_cpu_seconds": 2.6309878600000065,
+      "training_wall_seconds": 2.847349108022172,
+      "update": 80,
+      "validation": {
+        "accuracy": 0.388671875,
+        "brier": 0.7011483907699585,
+        "cases": 512,
+        "cross_entropy": 1.2910586595535278
+      }
+    },
+    {
+      "last_grad_norm": 2.2708001136779785,
+      "train_loss": 1.2434979222714901,
+      "training_cpu_seconds": 3.738372457999999,
+      "training_wall_seconds": 3.9620405820096494,
+      "update": 160,
+      "validation": {
+        "accuracy": 0.359375,
+        "brier": 0.7397817373275757,
+        "cases": 512,
+        "cross_entropy": 1.356542706489563
+      }
+    }
+  ],
+  "parameters": {
+    "backbone": 8651,
+    "frontend": 2208,
+    "matching": {
+      "hidden_width": 51,
+      "n_parameters": 8651,
+      "relative_gap": 0.004995353159851301,
+      "target_parameters": 8608
+    },
+    "readout": 132,
+    "total": 10991
+  },
+  "prepare_cpu_seconds": 4.6867573789999994,
+  "selected_step": 80,
+  "source_seal": "bb0d2eda33c34785da9563a84a06ed4c5d2391826e52173452ee43924723de02",
+  "spec": {
+    "architecture": "continuous_rnn",
+    "batch_size": 32,
+    "data_seed": 7123,
+    "depth": 1,
+    "length": 32,
+    "lr": 0.003,
+    "match_cell_budget": true,
+    "seed": 1103,
+    "stage": "mechanism",
+    "task": "synthetic",
+    "test_size": 1024,
+    "train_size": 2048,
+    "updates": 160,
+    "val_size": 512,
+    "width": 32
+  },
+  "split_sources_sha256": "9727a453ac737118d728368d70c0b375bc84e5f13840938370e866300ee17030",
+  "test": {
+    "accuracy": 0.373046875,
+    "brier": 0.7055997848510742,
+    "cases": 1024,
+    "cross_entropy": 1.2945048809051514
+  },
+  "test_cpu_seconds": 0.0940499379999995,
+  "test_wall_seconds": 0.09404764899954898,
+  "timing_scope": "includes preparation, fitting, validation, serialization, reload and test; installation excluded",
+  "total_cpu_seconds": 11.796031963999999,
+  "total_wall_seconds": 13.186388957998133,
+  "training_cpu_seconds": 3.738372457999999,
+  "training_examples_seen": 5120,
+  "training_sequence_positions": 163840,
+  "training_wall_seconds": 3.9620405820096494,
+  "unique_training_examples_seen": 1859,
+  "validation_cpu_seconds": 0.13372992499999903
+}
