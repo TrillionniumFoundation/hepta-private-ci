@@ -315,7 +315,7 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     // persisted budget or restart the disabled child.
     drop(supervisor);
     let (mut supervisor, recovered) = Supervisor::recover(
-        registry,
+        registry.clone(),
         control.driver(),
         config(),
         now + Duration::from_secs(3),
@@ -329,6 +329,28 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     );
     assert_eq!(
         supervisor.tick(now + Duration::from_secs(4)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&agent_id), 4);
+
+    // A second cold recovery, still inside the restart window, must not
+    // re-arm the exhausted child or create a fifth process.
+    drop(supervisor);
+    let (mut supervisor, recovered) = Supervisor::recover(
+        registry,
+        control.driver(),
+        config(),
+        now + Duration::from_secs(5),
+    )?;
+    assert_eq!(recovered, TickReport::default());
+    assert!(
+        !supervisor
+            .snapshot(&agent_id)
+            .expect("snapshot after repeated post-exhaustion recovery")
+            .active
+    );
+    assert_eq!(
+        supervisor.tick(now + Duration::from_secs(6)),
         TickReport::default()
     );
     assert_eq!(control.spawn_count(&agent_id), 4);
