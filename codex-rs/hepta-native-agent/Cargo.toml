@@ -19,7 +19,6 @@ codex-execution-core = { workspace = true }
 codex-hepta-types = { workspace = true }
 codex-http-client = { workspace = true }
 http = { workspace = true }
-serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 tokio = { workspace = true, features = ["io-util", "macros", "net", "rt-multi-thread", "sync", "time"] }
 
@@ -28,4 +27,3 @@ url = { workspace = true }
 
 [dev-dependencies]
 pretty_assertions = { workspace = true }
-tempfile = { workspace = true }

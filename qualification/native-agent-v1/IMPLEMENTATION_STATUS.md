@@ -48,6 +48,24 @@ Clippy 检出 map guard 持有问题。两次失败及最终成功的完整日�
 未运行原 adapter 留下的一项 adapter 专属单元测试；其库与完整依赖链编译通过。
 这些 scoped gates 不等同于全仓库 CI 全绿。
 
+## 发布后 CI 整理
+
+官方原始构建记录改名为 `OFFICIAL_BUILD.json`，避免被现有 `BUILD.*` Starlark 规则误选，
+保留原始字节。native crate 的两条未使用直接依赖及对应 lockfile 本地依赖边已删除；
+外部依赖版本、native 与 ThreadStore 的 Rust 实现源码均未改变。
+继承的 Python 测试文件格式问题使用锁定 Ruff 0.15.13 修正，完整安装文件哈希和 AST 一致性已核验。
+
+job `1a180ffd6cc-96a-2dd5` 再次通过 259 项 native + ThreadStore 测试、14 项 runner 测试、
+scoped fix、fmt、strict Clippy、Bazel 锁刷新和 release 构建。Bazel 锁文件无新增差异。
+见 [整理记录](provenance/FINAL_CI_HYGIENE.json)、
+[原始日志](evidence/ci-hygiene-gates-20261028.tar.gz)和
+[构建身份](provenance/POST_CI_HYGIENE_BUILD.json)。这些结果不等同于全仓 CI 全绿。
+
+正式测量绑定提交 `ea162dd819932d6b962863aebf49908c557b5e3f` 与 native SHA256
+`0628b5ea8d919db59b581f66eba64ddc3a6674ee960b6f6b13790e61d27d9f08`。
+整理后的构建为 `aa2bca08f38d1e7e44b33784bf419f9e7046421a9447ac528dfde5e0c06f75b5`，
+不能将下文的性能数字直接记在这个新二进制名下。两轮冻结运行与原始失败均保持不变。
+
 ## 正式对照状态
 
 两轮各有三条 replay 和三条 live 路径：每条 replay 9/9、live 6/6，warmup 1/1。

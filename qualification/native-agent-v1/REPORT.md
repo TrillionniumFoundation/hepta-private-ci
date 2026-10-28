@@ -30,13 +30,13 @@ Cell 语义入口和自适应结构的独立结果在 [#4131][cell-pr]；其未�
 发布前重新读取官方 release API，最新非预发布仍为 0.165.0，发布时间 2026-10-27 20:09:38 UTC。
 记录见 [UPSTREAM_LATEST_AT_PUBLICATION.json](provenance/UPSTREAM_LATEST_AT_PUBLICATION.json)。
 官方两条路径使用相同最小初始化观测补丁；workspace 本地 package 版本锁调整和 wrapper 均留档。
-不能把它们称为未经修改的官方发布二进制。[官方构建记录](provenance/official-0165/BUILD.json)
+不能把它们称为未经修改的官方发布二进制。[官方构建记录](provenance/official-0165/OFFICIAL_BUILD.json)
 
-最终 native release SHA256 为
+正式对照冻结于提交 `ea162dd819932d6b962863aebf49908c557b5e3f`，其 native release SHA256 为
 `0628b5ea8d919db59b581f66eba64ddc3a6674ee960b6f6b13790e61d27d9f08`；
 App Server 为 `7b9a74955391ef21e56a021cd119c0e934d42d4b24339bccf0af8c74abc331cc`；
 facade 为 `4f96fb3aa150f7f182f4527da2e83ce836a7a77d08206ce69dee294a049563a8`。
-native 与官方使用相同 release profile 设置。构建后仅测试文件发生 lint 修正，生产输入未变；
+native 与官方使用相同 release profile 设置。该次构建后仅测试文件发生 lint 修正，生产输入未变；
 该调和核对位于 [POST_BUILD_SOURCE_RECONCILIATION.json](provenance/POST_BUILD_SOURCE_RECONCILIATION.json)。
 ThreadStore checkpoint 切片没有链接进这个 runner，不能把其生产成本包含在本次数字中。
 
@@ -89,6 +89,30 @@ ModelPort wrapper 和 checkpoint API 尚未组合成生产 Agentd/Fleet、QueueS
 以及两次测量校准失败均保留。map guard 已通过缩小作用域修正，未增加 lint 豁免。
 最终成功不能抹去此前失败，也不能替代全仓库 CI 状态。
 [工程状态](IMPLEMENTATION_STATUS.md)与各 MANIFEST 绑定原始日志。
+
+## 发布后 CI 整理与测量版本
+
+冻结提交的 CI 揭示了两个本轮引入的问题：官方原始构建记录 `BUILD.json` 被仓库的
+`BUILD.*` 规则当成 Starlark；native crate 声明了未直接使用的 `serde` 和 `tempfile`。
+现将记录改名为 `OFFICIAL_BUILD.json` 并同步索引，原始文件字节保持不变；删除两条未使用依赖
+及两个 lockfile 中对应的本地 package 依赖边，不改变外部 package 版本。
+
+基线已有的 `scripts/test_hepta_native_feedback.py` 格式问题也用 `scripts/uv.lock` 锁定的
+Ruff 0.15.13 修正。安装文件的完整 SHA256 经过核对；格式前文件与指定基线完全相同，
+格式前后 Python AST 相同。此前两次依赖下载超时仍保留，不将其称为测试失败或成功格式化。
+[整理记录](provenance/FINAL_CI_HYGIENE.json)
+
+整理后，native + ThreadStore 的 259 项测试、runner 的 14 项测试、scoped `just fix`、
+`just fmt`、strict Clippy、Bazel 锁刷新和 release 构建全部通过。Bazel 锁没有新增差异；
+native 与 ThreadStore 的 Rust 实现文件与原通过 gate 的指纹一致。
+完整日志见 [CI 整理 gate](evidence/ci-hygiene-gates-20261028.tar.gz)及其
+[MANIFEST](evidence/ci-hygiene-gates-20261028.MANIFEST.json)，job 为 `1a180ffd6cc-96a-2dd5`。
+
+删除依赖后，新的 release SHA256 为
+`aa2bca08f38d1e7e44b33784bf419f9e7046421a9447ac528dfde5e0c06f75b5`。
+这是单独验证的构建身份；下文 V1/V2 正式数据仍属于原来的 `0628b5ea…` 二进制，
+没有将原测量改归给新构建，也没有因清理依赖而重新选择模型案例。
+[构建及源码核对](provenance/POST_CI_HYGIENE_BUILD.json)
 
 ## 正式比较设计
 
