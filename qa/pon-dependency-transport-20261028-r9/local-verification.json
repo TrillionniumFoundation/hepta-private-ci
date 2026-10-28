@@ -1,0 +1,180 @@
+{
+  "schema": "hepta-transport-static-controls-v1",
+  "controls": [
+    {
+      "name": "external-zip-full-graph",
+      "command": [
+        "python3",
+        "-B",
+        "qa/pon-dependency-resolution-20261028-r8/verify_resolution.py",
+        "--artifact-zip",
+        "/workspace/scratch/56818e4fba76/recovery/round8/hepta-pon-dependency-proposal-r8.zip"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "streams": {
+        "stdout": {
+          "path": "local-logs/external-zip-full-graph.stdout.txt",
+          "bytes": 12257,
+          "sha256": "e5303c33df8bdd9c9d513f9ce6f3f72d05a9989fa648ccded2e3f04fb0d79124"
+        },
+        "stderr": {
+          "path": "local-logs/external-zip-full-graph.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "name": "missing-required-argument",
+      "command": [
+        "python3",
+        "-B",
+        "qa/pon-dependency-resolution-20261028-r8/verify_resolution.py"
+      ],
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "streams": {
+        "stdout": {
+          "path": "local-logs/missing-required-argument.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "local-logs/missing-required-argument.stderr.txt",
+          "bytes": 208,
+          "sha256": "7e003e0627b6fd3976a1ebccbcb3cccb3fb6a50e1743a1f7367acedbe46a9949"
+        }
+      }
+    },
+    {
+      "name": "missing-external-file",
+      "command": [
+        "python3",
+        "-B",
+        "qa/pon-dependency-resolution-20261028-r8/verify_resolution.py",
+        "--artifact-zip",
+        "/tmp/hepta-transport-negative-7y664ien/missing.zip"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "streams": {
+        "stdout": {
+          "path": "local-logs/missing-external-file.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "local-logs/missing-external-file.stderr.txt",
+          "bytes": 719,
+          "sha256": "4600259a7c366ff79e218401c3e004d07f5e6647c22757d6bb8220803f747e7e"
+        }
+      }
+    },
+    {
+      "name": "corrupt-same-size-zip",
+      "command": [
+        "python3",
+        "-B",
+        "qa/pon-dependency-resolution-20261028-r8/verify_resolution.py",
+        "--artifact-zip",
+        "/tmp/hepta-transport-negative-7y664ien/corrupt.zip"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "streams": {
+        "stdout": {
+          "path": "local-logs/corrupt-same-size-zip.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "local-logs/corrupt-same-size-zip.stderr.txt",
+          "bytes": 673,
+          "sha256": "7f32adfa12e961d36042f41052e7d90ebf4354e37120fb5e582000d1e7bef3ec"
+        }
+      }
+    },
+    {
+      "name": "truncated-zip",
+      "command": [
+        "python3",
+        "-B",
+        "qa/pon-dependency-resolution-20261028-r8/verify_resolution.py",
+        "--artifact-zip",
+        "/tmp/hepta-transport-negative-7y664ien/truncated.zip"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "streams": {
+        "stdout": {
+          "path": "local-logs/truncated-zip.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "local-logs/truncated-zip.stderr.txt",
+          "bytes": 719,
+          "sha256": "4600259a7c366ff79e218401c3e004d07f5e6647c22757d6bb8220803f747e7e"
+        }
+      }
+    },
+    {
+      "name": "symlink-zip",
+      "command": [
+        "python3",
+        "-B",
+        "qa/pon-dependency-resolution-20261028-r8/verify_resolution.py",
+        "--artifact-zip",
+        "/tmp/hepta-transport-negative-7y664ien/alias.zip"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "streams": {
+        "stdout": {
+          "path": "local-logs/symlink-zip.stdout.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "local-logs/symlink-zip.stderr.txt",
+          "bytes": 719,
+          "sha256": "4600259a7c366ff79e218401c3e004d07f5e6647c22757d6bb8220803f747e7e"
+        }
+      }
+    }
+  ],
+  "full_graph_result_byte_semantics_equal_historical_import_review": true,
+  "complete_zip_metadata_verified": true,
+  "native_commands_executed": false,
+  "blob_size_policy_check": {
+    "command": [
+      "python3",
+      "scripts/check_blob_size.py",
+      "--base",
+      "3e9efb15faa261a4dc3ffc3205cd259aaee41a3f",
+      "--head",
+      "8a69cec6eb08f9330511690137245566b4e1d0f8",
+      "--max-bytes",
+      "512000",
+      "--allowlist",
+      ".github/blob-size-allowlist.txt"
+    ],
+    "tree_scope": "staged transport tree before this receipt and policy-log addition",
+    "exit_code": 0,
+    "stdout_sha256": "137b71ec4c6101f43c4a86689bbd1eb5c0d563c012c97c32143bd80fc4b362de",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "original_policy_used_without_modification": true
+  },
+  "policy_allowlist_and_native_workflows_unchanged": true,
+  "structural_preflight": {
+    "command": ["python3", "-B", "scripts/hepta_workspace.py"],
+    "manifests": 196,
+    "errors": 0
+  },
+  "python_lint_format": {
+    "ruff_check_exit_code": 0,
+    "ruff_format_check_exit_code": 0,
+    "path": "qa/pon-dependency-resolution-20261028-r8/verify_resolution.py"
+  }
+}

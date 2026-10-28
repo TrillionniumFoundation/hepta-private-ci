@@ -148,7 +148,7 @@ error if it is invoked with the applied graph.
 
 ## Evidence and local verification
 
-`artifact-12791038108.zip` preserves the original complete artifact, including the
+The externally retained `artifact-12791038108.zip` preserves the complete artifact, including the
 8.25 MB metadata output, originals/proposals, patch, raw command streams and
 hash manifest. `hosted-record.json` and `hosted-files.json` are unchanged extracted
 copies for convenient review. `github/` retains independently read source,
@@ -160,8 +160,19 @@ files. `import-review.json` verifies the actual imported bytes. To repeat the
 read-only review from a checkout containing the recorded source tree, run:
 
 ```sh
-python3 -B qa/pon-dependency-resolution-20261028-r8/verify_resolution.py
+python3 -B qa/pon-dependency-resolution-20261028-r8/verify_resolution.py \
+  --artifact-zip /absolute/path/to/artifact-12791038108.zip
 ```
+
+The original ZIP exceeded the unchanged 512,000-byte blob limit in the subsequent
+`682a88a7` CI run. It is therefore no longer a file in the current tree. The
+[transport follow-up](../pon-dependency-transport-20261028-r9/README.md) retains the
+original download source, exact ZIP identity, every member's identity, complete
+ZIP envelope metadata, and the failed compression attempt. Supply the externally
+retained original ZIP explicitly; the verifier rejects a missing file, wrong
+size or wrong SHA-256. It performs the same graph review after that identity
+check. The earlier candidate manifest and verification receipts describe the
+historical `d9dfaa9` / `682a88a7` tree and remain unchanged.
 
 `patch-review.json` also retains an initially nonidentical textual diff check:
 the local repository abbreviates object IDs to nine characters, whereas the

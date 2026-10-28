@@ -1,0 +1,240 @@
+{
+  "schema": "hepta-aws-crypto-actual-path-review-v1",
+  "original_artifact_id": 12791038108,
+  "original_artifact_sha256": "7cb5ad030c5d63ae3dce23cc35a6aeb05d6882571b096ef724afc5a66649f330",
+  "metadata_member": "logs/cargo-metadata.stdout.txt",
+  "metadata_bytes": 8254348,
+  "metadata_sha256": "4669fc0eb35e64ad6c3104158253c88fed92486e0e42bf6e3c7da481ec7ebdd8",
+  "metadata_is_actual_hosted_not_synthetic": true,
+  "source_commit": "366dc9374ab554036873fdb66e3497151d36d273",
+  "imported_product_lock_sha256": "e113db5c407fde385abaaad646e074cf0ba7a09e8905673be2e3fa71db75d6ec",
+  "packages": [
+    {
+      "name": "codex-aws-auth",
+      "version": "0.0.0",
+      "source": null,
+      "features": [],
+      "direct_resolved_parents": [
+        {
+          "name": "codex-app-server",
+          "version": "0.0.0"
+        },
+        {
+          "name": "codex-model-provider",
+          "version": "0.0.0"
+        }
+      ],
+      "declared_crypto_dependencies": [
+        {
+          "name": "aws-config",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "req": "^1",
+          "kind": null,
+          "rename": null,
+          "optional": false,
+          "uses_default_features": true,
+          "features": ["credentials-login"],
+          "target": null,
+          "registry": null
+        },
+        {
+          "name": "aws-sigv4",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "req": "^1",
+          "kind": null,
+          "rename": null,
+          "optional": false,
+          "uses_default_features": true,
+          "features": [],
+          "target": null,
+          "registry": null
+        }
+      ]
+    },
+    {
+      "name": "aws-config",
+      "version": "1.8.12",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "features": [
+        "credentials-login",
+        "credentials-process",
+        "default",
+        "default-https-client",
+        "rt-tokio",
+        "sso"
+      ],
+      "direct_resolved_parents": [
+        {
+          "name": "codex-aws-auth",
+          "version": "0.0.0"
+        }
+      ],
+      "declared_crypto_dependencies": [
+        {
+          "name": "p256",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "req": "^0.13.2",
+          "kind": null,
+          "rename": null,
+          "optional": true,
+          "uses_default_features": true,
+          "features": [],
+          "target": null,
+          "registry": null
+        },
+        {
+          "name": "rand",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "req": "^0.8.5",
+          "kind": null,
+          "rename": null,
+          "optional": true,
+          "uses_default_features": false,
+          "features": ["std", "std_rng"],
+          "target": null,
+          "registry": null
+        }
+      ]
+    },
+    {
+      "name": "aws-sigv4",
+      "version": "1.3.7",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "features": ["default", "http0-compat", "http1", "sign-http"],
+      "direct_resolved_parents": [
+        {
+          "name": "aws-runtime",
+          "version": "1.5.17"
+        },
+        {
+          "name": "codex-aws-auth",
+          "version": "0.0.0"
+        }
+      ],
+      "declared_crypto_dependencies": [
+        {
+          "name": "crypto-bigint",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "req": "^0.5.4",
+          "kind": null,
+          "rename": null,
+          "optional": true,
+          "uses_default_features": true,
+          "features": [],
+          "target": null,
+          "registry": null
+        },
+        {
+          "name": "p256",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "req": "^0.11",
+          "kind": null,
+          "rename": null,
+          "optional": true,
+          "uses_default_features": true,
+          "features": ["ecdsa"],
+          "target": null,
+          "registry": null
+        }
+      ]
+    },
+    {
+      "name": "p256",
+      "version": "0.13.2",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "features": [
+        "alloc",
+        "arithmetic",
+        "default",
+        "digest",
+        "ecdsa",
+        "ecdsa-core",
+        "pem",
+        "pkcs8",
+        "sha2",
+        "sha256",
+        "std"
+      ],
+      "direct_resolved_parents": [
+        {
+          "name": "aws-config",
+          "version": "1.8.12"
+        }
+      ],
+      "declared_crypto_dependencies": [
+        {
+          "name": "elliptic-curve",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "req": "^0.13.1",
+          "kind": null,
+          "rename": null,
+          "optional": false,
+          "uses_default_features": false,
+          "features": ["hazmat", "sec1"],
+          "target": null,
+          "registry": null
+        }
+      ]
+    },
+    {
+      "name": "elliptic-curve",
+      "version": "0.13.8",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "features": [
+        "alloc",
+        "arithmetic",
+        "digest",
+        "ff",
+        "group",
+        "hazmat",
+        "pem",
+        "pkcs8",
+        "sec1",
+        "std"
+      ],
+      "direct_resolved_parents": [
+        {
+          "name": "ecdsa",
+          "version": "0.16.9"
+        },
+        {
+          "name": "p256",
+          "version": "0.13.2"
+        },
+        {
+          "name": "primeorder",
+          "version": "0.13.6"
+        }
+      ],
+      "declared_crypto_dependencies": [
+        {
+          "name": "crypto-bigint",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "req": "^0.5",
+          "kind": null,
+          "rename": null,
+          "optional": false,
+          "uses_default_features": false,
+          "features": ["rand_core", "generic-array", "zeroize"],
+          "target": null,
+          "registry": null
+        }
+      ]
+    },
+    {
+      "name": "crypto-bigint",
+      "version": "0.5.5",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "features": ["generic-array", "rand_core", "zeroize"],
+      "direct_resolved_parents": [
+        {
+          "name": "elliptic-curve",
+          "version": "0.13.8"
+        }
+      ],
+      "declared_crypto_dependencies": []
+    }
+  ],
+  "source_candidate_compiled": false,
+  "bigint_blocker_closed": false
+}

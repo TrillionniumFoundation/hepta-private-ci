@@ -1,0 +1,4050 @@
+{
+  "schema": "hepta-sigv4-published-vector-preservation-v1",
+  "old_version": "1.3.7",
+  "new_version": "1.6.4",
+  "criterion": "Every original regular file below a subdirectory whose suffix is not .rs",
+  "files_byte_identical": 808,
+  "vectors": [
+    {
+      "path": "aws-signing-test-suite/README.md",
+      "bytes": 333,
+      "sha256": "2a29762f40b2017808340935fe45fba4ecdaffcfb6df129502213fe35cb9e6e0"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/double-encode-path/header-canonical-request.txt",
+      "bytes": 209,
+      "sha256": "2a9633479dc468120a15342d58fab29bc21751305457998320057b96cffec4cf"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/double-encode-path/header-signed-request.txt",
+      "bytes": 330,
+      "sha256": "be27fb4b91c774b0124dd476e3863e4bceb953abe67d3ed8f692dbe7bf4131cb"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/double-encode-path/request.txt",
+      "bytes": 132,
+      "sha256": "029b02469a402961857265a4d8d812212574e44a26b31cb10fdb8437290c101f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/double-url-encode/header-canonical-request.txt",
+      "bytes": 269,
+      "sha256": "684dbb3c92a8b6b1e452e23e523c1ea941c713a4c13500bb9f3bdad1e19afaf7"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/double-url-encode/header-signed-request.txt",
+      "bytes": 376,
+      "sha256": "da11e081071253c25c27650c4f037b84419aa2605c8d03ed9ed2e6cde0b473b7"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/double-url-encode/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "a78c8ad8a97f74b1f6329e8bbac0516b83c24f749c2db333d019f4a1994e6411"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/double-url-encode/request.txt",
+      "bytes": 184,
+      "sha256": "f81063fbe99aecbda23e88445883dca9bfb4f50f76b52a8d2ba96369a0348d44"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-key-duplicate/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-key-duplicate/header-canonical-request.txt",
+      "bytes": 186,
+      "sha256": "dc7f04a3abfde8d472b0ab1a418b741b7c67174dad1551b4117b15527fbe966c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-key-duplicate/header-signature.txt",
+      "bytes": 64,
+      "sha256": "545276fe096aaefd4c849826d9b372a19cf946ad46b61a59b5a3fb15cb5120d7"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-key-duplicate/header-signed-request.txt",
+      "bytes": 337,
+      "sha256": "4406aea0dc0feca79f238bb596c4ecedcc59ce15045ec18bfbb73da12fce5b76"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-key-duplicate/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "c6242de698f8b40fc6d4a849e41e8d5662aff6c1a8f411575f522ed53c45c2c1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-key-duplicate/query-canonical-request.txt",
+      "bytes": 341,
+      "sha256": "fe8b58fb44117d598520befc07c144a5699c661a8db78f9ce4caee1655dec813"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-key-duplicate/query-signature.txt",
+      "bytes": 64,
+      "sha256": "cc9472277f1b31318850194c3bc58367ab6f683316e1bfe325a6bd6a22689173"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-key-duplicate/query-signed-request.txt",
+      "bytes": 373,
+      "sha256": "ffc3c6fe67d1957c895882e4aa359c093551dec1958b72dfa8bd9393e5922d52"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-key-duplicate/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "c8cfe3b2c043afb8227d297aa91f3404d6fe3047587e5c34fed414501fc6472c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-key-duplicate/request.txt",
+      "bytes": 96,
+      "sha256": "095932a43e7b125a053680cbcaabe392ef500d60e07e31868845a4963d703bd4"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-multiline/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-multiline/header-canonical-request.txt",
+      "bytes": 186,
+      "sha256": "e99419459a677bc11de234014be3c4e72c1ea5b454ceb58b613061f5d7a162e8"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-multiline/header-signature.txt",
+      "bytes": 64,
+      "sha256": "62d1302d505b70e20908c3bd3c22486157c39c5390d03eda56cbdeaf10fb5345"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-multiline/header-signed-request.txt",
+      "bytes": 322,
+      "sha256": "a4c5dece3b6a16e954d7c99612ccdf61d361230262f1b5ef3e6aef4631a1a753"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-multiline/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "9ffef6b6145321aa60b195a54e16d56e57d249e97867372818b6be0c43eb2fc1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-multiline/query-canonical-request.txt",
+      "bytes": 341,
+      "sha256": "0e73c10e35324b4d215da4bb70be61d13a3d30d569be4ed6e8fd8948965341ca"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-multiline/query-signature.txt",
+      "bytes": 64,
+      "sha256": "fafffe886cede387c2218fbc79fb494046fc9c4731964d501d5561998f9a73ae"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-multiline/query-signed-request.txt",
+      "bytes": 358,
+      "sha256": "30bf1f9fcb60426d8f456ff00f05c8c79861300fb508986d489457516b8c8a60"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-multiline/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "d44b8229d6637fbb4708927f6e2ce232d19f0dfb98d68469400f49fa501c327f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-multiline/request.txt",
+      "bytes": 81,
+      "sha256": "87bc77b20a791d2a411b1f899ccca83ce4e53ab813418ce94833fdc9eeca2665"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-order/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-order/header-canonical-request.txt",
+      "bytes": 193,
+      "sha256": "31ce73cd3f3d9f66977ad3dd957dc47af14df92fcd8509f59b349e9137c58b86"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-order/header-signature.txt",
+      "bytes": 64,
+      "sha256": "fa6cdba6554ef7ad9e62f2136296eb81cc3765b24260f3f5a9713a53f0a40dcc"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-order/header-signed-request.txt",
+      "bytes": 355,
+      "sha256": "d10563b8cf331a03cf3097e81b50046087ce147175fcadd03d6b3f48e5da2222"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-order/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "497b265065488d34e4c516cca35dced5b02d611f2a8cf59d241f7f35848f449f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-order/query-canonical-request.txt",
+      "bytes": 348,
+      "sha256": "f4d3f13084ba7664111670ce26458291d3e0c620acd9384f8cd6b60d8e83423e"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-order/query-signature.txt",
+      "bytes": 64,
+      "sha256": "5cae6ab245a6e2189ea94abc0fbedc09747f527676520a9a24b8c27c55bd7e14"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-order/query-signed-request.txt",
+      "bytes": 391,
+      "sha256": "09109ed65041c16d73670bd2c9b1b2f9e80814a649ee85b829ced896703442eb"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-order/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "cb34b0cf29748fac2bb7a646ca4ef76d23e01b44cc168dce1943f93e63a8e374"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-order/request.txt",
+      "bytes": 114,
+      "sha256": "730ad02079fde189a3bad34d54ae2ac258cd81d27e42eaaa4cd068c9b8e8a938"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-trim/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-trim/header-canonical-request.txt",
+      "bytes": 202,
+      "sha256": "a726db9b0df21c14f559d0a978e563112acb1b9e05476f0a6a1c7d68f28605c7"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-trim/header-signature.txt",
+      "bytes": 64,
+      "sha256": "9d7b902a2308b5d361e2caaa3306af9a28791d553d73c44b9c8cb72fe3b584b2"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-trim/header-signed-request.txt",
+      "bytes": 337,
+      "sha256": "5a08e8c4caa69eb8521e06ebe0eaa62d4d93ecaa78fd13b83dc8eadede437784"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-trim/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "0108d35bd09f7f117e2101d06677ebccd51df2015fdd7284edc8ca49afab994b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-trim/query-canonical-request.txt",
+      "bytes": 370,
+      "sha256": "84c9e353b6161b689210977f93b93e6a7182f9ecb2ceae8af8c3d86b080a88ae"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-trim/query-signature.txt",
+      "bytes": 64,
+      "sha256": "480a30717b56d36e1bf3d2df8aeff3e69b6dc535d8bf446d5de5990bb2da6185"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-trim/query-signed-request.txt",
+      "bytes": 375,
+      "sha256": "0a39919594fa76f295ff432a76e85d9bbe41e73a10d62221c2db2ef03b866826"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-trim/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "369f2a27f507c34bfdb5d9da87f4e00da2cd9ba87b5d87e5a3728c9ca2abe72a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-header-value-trim/request.txt",
+      "bytes": 85,
+      "sha256": "3ca569dba28e15df4200ca1619c6909645ad0259f6121827e099c46c66e9dc87"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-normalized/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-normalized/header-canonical-request.txt",
+      "bytes": 143,
+      "sha256": "bb579772317eb040ac9ed261061d46c1f17a8133879d6129b6e1c25292927e63"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-normalized/header-signature.txt",
+      "bytes": 64,
+      "sha256": "fa5655a3a49cffd6758983044fb6c6a34dfaf6dc74c3b71109e41ba265b57352"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-normalized/header-signed-request.txt",
+      "bytes": 282,
+      "sha256": "38938f71bd4a0fd08c62086db485c20bc65800c241338ff749d8e47357ad4184"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-normalized/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "9fea9fcbf5a67a7393fb14fd3c1b6e80d4f55dbbddad4302bb6905c0decd5570"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-normalized/query-canonical-request.txt",
+      "bytes": 285,
+      "sha256": "bb7705b4aa3cb8e8f5e1e0b3d4c0b64030797a313c8ceee43e33117cc43eadc5"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-normalized/query-signature.txt",
+      "bytes": 64,
+      "sha256": "28236966f3b538e7e438b9f6f072c6df3d3f45c42627880286a5213c38e9b1b9"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-normalized/query-signed-request.txt",
+      "bytes": 316,
+      "sha256": "02fa8ae4c8657f4e7a3105ef931a0c8e01a0910d6179384794c9a216b9fc2efa"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-normalized/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "6f721dcd17fa2df7a0a1d55dcc13dee9e3f87ceaa60d70fe65185c1e05e1d579"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-normalized/request.txt",
+      "bytes": 52,
+      "sha256": "d8b74911b99b5135181e4b70fca777aa214067c703c6a2af5cbd34b7e6b0064a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-relative-normalized/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-relative-normalized/header-canonical-request.txt",
+      "bytes": 143,
+      "sha256": "bb579772317eb040ac9ed261061d46c1f17a8133879d6129b6e1c25292927e63"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-relative-normalized/header-signature.txt",
+      "bytes": 64,
+      "sha256": "fa5655a3a49cffd6758983044fb6c6a34dfaf6dc74c3b71109e41ba265b57352"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-relative-normalized/header-signed-request.txt",
+      "bytes": 295,
+      "sha256": "d0b523fadf59e7f626561011838725bbc433b9a19d1605e72706e1353e97ab6d"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-relative-normalized/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "9fea9fcbf5a67a7393fb14fd3c1b6e80d4f55dbbddad4302bb6905c0decd5570"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-relative-normalized/query-canonical-request.txt",
+      "bytes": 285,
+      "sha256": "bb7705b4aa3cb8e8f5e1e0b3d4c0b64030797a313c8ceee43e33117cc43eadc5"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-relative-normalized/query-signature.txt",
+      "bytes": 64,
+      "sha256": "28236966f3b538e7e438b9f6f072c6df3d3f45c42627880286a5213c38e9b1b9"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-relative-normalized/query-signed-request.txt",
+      "bytes": 329,
+      "sha256": "39a2e367b7b79ec1bfa07179376f6d2a202f2b9d1eab6b8320dc8e9b625c97f0"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-relative-normalized/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "6f721dcd17fa2df7a0a1d55dcc13dee9e3f87ceaa60d70fe65185c1e05e1d579"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-relative-normalized/request.txt",
+      "bytes": 65,
+      "sha256": "a9c41272e0cf1735ba02007c685bd03bb7ee7f15bc28a3a3ff60dc4b7a9ed460"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-relative-unnormalized/context.json",
+      "bytes": 319,
+      "sha256": "d47c4b71842e953fec10ade654596793c44b0328eabf509b901d224894063d3a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-relative-unnormalized/header-canonical-request.txt",
+      "bytes": 166,
+      "sha256": "76115030c0f3ff06c20fdff5ceb6d5e0b835a1743e00b94fea7c7f381269437b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-relative-unnormalized/header-signature.txt",
+      "bytes": 64,
+      "sha256": "ccfef4264df2330a4f78d5c535097cd393e780f62e6ef01828b91d96f6958337"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-relative-unnormalized/header-signed-request.txt",
+      "bytes": 295,
+      "sha256": "44b620d97df6efdbb147122624cd5a4eced7f59ac9826286579699a901a4d927"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-relative-unnormalized/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "c69bf2620cd42e5428cacf4d0bd1e7d0dd15a7a3805cd12818718e2d3776c3c0"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-relative-unnormalized/query-canonical-request.txt",
+      "bytes": 308,
+      "sha256": "13b7758115ec070fe36a7ae9d754154ad73f6ee9a5eac022494857d0e7effc18"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-relative-unnormalized/query-signature.txt",
+      "bytes": 64,
+      "sha256": "f0170e389340e4bf4dfed401e072b73357125508538499ce70bc7a6779a231ef"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-relative-unnormalized/query-signed-request.txt",
+      "bytes": 329,
+      "sha256": "286e0f1edc8f98d7c0a2491747413664fbe31198baf3388bdac2e60900560e35"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-relative-unnormalized/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "506a79ec6add8ace47c36161af0ea69d669c4e355ab32ca58d78b98d18e43581"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-relative-unnormalized/request.txt",
+      "bytes": 65,
+      "sha256": "a9c41272e0cf1735ba02007c685bd03bb7ee7f15bc28a3a3ff60dc4b7a9ed460"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-unnormalized/context.json",
+      "bytes": 319,
+      "sha256": "d47c4b71842e953fec10ade654596793c44b0328eabf509b901d224894063d3a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-unnormalized/header-canonical-request.txt",
+      "bytes": 153,
+      "sha256": "0511f456aa502b456d135fcb9d749374a55228f9dbeedda1eacf659e05b0615b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-unnormalized/header-signature.txt",
+      "bytes": 64,
+      "sha256": "3c3963fd637c696052ac654a4c777e413617d884c5959c81f782c47792d50685"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-unnormalized/header-signed-request.txt",
+      "bytes": 282,
+      "sha256": "02da11a6b868076bd8f8c8c15ba185027174604abecdaa581fd5a6c07258a5af"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-unnormalized/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "cd899138fd942e3b7253c894d816a1710f916e7082430a59f5b5f024b41c2662"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-unnormalized/query-canonical-request.txt",
+      "bytes": 295,
+      "sha256": "6e02e2dba21d6f269bae339b86ff27a4b7bbc9d88c482abccbfbf8a49d602482"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-unnormalized/query-signature.txt",
+      "bytes": 64,
+      "sha256": "7b38bfddd373678c169fd81ebacc5863d8c03562c0d36c6fba90eedd1c98b9d0"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-unnormalized/query-signed-request.txt",
+      "bytes": 316,
+      "sha256": "34595510e9cbeb887a4926ec713e1ab2d3e80d06ad548644045c800c043fc972"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-unnormalized/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "6ccd0c1dadd30f0e45663982d387439a042c97a88a55397c79f960a0794b607d"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-relative-unnormalized/request.txt",
+      "bytes": 52,
+      "sha256": "d8b74911b99b5135181e4b70fca777aa214067c703c6a2af5cbd34b7e6b0064a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-dot-slash-normalized/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-dot-slash-normalized/header-canonical-request.txt",
+      "bytes": 143,
+      "sha256": "bb579772317eb040ac9ed261061d46c1f17a8133879d6129b6e1c25292927e63"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-dot-slash-normalized/header-signature.txt",
+      "bytes": 64,
+      "sha256": "fa5655a3a49cffd6758983044fb6c6a34dfaf6dc74c3b71109e41ba265b57352"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-dot-slash-normalized/header-signed-request.txt",
+      "bytes": 274,
+      "sha256": "7442df976ec3e9f28087c762381df49eea7ae84d629c9525a0b51e8cf92d1964"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-dot-slash-normalized/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "9fea9fcbf5a67a7393fb14fd3c1b6e80d4f55dbbddad4302bb6905c0decd5570"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-dot-slash-normalized/query-canonical-request.txt",
+      "bytes": 285,
+      "sha256": "bb7705b4aa3cb8e8f5e1e0b3d4c0b64030797a313c8ceee43e33117cc43eadc5"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-dot-slash-normalized/query-signature.txt",
+      "bytes": 64,
+      "sha256": "28236966f3b538e7e438b9f6f072c6df3d3f45c42627880286a5213c38e9b1b9"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-dot-slash-normalized/query-signed-request.txt",
+      "bytes": 308,
+      "sha256": "7e0a6f1bec95b2f6cc127efb810a70a71be7bd78847268b159a14739478a0209"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-dot-slash-normalized/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "6f721dcd17fa2df7a0a1d55dcc13dee9e3f87ceaa60d70fe65185c1e05e1d579"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-dot-slash-normalized/request.txt",
+      "bytes": 44,
+      "sha256": "4a64c13af5ff3fbb3500c5345cb4449992ce1ec84bf499b118d2dc7a83c51aaf"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-dot-slash-unnormalized/context.json",
+      "bytes": 319,
+      "sha256": "d47c4b71842e953fec10ade654596793c44b0328eabf509b901d224894063d3a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-dot-slash-unnormalized/header-canonical-request.txt",
+      "bytes": 145,
+      "sha256": "d67825e2268bd77a97c7688b8d72c31a3c1855b309808505ba0a9747d2465aa7"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-dot-slash-unnormalized/header-signature.txt",
+      "bytes": 64,
+      "sha256": "9633cd53ba3040f3ce2601d621f32c0dec6acb622f621bb879fb7253778f2bd0"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-dot-slash-unnormalized/header-signed-request.txt",
+      "bytes": 274,
+      "sha256": "23982d3b6240b311e5fdc09a238ee1832af89973f9d287f1e957ffce609e8c1b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-dot-slash-unnormalized/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "680e2a337e4a855b51b38c0ab36a65801c328447dea3aae5a34cdccba1e9ad3c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-dot-slash-unnormalized/query-canonical-request.txt",
+      "bytes": 287,
+      "sha256": "21b2da17873f30c1a7410efdc271738b318ccc2c9c6fbe1289fc242aeb1a8ae1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-dot-slash-unnormalized/query-signature.txt",
+      "bytes": 64,
+      "sha256": "fe6ebc9be5f7a1f2be934d604297a587f68688912e4cf6ab36fe0ac491bc700c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-dot-slash-unnormalized/query-signed-request.txt",
+      "bytes": 308,
+      "sha256": "41c5c609a8e3bb128a63e7e90314801d21f4d2794a49b164acc05fcfaa2b936d"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-dot-slash-unnormalized/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "c30df0a76085f638d31bdff5e5d8b25a57f9fe4cf4a16bece4d33830c4754581"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-dot-slash-unnormalized/request.txt",
+      "bytes": 44,
+      "sha256": "4a64c13af5ff3fbb3500c5345cb4449992ce1ec84bf499b118d2dc7a83c51aaf"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-normalized/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-normalized/header-canonical-request.txt",
+      "bytes": 143,
+      "sha256": "bb579772317eb040ac9ed261061d46c1f17a8133879d6129b6e1c25292927e63"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-normalized/header-signature.txt",
+      "bytes": 64,
+      "sha256": "fa5655a3a49cffd6758983044fb6c6a34dfaf6dc74c3b71109e41ba265b57352"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-normalized/header-signed-request.txt",
+      "bytes": 273,
+      "sha256": "6452ad45e6cb929a9e90b295277850815d3e3b0cb0f34782a117956ef4721cbf"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-normalized/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "9fea9fcbf5a67a7393fb14fd3c1b6e80d4f55dbbddad4302bb6905c0decd5570"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-normalized/query-canonical-request.txt",
+      "bytes": 285,
+      "sha256": "bb7705b4aa3cb8e8f5e1e0b3d4c0b64030797a313c8ceee43e33117cc43eadc5"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-normalized/query-signature.txt",
+      "bytes": 64,
+      "sha256": "28236966f3b538e7e438b9f6f072c6df3d3f45c42627880286a5213c38e9b1b9"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-normalized/query-signed-request.txt",
+      "bytes": 307,
+      "sha256": "56877d0197170bfeb0cfde155e1794cacbc7435d431c1209264f4933fd4c5aec"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-normalized/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "6f721dcd17fa2df7a0a1d55dcc13dee9e3f87ceaa60d70fe65185c1e05e1d579"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-normalized/request.txt",
+      "bytes": 43,
+      "sha256": "5f51a08c2f9218a0c8b630c64a534bb6405a85b038fee4c6ccfc334a36129082"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-pointless-dot-normalized/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-pointless-dot-normalized/header-canonical-request.txt",
+      "bytes": 150,
+      "sha256": "214d50c111a8edc4819da6a636336472c916b5240f51e9a51b5c3305180cf702"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-pointless-dot-normalized/header-signature.txt",
+      "bytes": 64,
+      "sha256": "e86c2b55d0750e90af65fd314cc3b088cfcb7b843dd3439156b7ee9892c36871"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-pointless-dot-normalized/header-signed-request.txt",
+      "bytes": 281,
+      "sha256": "c9421ece8f3ae1cd45122ef419e998d20246d52710e3b3c7c8f8883894bc0ff2"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-pointless-dot-normalized/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "2835f7fac92431324cd0c5fa589554c49a3766ad30ab5bcecb865ebace06d0b2"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-pointless-dot-normalized/query-canonical-request.txt",
+      "bytes": 292,
+      "sha256": "88dd73bb06de69cb042dbb82cadbb4fce1a2623615d94520c271614abf94e738"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-pointless-dot-normalized/query-signature.txt",
+      "bytes": 64,
+      "sha256": "3ff275f86ed62f91405991dc18b5470becae950677e96d8070575ccd24a78a18"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-pointless-dot-normalized/query-signed-request.txt",
+      "bytes": 315,
+      "sha256": "c4bb330f714b984f51152d2f4ce60e54b6337c46372a2bf2d2f6e9901f221dd3"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-pointless-dot-normalized/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "a696f7f488972872bd387a470ea99624cac688055e1642d40224017ac4e485df"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-pointless-dot-normalized/request.txt",
+      "bytes": 51,
+      "sha256": "1be40007eac2398e16756d64c47eab8c7e917683b4a1ff2e34fd6e7ad4933730"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-pointless-dot-unnormalized/context.json",
+      "bytes": 319,
+      "sha256": "d47c4b71842e953fec10ade654596793c44b0328eabf509b901d224894063d3a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-pointless-dot-unnormalized/header-canonical-request.txt",
+      "bytes": 152,
+      "sha256": "73895e0e829507e28e39fd24669aedc2434a8e179e547e3c075b42921f952cdb"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-pointless-dot-unnormalized/header-signature.txt",
+      "bytes": 64,
+      "sha256": "049a05814a030f3ce27a515f2102052abf266e0e9ad69c9b237fb8d37c18d5aa"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-pointless-dot-unnormalized/header-signed-request.txt",
+      "bytes": 281,
+      "sha256": "3259e0afff2b60561a3f2a5e1c27f56bfdf7bb8617c34d5e8061ebd8e6f437ab"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-pointless-dot-unnormalized/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "210515bc569b5dc6a2b715748b3708ac5e0ad5520e506fb8dccd02aa6ea802db"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-pointless-dot-unnormalized/query-canonical-request.txt",
+      "bytes": 294,
+      "sha256": "cb23444939471187ac1f0fb25d437337af0d5f48b5ae0ede5baa3727c8c6af92"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-pointless-dot-unnormalized/query-signature.txt",
+      "bytes": 64,
+      "sha256": "74bc6cf8f26e1bbc77d4d124ac296293ad9a1fcabd0f72afe51234df24ee7dd3"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-pointless-dot-unnormalized/query-signed-request.txt",
+      "bytes": 315,
+      "sha256": "61b45bbff4ae755381a1116227d224145297ec66ddafb85b6918ed8619c6eca9"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-pointless-dot-unnormalized/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "b96c162620089d755852a60fa95a4c9532e28ab392e8d65808b0223ba6be043d"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-pointless-dot-unnormalized/request.txt",
+      "bytes": 51,
+      "sha256": "1be40007eac2398e16756d64c47eab8c7e917683b4a1ff2e34fd6e7ad4933730"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-unnormalized/context.json",
+      "bytes": 319,
+      "sha256": "d47c4b71842e953fec10ade654596793c44b0328eabf509b901d224894063d3a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-unnormalized/header-canonical-request.txt",
+      "bytes": 144,
+      "sha256": "80cb39203d058af815de2b79250ff56e1b73eb9b4718c86556cdc6f150c5d209"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-unnormalized/header-signature.txt",
+      "bytes": 64,
+      "sha256": "b11f99113ae4d4f66757b8c0ec5c68d4daa5b3b68727dc741aa503f365f9b937"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-unnormalized/header-signed-request.txt",
+      "bytes": 273,
+      "sha256": "cb8c743fd53521aa97b6c08c5008b7f7d1165ec2d8ff467fa4427fed8d6f46bc"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-unnormalized/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "378c59e820abfd2e511115c263b88baf23959fb81b86ebbc9607b872192941be"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-unnormalized/query-canonical-request.txt",
+      "bytes": 286,
+      "sha256": "e10a01494cafa1f2207c4de80c69b7a36d6f2d282aa63ee64a5ca50e175cf730"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-unnormalized/query-signature.txt",
+      "bytes": 64,
+      "sha256": "a726a64654ad627e43894426bdef00bc471d4177774ec85771698fba4db35246"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-unnormalized/query-signed-request.txt",
+      "bytes": 307,
+      "sha256": "6de01bf2cba1d0508c66110bce7e40ffc2f440f9ded9fbbf12b381d860613d44"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-unnormalized/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "42ebd589a3b03e1a94f1382fe50aaf56e811df115c8df73d6a7572ac91b54f60"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slash-unnormalized/request.txt",
+      "bytes": 43,
+      "sha256": "5f51a08c2f9218a0c8b630c64a534bb6405a85b038fee4c6ccfc334a36129082"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slashes-normalized/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slashes-normalized/header-canonical-request.txt",
+      "bytes": 151,
+      "sha256": "cb96b4ac96d501f7c5c15bc6d67b3035061cfced4af6585ad927f7e6c985c015"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slashes-normalized/header-signature.txt",
+      "bytes": 64,
+      "sha256": "eb7125f7be4aeded024b87b4ba14b845d28ae16b8a94c68e5644193e5cdf4c2d"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slashes-normalized/header-signed-request.txt",
+      "bytes": 282,
+      "sha256": "7375a659529cbfcf79a9fb3d33f7816ed93f9c57733b1403a54b40bfc5dcddda"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slashes-normalized/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "27bed0e57aed8d64d0448e73407daf8909ee0e56ca95b2f8973a1c94fff1b9f2"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slashes-normalized/query-canonical-request.txt",
+      "bytes": 293,
+      "sha256": "1a3e3fe19998c62136ed2ff9c8531973a46d4a21b336f58e8fcad185ec64d642"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slashes-normalized/query-signature.txt",
+      "bytes": 64,
+      "sha256": "98f5e10fb30f0ca7ce42f2e3ed747412351557aec7d0a558096c46fa8a40317a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slashes-normalized/query-signed-request.txt",
+      "bytes": 316,
+      "sha256": "87bde2417c7de43dee8618102a6c97b61e112410e9921f9bb8aaaa12cd925358"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slashes-normalized/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "1e1000c200085568e8bee2dda86c445d67838310b9c68b7d6ad776d278f7bb8d"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slashes-normalized/request.txt",
+      "bytes": 52,
+      "sha256": "24d96147f9668b53ab7a628a6d402b0780b458ba32a03281e34ea9ce99216e03"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slashes-unnormalized/context.json",
+      "bytes": 319,
+      "sha256": "d47c4b71842e953fec10ade654596793c44b0328eabf509b901d224894063d3a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slashes-unnormalized/header-canonical-request.txt",
+      "bytes": 153,
+      "sha256": "528ec3105ee1f34ab014bb0a1a45da0ed2742a4fea3555149e5b4d5d201eb240"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slashes-unnormalized/header-signature.txt",
+      "bytes": 64,
+      "sha256": "fb16ec9fc298aaf4ca2de14e0466d9a314b18fffc8451382233327d11458d119"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slashes-unnormalized/header-signed-request.txt",
+      "bytes": 282,
+      "sha256": "dc2613694c5336ce8f8d2fcb40a8f9eecab3a600e8ceafb51f761a5da9dfc7bd"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slashes-unnormalized/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "8aa5299f292a07d98e63b8137d7329bd7ae9967da79b4938ad9edb4dcb1d7d25"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slashes-unnormalized/query-canonical-request.txt",
+      "bytes": 295,
+      "sha256": "82241114f9a6320f054333c890952474aa7a0069d28a4326c3a8d95bbecc69ee"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slashes-unnormalized/query-signature.txt",
+      "bytes": 64,
+      "sha256": "0295e1c765fbf56eb3c8379d3b448ce8f65ae07b51183fd055627a7c346f77e4"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slashes-unnormalized/query-signed-request.txt",
+      "bytes": 316,
+      "sha256": "e335e509139549eed5544bba094396545b53bdf43057d92a727bac3153318c8c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slashes-unnormalized/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "49c2bf22377d7a6266a260723c9cbd127596607e258437ee444f66d67658e9f4"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-slashes-unnormalized/request.txt",
+      "bytes": 52,
+      "sha256": "24d96147f9668b53ab7a628a6d402b0780b458ba32a03281e34ea9ce99216e03"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-space-normalized/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-space-normalized/header-canonical-request.txt",
+      "bytes": 159,
+      "sha256": "63ee75631ed7234ae61b5f736dfc7754cdccfedbff4b5128a915706ee9390d86"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-space-normalized/header-signature.txt",
+      "bytes": 64,
+      "sha256": "10c75c8bea435e45866087e202d52990ca7676d92c2bff73a123ed5179ab36f0"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-space-normalized/header-signed-request.txt",
+      "bytes": 286,
+      "sha256": "a5fb43dc86f84471e2e212f37ed9407ac270e90386ec2e300d091059a12ec48f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-space-normalized/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "2e8d72a7e2c454df4e75a46801ccd0a35975a7b46424bda1b835755715852e69"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-space-normalized/query-canonical-request.txt",
+      "bytes": 301,
+      "sha256": "cc3dd817bd405e51225826ec4934a96d065d6af5b6b0163c7a5abbd26a84519e"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-space-normalized/query-signature.txt",
+      "bytes": 64,
+      "sha256": "bd414c6f181b5812e7f030edf2e224889019dee44490fe9ef795e22bc17b892c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-space-normalized/query-signed-request.txt",
+      "bytes": 320,
+      "sha256": "7788fdba20a423e9aed55a2db93f48244a19a731ab73cbb29bd270e6a8c0b1dd"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-space-normalized/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "463b7ec9ea175b270fbe27dee70ee0cfdf50c6248aae36e1a9a84e94ede37e1b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-space-normalized/request.txt",
+      "bytes": 58,
+      "sha256": "5252901bd48ce3922092976b5d06eeeab6e406561798f31d8c1382a22f446eb2"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-space-unnormalized/context.json",
+      "bytes": 319,
+      "sha256": "d47c4b71842e953fec10ade654596793c44b0328eabf509b901d224894063d3a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-space-unnormalized/header-canonical-request.txt",
+      "bytes": 159,
+      "sha256": "63ee75631ed7234ae61b5f736dfc7754cdccfedbff4b5128a915706ee9390d86"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-space-unnormalized/header-signature.txt",
+      "bytes": 64,
+      "sha256": "10c75c8bea435e45866087e202d52990ca7676d92c2bff73a123ed5179ab36f0"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-space-unnormalized/header-signed-request.txt",
+      "bytes": 286,
+      "sha256": "a5fb43dc86f84471e2e212f37ed9407ac270e90386ec2e300d091059a12ec48f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-space-unnormalized/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "2e8d72a7e2c454df4e75a46801ccd0a35975a7b46424bda1b835755715852e69"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-space-unnormalized/query-canonical-request.txt",
+      "bytes": 301,
+      "sha256": "cc3dd817bd405e51225826ec4934a96d065d6af5b6b0163c7a5abbd26a84519e"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-space-unnormalized/query-signature.txt",
+      "bytes": 64,
+      "sha256": "bd414c6f181b5812e7f030edf2e224889019dee44490fe9ef795e22bc17b892c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-space-unnormalized/query-signed-request.txt",
+      "bytes": 320,
+      "sha256": "7788fdba20a423e9aed55a2db93f48244a19a731ab73cbb29bd270e6a8c0b1dd"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-space-unnormalized/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "463b7ec9ea175b270fbe27dee70ee0cfdf50c6248aae36e1a9a84e94ede37e1b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-space-unnormalized/request.txt",
+      "bytes": 56,
+      "sha256": "0a2901d646dd18800fa028eaddb79d7532b9a4fddcaf84724fec0377b34fbbcf"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-unreserved/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-unreserved/header-canonical-request.txt",
+      "bytes": 209,
+      "sha256": "6a968768eefaa713e2a6b16b589a8ea192661f098f37349f4e2c0082757446f9"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-unreserved/header-signature.txt",
+      "bytes": 64,
+      "sha256": "4a6b55068be48fba2ace3e96ec645747baf73ee362b6b86ae84f4479c8459904"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-unreserved/header-signed-request.txt",
+      "bytes": 338,
+      "sha256": "6243f9523c2d0b87ef238210287c393f68ef9c210822544181ae1daefd4c229a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-unreserved/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "5aa8c0aeac75b71539d7554e880d53c6ea412ddc36543183f1672e7ad8a14dbe"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-unreserved/query-canonical-request.txt",
+      "bytes": 351,
+      "sha256": "3134f2fbc6ef58f34b74b01643a159bfccbc121ea4288a4b75e65bc805d08219"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-unreserved/query-signature.txt",
+      "bytes": 64,
+      "sha256": "784b92565a5e31691e74a82c4ca90e2c37fcb07d0453df6545021fdaf795cedf"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-unreserved/query-signed-request.txt",
+      "bytes": 372,
+      "sha256": "2f6519fcf33fb3b815b696509442552f5a7da55c4d61e8b355b351d9f0eaaeba"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-unreserved/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "f2086708c733c39cbf67523b65b84eb2226923ef967db28f946f2bf61b8eaff7"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-unreserved/request.txt",
+      "bytes": 108,
+      "sha256": "ca8959b237a7d49f99a4f1b00b2332a233bd177961fb408c4cbcf9c374992899"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-utf8/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-utf8/header-canonical-request.txt",
+      "bytes": 152,
+      "sha256": "2a0a97d02205e45ce2e994789806b19270cfbbb0921b278ccf58f5249ac42102"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-utf8/header-signature.txt",
+      "bytes": 64,
+      "sha256": "27ff33173706fc8945d9b21a3b7a53754cafdb752d216bdddbe6520037668439"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-utf8/header-signed-request.txt",
+      "bytes": 275,
+      "sha256": "5929bf2a313cd65a4d286073a9a0ae01ef8bce8a9b2163e087bf66791d5e95e2"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-utf8/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "2530860ffa3c645b610c1b10bb7b511d59c274f6eee7eee2f92c70b2887cbd2d"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-utf8/query-canonical-request.txt",
+      "bytes": 294,
+      "sha256": "d8f78e05d0d9bb1c16ae1e60ed405de76cfb8fdcd3e414ffe65fad563b996d66"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-utf8/query-signature.txt",
+      "bytes": 64,
+      "sha256": "6698b63a8fc339d6941de1a1180e2b91a7b43cbca3bb69e37f820fb37de21213"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-utf8/query-signed-request.txt",
+      "bytes": 309,
+      "sha256": "684824094dec279e08502a2bfcfec5532f4aa8eaf57d1a2063a2abf3c06a0adc"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-utf8/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "703c9fe7e881253d9decd52592dc2615667ac7c465f02f458342bf60e247a8dc"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-utf8/request.txt",
+      "bytes": 45,
+      "sha256": "b4d266739a1a12c2d22056ddb5010a843c828d847f58ac9ab26696780bc1df8a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla/header-canonical-request.txt",
+      "bytes": 143,
+      "sha256": "bb579772317eb040ac9ed261061d46c1f17a8133879d6129b6e1c25292927e63"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla/header-signature.txt",
+      "bytes": 64,
+      "sha256": "fa5655a3a49cffd6758983044fb6c6a34dfaf6dc74c3b71109e41ba265b57352"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla/header-signed-request.txt",
+      "bytes": 272,
+      "sha256": "f94281f97a281169827bbd016b1454eec132260d77c505405c558b7d21a177bc"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "9fea9fcbf5a67a7393fb14fd3c1b6e80d4f55dbbddad4302bb6905c0decd5570"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla/query-canonical-request.txt",
+      "bytes": 285,
+      "sha256": "bb7705b4aa3cb8e8f5e1e0b3d4c0b64030797a313c8ceee43e33117cc43eadc5"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla/query-signature.txt",
+      "bytes": 64,
+      "sha256": "28236966f3b538e7e438b9f6f072c6df3d3f45c42627880286a5213c38e9b1b9"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla/query-signed-request.txt",
+      "bytes": 306,
+      "sha256": "c852a49d2c297176cdbcc19bb38ada988ed6f76dd5bbef217b7c37215fa0b4e5"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "6f721dcd17fa2df7a0a1d55dcc13dee9e3f87ceaa60d70fe65185c1e05e1d579"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla/request.txt",
+      "bytes": 42,
+      "sha256": "9b87a0709187548ccac04f6d06a8cba1fc85273003efcda670e9f3ca1ad63e4f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-empty-query-key/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-empty-query-key/header-canonical-request.txt",
+      "bytes": 156,
+      "sha256": "1e24db194ed7d0eec2de28d7369675a243488e08526e8c1c73571282f7c517ab"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-empty-query-key/header-signature.txt",
+      "bytes": 64,
+      "sha256": "0788f8d113c5e08451d25a14c00046f63f2791b96d125bb782cb859da38b8ca9"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-empty-query-key/header-signed-request.txt",
+      "bytes": 286,
+      "sha256": "d7100430050edb60211d3f42905ee8616ca54e0539657afb62a67a869e66ece3"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-empty-query-key/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "793f582392d7ebc0e329de45693ab2679c4b036a1637fd09816030f4619a235a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-empty-query-key/query-canonical-request.txt",
+      "bytes": 299,
+      "sha256": "74828b608f939673ed5a839190452a943b0178760f258da766209b21f8ca3f86"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-empty-query-key/query-signature.txt",
+      "bytes": 64,
+      "sha256": "1bf9af6df318b3053ab463858336f50af8e08f5db23395024e6e4fea66928523"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-empty-query-key/query-signed-request.txt",
+      "bytes": 320,
+      "sha256": "bcc7e7bbb5d16ec9f73266517aeb53ff6e69b26e97ae437291182c4aace8a8ce"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-empty-query-key/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "4c38cbba63aaa109b952fdab0f87cb26dac4226d507eb4c842393a5357767fdb"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-empty-query-key/request.txt",
+      "bytes": 56,
+      "sha256": "4e4568a15255171dd51f24fc1a60dfe29f293bcb32c0ed3f008273c4d1cb1e2d"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query/header-canonical-request.txt",
+      "bytes": 143,
+      "sha256": "bb579772317eb040ac9ed261061d46c1f17a8133879d6129b6e1c25292927e63"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query/header-signature.txt",
+      "bytes": 64,
+      "sha256": "fa5655a3a49cffd6758983044fb6c6a34dfaf6dc74c3b71109e41ba265b57352"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query/header-signed-request.txt",
+      "bytes": 272,
+      "sha256": "f94281f97a281169827bbd016b1454eec132260d77c505405c558b7d21a177bc"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "9fea9fcbf5a67a7393fb14fd3c1b6e80d4f55dbbddad4302bb6905c0decd5570"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query/query-canonical-request.txt",
+      "bytes": 285,
+      "sha256": "bb7705b4aa3cb8e8f5e1e0b3d4c0b64030797a313c8ceee43e33117cc43eadc5"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query/query-signature.txt",
+      "bytes": 64,
+      "sha256": "28236966f3b538e7e438b9f6f072c6df3d3f45c42627880286a5213c38e9b1b9"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query/query-signed-request.txt",
+      "bytes": 306,
+      "sha256": "c852a49d2c297176cdbcc19bb38ada988ed6f76dd5bbef217b7c37215fa0b4e5"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "6f721dcd17fa2df7a0a1d55dcc13dee9e3f87ceaa60d70fe65185c1e05e1d579"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query/request.txt",
+      "bytes": 42,
+      "sha256": "9b87a0709187548ccac04f6d06a8cba1fc85273003efcda670e9f3ca1ad63e4f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-order-encoded/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-order-encoded/header-canonical-request.txt",
+      "bytes": 187,
+      "sha256": "868294f5c38bd141c4972a373a76654f1418a8e4fc18b2e7903ae45e8ae0ec71"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-order-encoded/header-signature.txt",
+      "bytes": 64,
+      "sha256": "8d5841cb6fef62be2bd14d4b9d3caf678d51b14d5789563b7c5ae5ada969b0ec"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-order-encoded/header-signed-request.txt",
+      "bytes": 317,
+      "sha256": "6d9e91ce75b82e798cec41b012068e71e357a34b5b0863c2c5647036690bba8e"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-order-encoded/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "207cb01b0add3cb9e2b353653a8522066edb10f06162355b2ad872099d8203bf"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-order-encoded/query-canonical-request.txt",
+      "bytes": 330,
+      "sha256": "9808d6cdc8245c74e705c68350fc6a62b91778cdd613890e5d177998c02c6f53"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-order-encoded/query-signature.txt",
+      "bytes": 64,
+      "sha256": "50c2476dfb3b5d0098837daef487da1be6bee6b53d748941e2af3ae41c8270e6"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-order-encoded/query-signed-request.txt",
+      "bytes": 351,
+      "sha256": "a3bb51aa5a45b74adba59e14556524048b3920cf1dcd088152e5345d2136e498"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-order-encoded/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "82df2f030798649f902f809c79a9afa1d35a1cb36640fec208e15840cb1ddba0"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-order-encoded/request.txt",
+      "bytes": 87,
+      "sha256": "9cc53deecccec5e3cf1b9ccfd0f56fee48ca024a7d89e55cb6e72d963fc9cc1a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-order-key-case/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-order-key-case/header-canonical-request.txt",
+      "bytes": 170,
+      "sha256": "816cd5b414d056048ba4f7c5386d6e0533120fb1fcfa93762cf0fc39e2cf19e0"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-order-key-case/header-signature.txt",
+      "bytes": 64,
+      "sha256": "20158c757b0f60f309dd1a91a863403fb30504ab919e8a2eb865992e8fb8b83b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-order-key-case/header-signed-request.txt",
+      "bytes": 300,
+      "sha256": "9704694d66dfda9cce8a4dc5c45a73bcbd4373ba836b11773077e986f8f5c92b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-order-key-case/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "003cbc3b1170b64f9cb91b6f5d8bc34c8880f68aa7aaccda1c8c89784685d75b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-order-key-case/query-canonical-request.txt",
+      "bytes": 313,
+      "sha256": "b82878ecb2ab7ad194b9fe79b2946c2a36ee1627a219408089b2d774c1a0cedb"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-order-key-case/query-signature.txt",
+      "bytes": 64,
+      "sha256": "04f51047ca72244da352bc59cbbac829f6ea7936b5f6be37c44f0ec31a74a19a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-order-key-case/query-signed-request.txt",
+      "bytes": 334,
+      "sha256": "a89b385cd29c3e4a47b71b689d6e5b9a8be3d7b24908b6ae7572d3f39b9d6530"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-order-key-case/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "c4016d2957fe46aa71376cba48c3c653a4195c89d2e244046d0c04ca846bd9e3"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-order-key-case/request.txt",
+      "bytes": 70,
+      "sha256": "97810c491d9ed70141c44b1a180169aac0149f086dd6db2a4ddea810af99d6d4"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-unreserved/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-unreserved/header-canonical-request.txt",
+      "bytes": 276,
+      "sha256": "c30d4703d9f799439be92736156d47ccfb2d879ddf56f5befa6d1d6aab979177"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-unreserved/header-signature.txt",
+      "bytes": 64,
+      "sha256": "b1a8b4c223dbbfbb60c55637b3d9e0355de0bfbb7ee96b8ca281f66117ac78c6"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-unreserved/header-signed-request.txt",
+      "bytes": 406,
+      "sha256": "4358550a5f28d6c949a227a5d209e4da1c86b1bf3c2a01d0db4b9703baeb4f64"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-unreserved/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "1e07a253b77c390af5524f8703b469939d1022a98e97de879f4a2ed14812f24c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-unreserved/query-canonical-request.txt",
+      "bytes": 419,
+      "sha256": "c77f27ef2b499fbfee3f0b3c88bba7057b2b31ee9b62047078a5e0d6be91fd58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-unreserved/query-signature.txt",
+      "bytes": 64,
+      "sha256": "1d2dd6549e99e0995ee8513b83d49d6ff9f78b9b7e98f70787c871021382b325"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-unreserved/query-signed-request.txt",
+      "bytes": 440,
+      "sha256": "9f95049efb2d3098c1fa441cbf7bb32be9f6901b1df0cbadfb22b80e50e7d3a7"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-unreserved/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "b0dd68ba3bab2864ada0a66cfa6169f14ac88ab82b2b1e48696113f117f602d7"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-query-unreserved/request.txt",
+      "bytes": 176,
+      "sha256": "7de6e24f8d6f7b1cb5e9b9c766f47c5b60f06801892ed01e32f2510225a2ef87"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-utf8-query/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-utf8-query/header-canonical-request.txt",
+      "bytes": 156,
+      "sha256": "eb30c5bed55734080471a834cc727ae56beb50e5f39d1bff6d0d38cb192a7073"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-utf8-query/header-signature.txt",
+      "bytes": 64,
+      "sha256": "5839f837a202711c2fc32f85372160a400d3ac5c20f0ef5c8a192e32faf63135"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-utf8-query/header-signed-request.txt",
+      "bytes": 280,
+      "sha256": "3e2d3ff932daa00add009647180bbe7ae844ba79232012fd16d445f0fdd4ac08"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-utf8-query/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "df36326ee12b27c17280905db80c552f94e9f4869ca845de5f7aba1004513f73"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-utf8-query/query-canonical-request.txt",
+      "bytes": 299,
+      "sha256": "b2e8ae8e48ec880defebc6f6dc1d9fbc9f1856b33146f2943060ca71a50a7a77"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-utf8-query/query-signature.txt",
+      "bytes": 64,
+      "sha256": "a06916afc5858541848fb6d70a86ab98255d390b3d7e8629a3fd1f2cea263cb0"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-utf8-query/query-signed-request.txt",
+      "bytes": 314,
+      "sha256": "97bf63ddd39d1bb6e0f7246626c9bcf7f0403e9340b8594824fe8ff2ffbb9a48"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-utf8-query/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "c68ebf8b17c28cf6df377a690fe6012787402e8c4bb20f9c49368f039d02472a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-utf8-query/request.txt",
+      "bytes": 50,
+      "sha256": "71775630f617a76d3f8cea8a489194033dd250a852777171ea7dd6d2703fb003"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-with-session-token/context.json",
+      "bytes": 403,
+      "sha256": "2294d0776e907b6fe1d6fefc7806f6efa25378bac9c050eba6cf67d96d54a5dc"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-with-session-token/header-canonical-request.txt",
+      "bytes": 250,
+      "sha256": "067b36aa60031588cea4a4cde1f21215227a047690c72247f1d70b32fbbfad2b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-with-session-token/header-signature.txt",
+      "bytes": 64,
+      "sha256": "69d69f1e309666ee133735ba2f35fc571dbc94df1b5180c10633a385b7b9773a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-with-session-token/header-signed-request.txt",
+      "bytes": 379,
+      "sha256": "79048a74373343ec6589cc3bcbc524f0ccdccfedf77d0465c05b1e26cf336d36"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-with-session-token/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "cf288f2c6f975eafad67cb4bc9ce1c1bb3c6ddda46ed83e006ec48f133b8c665"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-with-session-token/query-canonical-request.txt",
+      "bytes": 371,
+      "sha256": "cb30434103085aa9e73780fc60dc9a9df818fd2a7b1de12a9f6f4d791f898761"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-with-session-token/query-signature.txt",
+      "bytes": 64,
+      "sha256": "fda8c172e979325d8df0be0d8042e9a1f729be9128a31e4fe2e95439706f2e19"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-with-session-token/query-signed-request.txt",
+      "bytes": 392,
+      "sha256": "1559c546dc19195650a136161148d9d869ccee9ad494e1d1a1b549870942e0b1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-with-session-token/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "1257a3d998d52b63059e3cffe6bc3848223b373173e5bbe7cf543be9564e076c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/get-vanilla-with-session-token/request.txt",
+      "bytes": 42,
+      "sha256": "9b87a0709187548ccac04f6d06a8cba1fc85273003efcda670e9f3ca1ad63e4f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-key-case/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-key-case/header-canonical-request.txt",
+      "bytes": 144,
+      "sha256": "553f88c9e4d10fc9e109e2aeb65f030801b70c2f6468faca261d401ae622fc87"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-key-case/header-signature.txt",
+      "bytes": 64,
+      "sha256": "ee1aeaafe181b7bf97af49c9cff9cc31bb9a7ee0357fe3b0c121029ea366a18f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-key-case/header-signed-request.txt",
+      "bytes": 273,
+      "sha256": "04838851334fe787a627d5e1bdb3985eb42070aa5c08bd80d8b8eeca36f92ae9"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-key-case/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "73fd75fb7e71e1e9be6b5982cfe16f79f2a2ab9c33518a12183b481f28d25206"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-key-case/query-canonical-request.txt",
+      "bytes": 286,
+      "sha256": "d27fc6fe1afc1d88b248c5ae9194ec0943a693dd6d81d8d815c88a369eb0471e"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-key-case/query-signature.txt",
+      "bytes": 64,
+      "sha256": "f33aa7a1a1314a673a5694da9453e7b5c8db06b72303404c82fbedfdf0d04788"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-key-case/query-signed-request.txt",
+      "bytes": 307,
+      "sha256": "1fdb321a4d18d9b6255742527985dd0544c2b101114a89106760aede3685e34c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-key-case/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "b49c2a07d28a8edc98fb98f2b4511133a73fa72206ca8bf92c169e06feff148e"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-key-case/request.txt",
+      "bytes": 43,
+      "sha256": "29349106eca8824883913a7e55662958625d22ad40b4b8dcd53876bcce60063c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-key-sort/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-key-sort/header-canonical-request.txt",
+      "bytes": 173,
+      "sha256": "9368318c2967cf6de74404b30c65a91e8f6253e0a8659d6d5319f1a812f87d65"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-key-sort/header-signature.txt",
+      "bytes": 64,
+      "sha256": "c6ec5ad5864b29c66026049862d8cec6b36719187048ffd20de92cbfed056c29"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-key-sort/header-signed-request.txt",
+      "bytes": 302,
+      "sha256": "66d18e62e9591a76b8b7e0de22c565099f3425f9292f77304453bb428b1fb860"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-key-sort/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "63908f392d491f7a43e8fd50a3b775e9adf30265af75c05159cba8d839c36c7a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-key-sort/query-canonical-request.txt",
+      "bytes": 328,
+      "sha256": "1295ed77e4ef8b18b32815e493e0b0f78ee47615c0ecbebfec7c75709eb58c88"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-key-sort/query-signature.txt",
+      "bytes": 64,
+      "sha256": "c9b3651f423d031a4efc6410403ef1e680170c14ada08838f6cc522c864a9762"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-key-sort/query-signed-request.txt",
+      "bytes": 338,
+      "sha256": "d83f051e9d860a7b35e41f6c7fe097587a6ea5dd5205e5e5ce80292e6ac356ce"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-key-sort/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "1de4e46ff636c9a6b6fa77e9962901254085a5adb14e5ae00d642b7248696c7a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-key-sort/request.txt",
+      "bytes": 61,
+      "sha256": "2d690f0ba8e57ec0c982d92cdd7f5ab3001f3bd72b0fb71a40112e729d2475cf"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-value-case/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-value-case/header-canonical-request.txt",
+      "bytes": 173,
+      "sha256": "d51ced243e649e3de6ef63afbbdcbca03131a21a7103a1583706a64618606a93"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-value-case/header-signature.txt",
+      "bytes": 64,
+      "sha256": "4daf1fc192be79c405cdb199812e56359d3ec3b1e742e51880bbce7f3e7a50f8"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-value-case/header-signed-request.txt",
+      "bytes": 302,
+      "sha256": "710bef1c24adb85b9c503a5251eebb257fd1ca0c1adf7b830fbb6063fa31f446"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-value-case/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "c574383bb4efd4f125554c6bfa24f89e0eb655b09b2d72d1ddfd9728c7f2a243"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-value-case/query-canonical-request.txt",
+      "bytes": 328,
+      "sha256": "9d4d1de88f0149695a91a01275fc72dc00fb50bdc78e424f012ec860d5f8c41d"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-value-case/query-signature.txt",
+      "bytes": 64,
+      "sha256": "d39ca2cc4122d34be5628afbd20ba1dbc33e1bd1b046c57bdb7e6194be47f0bb"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-value-case/query-signed-request.txt",
+      "bytes": 338,
+      "sha256": "0e7aaa2e14fa6c99639a976330d7d2680d68406a77b7981b6968fbf784a2a57e"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-value-case/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "2170c2ae219327b91ce2b49d9c0bd9889f8c5eb4263571cb07afbf029ae9482e"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-header-value-case/request.txt",
+      "bytes": 61,
+      "sha256": "25e6676ad202e9fe09788e3c077c514c061bbd1d1dc3a06c2b25f1237f4cc86b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-sts-header-after/context.json",
+      "bytes": 708,
+      "sha256": "047132d9810c045eaa4607e519f6393764c6b1ad8d0dc991f9f5406e98eb55da"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-sts-header-after/header-canonical-request.txt",
+      "bytes": 144,
+      "sha256": "553f88c9e4d10fc9e109e2aeb65f030801b70c2f6468faca261d401ae622fc87"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-sts-header-after/header-signature.txt",
+      "bytes": 64,
+      "sha256": "ee1aeaafe181b7bf97af49c9cff9cc31bb9a7ee0357fe3b0c121029ea366a18f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-sts-header-after/header-signed-request.txt",
+      "bytes": 631,
+      "sha256": "54da8a6363251adb866a4c39448577fff96ddcc8571789dc9df837d2c71cf5c6"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-sts-header-after/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "73fd75fb7e71e1e9be6b5982cfe16f79f2a2ab9c33518a12183b481f28d25206"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-sts-header-after/query-canonical-request.txt",
+      "bytes": 286,
+      "sha256": "d27fc6fe1afc1d88b248c5ae9194ec0943a693dd6d81d8d815c88a369eb0471e"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-sts-header-after/query-signature.txt",
+      "bytes": 64,
+      "sha256": "f33aa7a1a1314a673a5694da9453e7b5c8db06b72303404c82fbedfdf0d04788"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-sts-header-after/query-signed-request.txt",
+      "bytes": 699,
+      "sha256": "0b5d903e5ef905325373049222cac71b17728d722e6c795135fa9ec6be44430f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-sts-header-after/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "b49c2a07d28a8edc98fb98f2b4511133a73fa72206ca8bf92c169e06feff148e"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-sts-header-after/request.txt",
+      "bytes": 43,
+      "sha256": "29349106eca8824883913a7e55662958625d22ad40b4b8dcd53876bcce60063c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-sts-header-before/context.json",
+      "bytes": 709,
+      "sha256": "7937a4cfae3500896c6b9604fbe4543e4fff2b0d7ccb6765a7a6f211e58e0130"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-sts-header-before/header-canonical-request.txt",
+      "bytes": 523,
+      "sha256": "c237e1b440d4c63c32ca95b5b99481081cb7b13c7e40434868e71567c1a882f6"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-sts-header-before/header-signature.txt",
+      "bytes": 64,
+      "sha256": "2303102c20d888956d8146cc180a0884cc483183fff1772289479626aa809d86"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-sts-header-before/header-signed-request.txt",
+      "bytes": 652,
+      "sha256": "b27030c08a85b4650b81f734dca5744c45d54689cbb915d96765b326c65e7d2e"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-sts-header-before/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "63bc10877d08fb9f46e95a03f2082a0539ebc2085ccb07fa9def20b0fe2e2b29"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-sts-header-before/query-canonical-request.txt",
+      "bytes": 678,
+      "sha256": "37f7ba7a2ec89e8b29a0d637bcc70d8e8d0fdba854ddfc5bc06a12398cfe8605"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-sts-header-before/query-signature.txt",
+      "bytes": 64,
+      "sha256": "a94ef2a55c1d9e4d39d07c2b64790a140c120c1d48bb530960b784c8965447b9"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-sts-header-before/query-signed-request.txt",
+      "bytes": 699,
+      "sha256": "60d2c6ddd8e9e1a498154ea6b222a5d992000906ced64acc5a5a463194b54f36"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-sts-header-before/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "30c78edce075f2a3e6e7eacb97a02000ca740e8ca75f8d5fa09b6ab3b7f53e95"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-sts-header-before/request.txt",
+      "bytes": 43,
+      "sha256": "29349106eca8824883913a7e55662958625d22ad40b4b8dcd53876bcce60063c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla/header-canonical-request.txt",
+      "bytes": 144,
+      "sha256": "553f88c9e4d10fc9e109e2aeb65f030801b70c2f6468faca261d401ae622fc87"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla/header-signature.txt",
+      "bytes": 64,
+      "sha256": "ee1aeaafe181b7bf97af49c9cff9cc31bb9a7ee0357fe3b0c121029ea366a18f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla/header-signed-request.txt",
+      "bytes": 273,
+      "sha256": "04838851334fe787a627d5e1bdb3985eb42070aa5c08bd80d8b8eeca36f92ae9"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "73fd75fb7e71e1e9be6b5982cfe16f79f2a2ab9c33518a12183b481f28d25206"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla/query-canonical-request.txt",
+      "bytes": 286,
+      "sha256": "d27fc6fe1afc1d88b248c5ae9194ec0943a693dd6d81d8d815c88a369eb0471e"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla/query-signature.txt",
+      "bytes": 64,
+      "sha256": "f33aa7a1a1314a673a5694da9453e7b5c8db06b72303404c82fbedfdf0d04788"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla/query-signed-request.txt",
+      "bytes": 307,
+      "sha256": "1fdb321a4d18d9b6255742527985dd0544c2b101114a89106760aede3685e34c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "b49c2a07d28a8edc98fb98f2b4511133a73fa72206ca8bf92c169e06feff148e"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla/request.txt",
+      "bytes": 43,
+      "sha256": "29349106eca8824883913a7e55662958625d22ad40b4b8dcd53876bcce60063c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla-empty-query-value/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla-empty-query-value/header-canonical-request.txt",
+      "bytes": 157,
+      "sha256": "9d659678c1756bb3113e2ce898845a0a79dbbc57b740555917687f1b3340fbbd"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla-empty-query-value/header-signature.txt",
+      "bytes": 64,
+      "sha256": "1c9e8fe0b2558073972b690c2cc279a3551df00eade950cec79e6c97d2f4fa3a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla-empty-query-value/header-signed-request.txt",
+      "bytes": 287,
+      "sha256": "ffbdb86069931f4d792e5d587537b196c2a898b6bf8a66a484a49a32cdb2d713"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla-empty-query-value/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "13275c2dab349dbf6475d0edf1566e296001bb62ba7a9d9d9128d7ca1b945190"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla-empty-query-value/query-canonical-request.txt",
+      "bytes": 300,
+      "sha256": "98241d1c6f938789d34b92e16e08b7fc8fdaa774c5437ba30d505eedae43dd2b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla-empty-query-value/query-signature.txt",
+      "bytes": 64,
+      "sha256": "f8068a07d1d7d61ca51b2f12955c94c29b6651d74bfaa4f98dcdfd914ea5a2bd"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla-empty-query-value/query-signed-request.txt",
+      "bytes": 321,
+      "sha256": "3911c91a55c59ed007c5fbdefb3f798bbd7226f50a82c8dae2b4149e87dbdc41"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla-empty-query-value/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "e5e4faec84fab30ed1fd35646daee2e4032f6300527df9623c136818beb6531a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla-empty-query-value/request.txt",
+      "bytes": 57,
+      "sha256": "b1c4114a5cf0f64ba8d065abf28a614f4ea7a67ddbe77cd4f590a4f3aaeb5a73"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla-query/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla-query/header-canonical-request.txt",
+      "bytes": 157,
+      "sha256": "9d659678c1756bb3113e2ce898845a0a79dbbc57b740555917687f1b3340fbbd"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla-query/header-signature.txt",
+      "bytes": 64,
+      "sha256": "1c9e8fe0b2558073972b690c2cc279a3551df00eade950cec79e6c97d2f4fa3a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla-query/header-signed-request.txt",
+      "bytes": 287,
+      "sha256": "ffbdb86069931f4d792e5d587537b196c2a898b6bf8a66a484a49a32cdb2d713"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla-query/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "13275c2dab349dbf6475d0edf1566e296001bb62ba7a9d9d9128d7ca1b945190"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla-query/query-canonical-request.txt",
+      "bytes": 300,
+      "sha256": "98241d1c6f938789d34b92e16e08b7fc8fdaa774c5437ba30d505eedae43dd2b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla-query/query-signature.txt",
+      "bytes": 64,
+      "sha256": "f8068a07d1d7d61ca51b2f12955c94c29b6651d74bfaa4f98dcdfd914ea5a2bd"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla-query/query-signed-request.txt",
+      "bytes": 321,
+      "sha256": "3911c91a55c59ed007c5fbdefb3f798bbd7226f50a82c8dae2b4149e87dbdc41"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla-query/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "e5e4faec84fab30ed1fd35646daee2e4032f6300527df9623c136818beb6531a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-vanilla-query/request.txt",
+      "bytes": 57,
+      "sha256": "b1c4114a5cf0f64ba8d065abf28a614f4ea7a67ddbe77cd4f590a4f3aaeb5a73"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-x-www-form-urlencoded/context.json",
+      "bytes": 317,
+      "sha256": "c94708386cb3f2b7ab4337aa7ec85a7cdcfb7a0d4d2f22be66495b18a0d7ba21"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-x-www-form-urlencoded/header-canonical-request.txt",
+      "bytes": 344,
+      "sha256": "b1edd1d03544c25390e32085d55b57acc9a3961bb59415ff86c45c3d89d16cfb"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-x-www-form-urlencoded/header-signature.txt",
+      "bytes": 64,
+      "sha256": "a1509139e088b49fa03e4ca91bb43c66a39eb1e60705f11296eae3c2a90ee780"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-x-www-form-urlencoded/header-signed-request.txt",
+      "bytes": 486,
+      "sha256": "e389a8c47210b6e2499534f30d80994b34da047fe1ed9bfdca1748868c4fafa4"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-x-www-form-urlencoded/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "5c809c698c26205ff574ae3d4a78bdfd40ec4770ab777350a531e1b7c283939a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-x-www-form-urlencoded/query-canonical-request.txt",
+      "bytes": 411,
+      "sha256": "ee5059a7c437165a28d0e775e6498be428761255d657d8c04cb1baa41de6514c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-x-www-form-urlencoded/query-signature.txt",
+      "bytes": 64,
+      "sha256": "5ac94bb82ab1eed992be10b5599105380d2ed9e18e5c224f09c1573d3c9aebbf"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-x-www-form-urlencoded/query-signed-request.txt",
+      "bytes": 417,
+      "sha256": "007cce5e56c7b5eda54d062dda8a9acc21259ad13be251a1ddcb34c84a8a48ea"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-x-www-form-urlencoded/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "2f0930d87b356800954ef2998459eb303c3b117226507d95213492a7d45fb61d"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-x-www-form-urlencoded/request.txt",
+      "bytes": 122,
+      "sha256": "ac60f842802c8efa6ddb25b8cda8e4380354552a5c376073ff489ec583b2d905"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-x-www-form-urlencoded-parameters/context.json",
+      "bytes": 317,
+      "sha256": "c94708386cb3f2b7ab4337aa7ec85a7cdcfb7a0d4d2f22be66495b18a0d7ba21"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-x-www-form-urlencoded-parameters/header-canonical-request.txt",
+      "bytes": 359,
+      "sha256": "a89f1a5b53e37702ee6363ce1da3ce8f54386f3c8f352ae652153c2982a0bc4d"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-x-www-form-urlencoded-parameters/header-signature.txt",
+      "bytes": 64,
+      "sha256": "41d26efc617710bd5a2b41c28ff8c3db656b8679b6342d5d559e13fa597c20d0"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-x-www-form-urlencoded-parameters/header-signed-request.txt",
+      "bytes": 501,
+      "sha256": "b169fa2ffc821a7058310139c30c36a8ec2132f72e2d84f95e84c8b92e7eae12"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-x-www-form-urlencoded-parameters/header-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "588ad1662bb89a68652332c6e5d194a1a399da007ee96de3df47a1246e5ef150"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-x-www-form-urlencoded-parameters/query-canonical-request.txt",
+      "bytes": 426,
+      "sha256": "32192353b8ae6d857fac1c71cda066e6af2d3a3127ea7ac1fee22621ab4f05dc"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-x-www-form-urlencoded-parameters/query-signature.txt",
+      "bytes": 64,
+      "sha256": "18689c11990c8135849b9446a5148d7c70bf21bd269dabff111fe4c6d5cb1435"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-x-www-form-urlencoded-parameters/query-signed-request.txt",
+      "bytes": 432,
+      "sha256": "91df10b7e359ea6448a9ed732f5f7e6900b565a3039dfff0a019c4b3167999dc"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-x-www-form-urlencoded-parameters/query-string-to-sign.txt",
+      "bytes": 138,
+      "sha256": "a15f283bc7bbbae989f0ca62ef0d7b2aea239f2691014fadf30075094eef8442"
+    },
+    {
+      "path": "aws-signing-test-suite/v4/post-x-www-form-urlencoded-parameters/request.txt",
+      "bytes": 137,
+      "sha256": "2160e0b03d09382c1b0819a9da7e6845f12d3810a31e68d1e173fa15580399af"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-key-duplicate/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-key-duplicate/header-canonical-request.txt",
+      "bytes": 230,
+      "sha256": "30f1f7b639b7fd5982a0f700e6d23bf7bb24f2f1d9e1314005bf22130da61cdf"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-key-duplicate/header-signature.txt",
+      "bytes": 142,
+      "sha256": "6197dc1745a3c1e031ade8070faa979ae37f9edad3b7067ff1214460994a042d"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-key-duplicate/header-signed-request.txt",
+      "bytes": 455,
+      "sha256": "9d2730aadbd44c6c58500846abbe358f2f8e0b77b71426a97c7da57a89db6b16"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-key-duplicate/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "a6a13974d64d68be8de96a0ca9f5db3a7ddfabdfeb82d029365436f4d28dfb14"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-key-duplicate/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-key-duplicate/query-canonical-request.txt",
+      "bytes": 362,
+      "sha256": "a6e21a0099c98cbb4ec73928a08e8b116dfd634c471a8c03c4007b5258b664ea"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-key-duplicate/query-signature.txt",
+      "bytes": 142,
+      "sha256": "741b9ef93aad2ef589216f7723bea01428058240ab897ce15ef7ce235482e85d"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-key-duplicate/query-signed-request.txt",
+      "bytes": 472,
+      "sha256": "316c3a7d305983d98b204ad985fffa2f5cee805fdc463cc211545069dbc0137c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-key-duplicate/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "cd4dce98b9a432e2fc9ff4ce845f5d2f4ef26d19a500e7695157c9a4224e5387"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-key-duplicate/request.txt",
+      "bytes": 96,
+      "sha256": "095932a43e7b125a053680cbcaabe392ef500d60e07e31868845a4963d703bd4"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-multiline/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-multiline/header-canonical-request.txt",
+      "bytes": 230,
+      "sha256": "3579d4751dd7db30860b89a17b53647c70fd8363ec485836dbf68cfd22313398"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-multiline/header-signature.txt",
+      "bytes": 142,
+      "sha256": "d40f56c1713ad980d1933b9d913661a1383807d7ad44162a31f1ef8a156c769c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-multiline/header-signed-request.txt",
+      "bytes": 440,
+      "sha256": "033791c50178317cfe1185a1392a685427a96ddb8cf0079ce84a1fef5568f8a0"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-multiline/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "75fceb66d68f86f38845199f4088850a0af4a9805a206a7072e89723d57c6266"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-multiline/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-multiline/query-canonical-request.txt",
+      "bytes": 362,
+      "sha256": "960c3db8a6ce71c62c4bc13e5f2a72231a8f1a644d52e688ac1524ecd4b09643"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-multiline/query-signature.txt",
+      "bytes": 142,
+      "sha256": "d2a6e4119b348cef49cdc13ffc6a956ed92c850ed83734ce4cfcfde4dc3ecd72"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-multiline/query-signed-request.txt",
+      "bytes": 457,
+      "sha256": "599df0e99aa35ccfa0456c00878d32237d35ad016fafe6f36d6835f6aed59062"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-multiline/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "e992e1f794f5bd24c58d239f45dd78a64305feffcfb14628a6df767a3e17b7f8"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-multiline/request.txt",
+      "bytes": 81,
+      "sha256": "87bc77b20a791d2a411b1f899ccca83ce4e53ab813418ce94833fdc9eeca2665"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-order/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-order/header-canonical-request.txt",
+      "bytes": 237,
+      "sha256": "e1c3b5d34632ffff080330b3bc31906c8988bf1683f4af689ef3f1811952df36"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-order/header-signature.txt",
+      "bytes": 142,
+      "sha256": "2bea873d1b8ce57ce79e74248591b5acf2887ab28b5f7229a64cb1e9086832a4"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-order/header-signed-request.txt",
+      "bytes": 471,
+      "sha256": "40fb0cb43fdd4e1ec403cd4067bdc8d998c5ef5d56a56addc7040f8172893597"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-order/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "09132bc6c98516536022807cb0dd800dcecb3d18d131ff945f1b0e8150d7d244"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-order/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-order/query-canonical-request.txt",
+      "bytes": 369,
+      "sha256": "e2bf35ea25a1943bf52cfc8348c787db8fd8ca642dc9f2b9443939c2fb0d3c54"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-order/query-signature.txt",
+      "bytes": 142,
+      "sha256": "74971e4c6cdb0cb49eae12bf76cfac7a7c6b906a112afb976eabb658dcbdbfca"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-order/query-signed-request.txt",
+      "bytes": 488,
+      "sha256": "b3f752f524c397f0b6b074d5bdacae7c67cf00ba3f7b75678a005b22c2001dba"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-order/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "c5f9c616252a7a776fbf3bfddd48f0dd095f71076afa835fcf59ac75f9c38c2f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-order/request.txt",
+      "bytes": 114,
+      "sha256": "730ad02079fde189a3bad34d54ae2ac258cd81d27e42eaaa4cd068c9b8e8a938"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-trim/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-trim/header-canonical-request.txt",
+      "bytes": 246,
+      "sha256": "18b43001be9b531ebdd8202144dbd7630ea8a35bc328a7d0e561dda03a876095"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-trim/header-signature.txt",
+      "bytes": 144,
+      "sha256": "87b481e3b658378dcf274f949202cb946dfe36b60727f2b337439c196ce3d50d"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-trim/header-signed-request.txt",
+      "bytes": 457,
+      "sha256": "c207eef76902f1662e648b93a3b9da8b3dfd61980087d9b1541c1a8cf85f7fa5"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-trim/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "80b57fa2b16aae774066ef1186e9fc333704c042a9296b45042e091e9fcbacd3"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-trim/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-trim/query-canonical-request.txt",
+      "bytes": 391,
+      "sha256": "4f92ebcf5f0844588e443a2243fafdb64319c6d1ad913c07686129b9991326a3"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-trim/query-signature.txt",
+      "bytes": 142,
+      "sha256": "79f47dbc5e4ca6ffceff86664954e1673cc0096c4676f0be3840ff2340e4cb7c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-trim/query-signed-request.txt",
+      "bytes": 474,
+      "sha256": "21a779fc82e3fe6ceb5609d10d62e2487392bdf856efd41b26e52ff0a100fec3"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-trim/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "a1c51f4b830fa3780d25c0fb711b1f8c0e6b3e50bc1cdc6fc289508fc7d5f1bd"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-header-value-trim/request.txt",
+      "bytes": 85,
+      "sha256": "3ca569dba28e15df4200ca1619c6909645ad0259f6121827e099c46c66e9dc87"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-normalized/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-normalized/header-canonical-request.txt",
+      "bytes": 187,
+      "sha256": "cf59db423e841c8b7e3444158185aa261b724a5c27cbe762676f3eed19f4dc02"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-normalized/header-signature.txt",
+      "bytes": 142,
+      "sha256": "95e53ce3e69be747abaa64f41ac8d0c608803aac9151a7cfc6f0bed2523ce027"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-normalized/header-signed-request.txt",
+      "bytes": 398,
+      "sha256": "6db83119e33d38c7dcbb25a3345c847119aa36eb1daafab23eff3f8a1c97676c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-normalized/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "b044f8b9ac3f054e125db86f143f97395f6ad731ca42554c698420a33ee15efc"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-normalized/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-normalized/query-canonical-request.txt",
+      "bytes": 306,
+      "sha256": "890c4ed28c1a1ac10b5862719b537afbe392e987dc1aab1efa16fe7de41d3c81"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-normalized/query-signature.txt",
+      "bytes": 140,
+      "sha256": "0fee914e8315845f9bae77efcc8185b845880806d2de53bd70712f4062337d21"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-normalized/query-signed-request.txt",
+      "bytes": 415,
+      "sha256": "48dd77b52b26b940ddef0fd01316b215c313c6673ab65e01cca8b4a738165243"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-normalized/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "fa714e0e437ce8c841c4502e024144277f38fdd93dea93835943a2e093076d77"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-normalized/request.txt",
+      "bytes": 52,
+      "sha256": "d8b74911b99b5135181e4b70fca777aa214067c703c6a2af5cbd34b7e6b0064a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-relative-normalized/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-relative-normalized/header-canonical-request.txt",
+      "bytes": 187,
+      "sha256": "cf59db423e841c8b7e3444158185aa261b724a5c27cbe762676f3eed19f4dc02"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-relative-normalized/header-signature.txt",
+      "bytes": 144,
+      "sha256": "ce568af54862441cfba122631efe78e8d7c3f5ff33af46f9b3bd5b99a0694563"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-relative-normalized/header-signed-request.txt",
+      "bytes": 411,
+      "sha256": "409e0238899228119c7c5bcd013495c9b1d9b697d8d6611fffbf4ca2d44a1910"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-relative-normalized/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "b044f8b9ac3f054e125db86f143f97395f6ad731ca42554c698420a33ee15efc"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-relative-normalized/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-relative-normalized/query-canonical-request.txt",
+      "bytes": 306,
+      "sha256": "890c4ed28c1a1ac10b5862719b537afbe392e987dc1aab1efa16fe7de41d3c81"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-relative-normalized/query-signature.txt",
+      "bytes": 140,
+      "sha256": "086fae62c701445658adaa21d44d4b8134aa8ae56cd17b8027498d19d78b0ba3"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-relative-normalized/query-signed-request.txt",
+      "bytes": 428,
+      "sha256": "e41f93becd7825383392c3cba000a181778ed6cc779d69bf8249d5713723c8da"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-relative-normalized/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "fa714e0e437ce8c841c4502e024144277f38fdd93dea93835943a2e093076d77"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-relative-normalized/request.txt",
+      "bytes": 65,
+      "sha256": "a9c41272e0cf1735ba02007c685bd03bb7ee7f15bc28a3a3ff60dc4b7a9ed460"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-relative-unnormalized/context.json",
+      "bytes": 319,
+      "sha256": "d47c4b71842e953fec10ade654596793c44b0328eabf509b901d224894063d3a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-relative-unnormalized/header-canonical-request.txt",
+      "bytes": 210,
+      "sha256": "7bad1fab948577ec4e860ff2bb06ce9b69f0dd60eb8a9ad7c016b584254f9b5b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-relative-unnormalized/header-signature.txt",
+      "bytes": 142,
+      "sha256": "3cb6b25915fbb33d4f704ddb278370e35845a1bcbf8fa517fa3414e7de1d7f36"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-relative-unnormalized/header-signed-request.txt",
+      "bytes": 411,
+      "sha256": "1d71064b6bf7d5529520ecd2a2c6ffe51011b98dfc31f8d243cabce6f80d847f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-relative-unnormalized/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "38035aa68ab9e86044943c23e66887309b42d0cbd3d762e967db9b7991dc9cb5"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-relative-unnormalized/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-relative-unnormalized/query-canonical-request.txt",
+      "bytes": 329,
+      "sha256": "504892d7f7262dd98d79ab7f3bb6f918cd59d491aacb2d76450f6e065479b31a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-relative-unnormalized/query-signature.txt",
+      "bytes": 144,
+      "sha256": "060cbf64722917273fd4ddae9cb9582a0c0e525940a10c0410b62cf60b3d3931"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-relative-unnormalized/query-signed-request.txt",
+      "bytes": 430,
+      "sha256": "011d042675d53c1a2069cc1e2c26ca08c31f0defcf4848f7b0a5e1a58c948a78"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-relative-unnormalized/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "fc8fe1d538439b0a8e652341f7019baf2582ff6f8238a2bb12a2a062645ac413"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-relative-unnormalized/request.txt",
+      "bytes": 65,
+      "sha256": "a9c41272e0cf1735ba02007c685bd03bb7ee7f15bc28a3a3ff60dc4b7a9ed460"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-unnormalized/context.json",
+      "bytes": 319,
+      "sha256": "d47c4b71842e953fec10ade654596793c44b0328eabf509b901d224894063d3a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-unnormalized/header-canonical-request.txt",
+      "bytes": 197,
+      "sha256": "c859b5032f2ebd5df0285ff633b495b0e6e962e5adb94731c95e8e993a9a8213"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-unnormalized/header-signature.txt",
+      "bytes": 142,
+      "sha256": "3e8f6620dfaa5a9cabf223e3033e5f678aaf3e66064985c03cfae50893b93400"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-unnormalized/header-signed-request.txt",
+      "bytes": 398,
+      "sha256": "05ab03bcac226044422208f99fd3466c83dd1aa3af848801b68772d1be13b775"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-unnormalized/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "fe530f501b42ef769a000152970301bdd722d42670b6b5f361e5923c93995837"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-unnormalized/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-unnormalized/query-canonical-request.txt",
+      "bytes": 316,
+      "sha256": "bbbb3668f996906ebb2c96ebdc2418af99656315adaf647989ab336c88fb516e"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-unnormalized/query-signature.txt",
+      "bytes": 142,
+      "sha256": "f03162a16374a8e9e3a42cea49a61c09e9f850c166d83ac06122c4b37e170d47"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-unnormalized/query-signed-request.txt",
+      "bytes": 415,
+      "sha256": "2eba5eda40129ebee4e1b8cd3a58b2b4e85c22ad54cbba300dd08284e2709a1f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-unnormalized/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "7d7f32b46c77ce041b2ff5b2ad03114518fc7cf6c56ba04cb7aa79cdc0a33ec9"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-relative-unnormalized/request.txt",
+      "bytes": 52,
+      "sha256": "d8b74911b99b5135181e4b70fca777aa214067c703c6a2af5cbd34b7e6b0064a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-dot-slash-normalized/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-dot-slash-normalized/header-canonical-request.txt",
+      "bytes": 187,
+      "sha256": "cf59db423e841c8b7e3444158185aa261b724a5c27cbe762676f3eed19f4dc02"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-dot-slash-normalized/header-signature.txt",
+      "bytes": 142,
+      "sha256": "55a88cf54d63ecb64744c8849e9ca300a6af120498343d16a407fd01142d1003"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-dot-slash-normalized/header-signed-request.txt",
+      "bytes": 392,
+      "sha256": "aea7c922261f39abec7fc40b667d6733283b09856ce4a272c0e6f0ec92c52ce8"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-dot-slash-normalized/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "b044f8b9ac3f054e125db86f143f97395f6ad731ca42554c698420a33ee15efc"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-dot-slash-normalized/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-dot-slash-normalized/query-canonical-request.txt",
+      "bytes": 306,
+      "sha256": "890c4ed28c1a1ac10b5862719b537afbe392e987dc1aab1efa16fe7de41d3c81"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-dot-slash-normalized/query-signature.txt",
+      "bytes": 144,
+      "sha256": "51a9a30c9eed508e8f0fbffe33349adc17edd17af5fdbd9745a4dc97f4076ae7"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-dot-slash-normalized/query-signed-request.txt",
+      "bytes": 409,
+      "sha256": "0c802d04c20ee2d21904102b7a6971d1ec0779e3a047257e1a5553b1ac141403"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-dot-slash-normalized/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "fa714e0e437ce8c841c4502e024144277f38fdd93dea93835943a2e093076d77"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-dot-slash-normalized/request.txt",
+      "bytes": 44,
+      "sha256": "4a64c13af5ff3fbb3500c5345cb4449992ce1ec84bf499b118d2dc7a83c51aaf"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-dot-slash-unnormalized/context.json",
+      "bytes": 319,
+      "sha256": "d47c4b71842e953fec10ade654596793c44b0328eabf509b901d224894063d3a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-dot-slash-unnormalized/header-canonical-request.txt",
+      "bytes": 189,
+      "sha256": "a14dce0217a32357c623c3db790988b6b5aa1494a527158b06d3ca4444561a4b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-dot-slash-unnormalized/header-signature.txt",
+      "bytes": 142,
+      "sha256": "9800b05821d5f2bf06b8f65bb2916609ae131a2388060e183343a65b22558e8d"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-dot-slash-unnormalized/header-signed-request.txt",
+      "bytes": 390,
+      "sha256": "4b4cda0c08cddc764044cde6596486eb815eb337c139af3e62034e04c08400f5"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-dot-slash-unnormalized/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "2e568a1b32bebbbad78e68aeb1f5e1d88d383c461b34f33dfa02322f1b64adcd"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-dot-slash-unnormalized/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-dot-slash-unnormalized/query-canonical-request.txt",
+      "bytes": 308,
+      "sha256": "0d146fed00cdf50d7a87864583b7a33ca75322aab46b0a2d204f5d0c13440917"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-dot-slash-unnormalized/query-signature.txt",
+      "bytes": 140,
+      "sha256": "5d90cdf9d4a793103524a40082df4718dfc407aeaf5e60021f22de28a5aaad8c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-dot-slash-unnormalized/query-signed-request.txt",
+      "bytes": 407,
+      "sha256": "2cba81b40c338f5c0c9cfa325e2c6f55850ae9df2cf91896103047086dea731e"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-dot-slash-unnormalized/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "88a9f33a67efff718f3a0f614c7bf738817e3f254f3e05e61bd2905310b67c9c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-dot-slash-unnormalized/request.txt",
+      "bytes": 44,
+      "sha256": "4a64c13af5ff3fbb3500c5345cb4449992ce1ec84bf499b118d2dc7a83c51aaf"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-normalized/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-normalized/header-canonical-request.txt",
+      "bytes": 187,
+      "sha256": "cf59db423e841c8b7e3444158185aa261b724a5c27cbe762676f3eed19f4dc02"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-normalized/header-signature.txt",
+      "bytes": 144,
+      "sha256": "32cc1b1339b18da0996ec9f7b8a6f0382ffacc3ace83d01c31bc01d693b0af9b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-normalized/header-signed-request.txt",
+      "bytes": 391,
+      "sha256": "f7d2d864f2335bc4ebec0b3ab9ddb6e37a73e28a171057e134e256192deaa40f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-normalized/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "b044f8b9ac3f054e125db86f143f97395f6ad731ca42554c698420a33ee15efc"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-normalized/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-normalized/query-canonical-request.txt",
+      "bytes": 306,
+      "sha256": "890c4ed28c1a1ac10b5862719b537afbe392e987dc1aab1efa16fe7de41d3c81"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-normalized/query-signature.txt",
+      "bytes": 142,
+      "sha256": "e39ff7d6dbcd31a5479db2efdde56bc83213c8a1418fa28ecea4fb5740d2bb7b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-normalized/query-signed-request.txt",
+      "bytes": 404,
+      "sha256": "1c932f32045d69b68bac3e564e3636f892976715f3152c3eeba9535abc9e93b7"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-normalized/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "fa714e0e437ce8c841c4502e024144277f38fdd93dea93835943a2e093076d77"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-normalized/request.txt",
+      "bytes": 43,
+      "sha256": "5f51a08c2f9218a0c8b630c64a534bb6405a85b038fee4c6ccfc334a36129082"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-pointless-dot-normalized/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-pointless-dot-normalized/header-canonical-request.txt",
+      "bytes": 194,
+      "sha256": "823cb165e35e124f862c99c89a46414c24e3800f149377591e35a4848317e825"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-pointless-dot-normalized/header-signature.txt",
+      "bytes": 142,
+      "sha256": "8cf2f98c4237bf388a84c4b5555d62f92e1c2b9b263c9aad991dce58902b239f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-pointless-dot-normalized/header-signed-request.txt",
+      "bytes": 401,
+      "sha256": "a686cff672a6f0b5d386f8ce6b40bbdabd9486257965197104ab42302481295c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-pointless-dot-normalized/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "8a2c053e8193b512e98bdd2e748edf97c359372eecf0bd32c48cd338054bca36"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-pointless-dot-normalized/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-pointless-dot-normalized/query-canonical-request.txt",
+      "bytes": 313,
+      "sha256": "0cc67a8acfed5946b645794c649dd98d3485728119cdf17d38985ba0ff55abca"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-pointless-dot-normalized/query-signature.txt",
+      "bytes": 142,
+      "sha256": "75c851c5e0b114662cc639e79478feb7b8d331a6c90125a3f4e422bd2d91cb6c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-pointless-dot-normalized/query-signed-request.txt",
+      "bytes": 414,
+      "sha256": "1c1ef76d092782ab3447247de4ecbd21a896fe8869f752006f151f88fdbfe4ee"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-pointless-dot-normalized/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "839754dca4de05eb7610335ae8eabb51264a310aacd7ad636b829402925ffb42"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-pointless-dot-normalized/request.txt",
+      "bytes": 51,
+      "sha256": "1be40007eac2398e16756d64c47eab8c7e917683b4a1ff2e34fd6e7ad4933730"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-pointless-dot-unnormalized/context.json",
+      "bytes": 319,
+      "sha256": "d47c4b71842e953fec10ade654596793c44b0328eabf509b901d224894063d3a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-pointless-dot-unnormalized/header-canonical-request.txt",
+      "bytes": 196,
+      "sha256": "407314cdff397462b2458ba1860907adefcbb73fd630ddbd3de7300d2f773804"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-pointless-dot-unnormalized/header-signature.txt",
+      "bytes": 140,
+      "sha256": "8a16197d408a6e2191ef8ac4e8e4930f9e2c1884b95422d18233a650b8a7aee4"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-pointless-dot-unnormalized/header-signed-request.txt",
+      "bytes": 401,
+      "sha256": "d2d1b8011d02919175ffeffe5d9eaa6ceceba082c9023fecbb44f9a7a274a06b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-pointless-dot-unnormalized/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "bf3d04627e4e9b1e6ba935cd926ed7bd40a0553f35c17e019fab80cc3baf4daa"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-pointless-dot-unnormalized/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-pointless-dot-unnormalized/query-canonical-request.txt",
+      "bytes": 315,
+      "sha256": "efbe4f47c2acbb53fbfd0be6846cfa35a48c21f3f800e741278dae7b721302b4"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-pointless-dot-unnormalized/query-signature.txt",
+      "bytes": 142,
+      "sha256": "82a48b801c047f2c24326fa5e08ebc6b5cbc7db4d75aa33e645d0c4ec37ac57b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-pointless-dot-unnormalized/query-signed-request.txt",
+      "bytes": 416,
+      "sha256": "cfe5044b0522b5ef0d85d0b766f4fe2e364e63a43bafc3fe2f6b7107ee9a6cf2"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-pointless-dot-unnormalized/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "ca4b63e4727f58aeb0ad0841b99af7aa54f31094c6b77afc1bebc5a5fe5a5749"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-pointless-dot-unnormalized/request.txt",
+      "bytes": 51,
+      "sha256": "1be40007eac2398e16756d64c47eab8c7e917683b4a1ff2e34fd6e7ad4933730"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-unnormalized/context.json",
+      "bytes": 319,
+      "sha256": "d47c4b71842e953fec10ade654596793c44b0328eabf509b901d224894063d3a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-unnormalized/header-canonical-request.txt",
+      "bytes": 188,
+      "sha256": "fc8f42c7ce50ba8830a34b16d9fb478170176d78c81339e8d7e31d4baa9ec9f4"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-unnormalized/header-signature.txt",
+      "bytes": 144,
+      "sha256": "e78af2ce76f6ea84662d31a5d288e69138c463ca452afae889e3c9686194294d"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-unnormalized/header-signed-request.txt",
+      "bytes": 391,
+      "sha256": "ed310a3040c2094c76346741921cd0e255d9aab23e0e1c052f9d239cb9e4b4b1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-unnormalized/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "71b2fad77944a81c7a495333c86eec1ed363bcfd6a5248da2c0193f076bf56bf"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-unnormalized/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-unnormalized/query-canonical-request.txt",
+      "bytes": 307,
+      "sha256": "633e0570a745c18cc22e43af8be65cfed3e7173061ec403353734bdfae90e0b6"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-unnormalized/query-signature.txt",
+      "bytes": 142,
+      "sha256": "bd5f8ada64b063cf1f72d4f7229a48f8e407deeff0b28f0a8e519b19c82fe67e"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-unnormalized/query-signed-request.txt",
+      "bytes": 408,
+      "sha256": "436dc932d1ee0809ac3a942f8b6eccbd610f62d76a0fad28c48861ecf1698709"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-unnormalized/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "e0c810cb84fa13327c4cf4e2e725c5160c3b2c22f7be2b7d376889b8dc3c3017"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slash-unnormalized/request.txt",
+      "bytes": 43,
+      "sha256": "5f51a08c2f9218a0c8b630c64a534bb6405a85b038fee4c6ccfc334a36129082"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slashes-normalized/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slashes-normalized/header-canonical-request.txt",
+      "bytes": 195,
+      "sha256": "ea6c9c4bc1e85b94f2579cebbc85a84c3f8eaa055c006697555f074dd68509a6"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slashes-normalized/header-signature.txt",
+      "bytes": 140,
+      "sha256": "dbc82e7c0bdc78f6714ee996d82c3b07b508ff2b00f7934bd61e8c1b012bc48d"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slashes-normalized/header-signed-request.txt",
+      "bytes": 398,
+      "sha256": "b058bbe381d4c7b497077eacbb63b97bca35f953ba3c506ec165f8bd521c5b51"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slashes-normalized/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "59fcf0d817d72a565f84591e8201634fc8dde4f0933de495dc461854a8538aa8"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slashes-normalized/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slashes-normalized/query-canonical-request.txt",
+      "bytes": 314,
+      "sha256": "ab3f7b8af0ce16e0faf508160fb13d890874992d74f36214ae9eec7437361f2b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slashes-normalized/query-signature.txt",
+      "bytes": 142,
+      "sha256": "b64aa50cf487fb04c07b366217b1e8b91b1db017f8fe881ce26d2d507300d93d"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slashes-normalized/query-signed-request.txt",
+      "bytes": 415,
+      "sha256": "59b6e4bc787ee787c082fd8f4dbfa146721b2e980850c0e191e1de8a67aeca45"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slashes-normalized/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "e2b32eef1e921dc1aed3db501b90873e9f3309be967f28928b86e5da185000e5"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slashes-normalized/request.txt",
+      "bytes": 52,
+      "sha256": "24d96147f9668b53ab7a628a6d402b0780b458ba32a03281e34ea9ce99216e03"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slashes-unnormalized/context.json",
+      "bytes": 319,
+      "sha256": "d47c4b71842e953fec10ade654596793c44b0328eabf509b901d224894063d3a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slashes-unnormalized/header-canonical-request.txt",
+      "bytes": 197,
+      "sha256": "bf8c459a6a7f3879f55bff41e4dca65f69df4628456904e47f83013c0deb7276"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slashes-unnormalized/header-signature.txt",
+      "bytes": 140,
+      "sha256": "0f431495c32ed1356d16f76a1de684e90c7e7d9ac74beb483350dbf27712b7ce"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slashes-unnormalized/header-signed-request.txt",
+      "bytes": 400,
+      "sha256": "3fc9713ca2d62cc6f2ba1db961dce49942fa0e67b510ae1eecfc85c1e786fa42"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slashes-unnormalized/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "5411af9867ce05eaf05b2869e74e7b436e5ae072a88f115839f634aafb4e23f3"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slashes-unnormalized/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slashes-unnormalized/query-canonical-request.txt",
+      "bytes": 316,
+      "sha256": "660b4a6f0bd53b287cefb21cdf69c1574303de44d2e9f7759b5379b428b70157"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slashes-unnormalized/query-signature.txt",
+      "bytes": 142,
+      "sha256": "b743f700715c0d0feab2c60d56871b4f5d41340417731445ee41fbd1e78fd378"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slashes-unnormalized/query-signed-request.txt",
+      "bytes": 417,
+      "sha256": "2800de9ab19d42b697d2e371aaf936a0e80aa3fd5910d42372ff92a2485e5bb1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slashes-unnormalized/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "7659320fd82574ce903c21f3af077d288d5e84bcb26743181e71162d4d000b4d"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-slashes-unnormalized/request.txt",
+      "bytes": 52,
+      "sha256": "24d96147f9668b53ab7a628a6d402b0780b458ba32a03281e34ea9ce99216e03"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-space-normalized/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-space-normalized/header-canonical-request.txt",
+      "bytes": 203,
+      "sha256": "1bbd1a746b47d963b21f6e6783c689c038162ccc3f8a69abeda218a178ee4d19"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-space-normalized/header-signature.txt",
+      "bytes": 142,
+      "sha256": "83e1635c51f0eaaec74f820df9b10ad28d29a10d280bdc8c1f358f571b77f86b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-space-normalized/header-signed-request.txt",
+      "bytes": 406,
+      "sha256": "70a18b7955aa49d2e42193b616289785e87943204312103c763ca3a1476dd093"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-space-normalized/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "6b84e42982fe0cd4aa4ebcceab9ca73061aa7ea7a4300ba174cc335c5f51f30e"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-space-normalized/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-space-normalized/query-canonical-request.txt",
+      "bytes": 322,
+      "sha256": "6a2f4ddc0e28ca4b91abed80c45ad628fc63d8a4cd9c443869d5dd6cf07235ed"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-space-normalized/query-signature.txt",
+      "bytes": 142,
+      "sha256": "400e8eb83afe79dd65cd0859f30ae987d906a8f82bf15e41c50887438688392b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-space-normalized/query-signed-request.txt",
+      "bytes": 417,
+      "sha256": "2a1d20ceb9ac49327d00df3cbec47b3163157decb8671f8c15827d679b1e69c0"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-space-normalized/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "ecd4674a90a92f66994dd12bc8987d0efd370eeac2dd63a2e8aae7b1b958bed9"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-space-normalized/request.txt",
+      "bytes": 56,
+      "sha256": "0a2901d646dd18800fa028eaddb79d7532b9a4fddcaf84724fec0377b34fbbcf"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-space-unnormalized/context.json",
+      "bytes": 319,
+      "sha256": "d47c4b71842e953fec10ade654596793c44b0328eabf509b901d224894063d3a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-space-unnormalized/header-canonical-request.txt",
+      "bytes": 203,
+      "sha256": "1bbd1a746b47d963b21f6e6783c689c038162ccc3f8a69abeda218a178ee4d19"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-space-unnormalized/header-signature.txt",
+      "bytes": 144,
+      "sha256": "407681c6e6c80d344c45e77f72539ada2e0bacd8905155172ef15585dd802282"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-space-unnormalized/header-signed-request.txt",
+      "bytes": 406,
+      "sha256": "be1cfa6fe7b0c9f5dea6d620f4316b7785a9125055fdf647718f037461facf3d"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-space-unnormalized/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "6b84e42982fe0cd4aa4ebcceab9ca73061aa7ea7a4300ba174cc335c5f51f30e"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-space-unnormalized/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-space-unnormalized/query-canonical-request.txt",
+      "bytes": 322,
+      "sha256": "6a2f4ddc0e28ca4b91abed80c45ad628fc63d8a4cd9c443869d5dd6cf07235ed"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-space-unnormalized/query-signature.txt",
+      "bytes": 142,
+      "sha256": "2f1781ba986427be62aa8626ab5d93be228bd5d7bc30d2918d01bf50d69d9a25"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-space-unnormalized/query-signed-request.txt",
+      "bytes": 417,
+      "sha256": "746cfd51d33391c087b226e298a539903fd5244935ecf0412c113916c43148cc"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-space-unnormalized/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "ecd4674a90a92f66994dd12bc8987d0efd370eeac2dd63a2e8aae7b1b958bed9"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-space-unnormalized/request.txt",
+      "bytes": 56,
+      "sha256": "0a2901d646dd18800fa028eaddb79d7532b9a4fddcaf84724fec0377b34fbbcf"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-unreserved/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-unreserved/header-canonical-request.txt",
+      "bytes": 253,
+      "sha256": "b48c0f7d7cdaa2cd05e4b789c913063becd96ccace5296a334c950040e58bcac"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-unreserved/header-signature.txt",
+      "bytes": 142,
+      "sha256": "f9f8d2be24abe13e8cfdd6d9b84a22c1dda7b1703ecf366dcb27f799d1a07515"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-unreserved/header-signed-request.txt",
+      "bytes": 454,
+      "sha256": "ea6dd11afdf2bd6377aff56bbe1c7bf5966c9037e0a1e899fc5a2c68c903c33a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-unreserved/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "bdcb218476b3e45eaf03eba99553b37ef7070bf90137120c4e7576df1a8b9bcf"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-unreserved/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-unreserved/query-canonical-request.txt",
+      "bytes": 372,
+      "sha256": "a967a5035e5dc574f94fb9f0de0faf9d56e889c26d9a65d7d0a15d89690280d1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-unreserved/query-signature.txt",
+      "bytes": 142,
+      "sha256": "68051e2bc9e379e771c24205f331a8ead2669377328f060fe45c4f84dab1e08e"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-unreserved/query-signed-request.txt",
+      "bytes": 473,
+      "sha256": "87b54cd1875401a43ebf7b378b4eb48190ab3fa6b15a28936ece2697f8285540"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-unreserved/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "7da8228a65f66a79f9a960ba032aa3dc06f578211f6ac14ec09ea88ffa3d829f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-unreserved/request.txt",
+      "bytes": 108,
+      "sha256": "ca8959b237a7d49f99a4f1b00b2332a233bd177961fb408c4cbcf9c374992899"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-utf8/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-utf8/header-canonical-request.txt",
+      "bytes": 196,
+      "sha256": "7c8a7084825e715f0e217a7470ce3611bcfedb5b70329d9b36bba5cefd39c11a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-utf8/header-signature.txt",
+      "bytes": 140,
+      "sha256": "20159156b73151dcd4a1865a5269e73a1d54e90c6936f01272231474d1404e36"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-utf8/header-signed-request.txt",
+      "bytes": 393,
+      "sha256": "d264f1a09ac30272b486faf9589663859db7dd2327f2482d4ea0b26df980e7e4"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-utf8/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "a61bdcd2d12888efbebcd95a20ebc7e76e767ec4f9812aaecca035f3db3cab5d"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-utf8/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-utf8/query-canonical-request.txt",
+      "bytes": 315,
+      "sha256": "b77c78c8276c5eac930db70b21b69b34d0c2560e1a963ab28e28481ef6a4ff66"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-utf8/query-signature.txt",
+      "bytes": 144,
+      "sha256": "305248cc23b92c020020e2f685a17e134d79e564af43cc8ff370675fda6eca26"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-utf8/query-signed-request.txt",
+      "bytes": 408,
+      "sha256": "233dda1280a3e723835fc104ae72d8b1d37929912974c5a59de02423a3ab9ffc"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-utf8/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "6571893e0eca276b742f4a44a7ae297ee78e6e8f84793cfa9d33d7b7b99a2b8b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-utf8/request.txt",
+      "bytes": 45,
+      "sha256": "b4d266739a1a12c2d22056ddb5010a843c828d847f58ac9ab26696780bc1df8a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla/canonical-request.txt",
+      "bytes": 187,
+      "sha256": "cf59db423e841c8b7e3444158185aa261b724a5c27cbe762676f3eed19f4dc02"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla/header-canonical-request.txt",
+      "bytes": 187,
+      "sha256": "cf59db423e841c8b7e3444158185aa261b724a5c27cbe762676f3eed19f4dc02"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla/header-signature.txt",
+      "bytes": 142,
+      "sha256": "d1c3a352c2e33c7eb7262ce654220e67f056cdae6e444e7fc34c2479e8e1cc59"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla/header-signed-request.txt",
+      "bytes": 392,
+      "sha256": "6b6b4dd5a1d223f349d902204b015746ee1816eaffb7b44ceb530afc36eadf53"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "b044f8b9ac3f054e125db86f143f97395f6ad731ca42554c698420a33ee15efc"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla/query-canonical-request.txt",
+      "bytes": 306,
+      "sha256": "890c4ed28c1a1ac10b5862719b537afbe392e987dc1aab1efa16fe7de41d3c81"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla/query-signature.txt",
+      "bytes": 142,
+      "sha256": "efa1572437b373c34dd553918c3d49317e063cff84bf43ae598ce975cce5508b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla/query-signed-request.txt",
+      "bytes": 405,
+      "sha256": "d99a1ddc6bacb9f06b789a8b9b9a05ab939fc71baeb214d28818e1c4380e1554"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "fa714e0e437ce8c841c4502e024144277f38fdd93dea93835943a2e093076d77"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla/request.txt",
+      "bytes": 42,
+      "sha256": "9b87a0709187548ccac04f6d06a8cba1fc85273003efcda670e9f3ca1ad63e4f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla/string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "b044f8b9ac3f054e125db86f143f97395f6ad731ca42554c698420a33ee15efc"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-empty-query-key/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-empty-query-key/header-canonical-request.txt",
+      "bytes": 200,
+      "sha256": "894f4237e92aae973c992da1d1f39d7a5913a23e9f7cbcf085e9550685eb498a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-empty-query-key/header-signature.txt",
+      "bytes": 140,
+      "sha256": "4debf4b484a7ece9fd807e1e8bdf7dce8868e085c2002085dc96a117bd96f23c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-empty-query-key/header-signed-request.txt",
+      "bytes": 404,
+      "sha256": "9b955793213505ef3b0ff88e0f7fdb3e067b2f60ec52278822fbdc5416fe1981"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-empty-query-key/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "7ae6a4daff5bbc4aa35b3bbb9da88e309a8d4c3d2790db72d903523dcc9bfca0"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-empty-query-key/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-empty-query-key/query-canonical-request.txt",
+      "bytes": 320,
+      "sha256": "07551f1d699afeb50d6811a527ab7b0270b60448ea27d8cbccb9750d68287b3f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-empty-query-key/query-signature.txt",
+      "bytes": 144,
+      "sha256": "2488c92af7b16ebacc3e58b7125beeedb42634f9dbb89fad769655dc69110441"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-empty-query-key/query-signed-request.txt",
+      "bytes": 421,
+      "sha256": "eae9175f7c51b4c6652953ed9174552291eccb2334fe7c2f03805a70b17fb844"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-empty-query-key/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "01597a3d21ac02e21f3f447bda0ec306430986bf7b202b5efc2b1cb69035f16f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-empty-query-key/request.txt",
+      "bytes": 56,
+      "sha256": "4e4568a15255171dd51f24fc1a60dfe29f293bcb32c0ed3f008273c4d1cb1e2d"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query/header-canonical-request.txt",
+      "bytes": 187,
+      "sha256": "cf59db423e841c8b7e3444158185aa261b724a5c27cbe762676f3eed19f4dc02"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query/header-signature.txt",
+      "bytes": 140,
+      "sha256": "4bb4467dde63ebe16411c7a3153c87db60ab71da19d8ecf44d0d369f4ee0e5b4"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query/header-signed-request.txt",
+      "bytes": 390,
+      "sha256": "cef18a7b4f55b7b88c2f5e2fbc315231e4e2d60b69bc0edd0f0208cc6dc23479"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "b044f8b9ac3f054e125db86f143f97395f6ad731ca42554c698420a33ee15efc"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query/query-canonical-request.txt",
+      "bytes": 306,
+      "sha256": "890c4ed28c1a1ac10b5862719b537afbe392e987dc1aab1efa16fe7de41d3c81"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query/query-signature.txt",
+      "bytes": 140,
+      "sha256": "b1c46cc8319722d5dea79f7fb5d4990486a3cdb6e19bc9836245fe624d3d159e"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query/query-signed-request.txt",
+      "bytes": 405,
+      "sha256": "8022f72cf9dccea40a645f784106bc7ee90e72b87f37cb4df63fd0278994d365"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "fa714e0e437ce8c841c4502e024144277f38fdd93dea93835943a2e093076d77"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query/request.txt",
+      "bytes": 42,
+      "sha256": "9b87a0709187548ccac04f6d06a8cba1fc85273003efcda670e9f3ca1ad63e4f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-order-encoded/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-order-encoded/header-canonical-request.txt",
+      "bytes": 231,
+      "sha256": "55568a29040b287c72015a5ab482d9aaceeb1e9881f3bc946378bc3d6079f6a5"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-order-encoded/header-signature.txt",
+      "bytes": 140,
+      "sha256": "b7e8ce1cef9cf7ed0e913450cb56850a583c67ed13b67e1c5940167d8a0ce6ac"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-order-encoded/header-signed-request.txt",
+      "bytes": 435,
+      "sha256": "c420153b8009fa78f68f8d0cdba0252e9505fb74a6320e7e296f6f3681f036de"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-order-encoded/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "6f82f1b87de2b6e1f68d9d209b2f2be386a12c9d4b4798b29ab345c545dd213d"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-order-encoded/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-order-encoded/query-canonical-request.txt",
+      "bytes": 351,
+      "sha256": "56d9ab07692614338f2aa44f1018ad4102b19305fba8b83383d2d7c6ca816614"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-order-encoded/query-signature.txt",
+      "bytes": 144,
+      "sha256": "05312f5683e675a4988190f312525853c2257a7fda4e63278d64b718c16bb6fb"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-order-encoded/query-signed-request.txt",
+      "bytes": 452,
+      "sha256": "b761a2308adaf5c9c7a925a18ad09821de87fc035a0759518625b72a8102dbe6"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-order-encoded/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "97cc69e3bba45895f0866cd0e307b41121743d194ca6c2cd995c770a20a3a279"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-order-encoded/request.txt",
+      "bytes": 87,
+      "sha256": "9cc53deecccec5e3cf1b9ccfd0f56fee48ca024a7d89e55cb6e72d963fc9cc1a"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-order-key-case/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-order-key-case/header-canonical-request.txt",
+      "bytes": 214,
+      "sha256": "cc07b29e0d0f0b2d6aa296621a5608fd9c2271159b9b2f737f682704ebb96482"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-order-key-case/header-signature.txt",
+      "bytes": 142,
+      "sha256": "4ab931bc4fa1e2f18f6476bcb2347f95756da39f8025504ff4dc8a8a2b1503e5"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-order-key-case/header-signed-request.txt",
+      "bytes": 418,
+      "sha256": "21f9132722785920403ccbbc616f15628d38fcd5beb2318c18e4880b409f67ef"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-order-key-case/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "49f97c02aa145c1ded827b1e3c2cfe8c07345fc827abb70f4d54941cfe16c413"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-order-key-case/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-order-key-case/query-canonical-request.txt",
+      "bytes": 334,
+      "sha256": "c688584c3dbae2868c4911c825239f2c9375e66b9962f21db60b9b2fcd75bf45"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-order-key-case/query-signature.txt",
+      "bytes": 140,
+      "sha256": "5ac7970d80e5f51758c78401bbdfb6d4ceb9012565338bcbdd02fabfb87c1271"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-order-key-case/query-signed-request.txt",
+      "bytes": 431,
+      "sha256": "23c4b769ca5167145553f889f752a64ac768efab5d6fabd3d9d36df7a30ed41e"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-order-key-case/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "5ccc51d7d3c111696bb59ad0e30222c9c321c7fcbe4b1b7871119825ab6a5464"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-order-key-case/request.txt",
+      "bytes": 70,
+      "sha256": "97810c491d9ed70141c44b1a180169aac0149f086dd6db2a4ddea810af99d6d4"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-unreserved/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-unreserved/header-canonical-request.txt",
+      "bytes": 320,
+      "sha256": "377b8a3e195894659b84cd1c475dc8a3663a663360a349430c0c3b82bd82b77b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-unreserved/header-signature.txt",
+      "bytes": 142,
+      "sha256": "843c7567a22750b7403040e08abe77b003ff52571f738b315afcead585aa3fa1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-unreserved/header-signed-request.txt",
+      "bytes": 524,
+      "sha256": "cdf8cf332affed59291cd4aabc9b25d779bb8ea1bdca6029e62bc4d41c8f255c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-unreserved/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "b5c56fa1e336f470552d28bf7d5ce3376b133644b34fcacb9da5b9c8e6ee4658"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-unreserved/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-unreserved/query-canonical-request.txt",
+      "bytes": 440,
+      "sha256": "5d8923c620c699f856a35a6eb8dd786fd4c8c6ab0a35c552caeb5b648989433f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-unreserved/query-signature.txt",
+      "bytes": 142,
+      "sha256": "9b6f5011e0649a849d2fe0774fb672f882e6c9613c4e9515caa3b9c2f04fde29"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-unreserved/query-signed-request.txt",
+      "bytes": 541,
+      "sha256": "06984e908706b3832c22b13e34504748920a79dd075729bd39db6ec77f76103b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-unreserved/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "71d4af9757c6546a5131a3ca55db7d62694c23bcacef80ed122c64ae989d0cf1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-query-unreserved/request.txt",
+      "bytes": 176,
+      "sha256": "7de6e24f8d6f7b1cb5e9b9c766f47c5b60f06801892ed01e32f2510225a2ef87"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-utf8-query/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-utf8-query/header-canonical-request.txt",
+      "bytes": 200,
+      "sha256": "b27131d754045e85823698b1fe3fc9694c17b16d97f4c43cef2359a1233c7b76"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-utf8-query/header-signature.txt",
+      "bytes": 144,
+      "sha256": "d9d315e80b528dd7ace3a1b8b10372c4d4f8cc9e5ab9777d02be82e67e2e4e89"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-utf8-query/header-signed-request.txt",
+      "bytes": 398,
+      "sha256": "25664fd40c4fe63be3f1edfee1a95f14112a82f25304719392a57af0cc557cc7"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-utf8-query/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "960d96ec85bf8f0592758d7547e6221f85fa240c4b215e304bc3354609e6aea3"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-utf8-query/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-utf8-query/query-canonical-request.txt",
+      "bytes": 320,
+      "sha256": "e22d57192c68232f914afff959b8aa1027756098f879c7d4d7615a2469f85c1f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-utf8-query/query-signature.txt",
+      "bytes": 140,
+      "sha256": "b74dfb55b37d674b0c3f45e8592ea64ea83cc68dc48d550cc93cb1b6a372054f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-utf8-query/query-signed-request.txt",
+      "bytes": 415,
+      "sha256": "66200473d6c4ef60dee22ab3fa16add2e0b8328c865691ec1b4fd7fee3270d47"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-utf8-query/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "e06cea2cb3472459f3b01589c78433c9980eb59cbc44557cc8054bb5035b8924"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-utf8-query/request.txt",
+      "bytes": 50,
+      "sha256": "71775630f617a76d3f8cea8a489194033dd250a852777171ea7dd6d2703fb003"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-with-session-token/context.json",
+      "bytes": 403,
+      "sha256": "2294d0776e907b6fe1d6fefc7806f6efa25378bac9c050eba6cf67d96d54a5dc"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-with-session-token/header-canonical-request.txt",
+      "bytes": 294,
+      "sha256": "79893373104239a0547df489af395ec3c1b8873a8601f07f11ffd3f1ac557e7d"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-with-session-token/header-signature.txt",
+      "bytes": 140,
+      "sha256": "7ef2a93f717d6030a507038a5039c5793f9e2daf9c1cb342be3ea00c4d9ed691"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-with-session-token/header-signed-request.txt",
+      "bytes": 497,
+      "sha256": "e51a978b0d4b493462505fcd2d3d16daac2956d2da9e1855ce633c3b43710797"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-with-session-token/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "a8ddb188e516d365ba275c2b6d55ead851e89ab66f162adf29614f37cd3403c9"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-with-session-token/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-with-session-token/query-canonical-request.txt",
+      "bytes": 392,
+      "sha256": "496062b4c2ed2175fe08ad084158783fa8d013c694542af721d49b25d1ebd390"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-with-session-token/query-signature.txt",
+      "bytes": 144,
+      "sha256": "da6e4902026ffd2eb3e6b94530f3a7beb2840b94f6dd28bb6e7d2f1167026c22"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-with-session-token/query-signed-request.txt",
+      "bytes": 491,
+      "sha256": "3c85ec796aecef8aac2789b78058e83f6ac406bd3983aca7aca6400d19ca703e"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-with-session-token/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "1a602b8668ba48b31f8e0d69c166c4b2a2977ade961fd514f45075fecce15cd1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/get-vanilla-with-session-token/request.txt",
+      "bytes": 42,
+      "sha256": "9b87a0709187548ccac04f6d06a8cba1fc85273003efcda670e9f3ca1ad63e4f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-key-case/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-key-case/header-canonical-request.txt",
+      "bytes": 188,
+      "sha256": "806a9b01b76472cc6b66fff02630726d55f8b4ada6d2fd9b36eb0d710e215861"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-key-case/header-signature.txt",
+      "bytes": 140,
+      "sha256": "98ca95bfbbf1ea4c10d36347175fa9dac2d94fabdb8a5740a580153892e5a0a0"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-key-case/header-signed-request.txt",
+      "bytes": 393,
+      "sha256": "4b847c5d29fdf622644d83c76e6896ea0d5e671db7bdfa36209c73c22a6e9c97"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-key-case/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "d5b9afb6da963e78dbad2ddbef81147b6705ebe4e358554b0971a51726e17b5b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-key-case/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-key-case/query-canonical-request.txt",
+      "bytes": 307,
+      "sha256": "192546340393592ef9baaa24656f55ed91288110e7514b50f0a3f79bb761a29c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-key-case/query-signature.txt",
+      "bytes": 140,
+      "sha256": "c2a46cd54a5da6dfb58bc03f833062f4b406a1cc94d7316ceab702b3b9b23503"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-key-case/query-signed-request.txt",
+      "bytes": 404,
+      "sha256": "efe30485378b516474c99a3031e4f4a29938f3c747d5196cbf1272c6d223f9e0"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-key-case/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "6c559aa3001b90e4a5a2ece20322841691d0d2ee52e601b479a47e8ac163897f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-key-case/request.txt",
+      "bytes": 43,
+      "sha256": "29349106eca8824883913a7e55662958625d22ad40b4b8dcd53876bcce60063c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-key-sort/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-key-sort/header-canonical-request.txt",
+      "bytes": 217,
+      "sha256": "b92b1e85236a12f9d118f85fb6686c83b0e83fb3428f8d4da3cc9acb2851fcfa"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-key-sort/header-signature.txt",
+      "bytes": 142,
+      "sha256": "cf7406e98398baaa23638a74c445e327849f4a743a32364034ac486252bb7de9"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-key-sort/header-signed-request.txt",
+      "bytes": 422,
+      "sha256": "446c00744b20b7d3153ce71d46621c78a332a34b9d2c58f8f7ce5b005259885c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-key-sort/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "aee802e7fefd296db95bca234cf6152dbbc8b1f426d49d1ea579198b63c97685"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-key-sort/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-key-sort/query-canonical-request.txt",
+      "bytes": 349,
+      "sha256": "336638ab840d4785edc7db35ab9c036bc15ffb2dc1a4e05b04f3a7cd7407593f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-key-sort/query-signature.txt",
+      "bytes": 142,
+      "sha256": "d6d1b961fb2de410140e71261bc6d3149c0f87c7b1f67d9d722406330a002f36"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-key-sort/query-signed-request.txt",
+      "bytes": 437,
+      "sha256": "f42b09bbe1e2310fde6ef14c8d961daca265a0444f9fd789c28cb200f8463201"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-key-sort/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "05d2b9a47ed3ae4d09f29926f0be178189d77d538efee74e8d311d72850e7da3"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-key-sort/request.txt",
+      "bytes": 61,
+      "sha256": "2d690f0ba8e57ec0c982d92cdd7f5ab3001f3bd72b0fb71a40112e729d2475cf"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-value-case/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-value-case/header-canonical-request.txt",
+      "bytes": 217,
+      "sha256": "7de5a74bc45fb5c8a90faada2ab9538e69e4a5eb7f330f62387715669cecd492"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-value-case/header-signature.txt",
+      "bytes": 140,
+      "sha256": "fee1fafe63bf43330dddd3f511858d210ed806e47038c694bfb8f22bce9cf5f8"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-value-case/header-signed-request.txt",
+      "bytes": 420,
+      "sha256": "1f37adb34a50653a5794eba32d3d04ab749a76071211877fefea1704f6460e07"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-value-case/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "47fec45d370b6a141edc0c64608986b12a154082efbb9d81ba9fd539b4a6e1a2"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-value-case/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-value-case/query-canonical-request.txt",
+      "bytes": 349,
+      "sha256": "949fb555e05d3289760ff0f0566ad73a69ed865000d9843b93a15b916dbc8b6f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-value-case/query-signature.txt",
+      "bytes": 142,
+      "sha256": "aa89be4882cc1d76d09b7f558c31da664626a9e1727dec400bd0be1c98a98352"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-value-case/query-signed-request.txt",
+      "bytes": 435,
+      "sha256": "793557bf028b1fdfd0348c769513f730e2bf8b77061e74b322e65fc8c46fd8dd"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-value-case/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "4c101395c0e5e6a602d1cbdb414d1c294dc0d926c25451419914c2723ce3b90e"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-header-value-case/request.txt",
+      "bytes": 61,
+      "sha256": "25e6676ad202e9fe09788e3c077c514c061bbd1d1dc3a06c2b25f1237f4cc86b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-sts-header-after/context.json",
+      "bytes": 708,
+      "sha256": "047132d9810c045eaa4607e519f6393764c6b1ad8d0dc991f9f5406e98eb55da"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-sts-header-after/header-canonical-request.txt",
+      "bytes": 188,
+      "sha256": "806a9b01b76472cc6b66fff02630726d55f8b4ada6d2fd9b36eb0d710e215861"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-sts-header-after/header-signature.txt",
+      "bytes": 142,
+      "sha256": "01b6bc7f947cb67b7d125322f963aac8657b9a508a9d48aa842a074d52446418"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-sts-header-after/header-signed-request.txt",
+      "bytes": 749,
+      "sha256": "0a4ae06cb9814fe07cc00ec3153b560cf91a23effcc5207431baa9497ea4dc77"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-sts-header-after/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "d5b9afb6da963e78dbad2ddbef81147b6705ebe4e358554b0971a51726e17b5b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-sts-header-after/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-sts-header-after/query-canonical-request.txt",
+      "bytes": 307,
+      "sha256": "192546340393592ef9baaa24656f55ed91288110e7514b50f0a3f79bb761a29c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-sts-header-after/query-signature.txt",
+      "bytes": 144,
+      "sha256": "039ff0a82c0ab76bcf874bdede0d8d9700149dcf5e6689373657c41bd7626b10"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-sts-header-after/query-signed-request.txt",
+      "bytes": 796,
+      "sha256": "eafb4e72013167b2d2809cf75486a6000450c164f4d23b14f5683ab2da7312bf"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-sts-header-after/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "6c559aa3001b90e4a5a2ece20322841691d0d2ee52e601b479a47e8ac163897f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-sts-header-after/request.txt",
+      "bytes": 43,
+      "sha256": "29349106eca8824883913a7e55662958625d22ad40b4b8dcd53876bcce60063c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-sts-header-before/context.json",
+      "bytes": 709,
+      "sha256": "7937a4cfae3500896c6b9604fbe4543e4fff2b0d7ccb6765a7a6f211e58e0130"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-sts-header-before/header-canonical-request.txt",
+      "bytes": 567,
+      "sha256": "964c15d46a67b327b877c02d680c81cb75df04e85144142e190da565ff0d029f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-sts-header-before/header-signature.txt",
+      "bytes": 142,
+      "sha256": "fce0a235806637f2a2dd246a188b107db4385de641b159b6547dab8f81efefac"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-sts-header-before/header-signed-request.txt",
+      "bytes": 770,
+      "sha256": "7e154e807e24c82e86ecaa5926dc03d97650253d50053f5ad8404266f3bc2977"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-sts-header-before/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "c16f577a96ccf568099655015a2822c4f7bac19fbafefebe8a4f1cd7590261d3"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-sts-header-before/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-sts-header-before/query-canonical-request.txt",
+      "bytes": 699,
+      "sha256": "c3a8ba26c461df46b5010b756fb8644fd922a2aea95d77b56295e5e4d3bb155f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-sts-header-before/query-signature.txt",
+      "bytes": 140,
+      "sha256": "77b910fe9e60cdef928d9a40a2682b5b0d3dbeda7b65e0f3008e22820d62aee5"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-sts-header-before/query-signed-request.txt",
+      "bytes": 796,
+      "sha256": "0038fad96a10dd4526e5dd39d9924e534f364f1f399d232dbee7e475e7626dea"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-sts-header-before/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "7a4d27c88b96e829324586f37595c007e6e4b4fd1a686206400cb35ca9170c02"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-sts-header-before/request.txt",
+      "bytes": 43,
+      "sha256": "29349106eca8824883913a7e55662958625d22ad40b4b8dcd53876bcce60063c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla/header-canonical-request.txt",
+      "bytes": 188,
+      "sha256": "806a9b01b76472cc6b66fff02630726d55f8b4ada6d2fd9b36eb0d710e215861"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla/header-signature.txt",
+      "bytes": 140,
+      "sha256": "8582feb1b9d30020f443717dbbef466bb95748c4da80e5ff8700ba9085d4af4d"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla/header-signed-request.txt",
+      "bytes": 389,
+      "sha256": "8929d26c1d4dc54d66b540abc7a56da499540a9828e6b33a26c36fece80b0ecc"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "d5b9afb6da963e78dbad2ddbef81147b6705ebe4e358554b0971a51726e17b5b"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla/query-canonical-request.txt",
+      "bytes": 307,
+      "sha256": "192546340393592ef9baaa24656f55ed91288110e7514b50f0a3f79bb761a29c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla/query-signature.txt",
+      "bytes": 140,
+      "sha256": "156aae5040cb976b23f74b6731d9fa869eec91cb4c558f6b089e9990bce770e7"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla/query-signed-request.txt",
+      "bytes": 404,
+      "sha256": "8093dfd6de9743471beae955bd0264f7e516573dc43a392a2fbbd41f2a2977b8"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "6c559aa3001b90e4a5a2ece20322841691d0d2ee52e601b479a47e8ac163897f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla/request.txt",
+      "bytes": 43,
+      "sha256": "29349106eca8824883913a7e55662958625d22ad40b4b8dcd53876bcce60063c"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla-empty-query-value/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla-empty-query-value/header-canonical-request.txt",
+      "bytes": 201,
+      "sha256": "502dea2656f02eea10bd05eeec315ea1a6686ed2861176e1670b2d67e17b2f36"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla-empty-query-value/header-signature.txt",
+      "bytes": 142,
+      "sha256": "fc68d9dc3e510bc9846c261234a08c5885a2c92fdb197bda09c7ce4a950bd156"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla-empty-query-value/header-signed-request.txt",
+      "bytes": 403,
+      "sha256": "e755db12d476ad3866d40dbf669788ede2606caffd69b82bb3d48a458425dfc7"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla-empty-query-value/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "8e6a68e82fc66dd2dfa6c530e7ee24b9608ba5b41ca3295f13f7c453c1bdceb4"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla-empty-query-value/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla-empty-query-value/query-canonical-request.txt",
+      "bytes": 321,
+      "sha256": "b9ec8df7b378fbee58903f5c54bd50e80a4d2d5aa9532583910ce771e42574fe"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla-empty-query-value/query-signature.txt",
+      "bytes": 142,
+      "sha256": "1dd1549b1e8cc485bc4e60b88dfcd2c3965b9801189939c7c1d79d416f7cb5ad"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla-empty-query-value/query-signed-request.txt",
+      "bytes": 420,
+      "sha256": "1c4bb8af1e787288273248e930fe0f73f4b9d7ba97c8d0d72c42d79502464d73"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla-empty-query-value/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "c43a9495370e559ad47d98067a3a1a18bc16804050ff1e21b94a221d0a73b633"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla-empty-query-value/request.txt",
+      "bytes": 57,
+      "sha256": "b1c4114a5cf0f64ba8d065abf28a614f4ea7a67ddbe77cd4f590a4f3aaeb5a73"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla-query/context.json",
+      "bytes": 318,
+      "sha256": "5f8a32a755e065dec2dbcb5b7f2a8b1dcd539391255514de714704e33916a2f1"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla-query/header-canonical-request.txt",
+      "bytes": 201,
+      "sha256": "502dea2656f02eea10bd05eeec315ea1a6686ed2861176e1670b2d67e17b2f36"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla-query/header-signature.txt",
+      "bytes": 144,
+      "sha256": "8f2febbc62951eb7ca526154fe38936945d98caf89bf4461ce5a650019fd39ff"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla-query/header-signed-request.txt",
+      "bytes": 403,
+      "sha256": "7bbfb662f67fab066533254ba4e71aed65b5064f49cb50ccf4cb35368526c40f"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla-query/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "8e6a68e82fc66dd2dfa6c530e7ee24b9608ba5b41ca3295f13f7c453c1bdceb4"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla-query/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla-query/query-canonical-request.txt",
+      "bytes": 321,
+      "sha256": "b9ec8df7b378fbee58903f5c54bd50e80a4d2d5aa9532583910ce771e42574fe"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla-query/query-signature.txt",
+      "bytes": 140,
+      "sha256": "0921bf27594d4293f6ca44b9322b2c408c099bac62025554427ce86da0dbd245"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla-query/query-signed-request.txt",
+      "bytes": 418,
+      "sha256": "82a54265fdaf97a0d1f0ca239458e3bc197701edfdefb37f1e17d446ae69e7e0"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla-query/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "c43a9495370e559ad47d98067a3a1a18bc16804050ff1e21b94a221d0a73b633"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-vanilla-query/request.txt",
+      "bytes": 57,
+      "sha256": "b1c4114a5cf0f64ba8d065abf28a614f4ea7a67ddbe77cd4f590a4f3aaeb5a73"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-x-www-form-urlencoded/context.json",
+      "bytes": 317,
+      "sha256": "c94708386cb3f2b7ab4337aa7ec85a7cdcfb7a0d4d2f22be66495b18a0d7ba21"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-x-www-form-urlencoded/header-canonical-request.txt",
+      "bytes": 388,
+      "sha256": "ba7fa291aefad463b308fdc89b33d852aea9fbcfa151d820117bd8189066cb91"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-x-www-form-urlencoded/header-signature.txt",
+      "bytes": 140,
+      "sha256": "1a4662874540ceb8ffd61f45cd94b72d5c8b2740465c8c59fa5b40b369574935"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-x-www-form-urlencoded/header-signed-request.txt",
+      "bytes": 604,
+      "sha256": "fa65421f25906c3064174c2423468fe6dded252fd479dce0b36830c2f32584fa"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-x-www-form-urlencoded/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "2841783e2e02d1cf78d698186fb578ae5dc3fdf58811812cc3c95f7ac1707a2e"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-x-www-form-urlencoded/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-x-www-form-urlencoded/query-canonical-request.txt",
+      "bytes": 432,
+      "sha256": "4e4122984d30d13170a298ece62cc30f8da12578fb3b482616b1f11036b13934"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-x-www-form-urlencoded/query-signature.txt",
+      "bytes": 140,
+      "sha256": "89aa8dcd96d606b205975b65eaa7300744480f3ede989f675dc5aeae89f2ccb3"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-x-www-form-urlencoded/query-signed-request.txt",
+      "bytes": 516,
+      "sha256": "1c6c066f3938a9a15a0202a2d0f615ea92359274efd0a9c4a0ff8afc4a6367fe"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-x-www-form-urlencoded/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "30043970c1a31b9575f2200612c4eb3c77d76c4d4545276f396cc319f166a894"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-x-www-form-urlencoded/request.txt",
+      "bytes": 122,
+      "sha256": "ac60f842802c8efa6ddb25b8cda8e4380354552a5c376073ff489ec583b2d905"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-x-www-form-urlencoded-parameters/context.json",
+      "bytes": 317,
+      "sha256": "c94708386cb3f2b7ab4337aa7ec85a7cdcfb7a0d4d2f22be66495b18a0d7ba21"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-x-www-form-urlencoded-parameters/header-canonical-request.txt",
+      "bytes": 403,
+      "sha256": "bcdb9ab3050c0bb18c5e9eb60e6eb1aaaf00907920065569a99b0c51278639b5"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-x-www-form-urlencoded-parameters/header-signature.txt",
+      "bytes": 142,
+      "sha256": "9aba1f43dca186d5eda2764b07a2413eb773c7dcd737b47a998fee5ebf3845a2"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-x-www-form-urlencoded-parameters/header-signed-request.txt",
+      "bytes": 619,
+      "sha256": "9b1ade012c243d493e556cab0366f785d724f56b024c0cf0e5001d344732c962"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-x-www-form-urlencoded-parameters/header-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "b161c9f907d0355884398a696638b030a38ef7b27801e11465f14c0d9911c7f9"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-x-www-form-urlencoded-parameters/public-key.json",
+      "bytes": 151,
+      "sha256": "7f926e5ce5f175df1322ded4d113fffd75c18e9fadbf3bb334d575592a483d58"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-x-www-form-urlencoded-parameters/query-canonical-request.txt",
+      "bytes": 447,
+      "sha256": "d4dab970413a0459d2a3bb644b278e96e85f2f6ac8fa09a74bbd6a269ec3dd82"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-x-www-form-urlencoded-parameters/query-signature.txt",
+      "bytes": 144,
+      "sha256": "f098be63215b3a9c6059393afc721e3895a225014967abef29f0e847cab9d536"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-x-www-form-urlencoded-parameters/query-signed-request.txt",
+      "bytes": 531,
+      "sha256": "128fe9193d931ce738c203a8040852c3f088ca39771b18968e5956ea44444da5"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-x-www-form-urlencoded-parameters/query-string-to-sign.txt",
+      "bytes": 134,
+      "sha256": "60d910ef8c86215f1cc6d03ff810883a0340156aa3661cc0a837708d2a66e335"
+    },
+    {
+      "path": "aws-signing-test-suite/v4a/post-x-www-form-urlencoded-parameters/request.txt",
+      "bytes": 137,
+      "sha256": "2160e0b03d09382c1b0819a9da7e6845f12d3810a31e68d1e173fa15580399af"
+    }
+  ],
+  "native_tests_executed": false
+}

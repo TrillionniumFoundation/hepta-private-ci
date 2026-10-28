@@ -1,0 +1,4056 @@
+{
+  "schema": "aws-config-original-tree-receipt-v1",
+  "repository": "awslabs/aws-sdk-rust",
+  "commit": "f031610a8cbb4ac2dac3229bfaeaa88182787ab4",
+  "path": "sdk/aws-config",
+  "trees": {
+    "test-data": {
+      "sha": "63944c04673762fe5a02eb016a4354f291f8b429",
+      "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/63944c04673762fe5a02eb016a4354f291f8b429",
+      "tree": [
+        {
+          "path": "assume-role-tests.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "26bcf4308dd8673e776e5b2779183e16d6125b31",
+          "size": 15236,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/26bcf4308dd8673e776e5b2779183e16d6125b31"
+        },
+        {
+          "path": "default-credential-provider-chain",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "4bde1b7db3fa13cbe45c5301529bfe1d9a8b4123",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/4bde1b7db3fa13cbe45c5301529bfe1d9a8b4123"
+        },
+        {
+          "path": "default-credential-provider-chain/e2e_fips_and_dual_stack_sso",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "8101fb876dbc1088d5a64d8974c0c49ab76afa46",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/8101fb876dbc1088d5a64d8974c0c49ab76afa46"
+        },
+        {
+          "path": "default-credential-provider-chain/e2e_fips_and_dual_stack_sso/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7e1f0ed5e68c44add3e2ecfa39c3247fed1a9cb4",
+          "size": 155,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/7e1f0ed5e68c44add3e2ecfa39c3247fed1a9cb4"
+        },
+        {
+          "path": "default-credential-provider-chain/e2e_fips_and_dual_stack_sso/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "51549eeb412b11dcb845af9ccc8c1cecc46b467f",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/51549eeb412b11dcb845af9ccc8c1cecc46b467f"
+        },
+        {
+          "path": "default-credential-provider-chain/e2e_fips_and_dual_stack_sso/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "5dfd5d6df99bbf1d3d0ff49dab679f06f773c072",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/5dfd5d6df99bbf1d3d0ff49dab679f06f773c072"
+        },
+        {
+          "path": "default-credential-provider-chain/e2e_fips_and_dual_stack_sso/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "5110456e6ef3c261b21c1de4cb56a8160594e4a7",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/5110456e6ef3c261b21c1de4cb56a8160594e4a7"
+        },
+        {
+          "path": "default-credential-provider-chain/e2e_fips_and_dual_stack_sso/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7967221048a7048d655c02a319306c8b7045bded",
+          "size": 164,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/7967221048a7048d655c02a319306c8b7045bded"
+        },
+        {
+          "path": "default-credential-provider-chain/e2e_fips_and_dual_stack_sso/fs/home/.aws/sso",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "ff77d6972a1d8459b4c7e9ae4397239570d4ec0d",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/ff77d6972a1d8459b4c7e9ae4397239570d4ec0d"
+        },
+        {
+          "path": "default-credential-provider-chain/e2e_fips_and_dual_stack_sso/fs/home/.aws/sso/cache",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "eefb830273c491eb548891c05fd3336e0cdbd22f",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/eefb830273c491eb548891c05fd3336e0cdbd22f"
+        },
+        {
+          "path": "default-credential-provider-chain/e2e_fips_and_dual_stack_sso/fs/home/.aws/sso/cache/dace00cba5f8355ec9d274ceb2bcebdfbeed0e12.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c4cca143fbc51e0745810515d3130baa3a989c91",
+          "size": 121,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/c4cca143fbc51e0745810515d3130baa3a989c91"
+        },
+        {
+          "path": "default-credential-provider-chain/e2e_fips_and_dual_stack_sso/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f7f80963e890e167104ba5b50eba627d7979c3ce",
+          "size": 2202,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/f7f80963e890e167104ba5b50eba627d7979c3ce"
+        },
+        {
+          "path": "default-credential-provider-chain/e2e_fips_and_dual_stack_sso/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a2782c6c056140f7a6936da79bb3bf2f6365110c",
+          "size": 332,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/a2782c6c056140f7a6936da79bb3bf2f6365110c"
+        },
+        {
+          "path": "default-credential-provider-chain/ecs_assume_role",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "6e585a41d1bbc6be9b30609cd02a896196972a83",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/6e585a41d1bbc6be9b30609cd02a896196972a83"
+        },
+        {
+          "path": "default-credential-provider-chain/ecs_assume_role/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "dc9f3f5948efca7fad39716f61fbc8da06901548",
+          "size": 122,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/dc9f3f5948efca7fad39716f61fbc8da06901548"
+        },
+        {
+          "path": "default-credential-provider-chain/ecs_assume_role/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "6b3ed6dd30b1c683cb5e8dc8483d0408bc0a007b",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/6b3ed6dd30b1c683cb5e8dc8483d0408bc0a007b"
+        },
+        {
+          "path": "default-credential-provider-chain/ecs_assume_role/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "cfe461973be985d9e0c9d47c668f3f29df929122",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/cfe461973be985d9e0c9d47c668f3f29df929122"
+        },
+        {
+          "path": "default-credential-provider-chain/ecs_assume_role/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "f0ec0b1991db499409f322f4459612b23c70fe5c",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/f0ec0b1991db499409f322f4459612b23c70fe5c"
+        },
+        {
+          "path": "default-credential-provider-chain/ecs_assume_role/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3631de7e24d6733a527ca1ab17aa3c1435b5870c",
+          "size": 127,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/3631de7e24d6733a527ca1ab17aa3c1435b5870c"
+        },
+        {
+          "path": "default-credential-provider-chain/ecs_assume_role/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a34024cc4f9bc023cf66c2cd347b9ebae76c41c6",
+          "size": 6421,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/a34024cc4f9bc023cf66c2cd347b9ebae76c41c6"
+        },
+        {
+          "path": "default-credential-provider-chain/ecs_assume_role/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1c427a5b4b491213581400a1296f78e87a3e1ef5",
+          "size": 339,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/1c427a5b4b491213581400a1296f78e87a3e1ef5"
+        },
+        {
+          "path": "default-credential-provider-chain/ecs_credentials",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "10b3d6aed653285d0b16db3fc85c531e5120cbe7",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/10b3d6aed653285d0b16db3fc85c531e5120cbe7"
+        },
+        {
+          "path": "default-credential-provider-chain/ecs_credentials/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e8c4070c682dffa48c724cbf1f4fb4ec3ca5b969",
+          "size": 151,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/e8c4070c682dffa48c724cbf1f4fb4ec3ca5b969"
+        },
+        {
+          "path": "default-credential-provider-chain/ecs_credentials/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "41c019d1d099ebb96b2bc8855feba5e7cd27a720",
+          "size": 2071,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/41c019d1d099ebb96b2bc8855feba5e7cd27a720"
+        },
+        {
+          "path": "default-credential-provider-chain/ecs_credentials/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2067729f7c67e2658056b31bdeb49c04a3434c45",
+          "size": 305,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/2067729f7c67e2658056b31bdeb49c04a3434c45"
+        },
+        {
+          "path": "default-credential-provider-chain/ecs_credentials_invalid_profile",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "7f0c831e79302f7c91a2fbd692e15900daca7bbc",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/7f0c831e79302f7c91a2fbd692e15900daca7bbc"
+        },
+        {
+          "path": "default-credential-provider-chain/ecs_credentials_invalid_profile/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e8c4070c682dffa48c724cbf1f4fb4ec3ca5b969",
+          "size": 151,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/e8c4070c682dffa48c724cbf1f4fb4ec3ca5b969"
+        },
+        {
+          "path": "default-credential-provider-chain/ecs_credentials_invalid_profile/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "5d771d5d6ab5d33a4f2c277a908e23746e0256e3",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/5d771d5d6ab5d33a4f2c277a908e23746e0256e3"
+        },
+        {
+          "path": "default-credential-provider-chain/ecs_credentials_invalid_profile/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "c74a1e8bce4f0c68b62095055ff4669378d03bff",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/c74a1e8bce4f0c68b62095055ff4669378d03bff"
+        },
+        {
+          "path": "default-credential-provider-chain/ecs_credentials_invalid_profile/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "3970586a14c9f3bbda1f6d1a70ecf4a54052f076",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/3970586a14c9f3bbda1f6d1a70ecf4a54052f076"
+        },
+        {
+          "path": "default-credential-provider-chain/ecs_credentials_invalid_profile/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ee7716ed0674ab43207ca92632e8a1e7590644b2",
+          "size": 72,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/ee7716ed0674ab43207ca92632e8a1e7590644b2"
+        },
+        {
+          "path": "default-credential-provider-chain/ecs_credentials_invalid_profile/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "41c019d1d099ebb96b2bc8855feba5e7cd27a720",
+          "size": 2071,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/41c019d1d099ebb96b2bc8855feba5e7cd27a720"
+        },
+        {
+          "path": "default-credential-provider-chain/ecs_credentials_invalid_profile/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2067729f7c67e2658056b31bdeb49c04a3434c45",
+          "size": 305,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/2067729f7c67e2658056b31bdeb49c04a3434c45"
+        },
+        {
+          "path": "default-credential-provider-chain/eks_pod_identity_credentials",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "718e9553d9bd4d12481db6e576e5335345065586",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/718e9553d9bd4d12481db6e576e5335345065586"
+        },
+        {
+          "path": "default-credential-provider-chain/eks_pod_identity_credentials/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "45324e91b508dc7e10e117ddeadc2f02527a8667",
+          "size": 189,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/45324e91b508dc7e10e117ddeadc2f02527a8667"
+        },
+        {
+          "path": "default-credential-provider-chain/eks_pod_identity_credentials/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "f866dc603e5c3c6e037e2bffbe0cd4a0e8df5da5",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/f866dc603e5c3c6e037e2bffbe0cd4a0e8df5da5"
+        },
+        {
+          "path": "default-credential-provider-chain/eks_pod_identity_credentials/fs/token.jwt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "661b5e547a83fbc2ffbd428844a466bd127e6bc4",
+          "size": 9,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/661b5e547a83fbc2ffbd428844a466bd127e6bc4"
+        },
+        {
+          "path": "default-credential-provider-chain/eks_pod_identity_credentials/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "59ac7db15d2cbbe0919d7486d3e0ee6b1e0b2919",
+          "size": 2056,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/59ac7db15d2cbbe0919d7486d3e0ee6b1e0b2919"
+        },
+        {
+          "path": "default-credential-provider-chain/eks_pod_identity_credentials/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ee79a7c61f54bb40fc556564cdd45d726107f19d",
+          "size": 331,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/ee79a7c61f54bb40fc556564cdd45d726107f19d"
+        },
+        {
+          "path": "default-credential-provider-chain/eks_pod_identity_no_token_file",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "59b10dedb09cf8519a64bcf2fe05d20ba935ad93",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/59b10dedb09cf8519a64bcf2fe05d20ba935ad93"
+        },
+        {
+          "path": "default-credential-provider-chain/eks_pod_identity_no_token_file/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "45324e91b508dc7e10e117ddeadc2f02527a8667",
+          "size": 189,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/45324e91b508dc7e10e117ddeadc2f02527a8667"
+        },
+        {
+          "path": "default-credential-provider-chain/eks_pod_identity_no_token_file/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a0965529c7ec27dd2620f89212ac5aa07bfced6a",
+          "size": 82,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/a0965529c7ec27dd2620f89212ac5aa07bfced6a"
+        },
+        {
+          "path": "default-credential-provider-chain/eks_pod_identity_no_token_file/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6e2b5c09f54f5f2dbd343974b6e797c609b7ed61",
+          "size": 209,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/6e2b5c09f54f5f2dbd343974b6e797c609b7ed61"
+        },
+        {
+          "path": "default-credential-provider-chain/environment_variables",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "d32689e44e2b2381820d88dee9c7d6735f02d94a",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/d32689e44e2b2381820d88dee9c7d6735f02d94a"
+        },
+        {
+          "path": "default-credential-provider-chain/environment_variables/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "dba68846bfb634c205acaa5370481d478deb6898",
+          "size": 156,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/dba68846bfb634c205acaa5370481d478deb6898"
+        },
+        {
+          "path": "default-credential-provider-chain/environment_variables/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "440bac5f105c6c5aadd80133650ac1bb87116ee7",
+          "size": 109,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/440bac5f105c6c5aadd80133650ac1bb87116ee7"
+        },
+        {
+          "path": "default-credential-provider-chain/environment_variables/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ecb27751c953dc666f854d9c712dd356b11a6340",
+          "size": 262,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/ecb27751c953dc666f854d9c712dd356b11a6340"
+        },
+        {
+          "path": "default-credential-provider-chain/environment_variables_blank",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "660a5b45e665706fff3cd2078a6f27f6b73986ad",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/660a5b45e665706fff3cd2078a6f27f6b73986ad"
+        },
+        {
+          "path": "default-credential-provider-chain/environment_variables_blank/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3b978c4360a4ee2b77d49fb36f9281a556fce01e",
+          "size": 115,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/3b978c4360a4ee2b77d49fb36f9281a556fce01e"
+        },
+        {
+          "path": "default-credential-provider-chain/environment_variables_blank/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "fd6b8e283d649f133982cb7ea9351c0ec7ea574d",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/fd6b8e283d649f133982cb7ea9351c0ec7ea574d"
+        },
+        {
+          "path": "default-credential-provider-chain/environment_variables_blank/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "839325113f092e65fc779b95e94b35fd8c2a3ab6",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/839325113f092e65fc779b95e94b35fd8c2a3ab6"
+        },
+        {
+          "path": "default-credential-provider-chain/environment_variables_blank/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "50893700352d768ad5356d72b738c9060644fc6b",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/50893700352d768ad5356d72b738c9060644fc6b"
+        },
+        {
+          "path": "default-credential-provider-chain/environment_variables_blank/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f072e0c781566018b1c0adcc0d6c802ac8d26786",
+          "size": 218,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/f072e0c781566018b1c0adcc0d6c802ac8d26786"
+        },
+        {
+          "path": "default-credential-provider-chain/environment_variables_blank/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "489a35c6115b39458d8fd4e17f39da16f57856d1",
+          "size": 100,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/489a35c6115b39458d8fd4e17f39da16f57856d1"
+        },
+        {
+          "path": "default-credential-provider-chain/environment_variables_blank/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0d71cdbbb7fc4295d8542ba74309a411dd990e4a",
+          "size": 286,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/0d71cdbbb7fc4295d8542ba74309a411dd990e4a"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_assume_role",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "f08e1cd5580e371056cb3aabd61e6030354fc480",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/f08e1cd5580e371056cb3aabd61e6030354fc480"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_assume_role/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+          "size": 22,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_assume_role/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "8b5d031666dada50f621da150bf1ab1895d89f03",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/8b5d031666dada50f621da150bf1ab1895d89f03"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_assume_role/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "80b046bf6da31144680dd6dc3985945eacc124d0",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/80b046bf6da31144680dd6dc3985945eacc124d0"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_assume_role/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "20292ac5dd7a2e34e0dbe06539c264a9739c50ab",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/20292ac5dd7a2e34e0dbe06539c264a9739c50ab"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_assume_role/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "638bdfbc5c8e2e97dd7a319dd255c3dedc627c97",
+          "size": 134,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/638bdfbc5c8e2e97dd7a319dd255c3dedc627c97"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_assume_role/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "285f10b37cb58139be25ace61e43b27a82be0614",
+          "size": 13732,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/285f10b37cb58139be25ace61e43b27a82be0614"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_assume_role/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "963080a07f9a7035209014f9cafcc9f39a01b5c2",
+          "size": 331,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/963080a07f9a7035209014f9cafcc9f39a01b5c2"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_config_with_no_creds",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "e634aa9dfef8fd7e59f30877692c51c1b32306c4",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/e634aa9dfef8fd7e59f30877692c51c1b32306c4"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_config_with_no_creds/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "db12cd280b547d19fc5c21d9e17331085af0888b",
+          "size": 51,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/db12cd280b547d19fc5c21d9e17331085af0888b"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_config_with_no_creds/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "f63bad6b43bc9b55c85c3955b885a9f7c6767d1b",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/f63bad6b43bc9b55c85c3955b885a9f7c6767d1b"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_config_with_no_creds/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "5621509f242ac1d80f9b27a357a8bfffde9b0dc0",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/5621509f242ac1d80f9b27a357a8bfffde9b0dc0"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_config_with_no_creds/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "1803301a93b69cf74024c65ff7a69c0918211f99",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/1803301a93b69cf74024c65ff7a69c0918211f99"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_config_with_no_creds/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "490734a8290928b5ba0216632053b683430d32c8",
+          "size": 27,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/490734a8290928b5ba0216632053b683430d32c8"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_config_with_no_creds/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9033ccb10cee5b1435128554936f9f93d8665c90",
+          "size": 9461,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/9033ccb10cee5b1435128554936f9f93d8665c90"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_config_with_no_creds/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "73a9fe8bb21d2ec3a4c48492cee118ca9184801a",
+          "size": 319,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/73a9fe8bb21d2ec3a4c48492cee118ca9184801a"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_default_chain_error",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "b574f8b9c90db4049cac33f229e99c1360184474",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/b574f8b9c90db4049cac33f229e99c1360184474"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_default_chain_error/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "db12cd280b547d19fc5c21d9e17331085af0888b",
+          "size": 51,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/db12cd280b547d19fc5c21d9e17331085af0888b"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_default_chain_error/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "0b0050830dcec11a58f884ddde9e215aa77d4306",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/0b0050830dcec11a58f884ddde9e215aa77d4306"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_default_chain_error/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "758321594b2e21ccef764ab53cd65b58095e594d",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/758321594b2e21ccef764ab53cd65b58095e594d"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_default_chain_error/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "7cd760e03e08caf5ebcef03193adbe662db7d926",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/7cd760e03e08caf5ebcef03193adbe662db7d926"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_default_chain_error/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          "size": 0,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_default_chain_error/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "91db215749e065d2d3b66cb6db1da03e55fac30f",
+          "size": 5985,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/91db215749e065d2d3b66cb6db1da03e55fac30f"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_default_chain_error/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "da2abbfc5c53c95b5c41070b8553ea813ffb7369",
+          "size": 288,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/da2abbfc5c53c95b5c41070b8553ea813ffb7369"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_default_chain_retries",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "ef70f7198a30782480e91ba958adf4a6423f4f8b",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/ef70f7198a30782480e91ba958adf4a6423f4f8b"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_default_chain_retries/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "db12cd280b547d19fc5c21d9e17331085af0888b",
+          "size": 51,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/db12cd280b547d19fc5c21d9e17331085af0888b"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_default_chain_retries/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "0b0050830dcec11a58f884ddde9e215aa77d4306",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/0b0050830dcec11a58f884ddde9e215aa77d4306"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_default_chain_retries/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "758321594b2e21ccef764ab53cd65b58095e594d",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/758321594b2e21ccef764ab53cd65b58095e594d"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_default_chain_retries/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "7cd760e03e08caf5ebcef03193adbe662db7d926",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/7cd760e03e08caf5ebcef03193adbe662db7d926"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_default_chain_retries/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          "size": 0,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_default_chain_retries/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1a639488c71531cc497a2bc7f77cc36b95cf31e1",
+          "size": 14269,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/1a639488c71531cc497a2bc7f77cc36b95cf31e1"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_default_chain_retries/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b8048ebbf6337a5d2f8132786e22b3a4747cf11e",
+          "size": 383,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/b8048ebbf6337a5d2f8132786e22b3a4747cf11e"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_default_chain_success",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "9d1dd105aaecc02290d04900ab05892d5c83e282",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/9d1dd105aaecc02290d04900ab05892d5c83e282"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_default_chain_success/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "db12cd280b547d19fc5c21d9e17331085af0888b",
+          "size": 51,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/db12cd280b547d19fc5c21d9e17331085af0888b"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_default_chain_success/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "0b0050830dcec11a58f884ddde9e215aa77d4306",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/0b0050830dcec11a58f884ddde9e215aa77d4306"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_default_chain_success/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "758321594b2e21ccef764ab53cd65b58095e594d",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/758321594b2e21ccef764ab53cd65b58095e594d"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_default_chain_success/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "7cd760e03e08caf5ebcef03193adbe662db7d926",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/7cd760e03e08caf5ebcef03193adbe662db7d926"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_default_chain_success/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          "size": 0,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_default_chain_success/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a1f57fc6ef75fad5c1330dc0d267f64acda00094",
+          "size": 9421,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/a1f57fc6ef75fad5c1330dc0d267f64acda00094"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_default_chain_success/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f951f70eea812c9e4e0ecd3c9c86c24580f6ff6b",
+          "size": 383,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/f951f70eea812c9e4e0ecd3c9c86c24580f6ff6b"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_disabled",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "1d8888db30ca43502760181e75377dc711563723",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/1d8888db30ca43502760181e75377dc711563723"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_disabled/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b7e3ba4252c926232d2a7f24902974b2fec861b3",
+          "size": 61,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/b7e3ba4252c926232d2a7f24902974b2fec861b3"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_disabled/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d313739d7a81746be2030a4ce60a1343e65e1a74",
+          "size": 69,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/d313739d7a81746be2030a4ce60a1343e65e1a74"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_disabled/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "47122825013828d53c58249a1c63aa2f1e358e94",
+          "size": 225,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/47122825013828d53c58249a1c63aa2f1e358e94"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_no_iam_role",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "aed373be2d90a625459ab8fc611363da1bdcdce7",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/aed373be2d90a625459ab8fc611363da1bdcdce7"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_no_iam_role/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+          "size": 22,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_no_iam_role/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "b770c5f47bbe49a0bebcb84908773f92b40a9b39",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/b770c5f47bbe49a0bebcb84908773f92b40a9b39"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_no_iam_role/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "8b042be639d3c1abc2d889529b5d81550b843a6c",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/8b042be639d3c1abc2d889529b5d81550b843a6c"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_no_iam_role/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "1bd1bf382b6d028a87c26dc861864ace51438ce3",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/1bd1bf382b6d028a87c26dc861864ace51438ce3"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_no_iam_role/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e9a026444005381a54445371920a057d433d605f",
+          "size": 125,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/e9a026444005381a54445371920a057d433d605f"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_no_iam_role/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "91db215749e065d2d3b66cb6db1da03e55fac30f",
+          "size": 5985,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/91db215749e065d2d3b66cb6db1da03e55fac30f"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_no_iam_role/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5c4a015f99035f6de55ff9a5deeb90354e230d01",
+          "size": 210,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/5c4a015f99035f6de55ff9a5deeb90354e230d01"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_token_fail",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "9bdb8234c480ef1ef11c30cbc03e82d3a2b649c4",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/9bdb8234c480ef1ef11c30cbc03e82d3a2b649c4"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_token_fail/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+          "size": 22,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_token_fail/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "b770c5f47bbe49a0bebcb84908773f92b40a9b39",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/b770c5f47bbe49a0bebcb84908773f92b40a9b39"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_token_fail/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "8b042be639d3c1abc2d889529b5d81550b843a6c",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/8b042be639d3c1abc2d889529b5d81550b843a6c"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_token_fail/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "1bd1bf382b6d028a87c26dc861864ace51438ce3",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/1bd1bf382b6d028a87c26dc861864ace51438ce3"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_token_fail/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e9a026444005381a54445371920a057d433d605f",
+          "size": 125,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/e9a026444005381a54445371920a057d433d605f"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_token_fail/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "588e7cec962abb8e4d1f12165037709728a875c5",
+          "size": 1437,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/588e7cec962abb8e4d1f12165037709728a875c5"
+        },
+        {
+          "path": "default-credential-provider-chain/imds_token_fail/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b4e7ca9090531d8c2f9a0e663910ecc0efc3007b",
+          "size": 180,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/b4e7ca9090531d8c2f9a0e663910ecc0efc3007b"
+        },
+        {
+          "path": "default-credential-provider-chain/prefer_environment",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "0dcd6dac5c70ada1994f63d549c4b329c15e491f",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/0dcd6dac5c70ada1994f63d549c4b329c15e491f"
+        },
+        {
+          "path": "default-credential-provider-chain/prefer_environment/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9c196d40c999d43692cd23dd17567624a1cbef23",
+          "size": 105,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/9c196d40c999d43692cd23dd17567624a1cbef23"
+        },
+        {
+          "path": "default-credential-provider-chain/prefer_environment/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "c79f11bae451f25b411af5a076a97e25baf6b2a3",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/c79f11bae451f25b411af5a076a97e25baf6b2a3"
+        },
+        {
+          "path": "default-credential-provider-chain/prefer_environment/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "c72696d9726dc39148b44f582005c2074e507694",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/c72696d9726dc39148b44f582005c2074e507694"
+        },
+        {
+          "path": "default-credential-provider-chain/prefer_environment/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "4f76770c0293b22b1c62c0da8e8409f64eba620d",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/4f76770c0293b22b1c62c0da8e8409f64eba620d"
+        },
+        {
+          "path": "default-credential-provider-chain/prefer_environment/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a7e5ed58158e3ac104945bc0aeefdf42685dff01",
+          "size": 142,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/a7e5ed58158e3ac104945bc0aeefdf42685dff01"
+        },
+        {
+          "path": "default-credential-provider-chain/prefer_environment/fs/home/.aws/credentials",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1cab6a6ca21392456a0978e10640f0c7916b7539",
+          "size": 65,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/1cab6a6ca21392456a0978e10640f0c7916b7539"
+        },
+        {
+          "path": "default-credential-provider-chain/prefer_environment/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d313739d7a81746be2030a4ce60a1343e65e1a74",
+          "size": 69,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/d313739d7a81746be2030a4ce60a1343e65e1a74"
+        },
+        {
+          "path": "default-credential-provider-chain/prefer_environment/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "97751f5ef4e0661e0b8de4a9e8924c108e171697",
+          "size": 209,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/97751f5ef4e0661e0b8de4a9e8924c108e171697"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_name",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "8aca0ccf744182b9a3dfa2dad97744f652e01b78",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/8aca0ccf744182b9a3dfa2dad97744f652e01b78"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_name/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "053cbf1bedc13a2763b958d2b4ff7c1cddf60a4d",
+          "size": 80,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/053cbf1bedc13a2763b958d2b4ff7c1cddf60a4d"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_name/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "32a4fa4f6513ec265108a27387419f0fcb508514",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/32a4fa4f6513ec265108a27387419f0fcb508514"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_name/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "52432746d1ec46dd067cae4e2f08040884c6a2a6",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/52432746d1ec46dd067cae4e2f08040884c6a2a6"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_name/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "9e21cda35ac133b88714b38ef06d24fececa09d8",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/9e21cda35ac133b88714b38ef06d24fececa09d8"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_name/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "cd3647966900c5325526320f880efed19518119b",
+          "size": 243,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/cd3647966900c5325526320f880efed19518119b"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_name/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "489a35c6115b39458d8fd4e17f39da16f57856d1",
+          "size": 100,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/489a35c6115b39458d8fd4e17f39da16f57856d1"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_name/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f7a1a28b8b8ffa37892c99a05929f89a6bc3b83c",
+          "size": 238,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/f7a1a28b8b8ffa37892c99a05929f89a6bc3b83c"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_overrides_web_identity",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "c27060d5384cf7bdbfe942b42f0690c970767f24",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/c27060d5384cf7bdbfe942b42f0690c970767f24"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_overrides_web_identity/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "233d9a0b0107f721ba762337604f1c691afd8c38",
+          "size": 146,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/233d9a0b0107f721ba762337604f1c691afd8c38"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_overrides_web_identity/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "72fc08531c5ff15da16a48699761e5bc901c766a",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/72fc08531c5ff15da16a48699761e5bc901c766a"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_overrides_web_identity/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "e7890117433349b3f36fb2f9dd5070bb5ab6e5d3",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/e7890117433349b3f36fb2f9dd5070bb5ab6e5d3"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_overrides_web_identity/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "65cfb685aca312c53d29ef402cc71820f730ef0e",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/65cfb685aca312c53d29ef402cc71820f730ef0e"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_overrides_web_identity/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b59c920d17639ed74ea535133df819e3ce86f6d3",
+          "size": 89,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/b59c920d17639ed74ea535133df819e3ce86f6d3"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_overrides_web_identity/fs/token.jwt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f7627e85cb56d175597a4a486bf4158f5940c53b",
+          "size": 16,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/f7627e85cb56d175597a4a486bf4158f5940c53b"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_overrides_web_identity/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "489a35c6115b39458d8fd4e17f39da16f57856d1",
+          "size": 100,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/489a35c6115b39458d8fd4e17f39da16f57856d1"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_overrides_web_identity/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4cc9266a3b2e3fe795502e1a18cc6f85a07f0f22",
+          "size": 281,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/4cc9266a3b2e3fe795502e1a18cc6f85a07f0f22"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_static_keys",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "84daa6a73fc9f775de015cc1ded2985a83d73e17",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/84daa6a73fc9f775de015cc1ded2985a83d73e17"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_static_keys/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+          "size": 22,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_static_keys/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "3888240f96ce3fccb314f520ce36bc6c3a071ed3",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/3888240f96ce3fccb314f520ce36bc6c3a071ed3"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_static_keys/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "b5d1616528cbaaae7c47928794cd134fd8693e38",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/b5d1616528cbaaae7c47928794cd134fd8693e38"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_static_keys/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "975ccd0556f971ead16b9187dc793e9d98d3a76d",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/975ccd0556f971ead16b9187dc793e9d98d3a76d"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_static_keys/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d203db07874b4cdcc614f31a2152e955bbbbc91e",
+          "size": 231,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/d203db07874b4cdcc614f31a2152e955bbbbc91e"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_static_keys/fs/home/.aws/credentials",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "911f7ec09d4facd9d15930eb9ea9a708a34c7d85",
+          "size": 81,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/911f7ec09d4facd9d15930eb9ea9a708a34c7d85"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_static_keys/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "489a35c6115b39458d8fd4e17f39da16f57856d1",
+          "size": 100,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/489a35c6115b39458d8fd4e17f39da16f57856d1"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_static_keys/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c56a02bac65faa0b3440bfb48c9461371e522ff7",
+          "size": 200,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/c56a02bac65faa0b3440bfb48c9461371e522ff7"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_static_keys_case_insensitive",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "0553e67ce44530d52c4614b1005d694dc0755080",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/0553e67ce44530d52c4614b1005d694dc0755080"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_static_keys_case_insensitive/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+          "size": 22,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_static_keys_case_insensitive/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "2a5377590fcf172a52cf61b736da0ae503982609",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/2a5377590fcf172a52cf61b736da0ae503982609"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_static_keys_case_insensitive/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "99e574ccddca6826b5804407c55de7d244eca201",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/99e574ccddca6826b5804407c55de7d244eca201"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_static_keys_case_insensitive/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "d220960c6eac87c03c3e30030a1ecd1bd7609c55",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/d220960c6eac87c03c3e30030a1ecd1bd7609c55"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_static_keys_case_insensitive/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a8c11c6e8c4d1c305f6289c649a6a0c39f7e9932",
+          "size": 29,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/a8c11c6e8c4d1c305f6289c649a6a0c39f7e9932"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_static_keys_case_insensitive/fs/home/.aws/credentials",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bac520774d7380d263d4760af21a2251b1cb2e93",
+          "size": 81,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/bac520774d7380d263d4760af21a2251b1cb2e93"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_static_keys_case_insensitive/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "489a35c6115b39458d8fd4e17f39da16f57856d1",
+          "size": 100,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/489a35c6115b39458d8fd4e17f39da16f57856d1"
+        },
+        {
+          "path": "default-credential-provider-chain/profile_static_keys_case_insensitive/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c56a02bac65faa0b3440bfb48c9461371e522ff7",
+          "size": 200,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/c56a02bac65faa0b3440bfb48c9461371e522ff7"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_assume_role",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "e0825ba6f034281c08d50add7bed04a6ec6cb691",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/e0825ba6f034281c08d50add7bed04a6ec6cb691"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_assume_role/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5b93b6dd7f3a1a64fe96bdcd1eafaa760e0a5e20",
+          "size": 80,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/5b93b6dd7f3a1a64fe96bdcd1eafaa760e0a5e20"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_assume_role/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "51549eeb412b11dcb845af9ccc8c1cecc46b467f",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/51549eeb412b11dcb845af9ccc8c1cecc46b467f"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_assume_role/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "5dfd5d6df99bbf1d3d0ff49dab679f06f773c072",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/5dfd5d6df99bbf1d3d0ff49dab679f06f773c072"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_assume_role/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "5110456e6ef3c261b21c1de4cb56a8160594e4a7",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/5110456e6ef3c261b21c1de4cb56a8160594e4a7"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_assume_role/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7967221048a7048d655c02a319306c8b7045bded",
+          "size": 164,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/7967221048a7048d655c02a319306c8b7045bded"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_assume_role/fs/home/.aws/sso",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "ff77d6972a1d8459b4c7e9ae4397239570d4ec0d",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/ff77d6972a1d8459b4c7e9ae4397239570d4ec0d"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_assume_role/fs/home/.aws/sso/cache",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "eefb830273c491eb548891c05fd3336e0cdbd22f",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/eefb830273c491eb548891c05fd3336e0cdbd22f"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_assume_role/fs/home/.aws/sso/cache/dace00cba5f8355ec9d274ceb2bcebdfbeed0e12.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c4cca143fbc51e0745810515d3130baa3a989c91",
+          "size": 121,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/c4cca143fbc51e0745810515d3130baa3a989c91"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_assume_role/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ea606c0a8f1946d6b3b57ef4d9eb81c6dd6b91d9",
+          "size": 2204,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/ea606c0a8f1946d6b3b57ef4d9eb81c6dd6b91d9"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_assume_role/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c7ec81834b576637e1f09a024754a1c6d17aa893",
+          "size": 285,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/c7ec81834b576637e1f09a024754a1c6d17aa893"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_no_token_file",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "62e96b2846b689ef2bf87ab45758992ee0b67591",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/62e96b2846b689ef2bf87ab45758992ee0b67591"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_no_token_file/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5b93b6dd7f3a1a64fe96bdcd1eafaa760e0a5e20",
+          "size": 80,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/5b93b6dd7f3a1a64fe96bdcd1eafaa760e0a5e20"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_no_token_file/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "cf8527109aeb26d71e3f4d86d1ebd122d3d8879a",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/cf8527109aeb26d71e3f4d86d1ebd122d3d8879a"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_no_token_file/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "a823be1de61b34f97ba3b35545865e1e0b6715b4",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/a823be1de61b34f97ba3b35545865e1e0b6715b4"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_no_token_file/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "2343a5c821a70b29e65e36354581f4710ccd23e2",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/2343a5c821a70b29e65e36354581f4710ccd23e2"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_no_token_file/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7967221048a7048d655c02a319306c8b7045bded",
+          "size": 164,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/7967221048a7048d655c02a319306c8b7045bded"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_no_token_file/fs/home/.aws/sso",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "48d5aaa24e436d1904836ac257c0690cb1f7491b",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/48d5aaa24e436d1904836ac257c0690cb1f7491b"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_no_token_file/fs/home/.aws/sso/cache",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "3ae7b592cc78a294422366cb36ba59822e2a3c72",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/3ae7b592cc78a294422366cb36ba59822e2a3c72"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_no_token_file/fs/home/.aws/sso/cache/differenthashthatdoesntmatch.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c4cca143fbc51e0745810515d3130baa3a989c91",
+          "size": 121,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/c4cca143fbc51e0745810515d3130baa3a989c91"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_no_token_file/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a0965529c7ec27dd2620f89212ac5aa07bfced6a",
+          "size": 82,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/a0965529c7ec27dd2620f89212ac5aa07bfced6a"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_no_token_file/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9617044ce593d48787a731a54f6c746c713b4a2a",
+          "size": 229,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/9617044ce593d48787a731a54f6c746c713b4a2a"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_server_error",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "d5719276974306032eb909eeae8b40c7d8930d10",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/d5719276974306032eb909eeae8b40c7d8930d10"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_server_error/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5b93b6dd7f3a1a64fe96bdcd1eafaa760e0a5e20",
+          "size": 80,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/5b93b6dd7f3a1a64fe96bdcd1eafaa760e0a5e20"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_server_error/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "51549eeb412b11dcb845af9ccc8c1cecc46b467f",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/51549eeb412b11dcb845af9ccc8c1cecc46b467f"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_server_error/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "5dfd5d6df99bbf1d3d0ff49dab679f06f773c072",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/5dfd5d6df99bbf1d3d0ff49dab679f06f773c072"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_server_error/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "5110456e6ef3c261b21c1de4cb56a8160594e4a7",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/5110456e6ef3c261b21c1de4cb56a8160594e4a7"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_server_error/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7967221048a7048d655c02a319306c8b7045bded",
+          "size": 164,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/7967221048a7048d655c02a319306c8b7045bded"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_server_error/fs/home/.aws/sso",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "ff77d6972a1d8459b4c7e9ae4397239570d4ec0d",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/ff77d6972a1d8459b4c7e9ae4397239570d4ec0d"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_server_error/fs/home/.aws/sso/cache",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "eefb830273c491eb548891c05fd3336e0cdbd22f",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/eefb830273c491eb548891c05fd3336e0cdbd22f"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_server_error/fs/home/.aws/sso/cache/dace00cba5f8355ec9d274ceb2bcebdfbeed0e12.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c4cca143fbc51e0745810515d3130baa3a989c91",
+          "size": 121,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/c4cca143fbc51e0745810515d3130baa3a989c91"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_server_error/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "73bb4a76759bbfe6145acf6fd9620e30d86e0969",
+          "size": 1165,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/73bb4a76759bbfe6145acf6fd9620e30d86e0969"
+        },
+        {
+          "path": "default-credential-provider-chain/sso_server_error/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7fa3da7d4bf19c1562708f4fad1ec2b90ccf8f11",
+          "size": 247,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/7fa3da7d4bf19c1562708f4fad1ec2b90ccf8f11"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_source_profile_no_env",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "f5018cabbba61e52878377100ddb403d1a321fa2",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/f5018cabbba61e52878377100ddb403d1a321fa2"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_source_profile_no_env/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "771e473b2485d771d6e6752288e09f9a8c359057",
+          "size": 99,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/771e473b2485d771d6e6752288e09f9a8c359057"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_source_profile_no_env/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "f62d065809cea628fc529d507aa00d3d414169f4",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/f62d065809cea628fc529d507aa00d3d414169f4"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_source_profile_no_env/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "bcd368e4208b6d703761a579a268eea2d81d8113",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/bcd368e4208b6d703761a579a268eea2d81d8113"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_source_profile_no_env/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "076ee9372763b2544631afb05ad2569aace11332",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/076ee9372763b2544631afb05ad2569aace11332"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_source_profile_no_env/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bb4e50451e399819443446ca95872d90c51a6b1d",
+          "size": 126,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/bb4e50451e399819443446ca95872d90c51a6b1d"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_source_profile_no_env/fs/token.jwt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "91d25a8217d358db0187e655aad7981456c931eb",
+          "size": 10,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/91d25a8217d358db0187e655aad7981456c931eb"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_source_profile_no_env/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8182c592d746d367ba8133e5c7382b8ca4c01bdd",
+          "size": 87,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/8182c592d746d367ba8133e5c7382b8ca4c01bdd"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_source_profile_no_env/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ce3ae3cf1818ef01f5411efc9c5da0d281010aa1",
+          "size": 323,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/ce3ae3cf1818ef01f5411efc9c5da0d281010aa1"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_env",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "9c74a66653d9ff082a64fdf4f0069fc25a509738",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/9c74a66653d9ff082a64fdf4f0069fc25a509738"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_env/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f57ba580258cf62dac7bcc956587b1289e0dd93d",
+          "size": 184,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/f57ba580258cf62dac7bcc956587b1289e0dd93d"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_env/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "7fe44e31f996649fe8ebf493db122426be6bae23",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/7fe44e31f996649fe8ebf493db122426be6bae23"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_env/fs/token.jwt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4467c73301f74020cfa3bd31e6a23f5125937083",
+          "size": 266,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/4467c73301f74020cfa3bd31e6a23f5125937083"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_env/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "cc05fdb610b3e9456b6a594b646d71b52c7c7a92",
+          "size": 3734,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/cc05fdb610b3e9456b6a594b646d71b52c7c7a92"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_env/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5ffa6f86c9f9a43a501bbcd15299a3e61a543134",
+          "size": 339,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/5ffa6f86c9f9a43a501bbcd15299a3e61a543134"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_invalid_jwt",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "8d014a6c16a68fbdd4345328d1cf6e0872785f29",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/8d014a6c16a68fbdd4345328d1cf6e0872785f29"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_invalid_jwt/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4e6f75b9f20e5358591bb37b7ab96d60a2352d7b",
+          "size": 73,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/4e6f75b9f20e5358591bb37b7ab96d60a2352d7b"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_invalid_jwt/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "5238e162a4744d55276eef84200779a449e8a956",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/5238e162a4744d55276eef84200779a449e8a956"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_invalid_jwt/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "5396e85ee53e3c32ec2e8dfd6cfed2be38f73420",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/5396e85ee53e3c32ec2e8dfd6cfed2be38f73420"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_invalid_jwt/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "0b27cc6d0d5ef052dbbfb3b562272582f962f8df",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/0b27cc6d0d5ef052dbbfb3b562272582f962f8df"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_invalid_jwt/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a396a64cb61ddae3aaf10a63551163b518ed8737",
+          "size": 170,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/a396a64cb61ddae3aaf10a63551163b518ed8737"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_invalid_jwt/fs/token.jwt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1d0a48c8754babf6bcc745caba55baac7f948944",
+          "size": 834,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/1d0a48c8754babf6bcc745caba55baac7f948944"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_invalid_jwt/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a3962e5e79518b8e954c721f04baf0d0e33aedfd",
+          "size": 3703,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/a3962e5e79518b8e954c721f04baf0d0e33aedfd"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_invalid_jwt/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c4fe9c61dc2890ae7024b5c4120f3231eccfa390",
+          "size": 253,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/c4fe9c61dc2890ae7024b5c4120f3231eccfa390"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_profile",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "5b7c63675f1578235144dbd5ec87c46f9bbfd02f",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/5b7c63675f1578235144dbd5ec87c46f9bbfd02f"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_profile/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4e6f75b9f20e5358591bb37b7ab96d60a2352d7b",
+          "size": 73,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/4e6f75b9f20e5358591bb37b7ab96d60a2352d7b"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_profile/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "309faf7604d5495b6ce498d7d80cf7056377404d",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/309faf7604d5495b6ce498d7d80cf7056377404d"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_profile/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "98644db61cf1c523d20b9c6b7557eccec112d620",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/98644db61cf1c523d20b9c6b7557eccec112d620"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_profile/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "374ce74ddd2bfe3d7a615d43e9f50734806a8fcf",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/374ce74ddd2bfe3d7a615d43e9f50734806a8fcf"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_profile/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e3b9ce55b1cb2fd31719f59d225ef6187ab75006",
+          "size": 98,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/e3b9ce55b1cb2fd31719f59d225ef6187ab75006"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_profile/fs/token.jwt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "91d25a8217d358db0187e655aad7981456c931eb",
+          "size": 10,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/91d25a8217d358db0187e655aad7981456c931eb"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_profile/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "076b5a0ec6df930730c23e639b6bffc16b97236c",
+          "size": 4434,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/076b5a0ec6df930730c23e639b6bffc16b97236c"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_profile/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9536ea490167b7165a5c23c580015a6c3b227769",
+          "size": 346,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/9536ea490167b7165a5c23c580015a6c3b227769"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_source_profile",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "e6b1c8c3ef9feb8c53bd5e12da86e4d363a1f6af",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/e6b1c8c3ef9feb8c53bd5e12da86e4d363a1f6af"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_source_profile/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4e6f75b9f20e5358591bb37b7ab96d60a2352d7b",
+          "size": 73,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/4e6f75b9f20e5358591bb37b7ab96d60a2352d7b"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_source_profile/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "572a39b4e912c529956d7ff46ef25a5edcf97df6",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/572a39b4e912c529956d7ff46ef25a5edcf97df6"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_source_profile/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "7cbd64354fabfd3d71438ee1d1a6dce14d31cf8d",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/7cbd64354fabfd3d71438ee1d1a6dce14d31cf8d"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_source_profile/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "ed74f735f27e8fddd3804a1202b19fc49deb86c2",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/ed74f735f27e8fddd3804a1202b19fc49deb86c2"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_source_profile/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "902524f6bca218d9d9173fd40b3b1ff4770bcbf6",
+          "size": 177,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/902524f6bca218d9d9173fd40b3b1ff4770bcbf6"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_source_profile/fs/token.jwt",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "91d25a8217d358db0187e655aad7981456c931eb",
+          "size": 10,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/91d25a8217d358db0187e655aad7981456c931eb"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_source_profile/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b7b5708380c56d04b25c189a7da19be0046b1401",
+          "size": 9069,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/b7b5708380c56d04b25c189a7da19be0046b1401"
+        },
+        {
+          "path": "default-credential-provider-chain/web_identity_token_source_profile/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "87724dc426d6b60d4b10a829a7e64f0e095ad147",
+          "size": 336,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/87724dc426d6b60d4b10a829a7e64f0e095ad147"
+        },
+        {
+          "path": "default-token-provider-chain",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "528fcfbbb7c6b33279e25bbe193a8c47751596ed",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/528fcfbbb7c6b33279e25bbe193a8c47751596ed"
+        },
+        {
+          "path": "default-token-provider-chain/profile_keys",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "ce91dbba38b75392033fd5619c30c0e9ffc7ada4",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/ce91dbba38b75392033fd5619c30c0e9ffc7ada4"
+        },
+        {
+          "path": "default-token-provider-chain/profile_keys/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f86eb48eb68f401a127c5b66a6477adc60331c6b",
+          "size": 24,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/f86eb48eb68f401a127c5b66a6477adc60331c6b"
+        },
+        {
+          "path": "default-token-provider-chain/profile_keys/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "ea58ea16833f692af0ea89c299a6b66383d5659e",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/ea58ea16833f692af0ea89c299a6b66383d5659e"
+        },
+        {
+          "path": "default-token-provider-chain/profile_keys/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "fba1ac855a68a7aa8c035d8b384da36748e4a509",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/fba1ac855a68a7aa8c035d8b384da36748e4a509"
+        },
+        {
+          "path": "default-token-provider-chain/profile_keys/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "7db11d36d727830f84ecba6f41b4ea859bbbc2d9",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/7db11d36d727830f84ecba6f41b4ea859bbbc2d9"
+        },
+        {
+          "path": "default-token-provider-chain/profile_keys/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8600cea36823398017b7b4a350a99a75e8914172",
+          "size": 155,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/8600cea36823398017b7b4a350a99a75e8914172"
+        },
+        {
+          "path": "default-token-provider-chain/profile_keys/fs/home/.aws/sso",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "b65aa415b5aced6723fbecf4d004b3f35a14bef5",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/b65aa415b5aced6723fbecf4d004b3f35a14bef5"
+        },
+        {
+          "path": "default-token-provider-chain/profile_keys/fs/home/.aws/sso/cache",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "0dbf586dd88d904a626a813ba81d7a5f5c1d5fef",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/0dbf586dd88d904a626a813ba81d7a5f5c1d5fef"
+        },
+        {
+          "path": "default-token-provider-chain/profile_keys/fs/home/.aws/sso/cache/d12208e38164f558a1d06c99432ab77dbb346c45.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "29c690fd09c24075c0d495ef750b321a2bbd29c3",
+          "size": 123,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/29c690fd09c24075c0d495ef750b321a2bbd29c3"
+        },
+        {
+          "path": "default-token-provider-chain/profile_keys/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "51c2a6c20d70dfde21034530910af91ac672507a",
+          "size": 106,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/51c2a6c20d70dfde21034530910af91ac672507a"
+        },
+        {
+          "path": "default-token-provider-chain/profile_keys/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "547c0dfe72d54412d3632111c29f724a2600c6bd",
+          "size": 199,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/547c0dfe72d54412d3632111c29f724a2600c6bd"
+        },
+        {
+          "path": "default-token-provider-chain/profile_keys_case_insensitive",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "df3bdb584943d2f2a8b3d171d5aed0e8570fca31",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/df3bdb584943d2f2a8b3d171d5aed0e8570fca31"
+        },
+        {
+          "path": "default-token-provider-chain/profile_keys_case_insensitive/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f86eb48eb68f401a127c5b66a6477adc60331c6b",
+          "size": 24,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/f86eb48eb68f401a127c5b66a6477adc60331c6b"
+        },
+        {
+          "path": "default-token-provider-chain/profile_keys_case_insensitive/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "f5759ab1d89ccedd84b956c25e364cf239ed19b4",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/f5759ab1d89ccedd84b956c25e364cf239ed19b4"
+        },
+        {
+          "path": "default-token-provider-chain/profile_keys_case_insensitive/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "743ccc875177e75a2adc5e59d97cd4c44d44ae62",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/743ccc875177e75a2adc5e59d97cd4c44d44ae62"
+        },
+        {
+          "path": "default-token-provider-chain/profile_keys_case_insensitive/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "861cd351432a90bc7b3a393a1aa8ec1796088a04",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/861cd351432a90bc7b3a393a1aa8ec1796088a04"
+        },
+        {
+          "path": "default-token-provider-chain/profile_keys_case_insensitive/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "170ea69cf5990f1fa0f9bd9bc152a688ae5ed95c",
+          "size": 155,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/170ea69cf5990f1fa0f9bd9bc152a688ae5ed95c"
+        },
+        {
+          "path": "default-token-provider-chain/profile_keys_case_insensitive/fs/home/.aws/sso",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "b65aa415b5aced6723fbecf4d004b3f35a14bef5",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/b65aa415b5aced6723fbecf4d004b3f35a14bef5"
+        },
+        {
+          "path": "default-token-provider-chain/profile_keys_case_insensitive/fs/home/.aws/sso/cache",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "0dbf586dd88d904a626a813ba81d7a5f5c1d5fef",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/0dbf586dd88d904a626a813ba81d7a5f5c1d5fef"
+        },
+        {
+          "path": "default-token-provider-chain/profile_keys_case_insensitive/fs/home/.aws/sso/cache/d12208e38164f558a1d06c99432ab77dbb346c45.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "29c690fd09c24075c0d495ef750b321a2bbd29c3",
+          "size": 123,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/29c690fd09c24075c0d495ef750b321a2bbd29c3"
+        },
+        {
+          "path": "default-token-provider-chain/profile_keys_case_insensitive/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "66531cb7fb6bb83b002299a1465bd2e1dfc63fec",
+          "size": 133,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/66531cb7fb6bb83b002299a1465bd2e1dfc63fec"
+        },
+        {
+          "path": "default-token-provider-chain/profile_keys_case_insensitive/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8e0930f2ac1bee1ad89b964df0cac55a64bbcd01",
+          "size": 243,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/8e0930f2ac1bee1ad89b964df0cac55a64bbcd01"
+        },
+        {
+          "path": "default-token-provider-chain/profile_name",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "985e43818ab96ea1f2fc1405e47c86c333e13b58",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/985e43818ab96ea1f2fc1405e47c86c333e13b58"
+        },
+        {
+          "path": "default-token-provider-chain/profile_name/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "95de9aa00814132a3e25e369356d3452f3de7554",
+          "size": 58,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/95de9aa00814132a3e25e369356d3452f3de7554"
+        },
+        {
+          "path": "default-token-provider-chain/profile_name/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "c9d01b9ca0cde52508ac7098e0dcaf5779b76cb6",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/c9d01b9ca0cde52508ac7098e0dcaf5779b76cb6"
+        },
+        {
+          "path": "default-token-provider-chain/profile_name/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "9e857a01b53919e7ae0a836423a8fc1f5343e180",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/9e857a01b53919e7ae0a836423a8fc1f5343e180"
+        },
+        {
+          "path": "default-token-provider-chain/profile_name/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "1fc5f8dc29513392bbbf409891ea8e795b3327ef",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/1fc5f8dc29513392bbbf409891ea8e795b3327ef"
+        },
+        {
+          "path": "default-token-provider-chain/profile_name/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3be74934faf15d703718e149194eb83ae329633e",
+          "size": 347,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/3be74934faf15d703718e149194eb83ae329633e"
+        },
+        {
+          "path": "default-token-provider-chain/profile_name/fs/home/.aws/sso",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "bef070e6e93dc0d8381e1b8ba722db368dc44145",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/bef070e6e93dc0d8381e1b8ba722db368dc44145"
+        },
+        {
+          "path": "default-token-provider-chain/profile_name/fs/home/.aws/sso/cache",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "ed2f728301e4e91546b5617e15372fe129d7bf27",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/ed2f728301e4e91546b5617e15372fe129d7bf27"
+        },
+        {
+          "path": "default-token-provider-chain/profile_name/fs/home/.aws/sso/cache/29faa2f70ab0f58f60e284d585d95865572f5cbd.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "29c690fd09c24075c0d495ef750b321a2bbd29c3",
+          "size": 123,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/29c690fd09c24075c0d495ef750b321a2bbd29c3"
+        },
+        {
+          "path": "default-token-provider-chain/profile_name/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e73bae7f4a7c2d282701a02020af64a446a4fac5",
+          "size": 114,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/e73bae7f4a7c2d282701a02020af64a446a4fac5"
+        },
+        {
+          "path": "default-token-provider-chain/profile_name/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "169e400f66d4d1541511f5c7b14dbdf7407e28ff",
+          "size": 207,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/169e400f66d4d1541511f5c7b14dbdf7407e28ff"
+        },
+        {
+          "path": "ecs-tests.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "10a040bf4a267276ce378b0c52a2c9021d2befa3",
+          "size": 2580,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/10a040bf4a267276ce378b0c52a2c9021d2befa3"
+        },
+        {
+          "path": "imds-config",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "73e0ee64657b82f010a267d6a794b61e6d245aaa",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/73e0ee64657b82f010a267d6a794b61e6d245aaa"
+        },
+        {
+          "path": "imds-config/imds-endpoint-tests.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a0bc1c9201be0959b02d404647bb620dd19646ab",
+          "size": 3827,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/a0bc1c9201be0959b02d404647bb620dd19646ab"
+        },
+        {
+          "path": "login-provider-test-cases.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6c71b52016598bcd102d6fc1f36e30f82024eb2f",
+          "size": 15006,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/6c71b52016598bcd102d6fc1f36e30f82024eb2f"
+        },
+        {
+          "path": "profile-provider",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "2fab96565dd035d422edfef615708fbe9e41c86b",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/2fab96565dd035d422edfef615708fbe9e41c86b"
+        },
+        {
+          "path": "profile-provider/assume_role_override_global_env_url",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "3567fb9271875d2a39ea10c30c39e4410b3b399b",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/3567fb9271875d2a39ea10c30c39e4410b3b399b"
+        },
+        {
+          "path": "profile-provider/assume_role_override_global_env_url/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "806fe9c81c6111deb4624802c69d031bb2ead60e",
+          "size": 78,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/806fe9c81c6111deb4624802c69d031bb2ead60e"
+        },
+        {
+          "path": "profile-provider/assume_role_override_global_env_url/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "c79f11bae451f25b411af5a076a97e25baf6b2a3",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/c79f11bae451f25b411af5a076a97e25baf6b2a3"
+        },
+        {
+          "path": "profile-provider/assume_role_override_global_env_url/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "c72696d9726dc39148b44f582005c2074e507694",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/c72696d9726dc39148b44f582005c2074e507694"
+        },
+        {
+          "path": "profile-provider/assume_role_override_global_env_url/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "4f76770c0293b22b1c62c0da8e8409f64eba620d",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/4f76770c0293b22b1c62c0da8e8409f64eba620d"
+        },
+        {
+          "path": "profile-provider/assume_role_override_global_env_url/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a7e5ed58158e3ac104945bc0aeefdf42685dff01",
+          "size": 142,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/a7e5ed58158e3ac104945bc0aeefdf42685dff01"
+        },
+        {
+          "path": "profile-provider/assume_role_override_global_env_url/fs/home/.aws/credentials",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1cab6a6ca21392456a0978e10640f0c7916b7539",
+          "size": 65,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/1cab6a6ca21392456a0978e10640f0c7916b7539"
+        },
+        {
+          "path": "profile-provider/assume_role_override_global_env_url/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b567876d56499a955b6d5f16250c31ac0a0e566d",
+          "size": 3427,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/b567876d56499a955b6d5f16250c31ac0a0e566d"
+        },
+        {
+          "path": "profile-provider/assume_role_override_global_env_url/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "75cc3d62cee32a4924dd18ac51656319ab1d9f7b",
+          "size": 332,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/75cc3d62cee32a4924dd18ac51656319ab1d9f7b"
+        },
+        {
+          "path": "profile-provider/assume_role_override_global_profile_url",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "f33dab2fd0a0ee73cfdc6a65c157d59ec01eb499",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/f33dab2fd0a0ee73cfdc6a65c157d59ec01eb499"
+        },
+        {
+          "path": "profile-provider/assume_role_override_global_profile_url/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+          "size": 22,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b"
+        },
+        {
+          "path": "profile-provider/assume_role_override_global_profile_url/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "b09977d5061576320ac93ef54f08c2850b3af0a8",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/b09977d5061576320ac93ef54f08c2850b3af0a8"
+        },
+        {
+          "path": "profile-provider/assume_role_override_global_profile_url/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "1ef9dc0cd3b19560fe35680606e8c752580f151a",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/1ef9dc0cd3b19560fe35680606e8c752580f151a"
+        },
+        {
+          "path": "profile-provider/assume_role_override_global_profile_url/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "4d619a22811dbc8ec5892c22b76ce2de99d0ac3b",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/4d619a22811dbc8ec5892c22b76ce2de99d0ac3b"
+        },
+        {
+          "path": "profile-provider/assume_role_override_global_profile_url/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a00d07b3b55248ceeb6389e9d2d0d8914957c174",
+          "size": 192,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/a00d07b3b55248ceeb6389e9d2d0d8914957c174"
+        },
+        {
+          "path": "profile-provider/assume_role_override_global_profile_url/fs/home/.aws/credentials",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1cab6a6ca21392456a0978e10640f0c7916b7539",
+          "size": 65,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/1cab6a6ca21392456a0978e10640f0c7916b7539"
+        },
+        {
+          "path": "profile-provider/assume_role_override_global_profile_url/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "44fe3946c16a7e4d8d8ee154f2b3b8e457061d32",
+          "size": 3435,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/44fe3946c16a7e4d8d8ee154f2b3b8e457061d32"
+        },
+        {
+          "path": "profile-provider/assume_role_override_global_profile_url/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0f2172ffb0204cd5c8513475cd788db6aaf54280",
+          "size": 328,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/0f2172ffb0204cd5c8513475cd788db6aaf54280"
+        },
+        {
+          "path": "profile-provider/assume_role_override_service_env_url",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "5759cb484e1c9f8cb0cb155ab11f139b1349fc51",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/5759cb484e1c9f8cb0cb155ab11f139b1349fc51"
+        },
+        {
+          "path": "profile-provider/assume_role_override_service_env_url/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "dfb5bc964801440409f792969c6dc1c0622a75ef",
+          "size": 79,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/dfb5bc964801440409f792969c6dc1c0622a75ef"
+        },
+        {
+          "path": "profile-provider/assume_role_override_service_env_url/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "c79f11bae451f25b411af5a076a97e25baf6b2a3",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/c79f11bae451f25b411af5a076a97e25baf6b2a3"
+        },
+        {
+          "path": "profile-provider/assume_role_override_service_env_url/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "c72696d9726dc39148b44f582005c2074e507694",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/c72696d9726dc39148b44f582005c2074e507694"
+        },
+        {
+          "path": "profile-provider/assume_role_override_service_env_url/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "4f76770c0293b22b1c62c0da8e8409f64eba620d",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/4f76770c0293b22b1c62c0da8e8409f64eba620d"
+        },
+        {
+          "path": "profile-provider/assume_role_override_service_env_url/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a7e5ed58158e3ac104945bc0aeefdf42685dff01",
+          "size": 142,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/a7e5ed58158e3ac104945bc0aeefdf42685dff01"
+        },
+        {
+          "path": "profile-provider/assume_role_override_service_env_url/fs/home/.aws/credentials",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1cab6a6ca21392456a0978e10640f0c7916b7539",
+          "size": 65,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/1cab6a6ca21392456a0978e10640f0c7916b7539"
+        },
+        {
+          "path": "profile-provider/assume_role_override_service_env_url/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1bb9861932fb891cbc48912ad5c312c30b533034",
+          "size": 3421,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/1bb9861932fb891cbc48912ad5c312c30b533034"
+        },
+        {
+          "path": "profile-provider/assume_role_override_service_env_url/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "cfc1f8b0d6e68a2251e2c1e80c3c81a67a7eaf28",
+          "size": 337,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/cfc1f8b0d6e68a2251e2c1e80c3c81a67a7eaf28"
+        },
+        {
+          "path": "profile-provider/assume_role_override_service_profile_url",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "eea69860f0926bcfbfcf583b87adc2bb3154456a",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/eea69860f0926bcfbfcf583b87adc2bb3154456a"
+        },
+        {
+          "path": "profile-provider/assume_role_override_service_profile_url/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+          "size": 22,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b"
+        },
+        {
+          "path": "profile-provider/assume_role_override_service_profile_url/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "9818652c2eb4e031ddac26dbecf5dd15b91eb3fc",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/9818652c2eb4e031ddac26dbecf5dd15b91eb3fc"
+        },
+        {
+          "path": "profile-provider/assume_role_override_service_profile_url/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "e69a112743fd30fabfc6a3a75f9503a060e3b330",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/e69a112743fd30fabfc6a3a75f9503a060e3b330"
+        },
+        {
+          "path": "profile-provider/assume_role_override_service_profile_url/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "aa764b1c5492750407e991296d5cae5873d89e49",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/aa764b1c5492750407e991296d5cae5873d89e49"
+        },
+        {
+          "path": "profile-provider/assume_role_override_service_profile_url/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8b102c3b81475c4d30dafd1f205f090a4c075afb",
+          "size": 246,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/8b102c3b81475c4d30dafd1f205f090a4c075afb"
+        },
+        {
+          "path": "profile-provider/assume_role_override_service_profile_url/fs/home/.aws/credentials",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1cab6a6ca21392456a0978e10640f0c7916b7539",
+          "size": 65,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/1cab6a6ca21392456a0978e10640f0c7916b7539"
+        },
+        {
+          "path": "profile-provider/assume_role_override_service_profile_url/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3c813a1a29a4f2647d233f775e83f696e02fdb28",
+          "size": 3444,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/3c813a1a29a4f2647d233f775e83f696e02fdb28"
+        },
+        {
+          "path": "profile-provider/assume_role_override_service_profile_url/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f17f421066c752057693b7398d4379886a0537ab",
+          "size": 338,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/f17f421066c752057693b7398d4379886a0537ab"
+        },
+        {
+          "path": "profile-provider/credential_process",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "709a4d59fa5ffa3a02e0a35d503c8e6c7f1c3f7f",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/709a4d59fa5ffa3a02e0a35d503c8e6c7f1c3f7f"
+        },
+        {
+          "path": "profile-provider/credential_process/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+          "size": 22,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b"
+        },
+        {
+          "path": "profile-provider/credential_process/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "6d22463bcc3488e329308f826be3a793e3ad0288",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/6d22463bcc3488e329308f826be3a793e3ad0288"
+        },
+        {
+          "path": "profile-provider/credential_process/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "dba5032411a8ba910c2b6498a2afcc7d05c7f3af",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/dba5032411a8ba910c2b6498a2afcc7d05c7f3af"
+        },
+        {
+          "path": "profile-provider/credential_process/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "f6b620c8ecd6e803071ae3d4033988ae86cfe340",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/f6b620c8ecd6e803071ae3d4033988ae86cfe340"
+        },
+        {
+          "path": "profile-provider/credential_process/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9811adfbd14e1ab03086f53da3c514e40e3df612",
+          "size": 571,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/9811adfbd14e1ab03086f53da3c514e40e3df612"
+        },
+        {
+          "path": "profile-provider/credential_process/fs/home/.aws/credentials",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1cab6a6ca21392456a0978e10640f0c7916b7539",
+          "size": 65,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/1cab6a6ca21392456a0978e10640f0c7916b7539"
+        },
+        {
+          "path": "profile-provider/credential_process/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e7ade3e074db627039c3bf3d17379bc8d47a8eb5",
+          "size": 86,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/e7ade3e074db627039c3bf3d17379bc8d47a8eb5"
+        },
+        {
+          "path": "profile-provider/credential_process/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8427a18944f739dd5296f3adce51ab6ec7dc9e90",
+          "size": 332,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/8427a18944f739dd5296f3adce51ab6ec7dc9e90"
+        },
+        {
+          "path": "profile-provider/credential_process_account_id_fallback",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "82aa8e2c1531081e4c21e82ac02b03b6e21bb4a0",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/82aa8e2c1531081e4c21e82ac02b03b6e21bb4a0"
+        },
+        {
+          "path": "profile-provider/credential_process_account_id_fallback/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+          "size": 22,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b"
+        },
+        {
+          "path": "profile-provider/credential_process_account_id_fallback/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "af32bcf5fa0e0b7f8870116c39e3c6a78b4b0997",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/af32bcf5fa0e0b7f8870116c39e3c6a78b4b0997"
+        },
+        {
+          "path": "profile-provider/credential_process_account_id_fallback/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "64114627d37909aafaf9dfda63940df857a8baad",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/64114627d37909aafaf9dfda63940df857a8baad"
+        },
+        {
+          "path": "profile-provider/credential_process_account_id_fallback/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "a2caf7cbc983c1b358f2f86e974c5c404a0c1c48",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/a2caf7cbc983c1b358f2f86e974c5c404a0c1c48"
+        },
+        {
+          "path": "profile-provider/credential_process_account_id_fallback/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0eddabc62f5c9ba947dd55638c4a8cfda9ec6f1e",
+          "size": 478,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/0eddabc62f5c9ba947dd55638c4a8cfda9ec6f1e"
+        },
+        {
+          "path": "profile-provider/credential_process_account_id_fallback/fs/home/.aws/credentials",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1cab6a6ca21392456a0978e10640f0c7916b7539",
+          "size": 65,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/1cab6a6ca21392456a0978e10640f0c7916b7539"
+        },
+        {
+          "path": "profile-provider/credential_process_account_id_fallback/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0d947ef869e6e072dafd76e362be1f9c355bc44c",
+          "size": 106,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/0d947ef869e6e072dafd76e362be1f9c355bc44c"
+        },
+        {
+          "path": "profile-provider/credential_process_account_id_fallback/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "10f1746d30a451958140bfb90322fe21a1bd3168",
+          "size": 391,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/10f1746d30a451958140bfb90322fe21a1bd3168"
+        },
+        {
+          "path": "profile-provider/credential_process_failure",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "d691997414799d3dc61af02847c1b3eaf33e72f2",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/d691997414799d3dc61af02847c1b3eaf33e72f2"
+        },
+        {
+          "path": "profile-provider/credential_process_failure/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+          "size": 22,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b"
+        },
+        {
+          "path": "profile-provider/credential_process_failure/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "4720c00ef50ea3414c21c495492d31f9bc4e59be",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/4720c00ef50ea3414c21c495492d31f9bc4e59be"
+        },
+        {
+          "path": "profile-provider/credential_process_failure/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "e4a568544fd04a51e2f4ec6b22a476bd8d52adec",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/e4a568544fd04a51e2f4ec6b22a476bd8d52adec"
+        },
+        {
+          "path": "profile-provider/credential_process_failure/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "a183c51a0de373b722dfcfc16aa4105cd12d079c",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/a183c51a0de373b722dfcfc16aa4105cd12d079c"
+        },
+        {
+          "path": "profile-provider/credential_process_failure/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "13f1cd1a6c44bf29863b302c993297a2b692b0aa",
+          "size": 95,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/13f1cd1a6c44bf29863b302c993297a2b692b0aa"
+        },
+        {
+          "path": "profile-provider/credential_process_failure/fs/home/.aws/credentials",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1cab6a6ca21392456a0978e10640f0c7916b7539",
+          "size": 65,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/1cab6a6ca21392456a0978e10640f0c7916b7539"
+        },
+        {
+          "path": "profile-provider/credential_process_failure/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e7ade3e074db627039c3bf3d17379bc8d47a8eb5",
+          "size": 86,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/e7ade3e074db627039c3bf3d17379bc8d47a8eb5"
+        },
+        {
+          "path": "profile-provider/credential_process_failure/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "16b75a9476e79a419e8acffa02e9cf2822f7aa36",
+          "size": 304,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/16b75a9476e79a419e8acffa02e9cf2822f7aa36"
+        },
+        {
+          "path": "profile-provider/credential_process_invalid",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "fb6136f49f992c7586eeafd7aab0519c69612b95",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/fb6136f49f992c7586eeafd7aab0519c69612b95"
+        },
+        {
+          "path": "profile-provider/credential_process_invalid/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+          "size": 22,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b"
+        },
+        {
+          "path": "profile-provider/credential_process_invalid/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "0c0ed3baba3d5b5f92bdd6a73e75fc8145cb01a5",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/0c0ed3baba3d5b5f92bdd6a73e75fc8145cb01a5"
+        },
+        {
+          "path": "profile-provider/credential_process_invalid/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "ff94c810766e687c8155fec6ba88a70de26028be",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/ff94c810766e687c8155fec6ba88a70de26028be"
+        },
+        {
+          "path": "profile-provider/credential_process_invalid/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "44085e5a49217c54cb412bbb559aab13392e6793",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/44085e5a49217c54cb412bbb559aab13392e6793"
+        },
+        {
+          "path": "profile-provider/credential_process_invalid/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f42737c30c75f4769948cd02eb1555e7032b6dff",
+          "size": 108,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/f42737c30c75f4769948cd02eb1555e7032b6dff"
+        },
+        {
+          "path": "profile-provider/credential_process_invalid/fs/home/.aws/credentials",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1cab6a6ca21392456a0978e10640f0c7916b7539",
+          "size": 65,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/1cab6a6ca21392456a0978e10640f0c7916b7539"
+        },
+        {
+          "path": "profile-provider/credential_process_invalid/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e7ade3e074db627039c3bf3d17379bc8d47a8eb5",
+          "size": 86,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/e7ade3e074db627039c3bf3d17379bc8d47a8eb5"
+        },
+        {
+          "path": "profile-provider/credential_process_invalid/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "795134a98c7cee874c139bee4406d75ceee7f7c6",
+          "size": 272,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/795134a98c7cee874c139bee4406d75ceee7f7c6"
+        },
+        {
+          "path": "profile-provider/e2e_assume_role",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "489c81f364cdfac3a6be0ff848481eb943660bd8",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/489c81f364cdfac3a6be0ff848481eb943660bd8"
+        },
+        {
+          "path": "profile-provider/e2e_assume_role/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d25d3cebf852340df9aa98f9433a8ed58b04aefc",
+          "size": 122,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/d25d3cebf852340df9aa98f9433a8ed58b04aefc"
+        },
+        {
+          "path": "profile-provider/e2e_assume_role/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "2504f47b8766dbe7403b911c74ecc5f4ee2cc6c4",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/2504f47b8766dbe7403b911c74ecc5f4ee2cc6c4"
+        },
+        {
+          "path": "profile-provider/e2e_assume_role/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "e84d8789ce13da348ccf809bf9eb7da0c90b7a30",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/e84d8789ce13da348ccf809bf9eb7da0c90b7a30"
+        },
+        {
+          "path": "profile-provider/e2e_assume_role/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "e93739ef70738b15671884957e6336680b9d34b3",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/e93739ef70738b15671884957e6336680b9d34b3"
+        },
+        {
+          "path": "profile-provider/e2e_assume_role/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a7e5ed58158e3ac104945bc0aeefdf42685dff01",
+          "size": 142,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/a7e5ed58158e3ac104945bc0aeefdf42685dff01"
+        },
+        {
+          "path": "profile-provider/e2e_assume_role/fs/home/.aws/credentials",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c36049f418cc08f8f2c0c65d28836df1cb29c32c",
+          "size": 95,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/c36049f418cc08f8f2c0c65d28836df1cb29c32c"
+        },
+        {
+          "path": "profile-provider/e2e_assume_role/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b30b6881590ab91e60b56dfc4b626f466bb171ee",
+          "size": 3437,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/b30b6881590ab91e60b56dfc4b626f466bb171ee"
+        },
+        {
+          "path": "profile-provider/e2e_assume_role/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7b73863d629b538c4f40c8d4df800f367e12b527",
+          "size": 308,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/7b73863d629b538c4f40c8d4df800f367e12b527"
+        },
+        {
+          "path": "profile-provider/e2e_fips_and_dual_stack_sts",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "e74fa08a45345ee2cd58841b3eda3e70e4834a3c",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/e74fa08a45345ee2cd58841b3eda3e70e4834a3c"
+        },
+        {
+          "path": "profile-provider/e2e_fips_and_dual_stack_sts/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+          "size": 22,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b"
+        },
+        {
+          "path": "profile-provider/e2e_fips_and_dual_stack_sts/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "3c95d7b8b6ab4dccfad3bbeafde9758e0180e0bd",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/3c95d7b8b6ab4dccfad3bbeafde9758e0180e0bd"
+        },
+        {
+          "path": "profile-provider/e2e_fips_and_dual_stack_sts/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "c7bdee950d9eae8a71ca18dc4aa8d676f145a52c",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/c7bdee950d9eae8a71ca18dc4aa8d676f145a52c"
+        },
+        {
+          "path": "profile-provider/e2e_fips_and_dual_stack_sts/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "d9f2a0107163d7bc29d560a26cb3e24cd8dad757",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/d9f2a0107163d7bc29d560a26cb3e24cd8dad757"
+        },
+        {
+          "path": "profile-provider/e2e_fips_and_dual_stack_sts/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "17d486343792bc2d4bd0eb79f0c1fc476233a692",
+          "size": 197,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/17d486343792bc2d4bd0eb79f0c1fc476233a692"
+        },
+        {
+          "path": "profile-provider/e2e_fips_and_dual_stack_sts/fs/home/.aws/credentials",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1cab6a6ca21392456a0978e10640f0c7916b7539",
+          "size": 65,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/1cab6a6ca21392456a0978e10640f0c7916b7539"
+        },
+        {
+          "path": "profile-provider/e2e_fips_and_dual_stack_sts/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "000b74b8e20c207b0989f1c7326be612fccf6e2f",
+          "size": 3435,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/000b74b8e20c207b0989f1c7326be612fccf6e2f"
+        },
+        {
+          "path": "profile-provider/e2e_fips_and_dual_stack_sts/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8bad7727278c39e103b1608129b550b92b9a4256",
+          "size": 351,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/8bad7727278c39e103b1608129b550b92b9a4256"
+        },
+        {
+          "path": "profile-provider/empty_config",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "480039652649c026f450394f0f016e4cc9a8ac16",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/480039652649c026f450394f0f016e4cc9a8ac16"
+        },
+        {
+          "path": "profile-provider/empty_config/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+          "size": 22,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b"
+        },
+        {
+          "path": "profile-provider/empty_config/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0d325c157c792fd08081469b62d2be71ac9113af",
+          "size": 119,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/0d325c157c792fd08081469b62d2be71ac9113af"
+        },
+        {
+          "path": "profile-provider/empty_config/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d954e883ab6fc83fe3ea0c8c919db7aec134d2bb",
+          "size": 146,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/d954e883ab6fc83fe3ea0c8c919db7aec134d2bb"
+        },
+        {
+          "path": "profile-provider/invalid_config",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "93a37103b83e0f351ea5a8dbfc4ea74282ce1b80",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/93a37103b83e0f351ea5a8dbfc4ea74282ce1b80"
+        },
+        {
+          "path": "profile-provider/invalid_config/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+          "size": 22,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b"
+        },
+        {
+          "path": "profile-provider/invalid_config/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "fccaf8928143f8a2e33e49440a1b2d9ddea348d0",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/fccaf8928143f8a2e33e49440a1b2d9ddea348d0"
+        },
+        {
+          "path": "profile-provider/invalid_config/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "ecbba42bf73fa6907a49f1a31d9c0c4dd88d8947",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/ecbba42bf73fa6907a49f1a31d9c0c4dd88d8947"
+        },
+        {
+          "path": "profile-provider/invalid_config/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "f86bdfc0f74096726f9103909eb90beb706c17c6",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/f86bdfc0f74096726f9103909eb90beb706c17c6"
+        },
+        {
+          "path": "profile-provider/invalid_config/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "eba61765c136d34332d5ba5f91e1c1fe0b099b0c",
+          "size": 57,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/eba61765c136d34332d5ba5f91e1c1fe0b099b0c"
+        },
+        {
+          "path": "profile-provider/invalid_config/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b8770a0948eb92167a11537030ab65e553060839",
+          "size": 121,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/b8770a0948eb92167a11537030ab65e553060839"
+        },
+        {
+          "path": "profile-provider/invalid_config/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "21bce59c31c9179ea8cf02660ebc538d58f7efde",
+          "size": 134,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/21bce59c31c9179ea8cf02660ebc538d58f7efde"
+        },
+        {
+          "path": "profile-provider/invalid_sso_credentials_config",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "480bbe7d2f282fb0443e9d5458d0af206ab58808",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/480bbe7d2f282fb0443e9d5458d0af206ab58808"
+        },
+        {
+          "path": "profile-provider/invalid_sso_credentials_config/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+          "size": 22,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b"
+        },
+        {
+          "path": "profile-provider/invalid_sso_credentials_config/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "3fb7280a2c223ba83199b63fb63c1813e69653ba",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/3fb7280a2c223ba83199b63fb63c1813e69653ba"
+        },
+        {
+          "path": "profile-provider/invalid_sso_credentials_config/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "30e6093fa41d811dc700bcf5923ee7c4cb16bdeb",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/30e6093fa41d811dc700bcf5923ee7c4cb16bdeb"
+        },
+        {
+          "path": "profile-provider/invalid_sso_credentials_config/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "51602492a22021ad5141567a053d3116def1e40d",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/51602492a22021ad5141567a053d3116def1e40d"
+        },
+        {
+          "path": "profile-provider/invalid_sso_credentials_config/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3cf147e2652da8e161242aa0e23679491a98b28b",
+          "size": 148,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/3cf147e2652da8e161242aa0e23679491a98b28b"
+        },
+        {
+          "path": "profile-provider/invalid_sso_credentials_config/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b8770a0948eb92167a11537030ab65e553060839",
+          "size": 121,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/b8770a0948eb92167a11537030ab65e553060839"
+        },
+        {
+          "path": "profile-provider/invalid_sso_credentials_config/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bc67c4ea7b3e2da0b9d072e298a64dc954e1f948",
+          "size": 238,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/bc67c4ea7b3e2da0b9d072e298a64dc954e1f948"
+        },
+        {
+          "path": "profile-provider/region_override",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "c742bd0778db2beff48e3f7e9da9208ea58eaf14",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/c742bd0778db2beff48e3f7e9da9208ea58eaf14"
+        },
+        {
+          "path": "profile-provider/region_override/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b4c76e3c811832497bd0a9a7f73fd9e3352f8bcb",
+          "size": 51,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/b4c76e3c811832497bd0a9a7f73fd9e3352f8bcb"
+        },
+        {
+          "path": "profile-provider/region_override/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "4e6b1f3175800b7cc83758509b59c59e33effb3d",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/4e6b1f3175800b7cc83758509b59c59e33effb3d"
+        },
+        {
+          "path": "profile-provider/region_override/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "779524f8904adca7ca5737d8118a570f8945a180",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/779524f8904adca7ca5737d8118a570f8945a180"
+        },
+        {
+          "path": "profile-provider/region_override/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "746ebae3670e9b009998987b10c4e7d834e4fd91",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/746ebae3670e9b009998987b10c4e7d834e4fd91"
+        },
+        {
+          "path": "profile-provider/region_override/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c21d2474732e99d42acd909978bba7482f847251",
+          "size": 197,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/c21d2474732e99d42acd909978bba7482f847251"
+        },
+        {
+          "path": "profile-provider/region_override/fs/home/.aws/credentials",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1cab6a6ca21392456a0978e10640f0c7916b7539",
+          "size": 65,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/1cab6a6ca21392456a0978e10640f0c7916b7539"
+        },
+        {
+          "path": "profile-provider/region_override/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "dd8b401e9a5716e54a88427e31e5e027a132bec2",
+          "size": 3446,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/dd8b401e9a5716e54a88427e31e5e027a132bec2"
+        },
+        {
+          "path": "profile-provider/region_override/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2144cba97e94bb1f19ed2204e3cde29bcbbfa370",
+          "size": 347,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/2144cba97e94bb1f19ed2204e3cde29bcbbfa370"
+        },
+        {
+          "path": "profile-provider/retry_on_error",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "4baa9985665ff9714a6aa9e7f9d499674a79a71a",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/4baa9985665ff9714a6aa9e7f9d499674a79a71a"
+        },
+        {
+          "path": "profile-provider/retry_on_error/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+          "size": 22,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b"
+        },
+        {
+          "path": "profile-provider/retry_on_error/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "c79f11bae451f25b411af5a076a97e25baf6b2a3",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/c79f11bae451f25b411af5a076a97e25baf6b2a3"
+        },
+        {
+          "path": "profile-provider/retry_on_error/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "c72696d9726dc39148b44f582005c2074e507694",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/c72696d9726dc39148b44f582005c2074e507694"
+        },
+        {
+          "path": "profile-provider/retry_on_error/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "4f76770c0293b22b1c62c0da8e8409f64eba620d",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/4f76770c0293b22b1c62c0da8e8409f64eba620d"
+        },
+        {
+          "path": "profile-provider/retry_on_error/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a7e5ed58158e3ac104945bc0aeefdf42685dff01",
+          "size": 142,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/a7e5ed58158e3ac104945bc0aeefdf42685dff01"
+        },
+        {
+          "path": "profile-provider/retry_on_error/fs/home/.aws/credentials",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1cab6a6ca21392456a0978e10640f0c7916b7539",
+          "size": 65,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/1cab6a6ca21392456a0978e10640f0c7916b7539"
+        },
+        {
+          "path": "profile-provider/retry_on_error/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8ffa30809c3a4fad30868f2d6320a92dcfb449ec",
+          "size": 5903,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/8ffa30809c3a4fad30868f2d6320a92dcfb449ec"
+        },
+        {
+          "path": "profile-provider/retry_on_error/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "35a6a7b722dbe5480b5284ce56c07a6f24279c5f",
+          "size": 307,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/35a6a7b722dbe5480b5284ce56c07a6f24279c5f"
+        },
+        {
+          "path": "profile-provider/sso_credentials",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "889d40b55307f64a83d73826477361b1d1878275",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/889d40b55307f64a83d73826477361b1d1878275"
+        },
+        {
+          "path": "profile-provider/sso_credentials/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+          "size": 22,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b"
+        },
+        {
+          "path": "profile-provider/sso_credentials/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "b2a9abd038fb6eb03852aef3e5817ac5aaccb920",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/b2a9abd038fb6eb03852aef3e5817ac5aaccb920"
+        },
+        {
+          "path": "profile-provider/sso_credentials/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "af4c04f94a4804565b5eea96dbd30a6ab1bfecbc",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/af4c04f94a4804565b5eea96dbd30a6ab1bfecbc"
+        },
+        {
+          "path": "profile-provider/sso_credentials/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "2207be77d244739fdc66f967be099d4684db9db9",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/2207be77d244739fdc66f967be099d4684db9db9"
+        },
+        {
+          "path": "profile-provider/sso_credentials/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "91939db9255779843e4a8e3efcd00c3d9d6ad441",
+          "size": 205,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/91939db9255779843e4a8e3efcd00c3d9d6ad441"
+        },
+        {
+          "path": "profile-provider/sso_credentials/fs/home/.aws/credentials",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          "size": 0,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        },
+        {
+          "path": "profile-provider/sso_credentials/fs/home/.aws/sso",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "9fcbebbf4c5eb5e334f08018a3ccdaf94af81ca4",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/9fcbebbf4c5eb5e334f08018a3ccdaf94af81ca4"
+        },
+        {
+          "path": "profile-provider/sso_credentials/fs/home/.aws/sso/cache",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "b44d39dfa0831a46aa491570fcae649e45fb4654",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/b44d39dfa0831a46aa491570fcae649e45fb4654"
+        },
+        {
+          "path": "profile-provider/sso_credentials/fs/home/.aws/sso/cache/34c6fceca75e456f25e7e99531e2425c6c1de443.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "06853e98f985a4821622c1707102429a17f0bf4f",
+          "size": 350,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/06853e98f985a4821622c1707102429a17f0bf4f"
+        },
+        {
+          "path": "profile-provider/sso_credentials/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e92f6fafd39eb98bade23bc846c09fb6a2f1fc74",
+          "size": 2074,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/e92f6fafd39eb98bade23bc846c09fb6a2f1fc74"
+        },
+        {
+          "path": "profile-provider/sso_credentials/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e48324f8e98af00651f12d87774433d822dc04ca",
+          "size": 334,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/e48324f8e98af00651f12d87774433d822dc04ca"
+        },
+        {
+          "path": "profile-provider/sso_override_global_env_url",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "0569474cbb7b05ca017160f8c9c926bf3c1d5b48",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/0569474cbb7b05ca017160f8c9c926bf3c1d5b48"
+        },
+        {
+          "path": "profile-provider/sso_override_global_env_url/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "806fe9c81c6111deb4624802c69d031bb2ead60e",
+          "size": 78,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/806fe9c81c6111deb4624802c69d031bb2ead60e"
+        },
+        {
+          "path": "profile-provider/sso_override_global_env_url/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "b2a9abd038fb6eb03852aef3e5817ac5aaccb920",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/b2a9abd038fb6eb03852aef3e5817ac5aaccb920"
+        },
+        {
+          "path": "profile-provider/sso_override_global_env_url/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "af4c04f94a4804565b5eea96dbd30a6ab1bfecbc",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/af4c04f94a4804565b5eea96dbd30a6ab1bfecbc"
+        },
+        {
+          "path": "profile-provider/sso_override_global_env_url/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "2207be77d244739fdc66f967be099d4684db9db9",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/2207be77d244739fdc66f967be099d4684db9db9"
+        },
+        {
+          "path": "profile-provider/sso_override_global_env_url/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "91939db9255779843e4a8e3efcd00c3d9d6ad441",
+          "size": 205,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/91939db9255779843e4a8e3efcd00c3d9d6ad441"
+        },
+        {
+          "path": "profile-provider/sso_override_global_env_url/fs/home/.aws/credentials",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          "size": 0,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        },
+        {
+          "path": "profile-provider/sso_override_global_env_url/fs/home/.aws/sso",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "9fcbebbf4c5eb5e334f08018a3ccdaf94af81ca4",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/9fcbebbf4c5eb5e334f08018a3ccdaf94af81ca4"
+        },
+        {
+          "path": "profile-provider/sso_override_global_env_url/fs/home/.aws/sso/cache",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "b44d39dfa0831a46aa491570fcae649e45fb4654",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/b44d39dfa0831a46aa491570fcae649e45fb4654"
+        },
+        {
+          "path": "profile-provider/sso_override_global_env_url/fs/home/.aws/sso/cache/34c6fceca75e456f25e7e99531e2425c6c1de443.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "06853e98f985a4821622c1707102429a17f0bf4f",
+          "size": 350,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/06853e98f985a4821622c1707102429a17f0bf4f"
+        },
+        {
+          "path": "profile-provider/sso_override_global_env_url/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ae5f568852507b2fb7165ba99b117b8e87011006",
+          "size": 2051,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/ae5f568852507b2fb7165ba99b117b8e87011006"
+        },
+        {
+          "path": "profile-provider/sso_override_global_env_url/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d95939b2043fb4454f9cc54d2d9b66e4e465ecb3",
+          "size": 371,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/d95939b2043fb4454f9cc54d2d9b66e4e465ecb3"
+        },
+        {
+          "path": "profile-provider/sso_token",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "c0a42ac6854e06a66a725a0a7c35ef16cfb43134",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/c0a42ac6854e06a66a725a0a7c35ef16cfb43134"
+        },
+        {
+          "path": "profile-provider/sso_token/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+          "size": 22,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b"
+        },
+        {
+          "path": "profile-provider/sso_token/fs",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "7463e83ecec59dc1ec4fcfad4520e80854ab3d95",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/7463e83ecec59dc1ec4fcfad4520e80854ab3d95"
+        },
+        {
+          "path": "profile-provider/sso_token/fs/env.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b",
+          "size": 22,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/55fcfbeb051e5f19fab037e2e3fb25b3e4b9b30b"
+        },
+        {
+          "path": "profile-provider/sso_token/fs/home",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "037953f007055e943b980dfa4dfc7ae3913fc80f",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/037953f007055e943b980dfa4dfc7ae3913fc80f"
+        },
+        {
+          "path": "profile-provider/sso_token/fs/home/.aws",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "90b4ca14a6e93e95ad30db23210360697ac3b17f",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/90b4ca14a6e93e95ad30db23210360697ac3b17f"
+        },
+        {
+          "path": "profile-provider/sso_token/fs/home/.aws/config",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3cf147e2652da8e161242aa0e23679491a98b28b",
+          "size": 148,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/3cf147e2652da8e161242aa0e23679491a98b28b"
+        },
+        {
+          "path": "profile-provider/sso_token/fs/home/.aws/credentials",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          "size": 0,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        },
+        {
+          "path": "profile-provider/sso_token/fs/home/.aws/sso",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "9fcbebbf4c5eb5e334f08018a3ccdaf94af81ca4",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/9fcbebbf4c5eb5e334f08018a3ccdaf94af81ca4"
+        },
+        {
+          "path": "profile-provider/sso_token/fs/home/.aws/sso/cache",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "b44d39dfa0831a46aa491570fcae649e45fb4654",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/b44d39dfa0831a46aa491570fcae649e45fb4654"
+        },
+        {
+          "path": "profile-provider/sso_token/fs/home/.aws/sso/cache/34c6fceca75e456f25e7e99531e2425c6c1de443.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "06853e98f985a4821622c1707102429a17f0bf4f",
+          "size": 350,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/06853e98f985a4821622c1707102429a17f0bf4f"
+        },
+        {
+          "path": "profile-provider/sso_token/fs/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e92f6fafd39eb98bade23bc846c09fb6a2f1fc74",
+          "size": 2074,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/e92f6fafd39eb98bade23bc846c09fb6a2f1fc74"
+        },
+        {
+          "path": "profile-provider/sso_token/fs/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7ff24f62a8323e696cefef07682533c5ed6b06c6",
+          "size": 232,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/7ff24f62a8323e696cefef07682533c5ed6b06c6"
+        },
+        {
+          "path": "profile-provider/sso_token/http-traffic.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6a053d6a3bb55bb357bbc378355260ddad36f694",
+          "size": 77,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/6a053d6a3bb55bb357bbc378355260ddad36f694"
+        },
+        {
+          "path": "profile-provider/sso_token/test-case.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2a0e6c87d265e2b5be92cd92bc23fee62bbebf8b",
+          "size": 371,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/2a0e6c87d265e2b5be92cd92bc23fee62bbebf8b"
+        }
+      ],
+      "truncated": false
+    },
+    "integration-tests": {
+      "sha": "4060b8b364544c6866d9b4723154342eb1a30e55",
+      "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/4060b8b364544c6866d9b4723154342eb1a30e55",
+      "tree": [
+        {
+          "path": "eks-credentials",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "0e8b1c258853e40241b24504a8088df3b3bed0a4",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/0e8b1c258853e40241b24504a8088df3b3bed0a4"
+        },
+        {
+          "path": "eks-credentials/.npmignore",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c1d6d45dcf388eb07c3879d309dd5e4fb06d26ef",
+          "size": 65,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/c1d6d45dcf388eb07c3879d309dd5e4fb06d26ef"
+        },
+        {
+          "path": "eks-credentials/README.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a37f902e3cae6c19912c86ddb2fe2f532bef7af5",
+          "size": 710,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/a37f902e3cae6c19912c86ddb2fe2f532bef7af5"
+        },
+        {
+          "path": "eks-credentials/bin",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "8efb29cf86789ceb4f6d6b59c138e81f62885bc6",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/8efb29cf86789ceb4f6d6b59c138e81f62885bc6"
+        },
+        {
+          "path": "eks-credentials/bin/eks-credentials.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b2de8294b06e33ec2fe3d25537fdfb7573fea97d",
+          "size": 1090,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/b2de8294b06e33ec2fe3d25537fdfb7573fea97d"
+        },
+        {
+          "path": "eks-credentials/cdk.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a7f92ed321f3348aab2f4e3a1d6b549abcdbe1ac",
+          "size": 87,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/a7f92ed321f3348aab2f4e3a1d6b549abcdbe1ac"
+        },
+        {
+          "path": "eks-credentials/jest.config.js",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d9564adce4deba45fcfb50048efbaeffa8d7cb66",
+          "size": 274,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/d9564adce4deba45fcfb50048efbaeffa8d7cb66"
+        },
+        {
+          "path": "eks-credentials/lib",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "64fdfa789d40e17bed21108b73cf5dbda55c23d0",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/64fdfa789d40e17bed21108b73cf5dbda55c23d0"
+        },
+        {
+          "path": "eks-credentials/lib/eks-credentials-stack.ts",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "33966d8e670dddda2a85bb37eaae7f4abf7df1df",
+          "size": 3869,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/33966d8e670dddda2a85bb37eaae7f4abf7df1df"
+        },
+        {
+          "path": "eks-credentials/package-lock.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "845889f40f432beacd764b7df459773d20e8efe0",
+          "size": 18027,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/845889f40f432beacd764b7df459773d20e8efe0"
+        },
+        {
+          "path": "eks-credentials/package.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c433ea8e09292c59e82acd6038ccbec62ad47b96",
+          "size": 491,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/c433ea8e09292c59e82acd6038ccbec62ad47b96"
+        },
+        {
+          "path": "eks-credentials/test.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a3ef1c4d051e3b536fce8b68150848061975bd4d",
+          "size": 537,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/a3ef1c4d051e3b536fce8b68150848061975bd4d"
+        },
+        {
+          "path": "eks-credentials/tsconfig.json",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9f8e8beabd2331151f877be0cd3cd3b7b316eb8e",
+          "size": 650,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/9f8e8beabd2331151f877be0cd3cd3b7b316eb8e"
+        }
+      ],
+      "truncated": false
+    },
+    "fuzz": {
+      "sha": "2c3dcd1f749a983f8ce8cfa2ddac8b68cef1dd9c",
+      "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/2c3dcd1f749a983f8ce8cfa2ddac8b68cef1dd9c",
+      "tree": [
+        {
+          "path": "Cargo.toml",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c738510c92f7e237f594e21375db436220f5101f",
+          "size": 562,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/c738510c92f7e237f594e21375db436220f5101f"
+        },
+        {
+          "path": "fuzz_targets",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "b2224f2c29db0e080fe835675b3d528a333d6efe",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/b2224f2c29db0e080fe835675b3d528a333d6efe"
+        },
+        {
+          "path": "fuzz_targets/profile-parser.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ceec6892578e77cd48523a9f837507d00d0b4a49",
+          "size": 870,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/ceec6892578e77cd48523a9f837507d00d0b4a49"
+        }
+      ],
+      "truncated": false
+    },
+    "src": {
+      "sha": "3cb8ee842daae9f052851f0a7c3844b02aaedf5e",
+      "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/3cb8ee842daae9f052851f0a7c3844b02aaedf5e",
+      "tree": [
+        {
+          "path": "credential_process.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "14bafb4580a836961ff6f33874faacf78e5d1f83",
+          "size": 14458,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/14bafb4580a836961ff6f33874faacf78e5d1f83"
+        },
+        {
+          "path": "default_provider.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "436778c13996f28141db846acdcf2bf889bbfbe4",
+          "size": 3117,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/436778c13996f28141db846acdcf2bf889bbfbe4"
+        },
+        {
+          "path": "default_provider",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "d5662c6c2b936aa08767a2f17fadb4ac936ae6ce",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/d5662c6c2b936aa08767a2f17fadb4ac936ae6ce"
+        },
+        {
+          "path": "default_provider/account_id_endpoint_mode.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8e0975610e1936ce266fdca9c3281edbce3357c1",
+          "size": 3220,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/8e0975610e1936ce266fdca9c3281edbce3357c1"
+        },
+        {
+          "path": "default_provider/app_name.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7a411e1a73e1269f598acab6a40823c2e4997394",
+          "size": 5859,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/7a411e1a73e1269f598acab6a40823c2e4997394"
+        },
+        {
+          "path": "default_provider/auth_scheme_preference.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2a5d765aac092dc39e281d560004a002028379c1",
+          "size": 6976,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/2a5d765aac092dc39e281d560004a002028379c1"
+        },
+        {
+          "path": "default_provider/checksums.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "25da664a39318300b632908d6edba9379afd7130",
+          "size": 9186,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/25da664a39318300b632908d6edba9379afd7130"
+        },
+        {
+          "path": "default_provider/credentials.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e901846938b369718a69b64e9150865f4ab58093",
+          "size": 14328,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/e901846938b369718a69b64e9150865f4ab58093"
+        },
+        {
+          "path": "default_provider/disable_request_compression.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a43886913b07766a0869e8e0ef1266c2cd08224f",
+          "size": 4004,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/a43886913b07766a0869e8e0ef1266c2cd08224f"
+        },
+        {
+          "path": "default_provider/endpoint_url.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "da3569385da69042c099091c80fce49ea1423160",
+          "size": 3739,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/da3569385da69042c099091c80fce49ea1423160"
+        },
+        {
+          "path": "default_provider/ignore_configured_endpoint_urls.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3513185d81f384fee80706d3997d68ca098d445a",
+          "size": 3280,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/3513185d81f384fee80706d3997d68ca098d445a"
+        },
+        {
+          "path": "default_provider/region.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "db82b720b98524d3c75ebff834ec64200cfa7b39",
+          "size": 2413,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/db82b720b98524d3c75ebff834ec64200cfa7b39"
+        },
+        {
+          "path": "default_provider/request_min_compression_size_bytes.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4ccbbf84b3e7e57cc39b3c3cf0eb068ac9804e93",
+          "size": 4189,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/4ccbbf84b3e7e57cc39b3c3cf0eb068ac9804e93"
+        },
+        {
+          "path": "default_provider/retry_config.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9eb4639c7f6906b6c02140fb051662a3683393ff",
+          "size": 12209,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/9eb4639c7f6906b6c02140fb051662a3683393ff"
+        },
+        {
+          "path": "default_provider/timeout_config.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "064b80e2ebca9d9430f36ae3c4212d5fdc7c8095",
+          "size": 1314,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/064b80e2ebca9d9430f36ae3c4212d5fdc7c8095"
+        },
+        {
+          "path": "default_provider/token.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "66236b32b063c087c4582b0ea0003125fd0fc635",
+          "size": 4197,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/66236b32b063c087c4582b0ea0003125fd0fc635"
+        },
+        {
+          "path": "default_provider/use_dual_stack.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a78be5ae0e41b0d685a5c7f4f00c1725f5b37ed9",
+          "size": 3670,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/a78be5ae0e41b0d685a5c7f4f00c1725f5b37ed9"
+        },
+        {
+          "path": "default_provider/use_fips.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "92932f4610c5cc63cb3e65267244581421567228",
+          "size": 2793,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/92932f4610c5cc63cb3e65267244581421567228"
+        },
+        {
+          "path": "ecs.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5c3e811154c9b35359b5d62d9b6549537ef1e72d",
+          "size": 36060,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/5c3e811154c9b35359b5d62d9b6549537ef1e72d"
+        },
+        {
+          "path": "env_service_config.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "00c67a1275551405269523800371541b235440dd",
+          "size": 848,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/00c67a1275551405269523800371541b235440dd"
+        },
+        {
+          "path": "environment",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "9d1c22fc3e369b17a1d8ba74bbad6e821f3655ca",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/9d1c22fc3e369b17a1d8ba74bbad6e821f3655ca"
+        },
+        {
+          "path": "environment/credentials.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ae662c75b4bb969550315632a291bf402deb71ce",
+          "size": 8993,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/ae662c75b4bb969550315632a291bf402deb71ce"
+        },
+        {
+          "path": "environment/mod.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d43dc6588f0db4a37a6e5346d0afa7f2a45117f1",
+          "size": 2111,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/d43dc6588f0db4a37a6e5346d0afa7f2a45117f1"
+        },
+        {
+          "path": "environment/region.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2f389bb479dd019b69b9c5b9da1b6f058e7ab722",
+          "size": 2569,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/2f389bb479dd019b69b9c5b9da1b6f058e7ab722"
+        },
+        {
+          "path": "http_credential_provider.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "fb66e5ab8e9ac782596cc6892981c6591ab6e887",
+          "size": 13961,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/fb66e5ab8e9ac782596cc6892981c6591ab6e887"
+        },
+        {
+          "path": "imds",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "9db3be7687308005f17b1d94c37ff484fbc846e1",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/9db3be7687308005f17b1d94c37ff484fbc846e1"
+        },
+        {
+          "path": "imds/client.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "86f8101028f3f767d0394388cba2f0c9f6bee467",
+          "size": 47770,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/86f8101028f3f767d0394388cba2f0c9f6bee467"
+        },
+        {
+          "path": "imds/client",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "a630f17bbcf81d60e23179c280128898a6ac6b72",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/a630f17bbcf81d60e23179c280128898a6ac6b72"
+        },
+        {
+          "path": "imds/client/error.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7e418c28f8e04590ffc97f12ce58c7b8d4bd6300",
+          "size": 7860,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/7e418c28f8e04590ffc97f12ce58c7b8d4bd6300"
+        },
+        {
+          "path": "imds/client/token.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8ec3e8914ccba067a29584bb8527666350697395",
+          "size": 9336,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/8ec3e8914ccba067a29584bb8527666350697395"
+        },
+        {
+          "path": "imds/credentials.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e8a3fbaf533af527635cef3e51de5562468c3d35",
+          "size": 25732,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/e8a3fbaf533af527635cef3e51de5562468c3d35"
+        },
+        {
+          "path": "imds/mod.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a85e3536447b8438713895f5cd1067a452fb6c69",
+          "size": 400,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/a85e3536447b8438713895f5cd1067a452fb6c69"
+        },
+        {
+          "path": "imds/region.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d8da43ed251b7d42e45881dffe97f943fbb168fe",
+          "size": 5703,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/d8da43ed251b7d42e45881dffe97f943fbb168fe"
+        },
+        {
+          "path": "json_credentials.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b7cba8c3d2743ff24cb9b93ed782ca8a338fb664",
+          "size": 16724,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/b7cba8c3d2743ff24cb9b93ed782ca8a338fb664"
+        },
+        {
+          "path": "lib.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e47b5292b19bf34157d04c772fc2782de80c82bc",
+          "size": 57158,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/e47b5292b19bf34157d04c772fc2782de80c82bc"
+        },
+        {
+          "path": "login.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a1c61c6fae35981b1a9f64003c267e7bb49d7f9d",
+          "size": 20475,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/a1c61c6fae35981b1a9f64003c267e7bb49d7f9d"
+        },
+        {
+          "path": "login",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "1ed01cbaf35a02b35e467cb84913e6e881dd3996",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/1ed01cbaf35a02b35e467cb84913e6e881dd3996"
+        },
+        {
+          "path": "login/cache.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5784729e9578ec91586c5d68c25910b8244e9dff",
+          "size": 18967,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/5784729e9578ec91586c5d68c25910b8244e9dff"
+        },
+        {
+          "path": "login/dpop.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2c6af341ce54e8c88ebd3c61fc2da02a027caeac",
+          "size": 10766,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/2c6af341ce54e8c88ebd3c61fc2da02a027caeac"
+        },
+        {
+          "path": "login/token.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7e3220ad259b557508e19271baa6d1d35cf78818",
+          "size": 7109,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/7e3220ad259b557508e19271baa6d1d35cf78818"
+        },
+        {
+          "path": "meta",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "888ed223af6863f1e7e02c092c99e6ee961208d6",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/888ed223af6863f1e7e02c092c99e6ee961208d6"
+        },
+        {
+          "path": "meta/credentials",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "f44fcf83d3253ff44c1cef77da8b47972a39b73d",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/f44fcf83d3253ff44c1cef77da8b47972a39b73d"
+        },
+        {
+          "path": "meta/credentials/chain.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b09874c6a27d4db35c445a2f24d418d62786bad4",
+          "size": 8374,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/b09874c6a27d4db35c445a2f24d418d62786bad4"
+        },
+        {
+          "path": "meta/credentials/mod.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e681e753a732b70c2e33d76937d3bf28894caaac",
+          "size": 263,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/e681e753a732b70c2e33d76937d3bf28894caaac"
+        },
+        {
+          "path": "meta/mod.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b8160f5a38b299b1161e834c8add2064e2a7c5af",
+          "size": 239,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/b8160f5a38b299b1161e834c8add2064e2a7c5af"
+        },
+        {
+          "path": "meta/region.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "09e34e8bdf38f2eec967b6d6d52f4a8a9a6d504c",
+          "size": 5761,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/09e34e8bdf38f2eec967b6d6d52f4a8a9a6d504c"
+        },
+        {
+          "path": "meta/token.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "64ff0c21d8ed1de8e10aff09bb294ca3a459ffca",
+          "size": 3805,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/64ff0c21d8ed1de8e10aff09bb294ca3a459ffca"
+        },
+        {
+          "path": "profile.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5b77b99f9bb044cd5aec97165310e73c6ff30080",
+          "size": 4184,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/5b77b99f9bb044cd5aec97165310e73c6ff30080"
+        },
+        {
+          "path": "profile",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "fb624ba37b001d3908a0f1fdf3b37776425f1aa2",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/fb624ba37b001d3908a0f1fdf3b37776425f1aa2"
+        },
+        {
+          "path": "profile/credentials.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "60357e048065174a25a822154df54e3d4a8d6011",
+          "size": 37830,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/60357e048065174a25a822154df54e3d4a8d6011"
+        },
+        {
+          "path": "profile/credentials",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "19ab3d1d47ae57a2c5b31c2bdaee4afa4aacbb72",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/19ab3d1d47ae57a2c5b31c2bdaee4afa4aacbb72"
+        },
+        {
+          "path": "profile/credentials/exec.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e463da2890e4a0a7233c15c61eee799e0664baa0",
+          "size": 11120,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/e463da2890e4a0a7233c15c61eee799e0664baa0"
+        },
+        {
+          "path": "profile/credentials/repr.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "25c45be2ccae8855973f0002ecb4bb7824250c01",
+          "size": 25946,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/25c45be2ccae8855973f0002ecb4bb7824250c01"
+        },
+        {
+          "path": "profile/location_of_profile_files.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d712da7ff5d1fd9e72152dde53c35e625905166f",
+          "size": 997,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/d712da7ff5d1fd9e72152dde53c35e625905166f"
+        },
+        {
+          "path": "profile/parser.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "a2b4d4371a4bbaf85a409fa1296062f7e9478466",
+          "size": 2156,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/a2b4d4371a4bbaf85a409fa1296062f7e9478466"
+        },
+        {
+          "path": "profile/profile_file.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c99bd4f16ca2f6e47a44b35f040e2cc7784dd427",
+          "size": 878,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/c99bd4f16ca2f6e47a44b35f040e2cc7784dd427"
+        },
+        {
+          "path": "profile/region.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "34a3fffaca1d3ec30c4e4137578c1779c9c2c3b9",
+          "size": 8236,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/34a3fffaca1d3ec30c4e4137578c1779c9c2c3b9"
+        },
+        {
+          "path": "profile/token.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2e333079882a980e84df6829116569dadf1176ae",
+          "size": 8166,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/2e333079882a980e84df6829116569dadf1176ae"
+        },
+        {
+          "path": "provider_config.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ce9c9ea280ea4f1824b11ed08eb6c65669b628cb",
+          "size": 14116,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/ce9c9ea280ea4f1824b11ed08eb6c65669b628cb"
+        },
+        {
+          "path": "retry.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d03e076078d151059aaee11347c227da4fa11ce5",
+          "size": 2633,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/d03e076078d151059aaee11347c227da4fa11ce5"
+        },
+        {
+          "path": "sensitive_command.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1f2edd74bd137b73e81edd958548ceecf1533725",
+          "size": 1279,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/1f2edd74bd137b73e81edd958548ceecf1533725"
+        },
+        {
+          "path": "sso.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "69ed37ed0fcc359bad121a9fc1b10133ff385972",
+          "size": 287,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/69ed37ed0fcc359bad121a9fc1b10133ff385972"
+        },
+        {
+          "path": "sso",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "76ff45880e00f22018ef8a4221762ef811d8b667",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/76ff45880e00f22018ef8a4221762ef811d8b667"
+        },
+        {
+          "path": "sso/cache.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "42a1bb1b328eaa3bf04276705b34963ae220f676",
+          "size": 22425,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/42a1bb1b328eaa3bf04276705b34963ae220f676"
+        },
+        {
+          "path": "sso/credentials.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "5b6b4fc6dd76baf6b011954a652f5a99ce76af1f",
+          "size": 9870,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/5b6b4fc6dd76baf6b011954a652f5a99ce76af1f"
+        },
+        {
+          "path": "sso/token.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "51cc2bd12f6b30fc88c4d63aa98f63e606f8f7fe",
+          "size": 33435,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/51cc2bd12f6b30fc88c4d63aa98f63e606f8f7fe"
+        },
+        {
+          "path": "stalled_stream_protection.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1e47905305c7602e6fe7df38f803b00417cbcde7",
+          "size": 295,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/1e47905305c7602e6fe7df38f803b00417cbcde7"
+        },
+        {
+          "path": "sts.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7c3ea29062e13372dcb91287b2435baea3529fee",
+          "size": 310,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/7c3ea29062e13372dcb91287b2435baea3529fee"
+        },
+        {
+          "path": "sts",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "612fc9608baa93081259bd95ee5d00e1b841a472",
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/trees/612fc9608baa93081259bd95ee5d00e1b841a472"
+        },
+        {
+          "path": "sts/assume_role.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "8b644199874a500a48f987e8a8561e1527fe46bd",
+          "size": 24517,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/8b644199874a500a48f987e8a8561e1527fe46bd"
+        },
+        {
+          "path": "sts/util.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "dd51e1850ae5a4a84c704f520fc9dc8ee9ec2073",
+          "size": 2881,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/dd51e1850ae5a4a84c704f520fc9dc8ee9ec2073"
+        },
+        {
+          "path": "test_case.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2b71889eaadca7b619541583ef5f9b1cdfee1e1e",
+          "size": 14968,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/2b71889eaadca7b619541583ef5f9b1cdfee1e1e"
+        },
+        {
+          "path": "timeout.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "1409e60332fe66d673b7163a8f14d327340af436",
+          "size": 345,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/1409e60332fe66d673b7163a8f14d327340af436"
+        },
+        {
+          "path": "web_identity_token.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "be8b25554b183be05ace8c1e2b7e5d2b7961357b",
+          "size": 13702,
+          "url": "https://api.github.com/repos/awslabs/aws-sdk-rust/git/blobs/be8b25554b183be05ace8c1e2b7e5d2b7961357b"
+        }
+      ],
+      "truncated": false
+    }
+  }
+}

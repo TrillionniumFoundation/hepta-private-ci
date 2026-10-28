@@ -1,0 +1,37 @@
+load("@crates//:defs.bzl", "all_crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+# Same six aws-config features as the original production metadata.
+# All original provider unit tests remain in the Cargo workspace member. The
+# first-party codex-aws-auth Bazel tests continue to exercise this library.
+rust_library(
+    name = "aws-config",
+    srcs = glob(["src/**/*.rs"]),
+    compile_data = glob(["src/**/*.md"]),
+    crate_features = [
+        "credentials-login",
+        "credentials-process",
+        "default",
+        "default-https-client",
+        "rt-tokio",
+        "sso",
+    ],
+    crate_name = "aws_config",
+    crate_root = "src/lib.rs",
+    edition = "2021",
+    version = "1.8.12",
+    visibility = ["//visibility:public"],
+    deps = all_crate_deps(normal = True),
+)
+
+alias(
+    name = "aws-config-1.8.12-hepta-p256014",
+    actual = ":aws-config",
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "package-files",
+    srcs = glob(["**"], exclude = ["BUILD.bazel", "target/**"]),
+    visibility = ["//visibility:public"],
+)

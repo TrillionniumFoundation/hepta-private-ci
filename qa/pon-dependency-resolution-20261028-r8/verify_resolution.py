@@ -91,8 +91,14 @@ def dependency_key(dependency, packages):
     return selected[0]
 
 
-def verify(current_kind):
-    archive = (HERE / "artifact-12791038108.zip").read_bytes()
+def verify(current_kind, artifact_zip):
+    require(
+        artifact_zip.is_file()
+        and not artifact_zip.is_symlink()
+        and artifact_zip.stat().st_size == 1270736,
+        "supply the retained original 1270736-byte ZIP as a regular file",
+    )
+    archive = artifact_zip.read_bytes()
     require(
         len(archive) == 1270736 and sha256(archive) == ARCHIVE_SHA, "archive identity"
     )
@@ -536,5 +542,15 @@ if __name__ == "__main__":
     parser.add_argument(
         "--current-kind", choices=("original", "proposal"), default="proposal"
     )
+    parser.add_argument(
+        "--artifact-zip",
+        type=Path,
+        required=True,
+        help="Externally retained original artifact 12791038108 ZIP; exact size and SHA-256 are mandatory",
+    )
     arguments = parser.parse_args()
-    print(json.dumps(verify(arguments.current_kind), indent=2) + "\n", end="")
+    print(
+        json.dumps(verify(arguments.current_kind, arguments.artifact_zip), indent=2)
+        + "\n",
+        end="",
+    )
