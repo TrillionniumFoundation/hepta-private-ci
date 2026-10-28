@@ -1,6 +1,7 @@
 load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
 load("@rules_cc//cc:cc_static_library.bzl", "cc_static_library")
 load("@rules_cc//cc:defs.bzl", "cc_library")
+load(":release_pair.bzl", "rusty_v8_release_pair")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -335,7 +336,7 @@ filegroup(
     srcs = ["@v8_crate_150_4_0//:src_binding_release_x86_64_pc_windows_msvc"],
 )
 
-filegroup(
+rusty_v8_release_pair(
     name = "rusty_v8_release_pair_x86_64_apple_darwin",
     srcs = [
         ":src_binding_release_x86_64_apple_darwin_150_4_0_release",
@@ -343,7 +344,7 @@ filegroup(
     ],
 )
 
-filegroup(
+rusty_v8_release_pair(
     name = "rusty_v8_release_pair_aarch64_apple_darwin",
     srcs = [
         ":src_binding_release_aarch64_apple_darwin_150_4_0_release",
@@ -351,7 +352,7 @@ filegroup(
     ],
 )
 
-filegroup(
+rusty_v8_release_pair(
     name = "rusty_v8_release_pair_x86_64_unknown_linux_gnu",
     srcs = [
         ":src_binding_release_x86_64_unknown_linux_gnu_150_4_0_release",
@@ -359,7 +360,7 @@ filegroup(
     ],
 )
 
-filegroup(
+rusty_v8_release_pair(
     name = "rusty_v8_release_pair_aarch64_unknown_linux_gnu",
     srcs = [
         ":src_binding_release_aarch64_unknown_linux_gnu_150_4_0_release",
@@ -367,7 +368,7 @@ filegroup(
     ],
 )
 
-filegroup(
+rusty_v8_release_pair(
     name = "rusty_v8_release_pair_x86_64_unknown_linux_musl",
     srcs = [
         ":src_binding_release_x86_64_unknown_linux_musl_150_4_0_release",
@@ -375,7 +376,7 @@ filegroup(
     ],
 )
 
-filegroup(
+rusty_v8_release_pair(
     name = "rusty_v8_release_pair_aarch64_unknown_linux_musl",
     srcs = [
         ":src_binding_release_aarch64_unknown_linux_musl_150_4_0_release",
@@ -383,7 +384,7 @@ filegroup(
     ],
 )
 
-filegroup(
+rusty_v8_release_pair(
     name = "rusty_v8_release_pair_x86_64_pc_windows_msvc",
     srcs = [
         ":src_binding_release_x86_64_pc_windows_msvc_150_4_0_release",
@@ -391,7 +392,7 @@ filegroup(
     ],
 )
 
-filegroup(
+rusty_v8_release_pair(
     name = "rusty_v8_release_pair_aarch64_pc_windows_msvc",
     srcs = [
         ":src_binding_release_aarch64_pc_windows_msvc_150_4_0_release",
@@ -399,7 +400,7 @@ filegroup(
     ],
 )
 
-filegroup(
+rusty_v8_release_pair(
     name = "rusty_v8_sandbox_release_pair_x86_64_apple_darwin",
     srcs = [
         ":src_binding_release_x86_64_apple_darwin_150_4_0_release",
@@ -407,7 +408,7 @@ filegroup(
     ],
 )
 
-filegroup(
+rusty_v8_release_pair(
     name = "rusty_v8_sandbox_release_pair_aarch64_apple_darwin",
     srcs = [
         ":src_binding_release_aarch64_apple_darwin_150_4_0_release",
@@ -415,7 +416,7 @@ filegroup(
     ],
 )
 
-filegroup(
+rusty_v8_release_pair(
     name = "rusty_v8_sandbox_release_pair_x86_64_unknown_linux_gnu",
     srcs = [
         ":src_binding_release_x86_64_unknown_linux_gnu_150_4_0_release",
@@ -423,7 +424,7 @@ filegroup(
     ],
 )
 
-filegroup(
+rusty_v8_release_pair(
     name = "rusty_v8_sandbox_release_pair_aarch64_unknown_linux_gnu",
     srcs = [
         ":src_binding_release_aarch64_unknown_linux_gnu_150_4_0_release",
@@ -431,7 +432,7 @@ filegroup(
     ],
 )
 
-filegroup(
+rusty_v8_release_pair(
     name = "rusty_v8_sandbox_release_pair_x86_64_unknown_linux_musl",
     srcs = [
         ":src_binding_release_x86_64_unknown_linux_musl_150_4_0_release",
@@ -439,7 +440,7 @@ filegroup(
     ],
 )
 
-filegroup(
+rusty_v8_release_pair(
     name = "rusty_v8_sandbox_release_pair_aarch64_unknown_linux_musl",
     srcs = [
         ":src_binding_release_aarch64_unknown_linux_musl_150_4_0_release",
