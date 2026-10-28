@@ -1,0 +1,766 @@
+{
+  "schema": "hepta.free-boundary.maintenance-ci-diagnostics.v1",
+  "observed_at_utc": "2026-10-28 09:13:32 UTC",
+  "purpose": "Read-only diagnosis of the previously published scientific-results head. This receipt is not a CI pass or a diagnostic for a later maintenance head.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "head_sha": "c32392367b7587d09806ca5cbc74678a168b4e16",
+  "baseline_sha": "fb9281e4a7ccfc4034281ed6310adea7e50f4474",
+  "head_run_id": 40634872515,
+  "baseline_run_id": 40472591263,
+  "actual_ci_checkouts": {
+    "head_merge_commit": "f43fd711a98effac15e1ea180c4bf55f67a601f4",
+    "baseline_merge_commit": "a9b3cc7704ca2169cb90712090cb162730bdbe1e",
+    "baseline_merge_commit_note": "Full identifier from the baseline macOS job git log -1 --format=%H output at 2026-10-27T08:20:49.4762500Z; baseline job merged fb9281... into 63f198ad85cfa2aa579032256355f446cfe793a0."
+  },
+  "exact_head_checks": {
+    "endpoint": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/c32392367b7587d09806ca5cbc74678a168b4e16/check-runs?per_page=100&page=1",
+    "total_count": 44,
+    "counts": {
+      "failure": 6,
+      "success": 16,
+      "skipped": 11,
+      "cancelled": 11
+    },
+    "failures": [
+      {
+        "id": 122658193071,
+        "name": "CI required",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40634872515/job/122658193071"
+      },
+      {
+        "id": 122658133290,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40634872515/job/122658133290"
+      },
+      {
+        "id": 122639715088,
+        "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40634872515/job/122639715088"
+      },
+      {
+        "id": 122639715035,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40634872515/job/122639715035"
+      },
+      {
+        "id": 122639714982,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40634872515/job/122639714982"
+      },
+      {
+        "id": 122639714542,
+        "name": "cargo-deny / cargo-deny",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40634872515/job/122639714542"
+      }
+    ]
+  },
+  "source_identity_comparison": [
+    {
+      "path": "codex-rs",
+      "baseline_object": "346caa752c4443bb1e2837e195aba2736c354d4b",
+      "head_object": "346caa752c4443bb1e2837e195aba2736c354d4b"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "baseline_object": "55e117dafe84709451a638bb8f6bafa41c38bd5a",
+      "head_object": "55e117dafe84709451a638bb8f6bafa41c38bd5a"
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "baseline_object": "8d8123c81dabc3cd38c2ef9847c1633e3ff1080c",
+      "head_object": "8d8123c81dabc3cd38c2ef9847c1633e3ff1080c"
+    }
+  ],
+  "source_identity_method": "git rev-parse COMMIT:PATH for both immutable commits. Equal inputs and recurring failures do not establish every underlying cause.",
+  "log_retrieval": {
+    "tool": "github_fetch_workflow_job_logs",
+    "successful_jobs": [
+      122639715088,
+      122639715035,
+      122639714982,
+      122083800736,
+      122083800616,
+      122083800557
+    ],
+    "archive_artifact_fallback_used": false,
+    "cargo_deny_log": "Not retried in this review. Parent had already received repeated Transport closed errors for head and baseline Cargo-deny logs; exact diagnostic remains unavailable."
+  },
+  "log_scope": "Selected verbatim log-line excerpts only, with their positions in the retrieved decoded log. These files do not archive complete job logs. ANSI escapes and CR characters are retained where present.",
+  "jobs": [
+    {
+      "job_id": 122639715088,
+      "run_id": 40634872515,
+      "ref_role": "head",
+      "name": "macOS aarch64 Bazel clippy",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40634872515/job/122639715088",
+      "retrieved_log_characters": 784405,
+      "retrieved_log_lines": 7035,
+      "checkout_line": "2026-10-28T04:55:10.5639250Z HEAD is now at f43fd71 Merge c32392367b7587d09806ca5cbc74678a168b4e16 into fb9281e4a7ccfc4034281ed6310adea7e50f4474",
+      "selected_excerpts": [
+        {
+          "needle": "error: used `unwrap()`",
+          "found": true,
+          "first_log_line": 6858,
+          "last_log_line": 6878,
+          "lines": [
+            "2026-10-28T05:27:04.1936260Z ERROR: /Users/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-fleet/BUILD.bazel:3:17: Clippy //codex-rs/hepta-fleet:hepta-fleet-unit-tests-bin failed: (Exit 1): process_wrapper failed: error executing Clippy command (from aspects [@@rules_rs++rules_rust+rules_rust//rust/private:clippy.bzl%rust_clippy_aspect] on rust_test rule target //codex-rs/hepta-fleet:hepta-fleet-unit-tests-bin) bazel-out/darwin_arm64-opt-exec-ST-fd45d9624a1f/bin/external/rules_rs++rules_rust+rules_rust/util/process_wrapper/process_wrapper ... (remaining 135 arguments skipped)",
+            "2026-10-28T05:27:04.2034040Z ",
+            "2026-10-28T05:27:04.2141550Z Use --sandbox_debug to see verbose messages from the sandbox and retain the sandbox build root for debugging",
+            "2026-10-28T05:27:04.2243250Z error: used `unwrap()` on a `Result` value",
+            "2026-10-28T05:27:04.2345250Z    --> hepta-fleet/src/authority_port.rs:197:9",
+            "2026-10-28T05:27:04.2451410Z     |",
+            "2026-10-28T05:27:04.2553820Z 197 | /         ledger",
+            "2026-10-28T05:27:04.2639710Z 198 | |             .admit_host(HostObservation {",
+            "2026-10-28T05:27:04.2682890Z 199 | |                 host_id: \"host-one\".into(),",
+            "2026-10-28T05:27:04.2683810Z 200 | |                 failure_domain_id: \"rack-one\".into(),",
+            "2026-10-28T05:27:04.2684640Z ...   |",
+            "2026-10-28T05:27:04.2689220Z 209 | |             })",
+            "2026-10-28T05:27:04.2689580Z 210 | |             .unwrap();",
+            "2026-10-28T05:27:04.2689920Z     | |_____________________^",
+            "2026-10-28T05:27:04.2690170Z     |",
+            "2026-10-28T05:27:04.2690490Z     = note: if this value is an `Err`, it will panic",
+            "2026-10-28T05:27:04.2691200Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used",
+            "2026-10-28T05:27:04.2692680Z     = note: requested on the command line with `-D clippy::unwrap-used`",
+            "2026-10-28T05:27:04.2692970Z ",
+            "2026-10-28T05:27:04.2693060Z error: aborting due to 1 previous error",
+            "2026-10-28T05:27:04.2693300Z "
+          ]
+        }
+      ]
+    },
+    {
+      "job_id": 122639715035,
+      "run_id": 40634872515,
+      "ref_role": "head",
+      "name": "Windows Bazel test shard 3/4",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40634872515/job/122639715035",
+      "retrieved_log_characters": 2308069,
+      "retrieved_log_lines": 18136,
+      "checkout_line": "2026-10-28T04:55:15.4000296Z HEAD is now at f43fd71 Merge c32392367b7587d09806ca5cbc74678a168b4e16 into fb9281e4a7ccfc4034281ed6310adea7e50f4474\r",
+      "selected_excerpts": [
+        {
+          "needle": "prompt pipeline durable owners failed to open",
+          "found": true,
+          "first_log_line": 5026,
+          "last_log_line": 5030,
+          "lines": [
+            "2026-10-28T05:40:02.8678787Z \r",
+            "2026-10-28T05:40:02.8679723Z thread 'automation::service_tests::production_constructor_never_resumes_a_draining_owner' (3280) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:\r",
+            "2026-10-28T05:40:02.8813077Z Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\r",
+            "2026-10-28T05:40:02.8813729Z \r",
+            "2026-10-28T05:40:02.8814269Z ---- automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit stdout ----\r"
+          ]
+        },
+        {
+          "needle": "called `Result::unwrap()` on an `Err` value: Capacity",
+          "found": true,
+          "first_log_line": 4347,
+          "last_log_line": 4352,
+          "lines": [
+            "2026-10-28T05:31:39.2389645Z \r",
+            "2026-10-28T05:31:39.2658290Z thread 'authbus_outbox_tests::bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed' (7460) panicked at hepta-evidence/src\\authbus_outbox_tests.rs:57:10:\r",
+            "2026-10-28T05:31:39.3010400Z called `Result::unwrap()` on an `Err` value: Capacity\r",
+            "2026-10-28T05:31:39.3359669Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\r",
+            "2026-10-28T05:31:39.3398451Z \r",
+            "2026-10-28T05:31:39.3601119Z \r"
+          ]
+        },
+        {
+          "needle": "backup: Os { code: 33",
+          "found": true,
+          "first_log_line": 3305,
+          "last_log_line": 3310,
+          "lines": [
+            "2026-10-28T05:16:16.0391059Z \r",
+            "2026-10-28T05:16:16.0394213Z thread 'paired_owner_tests::actual_locked_file_replays_mixed_profiles_and_retains_rollback_anchor' (7380) panicked at hepta-intelligence-eval/src\\paired_owner_tests.rs:300:34:\r",
+            "2026-10-28T05:16:16.0395852Z backup: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r",
+            "2026-10-28T05:16:16.0397409Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\r",
+            "2026-10-28T05:16:16.0399518Z \r",
+            "2026-10-28T05:16:16.0399526Z \r"
+          ]
+        },
+        {
+          "needle": "matrixd control socket path is not stale",
+          "found": true,
+          "first_log_line": 4910,
+          "last_log_line": 4915,
+          "lines": [
+            "2026-10-28T05:38:48.0833240Z \r",
+            "2026-10-28T05:38:48.0839999Z ---- control::tests::health_tracks_real_task_state_and_owner_uds_serves_exact_identity stdout ----\r",
+            "2026-10-28T05:38:48.0858118Z Error: Io(Custom { kind: AlreadyExists, error: \"matrixd control socket path is not stale: \\\\\\\\?\\\\D:\\\\tmp\\\\hmx-control-8MjlkX\\\\fleet\\\\run\\\\aaghu64s7r56mdd2v36p3hkrmci.mx\" })\r",
+            "2026-10-28T05:38:48.0927829Z \r",
+            "2026-10-28T05:38:48.0934661Z \r",
+            "2026-10-28T05:38:48.0936152Z failures:\r"
+          ]
+        },
+        {
+          "needle": "thread 'tests::sandbox_feature_matches_linked_v8'",
+          "found": true,
+          "first_log_line": 3798,
+          "last_log_line": 3808,
+          "lines": [
+            "2026-10-28T05:25:34.4511859Z thread 'tests::sandbox_feature_matches_linked_v8' (984) panicked at v8-poc/src/lib.rs:69:9:\r",
+            "2026-10-28T05:25:34.4911179Z assertion failed: `(left == right)`\r",
+            "2026-10-28T05:25:34.5297698Z \r",
+            "2026-10-28T05:25:34.5665620Z Diff < left / right > :\r",
+            "2026-10-28T05:25:34.6151089Z <true\r",
+            "2026-10-28T05:25:34.6691350Z >false\r",
+            "2026-10-28T05:25:34.7087936Z \r",
+            "2026-10-28T05:25:34.7670454Z \r",
+            "2026-10-28T05:25:34.8141601Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\r",
+            "2026-10-28T05:25:34.8650675Z \r",
+            "2026-10-28T05:25:34.9136720Z \r"
+          ]
+        },
+        {
+          "needle": "thread 'exact_digest_abort_terminalizes_unresolved_intent'",
+          "found": true,
+          "first_log_line": 4228,
+          "last_log_line": 4235,
+          "lines": [
+            "2026-10-28T05:31:13.1495215Z thread 'exact_digest_abort_terminalizes_unresolved_intent' (7084) panicked at hepta-supervisor/tests/signed_intent_recovery.rs:162:5:\r",
+            "2026-10-28T05:31:13.1550683Z assertion failed: matches!(first, Err(SupervisorError::SignedIntentRecoveryRequired(agent_id))\r",
+            "2026-10-28T05:31:13.1558902Z     if agent_id == fleet.agent_id)\r",
+            "2026-10-28T05:31:13.1585504Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\r",
+            "2026-10-28T05:31:13.1601297Z \r",
+            "2026-10-28T05:31:13.1602075Z \r",
+            "2026-10-28T05:31:13.1637928Z failures:\r",
+            "2026-10-28T05:31:13.1697860Z     exact_digest_abort_terminalizes_unresolved_intent\r"
+          ]
+        }
+      ]
+    },
+    {
+      "job_id": 122639714982,
+      "run_id": 40634872515,
+      "ref_role": "head",
+      "name": "Windows Bazel test shard 1/4",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40634872515/job/122639714982",
+      "retrieved_log_characters": 975724,
+      "retrieved_log_lines": 6150,
+      "checkout_line": "2026-10-28T04:55:15.5395893Z HEAD is now at f43fd71 Merge c32392367b7587d09806ca5cbc74678a168b4e16 into fb9281e4a7ccfc4034281ed6310adea7e50f4474\r",
+      "selected_excerpts": [
+        {
+          "needle": "wait for Git wrapper child readiness",
+          "found": true,
+          "first_log_line": 4019,
+          "last_log_line": 4025,
+          "lines": [
+            "2026-10-28T05:34:01.3476752Z \r",
+            "2026-10-28T05:34:01.3528362Z thread 'git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running' (1412) panicked at git-utils/src\\git_process_tests.rs:75:6:\r",
+            "2026-10-28T05:34:01.3657756Z wait for Git wrapper child readiness: Elapsed(())\r",
+            "2026-10-28T05:34:01.3797995Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\r",
+            "2026-10-28T05:34:01.3847032Z \r",
+            "2026-10-28T05:34:01.3859709Z ---- git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running stdout ----\r",
+            "2026-10-28T05:34:01.3860566Z \r"
+          ]
+        },
+        {
+          "needle": "thread 'store::migration_convergence_tests::canonical_cut_after_rebind_reopens'",
+          "found": true,
+          "first_log_line": 4135,
+          "last_log_line": 4139,
+          "lines": [
+            "2026-10-28T05:37:13.6944475Z thread 'store::migration_convergence_tests::canonical_cut_after_rebind_reopens' (8076) panicked at hepta-automation/src\\migration_convergence_tests.rs:154:10:\r",
+            "2026-10-28T05:37:13.6945780Z real open: Invalid\r",
+            "2026-10-28T05:37:13.6946463Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\r",
+            "2026-10-28T05:37:13.6947111Z \r",
+            "2026-10-28T05:37:13.6947662Z ---- store::migration_convergence_tests::displaced_cut_after_rebind_reopens stdout ----\r"
+          ]
+        },
+        {
+          "needle": "workspace root must be canonical",
+          "found": true,
+          "first_log_line": 3805,
+          "last_log_line": 3810,
+          "lines": [
+            "2026-10-28T05:27:56.8827830Z \r",
+            "2026-10-28T05:27:56.8888032Z ---- registry::tests::workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths stdout ----\r",
+            "2026-10-28T05:27:56.8999373Z Error: Invalid(\"workspace root must be canonical and must not traverse a symlink: D:\\\\tmp\\\\.tmpMwpe1B\\\\sweep\\\\a\")\r",
+            "2026-10-28T05:27:56.9009507Z \r",
+            "2026-10-28T05:27:56.9028166Z \r",
+            "2026-10-28T05:27:56.9029534Z failures:\r"
+          ]
+        },
+        {
+          "needle": "thread 'cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send'",
+          "found": true,
+          "first_log_line": 4504,
+          "last_log_line": 4510,
+          "lines": [
+            "2026-10-28T05:40:21.3124822Z thread 'cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send' (2616) panicked at ext/hepta-memory/src\\cognitive\\federation.rs:1309:9:\r",
+            "2026-10-28T05:40:21.3126469Z assertion failed: EphemeralModelInputContributor::is_active(&extension, &thread_store,\r",
+            "2026-10-28T05:40:21.3128095Z     &turn_store)\r",
+            "2026-10-28T05:40:21.3128956Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\r",
+            "2026-10-28T05:40:21.3129685Z \r",
+            "2026-10-28T05:40:21.3129822Z \r",
+            "2026-10-28T05:40:21.3130147Z failures:\r"
+          ]
+        },
+        {
+          "needle": "thread 'restart_budget_survives_repeated_supervisord_recovery'",
+          "found": true,
+          "first_log_line": 4343,
+          "last_log_line": 4349,
+          "lines": [
+            "2026-10-28T05:39:27.0041631Z thread 'restart_budget_survives_repeated_supervisord_recovery' (7176) panicked at hepta-supervisor/tests/restart_budget_recovery.rs:251:5:\r",
+            "2026-10-28T05:39:27.0043227Z assertion failed: supervisor.snapshot(&agent_id).expect(\"snapshot\").events.iter().any(|event|\r",
+            "2026-10-28T05:39:27.0361396Z         matches!(&event.kind, SupervisorEventKind::AutomaticRestartQueued\r",
+            "2026-10-28T05:39:27.0472674Z             { attempt: 2 }))\r",
+            "2026-10-28T05:39:27.0692731Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\r",
+            "2026-10-28T05:39:27.0791229Z \r",
+            "2026-10-28T05:39:27.0909515Z \r"
+          ]
+        },
+        {
+          "needle": "thread 'session::tests::guardian_tests::request_permissions_routes_to_guardian_when_reviewer_is_enabled'",
+          "found": true,
+          "first_log_line": 5072,
+          "last_log_line": 5094,
+          "lines": [
+            "2026-10-28T05:48:55.8667962Z thread 'session::tests::guardian_tests::request_permissions_routes_to_guardian_when_reviewer_is_enabled' (6980) panicked at core/src\\session\\tests\\guardian_tests.rs:188:5:\r",
+            "2026-10-28T05:48:55.8674784Z assertion failed: `(left == right)`\r",
+            "2026-10-28T05:48:55.8675076Z \r",
+            "2026-10-28T05:48:55.8675223Z Diff < left / right > :\r",
+            "2026-10-28T05:48:55.8675542Z  Some(\r",
+            "2026-10-28T05:48:55.8680105Z      RequestPermissionsResponse {\r",
+            "2026-10-28T05:48:55.8680565Z          permissions: RequestPermissionProfile {\r",
+            "2026-10-28T05:48:55.8681020Z <            network: None,\r",
+            "2026-10-28T05:48:55.8685334Z >            network: Some(\r",
+            "2026-10-28T05:48:55.8685724Z >                NetworkPermissions {\r",
+            "2026-10-28T05:48:55.8695777Z >                    enabled: Some(\r",
+            "2026-10-28T05:48:55.8696234Z >                        true,\r",
+            "2026-10-28T05:48:55.8696613Z >                    ),\r",
+            "2026-10-28T05:48:55.8701072Z >                },\r",
+            "2026-10-28T05:48:55.8701395Z >            ),\r",
+            "2026-10-28T05:48:55.8706049Z              file_system: None,\r",
+            "2026-10-28T05:48:55.8706464Z          },\r",
+            "2026-10-28T05:48:55.8706777Z          scope: Turn,\r",
+            "2026-10-28T05:48:55.8710949Z          strict_auto_review: false,\r",
+            "2026-10-28T05:48:55.8711364Z      },\r",
+            "2026-10-28T05:48:55.8715271Z  )\r",
+            "2026-10-28T05:48:55.8715454Z \r",
+            "2026-10-28T05:48:55.8715459Z \r"
+          ]
+        }
+      ]
+    },
+    {
+      "job_id": 122083800736,
+      "run_id": 40472591263,
+      "ref_role": "baseline",
+      "name": "macOS aarch64 Bazel clippy",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40472591263/job/122083800736",
+      "retrieved_log_characters": 1056469,
+      "retrieved_log_lines": 9135,
+      "checkout_line": "2026-10-27T08:20:49.4475430Z HEAD is now at a9b3cc7 Merge fb9281e4a7ccfc4034281ed6310adea7e50f4474 into 63f198ad85cfa2aa579032256355f446cfe793a0",
+      "selected_excerpts": [
+        {
+          "needle": "##[error]The operation was canceled.",
+          "found": true,
+          "first_log_line": 9110,
+          "last_log_line": 9114,
+          "lines": [
+            "2026-10-27T09:20:59.4062910Z [15,314 / 18,878] Compiling external/v8+/icu/torque-generated/src/builtins/proxy-tq-csa.cc [for tool]; 16s disk-cache, darwin-sandbox ... (30 actions, 4 running)",
+            "2026-10-27T09:21:00.8335300Z [15,316 / 18,878] Compiling external/v8+/icu/torque-generated/src/builtins/proxy-delete-property-tq-csa.cc [for tool]; 16s disk-cache, darwin-sandbox ... (30 actions, 4 running)",
+            "2026-10-27T09:21:01.9344760Z ##[error]The operation was canceled.",
+            "2026-10-27T09:21:01.9963170Z Post job cleanup.",
+            "2026-10-27T09:21:02.0013040Z ##[start-action display=Set up Bazel;id=__a3134be1-d12e-4b97-b5ed-01e5efaa0a8a.__bazel-contrib_setup-bazel]"
+          ]
+        }
+      ]
+    },
+    {
+      "job_id": 122083800616,
+      "run_id": 40472591263,
+      "ref_role": "baseline",
+      "name": "Windows Bazel test shard 3/4",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40472591263/job/122083800616",
+      "retrieved_log_characters": 2347809,
+      "retrieved_log_lines": 18363,
+      "checkout_line": "2026-10-27T08:20:52.8957480Z HEAD is now at a9b3cc7 Merge fb9281e4a7ccfc4034281ed6310adea7e50f4474 into 63f198ad85cfa2aa579032256355f446cfe793a0\r",
+      "selected_excerpts": [
+        {
+          "needle": "prompt pipeline durable owners failed to open",
+          "found": true,
+          "first_log_line": 5224,
+          "last_log_line": 5228,
+          "lines": [
+            "2026-10-27T09:12:16.2743083Z \r",
+            "2026-10-27T09:12:16.2744136Z thread 'automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit' (7004) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:\r",
+            "2026-10-27T09:12:16.2746063Z Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\r",
+            "2026-10-27T09:12:16.2747410Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\r",
+            "2026-10-27T09:12:16.2747956Z \r"
+          ]
+        },
+        {
+          "needle": "called `Result::unwrap()` on an `Err` value: Capacity",
+          "found": true,
+          "first_log_line": 4585,
+          "last_log_line": 4590,
+          "lines": [
+            "2026-10-27T09:03:05.9327946Z \r",
+            "2026-10-27T09:03:05.9328963Z thread 'authbus_outbox_tests::bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed' (7756) panicked at hepta-evidence/src\\authbus_outbox_tests.rs:57:10:\r",
+            "2026-10-27T09:03:05.9330482Z called `Result::unwrap()` on an `Err` value: Capacity\r",
+            "2026-10-27T09:03:05.9331328Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\r",
+            "2026-10-27T09:03:05.9331897Z \r",
+            "2026-10-27T09:03:05.9331904Z \r"
+          ]
+        },
+        {
+          "needle": "backup: Os { code: 33",
+          "found": true,
+          "first_log_line": 3823,
+          "last_log_line": 3828,
+          "lines": [
+            "2026-10-27T08:55:00.5236579Z \r",
+            "2026-10-27T08:55:00.5305802Z thread 'paired_owner_tests::actual_locked_file_replays_mixed_profiles_and_retains_rollback_anchor' (6120) panicked at hepta-intelligence-eval/src\\paired_owner_tests.rs:300:34:\r",
+            "2026-10-27T08:55:00.5404753Z backup: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r",
+            "2026-10-27T08:55:00.5414451Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\r",
+            "2026-10-27T08:55:00.5554174Z \r",
+            "2026-10-27T08:55:00.5624269Z \r"
+          ]
+        },
+        {
+          "needle": "matrixd control socket path is not stale",
+          "found": true,
+          "first_log_line": 5101,
+          "last_log_line": 5106,
+          "lines": [
+            "2026-10-27T09:10:48.5412571Z \r",
+            "2026-10-27T09:10:48.5417936Z ---- control::tests::health_tracks_real_task_state_and_owner_uds_serves_exact_identity stdout ----\r",
+            "2026-10-27T09:10:48.5419543Z Error: Io(Custom { kind: AlreadyExists, error: \"matrixd control socket path is not stale: \\\\\\\\?\\\\D:\\\\tmp\\\\hmx-control-t2iwDE\\\\fleet\\\\run\\\\aaghu64s7r56mdd2v36p3hkrmci.mx\" })\r",
+            "2026-10-27T09:10:48.5422233Z \r",
+            "2026-10-27T09:10:48.5423428Z \r",
+            "2026-10-27T09:10:48.5424607Z failures:\r"
+          ]
+        },
+        {
+          "needle": "test tests::sandbox_feature_matches_linked_v8 ... FAILED",
+          "found": true,
+          "first_log_line": 3907,
+          "last_log_line": 3910,
+          "lines": [
+            "2026-10-27T08:55:31.2831229Z test tests::parses_crdtp_dispatchable_messages ... ok\r",
+            "2026-10-27T08:55:31.3390850Z test tests::sandbox_feature_matches_linked_v8 ... FAILED\r",
+            "2026-10-27T08:55:31.3761072Z [FATAL:partition_address_space.cc(301)] Check failed: !IsConfigurablePoolInitialized(). \r",
+            "2026-10-27T08:55:31.4121376Z #0 0x7ff6674f8f32 (D:\\o\\execroot\\_main\\bazel-out\\windows_x86_64_msvc-fastbuild\\bin\\codex-rs\\v8-poc\\v8-poc-unit-tests-bin.exe+0xe88f32)\r"
+          ]
+        }
+      ]
+    },
+    {
+      "job_id": 122083800557,
+      "run_id": 40472591263,
+      "ref_role": "baseline",
+      "name": "Windows Bazel test shard 1/4",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40472591263/job/122083800557",
+      "retrieved_log_characters": 1011050,
+      "retrieved_log_lines": 6528,
+      "checkout_line": "2026-10-27T08:20:51.4081647Z HEAD is now at a9b3cc7 Merge fb9281e4a7ccfc4034281ed6310adea7e50f4474 into 63f198ad85cfa2aa579032256355f446cfe793a0\r",
+      "selected_excerpts": [
+        {
+          "needle": "wait for Git wrapper child readiness",
+          "found": true,
+          "first_log_line": 3565,
+          "last_log_line": 3570,
+          "lines": [
+            "2026-10-27T08:46:28.5074409Z \r",
+            "2026-10-27T08:46:28.5075160Z thread 'git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running' (3396) panicked at git-utils/src\\git_process_tests.rs:75:6:\r",
+            "2026-10-27T08:46:28.5076867Z wait for Git wrapper child readiness: Elapsed(())\r",
+            "2026-10-27T08:46:28.5077420Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\r",
+            "2026-10-27T08:46:28.5078059Z \r",
+            "2026-10-27T08:46:28.5078453Z ---- git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running stdout ----\r"
+          ]
+        },
+        {
+          "needle": "thread 'store::migration_convergence_tests::canonical_cut_after_rebind_reopens'",
+          "found": true,
+          "first_log_line": 3667,
+          "last_log_line": 3671,
+          "lines": [
+            "2026-10-27T08:47:57.6003996Z thread 'store::migration_convergence_tests::canonical_cut_after_rebind_reopens' (8916) panicked at hepta-automation/src\\migration_convergence_tests.rs:154:10:\r",
+            "2026-10-27T08:47:57.6012051Z real open: Invalid\r",
+            "2026-10-27T08:47:57.6035033Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\r",
+            "2026-10-27T08:47:57.6100786Z \r",
+            "2026-10-27T08:47:57.6103073Z ---- store::migration_convergence_tests::canonical_cut_before_rebind_reopens stdout ----\r"
+          ]
+        },
+        {
+          "needle": "workspace root must be canonical",
+          "found": true,
+          "first_log_line": 3385,
+          "last_log_line": 3390,
+          "lines": [
+            "2026-10-27T08:43:05.0190869Z \r",
+            "2026-10-27T08:43:05.0268488Z ---- registry::tests::workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths stdout ----\r",
+            "2026-10-27T08:43:05.0429601Z Error: Invalid(\"workspace root must be canonical and must not traverse a symlink: D:\\\\tmp\\\\.tmpiLJwnz\\\\sweep\\\\a\")\r",
+            "2026-10-27T08:43:05.0590466Z \r",
+            "2026-10-27T08:43:05.0799836Z \r",
+            "2026-10-27T08:43:05.0889248Z failures:\r"
+          ]
+        },
+        {
+          "needle": "thread 'cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send'",
+          "found": true,
+          "first_log_line": 4024,
+          "last_log_line": 4029,
+          "lines": [
+            "2026-10-27T08:50:27.0364920Z thread 'cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send' (1804) panicked at ext/hepta-memory/src\\cognitive\\federation.rs:1309:9:\r",
+            "2026-10-27T08:50:27.0365460Z assertion failed: EphemeralModelInputContributor::is_active(&extension, &thread_store,\r",
+            "2026-10-27T08:50:27.0365750Z     &turn_store)\r",
+            "2026-10-27T08:50:27.0365986Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\r",
+            "2026-10-27T08:50:27.0366189Z \r",
+            "2026-10-27T08:50:27.0366191Z \r"
+          ]
+        },
+        {
+          "needle": "thread 'restart_budget_survives_repeated_supervisord_recovery'",
+          "found": true,
+          "first_log_line": 3866,
+          "last_log_line": 3872,
+          "lines": [
+            "2026-10-27T08:49:40.9152067Z thread 'restart_budget_survives_repeated_supervisord_recovery' (7356) panicked at hepta-supervisor/tests/restart_budget_recovery.rs:251:5:\r",
+            "2026-10-27T08:49:40.9207006Z assertion failed: supervisor.snapshot(&agent_id).expect(\"snapshot\").events.iter().any(|event|\r",
+            "2026-10-27T08:49:40.9238643Z         matches!(&event.kind, SupervisorEventKind::AutomaticRestartQueued\r",
+            "2026-10-27T08:49:40.9285545Z             { attempt: 2 }))\r",
+            "2026-10-27T08:49:40.9296768Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\r",
+            "2026-10-27T08:49:40.9315226Z \r",
+            "2026-10-27T08:49:40.9326855Z \r"
+          ]
+        }
+      ]
+    }
+  ],
+  "windows_failed_name_comparisons": [
+    {
+      "head_job_id": 122639715035,
+      "baseline_job_id": 122083800616,
+      "method": "Unique literal 'test NAME ... FAILED' lines after removing timestamps and ANSI color. This is a log-text comparison, not an exhaustive failure census or causal test.",
+      "head_recognized_failed_names": [
+        "paired_owner_tests::actual_locked_file_replays_mixed_profiles_and_retains_rollback_anchor",
+        "tests::sandbox_feature_matches_linked_v8",
+        "exact_digest_abort_terminalizes_unresolved_intent",
+        "authbus_outbox_tests::bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed",
+        "authorized_read_rpc_is_capability_gated_and_denies_outside_root",
+        "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+        "explicitly_started_rejected_queue_messages_remain_durable",
+        "core_error_after_started_never_releases_ambiguous_dispatch",
+        "registered_queue_lifecycle_starts_messages_in_fifo_order",
+        "rejected_queue_messages_remain_durable_and_block_followups",
+        "control::tests::health_tracks_real_task_state_and_owner_uds_serves_exact_identity",
+        "automation::service_tests::production_constructor_never_resumes_a_draining_owner",
+        "automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit",
+        "automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen",
+        "automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement",
+        "automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen",
+        "automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation",
+        "browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding",
+        "browser_servo::tests::non_effect_calls_never_enter_final_use_authority",
+        "browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary",
+        "automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn",
+        "cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records",
+        "cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends",
+        "cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment",
+        "cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently",
+        "cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict",
+        "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation",
+        "prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host",
+        "plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently",
+        "runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor",
+        "runtime::tests::automation_owner_mismatch_remains_fail_closed",
+        "runtime::tests::automation_generation_change_during_open_remains_fail_closed",
+        "runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation",
+        "runtime::tests::generation_change_during_open_is_fenced_before_serving",
+        "runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store",
+        "runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation",
+        "runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe",
+        "runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane",
+        "runtime::tests::unavailable_automation_store_degrades_without_startup_failure",
+        "runtime::tests::stale_generation_is_fenced_before_cognitive_store_open",
+        "runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error",
+        "state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress",
+        "state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent",
+        "state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it",
+        "state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access",
+        "state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership",
+        "state::isolation_tests::serving_agent_survives_unrelated_registry_corruption",
+        "state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences",
+        "app::tests::safety_buffering::safety_retry_forks_after_the_previous_turn_and_uses_faster_settings",
+        "resume_picker::transcript_preview::tests::paginated_transcript_preview_pages_past_old_item_budget",
+        "resume_picker::transcript_preview::tests::transcript_preview_preserves_legacy_and_paginated_output"
+      ],
+      "baseline_recognized_failed_names": [
+        "paired_owner_tests::actual_locked_file_replays_mixed_profiles_and_retains_rollback_anchor",
+        "tests::sandbox_feature_matches_linked_v8",
+        "exact_digest_abort_terminalizes_unresolved_intent",
+        "authorized_read_rpc_is_capability_gated_and_denies_outside_root",
+        "authbus_outbox_tests::bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed",
+        "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+        "core_error_after_started_never_releases_ambiguous_dispatch",
+        "explicitly_started_rejected_queue_messages_remain_durable",
+        "registered_queue_lifecycle_starts_messages_in_fifo_order",
+        "rejected_queue_messages_remain_durable_and_block_followups",
+        "control::tests::health_tracks_real_task_state_and_owner_uds_serves_exact_identity",
+        "automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit",
+        "automation::service_tests::production_constructor_never_resumes_a_draining_owner",
+        "automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement",
+        "automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen",
+        "browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding",
+        "browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary",
+        "automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn",
+        "automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation",
+        "browser_servo::tests::non_effect_calls_never_enter_final_use_authority",
+        "automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen",
+        "cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records",
+        "cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends",
+        "cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment",
+        "cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently",
+        "cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict",
+        "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation",
+        "prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host",
+        "runtime::tests::automation_generation_change_during_open_remains_fail_closed",
+        "plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently",
+        "runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor",
+        "runtime::tests::automation_owner_mismatch_remains_fail_closed",
+        "runtime::tests::generation_change_during_open_is_fenced_before_serving",
+        "runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation",
+        "runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store",
+        "runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation",
+        "runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe",
+        "runtime::tests::unavailable_automation_store_degrades_without_startup_failure",
+        "runtime::tests::stale_generation_is_fenced_before_cognitive_store_open",
+        "runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane",
+        "runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error",
+        "state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it",
+        "state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress",
+        "state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access",
+        "state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent",
+        "state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership",
+        "state::isolation_tests::serving_agent_survives_unrelated_registry_corruption",
+        "state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences",
+        "app::tests::safety_buffering::safety_retry_forks_first_turn_and_continues_without_duplicating_prompt",
+        "app::tests::safety_buffering::safety_retry_replays_older_interruption_notices",
+        "app::tests::safety_buffering::safety_retry_forks_after_the_previous_turn_and_uses_faster_settings",
+        "resume_picker::transcript_preview::tests::paginated_transcript_preview_pages_past_old_item_budget",
+        "resume_picker::transcript_preview::tests::transcript_preview_preserves_legacy_and_paginated_output",
+        "app::tests::safety_buffering::safety_retry_preserves_a_committed_steer_from_the_interrupted_turn"
+      ],
+      "shared_failed_names": [
+        "paired_owner_tests::actual_locked_file_replays_mixed_profiles_and_retains_rollback_anchor",
+        "tests::sandbox_feature_matches_linked_v8",
+        "exact_digest_abort_terminalizes_unresolved_intent",
+        "authbus_outbox_tests::bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed",
+        "authorized_read_rpc_is_capability_gated_and_denies_outside_root",
+        "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+        "explicitly_started_rejected_queue_messages_remain_durable",
+        "core_error_after_started_never_releases_ambiguous_dispatch",
+        "registered_queue_lifecycle_starts_messages_in_fifo_order",
+        "rejected_queue_messages_remain_durable_and_block_followups",
+        "control::tests::health_tracks_real_task_state_and_owner_uds_serves_exact_identity",
+        "automation::service_tests::production_constructor_never_resumes_a_draining_owner",
+        "automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit",
+        "automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen",
+        "automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement",
+        "automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen",
+        "automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation",
+        "browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding",
+        "browser_servo::tests::non_effect_calls_never_enter_final_use_authority",
+        "browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary",
+        "automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn",
+        "cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records",
+        "cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends",
+        "cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment",
+        "cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently",
+        "cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict",
+        "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation",
+        "prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host",
+        "plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently",
+        "runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor",
+        "runtime::tests::automation_owner_mismatch_remains_fail_closed",
+        "runtime::tests::automation_generation_change_during_open_remains_fail_closed",
+        "runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation",
+        "runtime::tests::generation_change_during_open_is_fenced_before_serving",
+        "runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store",
+        "runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation",
+        "runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe",
+        "runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane",
+        "runtime::tests::unavailable_automation_store_degrades_without_startup_failure",
+        "runtime::tests::stale_generation_is_fenced_before_cognitive_store_open",
+        "runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error",
+        "state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress",
+        "state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent",
+        "state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it",
+        "state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access",
+        "state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership",
+        "state::isolation_tests::serving_agent_survives_unrelated_registry_corruption",
+        "state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences",
+        "app::tests::safety_buffering::safety_retry_forks_after_the_previous_turn_and_uses_faster_settings",
+        "resume_picker::transcript_preview::tests::paginated_transcript_preview_pages_past_old_item_budget",
+        "resume_picker::transcript_preview::tests::transcript_preview_preserves_legacy_and_paginated_output"
+      ],
+      "head_only_recognized_failed_names": [],
+      "baseline_only_recognized_failed_names": [
+        "app::tests::safety_buffering::safety_retry_forks_first_turn_and_continues_without_duplicating_prompt",
+        "app::tests::safety_buffering::safety_retry_replays_older_interruption_notices",
+        "app::tests::safety_buffering::safety_retry_preserves_a_committed_steer_from_the_interrupted_turn"
+      ]
+    },
+    {
+      "head_job_id": 122639714982,
+      "baseline_job_id": 122083800557,
+      "method": "Unique literal 'test NAME ... FAILED' lines after removing timestamps and ANSI color. This is a log-text comparison, not an exhaustive failure census or causal test.",
+      "head_recognized_failed_names": [
+        "registry::tests::workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths",
+        "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running",
+        "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running",
+        "store::migration_convergence_tests::canonical_cut_after_rebind_reopens",
+        "store::migration_convergence_tests::displaced_cut_after_rebind_reopens",
+        "store::migration_convergence_tests::canonical_cut_before_rebind_reopens",
+        "store::migration_convergence_tests::displaced_cut_before_rebind_reopens",
+        "restart_budget_survives_repeated_supervisord_recovery",
+        "cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send",
+        "session::tests::guardian_tests::request_permissions_routes_to_guardian_when_reviewer_is_enabled"
+      ],
+      "baseline_recognized_failed_names": [
+        "registry::tests::workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths",
+        "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running",
+        "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running",
+        "store::migration_convergence_tests::canonical_cut_after_rebind_reopens",
+        "store::migration_convergence_tests::canonical_cut_before_rebind_reopens",
+        "store::migration_convergence_tests::displaced_cut_before_rebind_reopens",
+        "store::migration_convergence_tests::displaced_cut_after_rebind_reopens",
+        "restart_budget_survives_repeated_supervisord_recovery",
+        "cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send",
+        "environment_selection::tests::blocking_snapshot_waits_for_starting_environment",
+        "agent::control::tests::spawn_agent_fork_last_n_turns_drops_parent_startup_prefix_when_under_limit"
+      ],
+      "shared_failed_names": [
+        "registry::tests::workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths",
+        "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running",
+        "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running",
+        "store::migration_convergence_tests::canonical_cut_after_rebind_reopens",
+        "store::migration_convergence_tests::displaced_cut_after_rebind_reopens",
+        "store::migration_convergence_tests::canonical_cut_before_rebind_reopens",
+        "store::migration_convergence_tests::displaced_cut_before_rebind_reopens",
+        "restart_budget_survives_repeated_supervisord_recovery",
+        "cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send"
+      ],
+      "head_only_recognized_failed_names": [
+        "session::tests::guardian_tests::request_permissions_routes_to_guardian_when_reviewer_is_enabled"
+      ],
+      "baseline_only_recognized_failed_names": [
+        "environment_selection::tests::blocking_snapshot_waits_for_starting_environment",
+        "agent::control::tests::spawn_agent_fork_last_n_turns_drops_parent_startup_prefix_when_under_limit"
+      ]
+    }
+  ],
+  "findings": [
+    "Head macOS Clippy reports clippy::unwrap-used in hepta-fleet/src/authority_port.rs:197:9. The file is byte-identical to baseline. Baseline macOS Clippy was cancelled, so this review does not claim its same diagnostic was observed there.",
+    "All 51 recognized failing-test name lines from head Windows shard 3 also appear as failing-test lines in the baseline shard 3 log. Selected repeated error messages include UnsafeStateDirectory, Capacity, Windows file locking, a non-stale matrixd socket, and signed-intent recovery assertions. V8 has a matching failed-test name; the baseline retrieved text did not expose its panic detail.",
+    "Windows shard 1 repeats nine recognized failing-test names. A guardian permissions test also fails at head and was not found as failed in the baseline log. The observed head assertion compares actual network None with expected network Some. This is an unresolved test outcome, not proof of a change-induced regression.",
+    "The windows aggregate and CI required checks fail in addition to the underlying jobs. Cancelled checks are not passing checks.",
+    "No workflow rerun, dependency change, workflow edit, bypass, or merge was performed by this diagnostic review.",
+    "CI is not green. Exact causes are not established for all reported failures, including Cargo-deny."
+  ]
+}

@@ -46,6 +46,33 @@ and neutral or negative outcomes retain their declared roles.
 
 ## Reproduction and source seal
 
+Post-publication review corrected one checkpoint filename assertion in a
+development test. The [acceptance record](ACCEPTANCE.md) distinguishes the
+original scientific source from this maintenance revision. Original results
+retain `results/SOURCE_SEAL.json`; that seal correctly rejects the revised test
+file. It must not be replaced or treated as a seal of current HEAD.
+
+For the exact published scientific source and its archived evidence, use a
+separate checkout of `c32392367b7587d09806ca5cbc74678a168b4e16`, then verify its
+original seal. This commit contains the original experiment and the known stale
+test assertion. The mathematical and scientific result auditors do not execute
+that development test.
+
+```bash
+(
+set -e
+git worktree add --detach ../hepta-free-boundary-archived c32392367b7587d09806ca5cbc74678a168b4e16
+cd ../hepta-free-boundary-archived
+python3 -m experiments.free_boundary_neuron.provenance verify \
+  experiments/free_boundary_neuron/results/SOURCE_SEAL.json
+)
+```
+
+For the corrected maintenance revision, verify
+`results/maintenance001/SOURCE_SEAL.json`. That later seal is not retrospective
+registration of the original experiment. A fresh scientific reproduction must
+use its own committed source, new seal and unused destinations.
+
 Run from the repository root using Python with the versions in
 [`requirements.txt`](requirements.txt). Learning uses NumPy manual reverse mode;
 Torch is not required. Behavioral and directional-gradient fixtures run without
@@ -61,29 +88,34 @@ input inventory to be tracked and clean, records source identities and environme
 and refuses to replace an existing seal. Use new destinations for each attempt.
 
 ```bash
+(
+set -e
 study=experiments/free_boundary_neuron
-seal="$study/results/SOURCE_SEAL.json"
+attempt="$study/results/reproduction001"
+seal="$attempt/SOURCE_SEAL.json"
+test ! -e "$attempt"
 python3 -m experiments.free_boundary_neuron.provenance freeze "$seal"
 python3 -m experiments.free_boundary_neuron.provenance verify "$seal"
 
 python3 -m experiments.free_boundary_neuron.math.audit \
-  --source-seal "$seal" --output-dir "$study/results/math/run001"
+  --source-seal "$seal" --output-dir "$attempt/math"
 python3 -m experiments.free_boundary_neuron.math.belief_reference_check \
-  --source-seal "$seal" --output "$study/results/math/run001/belief_reference.json"
+  --source-seal "$seal" --output "$attempt/math/belief_reference.json"
 
 python3 -m experiments.free_boundary_neuron.learning.runner \
   --phase screening --source-seal "$seal" \
-  --output "$study/results/learning/screening.json"
+  --output "$attempt/learning/screening.json"
 python3 -m experiments.free_boundary_neuron.learning.runner \
   --phase confirmation --source-seal "$seal" \
-  --output "$study/results/learning/confirmation.json"
+  --output "$attempt/learning/confirmation.json"
 python3 -m experiments.free_boundary_neuron.learning.runner \
   --phase audit --source-seal "$seal" \
-  --results "$study/results/learning/confirmation.json" \
-  --output "$study/results/learning/confirmation_audit.json"
+  --results "$attempt/learning/confirmation.json" \
+  --output "$attempt/learning/confirmation_audit.json"
 python3 -m experiments.free_boundary_neuron.analysis \
-  --source-seal "$seal" --results "$study/results/learning/confirmation.json" \
-  --output "$study/results/learning/confirmation_analysis.json"
+  --source-seal "$seal" --results "$attempt/learning/confirmation.json" \
+  --output "$attempt/learning/confirmation_analysis.json"
+)
 ```
 
 Audit screening with the same audit command and its own input/output names.
@@ -92,11 +124,13 @@ the original registration. Source changes require a new seal and clearly
 identified attempt.
 
 The [owner instructions](owner/README.md) explain building the source-composed
-host and testing real native stopping and recovery. For the registered run, use
-the generated model at `results/math/run001/readout_affine_v1.json`, destination
-`results/owner/run001`, the source seal, and the actual build receipt. The receipt
-and run bind the binary hash. Archived replay uses that exact binary; rebuilding
-on another system is a fresh reproduction unless the binary is byte-identical.
+host and testing real native stopping and recovery. The archived registered run
+used `results/math/run001/readout_affine_v1.json`, destination
+`results/owner/run001`, the original source seal, and its actual build receipt.
+A fresh reproduction must instead use its newly generated model, matching seal,
+build receipt, and unused owner destination. The receipt and run bind the binary
+hash. Archived replay uses that exact binary; rebuilding on another system is a
+fresh reproduction unless the binary is byte-identical.
 
 ## Evidence and interpretation
 

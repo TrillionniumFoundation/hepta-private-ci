@@ -1,0 +1,52 @@
+{
+  "schema": "hepta.free-boundary.maintenance-source-comparison.v1",
+  "checked_at_utc": "2026-10-28T09:14:22.371114+00:00",
+  "original_seal_sha256": "5876ab602e03e4c1f324342f8e046246c2162d4e9a07d1016d7d2edfcffa162c",
+  "original_source_commit": "95b0d6668892868a4a19268a2fb707f2dca586ba",
+  "published_evidence_commit": "c32392367b7587d09806ca5cbc74678a168b4e16",
+  "historical_git_object_verification": [
+    {
+      "commit": "95b0d6668892868a4a19268a2fb707f2dca586ba",
+      "checked_inputs": 105,
+      "mismatches": []
+    },
+    {
+      "commit": "c32392367b7587d09806ca5cbc74678a168b4e16",
+      "checked_inputs": 105,
+      "mismatches": []
+    }
+  ],
+  "current_input_count": 105,
+  "unchanged_inputs": 104,
+  "changed_inputs": {
+    "experiments/free_boundary_neuron/learning/test_learning.py": {
+      "before": {
+        "bytes": 11556,
+        "sha256": "f6dcb299a4ad9c80f3be50bd189d1658d32166b4ccaf265a927057ad0d8022f9"
+      },
+      "after": {
+        "sha256": "c99994be9c0704967ac9cddd5afee9fb7e4a4912ca6f25555fa5a874940cd2f6",
+        "bytes": 11604
+      }
+    }
+  },
+  "original_seal_current_revision_check": {
+    "rejected": true,
+    "message": "Frozen inputs changed: ['experiments/free_boundary_neuron/learning/test_learning.py']"
+  },
+  "scientific_methods_protocols_and_native_sources_unchanged": true,
+  "interpretation": "One development-test assertion changed after outcomes. Original results retain original source identity; this is not a new registration of old outcomes.",
+  "before_format_changed_inputs": {
+    "experiments/free_boundary_neuron/learning/test_learning.py": {
+      "before": {
+        "bytes": 11556,
+        "sha256": "f6dcb299a4ad9c80f3be50bd189d1658d32166b4ccaf265a927057ad0d8022f9"
+      },
+      "after": {
+        "sha256": "e6603a33f971d3d8afe7002f90077501315b4b2007db9f05fc4a5f501f15511a",
+        "bytes": 11566
+      }
+    }
+  },
+  "checked_after_format_at_utc": "2026-10-28T09:17:41.521327+00:00"
+}

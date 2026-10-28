@@ -127,20 +127,34 @@ and auditor verify the source seal; the runner additionally checks the build
 receipt against the current original/native and research-host source bytes.
 Do not reuse or overwrite an existing destination.
 
+The following commands continue the fresh `reproduction001` attempt from the
+[top-level runbook](../README.md), after its source seal and mathematical export
+exist. The registered historical paths under `results/owner/run001` are evidence,
+not fresh execution destinations. This block stops if its new owner destination
+already exists or if an earlier command fails.
+
 ```bash
+(
+set -e
+study="$PWD/experiments/free_boundary_neuron"
+attempt="$study/results/reproduction001"
+test -f "$attempt/SOURCE_SEAL.json"
+test -f "$attempt/math/readout_affine_v1.json"
+test ! -e "$attempt/owner"
 python -m experiments.free_boundary_neuron.owner.run \
-  --binary "$PWD/experiments/free_boundary_neuron/owner/runs/build01/target/debug/examples/free_boundary_host" \
-  --model "$PWD/experiments/free_boundary_neuron/results/math/run001/readout_affine_v1.json" \
-  --destination "$PWD/experiments/free_boundary_neuron/results/owner/run001" \
-  --source-seal /absolute/path/to/SOURCE_SEAL.json \
-  --build-receipt "$PWD/experiments/free_boundary_neuron/owner/runs/build01/BUILD_RECEIPT.json"
+  --binary "$study/owner/runs/build01/target/debug/examples/free_boundary_host" \
+  --model "$attempt/math/readout_affine_v1.json" \
+  --destination "$attempt/owner" \
+  --source-seal "$attempt/SOURCE_SEAL.json" \
+  --build-receipt "$study/owner/runs/build01/BUILD_RECEIPT.json"
 
 python -m experiments.free_boundary_neuron.owner.audit \
-  --root "$PWD/experiments/free_boundary_neuron/results/owner/run001" \
-  --model "$PWD/experiments/free_boundary_neuron/results/math/run001/readout_affine_v1.json" \
-  --binary "$PWD/experiments/free_boundary_neuron/owner/runs/build01/target/debug/examples/free_boundary_host" \
-  --source-seal /absolute/path/to/SOURCE_SEAL.json \
-  --output "$PWD/experiments/free_boundary_neuron/results/owner/run001/AUDIT.json"
+  --root "$attempt/owner" \
+  --model "$attempt/math/readout_affine_v1.json" \
+  --binary "$study/owner/runs/build01/target/debug/examples/free_boundary_host" \
+  --source-seal "$attempt/SOURCE_SEAL.json" \
+  --output "$attempt/owner/AUDIT.json"
+)
 ```
 
 There are 56 paired contexts and 168 episodes. Each natural episode directory
@@ -160,7 +174,10 @@ encoder-domain checks, failed requests, bytes, and allocation peaks. Native
 process user/system CPU, process wall time, RPC timing, Python orchestration,
 threshold tuning, and independent audit are separately recorded. Global math
 table-generation costs are recorded by the math export and belong in the
-combined study accounting. Build/dependency preparation is recorded separately.
+combined study accounting. Cargo invocation times and dependency identities are
+recorded separately. Historical dependency acquisition, toolchain and workspace
+preparation, and build CPU were not timed; they are not included in a measured
+project-wide total. See the [build timing scope](../results/owner/build/history/README.md).
 
 Recorded retry receipts retain the original timing fields for identity, but
 those old timings are not charged again as new native work. The retry's actual

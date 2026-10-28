@@ -1,0 +1,85 @@
+{
+  "after_fix_complete_learning_preflight": {
+    "child_system_cpu_seconds": 0.522886,
+    "child_user_cpu_seconds": 4.541888,
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-m",
+      "unittest",
+      "experiments.free_boundary_neuron.learning.test_learning",
+      "-v"
+    ],
+    "cwd": "/workspace/scratch/07399998a2e3/hepta",
+    "environment_overrides": {
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "exit_code": 0,
+    "finished_at_utc": "2026-10-28T09:12:25.585910+00:00",
+    "started_at_utc": "2026-10-28T09:12:22.132769+00:00",
+    "stderr": "test_bellman_against_exhaustive_small_tree (experiments.free_boundary_neuron.learning.test_learning.LearningTests.test_bellman_against_exhaustive_small_tree) ... ok\ntest_checkpoint_audit_rejects_validation_and_work_tampering (experiments.free_boundary_neuron.learning.test_learning.LearningTests.test_checkpoint_audit_rejects_validation_and_work_tampering) ... ok\ntest_complete_neutral_cost_and_duration (experiments.free_boundary_neuron.learning.test_learning.LearningTests.test_complete_neutral_cost_and_duration) ... ok\ntest_event_keyed_streams_and_prefix_causality (experiments.free_boundary_neuron.learning.test_learning.LearningTests.test_event_keyed_streams_and_prefix_causality) ... ok\ntest_failed_attempt_preserves_completed_and_trained_checkpoints (experiments.free_boundary_neuron.learning.test_learning.LearningTests.test_failed_attempt_preserves_completed_and_trained_checkpoints) ... ok\ntest_hard_inference_matches_training_without_surrogate_work (experiments.free_boundary_neuron.learning.test_learning.LearningTests.test_hard_inference_matches_training_without_surrogate_work) ... ok\ntest_hard_training_objective_equals_stopped_rollout (experiments.free_boundary_neuron.learning.test_learning.LearningTests.test_hard_training_objective_equals_stopped_rollout) ... ok\ntest_late_result_write_failure_keeps_complete_seed (experiments.free_boundary_neuron.learning.test_learning.LearningTests.test_late_result_write_failure_keeps_complete_seed) ... ok\ntest_manual_reverse_mode_on_genuine_smooth_path (experiments.free_boundary_neuron.learning.test_learning.LearningTests.test_manual_reverse_mode_on_genuine_smooth_path) ... ok\ntest_terminal_belief_is_not_fpt_probability (experiments.free_boundary_neuron.learning.test_learning.LearningTests.test_terminal_belief_is_not_fpt_probability) ... ok\n\n----------------------------------------------------------------------\nRan 10 tests in 1.220s\n\nOK\n",
+    "stdout": "{\"phase\": \"development\", \"completed_seed\": 900001, \"arms\": 6}\n{\"phase\": \"development\", \"completed_seed\": 900001, \"arms\": 6}\n",
+    "wall_seconds": 3.4531114639976295
+  },
+  "before_fix_single_test": {
+    "child_system_cpu_seconds": 0.17182,
+    "child_user_cpu_seconds": 2.919525,
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-m",
+      "unittest",
+      "experiments.free_boundary_neuron.learning.test_learning.LearningTests.test_failed_attempt_preserves_completed_and_trained_checkpoints",
+      "-v"
+    ],
+    "cwd": "/workspace/scratch/07399998a2e3/hepta",
+    "environment_overrides": {
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "exit_code": 1,
+    "finished_at_utc": "2026-10-28T09:12:22.131818+00:00",
+    "started_at_utc": "2026-10-28T09:12:20.205649+00:00",
+    "stderr": "test_failed_attempt_preserves_completed_and_trained_checkpoints (experiments.free_boundary_neuron.learning.test_learning.LearningTests.test_failed_attempt_preserves_completed_and_trained_checkpoints) ... FAIL\n\n======================================================================\nFAIL: test_failed_attempt_preserves_completed_and_trained_checkpoints (experiments.free_boundary_neuron.learning.test_learning.LearningTests.test_failed_attempt_preserves_completed_and_trained_checkpoints)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/07399998a2e3/hepta/experiments/free_boundary_neuron/learning/test_learning.py\", line 221, in test_failed_attempt_preserves_completed_and_trained_checkpoints\n    self.assertTrue(\nAssertionError: False is not true\n\n----------------------------------------------------------------------\nRan 1 test in 0.657s\n\nFAILED (failures=1)\n",
+    "stdout": "",
+    "wall_seconds": 1.9261733969979105
+  },
+  "correction": {
+    "changed_sealed_input_paths": [
+      "experiments/free_boundary_neuron/learning/test_learning.py"
+    ],
+    "historical_source_commit": "95b0d6668892868a4a19268a2fb707f2dca586ba",
+    "new_assertion_filename": "seed_900001_fixed_first_passage_checkpoint.json",
+    "new_sha256": "e6603a33f971d3d8afe7002f90077501315b4b2007db9f05fc4a5f501f15511a",
+    "old_assertion_filename": "seed_900001_fixed_fpt_checkpoint.json",
+    "old_sha256": "f6dcb299a4ad9c80f3be50bd189d1658d32166b4ccaf265a927057ad0d8022f9",
+    "path": "experiments/free_boundary_neuron/learning/test_learning.py"
+  },
+  "historical_artifacts_unchanged": true,
+  "historical_preflight": {
+    "qualification": "The earlier 46-case total consists of pre-freeze receipts. The learning receipt has no source commit or input hashes, and cannot substantiate that all 46 tests pass on the final sealed source. The sealed source contained this stale filename assertion; the original receipt remains unchanged.",
+    "receipt": "results/preflight/learning_tests.json",
+    "recorded_at_utc": "2026-10-28T04:00:30.556291+00:00",
+    "stage": "pre_freeze_behavioral_validation"
+  },
+  "passed": true,
+  "protected_artifacts_sha256_after": {
+    "learning/PROTOCOL.json": "30915cbb7ac27e153b058044d3ec47258fb3574193358aa136cd4dd2b5fc0d97",
+    "learning/runner.py": "31fcc54ab23bcbc487007637e9bf3e87a9d9859d8b9477a133790013e2a250e9",
+    "results/SOURCE_SEAL.json": "5876ab602e03e4c1f324342f8e046246c2162d4e9a07d1016d7d2edfcffa162c",
+    "results/learning/confirmation.json": "d961593272f15956d69e1b85b8c90b3fb576eaf3b1bab2ffbbf86b4364f61ad2",
+    "results/learning/screening.json": "ced8a42c51bfec818534bfde39ad51a47271aa7cca274378aa00e773aeb8a8e3",
+    "results/preflight/learning_tests.json": "225c5bba13b009edb07c07bc88a1acd2cf12c7445aede9a5f50bf44153a26524",
+    "results/preflight/learning_tests.txt": "ff0f70627cb716a2b4dbaed63fd8b1f8177d431826a7b17f69dcdf6915e506f7"
+  },
+  "protected_artifacts_sha256_before": {
+    "learning/PROTOCOL.json": "30915cbb7ac27e153b058044d3ec47258fb3574193358aa136cd4dd2b5fc0d97",
+    "learning/runner.py": "31fcc54ab23bcbc487007637e9bf3e87a9d9859d8b9477a133790013e2a250e9",
+    "results/SOURCE_SEAL.json": "5876ab602e03e4c1f324342f8e046246c2162d4e9a07d1016d7d2edfcffa162c",
+    "results/learning/confirmation.json": "d961593272f15956d69e1b85b8c90b3fb576eaf3b1bab2ffbbf86b4364f61ad2",
+    "results/learning/screening.json": "ced8a42c51bfec818534bfde39ad51a47271aa7cca274378aa00e773aeb8a8e3",
+    "results/preflight/learning_tests.json": "225c5bba13b009edb07c07bc88a1acd2cf12c7445aede9a5f50bf44153a26524",
+    "results/preflight/learning_tests.txt": "ff0f70627cb716a2b4dbaed63fd8b1f8177d431826a7b17f69dcdf6915e506f7"
+  },
+  "recorded_at_utc": "2026-10-28T09:12:25.594498+00:00",
+  "schema": "hepta.free-boundary.maintenance-learning-tests.v1",
+  "scope": "Test-only correction after scientific freeze; no screening or confirmation run, parameter update, score regeneration, protocol edit, or historical evidence replacement.",
+  "seal_behavior": "Original SOURCE_SEAL.json is unchanged. After this test-only edit, strict original seal verification of the current checkout must reject the changed test file. Historical reproduction must use the historical source or an explicitly documented maintenance lineage; do not relax the verifier."
+}

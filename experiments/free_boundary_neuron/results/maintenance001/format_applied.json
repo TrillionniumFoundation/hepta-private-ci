@@ -1,0 +1,37 @@
+{
+  "schema": "hepta.free-boundary.maintenance-format.v1",
+  "recorded_at_utc": "2026-10-28T09:16:38.325607+00:00",
+  "command": [
+    "/tmp/hepta-ci-tools/bin/just",
+    "fmt",
+    "--base",
+    "c32392367b7587d09806ca5cbc74678a168b4e16"
+  ],
+  "cwd": "/tmp/hepta-free-boundary-final-check/codex-rs",
+  "exit_code": 0,
+  "stdout": "No changed files need formatting. Use --all for a full repository check.\n",
+  "stderr": "",
+  "wall_seconds": 0.1508571619997383,
+  "test_ast_unchanged": true,
+  "scope": "Required repository formatter executed in an isolated checkout, but its ownership rules do not select study Python files. Explicit Ruff formatting below covers the corrected test.",
+  "explicit_ruff": {
+    "command": [
+      "uv",
+      "run",
+      "--offline",
+      "--frozen",
+      "--project",
+      "scripts",
+      "ruff",
+      "format",
+      "experiments/free_boundary_neuron/learning/test_learning.py"
+    ],
+    "exit_code": 0,
+    "stdout": "1 file reformatted\n",
+    "stderr": "",
+    "wall_seconds": 0.11092074499902083,
+    "before_sha256": "e6603a33f971d3d8afe7002f90077501315b4b2007db9f05fc4a5f501f15511a",
+    "after_sha256": "c99994be9c0704967ac9cddd5afee9fb7e4a4912ca6f25555fa5a874940cd2f6",
+    "test_ast_unchanged": true
+  }
+}

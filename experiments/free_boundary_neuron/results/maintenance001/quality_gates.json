@@ -1,0 +1,442 @@
+{
+  "schema": "hepta.free-boundary.maintenance-quality.v1",
+  "recorded_at_utc": "2026-10-28T09:41:51.711994+00:00",
+  "isolated_checkout": "/tmp/hepta-free-boundary-final-check",
+  "maintenance_source_commit": "0d24d0074fe3da9d09a3a62901ce854506c802db",
+  "commands": [
+    {
+      "command": [
+        "/tmp/hepta-ci-tools/bin/just",
+        "fmt",
+        "--base",
+        "c32392367b7587d09806ca5cbc74678a168b4e16",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "No changed files need formatting. Use --all for a full repository check.\n",
+      "stderr": "",
+      "wall_seconds": 0.22012329400604358
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "check",
+        "experiments/free_boundary_neuron"
+      ],
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "wall_seconds": 0.053093702998012304
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "format",
+        "--check",
+        "experiments/free_boundary_neuron"
+      ],
+      "exit_code": 0,
+      "stdout": "27 files already formatted\n",
+      "stderr": "",
+      "wall_seconds": 0.05089901499741245
+    },
+    {
+      "command": [
+        "/tmp/hepta-codespell-policy-venv/bin/codespell",
+        "experiments/free_boundary_neuron/README.md",
+        "experiments/free_boundary_neuron/REPORT.md",
+        "experiments/free_boundary_neuron/ACCEPTANCE.md",
+        "experiments/free_boundary_neuron/owner/README.md",
+        "experiments/free_boundary_neuron/learning/test_learning.py",
+        "experiments/free_boundary_neuron/results/maintenance001/CI_STATUS.md"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "wall_seconds": 0.11204837200057227
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "experiments.free_boundary_neuron.provenance",
+        "verify",
+        "experiments/free_boundary_neuron/results/maintenance001/SOURCE_SEAL.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"source_commit\": \"0d24d0074fe3da9d09a3a62901ce854506c802db\",\n  \"seal_sha256\": \"f640883290971e399cd6c28c05535987186da2b7b083966c6edf6da3d169b437\",\n  \"verified_inputs\": 105,\n  \"environment\": {\n    \"python\": \"3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]\",\n    \"platform\": \"Linux-6.18.55-x86_64-with-glibc2.39\",\n    \"numpy\": \"2.3.5\",\n    \"scipy\": \"1.17.0\"\n  }\n}\n",
+      "stderr": "",
+      "wall_seconds": 0.24822262700035935
+    }
+  ],
+  "runbook_bash_syntax": [
+    {
+      "file": "experiments/free_boundary_neuron/README.md",
+      "block": 0,
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "file": "experiments/free_boundary_neuron/README.md",
+      "block": 1,
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "file": "experiments/free_boundary_neuron/README.md",
+      "block": 2,
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "file": "experiments/free_boundary_neuron/owner/README.md",
+      "block": 0,
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "file": "experiments/free_boundary_neuron/owner/README.md",
+      "block": 1,
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "file": "experiments/free_boundary_neuron/owner/README.md",
+      "block": 2,
+      "exit_code": 0,
+      "stderr": ""
+    }
+  ],
+  "local_document_links": [
+    {
+      "file": "experiments/free_boundary_neuron/README.md",
+      "target": "math/THEORY.md",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/README.md",
+      "target": "learning/PROTOCOL.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/README.md",
+      "target": "owner/README.md",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/README.md",
+      "target": "PROTOCOL.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/README.md",
+      "target": "math/PROTOCOL.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/README.md",
+      "target": "learning/PROTOCOL.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/README.md",
+      "target": "owner/PROTOCOL.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/README.md",
+      "target": "ACCEPTANCE.md",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/README.md",
+      "target": "requirements.txt",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/README.md",
+      "target": "owner/README.md",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/learning/confirmation_summary.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "PROTOCOL.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/owner/run001/AUDIT.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/SOURCE_SEAL.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/preflight/publication_commits.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "ACCEPTANCE.md",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/preflight/",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/preflight/final_quality_gates.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/figures/QUALITY_GATES.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/preflight/final_isolated_quality_gates.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/owner/build/LOG_NAMES.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "learning/PROTOCOL.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/learning/screening_audit.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/learning/confirmation_audit.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "math/THEORY.md",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "math/",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/math/run001/numerical_audit_20261028T041441736488Z.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "math/THEORY.md",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/math/run001/numerical_audit_20261028T041441736488Z.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/math/run001/belief_reference_check.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/learning/confirmation_summary.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/learning/confirmation_summary.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/learning/confirmation_summary.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/figures/confirmation_results.png",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/learning/confirmation.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "learning/PROTOCOL.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "owner/README.md",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/owner/run001/RESEARCH_PERMIT.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "math/PROFILE.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/owner/run001/THRESHOLD_TUNING.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/owner/run001/AUDIT.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/owner/run001/",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/owner/run001/INDEX.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/owner/run001/AUDIT.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/owner/build/history/README.md",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/preflight/infrastructure_incident001.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/preflight/infrastructure_recovery001.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "results/owner/run001/START.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/REPORT.md",
+      "target": "README.md",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/ACCEPTANCE.md",
+      "target": "results/maintenance001/all_tests_final.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/ACCEPTANCE.md",
+      "target": "results/maintenance001/learning_tests.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/ACCEPTANCE.md",
+      "target": "results/maintenance001/remaining_tests.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/ACCEPTANCE.md",
+      "target": "results/maintenance001/source_comparison.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/ACCEPTANCE.md",
+      "target": "results/SOURCE_SEAL.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/ACCEPTANCE.md",
+      "target": "README.md",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/ACCEPTANCE.md",
+      "target": "results/maintenance001/SOURCE_SEAL.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/ACCEPTANCE.md",
+      "target": "results/learning/confirmation_summary.json",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/ACCEPTANCE.md",
+      "target": "REPORT.md",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/ACCEPTANCE.md",
+      "target": "results/owner/build/history/README.md",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/ACCEPTANCE.md",
+      "target": "results/maintenance001/CI_STATUS.md",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/owner/README.md",
+      "target": "../README.md",
+      "exists": true
+    },
+    {
+      "file": "experiments/free_boundary_neuron/owner/README.md",
+      "target": "../results/owner/build/history/README.md",
+      "exists": true
+    }
+  ],
+  "passed": true,
+  "formatting_scope": "Repository formatter does not select study Python paths; explicit Ruff checks cover them.",
+  "precommit_whitespace_correction": {
+    "initial_check_exit_code": 2,
+    "diagnostic": "CI_STATUS.md:45: new blank line at EOF",
+    "correction": "Remove trailing empty line; no scientific source or outcome change.",
+    "final_check_exit_code": 0
+  }
+}
