@@ -146,7 +146,8 @@ impl fmt::Display for FleetAuthorityError {
 
 impl std::error::Error for FleetAuthorityError {}
 
-#[cfg(all(test, unix))]
+#[cfg(test)]
+#[cfg(unix)]
 mod tests {
     use super::*;
     use crate::lease_ledger::HostObservation;
@@ -207,7 +208,7 @@ mod tests {
                     accelerator_millis: 1_000,
                 },
             })
-            .unwrap();
+            .expect("admit fixture host-one to lease ledger");
         ledger
     }
 

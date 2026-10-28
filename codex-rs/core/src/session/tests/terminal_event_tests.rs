@@ -166,9 +166,11 @@ async fn assert_terminal_publication_follows_cleanup(point: GatePoint) {
             .iter()
             .all(|event| !matches!(event, EventMsg::TurnComplete(_) | EventMsg::TurnAborted(_)))
     );
-    let expected_flushes = match point {
-        GatePoint::ThreadIdle => 2,
-        GatePoint::TurnAbort => 3,
+    // Accepting an abort marks the agent interrupted before terminal cleanup.
+    // That non-final status is separate from publishing the terminal event.
+    let (expected_flushes, expected_status) = match point {
+        GatePoint::ThreadIdle => (2, initial_status),
+        GatePoint::TurnAbort => (3, AgentStatus::Interrupted),
     };
     assert_eq!(
         (
@@ -176,7 +178,7 @@ async fn assert_terminal_publication_follows_cleanup(point: GatePoint) {
             store.calls().await.flush_thread,
             session.agent_status.borrow().clone(),
         ),
-        (true, expected_flushes, initial_status),
+        (true, expected_flushes, expected_status),
     );
     let persisted_before_release = persisted_terminals(&session).await;
     assert_eq!(persisted_before_release.len(), 1);
