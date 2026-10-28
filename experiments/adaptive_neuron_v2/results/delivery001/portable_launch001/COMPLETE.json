@@ -1,0 +1,28 @@
+{
+  "accounting": "This enclosing interval includes child subprocesses. Nested receipts explain its components and must not be added to it again.",
+  "complete": true,
+  "cpu": {
+    "child_system_seconds": 14.156216,
+    "child_user_seconds": 39.866423,
+    "self_system_seconds": 0.00285,
+    "self_user_seconds": 0.0
+  },
+  "error": null,
+  "facts": {
+    "exit_code": 0
+  },
+  "finished_at_utc": "2026-10-28T11:11:54.364503+00:00",
+  "identity": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "/workspace/scratch/07399998a2e3/deliverables/hepta_adaptive_neuron_v2_exact_evidence/replay.py",
+      "--output",
+      "/workspace/scratch/07399998a2e3/deliverables/hepta_adaptive_neuron_v2_portable_replay001"
+    ],
+    "stage": "portable_replay_outer"
+  },
+  "schema": "hepta.adaptive-neuron.cost-stage.v2",
+  "scope": "Encloses full subprocess startup, manifest verification, new-root copying, all 2880 cold native replays, statistical reconstruction and output publication. All inner timings are nested, not additive.",
+  "started_at_utc": "2026-10-28T11:10:52.905670+00:00",
+  "wall_seconds": 61.45887775799929
+}

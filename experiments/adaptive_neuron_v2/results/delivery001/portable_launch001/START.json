@@ -1,0 +1,13 @@
+{
+  "identity": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "/workspace/scratch/07399998a2e3/deliverables/hepta_adaptive_neuron_v2_exact_evidence/replay.py",
+      "--output",
+      "/workspace/scratch/07399998a2e3/deliverables/hepta_adaptive_neuron_v2_portable_replay001"
+    ],
+    "stage": "portable_replay_outer"
+  },
+  "scope": "Encloses full subprocess startup, manifest verification, new-root copying, all 2880 cold native replays, statistical reconstruction and output publication. All inner timings are nested, not additive.",
+  "started_at_utc": "2026-10-28T11:10:52.905670+00:00"
+}
