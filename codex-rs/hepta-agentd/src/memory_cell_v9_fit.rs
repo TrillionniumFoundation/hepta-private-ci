@@ -40,14 +40,26 @@ pub(super) async fn fit(config: &MemoryCellTrainerConfigV1, owner: &ControlFixtu
     let snapshot = owner.snapshot().await;
     let configuration = json!({"seed":91317,"steps":600,"dimension":48,"hidden":32,
         "threshold":if representation == "catalog" {0.5} else {0.9}});
-    let request = serde_json::to_vec(&json!({"schema":"hepta.memory.v9.paired-fit.v1",
-        "representation":representation,"configuration":configuration,"export":snapshot,"parents":parents})).unwrap();
+    let frame = json!({"schema":"hepta.memory.v9.paired-fit.v1",
+        "representation":representation,"configuration":configuration,"export":snapshot,"parents":parents});
+    let result = execute(config,&frame,"memory-cell-v9/learning/worker.py",&code,directory).await;
+    assert_eq!(code_identity(config),code);
+    assert_eq!(result["owner_cut_digest"],snapshot.owner_cut_digest().to_string());
+    assert_eq!(result["configuration"],configuration);
+    assert_eq!(result["representation"],representation);
+    assert_eq!(result["receipt"]["actual_fit_calls"],6);
+    result
+}
+
+pub(super) async fn execute(config: &MemoryCellTrainerConfigV1, frame: &Value,
+    script: &str, code: &Value, directory: &Path) -> Value {
+    let request = serde_json::to_vec(frame).unwrap();
     assert!(request.len() <= 16 * 1024 * 1024);
     save(&directory.join("FIT_REQUEST.json"),&json!({"request_json":String::from_utf8(request.clone()).unwrap(),
         "request_sha256":Digest32::of_bytes(&request).to_string(),"code_identity":code}));
     let started = Instant::now();
     let mut child = tokio::process::Command::new(&config.python)
-        .args(["-I","-u","-B"]).arg(config.qualification_root.join("memory-cell-v9/learning/worker.py"))
+        .args(["-I","-u","-B"]).arg(config.qualification_root.join(script))
         .env("OPENBLAS_NUM_THREADS","1").env("OMP_NUM_THREADS","1")
         .stdin(Stdio::piped()).stdout(Stdio::piped()).stderr(Stdio::piped()).kill_on_drop(true).spawn().unwrap();
     let pid = child.id().unwrap();
@@ -74,12 +86,7 @@ pub(super) async fn fit(config: &MemoryCellTrainerConfigV1, owner: &ControlFixtu
     assert!(status.success(),"paired training failed: {}",String::from_utf8_lossy(&errors));
     assert!(raw.len() <= 16 * 1024 * 1024 && errors.len() <= 8192);
     let result: Value = serde_json::from_slice(&raw).unwrap();
-    assert_eq!(code_identity(config),code);
     assert_eq!(result["request_digest"],Digest32::of_bytes(&request).to_string());
-    assert_eq!(result["owner_cut_digest"],snapshot.owner_cut_digest().to_string());
-    assert_eq!(result["configuration"],configuration);
-    assert_eq!(result["representation"],representation);
-    assert_eq!(result["receipt"]["actual_fit_calls"],6);
     result
 }
 

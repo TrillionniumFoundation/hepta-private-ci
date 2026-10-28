@@ -27,6 +27,11 @@ use crate::memory_cell_runtime_tests::TrustedTestResolver;
 use crate::memory_cell_test_support::ControlFixture;
 use crate::memory_cell_test_support::request;
 
+pub(super) enum Reader<'a> {
+    Native(&'a TrustedTestResolver),
+    Direct(&'a super::direct::DirectOwner),
+}
+
 pub(super) const FIXTURE_SHA: &str = "750ecabdcdbc0aa9f5bf253615efaff090800c3a96a2958e0d17a4df829c6502";
 
 #[derive(Deserialize)]
@@ -134,7 +139,7 @@ fn scalar(value: &Value, operation: MemoryOperationV1) -> Option<i64> {
     }
 }
 
-pub(super) async fn evaluate(owner: &ControlFixture, resolver: &TrustedTestResolver, tasks: &[Task]) -> Value {
+pub(super) async fn evaluate(owner: &ControlFixture, reader: &Reader<'_>, tasks: &[Task]) -> Value {
     let snapshot = owner.snapshot().await;
     let before = owner.client.traffic_snapshot();
     let started = Instant::now();
@@ -152,13 +157,19 @@ pub(super) async fn evaluate(owner: &ControlFixture, resolver: &TrustedTestResol
             let mut request = request(snapshot.scope().clone());
             request.query_id = ContractIdV1::new(format!("query:v9:{}:{offset}", task.id)).unwrap();
             request.entity = query.entity.clone();
-            resolver.set(TestRoute::Read(query.operation));
-            let readout = owner.client.memory_cell_read(request.clone()).await.unwrap();
+            let (status,value,readout) = match reader {
+                Reader::Native(resolver) => {
+                    resolver.set(TestRoute::Read(query.operation));
+                    let readout = owner.client.memory_cell_read(request.clone()).await.unwrap();
+                    (readout.status,readout.value.clone(),serde_json::to_value(readout).unwrap())
+                },
+                Reader::Direct(direct) => direct.read(owner,&request,query.operation).await,
+            };
             let expected = expected(&snapshot, query);
-            let ok = readout.status == MemoryReadStatusV1::Ok;
-            correct += usize::from(ok && readout.value == expected);
+            let ok = status == MemoryReadStatusV1::Ok;
+            correct += usize::from(ok && value == expected);
             target = target.checked_add(task.coefficients[offset].checked_mul(scalar(&expected,query.operation).unwrap()).unwrap()).unwrap();
-            total = total.and_then(|sum| ok.then(||scalar(&readout.value,query.operation)).flatten()
+            total = total.and_then(|sum| ok.then(||scalar(&value,query.operation)).flatten()
                 .and_then(|number|task.coefficients[offset].checked_mul(number)).and_then(|number|sum.checked_add(number)));
             requests.push(request);
             readouts.push(readout);

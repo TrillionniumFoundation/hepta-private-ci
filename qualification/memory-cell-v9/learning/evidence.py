@@ -154,6 +154,7 @@ def scalar(value, operation):
 
 def verify_batch(batch, export, tasks, publication):
     facts = owner_facts(export)
+    direct = publication.get("mode") == "direct_owner"
     require(batch["source_cut"] == export["owner_cut_digest"], "batch owner cut mismatch")
     require(batch["tasks"] == len(tasks) == len(batch["records"]), "missing or extra task")
     integer(batch["wall_ns"], "batch wall")
@@ -174,9 +175,14 @@ def verify_batch(batch, export, tasks, publication):
                     "at": 15, "since": 10, "max_hops": 3, "max_cells": 3}, "request changed frozen operation/address profile")
             expected, sources = expected_read(facts, query["entity"], query["operation"])
             expected_values.append(expected)
-            require(readout["schema"] == "hepta.memory.readout.v1" and readout["query_id"] == request["query_id"]
-                    and readout["generation"] == publication["generation"]
-                    and readout["snapshot_digest"] == publication["bundle_digest"], "readout release identity")
+            require(readout["query_id"] == request["query_id"], "readout query identity")
+            if direct:
+                require(readout["schema"] == "hepta.memory.direct-owner-read.v1" and readout["owner_cut"] == export["owner_cut_digest"]
+                        and readout["scope"] == export["scope"] and readout["before_and_after_cut_verified"] is True
+                        and readout["model_storage_bytes"] == 0, "direct owner cut revalidation")
+            else:
+                require(readout["schema"] == "hepta.memory.readout.v1" and readout["generation"] == publication["generation"]
+                        and readout["snapshot_digest"] == publication["bundle_digest"], "readout release identity")
             status = readout["status"]
             require(status in {"ok", "abstain", "stale", "unavailable", "budget_exceeded"}, "read status")
             statuses[status] = statuses.get(status, 0) + 1
@@ -185,10 +191,12 @@ def verify_batch(batch, export, tasks, publication):
                 operation = query["operation"]
                 kinds = ("semantic", "procedure") if operation == "apply" else () if operation == "current" else (operation,)
                 predicted = "mixed" if operation == "apply" else "source_evidence" if operation == "current" else "model_prediction"
-                require(readout["operation"] == operation and sorted(readout["source_ids"]) == sources
-                        and readout["cell_digests"] == sorted(publication[f"{kind}_digest"] for kind in kinds)
-                        and readout["prediction_kind"] == predicted and readout["reason"] is None
-                        and readout["hops"] == (3 if operation == "apply" else 1), "readout model/source binding")
+                require(readout["operation"] == operation and sorted(readout["source_ids"]) == sources, "readout source binding")
+                if not direct:
+                    expected_digests = publication.get("used_digests", {}).get(request["entity"], {})
+                    require(readout["cell_digests"] == sorted(expected_digests.get(kind, publication.get(f"{kind}_digest")) for kind in kinds)
+                            and readout["prediction_kind"] == predicted and readout["reason"] is None
+                            and readout["hops"] == (3 if operation == "apply" else 1), "readout model binding")
                 if operation in KINDS:
                     validate_value(operation, readout["value"])
             else:

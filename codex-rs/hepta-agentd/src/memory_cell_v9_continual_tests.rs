@@ -22,6 +22,8 @@ use crate::memory_cell_training_test_support::trainer;
 mod data;
 #[path = "memory_cell_v9_fit.rs"]
 mod fit;
+#[path = "memory_cell_prospective_direct.rs"]
+mod direct;
 
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -45,7 +47,7 @@ async fn continual(config: &ChildConfig) -> Value {
         std::fs::create_dir(&directory).unwrap();
         let before = if release.is_some() {
             data::save(&directory.join("BEFORE_OWNER.json"),&serde_json::to_value(owner.snapshot().await).unwrap());
-            Some(data::save(&directory.join("before-retention.json"),&data::evaluate(&owner,&resolver,&stage.retention).await))
+            Some(data::save(&directory.join("before-retention.json"),&data::evaluate(&owner,&data::Reader::Native(&resolver),&stage.retention).await))
         } else { None };
         data::append(&owner,&stage.writes).await;
         let snapshot = owner.snapshot().await;
@@ -66,7 +68,7 @@ async fn continual(config: &ChildConfig) -> Value {
             fit::publish(release.as_ref().unwrap(),&snapshot,&paired,"zero",generation,code_digest);
         }
         let released = release.as_ref().unwrap();
-        let prefix = data::evaluate(&owner,&resolver,&stage.prefix).await;
+        let prefix = data::evaluate(&owner,&data::Reader::Native(&resolver),&stage.prefix).await;
         assert_eq!(prefix["correct"],prefix["queries"],"prefix event reads use current owner facts");
         data::save(&directory.join("completed-prefix.json"),&prefix);
         let mut interventions = Vec::new();
@@ -81,7 +83,7 @@ async fn continual(config: &ChildConfig) -> Value {
             let mut phases = Vec::new();
             for (name,tasks) in [("future",&stage.future),("retention",&stage.retention)] {
                 for model in [loaded.semantic(),loaded.procedure()] { model.sleep().unwrap(); }
-                let mut batch = data::evaluate(&owner,&resolver,tasks).await;
+                let mut batch = data::evaluate(&owner,&data::Reader::Native(&resolver),tasks).await;
                 batch["native_cost"] = json!([loaded.semantic().cost().unwrap(),loaded.procedure().cost().unwrap()]);
                 phases.push(data::save(&directory.join(format!("{intervention}-{name}.json")),&batch));
             }
