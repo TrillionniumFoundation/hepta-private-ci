@@ -1,6 +1,6 @@
 {
   "schema": "hepta.memory.v8.verification-request.v1",
-  "attempt": 2,
+  "attempt": 3,
   "tests_before_final_fix_and_format": true,
   "frozen_addressing_source_commit": "7e194d9f0858e805a0cab502215a1f64ddc0ea00",
   "candidate_manifest": {
@@ -20,16 +20,27 @@
   "prospective_actual_arms": 11,
   "preserve_all_failed_and_negative_results": true,
   "purpose": "Compile actual V8 product integrations; exercise owner restart and durable migration, paired native language readbacks, real prospective training and independent evidence scoring.",
-  "previous_attempt": {
-    "run_id": 40609738136,
-    "source_commit": "92097d22a47d85e9e118c9685b7c915fa3dc49ae",
-    "raw_receipt": "qualification/memory-cell-v8/evidence/ci/run-01/receipt.json",
-    "review": "qualification/memory-cell-v8/evidence/ci/run-01/REVIEW.json"
-  },
   "engineering_repairs": [
     "Serialize opt-in actual memory qualification with zero automatic retries and a bounded 20-minute Nextest experiment watchdog; preserve product/worker/request/child deadlines.",
-    "Distinguish typed unsupported multiple-cutoff requests from actual resolver failures, retain dedicated host abstention counters and real control regression coverage."
+    "Distinguish typed unsupported multiple-cutoff requests from actual resolver failures, retain dedicated host abstention counters and real control regression coverage.",
+    "Freeze the complete original evaluation directory, including non-Python inputs and manifests, in the finalization tested-source gate."
   ],
   "post_held_model_or_input_changes": false,
-  "native_repeat_scope": "Same frozen models, fixture and quality thresholds measured through the corrected shared Rust host; this is not a new blind model-selection evaluation."
+  "native_repeat_scope": "Same frozen models, fixture and quality thresholds measured through the corrected shared Rust host; this is not a new blind model-selection evaluation.",
+  "previous_attempts": [
+    {
+      "run_id": 40609738136,
+      "source_commit": "92097d22a47d85e9e118c9685b7c915fa3dc49ae",
+      "raw_receipt": "qualification/memory-cell-v8/evidence/ci/run-01/receipt.json",
+      "review": "qualification/memory-cell-v8/evidence/ci/run-01/REVIEW.json"
+    },
+    {
+      "run_id": 40612088249,
+      "source_commit": "1f52f23f2dc9cf1ecc863c61e52cce8e53f35330",
+      "status_when_this_request_was_frozen": "in_progress",
+      "retain_all_results": true
+    }
+  ],
+  "repeat_reason": "The finalizer source changed to close an independently audited evaluation-input freeze gap. This exact final source requires its own full verification; attempt 2 remains in progress and all its eventual results will be retained.",
+  "attempt_2_outcomes_used_for_model_or_protocol_selection": false
 }
