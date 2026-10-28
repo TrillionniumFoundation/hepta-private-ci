@@ -1,7 +1,8 @@
 name: Transfer reviewed NDU Git objects
 
 on:
-  pull_request:
+  push:
+    branches: [research/ndu-object-transfer-20261028]
     paths:
       - .github/workflows/ndu-object-transfer.yml
       - scripts/ndu_reviewed_object_transfer.py
@@ -13,7 +14,7 @@ permissions:
 
 jobs:
   transfer-immutable-objects:
-    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.event.pull_request.number == 4155 && github.event.pull_request.head.repo.full_name == github.repository
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/research/ndu-object-transfer-20261028'
     runs-on: ubuntu-24.04
     timeout-minutes: 8
     permissions:
@@ -22,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.sha }}
           persist-credentials: false
       - name: Check transfer validation boundaries
         run: python3 -m unittest discover -s scripts -p 'test_ndu_reviewed_object_transfer.py' -v
