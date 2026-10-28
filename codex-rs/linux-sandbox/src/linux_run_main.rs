@@ -26,6 +26,9 @@ use crate::bwrap::create_bwrap_command_args;
 use crate::landlock::apply_permission_profile_to_current_thread;
 use crate::launcher::exec_bwrap;
 use crate::launcher::preferred_bwrap_supports_argv0;
+use crate::pidfd_reaper::ChildExitEvents;
+use crate::pidfd_reaper::OwnerPidfd;
+use crate::pidfd_reaper::open_current_owner_pidfd;
 use crate::proxy_routing::activate_proxy_routes_in_netns;
 use crate::proxy_routing::prepare_host_proxy_route_spec;
 use codex_protocol::error::Result as CodexResult;
@@ -122,6 +125,10 @@ pub struct LandlockCommand {
     #[arg(long = "apply-seccomp-then-exec", hide = true, default_value_t = false)]
     pub apply_seccomp_then_exec: bool,
 
+    /// Inherited actual outer-helper lifetime, used only by the filtered PID 1.
+    #[arg(long = "owner-pidfd", hide = true)]
+    pub owner_pidfd: Option<libc::c_int>,
+
     /// Internal compatibility flag.
     ///
     /// By default, restricted-network sandboxing uses isolated networking.
@@ -163,6 +170,7 @@ pub fn run_main() -> ! {
         permission_profile,
         use_legacy_landlock,
         apply_seccomp_then_exec,
+        owner_pidfd,
         allow_network_for_proxy,
         proxy_route_spec,
         verify_fd_mounts,
@@ -175,6 +183,9 @@ pub fn run_main() -> ! {
     }
     if !apply_seccomp_then_exec && !verify_fd_mounts.is_empty() {
         panic!("--verify-fd-mount is only supported in the inner sandbox stage");
+    }
+    if !apply_seccomp_then_exec && owner_pidfd.is_some() {
+        panic!("--owner-pidfd is only supported in the inner sandbox stage");
     }
     ensure_inner_stage_mode_is_valid(apply_seccomp_then_exec, use_legacy_landlock);
     let EffectivePermissions {
@@ -220,11 +231,19 @@ pub fn run_main() -> ! {
             panic!("Linux sandbox retained effective or permitted capabilities");
         }
 
+        let owner = OwnerPidfd::from_inherited(
+            owner_pidfd.unwrap_or_else(|| panic!("inner sandbox requires its actual owner pidfd")),
+        )
+        .unwrap_or_else(|error| panic!("failed to bind inner sandbox owner: {error}"));
+        if unsafe { libc::getpid() } != 1 {
+            panic!("inner sandbox lifecycle requires the actual namespace PID 1");
+        }
+
         if allow_network_for_proxy {
             let spec = proxy_route_spec
                 .as_deref()
                 .unwrap_or_else(|| panic!("managed proxy mode requires --proxy-route-spec"));
-            if let Err(err) = activate_proxy_routes_in_netns(spec) {
+            if let Err(err) = activate_proxy_routes_in_netns(spec, &owner) {
                 panic!("error activating Linux proxy routing bridge: {err}");
             }
         }
@@ -239,7 +258,14 @@ pub fn run_main() -> ! {
             panic!("error applying Linux sandbox restrictions: {e:?}");
         }
 
+        // Block SIGCHLD before the fork and wait on its kernel signalfd together
+        // with the real owner pidfd. Keep this process as the filtered PID 1.
+        let child_events = ChildExitEvents::new()
+            .unwrap_or_else(|error| panic!("failed to watch sandboxed child exits: {error}"));
         let signal_mask = ForwardedSignalMask::block();
+        owner
+            .exit_if_dead()
+            .unwrap_or_else(|error| panic!("failed to check sandbox owner before fork: {error}"));
         let command_pid = unsafe { libc::fork() };
         if command_pid < 0 {
             let err = std::io::Error::last_os_error();
@@ -249,29 +275,24 @@ pub fn run_main() -> ! {
         if command_pid == 0 {
             reset_forwarded_signal_handlers_to_default();
             signal_mask.restore();
+            child_events
+                .restore_mask()
+                .unwrap_or_else(|error| panic!("failed to restore command signal mask: {error}"));
             exec_or_panic(command);
         }
 
         let signal_forwarders = install_bwrap_signal_forwarders(command_pid);
         signal_mask.restore();
-        loop {
-            let mut status = 0;
-            let reaped_pid = unsafe { libc::waitpid(-1, &mut status, 0) };
-            if reaped_pid == command_pid {
-                let exit_signal_mask = ForwardedSignalMask::block();
-                signal_forwarders.restore();
-                exit_signal_mask.restore();
-                exit_with_wait_status(status);
-            }
-            if reaped_pid >= 0 {
-                continue;
-            }
-
-            let err = std::io::Error::last_os_error();
-            if err.raw_os_error() != Some(libc::EINTR) {
-                panic!("failed to reap sandboxed child: {err}");
-            }
-        }
+        let status = child_events
+            .wait_for_command(command_pid, &owner)
+            .unwrap_or_else(|error| panic!("failed to reap sandboxed child: {error}"));
+        let exit_signal_mask = ForwardedSignalMask::block();
+        signal_forwarders.restore();
+        exit_signal_mask.restore();
+        child_events
+            .restore_mask()
+            .unwrap_or_else(|error| panic!("failed to restore sandbox init signal mask: {error}"));
+        exit_with_wait_status(status);
     }
 
     if file_system_sandbox_policy.has_full_disk_write_access() && !allow_network_for_proxy {
@@ -399,7 +420,7 @@ fn run_bwrap_with_proc_fallback(
     command_cwd: Option<&Path>,
     file_system_sandbox_policy: &FileSystemSandboxPolicy,
     network_sandbox_policy: NetworkSandboxPolicy,
-    inner: Vec<String>,
+    mut inner: Vec<String>,
     mount_proc: bool,
     allow_network_for_proxy: bool,
 ) -> ! {
@@ -416,6 +437,22 @@ fn run_bwrap_with_proc_fallback(
         mount_proc = false;
     }
 
+    // The pidfd names this actual outer helper, not a numeric PID resolved
+    // after entering a new namespace. Its kernel lifetime survives both bwrap
+    // execs and any AppArmor transition that clears PR_SET_PDEATHSIG.
+    let owner_pidfd = open_current_owner_pidfd()
+        .unwrap_or_else(|error| panic!("failed to open sandbox owner pidfd: {error}"));
+    let command_separator = inner
+        .iter()
+        .position(|argument| argument == "--")
+        .unwrap_or_else(|| panic!("inner sandbox command is missing its separator"));
+    inner.splice(
+        command_separator..command_separator,
+        [
+            "--owner-pidfd".to_owned(),
+            owner_pidfd.as_raw_fd().to_string(),
+        ],
+    );
     let options = BwrapOptions {
         mount_proc,
         network_mode,
@@ -429,6 +466,7 @@ fn run_bwrap_with_proc_fallback(
         options,
     )
     .unwrap_or_else(|err| exit_with_bwrap_build_error(err));
+    bwrap_args.preserved_files.push(owner_pidfd);
     apply_inner_command_argv0(&mut bwrap_args.args);
     run_or_exec_bwrap(bwrap_args);
 }

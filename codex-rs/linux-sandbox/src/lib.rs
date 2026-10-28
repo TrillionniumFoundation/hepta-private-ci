@@ -20,6 +20,8 @@ mod launcher;
 #[cfg(target_os = "linux")]
 mod linux_run_main;
 #[cfg(target_os = "linux")]
+mod pidfd_reaper;
+#[cfg(target_os = "linux")]
 mod proxy_lifecycle;
 #[cfg(target_os = "linux")]
 mod proxy_routing;
