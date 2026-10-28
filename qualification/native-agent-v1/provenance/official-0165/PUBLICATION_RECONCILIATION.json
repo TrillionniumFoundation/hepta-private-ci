@@ -1,0 +1,32 @@
+{
+  "before_copy_archive_bytes": 5693,
+  "before_copy_archive_sha256": "a256179ad35a9a58bfcf53de6c6e8c43181004defd11ccbefd6811e8fe53662d",
+  "compiled_binaries_and_measurement_inputs_unchanged": true,
+  "first_reconciliation_job_failed_before_changes": {
+    "id": "1a180ed1c0b-96a-2d49",
+    "reason": "Attempt to parse changed BUILD copy raised JSONDecodeError; original source was subsequently verified valid."
+  },
+  "formatting_cause_not_independently_attributed": true,
+  "integrity_check_job": "1a180ec2eb2-96a-2d44",
+  "original_source_manifest_unchanged": true,
+  "restored_from_sha_verified_original_files": [
+    {
+      "before_bytes": 21974,
+      "before_sha256": "786271de8d7578a1d9af421085c17b15c41c46becf50e4d2fbef5a87686db115",
+      "copy_json_error": "Expecting property name enclosed in double quotes: line 11 column 9 (char 342)",
+      "copy_json_valid": false,
+      "original_json_valid": true,
+      "path": "BUILD.json",
+      "restored_bytes": 17376,
+      "restored_sha256": "30df8de393e58f958d1ccd0890c1b3aa2bc5db0c485c73b4a5d048161e616e85"
+    },
+    {
+      "before_bytes": 12165,
+      "before_sha256": "a584b81aaf6e918e61d1237d7d5aefec2e69539bd2a0b1c0ddcc837ea972549e",
+      "path": "hepta_facade.rs",
+      "restored_bytes": 11993,
+      "restored_sha256": "74e789456f52da8fadacbe71ec2b39c05e38d38d9b03c8a68b7ca4ccc7589de0"
+    }
+  ],
+  "schema": "hepta.official-source-copy-reconciliation.v1"
+}

@@ -13,9 +13,9 @@ use tokio_util::sync::CancellationToken;
 
 use crate::Limits;
 use crate::ModelEvent;
+use crate::ModelPort;
 use crate::ObservedModelCompletion;
 use crate::PendingTool;
-use crate::ResponsesModel;
 use crate::RunOutcome;
 use crate::ToolCall;
 use crate::ToolObservation;
@@ -33,11 +33,11 @@ pub struct NativeAgent {
 }
 
 impl NativeAgent {
-    pub async fn run<O: TurnOwner, T: ToolPort>(
+    pub async fn run<O: TurnOwner, T: ToolPort, M: ModelPort>(
         &self,
         owner: &O,
         tools: &T,
-        model: &ResponsesModel,
+        model: &M,
         state: &mut TurnState,
         cancel: &CancellationToken,
     ) -> Result<RunOutcome> {
@@ -166,10 +166,10 @@ impl NativeAgent {
         }
     }
 
-    async fn collect_model<O: TurnOwner>(
+    async fn collect_model<O: TurnOwner, M: ModelPort>(
         &self,
         owner: &O,
-        model: &ResponsesModel,
+        model: &M,
         state: &mut TurnState,
     ) -> Result<Vec<Value>> {
         let request = state

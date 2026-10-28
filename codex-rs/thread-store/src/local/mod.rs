@@ -6,6 +6,7 @@ mod list_threads;
 mod live_writer;
 mod model_context;
 mod move_thread_to_section;
+mod native_checkpoint;
 mod paginated_fork;
 mod pending_thread_metadata;
 mod projects;
@@ -129,6 +130,7 @@ pub struct LocalThreadStore {
     writer_lock_coordinator: Arc<WriterLockCoordinator>,
     state_db: Option<StateDbHandle>,
     thread_history_db: Arc<OnceCell<sqlx::SqlitePool>>,
+    native_checkpoint_db: Arc<OnceCell<sqlx::SqlitePool>>,
 }
 
 struct LiveRecorderEntry {
@@ -141,6 +143,7 @@ struct LiveRecorderEntry {
     // so missing SQLite rows can still be seeded.
     history_mode: ThreadHistoryMode,
     writer_lock: WriterLockGuard,
+    native_checkpoint_epoch: std::sync::OnceLock<Arc<()>>,
 }
 
 #[derive(Default)]
@@ -242,6 +245,7 @@ impl LocalThreadStore {
             writer_lock_coordinator,
             state_db,
             thread_history_db: Arc::new(OnceCell::new()),
+            native_checkpoint_db: Arc::new(OnceCell::new()),
         }
     }
 
@@ -331,6 +335,7 @@ impl LocalThreadStore {
                     rollout_id,
                     history_mode,
                     writer_lock,
+                    native_checkpoint_epoch: std::sync::OnceLock::new(),
                 });
                 Ok(())
             }
@@ -413,6 +418,31 @@ impl LocalThreadStore {
 }
 
 impl ThreadStore for LocalThreadStore {
+    fn open_native_checkpoint(
+        &self,
+        binding: crate::NativeCheckpointBinding,
+        mode: crate::NativeCheckpointOpenMode,
+        currentness: Arc<dyn crate::NativeCheckpointCurrentness>,
+    ) -> ThreadStoreFuture<'_, crate::NativeCheckpointSession> {
+        Box::pin(async move { native_checkpoint::open(self, binding, mode, currentness).await })
+    }
+
+    fn load_native_checkpoint<'a>(
+        &'a self,
+        session: &'a crate::NativeCheckpointSession,
+    ) -> ThreadStoreFuture<'a, crate::NativeCheckpointLoad> {
+        Box::pin(async move { native_checkpoint::load(self, session).await })
+    }
+
+    fn commit_native_checkpoint<'a>(
+        &'a self,
+        session: &'a crate::NativeCheckpointSession,
+        expected: crate::NativeCheckpointExpected,
+        state: crate::NativeCheckpointState,
+    ) -> ThreadStoreFuture<'a, crate::StoredNativeCheckpoint> {
+        Box::pin(async move { native_checkpoint::commit(self, session, expected, state).await })
+    }
+
     fn as_any(&self) -> &dyn std::any::Any {
         self
     }

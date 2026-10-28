@@ -91,6 +91,43 @@ impl Drop for LiveThreadInitGuard {
 }
 
 impl LiveThread {
+    /// Open typed pending-state storage in the same owner as this live thread.
+    pub async fn open_native_checkpoint(
+        &self,
+        binding: crate::NativeCheckpointBinding,
+        mode: crate::NativeCheckpointOpenMode,
+        currentness: Arc<dyn crate::NativeCheckpointCurrentness>,
+    ) -> ThreadStoreResult<crate::NativeCheckpointSession> {
+        if binding.thread_id != self.thread_id {
+            return Err(ThreadStoreError::Conflict {
+                message: "native checkpoint binding has another thread id".to_string(),
+            });
+        }
+        self.thread_store
+            .open_native_checkpoint(binding, mode, currentness)
+            .await
+    }
+
+    pub async fn load_native_checkpoint(
+        &self,
+        session: &crate::NativeCheckpointSession,
+    ) -> ThreadStoreResult<crate::NativeCheckpointLoad> {
+        session.require_thread(self.thread_id)?;
+        self.thread_store.load_native_checkpoint(session).await
+    }
+
+    pub async fn commit_native_checkpoint(
+        &self,
+        session: &crate::NativeCheckpointSession,
+        expected: crate::NativeCheckpointExpected,
+        state: crate::NativeCheckpointState,
+    ) -> ThreadStoreResult<crate::StoredNativeCheckpoint> {
+        session.require_thread(self.thread_id)?;
+        self.thread_store
+            .commit_native_checkpoint(session, expected, state)
+            .await
+    }
+
     pub async fn create(
         thread_store: Arc<dyn ThreadStore>,
         params: CreateThreadParams,

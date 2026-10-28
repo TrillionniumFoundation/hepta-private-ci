@@ -3,7 +3,10 @@
 
 #![forbid(unsafe_code)]
 
+mod model_port;
 mod responses;
+
+pub use model_port::ModelPort;
 
 pub use responses::ModelEvent;
 pub use responses::ModelRequest;

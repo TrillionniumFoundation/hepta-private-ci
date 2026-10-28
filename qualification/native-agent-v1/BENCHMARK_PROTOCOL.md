@@ -8,8 +8,8 @@ The benchmark must retain failed runs and incomplete measurement coverage.
 
 | Arm | Resident execution path | Tool backend |
 | --- | --- | --- |
-| `app-server` | Official Codex 0.164.0 App Server, one persistent process | One persistent qualification helper using the pinned hepta-runtime code |
-| `facade` | Pinned upstream 0.164.0 in-process client/server facade, one persistent wrapper process | The same helper executable and runtime code |
+| `app-server` | Official Codex 0.165.0 App Server source, one persistent process | One persistent qualification helper using the pinned hepta-runtime code |
+| `facade` | Pinned upstream 0.165.0 in-process client/server facade, one persistent wrapper process | The same helper executable and runtime code |
 | `native` | Native model/tool loop, one persistent qualification process | The same runtime bridge and hepta-runtime code in that process |
 
 Every arm has the same outer Python harness and model gateway. The facade still
@@ -17,6 +17,12 @@ has the shared outer JSON-lines measurement transport. Its internal typed
 channels do not make this a zero-serialization benchmark. The native arm avoids
 the separate tool-helper IPC because its runtime bridge is in-process; that is
 an observed deployment difference, not work omitted from accounting.
+
+Both Codex builds use upstream commit
+`360319d8dee62d87e2d59fc0c21805d79519cfed`, the same recorded bootstrap
+observability patch and a declared Rust 1.95.0 override of upstream's 1.99.1
+toolchain. They are source qualification builds, not stock release binaries.
+The 0.164 diagnostic runs remain separate from the formal comparison.
 
 Each case gets a fresh session/thread on its resident executor. It invokes
 `hepta_probe` exactly once with one of `sum`, `lines`, or `digest`, then returns
@@ -192,3 +198,48 @@ Consequently `global_total_memory_or_cpu_claim_supported` remains false. Use
 these results as scoped runtime evidence, with the declared omitted work. A
 lower main-process RSS or an apparent transfer of work to helpers, detached
 jobs, SSH services or the model service is not proof of lower system cost.
+
+## Frozen V2 measurement revision
+
+The final run uses `benchmark_v2.py` and `process_metrics_v2.py`, with identities
+and lane order frozen in [FORMAL_PLAN_V2.json](FORMAL_PLAN_V2.json). The model,
+executors, tasks, budgets, helper and scoring remain the first round's inputs.
+The V1 files and original reports remain immutable evidence.
+
+V1's whole-host `/proc` scan used about 87% to 88% of one core during formal
+measurement. V2 enumerates explicit cgroups and all selected task children.
+It retains fresh PSS reads and both PID/start-tick identity checks; it does not
+cache PSS or substitute RSS. The 100 ms candidate failed the unchanged 5% idle
+tree observer-CPU gate. A 500 ms candidate was declared before calibration and
+formal execution, then passed two controlled-tree calibrations at 2.43% and
+2.53%. Failed calibration and summary attempts remain archived.
+
+The interval is a **wait after each sample**, not an exact 2 Hz schedule.
+Observer CPU is sampling-call thread CPU divided by actual whole-lane elapsed
+time; active sampling wall time excludes waits and is not that denominator.
+All six final lanes pass the same 5% observation threshold individually.
+This does not establish negligible observer perturbation.
+
+Lower cadence can miss more short-lived processes, cgroup CPU counters and
+short memory peaks. The report must show missing counters next to the scoped
+CPU values and complete/incomplete PSS samples next to memory. Complete PSS
+means readable selected identities in that sample, not full temporal or global
+coverage. Do not compare V1/V2 peak differences as implementation savings.
+Do not subtract observer CPU to reconstruct an uninstrumented execution cost.
+
+The fixed order is replay native / app-server / facade, then live facade /
+app-server / native, in six separate fresh jobs requesting CPUQuota 400%, MemoryMax
+8 GiB and nice 10. Reports verify CPU and memory limits; effective cpuset and
+nice are not independently observed. This is not a randomized or
+counterbalanced experiment.
+The [final report](REPORT.md) records outcomes and limitations; the
+[independent audit](evidence/V2_AUDIT.md) verifies actual requests, fingerprints,
+observer ratios, incomplete counters and source-file preservation.
+
+## Fault-target distinction
+
+The latest fault qualification kills the entire native runner, but only the
+runtime helper in the Codex arms while the Codex core remains alive. Each
+declared scope preserves the original runtime operation; these are not matched
+whole-agent failures. Unverified cold Codex pending-call recovery is not scored
+as a Codex failure. See [CODEX_RECOVERY_BOUNDARY.md](CODEX_RECOVERY_BOUNDARY.md).

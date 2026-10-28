@@ -1,0 +1,480 @@
+{
+  "schema": "hepta.formal.v2.operator-jobs.v1",
+  "requested_limits": {
+    "cpu_quota_percent": 400,
+    "memory_max_bytes": 8589934592,
+    "nice": 10
+  },
+  "reported_cpu_and_memory_limits_in_each_report": true,
+  "nice_effective_cpuset_not_independently_observed": true,
+  "jobs": [
+    {
+      "name": "replay-native",
+      "launch": {
+        "audit_recorded": true,
+        "job": {
+          "args": [
+            "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1/benchmark_v2.py",
+            "--lane",
+            "native",
+            "--mode",
+            "replay",
+            "--output",
+            "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1/formal-0165-replay-native-v2",
+            "--fixture",
+            "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1",
+            "--native",
+            "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1/runner/target/release/hepta-native-qualification",
+            "--codex",
+            "/home/qian-qi/worktrees/codex-official-0165-facade-20261028/bin/codex",
+            "--facade",
+            "/home/qian-qi/worktrees/codex-official-0165-facade-20261028/bin/hepta_facade",
+            "--warmup"
+          ],
+          "created_unix_ms": 1793162775453,
+          "cwd": "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1",
+          "env_keys": [],
+          "executable": "/usr/bin/python3",
+          "execution_mode": "operator",
+          "host": "main",
+          "id": "1a180d48b9d-96a-2ca8",
+          "idempotency_key": "formal-0165-replay-native-20261028-v2",
+          "launch_error": null,
+          "launch_state": "launched",
+          "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-operator-host/jobs/1a180d48b9d-96a-2ca8",
+          "request_digest": "411e2a835580b30b93c22e2d6ae0214747ac91147de20aed88d28d4a4137618f",
+          "request_fingerprint": 4692234605330216000,
+          "ssh_target": "localhost",
+          "system_jobctl": false,
+          "unit": "hepta-runtime-job-1a180d48b9d-96a-2ca8"
+        },
+        "launch": {
+          "backend": "systemd",
+          "launcher_pid": null,
+          "ok": true,
+          "unit": "hepta-runtime-job-1a180d48b9d-96a-2ca8"
+        },
+        "local_record_pending": false,
+        "reused": false
+      },
+      "status": {
+        "at_unix_ms": 1793162798053,
+        "audit_recorded": true,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a180d48b9d-96a-2ca8",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 2086,
+            "stored": 2086
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "state": "succeeded",
+        "timed_out": false
+      }
+    },
+    {
+      "name": "replay-app-server",
+      "launch": {
+        "audit_recorded": true,
+        "job": {
+          "args": [
+            "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1/benchmark_v2.py",
+            "--lane",
+            "app-server",
+            "--mode",
+            "replay",
+            "--output",
+            "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1/formal-0165-replay-app-server-v2",
+            "--fixture",
+            "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1",
+            "--native",
+            "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1/runner/target/release/hepta-native-qualification",
+            "--codex",
+            "/home/qian-qi/worktrees/codex-official-0165-facade-20261028/bin/codex",
+            "--facade",
+            "/home/qian-qi/worktrees/codex-official-0165-facade-20261028/bin/hepta_facade",
+            "--warmup"
+          ],
+          "created_unix_ms": 1793162846947,
+          "cwd": "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1",
+          "env_keys": [],
+          "executable": "/usr/bin/python3",
+          "execution_mode": "operator",
+          "host": "main",
+          "id": "1a180d5a2e3-96a-2cb0",
+          "idempotency_key": "formal-0165-replay-app-server-20261028-v2",
+          "launch_error": null,
+          "launch_state": "launched",
+          "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-operator-host/jobs/1a180d5a2e3-96a-2cb0",
+          "request_digest": "3e10255057c7c5a2e20d3505483cb5dfa3df1c4d7b77b979e6bf2a1ae3a351f3",
+          "request_fingerprint": 4472115456979224000,
+          "ssh_target": "localhost",
+          "system_jobctl": false,
+          "unit": "hepta-runtime-job-1a180d5a2e3-96a-2cb0"
+        },
+        "launch": {
+          "backend": "systemd",
+          "launcher_pid": null,
+          "ok": true,
+          "unit": "hepta-runtime-job-1a180d5a2e3-96a-2cb0"
+        },
+        "local_record_pending": false,
+        "reused": false
+      },
+      "status": {
+        "at_unix_ms": 1793162878311,
+        "audit_recorded": true,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a180d5a2e3-96a-2cb0",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 2127,
+            "stored": 2127
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "state": "succeeded",
+        "timed_out": false
+      }
+    },
+    {
+      "name": "replay-facade",
+      "launch": {
+        "audit_recorded": true,
+        "job": {
+          "args": [
+            "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1/benchmark_v2.py",
+            "--lane",
+            "facade",
+            "--mode",
+            "replay",
+            "--output",
+            "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1/formal-0165-replay-facade-v2",
+            "--fixture",
+            "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1",
+            "--native",
+            "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1/runner/target/release/hepta-native-qualification",
+            "--codex",
+            "/home/qian-qi/worktrees/codex-official-0165-facade-20261028/bin/codex",
+            "--facade",
+            "/home/qian-qi/worktrees/codex-official-0165-facade-20261028/bin/hepta_facade",
+            "--warmup"
+          ],
+          "created_unix_ms": 1793162966142,
+          "cwd": "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1",
+          "env_keys": [],
+          "executable": "/usr/bin/python3",
+          "execution_mode": "operator",
+          "host": "main",
+          "id": "1a180d7747e-96a-2cb5",
+          "idempotency_key": "formal-0165-replay-facade-20261028-v2",
+          "launch_error": null,
+          "launch_state": "launched",
+          "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-operator-host/jobs/1a180d7747e-96a-2cb5",
+          "request_digest": "583bca76e9a45af21497b17f3a2177dfaf87d8f853e0ca130402909e1829d359",
+          "request_fingerprint": 6357897911038402000,
+          "ssh_target": "localhost",
+          "system_jobctl": false,
+          "unit": "hepta-runtime-job-1a180d7747e-96a-2cb5"
+        },
+        "launch": {
+          "backend": "systemd",
+          "launcher_pid": null,
+          "ok": true,
+          "unit": "hepta-runtime-job-1a180d7747e-96a-2cb5"
+        },
+        "local_record_pending": false,
+        "reused": false
+      },
+      "status": {
+        "at_unix_ms": 1793162994910,
+        "audit_recorded": true,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a180d7747e-96a-2cb5",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 2076,
+            "stored": 2076
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "state": "succeeded",
+        "timed_out": false
+      }
+    },
+    {
+      "name": "live-facade",
+      "launch": {
+        "audit_recorded": true,
+        "job": {
+          "args": [
+            "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1/benchmark_v2.py",
+            "--lane",
+            "facade",
+            "--mode",
+            "live",
+            "--output",
+            "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1/formal-0165-live-facade-v2",
+            "--fixture",
+            "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1",
+            "--native",
+            "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1/runner/target/release/hepta-native-qualification",
+            "--codex",
+            "/home/qian-qi/worktrees/codex-official-0165-facade-20261028/bin/codex",
+            "--facade",
+            "/home/qian-qi/worktrees/codex-official-0165-facade-20261028/bin/hepta_facade",
+            "--warmup"
+          ],
+          "created_unix_ms": 1793163071219,
+          "cwd": "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1",
+          "env_keys": [],
+          "executable": "/usr/bin/python3",
+          "execution_mode": "operator",
+          "host": "main",
+          "id": "1a180d90ef3-96a-2cc2",
+          "idempotency_key": "formal-0165-live-facade-20261028-v2",
+          "launch_error": null,
+          "launch_state": "launched",
+          "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-operator-host/jobs/1a180d90ef3-96a-2cc2",
+          "request_digest": "2e2f94b85a129087a3611a46aac6ef59f464768810e76a56a6679a2db54e9f10",
+          "request_fingerprint": 3328042169156145000,
+          "ssh_target": "localhost",
+          "system_jobctl": false,
+          "unit": "hepta-runtime-job-1a180d90ef3-96a-2cc2"
+        },
+        "launch": {
+          "backend": "systemd",
+          "launcher_pid": null,
+          "ok": true,
+          "unit": "hepta-runtime-job-1a180d90ef3-96a-2cc2"
+        },
+        "local_record_pending": false,
+        "reused": false
+      },
+      "status": {
+        "at_unix_ms": 1793163133939,
+        "audit_recorded": true,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a180d90ef3-96a-2cc2",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 1579,
+            "stored": 1579
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "state": "succeeded",
+        "timed_out": false
+      }
+    },
+    {
+      "name": "live-app-server",
+      "launch": {
+        "audit_recorded": true,
+        "job": {
+          "args": [
+            "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1/benchmark_v2.py",
+            "--lane",
+            "app-server",
+            "--mode",
+            "live",
+            "--output",
+            "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1/formal-0165-live-app-server-v2",
+            "--fixture",
+            "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1",
+            "--native",
+            "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1/runner/target/release/hepta-native-qualification",
+            "--codex",
+            "/home/qian-qi/worktrees/codex-official-0165-facade-20261028/bin/codex",
+            "--facade",
+            "/home/qian-qi/worktrees/codex-official-0165-facade-20261028/bin/hepta_facade",
+            "--warmup"
+          ],
+          "created_unix_ms": 1793163211845,
+          "cwd": "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1",
+          "env_keys": [],
+          "executable": "/usr/bin/python3",
+          "execution_mode": "operator",
+          "host": "main",
+          "id": "1a180db3445-96a-2ccd",
+          "idempotency_key": "formal-0165-live-app-server-20261028-v2",
+          "launch_error": null,
+          "launch_state": "launched",
+          "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-operator-host/jobs/1a180db3445-96a-2ccd",
+          "request_digest": "42b5a4bf8c641d71ec42ef1be92156eeae420c9060d773695d3501815466e191",
+          "request_fingerprint": 4806929319888952000,
+          "ssh_target": "localhost",
+          "system_jobctl": false,
+          "unit": "hepta-runtime-job-1a180db3445-96a-2ccd"
+        },
+        "launch": {
+          "backend": "systemd",
+          "launcher_pid": null,
+          "ok": true,
+          "unit": "hepta-runtime-job-1a180db3445-96a-2ccd"
+        },
+        "local_record_pending": false,
+        "reused": false
+      },
+      "status": {
+        "at_unix_ms": 1793163293930,
+        "audit_recorded": true,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a180db3445-96a-2ccd",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 1614,
+            "stored": 1614
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "state": "succeeded",
+        "timed_out": false
+      }
+    },
+    {
+      "name": "live-native",
+      "launch": {
+        "audit_recorded": true,
+        "job": {
+          "args": [
+            "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1/benchmark_v2.py",
+            "--lane",
+            "native",
+            "--mode",
+            "live",
+            "--output",
+            "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1/formal-0165-live-native-v2",
+            "--fixture",
+            "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1",
+            "--native",
+            "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1/runner/target/release/hepta-native-qualification",
+            "--codex",
+            "/home/qian-qi/worktrees/codex-official-0165-facade-20261028/bin/codex",
+            "--facade",
+            "/home/qian-qi/worktrees/codex-official-0165-facade-20261028/bin/hepta_facade",
+            "--warmup"
+          ],
+          "created_unix_ms": 1793163440666,
+          "cwd": "/home/qian-qi/worktrees/hepta-native-agent-20261027/qualification/native-agent-v1",
+          "env_keys": [],
+          "executable": "/usr/bin/python3",
+          "execution_mode": "operator",
+          "host": "main",
+          "id": "1a180deb21a-96a-2cd9",
+          "idempotency_key": "formal-0165-live-native-20261028-v2",
+          "launch_error": null,
+          "launch_state": "launched",
+          "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-operator-host/jobs/1a180deb21a-96a-2cd9",
+          "request_digest": "9c9967538201874b93828df494dfba23b822b2e28356b4718a4c3af0e2370bb8",
+          "request_fingerprint": 11284163949714573000,
+          "ssh_target": "localhost",
+          "system_jobctl": false,
+          "unit": "hepta-runtime-job-1a180deb21a-96a-2cd9"
+        },
+        "launch": {
+          "backend": "systemd",
+          "launcher_pid": null,
+          "ok": true,
+          "unit": "hepta-runtime-job-1a180deb21a-96a-2cd9"
+        },
+        "local_record_pending": false,
+        "reused": false
+      },
+      "status": {
+        "at_unix_ms": 1793163488867,
+        "audit_recorded": true,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a180deb21a-96a-2cd9",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 1576,
+            "stored": 1576
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "state": "succeeded",
+        "timed_out": false
+      }
+    }
+  ]
+}

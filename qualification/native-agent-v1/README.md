@@ -1,5 +1,10 @@
 # Native agent and shared-runtime qualification
 
+The completed 0.165.0 comparison, measured limits and engineering status are in
+[REPORT.md](REPORT.md). Both formal rounds and their failures remain in the
+evidence directory. Use [FORMAL_PLAN_V2.json](FORMAL_PLAN_V2.json) and the V2
+measurement entry point below for the final recorded sampling configuration.
+
 This directory exercises a bounded native agent against the same real
 `hepta-runtime` tool implementation used by two Codex comparison lanes. The
 native path is a complete model/tool conversation for a fixed read-only task:
@@ -25,7 +30,8 @@ not declare a test count, a performance winner or production readiness.
 | `runner/src/main.rs` | Persistent JSON-lines qualification interface and cancellation input |
 | `model_gateway.py` | Shared fixed-response replay or live Responses boundary, bounded requests and captured model evidence |
 | `protocol_driver.py` | Codex thread/turn correlation and delivery of dynamic tool calls to the shared runtime helper |
-| `benchmark.py` and `process_metrics.py` | One resident executor lane per run, correctness records, process-tree sampling and explicit detached-job coverage |
+| `benchmark_v2.py` and `process_metrics_v2.py` | Final scoped process sampling, 500 ms post-sample wait, one resident executor per lane and explicit detached-job coverage |
+| `benchmark.py` and `process_metrics.py` | Preserved first-round source, including the measured observer overhead; not silently replaced by V2 |
 
 The native loop uses the shared Cell/runtime DTOs from `codex-hepta-types`.
 The canonical conversion seam and its authority limits are described in
@@ -245,7 +251,7 @@ HEPTA_FACADE_BIN=/absolute/pinned/hepta_facade
 HEPTA_QUAL_OUTPUT=/absolute/new-qualification-series
 
 for qual_lane in native app-server facade; do
-  python3 "$HEPTA_QUAL_ROOT/benchmark.py" \
+  python3 "$HEPTA_QUAL_ROOT/benchmark_v2.py" \
     --lane "$qual_lane" --mode replay --warmup --repeats 3 \
     --output "$HEPTA_QUAL_OUTPUT/replay-$qual_lane" \
     --fixture "$HEPTA_QUAL_ROOT" --native "$HEPTA_NATIVE_BIN" \
@@ -258,6 +264,12 @@ layer, use the same arguments with `--mode live`, a new output directory and
 an explicit `--upstream http://127.0.0.1:PORT/v1` pointing to the already
 configured common Responses service. The gateway does not provision a model
 service or copy production credentials.
+
+The recorded live order is `facade app-server native`, with two repeats per
+lane. Each recorded lane used a fresh operator job requesting CPUQuota 400%,
+MemoryMax 8 GiB and nice 10. Reports verify the CPU and memory limits, not the
+effective cpuset or nice value. The illustrative loop above does not itself create
+those resource limits. Reproduce the frozen plan and limits explicitly.
 
 The command above is a reproduction entry point, not a sufficient statistical
 performance study. Preserve run order and machine conditions; repeated and
@@ -302,3 +314,10 @@ and failure qualification. Neither successful fixture execution nor a pure
 canonical DTO projection establishes those properties. This experiment also
 does not establish adaptive Cell utility or emergent general intelligence;
 those need separate, fixed-executor capability evidence.
+
+The new generic `ModelPort` and ThreadStore-owned checkpoint API are tested
+integration seams. This runner still uses its qualification `SessionOwner`,
+and does not consume the ThreadStore sidecar or production FinalUse writer.
+See [OWNERSHIP_BOUNDARIES.md](OWNERSHIP_BOUNDARIES.md) for this distinction and
+[CODEX_RECOVERY_BOUNDARY.md](CODEX_RECOVERY_BOUNDARY.md) for the different fault
+targets in the native and Codex experiments.

@@ -1,11 +1,13 @@
 # Native qualification: ownership and production boundaries
 
-This draft implements a bounded native conversation and reuses real runtime
-jobs. It does **not** install a native production session owner in Agentd.
+This branch implements a bounded native conversation, a model port supplied by
+the host and a store-owned checkpoint slice, and reuses real runtime jobs. It does
+**not** install a native production session owner in Agentd.
 The production interfaces below already exist; the missing work is their
 composition with this loop, not the invention of another authority service.
 Source links pin the reviewed #2963 base to
 `88a43bece9428b091479712b4c29084720d87123`; they do not claim a later branch audit.
+Relative source links describe the new slices in this branch.
 
 ## What owns the implemented path
 
@@ -30,7 +32,7 @@ projection retains `AuthorityPosture::DENY_ALL`; an outcome grants no new effect
 | --- | --- | --- |
 | [AgentdState][state]: `refresh_generation`, `current_generation`, `mark_fenced` | Reloads `FleetRegistry`, checks the Agent's roots/resources and lifecycle generation, closes admission and fences runs. Current lifecycle generation is distinct from process spawn generation. | No native `TurnOwner` is wired to this live Agentd/Fleet fence or its readiness and drain state. Fixed fixture generation is not a substitute. |
 | [AgentRunCoordinator][lane]: `start_run`, `attach_context`, `mark_dispatched`, `cancel_run`, `observe_terminal`, `recover_indeterminate` | Owns run revisions, context attachment, deadlines and the admitted/dispatched/cancelling/indeterminate/terminal transitions. | Native root/child operations are not composed with the daemon's sole coordinator. This in-memory coordinator alone is not durable storage for a native pending model/tool checkpoint. |
-| [ThreadStore][store]: `create_thread`, `resume_thread`, `append_items`, `persist_thread`, `load_history` | Storage-neutral thread persistence and recovery, including deletion fencing. | Native session creation and checkpoint/history representation are not mapped into the existing thread store. |
+| [ThreadStore][store]: `create_thread`, `resume_thread`, `append_items`, `persist_thread`, `load_history` | Storage-neutral thread persistence and recovery, including deletion fencing. | This branch adds the typed native checkpoint API described below; the loop's state codec and session/history recovery are not yet wired to it. |
 | [LiveThread][live]: `create`, `resume`, `append_items`, `persist`, `flush`, `shutdown` | Active-thread persistence lifecycle over the selected `ThreadStore`, including initialization cleanup. | The runner's private snapshot directory has not been replaced by this production lifecycle or a reviewed compatible native checkpoint representation. |
 | [QueueStore][queue]: client-binding reserve/finalize, dispatch lock, claim/authorize/recover/complete | Durable ordered user input, payload/client identity and leased cross-process dispatch. Unsupported implementations reject the relevant operations. | JSON-lines fixture commands do not implement this queue contract or bind its leased dispatch to a native turn. |
 | [History recovery records][history]: `TurnRecoveryRequestBinding`, `TurnRecoveryHistoryBoundary`, `TurnRecoveryReplayV1` | Bind a recovery generation to the exact semantic request, history prefix, context and replay-critical environment data. Missing boundary/replay data does not grant recovery authority. | Native exact-body/provider-response recovery has not been mapped to those records or qualified for existing persisted threads. |
@@ -45,31 +47,65 @@ the host does not acquire signing authority from a native request. Multiple
 destinations must be explicitly registered and named. Composing both model and
 runtime targets must retain this separation and observer-only reconciliation.
 
-### Concrete persistence and model-entry gaps
+### Ordinary rollout persistence and the new model-entry seam
 
 The reviewed local thread writer calls `record_canonical_items` followed by
 `RolloutRecorder::flush`; `write_pending_once` calls `File::flush`, with no
 `sync_data` or `sync_all` barrier in that recorder. A successful flush is not
-evidence that a native pending-effect checkpoint survives power loss. Any
-required durable barrier belongs inside this existing writer, including first
-file creation, rather than in a second snapshot writer. See [live writer][live-writer]
-and [recorder][recorder].
+evidence that a native pending-effect checkpoint survives power loss. The new
+store-owned SQLite sidecar below supplies a separate strict pending-state path
+inside the selected store; ordinary rollout flush is not its commit barrier.
+See [live writer][live-writer] and [recorder][recorder].
 
 `load_rollout_items` counts malformed rows, but `get_rollout_history` discards
 that count as `_parse_errors`. Native pending-effect recovery must use an
 explicit strict path that rejects malformed or truncated checkpoint input and
 validates the original identity, generation and checkpoint sequence; silently
 falling back to an older valid checkpoint could redispatch an uncertain effect.
-The tolerant ordinary-history loader does not establish that recovery property.
+The tolerant ordinary-history loader does not establish that recovery property;
+the sidecar validates its own complete chain instead of recovering pending state
+through that tolerant loader. The application codec and history mapping remain
+unimplemented production composition.
 
-In this draft, [engine.rs](../../codex-rs/hepta-native-agent/src/engine.rs) accepts
-the concrete `ResponsesModel`; after owner admission and checkpointing it calls
-[ResponsesModel::open](../../codex-rs/hepta-native-agent/src/responses.rs), which
-sends the HTTP POST. `ModelRequest` carries an operation ID and exact bytes, not
-a checked FinalUse handle. Replacing `SessionOwner` alone therefore cannot
-install the production check at model dispatch. A checked model transport/port
-must compose that physical entry with the existing writer and FinalUse owner;
-consuming a grant earlier in `admit_model` is insufficient across later awaits.
+[engine.rs](../../codex-rs/hepta-native-agent/src/engine.rs) now accepts a generic
+[ModelPort](../../codex-rs/hepta-native-agent/src/model_port.rs). Its default
+`ResponsesModel` implementation preserves the original POST and response-query
+behavior. The port exposes `open(original_request)` and
+`reconcile(original_request, response_id)` while retaining restricted stream and
+completion types. The [external-wrapper test](../../codex-rs/hepta-native-agent/tests/model_port.rs)
+checks zero actual POSTs after local entry rejection, retained exact pending
+bytes and delegation of the original response query. Its test gate is not FinalUse.
+
+`ModelRequest` still carries correlation and exact bytes, not an execution grant.
+The qualification runner uses the default transport, not a production checked
+wrapper. A host wrapper must compose the concrete effect entry with the existing
+writer, external grant provider and same-authority token consumption; consuming
+a grant earlier in `admit_model` is insufficient across later awaits. The current
+production target trait also needs a reviewed streaming-entry handoff; it is not
+already a generic checked SSE/process adapter. See [the concrete composition](ARCHITECTURE_DECISION.md).
+
+### Store-owned checkpoint slice in this branch
+
+The [typed checkpoint API](../../codex-rs/thread-store/src/native_checkpoint.rs)
+and [local implementation](../../codex-rs/thread-store/src/local/native_checkpoint.rs)
+add pending-state storage outside model-visible history under the existing
+`ThreadStore`/`LiveThread`.
+They reuse the live recorder's writer lock, writer-instance epoch and lifecycle
+coordination, validate the original binding and a revision/hash chain with CAS,
+and retain a host-supplied, nonserializable currentness permit through a sidecar
+SQLite commit opened with
+`SqliteConfig::open_durable_evidence_pool` (`synchronous=FULL`). Recovery never
+treats a missing or corrupt checkpoint as new work. An owner task keeps the
+writer, lifecycle and host guards alive through COMMIT even if the awaiting
+caller is cancelled. No `RolloutItem`, grant ledger or second jobs owner is added.
+
+This slice requires a materialized live thread and a self-contained state codec.
+It does not atomically commit the separate rollout file, install a production
+Fleet/QueueStore permit provider, replace the runner's `SessionOwner`, or connect
+FinalUse to model/runtime entry. Its real-store regression tests qualify storage
+and the host-permit seam; they are not production native conversation evidence.
+`NativeCheckpointPermit` holds the guard supplied by the host; merely creating
+that wrapper does not verify a lease, generation or FinalUse capability.
 
 ## Why SessionOwner is not promoted to production authority
 
@@ -96,13 +132,15 @@ These are outstanding integration gates, not claims that the draft passes them.
    existing thread lifecycle and queue dispatch lease to the native loop; map
    run/turn/child-operation identities and revisions without opening a second
    writer or allocating a replacement operation after an ambiguous response.
-2. **Durable history and recovery mapping.** Persist the native pending state,
+2. **Durable history and recovery mapping.** Map a self-contained native codec to
+   the implemented store-owned checkpoint API and persist the native pending state,
    exact model body, original provider response ID and compiled process request
    through the selected production owners. Validate old-thread resume, queue
    redelivery, corruption rejection and recovery-generation consumption.
-3. **Checked model and runtime entry.** Attach the appropriate existing production
-   targets and external grant provider; bind destination, payload, deadline,
-   lease and generation. Revalidate currentness/revocation at the physical entry
+3. **Checked model and runtime entry.** Compose the native model/runtime adapters
+   with the existing production writer and external grant provider; bind
+   destination, payload, deadline, lease and generation. Revalidate
+   currentness/revocation at the physical entry
    after waits and checkpoints. Qualification records and the converter cannot
    satisfy this gate.
 4. **Original-operation fault evidence.** Inject crashes/lost acknowledgements

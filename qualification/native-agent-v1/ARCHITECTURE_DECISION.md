@@ -95,9 +95,60 @@ FinalUse writer／targets 和 AuthBus；缺口是这些 owner 与 native loop �
 当前 `TurnOwner` 接缝由宿主提供身份与准入，资格 runner 的 `SessionOwner` 仍使用固定 generation 1。
 其私有文件、锁、不可变准入和 checkpoint hash chain 证明实验内一致性，不能替代生产 principal、
 活跃租约、代次撤销、队列 dispatch 或绑定物理目标的 FinalUse grant。
-真实 jobs owner 已复用；native 的会话／恢复记录尚未映射到生产存储，模型与工具入口尚未完成
-生产 writer／target 组合，agentd 的启动、ready、drain 和 AuthBus 路径也尚未切换。
+真实 jobs owner 已复用；`ModelPort` 与同一 `ThreadStore`／`LiveThread` owner 下的 typed checkpoint
+API 已实现。后者通过 sidecar SQLite 的 durable commit、原 binding、CAS／hash chain 和原 writer
+epoch 保留 pending state；owner task 在等待方取消后仍持有 writer／lifecycle／host permit 至提交结束。
+这解决了可复用的存储切片，不代表 qualification runner 或 Agentd 已经使用它；runner 仍使用
+`SessionOwner`，native 的状态 codec、生产会话／历史恢复映射及 Fleet／queue permit provider 尚未接入。
+sidecar 不与单独的 rollout 文件形成原子事务，currentness permit 也不替代物理入口的 FinalUse。
+模型与工具入口尚未完成生产 writer／target 组合，Agentd 的启动、ready、drain 和 AuthBus 路径
+也尚未切换。[存储 API](../../codex-rs/thread-store/src/native_checkpoint.rs)
+[真实 store 实现](../../codex-rs/thread-store/src/local/native_checkpoint.rs)
 canonical converter 只转换关联数据，终态 receipt 不产生新执行权限。[契约说明](CONTRACT_CONVERGENCE.md)
+
+## ModelPort 切片与真实 FinalUse 的组合路径
+
+本次增加的 `ModelPort` 只开放 `open(original_request)` 与 `reconcile(original_request, response_id)`，
+engine 已接受该泛型端口，`ResponsesModel` 实现它并保持原行为；返回值仍是受限的
+`ResponsesStream`／`ObservedModelCompletion`。qualification runner 使用的是默认实现。
+外部宿主可以拒绝首次入口并委托原响应查询，不能通过新公共构造器伪造模型终态。
+外部 wrapper 测试使用真实 HTTP peer 检查零 POST 与原 Response ID 的 GET；测试拒绝器不是生产授权。
+该切片不创建 grant、authority journal 或新的 operation owner，也没有接通生产 writer。
+
+生产组合必须遵循既有 owner 的真实调用链，以下是尚需完成的接入顺序：
+
+1. 宿主将原 operation、generation、目标和精确载荷交给已有 `ProductionDurableWriter::prepare_operation`，
+   使用原 `OperationIntentV1` 与 `ProductionQueuedReceipt`；模型 body 和工具 `ProcessStartParams` 均须保持不变。
+   endpoint／destination、策略和 deadline 也须进入相应不可变绑定；native 准入结果本身不授予执行权限。
+2. 将 native 状态 codec 接入已实现的 ThreadStore checkpoint API，持久化原 pending 状态及其关联，
+   由真实宿主 currentness provider 保留 guard 至提交结束，完成写前记录后才尝试入口；
+   不把 grant token 序列化进 checkpoint，也不另建并行 outbox。
+3. 从同一 writer 的 `final_use_binding(receipt, destination_id)` 派生准确绑定，交给外部
+   `AgentdFinalUseGrantProvider::signed_grant`；不能用仅含 semantic digest 的另一个 binding helper 替换它。
+   签发者仍是独立 grant provider，native 库不持有签名密钥。[生产宿主][production-host]
+4. 复用同一 writer 的一次性 dispatch claim、原 outbox 状态与同一个 `FinalUseAuthority`；
+   真正的 `claim(signed_grant, expected)` 得到不可克隆的 token。完成所有可等待的准备与写前记录后，
+   重查 owner／lease／generation、取消和期限，再用该 token 的 `enter(expected)` 消费最终使用权。
+5. 将得到的 `EnteredUseToken` 传入具体授权提交函数，紧接模型原 POST 或 runtime 原请求的首次 effect entry；
+   不能在 admit 时检查一次、稍后任意发送。现有 infer worker 已有“写前记录→重查→enter→授权提交”实例。
+   此保证是宿主本地异步入口；若要求远端物理 spawn 时也核验同一 FinalUse，目标端还须参与该协议。
+6. 收到 provider Response ID 或 runtime job binding 后记录原关联；断流／回应不明只能查询该原响应或
+   `observe_request(original_params)`。不得再次 POST、换 operation 或再领一个 grant 来判定前次是否发生。
+   最后由真实终态证据回写原 writer／turn；accepted、checkpoint 成功和关联 receipt 均不等于任务完成。
+
+第 4—5 步目前存在明确接口缺口：[生产 target trait][production-writer] 返回异步 `ProductionTargetOutcome`，
+不交付实时 SSE stream，也不把 `VerifiedUseToken` 作为 target 参数。现有 dispatcher 在
+`with_verified_use` 后立即等待 target future；这不能保证 target 内部后续等待后的 HTTP send 再核验一次。
+当前核查的生产 target 是 cognitive source 目标，不能把泛型 target 当作现成的 checked HTTP／process adapter。
+接入需要从原 writer 中复用一次性 claim 与 token 交接，提供兼容流式模型入口的受检路径；
+公开 `mark_indeterminate` 允许原状态重放，不能单独替代私有的一次性 dispatch claim。[writer 源码][production-writer]
+
+[现有 infer worker][native-authorized-entry] 的 `VerifiedUseToken::enter` 和接收 `EnteredUseToken` 的提交函数
+提供了可复用的边界形式；[FinalUse 类型][final-use-types] 要求使用同一 authority 的真实状态及撤销前沿。
+[hepta-runtime native facade][runtime-native] 复用 jobs owner，但要求宿主验证 principal／turn／generation／FinalUse；
+其 [jobs owner fence][runtime-jobs] 不会自动变成 Agentd／Fleet 的同一代次和授权检查。
+因此最小 ModelPort 解决宿主注入位置，外部 grant provider、一次性 writer 入口、原 token 消费、
+生产恢复与生命周期组合仍是后续放行门，不能用测试 gate 或另建布尔授权替代。
 
 ## 保留 Codex 后端与重新评估条件
 
@@ -118,3 +169,10 @@ canonical converter 只转换关联数据，终态 receipt 不产生新执行权
 [facade-cargo]: https://github.com/openai/codex/blob/360319d8dee62d87e2d59fc0c21805d79519cfed/codex-rs/app-server-client/Cargo.toml
 [server-cargo]: https://github.com/openai/codex/blob/360319d8dee62d87e2d59fc0c21805d79519cfed/codex-rs/app-server/Cargo.toml
 [execserver]: https://github.com/openai/codex/blob/360319d8dee62d87e2d59fc0c21805d79519cfed/codex-rs/exec-server/README.md
+
+[production-host]: https://github.com/TrillionniumFoundation/hepta-private-ci/blob/88a43bece9428b091479712b4c29084720d87123/codex-rs/hepta-agentd/src/production_writer_host.rs
+[production-writer]: https://github.com/TrillionniumFoundation/hepta-private-ci/blob/88a43bece9428b091479712b4c29084720d87123/codex-rs/hepta-memory/src/production_writer.rs
+[native-authorized-entry]: https://github.com/TrillionniumFoundation/hepta-private-ci/blob/88a43bece9428b091479712b4c29084720d87123/codex-rs/hepta-infer-worker-host/src/native_app_server.rs
+[final-use-types]: https://github.com/TrillionniumFoundation/hepta-private-ci/blob/88a43bece9428b091479712b4c29084720d87123/codex-rs/hepta-contracts/src/final_use.rs
+[runtime-native]: https://github.com/TrillionniumFoundation/hepta-runtime/blob/d7d039458c8745bea1bafd24f03635e75a66a2f4/src/native.rs
+[runtime-jobs]: https://github.com/TrillionniumFoundation/hepta-runtime/blob/d7d039458c8745bea1bafd24f03635e75a66a2f4/src/mcp/runtime/jobs.rs
