@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.free-boundary.math-audit-protocol.v1",
+  "evidence_scope": "engineering_correctness_only",
+  "scientific_efficacy_claim": false,
+  "test_command": "python -m unittest discover -s experiments/free_boundary_neuron/math/tests -v",
+  "audit_command": "python -m experiments.free_boundary_neuron.math.audit --output-dir experiments/free_boundary_neuron/math/results --source-seal SOURCE_SEAL",
+  "one_shot_grid": {"mu": [-0.8, 0.0, 0.6], "sigma": [0.3, 0.7, 1.2], "rate": [0.05, 0.3], "cost": 0.25},
+  "renewal_cases": [[0.5, 1.0, 0.2, 0.0, 0.5, 0.4], [-0.4, 0.8, 0.3, 0.0, 0.0, 1.0], [1.0, 0.5, 0.2, 0.0, 1.0, 0.0]],
+  "finite_difference_step": 0.00001,
+  "baseline_reference_precision": {
+    "command": "python -m experiments.free_boundary_neuron.math.belief_reference_check --source-seal SOURCE_SEAL --output OUTPUT.json",
+    "contexts": "All sixteen registered ID/OOD reliability-cost-deadline combinations",
+    "exact_reference": "Reachable Bernoulli evidence-lattice optimal stopping recursion",
+    "deployed_policy_evaluation": "Integrate all complete observation streams with deployed cumulative log-odds and action_arrays semantics",
+    "first_observation_charged": true,
+    "max_expected_utility_regret_tolerance": 0.001,
+    "classification": "Numerical baseline approximation verification; no seed or training; not efficacy gate tuning"
+  },
+  "moving_meshes": [64, 128, 256, 512],
+  "tolerances": {
+    "root_relative_residual": 5e-14,
+    "one_shot_obstacle_violation": 1e-10,
+    "one_shot_generator_violation": 1e-10,
+    "one_shot_optimizer_boundary_error": 2e-5,
+    "fpt_quadrature_error": 1e-10,
+    "fpt_gradient_scaled_error": 2e-6,
+    "renewal_solver_boundary_error": 1e-10,
+    "renewal_optimizer_boundary_error": 2e-5,
+    "renewal_boundary_gradient_scaled_error": 1e-6,
+    "renewal_value_gradient_scaled_error": 1e-6,
+    "renewal_obstacle_violation": 1e-10,
+    "renewal_generator_violation": 1e-10,
+    "moving_linear_last_error": 4e-7,
+    "moving_curved_last_mesh_change": 5e-7,
+    "moving_negative_mass": 1e-12,
+    "near_degenerate_solver_relative_error": 1e-8,
+    "owner_row_mass_error": 2e-14,
+    "owner_bellman_error": 5e-13
+  },
+  "limitations": [
+    "Finite domain checks supplement analytic verification and are not a new proof.",
+    "The curved-boundary solver is a smooth deterministic-boundary numerical reference with mesh checks, not an exact closed form.",
+    "The owner oracle is the explicitly exported finite-state Bermudan MDP, not the continuous diffusion optimum.",
+    "No learning, natural task, hardware energy, or production admission claim follows from these checks.",
+    "Parameter derivatives are within a fixed regime; no derivative is asserted across active-set changes or nonattainment boundaries."
+  ]
+}

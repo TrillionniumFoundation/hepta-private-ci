@@ -1,0 +1,2870 @@
+{
+  "arm": "free_boundary",
+  "avoided_future_tick_opportunities": 17,
+  "case": "free_boundary.s40.n7106",
+  "independent_population_sample": false,
+  "initial_remaining": 32,
+  "initial_state": 40,
+  "native_files": {
+    "IDENTITY.json": {
+      "bytes": 635,
+      "sha256": "b35fbe15fd74e6ed1615130331c17cc9b9c7d4f3539d5444bca128d358728921"
+    },
+    "events.jsonl": {
+      "bytes": 17821,
+      "sha256": "f6ae849d59cf14c7daf3cbd89b29d4889065f43a08c1dade5107e817767b9c1b"
+    },
+    "owner.journal": {
+      "bytes": 7560,
+      "sha256": "562e9f9162b16c5474a634dbd183ab692148de24e00d961b9ce2302cffe79563"
+    },
+    "owner.witness": {
+      "bytes": 1904,
+      "sha256": "40daa1c3d1ea52c0c32d17e5cb82ffe8bc16b14ff96ede30b48a6c67dab9aeed"
+    }
+  },
+  "owner_authority": "DENY_ALL",
+  "physical_processes": [
+    {
+      "child_system_cpu_seconds": 0.004249999999999976,
+      "child_user_cpu_seconds": 0.0834690000000009,
+      "exit_code": 0,
+      "process_wall_ns": 94145632,
+      "rpc_count": 4,
+      "stderr": ""
+    },
+    {
+      "child_system_cpu_seconds": 0.009299000000000057,
+      "child_user_cpu_seconds": 0.10062199999999955,
+      "exit_code": 0,
+      "process_wall_ns": 136653532,
+      "rpc_count": 36,
+      "stderr": ""
+    }
+  ],
+  "policy": {
+    "kind": "free_boundary"
+  },
+  "profile_sha256": "7897b4d4e8965eef679bba3b168a01a2603c8f96f8de269305f12e9edcf990cc",
+  "realized_discounted_task_return": -0.0142402882135727,
+  "rpc": [
+    {
+      "client_cpu_ns": 173631,
+      "client_wall_ns": 88780745,
+      "request": {
+        "command": "Open",
+        "request": {
+          "calibration": "/workspace/scratch/07399998a2e3/hepta/experiments/free_boundary_neuron/results/owner/run001/ENCODER_DOMAIN.json",
+          "calibration_sha256": "d0afc7288dcf7a4e0609ca0f696c854c9538ebb0e34bd727ee3f60610cc6df34",
+          "case": "free_boundary.s40.n7106",
+          "expires": 64,
+          "model": "/workspace/scratch/07399998a2e3/hepta/experiments/free_boundary_neuron/results/math/run001/readout_affine_v1.json",
+          "model_sha256": "7897b4d4e8965eef679bba3b168a01a2603c8f96f8de269305f12e9edcf990cc",
+          "policy": {
+            "kind": "free_boundary"
+          }
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 86405,
+        "result": {
+          "event_validation_bellman_terms": 0,
+          "event_validation_kernel_steps": 0,
+          "event_validation_readout_calls": 0,
+          "finite_encoder_domain_checks": 3333,
+          "open_restore_micros": 86227,
+          "original_journal_replay_steps": 0,
+          "profile_validation_bellman_terms": 326432,
+          "profile_validation_readouts": 3333,
+          "status": {
+            "checkpoint": "0000000000000000000000000000000000000000000000000000000000000000",
+            "durable_event_count": 0,
+            "external_terminal": null,
+            "host_poisoned": false,
+            "owner_authority": "DENY_ALL",
+            "sequence": 0,
+            "terminal": false
+          }
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 99287,
+      "client_wall_ns": 3326761,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.0",
+          "evidence_digest": "4e014f37f08b2f74b9b0259769da73f95982916078706425061c0ecdc2428397",
+          "remaining": 32,
+          "state": 40
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 3123,
+        "result": {
+          "activation_q24": [
+            0,
+            6710886,
+            4194304,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 1,
+          "checkpoint_after": "1fe607e8c54d8a7f0c6de2ab805a9fcb57b88571a12866be1b8addcbe3082bbb",
+          "checkpoint_before": "0000000000000000000000000000000000000000000000000000000000000000",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_q24": [
+            0,
+            2684354,
+            1048576,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "feeb1558d9f4ddf7a29a5b6f7098baa4434d6013ee19e2940971e9b4bd685a44",
+          "execution_micros": 1224,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 196978,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.0968907574889166,
+            "stop_value": -0.6499999999999999,
+            "value": 0.0968907574889166
+          },
+          "sequence": 1,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 59602,
+      "client_wall_ns": 212311,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.0",
+          "evidence_digest": "4e014f37f08b2f74b9b0259769da73f95982916078706425061c0ecdc2428397",
+          "remaining": 32,
+          "state": 40
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 38,
+        "result": {
+          "activation_q24": [
+            0,
+            6710886,
+            4194304,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 0,
+          "checkpoint_after": "1fe607e8c54d8a7f0c6de2ab805a9fcb57b88571a12866be1b8addcbe3082bbb",
+          "checkpoint_before": "0000000000000000000000000000000000000000000000000000000000000000",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": true,
+          "eligibility_q24": [
+            0,
+            2684354,
+            1048576,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "feeb1558d9f4ddf7a29a5b6f7098baa4434d6013ee19e2940971e9b4bd685a44",
+          "execution_micros": 1224,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 196978,
+          "native_abstain": false,
+          "native_transition_executed": false,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.0968907574889166,
+            "stop_value": -0.6499999999999999,
+            "value": 0.0968907574889166
+          },
+          "sequence": 1,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 39886,
+      "client_wall_ns": 148759,
+      "request": {
+        "command": "Close"
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 67,
+        "result": {
+          "checkpoint": "1fe607e8c54d8a7f0c6de2ab805a9fcb57b88571a12866be1b8addcbe3082bbb",
+          "durable_event_count": 1,
+          "external_terminal": null,
+          "host_poisoned": false,
+          "owner_authority": "DENY_ALL",
+          "sequence": 1,
+          "terminal": false
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 227343,
+      "client_wall_ns": 94116262,
+      "request": {
+        "command": "Resume",
+        "request": {
+          "calibration": "/workspace/scratch/07399998a2e3/hepta/experiments/free_boundary_neuron/results/owner/run001/ENCODER_DOMAIN.json",
+          "calibration_sha256": "d0afc7288dcf7a4e0609ca0f696c854c9538ebb0e34bd727ee3f60610cc6df34",
+          "case": "free_boundary.s40.n7106",
+          "expires": 64,
+          "model": "/workspace/scratch/07399998a2e3/hepta/experiments/free_boundary_neuron/results/math/run001/readout_affine_v1.json",
+          "model_sha256": "7897b4d4e8965eef679bba3b168a01a2603c8f96f8de269305f12e9edcf990cc",
+          "policy": {
+            "kind": "free_boundary"
+          }
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 91849,
+        "result": {
+          "event_validation_bellman_terms": 0,
+          "event_validation_kernel_steps": 1,
+          "event_validation_readout_calls": 1,
+          "finite_encoder_domain_checks": 3333,
+          "open_restore_micros": 91732,
+          "original_journal_replay_steps": 1,
+          "profile_validation_bellman_terms": 326432,
+          "profile_validation_readouts": 3333,
+          "status": {
+            "checkpoint": "1fe607e8c54d8a7f0c6de2ab805a9fcb57b88571a12866be1b8addcbe3082bbb",
+            "durable_event_count": 1,
+            "external_terminal": null,
+            "host_poisoned": false,
+            "owner_authority": "DENY_ALL",
+            "sequence": 1,
+            "terminal": false
+          }
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 73745,
+      "client_wall_ns": 178788,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.0",
+          "evidence_digest": "4e014f37f08b2f74b9b0259769da73f95982916078706425061c0ecdc2428397",
+          "remaining": 32,
+          "state": 40
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 24,
+        "result": {
+          "activation_q24": [
+            0,
+            6710886,
+            4194304,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 0,
+          "checkpoint_after": "1fe607e8c54d8a7f0c6de2ab805a9fcb57b88571a12866be1b8addcbe3082bbb",
+          "checkpoint_before": "0000000000000000000000000000000000000000000000000000000000000000",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": true,
+          "eligibility_q24": [
+            0,
+            2684354,
+            1048576,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "feeb1558d9f4ddf7a29a5b6f7098baa4434d6013ee19e2940971e9b4bd685a44",
+          "execution_micros": 1224,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 196978,
+          "native_abstain": false,
+          "native_transition_executed": false,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.0968907574889166,
+            "stop_value": -0.6499999999999999,
+            "value": 0.0968907574889166
+          },
+          "sequence": 1,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 280113,
+      "client_wall_ns": 2912061,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.1",
+          "evidence_digest": "4a452fef36598c014b88e038f069ffae821a659c074c886d665f91d605aa783e",
+          "remaining": 31,
+          "state": 38
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 2528,
+        "result": {
+          "activation_q24": [
+            0,
+            13073121,
+            7326925,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 1,
+          "checkpoint_after": "6c4364087e502696691589a1a13e9052eb09a92a805d6808a51e87c294e1420e",
+          "checkpoint_before": "1fe607e8c54d8a7f0c6de2ab805a9fcb57b88571a12866be1b8addcbe3082bbb",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_q24": [
+            0,
+            7617275,
+            2356019,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "efb0d903b860a42e6d057012a3ec8a5f394d05268470b4f91e76b358e42daf33",
+          "execution_micros": 1187,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 204751,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.0769001843517131,
+            "stop_value": -0.73,
+            "value": 0.0769001843517131
+          },
+          "sequence": 2,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 69445,
+      "client_wall_ns": 194048,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.1",
+          "evidence_digest": "4a452fef36598c014b88e038f069ffae821a659c074c886d665f91d605aa783e",
+          "remaining": 31,
+          "state": 38
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 28,
+        "result": {
+          "activation_q24": [
+            0,
+            13073121,
+            7326925,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 0,
+          "checkpoint_after": "6c4364087e502696691589a1a13e9052eb09a92a805d6808a51e87c294e1420e",
+          "checkpoint_before": "1fe607e8c54d8a7f0c6de2ab805a9fcb57b88571a12866be1b8addcbe3082bbb",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": true,
+          "eligibility_q24": [
+            0,
+            7617275,
+            2356019,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "efb0d903b860a42e6d057012a3ec8a5f394d05268470b4f91e76b358e42daf33",
+          "execution_micros": 1187,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 204751,
+          "native_abstain": false,
+          "native_transition_executed": false,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.0769001843517131,
+            "stop_value": -0.73,
+            "value": 0.0769001843517131
+          },
+          "sequence": 2,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 64305,
+      "client_wall_ns": 2260203,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.2",
+          "evidence_digest": "0e374956f05ce12142ec31db9d9da836cf21818b5bd4c184216af7702813a72a",
+          "remaining": 30,
+          "state": 31
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 2088,
+        "result": {
+          "activation_q24": [
+            0,
+            22489989,
+            9623962,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 1,
+          "checkpoint_after": "bce2a4078caa88f88b47aa4664c8aa08ca018fb874c2e209a4f53198b11a07d8",
+          "checkpoint_before": "6c4364087e502696691589a1a13e9052eb09a92a805d6808a51e87c294e1420e",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_q24": [
+            0,
+            20901029,
+            3584000,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "03c4b4beecd590abb0ad56c6168a320f1f95630a465948cbc079df96b4ff81c3",
+          "execution_micros": 970,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 209476,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.0318347074843544,
+            "stop_value": -1.01,
+            "value": 0.0318347074843544
+          },
+          "sequence": 3,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 44400,
+      "client_wall_ns": 132713,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.2",
+          "evidence_digest": "0e374956f05ce12142ec31db9d9da836cf21818b5bd4c184216af7702813a72a",
+          "remaining": 30,
+          "state": 31
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 22,
+        "result": {
+          "activation_q24": [
+            0,
+            22489989,
+            9623962,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 0,
+          "checkpoint_after": "bce2a4078caa88f88b47aa4664c8aa08ca018fb874c2e209a4f53198b11a07d8",
+          "checkpoint_before": "6c4364087e502696691589a1a13e9052eb09a92a805d6808a51e87c294e1420e",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": true,
+          "eligibility_q24": [
+            0,
+            20901029,
+            3584000,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "03c4b4beecd590abb0ad56c6168a320f1f95630a465948cbc079df96b4ff81c3",
+          "execution_micros": 970,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 209476,
+          "native_abstain": false,
+          "native_transition_executed": false,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.0318347074843544,
+            "stop_value": -1.01,
+            "value": 0.0318347074843544
+          },
+          "sequence": 3,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 66941,
+      "client_wall_ns": 2487932,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.3",
+          "evidence_digest": "1b2d5f33778afbacd418835a444c65542409b0b51b5211982660dadda9bb7d47",
+          "remaining": 29,
+          "state": 35
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 2334,
+        "result": {
+          "activation_q24": [
+            0,
+            26815857,
+            11294311,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 1,
+          "checkpoint_after": "2ea0dc7f392556a308c4190d9ed9531cdc34ad187e251397fa47401c707a5743",
+          "checkpoint_before": "bce2a4078caa88f88b47aa4664c8aa08ca018fb874c2e209a4f53198b11a07d8",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_q24": [
+            0,
+            26540029,
+            4615578,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "3e1c88c84f52b3f3e96b4225fdd02821ad72835b2a6be320312cc61ccc9844a1",
+          "execution_micros": 1232,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 214201,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.05025705378438332,
+            "stop_value": -0.8499999999999999,
+            "value": 0.05025705378438332
+          },
+          "sequence": 4,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 45147,
+      "client_wall_ns": 255095,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.3",
+          "evidence_digest": "1b2d5f33778afbacd418835a444c65542409b0b51b5211982660dadda9bb7d47",
+          "remaining": 29,
+          "state": 35
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 73,
+        "result": {
+          "activation_q24": [
+            0,
+            26815857,
+            11294311,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 0,
+          "checkpoint_after": "2ea0dc7f392556a308c4190d9ed9531cdc34ad187e251397fa47401c707a5743",
+          "checkpoint_before": "bce2a4078caa88f88b47aa4664c8aa08ca018fb874c2e209a4f53198b11a07d8",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": true,
+          "eligibility_q24": [
+            0,
+            26540029,
+            4615578,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "3e1c88c84f52b3f3e96b4225fdd02821ad72835b2a6be320312cc61ccc9844a1",
+          "execution_micros": 1232,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 214201,
+          "native_abstain": false,
+          "native_transition_executed": false,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.05025705378438332,
+            "stop_value": -0.8499999999999999,
+            "value": 0.05025705378438332
+          },
+          "sequence": 4,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 58352,
+      "client_wall_ns": 1866643,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.4",
+          "evidence_digest": "1f1fc07228d59ff1c8340a5d7395cef275215e992fc36bb42bf51143dd72f6ea",
+          "remaining": 28,
+          "state": 37
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 1717,
+        "result": {
+          "activation_q24": [
+            0,
+            28665652,
+            12494644,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 1,
+          "checkpoint_after": "f95ca91c062147f02d39eed8a3e96fdde1ecf6eae1b1a17882f6756f55bc136d",
+          "checkpoint_before": "2ea0dc7f392556a308c4190d9ed9531cdc34ad187e251397fa47401c707a5743",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_q24": [
+            0,
+            28176152,
+            5431450,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "fb38e080ee0ea03f72ed39b4109091b7807bb4cb4ebdadac12dd06559bd6071b",
+          "execution_micros": 931,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 218926,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.06021901028216616,
+            "stop_value": -0.77,
+            "value": 0.06021901028216616
+          },
+          "sequence": 5,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 59426,
+      "client_wall_ns": 145593,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.4",
+          "evidence_digest": "1f1fc07228d59ff1c8340a5d7395cef275215e992fc36bb42bf51143dd72f6ea",
+          "remaining": 28,
+          "state": 37
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 21,
+        "result": {
+          "activation_q24": [
+            0,
+            28665652,
+            12494644,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 0,
+          "checkpoint_after": "f95ca91c062147f02d39eed8a3e96fdde1ecf6eae1b1a17882f6756f55bc136d",
+          "checkpoint_before": "2ea0dc7f392556a308c4190d9ed9531cdc34ad187e251397fa47401c707a5743",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": true,
+          "eligibility_q24": [
+            0,
+            28176152,
+            5431450,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "fb38e080ee0ea03f72ed39b4109091b7807bb4cb4ebdadac12dd06559bd6071b",
+          "execution_micros": 931,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 218926,
+          "native_abstain": false,
+          "native_transition_executed": false,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.06021901028216616,
+            "stop_value": -0.77,
+            "value": 0.06021901028216616
+          },
+          "sequence": 5,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 46914,
+      "client_wall_ns": 1699987,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.5",
+          "evidence_digest": "cc7350ee8645dbf947f1c809f7be732741d3c72bc6134d9042b1558788fa9207",
+          "remaining": 27,
+          "state": 38
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 1575,
+        "result": {
+          "activation_q24": [
+            0,
+            29329481,
+            13342465,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 1,
+          "checkpoint_after": "6b50d2696f9d2fdca47743b5035131269b49b94012fc9d2c194949a2bdb434ab",
+          "checkpoint_before": "f95ca91c062147f02d39eed8a3e96fdde1ecf6eae1b1a17882f6756f55bc136d",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_q24": [
+            0,
+            28166227,
+            6051341,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "a6337aae9cfa2a9b6ef097f3fd630c4f641ccfee8cf44a53d1a455adc5844d7d",
+          "execution_micros": 814,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 224579,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.06408050476881591,
+            "stop_value": -0.73,
+            "value": 0.06408050476881591
+          },
+          "sequence": 6,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 58228,
+      "client_wall_ns": 187756,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.5",
+          "evidence_digest": "cc7350ee8645dbf947f1c809f7be732741d3c72bc6134d9042b1558788fa9207",
+          "remaining": 27,
+          "state": 38
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 19,
+        "result": {
+          "activation_q24": [
+            0,
+            29329481,
+            13342465,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 0,
+          "checkpoint_after": "6b50d2696f9d2fdca47743b5035131269b49b94012fc9d2c194949a2bdb434ab",
+          "checkpoint_before": "f95ca91c062147f02d39eed8a3e96fdde1ecf6eae1b1a17882f6756f55bc136d",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": true,
+          "eligibility_q24": [
+            0,
+            28166227,
+            6051341,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "a6337aae9cfa2a9b6ef097f3fd630c4f641ccfee8cf44a53d1a455adc5844d7d",
+          "execution_micros": 814,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 224579,
+          "native_abstain": false,
+          "native_transition_executed": false,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.06408050476881591,
+            "stop_value": -0.73,
+            "value": 0.06408050476881591
+          },
+          "sequence": 6,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 57428,
+      "client_wall_ns": 1579596,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.6",
+          "evidence_digest": "6b10e5a21143b5c3f09095cf62c0b1646dec47ef54466907c463cc3bdbb6ee32",
+          "remaining": 26,
+          "state": 39
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 1437,
+        "result": {
+          "activation_q24": [
+            0,
+            29103835,
+            13925902,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 1,
+          "checkpoint_after": "9fe51eb807e905eee300556471ad97b4c97ea2a9b023972b4d2c25fc1b8d7a94",
+          "checkpoint_before": "6b50d2696f9d2fdca47743b5035131269b49b94012fc9d2c194949a2bdb434ab",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_q24": [
+            0,
+            26888801,
+            6507146,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "2bee4b856d28315fe9685cce2d23e278a498211c0817e599ffcaa01b1c3c1109",
+          "execution_micros": 685,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 229304,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.06812455257540914,
+            "stop_value": -0.69,
+            "value": 0.06812455257540914
+          },
+          "sequence": 7,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 74063,
+      "client_wall_ns": 185588,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.6",
+          "evidence_digest": "6b10e5a21143b5c3f09095cf62c0b1646dec47ef54466907c463cc3bdbb6ee32",
+          "remaining": 26,
+          "state": 39
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 17,
+        "result": {
+          "activation_q24": [
+            0,
+            29103835,
+            13925902,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 0,
+          "checkpoint_after": "9fe51eb807e905eee300556471ad97b4c97ea2a9b023972b4d2c25fc1b8d7a94",
+          "checkpoint_before": "6b50d2696f9d2fdca47743b5035131269b49b94012fc9d2c194949a2bdb434ab",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": true,
+          "eligibility_q24": [
+            0,
+            26888801,
+            6507146,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "2bee4b856d28315fe9685cce2d23e278a498211c0817e599ffcaa01b1c3c1109",
+          "execution_micros": 685,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 229304,
+          "native_abstain": false,
+          "native_transition_executed": false,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.06812455257540914,
+            "stop_value": -0.69,
+            "value": 0.06812455257540914
+          },
+          "sequence": 7,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 47756,
+      "client_wall_ns": 1481828,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.7",
+          "evidence_digest": "00bc4a8ca88cd433c1fe016a651c70ecd152a27ebd40a8806ef89b03da4bfccb",
+          "remaining": 25,
+          "state": 37
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 1360,
+        "result": {
+          "activation_q24": [
+            0,
+            30224349,
+            14311051,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 1,
+          "checkpoint_after": "3bb36f04bef8264392d035744282a9501f1579d4645bd5734f72b8a4148c9b15",
+          "checkpoint_before": "9fe51eb807e905eee300556471ad97b4c97ea2a9b023972b4d2c25fc1b8d7a94",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_q24": [
+            0,
+            29161061,
+            6831336,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "1297eaf509219c2bc7f85e539401c12a339661923be857f2594bb7949113d0a9",
+          "execution_micros": 662,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 1,
+          "model_resident_bytes": 234029,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.05081512350968105,
+            "stop_value": -0.77,
+            "value": 0.05081512350968105
+          },
+          "sequence": 8,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 37051,
+      "client_wall_ns": 119167,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.7",
+          "evidence_digest": "00bc4a8ca88cd433c1fe016a651c70ecd152a27ebd40a8806ef89b03da4bfccb",
+          "remaining": 25,
+          "state": 37
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 17,
+        "result": {
+          "activation_q24": [
+            0,
+            30224349,
+            14311051,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 0,
+          "checkpoint_after": "3bb36f04bef8264392d035744282a9501f1579d4645bd5734f72b8a4148c9b15",
+          "checkpoint_before": "9fe51eb807e905eee300556471ad97b4c97ea2a9b023972b4d2c25fc1b8d7a94",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": true,
+          "eligibility_q24": [
+            0,
+            29161061,
+            6831336,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "1297eaf509219c2bc7f85e539401c12a339661923be857f2594bb7949113d0a9",
+          "execution_micros": 662,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 1,
+          "model_resident_bytes": 234029,
+          "native_abstain": false,
+          "native_transition_executed": false,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.05081512350968105,
+            "stop_value": -0.77,
+            "value": 0.05081512350968105
+          },
+          "sequence": 8,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 68963,
+      "client_wall_ns": 1899873,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.8",
+          "evidence_digest": "ce923449fe3d041770ca9b2bd9d7f32839c5eafa1aaa825ecd85b1220c34a36f",
+          "remaining": 24,
+          "state": 38
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 1552,
+        "result": {
+          "activation_q24": [
+            0,
+            30341218,
+            14547484,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 1,
+          "checkpoint_after": "9e77339713eb5e1efc56ec9cfbac37685220af21aad02930ccd13826bcdb7d18",
+          "checkpoint_before": "3bb36f04bef8264392d035744282a9501f1579d4645bd5734f72b8a4148c9b15",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_q24": [
+            0,
+            29144315,
+            7052539,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "95f09a42231c87d1e1775052639c5506baad3de2eea073b88ccad3a1bbc980ff",
+          "execution_micros": 818,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 238754,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.05407486045152758,
+            "stop_value": -0.73,
+            "value": 0.05407486045152758
+          },
+          "sequence": 9,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 43623,
+      "client_wall_ns": 127096,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.8",
+          "evidence_digest": "ce923449fe3d041770ca9b2bd9d7f32839c5eafa1aaa825ecd85b1220c34a36f",
+          "remaining": 24,
+          "state": 38
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 19,
+        "result": {
+          "activation_q24": [
+            0,
+            30341218,
+            14547484,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 0,
+          "checkpoint_after": "9e77339713eb5e1efc56ec9cfbac37685220af21aad02930ccd13826bcdb7d18",
+          "checkpoint_before": "3bb36f04bef8264392d035744282a9501f1579d4645bd5734f72b8a4148c9b15",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": true,
+          "eligibility_q24": [
+            0,
+            29144315,
+            7052539,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "95f09a42231c87d1e1775052639c5506baad3de2eea073b88ccad3a1bbc980ff",
+          "execution_micros": 818,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 238754,
+          "native_abstain": false,
+          "native_transition_executed": false,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.05407486045152758,
+            "stop_value": -0.73,
+            "value": 0.05407486045152758
+          },
+          "sequence": 9,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 55349,
+      "client_wall_ns": 1713431,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.9",
+          "evidence_digest": "b3dbba8764b303fac41aef89985ae1416331e84131aedad51d37921f3c7114c3",
+          "remaining": 23,
+          "state": 42
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 1577,
+        "result": {
+          "activation_q24": [
+            0,
+            27692085,
+            14672380,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 1,
+          "checkpoint_after": "6fca900f3a2ca769e6b6b7c882455d5d154f6784b6ee3bcd1129c4e5d6a0a866",
+          "checkpoint_before": "9e77339713eb5e1efc56ec9cfbac37685220af21aad02930ccd13826bcdb7d18",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_q24": [
+            0,
+            23433625,
+            7194365,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "bf366d7634cf87ecbe0d35c95b7cbe6e8aca2006e19f9c630f98b6a7b322c472",
+          "execution_micros": 655,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 245337,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.08144799765641982,
+            "stop_value": -0.5700000000000001,
+            "value": 0.08144799765641982
+          },
+          "sequence": 10,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 41267,
+      "client_wall_ns": 123670,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.9",
+          "evidence_digest": "b3dbba8764b303fac41aef89985ae1416331e84131aedad51d37921f3c7114c3",
+          "remaining": 23,
+          "state": 42
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 20,
+        "result": {
+          "activation_q24": [
+            0,
+            27692085,
+            14672380,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 0,
+          "checkpoint_after": "6fca900f3a2ca769e6b6b7c882455d5d154f6784b6ee3bcd1129c4e5d6a0a866",
+          "checkpoint_before": "9e77339713eb5e1efc56ec9cfbac37685220af21aad02930ccd13826bcdb7d18",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": true,
+          "eligibility_q24": [
+            0,
+            23433625,
+            7194365,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "bf366d7634cf87ecbe0d35c95b7cbe6e8aca2006e19f9c630f98b6a7b322c472",
+          "execution_micros": 655,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 245337,
+          "native_abstain": false,
+          "native_transition_executed": false,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.08144799765641982,
+            "stop_value": -0.5700000000000001,
+            "value": 0.08144799765641982
+          },
+          "sequence": 10,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 64247,
+      "client_wall_ns": 2245268,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.10",
+          "evidence_digest": "9de4df71038cf614eef9316c91c2d22372622f9f339e5855078515ffdb4ed2b6",
+          "remaining": 22,
+          "state": 41
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 2005,
+        "result": {
+          "activation_q24": [
+            0,
+            26323896,
+            14713623,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 1,
+          "checkpoint_after": "ff009ff27f5ea5ea6c22665aa4ca1fc9ddd25c882b59a89cddc23bf845a4fbf5",
+          "checkpoint_before": "6fca900f3a2ca769e6b6b7c882455d5d154f6784b6ee3bcd1129c4e5d6a0a866",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_q24": [
+            0,
+            21193415,
+            7275588,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "fe582ff0a471eacb77a6ee42ae2b3741d64faad3fe4cd2677a44620674fa3e9f",
+          "execution_micros": 959,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 250064,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.06881748306415443,
+            "stop_value": -0.6099999999999999,
+            "value": 0.06881748306415443
+          },
+          "sequence": 11,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 164100,
+      "client_wall_ns": 256913,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.10",
+          "evidence_digest": "9de4df71038cf614eef9316c91c2d22372622f9f339e5855078515ffdb4ed2b6",
+          "remaining": 22,
+          "state": 41
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 21,
+        "result": {
+          "activation_q24": [
+            0,
+            26323896,
+            14713623,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 0,
+          "checkpoint_after": "ff009ff27f5ea5ea6c22665aa4ca1fc9ddd25c882b59a89cddc23bf845a4fbf5",
+          "checkpoint_before": "6fca900f3a2ca769e6b6b7c882455d5d154f6784b6ee3bcd1129c4e5d6a0a866",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": true,
+          "eligibility_q24": [
+            0,
+            21193415,
+            7275588,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "fe582ff0a471eacb77a6ee42ae2b3741d64faad3fe4cd2677a44620674fa3e9f",
+          "execution_micros": 959,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 250064,
+          "native_abstain": false,
+          "native_transition_executed": false,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.06881748306415443,
+            "stop_value": -0.6099999999999999,
+            "value": 0.06881748306415443
+          },
+          "sequence": 11,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 175999,
+      "client_wall_ns": 2652613,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.11",
+          "evidence_digest": "f89452d24f679144e0008e0a87f67d7289f2c72d63d82710042a57511165de9f",
+          "remaining": 21,
+          "state": 42
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 2381,
+        "result": {
+          "activation_q24": [
+            0,
+            24574236,
+            14692126,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 1,
+          "checkpoint_after": "50f7d74723b5db5605550348f937cae7d47fe75b358707eb5869ac83e4e6c5af",
+          "checkpoint_before": "ff009ff27f5ea5ea6c22665aa4ca1fc9ddd25c882b59a89cddc23bf845a4fbf5",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_q24": [
+            0,
+            18460463,
+            7310826,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "95c3b5d402c4cf5e0cb9fdf54868c298a2fec8662d7a2ee70a4b5e627e47c90d",
+          "execution_micros": 961,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 254792,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.07295978215048878,
+            "stop_value": -0.5700000000000001,
+            "value": 0.07295978215048878
+          },
+          "sequence": 12,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 63018,
+      "client_wall_ns": 324266,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.11",
+          "evidence_digest": "f89452d24f679144e0008e0a87f67d7289f2c72d63d82710042a57511165de9f",
+          "remaining": 21,
+          "state": 42
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 119,
+        "result": {
+          "activation_q24": [
+            0,
+            24574236,
+            14692126,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 0,
+          "checkpoint_after": "50f7d74723b5db5605550348f937cae7d47fe75b358707eb5869ac83e4e6c5af",
+          "checkpoint_before": "ff009ff27f5ea5ea6c22665aa4ca1fc9ddd25c882b59a89cddc23bf845a4fbf5",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": true,
+          "eligibility_q24": [
+            0,
+            18460463,
+            7310826,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "95c3b5d402c4cf5e0cb9fdf54868c298a2fec8662d7a2ee70a4b5e627e47c90d",
+          "execution_micros": 961,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 254792,
+          "native_abstain": false,
+          "native_transition_executed": false,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.07295978215048878,
+            "stop_value": -0.5700000000000001,
+            "value": 0.07295978215048878
+          },
+          "sequence": 12,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 164697,
+      "client_wall_ns": 3308432,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.12",
+          "evidence_digest": "e7748613c091d0e5b0831cbb73fbb96f5270397603ffc74c4d7fb5081458eb0e",
+          "remaining": 20,
+          "state": 42
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 2993,
+        "result": {
+          "activation_q24": [
+            0,
+            23209563,
+            14623575,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 1,
+          "checkpoint_after": "a06d20f6e2effc5f1d2fbd14f26db159ac852177b7dd83e97f348dd74b032d0e",
+          "checkpoint_before": "50f7d74723b5db5605550348f937cae7d47fe75b358707eb5869ac83e4e6c5af",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_q24": [
+            0,
+            16657292,
+            7311307,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "97bd3dd504d0dd7f9b97340343f423981d58eea5b5a4b467ed545190bf8878cf",
+          "execution_micros": 1020,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 262288,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.06860851836933787,
+            "stop_value": -0.5700000000000001,
+            "value": 0.06860851836933787
+          },
+          "sequence": 13,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 104116,
+      "client_wall_ns": 189641,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.12",
+          "evidence_digest": "e7748613c091d0e5b0831cbb73fbb96f5270397603ffc74c4d7fb5081458eb0e",
+          "remaining": 20,
+          "state": 42
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 24,
+        "result": {
+          "activation_q24": [
+            0,
+            23209563,
+            14623575,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 0,
+          "checkpoint_after": "a06d20f6e2effc5f1d2fbd14f26db159ac852177b7dd83e97f348dd74b032d0e",
+          "checkpoint_before": "50f7d74723b5db5605550348f937cae7d47fe75b358707eb5869ac83e4e6c5af",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": true,
+          "eligibility_q24": [
+            0,
+            16657292,
+            7311307,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "97bd3dd504d0dd7f9b97340343f423981d58eea5b5a4b467ed545190bf8878cf",
+          "execution_micros": 1020,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 262288,
+          "native_abstain": false,
+          "native_transition_executed": false,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.06860851836933787,
+            "stop_value": -0.5700000000000001,
+            "value": 0.06860851836933787
+          },
+          "sequence": 13,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 78528,
+      "client_wall_ns": 2293819,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.13",
+          "evidence_digest": "6fc2152917ba726e36807c041f983546f7c6a7e55f4640b069619e4c563f72e2",
+          "remaining": 19,
+          "state": 36
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 2127,
+        "result": {
+          "activation_q24": [
+            0,
+            26160161,
+            14519733,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 1,
+          "checkpoint_after": "2ec4e5ab1d6975cba9335c2726f96f7c1901401617bc617dd152de16d4d3c18a",
+          "checkpoint_before": "a06d20f6e2effc5f1d2fbd14f26db159ac852177b7dd83e97f348dd74b032d0e",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_q24": [
+            0,
+            22978336,
+            7285587,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "c123f99d96309d025ba84ca0183ed23a4a8863a02e6c27b798e591f608ba7b73",
+          "execution_micros": 993,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 267016,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.02685395427201961,
+            "stop_value": -0.81,
+            "value": 0.02685395427201961
+          },
+          "sequence": 14,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 80953,
+      "client_wall_ns": 173364,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.13",
+          "evidence_digest": "6fc2152917ba726e36807c041f983546f7c6a7e55f4640b069619e4c563f72e2",
+          "remaining": 19,
+          "state": 36
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 22,
+        "result": {
+          "activation_q24": [
+            0,
+            26160161,
+            14519733,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 0,
+          "checkpoint_after": "2ec4e5ab1d6975cba9335c2726f96f7c1901401617bc617dd152de16d4d3c18a",
+          "checkpoint_before": "a06d20f6e2effc5f1d2fbd14f26db159ac852177b7dd83e97f348dd74b032d0e",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": true,
+          "eligibility_q24": [
+            0,
+            22978336,
+            7285587,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "c123f99d96309d025ba84ca0183ed23a4a8863a02e6c27b798e591f608ba7b73",
+          "execution_micros": 993,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 267016,
+          "native_abstain": false,
+          "native_transition_executed": false,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.02685395427201961,
+            "stop_value": -0.81,
+            "value": 0.02685395427201961
+          },
+          "sequence": 14,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 565366,
+      "client_wall_ns": 3618091,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.14",
+          "evidence_digest": "b44991369499e37e3d19f272b0099e6bf8d80eb1c71a9e3a71985060363adc62",
+          "remaining": 18,
+          "state": 29
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 2661,
+        "result": {
+          "activation_q24": [
+            0,
+            33018301,
+            14389423,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 1,
+          "checkpoint_after": "ea0e5b7f39cefe090c7326c5fdda7cf9cf5a969a21093629e5211ce5c552f664",
+          "checkpoint_before": "2ec4e5ab1d6975cba9335c2726f96f7c1901401617bc617dd152de16d4d3c18a",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_q24": [
+            0,
+            39224540,
+            7240150,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "0f62522f55dc4aa2518b61d843a2580706360a6d3e671c465392fa250df71733",
+          "execution_micros": 1137,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 3,
+          "model_resident_bytes": 271744,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.004582403757520319,
+            "stop_value": -1.09,
+            "value": 0.004582403757520319
+          },
+          "sequence": 15,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 1088643,
+      "client_wall_ns": 1087318,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.14",
+          "evidence_digest": "b44991369499e37e3d19f272b0099e6bf8d80eb1c71a9e3a71985060363adc62",
+          "remaining": 18,
+          "state": 29
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 26,
+        "result": {
+          "activation_q24": [
+            0,
+            33018301,
+            14389423,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 0,
+          "checkpoint_after": "ea0e5b7f39cefe090c7326c5fdda7cf9cf5a969a21093629e5211ce5c552f664",
+          "checkpoint_before": "2ec4e5ab1d6975cba9335c2726f96f7c1901401617bc617dd152de16d4d3c18a",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": true,
+          "eligibility_q24": [
+            0,
+            39224540,
+            7240150,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "0f62522f55dc4aa2518b61d843a2580706360a6d3e671c465392fa250df71733",
+          "execution_micros": 1137,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 3,
+          "model_resident_bytes": 271744,
+          "native_abstain": false,
+          "native_transition_executed": false,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "continue",
+            "bellman_terms": 0,
+            "continuation": 0.004582403757520319,
+            "stop_value": -1.09,
+            "value": 0.004582403757520319
+          },
+          "sequence": 15,
+          "terminal": false,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 185440,
+      "client_wall_ns": 2635607,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.15",
+          "evidence_digest": "f3b0868279cdac49239b41f15a401f01a012be8d5122f7acce234566e105ef8c",
+          "remaining": 17,
+          "state": 21
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 2130,
+        "result": {
+          "activation_q24": [
+            0,
+            43478187,
+            14239261,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 1,
+          "checkpoint_after": "94d5eb543bd3bc853634fdc7ed8f4cfbdafe67489e656cb78afd28a7560fdea9",
+          "checkpoint_before": "ea0e5b7f39cefe090c7326c5fdda7cf9cf5a969a21093629e5211ce5c552f664",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_q24": [
+            0,
+            60869658,
+            6239205,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "fe1d49551680b47173c6e4d89d1813b1c1bb3f4d9e3a43be960f7fcbe43a9ed4",
+          "execution_micros": 887,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 276472,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "abstain",
+            "bellman_terms": 0,
+            "continuation": -0.0008585029125761965,
+            "stop_value": -1.41,
+            "value": 0.0
+          },
+          "sequence": 16,
+          "terminal": true,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 145649,
+      "client_wall_ns": 319275,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "observation.15",
+          "evidence_digest": "f3b0868279cdac49239b41f15a401f01a012be8d5122f7acce234566e105ef8c",
+          "remaining": 17,
+          "state": 21
+        }
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 22,
+        "result": {
+          "activation_q24": [
+            0,
+            43478187,
+            14239261,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "actual_bellman_terms": 0,
+          "actual_model_calls": 0,
+          "checkpoint_after": "94d5eb543bd3bc853634fdc7ed8f4cfbdafe67489e656cb78afd28a7560fdea9",
+          "checkpoint_before": "ea0e5b7f39cefe090c7326c5fdda7cf9cf5a969a21093629e5211ce5c552f664",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": true,
+          "eligibility_q24": [
+            0,
+            60869658,
+            6239205,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_digest": "fe1d49551680b47173c6e4d89d1813b1c1bb3f4d9e3a43be960f7fcbe43a9ed4",
+          "execution_micros": 887,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 276472,
+          "native_abstain": false,
+          "native_transition_executed": false,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "queue_age_micros": 0,
+          "readout": {
+            "action": "abstain",
+            "bellman_terms": 0,
+            "continuation": -0.0008585029125761965,
+            "stop_value": -1.41,
+            "value": 0.0
+          },
+          "sequence": 16,
+          "terminal": true,
+          "transient_allocation_bytes": 221,
+          "write_amplification_ppm": 716050
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 45803,
+      "client_wall_ns": 377614,
+      "request": {
+        "command": "Status"
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 13,
+        "result": {
+          "checkpoint": "94d5eb543bd3bc853634fdc7ed8f4cfbdafe67489e656cb78afd28a7560fdea9",
+          "durable_event_count": 16,
+          "external_terminal": null,
+          "host_poisoned": false,
+          "owner_authority": "DENY_ALL",
+          "sequence": 16,
+          "terminal": true
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 138582,
+      "client_wall_ns": 284069,
+      "request": {
+        "command": "Observe",
+        "observation": {
+          "event_id": "forbidden-after-stop",
+          "evidence_digest": "f3b0868279cdac49239b41f15a401f01a012be8d5122f7acce234566e105ef8c",
+          "remaining": 16,
+          "state": 21
+        }
+      },
+      "response": {
+        "error": "Episode already stopped; no further native tick",
+        "ok": false,
+        "physical_rpc_micros": 13
+      }
+    },
+    {
+      "client_cpu_ns": 39094,
+      "client_wall_ns": 79793,
+      "request": {
+        "command": "Status"
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 10,
+        "result": {
+          "checkpoint": "94d5eb543bd3bc853634fdc7ed8f4cfbdafe67489e656cb78afd28a7560fdea9",
+          "durable_event_count": 16,
+          "external_terminal": null,
+          "host_poisoned": false,
+          "owner_authority": "DENY_ALL",
+          "sequence": 16,
+          "terminal": true
+        }
+      }
+    },
+    {
+      "client_cpu_ns": 26111,
+      "client_wall_ns": 238804,
+      "request": {
+        "command": "Close"
+      },
+      "response": {
+        "ok": true,
+        "physical_rpc_micros": 85,
+        "result": {
+          "checkpoint": "94d5eb543bd3bc853634fdc7ed8f4cfbdafe67489e656cb78afd28a7560fdea9",
+          "durable_event_count": 16,
+          "external_terminal": null,
+          "host_poisoned": false,
+          "owner_authority": "DENY_ALL",
+          "sequence": 16,
+          "terminal": true
+        }
+      }
+    }
+  ],
+  "schema": "hepta.free-boundary.owner-episode.v1",
+  "seed": 7106,
+  "steps": [
+    {
+      "action": "continue",
+      "checkpoint": "1fe607e8c54d8a7f0c6de2ab805a9fcb57b88571a12866be1b8addcbe3082bbb",
+      "discount": 1.0,
+      "native_abstain": false,
+      "observation": {
+        "event_id": "observation.0",
+        "evidence_digest": "4e014f37f08b2f74b9b0259769da73f95982916078706425061c0ecdc2428397",
+        "remaining": 32,
+        "state": 40
+      },
+      "remaining": 32,
+      "state": 40,
+      "step": 0,
+      "transition_outcome": 38,
+      "transition_uniform": 0.31680151290482655
+    },
+    {
+      "action": "continue",
+      "checkpoint": "6c4364087e502696691589a1a13e9052eb09a92a805d6808a51e87c294e1420e",
+      "discount": 0.9925280548191384,
+      "native_abstain": false,
+      "observation": {
+        "event_id": "observation.1",
+        "evidence_digest": "4a452fef36598c014b88e038f069ffae821a659c074c886d665f91d605aa783e",
+        "remaining": 31,
+        "state": 38
+      },
+      "remaining": 31,
+      "state": 38,
+      "step": 1,
+      "transition_outcome": 31,
+      "transition_uniform": 0.02423558438607326
+    },
+    {
+      "action": "continue",
+      "checkpoint": "bce2a4078caa88f88b47aa4664c8aa08ca018fb874c2e209a4f53198b11a07d8",
+      "discount": 0.9851119396030626,
+      "native_abstain": false,
+      "observation": {
+        "event_id": "observation.2",
+        "evidence_digest": "0e374956f05ce12142ec31db9d9da836cf21818b5bd4c184216af7702813a72a",
+        "remaining": 30,
+        "state": 31
+      },
+      "remaining": 30,
+      "state": 31,
+      "step": 2,
+      "transition_outcome": 35,
+      "transition_uniform": 0.825590971359049
+    },
+    {
+      "action": "continue",
+      "checkpoint": "2ea0dc7f392556a308c4190d9ed9531cdc34ad187e251397fa47401c707a5743",
+      "discount": 0.9777512371933363,
+      "native_abstain": false,
+      "observation": {
+        "event_id": "observation.3",
+        "evidence_digest": "1b2d5f33778afbacd418835a444c65542409b0b51b5211982660dadda9bb7d47",
+        "remaining": 29,
+        "state": 35
+      },
+      "remaining": 29,
+      "state": 35,
+      "step": 3,
+      "transition_outcome": 37,
+      "transition_uniform": 0.711785392728288
+    },
+    {
+      "action": "continue",
+      "checkpoint": "f95ca91c062147f02d39eed8a3e96fdde1ecf6eae1b1a17882f6756f55bc136d",
+      "discount": 0.9704455335485082,
+      "native_abstain": false,
+      "observation": {
+        "event_id": "observation.4",
+        "evidence_digest": "1f1fc07228d59ff1c8340a5d7395cef275215e992fc36bb42bf51143dd72f6ea",
+        "remaining": 28,
+        "state": 37
+      },
+      "remaining": 28,
+      "state": 37,
+      "step": 4,
+      "transition_outcome": 38,
+      "transition_uniform": 0.6069154557865273
+    },
+    {
+      "action": "continue",
+      "checkpoint": "6b50d2696f9d2fdca47743b5035131269b49b94012fc9d2c194949a2bdb434ab",
+      "discount": 0.9631944177208217,
+      "native_abstain": false,
+      "observation": {
+        "event_id": "observation.5",
+        "evidence_digest": "cc7350ee8645dbf947f1c809f7be732741d3c72bc6134d9042b1558788fa9207",
+        "remaining": 27,
+        "state": 38
+      },
+      "remaining": 27,
+      "state": 38,
+      "step": 5,
+      "transition_outcome": 39,
+      "transition_uniform": 0.5589812312662983
+    },
+    {
+      "action": "continue",
+      "checkpoint": "9fe51eb807e905eee300556471ad97b4c97ea2a9b023972b4d2c25fc1b8d7a94",
+      "discount": 0.9559974818330998,
+      "native_abstain": false,
+      "observation": {
+        "event_id": "observation.6",
+        "evidence_digest": "6b10e5a21143b5c3f09095cf62c0b1646dec47ef54466907c463cc3bdbb6ee32",
+        "remaining": 26,
+        "state": 39
+      },
+      "remaining": 26,
+      "state": 39,
+      "step": 6,
+      "transition_outcome": 37,
+      "transition_uniform": 0.25775872703468766
+    },
+    {
+      "action": "continue",
+      "checkpoint": "3bb36f04bef8264392d035744282a9501f1579d4645bd5734f72b8a4148c9b15",
+      "discount": 0.9488543210558013,
+      "native_abstain": false,
+      "observation": {
+        "event_id": "observation.7",
+        "evidence_digest": "00bc4a8ca88cd433c1fe016a651c70ecd152a27ebd40a8806ef89b03da4bfccb",
+        "remaining": 25,
+        "state": 37
+      },
+      "remaining": 25,
+      "state": 37,
+      "step": 7,
+      "transition_outcome": 38,
+      "transition_uniform": 0.5857341785234467
+    },
+    {
+      "action": "continue",
+      "checkpoint": "9e77339713eb5e1efc56ec9cfbac37685220af21aad02930ccd13826bcdb7d18",
+      "discount": 0.9417645335842487,
+      "native_abstain": false,
+      "observation": {
+        "event_id": "observation.8",
+        "evidence_digest": "ce923449fe3d041770ca9b2bd9d7f32839c5eafa1aaa825ecd85b1220c34a36f",
+        "remaining": 24,
+        "state": 38
+      },
+      "remaining": 24,
+      "state": 38,
+      "step": 8,
+      "transition_outcome": 42,
+      "transition_uniform": 0.8284616242772078
+    },
+    {
+      "action": "continue",
+      "checkpoint": "6fca900f3a2ca769e6b6b7c882455d5d154f6784b6ee3bcd1129c4e5d6a0a866",
+      "discount": 0.9347277206160275,
+      "native_abstain": false,
+      "observation": {
+        "event_id": "observation.9",
+        "evidence_digest": "b3dbba8764b303fac41aef89985ae1416331e84131aedad51d37921f3c7114c3",
+        "remaining": 23,
+        "state": 42
+      },
+      "remaining": 23,
+      "state": 42,
+      "step": 9,
+      "transition_outcome": 41,
+      "transition_uniform": 0.34191420310338766
+    },
+    {
+      "action": "continue",
+      "checkpoint": "ff009ff27f5ea5ea6c22665aa4ca1fc9ddd25c882b59a89cddc23bf845a4fbf5",
+      "discount": 0.9277434863285529,
+      "native_abstain": false,
+      "observation": {
+        "event_id": "observation.10",
+        "evidence_digest": "9de4df71038cf614eef9316c91c2d22372622f9f339e5855078515ffdb4ed2b6",
+        "remaining": 22,
+        "state": 41
+      },
+      "remaining": 22,
+      "state": 41,
+      "step": 10,
+      "transition_outcome": 42,
+      "transition_uniform": 0.5932944994277161
+    },
+    {
+      "action": "continue",
+      "checkpoint": "50f7d74723b5db5605550348f937cae7d47fe75b358707eb5869ac83e4e6c5af",
+      "discount": 0.9208114378568045,
+      "native_abstain": false,
+      "observation": {
+        "event_id": "observation.11",
+        "evidence_digest": "f89452d24f679144e0008e0a87f67d7289f2c72d63d82710042a57511165de9f",
+        "remaining": 21,
+        "state": 42
+      },
+      "remaining": 21,
+      "state": 42,
+      "step": 11,
+      "transition_outcome": 42,
+      "transition_uniform": 0.4483259110530731
+    },
+    {
+      "action": "continue",
+      "checkpoint": "a06d20f6e2effc5f1d2fbd14f26db159ac852177b7dd83e97f348dd74b032d0e",
+      "discount": 0.9139311852712282,
+      "native_abstain": false,
+      "observation": {
+        "event_id": "observation.12",
+        "evidence_digest": "e7748613c091d0e5b0831cbb73fbb96f5270397603ffc74c4d7fb5081458eb0e",
+        "remaining": 20,
+        "state": 42
+      },
+      "remaining": 20,
+      "state": 42,
+      "step": 12,
+      "transition_outcome": 36,
+      "transition_uniform": 0.043465751397344154
+    },
+    {
+      "action": "continue",
+      "checkpoint": "2ec4e5ab1d6975cba9335c2726f96f7c1901401617bc617dd152de16d4d3c18a",
+      "discount": 0.9071023415558017,
+      "native_abstain": false,
+      "observation": {
+        "event_id": "observation.13",
+        "evidence_digest": "6fc2152917ba726e36807c041f983546f7c6a7e55f4640b069619e4c563f72e2",
+        "remaining": 19,
+        "state": 36
+      },
+      "remaining": 19,
+      "state": 36,
+      "step": 13,
+      "transition_outcome": 29,
+      "transition_uniform": 0.018900550476573963
+    },
+    {
+      "action": "continue",
+      "checkpoint": "ea0e5b7f39cefe090c7326c5fdda7cf9cf5a969a21093629e5211ce5c552f664",
+      "discount": 0.9003245225862656,
+      "native_abstain": false,
+      "observation": {
+        "event_id": "observation.14",
+        "evidence_digest": "b44991369499e37e3d19f272b0099e6bf8d80eb1c71a9e3a71985060363adc62",
+        "remaining": 18,
+        "state": 29
+      },
+      "remaining": 18,
+      "state": 29,
+      "step": 14,
+      "transition_outcome": 21,
+      "transition_uniform": 0.016484156965907604
+    },
+    {
+      "action": "abstain",
+      "checkpoint": "94d5eb543bd3bc853634fdc7ed8f4cfbdafe67489e656cb78afd28a7560fdea9",
+      "discount": 0.8935973471085157,
+      "native_abstain": false,
+      "observation": {
+        "event_id": "observation.15",
+        "evidence_digest": "f3b0868279cdac49239b41f15a401f01a012be8d5122f7acce234566e105ef8c",
+        "remaining": 17,
+        "state": 21
+      },
+      "remaining": 17,
+      "state": 21,
+      "step": 15
+    }
+  ],
+  "terminal_reason": "abstain",
+  "work": {
+    "all_original_kernel_executions": 18,
+    "event_validation_bellman_terms": 0,
+    "event_validation_kernel_steps": 1,
+    "event_validation_readout_calls": 1,
+    "failed_requests": 1,
+    "finite_encoder_domain_checks": 6666,
+    "journal_bytes_written": 7424,
+    "model_calls": 16,
+    "model_latency_micros": 32,
+    "native_tick_micros": 15135,
+    "original_journal_replay_steps": 1,
+    "owner_ticks": 16,
+    "peak_transient_allocation_bytes": 221,
+    "physical_rpc_micros": 212562,
+    "profile_validation_bellman_terms": 652864,
+    "profile_validation_readouts": 6666,
+    "readout_bellman_terms": 0,
+    "rpc_count": 40
+  }
+}

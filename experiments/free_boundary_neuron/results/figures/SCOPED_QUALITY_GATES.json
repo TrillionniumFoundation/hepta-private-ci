@@ -1,0 +1,22 @@
+{
+  "command": "UV_CACHE_DIR=/tmp/hepta-ruff-cache UV_PROJECT_ENVIRONMENT=/workspace/scratch/07399998a2e3/hepta/.tools/ruff uv run --offline --frozen --project scripts ruff format --check experiments/free_boundary_neuron/results/figures/render_confirmation.py",
+  "created_at_utc": "2026-10-28T04:34:36.819084+00:00",
+  "elapsed_wall_seconds": 0.2976268769998569,
+  "exit_code": 0,
+  "figure_receipt_matches_renderer": true,
+  "global_required_just_fmt": {
+    "cause": "Sparse checkout plus untracked synchronization temporary Rust copies makes the default formatter scope include baseline files whose package manifests are absent; it falls back to a workspace-only Cargo.toml and raises KeyError(package).",
+    "receipt": "QUALITY_GATES.json",
+    "resolution": "No formatter or checkout policy was changed. Explicit renderer Ruff check/format passed; repository-wide failure is retained, not relabeled as success.",
+    "selected_changed_paths": 8195,
+    "selected_rust_paths": 4014,
+    "status": "failed_environment_scope"
+  },
+  "renderer_sha256": "2e7decb9f30a774935f71ab281cca06921519c5b4f1b4401768b23ce55f0dbc5",
+  "schema": "hepta.free-boundary.figure-scoped-quality.v1",
+  "scope": "Explicit figure renderer only, through its owning Python formatter; not a repository-wide format pass.",
+  "scoped_passed": true,
+  "sealed_scientific_inventory_unchanged": true,
+  "stderr": "",
+  "stdout": "1 file already formatted\n"
+}

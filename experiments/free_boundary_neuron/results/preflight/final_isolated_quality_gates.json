@@ -1,0 +1,130 @@
+{
+  "schema": "hepta.free-boundary.final-isolated-quality.v1",
+  "checkout": "/tmp/hepta-free-boundary-final-check",
+  "checked_commit": "83e39c90725f836008f5c634f4e1997f4236c8ed",
+  "source": {
+    "source_commit": "95b0d6668892868a4a19268a2fb707f2dca586ba",
+    "seal_sha256": "5876ab602e03e4c1f324342f8e046246c2162d4e9a07d1016d7d2edfcffa162c",
+    "verified_inputs": 105,
+    "environment": {
+      "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+      "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+      "numpy": "2.3.5",
+      "scipy": "1.17.0"
+    }
+  },
+  "commands": [
+    {
+      "command": [
+        "/tmp/hepta-ci-tools/bin/just",
+        "fmt",
+        "--base",
+        "fb9281e4a7ccfc4034281ed6310adea7e50f4474",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "wall_seconds": 0.5917906260001473
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "check",
+        "experiments/free_boundary_neuron"
+      ],
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "wall_seconds": 0.09110033199976897
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "format",
+        "--check",
+        "experiments/free_boundary_neuron"
+      ],
+      "exit_code": 0,
+      "stdout": "27 files already formatted\n",
+      "stderr": "",
+      "wall_seconds": 0.06387046100280713
+    },
+    {
+      "command": [
+        "/tmp/hepta-codespell-policy-venv/bin/codespell",
+        "experiments/free_boundary_neuron/REPORT.md",
+        "experiments/free_boundary_neuron/__init__.py",
+        "experiments/free_boundary_neuron/PROTOCOL.json",
+        "experiments/free_boundary_neuron/README.md",
+        "experiments/free_boundary_neuron/test_provenance.py",
+        "experiments/free_boundary_neuron/provenance.py",
+        "experiments/free_boundary_neuron/requirements.txt",
+        "experiments/free_boundary_neuron/analysis.py",
+        "experiments/free_boundary_neuron/owner/test_audit.py",
+        "experiments/free_boundary_neuron/owner/run.py",
+        "experiments/free_boundary_neuron/owner/PROTOCOL.json",
+        "experiments/free_boundary_neuron/owner/common.py",
+        "experiments/free_boundary_neuron/owner/audit.py",
+        "experiments/free_boundary_neuron/owner/profile.rs",
+        "experiments/free_boundary_neuron/owner/README.md",
+        "experiments/free_boundary_neuron/owner/free_boundary_host.rs",
+        "experiments/free_boundary_neuron/owner/session.rs",
+        "experiments/free_boundary_neuron/owner/port.rs",
+        "experiments/free_boundary_neuron/owner/test_native.py",
+        "experiments/free_boundary_neuron/owner/events.rs",
+        "experiments/free_boundary_neuron/owner/build.py",
+        "experiments/free_boundary_neuron/learning/__init__.py",
+        "experiments/free_boundary_neuron/learning/PROTOCOL.json",
+        "experiments/free_boundary_neuron/learning/test_learning.py",
+        "experiments/free_boundary_neuron/learning/network.py",
+        "experiments/free_boundary_neuron/learning/runner.py",
+        "experiments/free_boundary_neuron/learning/task.py",
+        "experiments/free_boundary_neuron/math/__init__.py",
+        "experiments/free_boundary_neuron/math/belief_reference_check.py",
+        "experiments/free_boundary_neuron/math/finite_horizon.py",
+        "experiments/free_boundary_neuron/math/PROTOCOL.json",
+        "experiments/free_boundary_neuron/math/audit.py",
+        "experiments/free_boundary_neuron/math/THEORY.md",
+        "experiments/free_boundary_neuron/math/PROFILE.json",
+        "experiments/free_boundary_neuron/math/renewal.py",
+        "experiments/free_boundary_neuron/math/hitting.py",
+        "experiments/free_boundary_neuron/math/one_shot.py",
+        "experiments/free_boundary_neuron/math/roots.py",
+        "experiments/free_boundary_neuron/math/moving.py",
+        "experiments/free_boundary_neuron/math/tests/test_diffusion.py",
+        "experiments/free_boundary_neuron/math/tests/test_stopping.py"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "wall_seconds": 0.2781887659984932
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--exit-code"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "wall_seconds": 0.012681503998464905
+    }
+  ],
+  "scientific_inputs_unchanged": true,
+  "passed": true,
+  "scope": "All study changes relative to the original study baseline in an isolated checkout; exact owning-tool checks include scientific source and display renderer. No behavioral or scientific reruns."
+}

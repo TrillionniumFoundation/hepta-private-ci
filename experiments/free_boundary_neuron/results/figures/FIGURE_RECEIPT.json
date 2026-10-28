@@ -1,0 +1,126 @@
+{
+  "created_at_utc": "2026-10-28T04:31:28.223649+00:00",
+  "figure_size_inches": [
+    13.6,
+    6.2
+  ],
+  "inputs": {
+    "confirmation_results": {
+      "bytes": 436178,
+      "path": "results/learning/confirmation.json",
+      "sha256": "d961593272f15956d69e1b85b8c90b3fb576eaf3b1bab2ffbbf86b4364f61ad2"
+    },
+    "confirmation_summary": {
+      "bytes": 20922,
+      "path": "results/learning/confirmation_summary.json",
+      "sha256": "fa4a480fd59bfe0f53506714eacd27ead1fc8aa03c9f1c8e17560372e23ad9a9"
+    },
+    "source_seal": {
+      "bytes": 17986,
+      "path": "results/SOURCE_SEAL.json",
+      "sha256": "5876ab602e03e4c1f324342f8e046246c2162d4e9a07d1016d7d2edfcffa162c"
+    }
+  },
+  "interpretation": "All means and adjusted intervals are read from the verified saved summary. No new statistical comparison, training or data generation is performed.",
+  "outputs": {
+    "confirmation_results.png": {
+      "bytes": 225321,
+      "sha256": "412604fb6c8279c70f099123b7ba652a9b306560a21b5f98dbc9e20f99b6ef63"
+    },
+    "confirmation_results.svg": {
+      "bytes": 21811,
+      "sha256": "1055f87cca94dfc9c87b25428f3fc01ea10aa2c33438073c808f7f70b3647640"
+    }
+  },
+  "plotted_inputs": {
+    "ood_utility": {
+      "direct:first_passage": 0.19885156250000002,
+      "direct:standard": 0.18699023437500004,
+      "fixed:first_passage": 0.18975244140625,
+      "fixed:standard": 0.19276220703125002,
+      "free:first_passage": 0.25515478515625,
+      "free:standard": 0.264833984375
+    },
+    "raw_belief_dp_ood_utility": 0.28862353515625,
+    "registered_primary": [
+      {
+        "confirmatory_superiority": true,
+        "descriptive_95_ci": [
+          0.05905795461342516,
+          0.09662954538657476
+        ],
+        "family_adjusted_97_5_ci": [
+          0.055546420173174224,
+          0.1001410798268257
+        ],
+        "gradient": "standard",
+        "mean_difference": 0.07784374999999996,
+        "minimum_practical_effect": 0.005,
+        "n_independent_seeds": 10,
+        "paired_differences": [
+          0.08849121093749995,
+          0.02410156249999995,
+          0.06014160156249998,
+          0.07724609374999991,
+          0.09127929687500003,
+          0.09654785156249995,
+          0.05763671875000001,
+          0.07356445312499996,
+          0.08905761718749994,
+          0.12037109374999999
+        ]
+      },
+      {
+        "confirmatory_superiority": true,
+        "descriptive_95_ci": [
+          0.03268621274183653,
+          0.07992023257066344
+        ],
+        "family_adjusted_97_5_ci": [
+          0.02827160361916517,
+          0.0843348416933348
+        ],
+        "gradient": "first_passage",
+        "mean_difference": 0.056303222656249985,
+        "minimum_practical_effect": 0.005,
+        "n_independent_seeds": 10,
+        "paired_differences": [
+          0.08382324218750004,
+          0.03163574218749998,
+          0.06044921874999995,
+          0.03647949218749991,
+          0.08542480468749997,
+          0.027934570312500018,
+          0.012412109375000036,
+          0.04814453125000001,
+          0.05421874999999998,
+          0.12250976562499999
+        ]
+      }
+    ]
+  },
+  "plotting_versions": {
+    "matplotlib": "3.10.8",
+    "numpy": "2.3.5",
+    "python": "3.12.14"
+  },
+  "png_dpi": 180,
+  "renderer": {
+    "path": "results/figures/render_confirmation.py",
+    "science_source_seal_scope": "Renderer is an evidence artifact under results; it changes no sealed scientific source or protocol.",
+    "sha256": "2e7decb9f30a774935f71ab281cca06921519c5b4f1b4401768b23ce55f0dbc5"
+  },
+  "schema": "hepta.free-boundary.confirmation-figure.v1",
+  "scope": "Synthetic known-model stopping comparison with fixed surrogate parameters; no claim of first-passage SG superiority, native trained-SNN deployment or hardware energy savings.",
+  "source": {
+    "environment": {
+      "numpy": "2.3.5",
+      "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+      "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+      "scipy": "1.17.0"
+    },
+    "seal_sha256": "5876ab602e03e4c1f324342f8e046246c2162d4e9a07d1016d7d2edfcffa162c",
+    "source_commit": "95b0d6668892868a4a19268a2fb707f2dca586ba",
+    "verified_inputs": 105
+  }
+}

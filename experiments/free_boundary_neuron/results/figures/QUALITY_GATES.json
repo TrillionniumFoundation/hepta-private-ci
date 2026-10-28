@@ -1,0 +1,77 @@
+{
+  "artifact_checks": {
+    "all_output_hashes_match_receipt": true,
+    "final_png_identical_to_visually_reviewed_png": true,
+    "png_bytes": 225321,
+    "svg_bytes": 21811
+  },
+  "checks": [
+    {
+      "capture": "Completed read-only invocation immediately before this formatting sequence.",
+      "command": "UV_CACHE_DIR=/tmp/hepta-ruff-cache UV_PROJECT_ENVIRONMENT=/workspace/scratch/07399998a2e3/hepta/.tools/ruff uv run --offline --frozen --project scripts ruff check experiments/free_boundary_neuron/results/figures/render_confirmation.py",
+      "cwd": "/workspace/scratch/07399998a2e3/hepta",
+      "exit_code": 0,
+      "name": "initial_ruff_check",
+      "stderr": "",
+      "stdout": "All checks passed!\n"
+    },
+    {
+      "command": "UV_CACHE_DIR=/tmp/hepta-ruff-cache UV_PROJECT_ENVIRONMENT=/workspace/scratch/07399998a2e3/hepta/.tools/ruff uv run --offline --frozen --project scripts ruff format experiments/free_boundary_neuron/results/figures/render_confirmation.py",
+      "cwd": "/workspace/scratch/07399998a2e3/hepta",
+      "elapsed_wall_seconds": 0.10049619400160736,
+      "exit_code": 0,
+      "name": "ruff_format",
+      "stderr": "",
+      "stdout": "1 file reformatted\n"
+    },
+    {
+      "command": "UV_CACHE_DIR=/tmp/hepta-ruff-cache UV_PROJECT_ENVIRONMENT=/workspace/scratch/07399998a2e3/hepta/.tools/ruff uv run --offline --frozen --project scripts ruff check experiments/free_boundary_neuron/results/figures/render_confirmation.py",
+      "cwd": "/workspace/scratch/07399998a2e3/hepta",
+      "elapsed_wall_seconds": 0.10613971799830324,
+      "exit_code": 0,
+      "name": "final_ruff_check",
+      "stderr": "",
+      "stdout": "All checks passed!\n"
+    },
+    {
+      "command": "PATH=/tmp/hepta-ci-tools/bin:/tmp/hepta-ci-rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin:$PATH /tmp/hepta-ci-tools/bin/just fmt",
+      "cwd": "/workspace/scratch/07399998a2e3/hepta",
+      "elapsed_wall_seconds": 2.865121555998485,
+      "exit_code": 1,
+      "name": "required_just_fmt",
+      "stderr": "Traceback (most recent call last):\n  File \"/workspace/scratch/07399998a2e3/hepta/codex-rs/../scripts/format.py\", line 511, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/workspace/scratch/07399998a2e3/hepta/codex-rs/../scripts/format.py\", line 482, in main\n    else scoped_formatter_groups(\n         ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/07399998a2e3/hepta/codex-rs/../scripts/format.py\", line 406, in scoped_formatter_groups\n    \"Rust\", tuple(rust_file_command(path, check=check) for path in rust)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/07399998a2e3/hepta/codex-rs/../scripts/format.py\", line 406, in <genexpr>\n    \"Rust\", tuple(rust_file_command(path, check=check) for path in rust)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/07399998a2e3/hepta/codex-rs/../scripts/format.py\", line 293, in rust_file_command\n    package = tomllib.loads(manifest.read_text())[\"package\"]\n              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^\nKeyError: 'package'\nerror: recipe `fmt` failed on line 51 with exit code 1\n",
+      "stdout": ""
+    },
+    {
+      "command": "MPLCONFIGDIR=/tmp/hepta-free-boundary-mpl python3 experiments/free_boundary_neuron/results/figures/render_confirmation.py",
+      "cwd": "/workspace/scratch/07399998a2e3/hepta",
+      "elapsed_wall_seconds": 0.9563539840019075,
+      "exit_code": 0,
+      "name": "regenerate_display_artifacts",
+      "stderr": "",
+      "stdout": "{\n  \"outputs\": {\n    \"confirmation_results.png\": {\n      \"sha256\": \"412604fb6c8279c70f099123b7ba652a9b306560a21b5f98dbc9e20f99b6ef63\",\n      \"bytes\": 225321\n    },\n    \"confirmation_results.svg\": {\n      \"sha256\": \"1055f87cca94dfc9c87b25428f3fc01ea10aa2c33438073c808f7f70b3647640\",\n      \"bytes\": 21811\n    }\n  },\n  \"receipt\": \"/workspace/scratch/07399998a2e3/hepta/experiments/free_boundary_neuron/results/figures/FIGURE_RECEIPT.json\"\n}\n"
+    }
+  ],
+  "finished_at_utc": "2026-10-28T04:31:28.711737+00:00",
+  "passed": false,
+  "renderer": {
+    "ast_unchanged": true,
+    "display_artifacts_regenerated": true,
+    "python_ast_sha256_after": "0360e0aa2a7627bc8a097fcb4416914aea96da72cfcb1c5dee7727fbeebfff2c",
+    "python_ast_sha256_before": "0360e0aa2a7627bc8a097fcb4416914aea96da72cfcb1c5dee7727fbeebfff2c",
+    "receipt_hash_matches": true,
+    "sha256_after": "2e7decb9f30a774935f71ab281cca06921519c5b4f1b4401768b23ce55f0dbc5",
+    "sha256_before": "ef0b2068fa249c8f016fb743e84b057168b21402dfa197475aa6dc0b4edda2ba"
+  },
+  "schema": "hepta.free-boundary.figure-quality-gates.v1",
+  "scientific_inputs": {
+    "after_count": 105,
+    "after_sha256": "92525aef33849c52c05809fc763e19970846a80cc827f169203434ed7614cf65",
+    "before_count": 105,
+    "before_sha256": "92525aef33849c52c05809fc763e19970846a80cc827f169203434ed7614cf65",
+    "changed_paths": [],
+    "unchanged": true
+  },
+  "scope": "Display renderer and figure artifacts only; no scientific execution, source/protocol edits or behavioral tests.",
+  "started_at_utc": "2026-10-28T04:31:24.280617+00:00"
+}

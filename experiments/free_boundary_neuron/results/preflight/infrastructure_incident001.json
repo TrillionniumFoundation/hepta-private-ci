@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.free-boundary.infrastructure-incident.v1",
+  "at_utc": "2026-10-28T04:15:45.141762+00:00",
+  "command": "python -u -m experiments.free_boundary_neuron.learning.runner --phase screening --source-seal experiments/free_boundary_neuron/results/SOURCE_SEAL.json --output experiments/free_boundary_neuron/results/learning/screening.json",
+  "exit_code": 101,
+  "failure": "Sandbox could not create mount marker: No space left on device; Python process did not start",
+  "outcomes_observed": false,
+  "response": "Remove regenerable compilation caches only; retain exact binary, logs, build receipts, source, dependencies and all outcomes",
+  "removed": [
+    {
+      "path": "/workspace/scratch/07399998a2e3/hepta/experiments/free_boundary_neuron/owner/runs/build01/target/debug/deps",
+      "logical_bytes": 58834943
+    },
+    {
+      "path": "/workspace/scratch/07399998a2e3/hepta/experiments/free_boundary_neuron/owner/runs/build01/target/debug/build",
+      "logical_bytes": 7910521
+    },
+    {
+      "path": "/workspace/scratch/07399998a2e3/hepta/experiments/free_boundary_neuron/owner/runs/build01/target/debug/incremental",
+      "logical_bytes": 0
+    },
+    {
+      "path": "/workspace/scratch/07399998a2e3/hepta/experiments/free_boundary_neuron/owner/runs/build01/target/debug/.fingerprint",
+      "logical_bytes": 26234
+    }
+  ],
+  "free_bytes_after_cleanup": 0
+}

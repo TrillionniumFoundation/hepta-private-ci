@@ -1,0 +1,126 @@
+[
+  {
+    "commit": "3a8a5b518b168498581de1e824bbdeac1dfaf495",
+    "message": "Register free-boundary study and source integrity checks",
+    "paths": [
+      "experiments/free_boundary_neuron/.gitignore",
+      "experiments/free_boundary_neuron/__init__.py",
+      "experiments/free_boundary_neuron/PROTOCOL.json",
+      "experiments/free_boundary_neuron/requirements.txt",
+      "experiments/free_boundary_neuron/provenance.py",
+      "experiments/free_boundary_neuron/test_provenance.py",
+      "experiments/free_boundary_neuron/analysis.py"
+    ]
+  },
+  {
+    "commit": "27dd7622477811f83deb252d88517a8fee18c9ed",
+    "message": "Add stable diffusion roots and single-execution stopping oracle",
+    "paths": [
+      "experiments/free_boundary_neuron/math/__init__.py",
+      "experiments/free_boundary_neuron/math/roots.py",
+      "experiments/free_boundary_neuron/math/hitting.py",
+      "experiments/free_boundary_neuron/math/one_shot.py",
+      "experiments/free_boundary_neuron/math/PROFILE.json",
+      "experiments/free_boundary_neuron/math/PROTOCOL.json"
+    ]
+  },
+  {
+    "commit": "49fc964403c6687498c352a747d7e23029e9de0e",
+    "message": "Add renewal stopping and moving-boundary reference solvers",
+    "paths": [
+      "experiments/free_boundary_neuron/math/renewal.py",
+      "experiments/free_boundary_neuron/math/moving.py",
+      "experiments/free_boundary_neuron/math/THEORY.md"
+    ]
+  },
+  {
+    "commit": "324def6446384e3966b891b28203fbb74adde440",
+    "message": "Add finite-horizon decision table and numerical verification",
+    "paths": [
+      "experiments/free_boundary_neuron/math/finite_horizon.py",
+      "experiments/free_boundary_neuron/math/audit.py"
+    ]
+  },
+  {
+    "commit": "58a1082241f8757ef20a8e0c937180cb0803e533",
+    "message": "Verify stopping derivatives and exact evidence-task baseline",
+    "paths": [
+      "experiments/free_boundary_neuron/math/belief_reference_check.py",
+      "experiments/free_boundary_neuron/math/tests/test_diffusion.py",
+      "experiments/free_boundary_neuron/math/tests/test_stopping.py"
+    ]
+  },
+  {
+    "commit": "25d582ad13c929129af6acc02432cca0d5010174",
+    "message": "Register causal evidence task and equal-information policies",
+    "paths": [
+      "experiments/free_boundary_neuron/learning/__init__.py",
+      "experiments/free_boundary_neuron/learning/PROTOCOL.json",
+      "experiments/free_boundary_neuron/learning/task.py"
+    ]
+  },
+  {
+    "commit": "fccccb56234d5a4e3c20449b601039a4081ed3dc",
+    "message": "Implement hard-spiking learning and derivative checks",
+    "paths": [
+      "experiments/free_boundary_neuron/learning/network.py",
+      "experiments/free_boundary_neuron/learning/test_learning.py"
+    ]
+  },
+  {
+    "commit": "59695fc2b672dcfecdb5373db2a67caa72408496",
+    "message": "Add six-arm runner with preserved checkpoints and independent audit",
+    "paths": [
+      "experiments/free_boundary_neuron/learning/runner.py"
+    ]
+  },
+  {
+    "commit": "dda5f71bf6d5634a3c6d9b43f81f951086e98edb",
+    "message": "Build original native owner with explicit evidence accounting",
+    "paths": [
+      "experiments/free_boundary_neuron/owner/build.py",
+      "experiments/free_boundary_neuron/owner/common.py"
+    ]
+  },
+  {
+    "commit": "cc4727a2f98dce29e0b6fb7101878c61ba7f4095",
+    "message": "Bind versioned readout profiles to the native inference port",
+    "paths": [
+      "experiments/free_boundary_neuron/owner/profile.rs",
+      "experiments/free_boundary_neuron/owner/port.rs",
+      "experiments/free_boundary_neuron/owner/PROTOCOL.json"
+    ]
+  },
+  {
+    "commit": "58fb3886bba9fcd350244ed686d938465e4dff27",
+    "message": "Add durable stopping session and original-owner replay host",
+    "paths": [
+      "experiments/free_boundary_neuron/owner/events.rs",
+      "experiments/free_boundary_neuron/owner/session.rs",
+      "experiments/free_boundary_neuron/owner/free_boundary_host.rs"
+    ]
+  },
+  {
+    "commit": "730920eef0a647761a9baa607d77e65c6c8a011d",
+    "message": "Run paired native-owner trajectories with real stopping",
+    "paths": [
+      "experiments/free_boundary_neuron/owner/run.py"
+    ]
+  },
+  {
+    "commit": "53a97d99c806d15977de2db120b9e37c25712f15",
+    "message": "Audit complete native trajectories and applied-action gates",
+    "paths": [
+      "experiments/free_boundary_neuron/owner/audit.py",
+      "experiments/free_boundary_neuron/owner/test_audit.py"
+    ]
+  },
+  {
+    "commit": "802ebe447d9fa9e751c16cdb75c3f7fc36618da1",
+    "message": "Test native stopping, retries, recovery and corruption rejection",
+    "paths": [
+      "experiments/free_boundary_neuron/owner/test_native.py",
+      "experiments/free_boundary_neuron/owner/README.md"
+    ]
+  }
+]

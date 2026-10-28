@@ -1,0 +1,22 @@
+test_closed_form_matches_independent_fpt_integration (test_diffusion.HittingTests.test_closed_form_matches_independent_fpt_integration) ... ok
+test_killing_and_discount_are_distinct_readouts (test_diffusion.HittingTests.test_killing_and_discount_are_distinct_readouts) ... ok
+test_score_integral_parameter_gradients (test_diffusion.HittingTests.test_score_integral_parameter_gradients) ... ok
+test_vector_extremes_and_boundary_conventions (test_diffusion.HittingTests.test_vector_extremes_and_boundary_conventions) ... ok
+test_curved_boundary_refinement_and_frozen_bias_are_reported (test_diffusion.MovingBoundaryTests.test_curved_boundary_refinement_and_frozen_bias_are_reported) ... ok
+test_fortet_linear_case_converges_to_exact_relative_drift (test_diffusion.MovingBoundaryTests.test_fortet_linear_case_converges_to_exact_relative_drift) ... ok
+test_root_derivatives_match_full_parameter_perturbations (test_diffusion.RootTests.test_root_derivatives_match_full_parameter_perturbations) ... ok
+test_roots_remain_resolved_under_large_drift_cancellation (test_diffusion.RootTests.test_roots_remain_resolved_under_large_drift_cancellation) ... ok
+test_exported_transition_and_bellman_equation (test_stopping.BermudanTests.test_exported_transition_and_bellman_equation) ... ok
+test_policy_evaluation_recovers_bellman_value (test_stopping.BermudanTests.test_policy_evaluation_recovers_bellman_value) ... ok
+test_constrained_threshold_does_not_claim_smooth_fit (test_stopping.OneShotTests.test_constrained_threshold_does_not_claim_smooth_fit) ... ok
+test_global_threshold_maximization_and_full_resolve_sensitivities (test_stopping.OneShotTests.test_global_threshold_maximization_and_full_resolve_sensitivities) ... ok
+test_whole_domain_obstacle_and_superharmonic_verification (test_stopping.OneShotTests.test_whole_domain_obstacle_and_superharmonic_verification) ... ok
+test_constrained_abstain_policy_has_zero_derivatives (test_stopping.RenewalTests.test_constrained_abstain_policy_has_zero_derivatives) ... ok
+test_degeneracy_constraints_and_conditioning_are_explicit (test_stopping.RenewalTests.test_degeneracy_constraints_and_conditioning_are_explicit) ... ok
+test_every_derivative_recomputes_entire_renewal_solution (test_stopping.RenewalTests.test_every_derivative_recomputes_entire_renewal_solution) ... ok
+test_independent_solver_and_global_optimizer (test_stopping.RenewalTests.test_independent_solver_and_global_optimizer) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.099s
+
+OK
