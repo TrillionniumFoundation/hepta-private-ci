@@ -12,10 +12,13 @@ output channel and 64 KiB frames are hard bounds. Writer, initial-read, RPC and
 cleanup deadlines are explicit; writer/session futures stay owned on failure.
 An HMI session failure is isolated from Agentd's required runtime tasks.
 
-The first newline JSON command must be `{"type":"submit","request":...}`.
-`request` is an existing independently signed `AuthBusTextIngress`, including
-its original message ID, sequence, expiry and `AuthBusTextBody`. Its thread must
-already exist. This adapter does not start another conversation.
+The first newline JSON command carries a signed input: `submit`, `submitAudio`
+under the explicit audio profile, or `attach` without input admission. Text
+`submit` and `attach` carry an existing independently signed `AuthBusTextIngress`,
+including its original message ID, sequence, expiry and `AuthBusTextBody`.
+`attach` authenticates the connection without admitting that input. The thread
+must already exist. This adapter does not start another conversation. Audio and
+process-recovery contracts are in [AUDIO_OBSERVATIONS.md](AUDIO_OBSERVATIONS.md).
 
 Agentd checks its actual current generation/readiness and reloads its actual
 `TextTrust` public-key/thread registry. The signature covers the canonical
@@ -57,6 +60,27 @@ copied by the client or roll back committed tools. A terminal request ack does
 not claim a terminal model receipt. Disconnect/unknown admission requires
 reconciliation of the original delivery, never a replacement request.
 
+For connected input, `interrupt`, `reconnect`, `stop` and EOF also reconcile the
+exact original delivery that this connection armed. A queued input is deleted
+by its existing Core queue ID; a persisted turn receives `turn/interrupt`.
+Neither a duplicate nor a rejected competing input replaces the owned delivery.
+Only a confirmed Core `Cancelled` frees that input's pending presentation slot;
+its sequence high-water remains, and the next distinct signed input may proceed.
+
+`interruptRequested.originalCancellation` reports that separate reconciliation.
+If original admission is still pending, it first reports `status:"pending"`;
+after admission resolves, an `originalCancellation` frame carries the result in
+`outcome`. `reconnected` and `sessionTerminal` also retain `originalCancellation`.
+An AuthBus admission can precede the Core receipt, so a `Missing` lookup alone
+does not cancel the durable input. The connected owner retries lookup/cancellation
+under the same original ID for at most three seconds. Expiry, transport or
+authority failure reports `status:"unknown"` with the original delivery ID;
+reconnect refuses to discard that uncertain binding. `sessionTerminal` retains
+an unresolved admission in `pendingOutcome`. Keep these diagnostics for original
+ID reconciliation or `cancelRecovered`; neither `requested` nor
+`terminalObserved:false` proves model completion, permanent cancellation or tool
+rollback. Cleanup deadlines can still end with an unknown result.
+
 The default profile is text only. Its principal is the actual registered AuthBus issuer;
 the local Agent UI identity is scoped by that key epoch and Agent spawn. These
 fields are not microphone/device permissions. `capture_generation` is zero,
@@ -78,6 +102,14 @@ Only the model's HTTP SSE response is a fixture. It covers invalid signatures,
 Chinese deltas, same-thread/client-ID persistence, duplicates, reconnection,
 the next distinct input, live cancellation and current-trust revocation.
 It is not production-user, physical audio or end-to-end performance acceptance.
+
+`tests/hmi_owner_v3/interleaving_tests.rs` additionally holds a first model turn
+while a second text/audio input is queued. It checks interrupt or reconnect,
+the original cancelled receipt, duplicate refusal to replay, a fresh next input
+and immediate Stop before that new input's Core receipt. Its model and PCM are
+fixtures; the owner processes, signatures and canonical queue are real test
+components. It does not establish cancellation across an indefinitely
+unavailable relay or Core.
 
 ```sh
 just test --locked -p codex-hepta-agentd --test hmi_text_product --cargo-profile dev-small
