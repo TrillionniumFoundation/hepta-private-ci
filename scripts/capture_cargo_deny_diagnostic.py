@@ -33,6 +33,8 @@ ARCHIVE_SHA256 = "0e8c2aa59128612c90d9e09c02204e912f29a5b8d9a64671b94608cbe09e06
 BINARY_BYTES = 16086896
 BINARY_SHA256 = "06f9d1a0ba92b201bff1215b6dc24e669b212c151ecd52cae5d38aab73931d3c"
 MAX_LOG_BYTES = 8 * 1024 * 1024
+MAX_CONTEXT_LOG_BYTES = 64 * 1024
+MAX_TAIL_BYTES = 256 * 1024
 INPUTS = (
     "codex-rs/Cargo.toml",
     "codex-rs/Cargo.lock",
@@ -77,7 +79,11 @@ def capture(
     timeout: float = 600,
     limit: int = MAX_LOG_BYTES,
 ) -> dict:
-    """Drain both pipes while retaining only bounded prefixes, never a tail leak."""
+    """Drain both pipes; retain nonoverlapping prefixes/tails within each limit."""
+    if type(limit) is not int or limit < 2:
+        raise ValueError("each stream retention limit must be an integer >= 2")
+    tail_limit = min(MAX_TAIL_BYTES, max(1, limit // 4))
+    prefix_limit = limit - tail_limit
     streams = {}
     with ExitStack() as stack:
         selector = stack.enter_context(selectors.DefaultSelector())
@@ -96,6 +102,7 @@ def capture(
                 "kept": 0,
                 "digest": hashlib.sha256(),
                 "sink": sink,
+                "tail": bytearray(),
             }
             selector.register(pipe, selectors.EVENT_READ, name)
         deadline = time.monotonic() + timeout
@@ -116,26 +123,58 @@ def capture(
                 state = streams[key.data]
                 state["bytes"] += len(block)
                 state["digest"].update(block)
-                retained = block[: max(0, limit - state["kept"])]
+                retained = block[: max(0, prefix_limit - state["kept"])]
                 state["sink"].write(retained)
                 state["kept"] += len(retained)
+                state["tail"].extend(block[len(retained) :])
+                if len(state["tail"]) > tail_limit:
+                    del state["tail"][:-tail_limit]
         exit_code = process.wait()
+    retained_streams = {}
+    for name, state in streams.items():
+        prefix_path = output / f"{label}.{name}.log"
+        tail_path = output / f"{label}.{name}.tail.log"
+        with tail_path.open("wb") as target:
+            target.write(state["tail"])
+        tail_start = state["bytes"] - len(state["tail"])
+        omitted_bytes = tail_start - state["kept"]
+        retained_streams[name] = {
+            "observed_bytes": state["bytes"],
+            "observed_sha256": state["digest"].hexdigest(),
+            "retained_bytes": state["kept"] + len(state["tail"]),
+            "omitted_bytes": omitted_bytes,
+            "omitted_range": {"start": state["kept"], "end": tail_start},
+            "truncated": omitted_bytes > 0,
+            "complete": not timed_out and omitted_bytes == 0,
+            "prefix": {
+                "path": prefix_path.name,
+                "start": 0,
+                "end": state["kept"],
+                **identity(prefix_path),
+            },
+            "tail": {
+                "path": tail_path.name,
+                "start": tail_start,
+                "end": state["bytes"],
+                **identity(tail_path),
+            },
+        }
     return {
         "command": command,
         "exit_code": exit_code,
         "timed_out": timed_out,
-        "streams": {
-            name: {
-                "path": f"{label}.{name}.log",
-                "observed_bytes": state["bytes"],
-                "observed_sha256": state["digest"].hexdigest(),
-                "retained_bytes": state["kept"],
-                "truncated": state["bytes"] > limit,
-                "complete": not timed_out and state["bytes"] <= limit,
-                "retained_sha256": identity(output / f"{label}.{name}.log")["sha256"],
-            }
-            for name, state in streams.items()
+        "retention": {
+            "strategy": "nonoverlapping_prefix_and_tail",
+            "offsets": "zero_based_half_open_bytes",
+            "limit_bytes_per_stream": limit,
+            "prefix_limit_bytes_per_stream": prefix_limit,
+            "tail_limit_bytes_per_stream": tail_limit,
+            "combined_limit_bytes": 2 * limit,
+            "combined_retained_bytes": sum(
+                stream["retained_bytes"] for stream in retained_streams.values()
+            ),
         },
+        "streams": retained_streams,
     }
 
 
@@ -189,7 +228,7 @@ def main() -> int:
         parser.error("diagnostic output must be outside the checkout")
     output.mkdir(parents=True, exist_ok=False)
     receipt = {
-        "schema_version": 1,
+        "schema_version": 2,
         "kind": "cargo_deny_host_diagnostic_after_canonical_failure",
         "started_at_utc": datetime.now(timezone.utc).isoformat(),
         "original_action": "EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246",
@@ -203,7 +242,17 @@ def main() -> int:
             "Ubuntu host instead of the pinned Docker image; this is separate diagnostic evidence.",
             "Explicit --locked prevents changing Cargo.lock; the canonical action omits that flag.",
             "JSON output and explicit config path; registry and advisory data may be fetched later.",
+            "Host --log-level error suppresses warning rendering; the canonical action remains at its default warn level. Check severities and exit rules are unchanged.",
         ],
+        "log_retention_limits": {
+            "diagnostic_bytes_per_stream": MAX_LOG_BYTES,
+            "context_bytes_per_stream": MAX_CONTEXT_LOG_BYTES,
+            "context_runs": 5,
+            "maximum_tail_bytes_per_stream": MAX_TAIL_BYTES,
+            "maximum_combined_log_bytes": 2
+            * (MAX_LOG_BYTES + 5 * MAX_CONTEXT_LOG_BYTES),
+            "scope": "retained stdout/stderr files only; excludes receipt and temporary pinned tool",
+        },
         "tool_release": {
             "url": ARCHIVE_URL,
             "archive_sha256": ARCHIVE_SHA256,
@@ -229,7 +278,9 @@ def main() -> int:
             ("rustc_version", ["rustc", "--version"]),
         ):
             checkpoint(output, receipt, f"{label}_running")
-            result = capture(command, root, output, label, timeout=30, limit=65536)
+            result = capture(
+                command, root, output, label, timeout=30, limit=MAX_CONTEXT_LOG_BYTES
+            )
             receipt["runs"][label] = result
             checkpoint(output, receipt, f"{label}_captured")
             if result["exit_code"] != 0 or result["timed_out"]:
@@ -259,7 +310,7 @@ def main() -> int:
             command = [
                 str(binary),
                 "--log-level",
-                "warn",
+                "error",
                 "--format",
                 "json",
                 "--color",
@@ -292,7 +343,7 @@ def main() -> int:
             output,
             "worktree_after",
             timeout=30,
-            limit=65536,
+            limit=MAX_CONTEXT_LOG_BYTES,
         )
         receipt["runs"]["worktree_after"] = result
         if result["exit_code"] != 0 or result["timed_out"]:
