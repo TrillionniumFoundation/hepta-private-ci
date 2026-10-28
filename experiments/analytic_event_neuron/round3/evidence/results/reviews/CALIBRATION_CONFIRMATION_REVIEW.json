@@ -1,0 +1,73 @@
+{
+  "actual_model_refit_or_dataset_generation": false,
+  "all_losses_calibration_coverage_and_gates_recomputed": true,
+  "checks": {
+    "all_gates_and_statistics": 2390,
+    "binding": 243,
+    "coverage": 3,
+    "data_identity": 1455,
+    "dense_public_gate": 840,
+    "equivalence": 3,
+    "independent_dense_mean": 1200,
+    "independent_dense_variance": 1200,
+    "independent_gaussian_supremum": 240,
+    "independent_metric": 7200,
+    "old_retention_difference": 600,
+    "pointwise_guard": 240,
+    "pointwise_summary": 7,
+    "q24_grid": 720,
+    "registration": 1,
+    "sampling_units": 3,
+    "scope": 1,
+    "target": 2400,
+    "window_summary": 7200
+  },
+  "dependent_horizon_measurements_independently_recomputed": 921600,
+  "empirical_profiles_gaussian_worst_cases": {
+    "calibrated": {
+      "finite_bound_above_002_count": 66390,
+      "forecast_count": 92160,
+      "maximum_finite_bound": 126.32038577950071,
+      "unbounded_count": 9966
+    },
+    "calibrated_q24": {
+      "finite_bound_above_002_count": 66390,
+      "forecast_count": 92160,
+      "maximum_finite_bound": 118.35711645790191,
+      "unbounded_count": 16232
+    }
+  },
+  "empirical_worst_case_results_are_secondary_math_diagnostics_not_redefined_gates": true,
+  "failures": [],
+  "full_model_domain_trajectory_predictions_independently_recomputed": 307200,
+  "global_freeze_sha256": "75df6af8ce501e624fd2900f096b7c6a050e5c61cbb200fca4ada5fc54d81146",
+  "global_frozen_sources_verified": 83,
+  "global_prepared_artifacts_verified": 329,
+  "independent_dense_gaussian_gate_and_moments": true,
+  "index_sha256": "a13f63af2afd7d6d88a97b7a0749f3c3ecc1756f8d4c6caf1ef28aaeab428f65",
+  "label_budget_scope": "512 fitting labels matched for replay/calibration; calibration additionally selects on256dev labels, replaydoesnot; classical calibration shares identical selection",
+  "maximum_absolute_errors": {
+    "all_gates_and_statistics": 9.71445146547012e-17,
+    "dense_public_gate": 2.275957200481571e-15,
+    "equivalence": 0.0,
+    "independent_dense_mean": 2.6645352591003757e-15,
+    "independent_dense_variance": 1.63202784619898e-14,
+    "independent_gaussian_supremum": 8.81239525796218e-16,
+    "independent_metric": 8.881784197001252e-16,
+    "old_retention_difference": 0.0,
+    "pointwise_summary": 8.083811398051921e-16,
+    "target": 0.0,
+    "window_summary": 2.220446049250313e-16
+  },
+  "native_executed": false,
+  "parent_cpu_ns": 24459925292,
+  "passed": true,
+  "results_sha256": "4222cfc15dbdc1d3086e605bb2d078ae34ee4e82449aa35d0e877736b4e11ba5",
+  "review_script_sha256": "4d45b177a29e70082497038a1f58c668cd211a65aecc6b1e1295ae38363a6d97",
+  "schema": "hepta.round3.calibration-independent-confirmation-review.v1",
+  "source_commit": "29174619dfc56cef1c16b34fbf98f85a1cd2e4c3",
+  "twenty_paired_seed_trajectory_bootstraps_recomputed": true,
+  "unique_new_trajectories": 15360,
+  "unique_old_trajectories": 1280,
+  "wall_ns": 24938631115
+}
