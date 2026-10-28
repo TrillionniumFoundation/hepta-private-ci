@@ -20,7 +20,9 @@ use codex_app_server_protocol::ThreadRollbackResponse;
 use codex_app_server_protocol::ThreadStartParams;
 use codex_app_server_protocol::ThreadStartResponse;
 use codex_app_server_protocol::ThreadStatus;
+use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnStartParams;
+use codex_app_server_protocol::TurnStartResponse;
 use codex_app_server_protocol::UserInput as V2UserInput;
 use pretty_assertions::assert_eq;
 use serde_json::Value;
@@ -28,6 +30,27 @@ use tempfile::TempDir;
 use tokio::time::timeout;
 
 const DEFAULT_READ_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(10);
+
+// A previous turn can emit a completion while a later turn is still active.
+// Require the exact response's turn identity before invoking rollback.
+async fn wait_for_exact_turn_completed(
+    mcp: &mut TestAppServer,
+    thread_id: &str,
+    turn_id: &str,
+) -> Result<()> {
+    let completed: TurnCompletedNotification = timeout(DEFAULT_READ_TIMEOUT, async {
+        loop {
+            let notification: TurnCompletedNotification =
+                mcp.read_notification("turn/completed").await?;
+            if notification.thread_id == thread_id && notification.turn.id == turn_id {
+                break Ok::<_, anyhow::Error>(notification);
+            }
+        }
+    })
+    .await??;
+    assert_eq!(completed.turn.status, TurnStatus::Completed);
+    Ok(())
+}
 
 #[tokio::test]
 async fn thread_rollback_rejects_paginated_thread() -> Result<()> {
@@ -165,16 +188,13 @@ async fn thread_rollback_drops_last_turns_and_persists_to_rollout() -> Result<()
             ..Default::default()
         })
         .await?;
-    let _turn1_resp: JSONRPCResponse = timeout(
+    let turn1_resp: JSONRPCResponse = timeout(
         DEFAULT_READ_TIMEOUT,
         mcp.read_stream_until_response_message(RequestId::Integer(turn1_id)),
     )
     .await??;
-    let _completed1 = timeout(
-        DEFAULT_READ_TIMEOUT,
-        mcp.read_stream_until_notification_message("turn/completed"),
-    )
-    .await??;
+    let TurnStartResponse { turn: turn1 } = to_response(turn1_resp)?;
+    wait_for_exact_turn_completed(&mut mcp, &thread.id, &turn1.id).await?;
 
     let turn2_id = mcp
         .send_turn_start_request(TurnStartParams {
@@ -187,16 +207,13 @@ async fn thread_rollback_drops_last_turns_and_persists_to_rollout() -> Result<()
             ..Default::default()
         })
         .await?;
-    let _turn2_resp: JSONRPCResponse = timeout(
+    let turn2_resp: JSONRPCResponse = timeout(
         DEFAULT_READ_TIMEOUT,
         mcp.read_stream_until_response_message(RequestId::Integer(turn2_id)),
     )
     .await??;
-    let _completed2 = timeout(
-        DEFAULT_READ_TIMEOUT,
-        mcp.read_stream_until_notification_message("turn/completed"),
-    )
-    .await??;
+    let TurnStartResponse { turn: turn2 } = to_response(turn2_resp)?;
+    wait_for_exact_turn_completed(&mut mcp, &thread.id, &turn2.id).await?;
     mcp.clear_message_buffer();
 
     // Roll back the last turn.
