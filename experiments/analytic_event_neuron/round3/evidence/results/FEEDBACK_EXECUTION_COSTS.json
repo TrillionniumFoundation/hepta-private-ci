@@ -1,0 +1,221 @@
+{
+  "accounting_rules": [
+    "Phase wall already contains worker and audit wall; do not add nested values into an elapsed total.",
+    "Controller process CPU excludes policy-worker and native process CPU; policy-worker CPU is a separate scope.",
+    "Native IPC wall is nested in caller wall; kernel/head timing is nested again.",
+    "Readback archive duration is nested in training/worker wall and includes verification/removal.",
+    "Task utility charges are not CPU time, energy or dollars; do not sum their units.",
+    "Development smoke and failed-attempt totals are not inferred from successful formal counters.",
+    "Shared host with concurrent main confirmation; no isolated hardware-speed or energy claim."
+  ],
+  "all_formal_episodes": 17280,
+  "audit_native_compressed_bytes": 9929555,
+  "complete": true,
+  "confirmation_owner_compressed_bytes": 32770083,
+  "confirmation_phase": {
+    "controller_parent_cpu_ns": 238387101237,
+    "scope": "Controller data creation/scoring, policy subprocesses, full native audit, per-seed freeze verification and persistence",
+    "wall_ns": 1374976403574
+  },
+  "confirmation_transport": {
+    "archive_bytes": 45398834,
+    "archive_ns": 347771888018,
+    "deliveries": 62165,
+    "files": 221055,
+    "observations": 96725
+  },
+  "covered_successful_native_requests": 214842,
+  "covered_successful_native_ticks": 379266,
+  "failed_development_training_attempt": {
+    "all_native_requests_or_ticks": null,
+    "parent_cpu_ns": null,
+    "phase": "seed701 first training attempt before freeze",
+    "reason": "ENOSPC interrupted before complete counters; all partial bytes retained and hashed",
+    "receipt": "FEEDBACK_TRAINING_OPERATIONAL_EVENT.json",
+    "wall_ns": null
+  },
+  "native_audit_nested_in_confirmation_phase": {
+    "isolated_parent_cpu_ns": null,
+    "native_requests": 57501,
+    "native_roundtrip_ns": 142678219343,
+    "native_ticks": 93633,
+    "sparse_ticks": 72264,
+    "typed_ticks": 21369,
+    "wall_ns_sum": 356264438343
+  },
+  "policy_workers_nested_in_confirmation_phase": {
+    "cpu_ns": 567491110349,
+    "native_requests": 57501,
+    "native_roundtrip_ns": 103715120260,
+    "native_ticks": 93633,
+    "wall_ns": 964508990672
+  },
+  "schema": "hepta.round3.feedback-execution-costs.v1",
+  "scopes": [
+    {
+      "audit": "feedback_confirmation/seed_607/AUDIT.json",
+      "audit_native": {
+        "native_requests": 11407,
+        "native_roundtrip_ns": 20658955003,
+        "native_ticks": 18583
+      },
+      "audit_wall_ns": 51339468360,
+      "policy_native_requests": 11407,
+      "policy_native_roundtrip_ns": 16765160334,
+      "policy_native_ticks": 18583,
+      "policy_worker_cpu_ns": 96418400627,
+      "policy_worker_wall_ns": 159909247490,
+      "seed": 607,
+      "sparse_ticks_replayed": 14352,
+      "summary": "feedback_confirmation/seed_607/SUMMARY.json",
+      "training_native": {
+        "requests": 19968,
+        "roundtrip_ns": 10410229109,
+        "ticks": 38400
+      },
+      "training_parent_cpu_ns": 43550058443,
+      "training_receipt": "feedback_prepared/seed_607/TRAINING_RECEIPT.json",
+      "training_wall_ns": 60653941927,
+      "typed_ticks_replayed": 4231
+    },
+    {
+      "audit": "feedback_confirmation/seed_701/AUDIT.json",
+      "audit_native": {
+        "native_requests": 11409,
+        "native_roundtrip_ns": 30331392937,
+        "native_ticks": 18558
+      },
+      "audit_wall_ns": 67696245249,
+      "policy_native_requests": 11409,
+      "policy_native_roundtrip_ns": 21803672659,
+      "policy_native_ticks": 18558,
+      "policy_worker_cpu_ns": 113240854041,
+      "policy_worker_wall_ns": 185659428374,
+      "seed": 701,
+      "sparse_ticks_replayed": 14298,
+      "summary": "feedback_confirmation/seed_701/SUMMARY.json",
+      "training_native": {
+        "requests": 19968,
+        "roundtrip_ns": 10615131462,
+        "ticks": 38400
+      },
+      "training_parent_cpu_ns": 43139682373,
+      "training_receipt": "feedback_prepared/seed_701/TRAINING_RECEIPT.json",
+      "training_wall_ns": 60447745647,
+      "typed_ticks_replayed": 4260
+    },
+    {
+      "audit": "feedback_confirmation/seed_809/AUDIT.json",
+      "audit_native": {
+        "native_requests": 11491,
+        "native_roundtrip_ns": 30002293150,
+        "native_ticks": 18727
+      },
+      "audit_wall_ns": 86938708170,
+      "policy_native_requests": 11491,
+      "policy_native_roundtrip_ns": 22219373304,
+      "policy_native_ticks": 18727,
+      "policy_worker_cpu_ns": 125432617730,
+      "policy_worker_wall_ns": 220288785439,
+      "seed": 809,
+      "sparse_ticks_replayed": 14472,
+      "summary": "feedback_confirmation/seed_809/SUMMARY.json",
+      "training_native": {
+        "requests": 19968,
+        "roundtrip_ns": 9631108035,
+        "ticks": 38400
+      },
+      "training_parent_cpu_ns": 38712450716,
+      "training_receipt": "feedback_prepared/seed_809/TRAINING_RECEIPT.json",
+      "training_wall_ns": 54104103068,
+      "typed_ticks_replayed": 4255
+    },
+    {
+      "audit": "feedback_confirmation/seed_907/AUDIT.json",
+      "audit_native": {
+        "native_requests": 11625,
+        "native_roundtrip_ns": 22542562016,
+        "native_ticks": 18918
+      },
+      "audit_wall_ns": 63878119212,
+      "policy_native_requests": 11625,
+      "policy_native_roundtrip_ns": 19673702702,
+      "policy_native_ticks": 18918,
+      "policy_worker_cpu_ns": 107937972166,
+      "policy_worker_wall_ns": 180309445846,
+      "seed": 907,
+      "sparse_ticks_replayed": 14586,
+      "summary": "feedback_confirmation/seed_907/SUMMARY.json",
+      "training_native": {
+        "requests": 19968,
+        "roundtrip_ns": 10055256654,
+        "ticks": 38400
+      },
+      "training_parent_cpu_ns": 37355030998,
+      "training_receipt": "feedback_prepared/seed_907/TRAINING_RECEIPT.json",
+      "training_wall_ns": 53505995444,
+      "typed_ticks_replayed": 4332
+    },
+    {
+      "audit": "feedback_confirmation/seed_1009/AUDIT.json",
+      "audit_native": {
+        "native_requests": 11569,
+        "native_roundtrip_ns": 39143016237,
+        "native_ticks": 18847
+      },
+      "audit_wall_ns": 86411897352,
+      "policy_native_requests": 11569,
+      "policy_native_roundtrip_ns": 23253211261,
+      "policy_native_ticks": 18847,
+      "policy_worker_cpu_ns": 124461265785,
+      "policy_worker_wall_ns": 218342083523,
+      "seed": 1009,
+      "sparse_ticks_replayed": 14556,
+      "summary": "feedback_confirmation/seed_1009/SUMMARY.json",
+      "training_native": {
+        "requests": 19968,
+        "roundtrip_ns": 13397273642,
+        "ticks": 38400
+      },
+      "training_parent_cpu_ns": 43738792035,
+      "training_receipt": "feedback_prepared/seed_1009/TRAINING_RECEIPT.json",
+      "training_wall_ns": 66107454337,
+      "typed_ticks_replayed": 4291
+    }
+  ],
+  "seed_count": 5,
+  "source_commit": "29174619dfc56cef1c16b34fbf98f85a1cd2e4c3",
+  "statistics_after_confirmation_phase": {
+    "frozen_source_and_model_binding": true,
+    "native_calls": 0,
+    "parent_cpu_ns": 9241804995,
+    "results_sha256": "9b6971ca4dbf5bee3d8ffacdf124ab9bf3af449d65915f1a0fb99bc81be8e9cc",
+    "source_commit": "29174619dfc56cef1c16b34fbf98f85a1cd2e4c3",
+    "wall_ns": 10007976229
+  },
+  "successful_training": {
+    "includes_train_development_actual_readbacks_and_archiving": true,
+    "native": {
+      "requests": 99840,
+      "roundtrip_ns": 54108998902,
+      "ticks": 192000
+    },
+    "parent_cpu_ns_sum": 206496014565,
+    "wall_ns_sum": 294819240423
+  },
+  "training_transport": {
+    "archive_bytes": 13296824,
+    "archive_ns": 39494433348,
+    "deliveries": 19200,
+    "files": 61440,
+    "observations": 23040
+  },
+  "unique_confirmation_trajectories": 1920,
+  "unmeasured": {
+    "energy_joules": null,
+    "hardware_write_amplification_bytes": null,
+    "monetary_cost": null,
+    "native_subprocess_cpu_ns": null,
+    "total_end_to_end_wall_ns": null
+  }
+}

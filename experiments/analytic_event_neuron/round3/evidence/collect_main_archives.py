@@ -4,7 +4,6 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
-import tarfile
 
 from .package_evidence import descriptor, sha
 
@@ -37,8 +36,12 @@ def collect(run_dir, repo, output):
             raise ValueError("Independent review is bound to different archive bytes")
         if review["analysis_sha256"] != entry["analysis_sha256"]:
             raise ValueError("Independent review is bound to different analysis bytes")
-        with tarfile.open(source, "r:gz") as archive:
-            members = json.load(archive.extractfile("ARCHIVE_MANIFEST.json"))
+        # The independent review verifies the complete member hash map, including
+        # the manifest itself. Reuse that bound count rather than decompressing
+        # tens of thousands of already checked files merely to count them again.
+        if review["archive_members"] != expected["file_count"]:
+            raise ValueError("Frozen audit and independent archive inventory differ")
+        data_members = review["archive_members"] - 1
         parts, combined = [], hashlib.sha256()
         with source.open("rb") as stream:
             while block := stream.read(8 * 1024 * 1024):
@@ -58,7 +61,7 @@ def collect(run_dir, repo, output):
             "name": name, "parts": parts, "bytes": source.stat().st_size,
             "sha256": expected["sha256"],
             "restore_root": "run/main/unpacked/" + entry["scope"],
-            "member_manifest": "ARCHIVE_MANIFEST.json", "data_members": len(members),
+            "member_manifest": "ARCHIVE_MANIFEST.json", "data_members": data_members,
             "all_member_hashes_verified": True,
             "independent_review_sha256": sha(review_path),
             "scientific_data_regenerated": False,
