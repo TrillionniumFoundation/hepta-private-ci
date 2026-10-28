@@ -212,7 +212,18 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
+      - name: Run the exact Supervisor restart-budget regression before broad reverse consumers
+        id: restart_budget_early
+        working-directory: codex-rs
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py --timeout-seconds 3600
+          --output "$RUNNER_TEMP/restart-budget-test.json" --
+          cargo test --locked -p codex-hepta-supervisor --test restart_budget_recovery
+          restart_budget_survives_repeated_supervisord_recovery -- --exact
+
       - name: Test affected owners and reverse consumers, not a hand-written package list
+        # Keep the complete original reverse-consumer gate even when the early regression fails.
+        if: success() || steps.restart_budget_early.outcome == 'failure'
         env:
           SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -241,6 +252,7 @@ jobs:
           path: |
             ${{ runner.temp }}/cargo-impact.json
             ${{ runner.temp }}/impact-test.json*
+            ${{ runner.temp }}/restart-budget-test.json*
           if-no-files-found: error
           retention-days: 14
 
