@@ -1463,7 +1463,21 @@ async fn wait_for_process_marker(marker: &str, should_exist: bool) -> Result<()>
         }
         if Instant::now() >= deadline {
             let expectation = if should_exist { "appear" } else { "exit" };
-            anyhow::bail!("process marker {marker:?} did not {expectation} before timeout");
+            let output = std::process::Command::new("ps")
+                .args(["-axo", "pid,ppid,pgid,sid,stat,command"])
+                .output()
+                .context("capture process ancestry after command/exec timeout")?;
+            let processes =
+                String::from_utf8(output.stdout).context("decode command/exec process ancestry")?;
+            let matching_processes = processes
+                .lines()
+                .filter(|line| line.contains(marker))
+                .collect::<Vec<_>>()
+                .join("\n");
+            anyhow::bail!(
+                "process marker {marker:?} did not {expectation} before timeout; \
+                 remaining pid/ppid/pgid/sid/stat/command:\n{matching_processes}"
+            );
         }
         sleep(Duration::from_millis(50)).await;
     }

@@ -50,6 +50,10 @@ jobs:
       PIP_NO_CACHE_DIR: "1"
       HF_HUB_OFFLINE: "1"
       TRANSFORMERS_OFFLINE: "1"
+      # Explicit allocator experiment; every original model/resource gate remains required.
+      MALLOC_ARENA_MAX: "2"
+      MALLOC_MMAP_THRESHOLD_: "131072"
+      MALLOC_TRIM_THRESHOLD_: "131072"
       HEPTA_PUBLIC_INITIAL_ROUND_RUNNER: ${{ github.workspace }}/hepta/scripts/hepta_smollm_observed_execution_v1.py
       HEPTA_PUBLIC_INITIAL_EXECUTION_PROFILE: hepta-original-model-observed-execution-v1
       HEPTA_PUBLIC_INITIAL_OBSERVATION_CHAIN: ${{ github.workspace }}/chain-observed
@@ -163,6 +167,20 @@ jobs:
           cat /etc/os-release > "$out/os-release.txt"
           printf '%s\n' "$ImageOS" "$ImageVersion" > "$out/runner-image.txt"
           id -u > "$out/uid.txt"
+          python3 -I -B - <<'PY_ALLOCATOR'
+          import json, os, platform
+          from pathlib import Path
+          policy = {key: os.environ[key] for key in (
+              "MALLOC_ARENA_MAX", "MALLOC_MMAP_THRESHOLD_", "MALLOC_TRIM_THRESHOLD_")}
+          record = dict(schema="hepta-host-allocator-observation-v1", values=policy,
+              libc=list(platform.libc_ver()), glibc_tunables=os.environ.get("GLIBC_TUNABLES"),
+              source_sha=os.environ["SOURCE_SHA"], original_model_source_unchanged=True,
+              original_exit_drain_ns=100000000, outcome="hypothesis-awaiting-original-gates",
+              product_qualification=False)
+          Path(os.environ["OUT"], "allocator-execution.txt").write_text(json.dumps(record, indent=2) + "\n")
+          if os.environ.get("GLIBC_TUNABLES"):
+              raise SystemExit("ambient GLIBC_TUNABLES prevents a controlled allocator comparison")
+          PY_ALLOCATOR
           for name in apparmor_restrict_unprivileged_userns unprivileged_userns_clone; do
             path="/proc/sys/kernel/$name"
             if test -r "$path"; then cat "$path" > "$out/$name.txt"; fi
