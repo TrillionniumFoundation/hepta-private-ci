@@ -12,6 +12,8 @@ import json
 import math
 from pathlib import Path
 
+from .report_provenance import audit_opening, validate_report_provenance
+
 VALUE_ARMS = {
     "value_margin",
     "value_call",
@@ -379,7 +381,13 @@ def parameter_budget(arm):
     }
 
 
-def build_summary(run_dir, engineering_path=None, amendment_path=None):
+def build_summary(
+    run_dir,
+    engineering_path=None,
+    amendment_path=None,
+    original_run=None,
+    audit_receipts=None,
+):
     root = Path(run_dir).resolve()
     audit_path = root / "AUDIT.json"
     audit = read_json(audit_path)  # Refuse to touch outcomes before audit exists.
@@ -420,9 +428,8 @@ def build_summary(run_dir, engineering_path=None, amendment_path=None):
         else root / "engineering" / "SUMMARY.json"
     )
     engineering = read_json(engineering_path)
-    require(
-        engineering["manifest_sha256"] == audit["manifest_sha256"],
-        "Engineering study belongs to another scientific run",
+    provenance = validate_report_provenance(
+        root, audit, engineering, original_run, audit_receipts
     )
     risk = split_calibration(root, manifest, scenarios)
     performance = {}
@@ -488,8 +495,19 @@ def build_summary(run_dir, engineering_path=None, amendment_path=None):
         }
     return {
         "schema": "hepta.continuous-boundary.results.v1",
-        "run_name": root.name,
-        "inputs_sha256": {key: digest(path) for key, path in inputs.items()},
+        "run_name": Path(provenance["original_run_directory"]).name,
+        "audited_input_name": root.name,
+        "audit_mode": provenance["audit_mode"],
+        "audit_provenance": provenance,
+        "original_strict_rejection": provenance["original_strict_rejection"],
+        "cost_roundoff_correction_count": provenance["correction_count"],
+        "maximum_absolute_cpu_correction_seconds": provenance[
+            "maximum_absolute_cpu_correction_seconds"
+        ],
+        "inputs_sha256": {
+            **{key: digest(path) for key, path in inputs.items()},
+            **provenance["inputs_sha256"],
+        },
         "manifest_sha256": audit["manifest_sha256"],
         "protocol_sha256": audit["protocol_sha256"],
         "source_seal_sha256": manifest["source_seal_sha256"],
@@ -543,7 +561,9 @@ def render_markdown(summary):
     lines = [
         "# Continuous-boundary confirmation results",
         "",
-        f"Run `{summary['run_name']}`: independent audit passed; **{summary['primary_gates_passed']}/3 registered primary benefit gates passed**. "
+        audit_opening(summary),
+        "",
+        f"Run `{summary['run_name']}`: **{summary['primary_gates_passed']}/3 registered primary benefit gates passed**. "
         f"There are {summary['n_independent_training_seeds']} independent training seeds and {summary['raw_episode_count']:,} audited episodes across all arms.",
         "",
         "## Pre-confirmation amendment",
@@ -741,9 +761,23 @@ def render_markdown(summary):
     return "\n".join(lines)
 
 
-def generate_report(run_dir, output=None, engineering_path=None, amendment_path=None):
-    summary = build_summary(run_dir, engineering_path, amendment_path)
-    output = Path(output) if output else Path(run_dir)
+def generate_report(
+    run_dir,
+    output=None,
+    engineering_path=None,
+    amendment_path=None,
+    original_run=None,
+    audit_receipts=None,
+):
+    summary = build_summary(
+        run_dir, engineering_path, amendment_path, original_run, audit_receipts
+    )
+    output = (Path(output) if output else Path(run_dir)).resolve()
+    if summary["audit_mode"] == "explicit_cost_roundoff_view":
+        require(
+            not output.is_relative_to(Path(run_dir).resolve()),
+            "Report outputs must be outside the exact-inventory derived audit view",
+        )
     output.mkdir(parents=True, exist_ok=True)
     artifacts = {
         "SUMMARY.json": canonical(summary) + b"\n",
@@ -765,9 +799,16 @@ def main():
     parser.add_argument("--output", type=Path)
     parser.add_argument("--engineering", type=Path)
     parser.add_argument("--amendment", type=Path)
+    parser.add_argument("--original-run", type=Path)
+    parser.add_argument("--audit-receipts", type=Path)
     args = parser.parse_args()
     result = generate_report(
-        args.run_dir, args.output, args.engineering, args.amendment
+        args.run_dir,
+        args.output,
+        args.engineering,
+        args.amendment,
+        args.original_run,
+        args.audit_receipts,
     )
     print(
         json.dumps(
