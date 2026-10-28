@@ -1,0 +1,344 @@
+﻿2026-10-28T11:09:33.3971919Z Current runner version: '2.338.0'
+2026-10-28T11:09:33.4008562Z ##[group]Runner Image Provisioner
+2026-10-28T11:09:33.4009435Z Hosted Compute Agent
+2026-10-28T11:09:33.4010086Z Version: 20261021.618
+2026-10-28T11:09:33.4010709Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-28T11:09:33.4011447Z Build Date: 2026-10-21T00:45:21Z
+2026-10-28T11:09:33.4012102Z Worker ID: {b128f0d4-e58c-44b2-8c78-717d65e6d76a}
+2026-10-28T11:09:33.4012813Z Region: eastus
+2026-10-28T11:09:33.4013317Z Cloud: Azure
+2026-10-28T11:09:33.4013826Z ##[endgroup]
+2026-10-28T11:09:33.4015262Z ##[group]Operating System
+2026-10-28T11:09:33.4015883Z Microsoft Windows Server 2025
+2026-10-28T11:09:33.4016496Z 10.0.26100
+2026-10-28T11:09:33.4017014Z Datacenter
+2026-10-28T11:09:33.4017501Z ##[endgroup]
+2026-10-28T11:09:33.4018009Z ##[group]Runner Image
+2026-10-28T11:09:33.4018547Z Image: windows-2025-vs2026
+2026-10-28T11:09:33.4019248Z Version: 20261021.278.1
+2026-10-28T11:09:33.4020698Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20261021.278/images/windows/Windows2025-VS2026-Readme.md
+2026-10-28T11:09:33.4022881Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20261021.278
+2026-10-28T11:09:33.4023842Z ##[endgroup]
+2026-10-28T11:09:33.4025033Z ##[group]GITHUB_TOKEN Permissions
+2026-10-28T11:09:33.4027003Z Contents: read
+2026-10-28T11:09:33.4027602Z Metadata: read
+2026-10-28T11:09:33.4028115Z ##[endgroup]
+2026-10-28T11:09:33.4030226Z Secret source: Actions
+2026-10-28T11:09:33.4031134Z Cache mode: write
+2026-10-28T11:09:33.4031801Z Prepare workflow directory
+2026-10-28T11:09:33.4362480Z Prepare all required actions
+2026-10-28T11:09:33.4411142Z Getting action download info
+2026-10-28T11:09:33.6238591Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-10-28T11:09:33.7672214Z Download action repository 'actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405' (SHA:a309ff8b426b58ec0e2a45f0f869d46889d02405)
+2026-10-28T11:09:33.9068529Z Download action repository 'actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f' (SHA:bbbca2ddaa5d8feaa63e36b76fdaad77386f024f)
+2026-10-28T11:09:34.1423095Z Complete job name: acl-observe
+2026-10-28T11:09:34.2858918Z ##[group]Run git config --global core.autocrlf false
+2026-10-28T11:09:34.2859958Z [36;1mgit config --global core.autocrlf false[0m
+2026-10-28T11:09:34.3623175Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-28T11:09:34.3624366Z ##[endgroup]
+2026-10-28T11:09:35.2387859Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-10-28T11:09:35.2388808Z with:
+2026-10-28T11:09:35.2389282Z   ref: b076299ecea703055a73bd1b659f6f65a3208921
+2026-10-28T11:09:35.2390380Z   persist-credentials: false
+2026-10-28T11:09:35.2391017Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-10-28T11:09:35.2395732Z   token: ***
+2026-10-28T11:09:35.2396218Z   ssh-strict: true
+2026-10-28T11:09:35.2396686Z   ssh-user: git
+2026-10-28T11:09:35.2397105Z   clean: true
+2026-10-28T11:09:35.2397553Z   sparse-checkout-cone-mode: true
+2026-10-28T11:09:35.2398090Z   fetch-depth: 1
+2026-10-28T11:09:35.2398517Z   fetch-tags: false
+2026-10-28T11:09:35.2398960Z   show-progress: true
+2026-10-28T11:09:35.2399404Z   lfs: false
+2026-10-28T11:09:35.2399820Z   submodules: false
+2026-10-28T11:09:35.2400293Z   set-safe-directory: true
+2026-10-28T11:09:35.2401018Z ##[endgroup]
+2026-10-28T11:09:35.4060291Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-10-28T11:09:35.4062106Z ##[group]Getting Git version info
+2026-10-28T11:09:35.4062843Z Working directory is 'D:\a\hepta-private-ci\hepta-private-ci'
+2026-10-28T11:09:35.5209150Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-10-28T11:09:35.5557883Z git version 2.56.0.windows.2
+2026-10-28T11:09:35.5606879Z ##[endgroup]
+2026-10-28T11:09:35.5620249Z Copying 'C:\Users\runneradmin\.gitconfig' to 'D:\a\_temp\4275f87e-dbd6-495f-94b6-ab7e7c56ab24\.gitconfig'
+2026-10-28T11:09:35.5642075Z Temporarily overriding HOME='D:\a\_temp\4275f87e-dbd6-495f-94b6-ab7e7c56ab24' before making global git config changes
+2026-10-28T11:09:35.5643779Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-28T11:09:35.5652601Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\hepta-private-ci\hepta-private-ci
+2026-10-28T11:09:35.6027923Z Deleting the contents of 'D:\a\hepta-private-ci\hepta-private-ci'
+2026-10-28T11:09:35.6033917Z ##[group]Initializing the repository
+2026-10-28T11:09:35.6043210Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\hepta-private-ci\hepta-private-ci
+2026-10-28T11:09:35.6954766Z Initialized empty Git repository in D:/a/hepta-private-ci/hepta-private-ci/.git/
+2026-10-28T11:09:35.7006686Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-10-28T11:09:35.7676999Z ##[endgroup]
+2026-10-28T11:09:35.7678177Z ##[group]Disabling automatic garbage collection
+2026-10-28T11:09:35.7685542Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-10-28T11:09:35.8061759Z ##[endgroup]
+2026-10-28T11:09:35.8063477Z ##[group]Setting up auth
+2026-10-28T11:09:35.8064347Z Removing SSH command configuration
+2026-10-28T11:09:35.8075032Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-10-28T11:09:35.8495145Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-10-28T11:09:37.2585317Z Removing HTTP extra header
+2026-10-28T11:09:37.2595437Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-28T11:09:37.2962014Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-10-28T11:09:37.8450145Z Removing includeIf entries pointing to credentials config files
+2026-10-28T11:09:37.8461829Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-28T11:09:37.8832759Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-10-28T11:09:38.4684429Z [command]"C:\Program Files\Git\bin\git.exe" config --file D:\a\_temp\git-credentials-29c56ed9-3877-4cb7-96bf-2aa6c60fbe42.config http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-10-28T11:09:38.5069791Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path D:\a\_temp\git-credentials-29c56ed9-3877-4cb7-96bf-2aa6c60fbe42.config
+2026-10-28T11:09:38.5444135Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path D:\a\_temp\git-credentials-29c56ed9-3877-4cb7-96bf-2aa6c60fbe42.config
+2026-10-28T11:09:38.5865494Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-29c56ed9-3877-4cb7-96bf-2aa6c60fbe42.config
+2026-10-28T11:09:38.6240323Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-29c56ed9-3877-4cb7-96bf-2aa6c60fbe42.config
+2026-10-28T11:09:38.6618282Z ##[endgroup]
+2026-10-28T11:09:38.6618989Z ##[group]Fetching the repository
+2026-10-28T11:09:38.6632716Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin b076299ecea703055a73bd1b659f6f65a3208921
+2026-10-28T11:09:49.1855725Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-10-28T11:09:49.1858198Z  * branch            b076299ecea703055a73bd1b659f6f65a3208921 -> FETCH_HEAD
+2026-10-28T11:09:49.1925791Z [command]"C:\Program Files\Git\bin\git.exe" rev-parse --verify --quiet b076299ecea703055a73bd1b659f6f65a3208921^{object}
+2026-10-28T11:09:49.2371708Z b076299ecea703055a73bd1b659f6f65a3208921
+2026-10-28T11:09:49.2412318Z ##[endgroup]
+2026-10-28T11:09:49.2412967Z ##[group]Determining the checkout info
+2026-10-28T11:09:49.2413863Z ##[endgroup]
+2026-10-28T11:09:49.2424225Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-10-28T11:09:49.3043513Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-10-28T11:09:49.3448817Z ##[group]Checking out the ref
+2026-10-28T11:09:49.3458768Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force b076299ecea703055a73bd1b659f6f65a3208921
+2026-10-28T11:09:50.4383436Z Updating files:  25% (3392/13313)
+2026-10-28T11:09:50.4747618Z Updating files:  26% (3462/13313)
+2026-10-28T11:09:50.5126038Z Updating files:  27% (3595/13313)
+2026-10-28T11:09:50.5502658Z Updating files:  28% (3728/13313)
+2026-10-28T11:09:50.6099736Z Updating files:  29% (3861/13313)
+2026-10-28T11:09:50.6500081Z Updating files:  30% (3994/13313)
+2026-10-28T11:09:50.6883886Z Updating files:  31% (4128/13313)
+2026-10-28T11:09:50.7269493Z Updating files:  32% (4261/13313)
+2026-10-28T11:09:50.7671503Z Updating files:  33% (4394/13313)
+2026-10-28T11:09:50.8062324Z Updating files:  34% (4527/13313)
+2026-10-28T11:09:50.8448971Z Updating files:  35% (4660/13313)
+2026-10-28T11:09:50.8866319Z Updating files:  36% (4793/13313)
+2026-10-28T11:09:50.9244443Z Updating files:  37% (4926/13313)
+2026-10-28T11:09:50.9615657Z Updating files:  38% (5059/13313)
+2026-10-28T11:09:51.0006378Z Updating files:  39% (5193/13313)
+2026-10-28T11:09:51.0383129Z Updating files:  40% (5326/13313)
+2026-10-28T11:09:51.0767729Z Updating files:  41% (5459/13313)
+2026-10-28T11:09:51.1142259Z Updating files:  42% (5592/13313)
+2026-10-28T11:09:51.1504669Z Updating files:  43% (5725/13313)
+2026-10-28T11:09:51.2299679Z Updating files:  44% (5858/13313)
+2026-10-28T11:09:51.4178797Z Updating files:  45% (5991/13313)
+2026-10-28T11:09:51.4321504Z Updating files:  46% (6124/13313)
+2026-10-28T11:09:51.4623314Z Updating files:  46% (6171/13313)
+2026-10-28T11:09:51.5108684Z Updating files:  47% (6258/13313)
+2026-10-28T11:09:51.5496995Z Updating files:  48% (6391/13313)
+2026-10-28T11:09:51.5830993Z Updating files:  49% (6524/13313)
+2026-10-28T11:09:51.6220751Z Updating files:  50% (6657/13313)
+2026-10-28T11:09:51.6553219Z Updating files:  51% (6790/13313)
+2026-10-28T11:09:51.6833329Z Updating files:  52% (6923/13313)
+2026-10-28T11:09:51.7114638Z Updating files:  53% (7056/13313)
+2026-10-28T11:09:51.7521742Z Updating files:  54% (7190/13313)
+2026-10-28T11:09:51.7892040Z Updating files:  55% (7323/13313)
+2026-10-28T11:09:51.8278217Z Updating files:  56% (7456/13313)
+2026-10-28T11:09:51.8605312Z Updating files:  57% (7589/13313)
+2026-10-28T11:09:51.8971723Z Updating files:  58% (7722/13313)
+2026-10-28T11:09:51.9430294Z Updating files:  59% (7855/13313)
+2026-10-28T11:09:51.9803396Z Updating files:  60% (7988/13313)
+2026-10-28T11:09:52.0094611Z Updating files:  61% (8121/13313)
+2026-10-28T11:09:52.0379726Z Updating files:  62% (8255/13313)
+2026-10-28T11:09:52.0742265Z Updating files:  63% (8388/13313)
+2026-10-28T11:09:52.1176364Z Updating files:  64% (8521/13313)
+2026-10-28T11:09:52.1516665Z Updating files:  65% (8654/13313)
+2026-10-28T11:09:52.1864532Z Updating files:  66% (8787/13313)
+2026-10-28T11:09:52.2164583Z Updating files:  67% (8920/13313)
+2026-10-28T11:09:52.2529347Z Updating files:  68% (9053/13313)
+2026-10-28T11:09:52.2927935Z Updating files:  69% (9186/13313)
+2026-10-28T11:09:52.3330573Z Updating files:  70% (9320/13313)
+2026-10-28T11:09:52.3685397Z Updating files:  71% (9453/13313)
+2026-10-28T11:09:52.4081565Z Updating files:  72% (9586/13313)
+2026-10-28T11:09:52.4331514Z Updating files:  73% (9719/13313)
+2026-10-28T11:09:52.4445310Z Updating files:  73% (9812/13313)
+2026-10-28T11:09:52.5461669Z Updating files:  74% (9852/13313)
+2026-10-28T11:09:52.7656374Z Updating files:  75% (9985/13313)
+2026-10-28T11:09:52.8044491Z Updating files:  76% (10118/13313)
+2026-10-28T11:09:52.8411179Z Updating files:  77% (10252/13313)
+2026-10-28T11:09:52.8922320Z Updating files:  78% (10385/13313)
+2026-10-28T11:09:52.9400971Z Updating files:  79% (10518/13313)
+2026-10-28T11:09:52.9901973Z Updating files:  80% (10651/13313)
+2026-10-28T11:09:53.0271348Z Updating files:  81% (10784/13313)
+2026-10-28T11:09:53.0687047Z Updating files:  82% (10917/13313)
+2026-10-28T11:09:53.1112201Z Updating files:  83% (11050/13313)
+2026-10-28T11:09:53.1522324Z Updating files:  84% (11183/13313)
+2026-10-28T11:09:53.1972520Z Updating files:  85% (11317/13313)
+2026-10-28T11:09:53.2370200Z Updating files:  86% (11450/13313)
+2026-10-28T11:09:53.2758777Z Updating files:  87% (11583/13313)
+2026-10-28T11:09:53.3103474Z Updating files:  88% (11716/13313)
+2026-10-28T11:09:53.3548811Z Updating files:  89% (11849/13313)
+2026-10-28T11:09:53.3968539Z Updating files:  90% (11982/13313)
+2026-10-28T11:09:53.4328874Z Updating files:  91% (12115/13313)
+2026-10-28T11:09:53.4455849Z Updating files:  92% (12248/13313)
+2026-10-28T11:09:53.4732041Z Updating files:  92% (12300/13313)
+2026-10-28T11:09:53.5311885Z Updating files:  93% (12382/13313)
+2026-10-28T11:09:53.5833576Z Updating files:  94% (12515/13313)
+2026-10-28T11:09:53.6221164Z Updating files:  95% (12648/13313)
+2026-10-28T11:09:53.6617434Z Updating files:  96% (12781/13313)
+2026-10-28T11:09:53.7001210Z Updating files:  97% (12914/13313)
+2026-10-28T11:09:53.7383493Z Updating files:  98% (13047/13313)
+2026-10-28T11:09:53.7750818Z Updating files:  99% (13180/13313)
+2026-10-28T11:09:53.7751451Z Updating files: 100% (13313/13313)
+2026-10-28T11:09:53.7751795Z Updating files: 100% (13313/13313), done.
+2026-10-28T11:09:53.8033090Z Note: switching to 'b076299ecea703055a73bd1b659f6f65a3208921'.
+2026-10-28T11:09:53.8033612Z 
+2026-10-28T11:09:53.8035021Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-28T11:09:53.8035851Z changes and commit them, and you can discard any commits you make in this
+2026-10-28T11:09:53.8036320Z state without impacting any branches by switching back to a branch.
+2026-10-28T11:09:53.8036981Z 
+2026-10-28T11:09:53.8037174Z If you want to create a new branch to retain commits you create, you may
+2026-10-28T11:09:53.8037994Z do so (now or later) by using -c with the switch command. Example:
+2026-10-28T11:09:53.8038410Z 
+2026-10-28T11:09:53.8038579Z   git switch -c <new-branch-name>
+2026-10-28T11:09:53.8038747Z 
+2026-10-28T11:09:53.8038842Z Or undo this operation with:
+2026-10-28T11:09:53.8038996Z 
+2026-10-28T11:09:53.8039065Z   git switch -
+2026-10-28T11:09:53.8039179Z 
+2026-10-28T11:09:53.8039377Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-28T11:09:53.8039694Z 
+2026-10-28T11:09:53.8039953Z HEAD is now at b076299 ci(windows): run isolated ACL observations with an available Python release
+2026-10-28T11:09:53.8177136Z ##[endgroup]
+2026-10-28T11:09:53.8678262Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-10-28T11:09:53.9055183Z b076299ecea703055a73bd1b659f6f65a3208921
+2026-10-28T11:09:53.9107361Z ##[group]Removing auth
+2026-10-28T11:09:53.9107765Z Removing SSH command configuration
+2026-10-28T11:09:53.9121600Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-10-28T11:09:53.9903771Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-10-28T11:09:54.6321904Z Removing HTTP extra header
+2026-10-28T11:09:54.6332663Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-28T11:09:54.6735126Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-10-28T11:09:55.2873902Z Removing includeIf entries pointing to credentials config files
+2026-10-28T11:09:55.2888796Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-28T11:09:55.3314750Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-10-28T11:09:55.3315797Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-10-28T11:09:55.3316512Z includeif.gitdir:/github/workspace/.git.path
+2026-10-28T11:09:55.3317050Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-28T11:09:55.3366422Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-10-28T11:09:55.3741019Z D:\a\_temp\git-credentials-29c56ed9-3877-4cb7-96bf-2aa6c60fbe42.config
+2026-10-28T11:09:55.3796074Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path D:\a\_temp\git-credentials-29c56ed9-3877-4cb7-96bf-2aa6c60fbe42.config
+2026-10-28T11:09:55.4311672Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-10-28T11:09:55.4737316Z D:\a\_temp\git-credentials-29c56ed9-3877-4cb7-96bf-2aa6c60fbe42.config
+2026-10-28T11:09:55.4790901Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path D:\a\_temp\git-credentials-29c56ed9-3877-4cb7-96bf-2aa6c60fbe42.config
+2026-10-28T11:09:55.5305739Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-10-28T11:09:55.5715684Z /github/runner_temp/git-credentials-29c56ed9-3877-4cb7-96bf-2aa6c60fbe42.config
+2026-10-28T11:09:55.5781034Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-29c56ed9-3877-4cb7-96bf-2aa6c60fbe42.config
+2026-10-28T11:09:55.6340973Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-28T11:09:55.6717559Z /github/runner_temp/git-credentials-29c56ed9-3877-4cb7-96bf-2aa6c60fbe42.config
+2026-10-28T11:09:55.6766542Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-29c56ed9-3877-4cb7-96bf-2aa6c60fbe42.config
+2026-10-28T11:09:55.7184830Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-10-28T11:09:56.2997764Z Removing credentials config 'D:\a\_temp\git-credentials-29c56ed9-3877-4cb7-96bf-2aa6c60fbe42.config'
+2026-10-28T11:09:56.3009695Z ##[endgroup]
+2026-10-28T11:09:56.3398181Z ##[group]Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+2026-10-28T11:09:56.3398665Z with:
+2026-10-28T11:09:56.3398857Z   python-version: 3.12.10
+2026-10-28T11:09:56.3399088Z   check-latest: false
+2026-10-28T11:09:56.3402163Z   token: ***
+2026-10-28T11:09:56.3402372Z   update-environment: true
+2026-10-28T11:09:56.3402620Z   allow-prereleases: false
+2026-10-28T11:09:56.3402856Z   freethreaded: false
+2026-10-28T11:09:56.3403550Z ##[endgroup]
+2026-10-28T11:09:56.5020960Z ##[group]Installed versions
+2026-10-28T11:09:56.5081338Z Successfully set up CPython (3.12.10)
+2026-10-28T11:09:56.5082335Z ##[endgroup]
+2026-10-28T11:09:56.5370680Z ##[group]Run $toolchain = python -c 'import pathlib,tomllib; print(tomllib.loads(pathlib.Path("codex-rs/rust-toolchain.toml").read_text())["toolchain"]["channel"])'
+2026-10-28T11:09:56.5373122Z [36;1m$toolchain = python -c 'import pathlib,tomllib; print(tomllib.loads(pathlib.Path("codex-rs/rust-toolchain.toml").read_text())["toolchain"]["channel"])'[0m
+2026-10-28T11:09:56.5373886Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+2026-10-28T11:09:56.5374377Z [36;1mif ($toolchain -notmatch '^\d+\.\d+\.\d+$') { throw "Expected an exact committed Rust release" }[0m
+2026-10-28T11:09:56.5374929Z [36;1mrustup toolchain install $toolchain --profile minimal[0m
+2026-10-28T11:09:56.5375267Z [36;1mexit $LASTEXITCODE[0m
+2026-10-28T11:09:56.5452953Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-28T11:09:56.5453304Z env:
+2026-10-28T11:09:56.5453568Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-28T11:09:56.5454117Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-28T11:09:56.5454596Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-28T11:09:56.5455020Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-28T11:09:56.5455432Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-28T11:09:56.5455743Z ##[endgroup]
+2026-10-28T11:09:58.3626618Z info: syncing channel updates for 1.96.0-x86_64-pc-windows-msvc
+2026-10-28T11:09:58.8669176Z info: latest update on 2026-05-28 for version 1.96.0 (ac68faa20 2026-05-25)
+2026-10-28T11:09:58.8761982Z info: downloading 3 components
+2026-10-28T11:10:07.5890109Z 
+2026-10-28T11:10:07.7306001Z   1.96.0-x86_64-pc-windows-msvc installed - rustc 1.96.0 (ac68faa20 2026-05-25)
+2026-10-28T11:10:07.7306620Z 
+2026-10-28T11:10:07.7976189Z ##[group]Run python -m unittest experiments.multimodal_output_portfolio.closure_20261028.ops_windows_acl_probe_tests -v
+2026-10-28T11:10:07.7977165Z [36;1mpython -m unittest experiments.multimodal_output_portfolio.closure_20261028.ops_windows_acl_probe_tests -v[0m
+2026-10-28T11:10:07.7977779Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+2026-10-28T11:10:07.7978592Z [36;1mpython experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe.py --expected-head "$env:EXPECTED_HEAD" --output-dir "$env:RUNNER_TEMP/hepta-windows-acl"[0m
+2026-10-28T11:10:07.7979346Z [36;1mexit $LASTEXITCODE[0m
+2026-10-28T11:10:07.8054850Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-28T11:10:07.8055188Z env:
+2026-10-28T11:10:07.8055467Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-28T11:10:07.8055941Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-28T11:10:07.8056454Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-28T11:10:07.8056894Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-28T11:10:07.8057300Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-28T11:10:07.8057700Z   EXPECTED_HEAD: b076299ecea703055a73bd1b659f6f65a3208921
+2026-10-28T11:10:07.8057988Z ##[endgroup]
+2026-10-28T11:10:12.6542687Z test_actual_git_rejects_live_and_index_only_source_changes (experiments.multimodal_output_portfolio.closure_20261028.ops_windows_acl_probe_tests.ProbeIntegrityTests.test_actual_git_rejects_live_and_index_only_source_changes) ... ok
+2026-10-28T11:10:12.6556955Z test_complete_transcript_keeps_false_invariant_as_observed_failure (experiments.multimodal_output_portfolio.closure_20261028.ops_windows_acl_probe_tests.ProbeIntegrityTests.test_complete_transcript_keeps_false_invariant_as_observed_failure) ... ok
+2026-10-28T11:10:12.8169842Z test_dependency_without_existing_checksum_cannot_enter_probe (experiments.multimodal_output_portfolio.closure_20261028.ops_windows_acl_probe_tests.ProbeIntegrityTests.test_dependency_without_existing_checksum_cannot_enter_probe) ... ok
+2026-10-28T11:10:12.8213959Z test_incomplete_or_duplicated_native_observation_cannot_complete (experiments.multimodal_output_portfolio.closure_20261028.ops_windows_acl_probe_tests.ProbeIntegrityTests.test_incomplete_or_duplicated_native_observation_cannot_complete) ... ok
+2026-10-28T11:10:12.8216149Z 
+2026-10-28T11:10:12.8216370Z ----------------------------------------------------------------------
+2026-10-28T11:10:12.8216788Z Ran 4 tests in 2.682s
+2026-10-28T11:10:12.8216945Z 
+2026-10-28T11:10:12.8217028Z OK
+2026-10-28T11:10:23.4968177Z {"status": "observations_completed", "output": "D:\\a\\_temp\\hepta-windows-acl"}
+2026-10-28T11:10:23.5562494Z ##[group]Run actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+2026-10-28T11:10:23.5562987Z with:
+2026-10-28T11:10:23.5563278Z   name: ndu-windows-acl-b076299ecea703055a73bd1b659f6f65a3208921
+2026-10-28T11:10:23.5563641Z   path: D:\a\_temp/hepta-windows-acl
+2026-10-28T11:10:23.5563898Z   if-no-files-found: error
+2026-10-28T11:10:23.5564113Z   compression-level: 6
+2026-10-28T11:10:23.5564308Z   overwrite: false
+2026-10-28T11:10:23.5564510Z   include-hidden-files: false
+2026-10-28T11:10:23.5564743Z   archive: true
+2026-10-28T11:10:23.5564909Z env:
+2026-10-28T11:10:23.5565157Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-28T11:10:23.5565606Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-28T11:10:23.5566521Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-28T11:10:23.5566930Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-28T11:10:23.5586974Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-28T11:10:23.5587411Z ##[endgroup]
+2026-10-28T11:10:23.7579638Z With the provided path, there will be 5 files uploaded
+2026-10-28T11:10:23.7586808Z Artifact name is valid!
+2026-10-28T11:10:23.7588319Z Root directory input is valid!
+2026-10-28T11:10:23.9553148Z Uploading artifact: ndu-windows-acl-b076299ecea703055a73bd1b659f6f65a3208921.zip
+2026-10-28T11:10:23.9595977Z Beginning upload of artifact content to blob storage
+2026-10-28T11:10:24.0410805Z Uploaded bytes 15029
+2026-10-28T11:10:24.0566296Z Finished uploading artifact content to blob storage!
+2026-10-28T11:10:24.0567362Z SHA256 digest of uploaded artifact is 727f4f5628793ffcbb359bef20b30d96feddfb107f5ea699b086473df84ad698
+2026-10-28T11:10:24.0568788Z Finalizing artifact upload
+2026-10-28T11:10:24.7785135Z Artifact ndu-windows-acl-b076299ecea703055a73bd1b659f6f65a3208921 successfully finalized. Artifact ID 12811650791
+2026-10-28T11:10:24.7787180Z Artifact ndu-windows-acl-b076299ecea703055a73bd1b659f6f65a3208921 has been successfully uploaded! Final size is 15029 bytes. Artifact ID is 12811650791
+2026-10-28T11:10:24.7796852Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677753899/artifacts/12811650791
+2026-10-28T11:10:24.8172916Z Post job cleanup.
+2026-10-28T11:10:24.9938624Z Post job cleanup.
+2026-10-28T11:10:25.2220750Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-10-28T11:10:25.2578005Z git version 2.56.0.windows.2
+2026-10-28T11:10:25.2644987Z Copying 'C:\Users\runneradmin\.gitconfig' to 'D:\a\_temp\da2b8226-1403-45ed-9603-58293cb5128d\.gitconfig'
+2026-10-28T11:10:25.2668709Z Temporarily overriding HOME='D:\a\_temp\da2b8226-1403-45ed-9603-58293cb5128d' before making global git config changes
+2026-10-28T11:10:25.2670085Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-28T11:10:25.2679432Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\hepta-private-ci\hepta-private-ci
+2026-10-28T11:10:25.3095997Z Removing SSH command configuration
+2026-10-28T11:10:25.3107999Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-10-28T11:10:25.3552501Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-10-28T11:10:25.9392959Z Removing HTTP extra header
+2026-10-28T11:10:25.9403679Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-28T11:10:25.9802763Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-10-28T11:10:26.5715043Z Removing includeIf entries pointing to credentials config files
+2026-10-28T11:10:26.5727753Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-28T11:10:26.6074978Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-10-28T11:10:26.6076681Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-10-28T11:10:26.6122884Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-10-28T11:10:26.6466539Z D:\a\_temp\git-credentials-29c56ed9-3877-4cb7-96bf-2aa6c60fbe42.config
+2026-10-28T11:10:26.6517455Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path D:\a\_temp\git-credentials-29c56ed9-3877-4cb7-96bf-2aa6c60fbe42.config
+2026-10-28T11:10:26.6913205Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-10-28T11:10:26.7258893Z D:\a\_temp\git-credentials-29c56ed9-3877-4cb7-96bf-2aa6c60fbe42.config
+2026-10-28T11:10:26.7307915Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path D:\a\_temp\git-credentials-29c56ed9-3877-4cb7-96bf-2aa6c60fbe42.config
+2026-10-28T11:10:26.7717565Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-10-28T11:10:27.3832606Z Removing credentials config 'D:\a\_temp\git-credentials-29c56ed9-3877-4cb7-96bf-2aa6c60fbe42.config'
+2026-10-28T11:10:27.4050634Z Cleaning up orphan processes
+2026-10-28T11:10:27.4743407Z Terminate orphan process: pid (4288) (vctip)

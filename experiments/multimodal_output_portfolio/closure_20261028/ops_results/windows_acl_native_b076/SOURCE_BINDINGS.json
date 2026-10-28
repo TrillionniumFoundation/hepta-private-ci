@@ -1,0 +1,76 @@
+{
+  "main_head": "792beb14600f9b49b04ed18f9061e11d0e163759",
+  "helper_head": "b076299ecea703055a73bd1b659f6f65a3208921",
+  "helper_parent": "792beb14600f9b49b04ed18f9061e11d0e163759",
+  "helper_only_changed_path": ".github/workflows/ndu-windows-storage-probe.yml",
+  "source_checks": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+      "sha256": "3fe5daee06868755f298a415864e4087984f95b1d20325a86687638bba4cd8ac",
+      "git_blob": "8945d75fe172679479b738e6266cac99a6f7ed16",
+      "same_as_exact_main": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+      "sha256": "58976c6d1594c116dfd108316bb748b5cf2e9f108785605eaa93c96b77145b83",
+      "git_blob": "755083dd97ef25065692028405412326e4e2ac49",
+      "same_as_exact_main": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/winutil.rs",
+      "sha256": "12e2413a588b62ff3cc91c70c626a20801f4f84c0f4ea858ca7eb41e83a92185",
+      "git_blob": "45378b4bb527ce2b202913ab3b21aad9ef4b1828",
+      "same_as_exact_main": true
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "sha256": "c335e0649d5d516cadd52d68c1a15ed5c136814d11553ef5c791ea7e5058a478",
+      "git_blob": "ccb051d9092fc07d30bb41d850eb79cf17d23592",
+      "same_as_exact_main": true
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "sha256": "6b9741f85cd8bd3b5fab5ac163c69a18ea9dde05c967ae5cb85d8af400b7590e",
+      "git_blob": "f7af2898ff4f9cfff98e19eb7e6c78163f6c6d4d",
+      "same_as_exact_main": true
+    },
+    {
+      "path": "codex-rs/rust-toolchain.toml",
+      "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+      "git_blob": "917d2492264a35bc9c0feaef41878d8825870866",
+      "same_as_exact_main": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/Cargo.toml",
+      "sha256": "dce261976c1eb7b943da155c6663241b3631e21ff8221df268ff1d104cba33fe",
+      "git_blob": "3886cbd222c32a8b0544c2cc0f01c545d7048bc9",
+      "same_as_exact_main": true
+    },
+    {
+      "path": ".github/workflows/ndu-windows-storage-probe.yml",
+      "helper_sha256": "63cb2ac0cd1e943ff42ee9e6a6741bb8b8fe950ce0d1931629a93090befdb168",
+      "helper_git_blob": "8a8ebf45f8d7a11289c4cebb71208fd8911e6ab2",
+      "expected_helper_workflow_difference": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe.rs",
+      "sha256": "b8bbc9d7a69f6f00941c03ec28152e4ac90c81e9ea8f0775c9f34dc8a7b2fa3c",
+      "git_blob": "c9be5f63f1382252f55518420c4b094381ce2dbb",
+      "same_as_exact_main": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe_support.rs",
+      "sha256": "7bfb9f1d113668715f2a36ad22bd0bf42e3a4f0661bd1db7bc5530571e5e9a33",
+      "git_blob": "816ce354d22bca58da4f367ac07fafdeaa901b4e",
+      "same_as_exact_main": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe.py",
+      "sha256": "c616d6b9456b72f19f5a718d6d2fef281ca57c6c8fb08f540544be782cdfbc96",
+      "git_blob": "59cef93339f23a8aff851aa1093bba3ff690f80b",
+      "same_as_exact_main": true
+    }
+  ],
+  "raw_transcript_reparsed_exactly": true,
+  "isolated_lock_equals_committed_dependency_closure": true
+}

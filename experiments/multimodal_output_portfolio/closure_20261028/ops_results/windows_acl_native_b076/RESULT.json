@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.windows-acl-native-review.v1",
+  "run_id": 40677753899,
+  "job_id": 122780389607,
+  "main_head": "792beb14600f9b49b04ed18f9061e11d0e163759",
+  "helper_head": "b076299ecea703055a73bd1b659f6f65a3208921",
+  "artifact_id": 12811650791,
+  "artifact_bytes": 15029,
+  "artifact_sha256": "727f4f5628793ffcbb359bef20b30d96feddfb107f5ea699b086473df84ad698",
+  "native_toolchain": "1.96.0",
+  "native_python": "3.12.10",
+  "native_build_and_execution": "completed",
+  "python_custody_tests": {
+    "tests": 4,
+    "passed": 4,
+    "seconds": 2.682
+  },
+  "qualification": false,
+  "main_blocking_ci_passed": false,
+  "checks": 26,
+  "open_probes": 84,
+  "actual_operation_records": 16,
+  "invariant_failures": [
+    "partial.repeat.root",
+    "partial.repeat.file",
+    "broad.refuse.delete_file",
+    "broad.refuse.delete_directory",
+    "broad.refuse.delete_protected",
+    "broad.final.outside_content_preserved",
+    "broad.final.outside_directory_preserved",
+    "broad.final.protected_directory_preserved"
+  ],
+  "source_and_lock_binding_passed": true,
+  "all_zip_crcs_passed": true,
+  "actual_facts": [
+    "Windows stores the complete directory deny as one effective ACE (flags 0x00, mask 0x00130156) plus one inherit-only recursive ACE (flags 0x0b, mask 0x40130156; mapped 0x00130156). Repeating the current repair duplicates both ACEs.",
+    "Windows stores the complete explicit file deny with flags 0x00. Repeating the current repair duplicates it. The current exact-flags-0x03 single-ACE predicate does not recognize either valid stored form.",
+    "Outside and protected-directory ordinary writes fail with OS error 5; full reads succeed. DELETE_CHILD-only opens succeed, including a directory with the complete capability deny. Adding FILE_WRITE_DATA to DELETE_CHILD fails.",
+    "Outside file/directory and protected .git are actually deleted. Authorized workspace/temp create/delete operations succeed.",
+    "DELETE-only opens outside/protected paths succeed, but partial-root DELETE itself is denied. These observations do not justify claiming every DELETE path skips restriction: parent DELETE_CHILD remains an alternate authorization route."
+  ],
+  "conclusions": [
+    "Two real independent defects remain: native ACE normalization breaks idempotence, and write-restricted capability enforcement does not block parent DELETE_CHILD sufficiently to enforce the promised workspace-only deletion scope.",
+    "A safe ACE fix must preserve effective and recursively inherited deny coverage, distinguish file scope using a stable target identity, and retain all missing-right/scope/order negatives.",
+    "Removing WRITE_RESTRICTED or accepting broad identity restricting SIDs would alter the full-read/authorization contract. No such production change has been made.",
+    "The diagnostic job success proves complete observations only. Original permission tests and full sandbox semantics remain open."
+  ]
+}

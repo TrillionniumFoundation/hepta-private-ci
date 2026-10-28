@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.windows-acl-probe.runtime-correction.v1",
+  "failed_head": "792beb14600f9b49b04ed18f9061e11d0e163759",
+  "run_id": 40677089458,
+  "job_id": 122778158078,
+  "failure": "actions/setup-python could not find Python 3.12.14 for Windows 2025 x64; Rust build and native permission observations never started. No ACL artifact existed.",
+  "cause": "Existing Linux workflow patch pin was incorrectly reused without checking Windows binary availability.",
+  "fix": "Pin existing official Windows x64 Python 3.12.10; retain exact action SHA and all diagnostic/production code.",
+  "official_version_evidence": "3.12.14 stable has no Windows x64 file; 3.12.10 stable has python-3.12.10-win32-x64.zip in release 3.12.10-14343898437.",
+  "old_workflow_sha256": "8c5c3f8f68cbebb3e423524cd9febcd4bb471bc1cd0fe2352a907783e1f099da",
+  "new_workflow_sha256": "edee15eb6877cfb7a30f4f45a2ce4c7565c1b832b9e21ceeb3924a934b140b11",
+  "frozen_probe_manifest_sha256": "4169a0711c9e22c94a0fa5e2a524ef1bff38e579bae8f516e4205dec243d2436",
+  "original_permission_failures": "remain open; this is only diagnostic runtime setup repair",
+  "validation": {
+    "git_diff_check": 0,
+    "windows_rerun": "pending next publication"
+  }
+}

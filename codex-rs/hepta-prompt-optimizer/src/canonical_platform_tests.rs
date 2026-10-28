@@ -8,7 +8,6 @@ use codex_hepta_contracts::FinalUseError;
 use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_prompt_registry::DurablePromptRegistry;
 use codex_hepta_prompt_registry::DurableRegistryError;
-use pretty_assertions::assert_eq;
 
 fn capture_tree(root: &Path) -> BTreeMap<PathBuf, Option<Vec<u8>>> {
     let mut image = BTreeMap::new();
