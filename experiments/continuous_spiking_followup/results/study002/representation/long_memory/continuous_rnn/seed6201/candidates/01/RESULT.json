@@ -1,0 +1,149 @@
+{
+  "arrays_manifest_sha256": "094f14deb62094bf68dc3d7323f370066cfd2f8fc9ada8eda879745f36b0761a",
+  "budget_exhausted": true,
+  "candidate_index": 1,
+  "checkpoint_manifest_sha256": "b6b6a5bd410b5173843a6411120e7664bb84d45adfe7383e9ed846fc047afe41",
+  "checkpoint_reload_max_error": 0.0,
+  "checkpoint_scope": "inference model state; optimizer/RNG continuation not retained",
+  "costs_seconds": {
+    "reload_cpu": 0.014283741999999933,
+    "reload_wall": 0.014286323996202555,
+    "serialization_cpu": 0.06860168300000069,
+    "serialization_wall": 0.06860465899808332,
+    "training_cpu": 12.013689728,
+    "training_wall": 12.036227491000318,
+    "validation_cpu": 0.07488892299999961,
+    "validation_wall": 0.07489343798806658
+  },
+  "cpu_budget_overshoot_seconds": 0.013689727999999235,
+  "cpu_budget_seconds": 12.0,
+  "examples_seen": 19232,
+  "gradient_groups": {
+    "backbone.blocks.0.cell.candidate.bias": {
+      "finite": true,
+      "l1": 0.23938389122486115
+    },
+    "backbone.blocks.0.cell.candidate.weight": {
+      "finite": true,
+      "l1": 5.939108371734619
+    },
+    "backbone.blocks.0.cell.log_rate": {
+      "finite": true,
+      "l1": 0.02234126254916191
+    },
+    "frontend.0.bias": {
+      "finite": true,
+      "l1": 0.2961132824420929
+    },
+    "frontend.0.weight": {
+      "finite": true,
+      "l1": 2.6013565063476562
+    },
+    "frontend.1.bias": {
+      "finite": true,
+      "l1": 0.060087088495492935
+    },
+    "frontend.1.weight": {
+      "finite": true,
+      "l1": 0.026985663920640945
+    },
+    "readout.bias": {
+      "finite": true,
+      "l1": 0.21674232184886932
+    },
+    "readout.weight": {
+      "finite": true,
+      "l1": 1.4863951206207275
+    }
+  },
+  "history": [
+    {
+      "crossed_milestone_fractions": [
+        0.25
+      ],
+      "examples_seen": 6944,
+      "final": false,
+      "last_gradient_norm": 0.20542679727077484,
+      "last_train_loss": 1.3936996459960938,
+      "training_cpu_seconds": 3.004283996999991,
+      "training_wall_seconds": 3.0044835680091637,
+      "update": 217,
+      "validation": {
+        "accuracy": 0.2265625,
+        "brier": 0.757781445980072,
+        "cases": 256,
+        "cross_entropy": 1.4011775255203247
+      }
+    },
+    {
+      "crossed_milestone_fractions": [
+        0.5
+      ],
+      "examples_seen": 10496,
+      "final": false,
+      "last_gradient_norm": 0.4782375395298004,
+      "last_train_loss": 1.445883870124817,
+      "training_cpu_seconds": 6.002798635000005,
+      "training_wall_seconds": 6.018383801972959,
+      "update": 328,
+      "validation": {
+        "accuracy": 0.23828125,
+        "brier": 0.7666419744491577,
+        "cases": 256,
+        "cross_entropy": 1.4191678762435913
+      }
+    },
+    {
+      "crossed_milestone_fractions": [
+        1.0
+      ],
+      "examples_seen": 19232,
+      "final": true,
+      "last_gradient_norm": 0.38022714853286743,
+      "last_train_loss": 1.3454506397247314,
+      "training_cpu_seconds": 12.013689728,
+      "training_wall_seconds": 12.036227491000318,
+      "update": 601,
+      "validation": {
+        "accuracy": 0.23828125,
+        "brier": 0.7668325901031494,
+        "cases": 256,
+        "cross_entropy": 1.4208590984344482
+      }
+    }
+  ],
+  "initialization_cpu_seconds": 0.0028552740000016286,
+  "last_update_cpu_seconds": 0.014568753999999018,
+  "learning_rate": 0.003,
+  "minibatch_rng_seed": 6978,
+  "model_config": {
+    "architecture": "continuous_rnn",
+    "classes": 4,
+    "depth": 1,
+    "input_dim": 64,
+    "match_cell_budget": false,
+    "seed": 6201,
+    "width": 32
+  },
+  "parameters": {
+    "backbone": 2112,
+    "frontend": 2208,
+    "matching": null,
+    "readout": 132,
+    "total": 4452
+  },
+  "selected_update": 217,
+  "selected_validation_ce": 1.4011775255203247,
+  "sequence_positions": 615424,
+  "termination": "cpu_budget",
+  "total_cpu_seconds": 12.180364454,
+  "total_wall_seconds": 12.202040570002282,
+  "unique_examples_seen": 2048,
+  "update_record_columns": [
+    "loss",
+    "gradient_norm",
+    "cpu_seconds",
+    "wall_seconds"
+  ],
+  "updates_completed": 601
+}

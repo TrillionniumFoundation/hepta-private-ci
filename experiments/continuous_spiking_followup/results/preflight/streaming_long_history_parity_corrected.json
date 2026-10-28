@@ -1,0 +1,116 @@
+{
+  "scope": "pre-seal T128 irregular-time parity using ten existing trained study001 checkpoints, random heldout diagnostic inputs; not new task quality evidence",
+  "seed": 91307,
+  "batch_size": 3,
+  "length": 128,
+  "input_distribution": "standard normal; dt=.05+1.25*Uniform(0,1), dt at every seventeenth step zero",
+  "rtol": 3e-05,
+  "atol": 3e-06,
+  "cases": [
+    {
+      "architecture": "hcsn",
+      "checkpoint": "experiments/continuous_spiking_network/results/study001/representation/mnist/hcsn/seed2201/checkpoint",
+      "checkpoint_manifest_sha256": "e64f6c17d993ca3122a65e12379a46d18e9a558b463b16f9cda50086e82cec10",
+      "max_abs_logit_error": 0.0,
+      "within_declared_tolerance": true,
+      "predicted_class_changes": 0,
+      "same_order_midpoint_replay_exact": true,
+      "rounded_elapsed_max_abs_error": 0.0
+    },
+    {
+      "architecture": "lif_snn",
+      "checkpoint": "experiments/continuous_spiking_network/results/study001/representation/mnist/lif_snn/seed2201/checkpoint",
+      "checkpoint_manifest_sha256": "64ae0ba8923e27f7f8f5cc420a1846f289a82dbd59796b0069e82c8d09311cce",
+      "max_abs_logit_error": 0.0,
+      "within_declared_tolerance": true,
+      "predicted_class_changes": 0,
+      "same_order_midpoint_replay_exact": true,
+      "rounded_elapsed_max_abs_error": 0.0
+    },
+    {
+      "architecture": "continuous_rnn",
+      "checkpoint": "experiments/continuous_spiking_network/results/study001/representation/mnist/continuous_rnn/seed2201/checkpoint",
+      "checkpoint_manifest_sha256": "94854adae6f48fca2cfd552c93daa71e161d12f6cfc7c89beb3325310b9e912d",
+      "max_abs_logit_error": 0.0,
+      "within_declared_tolerance": true,
+      "predicted_class_changes": 0,
+      "same_order_midpoint_replay_exact": true,
+      "rounded_elapsed_max_abs_error": 0.0
+    },
+    {
+      "architecture": "two_gates",
+      "checkpoint": "experiments/continuous_spiking_network/results/study001/representation/mnist/two_gates/seed2201/checkpoint",
+      "checkpoint_manifest_sha256": "17c73f4a8591087a1ec74c8cd64622498b3d6b23a658d0c0494cda2e99281ce4",
+      "max_abs_logit_error": 0.0,
+      "within_declared_tolerance": true,
+      "predicted_class_changes": 0,
+      "same_order_midpoint_replay_exact": true,
+      "rounded_elapsed_max_abs_error": 0.0
+    },
+    {
+      "architecture": "cfc",
+      "checkpoint": "experiments/continuous_spiking_network/results/study001/representation/mnist/cfc/seed2201/checkpoint",
+      "checkpoint_manifest_sha256": "6dd1a6ae981fb19c6d774f1a877314f2f59bcc73458c74cd6ed6e350f5d05c47",
+      "max_abs_logit_error": 0.0,
+      "within_declared_tolerance": true,
+      "predicted_class_changes": 0,
+      "same_order_midpoint_replay_exact": true,
+      "rounded_elapsed_max_abs_error": 0.0
+    },
+    {
+      "architecture": "mamba1",
+      "checkpoint": "experiments/continuous_spiking_network/results/study001/representation/mnist/mamba1/seed2201/checkpoint",
+      "checkpoint_manifest_sha256": "b1240295a258eaf3a4e9a6bea85f2ca112d000d8b886ebb1a2d54539afcc9a8b",
+      "max_abs_logit_error": 0.0,
+      "within_declared_tolerance": true,
+      "predicted_class_changes": 0,
+      "same_order_midpoint_replay_exact": true,
+      "rounded_elapsed_max_abs_error": 0.0
+    },
+    {
+      "architecture": "transformer",
+      "checkpoint": "experiments/continuous_spiking_network/results/study001/representation/mnist/transformer/seed2201/checkpoint",
+      "checkpoint_manifest_sha256": "a3bc0c464d519fd292b9f56d99a1e3c762e7de8074613078186a9b5230b8c8be",
+      "max_abs_logit_error": 1.9073486328125e-06,
+      "within_declared_tolerance": true,
+      "predicted_class_changes": 0,
+      "same_order_midpoint_replay_exact": true,
+      "rounded_elapsed_max_abs_error": 0.0
+    },
+    {
+      "architecture": "single",
+      "checkpoint": "experiments/continuous_spiking_network/results/study001/mechanism/synthetic/single/seed1101/checkpoint",
+      "checkpoint_manifest_sha256": "57ca00d73ba4821b666111a961a7bfad2f336d5c7544b4579a4a5bc5442486ee",
+      "max_abs_logit_error": 0.0,
+      "within_declared_tolerance": true,
+      "predicted_class_changes": 0,
+      "same_order_midpoint_replay_exact": true,
+      "rounded_elapsed_max_abs_error": 0.0
+    },
+    {
+      "architecture": "no_adaptation",
+      "checkpoint": "experiments/continuous_spiking_network/results/study001/mechanism/synthetic/no_adaptation/seed1101/checkpoint",
+      "checkpoint_manifest_sha256": "26a280850aa9da7ff1c27fb0f9786cdbb8f01e4a276f4abda86d5925595e6bc5",
+      "max_abs_logit_error": 0.0,
+      "within_declared_tolerance": true,
+      "predicted_class_changes": 0,
+      "same_order_midpoint_replay_exact": true,
+      "rounded_elapsed_max_abs_error": 0.0
+    },
+    {
+      "architecture": "ordinary",
+      "checkpoint": "experiments/continuous_spiking_network/results/study001/mechanism/synthetic/ordinary/seed1101/checkpoint",
+      "checkpoint_manifest_sha256": "3fc1cdf337cab5c321f461d15a144c4fdd01d1b2d4c7fbe17b53238cdfd4d39c",
+      "max_abs_logit_error": 0.0,
+      "within_declared_tolerance": true,
+      "predicted_class_changes": 0,
+      "same_order_midpoint_replay_exact": true,
+      "rounded_elapsed_max_abs_error": 0.0
+    }
+  ],
+  "passed": true,
+  "supersedes_initial_receipt_sha256": "8e9c3194b150bb6a4a573198648113b0b28332eb2be40b4b2fe42f2a8d435364",
+  "correction": "float64 elapsed accumulation with rounding to model dtype for each frontend/position calculation; tolerance unchanged",
+  "snapshot_format": "hcsn-incremental-state-v2",
+  "current_streaming_source_sha256": "733f7591bb9c64ffe7254a46f788d59fb88bb82614a4551521cf24c69de075e5"
+}

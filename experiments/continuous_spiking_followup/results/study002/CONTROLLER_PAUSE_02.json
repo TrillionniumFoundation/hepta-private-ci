@@ -1,0 +1,29 @@
+{
+  "time": 1793189954.1307588,
+  "invocation": 2,
+  "reason": "Paused controller during its between-job idle interval after eight complete jobs to increase training parallelism from one to two. Model source, CPU budgets and all scientific specifications unchanged.",
+  "started_jobs": [
+    "mechanism/synthetic/ordinary/seed5101",
+    "mechanism/synthetic/ordinary/seed5105",
+    "mechanism/synthetic/continuous_rnn/seed5102",
+    "representation/fsdd/transformer/seed6203",
+    "scaling/config01/hcsn/seed7302",
+    "scaling/config03/mamba1/seed7301",
+    "scaling/config04/hcsn/seed7302",
+    "scaling/config07/hcsn/seed7302"
+  ],
+  "completed_jobs": [
+    "mechanism/synthetic/ordinary/seed5101",
+    "mechanism/synthetic/ordinary/seed5105",
+    "mechanism/synthetic/continuous_rnn/seed5102",
+    "representation/fsdd/transformer/seed6203",
+    "scaling/config01/hcsn/seed7302",
+    "scaling/config03/mamba1/seed7301",
+    "scaling/config04/hcsn/seed7302",
+    "scaling/config07/hcsn/seed7302"
+  ],
+  "interrupted_scientific_jobs": 0,
+  "controller_exit_code": 130,
+  "last_job": "representation/fsdd/transformer/seed6203",
+  "source_seal": "52ce70744a2659e6f2690fc24e68f651d48f57d4a5064680e71d2694b0a2f673"
+}

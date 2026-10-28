@@ -1,0 +1,42 @@
+{
+  "attempt": 1,
+  "child_cpu_seconds": 5.14724,
+  "child_pid": 1444424,
+  "child_start_ticks": "6333198",
+  "child_system_cpu_seconds": 0.44998499999999997,
+  "child_user_cpu_seconds": 4.697255,
+  "command": [
+    "/workspace/scratch/9bbd63a0445f/hcsn-venv/bin/python",
+    "-m",
+    "experiments.continuous_spiking_followup.stream_measure",
+    "--output",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/measurements/scaling/config03/transformer/seed7301",
+    "--run",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/scaling/config03/transformer/seed7301",
+    "--cache-dir",
+    "/workspace/scratch/9bbd63a0445f/hcsn-data",
+    "--batch-size",
+    "16",
+    "--repeats",
+    "7"
+  ],
+  "controller_sha256": "00ec56ead8a7080e414c4befd5569e0d78517304f193f99c1a63d46300e944c7",
+  "cpu_scope": "exact direct child PID from POSIX wait4; nested descendants may be included when the child waits for them",
+  "ended_unix": 1793194015.1134415,
+  "exit_code": 0,
+  "failed_marker_exists": false,
+  "id": "measurements/scaling/config03/transformer/seed7301",
+  "interrupted": false,
+  "max_rss_platform_units": 245200,
+  "result_exists": true,
+  "result_sha256": "c2b7c58e9a95df7cbf953d05e4a3afbfa5eefcb6eade10a2bff057ab0c45f545",
+  "rss_units": "KiB on Linux; bytes on macOS",
+  "source_seals": {
+    "base": "bb0d2eda33c34785da9563a84a06ed4c5d2391826e52173452ee43924723de02",
+    "followup": "52ce70744a2659e6f2690fc24e68f651d48f57d4a5064680e71d2694b0a2f673"
+  },
+  "started_unix": 1793194009.9621606,
+  "wait_status": 0,
+  "wall_scope": "launch through reaping the exact direct child, including interpreter startup/shutdown and logging",
+  "wall_seconds": 5.1510915019971435
+}

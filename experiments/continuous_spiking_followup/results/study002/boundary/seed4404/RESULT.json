@@ -1,0 +1,413 @@
+{
+  "actor_manifest_sha256": "e7c0948d80f0393447d2bca235c314cab7c9037727517647784b7239033c40ec",
+  "actor_model_sha256": "4328ab448fdfdf20890972af17114ee0c990bbd327166a739259b48ce3e1a4ea",
+  "bellman_table_build_cpu_seconds": 0.4405279429999993,
+  "episode_manifest_sha256": "91862db269cc6ddc1a7a085856a731bda626376bb93c77647d22660a8421b535",
+  "fitting_prefix_cpu_seconds": 0.29466690500000015,
+  "limits": "temperature fitting is not a Bayesian transition proof; source arrays are prepared in RAM; avoided reads are actual task iterator/model steps, not network download or hardware energy",
+  "metrics": {
+    "id": {
+      "calibration": {
+        "raw": {
+          "prefix_brier": 0.07208449393510818,
+          "prefix_ce": 0.2313246726989746
+        },
+        "shared_temperature": {
+          "prefix_brier": 0.07241233438253403,
+          "prefix_ce": 0.23326806724071503
+        }
+      },
+      "direct": {
+        "accuracy": 0.9375,
+        "all_post_stop_reads_rejected": true,
+        "episodes": 64,
+        "loop_cpu_seconds": 0.34687369100000076,
+        "loop_wall_seconds": 0.3469703940063482,
+        "mean_cost": 0.11187499870720785,
+        "mean_observations": 5.0,
+        "net_utility": 0.8256250012927921,
+        "total_avoided_model_steps": 704,
+        "total_processed_rows": 320
+      },
+      "fixed": {
+        "accuracy": 0.84375,
+        "all_post_stop_reads_rejected": true,
+        "episodes": 64,
+        "loop_cpu_seconds": 0.1776947459999949,
+        "loop_wall_seconds": 0.1777784759979113,
+        "mean_cost": 0.09351562359370291,
+        "mean_observations": 2.640625,
+        "net_utility": 0.7502343764062971,
+        "total_avoided_model_steps": 855,
+        "total_processed_rows": 169
+      },
+      "full": {
+        "accuracy": 0.984375,
+        "all_post_stop_reads_rejected": true,
+        "episodes": 64,
+        "loop_cpu_seconds": 1.0237162350000073,
+        "loop_wall_seconds": 1.023827420976886,
+        "mean_cost": 0.578749991953373,
+        "mean_observations": 16.0,
+        "net_utility": 0.40562500804662704,
+        "total_avoided_model_steps": 0,
+        "total_processed_rows": 1024
+      },
+      "value": {
+        "accuracy": 0.921875,
+        "all_post_stop_reads_rejected": true,
+        "episodes": 64,
+        "loop_cpu_seconds": 0.450680237999995,
+        "loop_wall_seconds": 0.4507946700032335,
+        "mean_cost": 0.09710937418276444,
+        "mean_observations": 4.9375,
+        "net_utility": 0.8247656258172356,
+        "total_avoided_model_steps": 708,
+        "total_processed_rows": 316
+      },
+      "verification_full_prefix_cpu_seconds": 0.01757073699999978
+    },
+    "ood": {
+      "calibration": {
+        "raw": {
+          "prefix_brier": 0.09285315871238708,
+          "prefix_ce": 0.2788267433643341
+        },
+        "shared_temperature": {
+          "prefix_brier": 0.09283963590860367,
+          "prefix_ce": 0.2793442904949188
+        }
+      },
+      "direct": {
+        "accuracy": 0.8125,
+        "all_post_stop_reads_rejected": true,
+        "episodes": 64,
+        "loop_cpu_seconds": 0.28691446699999723,
+        "loop_wall_seconds": 0.28726922802161425,
+        "mean_cost": 0.1270312471606303,
+        "mean_observations": 3.9375,
+        "net_utility": 0.6854687528393697,
+        "total_avoided_model_steps": 1284,
+        "total_processed_rows": 252
+      },
+      "fixed": {
+        "accuracy": 0.796875,
+        "all_post_stop_reads_rejected": true,
+        "episodes": 64,
+        "loop_cpu_seconds": 0.21574229900000574,
+        "loop_wall_seconds": 0.21651159998145886,
+        "mean_cost": 0.20921874532359652,
+        "mean_observations": 3.34375,
+        "net_utility": 0.5876562546764035,
+        "total_avoided_model_steps": 1322,
+        "total_processed_rows": 214
+      },
+      "full": {
+        "accuracy": 0.90625,
+        "all_post_stop_reads_rejected": true,
+        "episodes": 64,
+        "loop_cpu_seconds": 1.4189378579999943,
+        "loop_wall_seconds": 1.4189723999879789,
+        "mean_cost": 1.3424999699927866,
+        "mean_observations": 24.0,
+        "net_utility": -0.43624996999278665,
+        "total_avoided_model_steps": 0,
+        "total_processed_rows": 1536
+      },
+      "value": {
+        "accuracy": 0.765625,
+        "all_post_stop_reads_rejected": true,
+        "episodes": 64,
+        "loop_cpu_seconds": 0.36606281300000276,
+        "loop_wall_seconds": 0.366158936994907,
+        "mean_cost": 0.12499999720603228,
+        "mean_observations": 4.203125,
+        "net_utility": 0.6406250027939677,
+        "total_avoided_model_steps": 1267,
+        "total_processed_rows": 269
+      },
+      "verification_full_prefix_cpu_seconds": 0.018645325999999685
+    }
+  },
+  "native": {},
+  "objective_sha256": "66d9958e116bb7538c7f5d4b9b6ac0dc80166bfaf50086b52b8099a6cf2d8eb9",
+  "policy_fit": {
+    "data_scope": "temperature/direct fit use training only; fixed uses validation utility; no heldout outcome is consumed",
+    "direct": {
+      "gradient_groups": {
+        "direct_bias": 0.043095942586660385,
+        "direct_context": 0.2295859009027481
+      },
+      "initial_soft_utility": 0.700245201587677,
+      "last_soft_utility_before_update": 0.75749671459198,
+      "parameters": {
+        "direct_bias": 0.16219544410705566,
+        "direct_context": [
+          -0.5968363285064697,
+          1.3987380266189575,
+          -0.8708579540252686
+        ]
+      },
+      "temperature": 0.02,
+      "updates": 100
+    },
+    "direct_training_cpu_seconds": 0.5842241379999988,
+    "fixed": {
+      "grid": [
+        0.5001,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.925,
+        0.95,
+        0.975,
+        0.99,
+        0.999
+      ],
+      "threshold": 0.7,
+      "tie_rule": "first grid entry",
+      "validation_scores": [
+        0.6118945317575708,
+        0.6291796881887421,
+        0.6749804696191859,
+        0.714277344817674,
+        0.7398437512129021,
+        0.7320898453435802,
+        0.7376367208416923,
+        0.7186718777229544,
+        0.6668750034114055,
+        0.6256054726982256,
+        0.5983984418526234,
+        0.5626367237782688,
+        0.5010937558909063,
+        0.33718750812113285
+      ]
+    },
+    "fixed_selection_cpu_seconds": 0.012542123999999433,
+    "temperature": 1.0358279943466187,
+    "temperature_bounds": [
+      0.25,
+      4.0
+    ],
+    "temperature_cpu_seconds": 4.600146187,
+    "temperature_train_ce": [
+      0.2931484878063202,
+      0.29301488399505615,
+      0.293047696352005,
+      0.293082594871521,
+      0.2930609881877899,
+      0.29302579164505005,
+      0.29301202297210693,
+      0.29302433133125305,
+      0.2930414378643036,
+      0.29304373264312744,
+      0.2930314838886261,
+      0.29301717877388,
+      0.29301202297210693,
+      0.2930174469947815,
+      0.29302582144737244,
+      0.2930286228656769,
+      0.2930239140987396,
+      0.2930164039134979,
+      0.29301217198371887,
+      0.29301363229751587,
+      0.293018102645874,
+      0.29302075505256653,
+      0.29301926493644714,
+      0.2930153012275696,
+      0.2930123209953308,
+      0.29301249980926514,
+      0.29301485419273376,
+      0.29301661252975464,
+      0.2930161952972412,
+      0.2930140495300293,
+      0.29301226139068604,
+      0.29301223158836365,
+      0.2930135428905487,
+      0.2930145859718323,
+      0.2930142879486084,
+      0.2930130362510681,
+      0.2930120825767517,
+      0.29301223158836365,
+      0.2930130362510681,
+      0.29301348328590393,
+      0.29301315546035767,
+      0.2930123805999756,
+      0.29301202297210693,
+      0.29301223158836365,
+      0.29301270842552185,
+      0.293012797832489,
+      0.29301249980926514,
+      0.2930120825767517,
+      0.2930120527744293,
+      0.2930123209953308,
+      0.29301249980926514,
+      0.293012410402298,
+      0.2930121123790741,
+      0.29301202297210693,
+      0.2930121421813965,
+      0.2930122911930084,
+      0.2930122911930084,
+      0.2930121421813965,
+      0.29301202297210693,
+      0.2930120527744293,
+      0.2930121421813965,
+      0.29301217198371887,
+      0.2930120825767517,
+      0.29301202297210693,
+      0.29301202297210693,
+      0.2930120825767517,
+      0.2930121123790741,
+      0.2930120825767517,
+      0.29301202297210693,
+      0.29301202297210693,
+      0.2930120825767517,
+      0.2930120825767517,
+      0.29301202297210693,
+      0.29301202297210693,
+      0.29301202297210693,
+      0.29301202297210693,
+      0.2930120527744293,
+      0.29301202297210693,
+      0.29301202297210693,
+      0.29301202297210693,
+      0.29301202297210693,
+      0.29301202297210693,
+      0.29301202297210693,
+      0.29301202297210693,
+      0.29301202297210693,
+      0.2930120527744293,
+      0.29301202297210693,
+      0.29301199316978455,
+      0.29301202297210693,
+      0.29301202297210693,
+      0.29301202297210693,
+      0.29301202297210693,
+      0.29301202297210693,
+      0.29301199316978455,
+      0.29301202297210693,
+      0.29301199316978455,
+      0.29301199316978455,
+      0.29301202297210693,
+      0.29301199316978455,
+      0.29301202297210693
+    ],
+    "temperature_updates": 100,
+    "total_cpu_seconds": 5.201015139000001,
+    "total_wall_seconds": 5.204564277999452
+  },
+  "policy_sha256": "eb71ec953fbdd2df4b8fc0e156b327365028ec9dfa7cba7c754e1d022f8952a2",
+  "replays": {
+    "id": {
+      "direct": {
+        "cpu_seconds": 0.00878484899999954,
+        "max_logit_error": 0.0,
+        "status": "exact_in_process_serialized_replay",
+        "steps_replayed": 1,
+        "task_sha256": "c94184975dc70044448c7294b4d47c5d006e84c2cd63c65ebd0a75a7f2e36100",
+        "wall_seconds": 0.008785070000158157
+      },
+      "fixed": {
+        "status": "already_stopped_after_first_read",
+        "steps_replayed": 0
+      },
+      "value": {
+        "cpu_seconds": 0.00597338700000094,
+        "max_logit_error": 0.0,
+        "status": "exact_in_process_serialized_replay",
+        "steps_replayed": 2,
+        "task_sha256": "3f8c8a93f4e0e7689aa8dd91f23624ab738639cdaa81548174466f0b7263ed4e",
+        "wall_seconds": 0.005975181993562728
+      }
+    },
+    "ood": {
+      "direct": {
+        "cpu_seconds": 0.006255906999999894,
+        "max_logit_error": 0.0,
+        "status": "exact_in_process_serialized_replay",
+        "steps_replayed": 3,
+        "task_sha256": "b725b9269b0091ab6613b606717ba08638c52cda79a56564a48560cc6c95c7f6",
+        "wall_seconds": 0.006257144996197894
+      },
+      "fixed": {
+        "status": "already_stopped_after_first_read",
+        "steps_replayed": 0
+      },
+      "value": {
+        "cpu_seconds": 0.010438533000000305,
+        "max_logit_error": 0.0,
+        "status": "exact_in_process_serialized_replay",
+        "steps_replayed": 4,
+        "task_sha256": "55b1a377775ad48978c84d2def21fbdfcb983cd8f861f3137d745db1af41144d",
+        "wall_seconds": 0.010439737998240162
+      }
+    }
+  },
+  "seed": 4404,
+  "source_seals": {
+    "base": "bb0d2eda33c34785da9563a84a06ed4c5d2391826e52173452ee43924723de02",
+    "followup": "52ce70744a2659e6f2690fc24e68f651d48f57d4a5064680e71d2694b0a2f673"
+  },
+  "timing_scope": "Python process after initial source check includes model loading, data, fitting, policy tables, online task runs, verification, evidence serialization and final source check; interpreter/import, initial source check and final RESULT write excluded; child native CPU separately recorded",
+  "total_cpu_seconds": 11.838725471,
+  "total_wall_seconds": 11.84747393699945,
+  "trace_files": {
+    "id": {
+      "direct": {
+        "path": "id_direct.jsonl.gz",
+        "records": 64,
+        "sha256": "b63305d9bd733ebc2c48b020058dbfaed9a888b0c7b5b56f51f8d99351a8e28a",
+        "uncompressed_sha256": "31cc00d256a9505e0409a118e767dac20dcaf526447dd8823083f70c863ae994"
+      },
+      "fixed": {
+        "path": "id_fixed.jsonl.gz",
+        "records": 64,
+        "sha256": "7763fd1e7f6d643672d2891219174a75023de3aee35b6e6ad9e1e73b6b154129",
+        "uncompressed_sha256": "670911e5efc511d9cc717785978d5d0d3d765b840d69544fb705edb5a26e5057"
+      },
+      "full": {
+        "path": "id_full.jsonl.gz",
+        "records": 64,
+        "sha256": "7dbade1675c250c22e887c3ebcae606c0e54cef3f071d955e0a410a400938383",
+        "uncompressed_sha256": "ae65b61d2a98e72c22f26963c1b2ec9dbfbd0ad3c853ae9b404beeb30f0ef03e"
+      },
+      "value": {
+        "path": "id_value.jsonl.gz",
+        "records": 64,
+        "sha256": "3ae35bfeae9ffd5146afe6f6a7711a3e7d1c8e3945f810d414f19e8e116fc582",
+        "uncompressed_sha256": "1a9a20af5560d60e8c16cbaeacd0f93451ec91df76b094f92086e5b03cbd53b7"
+      }
+    },
+    "ood": {
+      "direct": {
+        "path": "ood_direct.jsonl.gz",
+        "records": 64,
+        "sha256": "8c4a9c3041969151ffb8ba68d52567d760d7bb1029022b38594b352ecba2741b",
+        "uncompressed_sha256": "6fa59ca39b85958346afa785c497879e41ac503eaa0e047afa3be658c775482e"
+      },
+      "fixed": {
+        "path": "ood_fixed.jsonl.gz",
+        "records": 64,
+        "sha256": "6017d5b4f664ac89c81795bd7cbdea82945a5466bbb29410b170f6fe9d3031a4",
+        "uncompressed_sha256": "ffe8893cb94ad732ac60d8f62e2ab451f532c2f00f9a965c4a57f1b603f6fcbb"
+      },
+      "full": {
+        "path": "ood_full.jsonl.gz",
+        "records": 64,
+        "sha256": "bab064b063949a5776f82ec39467e06f164792db6ace965f51af7c001a14bafc",
+        "uncompressed_sha256": "e31148a88cf45afca9d4d09c03c09ede9c4aa4148077b0d1a172f4b983297d1f"
+      },
+      "value": {
+        "path": "ood_value.jsonl.gz",
+        "records": 64,
+        "sha256": "d9466fe0efe294df45a23d9c0d95df5b042bee0d8a319b137ce436238f49ff39",
+        "uncompressed_sha256": "aed48e75923359d402e00a3fb27c8734ad5181d9584915280fd227eee7e4fc83"
+      }
+    }
+  }
+}

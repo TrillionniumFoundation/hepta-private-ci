@@ -1,0 +1,43 @@
+{
+  "ast_check": {
+    "passed": true,
+    "path": "execution/display_correction_02/SOURCE_EQUIVALENCE.json",
+    "sha256": "d0bea37ab27f22ae1bf75d3d1a0ac93fefd7b107bcbf0493cb5ebcc253c39da4"
+  },
+  "authorization": "Root approved the narrow versioned display correction after both reviewers observed caption/legend overlap and clipped 100% markers.",
+  "changes": [
+    "Increase bottom layout space and move caption only for representation_all_candidates; preserve its two-row legend.",
+    "Add upper y-axis padding to105% in representation_all_tasks so exact100% markers are visible.",
+    "Add version/correction provenance and separate default output path."
+  ],
+  "created_unix": 1793194698.424938,
+  "minimal_diff": {
+    "path": "execution/display_correction_02/MINIMAL_DIFF.patch",
+    "sha256": "262aa99d3ec7654d34c3cdb1fbbbcbf3c62e35e048a8e5edcc93397aa1d50f1a"
+  },
+  "new_output": "figures_v2",
+  "new_source": {
+    "lines": 343,
+    "path": "plot_training_v2.py",
+    "sha256": "ce262db0bbd442b83bbd75613a7f6120fcf9baa077f24451d8fb8de9d49fccdf"
+  },
+  "original_analysis_seal": "8175d2a986a85c633b5a5af1aab502e0e23359a74980eb8b1e30246b5d9961ad",
+  "original_analysis_seal_file_sha256": "cab641233391766fde2855d0ee48ac5d024d79d37113a1ace4981627126a9bec",
+  "original_figures": {
+    "manifest_sha256": "016c8c2d8c0df8aa29b6c0ae7e9c6cfc51b187ec1617cb412a4dd32895ee60ae",
+    "path": "figures"
+  },
+  "original_source": {
+    "path": "plot_training.py",
+    "sha256": "e97d098b6fd06094719128c1aea4a17937907e1d42765c6991d8fce956cc5bdd"
+  },
+  "schema": "hcsn-analysis-display-correction-v1",
+  "scientific_source_seal": "52ce70744a2659e6f2690fc24e68f651d48f57d4a5064680e71d2694b0a2f673",
+  "unchanged": [
+    "all data and series",
+    "all interval and selection arithmetic",
+    "all scientific source",
+    "all20 original analysis files and original seal",
+    "all original16 figures and original figure manifest"
+  ]
+}

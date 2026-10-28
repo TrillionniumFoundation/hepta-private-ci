@@ -1,0 +1,46 @@
+{
+  "argv": [
+    "/workspace/scratch/9bbd63a0445f/hcsn-venv/bin/python",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/analysis/audit_training.py",
+    "--package",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup",
+    "--results",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002",
+    "--cache-dir",
+    "/workspace/scratch/9bbd63a0445f/hcsn-data",
+    "--replay",
+    "prespecified",
+    "--output",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/analysis/execution/training_audit_01/OUTPUT.json"
+  ],
+  "child_cpu_seconds": 29.783013,
+  "child_system_cpu_seconds": 1.9974319999999999,
+  "child_user_cpu_seconds": 27.785581,
+  "cwd": "/workspace/scratch/9bbd63a0445f/hepta-hcsn",
+  "ended_unix": 1793194236.81464,
+  "env_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "exit_code": 1,
+  "max_rss_kib": 566108,
+  "output_sha256": "876e25918138c077786960fef5fd206583b16d4f8941127bebbd4cbce525cf76",
+  "reported_status": "failed",
+  "seals_after": {
+    "analysis": "8175d2a986a85c633b5a5af1aab502e0e23359a74980eb8b1e30246b5d9961ad",
+    "analysis_file_map_sha256": "8175d2a986a85c633b5a5af1aab502e0e23359a74980eb8b1e30246b5d9961ad",
+    "base": "bb0d2eda33c34785da9563a84a06ed4c5d2391826e52173452ee43924723de02",
+    "followup": "52ce70744a2659e6f2690fc24e68f651d48f57d4a5064680e71d2694b0a2f673"
+  },
+  "seals_before": {
+    "analysis": "8175d2a986a85c633b5a5af1aab502e0e23359a74980eb8b1e30246b5d9961ad",
+    "analysis_file_map_sha256": "8175d2a986a85c633b5a5af1aab502e0e23359a74980eb8b1e30246b5d9961ad",
+    "base": "bb0d2eda33c34785da9563a84a06ed4c5d2391826e52173452ee43924723de02",
+    "followup": "52ce70744a2659e6f2690fc24e68f651d48f57d4a5064680e71d2694b0a2f673"
+  },
+  "started_unix": 1793194206.4867165,
+  "stderr": "stderr.log",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout": "stdout.log",
+  "stdout_sha256": "ce46a493f48fb55229c485310bedad21ca6d6ec50466d3ebe7e573bf3fc89dc7",
+  "wall_seconds": 30.32770209499722
+}

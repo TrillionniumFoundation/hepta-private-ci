@@ -1,0 +1,646 @@
+{
+  "accounting": "nested phases are included in totals; child CPU is separate; timers exclude imports and final MEASUREMENT write",
+  "cross_process_replay": {
+    "accounting": "parent total excludes child CPU; wall includes child lifetime; phase costs are nested, not additional totals",
+    "child": {
+      "arrays_manifest_sha256": "5f6ccdb35785f70038183f6918fc093129fe1e4d672ca7dc075c2fce1480cee8",
+      "costs_seconds": {
+        "continuation": {
+          "cpu": 0.004375321000000154,
+          "wall": 0.00437611300003482
+        },
+        "input_restore": {
+          "cpu": 0.0010004799999998593,
+          "wall": 0.0010013860010076314
+        },
+        "model_initialization_reload": {
+          "cpu": 0.004608645000000022,
+          "wall": 0.004609925003023818
+        },
+        "module_import_setup": {
+          "cpu": 1.373146871,
+          "wall": 1.379030612995848
+        },
+        "result_serialization_and_state_hash": {
+          "cpu": 0.0019785349999998925,
+          "wall": 0.0019799810033873655
+        },
+        "stream_construction_restore": {
+          "cpu": 0.004189510000000007,
+          "wall": 0.004190701998595614
+        }
+      },
+      "final_state_sha256": "68ea5db3999267056c84e7d05471910aeddae1306a33bdc3893d73e9ec8db755",
+      "model_sha256": "ffeceb75a2fd20fc7096f30e764701f2506b356a6c336c71cf442dc3c927d8ee",
+      "module_total_cpu_seconds": 1.38962231,
+      "module_total_wall_seconds": 1.395503102998191,
+      "numpy_version": "2.3.5",
+      "parent_pid": 1444122,
+      "pid": 1444125,
+      "processed_rows": 512,
+      "request_sha256": "06177ffeb89246cf209e7b6c607a7a475807bf0618a9e88cd19cafc1ce2d8f3c",
+      "scope": "module timer includes imports through result construction; parent external timer also includes interpreter startup, final write and shutdown; nested costs are not additive to totals",
+      "state_bytes": 2176,
+      "steps": 32,
+      "torch_version": "2.8.0+cpu"
+    },
+    "command": [
+      "/workspace/scratch/9bbd63a0445f/hcsn-venv/bin/python",
+      "-m",
+      "experiments.continuous_spiking_followup.stream_replay",
+      "--request",
+      "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/measurements/representation/mnist/continuous_rnn/seed6201/cold_replay/REQUEST.json",
+      "--output",
+      "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/measurements/representation/mnist/continuous_rnn/seed6201/cold_replay/child",
+      "--request-sha256",
+      "06177ffeb89246cf209e7b6c607a7a475807bf0618a9e88cd19cafc1ce2d8f3c"
+    ],
+    "distinct_process": true,
+    "exact_final_state": true,
+    "exact_logits": true,
+    "external_process_cost_seconds": {
+      "child_cpu": 1.7940559999999999,
+      "parent_cpu": 0.002298149000000027,
+      "wall": 1.8244687140031601
+    },
+    "max_abs_logit_error": 0.0,
+    "parent_expected_final_state_sha256": "68ea5db3999267056c84e7d05471910aeddae1306a33bdc3893d73e9ec8db755",
+    "parent_expected_manifest_sha256": "5f6ccdb35785f70038183f6918fc093129fe1e4d672ca7dc075c2fce1480cee8",
+    "parent_pid": 1444122,
+    "passed": true,
+    "preparation_cost_seconds": {
+      "cpu": 0.009117433999999758,
+      "wall": 0.009118257999944035
+    },
+    "reference_cost_seconds": {
+      "cpu": 0.004021123000000237,
+      "wall": 0.004022186003567185
+    },
+    "request_sha256": "06177ffeb89246cf209e7b6c607a7a475807bf0618a9e88cd19cafc1ce2d8f3c",
+    "returncode": 0,
+    "split_step": 16,
+    "state_receipt": {
+      "manifest_sha256": "44ee91d54254dd426ccbe1d49bcf87715a27404a71f200051474c421a4029612",
+      "payload_sha256": "97f72006daf89cc72b30b98acdd83be28a56e19073153316d8d7107bd5b1cfe6",
+      "serialized_bytes": 3434,
+      "state_tensor_bytes": 2176
+    },
+    "status": "completed",
+    "total_parent_cpu_seconds": 0.01735445999999996,
+    "total_wall_seconds": 1.839529566001147
+  },
+  "environment": {
+    "cuda": false,
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "python": "3.12.14",
+    "threads": 1,
+    "timing": "process CPU and elapsed wall; CPU is not hardware energy",
+    "torch": "2.8.0+cpu"
+  },
+  "execution_policy": "invoke serially after all training; no host exclusivity inferred",
+  "fixed_batch": {
+    "batch_size": 16,
+    "dt_sha256": "5f3293c47ad811cf325aa64190baaaf5d243e82065a173f321c83a3152792ee3",
+    "feature_width": 64,
+    "requested_batch_size": 16,
+    "sample_ids": [
+      "mnist:8123:test:0",
+      "mnist:8123:test:1",
+      "mnist:8123:test:2",
+      "mnist:8123:test:3",
+      "mnist:8123:test:4",
+      "mnist:8123:test:5",
+      "mnist:8123:test:6",
+      "mnist:8123:test:7",
+      "mnist:8123:test:8",
+      "mnist:8123:test:9",
+      "mnist:8123:test:10",
+      "mnist:8123:test:11",
+      "mnist:8123:test:12",
+      "mnist:8123:test:13",
+      "mnist:8123:test:14",
+      "mnist:8123:test:15"
+    ],
+    "selection": "first test episodes in saved dataset order",
+    "sequence_length": 32,
+    "x_sha256": "d2ee17605a3d971bf5cc378f9782793f6254215a9cf2e360bb155dd7cb35d84c"
+  },
+  "identity": {
+    "checkpoint_manifest_sha256": "9002180e032a06130a5c8cf693ef3ef1b0794cb2777550c90fda2ccb824610a5",
+    "data_manifest_sha256": "30898d82bc2a0d8b20fe87e82b095bac23b9141809146750e0f3ddba6fda3d00",
+    "predictions_manifest_sha256": "614a42d4eb41dd44b968b01f5a516b433c0149f31d183c76f94cfe10ebf3ac27",
+    "run_result_sha256": "b41cb7bc5ff55bc54108a13bcc8ac280be7f7099bdf3ae1c98bd3d98d446f52d",
+    "selected_checkpoint": "candidates/00/checkpoint",
+    "source_seals": {
+      "base": "bb0d2eda33c34785da9563a84a06ed4c5d2391826e52173452ee43924723de02",
+      "followup": "52ce70744a2659e6f2690fc24e68f651d48f57d4a5064680e71d2694b0a2f673"
+    },
+    "sources_manifest_sha256": "2c3916fde31e6a44456d51ae791b9dec6cf8052a2c99117c214cb758b4cab46f",
+    "spec": {
+      "architecture": "continuous_rnn",
+      "batch_size": 32,
+      "candidate_cpu_seconds": 12.0,
+      "cpu_milestone_fractions": [
+        0.25,
+        0.5,
+        1.0
+      ],
+      "data_seed": 8123,
+      "depth": 1,
+      "id": "representation/mnist/continuous_rnn/seed6201",
+      "learning_rates": [
+        0.001,
+        0.003
+      ],
+      "length": 32,
+      "match_cell_budget": false,
+      "max_updates": 4096,
+      "seed": 6201,
+      "stage": "representation",
+      "task": "mnist",
+      "test_size": 512,
+      "train_size": 2048,
+      "val_size": 256,
+      "width": 32
+    }
+  },
+  "measurement": {
+    "batch": {
+      "examples_per_second": {
+        "max": 16778.558699449146,
+        "median": 12826.042053726596,
+        "min": 10012.233670751146,
+        "p05": 10793.55403882093,
+        "p95": 15953.162306353,
+        "sum": 92945.6922094652
+      },
+      "process_cpu_seconds": [
+        0.0011392460000001492,
+        0.0012670299999997248,
+        0.0012526600000000165,
+        0.0009526420000001146,
+        0.0012467489999998804,
+        0.001596405000000356,
+        0.0011475350000003104
+      ],
+      "process_cpu_seconds_stats": {
+        "max": 0.001596405000000356,
+        "median": 0.0012467489999998804,
+        "min": 0.0009526420000001146,
+        "p05": 0.001008623200000125,
+        "p95": 0.0014975925000001663,
+        "sum": 0.008602267000000552
+      },
+      "repeat_output_max_abs_difference": 0.0,
+      "reset_plus_forward_wall_seconds": [
+        0.001142064000305254,
+        0.0012695510013145395,
+        0.0012556079964269884,
+        0.0009550880058668554,
+        0.0012489840009948239,
+        0.0015999940005713142,
+        0.0011506610026117414
+      ],
+      "wall_latency_seconds": {
+        "max": 0.0015980450043571182,
+        "median": 0.0012474619943532161,
+        "min": 0.0009535979988868348,
+        "p05": 0.001009709999198094,
+        "p95": 0.0014990816023782824,
+        "sum": 0.00861085998622002
+      },
+      "wall_seconds": [
+        0.0011406379999243654,
+        0.001268166997761,
+        0.0012540289972093888,
+        0.0009535979988868348,
+        0.0012474619943532161,
+        0.0015980450043571182,
+        0.0011489209937280975
+      ]
+    },
+    "stream": {
+      "examples_per_second": {
+        "max": 3015.829335926738,
+        "median": 2694.7695218295407,
+        "min": 1131.2403546360367,
+        "p05": 1237.4162077030433,
+        "p95": 2985.9448625461837,
+        "sum": 16451.65805642428
+      },
+      "process_cpu_seconds": [
+        0.006797659999999706,
+        0.01414171200000025,
+        0.005603532999999938,
+        0.005303904000000248,
+        0.0054850420000001066,
+        0.005937037000000256,
+        0.010771964999999994
+      ],
+      "process_cpu_seconds_stats": {
+        "max": 0.01414171200000025,
+        "median": 0.005937037000000256,
+        "min": 0.005303904000000248,
+        "p05": 0.005358245400000206,
+        "p95": 0.013130787900000171,
+        "sum": 0.0540408530000005
+      },
+      "repeat_output_max_abs_difference": 0.0,
+      "reset_plus_forward_wall_seconds": [
+        0.007010661000094842,
+        0.01432906400441425,
+        0.005811638002342079,
+        0.005677479995938484,
+        0.005685302996425889,
+        0.006349433999275789,
+        0.010995948003255762
+      ],
+      "wall_latency_seconds": {
+        "max": 0.014143767002678942,
+        "median": 0.00593742799537722,
+        "min": 0.005305339996994007,
+        "p05": 0.005359707498428179,
+        "p95": 0.013132612202025482,
+        "sum": 0.05404912099766079
+      },
+      "wall_seconds": [
+        0.006798612004786264,
+        0.014143767002678942,
+        0.005604157995549031,
+        0.005305339996994007,
+        0.005486565001774579,
+        0.00593742799537722,
+        0.01077325100050075
+      ]
+    }
+  },
+  "measurement_repetitions_per_mode": 7,
+  "memory_scope": "persistent tensor payload only, excluding weights, Python metadata and transient work; not RSS, peak allocation or energy",
+  "model_sha256": "ffeceb75a2fd20fc7096f30e764701f2506b356a6c336c71cf442dc3c927d8ee",
+  "parity": {
+    "all_prefixes_within_tolerance": true,
+    "arrays_manifest_sha256": "5bb550bab9d03f9038e1419b53c36f196e05d7efb98a3ef77630118216fcae36",
+    "atol": 3e-06,
+    "cost": {
+      "cpu_seconds": 0.011290472999999857,
+      "wall_seconds": 0.01128910399711458
+    },
+    "final_max_abs_logit_error": 0.0,
+    "final_predicted_class_changes": 0,
+    "final_state_payload_bytes": 2176,
+    "max_abs_logit_error": 0.0,
+    "passed": true,
+    "prefix_predicted_class_changes": 0,
+    "processed_rows": 512,
+    "rtol": 3e-05,
+    "saved_training_prediction_max_abs_error": 0.0,
+    "saved_training_predictions_within_tolerance": true,
+    "state_payload_bytes_initial_and_after_each_step": [
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176,
+      2176
+    ],
+    "steps": 32,
+    "tensor_entries_outside_tolerance": 0
+  },
+  "preparation_costs": {
+    "data": {
+      "cpu_seconds": 0.515313162,
+      "wall_seconds": 0.5152919879983529
+    },
+    "reload": {
+      "cpu_seconds": 0.009045723999999922,
+      "wall_seconds": 0.009044739999808371
+    }
+  },
+  "quantile_scope": "descriptive repeats on shared CPU host, not confidence intervals",
+  "raw_samples": [
+    {
+      "forward": {
+        "cpu_seconds": 0.0029387949999999385,
+        "wall_seconds": 0.0029399019986158237
+      },
+      "mode": "batch",
+      "phase": "warmup",
+      "repeat": 0,
+      "reset_plus_forward_interval": {
+        "cpu_seconds": 0.0029423529999998976,
+        "wall_seconds": 0.002942368999356404
+      },
+      "reset_with_identity_check": null
+    },
+    {
+      "forward": {
+        "cpu_seconds": 0.0074730160000000545,
+        "wall_seconds": 0.007474051999452058
+      },
+      "mode": "stream",
+      "phase": "warmup",
+      "repeat": 0,
+      "reset_plus_forward_interval": {
+        "cpu_seconds": 0.00775586199999978,
+        "wall_seconds": 0.007755195001664106
+      },
+      "reset_with_identity_check": {
+        "cpu_seconds": 0.0002780109999998004,
+        "wall_seconds": 0.00027806700381916016
+      }
+    },
+    {
+      "forward": {
+        "cpu_seconds": 0.004732420999999931,
+        "wall_seconds": 0.004734103997179773
+      },
+      "mode": "stream",
+      "phase": "warmup",
+      "repeat": 1,
+      "reset_plus_forward_interval": {
+        "cpu_seconds": 0.004932538000000264,
+        "wall_seconds": 0.0049324070059810765
+      },
+      "reset_with_identity_check": {
+        "cpu_seconds": 0.00019560199999979488,
+        "wall_seconds": 0.0001958150023710914
+      }
+    },
+    {
+      "forward": {
+        "cpu_seconds": 0.0012823440000002684,
+        "wall_seconds": 0.0012837239992222749
+      },
+      "mode": "batch",
+      "phase": "warmup",
+      "repeat": 1,
+      "reset_plus_forward_interval": {
+        "cpu_seconds": 0.0012853219999997556,
+        "wall_seconds": 0.0012851330029661767
+      },
+      "reset_with_identity_check": null
+    },
+    {
+      "forward": {
+        "cpu_seconds": 0.0011392460000001492,
+        "wall_seconds": 0.0011406379999243654
+      },
+      "mode": "batch",
+      "phase": "measurement",
+      "repeat": 0,
+      "reset_plus_forward_interval": {
+        "cpu_seconds": 0.0011422059999999234,
+        "wall_seconds": 0.001142064000305254
+      },
+      "reset_with_identity_check": null
+    },
+    {
+      "forward": {
+        "cpu_seconds": 0.006797659999999706,
+        "wall_seconds": 0.006798612004786264
+      },
+      "mode": "stream",
+      "phase": "measurement",
+      "repeat": 0,
+      "reset_plus_forward_interval": {
+        "cpu_seconds": 0.007011038999999997,
+        "wall_seconds": 0.007010661000094842
+      },
+      "reset_with_identity_check": {
+        "cpu_seconds": 0.00020971600000008195,
+        "wall_seconds": 0.00021002499852329493
+      }
+    },
+    {
+      "forward": {
+        "cpu_seconds": 0.01414171200000025,
+        "wall_seconds": 0.014143767002678942
+      },
+      "mode": "stream",
+      "phase": "measurement",
+      "repeat": 1,
+      "reset_plus_forward_interval": {
+        "cpu_seconds": 0.014329692000000005,
+        "wall_seconds": 0.01432906400441425
+      },
+      "reset_with_identity_check": {
+        "cpu_seconds": 0.00018297699999969552,
+        "wall_seconds": 0.00018341199756832793
+      }
+    },
+    {
+      "forward": {
+        "cpu_seconds": 0.0012670299999997248,
+        "wall_seconds": 0.001268166997761
+      },
+      "mode": "batch",
+      "phase": "measurement",
+      "repeat": 1,
+      "reset_plus_forward_interval": {
+        "cpu_seconds": 0.0012696349999998802,
+        "wall_seconds": 0.0012695510013145395
+      },
+      "reset_with_identity_check": null
+    },
+    {
+      "forward": {
+        "cpu_seconds": 0.0012526600000000165,
+        "wall_seconds": 0.0012540289972093888
+      },
+      "mode": "batch",
+      "phase": "measurement",
+      "repeat": 2,
+      "reset_plus_forward_interval": {
+        "cpu_seconds": 0.0012557549999998585,
+        "wall_seconds": 0.0012556079964269884
+      },
+      "reset_with_identity_check": null
+    },
+    {
+      "forward": {
+        "cpu_seconds": 0.005603532999999938,
+        "wall_seconds": 0.005604157995549031
+      },
+      "mode": "stream",
+      "phase": "measurement",
+      "repeat": 2,
+      "reset_plus_forward_interval": {
+        "cpu_seconds": 0.005811962000000115,
+        "wall_seconds": 0.005811638002342079
+      },
+      "reset_with_identity_check": {
+        "cpu_seconds": 0.00020509399999957267,
+        "wall_seconds": 0.000205406999157276
+      }
+    },
+    {
+      "forward": {
+        "cpu_seconds": 0.005303904000000248,
+        "wall_seconds": 0.005305339996994007
+      },
+      "mode": "stream",
+      "phase": "measurement",
+      "repeat": 3,
+      "reset_plus_forward_interval": {
+        "cpu_seconds": 0.005677611999999943,
+        "wall_seconds": 0.005677479995938484
+      },
+      "reset_with_identity_check": {
+        "cpu_seconds": 0.00036896800000008056,
+        "wall_seconds": 0.00036996199924033135
+      }
+    },
+    {
+      "forward": {
+        "cpu_seconds": 0.0009526420000001146,
+        "wall_seconds": 0.0009535979988868348
+      },
+      "mode": "batch",
+      "phase": "measurement",
+      "repeat": 3,
+      "reset_plus_forward_interval": {
+        "cpu_seconds": 0.0009550499999999573,
+        "wall_seconds": 0.0009550880058668554
+      },
+      "reset_with_identity_check": null
+    },
+    {
+      "forward": {
+        "cpu_seconds": 0.0012467489999998804,
+        "wall_seconds": 0.0012474619943532161
+      },
+      "mode": "batch",
+      "phase": "measurement",
+      "repeat": 4,
+      "reset_plus_forward_interval": {
+        "cpu_seconds": 0.001248930000000037,
+        "wall_seconds": 0.0012489840009948239
+      },
+      "reset_with_identity_check": null
+    },
+    {
+      "forward": {
+        "cpu_seconds": 0.0054850420000001066,
+        "wall_seconds": 0.005486565001774579
+      },
+      "mode": "stream",
+      "phase": "measurement",
+      "repeat": 4,
+      "reset_plus_forward_interval": {
+        "cpu_seconds": 0.005685590999999768,
+        "wall_seconds": 0.005685302996425889
+      },
+      "reset_with_identity_check": {
+        "cpu_seconds": 0.00019645799999956637,
+        "wall_seconds": 0.00019679300021380186
+      }
+    },
+    {
+      "forward": {
+        "cpu_seconds": 0.005937037000000256,
+        "wall_seconds": 0.00593742799537722
+      },
+      "mode": "stream",
+      "phase": "measurement",
+      "repeat": 5,
+      "reset_plus_forward_interval": {
+        "cpu_seconds": 0.00634973499999969,
+        "wall_seconds": 0.006349433999275789
+      },
+      "reset_with_identity_check": {
+        "cpu_seconds": 0.0004084769999996851,
+        "wall_seconds": 0.00040972900023916736
+      }
+    },
+    {
+      "forward": {
+        "cpu_seconds": 0.001596405000000356,
+        "wall_seconds": 0.0015980450043571182
+      },
+      "mode": "batch",
+      "phase": "measurement",
+      "repeat": 5,
+      "reset_plus_forward_interval": {
+        "cpu_seconds": 0.0016008740000001964,
+        "wall_seconds": 0.0015999940005713142
+      },
+      "reset_with_identity_check": null
+    },
+    {
+      "forward": {
+        "cpu_seconds": 0.0011475350000003104,
+        "wall_seconds": 0.0011489209937280975
+      },
+      "mode": "batch",
+      "phase": "measurement",
+      "repeat": 6,
+      "reset_plus_forward_interval": {
+        "cpu_seconds": 0.0011507370000001238,
+        "wall_seconds": 0.0011506610026117414
+      },
+      "reset_with_identity_check": null
+    },
+    {
+      "forward": {
+        "cpu_seconds": 0.010771964999999994,
+        "wall_seconds": 0.01077325100050075
+      },
+      "mode": "stream",
+      "phase": "measurement",
+      "repeat": 6,
+      "reset_plus_forward_interval": {
+        "cpu_seconds": 0.010996566999999846,
+        "wall_seconds": 0.010995948003255762
+      },
+      "reset_with_identity_check": {
+        "cpu_seconds": 0.00022050100000026163,
+        "wall_seconds": 0.00022082899522501975
+      }
+    }
+  ],
+  "run_directory": "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/representation/mnist/continuous_rnn/seed6201",
+  "schema": "hcsn-batch-stream-measurement-v1",
+  "setup_costs": {
+    "standalone_model_hash_probe": {
+      "cpu_seconds": 0.00010927900000012869,
+      "wall_seconds": 0.0001091090016416274
+    },
+    "stream_construction": {
+      "cpu_seconds": 0.0005249290000000073,
+      "wall_seconds": 0.000524820999999065
+    }
+  },
+  "strict_reload": true,
+  "timing_scope": "batch: complete final-logit model forward including auxiliary creation; stream: all one-token forwards including input checks, Python iteration and per-step auxiliary creation. Reset/model hash, warmup, state tracing, output comparison, replay and serialization excluded from forward timers and separately recorded; reset-plus-forward intervals also retained.",
+  "total_parent_cpu_seconds": 2.3378020189999997,
+  "total_wall_seconds": 4.169175820003147,
+  "warmup_repetitions_per_mode": 2
+}

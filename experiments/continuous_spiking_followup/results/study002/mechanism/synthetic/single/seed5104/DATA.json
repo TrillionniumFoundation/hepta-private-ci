@@ -1,0 +1,16 @@
+{
+  "canonical_events": 32,
+  "context_length": 32,
+  "context_policy": "identical evidence; subdivided dt and zero-input null steps",
+  "interpretation": "Synthetic causal cross-modal keyed evidence retrieval; not real-world data.",
+  "physical_duration": 32.0,
+  "preprocessing_fit": "none; fixed transforms only",
+  "schema": "hcsn-data-v1",
+  "seed": 8123,
+  "sizes": {
+    "test": 512,
+    "train": 2048,
+    "val": 256
+  },
+  "task": "synthetic"
+}
