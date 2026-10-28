@@ -1585,7 +1585,7 @@ mod tests {
         assert_eq!(error.to_string(), "timed out awaiting tools/list after 30s");
     }
 
-    #[tokio::test]
+    #[tokio::test(start_paused = true)]
     async fn active_time_timeout_pauses_while_elicitation_is_pending() {
         let pause_state = ElicitationPauseState::new();
         let pause = pause_state.enter();
@@ -1602,5 +1602,21 @@ mod tests {
             .await;
 
         assert_eq!(Ok("done"), result);
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn active_time_timeout_expires_without_pending_elicitation() {
+        let pause_state = ElicitationPauseState::new();
+        let result = active_time_timeout(
+            Duration::from_millis(/*millis*/ 50),
+            pause_state.subscribe(),
+            async {
+                time::sleep(Duration::from_millis(/*millis*/ 90)).await;
+                "done"
+            },
+        )
+        .await;
+
+        assert_eq!(Err(()), result);
     }
 }
