@@ -1,0 +1,52 @@
+{
+  "cgroup_limit_probes": [
+    {
+      "content": null,
+      "error": "FileNotFoundError",
+      "limit_bytes": null,
+      "mapped_to_process": false,
+      "path": "/sys/fs/cgroup/memory/memory.limit_in_bytes",
+      "state": "unavailable"
+    },
+    {
+      "content": null,
+      "error": "FileNotFoundError",
+      "limit_bytes": null,
+      "mapped_to_process": false,
+      "path": "/sys/fs/cgroup/memory.limit_in_bytes",
+      "state": "unavailable"
+    },
+    {
+      "content": "8589934592",
+      "error": null,
+      "limit_bytes": 8589934592,
+      "mapped_to_process": true,
+      "path": "/sys/fs/cgroup/memory.max",
+      "state": "reported-numeric-limit"
+    }
+  ],
+  "cpu_count": 9,
+  "effective_limit_known": false,
+  "effective_memory_bytes": null,
+  "effective_memory_upper_bound_bytes": 8589934592,
+  "limitation": "Visible cgroup probes do not attest hidden ancestors or available memory; missing is not unlimited.",
+  "observed_cgroup_limit_upper_bound_bytes": 8589934592,
+  "observed_limit_excludes_12_gib": true,
+  "physical_capacity_meets_12_gib": false,
+  "physical_memory_bytes": 10451435520,
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+  "proc_self_cgroup": {
+    "content": "0::/",
+    "error": null,
+    "path": "/proc/self/cgroup"
+  },
+  "proc_self_mountinfo": {
+    "content": "120 63 0:27 / / ro,nosuid,nodev,relatime - overlay overlay rw,lowerdir=/run/kata-containers/erofs-multi-layer/0abd358bdaba46159309218c8a789c5f/lower-0,upperdir=/run/kata-containers/erofs-multi-layer/0abd358bdaba46159309218c8a789c5f/upper/upper,workdir=/run/kata-containers/erofs-multi-layer/0abd358bdaba46159309218c8a789c5f/upper/work,index=off,metacopy=off\n121 120 0:30 / /proc ro,nosuid,nodev,noexec,relatime - proc proc rw\n122 121 0:31 /null /proc/keys ro,nosuid,nodev - tmpfs tmpfs rw,size=65536k,mode=755\n123 121 0:31 /null /proc/timer_list ro,nosuid,nodev - tmpfs tmpfs rw,size=65536k,mode=755\n124 121 0:30 /bus /proc/bus ro,nosuid,nodev,relatime - proc proc rw\n125 121 0:30 /fs /proc/fs ro,nosuid,nodev,relatime - proc proc rw\n126 121 0:30 /irq /proc/irq ro,nosuid,nodev,relatime - proc proc rw\n127 121 0:30 /sys /proc/sys ro,nosuid,nodev,relatime - proc proc rw\n128 120 0:31 / /dev ro,nosuid,nodev - tmpfs tmpfs rw,size=65536k,mode=755\n129 128 0:32 / /dev/pts ro,nosuid,nodev,noexec,relatime - devpts devpts rw,gid=5,mode=620,ptmxmode=666\n130 128 0:26 / /dev/shm ro,nosuid,nodev,relatime - tmpfs shm rw\n131 128 0:25 / /dev/mqueue ro,nosuid,nodev,noexec,relatime - mqueue mqueue rw\n132 120 0:20 / /sys ro,nosuid,nodev,noexec,relatime - sysfs sysfs rw\n133 132 0:24 / /sys/fs/cgroup ro,nosuid,nodev,noexec,relatime - cgroup2 cgroup2 rw,nsdelegate\n134 128 0:37 / /dev rw,nosuid,nodev,relatime - tmpfs tmpfs rw,mode=755\n135 134 0:31 /null /dev/null rw,nosuid - tmpfs tmpfs rw,size=65536k,mode=755\n136 134 0:31 /zero /dev/zero rw,nosuid - tmpfs tmpfs rw,size=65536k,mode=755\n137 134 0:31 /full /dev/full rw,nosuid - tmpfs tmpfs rw,size=65536k,mode=755\n138 134 0:31 /random /dev/random rw,nosuid - tmpfs tmpfs rw,size=65536k,mode=755\n139 134 0:31 /urandom /dev/urandom rw,nosuid - tmpfs tmpfs rw,size=65536k,mode=755\n140 134 0:31 /tty /dev/tty rw,nosuid - tmpfs tmpfs rw,size=65536k,mode=755\n141 134 0:38 / /dev/pts rw,nosuid,noexec,relatime - devpts devpts rw,mode=620,ptmxmode=666\n142 120 0:39 / /tmp/codex-daemon-0 ro,nosuid,nodev,relatime - tmpfs tmpfs rw,mode=000\n143 120 0:27 /tmp /tmp rw,nosuid,nodev,relatime - overlay overlay rw,lowerdir=/run/kata-containers/erofs-multi-layer/0abd358bdaba46159309218c8a789c5f/lower-0,upperdir=/run/kata-containers/erofs-multi-layer/0abd358bdaba46159309218c8a789c5f/upper/upper,workdir=/run/kata-containers/erofs-multi-layer/0abd358bdaba46159309218c8a789c5f/upper/work,index=off,metacopy=off\n144 143 0:40 / /tmp/codex-daemon-0 ro,nosuid,nodev,relatime - tmpfs tmpfs rw,mode=000\n145 143 0:41 / /tmp/.git ro,nosuid,nodev,relatime - tmpfs tmpfs rw,mode=555\n147 143 0:43 / /tmp/.agents ro,nosuid,nodev,relatime - tmpfs tmpfs rw,mode=555\n149 143 0:27 /tmp/.codex /tmp/.codex ro,nosuid,nodev,relatime - overlay overlay rw,lowerdir=/run/kata-containers/erofs-multi-layer/0abd358bdaba46159309218c8a789c5f/lower-0,upperdir=/run/kata-containers/erofs-multi-layer/0abd358bdaba46159309218c8a789c5f/upper/upper,workdir=/run/kata-containers/erofs-multi-layer/0abd358bdaba46159309218c8a789c5f/upper/work,index=off,metacopy=off\n153 143 0:46 / /tmp/.aws ro,nosuid,nodev,relatime - tmpfs tmpfs rw,mode=555\n154 143 0:27 /tmp/codex-bwrap-synthetic-mount-targets-0 /tmp/codex-bwrap-synthetic-mount-targets-0 ro,nosuid,nodev,relatime - overlay overlay rw,lowerdir=/run/kata-containers/erofs-multi-layer/0abd358bdaba46159309218c8a789c5f/lower-0,upperdir=/run/kata-containers/erofs-multi-layer/0abd358bdaba46159309218c8a789c5f/upper/upper,workdir=/run/kata-containers/erofs-multi-layer/0abd358bdaba46159309218c8a789c5f/upper/work,index=off,metacopy=off\n155 120 0:27 /workspace/scratch/3d4ec372c488 /workspace/scratch/3d4ec372c488 rw,nosuid,nodev,relatime - overlay overlay rw,lowerdir=/run/kata-containers/erofs-multi-layer/0abd358bdaba46159309218c8a789c5f/lower-0,upperdir=/run/kata-containers/erofs-multi-layer/0abd358bdaba46159309218c8a789c5f/upper/upper,workdir=/run/kata-containers/erofs-multi-layer/0abd358bdaba46159309218c8a789c5f/upper/work,index=off,metacopy=off\n156 155 0:47 / /workspace/scratch/3d4ec372c488/.git ro,nosuid,nodev,relatime - tmpfs tmpfs rw,mode=555\n159 155 0:48 / /workspace/scratch/3d4ec372c488/.agents ro,nosuid,nodev,relatime - tmpfs tmpfs rw,mode=555\n161 155 0:27 /workspace/scratch/3d4ec372c488/.codex /workspace/scratch/3d4ec372c488/.codex ro,nosuid,nodev,relatime - overlay overlay rw,lowerdir=/run/kata-containers/erofs-multi-layer/0abd358bdaba46159309218c8a789c5f/lower-0,upperdir=/run/kata-containers/erofs-multi-layer/0abd358bdaba46159309218c8a789c5f/upper/upper,workdir=/run/kata-containers/erofs-multi-layer/0abd358bdaba46159309218c8a789c5f/upper/work,index=off,metacopy=off\n163 155 0:49 / /workspace/scratch/3d4ec372c488/.aws ro,nosuid,nodev,relatime - tmpfs tmpfs rw,mode=555",
+    "error": null,
+    "path": "/proc/self/mountinfo"
+  },
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "resource_capacity_qualified": false,
+  "resource_scope": "resource_limit_unknown",
+  "schema": "hepta-observed-linux-host-resources-v2"
+}

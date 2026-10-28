@@ -100,21 +100,24 @@ jobs:
                   environment.write(f"{key}={value}\n")
           PY
           sudo apt-get update
-          sudo apt-get install -y build-essential pkg-config libcap-dev
+          sudo apt-get install -y build-essential bubblewrap pkg-config libcap-dev
+          bwrap --version > "$RUNNER_TEMP/hepta-public-initial-v2/bubblewrap-version.txt"
       - name: Resolve the existing checksum-verified V8 pair
         env:
           CODEX_REPO_ROOT: ${{ github.workspace }}/hepta
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
-      - name: Build the first-party binary required by the existing native host test
+      - name: Build the first-party binaries required by the existing native tests
         id: required_cli
         continue-on-error: true
         run: |
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/required-cli-build.json" --timeout-seconds 3600 --minimum-tests 0 -- cargo build --manifest-path codex-rs/Cargo.toml --locked -p codex-cli --bin codex
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/required-cli-build.json" --timeout-seconds 3600 --minimum-tests 0 -- cargo build --manifest-path codex-rs/Cargo.toml --locked -p codex-cli -p codex-code-mode-host --bin codex --bin codex-code-mode-host
           sha256sum "$CARGO_TARGET_DIR/debug/codex" > "$RUNNER_TEMP/hepta-public-initial-v2/codex-binary.sha256"
+          sha256sum "$CARGO_TARGET_DIR/debug/codex-code-mode-host" > "$RUNNER_TEMP/hepta-public-initial-v2/code-mode-host-binary.sha256"
           printf 'CARGO_BIN_EXE_codex=%s/debug/codex\n' "$CARGO_TARGET_DIR" >> "$GITHUB_ENV"
+          printf 'CARGO_BIN_EXE_codex-code-mode-host=%s/debug/codex-code-mode-host\n' "$CARGO_TARGET_DIR" >> "$GITHUB_ENV"
       - name: Execute the complete five changed Rust packages
         id: scoped_rust
         continue-on-error: true

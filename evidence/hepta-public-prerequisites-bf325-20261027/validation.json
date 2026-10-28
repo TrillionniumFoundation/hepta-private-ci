@@ -1,0 +1,57 @@
+{
+  "schema": "hepta-runtime-prerequisites-local-validation-v1",
+  "true_parent": "bf32538ccb9b52e3e0a8e089983eea7e3940b6a5",
+  "workflow_sha256": "288411a82ea15c17090f1c77c8363e0a5d122005a7d8ec256c8b9b55262d6108",
+  "records": [
+    {
+      "command": [
+        "python3",
+        "-B",
+        "scripts/test_hepta_smollm_public_initial_v2.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "test_hepta_smollm_public_initial_v2.log",
+      "sha256": "b5eb8c564ee53c7f9c49934371ca0efe6c63e5b930a164324c8b0cb9fff6303d",
+      "bytes": 442
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "scripts/test_hepta_smollm_descendant_v2.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "test_hepta_smollm_descendant_v2.log",
+      "sha256": "60af2c6463b05f23c1a90d2daf700ee1427efd630bd404b869267bb1798e0ab8",
+      "bytes": 756
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "scripts/test_hepta_smollm_answer_eos_research_v3.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "test_hepta_smollm_answer_eos_research_v3.log",
+      "sha256": "9580c9cc014328e50102232ef785a2355c2a3b7423b3912f50a9d5868a501db1",
+      "bytes": 1428
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "yaml_parsed": true,
+  "diff_unchanged_during_controls": true,
+  "wall_ns": 1162660041,
+  "native_prerequisite_build_rerun": false,
+  "all_35_native_failures_closed": false,
+  "real_model_new_run": false
+}
