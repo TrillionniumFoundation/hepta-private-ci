@@ -80,7 +80,7 @@ class EvidenceReaderTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             reader.command("ordinary-native", 2)
 
-    def test_colored_pidfd_receipt_requires_six_actual_pass_lines(self):
+    def namespace_receipt(self, *, colored=True, progress=False):
         record = self.command_record()
         record["minimum_tests"] = 14
         record["observed_passed_tests"] = 14
@@ -98,35 +98,156 @@ class EvidenceReaderTests(unittest.TestCase):
             "--no-capture",
         ]
         namespace = [
-            f"\x1b[32;1m PASS\x1b[0m [ 0.001s] codex-linux-sandbox "
-            f"\x1b[36m{name}\x1b[0m\n"
+            "linux_run_main::tests::" + name
             for name in evidence.NAMESPACE_TESTS
         ]
-        pidfd = [
-            f"\x1b[32;1m PASS\x1b[0m [ 0.001s] codex-linux-sandbox "
-            f"\x1b[36mpidfd_reaper::tests\x1b[0m\x1b[36m::\x1b[0m"
-            f"\x1b[34;1mcase_{index}\x1b[0m\n"
-            for index in range(6)
-        ]
+        # Independent exact producer names, not anonymous case_N stand-ins.
+        pidfd = (
+            "normal_child_exit_is_reaped_with_original_status",
+            "owner_already_dead_before_inner_entry_exits_before_command",
+            "actual_owner_exit_wakes_blocking_reaper_without_sigchld",
+            "ordinary_descriptor_cannot_replace_owner_pidfd",
+            "pidfd_type_check_does_not_consume_real_child_exit_status",
+            "restoring_sigchld_does_not_reblock_forwarded_signals",
+        )
+        names = namespace + ["pidfd_reaper::tests::" + name for name in pidfd]
+        lines = []
+        for index, name in enumerate(names, 1):
+            status = "\x1b[32;1mPASS\x1b[0m" if colored else "PASS"
+            if colored:
+                name = "\x1b[36m" + name.replace("::", "\x1b[0m::\x1b[36m") + "\x1b[0m"
+            ordinal = f" ( {index}/14)" if progress else ""
+            lines.append(
+                f" {status} [ 0.001s]{ordinal} codex-linux-sandbox {name}\n"
+            )
+        return record, lines
 
-        def write_receipt(lines):
-            raw = (
-                "".join(lines)
-                + "\x1b[32;1mSummary\x1b[0m [ 0.1s] 14 tests run: "
-                + "\x1b[1m14\x1b[0m \x1b[32;1mpassed\x1b[0m, 0 failed\n"
-            ).encode()
-            (self.root / "command.log").write_bytes(raw)
-            record["log_bytes"] = len(raw)
-            record["log_sha256"] = hashlib.sha256(raw).hexdigest()
-            (self.root / "namespace-and-pidfd.json").write_text(json.dumps(record))
+    def write_namespace_receipt(self, record, lines, *, reported_passed=14):
+        raw = (
+            "".join(lines)
+            + f"\x1b[32;1mSummary\x1b[0m [ 0.1s] {reported_passed} tests run: "
+            + f"\x1b[1m{reported_passed}\x1b[0m \x1b[32;1mpassed\x1b[0m, 0 failed\n"
+        ).encode()
+        (self.root / "command.log").write_bytes(raw)
+        record["observed_passed_tests"] = reported_passed
+        record["log_bytes"] = len(raw)
+        record["log_sha256"] = hashlib.sha256(raw).hexdigest()
+        (self.root / "namespace-and-pidfd.json").write_text(json.dumps(record))
+        return raw
 
-        write_receipt(namespace + pidfd)
+    def test_colored_pidfd_receipt_requires_six_actual_pass_lines(self):
+        record, lines = self.namespace_receipt()
+        raw = self.write_namespace_receipt(record, lines)
         reader = evidence.Evidence(self.root)
-        self.assertEqual(reader.command("namespace-and-pidfd", 14)["passed"], 14)
+        self.assertEqual(
+            reader.command("namespace-and-pidfd", 14),
+            {
+                "record": "namespace-and-pidfd.json",
+                "passed": 14,
+                "raw": {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()},
+            },
+        )
+        self.assertEqual((self.root / "command.log").read_bytes(), raw)
         # Summary alone cannot substitute for the missing sixth real pidfd PASS.
-        write_receipt(namespace + pidfd[:-1])
+        self.write_namespace_receipt(record, lines[:-1])
         with self.assertRaisesRegex(ValueError, "all six pidfd controls"):
             reader.command("namespace-and-pidfd", 14)
+
+    def test_namespace_plain_and_progress_records_preserve_raw_bytes(self):
+        for colored, progress in ((False, False), (False, True), (True, True)):
+            with self.subTest(colored=colored, progress=progress):
+                record, lines = self.namespace_receipt(colored=colored, progress=progress)
+                raw = self.write_namespace_receipt(record, lines)
+                self.assertEqual(
+                    evidence.Evidence(self.root).command("namespace-and-pidfd", 14)["passed"],
+                    14,
+                )
+                self.assertEqual((self.root / "command.log").read_bytes(), raw)
+
+    def test_namespace_duplicate_controls_cannot_replace_distinct_passes(self):
+        record, lines = self.namespace_receipt()
+        for index in (0, 8):
+            for extra in (False, True):
+                with self.subTest(index=index, extra=extra):
+                    altered = list(lines)
+                    if extra:
+                        altered.append(lines[index])
+                    else:
+                        altered[index] = lines[index + 1]
+                    self.write_namespace_receipt(record, altered)
+                    with self.assertRaises(ValueError):
+                        evidence.Evidence(self.root).command("namespace-and-pidfd", 14)
+
+    def test_namespace_each_missing_exact_control_is_rejected(self):
+        record, lines = self.namespace_receipt()
+        for index in range(len(lines)):
+            with self.subTest(index=index):
+                self.write_namespace_receipt(record, lines[:index] + lines[index + 1 :])
+                with self.assertRaises(ValueError):
+                    evidence.Evidence(self.root).command("namespace-and-pidfd", 14)
+
+    def test_namespace_prefix_suffix_and_wrong_binary_text_is_not_a_record(self):
+        record, lines = self.namespace_receipt(colored=False)
+        for index in (0, 8):
+            line = lines[index]
+            for replacement in (
+                "diagnostic: " + line,
+                line.replace("PASS", "BYPASS"),
+                line.rstrip("\n") + " diagnostic\n",
+                line.rstrip("\n") + "_extra\n",
+                line.replace("::tests::", "::tests::prefix_"),
+                line.replace("codex-linux-sandbox ", "codex-linux-sandbox::other "),
+                line.replace(" [ 0.001s]", " [not-a-duration]"),
+            ):
+                with self.subTest(index=index, replacement=replacement):
+                    altered = list(lines)
+                    altered[index] = replacement
+                    self.write_namespace_receipt(record, altered)
+                    with self.assertRaises(ValueError):
+                        evidence.Evidence(self.root).command("namespace-and-pidfd", 14)
+
+    def test_namespace_wrong_command_cannot_supply_passing_records(self):
+        record, lines = self.namespace_receipt()
+        command = record["command"]
+        for wrong in (
+            ["python3", "unrelated-passing-test.py"],
+            command[:-1],
+            [value.replace("codex-linux-sandbox", "codex-app-server") for value in command],
+            [value.replace(" | test(pidfd_reaper::tests::)", "") for value in command],
+        ):
+            with self.subTest(command=wrong):
+                self.write_namespace_receipt({**record, "command": wrong}, lines)
+                with self.assertRaisesRegex(ValueError, "complete namespace/pidfd command"):
+                    evidence.Evidence(self.root).command("namespace-and-pidfd", 14)
+
+    def test_namespace_non_sgr_controls_are_not_normalized(self):
+        record, lines = self.namespace_receipt(colored=False)
+        for escape in ("\x1b[2K", "\x1b]0;title\x07", "\r"):
+            with self.subTest(escape=escape):
+                altered = list(lines)
+                altered[8] = escape + altered[8]
+                self.write_namespace_receipt(record, altered)
+                with self.assertRaises(ValueError):
+                    evidence.Evidence(self.root).command("namespace-and-pidfd", 14)
+
+    def test_namespace_unexpected_terminal_control_is_rejected(self):
+        record, lines = self.namespace_receipt(colored=False)
+        lines.append(
+            " PASS [ 0.001s] codex-linux-sandbox pidfd_reaper::tests::not_an_original_control\n"
+        )
+        self.write_namespace_receipt(record, lines)
+        with self.assertRaisesRegex(ValueError, "unexpected namespace/pidfd"):
+            evidence.Evidence(self.root).command("namespace-and-pidfd", 14)
+
+    def test_namespace_summary_count_must_equal_exact_terminal_controls(self):
+        record, lines = self.namespace_receipt()
+        for reported_passed in (13, 15):
+            with self.subTest(reported_passed=reported_passed):
+                self.write_namespace_receipt(
+                    record, lines, reported_passed=reported_passed
+                )
+                with self.assertRaises(ValueError):
+                    evidence.Evidence(self.root).command("namespace-and-pidfd", 14)
 
     def test_another_run_cannot_supply_passing_receipt(self):
         record = self.command_record()
