@@ -49,6 +49,10 @@ fn initialize_v8_with_mode(jit_mode: V8JitMode) -> Result<V8Initialization, Stri
     let platform = v8::new_default_platform(0, false).make_shared();
     v8::V8::initialize_platform(platform.clone());
     v8::V8::initialize();
+    // V8 15's PA-backed sandbox allocator initializes its process-wide pool
+    // lazily without a mutex. Finish that first use while this OnceLock still
+    // excludes concurrent isolate creation on runtime threads.
+    drop(v8::new_default_allocator());
     Ok(V8Initialization {
         _platform: platform,
         jit_mode,
