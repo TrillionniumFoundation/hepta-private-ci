@@ -1,0 +1,89 @@
+{
+  "active_proxy_cache": {
+    "files": {
+      "PUBLIC_CONTEXT_CACHE.json": "73e84dd76ec0d99e9758e640e04e4b9ccbdc5e5f6ab521269768df120242b1c4",
+      "PUBLIC_CONTEXT_CACHE.npz": "47ceffaf75629cd32f1fac4b03400e8f19330729c7929c19372b0c963118a461"
+    },
+    "path": "/dev/shm/hepta-ndu-closure-20261028/natural_proxy_cache"
+  },
+  "archives": [
+    {
+      "bytes": 51291121,
+      "durable_save_status": "succeeded",
+      "file_id": "file_0000000041ec81f4815e791d557b1b84",
+      "files_verified": 108,
+      "library_file_id": "libfile_d698c7e8bba48191b109069055de9767",
+      "manifest_sha256": "4a44e0e6d4e2303bfa716a5f1885496468eeb5d65bbc0762672267a0a47e0e7c",
+      "path": "/workspace/scratch/627fa3bea56c/natural-retired-archives/natural-v1-retired-part01.tar.gz",
+      "sha256": "e5c9a390eba26158d49b0b1ead36777e93f16cd461a18c8cf3f35061c37c19ba",
+      "version": 0
+    },
+    {
+      "bytes": 48868793,
+      "durable_save_status": "succeeded",
+      "file_id": "file_00000000bcd481fb8f5fc0d5d15eae0f",
+      "files_verified": 91,
+      "library_file_id": "libfile_e288ca172c3881918b47208751293503",
+      "manifest_sha256": "4a44e0e6d4e2303bfa716a5f1885496468eeb5d65bbc0762672267a0a47e0e7c",
+      "path": "/workspace/scratch/627fa3bea56c/natural-retired-archives/natural-v1-retired-part02.tar.gz",
+      "sha256": "2cf895bb263bdd9df8638be8eec403fcce726bc9ca2a8d0546534f7adf31fa0c",
+      "version": 0
+    },
+    {
+      "bytes": 13428494,
+      "durable_save_status": "succeeded",
+      "file_id": "file_000000001c6c81f58df475d117363f79",
+      "files_verified": 26,
+      "library_file_id": "libfile_e3f708b029f08191bce0d14a6d9c7dce",
+      "manifest_sha256": "4a44e0e6d4e2303bfa716a5f1885496468eeb5d65bbc0762672267a0a47e0e7c",
+      "path": "/workspace/scratch/627fa3bea56c/natural-retired-archives/natural-warmstart-retired-001-002.tar.gz",
+      "sha256": "a25dfd37b12253aa4228458ffb9e3ecc54b6e9950f8f9315107b42262c59115d",
+      "version": 0
+    }
+  ],
+  "manifest_sha256": "4a44e0e6d4e2303bfa716a5f1885496468eeb5d65bbc0762672267a0a47e0e7c",
+  "release_authorization": "parent confirmed all three durable saves and authorized release of these immutable owned phases only",
+  "restoration": "extract both v1 archives at recorded source_root; shared original annotation zips and pinned pretrained weights are in active-v2 paths and publisher acquisition metadata; warm archive restores the two resource attempts exactly",
+  "retirement_receipts": {
+    "preprocessing": {
+      "completed_source_roles": {
+        "generator_train": 90
+      },
+      "interrupted_processes": [
+        986090
+      ],
+      "new_calibration_metrics": 0,
+      "new_development_metrics": 0,
+      "new_qualification_metrics": 0,
+      "reason": "Peer review found temporal-label overlap outside clamped target windows. Correct metadata-aligned windows in a new immutable protocol, preserving all allocated original source IDs and roles.",
+      "schema": "hepta.closure.retired-preprocessing.v1",
+      "source_protocol_sha256": "dc5a2c7a387b3df73986c0d2fa1ed6fac1b38b21d23e7fe3bbac43064882ca55",
+      "timestamp": 1793170263.0990987
+    },
+    "warm002": {
+      "budget_reduced": false,
+      "cgroup_memory_events": "low 0\nhigh 0\nmax 1103298\noom 6\noom_kill 4\noom_group_kill 0\n",
+      "exact_number_of_updates_after_last_marker_unknown": true,
+      "exit_code": 137,
+      "last_confirmed_optimizer_step": 256,
+      "last_saved_checkpoint_step": 256,
+      "log_sha256": "1add73cc67ebfd042b466fc75d943ee6d19f1ddc4d17053630949879bd38481a",
+      "new_calibration_metrics": false,
+      "new_development_metrics": false,
+      "new_qualification_pixels_or_metrics": false,
+      "preserved_files": {
+        "PUBLIC_CONTEXT_CACHE.json": "73e84dd76ec0d99e9758e640e04e4b9ccbdc5e5f6ab521269768df120242b1c4",
+        "PUBLIC_CONTEXT_CACHE.npz": "47ceffaf75629cd32f1fac4b03400e8f19330729c7929c19372b0c963118a461",
+        "WARMSTART_PROTOCOL.json": "daa0ea4f5e696eabab593b21df89b3dd5fb67d5f30efa086f57647ac336d60fe",
+        "warmstart-0000.pt": "c4628b7c641c868e4bf5141f8b8c68afcd1898db90d559b9c06d9dd05abf78c9",
+        "warmstart-0256.pt": "de5fd6c0ad1999002eb5e82f9e06f8d78342475d18374ec63c009c406ed1b6fc"
+      },
+      "protocol_sha256": "daa0ea4f5e696eabab593b21df89b3dd5fb67d5f30efa086f57647ac336d60fe",
+      "reason": "process exit137 / Linux cgroup OOM kill during shared external workload; not a scientific result",
+      "retired_utc": "2026-10-28T07:28:30.150384+00:00",
+      "schema": "hepta.closure.retired-resource-attempt.v1"
+    }
+  },
+  "schema": "hepta.closure.retired-natural-custody.v1",
+  "shared_dependencies_preserved_and_hash_verified": true
+}
