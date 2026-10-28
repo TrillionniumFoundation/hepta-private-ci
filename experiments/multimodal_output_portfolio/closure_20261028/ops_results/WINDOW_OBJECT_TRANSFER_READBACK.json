@@ -1,0 +1,82 @@
+{
+  "schema": "hepta.reviewed-object-transfer-readback.v1",
+  "created_at_utc": "2026-10-28T10:57:39.494427+00:00",
+  "scope": "Immutable blob transport only; no test qualification, ref movement, permission qualification or promotion. Git committed-byte readback follows final publication.",
+  "run_id": 40675347527,
+  "run_head": "3935f39cae9c2bd27272a4da6287d13e85521106",
+  "run_branch": "research/ndu-object-transfer-20261028",
+  "artifact_id": 12809444043,
+  "archive_bytes": 1204,
+  "archive_sha256": "d29ba68671002e126a2045285dbdf3134bd6efc6b55d29224361365637ac11ca",
+  "zip_crc_verified": true,
+  "result_sha256": "8bb237bed63dc9724b571dad4963c190ac9aabe2f174959c47b1157d94aae0da",
+  "transport_manifest_sha256": "ab4e85ec107519d3f6f1c2b288616739b017a532c4415c9820e05b602073729e",
+  "verified_file_count": 9,
+  "checked_against_frozen_manifest_and_current_local_bytes": true,
+  "ref_updates": 0,
+  "files": [
+    {
+      "path": "MODULE.bazel.lock",
+      "bytes": 1722721,
+      "sha256": "fe4bbfb92aac1eba58fb25357bf3182088d29a09b1838144041c94b03f8218cf",
+      "git_blob_sha": "3f9ad840678261729d88a348151b7784e19ccc29",
+      "published": true
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "bytes": 420227,
+      "sha256": "c335e0649d5d516cadd52d68c1a15ed5c136814d11553ef5c791ea7e5058a478",
+      "git_blob_sha": "ccb051d9092fc07d30bb41d850eb79cf17d23592",
+      "published": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/data_source_usage_register.json",
+      "bytes": 325069,
+      "sha256": "59b91f554034db64086bebc7872aa89ca961c7095429dca8a29c06392bb02fad",
+      "git_blob_sha": "29a4614976ba93f6df0af6ae151cf91a1f65bd5a",
+      "published": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/natural_results/OBSERVER_V3_DEVELOPMENT.json",
+      "bytes": 89339,
+      "sha256": "cedc4d07d09af4f382bc8f1513e3c566320b9af4d9ef2bfb5edd4e2ec5da9e97",
+      "git_blob_sha": "4244c2f8064ba2c3afb6fba62212548d9ea249b4",
+      "published": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/natural_results/V3_SOURCE_AUDIT_002.json",
+      "bytes": 334931,
+      "sha256": "acf35e107be9f1cba1e03630491e603499f1905688432a5323b3a6a0c4299326",
+      "git_blob_sha": "dfc2f20e00b6c6a8f8bd2633f1d6e0e477cfff45",
+      "published": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_results/CI_832_SYNAPSE_DIAGNOSTICS_INVENTORY.json",
+      "bytes": 71455,
+      "sha256": "14d4c07df22c04e27431002c38375577b310d1a9f23804a8aad4d5c9c9ea3502",
+      "git_blob_sha": "54c58c7abd6028b2b5645042ef4aac9ee9d38ac7",
+      "published": true
+    },
+    {
+      "path": "codex-rs/core/src/agent/control_tests.rs",
+      "bytes": 163999,
+      "sha256": "4b33c7fdf8dc144af2a39d01067015165e5eeddb6595e92fe8759efb304cc5de",
+      "git_blob_sha": "e227cde551d4eb99cab15bb64b3050de9db6fe43",
+      "published": true
+    },
+    {
+      "path": "codex-rs/core/src/environment_selection.rs",
+      "bytes": 73645,
+      "sha256": "9ae6c752bd8399ca26a3151d7e9087411a80fdce2ae399c90870a168c702a9e3",
+      "git_blob_sha": "4244d4d3995b095df8924ba538177b4ad91214a1",
+      "published": true
+    },
+    {
+      "path": "codex-rs/core/src/session/turn.rs",
+      "bytes": 132554,
+      "sha256": "fbc20b525af66ddc4b62d206b6f7426d21db4132b86abb82df67c2a7a42ed585",
+      "git_blob_sha": "9b560fa8a8544ca38523790752004dbf6a68c806",
+      "published": true
+    }
+  ]
+}
