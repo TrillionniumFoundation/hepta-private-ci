@@ -3663,6 +3663,7 @@ name = "codex-hepta-contracts"
 version = "0.0.0"
 dependencies = [
  "codex-utils-cargo-bin",
+ "codex-utils-path",
  "ed25519-dalek",
  "pretty_assertions",
  "rustix 1.1.4",
@@ -4118,7 +4119,9 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-types",
+ "codex-utils-path",
  "ed25519-dalek",
+ "pretty_assertions",
  "rustix 1.1.4",
  "serde",
  "serde_json",
@@ -5548,6 +5551,7 @@ dependencies = [
  "dunce",
  "pretty_assertions",
  "tempfile",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
