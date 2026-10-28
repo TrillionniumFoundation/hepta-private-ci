@@ -1,0 +1,32 @@
+{
+  "actual_failure_and_refusal_cost_preserved": true,
+  "binding_sha256": "902c0726a9de3d7ca41ac50a08becb46132f82073024332e610d93764599cb39",
+  "episode_sha256": "15b66026110d15800c4cb785f317d509afd030f3b4b5302e2a85fbe4626df65d",
+  "failure_receipt": {
+    "actual_media_written": false,
+    "actual_neural_forward_completed": true,
+    "destination": "/dev/shm/hepta-ndu-unified-20261028/native-failure-001/actual-failed-delivery/initial",
+    "exception": "FileExistsError",
+    "injection": "create_new output-directory collision after actual neural forward"
+  },
+  "measurements": {
+    "actor_nanoseconds": 498,
+    "actual_delivery_units": 0,
+    "actual_generator_calls": 1,
+    "actual_original_kernel_executions": 17,
+    "actual_owner_api_ticks": 7,
+    "cold_recovery_kernel_steps": 10,
+    "forecast_branch_ticks": 0,
+    "forecast_replay_kernel_steps": 0,
+    "native_cpu_seconds": 0.18579199999999998,
+    "python_cpu_seconds": 0.019912113000000176,
+    "wall_seconds": 0.20950967899989337
+  },
+  "native_authority": "DENY_ALL",
+  "passed": true,
+  "production_failure_rate_claim": false,
+  "profile_sha256": "ae072a99a79bc2c2cfab3cde009bf097c016308392a355e79d4aec90aaa6176d",
+  "schema": "hepta.ndu.actual-codec-failure-stress.v1",
+  "semantic_quality_score_claim": false,
+  "total_cost": 0.01674152137919999
+}
