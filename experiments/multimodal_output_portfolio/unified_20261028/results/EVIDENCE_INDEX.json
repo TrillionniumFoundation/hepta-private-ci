@@ -1,0 +1,88 @@
+{
+  "additional_evidence": "Source files and compact result/audit receipts are versioned in the isolated research branch.",
+  "artifact_count": 7,
+  "artifacts": [
+    {
+      "bytes": 134772691,
+      "file_id": "file_0000000099a881f8af3069d5c5178cb1",
+      "file_name": "ndu_fullpath_main_20261028.tar.gz",
+      "library_file_id": "libfile_220f3151a6b081919cb23fc1ddb481c1",
+      "library_version": 0,
+      "saved_status": "succeeded",
+      "scope": "fullpath_main",
+      "sha256": "4fd17a2d79c4a80087f189c6b74257bbe3ff9f85976ac58f92e8ba2c1fb0f4c5"
+    },
+    {
+      "bytes": 48194545,
+      "file_id": "file_00000000aa9882308a428f2d232c324b",
+      "file_name": "ndu_fullpath_retired_attempts_20261028.tar.gz",
+      "library_file_id": "libfile_aa343ee7243481919f6e34eef9df0413",
+      "library_version": 0,
+      "saved_status": "succeeded",
+      "scope": "retired_attempts",
+      "sha256": "df08a9417670945c590a1112cf1f62b2764a7b5ff3c8ee38db4b92f6f682a9cb"
+    },
+    {
+      "bytes": 594196,
+      "file_id": "file_00000000c3f081fd9f65f64e0a30c716",
+      "file_name": "native-integration-evidence-v2.tar.gz",
+      "library_file_id": "libfile_6a0b6c9b5d90819188d4b7fe36688f7d",
+      "library_version": 0,
+      "saved_status": "succeeded",
+      "scope": "native_original_owner",
+      "sha256": "4d26f070b7957d37548c54561c72854f20ba38c3a69704e45762c12d93b57c58"
+    },
+    {
+      "bytes": 35454842,
+      "file_id": "file_00000000603081fdbfbb44bcdc9b8782",
+      "file_name": "ndu_natural_joint_20261028_part1.tar.gz",
+      "library_file_id": "libfile_475adb1bd24081918e1d73f658dbc18f",
+      "library_version": 0,
+      "saved_status": "succeeded",
+      "scope": "natural_initial",
+      "sha256": "945635710b590eae6a48d56cc2932ec31458dfbb8bb0716122dc0ef80281f931"
+    },
+    {
+      "bytes": 45635327,
+      "file_id": "file_00000000da908230bc6d175597ab28b0",
+      "file_name": "ndu_natural_joint_20261028_part2.tar.gz",
+      "library_file_id": "libfile_9052627b591c81918edd63f708131360",
+      "library_version": 0,
+      "saved_status": "succeeded",
+      "scope": "natural_expanded",
+      "sha256": "125670a4f02028a9f3b4861c98f4e6c77a82348b403e034061c662771cf6be33"
+    },
+    {
+      "bytes": 483142,
+      "file_id": "file_00000000f2b481fd81fe8c4e3910012e",
+      "file_name": "natural-native-evidence.tar.gz",
+      "library_file_id": "libfile_33021b3e37f8819183b22646204babc3",
+      "library_version": 0,
+      "saved_status": "succeeded",
+      "scope": "natural_native_transport",
+      "sha256": "e71e4494fd40a08a7f7d47084e4e108c92348f43ccf37708717a11f292caf6c0"
+    },
+    {
+      "bytes": 465777,
+      "file_id": "file_00000000409081fd8ee065ad0b272548",
+      "file_name": "ndu_natural_selected_critic_20261028.tar.gz",
+      "library_file_id": "libfile_1653b5a596808191bce494ed84ec8739",
+      "library_version": 0,
+      "saved_status": "succeeded",
+      "scope": "selected_policy_critic_diagnostic",
+      "sha256": "1ecc362188e50659c50fe8d2be2d6bbbe3c5b186b534a25118260a4036b7cb6b"
+    }
+  ],
+  "base_sha": "d3c2d760eca5065fc966820379c35c6e8d56e855",
+  "fullpath_record_compression": "Use restore_records.py with COMPRESSED_RECORDS.json to restore exact original JSON before historical audit",
+  "global_optimality_established": false,
+  "historical_execution_sources_are_immutable": true,
+  "native_authority": "DENY_ALL",
+  "new_future_tail_certificate": false,
+  "promotion_approved": false,
+  "raw_training_media_scope": "Fullpath training performs actual file roundtrips but retains stream hashes and costs, not every training image; qualification media and all checkpoints are retained. Natural exact artifact/codec retention is specified per frozen run.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "research_branch": "research/ndu-unified-five-20261028",
+  "schema": "hepta.ndu.unified-evidence-index.v1",
+  "total_saved_bytes": 265600520
+}

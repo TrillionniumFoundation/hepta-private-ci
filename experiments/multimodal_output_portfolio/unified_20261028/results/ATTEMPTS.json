@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.ndu.unified-attempt-history.v1",
+  "all_qualification_criteria_preserved": true,
+  "attempts": [
+    {
+      "id": "fullpath-smoke-001",
+      "status": "preflight_failed",
+      "reason": "Missing original dataset protocol in external readonly restoration",
+      "qualification_outputs": 0,
+      "training_updates": 0
+    },
+    {
+      "id": "fullpath-smoke-002",
+      "status": "smoke_completed",
+      "training_updates": 8,
+      "training_bundles": 384,
+      "qualification_outputs": 0,
+      "path": "retired/fullpath-smoke-002"
+    },
+    {
+      "id": "fullpath-development-001",
+      "status": "preflight_failed",
+      "reason": "Reused external readonly data/observers disappeared; restored independently pinned own copies",
+      "training_updates": 0,
+      "qualification_outputs": 0
+    },
+    {
+      "id": "fullpath-development-002",
+      "status": "retired_before_qualification",
+      "reason": "Explicit deterministic strong-prior/fallback mode was absent from continuation manifest; fixed before qualification with unchanged learning hyperparameters and source selection",
+      "completed_mean_updates": 320,
+      "completed_risk_updates": 78,
+      "completed_training_bundles": 19104,
+      "partial_risk_step": 78,
+      "partial_media_files_retained": 34,
+      "interrupted_step_cpu_and_exact_partial_compute_unavailable": true,
+      "qualification_outputs": 0,
+      "raw_preserved": true
+    },
+    {
+      "id": "fullpath-development-003",
+      "status": "completed_frozen_main_study",
+      "training_updates": 1920,
+      "training_bundles": 92160,
+      "qualification_outputs": 27648,
+      "main_result_acceptance_flags_all_false": true
+    },
+    {
+      "id": "natural-initial-8",
+      "status": "completed_and_preserved",
+      "note": "First 8-step matched actual-output study; its qualification was already generated before expansion request could stop it. No reuse for second qualification."
+    },
+    {
+      "id": "natural-expanded-64",
+      "status": "completed_and_preserved",
+      "note": "Budget expansion authorized independently of first qualification scores; same warmstart/optimizer/noise/loss; 48 new video sources for calibration and qualification; all 8/64 candidates reported."
+    }
+  ],
+  "accounting_boundary": "Completed main runs report full measured counters. Interrupted risk step has retained partial files and only a lower bound, not invented exact CPU billing. Tariffs and measured batch work are separate."
+}
