@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.p41-windows-agentd-h7-lease-setup-candidate.v1",
+  "observed_utc": "2026-10-28T22:21:13Z",
+  "source_parent_sha": "8a76da24fb35a8b310bdcac065106c3b89a4b53a",
+  "source_path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+  "test": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+  "native_evidence": {
+    "run_id": 40771755828,
+    "job_id": 123111270867,
+    "platform": "windows-latest x86_64-pc-windows-msvc",
+    "failure": "open compact executor: Lease(StaleFence(\"local lease has expired\"))",
+    "original_fixture_ttl_seconds": 1
+  },
+  "candidate": {
+    "fixture_ttl_seconds": 15,
+    "post_fixture_expiration_wait_seconds": 20,
+    "changes": "only duration constants scoped to owning H7 test",
+    "reason": "separate Windows SQLite/compact-executor setup time from the deliberate expiration/quarantine assertion"
+  },
+  "unchanged": [
+    "production lease admission and fencing",
+    "original H7 trajectory start/terminal append",
+    "expired registry head quarantine assertion",
+    "positive/negative checks",
+    "required CI and security permissions"
+  ],
+  "validation": {
+    "static_source_scope_checked": true,
+    "native_windows_owning_test": "PENDING_NEW_EXACT_HEAD",
+    "current_required": "PENDING_NEW_EXACT_HEAD",
+    "local_rust_toolchain_available": false
+  },
+  "claims": {
+    "windows_h7_closed": false,
+    "all_blockers_closed": false,
+    "production_activation_allowed": false
+  },
+  "authority": "DENY_ALL",
+  "mode": "SHADOW_ONLY",
+  "status": "HOLD_NO_GO"
+}
