@@ -198,11 +198,13 @@ jobs:
         run: |
           set -euo pipefail
           unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/required-cli-build.json" --timeout-seconds 3600 --minimum-tests 0 -- cargo build --manifest-path codex-rs/Cargo.toml --locked -p codex-cli -p codex-code-mode-host --bin codex --bin codex-code-mode-host
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/required-cli-build.json" --timeout-seconds 3600 --minimum-tests 0 -- cargo build --manifest-path codex-rs/Cargo.toml --locked -p codex-cli -p codex-code-mode-host -p codex-rmcp-client --bin codex --bin codex-code-mode-host --bin test_stdio_server
           sha256sum "$CARGO_TARGET_DIR/debug/codex" > "$RUNNER_TEMP/hepta-public-initial-v2/codex-binary.sha256"
           sha256sum "$CARGO_TARGET_DIR/debug/codex-code-mode-host" > "$RUNNER_TEMP/hepta-public-initial-v2/code-mode-host-binary.sha256"
           printf 'CARGO_BIN_EXE_codex=%s/debug/codex\n' "$CARGO_TARGET_DIR" >> "$GITHUB_ENV"
           printf 'CARGO_BIN_EXE_codex-code-mode-host=%s/debug/codex-code-mode-host\n' "$CARGO_TARGET_DIR" >> "$GITHUB_ENV"
+          test -x "$CARGO_TARGET_DIR/debug/test_stdio_server"
+          printf 'CARGO_BIN_EXE_test_stdio_server=%s/debug/test_stdio_server\n' "$CARGO_TARGET_DIR" >> "$GITHUB_ENV"
       - name: Execute the complete five changed Rust packages
         id: scoped_rust
         timeout-minutes: 65
