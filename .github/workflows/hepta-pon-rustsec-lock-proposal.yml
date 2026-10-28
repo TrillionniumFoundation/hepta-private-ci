@@ -1,5 +1,7 @@
 name: Hepta PoN RustSec lock proposal (non-qualifying)
 
+# The one-shot PR proposal is retained in qa/pon-dependency-resolution-20261028-r8.
+# Retire automatic generation; dispatch still rejects an already-applied graph.
 on:
   workflow_dispatch:
     inputs:
@@ -7,14 +9,6 @@ on:
         description: Exact reviewed workflow head, full lowercase commit SHA
         required: true
         type: string
-  pull_request:
-    types: [opened, synchronize, reopened]
-    paths:
-      - ".github/workflows/hepta-pon-rustsec-lock-proposal.yml"
-      - "scripts/hepta_pon_dependency_proposal.py"
-      - "scripts/test_hepta_pon_dependency_proposal.py"
-      - "qa/pon-dependency-proposal-20261028/**"
-
 permissions:
   contents: read
 

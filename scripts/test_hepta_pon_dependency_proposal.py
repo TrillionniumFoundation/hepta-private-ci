@@ -172,6 +172,40 @@ class ProposalControls(unittest.TestCase):
             with self.subTest(value=value), self.assertRaises(ValueError):
                 proposal.change_manifest(value)
 
+    def test_applied_graph_proposal_fails_before_native_execution(self):
+        with TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            checkout = root / "checkout"
+            output = root / "output"
+            originals = {
+                proposal.INPUTS[0]: proposal.change_manifest(MANIFEST),
+                proposal.INPUTS[1]: lock_fixture(),
+                proposal.INPUTS[2]: b"{}\n",
+            }
+            for path, raw in originals.items():
+                destination = checkout / path
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes(raw)
+            with (
+                patch.object(proposal, "ROOT", checkout),
+                patch.object(proposal, "require_hosted"),
+                patch.object(proposal, "git", return_value=""),
+                patch.object(proposal.subprocess, "run") as native,
+            ):
+                with self.assertRaisesRegex(ValueError, "original workspace zstd"):
+                    proposal.prepare(output, SOURCE)
+                native.assert_not_called()
+            saved = json.loads((output / "record.json").read_text())
+            self.assertEqual(saved["state"], "preparing")
+            self.assertFalse(saved["committed_source_qualified"])
+            self.assertTrue(
+                all(stage["state"] == "not_started" for stage in saved["stages"])
+            )
+            self.assertEqual(
+                {path: (checkout / path).read_bytes() for path in originals},
+                originals,
+            )
+
     def test_lock_keeps_bigint_blocker_open(self):
         extra = '\n[[package]]\nname = "crypto-bigint"\nversion = "0.5.5"\n'
         review = proposal.check_lock(lock_fixture(extra))

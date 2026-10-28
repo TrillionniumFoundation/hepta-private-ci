@@ -1,0 +1,176 @@
+{
+  "schema": "hepta-pon-dependency-proposal-v1",
+  "source": "366dc9374ab554036873fdb66e3497151d36d273",
+  "source_tree": "fc1a413a036ebef783d6e1d6e04facbc0448fb44",
+  "started_at_utc": "2026-10-28T04:13:31.555733+00:00",
+  "run_id": "40630710054",
+  "run_attempt": "1",
+  "github_event_name": "pull_request",
+  "github_run_sha": "6b07dcdbd4e44ea31758db6df015aa7fe27ca165",
+  "github_ref": "refs/pull/4080/merge",
+  "proposal_only": true,
+  "native_builds_or_tests_requested": false,
+  "committed_source_qualified": false,
+  "all_advisories_closed": false,
+  "workflow_step_timeout_minutes": 35,
+  "workflow_job_timeout_minutes": 75,
+  "timeout_policy": "GitHub step timeout; no PID killing; interrupted exit and settlement remain unknown",
+  "original": {
+    "codex-rs/Cargo.toml": {
+      "bytes": 21984,
+      "sha256": "de8f230215a50fb76b1059848ab0eb7bd4aef1902f4c0f814377fe325f9aecdf"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 421926,
+      "sha256": "df846f073dc8da280a4eec65f07703987ef816d93b00fefc8dd9bc06e94bc4de"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1710477,
+      "sha256": "255c63219eed1dbff8a4e3ccbffee1ff59de6bb56606625b13953580d83e90b5"
+    }
+  },
+  "stages": [
+    {
+      "name": "cargo-version",
+      "cwd": ".",
+      "command": [
+        "cargo",
+        "+1.96.0",
+        "--version",
+        "--verbose"
+      ],
+      "state": "succeeded",
+      "exit_code": 0,
+      "started_at_utc": "2026-10-28T04:13:45.939178+00:00",
+      "wall_seconds": 0.015193010999993817,
+      "finished_at_utc": "2026-10-28T04:13:45.954852+00:00"
+    },
+    {
+      "name": "bazel-version",
+      "cwd": ".",
+      "command": [
+        "bazel",
+        "--version"
+      ],
+      "state": "succeeded",
+      "exit_code": 0,
+      "started_at_utc": "2026-10-28T04:13:45.955472+00:00",
+      "wall_seconds": 0.8960932110000002,
+      "finished_at_utc": "2026-10-28T04:13:46.852083+00:00"
+    },
+    {
+      "name": "just-version",
+      "cwd": ".",
+      "command": [
+        "just",
+        "--version"
+      ],
+      "state": "succeeded",
+      "exit_code": 0,
+      "started_at_utc": "2026-10-28T04:13:46.868349+00:00",
+      "wall_seconds": 0.0011597989999998504,
+      "finished_at_utc": "2026-10-28T04:13:46.909680+00:00"
+    },
+    {
+      "name": "cargo-update",
+      "cwd": "codex-rs",
+      "command": [
+        "cargo",
+        "+1.96.0",
+        "update",
+        "--package",
+        "ctutils",
+        "--precise",
+        "0.4.6"
+      ],
+      "state": "succeeded",
+      "exit_code": 0,
+      "started_at_utc": "2026-10-28T04:13:46.937989+00:00",
+      "wall_seconds": 10.121449831,
+      "finished_at_utc": "2026-10-28T04:13:57.070362+00:00"
+    },
+    {
+      "name": "cargo-metadata",
+      "cwd": "codex-rs",
+      "command": [
+        "cargo",
+        "+1.96.0",
+        "metadata",
+        "--locked",
+        "--all-features",
+        "--format-version",
+        "1"
+      ],
+      "state": "succeeded",
+      "exit_code": 0,
+      "started_at_utc": "2026-10-28T04:13:57.071257+00:00",
+      "wall_seconds": 8.299471838000002,
+      "finished_at_utc": "2026-10-28T04:14:05.371373+00:00"
+    },
+    {
+      "name": "bazel-lock-update",
+      "cwd": ".",
+      "command": [
+        "just",
+        "bazel-lock-update"
+      ],
+      "state": "succeeded",
+      "exit_code": 0,
+      "started_at_utc": "2026-10-28T04:14:05.419435+00:00",
+      "wall_seconds": 28.784668764000003,
+      "finished_at_utc": "2026-10-28T04:14:34.224422+00:00"
+    },
+    {
+      "name": "bazel-lock-check",
+      "cwd": ".",
+      "command": [
+        "just",
+        "bazel-lock-check"
+      ],
+      "state": "succeeded",
+      "exit_code": 0,
+      "started_at_utc": "2026-10-28T04:14:34.225442+00:00",
+      "wall_seconds": 4.280371814000006,
+      "finished_at_utc": "2026-10-28T04:14:38.506615+00:00"
+    }
+  ],
+  "state": "generated",
+  "declared_manifest_mutation": {
+    "path": "codex-rs/Cargo.toml",
+    "zstd_before": "0.13",
+    "zstd_after": "0.14.3"
+  },
+  "interrupted_or_unknown_stages": [],
+  "workflow_proposal_step_outcome": "success",
+  "finalized_at_utc": "2026-10-28T04:14:38.661611+00:00",
+  "changed_tracked_paths": [
+    "MODULE.bazel.lock",
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml"
+  ],
+  "resolved_graph_review": {
+    "selected": {
+      "ctutils": {
+        "version": "0.4.6",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "checksum": "fe3e9d21d39e6f39ff46e03d5b621424f88ee23d8a1672c6bfc9ccc7f2da4f6a"
+      },
+      "zstd": {
+        "version": "0.14.3",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "checksum": "db3ae9bf90af6e40197bef767eeefc46ad6397420fe873830bd85e5fbbfb3c70"
+      },
+      "zstd-safe": {
+        "version": "8.2.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "checksum": "ded520f16b29e1a9b771c722221b2b0a0398c2316d9bb3c42b458a5414d7434b"
+      }
+    },
+    "crypto_bigint_versions": [
+      "0.5.5"
+    ],
+    "crypto_bigint_blocker_closed": false
+  },
+  "review_errors": [],
+  "ready_for_review": true
+}

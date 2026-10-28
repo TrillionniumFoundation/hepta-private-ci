@@ -1,0 +1,409 @@
+{
+  "schema": "hepta-pon-proposal-lifecycle-review-v1",
+  "reviewed_at_utc": "2026-10-28T04:26:57.817510+00:00",
+  "result": "PASS",
+  "reviewed_proposal_source": "366dc9374ab554036873fdb66e3497151d36d273",
+  "reviewed_proposal_tree": "fc1a413a036ebef783d6e1d6e04facbc0448fb44",
+  "artifact_id": 12791038108,
+  "original_run_id": 40630710054,
+  "original_run_conclusion": "failure",
+  "original_failed_step": "Reject qualification of an uncommitted dependency graph",
+  "original_failure_reclassified": false,
+  "prior_coordinator_assumption": "Putting follow-up evidence in a new QA directory, without changing the old proposal paths, would prevent another proposal run on PR synchronize.",
+  "assumption_correct": false,
+  "correction": "pull_request path filters use the cumulative three-dot PR diff; this PR still includes the original proposal workflow/script, so a new QA directory alone is insufficient.",
+  "correction_acknowledged_before_publication": true,
+  "primary_documentation_url": "https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow#git-diff-comparisons",
+  "accepted_action": "Retire only the completed non-qualifying one-shot proposal pull_request automatic entry point.",
+  "automatic_event_before": {
+    "types": ["opened", "synchronize", "reopened"],
+    "paths": [
+      ".github/workflows/hepta-pon-rustsec-lock-proposal.yml",
+      "scripts/hepta_pon_dependency_proposal.py",
+      "scripts/test_hepta_pon_dependency_proposal.py",
+      "qa/pon-dependency-proposal-20261028/**"
+    ]
+  },
+  "events_after": {
+    "workflow_dispatch": {
+      "inputs": {
+        "source_sha": {
+          "description": "Exact reviewed workflow head, full lowercase commit SHA",
+          "required": "true",
+          "type": "string"
+        }
+      }
+    }
+  },
+  "workflow_bytes_before_sha256": "16c6d98693e4f90132dd450faf6abbd0bfe730958f3660a8151da2fdab7680c7",
+  "workflow_bytes_after_sha256": "1cec629dc80ea3f80b8cba4a091194db93f00fd22883f04de6db054a2bcb5697",
+  "yaml_semantic_difference": "Only on.pull_request removed; comments are explanatory.",
+  "jobs_source_guards_permissions_and_credentials_ast_unchanged": true,
+  "proposal_script_unchanged": true,
+  "original_tests_unchanged": [
+    "test_command_failure_retains_real_exit_and_stops_later_stages",
+    "test_finalizer_rejects_extra_manifest_edits_and_keeps_artifact_hashes",
+    "test_hosted_identity_and_output_path_fail_closed",
+    "test_interruption_remains_unknown",
+    "test_local_invocation_rejected_before_git_or_native_commands",
+    "test_lock_keeps_bigint_blocker_open",
+    "test_lock_rejects_duplicate_legacy_package_or_tampered_source",
+    "test_manifest_changes_only_reviewed_bytes",
+    "test_manifest_rejects_unreviewed_source_generations",
+    "test_pr_and_dispatch_select_mutually_exclusive_exact_sources",
+    "test_scope_rejects_manifest_feature_removal_elsewhere",
+    "test_source_checks_reject_forks_missing_shas_and_conflicting_origins"
+  ],
+  "additional_behavior_test": "test_applied_graph_proposal_fails_before_native_execution",
+  "manual_attempt_on_applied_graph": "Actual error before native command execution; no success fallback.",
+  "remote_configuration_operations_performed": [],
+  "native_qualification_denominator_changed": false,
+  "native_qualification": false,
+  "other_existing_workflow_file_count": 86,
+  "other_existing_workflow_files": [
+    {
+      "path": ".github/workflows/Dockerfile.bazel",
+      "sha256": "a3c228338f48cb7b02111b844e04feba143780f97638e6d494614817cf112b3a"
+    },
+    {
+      "path": ".github/workflows/README.md",
+      "sha256": "e6362cbd9111983e2e2670b2fb86bbf8ac8a819a0a3b3b5783d4254f13058d7c"
+    },
+    {
+      "path": ".github/workflows/automation-taskflow-focused.yml",
+      "sha256": "d3f1a50e4e3d9e7f665092e236382f64f50d766d989be796f2d6dae167662e93"
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "sha256": "7056008137ed9abbe8f29eae95ac4f1a3d771e7a6dba8fd012c11964ddb4221e"
+    },
+    {
+      "path": ".github/workflows/blob-size-policy.yml",
+      "sha256": "f0860d9723edf6d6a0a701bac787582c7998fd920eb91b23de4288b30ac5a53a"
+    },
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "sha256": "948571f133ca44df83f97aa81045458ca5dbb74bd10bb675d557283fefda302f"
+    },
+    {
+      "path": ".github/workflows/cargo-deny.yml",
+      "sha256": "c881216f6c2ddb1c7ba2f2a218ab8b6fcac96667d724510b18b25fe98f5dfbad"
+    },
+    {
+      "path": ".github/workflows/cla.yml",
+      "sha256": "ed68d940a662a74dd2566442089e29e958d21192d1728ff81d1ed0e0aea36d3f"
+    },
+    {
+      "path": ".github/workflows/close-stale-contributor-prs.yml",
+      "sha256": "e28059bb98c7abb8517bf3565353a23684031c6ff50d5830656bfb0a3dded32b"
+    },
+    {
+      "path": ".github/workflows/codespell.yml",
+      "sha256": "4bc889fafcd9d8437d16be7e79a3f15b928039a775df26338c759a41a00809c2"
+    },
+    {
+      "path": ".github/workflows/hepta-algorithm-docs.yml",
+      "sha256": "dccde05c593074f71011bb0df2af6207e02a204e51027fea4ac566c825b93813"
+    },
+    {
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "sha256": "5ae51b188989bbe6435cc0f5b62caffbc5da4b6fa2d855c2ed69afaaa8b53852"
+    },
+    {
+      "path": ".github/workflows/hepta-artifact-storage.yml",
+      "sha256": "8ed36d944999cc62e3923d93c66b11f8f3611f138aea047a9b54838f26c1711b"
+    },
+    {
+      "path": ".github/workflows/hepta-assimilation-discovery.yml",
+      "sha256": "7dc9d4f101ff3ded42f5350941299fbb4153fba809cf518a7795d5b041dd0976"
+    },
+    {
+      "path": ".github/workflows/hepta-audit-remediation.yml",
+      "sha256": "2d4464847cf0fead16ff4e58615f8168ace59df3096d53726a37e8091aa0be07"
+    },
+    {
+      "path": ".github/workflows/hepta-bazel-download.yml",
+      "sha256": "c40853afb357dac0a59c99a6d2d33ba2f7ac969ae2ee0419c8c2359803e01118"
+    },
+    {
+      "path": ".github/workflows/hepta-browser-agentd-composition.yml",
+      "sha256": "ec1f4d93dd894edc4a72e55033c8da935b2765d0c8b6d02799852e6a6db0734f"
+    },
+    {
+      "path": ".github/workflows/hepta-browser-servo-deployment-qualification.yml",
+      "sha256": "71411665d8b355eec9381b1c9e317bf872f7e94fe758142b2c3c2032a1d93387"
+    },
+    {
+      "path": ".github/workflows/hepta-browser-servo-worker-dev.yml",
+      "sha256": "4c785c2a5fc5d04735e0562765a14316534d43fe876f90b3be5279ea4485c837"
+    },
+    {
+      "path": ".github/workflows/hepta-cell-evidence-export.yml",
+      "sha256": "8cb49bda78925fa8962eef57ce3ee69bdb7e31e745ef7a92821bd279259a39af"
+    },
+    {
+      "path": ".github/workflows/hepta-cell-smollm.yml",
+      "sha256": "f3536233cae05727bd3759a6a5ff546408bbdec1e5bbde681042913ba2ac020d"
+    },
+    {
+      "path": ".github/workflows/hepta-cns-embodiment.yml",
+      "sha256": "c60b59754a81121a70e0ef9eb405dc14215c629a93a3ab387c00a40cc8882561"
+    },
+    {
+      "path": ".github/workflows/hepta-consolidated-source.yml",
+      "sha256": "769b27482d6466d2bbf2a8a82b8f2945df9576f0098a8a8324d416906c598593"
+    },
+    {
+      "path": ".github/workflows/hepta-contract-gate.yml",
+      "sha256": "61faff97c373308ded3cde266cad512c3f8795db2646f1a77779a7c8b46aa7f9"
+    },
+    {
+      "path": ".github/workflows/hepta-converged-learning.yml",
+      "sha256": "036a29631f8ed4a508085deed537ebd105ce6f2487b429760efd1ccce2c9c88f"
+    },
+    {
+      "path": ".github/workflows/hepta-deployment-handoff.yml",
+      "sha256": "d5da56cd0876a8b749cb595d278b1590ba99b99fac9c041d8b153703d55e1f8b"
+    },
+    {
+      "path": ".github/workflows/hepta-development-docs.yml",
+      "sha256": "6622d6b75446f70a30a90f3a9f34a7f047b134feadffb7b9ebb33b80ea0d0a43"
+    },
+    {
+      "path": ".github/workflows/hepta-diagnostic-source-export.yml",
+      "sha256": "b31fac796b0ceca9957e8e0c91989c8c4cae191125212c7d7845cca55e2bfc6c"
+    },
+    {
+      "path": ".github/workflows/hepta-durable-learning-roundtrip.yml",
+      "sha256": "2a509955792e8be3bde4dd5b57c623837c1756c31d844291f23af206d4301f56"
+    },
+    {
+      "path": ".github/workflows/hepta-gap-agentd-process.yml",
+      "sha256": "f52889571fa8722f0845eb797756e0dfeaf7d50c2fa2b1d992c8408b3e70ae42"
+    },
+    {
+      "path": ".github/workflows/hepta-implementation-readiness.yml",
+      "sha256": "fbbd9cdd0033ef5323d83b7ea407f027758ab35e12248c239ce47701f127ab9d"
+    },
+    {
+      "path": ".github/workflows/hepta-inference-maintenance.yml",
+      "sha256": "d26062aa88984c1c979653c46dde32b40b4b0acdfd7fadcc6d5bce4ba225a59d"
+    },
+    {
+      "path": ".github/workflows/hepta-integration-diagnostics.yml",
+      "sha256": "07aadb97d7def2d0045cc45d7a1008ee230a7e3d2943c6af1b358c1adf360449"
+    },
+    {
+      "path": ".github/workflows/hepta-intuition-qualification.yml",
+      "sha256": "b3e244d902bc5adc1c970ce026cb40c4e41d3e73b3e4fa87772b05043f830807"
+    },
+    {
+      "path": ".github/workflows/hepta-kernel-evidence-qualification.yml",
+      "sha256": "0cc079f1c017249d3af25683b3981d28cf3a96f37b6ded7e3c6ea2c441f362bf"
+    },
+    {
+      "path": ".github/workflows/hepta-knowledge-graph-qualification.yml",
+      "sha256": "e928ec8825ab0b7fac3a8f7642ea324d8316a7a58e000df3e5e7594940aa4edd"
+    },
+    {
+      "path": ".github/workflows/hepta-lane-b-truth.yml",
+      "sha256": "3e021f13cb695220f15d3b0f07e9896d1e426982795d8146f07e6b8e55df7a86"
+    },
+    {
+      "path": ".github/workflows/hepta-lane-d-semantic-conformance.yml",
+      "sha256": "479465eda2593e3e8f58b68a1447748b073f38a5c5feeecb720015c44cce8b2b"
+    },
+    {
+      "path": ".github/workflows/hepta-lane-e-gap-closure.yml",
+      "sha256": "c33dd37b2a0de21d6e1c1af705b750e3da63fed76880fa10602a897030bf035f"
+    },
+    {
+      "path": ".github/workflows/hepta-lane-f-shadow-qualification.yml",
+      "sha256": "b9d139c0cf98cccbd08011bb73cd8dc163a393482e0d45e0e4ce6f3855694dd6"
+    },
+    {
+      "path": ".github/workflows/hepta-learning-ledger-durable.yml",
+      "sha256": "d69d22fe8b2d4764142b564575c4bebd30817f7026e666aca5f5ce937e725510"
+    },
+    {
+      "path": ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
+      "sha256": "de965b37c80134f33f8007234242c101fc22b2c0a04235df61b2a99c8b1e6376"
+    },
+    {
+      "path": ".github/workflows/hepta-ndu-recursion.yml",
+      "sha256": "669497f104c4b0da94122d9427ef8d8d7d75a1a6d020483b0fb38e95f21a780c"
+    },
+    {
+      "path": ".github/workflows/hepta-objective-admission.yml",
+      "sha256": "6c59dd41c8e21917bea5202279cdb7219298a02c8821fcfdbe74efa385a5267a"
+    },
+    {
+      "path": ".github/workflows/hepta-objective-product-composition.yml",
+      "sha256": "37871e409d7a53a59a9a53fdc49945f3ed1fd7b21102a1df69f08cab8386dd89"
+    },
+    {
+      "path": ".github/workflows/hepta-offline-build-inputs.yml",
+      "sha256": "f7135d311e96728da029fba302e374e5b7b7258b80cf06e2372ec56ff6e49c8c"
+    },
+    {
+      "path": ".github/workflows/hepta-organ-implementation.yml",
+      "sha256": "9d9020e6645ed6de008bcdf4dce7e2ed0a0f67bc6e0e1661939ce13a50e7799b"
+    },
+    {
+      "path": ".github/workflows/hepta-pon-native-pair.yml",
+      "sha256": "9500316d66b3f327b378db67403e938af6333d545f8b910549b8ae8469b12600"
+    },
+    {
+      "path": ".github/workflows/hepta-repository-integrity.yml",
+      "sha256": "01251fd151cf4cca8f87f56b3e2d4ac1cfc1371487447829a1e2f85feea133d0"
+    },
+    {
+      "path": ".github/workflows/hepta-safe-yaml-rustsec-qualification.yml",
+      "sha256": "83dc04fb98559ea3de3bc2250028be51c2ce62968a5eb1522530b9e7ebf8830b"
+    },
+    {
+      "path": ".github/workflows/hepta-self-iteration-activation.yml",
+      "sha256": "5d423ac4c07d70c5d01e724f89b7a76a7c5b1b010282ac9c799f821e3fa55d66"
+    },
+    {
+      "path": ".github/workflows/hepta-v8-windows-sandbox.yml",
+      "sha256": "629513c924b7607923cfcfb1dfe21f070839568ae2fe7ed7bba9df01ff799edb"
+    },
+    {
+      "path": ".github/workflows/hepta-vnext-qualification.yml",
+      "sha256": "0454e38cf612f9e1abbbfeef4e7ddf583e8e0926e962a7d5aa56ebbe5508f791"
+    },
+    {
+      "path": ".github/workflows/hepta-windows-delete-boundary.yml",
+      "sha256": "b8cd0cbb620fe31da831faed90769fb56d3b214e882932b2c837f316b554c566"
+    },
+    {
+      "path": ".github/workflows/hnmf-qualification.yml",
+      "sha256": "9fb0efb9240a242323e5a06259d82b2464e4f47698480df3b0ea373354979dbd"
+    },
+    {
+      "path": ".github/workflows/issue-deduplicator.yml",
+      "sha256": "ba5a4bef1ad9eb973130f8cdcd27f7e51d09db6b33c773573153871b956deadb"
+    },
+    {
+      "path": ".github/workflows/issue-labeler.yml",
+      "sha256": "d021126359a00770ea5d701830213b094435935632849ce6cb0ab4df50e20dbb"
+    },
+    {
+      "path": ".github/workflows/issue-translator.yml",
+      "sha256": "cf4f9034b3928012b179be39ff3e2a66cc742731f4cd707aab5a0e1cba0feac1"
+    },
+    {
+      "path": ".github/workflows/lane-a-foundation.yml",
+      "sha256": "b35d9372299f53a34222942d559cb6b51504fcb8fe4dceae8ab3e29f79875fdd"
+    },
+    {
+      "path": ".github/workflows/matrix-sdk-upgrade.yml",
+      "sha256": "d1b3992c2c2a459b28887e1f0d320fc8616badb41dbbca96076e035b89dd2b8f"
+    },
+    {
+      "path": ".github/workflows/memory-federation-v2-final-verify.yml",
+      "sha256": "056d1a9431bb2b0f9141c1d8fbcec25372c7ce235e4ec6e935eb7ecf0663073d"
+    },
+    {
+      "path": ".github/workflows/openbao-compatibility.yml",
+      "sha256": "6d56c3614a44bd7dfe96472648acc8262ea818cbb4e4c120efd112d66c4d49c5"
+    },
+    {
+      "path": ".github/workflows/postmerge-ci.yml",
+      "sha256": "e68ef60919f1d5c73455903092faea02b03921b803c12e547070a1f5816a7c4b"
+    },
+    {
+      "path": ".github/workflows/python-runtime-build.yml",
+      "sha256": "3ed05402dff33f620ae4321e4f30989af9ee337563b7b231cb464698cefa6d2c"
+    },
+    {
+      "path": ".github/workflows/python-runtime-release.yml",
+      "sha256": "0cb41b3804598f06e6cae3f393c74bb4c1f5a8e54925b27263d5f5ca75c21bfb"
+    },
+    {
+      "path": ".github/workflows/python-sdk-release.yml",
+      "sha256": "a78ff42d81fa709818feaf307a8438a9cae0fad87e4f8f6ca53c614ec345f832"
+    },
+    {
+      "path": ".github/workflows/r2-release.yml",
+      "sha256": "5e33593a64238d54500700f2c48a4690291b14a0173956f423c6d454dda85670"
+    },
+    {
+      "path": ".github/workflows/repo-checks.yml",
+      "sha256": "11a4f87cb482742ce9654fbe189530da5c7d94fd1da4386bc0dedb50ee2c143f"
+    },
+    {
+      "path": ".github/workflows/rust-ci-full-nextest-platform.yml",
+      "sha256": "f6a36c24388cfda7c23e9977a47a97c7696ccb4db16df05a9ab5446736f6a16e"
+    },
+    {
+      "path": ".github/workflows/rust-ci-full.yml",
+      "sha256": "630e3e95ee605ce94591d8c61b2f3e369663c2a469fe014c001cb416bfbe281c"
+    },
+    {
+      "path": ".github/workflows/rust-ci.yml",
+      "sha256": "d5dde11e1a5e93befaab6c9427a647d50f3cc87d8841cf75562222fa4c3ff376"
+    },
+    {
+      "path": ".github/workflows/rust-release-argument-comment-lint.yml",
+      "sha256": "34b41b0f2847120c8b6b658a3e8d2255804f6f2792cfdd0e7262d74e332acbcd"
+    },
+    {
+      "path": ".github/workflows/rust-release-prepare.yml",
+      "sha256": "2176116b8b984e4422c3d07dffdb0b7b81114b5d0fa1fdd59af635f46c8bc5ad"
+    },
+    {
+      "path": ".github/workflows/rust-release-windows.yml",
+      "sha256": "b81d30ce91ae3ea49719709269041b7b1420366e13472e3519e0c442449a9b43"
+    },
+    {
+      "path": ".github/workflows/rust-release-zsh.yml",
+      "sha256": "83831f162f8c675bea841aa4030a84986b61026aa5424daf9798d111896acc74"
+    },
+    {
+      "path": ".github/workflows/rust-release.yml",
+      "sha256": "513e3225388b7a2ba694e184e277854403eccb3e1ca01248cbbbb8364a38f9d0"
+    },
+    {
+      "path": ".github/workflows/rusty-v8-release.yml",
+      "sha256": "41417489a73fddce4aa396a8e8d6acc280331b430906fbdea9373eb2fdf9dfcf"
+    },
+    {
+      "path": ".github/workflows/sdk.yml",
+      "sha256": "2ac4937a15b5589d6c075df0f521a4ea46d0727f2cce06a9a3bd25a0358369a3"
+    },
+    {
+      "path": ".github/workflows/self-hosted-desktop-availability.yml",
+      "sha256": "228d2c0cf5c87ff7ae791a6b22a93e8dfbe7849caa5d9a0c10efcb7b2cde8606"
+    },
+    {
+      "path": ".github/workflows/self-hosted-fleet-availability.yml",
+      "sha256": "25de5bf36e21d196a6ea222a2a84d91cd225be53635ee5ed72bf48b8f9ddd084"
+    },
+    {
+      "path": ".github/workflows/single-main-consolidation.yml",
+      "sha256": "dc7be5bbd1366233786f10939aa749cb0d5c12e029ac54c4c73c5f519d362a1e"
+    },
+    {
+      "path": ".github/workflows/single-main-foundation.yml",
+      "sha256": "9a0dba6ba5120188c778254fa016ca74e5b195a23210e3aefd09e3d8b0502977"
+    },
+    {
+      "path": ".github/workflows/single-main-maintenance.yml",
+      "sha256": "4aa3fa03f2438aebd52264f0779cf96faaf6817985994168d8b05b6142ad4805"
+    },
+    {
+      "path": ".github/workflows/trillionnium-os-attestation-handoff-check.yml",
+      "sha256": "ace90464faa80d769a93a82bee10659a5fe61e1938462c53564b383383f03bb9"
+    },
+    {
+      "path": ".github/workflows/v8-canary.yml",
+      "sha256": "d4ec44c648b4cb0d93377ce97890306631c680a8064ca645c03f91aa992b5334"
+    },
+    {
+      "path": ".github/workflows/zstd",
+      "sha256": "db7895878fd8536b3164a518ccf530d3e1ce06e51dcf976170ad3c489ea4d30d"
+    }
+  ]
+}

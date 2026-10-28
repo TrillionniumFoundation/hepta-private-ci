@@ -1,0 +1,185 @@
+{
+  "schema": "hepta-r8-original-cargo-deny-readback-v1",
+  "reviewed_at_utc": "2026-10-28T04:29:08.287269+00:00",
+  "source_head": "366dc9374ab554036873fdb66e3497151d36d273",
+  "actual_checkout_merge": "6b07dcdbd4e44ea31758db6df015aa7fe27ca165",
+  "run_id": 40630709963,
+  "job_id": 122629819533,
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40630709963/job/122629819533",
+  "conclusion": "failure",
+  "failed_step": "Run cargo-deny",
+  "raw_log_retained_by_coordinator": "recovery/round8/hepta-366-cargo-deny-original.log",
+  "raw_log_bytes": 196779,
+  "raw_log_characters": 176845,
+  "raw_log_sha256": "bf3d4dbe09b6cf9907c7c771a3594b81aaaa25f6f43d2b8b1467f85d2186becc",
+  "raw_log_duplicated_here": false,
+  "source_checkout_evidence": [
+    "2026-10-28T04:26:03.2716412Z HEAD is now at 6b07dcd Merge 366dc9374ab554036873fdb66e3497151d36d273 into 3e9efb15faa261a4dc3ffc3205cd259aaee41a3f",
+    "2026-10-28T04:26:03.2815135Z 6b07dcdbd4e44ea31758db6df015aa7fe27ca165"
+  ],
+  "errors": [
+    {
+      "id": "RUSTSEC-2026-0387",
+      "package": "crypto-bigint",
+      "original_version": "0.5.5",
+      "candidate_version": "0.5.5",
+      "status": "open; requires the preserved AWS/P-256 provider migration",
+      "original_reported_solution": ">=0.7.6 (try `cargo update -p crypto-bigint`)"
+    },
+    {
+      "id": "RUSTSEC-2026-0385",
+      "package": "ctutils",
+      "original_version": "0.4.2",
+      "candidate_version": "0.4.6",
+      "status": "vulnerable graph version replaced; original native/RustSec gates pending",
+      "original_reported_solution": ">=0.4.4 (try `cargo update -p ctutils`)"
+    },
+    {
+      "id": "RUSTSEC-2026-0391",
+      "package": "zstd",
+      "original_version": "0.13.3",
+      "candidate_version": "0.14.3",
+      "status": "vulnerable graph version removed; original native/RustSec gates pending",
+      "original_reported_solution": ">=0.14.3 (try `cargo update -p zstd`)"
+    },
+    {
+      "id": "RUSTSEC-2026-0398",
+      "package": "zstd-safe",
+      "original_version": "7.2.4",
+      "candidate_version": "8.2.0",
+      "status": "vulnerable graph version removed; original native/RustSec gates pending",
+      "original_reported_solution": ">=8.2.0 (try `cargo update -p zstd-safe`)"
+    },
+    {
+      "id": "RUSTSEC-2026-0403",
+      "package": "zstd-safe",
+      "original_version": "7.2.4",
+      "candidate_version": "8.2.0",
+      "status": "vulnerable graph version removed; original native/RustSec gates pending",
+      "original_reported_solution": ">=8.2.0 (try `cargo update -p zstd-safe`)"
+    }
+  ],
+  "error_count": 5,
+  "candidate_targeted_error_count": 4,
+  "still_open_error_count": 1,
+  "secondary_sections": {
+    "bans": "ok",
+    "licenses": "ok",
+    "sources": "ok"
+  },
+  "yanked_warnings": [
+    {
+      "name": "chacha20",
+      "version": "0.10.0"
+    },
+    {
+      "name": "clipboard-win",
+      "version": "5.4.1"
+    },
+    {
+      "name": "spin",
+      "version": "0.9.8"
+    }
+  ],
+  "warning_count": 3,
+  "yanked_versions_updated_in_this_candidate": false,
+  "diagnostic_excerpt": [
+    "2026-10-28T04:26:48.1659707Z error[vulnerability]: Multiple timing variability issues in operations intended to be constant-time",
+    "2026-10-28T04:26:48.1660633Z     \u250c\u2500 /github/workspace/codex-rs/Cargo.lock:386:1",
+    "2026-10-28T04:26:48.1661186Z     \u2502",
+    "2026-10-28T04:26:48.1661987Z 386 \u2502 crypto-bigint 0.5.5 registry+https://github.com/rust-lang/crates.io-index",
+    "2026-10-28T04:26:48.1662964Z     \u2502 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 security vulnerability detected",
+    "2026-10-28T04:26:48.1663648Z     \u2502",
+    "2026-10-28T04:26:48.1664034Z     \u251c ID: RUSTSEC-2026-0387",
+    "2026-10-28T04:26:48.1664690Z     \u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0387",
+    "2026-10-28T04:26:48.1665290Z     \u251c ## Summary",
+    "2026-10-28T04:26:48.1665635Z       ",
+    "2026-10-28T04:26:48.1666246Z       Several operations intended to be constant-time could execute secret-dependent",
+    "2026-10-28T04:26:48.1667049Z       branches, depending on the compiler and target CPU. These include subtraction,",
+    "2026-10-28T04:26:48.1667770Z       zero counting, division, and Montgomery multiplication.",
+    "2026-10-28T04:26:48.1668349Z       ",
+    "2026-10-28T04:26:48.1668836Z       Additionally, `UintRef` equality could terminate at the first unequal limb,",
+    "2026-10-28T04:26:48.1681211Z error[vulnerability]: Non-constant-time mask generation and `u128` comparisons",
+    "2026-10-28T04:26:48.1681607Z     \u250c\u2500 /github/workspace/codex-rs/Cargo.lock:398:1",
+    "2026-10-28T04:26:48.1681824Z     \u2502",
+    "2026-10-28T04:26:48.1682140Z 398 \u2502 ctutils 0.4.2 registry+https://github.com/rust-lang/crates.io-index",
+    "2026-10-28T04:26:48.1682721Z     \u2502 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 security vulnerability detected",
+    "2026-10-28T04:26:48.1683030Z     \u2502",
+    "2026-10-28T04:26:48.1683212Z     \u251c ID: RUSTSEC-2026-0385",
+    "2026-10-28T04:26:48.1683492Z     \u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0385",
+    "2026-10-28T04:26:48.1683778Z     \u251c ## Summary",
+    "2026-10-28T04:26:48.1683958Z       ",
+    "2026-10-28T04:26:48.1684188Z       The `ctutils::Choice` type has mask generation functions for each unsigned",
+    "2026-10-28T04:26:48.1684515Z       integer size (`u8`, `u16`, `u32`, `u64`, `u128`). These are `const fn` and",
+    "2026-10-28T04:26:48.1684828Z       therefore can't reuse the `asm!`-backed mask generation in the `cmov` crate",
+    "2026-10-28T04:26:48.1685123Z       that's otherwise used to ensure constant-time.",
+    "2026-10-28T04:26:48.1685298Z       ",
+    "2026-10-28T04:26:48.1691576Z error[vulnerability]: Data from an abandoned stream leaks into the next stream on a reused context",
+    "2026-10-28T04:26:48.1691922Z      \u250c\u2500 /github/workspace/codex-rs/Cargo.lock:1362:1",
+    "2026-10-28T04:26:48.1692137Z      \u2502",
+    "2026-10-28T04:26:48.1692438Z 1362 \u2502 zstd 0.13.3 registry+https://github.com/rust-lang/crates.io-index",
+    "2026-10-28T04:26:48.1692881Z      \u2502 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 security vulnerability detected",
+    "2026-10-28T04:26:48.1693183Z      \u2502",
+    "2026-10-28T04:26:48.1693354Z      \u251c ID: RUSTSEC-2026-0391",
+    "2026-10-28T04:26:48.1693693Z      \u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0391",
+    "2026-10-28T04:26:48.1694034Z      \u251c The `with_context` constructors of the stream encoders and decoders used the",
+    "2026-10-28T04:26:48.1694340Z        borrowed context as it was. When a stream was abandoned on a context, for",
+    "2026-10-28T04:26:48.1694626Z        example an encoder dropped before `finish()` after an error, whatever it",
+    "2026-10-28T04:26:48.1694912Z        left there was carried into the next stream: the input buffered by the",
+    "2026-10-28T04:26:48.1695184Z        previous encoder (up to 128 KiB, or all of it with `zstdmt`) became the",
+    "2026-10-28T04:26:48.1695480Z        start of the next frame, and a decoder returned undelivered output of the",
+    "2026-10-28T04:26:48.1695703Z        previous stream.",
+    "2026-10-28T04:26:48.1699327Z error[vulnerability]: `Seekable::decompress` sets a `Vec` length beyond its capacity for offsets past the end",
+    "2026-10-28T04:26:48.1699738Z      \u250c\u2500 /github/workspace/codex-rs/Cargo.lock:1364:1",
+    "2026-10-28T04:26:48.1699953Z      \u2502",
+    "2026-10-28T04:26:48.1700268Z 1364 \u2502 zstd-safe 7.2.4 registry+https://github.com/rust-lang/crates.io-index",
+    "2026-10-28T04:26:48.1700766Z      \u2502 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 security vulnerability detected",
+    "2026-10-28T04:26:48.1701103Z      \u2502",
+    "2026-10-28T04:26:48.1701279Z      \u251c ID: RUSTSEC-2026-0398",
+    "2026-10-28T04:26:48.1701526Z      \u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0398",
+    "2026-10-28T04:26:48.1701874Z      \u251c `ZSTD_seekable_decompress` shortens the requested length to the end of the",
+    "2026-10-28T04:26:48.1702193Z        data without checking that the offset is before it. For an offset past the",
+    "2026-10-28T04:26:48.1702482Z        end, it returns a wrapped-around length without writing anything, and",
+    "2026-10-28T04:26:48.1702747Z        `Seekable::decompress` passed that length to `Vec::set_len`.",
+    "2026-10-28T04:26:48.1702954Z        ",
+    "2026-10-28T04:26:48.1703144Z        With the `seekable` feature, whoever supplies the archive, or chooses the",
+    "2026-10-28T04:26:48.1703548Z        offset, can leave the caller's `Vec<u8>` with a length far beyond its",
+    "2026-10-28T04:26:48.1706307Z error[vulnerability]: Uninitialized memory exposed when streaming decompression of a legacy frame fails",
+    "2026-10-28T04:26:48.1706830Z      \u250c\u2500 /github/workspace/codex-rs/Cargo.lock:1364:1",
+    "2026-10-28T04:26:48.1707030Z      \u2502",
+    "2026-10-28T04:26:48.1707330Z 1364 \u2502 zstd-safe 7.2.4 registry+https://github.com/rust-lang/crates.io-index",
+    "2026-10-28T04:26:48.1707818Z      \u2502 \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 security vulnerability detected",
+    "2026-10-28T04:26:48.1708099Z      \u2502",
+    "2026-10-28T04:26:48.1708266Z      \u251c ID: RUSTSEC-2026-0403",
+    "2026-10-28T04:26:48.1708510Z      \u251c Advisory: https://rustsec.org/advisories/RUSTSEC-2026-0403",
+    "2026-10-28T04:26:48.1708858Z      \u251c When decompression fails inside a legacy (zstd v0.4 to v0.7) frame, the",
+    "2026-10-28T04:26:48.1709147Z        bundled zstd library reports the output buffer as fully written although",
+    "2026-10-28T04:26:48.1709452Z        nothing was written. `DCtx::decompress_stream` committed that position even",
+    "2026-10-28T04:26:48.1709759Z        on error, and for a `Vec<u8>` destination this extended the vector's length",
+    "2026-10-28T04:26:48.1709985Z        over uninitialized memory.",
+    "2026-10-28T04:26:48.1710116Z        ",
+    "2026-10-28T04:26:48.1710306Z        Legacy support is enabled by default. A 5- or 6-byte corrupt legacy frame is"
+  ],
+  "excerpt_transform": "ANSI color escape sequences removed for readability; full original log is retained unchanged by coordinator.",
+  "readback_attempts": [
+    {
+      "method": "github_fetch URL /actions/jobs/122629819533",
+      "result": "unsupported endpoint; INVALID_ARGUMENT; no job conclusion inferred from this failed fetch"
+    },
+    {
+      "method": "github_fetch_workflow_run_jobs run 40630709963",
+      "result": "success; exact failing job stored in github/deny-job.json"
+    }
+  ],
+  "fresh_candidate_deny_execution": false,
+  "advisory_ignores_added": false,
+  "native_qualification": false,
+  "all_advisories_closed": false,
+  "diagnostic_solution_lines": [
+    "2026-10-28T04:26:48.1680640Z     \u251c Solution: Upgrade to >=0.7.6 (try `cargo update -p crypto-bigint`)",
+    "2026-10-28T04:26:48.1691123Z     \u251c Solution: Upgrade to >=0.4.4 (try `cargo update -p ctutils`)",
+    "2026-10-28T04:26:48.1698600Z      \u251c Solution: Upgrade to >=0.14.3 (try `cargo update -p zstd`)",
+    "2026-10-28T04:26:48.1705719Z      \u251c Solution: Upgrade to >=8.2.0 (try `cargo update -p zstd-safe`)",
+    "2026-10-28T04:26:48.1714073Z      \u251c Solution: Upgrade to >=8.2.0 (try `cargo update -p zstd-safe`)"
+  ]
+}
