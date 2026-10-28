@@ -1,0 +1,50 @@
+{
+  "disk": {
+    "basis": "f_bavail for every UID, including root",
+    "capacity_passed": false,
+    "f_bavail_bytes": 0,
+    "f_bfree_bytes": 563130368,
+    "free_inodes": 1649133,
+    "path": "/workspace/scratch/e8a4dc33549f",
+    "registration_still_required": true,
+    "research_start_permitted": false
+  },
+  "measured_unix_ns": 1793167061324959106,
+  "plan": {
+    "actual_measured_units": {},
+    "admission": false,
+    "archive_writer_cap_bytes": 534773760,
+    "buffer_bytes": 8388608,
+    "failure_partial_and_receipt_reserve_bytes": null,
+    "failure_rule": "Retain partial files and all adverse results. An archive retry adds its retained predecessor bytes; no overwrite or silent deletion.",
+    "free_reserve_bytes": 268435456,
+    "full_literal_restore_reserve_bytes": null,
+    "historical_scientific_status": "FAIL",
+    "known_planned_payload_bytes": 0,
+    "limits": "Real unit shapes, output serializers, trace caps and directory inventory still require independent registration review; a small synthetic sample is not their bound.",
+    "minimum_f_bavail_bytes": 2147483648,
+    "missing_artifact_bounds": [
+      "bank_parent_state",
+      "branch_terminal_state",
+      "bank_prefix_terminal_state",
+      "rollout_terminal_state",
+      "parent_probe_output",
+      "branch_probe_output",
+      "endpoint_output",
+      "heads",
+      "traces_features_bindings"
+    ],
+    "peak_new_bytes_before_free_reserve": null,
+    "planned_regular_artifacts": null,
+    "raw_cap_bytes": 524288000,
+    "raw_cap_passed": false,
+    "raw_with_failure_bound_bytes": null,
+    "required_f_bavail_bytes": null,
+    "required_free_inodes": null,
+    "research_start_permitted": false,
+    "retained_failed_archives_bytes": 0,
+    "scientific_evidence": false,
+    "status": "NOT_REGISTERED / NOT_EXECUTED",
+    "unit_profiles_complete": false
+  }
+}
