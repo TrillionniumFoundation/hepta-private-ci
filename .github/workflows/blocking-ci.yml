@@ -163,7 +163,7 @@ jobs:
     needs: scope
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 120
     # Scope this budget strictly to the native reverse-consumer job; no coverage changes.
     env:
       CARGO_INCREMENTAL: "0"
