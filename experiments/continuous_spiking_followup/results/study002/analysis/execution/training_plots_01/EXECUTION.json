@@ -1,0 +1,46 @@
+{
+  "argv": [
+    "/workspace/scratch/9bbd63a0445f/hcsn-venv/bin/python",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/analysis/plot_training.py",
+    "--summary",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/analysis/COMPARISON_SUMMARY.json",
+    "--output",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/analysis/figures"
+  ],
+  "child_cpu_seconds": 12.079777,
+  "child_system_cpu_seconds": 0.717851,
+  "child_user_cpu_seconds": 11.361926,
+  "cwd": "/workspace/scratch/9bbd63a0445f/hepta-hcsn",
+  "ended_unix": 1793194551.5078213,
+  "env_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "exit_code": 0,
+  "max_rss_kib": 135124,
+  "products": {
+    "analysis/figures/FIGURE_MANIFEST.json": {
+      "bytes": 27880,
+      "sha256": "016c8c2d8c0df8aa29b6c0ae7e9c6cfc51b187ec1617cb412a4dd32895ee60ae"
+    }
+  },
+  "seals_after": {
+    "analysis_correction": "282d47e2f69dc44993d905b0bc79609249ff0eb62ada43c592ee5a2e461e375f",
+    "analysis_original": "8175d2a986a85c633b5a5af1aab502e0e23359a74980eb8b1e30246b5d9961ad",
+    "base": "bb0d2eda33c34785da9563a84a06ed4c5d2391826e52173452ee43924723de02",
+    "followup": "52ce70744a2659e6f2690fc24e68f651d48f57d4a5064680e71d2694b0a2f673",
+    "v2_source": "1776bc39d6f5308a18c9ce24c3c89833d3c7ff56c4dac78dd938ae3deffee7d9"
+  },
+  "seals_before": {
+    "analysis_correction": "282d47e2f69dc44993d905b0bc79609249ff0eb62ada43c592ee5a2e461e375f",
+    "analysis_original": "8175d2a986a85c633b5a5af1aab502e0e23359a74980eb8b1e30246b5d9961ad",
+    "base": "bb0d2eda33c34785da9563a84a06ed4c5d2391826e52173452ee43924723de02",
+    "followup": "52ce70744a2659e6f2690fc24e68f651d48f57d4a5064680e71d2694b0a2f673",
+    "v2_source": "1776bc39d6f5308a18c9ce24c3c89833d3c7ff56c4dac78dd938ae3deffee7d9"
+  },
+  "started_unix": 1793194539.225401,
+  "stderr": "stderr.log",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout": "stdout.log",
+  "stdout_sha256": "0260ec099c7b02b60f2e9bae085506cc1f6f424b9a42ea691bef4cc263ab8022",
+  "wall_seconds": 11.529175771996961
+}

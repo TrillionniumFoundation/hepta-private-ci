@@ -1,0 +1,30 @@
+{
+  "argv": [
+    "/workspace/scratch/9bbd63a0445f/hcsn-venv/bin/python",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/analysis/audit_training_v2.py",
+    "--package",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup",
+    "--results",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002",
+    "--cache-dir",
+    "/workspace/scratch/9bbd63a0445f/hcsn-data",
+    "--replay",
+    "prespecified",
+    "--output",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/analysis/execution/training_audit_v2_01/OUTPUT.json"
+  ],
+  "cwd": "/workspace/scratch/9bbd63a0445f/hepta-hcsn",
+  "env_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "seals_before": {
+    "analysis_correction": "282d47e2f69dc44993d905b0bc79609249ff0eb62ada43c592ee5a2e461e375f",
+    "analysis_original": "8175d2a986a85c633b5a5af1aab502e0e23359a74980eb8b1e30246b5d9961ad",
+    "base": "bb0d2eda33c34785da9563a84a06ed4c5d2391826e52173452ee43924723de02",
+    "followup": "52ce70744a2659e6f2690fc24e68f651d48f57d4a5064680e71d2694b0a2f673",
+    "v2_source": "1776bc39d6f5308a18c9ce24c3c89833d3c7ff56c4dac78dd938ae3deffee7d9"
+  },
+  "started_unix": 1793194435.7188528,
+  "stderr": "stderr.log",
+  "stdout": "stdout.log"
+}
