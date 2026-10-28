@@ -25,6 +25,7 @@ pub(super) fn code_identity(config: &MemoryCellTrainerConfigV1) -> Value {
         "memory-cell-v9/learning/__init__.py", "memory-cell-v9/learning/paired.py",
         "memory-cell-v9/learning/byte_model.py", "memory-cell-v9/learning/worker.py",
         "memory-cell-v9/learning/PROTOCOL.json", "memory-cell-v9/learning/resource_monitor.py",
+        "memory-cell-v9/learning/resource_samples.py",
     ]) {
         let raw = std::fs::read(config.qualification_root.join(name)).unwrap();
         files.insert(name.to_string(), json!({"bytes":raw.len(),"sha256":Digest32::of_bytes(&raw).to_string()}));

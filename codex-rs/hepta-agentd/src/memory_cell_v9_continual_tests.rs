@@ -4,6 +4,7 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::process::Stdio;
 use std::time::Duration;
+use std::time::Instant;
 
 use codex_hepta_types::Digest32;
 use serde::Deserialize;
@@ -114,6 +115,7 @@ async fn continual(config: &ChildConfig) -> Value {
 }
 
 async fn monitored_child(parent: &Path, representation: &str) -> Value {
+    let started = Instant::now();
     let training = trainer();
     let directory = parent.join(representation);
     std::fs::create_dir(&directory).unwrap();
@@ -142,6 +144,7 @@ async fn monitored_child(parent: &Path, representation: &str) -> Value {
     let report: Value = serde_json::from_slice(&raw).unwrap();
     let resource_raw = std::fs::read(&resources).unwrap();
     json!({"representation":representation,"directory":representation,"child":report,
+        "parent_supervision_wall_ns":started.elapsed().as_nanos(),
         "child_identity":{"bytes":raw.len(),"sha256":Digest32::of_bytes(&raw).to_string()},
         "resource_identity":{"path":resources.file_name().unwrap().to_str().unwrap(),"bytes":resource_raw.len(),"sha256":Digest32::of_bytes(&resource_raw).to_string()}})
 }
@@ -149,6 +152,7 @@ async fn monitored_child(parent: &Path, representation: &str) -> Value {
 #[tokio::test]
 #[ignore = "actual continual NumPy parameter interventions and native owner RPCs"]
 async fn actual_memory_cell_v9_continual_causal_parameter_memory() {
+    let started = Instant::now();
     let output = PathBuf::from(std::env::var_os("MEMORY_CELL_V9_CONTINUAL_RECEIPT_PATH").expect("explicit new V9 receipt path"));
     assert!(output.is_absolute() && !output.exists());
     std::fs::create_dir_all(output.parent().unwrap()).unwrap();
@@ -156,6 +160,10 @@ async fn actual_memory_cell_v9_continual_causal_parameter_memory() {
     std::fs::create_dir(&directory).unwrap();
     let training = trainer();
     let code = fit::code_identity(&training);
+    let protocol_raw = std::fs::read(training.qualification_root.join("memory-cell-v9/learning/PROTOCOL.json")).unwrap();
+    let mut protocol_file = std::fs::OpenOptions::new().create_new(true).write(true).open(directory.join("PROTOCOL.json")).unwrap();
+    std::io::Write::write_all(&mut protocol_file,&protocol_raw).unwrap();
+    protocol_file.sync_all().unwrap();
     data::save(&directory.join("MANIFEST.json"),&json!({"schema":"hepta.memory.v9.continual-lock.v1",
         "code_identity":code,"fixture_sha256":data::FIXTURE_SHA,"representations":["catalog","byte"],
         "interventions":["zero","frozen","trained","clean"],"stages":3,
@@ -166,6 +174,7 @@ async fn actual_memory_cell_v9_continual_causal_parameter_memory() {
     data::save(&output,&json!({"schema":"hepta.memory.v9.actual-continual.v1","fixture_sha256":data::FIXTURE_SHA,
         "artifact_directory":directory.file_name().unwrap().to_str().unwrap(),"code_identity":code,
         "children":children,"actual_training_processes":6,"actual_fit_calls":36,
+        "parent_wall_ns_before_final_receipt":started.elapsed().as_nanos(),
         "full_cost_gain_established":false,"independent_domains_are_iid_samples":false}));
     println!("MEMORY_CELL_V9_CONTINUAL_RECEIPT_PATH={}",output.display());
 }
