@@ -77,7 +77,8 @@ Held 的 320 个 query ID 实际对应 292 段不同文本、32 个模板组，�
 | 训练后移除 residual＋oracle | 264/576 | 576/576 | 816/1008 |
 | Joint 参数 cell＋oracle | 不适用 | 不适用 | 146/1008 |
 
-每种 router 下，参数与显式记录的 2,880 对输出完全相同，包括来源、状态和执行轨迹。
+每种 router 下，参数与显式记录的 2,880 对输出在值、状态、来源和执行轨迹字段上完全相同；
+这不表示包含计时字段的整个 JSON 逐字节相同。
 强基线是 exact typed SQLite、同信息固定 planner 和共同解释器；这不构成对所有 RAG
 或通用 LLM planner 的比较。
 
@@ -258,9 +259,30 @@ search/replay/communication wall 成本仍缺失，决策是 `NoChange / Missing
 unsupported acceptance 为 8/96（8.3333%）；仍为 shadow，质量门槛为 false。
 这些原生指标使用另一套任务与模型，不能与 residual 实验混合为同一统计结果。
 
-截至本文件本次编辑，仍需单独执行 exact-source 最终化：认证原始 GitHub artifact、
-核对全部 TAR 成员及四份 longrun/source freeze，之后运行原始 `ci_finalize.py` 的十包 `just fix`
-和 `just fmt`，保留补丁、日志与最终树。最终 fix/fmt 之后不再手工运行测试。
+**Exact-source 最终化已在 CI 完成并通过**：
+[run 40748270215](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40748270215)，
+job `123027755943`。输入 source 为 `d4193c842bba8113719ef36f451cbc9061e34a7f`，
+输入 tree 为 `8f55bde73e94040e4f0db1572966a2882751a1d9`；最终输出 tree 为
+`28b310cc8db30270110605f8509f95b772451fd6`。原始 artifact 认证、来源与成员 preflight、
+原始 finalizer、最终 freeze 四项门槛均通过。十包 `just fix` 与 `just fmt` 都退出零，
+wall 分别为 415.125325691 秒与 2.070047535 秒。
+
+原始 artifact `12845041139` 的 ZIP 为 565,627 B，SHA-256 为
+`d342f64c9d96b38c3bd737eab24adbc0e0f7820c8aebb1ade904bb4116541214`。
+最终补丁为 297,234 B，SHA-256 为
+`cf1ea514c924aab13cadb850942fa2e04b1075f2f5b553eb777c3cbcb0f87a71`。
+从固定远端 source 恢复 33 个旧文件，应用该原始补丁后，所有新文件的 Git blob 与
+SHA-256 均符合原始补丁及 `AFTER_FILES.json`。GitHub 用这些准确 blob 和输入 tree
+构建出的完整 tree 与 CI 输出相同。
+独立静态审查仅发现一处 `&format!` → `format!` 的 Clippy 修复，其余为格式调整。
+
+最终化保持 152 个 native Python 文件、153 个其他冻结来源输入，以及 323 个 adapter
+文件的字节不变。最终 fix/fmt 后没有手工重跑测试或模型；这里的源码树及文件核对属于
+产物身份验证。原始补丁、阶段日志和四项门槛回执的交付位置为
+[finalize-formal-01](evidence/finalize-formal-01/README.md)。
+最终源码已发布为 [`d6ef56de0a786e5c291602d4801125ae55f3be15`](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/d6ef56de0a786e5c291602d4801125ae55f3be15)，
+分支与提交 tree 均已独立读回确认。详见 [发布身份](evidence/finalize-formal-01/PUBLISHED_SOURCE.json)
+与 [恢复后的静态审查](evidence/finalize-formal-01/FINAL_PATCH_STATIC_REVIEW.json)。
 这些构建/完整性门槛通过，也不会把科学收益的 false 改成 true。
 
 失败和诊断证据分别保留在 [formal-04](evidence/native-formal-04/)、
