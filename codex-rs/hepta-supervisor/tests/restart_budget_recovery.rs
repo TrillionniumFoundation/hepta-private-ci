@@ -249,8 +249,8 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     assert_eq!(
         (
             snapshot.active,
-            snapshot.restart_attempt,
-            snapshot.restart_pending
+            snapshot.restart_attempt(),
+            snapshot.restart_pending()
         ),
         (true, 1, false)
     );
@@ -288,8 +288,8 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     assert_eq!(
         (
             snapshot.active,
-            snapshot.restart_attempt,
-            snapshot.restart_pending
+            snapshot.restart_attempt(),
+            snapshot.restart_pending()
         ),
         (true, 2, false)
     );
@@ -323,8 +323,8 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     assert_eq!(
         (
             snapshot.active,
-            snapshot.restart_attempt,
-            snapshot.restart_pending
+            snapshot.restart_attempt(),
+            snapshot.restart_pending()
         ),
         (true, 3, false)
     );

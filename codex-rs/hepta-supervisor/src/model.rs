@@ -310,6 +310,18 @@ pub struct AgentSupervisorSnapshot {
     pub(crate) has_last_command: bool,
 }
 
+impl AgentSupervisorSnapshot {
+    /// Restart-attempt counter captured by this snapshot.
+    pub fn restart_attempt(&self) -> u32 {
+        self.restart_attempt
+    }
+
+    /// Whether this snapshot records a queued restart.
+    pub fn restart_pending(&self) -> bool {
+        self.restart_pending
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub(crate) enum ControlRuntimePhase {

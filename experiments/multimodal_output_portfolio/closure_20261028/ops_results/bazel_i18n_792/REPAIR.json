@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.bazel-workspace-visibility-repair.v1",
+  "head_before": "792beb14600f9b49b04ed18f9061e11d0e163759",
+  "actual_failure": {
+    "run_id": 40677089566,
+    "job_id": 122779282027,
+    "message": "no such package 'codex-rs/third_party/i18n-config-0.4.8': Package is considered deleted due to --deleted_packages",
+    "phase": "Bazel target analysis before compile"
+  },
+  "root_cause": "The whole third_party directory was ignored although Cargo explicitly includes i18n-config-0.4.8 as a workspace member. The generated crate hub correctly points that member at its existing local BUILD target.",
+  "change": "Replace the blanket vendor directory ignore with all existing other vendor package paths, keeping the already declared workspace member visible. No target deletion or test assertion relaxation.",
+  "visible_workspace_member": "codex-rs/third_party/i18n-config-0.4.8",
+  "cargo_manifests_locks_and_dependency_policy_changed": false,
+  "before": {
+    "bytes": 309,
+    "sha256": "0889e87551e9b2f5263563c15741a814737bc3c197a04d34a57bde734d52740b"
+  },
+  "after": {
+    "bytes": 744,
+    "sha256": "9df8325d285a07e57c9a4c277992226812c5648b583a8823ab5531237e32ebab"
+  },
+  "qualification": "Static membership/visibility check only; actual Bazel analysis/build/test is required on the new head.",
+  "other_vendor_directories_kept_ignored": [
+    "codex-rs/third_party/aws-config-1.8.12",
+    "codex-rs/third_party/imbl-6.1.0",
+    "codex-rs/third_party/keyring-3.6.3",
+    "codex-rs/third_party/matrix-sdk-0.19.1",
+    "codex-rs/third_party/matrix-sdk-sqlite-0.18.0",
+    "codex-rs/third_party/matrix-sdk-sqlite-0.19.1",
+    "codex-rs/third_party/secret-service-4.0.0",
+    "codex-rs/third_party/serde-saphyr-2.0.0",
+    "codex-rs/third_party/starlark-0.14.2",
+    "codex-rs/third_party/zip-9.1.3"
+  ],
+  "membership_scope": "Only i18n-config membership and the real generated alias are established here; full Cargo metadata membership of the other ten directories is not claimed."
+}

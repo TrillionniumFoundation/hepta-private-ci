@@ -1,0 +1,13 @@
+==> Rust formatter failed
+$ rustfmt --edition 2024 --config imports_granularity=Item,skip_children=true --check -- /dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/hepta-supervisor/src/model.rs
+Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+Diff in /dev/shm/hepta-ndu-unified-20261028/repo/codex-rs/hepta-supervisor/src/model.rs:310:
+     pub(crate) has_last_command: bool,
+ }
+ 
+-
+ impl AgentSupervisorSnapshot {
+     /// Restart-attempt counter captured by this snapshot.
+     pub fn restart_attempt(&self) -> u32 {
+Formatting failed: Rust
+error: recipe `fmt` failed on line 51 with exit code 1
