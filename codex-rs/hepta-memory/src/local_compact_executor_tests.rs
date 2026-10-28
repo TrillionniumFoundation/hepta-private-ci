@@ -538,7 +538,10 @@ async fn terminal_bound_lease_transitions_audit_compact_journal_atomically() {
     // through a test-only trigger drop; the lifecycle transaction itself must
     // still leave the lease row count and compact row count unchanged.
     for (index, transition) in ["release", "rollback", "expire"].into_iter().enumerate() {
-        let expiry_offset = if transition == "expire" { 1 } else { 3_600 };
+        // The bound executor must be opened while its lease is still live.
+        // Windows CI can spend over one second opening the SQLite-backed store;
+        // that setup delay must not pre-expire the negative journal audit fixture.
+        let expiry_offset = if transition == "expire" { 15 } else { 3_600 };
         let (_temp, store, lease, executor, current_fence, checkpoint) =
             open_bound_executor(130 + index as u8, expiry_offset).await;
         let current = snapshot(current_fence);
@@ -583,7 +586,7 @@ async fn terminal_bound_lease_transitions_audit_compact_journal_atomically() {
                 .binding()
                 .expect("bound lease binding")
                 .lease_expires_at_unix_seconds;
-            for _ in 0..120 {
+            for _ in 0..800 {
                 if unix_seconds() >= expiry {
                     break;
                 }
