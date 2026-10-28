@@ -1,0 +1,17 @@
+   Compiling codex-hepta-neuron v0.0.0 (/workspace/scratch/07399998a2e3/hepta/experiments/free_boundary_neuron/owner/runs/build01/hepta-neuron)
+warning: method `runtime_mut` is never used
+  --> hepta-neuron/examples/original_owner.rs:50:12
+   |
+26 | / impl<W, P> AgentdNeuronOwner<W, P>
+27 | | where
+28 | |     W: AnchorWitnessStore,
+29 | |     P: NeuronInferenceControlPort,
+   | |__________________________________- method in this implementation
+...
+50 |       pub fn runtime_mut(&mut self) -> &mut NeuronRuntime<W> {
+   |              ^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codex-hepta-neuron` (example "free_boundary_host") generated 1 warning
+    Finished `dev` profile [unoptimized] target(s) in 1.82s
