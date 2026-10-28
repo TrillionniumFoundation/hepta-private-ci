@@ -1,0 +1,4520 @@
+{
+  "runs": [
+    {
+      "run_id": "mechanism/synthetic/hcsn/seed1101",
+      "spec": {
+        "architecture": "hcsn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1101,
+        "stage": "mechanism",
+        "task": "synthetic",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/synthetic/hcsn/seed1102",
+      "spec": {
+        "architecture": "hcsn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1102,
+        "stage": "mechanism",
+        "task": "synthetic",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/synthetic/hcsn/seed1103",
+      "spec": {
+        "architecture": "hcsn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1103,
+        "stage": "mechanism",
+        "task": "synthetic",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/synthetic/hcsn/seed1104",
+      "spec": {
+        "architecture": "hcsn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1104,
+        "stage": "mechanism",
+        "task": "synthetic",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/synthetic/hcsn/seed1105",
+      "spec": {
+        "architecture": "hcsn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1105,
+        "stage": "mechanism",
+        "task": "synthetic",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/synthetic/single/seed1101",
+      "spec": {
+        "architecture": "single",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1101,
+        "stage": "mechanism",
+        "task": "synthetic",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/synthetic/single/seed1102",
+      "spec": {
+        "architecture": "single",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1102,
+        "stage": "mechanism",
+        "task": "synthetic",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/synthetic/single/seed1103",
+      "spec": {
+        "architecture": "single",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1103,
+        "stage": "mechanism",
+        "task": "synthetic",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/synthetic/single/seed1104",
+      "spec": {
+        "architecture": "single",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1104,
+        "stage": "mechanism",
+        "task": "synthetic",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/synthetic/single/seed1105",
+      "spec": {
+        "architecture": "single",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1105,
+        "stage": "mechanism",
+        "task": "synthetic",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/synthetic/no_adaptation/seed1101",
+      "spec": {
+        "architecture": "no_adaptation",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1101,
+        "stage": "mechanism",
+        "task": "synthetic",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/synthetic/no_adaptation/seed1102",
+      "spec": {
+        "architecture": "no_adaptation",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1102,
+        "stage": "mechanism",
+        "task": "synthetic",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/synthetic/no_adaptation/seed1103",
+      "spec": {
+        "architecture": "no_adaptation",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1103,
+        "stage": "mechanism",
+        "task": "synthetic",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/synthetic/no_adaptation/seed1104",
+      "spec": {
+        "architecture": "no_adaptation",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1104,
+        "stage": "mechanism",
+        "task": "synthetic",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/synthetic/no_adaptation/seed1105",
+      "spec": {
+        "architecture": "no_adaptation",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1105,
+        "stage": "mechanism",
+        "task": "synthetic",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/synthetic/ordinary/seed1101",
+      "spec": {
+        "architecture": "ordinary",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1101,
+        "stage": "mechanism",
+        "task": "synthetic",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/synthetic/ordinary/seed1102",
+      "spec": {
+        "architecture": "ordinary",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1102,
+        "stage": "mechanism",
+        "task": "synthetic",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/synthetic/ordinary/seed1103",
+      "spec": {
+        "architecture": "ordinary",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1103,
+        "stage": "mechanism",
+        "task": "synthetic",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/synthetic/ordinary/seed1104",
+      "spec": {
+        "architecture": "ordinary",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1104,
+        "stage": "mechanism",
+        "task": "synthetic",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/synthetic/ordinary/seed1105",
+      "spec": {
+        "architecture": "ordinary",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1105,
+        "stage": "mechanism",
+        "task": "synthetic",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/synthetic/continuous_rnn/seed1101",
+      "spec": {
+        "architecture": "continuous_rnn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": true,
+        "seed": 1101,
+        "stage": "mechanism",
+        "task": "synthetic",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/synthetic/continuous_rnn/seed1102",
+      "spec": {
+        "architecture": "continuous_rnn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": true,
+        "seed": 1102,
+        "stage": "mechanism",
+        "task": "synthetic",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/synthetic/continuous_rnn/seed1103",
+      "spec": {
+        "architecture": "continuous_rnn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": true,
+        "seed": 1103,
+        "stage": "mechanism",
+        "task": "synthetic",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/synthetic/continuous_rnn/seed1104",
+      "spec": {
+        "architecture": "continuous_rnn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": true,
+        "seed": 1104,
+        "stage": "mechanism",
+        "task": "synthetic",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/synthetic/continuous_rnn/seed1105",
+      "spec": {
+        "architecture": "continuous_rnn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": true,
+        "seed": 1105,
+        "stage": "mechanism",
+        "task": "synthetic",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/multimodal_select/hcsn/seed1101",
+      "spec": {
+        "architecture": "hcsn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1101,
+        "stage": "mechanism",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/multimodal_select/hcsn/seed1102",
+      "spec": {
+        "architecture": "hcsn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1102,
+        "stage": "mechanism",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/multimodal_select/hcsn/seed1103",
+      "spec": {
+        "architecture": "hcsn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1103,
+        "stage": "mechanism",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/multimodal_select/hcsn/seed1104",
+      "spec": {
+        "architecture": "hcsn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1104,
+        "stage": "mechanism",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/multimodal_select/hcsn/seed1105",
+      "spec": {
+        "architecture": "hcsn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1105,
+        "stage": "mechanism",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/multimodal_select/single/seed1101",
+      "spec": {
+        "architecture": "single",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1101,
+        "stage": "mechanism",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/multimodal_select/single/seed1102",
+      "spec": {
+        "architecture": "single",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1102,
+        "stage": "mechanism",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/multimodal_select/single/seed1103",
+      "spec": {
+        "architecture": "single",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1103,
+        "stage": "mechanism",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/multimodal_select/single/seed1104",
+      "spec": {
+        "architecture": "single",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1104,
+        "stage": "mechanism",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/multimodal_select/single/seed1105",
+      "spec": {
+        "architecture": "single",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1105,
+        "stage": "mechanism",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/multimodal_select/no_adaptation/seed1101",
+      "spec": {
+        "architecture": "no_adaptation",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1101,
+        "stage": "mechanism",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/multimodal_select/no_adaptation/seed1102",
+      "spec": {
+        "architecture": "no_adaptation",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1102,
+        "stage": "mechanism",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/multimodal_select/no_adaptation/seed1103",
+      "spec": {
+        "architecture": "no_adaptation",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1103,
+        "stage": "mechanism",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/multimodal_select/no_adaptation/seed1104",
+      "spec": {
+        "architecture": "no_adaptation",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1104,
+        "stage": "mechanism",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/multimodal_select/no_adaptation/seed1105",
+      "spec": {
+        "architecture": "no_adaptation",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1105,
+        "stage": "mechanism",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/multimodal_select/ordinary/seed1101",
+      "spec": {
+        "architecture": "ordinary",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1101,
+        "stage": "mechanism",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/multimodal_select/ordinary/seed1102",
+      "spec": {
+        "architecture": "ordinary",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1102,
+        "stage": "mechanism",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/multimodal_select/ordinary/seed1103",
+      "spec": {
+        "architecture": "ordinary",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1103,
+        "stage": "mechanism",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/multimodal_select/ordinary/seed1104",
+      "spec": {
+        "architecture": "ordinary",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1104,
+        "stage": "mechanism",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/multimodal_select/ordinary/seed1105",
+      "spec": {
+        "architecture": "ordinary",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 1105,
+        "stage": "mechanism",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/multimodal_select/continuous_rnn/seed1101",
+      "spec": {
+        "architecture": "continuous_rnn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": true,
+        "seed": 1101,
+        "stage": "mechanism",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/multimodal_select/continuous_rnn/seed1102",
+      "spec": {
+        "architecture": "continuous_rnn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": true,
+        "seed": 1102,
+        "stage": "mechanism",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/multimodal_select/continuous_rnn/seed1103",
+      "spec": {
+        "architecture": "continuous_rnn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": true,
+        "seed": 1103,
+        "stage": "mechanism",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/multimodal_select/continuous_rnn/seed1104",
+      "spec": {
+        "architecture": "continuous_rnn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": true,
+        "seed": 1104,
+        "stage": "mechanism",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "mechanism/multimodal_select/continuous_rnn/seed1105",
+      "spec": {
+        "architecture": "continuous_rnn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": true,
+        "seed": 1105,
+        "stage": "mechanism",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/mnist/hcsn/seed2201",
+      "spec": {
+        "architecture": "hcsn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "mnist",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/mnist/hcsn/seed2202",
+      "spec": {
+        "architecture": "hcsn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "mnist",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/mnist/hcsn/seed2203",
+      "spec": {
+        "architecture": "hcsn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "mnist",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/mnist/lif_snn/seed2201",
+      "spec": {
+        "architecture": "lif_snn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "mnist",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/mnist/lif_snn/seed2202",
+      "spec": {
+        "architecture": "lif_snn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "mnist",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/mnist/lif_snn/seed2203",
+      "spec": {
+        "architecture": "lif_snn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "mnist",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/mnist/continuous_rnn/seed2201",
+      "spec": {
+        "architecture": "continuous_rnn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "mnist",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/mnist/continuous_rnn/seed2202",
+      "spec": {
+        "architecture": "continuous_rnn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "mnist",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/mnist/continuous_rnn/seed2203",
+      "spec": {
+        "architecture": "continuous_rnn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "mnist",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/mnist/two_gates/seed2201",
+      "spec": {
+        "architecture": "two_gates",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "mnist",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/mnist/two_gates/seed2202",
+      "spec": {
+        "architecture": "two_gates",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "mnist",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/mnist/two_gates/seed2203",
+      "spec": {
+        "architecture": "two_gates",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "mnist",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/mnist/cfc/seed2201",
+      "spec": {
+        "architecture": "cfc",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "mnist",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/mnist/cfc/seed2202",
+      "spec": {
+        "architecture": "cfc",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "mnist",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/mnist/cfc/seed2203",
+      "spec": {
+        "architecture": "cfc",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "mnist",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/mnist/mamba1/seed2201",
+      "spec": {
+        "architecture": "mamba1",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "mnist",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/mnist/mamba1/seed2202",
+      "spec": {
+        "architecture": "mamba1",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "mnist",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/mnist/mamba1/seed2203",
+      "spec": {
+        "architecture": "mamba1",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "mnist",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/mnist/transformer/seed2201",
+      "spec": {
+        "architecture": "transformer",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "mnist",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/mnist/transformer/seed2202",
+      "spec": {
+        "architecture": "transformer",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "mnist",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/mnist/transformer/seed2203",
+      "spec": {
+        "architecture": "transformer",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "mnist",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/fsdd/hcsn/seed2201",
+      "spec": {
+        "architecture": "hcsn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "fsdd",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/fsdd/hcsn/seed2202",
+      "spec": {
+        "architecture": "hcsn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "fsdd",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/fsdd/hcsn/seed2203",
+      "spec": {
+        "architecture": "hcsn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "fsdd",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/fsdd/lif_snn/seed2201",
+      "spec": {
+        "architecture": "lif_snn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "fsdd",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/fsdd/lif_snn/seed2202",
+      "spec": {
+        "architecture": "lif_snn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "fsdd",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/fsdd/lif_snn/seed2203",
+      "spec": {
+        "architecture": "lif_snn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "fsdd",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/fsdd/continuous_rnn/seed2201",
+      "spec": {
+        "architecture": "continuous_rnn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "fsdd",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/fsdd/continuous_rnn/seed2202",
+      "spec": {
+        "architecture": "continuous_rnn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "fsdd",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/fsdd/continuous_rnn/seed2203",
+      "spec": {
+        "architecture": "continuous_rnn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "fsdd",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/fsdd/two_gates/seed2201",
+      "spec": {
+        "architecture": "two_gates",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "fsdd",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/fsdd/two_gates/seed2202",
+      "spec": {
+        "architecture": "two_gates",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "fsdd",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/fsdd/two_gates/seed2203",
+      "spec": {
+        "architecture": "two_gates",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "fsdd",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/fsdd/cfc/seed2201",
+      "spec": {
+        "architecture": "cfc",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "fsdd",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/fsdd/cfc/seed2202",
+      "spec": {
+        "architecture": "cfc",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "fsdd",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/fsdd/cfc/seed2203",
+      "spec": {
+        "architecture": "cfc",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "fsdd",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/fsdd/mamba1/seed2201",
+      "spec": {
+        "architecture": "mamba1",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "fsdd",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/fsdd/mamba1/seed2202",
+      "spec": {
+        "architecture": "mamba1",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "fsdd",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/fsdd/mamba1/seed2203",
+      "spec": {
+        "architecture": "mamba1",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "fsdd",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/fsdd/transformer/seed2201",
+      "spec": {
+        "architecture": "transformer",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "fsdd",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/fsdd/transformer/seed2202",
+      "spec": {
+        "architecture": "transformer",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "fsdd",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/fsdd/transformer/seed2203",
+      "spec": {
+        "architecture": "transformer",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "fsdd",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/multimodal_select/hcsn/seed2201",
+      "spec": {
+        "architecture": "hcsn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/multimodal_select/hcsn/seed2202",
+      "spec": {
+        "architecture": "hcsn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/multimodal_select/hcsn/seed2203",
+      "spec": {
+        "architecture": "hcsn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/multimodal_select/lif_snn/seed2201",
+      "spec": {
+        "architecture": "lif_snn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/multimodal_select/lif_snn/seed2202",
+      "spec": {
+        "architecture": "lif_snn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/multimodal_select/lif_snn/seed2203",
+      "spec": {
+        "architecture": "lif_snn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/multimodal_select/continuous_rnn/seed2201",
+      "spec": {
+        "architecture": "continuous_rnn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/multimodal_select/continuous_rnn/seed2202",
+      "spec": {
+        "architecture": "continuous_rnn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/multimodal_select/continuous_rnn/seed2203",
+      "spec": {
+        "architecture": "continuous_rnn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/multimodal_select/two_gates/seed2201",
+      "spec": {
+        "architecture": "two_gates",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/multimodal_select/two_gates/seed2202",
+      "spec": {
+        "architecture": "two_gates",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/multimodal_select/two_gates/seed2203",
+      "spec": {
+        "architecture": "two_gates",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/multimodal_select/cfc/seed2201",
+      "spec": {
+        "architecture": "cfc",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/multimodal_select/cfc/seed2202",
+      "spec": {
+        "architecture": "cfc",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/multimodal_select/cfc/seed2203",
+      "spec": {
+        "architecture": "cfc",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/multimodal_select/mamba1/seed2201",
+      "spec": {
+        "architecture": "mamba1",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/multimodal_select/mamba1/seed2202",
+      "spec": {
+        "architecture": "mamba1",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/multimodal_select/mamba1/seed2203",
+      "spec": {
+        "architecture": "mamba1",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/multimodal_select/transformer/seed2201",
+      "spec": {
+        "architecture": "transformer",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/multimodal_select/transformer/seed2202",
+      "spec": {
+        "architecture": "transformer",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/multimodal_select/transformer/seed2203",
+      "spec": {
+        "architecture": "transformer",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/long_memory/hcsn/seed2201",
+      "spec": {
+        "architecture": "hcsn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/long_memory/hcsn/seed2202",
+      "spec": {
+        "architecture": "hcsn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/long_memory/hcsn/seed2203",
+      "spec": {
+        "architecture": "hcsn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/long_memory/lif_snn/seed2201",
+      "spec": {
+        "architecture": "lif_snn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/long_memory/lif_snn/seed2202",
+      "spec": {
+        "architecture": "lif_snn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/long_memory/lif_snn/seed2203",
+      "spec": {
+        "architecture": "lif_snn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/long_memory/continuous_rnn/seed2201",
+      "spec": {
+        "architecture": "continuous_rnn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/long_memory/continuous_rnn/seed2202",
+      "spec": {
+        "architecture": "continuous_rnn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/long_memory/continuous_rnn/seed2203",
+      "spec": {
+        "architecture": "continuous_rnn",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/long_memory/two_gates/seed2201",
+      "spec": {
+        "architecture": "two_gates",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/long_memory/two_gates/seed2202",
+      "spec": {
+        "architecture": "two_gates",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/long_memory/two_gates/seed2203",
+      "spec": {
+        "architecture": "two_gates",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/long_memory/cfc/seed2201",
+      "spec": {
+        "architecture": "cfc",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/long_memory/cfc/seed2202",
+      "spec": {
+        "architecture": "cfc",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/long_memory/cfc/seed2203",
+      "spec": {
+        "architecture": "cfc",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/long_memory/mamba1/seed2201",
+      "spec": {
+        "architecture": "mamba1",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/long_memory/mamba1/seed2202",
+      "spec": {
+        "architecture": "mamba1",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/long_memory/mamba1/seed2203",
+      "spec": {
+        "architecture": "mamba1",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/long_memory/transformer/seed2201",
+      "spec": {
+        "architecture": "transformer",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2201,
+        "stage": "representation",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/long_memory/transformer/seed2202",
+      "spec": {
+        "architecture": "transformer",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2202,
+        "stage": "representation",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "representation/long_memory/transformer/seed2203",
+      "spec": {
+        "architecture": "transformer",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "match_cell_budget": false,
+        "seed": 2203,
+        "stage": "representation",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 2048,
+        "updates": 240,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config00/hcsn/seed3301",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "center",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config00/hcsn/seed3302",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "center",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config00/hcsn/seed3303",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "center",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config00/mamba1/seed3301",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "center",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config00/mamba1/seed3302",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "center",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config00/mamba1/seed3303",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "center",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config00/transformer/seed3301",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "center",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config00/transformer/seed3302",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "center",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config00/transformer/seed3303",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "center",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config01/hcsn/seed3301",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 16
+      }
+    },
+    {
+      "run_id": "scaling/config01/hcsn/seed3302",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 16
+      }
+    },
+    {
+      "run_id": "scaling/config01/hcsn/seed3303",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 16
+      }
+    },
+    {
+      "run_id": "scaling/config01/mamba1/seed3301",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 16
+      }
+    },
+    {
+      "run_id": "scaling/config01/mamba1/seed3302",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 16
+      }
+    },
+    {
+      "run_id": "scaling/config01/mamba1/seed3303",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 16
+      }
+    },
+    {
+      "run_id": "scaling/config01/transformer/seed3301",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 16
+      }
+    },
+    {
+      "run_id": "scaling/config01/transformer/seed3302",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 16
+      }
+    },
+    {
+      "run_id": "scaling/config01/transformer/seed3303",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 16
+      }
+    },
+    {
+      "run_id": "scaling/config02/hcsn/seed3301",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 64
+      }
+    },
+    {
+      "run_id": "scaling/config02/hcsn/seed3302",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 64
+      }
+    },
+    {
+      "run_id": "scaling/config02/hcsn/seed3303",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 64
+      }
+    },
+    {
+      "run_id": "scaling/config02/mamba1/seed3301",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 64
+      }
+    },
+    {
+      "run_id": "scaling/config02/mamba1/seed3302",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 64
+      }
+    },
+    {
+      "run_id": "scaling/config02/mamba1/seed3303",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 64
+      }
+    },
+    {
+      "run_id": "scaling/config02/transformer/seed3301",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 64
+      }
+    },
+    {
+      "run_id": "scaling/config02/transformer/seed3302",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 64
+      }
+    },
+    {
+      "run_id": "scaling/config02/transformer/seed3303",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 64
+      }
+    },
+    {
+      "run_id": "scaling/config03/hcsn/seed3301",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 128
+      }
+    },
+    {
+      "run_id": "scaling/config03/hcsn/seed3302",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 128
+      }
+    },
+    {
+      "run_id": "scaling/config03/hcsn/seed3303",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 128
+      }
+    },
+    {
+      "run_id": "scaling/config03/mamba1/seed3301",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 128
+      }
+    },
+    {
+      "run_id": "scaling/config03/mamba1/seed3302",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 128
+      }
+    },
+    {
+      "run_id": "scaling/config03/mamba1/seed3303",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 128
+      }
+    },
+    {
+      "run_id": "scaling/config03/transformer/seed3301",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 128
+      }
+    },
+    {
+      "run_id": "scaling/config03/transformer/seed3302",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 128
+      }
+    },
+    {
+      "run_id": "scaling/config03/transformer/seed3303",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 128
+      }
+    },
+    {
+      "run_id": "scaling/config04/hcsn/seed3301",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 3,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 256
+      }
+    },
+    {
+      "run_id": "scaling/config04/hcsn/seed3302",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 3,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 256
+      }
+    },
+    {
+      "run_id": "scaling/config04/hcsn/seed3303",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 3,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 256
+      }
+    },
+    {
+      "run_id": "scaling/config04/mamba1/seed3301",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 3,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 256
+      }
+    },
+    {
+      "run_id": "scaling/config04/mamba1/seed3302",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 3,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 256
+      }
+    },
+    {
+      "run_id": "scaling/config04/mamba1/seed3303",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 3,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 256
+      }
+    },
+    {
+      "run_id": "scaling/config04/transformer/seed3301",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 3,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 256
+      }
+    },
+    {
+      "run_id": "scaling/config04/transformer/seed3302",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 3,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 256
+      }
+    },
+    {
+      "run_id": "scaling/config04/transformer/seed3303",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "capacity",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 3,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 256
+      }
+    },
+    {
+      "run_id": "scaling/config05/hcsn/seed3301",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "data",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 256,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config05/hcsn/seed3302",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "data",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 256,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config05/hcsn/seed3303",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "data",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 256,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config05/mamba1/seed3301",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "data",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 256,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config05/mamba1/seed3302",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "data",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 256,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config05/mamba1/seed3303",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "data",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 256,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config05/transformer/seed3301",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "data",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 256,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config05/transformer/seed3302",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "data",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 256,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config05/transformer/seed3303",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "data",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 256,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config06/hcsn/seed3301",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "data",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 4096,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config06/hcsn/seed3302",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "data",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 4096,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config06/hcsn/seed3303",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "data",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 4096,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config06/mamba1/seed3301",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "data",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 4096,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config06/mamba1/seed3302",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "data",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 4096,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config06/mamba1/seed3303",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "data",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 4096,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config06/transformer/seed3301",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "data",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 4096,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config06/transformer/seed3302",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "data",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 4096,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config06/transformer/seed3303",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "data",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 32,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 4096,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config07/hcsn/seed3301",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "context",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 64,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config07/hcsn/seed3302",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "context",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 64,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config07/hcsn/seed3303",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "context",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 64,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config07/mamba1/seed3301",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "context",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 64,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config07/mamba1/seed3302",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "context",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 64,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config07/mamba1/seed3303",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "context",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 64,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config07/transformer/seed3301",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "context",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 64,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config07/transformer/seed3302",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "context",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 64,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config07/transformer/seed3303",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "context",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 64,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config08/hcsn/seed3301",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "context",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 128,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config08/hcsn/seed3302",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "context",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 128,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config08/hcsn/seed3303",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "context",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 128,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config08/mamba1/seed3301",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "context",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 128,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config08/mamba1/seed3302",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "context",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 128,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config08/mamba1/seed3303",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "context",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 128,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config08/transformer/seed3301",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "context",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 128,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config08/transformer/seed3302",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "context",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 128,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config08/transformer/seed3303",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "context",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 1,
+        "length": 128,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "long_memory",
+        "test_size": 1024,
+        "train_size": 1024,
+        "updates": 160,
+        "val_size": 512,
+        "width": 32
+      }
+    },
+    {
+      "run_id": "scaling/config09/hcsn/seed3301",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "joint",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 128,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 4096,
+        "updates": 160,
+        "val_size": 512,
+        "width": 64
+      }
+    },
+    {
+      "run_id": "scaling/config09/hcsn/seed3302",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "joint",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 128,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 4096,
+        "updates": 160,
+        "val_size": 512,
+        "width": 64
+      }
+    },
+    {
+      "run_id": "scaling/config09/hcsn/seed3303",
+      "spec": {
+        "architecture": "hcsn",
+        "axis": "joint",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 128,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 4096,
+        "updates": 160,
+        "val_size": 512,
+        "width": 64
+      }
+    },
+    {
+      "run_id": "scaling/config09/mamba1/seed3301",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "joint",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 128,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 4096,
+        "updates": 160,
+        "val_size": 512,
+        "width": 64
+      }
+    },
+    {
+      "run_id": "scaling/config09/mamba1/seed3302",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "joint",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 128,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 4096,
+        "updates": 160,
+        "val_size": 512,
+        "width": 64
+      }
+    },
+    {
+      "run_id": "scaling/config09/mamba1/seed3303",
+      "spec": {
+        "architecture": "mamba1",
+        "axis": "joint",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 128,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 4096,
+        "updates": 160,
+        "val_size": 512,
+        "width": 64
+      }
+    },
+    {
+      "run_id": "scaling/config09/transformer/seed3301",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "joint",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 128,
+        "lr": 0.003,
+        "seed": 3301,
+        "stage": "scaling",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 4096,
+        "updates": 160,
+        "val_size": 512,
+        "width": 64
+      }
+    },
+    {
+      "run_id": "scaling/config09/transformer/seed3302",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "joint",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 128,
+        "lr": 0.003,
+        "seed": 3302,
+        "stage": "scaling",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 4096,
+        "updates": 160,
+        "val_size": 512,
+        "width": 64
+      }
+    },
+    {
+      "run_id": "scaling/config09/transformer/seed3303",
+      "spec": {
+        "architecture": "transformer",
+        "axis": "joint",
+        "batch_size": 32,
+        "data_seed": 7123,
+        "depth": 2,
+        "length": 128,
+        "lr": 0.003,
+        "seed": 3303,
+        "stage": "scaling",
+        "task": "multimodal_select",
+        "test_size": 1024,
+        "train_size": 4096,
+        "updates": 160,
+        "val_size": 512,
+        "width": 64
+      }
+    },
+    {
+      "run_id": "boundary/seed4401",
+      "spec": {
+        "seed": 4401,
+        "stage": "boundary"
+      }
+    },
+    {
+      "run_id": "boundary/seed4402",
+      "spec": {
+        "seed": 4402,
+        "stage": "boundary"
+      }
+    },
+    {
+      "run_id": "boundary/seed4403",
+      "spec": {
+        "seed": 4403,
+        "stage": "boundary"
+      }
+    },
+    {
+      "run_id": "boundary/seed4404",
+      "spec": {
+        "seed": 4404,
+        "stage": "boundary"
+      }
+    },
+    {
+      "run_id": "boundary/seed4405",
+      "spec": {
+        "seed": 4405,
+        "stage": "boundary"
+      }
+    }
+  ],
+  "source_seal": "bb0d2eda33c34785da9563a84a06ed4c5d2391826e52173452ee43924723de02"
+}

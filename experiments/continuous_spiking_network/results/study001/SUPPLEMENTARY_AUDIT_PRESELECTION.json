@@ -1,0 +1,785 @@
+{
+  "audit_role": "Post-seal independent checks; the frozen primary auditor is unchanged.",
+  "created_utc": "2026-10-28T07:28:39.792904+00:00",
+  "elapsed_seconds": 0.2903502650005976,
+  "errors": [],
+  "execution_history": {
+    "attempts": [
+      {
+        "elapsed_seconds": 14.464272022247314,
+        "exit_code": 0,
+        "file": "boundary/seed4403/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "boundary/seed4403",
+        "sha256": "c1d16defa77e777551e4d2418b80ce76160e329572056c1266cc165933f79315",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 13.513261556625366,
+        "exit_code": 0,
+        "file": "mechanism/multimodal_select/continuous_rnn/seed1102/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "mechanism/multimodal_select/continuous_rnn/seed1102",
+        "sha256": "fd883d34043849baaa0c77e0598f2acb07019068cea15bb7b9343e88cdd04eb9",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 20.99409055709839,
+        "exit_code": 0,
+        "file": "mechanism/multimodal_select/single/seed1103/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "mechanism/multimodal_select/single/seed1103",
+        "sha256": "9e57b47cf8696223571864762be4456bf9b7acbbf8f0c1483e5dbdcfbe01fbe5",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 7.039069175720215,
+        "exit_code": 0,
+        "file": "mechanism/synthetic/continuous_rnn/seed1101/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "mechanism/synthetic/continuous_rnn/seed1101",
+        "sha256": "66ff3ebf093a983ede8dffb51d1ec80826aac3b0ce3a3c7826ac4cc404a4b51d",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 14.709215879440308,
+        "exit_code": 0,
+        "file": "mechanism/synthetic/continuous_rnn/seed1104/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "mechanism/synthetic/continuous_rnn/seed1104",
+        "sha256": "60fafb2b48e3b1a2afa47cf5c6beba654320551fda6646793d0f9d6a8e6162e4",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 19.912468910217285,
+        "exit_code": 0,
+        "file": "mechanism/synthetic/ordinary/seed1104/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "mechanism/synthetic/ordinary/seed1104",
+        "sha256": "8e511722af4eff2025a31a9496cc6357bc45251404f3a7ff37209b504ec56a0a",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 36.18740367889404,
+        "exit_code": 0,
+        "file": "mechanism/synthetic/single/seed1101/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "mechanism/synthetic/single/seed1101",
+        "sha256": "ed505c219b5e4f7d85a539f9395a13147584d53640d4bffd8f70cc5d9ce6cfb8",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 7.192068338394165,
+        "exit_code": 0,
+        "file": "representation/fsdd/continuous_rnn/seed2201/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "representation/fsdd/continuous_rnn/seed2201",
+        "sha256": "dbe554adf244f6464807c6f5d749029701fa015831a0fa3bc8afd920d1530b27",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 8.006188869476318,
+        "exit_code": 0,
+        "file": "representation/fsdd/continuous_rnn/seed2203/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "representation/fsdd/continuous_rnn/seed2203",
+        "sha256": "4ab9bf0399b92023dd7e65b6bf7ea29087ab3fa003215c6da172edab4c24a0ba",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 17.28268575668335,
+        "exit_code": 0,
+        "file": "representation/long_memory/cfc/seed2201/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "representation/long_memory/cfc/seed2201",
+        "sha256": "726be6b47288e4bf2cb26bfee8f7c6f64c079620c4039994e3103fdf5d56aa60",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 13.311424732208252,
+        "exit_code": 0,
+        "file": "representation/long_memory/continuous_rnn/seed2202/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "representation/long_memory/continuous_rnn/seed2202",
+        "sha256": "8d1acdbdca80c7657c28f9262f2deb6edb4e6f4cf9fe4e064f2bccc7a864aac6",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 18.50045680999756,
+        "exit_code": 0,
+        "file": "representation/long_memory/continuous_rnn/seed2203/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "representation/long_memory/continuous_rnn/seed2203",
+        "sha256": "a90c2eb5a33d16499c02d1d6b8179b1e10026c06fe1dee979a3ae26a1154115d",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 44.923099517822266,
+        "exit_code": 0,
+        "file": "representation/long_memory/hcsn/seed2201/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "representation/long_memory/hcsn/seed2201",
+        "sha256": "ba4ec5777f42f2bc19087a17fcbe355d610f1d696791e6f427825da002b1b0d8",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 49.0136194229126,
+        "exit_code": 0,
+        "file": "representation/long_memory/hcsn/seed2202/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "representation/long_memory/hcsn/seed2202",
+        "sha256": "32644ae13e692ce90f189e682e5da0a7c3024a5738ecc763d6e8d86daf5c9476",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 8.55465817451477,
+        "exit_code": 0,
+        "file": "representation/long_memory/transformer/seed2201/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "representation/long_memory/transformer/seed2201",
+        "sha256": "83d42549a437abe896e02858caabc7c5c167e4a96eb4b562b4b220f1392544a2",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 8.7561674118042,
+        "exit_code": 0,
+        "file": "representation/long_memory/transformer/seed2203/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "representation/long_memory/transformer/seed2203",
+        "sha256": "2fa5861434dbe1e8651c76ca673e91731e0a7224093ca1d6b62ecf5f105154c5",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 14.656283855438232,
+        "exit_code": 0,
+        "file": "representation/long_memory/two_gates/seed2202/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "representation/long_memory/two_gates/seed2202",
+        "sha256": "3fcb2d0dad9f58c0bb540a17026669b5e5e0918fe4d3555653b00bc6ac747c94",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 7.882209300994873,
+        "exit_code": 0,
+        "file": "representation/mnist/continuous_rnn/seed2203/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "representation/mnist/continuous_rnn/seed2203",
+        "sha256": "64b28f4d37a6e1925bca88d5ed286affc3ea097280d1cdb4be62208d1910e492",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 32.06274104118347,
+        "exit_code": 0,
+        "file": "representation/multimodal_select/hcsn/seed2202/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "representation/multimodal_select/hcsn/seed2202",
+        "sha256": "6c758ab2aa0e85fd91efdd2ff7bc95dc08ae7236c13a8edcf1d00db33edd4f7d",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 14.153769254684448,
+        "exit_code": 0,
+        "file": "representation/multimodal_select/lif_snn/seed2201/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "representation/multimodal_select/lif_snn/seed2201",
+        "sha256": "2d605d6bbdc41d1085ef318290616af9ad8ffd5582db7a185c95a4b18d5f18a3",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 29.1390221118927,
+        "exit_code": 0,
+        "file": "representation/multimodal_select/transformer/seed2202/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "representation/multimodal_select/transformer/seed2202",
+        "sha256": "72a94f29ef004702605fdc242eda67e9e4b8d7575881eaed71086ee152a56481",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 12.55043911933899,
+        "exit_code": 0,
+        "file": "scaling/config00/mamba1/seed3303/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "scaling/config00/mamba1/seed3303",
+        "sha256": "528a0e086cb1e47d1cd0404e604f1891960f2eb5b69a5fb538251e3b0740cd1e",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 4.7143394947052,
+        "exit_code": 0,
+        "file": "scaling/config00/transformer/seed3301/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "scaling/config00/transformer/seed3301",
+        "sha256": "f7452f427cfc542d57d3c8eb94bd1933870f7c738a2c6cfc38582fac64b5465c",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 7.348598957061768,
+        "exit_code": 0,
+        "file": "scaling/config02/transformer/seed3302/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "scaling/config02/transformer/seed3302",
+        "sha256": "a422b09645c803a2c77383e12a3e58eb9f0765183ed22e7f8309f2f9bd827cc1",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 90.19793319702148,
+        "exit_code": 0,
+        "file": "scaling/config03/hcsn/seed3303/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "scaling/config03/hcsn/seed3303",
+        "sha256": "da40c2594150b704e57f85667fa5f4352b55347386bfa19b422efea4a004dbbf",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 82.26342129707336,
+        "exit_code": 0,
+        "file": "scaling/config03/mamba1/seed3301/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "scaling/config03/mamba1/seed3301",
+        "sha256": "048519d5f2d727b824ec0b537ec30cb9acf7af5d796a391e02d51d68a2262e47",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 72.66131496429443,
+        "exit_code": 0,
+        "file": "scaling/config03/mamba1/seed3302/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "scaling/config03/mamba1/seed3302",
+        "sha256": "a3aeb458e09af38a1b922bfda6dd7531db3efe8bb92a26d011a8adfe3add33e1",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 253.9769504070282,
+        "exit_code": 0,
+        "file": "scaling/config04/hcsn/seed3302/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "scaling/config04/hcsn/seed3302",
+        "sha256": "e1edb2491d98f0676e131e04c3d9da609e6364431b6900f3dfbc51f881d960af",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 44.306010246276855,
+        "exit_code": 0,
+        "file": "scaling/config04/transformer/seed3302/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "scaling/config04/transformer/seed3302",
+        "sha256": "66dc0dcc516a365e48b0a1a7bcdb7f8132ba5adb1d70a7ddc4d233e348f27780",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 27.922698259353638,
+        "exit_code": 0,
+        "file": "scaling/config05/hcsn/seed3302/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "scaling/config05/hcsn/seed3302",
+        "sha256": "f6f85279a05f3b0d683ccebd5276af37bae0b47207df3a6538071970e7160276",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 10.82783031463623,
+        "exit_code": 0,
+        "file": "scaling/config05/mamba1/seed3302/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "scaling/config05/mamba1/seed3302",
+        "sha256": "a9cb9a4592ddba089e45ed75e56b9b2ce3821f5f23deebb0e00856333c0a28d5",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 58.22383189201355,
+        "exit_code": 0,
+        "file": "scaling/config06/hcsn/seed3303/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "scaling/config06/hcsn/seed3303",
+        "sha256": "a6d333c96d557d8a6db6b86039fd0cea27d9c15a79c261a6135e4ae4ca41b946",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 18.983591079711914,
+        "exit_code": 0,
+        "file": "scaling/config06/mamba1/seed3302/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "scaling/config06/mamba1/seed3302",
+        "sha256": "81c9faaddeb5f8450a975a1bcbb7a338901d361e99311d3c7eb66e8c973a0661",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 12.93839979171753,
+        "exit_code": 0,
+        "file": "scaling/config06/mamba1/seed3303/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "scaling/config06/mamba1/seed3303",
+        "sha256": "a374d3388a3207daa278503e349e0cb5326fc5f4c1d42190b9b1b4e5a7ab9ff0",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 8.819470882415771,
+        "exit_code": 0,
+        "file": "scaling/config06/transformer/seed3302/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "scaling/config06/transformer/seed3302",
+        "sha256": "170879ba466343ca8a5bf4dc56b8cfffa0c2b95fcb2c256d63a4c9aa79a3ed3e",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 58.09288311004639,
+        "exit_code": 0,
+        "file": "scaling/config07/mamba1/seed3303/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "scaling/config07/mamba1/seed3303",
+        "sha256": "e93ac9c5407d9ca55ad10d59d6dc1a3a3c62ddcbf0e5aa07ef6d04908f2ed4fe",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 13.226962804794312,
+        "exit_code": 0,
+        "file": "scaling/config07/transformer/seed3303/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "scaling/config07/transformer/seed3303",
+        "sha256": "dcc886b55b297cc502a25f1b27902fe736ec9941d3d2fd5a212d680cf50d8d9d",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 13.294155836105347,
+        "exit_code": 0,
+        "file": "scaling/config08/transformer/seed3302/EXECUTION_01.json",
+        "result_exists": true,
+        "run_id": "scaling/config08/transformer/seed3302",
+        "sha256": "0b361f39f55db6b7042fdab649d76929384fd8db1ef29d318117e4aef97be71a",
+        "status": "completed"
+      },
+      {
+        "elapsed_seconds": 127.06598091125488,
+        "exit_code": -9,
+        "file": "scaling/config09/mamba1/seed3301/EXECUTION_01.json",
+        "result_exists": false,
+        "run_id": "scaling/config09/mamba1/seed3301",
+        "sha256": "62a167d4c7fe42fd6cbb5fdec620788cc470e2cfbe9d083caf54fbf633351f4e",
+        "status": "failed"
+      }
+    ],
+    "completed_without_execution_receipt": [
+      "scaling/config07/hcsn/seed3303"
+    ],
+    "errors": [],
+    "nonzero_or_failed_attempts": [
+      {
+        "elapsed_seconds": 127.06598091125488,
+        "exit_code": -9,
+        "file": "scaling/config09/mamba1/seed3301/EXECUTION_01.json",
+        "result_exists": false,
+        "run_id": "scaling/config09/mamba1/seed3301",
+        "sha256": "62a167d4c7fe42fd6cbb5fdec620788cc470e2cfbe9d083caf54fbf633351f4e",
+        "status": "failed"
+      }
+    ],
+    "retained_failed_json": []
+  },
+  "inventory": {
+    "all_completed": 39,
+    "classification_completed": 38,
+    "classification_planned": 224,
+    "missing_classification": [
+      "mechanism/multimodal_select/continuous_rnn/seed1101",
+      "mechanism/multimodal_select/continuous_rnn/seed1103",
+      "mechanism/multimodal_select/continuous_rnn/seed1104",
+      "mechanism/multimodal_select/continuous_rnn/seed1105",
+      "mechanism/multimodal_select/hcsn/seed1101",
+      "mechanism/multimodal_select/hcsn/seed1102",
+      "mechanism/multimodal_select/hcsn/seed1103",
+      "mechanism/multimodal_select/hcsn/seed1104",
+      "mechanism/multimodal_select/hcsn/seed1105",
+      "mechanism/multimodal_select/no_adaptation/seed1101",
+      "mechanism/multimodal_select/no_adaptation/seed1102",
+      "mechanism/multimodal_select/no_adaptation/seed1103",
+      "mechanism/multimodal_select/no_adaptation/seed1104",
+      "mechanism/multimodal_select/no_adaptation/seed1105",
+      "mechanism/multimodal_select/ordinary/seed1101",
+      "mechanism/multimodal_select/ordinary/seed1102",
+      "mechanism/multimodal_select/ordinary/seed1103",
+      "mechanism/multimodal_select/ordinary/seed1104",
+      "mechanism/multimodal_select/ordinary/seed1105",
+      "mechanism/multimodal_select/single/seed1101",
+      "mechanism/multimodal_select/single/seed1102",
+      "mechanism/multimodal_select/single/seed1104",
+      "mechanism/multimodal_select/single/seed1105",
+      "mechanism/synthetic/continuous_rnn/seed1102",
+      "mechanism/synthetic/continuous_rnn/seed1103",
+      "mechanism/synthetic/continuous_rnn/seed1105",
+      "mechanism/synthetic/hcsn/seed1101",
+      "mechanism/synthetic/hcsn/seed1102",
+      "mechanism/synthetic/hcsn/seed1103",
+      "mechanism/synthetic/hcsn/seed1104",
+      "mechanism/synthetic/hcsn/seed1105",
+      "mechanism/synthetic/no_adaptation/seed1101",
+      "mechanism/synthetic/no_adaptation/seed1102",
+      "mechanism/synthetic/no_adaptation/seed1103",
+      "mechanism/synthetic/no_adaptation/seed1104",
+      "mechanism/synthetic/no_adaptation/seed1105",
+      "mechanism/synthetic/ordinary/seed1101",
+      "mechanism/synthetic/ordinary/seed1102",
+      "mechanism/synthetic/ordinary/seed1103",
+      "mechanism/synthetic/ordinary/seed1105",
+      "mechanism/synthetic/single/seed1102",
+      "mechanism/synthetic/single/seed1103",
+      "mechanism/synthetic/single/seed1104",
+      "mechanism/synthetic/single/seed1105",
+      "representation/fsdd/cfc/seed2201",
+      "representation/fsdd/cfc/seed2202",
+      "representation/fsdd/cfc/seed2203",
+      "representation/fsdd/continuous_rnn/seed2202",
+      "representation/fsdd/hcsn/seed2201",
+      "representation/fsdd/hcsn/seed2202",
+      "representation/fsdd/hcsn/seed2203",
+      "representation/fsdd/lif_snn/seed2201",
+      "representation/fsdd/lif_snn/seed2202",
+      "representation/fsdd/lif_snn/seed2203",
+      "representation/fsdd/mamba1/seed2201",
+      "representation/fsdd/mamba1/seed2202",
+      "representation/fsdd/mamba1/seed2203",
+      "representation/fsdd/transformer/seed2201",
+      "representation/fsdd/transformer/seed2202",
+      "representation/fsdd/transformer/seed2203",
+      "representation/fsdd/two_gates/seed2201",
+      "representation/fsdd/two_gates/seed2202",
+      "representation/fsdd/two_gates/seed2203",
+      "representation/long_memory/cfc/seed2202",
+      "representation/long_memory/cfc/seed2203",
+      "representation/long_memory/continuous_rnn/seed2201",
+      "representation/long_memory/hcsn/seed2203",
+      "representation/long_memory/lif_snn/seed2201",
+      "representation/long_memory/lif_snn/seed2202",
+      "representation/long_memory/lif_snn/seed2203",
+      "representation/long_memory/mamba1/seed2201",
+      "representation/long_memory/mamba1/seed2202",
+      "representation/long_memory/mamba1/seed2203",
+      "representation/long_memory/transformer/seed2202",
+      "representation/long_memory/two_gates/seed2201",
+      "representation/long_memory/two_gates/seed2203",
+      "representation/mnist/cfc/seed2201",
+      "representation/mnist/cfc/seed2202",
+      "representation/mnist/cfc/seed2203",
+      "representation/mnist/continuous_rnn/seed2201",
+      "representation/mnist/continuous_rnn/seed2202",
+      "representation/mnist/hcsn/seed2201",
+      "representation/mnist/hcsn/seed2202",
+      "representation/mnist/hcsn/seed2203",
+      "representation/mnist/lif_snn/seed2201",
+      "representation/mnist/lif_snn/seed2202",
+      "representation/mnist/lif_snn/seed2203",
+      "representation/mnist/mamba1/seed2201",
+      "representation/mnist/mamba1/seed2202",
+      "representation/mnist/mamba1/seed2203",
+      "representation/mnist/transformer/seed2201",
+      "representation/mnist/transformer/seed2202",
+      "representation/mnist/transformer/seed2203",
+      "representation/mnist/two_gates/seed2201",
+      "representation/mnist/two_gates/seed2202",
+      "representation/mnist/two_gates/seed2203",
+      "representation/multimodal_select/cfc/seed2201",
+      "representation/multimodal_select/cfc/seed2202",
+      "representation/multimodal_select/cfc/seed2203",
+      "representation/multimodal_select/continuous_rnn/seed2201",
+      "representation/multimodal_select/continuous_rnn/seed2202",
+      "representation/multimodal_select/continuous_rnn/seed2203",
+      "representation/multimodal_select/hcsn/seed2201",
+      "representation/multimodal_select/hcsn/seed2203",
+      "representation/multimodal_select/lif_snn/seed2202",
+      "representation/multimodal_select/lif_snn/seed2203",
+      "representation/multimodal_select/mamba1/seed2201",
+      "representation/multimodal_select/mamba1/seed2202",
+      "representation/multimodal_select/mamba1/seed2203",
+      "representation/multimodal_select/transformer/seed2201",
+      "representation/multimodal_select/transformer/seed2203",
+      "representation/multimodal_select/two_gates/seed2201",
+      "representation/multimodal_select/two_gates/seed2202",
+      "representation/multimodal_select/two_gates/seed2203",
+      "scaling/config00/hcsn/seed3301",
+      "scaling/config00/hcsn/seed3302",
+      "scaling/config00/hcsn/seed3303",
+      "scaling/config00/mamba1/seed3301",
+      "scaling/config00/mamba1/seed3302",
+      "scaling/config00/transformer/seed3302",
+      "scaling/config00/transformer/seed3303",
+      "scaling/config01/hcsn/seed3301",
+      "scaling/config01/hcsn/seed3302",
+      "scaling/config01/hcsn/seed3303",
+      "scaling/config01/mamba1/seed3301",
+      "scaling/config01/mamba1/seed3302",
+      "scaling/config01/mamba1/seed3303",
+      "scaling/config01/transformer/seed3301",
+      "scaling/config01/transformer/seed3302",
+      "scaling/config01/transformer/seed3303",
+      "scaling/config02/hcsn/seed3301",
+      "scaling/config02/hcsn/seed3302",
+      "scaling/config02/hcsn/seed3303",
+      "scaling/config02/mamba1/seed3301",
+      "scaling/config02/mamba1/seed3302",
+      "scaling/config02/mamba1/seed3303",
+      "scaling/config02/transformer/seed3301",
+      "scaling/config02/transformer/seed3303",
+      "scaling/config03/hcsn/seed3301",
+      "scaling/config03/hcsn/seed3302",
+      "scaling/config03/mamba1/seed3303",
+      "scaling/config03/transformer/seed3301",
+      "scaling/config03/transformer/seed3302",
+      "scaling/config03/transformer/seed3303",
+      "scaling/config04/hcsn/seed3301",
+      "scaling/config04/hcsn/seed3303",
+      "scaling/config04/mamba1/seed3301",
+      "scaling/config04/mamba1/seed3302",
+      "scaling/config04/mamba1/seed3303",
+      "scaling/config04/transformer/seed3301",
+      "scaling/config04/transformer/seed3303",
+      "scaling/config05/hcsn/seed3301",
+      "scaling/config05/hcsn/seed3303",
+      "scaling/config05/mamba1/seed3301",
+      "scaling/config05/mamba1/seed3303",
+      "scaling/config05/transformer/seed3301",
+      "scaling/config05/transformer/seed3302",
+      "scaling/config05/transformer/seed3303",
+      "scaling/config06/hcsn/seed3301",
+      "scaling/config06/hcsn/seed3302",
+      "scaling/config06/mamba1/seed3301",
+      "scaling/config06/transformer/seed3301",
+      "scaling/config06/transformer/seed3303",
+      "scaling/config07/hcsn/seed3301",
+      "scaling/config07/hcsn/seed3302",
+      "scaling/config07/mamba1/seed3301",
+      "scaling/config07/mamba1/seed3302",
+      "scaling/config07/transformer/seed3301",
+      "scaling/config07/transformer/seed3302",
+      "scaling/config08/hcsn/seed3301",
+      "scaling/config08/hcsn/seed3302",
+      "scaling/config08/hcsn/seed3303",
+      "scaling/config08/mamba1/seed3301",
+      "scaling/config08/mamba1/seed3302",
+      "scaling/config08/mamba1/seed3303",
+      "scaling/config08/transformer/seed3301",
+      "scaling/config08/transformer/seed3303",
+      "scaling/config09/hcsn/seed3301",
+      "scaling/config09/hcsn/seed3302",
+      "scaling/config09/hcsn/seed3303",
+      "scaling/config09/mamba1/seed3301",
+      "scaling/config09/mamba1/seed3302",
+      "scaling/config09/mamba1/seed3303",
+      "scaling/config09/transformer/seed3301",
+      "scaling/config09/transformer/seed3302",
+      "scaling/config09/transformer/seed3303"
+    ],
+    "planned": 229,
+    "unexpected_completed": []
+  },
+  "metadata_only": true,
+  "runs_sha256": "2eadca5794f0354149b684db6add1f5b502f7e441e963a39c020621413544a01",
+  "schema": "hcsn-post-seal-supplementary-audit-v1",
+  "script_path": "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_network/results/study001/analysis/supplementary_audit.py",
+  "script_sha256": "2a8e9c1deca0b5369d0cf2bfb3bad0b66f868fa410c0fba5c85949443e620d4b",
+  "selection": {
+    "count": 28,
+    "mode": "prespecified",
+    "rule": "All frozen representation tasks/architectures at seed 2201; selected by specs, never test scores.",
+    "run_ids": [
+      "representation/fsdd/cfc/seed2201",
+      "representation/fsdd/continuous_rnn/seed2201",
+      "representation/fsdd/hcsn/seed2201",
+      "representation/fsdd/lif_snn/seed2201",
+      "representation/fsdd/mamba1/seed2201",
+      "representation/fsdd/transformer/seed2201",
+      "representation/fsdd/two_gates/seed2201",
+      "representation/long_memory/cfc/seed2201",
+      "representation/long_memory/continuous_rnn/seed2201",
+      "representation/long_memory/hcsn/seed2201",
+      "representation/long_memory/lif_snn/seed2201",
+      "representation/long_memory/mamba1/seed2201",
+      "representation/long_memory/transformer/seed2201",
+      "representation/long_memory/two_gates/seed2201",
+      "representation/mnist/cfc/seed2201",
+      "representation/mnist/continuous_rnn/seed2201",
+      "representation/mnist/hcsn/seed2201",
+      "representation/mnist/lif_snn/seed2201",
+      "representation/mnist/mamba1/seed2201",
+      "representation/mnist/transformer/seed2201",
+      "representation/mnist/two_gates/seed2201",
+      "representation/multimodal_select/cfc/seed2201",
+      "representation/multimodal_select/continuous_rnn/seed2201",
+      "representation/multimodal_select/hcsn/seed2201",
+      "representation/multimodal_select/lif_snn/seed2201",
+      "representation/multimodal_select/mamba1/seed2201",
+      "representation/multimodal_select/transformer/seed2201",
+      "representation/multimodal_select/two_gates/seed2201"
+    ],
+    "run_ids_sha256": "ff911d3de4f07cf2622e59708007c36dd2e53b7c6c3cf61cff09fbeb93a25557"
+  },
+  "selection_path_status": [
+    {
+      "checkpoint_manifest": false,
+      "predictions": false,
+      "result": false,
+      "run_id": "representation/fsdd/cfc/seed2201"
+    },
+    {
+      "checkpoint_manifest": true,
+      "predictions": true,
+      "result": true,
+      "run_id": "representation/fsdd/continuous_rnn/seed2201"
+    },
+    {
+      "checkpoint_manifest": false,
+      "predictions": false,
+      "result": false,
+      "run_id": "representation/fsdd/hcsn/seed2201"
+    },
+    {
+      "checkpoint_manifest": false,
+      "predictions": false,
+      "result": false,
+      "run_id": "representation/fsdd/lif_snn/seed2201"
+    },
+    {
+      "checkpoint_manifest": false,
+      "predictions": false,
+      "result": false,
+      "run_id": "representation/fsdd/mamba1/seed2201"
+    },
+    {
+      "checkpoint_manifest": false,
+      "predictions": false,
+      "result": false,
+      "run_id": "representation/fsdd/transformer/seed2201"
+    },
+    {
+      "checkpoint_manifest": false,
+      "predictions": false,
+      "result": false,
+      "run_id": "representation/fsdd/two_gates/seed2201"
+    },
+    {
+      "checkpoint_manifest": true,
+      "predictions": true,
+      "result": true,
+      "run_id": "representation/long_memory/cfc/seed2201"
+    },
+    {
+      "checkpoint_manifest": false,
+      "predictions": false,
+      "result": false,
+      "run_id": "representation/long_memory/continuous_rnn/seed2201"
+    },
+    {
+      "checkpoint_manifest": true,
+      "predictions": true,
+      "result": true,
+      "run_id": "representation/long_memory/hcsn/seed2201"
+    },
+    {
+      "checkpoint_manifest": false,
+      "predictions": false,
+      "result": false,
+      "run_id": "representation/long_memory/lif_snn/seed2201"
+    },
+    {
+      "checkpoint_manifest": false,
+      "predictions": false,
+      "result": false,
+      "run_id": "representation/long_memory/mamba1/seed2201"
+    },
+    {
+      "checkpoint_manifest": true,
+      "predictions": true,
+      "result": true,
+      "run_id": "representation/long_memory/transformer/seed2201"
+    },
+    {
+      "checkpoint_manifest": false,
+      "predictions": false,
+      "result": false,
+      "run_id": "representation/long_memory/two_gates/seed2201"
+    },
+    {
+      "checkpoint_manifest": false,
+      "predictions": false,
+      "result": false,
+      "run_id": "representation/mnist/cfc/seed2201"
+    },
+    {
+      "checkpoint_manifest": false,
+      "predictions": false,
+      "result": false,
+      "run_id": "representation/mnist/continuous_rnn/seed2201"
+    },
+    {
+      "checkpoint_manifest": false,
+      "predictions": false,
+      "result": false,
+      "run_id": "representation/mnist/hcsn/seed2201"
+    },
+    {
+      "checkpoint_manifest": false,
+      "predictions": false,
+      "result": false,
+      "run_id": "representation/mnist/lif_snn/seed2201"
+    },
+    {
+      "checkpoint_manifest": false,
+      "predictions": false,
+      "result": false,
+      "run_id": "representation/mnist/mamba1/seed2201"
+    },
+    {
+      "checkpoint_manifest": false,
+      "predictions": false,
+      "result": false,
+      "run_id": "representation/mnist/transformer/seed2201"
+    },
+    {
+      "checkpoint_manifest": false,
+      "predictions": false,
+      "result": false,
+      "run_id": "representation/mnist/two_gates/seed2201"
+    },
+    {
+      "checkpoint_manifest": false,
+      "predictions": false,
+      "result": false,
+      "run_id": "representation/multimodal_select/cfc/seed2201"
+    },
+    {
+      "checkpoint_manifest": false,
+      "predictions": false,
+      "result": false,
+      "run_id": "representation/multimodal_select/continuous_rnn/seed2201"
+    },
+    {
+      "checkpoint_manifest": false,
+      "predictions": false,
+      "result": false,
+      "run_id": "representation/multimodal_select/hcsn/seed2201"
+    },
+    {
+      "checkpoint_manifest": true,
+      "predictions": true,
+      "result": true,
+      "run_id": "representation/multimodal_select/lif_snn/seed2201"
+    },
+    {
+      "checkpoint_manifest": false,
+      "predictions": false,
+      "result": false,
+      "run_id": "representation/multimodal_select/mamba1/seed2201"
+    },
+    {
+      "checkpoint_manifest": false,
+      "predictions": false,
+      "result": false,
+      "run_id": "representation/multimodal_select/transformer/seed2201"
+    },
+    {
+      "checkpoint_manifest": false,
+      "predictions": false,
+      "result": false,
+      "run_id": "representation/multimodal_select/two_gates/seed2201"
+    }
+  ],
+  "source_seal": "bb0d2eda33c34785da9563a84a06ed4c5d2391826e52173452ee43924723de02",
+  "status": "metadata_verified_no_data_or_checkpoint_replay"
+}
