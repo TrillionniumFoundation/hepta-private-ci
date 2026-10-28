@@ -1,7 +1,6 @@
 //! Fixed host configuration and complete first-party import pins.
 
 use std::collections::BTreeMap;
-use std::collections::BTreeSet;
 use std::path::Path;
 use std::path::PathBuf;
 use std::time::Duration;
@@ -13,14 +12,17 @@ use tokio::io::AsyncReadExt;
 use super::wire::canonical;
 use super::wire::hash;
 
+#[path = "memory_cell_address_worker_profile.rs"]
+mod profile;
+
 /// Every path, code pin, alias and timeout is selected by the embedding host.
 /// Request JSON cannot alter executable arguments, model files or this registry.
 pub struct MemoryCellAddressWorkerConfigV1 {
     pub python: PathBuf,
     pub worker_script: PathBuf,
     pub worker_script_digest: ContractDigestV1,
-    /// Exact first-party file hashes, including the script, all `addressing/*.py`,
-    /// and the fixed `v6/__init__.py` plus `v6/encoder.py` import closure.
+    /// Exact first-party hashes for the closed, versioned V7 or V8 import profile.
+    /// Both profiles retain the fixed encoder and all required package modules.
     pub code_pins: BTreeMap<PathBuf, ContractDigestV1>,
     pub model_directory: PathBuf,
     pub model_digest: ContractDigestV1,
@@ -52,37 +54,39 @@ impl MemoryCellAddressWorkerConfigV1 {
             || self.code_pins.get(&self.worker_script) != Some(&self.worker_script_digest) {
             return Err("address script, model or encoder path lacks its host binding".to_string());
         }
-        let addressing = self.worker_script.parent().ok_or("address worker parent is missing")?;
-        let qualification = addressing.parent().and_then(Path::parent).ok_or("address worker import root is missing")?;
-        let mut required: BTreeSet<_> = ["__init__.py", "contracts.py", "planner.py", "model.py", "capabilities.py"]
-            .into_iter().map(|name| addressing.join(name)).collect();
-        required.insert(self.worker_script.clone());
-        required.insert(qualification.join("memory-cell-v6/v6/__init__.py"));
-        required.insert(qualification.join("memory-cell-v6/v6/encoder.py"));
+        let manifest = read_pinned(&self.model_directory.join("manifest.json"), self.model_digest, /*limit*/ 8_000_000).await?;
+        let manifest: serde_json::Value = serde_json::from_slice(&manifest).map_err(|_| "address model manifest JSON is invalid")?;
+        let profile = profile::source_profile(&self.worker_script, manifest["schema"].as_str())?;
+        let mut required = profile.required;
         // New first-party modules cannot silently appear outside the configured
         // manifest. Existing imports are exactly the fixed closure above.
-        let mut entries = tokio::fs::read_dir(addressing).await.map_err(|_| "cannot inventory address code pins")?;
         let mut count = 0;
-        while let Some(entry) = entries.next_entry().await.map_err(|_| "cannot inventory address code pins")? {
-            count += 1;
-            if count > 256 { return Err("address code directory exceeds its bound".to_string()); }
-            if entry.path().extension().is_some_and(|extension| extension == "py") { required.insert(entry.path()); }
+        for directory in profile.inventory_directories {
+            require_plain_path(&directory)?;
+            let mut entries = tokio::fs::read_dir(directory).await.map_err(|_| "cannot inventory address code pins")?;
+            while let Some(entry) = entries.next_entry().await.map_err(|_| "cannot inventory address code pins")? {
+                count += 1;
+                if count > 256 { return Err("address code directory exceeds its bound".to_string()); }
+                if entry.path().extension().is_some_and(|extension| extension == "py") { required.insert(entry.path()); }
+            }
         }
         if required.iter().any(|path| !self.code_pins.contains_key(path)) {
             return Err("address worker is missing a required first-party import pin".to_string());
         }
         for (path, digest) in &self.code_pins { read_pinned(path, *digest, /*limit*/ 1_048_576).await?; }
-        let policy_files: BTreeMap<_, _> = ["model.py", "capabilities.py", "contracts.py", "planner.py"].into_iter()
-            .map(|name| (name, self.code_pins[&addressing.join(name)].to_string())).collect();
+        let policy_files: BTreeMap<_, _> = profile.policy_files.into_iter()
+            .map(|(name, path)| (name, self.code_pins[&path].to_string())).collect();
         let policy = hash(&canonical(&serde_json::to_value(policy_files).map_err(|_| "policy pin encoding failed")?)?);
-        let manifest = read_pinned(&self.model_directory.join("manifest.json"), self.model_digest, /*limit*/ 8_000_000).await?;
-        let manifest: serde_json::Value = serde_json::from_slice(&manifest).map_err(|_| "address model manifest JSON is invalid")?;
-        if manifest["schema"] != "hepta.memory.v7.intent-model.v1" || manifest["policy_digest"] != policy.to_string() {
+        if manifest["policy_digest"] != policy.to_string() {
             return Err("address model policy differs from the pinned import closure".to_string());
         }
         Ok(policy)
     }
 }
+
+#[cfg(test)]
+#[path = "memory_cell_address_worker_profile_tests.rs"]
+mod tests;
 
 async fn read_pinned(path: &Path, digest: ContractDigestV1, limit: u64) -> Result<Vec<u8>, String> {
     require_plain_path(path)?;
