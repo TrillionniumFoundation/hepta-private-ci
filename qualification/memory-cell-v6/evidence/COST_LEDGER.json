@@ -1,0 +1,94 @@
+{
+  "adaptive_attempts": [
+    {
+      "accepted": 9,
+      "accepted_migration_bytes": 16200,
+      "candidate_evaluation_primitive_calls": 2018,
+      "candidates": 14,
+      "complete_final_evaluation_primitive_calls": null,
+      "discovery_primitive_calls": 936,
+      "initial_evaluation_primitive_calls": 120,
+      "known_primitive_calls_lower_bound": 3074,
+      "missing_costs": [
+        "partial final evaluation before unavailable month failure; exact work not durably counted"
+      ],
+      "proposed_state_bytes": 24413,
+      "rejected": 5,
+      "run": "oracle-adaptive"
+    },
+    {
+      "accepted": 9,
+      "accepted_migration_bytes": 16200,
+      "candidate_evaluation_primitive_calls": 2018,
+      "candidates": 14,
+      "complete_final_evaluation_primitive_calls": 192,
+      "discovery_primitive_calls": 936,
+      "initial_evaluation_primitive_calls": 120,
+      "known_primitive_calls_lower_bound": 3266,
+      "missing_costs": [],
+      "proposed_state_bytes": 24413,
+      "rejected": 5,
+      "run": "oracle-adaptive-v1.1"
+    }
+  ],
+  "all_adaptive_attempts": {
+    "accepted": 18,
+    "accepted_migration_bytes": 32400,
+    "candidate_evaluation_primitive_calls": 4036,
+    "candidates": 28,
+    "known_primitive_calls_lower_bound": 6340,
+    "proposed_state_bytes": 48826,
+    "rejected": 10
+  },
+  "live_teacher_or_model_api_calls": 0,
+  "schema": "memory-cell-v6.all-attempt-cost-ledger.v1",
+  "scope": "Only measured compute and persisted receipts. No end-to-end project CPU/wall/memory claim. Unknown failure costs are not zero.",
+  "unmeasured_work": [
+    "source acquisition and materialization",
+    "code and report authoring",
+    "some failed export work",
+    "partial first adaptive final evaluation",
+    "complete training and qualification process-tree resource totals",
+    "other verification and reporting overhead"
+  ],
+  "v5_eight_candidate_reproduction": {
+    "actual_candidates_fitted": 8,
+    "cpu_seconds": 11.654404211000001,
+    "wall_seconds": 11.663957084994763
+  },
+  "v6_completed_training": [
+    {
+      "completed_candidates": 6,
+      "cpu_seconds": 4.7158369229999995,
+      "peak_process_rss_kib": 144608,
+      "run": "development-v6a-fixed",
+      "wall_seconds": 4.717818081990117
+    },
+    {
+      "completed_candidates": 6,
+      "cpu_seconds": 4.516003179,
+      "peak_process_rss_kib": 144744,
+      "run": "development-v6b",
+      "wall_seconds": 4.5185006389947375
+    },
+    {
+      "completed_candidates": 6,
+      "cpu_seconds": 5.4426437,
+      "peak_process_rss_kib": 144928,
+      "run": "development-v6c",
+      "wall_seconds": 5.444847779988777
+    }
+  ],
+  "v6_completed_training_total": {
+    "candidates": 18,
+    "cpu_seconds": 14.674483802,
+    "wall_seconds": 14.681166500973632
+  },
+  "v6_failed_export": {
+    "cpu_seconds": null,
+    "included_in_completed_totals": false,
+    "record": "evidence/development-v6a/FAILURE.json",
+    "run": "development-v6a",
+    "wall_seconds": null
+  }
+}

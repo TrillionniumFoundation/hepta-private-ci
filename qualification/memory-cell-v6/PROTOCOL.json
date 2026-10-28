@@ -1,0 +1,13 @@
+{
+  "schema": "memory-cell-v6.semantic-addressing-protocol.v1",
+  "baseline_commit": "332d8156d081e22405450dd607023689f68f03e1",
+  "scope": "English, supplied series/date, six unchanged V5 operations; no production native integration or AGI claim",
+  "training": "Original public V5 training only. A fixed compact hand-authored concept encoder is learned through linear coefficients; no pretrained model, teacher API, or original held material.",
+  "development": "Original public V5 selection calibrates candidates; original public V5 development diagnoses implementation. Up to three disclosed development revisions, all retained; freeze before independent evaluation.",
+  "candidate_budget": "At most six learned configurations per revision, one deterministic contract parser, original eight-candidate V5 reproduction; one seed because convex fits do not create independent language observations.",
+  "selection": "Final disclosed development revision c: among selection pairs with zero observed OOD false acceptance, maximize correct known accepted, then minimize wrong known, false OOD, artifact bytes and candidate name. Include reject-all. Independent held criteria remain coverage >=0.8 and OOD false acceptance <=0.05. Prior a/b revisions used <=0.05 selection target and are fully retained.",
+  "new_held": {"author": "separate parent assistant, synthetic not human", "sha256": "2d121bd1d3cabb1c8e8787bdec81dfc6f894233df95adc5625c85cb26639f969", "rows": 180, "known": 120, "ood": 60, "access": "sealed until source/training/candidate/calibration/selected-parameter freeze"},
+  "prohibited": ["read original held raw data", "tune on new held", "call reused public development unseen", "claim learned features are pretrained semantic embeddings", "alter V5 negative reports"],
+  "structure_experiment": "After semantic freeze, equal primitive evaluations and serialized state for static shared and local-dispatched layouts on identical numeric traces; report absence of growth benefit if no evidence. No automatic production splitting.",
+  "runtime": "CPU; no torch, GPU, model downloads, teacher calls or production load; numpy/scipy/scikit-learn versions match V5"
+}

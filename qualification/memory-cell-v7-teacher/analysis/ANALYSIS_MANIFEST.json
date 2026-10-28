@@ -1,0 +1,162 @@
+{
+  "existing_bundle_contains_previous_report_revision": true,
+  "files": {
+    "PR_4131_APPEND.md": {
+      "bytes": 2062,
+      "sha256": "eb2cdc0cb65e7b743a9d4c01919db5c2fb057f8fb049dace58e4bdeb8d8d1c9b"
+    },
+    "README.md": {
+      "bytes": 4358,
+      "sha256": "2cc9b7cf5714d57cae14f086d08776ae86086adb80e555980d3dd46696f6e4a4"
+    },
+    "REPORT.md": {
+      "bytes": 12342,
+      "sha256": "bbbd216af1e0db908e767de5a628cb25ddefe6607781d7c3a2a5d78653dbb2c9"
+    },
+    "REPORT_DRAFT.md": {
+      "bytes": 12345,
+      "sha256": "3645dd414e47b62ecd1e6af30146eb87d73bcd727c30c6de195868afac596613"
+    },
+    "audit_costs.py": {
+      "bytes": 36315,
+      "sha256": "5f390cfeaf898fa7f65265b90d538525084badcb8d32ecf32cadd49c4b1a46b0"
+    },
+    "test_audit_costs.py": {
+      "bytes": 11045,
+      "sha256": "7e82567044c54b64a070068a6f629c5fb229bf7ac81505932dbf03f9a796006a"
+    }
+  },
+  "frozen_file_sha256_checks": {
+    "baselines/EVALUATION_PROTOCOL.json": true,
+    "baselines/run_baselines.py": true,
+    "baselines/score_teacher.py": true,
+    "holdout/create_holdout.py": true,
+    "holdout/labels.jsonl": true,
+    "holdout/requests.jsonl": true
+  },
+  "network_calls": 0,
+  "old_held_text_read": false,
+  "original_scoring_modified": false,
+  "posthoc": true,
+  "provider_retries": 0,
+  "publication": {
+    "archive": "evidence/raw-runs-20261028.tar.gz",
+    "archive_index": "evidence/ARCHIVE_INDEX.json",
+    "cost_audit": "evidence/cost-audit-v1/COST_AUDIT.json",
+    "precise_codespell_skip": "*qualification/memory-cell-v7-teacher/holdout/source/v5/selection_language.py",
+    "readme": {
+      "bytes": 8549,
+      "path_relative_to_analysis": "../README.md",
+      "sha256": "d965cf1ab4df8d4b5f901c5be31c36bacd737447c0089c635c90c8b1f4ef21db"
+    },
+    "repository_path": "qualification/memory-cell-v7-teacher"
+  },
+  "readable_summary_copies": {
+    "baselines-v1-summary.json": {
+      "bytes": 3848,
+      "sha256": "63659acd6881a01194e16b4e33fe94295d32adba50f5fd24f8b62f9e12fd8b67"
+    },
+    "baselines-v2-summary.json": {
+      "bytes": 4002,
+      "sha256": "e622265a1e8580074e1de1b62df75bdf79af6c97c54d74ab679157ad82f52686"
+    },
+    "smoke-summary.json": {
+      "bytes": 1164,
+      "sha256": "9257d979958c01f700d118ed8572b256d4d7f9d16faf3917da3a4e12f2b1b5a2"
+    },
+    "teacher-evaluation.json": {
+      "bytes": 2098,
+      "sha256": "afbf53f1195fc94a2f67bc75517c69965d67f3e83f0ad36f1fa591893cc30710"
+    },
+    "teacher-summary.json": {
+      "bytes": 1179,
+      "sha256": "5333a49f089a30e241161aba38f9f636d94822ac4080d7f1f8aea650163250ee"
+    }
+  },
+  "remote_cost_audit": {
+    "artifacts": {
+      "CASE_COSTS.jsonl": {
+        "sha256": "0fa54e8d79c991bb7d5d5a231feb5bcc6770dbac6428af4431bcb41cca49da68"
+      },
+      "COST_AUDIT.json": {
+        "bytes": 91166,
+        "sha256": "830592fc0ace739b181fa9520a9707dcb7d4eadc7092882c0d1bae1dd52a0c5d"
+      },
+      "SOURCE_SHA256.json": {
+        "sha256": "10d3813b96f423a8b7608ed195c75660c9fc8fde46dc541b5520a6925fd9176f"
+      },
+      "USAGE_OBSERVATIONS.jsonl": {
+        "sha256": "7d008240cac76a4c34aa3dbe4379f1b1f9a8180b58a1abad0e7d60b382fba065"
+      }
+    },
+    "cases": 181,
+    "cases_with_verification_errors": 0,
+    "conflicting_usage_groups": 0,
+    "dispatched_terminal_events": 76,
+    "duplicate_terminal_events": 0,
+    "executor": "root, remote original worktree",
+    "frame_parse_problems": 0,
+    "held_cases": 180,
+    "provenance": "Actual run results and artifact hashes returned by parent; raw remote case evidence not downloaded or reexecuted by report author",
+    "provider_error_codes": {
+      "empty_terminal_response": 3
+    },
+    "recorded_noncompleted_tokens": {
+      "input_tokens": 5716,
+      "output_tokens": 768,
+      "total_tokens": 6484
+    },
+    "recorded_tokens": {
+      "input_tokens": 139257,
+      "output_tokens": 12425,
+      "total_tokens": 151682
+    },
+    "reported_error_type_counts": {
+      "IncompleteRead": 10,
+      "JSONDecodeError": 3,
+      "RemoteDisconnected": 92,
+      "TimeoutError": 3,
+      "ValueError": 3
+    },
+    "reported_status_counts": {
+      "completed": 70,
+      "unknown_or_invalid": 111
+    },
+    "script_sha256": "5f390cfeaf898fa7f65265b90d538525084badcb8d32ecf32cadd49c4b1a46b0",
+    "smoke_cases": 1,
+    "terminal_usage_observations": 73,
+    "total_provider_cost": null,
+    "unknown_usage_assumed_zero": false,
+    "unknown_usage_cases": 108,
+    "usable_usage_cases": 73,
+    "verification_error_count": 0
+  },
+  "report_revision": "Publication: memory-cell-v7-teacher README, verified original baseline v2 summary link, completed remote cost-audit link",
+  "reported_remote_jobs": {
+    "1a1807443ef-96a-2aba": {
+      "kind": "scientific_dependency_install",
+      "outcome": "failed_at_480_second_download_deadline",
+      "provenance": "parent execution report"
+    },
+    "1a18082212e-96a-2b10": {
+      "kind": "dependency_recovery_and_frozen_baselines",
+      "outcome": "completed; protocol_complete=true; all_gates_pass=false",
+      "provenance": "parent execution report"
+    },
+    "1a1808d97d5-96a-2b41": {
+      "kind": "read_only_raw_cost_audit",
+      "outcome": "completed; verification_error_count=0; no provider reissues",
+      "provenance": "parent execution report"
+    }
+  },
+  "schema": "hepta.cell-v7.posthoc-analysis-delivery.v1",
+  "teacher_prompt_read_while_authoring_held_or_evaluators": false,
+  "validation": {
+    "actual_raw_remote_evidence_executed_by_root_remotely": true,
+    "actual_raw_remote_evidence_executed_locally": false,
+    "audit_source_unchanged": true,
+    "remote_synthetic_unittest_passed": 9,
+    "remote_synthetic_unittest_seconds": 0.194,
+    "synthetic_unittest_passed": 9
+  }
+}

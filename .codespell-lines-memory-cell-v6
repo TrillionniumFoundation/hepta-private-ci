@@ -1,0 +1,7 @@
+    "minimum": r"\b(?:min|minimum|minima|lowest|low|smallest|least|lower|trough|floor)\b",
+    "range": r"\b(?:range|span|spread|amplitude|width|breadth|extremes|high.to.low|high.low|peak.to.trough|apart|separation)\b|distance (?:between|from)|room between",
+    "lookup": r"\b(?:read\w*|record\w*|retriev\w*|fetch|lookup|look up|quote|observation|entry|datum|stored|archiv\w*|value|number|figure|amount|level|measurement)\b",
+    "prior": r"\b(?:prior|preced\w*|previous|predecessor|earlier|older|last month|back\w*|lag\w*|left|before)\b",
+    "two_prior": r"(?:two|2|pair of).{0,36}(?:prior|preced\w*|previous|earlier|before|predecessor)|(?:prior|preced\w*|previous).{0,24}(?:two|2)\b|two monthly predecessors|lags one and two",
+    "forecast": r"\b(?:predict\w*|forecast\w*|extrapolat\w*|interpolat\w*|infer|missing|cause\w*|causal|why|explain|scenario|intervention|significan\w*|would|will)\b",
+PREVIOUS = r"(?:prior|previous|preced\w*|last month|older|earlier|before|predecessor)"
