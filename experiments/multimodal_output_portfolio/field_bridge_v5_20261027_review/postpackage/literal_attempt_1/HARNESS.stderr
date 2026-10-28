@@ -1,0 +1,21 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/literal_reanalysis.py", line 435, in <module>
+    main()
+  File "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/literal_reanalysis.py", line 417, in main
+    reanalyze(args, directory, report)
+  File "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/literal_reanalysis.py", line 369, in reanalyze
+    report["frozen_reanalysis"] = run_child("frozen", args, root, directory)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/literal_reanalysis.py", line 333, in run_child
+    receipt = strict_json(imports)
+              ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/e8a4dc33549f/hepta/experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/literal_reanalysis.py", line 63, in strict_json
+    return json.loads(Path(path).read_bytes(), object_pairs_hook=pairs, parse_constant=invalid)
+                      ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1019, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/workspace/scratch/e8a4dc33549f/v5_literal_reanalysis/RESTORED_FROZEN_AUDIT_IMPORTS.json'
