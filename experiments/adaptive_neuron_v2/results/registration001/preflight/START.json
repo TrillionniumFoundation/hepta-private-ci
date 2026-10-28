@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "unittest",
+    "experiments.adaptive_neuron_v2.learning.test_learning",
+    "experiments.adaptive_neuron_v2.learning.test_runner",
+    "experiments.adaptive_neuron_v2.test_roster",
+    "experiments.adaptive_neuron_v2.owner.test_owner",
+    "-v"
+  ]
+}
