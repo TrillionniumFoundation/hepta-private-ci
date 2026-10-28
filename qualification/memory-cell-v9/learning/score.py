@@ -15,7 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from evidence import VARIANTS, canonical, child_path, decode, digest, identity, integer
 from evidence import owner_facts, read_bytes, read_json, require, transitions, verify_batch
 from model_evidence import audit_pairs
-from resource_evidence import verify_resources
+from resource_evidence import verify_resources, verify_runtime_storage
 
 
 PROJECT = Path(__file__).resolve().parent
@@ -144,6 +144,8 @@ def score(input_path):
             and lock["interventions"] == list(VARIANTS) and lock["stages"] == 3
             and lock["resident_budget_per_type"] == 262144, "episode protocol lock")
     require([item["representation"] for item in main["children"]] == ["catalog", "byte"], "representation inventory")
+    require(set(lock["runtime_roots"]) == {"catalog", "byte"}
+            and len(set(lock["runtime_roots"].values())) == 2, "separate recorded runtime storage roots")
     children = []
     for entry in main["children"]:
         root = child_path(directory, entry["directory"])
@@ -153,7 +155,13 @@ def score(input_path):
                 and child["fixture_sha256"] == FIXTURE_HASH, "child identity")
         require(len(child["stages"]) == 3 and child["actual_training_processes"] == 3 and child["actual_fit_calls"] == 18, "child process/fit inventory")
         resources = identity(child_path(directory, entry["resource_identity"]["path"]), entry["resource_identity"])
+        config = read_json(directory / f"{entry['representation']}-config.json")
+        require(set(config) == {"representation", "output_dir", "runtime_root"}
+                and config["representation"] == entry["representation"]
+                and Path(config["output_dir"]).name == entry["directory"], "continual child launch configuration")
+        verify_runtime_storage(config, child, resources, lock["runtime_roots"][entry["representation"]])
         resources = verify_resources(directory, resources, child["pid"], entry["parent_supervision_wall_ns"])
+        resources["runtime_storage_roots_verified"] = True
         stages, previous = [], None
         for index, stage in enumerate(child["stages"]):
             require(stage["stage"] == index and stage["id"] == independent["stages"][index]["id"], "stage order")

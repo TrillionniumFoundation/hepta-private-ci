@@ -29,15 +29,17 @@ mod structure;
 
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-struct ChildConfig { representation: String, output_dir: PathBuf }
+struct ChildConfig { representation: String, output_dir: PathBuf, runtime_root: PathBuf }
 
 async fn continual(config: &ChildConfig) -> Value {
     assert!(["catalog","byte"].contains(&config.representation.as_str()) && config.output_dir.is_absolute());
+    assert_eq!(std::env::temp_dir(),config.runtime_root);
     let training = trainer();
     let code = fit::code_identity(&training);
     let code_digest = code["digest"].as_str().unwrap().parse::<Digest32>().unwrap();
     let fixture = data::load_fixture(&training.qualification_root);
     let owner = ControlFixture::new().await;
+    assert!(owner.state.identity().layout.cognitive_root().starts_with(&config.runtime_root));
     let resolver = TrustedTestResolver::new(&owner);
     let mut release = None;
     let mut runtime = None;
@@ -70,6 +72,7 @@ async fn continual(config: &ChildConfig) -> Value {
             fit::publish(release.as_ref().unwrap(),&snapshot,&paired,"zero",generation,code_digest);
         }
         let released = release.as_ref().unwrap();
+        assert!(released.directory.path().starts_with(&config.runtime_root));
         let prefix = data::evaluate(&owner,&data::Reader::Native(&resolver),&stage.prefix).await;
         assert_eq!(prefix["correct"],prefix["queries"],"prefix event reads use current owner facts");
         data::save(&directory.join("completed-prefix.json"),&prefix);
@@ -99,6 +102,7 @@ async fn continual(config: &ChildConfig) -> Value {
             "new_records":stage.writes.len()*3,"owner":owner_identity,"before_retention":before,
             "interventions":interventions,"continuation_selection":selected,
             "families":data::family_counts(&stage.future),"training_receipt":paired["receipt"],
+            "source_ledger_path":owner.state.identity().layout.cognitive_root(),"artifact_owner_path":released.directory.path(),
             "source_ledger_logical_bytes":data::logical_files(owner.state.identity().layout.cognitive_root()),
             "artifact_owner_logical_bytes":data::logical_files(released.directory.path()),
             "traffic_after_stage":owner.client.traffic_snapshot()});
@@ -107,7 +111,7 @@ async fn continual(config: &ChildConfig) -> Value {
     }
     assert_eq!(fit::code_identity(&training),code);
     let report = json!({"schema":"hepta.memory.v9.continual-child.v1","representation":config.representation,
-        "pid":std::process::id(),"code_identity":code,"fixture_sha256":data::FIXTURE_SHA,
+        "pid":std::process::id(),"runtime_root":config.runtime_root,"code_identity":code,"fixture_sha256":data::FIXTURE_SHA,
         "stages":stages,"actual_training_processes":3,"actual_fit_calls":18,
         "logical_resident_budget_bytes_per_type":fit::RESIDENT_BUDGET,
         "natural_language_addressing_evaluated":false,"final_use_authority_granted":false});
@@ -118,21 +122,19 @@ async fn continual(config: &ChildConfig) -> Value {
     report
 }
 
-async fn monitored_child(parent: &Path, representation: &str) -> Value {
+async fn monitored_child(parent: &Path, representation: &str, temporary: &Path) -> Value {
     let started = Instant::now();
     let training = trainer();
     let directory = parent.join(representation);
     std::fs::create_dir(&directory).unwrap();
-    let temporary = directory.join("runtime");
-    std::fs::create_dir(&temporary).unwrap();
-    let configuration = ChildConfig { representation:representation.to_string(),output_dir:directory.clone() };
+    let configuration = ChildConfig { representation:representation.to_string(),output_dir:directory.clone(),runtime_root:temporary.to_path_buf() };
     let config_path = parent.join(format!("{representation}-config.json"));
     data::save(&config_path,&serde_json::to_value(configuration).unwrap());
     let resources = parent.join(format!("{representation}-resources.json"));
     let mut child = tokio::process::Command::new(&training.python)
         .args(["-I","-B"]).arg(training.qualification_root.join("memory-cell-v9/learning/resource_monitor.py"))
         .arg("--output").arg(&resources).arg("--samples").arg(parent.join(format!("{representation}-samples.jsonl")))
-        .arg("--root").arg(&directory).args(["--interval-ms","20","--timeout-seconds","600"])
+        .arg("--root").arg(&directory).arg("--root").arg(temporary).args(["--interval-ms","20","--timeout-seconds","600"])
         .arg("--stdout").arg(parent.join(format!("{representation}-stdout.log")))
         .arg("--stderr").arg(parent.join(format!("{representation}-stderr.log")))
         .arg("--").arg(std::env::current_exe().unwrap())
@@ -168,12 +170,19 @@ async fn actual_memory_cell_v9_continual_causal_parameter_memory() {
     let mut protocol_file = std::fs::OpenOptions::new().create_new(true).write(true).open(directory.join("PROTOCOL.json")).unwrap();
     std::io::Write::write_all(&mut protocol_file,&protocol_raw).unwrap();
     protocol_file.sync_all().unwrap();
+    // Keep real Unix socket paths short while accounting for all runtime storage.
+    let runtimes = ["catalog","byte"].map(|name|
+        (name,tempfile::Builder::new().prefix("hm9-").tempdir_in("/tmp").unwrap()));
+    let runtime_roots: std::collections::BTreeMap<_,_> = runtimes.iter().map(|(name,root)|(*name,root.path().to_path_buf())).collect();
     data::save(&directory.join("MANIFEST.json"),&json!({"schema":"hepta.memory.v9.continual-lock.v1",
         "code_identity":code,"fixture_sha256":data::FIXTURE_SHA,"representations":["catalog","byte"],
         "interventions":["zero","frozen","trained","clean"],"stages":3,
-        "resident_budget_per_type":fit::RESIDENT_BUDGET,"future_outcomes_seen":false}));
+        "resident_budget_per_type":fit::RESIDENT_BUDGET,"runtime_roots":runtime_roots,"future_outcomes_seen":false}));
     let mut children = Vec::new();
-    for representation in ["catalog","byte"] { children.push(monitored_child(&directory,representation).await); }
+    for (representation,temporary) in runtimes {
+        children.push(monitored_child(&directory,representation,temporary.path()).await);
+        temporary.close().unwrap();
+    }
     assert_eq!(fit::code_identity(&training),code);
     data::save(&output,&json!({"schema":"hepta.memory.v9.actual-continual.v1","fixture_sha256":data::FIXTURE_SHA,
         "artifact_directory":directory.file_name().unwrap().to_str().unwrap(),"code_identity":code,

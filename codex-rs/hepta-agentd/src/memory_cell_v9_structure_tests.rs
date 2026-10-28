@@ -23,14 +23,16 @@ mod gate;
 
 #[derive(Deserialize,Serialize)]
 #[serde(deny_unknown_fields)]
-struct ChildConfig { output_dir: PathBuf }
+struct ChildConfig { output_dir: PathBuf, runtime_root: PathBuf }
 
 async fn run(config: &ChildConfig) -> Value {
+    assert_eq!(std::env::temp_dir(),config.runtime_root);
     let training = trainer();
     let code = support::code(&training);
     let code_digest: Digest32 = code["digest"].as_str().unwrap().parse().unwrap();
     let fixture = data::load_fixture(&training.qualification_root);
     let owner = ControlFixture::new().await;
+    assert!(owner.state.identity().layout.cognitive_root().starts_with(&config.runtime_root));
     let resolver = TrustedTestResolver::new(&owner);
     let mut release = None;
     let mut runtime = None;
@@ -56,6 +58,7 @@ async fn run(config: &ChildConfig) -> Value {
             support::publish(release.as_ref().unwrap(),&snapshot,&baseline,generation,code_digest);
         }
         let released = release.as_ref().unwrap();
+        assert!(released.directory.path().starts_with(&config.runtime_root));
         let prefix_publication = {
             let loaded = released.host.load_current().unwrap();
             json!({"generation":loaded.generation().get(),"bundle_digest":loaded.bundle_digest(),
@@ -113,13 +116,14 @@ async fn run(config: &ChildConfig) -> Value {
         let report = json!({"stage":index,"id":stage.id,"directory":format!("stage-{index}"),"owner":owner_identity,
             "prefix_publication":prefix_publication,"selection":selection,"roles":roles,"structure_gate":gate,
             "actual_training_processes":9,"actual_selection_processes":1,"actual_fit_calls":72+2*learned_count,
+            "source_ledger_path":owner.state.identity().layout.cognitive_root(),"artifact_owner_path":released.directory.path(),
             "source_ledger_logical_bytes":source_bytes,"artifact_owner_logical_bytes":data::logical_files(released.directory.path()),
             "traffic_after_stage":owner.client.traffic_snapshot()});
         data::save(&directory.join("STAGE.json"),&report);
         reports.push(report);
     }
     assert_eq!(support::code(&training),code);
-    let report = json!({"schema":"hepta.memory.v9.structure-child.v1","pid":std::process::id(),"stages":reports,
+    let report = json!({"schema":"hepta.memory.v9.structure-child.v1","pid":std::process::id(),"runtime_root":config.runtime_root,"stages":reports,
         "code_identity":code,"fixture_sha256":data::FIXTURE_SHA,"actual_training_processes":27,
         "actual_selection_processes":3,"actual_fit_calls":fit_calls,"full_cost_gain_established":false,
         "natural_language_addressing_evaluated":false,"publication_authority_granted":false});
@@ -141,8 +145,7 @@ async fn actual_memory_cell_v9_observed_structure_budget_and_actions() {
     std::fs::create_dir(&artifacts).unwrap();
     let directory = artifacts.join("trial");
     std::fs::create_dir(&directory).unwrap();
-    let temporary = directory.join("runtime");
-    std::fs::create_dir(&temporary).unwrap();
+    let temporary = tempfile::Builder::new().prefix("hm9-").tempdir_in("/tmp").unwrap();
     let training = trainer();
     let code = support::code(&training);
     let protocol = std::fs::read(training.qualification_root.join("memory-cell-v9/learning/STRUCTURE_PROTOCOL.json")).unwrap();
@@ -150,17 +153,17 @@ async fn actual_memory_cell_v9_observed_structure_budget_and_actions() {
     std::io::Write::write_all(&mut file,&protocol).unwrap();
     file.sync_all().unwrap();
     let config_path = artifacts.join("child-config.json");
-    data::save(&config_path,&serde_json::to_value(ChildConfig{output_dir:directory.clone()}).unwrap());
+    data::save(&config_path,&serde_json::to_value(ChildConfig{output_dir:directory.clone(),runtime_root:temporary.path().to_path_buf()}).unwrap());
     data::save(&artifacts.join("MANIFEST.json"),&json!({"code_identity":code,"fixture_sha256":data::FIXTURE_SHA,
-        "protocol_sha256":Digest32::of_bytes(&protocol).to_string(),"future_outcomes_seen":false}));
+        "protocol_sha256":Digest32::of_bytes(&protocol).to_string(),"runtime_root":temporary.path(),"future_outcomes_seen":false}));
     let mut child = tokio::process::Command::new(&training.python).args(["-I","-B"])
         .arg(training.qualification_root.join("memory-cell-v9/learning/resource_monitor.py"))
         .arg("--output").arg(artifacts.join("resources.json")).arg("--samples").arg(artifacts.join("samples.jsonl"))
-        .arg("--root").arg(&directory).args(["--interval-ms","20","--timeout-seconds","1200"])
+        .arg("--root").arg(&directory).arg("--root").arg(temporary.path()).args(["--interval-ms","20","--timeout-seconds","1200"])
         .arg("--stdout").arg(artifacts.join("stdout.log")).arg("--stderr").arg(artifacts.join("stderr.log"))
         .arg("--").arg(std::env::current_exe().unwrap())
         .args(["--ignored","--exact","memory_cell_v9_continual_tests::structure::memory_cell_v9_structure_child","--nocapture","--test-threads=1"])
-        .env("MEMORY_CELL_V9_STRUCTURE_CHILD_CONFIG",&config_path).env("TMPDIR",temporary)
+        .env("MEMORY_CELL_V9_STRUCTURE_CHILD_CONFIG",&config_path).env("TMPDIR",temporary.path())
         .stdin(Stdio::null()).stdout(Stdio::null()).stderr(Stdio::inherit()).kill_on_drop(true).spawn().unwrap();
     let status = match tokio::time::timeout(Duration::from_secs(1260),child.wait()).await {
         Ok(result) => result.unwrap(),
@@ -170,6 +173,7 @@ async fn actual_memory_cell_v9_observed_structure_budget_and_actions() {
     let raw = std::fs::read(directory.join("CHILD.json")).unwrap();
     let child_report: Value = serde_json::from_slice(&raw).unwrap();
     let resource_raw = std::fs::read(artifacts.join("resources.json")).unwrap();
+    temporary.close().unwrap();
     assert_eq!(support::code(&training),code);
     data::save(&output,&json!({"schema":"hepta.memory.v9.actual-structure.v1","fixture_sha256":data::FIXTURE_SHA,
         "artifact_directory":artifacts.file_name().unwrap().to_str().unwrap(),"code_identity":code,"child":child_report,

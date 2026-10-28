@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from evidence import child_path, decode, digest, identity, integer, owner_facts, read_bytes, read_json, require, transitions, verify_batch
-from resource_evidence import verify_resources
+from resource_evidence import verify_resources, verify_runtime_storage
 from score import code_identity
 from structure_evidence import population, selection, verify_gate
 
@@ -135,14 +135,21 @@ def score(path):
     protocol = read_bytes(PROJECT / "STRUCTURE_PROTOCOL.json")
     require(protocol == read_bytes(directory / "PROTOCOL.json") and decode(protocol)["maximum_retention_error_permyriad"] == 0, "structure protocol changed or relaxed retention")
     code_identity(main["code_identity"])
+    config = read_json(directory / "child-config.json")
+    require(set(config) == {"output_dir", "runtime_root"} and Path(config["output_dir"]).name == "trial",
+            "structure child launch configuration")
     lock = read_json(directory / "MANIFEST.json")
     require(lock == {"code_identity": main["code_identity"], "fixture_sha256": FIXTURE_HASH,
-                     "protocol_sha256": digest(protocol), "future_outcomes_seen": False}, "structure manifest")
+                     "protocol_sha256": digest(protocol), "runtime_root": config["runtime_root"],
+                     "future_outcomes_seen": False}, "structure manifest")
     child = identity(directory / "trial" / "CHILD.json", main["child_identity"])
     require(child == main["child"] and child["schema"] == "hepta.memory.v9.structure-child.v1"
             and child["code_identity"] == main["code_identity"] and child["fixture_sha256"] == FIXTURE_HASH
             and len(child["stages"]) == 3, "structure child inventory/binding")
-    resources = verify_resources(directory, identity(directory / "resources.json", main["resource_identity"]), child["pid"], main["parent_supervision_wall_ns"])
+    resources = identity(directory / "resources.json", main["resource_identity"])
+    verify_runtime_storage(config, child, resources, lock["runtime_root"])
+    resources = verify_resources(directory, resources, child["pid"], main["parent_supervision_wall_ns"])
+    resources["runtime_storage_roots_verified"] = True
     stages, previous = [], None
     for index, stage in enumerate(child["stages"]):
         require(stage["stage"] == index and stage["id"] == fixture["stages"][index]["id"], "structure stage identity")

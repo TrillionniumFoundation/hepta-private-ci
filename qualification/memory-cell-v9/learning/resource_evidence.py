@@ -5,6 +5,21 @@ from pathlib import Path
 from evidence import child_path, decode, digest, integer, require
 
 
+def verify_runtime_storage(config, child, receipt, runtime_root):
+    require(config["runtime_root"] == child["runtime_root"] == runtime_root,
+            "runtime storage root differs between manifest, child config and actual child")
+    roots = [config["output_dir"], runtime_root]
+    paths = [Path(root) for root in roots]
+    require(receipt["roots"] == roots and all(path.is_absolute() and ".." not in path.parts for path in paths)
+            and paths[0] != paths[1] and not any(a in b.parents for a, b in (paths, paths[::-1])),
+            "resource monitor omitted or overlapped an artifact/runtime storage root")
+    for stage in child["stages"]:
+        for name in ("source_ledger_path", "artifact_owner_path"):
+            path = Path(stage[name])
+            require(path.is_absolute() and ".." not in path.parts and paths[1] in path.parents,
+                    "actual owner storage escaped the registered runtime root")
+
+
 def verify_resources(directory, receipt, child_pid, parent_wall_ns):
     require(receipt["schema"] == "hepta.memory.v9.sampled-lifecycle.v1" and receipt["passed"] is True
             and receipt["exit_code"] == 0 and receipt["child_pid"] == child_pid
