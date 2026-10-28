@@ -59,8 +59,8 @@ pub(super) fn evaluate(release: &ReleaseFixture, snapshot: &MemoryCellOwnerSnaps
             role,shards:count,queries:future["queries"].as_u64().unwrap(),errors:future["queries"].as_u64().unwrap()-future["correct"].as_u64().unwrap(),
             retention_queries:retained["queries"].as_u64().unwrap(),retention_errors:retained["queries"].as_u64().unwrap()-retained["correct"].as_u64().unwrap(),
             independent_evaluation:true,cost};
-        wires.push(json!({"role":format!("{:?}",measured.role),"artifact_digest":measured.artifact_digest,
-            "source_cut_digest":measured.source_cut_digest,"task_set_digest":task_digest,"training_profile_digest":code,
+        wires.push(json!({"role":format!("{:?}",measured.role),"artifact_digest":measured.artifact_digest.to_string(),
+            "source_cut_digest":measured.source_cut_digest.to_string(),"task_set_digest":task_digest.to_string(),"training_profile_digest":code.to_string(),
             "shards":count,"queries":measured.queries,"errors":measured.errors,"retention_queries":measured.retention_queries,
             "retention_errors":measured.retention_errors,"independent_evaluation":true,
             "cost":{"artifact_bytes":measured.cost.artifact_bytes,"raw_cache_bytes":measured.cost.raw_cache_bytes,
@@ -85,8 +85,8 @@ pub(super) fn evaluate(release: &ReleaseFixture, snapshot: &MemoryCellOwnerSnaps
     assert!(outcome.publication.is_none() && !outcome.proposal.authority.grants_any());
     assert_eq!(release.host.load_current().unwrap().generation().get(),baseline);
     json!({"measurements":wires,"task_set_json":task_set_json,"reference_roles_outside_split_merge_gate":exclusions,
-        "reason":format!("{:?}",decision.reason()),"evidence_digest":decision.evidence_digest(),
-        "proposed_digest":decision.proposed_digest(),"best_fixed_digest":decision.best_fixed_digest(),
-        "proposal_digest":outcome.proposal.proposal_digest,"proposal_candidates":outcome.proposal.candidates.len(),
+        "reason":format!("{:?}",decision.reason()),"evidence_digest":decision.evidence_digest().to_string(),
+        "proposed_digest":decision.proposed_digest().map(|digest|digest.to_string()),"best_fixed_digest":decision.best_fixed_digest().map(|digest|digest.to_string()),
+        "proposal_digest":outcome.proposal.proposal_digest.to_string(),"proposal_candidates":outcome.proposal.candidates.len(),
         "owner_publication_performed":false,"selected_generation_unchanged":baseline,"full_cost_gain_established":false})
 }
