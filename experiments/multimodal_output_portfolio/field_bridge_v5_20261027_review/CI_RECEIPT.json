@@ -1,0 +1,205 @@
+{
+  "schema": "hepta.field-bridge.v5.ci-observation.1",
+  "observed_at_utc": "2026-10-28 01:43:46 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": {
+    "number": 4145,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4145",
+    "head_sha": "ab620ac07b401a29505a0445297f842109e035f5",
+    "base_sha": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+    "merge_sha": "3768c75cae7e486bd50ec378c3a8ff8b24c52bcf",
+    "draft": true
+  },
+  "read_only_observation": true,
+  "all_repository_checks_passed": false,
+  "attribution_complete": false,
+  "scientific_qualification_advanced": false,
+  "production_permissions_changed": false,
+  "check_run_count": 41,
+  "check_state_counts": {
+    "skipped": 10,
+    "success": 12,
+    "in_progress": 17,
+    "failure": 2
+  },
+  "execution_scope_note": "Check runs are associated with the PR head. Default checkout jobs inspect the prospective GitHub merge; the blob checker uses the explicit base and head range. Architecture has separate source-head and base-merge lanes.",
+  "focused_checks": [
+    {
+      "name": "repo-checks / build-test",
+      "job_id": 122578880675,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40615834724/job/122578880675"
+    },
+    {
+      "name": "repo-checks / Native Hepta paths on macos-15",
+      "job_id": 122578880636,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40615834724/job/122578880636"
+    },
+    {
+      "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+      "job_id": 122578880605,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40615834724/job/122578880605"
+    },
+    {
+      "name": "repo-checks / Native Hepta paths on windows-latest",
+      "job_id": 122578880589,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40615834724/job/122578880589"
+    },
+    {
+      "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+      "job_id": 122578880570,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40615834724/job/122578880570"
+    },
+    {
+      "name": "Codespell / Check for spelling errors",
+      "job_id": 122578452806,
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40615834724/job/122578452806"
+    },
+    {
+      "name": "Blob size policy / Blob size policy",
+      "job_id": 122578452589,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40615834724/job/122578452589"
+    },
+    {
+      "name": "Architecture convergence (base-merge)",
+      "job_id": 122578287429,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40615832899/job/122578287429"
+    },
+    {
+      "name": "Architecture convergence (source-head)",
+      "job_id": 122578287176,
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40615832899/job/122578287176"
+    }
+  ],
+  "other_completed_failures": [
+    {
+      "name": "cargo-deny / cargo-deny",
+      "job_id": 122578880562,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40615834724/job/122578880562",
+      "cause_known": false
+    }
+  ],
+  "comparison_with_base": {
+    "pull_request": 4086,
+    "source_sha": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+    "blocking_run_id": 40541734166,
+    "formatting": {
+      "base_job_id": 122330645016,
+      "current_job_id": 122578880675,
+      "base_status": "failed",
+      "current_status": "success",
+      "current_formatter_step": "success",
+      "interpretation": "The previously observed Python formatting failure is absent in the new repo-checks run."
+    },
+    "blob_size": {
+      "base_job_id": 122325532670,
+      "current_job_id": 122578452589,
+      "base_oversized_files": 29,
+      "current_changed_files_checked": 38,
+      "byte_limit": 512000,
+      "interpretation": "The incremental PR range passes. This does not establish that the 29 oversized blobs in the base PR were repaired."
+    },
+    "codespell": {
+      "base_job_id": 122325532401,
+      "current_job_id": 122578452806,
+      "matching_historical_findings": 9,
+      "files": 4,
+      "new_findings": 0,
+      "affected_files_changed_in_new_pr": false,
+      "version_observed": "2.4.3",
+      "interpretation": "All nine current diagnostics match the prior job by path, line and reported token. The original files remain unchanged."
+    },
+    "cargo_deny": {
+      "base_job_id": 122330645266,
+      "current_job_id": 122578880562,
+      "both_jobs_failed": true,
+      "failed_step": "Run cargo-deny",
+      "current_log_retrieval": "Unavailable. The purpose-built job-log tool returned Transport closed. The approved GitHub fetch tool rejected both the jobs/122578880562/logs API URL and the job page URL as unsupported endpoints. Step summaries were available; output summary and text were null.",
+      "same_failure_cause_proved": false
+    },
+    "windows_and_bazel": {
+      "comparison_complete": false,
+      "interpretation": "Pending remote results are not treated as passing or automatically attributed to inherited failures."
+    }
+  },
+  "new_failures_attributed_to_this_pr": [],
+  "frozen_source_identities": [
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v2_20261027/DIRECTIONAL_PROTOCOL.json",
+      "bytes": 7864,
+      "sha256": "3f9cc1e3461b14c2061932e6247f194ddb9779a52a9356c5b18b6d1d8c02a1e3",
+      "diagnostic_lines": [
+        78,
+        102
+      ]
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v2_20261027/primary_runtime_tests.py",
+      "bytes": 10178,
+      "sha256": "b8c9539e1996af01795390db367ac2d94bebbf5900af8d89bfca5dcdcb398ac6",
+      "diagnostic_lines": [
+        60,
+        63
+      ]
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/next_20261025/media/evidence/public-source-retention-after-cache-eviction.json",
+      "bytes": 841,
+      "sha256": "bd418ba0799681a577fe73b67722a6c5c9264f71bf3d0c51d694934e923f9f66",
+      "diagnostic_lines": [
+        22
+      ]
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/repair_20261026/natural/document/evidence/SOURCE_MANIFEST.json",
+      "bytes": 120333,
+      "sha256": "948b5f8915ebb3b961992eb49c4e089980166d7cd2138b024a7e2714f30a0966",
+      "diagnostic_lines": [
+        3903,
+        4279,
+        4900,
+        6515
+      ]
+    }
+  ],
+  "historical_spelling_proposal": {
+    "status": "proposal_only_not_implemented",
+    "planned_paths": [
+      "scripts/codespell_frozen_findings.json",
+      "scripts/check_codespell_frozen_findings.py",
+      "scripts/test_codespell_frozen_findings.py",
+      ".github/workflows/codespell.yml"
+    ],
+    "policy": "Run the unchanged full-tree scan. Recognize only exact registered historical diagnostics after validating all original source bytes against fixed hashes. Reject changed bytes, new paths, extra or missing findings, duplicate records, unknown output and tool failures.",
+    "exception_identity": "Exact relative path, full source SHA256, line, SHA256 of the exact reported token, and occurrence count.",
+    "new_source_files_exempted": false,
+    "global_ignore_words_added": false,
+    "file_skip_rules_added": false,
+    "frozen_source_bytes_changed": false,
+    "tool_version_to_pin": "2.4.3",
+    "version_reason": "The currently pinned action still installs codespell from a lower-bounded requirement; the actual observed package version was 2.4.3.",
+    "primary_sources": [
+      "https://github.com/codespell-project/codespell/blob/v2.4.3/codespell_lib/_codespell.py",
+      "https://github.com/codespell-project/actions-codespell/blob/8f01853be192eb0f849a5c7d721450e7a467c579/action.yml",
+      "https://github.com/codespell-project/actions-codespell/blob/8f01853be192eb0f849a5c7d721450e7a467c579/requirements.txt"
+    ],
+    "scientific_thresholds_or_tolerances_changed": false
+  }
+}

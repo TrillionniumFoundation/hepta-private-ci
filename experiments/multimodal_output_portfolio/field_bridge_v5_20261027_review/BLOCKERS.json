@@ -1,0 +1,2439 @@
+{
+  "schema": "hepta.field-bridge.v5.historical-criteria-and-current-disposition.1",
+  "recorded_utc": "2026-10-28T01:53:58.494705+00:00",
+  "review_phase": "PREPACKAGE_EXECUTION_COMPLETE_CANDIDATE_REJECTED_ORIGINAL_AUDIT_FAIL",
+  "study_id": "hepta.field-bridge.v5.baseline-gate-transaction.20261027.1",
+  "prior_ledger_path": "../field_bridge_v4_20261027_review/BLOCKERS.json",
+  "prior_ledger_sha256": "80f2169c0bd099b167684cf0dad197b05c34f5d3015832c73e1578a0e82d9f65",
+  "prior_ledger_source_identity": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "commit": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+    "path": "experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review/BLOCKERS.json",
+    "sha256": "80f2169c0bd099b167684cf0dad197b05c34f5d3015832c73e1578a0e82d9f65",
+    "git_blob_sha": "d21c0f3afaf0bb29ea17f83c693e7ee6169496f7"
+  },
+  "original_closure_criteria_preserved_verbatim": true,
+  "original_status_fields_preserved_verbatim": true,
+  "original_ledger_modified": false,
+  "original_scope_limits": [
+    {
+      "baseline_evidence": [
+        "../field_bridge_20261027/README.md"
+      ],
+      "baseline_problem": "An empirical low-dimensional predictor is not a sufficient-state theorem, scalar FBSDE identification or HJB/Riccati certificate.",
+      "closure_criteria": [
+        "Specify the optimizer-state map, admissible policies, projection/information/actuation/coefficient errors and their quantified bounds for the implemented system.",
+        "Prove the necessary conditional transition/value assumptions or restrict claims to the empirical policy and tested task.",
+        "Any theorem-level closure requires mathematical work beyond a positive MNIST result."
+      ],
+      "id": "L01",
+      "is_v2_completion_gate": false,
+      "scope_rule": "This is a claim boundary, not an additional implementation task or a prerequisite for the bounded V2 experiment.",
+      "status": "not_established",
+      "title": "Formal parameter-field closure and paper theorem applicability"
+    },
+    {
+      "baseline_evidence": [
+        "../field_bridge_20261027/README.md"
+      ],
+      "baseline_problem": "The bridge is a short two-preview MNIST-derived local-adapter task with a fixed native kernel.",
+      "closure_criteria": [
+        "Provide separately registered LLM or new-task experiments and externally arriving feedback with later legal decisions to claim those capabilities.",
+        "Production owner integration requires actual owner contracts and validated authority; preserve DENY_ALL while they are absent.",
+        "No speed, parity, source review or small-task gain automatically closes this broader scope."
+      ],
+      "id": "L02",
+      "is_v2_completion_gate": false,
+      "scope_rule": "This is a claim boundary, not an additional implementation task or a prerequisite for the bounded V2 experiment.",
+      "status": "not_established",
+      "title": "LLM-scale, long-horizon feedback and production deployment"
+    }
+  ],
+  "items": [
+    {
+      "baseline_evidence": [
+        "../field_bridge_20261027_review/TRAINING_INTERPRETATION.md"
+      ],
+      "baseline_problem": "The V1 value panel had held-out standard deviations below 2e-7, insufficient to identify a useful hard-value response.",
+      "closure_criteria": [
+        "Pass the frozen PILOT_PROTOCOL actuator gate: every seed has original-plus-candidate endpoint response-value range at least 0.005 and the selected candidate changes at least 5% of response-panel semantic/image decisions.",
+        "Pass the frozen ordinary pilot gate: select only candidates with nonnegative development gain and clean-development change >= -0.01 in every seed; selected pooled development gain must be >=0.005.",
+        "Before a new primary test, also pass the separate frozen-trajectory response gate: each seed has mean within-snapshot action spread >=0.001 and at least25% of snapshots with spread>=0.001. Do not apply an extra0.005 threshold to each branch snapshot.",
+        "Keep deterministic no-update controls, output-component changes, effective-operator movement, paired RNG and complete optimizer state. No-update branch hard value must equal current value within1e-12."
+      ],
+      "id": "B01",
+      "new_evidence": [
+        "../field_bridge_v2_20261027/evidence/PILOT_SUMMARY.json",
+        "../field_bridge_v2_20261027/evidence/PILOT_ARITHMETIC_AUDIT.json",
+        "../field_bridge_v2_20261027/evidence/H7_GATE_RESULT.json"
+      ],
+      "resolution": "All 18 pilot candidates complete; selected upstream rank8/288-step actuator passes the original hard-response and development gates in every seed. Frozen H7 within-snapshot action spread and zero-control/state tests also pass. Scope is this actuator and panel, not universal controllability.",
+      "status": "closed_for_registered_development",
+      "title": "Hard-output response identification",
+      "v3_update": {
+        "gate_failures_are_not_relabelled_as_success": true,
+        "resolution": "V3 retains the same upstream rank8 actuator; complete development includes observable ordinary gains and253440 byte-verified actual outputs. No universal controllability claim.",
+        "status": "prior_registered_development_scope_preserved"
+      },
+      "v4_update": {
+        "gate_failure_not_relabelled_as_success": true,
+        "resolution": "No new response-bank fit. Previously demonstrated hard-response identification retains its bounded scope.",
+        "status": "prior_bounded_development_scope_preserved"
+      },
+      "source_identity": {
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "commit": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review/BLOCKERS.json",
+        "sha256": "80f2169c0bd099b167684cf0dad197b05c34f5d3015832c73e1578a0e82d9f65",
+        "git_blob_sha": "d21c0f3afaf0bb29ea17f83c693e7ee6169496f7",
+        "json_pointer": "/items/0",
+        "canonical_item_sha256": "835fae9eea62824f7023385a9ecfc7a4ae36a013d0b50732db568c4b1156156e",
+        "canonicalization": "UTF-8 JSON, sorted keys, compact separators, ensure_ascii=false"
+      },
+      "v5_update": {
+        "historical_status_unchanged": true,
+        "original_criteria_unchanged": true,
+        "scientific_claim_upgrade": false,
+        "new_evidence_state": "no_new_claim_in_this_scope",
+        "resolution": "V5 reuses the registered actuator. No new response-bank identification is claimed; bounded historical closure remains unchanged.",
+        "evidence": [
+          "SOURCE_AND_TEST_VERIFICATION.json",
+          "EXECUTION_REVIEW.md"
+        ]
+      }
+    },
+    {
+      "baseline_evidence": [
+        "../field_bridge_20261027_review/TRAINING_INTERPRETATION.md"
+      ],
+      "baseline_problem": "V1 field reward RMSE exceeded the training-mean baseline for every seed.",
+      "closure_criteria": [
+        "Freeze representation, normalizers, predictor, candidate family and decision rule before inspecting complete audit trajectories.",
+        "Compare delta-value prediction with no-change/last-value, fitting-set mean-delta and action-conditioned mean-delta baselines. Compare decision regret with the strongest fixed action chosen without audit labels.",
+        "Report complete-trajectory-cluster paired uncertainty and results by original model seed; sequential rows are not independent units.",
+        "A new audit used for refitting or model selection becomes development evidence and requires a subsequent untouched audit.",
+        "Apply the frozen exact G3/G4 thresholds in gate_audit.py: pooled MSE<=0.9*best predetermined baseline with no seed worse; pooled regret<=0.8*fit-selected fixed regret; advantage>=0.001 and paired trajectory95% lower>0. Eight fit and eight audit trajectories per seed are required."
+      ],
+      "id": "B02",
+      "new_evidence": [
+        "../field_bridge_v2_20261027/evidence/H7_GATE_RESULT.json",
+        "../field_bridge_v2_20261027/evidence/H7_COMPLETE_INTEGRITY_AUDIT.json"
+      ],
+      "resolution": "All nine predictors frozen before audit. Original H7 G3/G4 thresholds pass: MSE 0.0000300344 versus baseline 0.0000464601; regret ratio 0.6158; action advantage 0.00155466, trajectory 95% CI[0.00119183,0.00194834]. This establishes local eight-step skill on the shared response panel and new optimizer trajectories, not source-disjoint panel generalization or final policy superiority.",
+      "status": "closed_for_registered_local_trajectory_skill",
+      "title": "Held-out predictive and decision skill",
+      "v3_update": {
+        "gate_failures_are_not_relabelled_as_success": true,
+        "resolution": "V2 local8step result is unchanged. V3 full Qref targets and all180head fits are audited; H7 has lower CV MSE than prospective H12 in all3seeds. This does not establish closed-loop field superiority, which fails development.",
+        "status": "prior_local_skill_scope_preserved_terminal_increment_unqualified"
+      },
+      "v4_update": {
+        "gate_failure_not_relabelled_as_success": true,
+        "resolution": "108 complete V4 paths and all policy/rollback/checkpoint identities are verified; this is not a new sufficient-state or optimal-value claim.",
+        "status": "prior_local_trajectory_scope_preserved"
+      },
+      "source_identity": {
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "commit": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review/BLOCKERS.json",
+        "sha256": "80f2169c0bd099b167684cf0dad197b05c34f5d3015832c73e1578a0e82d9f65",
+        "git_blob_sha": "d21c0f3afaf0bb29ea17f83c693e7ee6169496f7",
+        "json_pointer": "/items/1",
+        "canonical_item_sha256": "594109b5ba42abc85b9485f461d58f4b2dcaa782b0fd90573e48ccbb08fe0e37",
+        "canonicalization": "UTF-8 JSON, sorted keys, compact separators, ensure_ascii=false"
+      },
+      "v5_update": {
+        "historical_status_unchanged": true,
+        "original_criteria_unchanged": true,
+        "scientific_claim_upgrade": false,
+        "new_evidence_state": "no_new_claim_in_this_scope",
+        "resolution": "The 38 contract tests and old OOF replay do not establish new held-out neural predictive skill. The V2 local eight-step result retains its original shared-panel scope.",
+        "evidence": [
+          "SOURCE_AND_TEST_VERIFICATION.json",
+          "EXECUTION_REVIEW.md"
+        ]
+      }
+    },
+    {
+      "baseline_evidence": [
+        "../field_bridge_20261027/evidence/RESULT.json"
+      ],
+      "baseline_problem": "V1 B-A did not meet the gain criterion.",
+      "closure_criteria": [
+        "Run the preregistered B-A contrast on new source identities after all development choices are frozen.",
+        "Both observers must satisfy the declared adjusted confidence and per-model direction conditions, and B must meet independent retention noninferiority.",
+        "Give ordinary training the same action range, candidate opportunity, sample budget, trainable capacity and total search accounting."
+      ],
+      "id": "B03",
+      "new_evidence": [
+        "../field_bridge_v2_20261027/evidence/PRIMARY_RESULT.json",
+        "STUDY_COST_LEDGER.json"
+      ],
+      "resolution": "B-A test gains pass both observers and all three fixed-model signs: reward +0.0304028934, audit +0.0296216434. B retention lower bounds -0.0125661019/-0.0112045102 do not meet -0.01, so the original joint criterion remains unmet. Near-zero retention point estimates do not establish harm beyond the margin. Shared search and reused ordinary endpoints are charged once.",
+      "status": "not_established",
+      "title": "Ordinary local learning benefit",
+      "v3_update": {
+        "gate_failures_are_not_relabelled_as_success": true,
+        "resolution": "V3 ordinary development gains are +0.0248120522/+0.0237154539. The coupled development gate failed for H12, so no new independent learning audit or final joint ordinary/retention confirmation ran. V2 joint criterion remains unmet.",
+        "status": "not_established"
+      },
+      "v4_update": {
+        "gate_failure_not_relabelled_as_success": true,
+        "resolution": "V4 ordinary-frozen task gain and qualification clean NI pass both observers. This is positive evidence within the new qualification scope; original final ordinary-gain/independent-retention closure remains unmet.",
+        "status": "not_established_for_original_final_joint_criterion"
+      },
+      "source_identity": {
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "commit": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review/BLOCKERS.json",
+        "sha256": "80f2169c0bd099b167684cf0dad197b05c34f5d3015832c73e1578a0e82d9f65",
+        "git_blob_sha": "d21c0f3afaf0bb29ea17f83c693e7ee6169496f7",
+        "json_pointer": "/items/2",
+        "canonical_item_sha256": "102bbd497fe7c9f9d85d48cf9872574e561f3fc744888bbd70514e15fa96d6e5",
+        "canonicalization": "UTF-8 JSON, sorted keys, compact separators, ensure_ascii=false"
+      },
+      "v5_update": {
+        "historical_status_unchanged": true,
+        "original_criteria_unchanged": true,
+        "scientific_claim_upgrade": false,
+        "new_evidence_state": "current_run_complete_candidate_rejected_original_audit_failed",
+        "resolution": "The complete V5 old-development run has positive recorded ordinary/field8 task gains over frozen, but does not execute the original fresh gain plus independent-retention joint test. Current media arithmetic is exact; original historical-regression audit remains FAIL.",
+        "evidence": [
+          "evidence/AUDIT.json",
+          "evidence/WITHIN_RUN_AUDIT.json",
+          "evidence/MEDIA_AUDIT.json",
+          "EXECUTION_REVIEW.md"
+        ]
+      }
+    },
+    {
+      "baseline_evidence": [
+        "../field_bridge_20261027/evidence/RESULT.json"
+      ],
+      "baseline_problem": "V1 C-B and E-G did not meet the gain criterion.",
+      "closure_criteria": [
+        "Pass both C-B under fixed deployment and E-G under identical native deployment using the declared fresh evaluation and retention gates.",
+        "Keep generic/richer-state or strong adaptive controls diagnostic; do not relabel direct candidate search as field sufficiency.",
+        "Preserve total exploration, probe, model-fit, candidate-evaluation and final-training costs."
+      ],
+      "id": "B04",
+      "new_evidence": [
+        "../field_bridge_v2_20261027/evidence/PRIMARY_RESULT.json",
+        "PRIMARY_INTERPRETATION_REVIEW.md"
+      ],
+      "resolution": "C-B and E-G both fail the original superiority gates. Pooled effects are negative under both observers, but adjusted intervals include zero. C-B uses the same literal deployment action. E-G uses the same native fitting/search procedure on checkpoint-specific data, with separately calibrated heads; it includes downstream readout mediation.",
+      "status": "not_established",
+      "title": "Incremental parameter-field training benefit",
+      "v3_update": {
+        "gate_failures_are_not_relabelled_as_success": true,
+        "resolution": "V3 H12-ordinary development means are -0.0098117194/-0.0076409023. Complete-source-disjoint development execution/score truth passes, but the increment gate fails. No final C-B or E-G was executed; no confirmatory inferiority is claimed.",
+        "status": "not_established"
+      },
+      "v4_update": {
+        "gate_failure_not_relabelled_as_success": true,
+        "resolution": "origin_field-ordinary and origin_field-origin_richer fail both adjusted lower endpoints and strict model-wise positivity. No final C-B or E-G was executed.",
+        "status": "not_established"
+      },
+      "source_identity": {
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "commit": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review/BLOCKERS.json",
+        "sha256": "80f2169c0bd099b167684cf0dad197b05c34f5d3015832c73e1578a0e82d9f65",
+        "git_blob_sha": "d21c0f3afaf0bb29ea17f83c693e7ee6169496f7",
+        "json_pointer": "/items/3",
+        "canonical_item_sha256": "bcdb737a582dc8ada15035628db2a0dc3cec21e2e12e04d470ecd60c685fea23",
+        "canonicalization": "UTF-8 JSON, sorted keys, compact separators, ensure_ascii=false"
+      },
+      "v5_update": {
+        "historical_status_unchanged": true,
+        "original_criteria_unchanged": true,
+        "scientific_claim_upgrade": false,
+        "new_evidence_state": "current_run_complete_candidate_rejected_original_audit_failed",
+        "resolution": "All four registered field-minus-matched-ordinary/richer contrasts are zero for both observers and every seed. The fixed field8 numeric entry fails both pooled superiority checks for each observer; the candidate is REJECTED. This closes its decision task only, not the original positive incremental-benefit criterion. Guard8 task means are lower than guard48 in every seed under both observers; no universal theory rejection or equivalence is claimed.",
+        "evidence": [
+          "evidence/AUDIT.json",
+          "evidence/WITHIN_RUN_AUDIT.json",
+          "evidence/MEDIA_AUDIT.json",
+          "EXECUTION_REVIEW.md"
+        ]
+      }
+    },
+    {
+      "baseline_evidence": [
+        "../field_bridge_20261027/evidence/RESULT.json"
+      ],
+      "baseline_problem": "V1 D-A and E-C did not meet the gain criterion.",
+      "closure_criteria": [
+        "Run the fixed-checkpoint D-A and E-C paired contrasts with exactly matched observations, feasible actions, stochastic marks and external output scoring.",
+        "Count actual common and selected continuation work; any reduced computation must retain sufficient output quality.",
+        "The declared corrected intervals, model-wise signs and retention conditions must all pass."
+      ],
+      "id": "B05",
+      "new_evidence": [
+        "../field_bridge_v2_20261027/evidence/PRIMARY_RESULT.json",
+        "../field_bridge_v2_20261027/evidence/PRIMARY_INDEPENDENT_MEDIA_AUDIT.json"
+      ],
+      "resolution": "D-A passes reward gain only; audit gain is not established. E-C does not pass the dual-observer gain conditions. Both native candidates pass retention, which does not substitute for the missing gain. All actual selected continuation work is counted and artifacts audited.",
+      "status": "not_established",
+      "title": "Runtime state-control value",
+      "v3_update": {
+        "gate_failures_are_not_relabelled_as_success": true,
+        "resolution": "Frozen V3 native-fixed reward gain passes; audit gain has interval crossing zero and a negative seed29. Both observers are required. Actual multiround feedback and later actions are fully verified. No E-C or final D-A confirmation ran.",
+        "status": "not_established"
+      },
+      "v4_update": {
+        "gate_failure_not_relabelled_as_success": true,
+        "resolution": "No new runtime holdout. Old-data honest-stage pilot is worse in all six model/controller comparisons. The prior dual-observer runtime gain failures stand.",
+        "status": "not_established"
+      },
+      "source_identity": {
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "commit": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review/BLOCKERS.json",
+        "sha256": "80f2169c0bd099b167684cf0dad197b05c34f5d3015832c73e1578a0e82d9f65",
+        "git_blob_sha": "d21c0f3afaf0bb29ea17f83c693e7ee6169496f7",
+        "json_pointer": "/items/4",
+        "canonical_item_sha256": "b6e7cee64d67012a921014e2d0ec6ff7e6409b92e572b84db2016a3efcdfae84",
+        "canonicalization": "UTF-8 JSON, sorted keys, compact separators, ensure_ascii=false"
+      },
+      "v5_update": {
+        "historical_status_unchanged": true,
+        "original_criteria_unchanged": true,
+        "scientific_claim_upgrade": false,
+        "new_evidence_state": "no_new_claim_in_this_scope",
+        "resolution": "V5 is local adapter training; it does not execute new fixed-checkpoint native runtime comparisons. Prior dual-observer runtime gain limitations remain.",
+        "evidence": [
+          "SOURCE_AND_TEST_VERIFICATION.json",
+          "EXECUTION_REVIEW.md"
+        ]
+      }
+    },
+    {
+      "baseline_evidence": [
+        "../field_bridge_20261027/evidence/MATCHED_INFORMATION_CHECK.json",
+        "../field_bridge_20261027/evidence/RESULT.json"
+      ],
+      "baseline_problem": "V1 E-F had no confirmed positive advantage.",
+      "closure_criteria": [
+        "Keep F on the exact same adapted model, public observation history, legal actions, fitting labels, tuning opportunities and capacity envelope.",
+        "Require the declared E-F superiority criterion on the fresh evaluation under both observers and independent retention.",
+        "Report measured state-update, readout, serialization, persistence and complete-deployment costs separately. State sensitivity or speed improvements alone cannot close this blocker."
+      ],
+      "id": "B06",
+      "new_evidence": [
+        "../field_bridge_v2_20261027/evidence/PRIMARY_RESULT.json",
+        "PRIMARY_RUNTIME_AUDIT_REVIEW.md",
+        "RECURRENCE_SCOPE_REVIEW.md"
+      ],
+      "resolution": "E-F effects are +0.0001265503/+0.0003625529 with adjusted intervals spanning zero and inconsistent fixed-model signs. This establishes neither native superiority nor equivalence. F shares E model and public information, labels, legal actions, capacity and 24-candidate tuning budget. State reset sensitivity and faster transport do not satisfy the superiority criterion.",
+      "status": "not_established",
+      "title": "Hepta-specific value beyond matched history",
+      "v3_update": {
+        "gate_failures_are_not_relabelled_as_success": true,
+        "resolution": "Native-history mean gains +0.0009548572/+0.0001980213 have corrected intervals crossing zero and mixed seed signs. The actual full-public-history88dim,1335-coefficient,12-candidate control and native have equal specified opportunity. No superiority or equivalence is established.",
+        "status": "not_established"
+      },
+      "v4_update": {
+        "gate_failure_not_relabelled_as_success": true,
+        "resolution": "No new Hepta-versus-history confirmatory comparison. Active state and different actions do not establish incremental value.",
+        "status": "not_established"
+      },
+      "source_identity": {
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "commit": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review/BLOCKERS.json",
+        "sha256": "80f2169c0bd099b167684cf0dad197b05c34f5d3015832c73e1578a0e82d9f65",
+        "git_blob_sha": "d21c0f3afaf0bb29ea17f83c693e7ee6169496f7",
+        "json_pointer": "/items/5",
+        "canonical_item_sha256": "349f6aec58b324196a54372deb8c27832a59fa00f098cc21fe79c47f5fc92e8c",
+        "canonicalization": "UTF-8 JSON, sorted keys, compact separators, ensure_ascii=false"
+      },
+      "v5_update": {
+        "historical_status_unchanged": true,
+        "original_criteria_unchanged": true,
+        "scientific_claim_upgrade": false,
+        "new_evidence_state": "no_new_claim_in_this_scope",
+        "resolution": "V5 does not execute a new Hepta-versus-matched-history comparison or owner integration. State changes, action changes and tests do not supply this superiority evidence.",
+        "evidence": [
+          "SOURCE_AND_TEST_VERIFICATION.json",
+          "EXECUTION_REVIEW.md"
+        ]
+      }
+    },
+    {
+      "baseline_evidence": [
+        "../field_bridge_20261027/evidence/RESULT.json"
+      ],
+      "baseline_problem": "V1 D/E/F/H did not establish retention noninferiority; damage exceeding the margin was not established either.",
+      "closure_criteria": [
+        "Freeze the 0.01 absolute-net-utility margin and comparison family before the new retention run.",
+        "Reserve retention-selection data separately if used by a training controller; never tune on the final retention set.",
+        "Require each candidate designated for acceptance to meet the declared family-adjusted lower endpoint under both observers."
+      ],
+      "id": "B07",
+      "new_evidence": [
+        "../field_bridge_v2_20261027/evidence/PRIMARY_RESULT.json",
+        "../field_bridge_v2_20261027/evidence/PRIMARY_INDEPENDENT_RESULTS_AUDIT.json"
+      ],
+      "resolution": "Original independent nine-comparison retention family and -0.01 margin preserved. Dual-observer noninferiority passes C,D,E,F,H,J (6/9); it is not established for B,G,K. These non-passes do not prove damage beyond the margin. No retention data was used to select or refit methods.",
+      "status": "partially_closed",
+      "title": "Independent retention noninferiority",
+      "v3_update": {
+        "gate_failures_are_not_relabelled_as_success": true,
+        "resolution": "Both V3 runtime clean noninferiority comparisons pass under both observers at margin0.01. They are the clean condition of the runtime audit, not final independent retention. Final retention remains unopened; V2 remaining limits are unchanged.",
+        "status": "partially_closed"
+      },
+      "v4_update": {
+        "gate_failure_not_relabelled_as_success": true,
+        "resolution": "Three V4 qualification clean NI comparisons pass both observers at -0.01. They do not replace original independent final retention requirements.",
+        "status": "partially_closed_original_scope_unchanged"
+      },
+      "source_identity": {
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "commit": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review/BLOCKERS.json",
+        "sha256": "80f2169c0bd099b167684cf0dad197b05c34f5d3015832c73e1578a0e82d9f65",
+        "git_blob_sha": "d21c0f3afaf0bb29ea17f83c693e7ee6169496f7",
+        "json_pointer": "/items/6",
+        "canonical_item_sha256": "d5ecfeb7a0963d10a5022465bbd6b715971b723c680e261e45158593026cfcec",
+        "canonicalization": "UTF-8 JSON, sorted keys, compact separators, ensure_ascii=false"
+      },
+      "v5_update": {
+        "historical_status_unchanged": true,
+        "original_criteria_unchanged": true,
+        "scientific_claim_upgrade": false,
+        "new_evidence_state": "current_run_complete_candidate_rejected_original_audit_failed",
+        "resolution": "The V5 old-development clean checks meet their numeric margin in the diagnostic, but are not independent final retention. All original margins, families and remaining non-passes remain unchanged.",
+        "evidence": [
+          "evidence/AUDIT.json",
+          "evidence/WITHIN_RUN_AUDIT.json",
+          "evidence/MEDIA_AUDIT.json",
+          "EXECUTION_REVIEW.md"
+        ]
+      }
+    },
+    {
+      "baseline_evidence": [
+        "../field_bridge_20261027/evidence/MATCHED_INFORMATION_CHECK.json"
+      ],
+      "baseline_problem": "The V1 native path cost was dominated by bridge/recording rather than only sparse_tick.",
+      "closure_criteria": [
+        "Optimize a new isolated implementation; preserve frozen V1 source and outputs.",
+        "Prove exact original-kernel state/output parity on random, edge and reset cases; include invalid-input rejection and authority invariants.",
+        "Benchmark randomized interleaved repeated blocks including feature construction and readout, report distributions, warmup and host/threads.",
+        "Separate kernel-only, bridge, receipt serialization/persistence and total costs. Lower implementation overhead closes engineering overhead only, not B05/B06."
+      ],
+      "id": "B08",
+      "new_evidence": [
+        "../field_bridge_v2_20261027/evidence/NATIVE_FFI_BUILD.json",
+        "../field_bridge_v2_20261027/evidence/NATIVE_FFI_CONTRACT.json",
+        "../field_bridge_v2_20261027/evidence/NATIVE_TRANSPORT_BENCHMARK.json",
+        "NATIVE_INDEPENDENT_ARITHMETIC.json"
+      ],
+      "resolution": "Isolated ABI and exact original-kernel state/receipt parity pass. Randomized paired repeated benchmarks show lower full-record and compact transport overhead; compact native remains slower than matched history. No utility, complete-deployment speed, or owner-integration claim is inferred.",
+      "status": "closed_for_transport_overhead",
+      "title": "Native bridge overhead and parity",
+      "v3_update": {
+        "gate_failures_are_not_relabelled_as_success": true,
+        "resolution": "V2 engineering transport result is unchanged. V3 full native fitting and selected-session original-kernel replay are exact, including DENY_ALL. No new interleaved total-latency superiority or efficacy claim is inferred.",
+        "status": "prior_transport_scope_preserved_v3_state_parity_verified"
+      },
+      "v4_update": {
+        "gate_failure_not_relabelled_as_success": true,
+        "resolution": "No new native/owner integration or latency superiority claim. DENY_ALL is preserved.",
+        "status": "prior_transport_scope_preserved"
+      },
+      "source_identity": {
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "commit": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review/BLOCKERS.json",
+        "sha256": "80f2169c0bd099b167684cf0dad197b05c34f5d3015832c73e1578a0e82d9f65",
+        "git_blob_sha": "d21c0f3afaf0bb29ea17f83c693e7ee6169496f7",
+        "json_pointer": "/items/7",
+        "canonical_item_sha256": "07ddbec040f4b5c26b9a3e5c6fbb3020adb2db592fb143a9e62432f1feea3c0c",
+        "canonicalization": "UTF-8 JSON, sorted keys, compact separators, ensure_ascii=false"
+      },
+      "v5_update": {
+        "historical_status_unchanged": true,
+        "original_criteria_unchanged": true,
+        "scientific_claim_upgrade": false,
+        "new_evidence_state": "no_new_claim_in_this_scope",
+        "resolution": "No new native latency/transport benchmark is claimed. Synthetic transaction and record tests are a separate engineering result.",
+        "evidence": [
+          "SOURCE_AND_TEST_VERIFICATION.json",
+          "EXECUTION_REVIEW.md"
+        ]
+      }
+    },
+    {
+      "baseline_evidence": [
+        "../field_bridge_20261027/PROTOCOL.json",
+        "../v6/data.py"
+      ],
+      "baseline_problem": "V1 source-disjointness was local to named experiments, not registry-wide secrecy or new-writer independence.",
+      "closure_criteria": [
+        "Retain the exact prior split prefixes or explicitly exclude all original pixel identities when expanding source pools.",
+        "Record disjoint pixel identities for development, trajectory audit, runtime calibration/development, primary test and retention; independently verify no overlapping hashes.",
+        "Commit the protocol and executable source before audit/test outcomes, freeze trained checkpoints and policies before primary test.",
+        "Define the scope as new relative to the recorded exposure registry; do not claim no model pretraining exposure or new writers."
+      ],
+      "id": "B09",
+      "new_evidence": [
+        "SOURCE_ALLOCATION.json",
+        "../field_bridge_v2_20261027/evidence/PRIMARY_PRETEST_FREEZE.json",
+        "../field_bridge_v2_20261027/evidence/PRIMARY_INDEPENDENT_MEDIA_AUDIT.json",
+        "../field_bridge_v2_20261027/evidence/PRIMARY_RECOVERY_PARITY_AUDIT.json"
+      ],
+      "resolution": "New primary and retention pixel identities are disjoint from each other and all 25000 original registered pixels; all original prefixes preserved. Scientific sources, final checkpoints/optimizer states and policies were frozen before primary outcomes, and complete audit/recovery parity passes. The original ledger additionally required disjoint source pixels between development and trajectory audit. Registered H7 fit/audit instead share the fixed response panel and hold out optimizer trajectories, so that stronger literal clause remains unmet. Preserve it as a documented ledger/protocol scope mismatch; do not reinterpret it as satisfied. No new-writer or global pretraining-secrecy claim.",
+      "status": "partially_closed",
+      "title": "Fresh evaluation identity and frozen access boundary",
+      "v3_update": {
+        "gate_failures_are_not_relabelled_as_success": true,
+        "resolution": "V3 all28048assignedimages/23roles and253intersections are independently checked against the complete29000image V2 registry. Fit/development/runtime-audit are separated; failed gates leave8roles/12496images without task materialization. V2 shared response-panel limitation is not retroactively closed; unknown pretraining/writer independence remains outside scope.",
+        "status": "v3_executed_source_access_verified_prior_v2_limitation_preserved"
+      },
+      "v4_update": {
+        "gate_failure_not_relabelled_as_success": true,
+        "resolution": "6,352 new official-train image identities exclude the full prior 57,048 identities, including unused V3 allocations. Protocol/source precede model execution and all 108 training paths are sealed before endpoint opening. Historical shared-panel limitation and unknown pretraining/writers are unchanged.",
+        "status": "v4_source_and_access_boundary_verified_prior_limit_preserved"
+      },
+      "source_identity": {
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "commit": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review/BLOCKERS.json",
+        "sha256": "80f2169c0bd099b167684cf0dad197b05c34f5d3015832c73e1578a0e82d9f65",
+        "git_blob_sha": "d21c0f3afaf0bb29ea17f83c693e7ee6169496f7",
+        "json_pointer": "/items/8",
+        "canonical_item_sha256": "c080cc293fb02f677ce468e08ffcc2686510d94c836439b91bd060c258f4478e",
+        "canonicalization": "UTF-8 JSON, sorted keys, compact separators, ensure_ascii=false"
+      },
+      "v5_update": {
+        "historical_status_unchanged": true,
+        "original_criteria_unchanged": true,
+        "scientific_claim_upgrade": false,
+        "new_evidence_state": "current_run_complete_candidate_rejected_original_audit_failed",
+        "resolution": "All 72 V5 training paths are source-bound and sealed before endpoints; the diagnostic and exact media audit verify the current old-development census. No new holdout was opened. The historical V2 shared-panel clause remains unmet and is not retroactively repaired.",
+        "evidence": [
+          "evidence/AUDIT.json",
+          "evidence/WITHIN_RUN_AUDIT.json",
+          "evidence/MEDIA_AUDIT.json",
+          "EXECUTION_REVIEW.md"
+        ]
+      }
+    },
+    {
+      "baseline_evidence": [
+        "../field_bridge_20261027/evidence/INDEPENDENT_AUDIT.json",
+        "../field_bridge_20261027/evidence/RESULTS_REVIEW_CHECKS.json"
+      ],
+      "baseline_problem": "V1 has full independent checks; V2 requires equivalent evidence for its changed execution.",
+      "closure_criteria": [
+        "Persist complete declared run grid, all failed candidates, public observations, chosen actions, media readback, model/policy/source identities and cost receipts.",
+        "Independently reconstruct features and both observer scores from delivered artifacts without generator calls.",
+        "Independently rebuild paired estimates, multiplicity corrections and acceptance flags; verify frozen-source identity.",
+        "Save immutable complete evidence and verify restoration manifests."
+      ],
+      "id": "B10",
+      "new_evidence": [
+        "../field_bridge_v2_20261027/evidence/PRIMARY_EVALUATION_COMPLETE.json",
+        "../field_bridge_v2_20261027/evidence/PRIMARY_INDEPENDENT_MEDIA_AUDIT.json",
+        "../field_bridge_v2_20261027/evidence/PRIMARY_INDEPENDENT_RESULTS_AUDIT.json",
+        "../field_bridge_v2_20261027/evidence/PRIMARY_RECOVERY_PARITY_AUDIT.json",
+        "../field_bridge_v2_20261027/evidence/ARCHIVE_AND_RESTORE_VERIFICATION.json",
+        "../field_bridge_v2_20261027/evidence/PERSISTENCE_AUTHORIZATION_BLOCKER.json"
+      ],
+      "resolution": "Complete raw grid, all model/controller evidence, media/native reconstruction, independent arithmetic, recovery parity, full archive SHA/CRC checks, and selective-restoration arithmetic all pass. Archive contains2181 payload files and2182 total regular members; restored84480-row statistics match within3.24e-16. Durable upload is not complete: automatic approval review requires explicit user authorization for saving the private archive and verification report to the connected Library destination. No alternate egress was attempted, and the original persistence criterion remains open.",
+      "status": "partially_closed_pending_persistence_authorization",
+      "title": "Full evidence reproduction and independent arithmetic",
+      "v3_update": {
+        "gate_failures_are_not_relabelled_as_success": true,
+        "local_verified_archive": {
+          "exact_statistical_reanalysis": true,
+          "inner_gzip_streams_verified": 129,
+          "ledger_bindings_preserved": 1181,
+          "payload_files": 2590,
+          "raw_archive_persisted": false,
+          "restore_files": 50,
+          "verification_receipt": "../field_bridge_v3_20261027/evidence/ARCHIVE_AND_RESTORE_VERIFICATION.json",
+          "verification_sha256": "198916ddf9f2ad281fcda54a79b79f9b0210cc56129a8dc77e054ee34a0c6351"
+        },
+        "resolution": "V3 actual fitting, media, both observer scores, native state, statistics, execution costs and stop decisions are independently verified. Complete raw archive integrity/restoration is reported by the external archive receipt. V2 archive/report upload was automatically rejected twice pending explicit named-file and Library-destination authorization; V3 archive persistence must also be concretely authorized. Git-backed sources/results do not equal durable raw archive storage.",
+        "status": "partially_closed_pending_persistence_authorization"
+      },
+      "v4_update": {
+        "gate_failure_not_relabelled_as_success": true,
+        "resolution": "Actual training identities, hard-media scores and statistical decision are preserved. Complete archive integrity/literal-restored exact reanalysis are bound by the external postpackage receipt. Automatic review rejected named-archive Library persistence; no further retry or alternate raw-data egress is authorized.",
+        "status": "partially_closed_pending_explicit_persistence_authorization"
+      },
+      "source_identity": {
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "commit": "0acfd9b27db910c180b0d8911f39aea469b7f864",
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review/BLOCKERS.json",
+        "sha256": "80f2169c0bd099b167684cf0dad197b05c34f5d3015832c73e1578a0e82d9f65",
+        "git_blob_sha": "d21c0f3afaf0bb29ea17f83c693e7ee6169496f7",
+        "json_pointer": "/items/9",
+        "canonical_item_sha256": "076abb91e9bbffe287b2081649d18df82f0a1413615794ae48af6c5a5fbe354a",
+        "canonicalization": "UTF-8 JSON, sorted keys, compact separators, ensure_ascii=false"
+      },
+      "v5_update": {
+        "historical_status_unchanged": true,
+        "original_criteria_unchanged": true,
+        "scientific_claim_upgrade": false,
+        "new_evidence_state": "current_run_complete_candidate_rejected_original_audit_failed",
+        "resolution": "All 72 current paths pass within-run artifact diagnosis and all 150 media files/384000 observer values recompute exactly. Original frozen audit remains FAIL on historical exact regression, whose cause is undetermined. Complete local raw archive/restore is pending this prepackage snapshot. Raw durable custody requires explicit concrete-file/destination authorization under the documented egress boundary; no new upload was attempted.",
+        "evidence": [
+          "evidence/AUDIT.json",
+          "evidence/WITHIN_RUN_AUDIT.json",
+          "evidence/MEDIA_AUDIT.json",
+          "EXECUTION_REVIEW.md"
+        ]
+      }
+    }
+  ],
+  "inherited_ledger_context": {
+    "all_original_substantive_blockers_closed": false,
+    "authority": "DENY_ALL",
+    "inherited_evidence_paths_base": "Inherited V1/V2/V3 evidence references retain the originating ledger context; new V4 evidence lives in ../field_bridge_v4_20261027/evidence/.",
+    "native_owner_integration": false,
+    "original_closure_criteria_preserved_verbatim": true,
+    "prior_ledger_path": "../field_bridge_v3_20261027_review/BLOCKERS.json",
+    "prior_ledger_sha256": "59c7c7aa111eb156291c76e76c1fdce389f7d517eed75b9df5b6aada72ee5a88",
+    "remaining_operational_blockers": [
+      "Explicit named V2/V3/V4 archive and verification-report authorization for ChatGPT Library; automatic approval rejection is preserved and no further upload is attempted."
+    ],
+    "remaining_scientific_claims": [
+      "B03",
+      "B04",
+      "B05",
+      "B06",
+      "B07",
+      "B09 historical/scope clause",
+      "L01",
+      "L02"
+    ],
+    "requires_calibration": true,
+    "schema": "hepta.field-bridge.v4.original-criteria-and-new-evidence.1",
+    "status_rule": "A blocker closes only when its stated substantive evidence exists; unsupported claims remain open or not_established. A failed gate is preserved, not reclassified as success.",
+    "terminal_disposition_sha256": "4caabe2966d62c8bad4b22ec69cf49b0dedfa10ca3c8d650a75c7603581bd8c6",
+    "v2_primary_joint_acceptance_unchanged": {
+      "accepted": 0,
+      "ordinary_retention_noninferiority_supported": false,
+      "ordinary_test_gain_supported": true,
+      "registered": 6,
+      "result_sha256": "ae10b12185c64d366019f3b73c522e9d6b364523174864a9424a65ffafc547e2"
+    },
+    "v3_archive_sha256": "37ef2e8de1a795ada43a92afc7403018e82ac23368e8ee6f7319569099abf4cf",
+    "v3_archive_verification_external_receipt": "../field_bridge_v3_20261027/evidence/ARCHIVE_AND_RESTORE_VERIFICATION.json",
+    "v3_archive_verification_sha256": "198916ddf9f2ad281fcda54a79b79f9b0210cc56129a8dc77e054ee34a0c6351",
+    "v3_development_gate_passed": false,
+    "v3_final_confirmation_executed": false,
+    "v3_frozen_runtime_gate_passed": false,
+    "v3_local_archive_and_restore_passed": true,
+    "v3_primary_comparisons_executed": 0,
+    "v3_primary_comparisons_not_established": [
+      "B-A",
+      "C-B",
+      "D-A",
+      "E-C",
+      "E-G",
+      "E-F"
+    ],
+    "v3_registered_execution_and_independent_integrity_complete": true,
+    "v4_qualification": {
+      "checks_passed": 4,
+      "checks_registered": 6,
+      "original_six_experiment_families_relabelled_as_checks": false,
+      "passed": false,
+      "result_sha256": "0634e0f89ad5c07dfa36c74c475b593b8b9aa8c29990bb86b078995ab63b3b58",
+      "status": "QUALIFICATION_FAILED"
+    }
+  },
+  "status_semantics": {
+    "closed_pass": "Only this named work item has met its stated evidence criterion within the explicit scope. It does not close another scientific criterion.",
+    "closed_reject_candidate": "A complete valid frozen decision rejects this candidate. The operational decision is complete; positive scientific superiority remains unestablished.",
+    "open_insufficient_evidence": "Evidence required by the stated criterion is missing, pending or insufficient. No positive, negative or equivalence effect is inferred.",
+    "approval_blocked": "A recorded applicable approval decision prevents the required action. Preserve the reason and concrete pending action; do not bypass it."
+  },
+  "work_items": [
+    {
+      "id": "V5-E01",
+      "title": "Frozen source identity and existing contract suites",
+      "state": "closed_pass",
+      "scope": "64 frozen files and 38 existing non-scientific tests; no neural efficacy guarantee",
+      "closure_criteria": [
+        "Match every frozen input SHA256 and its recomputed Git blob identity to the registered committed tree.",
+        "Pass all 38 calibration, finite-MDP, synthetic transaction, record and artifact-audit contract tests without new scientific model calls."
+      ],
+      "actual": {
+        "files_checked": 64,
+        "tests_passed": 38,
+        "tests_failed": 0,
+        "tests_skipped": 0,
+        "new_scientific_model_calls": 0
+      },
+      "evidence": [
+        {
+          "path": "SOURCE_AND_TEST_VERIFICATION.json",
+          "path_base": "review_directory",
+          "sha256": "e090d5e6b9532721c156bbdbb22c59462566286cdf5d4271c548a13702f5ba35"
+        }
+      ]
+    },
+    {
+      "id": "V5-E02",
+      "title": "R45 documentation source binding at reviewed local bytes",
+      "state": "closed_pass",
+      "scope": "Documentation binding only; no theorem, implementation, product or remote-CI qualification",
+      "closure_criteria": [
+        "Bind LEARNING_SYSTEM fieldSourceRevision to the inspected R45 commit.",
+        "Match ALGORITHM_SPECS document blob to the reviewed NDU_FBSDE_SPEC bytes and retain implementationState=not_implied."
+      ],
+      "actual": {
+        "algorithm_registry_blob": "156b908d796ed48ae63366cba0966a48ecbfa139",
+        "committed_repository_verification_claimed": false,
+        "document_git_blob": "156b908d796ed48ae63366cba0966a48ecbfa139",
+        "field_is_canonical_truth": false,
+        "field_source_revision": "ICLR-2027/paper-llm-theory@f8df0a6075f58f3ab9431a889b773cdf8d6e771d",
+        "implementation_state": "not_implied",
+        "paper_pin_matches": true,
+        "registry_blob_matches": true,
+        "scientific_theorem_qualification_claimed": false,
+        "worktree_documents": {
+          "docs/learning/ALGORITHM_SPECS.json": {
+            "bytes": 9251,
+            "sha256": "cc62ff5d695ff5f6e12fec7599f63ebbe1e1eda8603a582f452013b1765b4a56"
+          },
+          "docs/learning/LEARNING_SYSTEM.json": {
+            "bytes": 28069,
+            "sha256": "1f53dbbec5071708f982c1837de48bc058a52bdc93116fccf99d3c602a0392cc"
+          },
+          "docs/learning/NDU_FBSDE_SPEC.md": {
+            "bytes": 34055,
+            "sha256": "12e19c60971b645d2827f051cd268305a13b8a786bf6e49a133c407dfe2e4e01"
+          },
+          "qualification/module-execution-dossiers/R45_BINDING_REVIEW.md": {
+            "bytes": 6201,
+            "sha256": "0c74707c0e2ea7c04200c708c52d2a9dc5ef1773f8e28515323162b1d110acca"
+          }
+        }
+      },
+      "evidence": [
+        {
+          "path": "SOURCE_AND_TEST_VERIFICATION.json",
+          "path_base": "review_directory",
+          "sha256": "e090d5e6b9532721c156bbdbb22c59462566286cdf5d4271c548a13702f5ba35"
+        }
+      ]
+    },
+    {
+      "id": "V5-E03",
+      "title": "Committed engineering repository validation and remote CI disposition",
+      "state": "closed_pass",
+      "phase": "committed_repository_binding_verified",
+      "scope": "Committed source/document conformance only; remote whole-repository CI and product execution are not passed by this item",
+      "closure_criteria": [
+        "Record the final engineering commit/tree and scope of actual repository-binding checks.",
+        "Run required targeted checks on that identity and report remaining remote CI failures without exemptions or unsupported pass claims."
+      ],
+      "actual": {
+        "source_commit": "4cea2e109446115b12246952a0fdacb3a43e1281",
+        "source_tree": "4d4030ea7a8578268a16b5f2ec9f462eedef327d",
+        "modules": 40,
+        "source_observations": 40,
+        "native_documentation_references": {
+          "entrypoints": 177,
+          "runtimeDocuments": 97,
+          "testFiles": 165
+        },
+        "repositoryBindingsChecked": true,
+        "nativeProductTestsExecuted": false,
+        "independentReview": false,
+        "allGapsClosed": false,
+        "remote_all_ci_pass_claimed": false
+      },
+      "evidence": [
+        {
+          "path": "ENGINEERING_REPOSITORY_VERIFICATION.json",
+          "path_base": "review_directory",
+          "sha256": "ad1ad6a8d63e83723cb2a7c22735a584456816dd723c57aaddcf2f2cf3b5464b",
+          "bytes": 14977
+        },
+        {
+          "path": "qualification/module-execution-dossiers/R45_BINDING_REVIEW.md",
+          "path_base": "repository_root",
+          "sha256": "8394df074d9643464b364f7e044481dfaf6a4386df65f08c8539ab5d19103562",
+          "bytes": 6711
+        }
+      ]
+    },
+    {
+      "id": "V5-X01",
+      "title": "Registered 72-path training census and endpoint barrier",
+      "state": "closed_pass",
+      "phase": "execution_complete",
+      "closure_criteria": [
+        "Complete exactly 3 seeds x 4 schedules x 6 methods, with all attempted work and failures retained.",
+        "Bind all 72 path identities to the source freeze and seal all training phases before any endpoint phase.",
+        "Consume 288 scheduled gradient microsteps per completed path under the fixed transaction semantics."
+      ],
+      "actual": {
+        "planned_paths": 72,
+        "completed_paths_attested": 72,
+        "total_scheduled_gradient_microsteps": 20736,
+        "per_path_scheduled_microsteps": 288,
+        "transactions": 1512,
+        "all_training_sealed": true,
+        "endpoint_barrier_passed": true,
+        "phase_seals": {
+          "evaluate/17": "61fd470905250d1736139ce82cded9b824e4db640b0f14162478c07f87968ba5",
+          "evaluate/29": "c62ea481335d8ab0863a2212e7e991874dd8febfe52696009c224dbd20084e51",
+          "evaluate/43": "b0cb952964a8c4be22068bc3ba112e00dcb1b6fc0346eea86cddc1fd28e7b54f",
+          "train/17": "255a9e1e3dc57c6af5dc28dc38f0a15f7345ed590a2b893f582af1929c7da1ae",
+          "train/29": "078e71ded999e2976827e503d5b72d08802d08d0d01fc454e24e691e5e0c4feb",
+          "train/43": "7b9b2195e1977f62fe472885068714fd68c2b95ff727553ab9a8374c75f53ddf"
+        },
+        "original_frozen_audit_passed": false
+      },
+      "evidence": [
+        {
+          "path": "evidence/WITHIN_RUN_AUDIT.json",
+          "path_base": "review_directory",
+          "sha256": "0105da40023843b7551308c51e86fa945f9d213f21af29d53fb43a5fdfa6814f",
+          "bytes": 286822
+        },
+        {
+          "path": "evidence/MEDIA_AUDIT.json",
+          "path_base": "review_directory",
+          "sha256": "45240283c980e1558e4e8374a1e74088b126764f5d301d06d4b2c42a8048d7fe",
+          "bytes": 143656
+        }
+      ]
+    },
+    {
+      "id": "V5-X02",
+      "title": "Independent terminal artifact audit",
+      "state": "open_insufficient_evidence",
+      "phase": "blocked_by_historical_exact_regression",
+      "closure_criteria": [
+        "Validate complete trace chains, policy replay, schedules, rollback/state identities, work accounting and terminal checkpoints.",
+        "Validate paired hard-output bytes and aggregate endpoint arrays under both recorded observers.",
+        "Verify exact registered source identity and historical ordinary48 regression within its runtime/source conditions."
+      ],
+      "actual": {
+        "original_frozen_integrity_status": "FAIL",
+        "original_error": "Ordinary48 historical endpoint regression failed",
+        "within_current_run_integrity": "PASS",
+        "media_arithmetic": "PASS",
+        "historical_exact_regression": "FAIL",
+        "tolerance_added": false,
+        "causal_attribution": "UNDETERMINED"
+      },
+      "evidence": [
+        {
+          "path": "evidence/AUDIT.json",
+          "path_base": "review_directory",
+          "sha256": "35af3341f3fc283c41beda469e5c9ff2531f7bf01d537cb4dcc9c4a7fd6b42df",
+          "bytes": 213
+        },
+        {
+          "path": "evidence/WITHIN_RUN_AUDIT.json",
+          "path_base": "review_directory",
+          "sha256": "0105da40023843b7551308c51e86fa945f9d213f21af29d53fb43a5fdfa6814f",
+          "bytes": 286822
+        },
+        {
+          "path": "evidence/MEDIA_AUDIT.json",
+          "path_base": "review_directory",
+          "sha256": "45240283c980e1558e4e8374a1e74088b126764f5d301d06d4b2c42a8048d7fe",
+          "bytes": 143656
+        }
+      ]
+    },
+    {
+      "id": "V5-D01",
+      "title": "Fixed development-entry decision for field_8",
+      "state": "closed_reject_candidate",
+      "phase": "fixed_numeric_entry_failed",
+      "closure_criteria": [
+        "Apply the already frozen development_entry rule to all registered paths and both observers.",
+        "Record closed_pass if the entry rule passes, or closed_reject_candidate if complete valid results fail it.",
+        "In either case preserve all outcomes, open no new holdout automatically and leave original B03-B07 scientific criteria unchanged."
+      ],
+      "registered_rule": {
+        "candidate": "field_8",
+        "all_paths_complete": true,
+        "task_gain_over_frozen_each_model_min": 0.0,
+        "task_gain_over_frozen_pooled_min": 0.005,
+        "field_over_matched_ordinary_pooled_strict_min": 0.001,
+        "field_over_matched_ordinary_each_model_min": 0.0,
+        "field_over_matched_richer_pooled_strict_min": 0.0,
+        "field_over_matched_richer_each_model_min": 0.0,
+        "clean_delta_each_model_min": -0.01,
+        "all_observers_required": true,
+        "passing_authorizes_new_holdout_automatically": false
+      },
+      "actual": {
+        "decision": "REJECTED",
+        "numeric_passed": false,
+        "checks": {
+          "audit_clean_each_model": true,
+          "audit_frozen_each_model": true,
+          "audit_frozen_pooled": true,
+          "audit_ordinary_each_model": true,
+          "audit_ordinary_pooled": false,
+          "audit_richer_each_model": true,
+          "audit_richer_pooled": false,
+          "reward_clean_each_model": true,
+          "reward_frozen_each_model": true,
+          "reward_frozen_pooled": true,
+          "reward_ordinary_each_model": true,
+          "reward_ordinary_pooled": false,
+          "reward_richer_each_model": true,
+          "reward_richer_pooled": false
+        },
+        "false_checks": [
+          "audit_ordinary_pooled",
+          "audit_richer_pooled",
+          "reward_ordinary_pooled",
+          "reward_richer_pooled"
+        ],
+        "frozen_audit_status": "FAIL",
+        "scientific_confirmation": false,
+        "new_holdout_authorized": false,
+        "original_B04_positive_claim_closed": false
+      },
+      "evidence": [
+        {
+          "path": "evidence/WITHIN_RUN_AUDIT.json",
+          "path_base": "review_directory",
+          "sha256": "0105da40023843b7551308c51e86fa945f9d213f21af29d53fb43a5fdfa6814f",
+          "bytes": 286822
+        },
+        {
+          "path": "evidence/MEDIA_AUDIT.json",
+          "path_base": "review_directory",
+          "sha256": "45240283c980e1558e4e8374a1e74088b126764f5d301d06d4b2c42a8048d7fe",
+          "bytes": 143656
+        },
+        {
+          "path": "evidence/AUDIT.json",
+          "path_base": "review_directory",
+          "sha256": "35af3341f3fc283c41beda469e5c9ff2531f7bf01d537cb4dcc9c4a7fd6b42df",
+          "bytes": 213
+        }
+      ]
+    },
+    {
+      "id": "V5-A01",
+      "title": "Concrete raw preservation plan",
+      "state": "closed_pass",
+      "scope": "Preparation only; no archive/restore/upload success implied",
+      "closure_criteria": [
+        "Define actual-file census, inclusion/exclusion, file/member/volume hashes and full-stream/literal-restore checks.",
+        "Respect the 512000-byte Git blob gate and the historical explicit-destination approval boundary."
+      ],
+      "actual": {
+        "plan_written": true,
+        "archive_built_attested": false,
+        "upload_attempted_by_reviewer": false
+      },
+      "evidence": [
+        {
+          "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027/ARCHIVE_PLAN.md",
+          "path_base": "repository_root",
+          "sha256": "23e733b50dc4c57e42d323b079c35822344392f4063c379d16ea2c95062d4666"
+        }
+      ]
+    },
+    {
+      "id": "V5-A02",
+      "title": "Complete local raw archive and literal restored analysis",
+      "state": "open_insufficient_evidence",
+      "phase": "prepackage_snapshot_pending_build_restore",
+      "closure_criteria": [
+        "Archive the complete actual run including all failed/partial work, frozen dependencies, original assets and provenance.",
+        "Verify every member hash/length, archive and inner-stream CRC/EOF, safe exact inventory and any volume reconstruction.",
+        "Run restored frozen artifact analysis in a fresh directory and reproduce the original complete or partial disposition without model execution."
+      ],
+      "actual": {
+        "archive_built_attested": false,
+        "literal_restore_attested": false,
+        "postpackage_updates_will_be_separate_receipts": true
+      },
+      "evidence": []
+    },
+    {
+      "id": "V5-A03",
+      "title": "V5 durable raw custody",
+      "state": "approval_blocked",
+      "phase": "pending_verified_concrete_package_and_explicit_destination_authorization",
+      "closure_criteria": [
+        "Identify exact final archive/report or volume names, hashes, sizes and proposed durable destination.",
+        "Confirm any already explicit user authorization for those objects/destination; if missing, seek only the concrete necessary final approval.",
+        "After authorized transfer, record remote identities and verified retrievable byte identities."
+      ],
+      "actual": {
+        "upload_rejection_for_v5_claimed": false,
+        "new_upload_attempts": 0,
+        "durable_copy_attested": false,
+        "git_source_or_summary_is_raw_custody": false,
+        "named_new_raw_package_and_destination_authorization_received": false,
+        "new_filename_does_not_reset_prior_approval_boundary": true,
+        "local_packaging_and_verification_continue": true
+      },
+      "evidence": [
+        {
+          "path": "experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review/PERSISTENCE_APPROVAL_STATUS.json",
+          "path_base": "repository_root",
+          "sha256": "9158e9d235c58ded7dc34b4ecfc7d3c92a717661a4b94c37b3f325323cb00898",
+          "bytes": 2223
+        },
+        {
+          "path": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027/ARCHIVE_PLAN.md",
+          "path_base": "repository_root",
+          "sha256": "23e733b50dc4c57e42d323b079c35822344392f4063c379d16ea2c95062d4666",
+          "bytes": 10914
+        }
+      ],
+      "scope": "The documented private-archive egress approval boundary also applies to new V5 raw bytes; no new upload rejection or attempt is claimed"
+    },
+    {
+      "id": "H-P01",
+      "title": "Historical V2/V3 named-archive Library upload approval",
+      "state": "approval_blocked",
+      "scope": "Inherited automatic-review rejection; not a new V5 rejection",
+      "closure_criteria": [
+        "Obtain explicit authorization for the named historical raw archives/reports and Library destination, unless the full user conversation already supplies it.",
+        "Preserve prior rejection reasons and do not retry or substitute egress without applicable authorization."
+      ],
+      "actual": {
+        "prior_automatic_review_rejections": 3,
+        "historical_status": "BLOCKED_BY_AUTOMATIC_APPROVAL_REVIEW",
+        "new_upload_attempted_by_reviewer": false
+      },
+      "evidence": [
+        {
+          "path": "experiments/multimodal_output_portfolio/field_bridge_v4_20261027_review/PERSISTENCE_APPROVAL_STATUS.json",
+          "path_base": "repository_root",
+          "sha256": "9158e9d235c58ded7dc34b4ecfc7d3c92a717661a4b94c37b3f325323cb00898"
+        }
+      ]
+    },
+    {
+      "id": "H-A01",
+      "title": "Retrievable original V2/V3 raw bytes",
+      "state": "open_insufficient_evidence",
+      "scope": "Current inspection is not proof of irreversible loss from all external stores",
+      "closure_criteria": [
+        "Locate an existing complete archive or reconstructible original member/chunk set matching the historical recorded byte identities.",
+        "Keep historical successful local verification distinct from current retrievability; do not substitute new executions under historical hashes."
+      ],
+      "actual": {
+        "complete_original_archives_located_in_reviewed_sources": false,
+        "historical_verification_receipts_preserved": true,
+        "universal_loss_claimed": false
+      },
+      "evidence": [
+        {
+          "path": "qualification/module-execution-dossiers/R45_BINDING_REVIEW.md",
+          "path_base": "repository_root",
+          "sha256": "8394df074d9643464b364f7e044481dfaf6a4386df65f08c8539ab5d19103562",
+          "bytes": 6711
+        }
+      ]
+    },
+    {
+      "id": "V5-X03",
+      "title": "Post-failure current-run artifact integrity",
+      "state": "closed_pass",
+      "scope": "Within-current-run verification only; original frozen audit remains FAIL",
+      "closure_criteria": [
+        "Run the separately registered diagnostic source against the unchanged original FAIL and exact six phase seals.",
+        "Strictly reuse frozen stage, path and endpoint verification; grant no admission regardless of numerical results."
+      ],
+      "actual": {
+        "diagnostic_registered_commit": "f0897403189e866ffaa16c186fdb4ded2d3b5341",
+        "within_run_integrity": "PASS",
+        "overall_status": "FAIL",
+        "admission": false,
+        "source_freeze_sha256": "f86ef86edc02d81d2c68476c5742b332582cfb8a2096f6514dcdc616cdb64ab8"
+      },
+      "evidence": [
+        {
+          "path": "DIAGNOSTIC_PROTOCOL.json",
+          "path_base": "review_directory",
+          "sha256": "0766c2cc69b013c1d881c00e65ce425002d0922244ed37fa35855f7378339d08",
+          "bytes": 4572
+        },
+        {
+          "path": "evidence/WITHIN_RUN_AUDIT.json",
+          "path_base": "review_directory",
+          "sha256": "0105da40023843b7551308c51e86fa945f9d213f21af29d53fb43a5fdfa6814f",
+          "bytes": 286822
+        }
+      ]
+    },
+    {
+      "id": "V5-M01",
+      "title": "Independent reconstruction of all current hard-output scores",
+      "state": "closed_pass",
+      "scope": "Exact current-run media arithmetic; no historical-replay or scientific-superiority upgrade",
+      "closure_criteria": [
+        "Reconstruct legal source/target panels and independently recompute both observer utilities for all 150 retained endpoint files.",
+        "Require exact equality and bind original FAIL, diagnostic report, source freeze and all phase seals; no generator or new holdout."
+      ],
+      "actual": {
+        "media_files": 150,
+        "media_outputs": 192000,
+        "observer_values_verified": 384000,
+        "maximum_value_error": 0.0,
+        "all_exact": true,
+        "generator_calls": 0,
+        "frozen_audit_status": "FAIL",
+        "admission": false,
+        "new_holdout_authorized": false
+      },
+      "evidence": [
+        {
+          "path": "evidence/MEDIA_AUDIT.json",
+          "path_base": "review_directory",
+          "sha256": "45240283c980e1558e4e8374a1e74088b126764f5d301d06d4b2c42a8048d7fe",
+          "bytes": 143656
+        }
+      ]
+    },
+    {
+      "id": "V5-D02",
+      "title": "Independent action-gate and matched-terminal mechanism review",
+      "state": "closed_pass",
+      "phase": "independent_mechanism_evidence_bound",
+      "closure_criteria": [
+        "Bind the independent read-only review of all 288 adaptive decisions, margins, fallback actions and 48 same-grain terminal state comparisons.",
+        "Distinguish a gate that never overrides from evidence that learned representations are equivalent or universally unnecessary."
+      ],
+      "actual": {
+        "gate": {
+          "adaptive_decisions": 288,
+          "greedy_nonbaseline_by_mode": {
+            "field": 53,
+            "richer": 68
+          },
+          "margin_max": 0.01769331803209173,
+          "margin_min": 0.0,
+          "maximum_margin_tau_ratio": 0.7182597843657181,
+          "nonbaseline_overrides": 0,
+          "tau_max": 0.02710728320677247,
+          "tau_min": 0.01948005388318319,
+          "ties": 0,
+          "unique_greedy_nonbaseline_without_gate": 121
+        },
+        "bitwise_equality": {
+          "adaptive_baseline_path_pairs": 48,
+          "all_raw_endpoint_npz_files_byte_identical": true,
+          "all_terminal_optimizer_equal": true,
+          "all_terminal_parameters_equal": true,
+          "all_utility_arrays_bitwise_equal": true,
+          "raw_endpoint_file_pairs": 96
+        },
+        "representation_predictions": {
+          "greedy_disagreements": 26,
+          "maximum_prediction_difference": 0.01083449557824201,
+          "paired_macro_decisions": 144,
+          "raw_and_mapped_states_bitwise_equal": true
+        },
+        "generator_or_observer_calls": 0,
+        "scientific_retries": 0,
+        "overall_status": "FAIL",
+        "admission": false
+      },
+      "evidence": [
+        {
+          "path": "V5_NUMERIC_DIAGNOSIS.json",
+          "path_base": "review_directory",
+          "sha256": "7c7d74b07dfdaabd0457d491bcf4b69523cc2a4d5461748968008073b597da7e",
+          "bytes": 279785
+        },
+        {
+          "path": "V5_NUMERIC_DIAGNOSIS.md",
+          "path_base": "review_directory",
+          "sha256": "efb3588f1ae49bd3b108801a437f322c1777fc868e80a4464d91bb6c048c958e",
+          "bytes": 8697
+        }
+      ],
+      "scope": "Descriptive mechanism diagnosis of this rejected candidate only; no active-control efficacy or representation-equivalence claim"
+    }
+  ],
+  "all_original_substantive_blockers_closed": false,
+  "current_study_execution_complete": true,
+  "current_candidate_disposition": "REJECTED",
+  "new_holdout_authorized": false,
+  "certificate": false,
+  "authority": "DENY_ALL",
+  "requires_calibration": true,
+  "native_owner_integration": false,
+  "source_freeze_sha256": "f86ef86edc02d81d2c68476c5742b332582cfb8a2096f6514dcdc616cdb64ab8",
+  "registered_scientific_commit": "f49810e422892a76c1d37c19c5b4d5112cba6d9e",
+  "paper_source_commit": "f8df0a6075f58f3ab9431a889b773cdf8d6e771d",
+  "remaining_scientific_claims": [
+    "B03",
+    "B04",
+    "B05",
+    "B06",
+    "B07",
+    "B09 historical/scope clause",
+    "L01",
+    "L02"
+  ],
+  "result_update_contract": [
+    "Only add terminal evidence after the root provides the full run and audit identities.",
+    "Do not replace any inherited item closure_criteria, status, resolution, v3_update or v4_update.",
+    "Use work-item dispositions to distinguish valid candidate rejection from scientific-positive closure.",
+    "Preserve historical B09 scope mismatch, B10 custody limitations and L01/L02 claim boundaries."
+  ],
+  "original_frozen_audit_status": "FAIL",
+  "within_current_run_integrity": "PASS",
+  "independent_media_arithmetic": "PASS",
+  "historical_regression_status": "FAIL",
+  "historical_regression_causal_attribution": "UNDETERMINED",
+  "current_numeric_development_entry": {
+    "admission": false,
+    "checks": {
+      "audit_clean_each_model": true,
+      "audit_frozen_each_model": true,
+      "audit_frozen_pooled": true,
+      "audit_ordinary_each_model": true,
+      "audit_ordinary_pooled": false,
+      "audit_richer_each_model": true,
+      "audit_richer_pooled": false,
+      "reward_clean_each_model": true,
+      "reward_frozen_each_model": true,
+      "reward_frozen_pooled": true,
+      "reward_ordinary_each_model": true,
+      "reward_ordinary_pooled": false,
+      "reward_richer_each_model": true,
+      "reward_richer_pooled": false
+    },
+    "new_holdout_authorized": false,
+    "numeric_passed": false,
+    "override_reason": "Original frozen historical-regression audit remains FAIL; numeric checks are diagnostic only",
+    "passed": false,
+    "rule": {
+      "all_observers_required": true,
+      "all_paths_complete": true,
+      "candidate": "field_8",
+      "clean_delta_each_model_min": -0.01,
+      "field_over_matched_ordinary_each_model_min": 0.0,
+      "field_over_matched_ordinary_pooled_strict_min": 0.001,
+      "field_over_matched_richer_each_model_min": 0.0,
+      "field_over_matched_richer_pooled_strict_min": 0.0,
+      "passing_authorizes_new_holdout_automatically": false,
+      "task_gain_over_frozen_each_model_min": 0.0,
+      "task_gain_over_frozen_pooled_min": 0.005
+    }
+  },
+  "current_raw_archive_status": "PENDING_LOCAL_PACKAGE_AND_RESTORE",
+  "current_raw_durable_custody_status": "APPROVAL_BLOCKED_NO_NEW_UPLOAD_ATTEMPT",
+  "postpackage_receipts_separate_from_this_immutable_prepackage_snapshot": true,
+  "diagnostic_registered_commit": "f0897403189e866ffaa16c186fdb4ded2d3b5341",
+  "current_evidence_identities": {
+    "frozen_audit": {
+      "path": "evidence/AUDIT.json",
+      "path_base": "review_directory",
+      "sha256": "35af3341f3fc283c41beda469e5c9ff2531f7bf01d537cb4dcc9c4a7fd6b42df",
+      "bytes": 213
+    },
+    "within_run_diagnostic": {
+      "path": "evidence/WITHIN_RUN_AUDIT.json",
+      "path_base": "review_directory",
+      "sha256": "0105da40023843b7551308c51e86fa945f9d213f21af29d53fb43a5fdfa6814f",
+      "bytes": 286822
+    },
+    "media_reaudit": {
+      "path": "evidence/MEDIA_AUDIT.json",
+      "path_base": "review_directory",
+      "sha256": "45240283c980e1558e4e8374a1e74088b126764f5d301d06d4b2c42a8048d7fe",
+      "bytes": 143656
+    },
+    "independent_numeric_diagnosis": {
+      "path": "V5_NUMERIC_DIAGNOSIS.json",
+      "path_base": "review_directory",
+      "sha256": "7c7d74b07dfdaabd0457d491bcf4b69523cc2a4d5461748968008073b597da7e",
+      "bytes": 279785
+    },
+    "independent_numeric_interpretation": {
+      "path": "V5_NUMERIC_DIAGNOSIS.md",
+      "path_base": "review_directory",
+      "sha256": "efb3588f1ae49bd3b108801a437f322c1777fc868e80a4464d91bb6c048c958e",
+      "bytes": 8697
+    }
+  },
+  "current_descriptive_comparisons": [
+    {
+      "comparison": "field_48-ordinary_48",
+      "per_seed": {
+        "17": {
+          "clean": {
+            "audit": 0.0,
+            "reward": 0.0
+          },
+          "task": {
+            "audit": 0.0,
+            "reward": 0.0
+          }
+        },
+        "29": {
+          "clean": {
+            "audit": 0.0,
+            "reward": 0.0
+          },
+          "task": {
+            "audit": 0.0,
+            "reward": 0.0
+          }
+        },
+        "43": {
+          "clean": {
+            "audit": 0.0,
+            "reward": 0.0
+          },
+          "task": {
+            "audit": 0.0,
+            "reward": 0.0
+          }
+        }
+      },
+      "pooled": {
+        "clean": {
+          "audit": 0.0,
+          "reward": 0.0
+        },
+        "task": {
+          "audit": 0.0,
+          "reward": 0.0
+        }
+      },
+      "positive_task_seed_counts": {
+        "audit": 0,
+        "reward": 0
+      }
+    },
+    {
+      "comparison": "field_48-richer_48",
+      "per_seed": {
+        "17": {
+          "clean": {
+            "audit": 0.0,
+            "reward": 0.0
+          },
+          "task": {
+            "audit": 0.0,
+            "reward": 0.0
+          }
+        },
+        "29": {
+          "clean": {
+            "audit": 0.0,
+            "reward": 0.0
+          },
+          "task": {
+            "audit": 0.0,
+            "reward": 0.0
+          }
+        },
+        "43": {
+          "clean": {
+            "audit": 0.0,
+            "reward": 0.0
+          },
+          "task": {
+            "audit": 0.0,
+            "reward": 0.0
+          }
+        }
+      },
+      "pooled": {
+        "clean": {
+          "audit": 0.0,
+          "reward": 0.0
+        },
+        "task": {
+          "audit": 0.0,
+          "reward": 0.0
+        }
+      },
+      "positive_task_seed_counts": {
+        "audit": 0,
+        "reward": 0
+      }
+    },
+    {
+      "comparison": "field_8-ordinary_8",
+      "per_seed": {
+        "17": {
+          "clean": {
+            "audit": 0.0,
+            "reward": 0.0
+          },
+          "task": {
+            "audit": 0.0,
+            "reward": 0.0
+          }
+        },
+        "29": {
+          "clean": {
+            "audit": 0.0,
+            "reward": 0.0
+          },
+          "task": {
+            "audit": 0.0,
+            "reward": 0.0
+          }
+        },
+        "43": {
+          "clean": {
+            "audit": 0.0,
+            "reward": 0.0
+          },
+          "task": {
+            "audit": 0.0,
+            "reward": 0.0
+          }
+        }
+      },
+      "pooled": {
+        "clean": {
+          "audit": 0.0,
+          "reward": 0.0
+        },
+        "task": {
+          "audit": 0.0,
+          "reward": 0.0
+        }
+      },
+      "positive_task_seed_counts": {
+        "audit": 0,
+        "reward": 0
+      }
+    },
+    {
+      "comparison": "field_8-richer_8",
+      "per_seed": {
+        "17": {
+          "clean": {
+            "audit": 0.0,
+            "reward": 0.0
+          },
+          "task": {
+            "audit": 0.0,
+            "reward": 0.0
+          }
+        },
+        "29": {
+          "clean": {
+            "audit": 0.0,
+            "reward": 0.0
+          },
+          "task": {
+            "audit": 0.0,
+            "reward": 0.0
+          }
+        },
+        "43": {
+          "clean": {
+            "audit": 0.0,
+            "reward": 0.0
+          },
+          "task": {
+            "audit": 0.0,
+            "reward": 0.0
+          }
+        }
+      },
+      "pooled": {
+        "clean": {
+          "audit": 0.0,
+          "reward": 0.0
+        },
+        "task": {
+          "audit": 0.0,
+          "reward": 0.0
+        }
+      },
+      "positive_task_seed_counts": {
+        "audit": 0,
+        "reward": 0
+      }
+    },
+    {
+      "comparison": "ordinary_8-ordinary_48",
+      "per_seed": {
+        "17": {
+          "clean": {
+            "audit": -0.002221148086300695,
+            "reward": 0.0011479925386992385
+          },
+          "task": {
+            "audit": -0.0007983978220635901,
+            "reward": -0.0013355071970637677
+          }
+        },
+        "29": {
+          "clean": {
+            "audit": -0.000895754363864576,
+            "reward": -0.004045168426364487
+          },
+          "task": {
+            "audit": -0.004433710352782283,
+            "reward": -0.007430536524657305
+          }
+        },
+        "43": {
+          "clean": {
+            "audit": 3.2632215970829215e-05,
+            "reward": -0.004410727159029237
+          },
+          "task": {
+            "audit": -0.021663627635189364,
+            "reward": -0.030220756541439076
+          }
+        }
+      },
+      "pooled": {
+        "clean": {
+          "audit": -0.001028090078064814,
+          "reward": -0.0024359676822314955
+        },
+        "task": {
+          "audit": -0.008965245270011746,
+          "reward": -0.01299560008772005
+        }
+      },
+      "positive_task_seed_counts": {
+        "audit": 0,
+        "reward": 0
+      }
+    },
+    {
+      "comparison": "field_8-field_48",
+      "per_seed": {
+        "17": {
+          "clean": {
+            "audit": -0.002221148086300695,
+            "reward": 0.0011479925386992385
+          },
+          "task": {
+            "audit": -0.0007983978220635901,
+            "reward": -0.0013355071970637677
+          }
+        },
+        "29": {
+          "clean": {
+            "audit": -0.000895754363864576,
+            "reward": -0.004045168426364487
+          },
+          "task": {
+            "audit": -0.004433710352782283,
+            "reward": -0.007430536524657305
+          }
+        },
+        "43": {
+          "clean": {
+            "audit": 3.2632215970829215e-05,
+            "reward": -0.004410727159029237
+          },
+          "task": {
+            "audit": -0.021663627635189364,
+            "reward": -0.030220756541439076
+          }
+        }
+      },
+      "pooled": {
+        "clean": {
+          "audit": -0.001028090078064814,
+          "reward": -0.0024359676822314955
+        },
+        "task": {
+          "audit": -0.008965245270011746,
+          "reward": -0.01299560008772005
+        }
+      },
+      "positive_task_seed_counts": {
+        "audit": 0,
+        "reward": 0
+      }
+    },
+    {
+      "comparison": "richer_8-richer_48",
+      "per_seed": {
+        "17": {
+          "clean": {
+            "audit": -0.002221148086300695,
+            "reward": 0.0011479925386992385
+          },
+          "task": {
+            "audit": -0.0007983978220635901,
+            "reward": -0.0013355071970637677
+          }
+        },
+        "29": {
+          "clean": {
+            "audit": -0.000895754363864576,
+            "reward": -0.004045168426364487
+          },
+          "task": {
+            "audit": -0.004433710352782283,
+            "reward": -0.007430536524657305
+          }
+        },
+        "43": {
+          "clean": {
+            "audit": 3.2632215970829215e-05,
+            "reward": -0.004410727159029237
+          },
+          "task": {
+            "audit": -0.021663627635189364,
+            "reward": -0.030220756541439076
+          }
+        }
+      },
+      "pooled": {
+        "clean": {
+          "audit": -0.001028090078064814,
+          "reward": -0.0024359676822314955
+        },
+        "task": {
+          "audit": -0.008965245270011746,
+          "reward": -0.01299560008772005
+        }
+      },
+      "positive_task_seed_counts": {
+        "audit": 0,
+        "reward": 0
+      }
+    }
+  ],
+  "historical_descriptive_differences": {
+    "causal_attribution": "UNDETERMINED",
+    "exact_regression_gate_unchanged": true,
+    "recorded_old_runtime": {
+      "atomic_archive_publication_requires": "Linux glibc renameat2(RENAME_NOREPLACE)",
+      "interop_threads": 1,
+      "machine": "x86_64",
+      "native_library_sha256": "253fb6a5d2115283148f99c83007363aa09ef3c66dcaf51e172563b0891d2a00",
+      "numpy": "2.3.5",
+      "openblas_threads": 1,
+      "pillow": "12.3.0",
+      "platform": "linux",
+      "python": "3.12.14",
+      "runtime_canonical_torch_threads": 1,
+      "runtime_package_versions": [
+        {
+          "name": "filelock",
+          "version": "3.32.3"
+        },
+        {
+          "name": "fsspec",
+          "version": "2026.7.0"
+        },
+        {
+          "name": "Jinja2",
+          "version": "3.1.6"
+        },
+        {
+          "name": "MarkupSafe",
+          "version": "3.0.3"
+        },
+        {
+          "name": "mpmath",
+          "version": "1.3.0"
+        },
+        {
+          "name": "networkx",
+          "version": "3.6.1"
+        },
+        {
+          "name": "setuptools",
+          "version": "78.1.0"
+        },
+        {
+          "name": "sympy",
+          "version": "1.14.0"
+        },
+        {
+          "name": "torch",
+          "version": "2.8.0+cpu"
+        },
+        {
+          "name": "typing_extensions",
+          "version": "4.16.0"
+        }
+      ],
+      "schema": "hepta.field-bridge.v3.archive-runtime-environment.1",
+      "scope": "Dependency identity only; no fresh scientific execution, no qualification or production authority change",
+      "statistical_restore_model_native_network_calls": 0,
+      "statistical_restore_requires": [
+        "Python 3.12",
+        "NumPy 2.3.5"
+      ],
+      "torch": "2.8.0+cpu",
+      "training_torch_threads": 2
+    },
+    "recorded_runtime_matches": true,
+    "seeds": {
+      "17": {
+        "core_source_matches": {
+          "field_bridge_20261027/adapters.py": true,
+          "field_bridge_v3_20261027/learning.py": true,
+          "v6/data.py": true,
+          "v6/neural.py": true,
+          "v6/observer.py": true
+        },
+        "current_method": "ordinary_48",
+        "endpoints": {
+          "clean": {
+            "frozen": {
+              "changed_values": 4,
+              "exact": false,
+              "maximum_absolute_difference": 5.863606930001097e-07,
+              "maximum_signed_difference": 2.846121787136724e-07,
+              "mean_absolute_difference": 1.7011188900659807e-09,
+              "mean_signed_difference": -5.893525669656979e-10,
+              "minimum_signed_difference": -5.863606930001097e-07,
+              "per_observer": {
+                "audit": {
+                  "changed_values": 2,
+                  "maximum_absolute_difference": 5.863606930001097e-07,
+                  "maximum_signed_difference": 2.846121787136724e-07,
+                  "mean_absolute_difference": 1.7011188900659807e-09,
+                  "mean_signed_difference": -5.893525669656979e-10,
+                  "minimum_signed_difference": -5.863606930001097e-07,
+                  "rmse": 2.8805074781018415e-08,
+                  "values": 512
+                },
+                "reward": {
+                  "changed_values": 2,
+                  "maximum_absolute_difference": 5.863606930001097e-07,
+                  "maximum_signed_difference": 2.846121787136724e-07,
+                  "mean_absolute_difference": 1.7011188900659807e-09,
+                  "mean_signed_difference": -5.893525669656979e-10,
+                  "minimum_signed_difference": -5.863606930001097e-07,
+                  "rmse": 2.8805074781018415e-08,
+                  "values": 512
+                }
+              },
+              "rmse": 2.8805074781018415e-08,
+              "shape": [
+                2,
+                512
+              ],
+              "tolerance_pass": null,
+              "values": 1024
+            },
+            "ordinary": {
+              "changed_values": 38,
+              "exact": false,
+              "maximum_absolute_difference": 5.587935447692871e-07,
+              "maximum_signed_difference": 4.5746564858450967e-07,
+              "mean_absolute_difference": 1.705484464753753e-09,
+              "mean_signed_difference": 2.4156179270415357e-10,
+              "minimum_signed_difference": -5.587935447692871e-07,
+              "per_observer": {
+                "audit": {
+                  "changed_values": 19,
+                  "maximum_absolute_difference": 5.587935447692871e-07,
+                  "maximum_signed_difference": 4.5746564858450967e-07,
+                  "mean_absolute_difference": 1.705484464699543e-09,
+                  "mean_signed_difference": 2.4156179270415357e-10,
+                  "minimum_signed_difference": -5.587935447692871e-07,
+                  "rmse": 2.3914744817065227e-08,
+                  "values": 2048
+                },
+                "reward": {
+                  "changed_values": 19,
+                  "maximum_absolute_difference": 5.587935447692871e-07,
+                  "maximum_signed_difference": 4.5746564858450967e-07,
+                  "mean_absolute_difference": 1.7054844648079631e-09,
+                  "mean_signed_difference": 2.4156179270415357e-10,
+                  "minimum_signed_difference": -5.587935447692871e-07,
+                  "rmse": 2.3914744817918123e-08,
+                  "values": 2048
+                }
+              },
+              "rmse": 2.3914744817491675e-08,
+              "shape": [
+                4,
+                2,
+                512
+              ],
+              "tolerance_pass": null,
+              "values": 4096
+            },
+            "ordinary_minus_frozen_gain": {
+              "changed_values": 54,
+              "exact": false,
+              "maximum_absolute_difference": 5.863606930001097e-07,
+              "maximum_signed_difference": 5.863606930001097e-07,
+              "mean_absolute_difference": 3.4066033548197337e-09,
+              "mean_signed_difference": 8.309143596698515e-10,
+              "minimum_signed_difference": -5.587935447692871e-07,
+              "per_observer": {
+                "audit": {
+                  "changed_values": 27,
+                  "maximum_absolute_difference": 5.863606930001097e-07,
+                  "maximum_signed_difference": 5.863606930001097e-07,
+                  "mean_absolute_difference": 3.4066033547655236e-09,
+                  "mean_signed_difference": 8.309143596698515e-10,
+                  "minimum_signed_difference": -5.587935447692871e-07,
+                  "rmse": 3.74385810736119e-08,
+                  "values": 2048
+                },
+                "reward": {
+                  "changed_values": 27,
+                  "maximum_absolute_difference": 5.863606930001097e-07,
+                  "maximum_signed_difference": 5.863606930001097e-07,
+                  "mean_absolute_difference": 3.406603354873944e-09,
+                  "mean_signed_difference": 8.309143596698515e-10,
+                  "minimum_signed_difference": -5.587935447692871e-07,
+                  "rmse": 3.7438581074156706e-08,
+                  "values": 2048
+                }
+              },
+              "rmse": 3.7438581073884306e-08,
+              "shape": [
+                4,
+                2,
+                512
+              ],
+              "tolerance_pass": null,
+              "values": 4096
+            }
+          },
+          "task": {
+            "frozen": {
+              "changed_values": 24,
+              "exact": false,
+              "maximum_absolute_difference": 8.1434845922157e-07,
+              "maximum_signed_difference": 2.4512410168320287e-07,
+              "mean_absolute_difference": 1.6823832992419845e-09,
+              "mean_signed_difference": -1.133412297230161e-09,
+              "minimum_signed_difference": -8.1434845922157e-07,
+              "per_observer": {
+                "audit": {
+                  "changed_values": 12,
+                  "maximum_absolute_difference": 8.1434845922157e-07,
+                  "maximum_signed_difference": 2.4512410168320287e-07,
+                  "mean_absolute_difference": 1.6823832992419845e-09,
+                  "mean_signed_difference": -1.133412297230161e-09,
+                  "minimum_signed_difference": -8.1434845922157e-07,
+                  "rmse": 2.8456361573237352e-08,
+                  "values": 2048
+                },
+                "reward": {
+                  "changed_values": 12,
+                  "maximum_absolute_difference": 8.1434845922157e-07,
+                  "maximum_signed_difference": 2.4512410168320287e-07,
+                  "mean_absolute_difference": 1.6823832992419845e-09,
+                  "mean_signed_difference": -1.133412297230161e-09,
+                  "minimum_signed_difference": -8.1434845922157e-07,
+                  "rmse": 2.8456361573237352e-08,
+                  "values": 2048
+                }
+              },
+              "rmse": 2.8456361573237352e-08,
+              "shape": [
+                2,
+                2048
+              ],
+              "tolerance_pass": null,
+              "values": 4096
+            },
+            "ordinary": {
+              "changed_values": 130,
+              "exact": false,
+              "maximum_absolute_difference": 8.568167686462402e-07,
+              "maximum_signed_difference": 8.568167686462402e-07,
+              "mean_absolute_difference": 2.3313077690789415e-09,
+              "mean_signed_difference": -2.093656804050487e-10,
+              "minimum_signed_difference": -8.143484593325923e-07,
+              "per_observer": {
+                "audit": {
+                  "changed_values": 65,
+                  "maximum_absolute_difference": 8.568167686462402e-07,
+                  "maximum_signed_difference": 8.568167686462402e-07,
+                  "mean_absolute_difference": 2.3313077690789415e-09,
+                  "mean_signed_difference": -2.093656804050487e-10,
+                  "minimum_signed_difference": -8.143484593325923e-07,
+                  "rmse": 3.2448984483414134e-08,
+                  "values": 8192
+                },
+                "reward": {
+                  "changed_values": 65,
+                  "maximum_absolute_difference": 8.568167686462402e-07,
+                  "maximum_signed_difference": 8.568167686462402e-07,
+                  "mean_absolute_difference": 2.3313077690789415e-09,
+                  "mean_signed_difference": -2.093656804050487e-10,
+                  "minimum_signed_difference": -8.143484593325923e-07,
+                  "rmse": 3.244898448310171e-08,
+                  "values": 8192
+                }
+              },
+              "rmse": 3.244898448325792e-08,
+              "shape": [
+                4,
+                2,
+                2048
+              ],
+              "tolerance_pass": null,
+              "values": 16384
+            },
+            "ordinary_minus_frozen_gain": {
+              "changed_values": 226,
+              "exact": false,
+              "maximum_absolute_difference": 8.568167686462402e-07,
+              "maximum_signed_difference": 8.568167686462402e-07,
+              "mean_absolute_difference": 4.013691068320926e-09,
+              "mean_signed_difference": 9.240466168251122e-10,
+              "minimum_signed_difference": -8.143484593325923e-07,
+              "per_observer": {
+                "audit": {
+                  "changed_values": 113,
+                  "maximum_absolute_difference": 8.568167686462402e-07,
+                  "maximum_signed_difference": 8.568167686462402e-07,
+                  "mean_absolute_difference": 4.013691068320926e-09,
+                  "mean_signed_difference": 9.240466168251122e-10,
+                  "minimum_signed_difference": -8.143484593325923e-07,
+                  "rmse": 4.3159021165819676e-08,
+                  "values": 8192
+                },
+                "reward": {
+                  "changed_values": 113,
+                  "maximum_absolute_difference": 8.568167686462402e-07,
+                  "maximum_signed_difference": 8.568167686462402e-07,
+                  "mean_absolute_difference": 4.013691068320926e-09,
+                  "mean_signed_difference": 9.240466168251122e-10,
+                  "minimum_signed_difference": -8.143484593325923e-07,
+                  "rmse": 4.315902116558478e-08,
+                  "values": 8192
+                }
+              },
+              "rmse": 4.315902116570223e-08,
+              "shape": [
+                4,
+                2,
+                2048
+              ],
+              "tolerance_pass": null,
+              "values": 16384
+            }
+          }
+        },
+        "old_endpoint_sha256": "bc708f54093598e302a19f371dc311d12332ac21be2e39d5c1d168bd2b27e4bb",
+        "old_method": "ordinary_2"
+      },
+      "29": {
+        "core_source_matches": {
+          "field_bridge_20261027/adapters.py": true,
+          "field_bridge_v3_20261027/learning.py": true,
+          "v6/data.py": true,
+          "v6/neural.py": true,
+          "v6/observer.py": true
+        },
+        "current_method": "ordinary_48",
+        "endpoints": {
+          "clean": {
+            "frozen": {
+              "changed_values": 6,
+              "exact": false,
+              "maximum_absolute_difference": 7.003545761108398e-07,
+              "maximum_signed_difference": 7.003545761108398e-07,
+              "mean_absolute_difference": 1.7207639755375398e-09,
+              "mean_signed_difference": 1.0149960873954283e-09,
+              "minimum_signed_difference": -1.2367963786452663e-07,
+              "per_observer": {
+                "audit": {
+                  "changed_values": 3,
+                  "maximum_absolute_difference": 7.003545761108398e-07,
+                  "maximum_signed_difference": 7.003545761108398e-07,
+                  "mean_absolute_difference": 1.7207639755375398e-09,
+                  "mean_signed_difference": 1.0149960873954283e-09,
+                  "minimum_signed_difference": -1.2367963786452663e-07,
+                  "rmse": 3.153129139126472e-08,
+                  "values": 512
+                },
+                "reward": {
+                  "changed_values": 3,
+                  "maximum_absolute_difference": 7.003545761108398e-07,
+                  "maximum_signed_difference": 7.003545761108398e-07,
+                  "mean_absolute_difference": 1.7207639755375398e-09,
+                  "mean_signed_difference": 1.0149960873954283e-09,
+                  "minimum_signed_difference": -1.2367963786452663e-07,
+                  "rmse": 3.153129139126472e-08,
+                  "values": 512
+                }
+              },
+              "rmse": 3.153129139126472e-08,
+              "shape": [
+                2,
+                512
+              ],
+              "tolerance_pass": null,
+              "values": 1024
+            },
+            "ordinary": {
+              "changed_values": 100,
+              "exact": false,
+              "maximum_absolute_difference": 7.897615432739258e-07,
+              "maximum_signed_difference": 7.003545761108398e-07,
+              "mean_absolute_difference": 7.219387043771097e-09,
+              "mean_signed_difference": 1.5284967959567925e-09,
+              "minimum_signed_difference": -7.897615432739258e-07,
+              "per_observer": {
+                "audit": {
+                  "changed_values": 50,
+                  "maximum_absolute_difference": 7.897615432739258e-07,
+                  "maximum_signed_difference": 7.003545761108398e-07,
+                  "mean_absolute_difference": 7.219387043852412e-09,
+                  "mean_signed_difference": 1.5284967959838976e-09,
+                  "minimum_signed_difference": -7.897615432739258e-07,
+                  "rmse": 5.7482964263876393e-08,
+                  "values": 2048
+                },
+                "reward": {
+                  "changed_values": 50,
+                  "maximum_absolute_difference": 7.897615432739258e-07,
+                  "maximum_signed_difference": 7.003545761108398e-07,
+                  "mean_absolute_difference": 7.219387043689782e-09,
+                  "mean_signed_difference": 1.5284967959296875e-09,
+                  "minimum_signed_difference": -7.897615432739258e-07,
+                  "rmse": 5.7482964262521e-08,
+                  "values": 2048
+                }
+              },
+              "rmse": 5.7482964263198694e-08,
+              "shape": [
+                4,
+                2,
+                512
+              ],
+              "tolerance_pass": null,
+              "values": 4096
+            },
+            "ordinary_minus_frozen_gain": {
+              "changed_values": 100,
+              "exact": false,
+              "maximum_absolute_difference": 7.897615432739258e-07,
+              "maximum_signed_difference": 6.727874278800172e-07,
+              "mean_absolute_difference": 7.219387043771097e-09,
+              "mean_signed_difference": 5.135007085613642e-10,
+              "minimum_signed_difference": -7.897615432739258e-07,
+              "per_observer": {
+                "audit": {
+                  "changed_values": 50,
+                  "maximum_absolute_difference": 7.897615432739258e-07,
+                  "maximum_signed_difference": 6.727874278800172e-07,
+                  "mean_absolute_difference": 7.219387043852412e-09,
+                  "mean_signed_difference": 5.135007085884692e-10,
+                  "minimum_signed_difference": -7.897615432739258e-07,
+                  "rmse": 5.7482964263876393e-08,
+                  "values": 2048
+                },
+                "reward": {
+                  "changed_values": 50,
+                  "maximum_absolute_difference": 7.897615432739258e-07,
+                  "maximum_signed_difference": 6.727874277689949e-07,
+                  "mean_absolute_difference": 7.219387043689782e-09,
+                  "mean_signed_difference": 5.135007085342591e-10,
+                  "minimum_signed_difference": -7.897615432739258e-07,
+                  "rmse": 5.7482964262521e-08,
+                  "values": 2048
+                }
+              },
+              "rmse": 5.74829642631987e-08,
+              "shape": [
+                4,
+                2,
+                512
+              ],
+              "tolerance_pass": null,
+              "values": 4096
+            }
+          },
+          "task": {
+            "frozen": {
+              "changed_values": 34,
+              "exact": false,
+              "maximum_absolute_difference": 7.390975951260259e-07,
+              "maximum_signed_difference": 4.3362379065214895e-07,
+              "mean_absolute_difference": 2.5669578463164387e-09,
+              "mean_signed_difference": -1.5555997379449425e-09,
+              "minimum_signed_difference": -7.390975951260259e-07,
+              "per_observer": {
+                "audit": {
+                  "changed_values": 17,
+                  "maximum_absolute_difference": 7.390975951260259e-07,
+                  "maximum_signed_difference": 4.3362379065214895e-07,
+                  "mean_absolute_difference": 2.5669578463164387e-09,
+                  "mean_signed_difference": -1.5555997379449425e-09,
+                  "minimum_signed_difference": -7.390975951260259e-07,
+                  "rmse": 3.4504770839679904e-08,
+                  "values": 2048
+                },
+                "reward": {
+                  "changed_values": 17,
+                  "maximum_absolute_difference": 7.390975951260259e-07,
+                  "maximum_signed_difference": 4.3362379065214895e-07,
+                  "mean_absolute_difference": 2.5669578463164387e-09,
+                  "mean_signed_difference": -1.5555997379449425e-09,
+                  "minimum_signed_difference": -7.390975951260259e-07,
+                  "rmse": 3.4504770839679904e-08,
+                  "values": 2048
+                }
+              },
+              "rmse": 3.4504770839679904e-08,
+              "shape": [
+                2,
+                2048
+              ],
+              "tolerance_pass": null,
+              "values": 4096
+            },
+            "ordinary": {
+              "changed_values": 494,
+              "exact": false,
+              "maximum_absolute_difference": 8.76933336280139e-07,
+              "maximum_signed_difference": 8.76933336280139e-07,
+              "mean_absolute_difference": 8.893766789714729e-09,
+              "mean_signed_difference": -1.7862475956237312e-10,
+              "minimum_signed_difference": -8.501112461756222e-07,
+              "per_observer": {
+                "audit": {
+                  "changed_values": 247,
+                  "maximum_absolute_difference": 8.76933336280139e-07,
+                  "maximum_signed_difference": 8.76933336280139e-07,
+                  "mean_absolute_difference": 8.893766789762163e-09,
+                  "mean_signed_difference": -1.786247595691494e-10,
+                  "minimum_signed_difference": -8.501112461756222e-07,
+                  "rmse": 6.216131311236005e-08,
+                  "values": 8192
+                },
+                "reward": {
+                  "changed_values": 247,
+                  "maximum_absolute_difference": 8.76933336280139e-07,
+                  "maximum_signed_difference": 8.76933336280139e-07,
+                  "mean_absolute_difference": 8.893766789667295e-09,
+                  "mean_signed_difference": -1.7862475955559686e-10,
+                  "minimum_signed_difference": -8.501112461756222e-07,
+                  "rmse": 6.21613131120749e-08,
+                  "values": 8192
+                }
+              },
+              "rmse": 6.216131311221749e-08,
+              "shape": [
+                4,
+                2,
+                2048
+              ],
+              "tolerance_pass": null,
+              "values": 16384
+            },
+            "ordinary_minus_frozen_gain": {
+              "changed_values": 490,
+              "exact": false,
+              "maximum_absolute_difference": 8.76933336280139e-07,
+              "maximum_signed_difference": 8.76933336280139e-07,
+              "mean_absolute_difference": 8.85938788997687e-09,
+              "mean_signed_difference": 1.3769749783825694e-09,
+              "minimum_signed_difference": -8.501112461756222e-07,
+              "per_observer": {
+                "audit": {
+                  "changed_values": 245,
+                  "maximum_absolute_difference": 8.76933336280139e-07,
+                  "maximum_signed_difference": 8.76933336280139e-07,
+                  "mean_absolute_difference": 8.859387890024304e-09,
+                  "mean_signed_difference": 1.3769749783757931e-09,
+                  "minimum_signed_difference": -8.501112461756222e-07,
+                  "rmse": 6.208506551748779e-08,
+                  "values": 8192
+                },
+                "reward": {
+                  "changed_values": 245,
+                  "maximum_absolute_difference": 8.76933336280139e-07,
+                  "maximum_signed_difference": 8.76933336280139e-07,
+                  "mean_absolute_difference": 8.859387889929436e-09,
+                  "mean_signed_difference": 1.3769749783893457e-09,
+                  "minimum_signed_difference": -8.501112461756222e-07,
+                  "rmse": 6.208506551726083e-08,
+                  "values": 8192
+                }
+              },
+              "rmse": 6.208506551737432e-08,
+              "shape": [
+                4,
+                2,
+                2048
+              ],
+              "tolerance_pass": null,
+              "values": 16384
+            }
+          }
+        },
+        "old_endpoint_sha256": "751851494f31fd03094e72491286531a3f878351e9a84394fe11ad35d9c9661c",
+        "old_method": "ordinary_3"
+      },
+      "43": {
+        "core_source_matches": {
+          "field_bridge_20261027/adapters.py": true,
+          "field_bridge_v3_20261027/learning.py": true,
+          "v6/data.py": true,
+          "v6/neural.py": true,
+          "v6/observer.py": true
+        },
+        "current_method": "ordinary_48",
+        "endpoints": {
+          "clean": {
+            "frozen": {
+              "changed_values": 12,
+              "exact": false,
+              "maximum_absolute_difference": 7.592141627599247e-07,
+              "maximum_signed_difference": 1.4677643767058157e-07,
+              "mean_absolute_difference": 2.8638169164655475e-09,
+              "mean_signed_difference": -1.7695128918995134e-09,
+              "minimum_signed_difference": -7.592141627599247e-07,
+              "per_observer": {
+                "audit": {
+                  "changed_values": 6,
+                  "maximum_absolute_difference": 7.592141627599247e-07,
+                  "maximum_signed_difference": 1.4677643767058157e-07,
+                  "mean_absolute_difference": 2.8638169164655475e-09,
+                  "mean_signed_difference": -1.7695128918995134e-09,
+                  "minimum_signed_difference": -7.592141627599247e-07,
+                  "rmse": 3.7217903735291674e-08,
+                  "values": 512
+                },
+                "reward": {
+                  "changed_values": 6,
+                  "maximum_absolute_difference": 7.592141627599247e-07,
+                  "maximum_signed_difference": 1.4677643767058157e-07,
+                  "mean_absolute_difference": 2.8638169164655475e-09,
+                  "mean_signed_difference": -1.7695128918995134e-09,
+                  "minimum_signed_difference": -7.592141627599247e-07,
+                  "rmse": 3.7217903735291674e-08,
+                  "values": 512
+                }
+              },
+              "rmse": 3.7217903735291674e-08,
+              "shape": [
+                2,
+                512
+              ],
+              "tolerance_pass": null,
+              "values": 1024
+            },
+            "ordinary": {
+              "changed_values": 944,
+              "exact": false,
+              "maximum_absolute_difference": 1.5810132026894408e-06,
+              "maximum_signed_difference": 1.5810132026894408e-06,
+              "mean_absolute_difference": 1.106282070396892e-07,
+              "mean_signed_difference": 1.1216070561166159e-08,
+              "minimum_signed_difference": -1.490861177400049e-06,
+              "per_observer": {
+                "audit": {
+                  "changed_values": 472,
+                  "maximum_absolute_difference": 1.5810132026894408e-06,
+                  "maximum_signed_difference": 1.5810132026894408e-06,
+                  "mean_absolute_difference": 1.1062820703928262e-07,
+                  "mean_signed_difference": 1.1216070561193264e-08,
+                  "minimum_signed_difference": -1.490861177400049e-06,
+                  "rmse": 2.945973045124516e-07,
+                  "values": 2048
+                },
+                "reward": {
+                  "changed_values": 472,
+                  "maximum_absolute_difference": 1.5810132026894408e-06,
+                  "maximum_signed_difference": 1.5810132026894408e-06,
+                  "mean_absolute_difference": 1.1062820704009577e-07,
+                  "mean_signed_difference": 1.1216070561139053e-08,
+                  "minimum_signed_difference": -1.490861177400049e-06,
+                  "rmse": 2.9459730451405404e-07,
+                  "values": 2048
+                }
+              },
+              "rmse": 2.9459730451325286e-07,
+              "shape": [
+                4,
+                2,
+                512
+              ],
+              "tolerance_pass": null,
+              "values": 4096
+            },
+            "ordinary_minus_frozen_gain": {
+              "changed_values": 980,
+              "exact": false,
+              "maximum_absolute_difference": 1.6100704669508303e-06,
+              "maximum_signed_difference": 1.6100704669508303e-06,
+              "mean_absolute_difference": 1.1306128726548182e-07,
+              "mean_signed_difference": 1.2985583453065672e-08,
+              "minimum_signed_difference": -1.490861177400049e-06,
+              "per_observer": {
+                "audit": {
+                  "changed_values": 490,
+                  "maximum_absolute_difference": 1.6100704669508303e-06,
+                  "maximum_signed_difference": 1.6100704669508303e-06,
+                  "mean_absolute_difference": 1.1306128726507525e-07,
+                  "mean_signed_difference": 1.2985583453092777e-08,
+                  "minimum_signed_difference": -1.490861177400049e-06,
+                  "rmse": 2.9709744067190207e-07,
+                  "values": 2048
+                },
+                "reward": {
+                  "changed_values": 490,
+                  "maximum_absolute_difference": 1.6100704669508303e-06,
+                  "maximum_signed_difference": 1.6100704669508303e-06,
+                  "mean_absolute_difference": 1.130612872658884e-07,
+                  "mean_signed_difference": 1.2985583453038567e-08,
+                  "minimum_signed_difference": -1.490861177400049e-06,
+                  "rmse": 2.970974406734642e-07,
+                  "values": 2048
+                }
+              },
+              "rmse": 2.9709744067268314e-07,
+              "shape": [
+                4,
+                2,
+                512
+              ],
+              "tolerance_pass": null,
+              "values": 4096
+            }
+          },
+          "task": {
+            "frozen": {
+              "changed_values": 20,
+              "exact": false,
+              "maximum_absolute_difference": 6.102025509324704e-07,
+              "maximum_signed_difference": 4.611909389939939e-07,
+              "mean_absolute_difference": 1.1559677658991817e-09,
+              "mean_signed_difference": 9.14951668574103e-11,
+              "minimum_signed_difference": -6.102025509324704e-07,
+              "per_observer": {
+                "audit": {
+                  "changed_values": 10,
+                  "maximum_absolute_difference": 6.102025509324704e-07,
+                  "maximum_signed_difference": 4.611909389939939e-07,
+                  "mean_absolute_difference": 1.1559677658991817e-09,
+                  "mean_signed_difference": 9.14951668574103e-11,
+                  "minimum_signed_difference": -6.102025509324704e-07,
+                  "rmse": 2.0775887147153595e-08,
+                  "values": 2048
+                },
+                "reward": {
+                  "changed_values": 10,
+                  "maximum_absolute_difference": 6.102025509324704e-07,
+                  "maximum_signed_difference": 4.611909389939939e-07,
+                  "mean_absolute_difference": 1.1559677658991817e-09,
+                  "mean_signed_difference": 9.14951668574103e-11,
+                  "minimum_signed_difference": -6.102025509324704e-07,
+                  "rmse": 2.0775887147153595e-08,
+                  "values": 2048
+                }
+              },
+              "rmse": 2.0775887147153595e-08,
+              "shape": [
+                2,
+                2048
+              ],
+              "tolerance_pass": null,
+              "values": 4096
+            },
+            "ordinary": {
+              "changed_values": 3916,
+              "exact": false,
+              "maximum_absolute_difference": 3.3698976040774653e-06,
+              "maximum_signed_difference": 2.519786357901843e-06,
+              "mean_absolute_difference": 1.253785740122499e-07,
+              "mean_signed_difference": -7.218932296467644e-09,
+              "minimum_signed_difference": -3.3698976040774653e-06,
+              "per_observer": {
+                "audit": {
+                  "changed_values": 1958,
+                  "maximum_absolute_difference": 3.3698976040774653e-06,
+                  "maximum_signed_difference": 2.519786357901843e-06,
+                  "mean_absolute_difference": 1.2537857401240574e-07,
+                  "mean_signed_difference": -7.218932296393105e-09,
+                  "minimum_signed_difference": -3.3698976040774653e-06,
+                  "rmse": 3.395838284839011e-07,
+                  "values": 8192
+                },
+                "reward": {
+                  "changed_values": 1958,
+                  "maximum_absolute_difference": 3.369897603966443e-06,
+                  "maximum_signed_difference": 2.519786357901843e-06,
+                  "mean_absolute_difference": 1.2537857401209403e-07,
+                  "mean_signed_difference": -7.218932296542183e-09,
+                  "minimum_signed_difference": -3.369897603966443e-06,
+                  "rmse": 3.3958382848372743e-07,
+                  "values": 8192
+                }
+              },
+              "rmse": 3.3958382848381425e-07,
+              "shape": [
+                4,
+                2,
+                2048
+              ],
+              "tolerance_pass": null,
+              "values": 16384
+            },
+            "ordinary_minus_frozen_gain": {
+              "changed_values": 3978,
+              "exact": false,
+              "maximum_absolute_difference": 3.3698976040774653e-06,
+              "maximum_signed_difference": 2.519786357901843e-06,
+              "mean_absolute_difference": 1.2632572179457322e-07,
+              "mean_signed_difference": -7.310427463216634e-09,
+              "minimum_signed_difference": -3.3698976040774653e-06,
+              "per_observer": {
+                "audit": {
+                  "changed_values": 1989,
+                  "maximum_absolute_difference": 3.3698976040774653e-06,
+                  "maximum_signed_difference": 2.519786357901843e-06,
+                  "mean_absolute_difference": 1.2632572179471552e-07,
+                  "mean_signed_difference": -7.310427463128543e-09,
+                  "minimum_signed_difference": -3.3698976040774653e-06,
+                  "rmse": 3.400371258009763e-07,
+                  "values": 8192
+                },
+                "reward": {
+                  "changed_values": 1989,
+                  "maximum_absolute_difference": 3.369897603966443e-06,
+                  "maximum_signed_difference": 2.519786357901843e-06,
+                  "mean_absolute_difference": 1.2632572179443091e-07,
+                  "mean_signed_difference": -7.310427463304726e-09,
+                  "minimum_signed_difference": -3.369897603966443e-06,
+                  "rmse": 3.4003712580086575e-07,
+                  "values": 8192
+                }
+              },
+              "rmse": 3.40037125800921e-07,
+              "shape": [
+                4,
+                2,
+                2048
+              ],
+              "tolerance_pass": null,
+              "values": 16384
+            }
+          }
+        },
+        "old_endpoint_sha256": "861b740183f8e320544e926a42ff6a18b5283be2c629e3e75c8af7bb5d9ebb67",
+        "old_method": "ordinary_3"
+      }
+    },
+    "status": "FAIL",
+    "tolerance_pass_threshold": null
+  },
+  "prepackage_review_finalized": true,
+  "postpackage_policy": "Do not mutate this archived ledger after collection. Add separately identified postpackage verification/persistence receipts instead."
+}
