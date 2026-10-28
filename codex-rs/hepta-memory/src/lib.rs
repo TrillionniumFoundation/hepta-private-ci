@@ -113,6 +113,7 @@ pub use cognitive_model::SourceDraft;
 pub use cognitive_model::SourceEventId;
 pub use cognitive_model::SourceRevisionId;
 pub use cognitive_model::StableMemoryId;
+pub use cognitive_path::canonical_federation_workspace;
 pub use cognitive_retrieval::MAX_RETRIEVAL_CHANNEL_CANDIDATES;
 pub use cognitive_retrieval::MAX_RETRIEVAL_QUERY_BYTES;
 pub use cognitive_retrieval::MAX_RETRIEVAL_RESULTS;

@@ -1,4 +1,5 @@
 use std::path::Path;
+use std::path::PathBuf;
 use std::sync::Arc;
 
 use codex_extension_api::EPHEMERAL_MODEL_INPUT_MAX_CONTENT_BYTES;
@@ -30,6 +31,7 @@ use codex_hepta_memory::FederationConsumerAccess;
 use codex_hepta_memory::MemoryLifecycleState;
 use codex_hepta_memory::MemoryVerification;
 use codex_hepta_memory::RetrievalRequest;
+use codex_hepta_memory::canonical_federation_workspace;
 use serde::Serialize;
 use serde_json::Value;
 use serde_json::json;
@@ -100,7 +102,7 @@ impl From<&FederatedCoverageV2> for FederatedAttachmentCoverage {
 struct PreparedFederatedAttachment {
     thread_id: String,
     turn_id: String,
-    workspace: std::path::PathBuf,
+    workspace: PathBuf,
     query_sha256: Sha256Digest,
     coverage: FederatedAttachmentCoverage,
     bindings: Vec<FederatedMemoryRevalidationBinding>,
@@ -113,11 +115,35 @@ struct FederatedFinalUseGuard {
     runtime: CognitiveRuntime,
     access: FederationConsumerAccess,
     bindings: Vec<FederatedMemoryRevalidationBinding>,
+    requested_workspace: PathBuf,
+    canonical_workspace: PathBuf,
+}
+
+async fn resolve_federation_workspace(path: &Path) -> Option<PathBuf> {
+    let path = path.to_path_buf();
+    tokio::task::spawn_blocking(move || canonical_federation_workspace(&path))
+        .await
+        .ok()?
+        .ok()
 }
 
 impl EphemeralModelInputFinalUseGuard for FederatedFinalUseGuard {
     fn revalidate(self: Box<Self>) -> ModelProviderPolicyFuture<'static, ()> {
         Box::pin(async move {
+            // Keep capability revalidation as the last await: do not wait on
+            // filesystem work after observing the current grant state.
+            if !resolve_federation_workspace(&self.requested_workspace)
+                .await
+                .is_some_and(|workspace| {
+                    path_identity_bytes(&workspace)
+                        == path_identity_bytes(&self.canonical_workspace)
+                })
+            {
+                return Err(ModelProviderPolicyError::new(
+                    "federated_memory_final_use_workspace_changed",
+                    "federation workspace is unavailable or changed after request assembly",
+                ));
+            }
             let now = now_unix_seconds().ok_or_else(|| {
                 ModelProviderPolicyError::new(
                     "federated_memory_final_use_clock_unavailable",
@@ -236,9 +262,11 @@ impl FederatedCognitiveExtension {
             return None;
         }
         let prepared = input.turn_store.get::<PreparedFederatedAttachment>()?;
+        let workspace = resolve_federation_workspace(input.cwd).await?;
         if prepared.thread_id != input.thread_id
             || prepared.turn_id != input.turn_id
-            || path_identity_bytes(prepared.workspace.as_path()) != path_identity_bytes(input.cwd)
+            || path_identity_bytes(prepared.workspace.as_path())
+                != path_identity_bytes(workspace.as_path())
         {
             return None;
         }
@@ -252,8 +280,10 @@ impl FederatedCognitiveExtension {
             return None;
         }
         let now = now_unix_seconds()?;
-        let access =
-            FederationConsumerAccess::new(self.consumer_agent_id()?, workspace_digest(input.cwd));
+        let access = FederationConsumerAccess::new(
+            self.consumer_agent_id()?,
+            workspace_digest(workspace.as_path()),
+        );
         let Ok(statuses) = self.revalidate_many(&access, &prepared.bindings, now).await else {
             return None;
         };
@@ -283,7 +313,7 @@ impl FederatedCognitiveExtension {
         let source_binding_sha256 = federation_source_binding(
             input.thread_id,
             input.turn_id,
-            input.cwd,
+            workspace.as_path(),
             &prepared.query_sha256,
             &prepared.coverage,
             &prepared.bindings,
@@ -303,6 +333,8 @@ impl FederatedCognitiveExtension {
             runtime: self.runtime.clone(),
             access,
             bindings: prepared.bindings.clone(),
+            requested_workspace: input.cwd.to_path_buf(),
+            canonical_workspace: workspace,
         });
         Some(CognitiveProposalMaterial {
             source: FEDERATED_COGNITIVE_SOURCE,
@@ -390,10 +422,13 @@ impl TurnInputContributor for FederatedCognitiveExtension {
             if primary_environments.next().is_some() {
                 return Vec::new();
             }
-            let workspace = primary.cwd.to_path_buf();
-            if !workspace.is_absolute() {
+            let Ok(requested_workspace) = primary.cwd.to_abs_path() else {
                 return Vec::new();
-            }
+            };
+            let Some(workspace) = resolve_federation_workspace(requested_workspace.as_path()).await
+            else {
+                return Vec::new();
+            };
             let capture = capture_directive(&input.user_input);
             let Some(query) = capture.query else {
                 return Vec::new();
@@ -1261,6 +1296,18 @@ mod tests {
         let workspace = temp.path().join("consumer-workspace");
         std::fs::create_dir_all(&workspace).expect("consumer workspace");
         let workspace = workspace.canonicalize().expect("canonical workspace");
+        let native_workspace = PathUri::from_host_native_path(&workspace)
+            .expect("workspace URI")
+            .to_abs_path()
+            .expect("native workspace path")
+            .into_path_buf();
+        #[cfg(windows)]
+        assert_ne!(native_workspace, workspace, "exercise namespace aliases");
+        let other_workspace = native_workspace
+            .parent()
+            .expect("workspace parent")
+            .join("other-workspace");
+        std::fs::create_dir(&other_workspace).expect("different real workspace");
         let capability = owner
             .grant_federated_recall(
                 &owner_access,
@@ -1339,6 +1386,7 @@ mod tests {
         .expect("contributor")
         .expect("proposal before revoke");
         assert_eq!(first.source().as_str(), FEDERATED_COGNITIVE_SOURCE);
+        let first_binding = first.source_binding_sha256().clone();
         let (first_content, final_use_guard) = first.into_content_and_final_use_guard();
         assert!(first_content.contains(OWNER_ID));
         assert!(
@@ -1361,6 +1409,93 @@ mod tests {
         assert!(first_content.contains("\"completed_peers\":1"));
         assert!(first_content.contains("\"failed_peers\":0"));
         let final_use_guard = final_use_guard.expect("federated proposal final-use guard");
+        let native = EphemeralModelInputContributor::contribute(
+            &extension,
+            EphemeralModelInputContext {
+                cwd: &native_workspace,
+                ..input("model-provider-attempt:v1:native-workspace")
+            },
+        )
+        .await
+        .expect("native workspace contributor")
+        .expect("same workspace proposal");
+        assert_eq!(native.source_binding_sha256(), &first_binding);
+        let (native_content, native_guard) = native.into_content_and_final_use_guard();
+        assert_eq!(native_content, first_content);
+        native_guard
+            .expect("native workspace final-use guard")
+            .revalidate()
+            .await
+            .expect("unchanged workspace and grant remain current");
+        let different = EphemeralModelInputContributor::contribute(
+            &extension,
+            EphemeralModelInputContext {
+                cwd: &other_workspace,
+                ..input("model-provider-attempt:v1:different-workspace")
+            },
+        )
+        .await
+        .expect("different workspace contributor");
+        assert!(different.is_none());
+
+        #[cfg(any(unix, windows))]
+        {
+            let before_switch = EphemeralModelInputContributor::contribute(
+                &extension,
+                input("model-provider-attempt:v1:before-path-switch"),
+            )
+            .await
+            .expect("contributor before path switch")
+            .expect("proposal before path switch");
+            let (_, switch_guard) = before_switch.into_content_and_final_use_guard();
+            let retained_workspace = workspace.with_file_name("consumer-workspace-retained");
+            std::fs::rename(&workspace, &retained_workspace).expect("retain original workspace");
+            #[cfg(unix)]
+            std::os::unix::fs::symlink(&other_workspace, &native_workspace)
+                .expect("redirect workspace path");
+            #[cfg(windows)]
+            {
+                let output = std::process::Command::new("cmd.exe")
+                    .args(["/d", "/c", "mklink", "/J"])
+                    .arg(&native_workspace)
+                    .arg(&other_workspace)
+                    .output()
+                    .expect("redirect workspace with a junction");
+                assert!(
+                    output.status.success(),
+                    "junction creation failed: {output:?}"
+                );
+            }
+            assert_eq!(
+                workspace
+                    .canonicalize()
+                    .expect("resolve redirected workspace"),
+                other_workspace
+                    .canonicalize()
+                    .expect("resolve redirect target")
+            );
+            let redirected = EphemeralModelInputContributor::contribute(
+                &extension,
+                input("model-provider-attempt:v1:redirected-workspace"),
+            )
+            .await
+            .expect("redirected workspace contributor");
+            assert!(redirected.is_none());
+            let switch_error = switch_guard
+                .expect("path-switch final-use guard")
+                .revalidate()
+                .await
+                .expect_err("path change after assembly must fence provider dispatch");
+            assert_eq!(
+                switch_error.reason_code(),
+                "federated_memory_final_use_workspace_changed"
+            );
+            #[cfg(unix)]
+            std::fs::remove_file(&native_workspace).expect("remove workspace symlink");
+            #[cfg(windows)]
+            std::fs::remove_dir(&native_workspace).expect("remove workspace junction");
+            std::fs::rename(&retained_workspace, &workspace).expect("restore original workspace");
+        }
 
         owner
             .revoke_federated_recall(&owner_access, &capability, now)

@@ -1,10 +1,43 @@
-//! Filesystem-backed canonical identity checks for the legacy store opener.
+//! Filesystem-backed canonical identity checks for existing memory paths.
 //!
 //! This checks an existing path; it is not a descriptor-bound recovery guard.
 
 use std::io;
 use std::path::Path;
 use std::path::PathBuf;
+
+/// Resolve an existing, absolute federation workspace without path redirection.
+///
+/// The returned OS spelling preserves the existing canonical workspace digest.
+/// This observation grants no access and retains no directory handle; callers
+/// must still validate the federation capability at use time.
+pub fn canonical_federation_workspace(path: &Path) -> io::Result<PathBuf> {
+    if !cfg!(any(unix, windows)) {
+        return Err(io::Error::new(
+            io::ErrorKind::Unsupported,
+            "federation workspace identity is unsupported on this platform",
+        ));
+    }
+    if !path.is_absolute() {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "federation workspace must be absolute",
+        ));
+    }
+    let canonical = canonical_path_without_redirection(path)?.ok_or_else(|| {
+        io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "federation workspace has a redirected or unsupported path component",
+        )
+    })?;
+    if !std::fs::symlink_metadata(&canonical)?.is_dir() {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "federation workspace must be a directory",
+        ));
+    }
+    Ok(canonical)
+}
 
 /// Return the OS canonical spelling only when no path component redirects it.
 /// Windows drive/UNC verbatim prefixes are namespace spellings, not redirects.
