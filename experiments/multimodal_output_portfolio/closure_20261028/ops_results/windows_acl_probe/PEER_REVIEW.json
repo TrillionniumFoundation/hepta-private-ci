@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.windows-acl-probe.peer-review.v1",
+  "reviewer": "/root/native_tail",
+  "scope": "Independent read-only source review; no Windows compilation or execution.",
+  "reviewed_sources": [
+    {
+      "path": ".github/workflows/ndu-windows-storage-probe.yml",
+      "mode": "100644",
+      "bytes": 3520,
+      "sha256": "8c5c3f8f68cbebb3e423524cd9febcd4bb471bc1cd0fe2352a907783e1f099da"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe.py",
+      "mode": "100644",
+      "bytes": 14328,
+      "sha256": "c616d6b9456b72f19f5a718d6d2fef281ca57c6c8fb08f540544be782cdfbc96"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe.rs",
+      "mode": "100644",
+      "bytes": 8119,
+      "sha256": "b8bbc9d7a69f6f00941c03ec28152e4ac90c81e9ea8f0775c9f34dc8a7b2fa3c"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe_support.rs",
+      "mode": "100644",
+      "bytes": 11654,
+      "sha256": "7bfb9f1d113668715f2a36ad22bd0bf42e3a4f0661bd1db7bc5530571e5e9a33"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe_tests.py",
+      "mode": "100644",
+      "bytes": 5454,
+      "sha256": "a2574fc596ec5a4ba174b2a21f773475c15da0a14dd5a8aa720c1e14bd6b136d"
+    }
+  ],
+  "blocking_finding_resolved": "Windows pathlib backslashes differed from Git ls-tree forward-slash paths; all Git/blob paths now use as_posix().",
+  "findings": [
+    "TokenUser begins with SID_AND_ATTRIBUTES; group queries use count plus aligned offset. A base token with zero restricting groups is represented explicitly and accepted.",
+    "SetNamedSecurityInfoW mutable pointer matches windows-sys 0.52 API; required Win32 features are included.",
+    "Completion requires exact CHECK/OP/OPEN/ACL/ACE/GROUPS/TOKEN identity sets and rejects omissions/duplicates; a DONE row alone cannot succeed.",
+    "Permission mutations target only the newly created temporary fixture. Impersonation RAII aborts if reverting fails.",
+    "Production token flags and ACL source remain unchanged; committed source and the isolated exact lock are checked before and after execution."
+  ],
+  "conclusion": "No remaining source blocker identified. Actual native results remain required and observation completion is not security qualification."
+}
