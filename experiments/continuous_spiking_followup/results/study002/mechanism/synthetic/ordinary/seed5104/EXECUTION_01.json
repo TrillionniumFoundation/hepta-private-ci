@@ -1,0 +1,25 @@
+{
+  "attempt": 1,
+  "child_cpu_seconds": 32.91422,
+  "child_system_cpu_seconds": 0.49140799999999996,
+  "child_user_cpu_seconds": 32.422812,
+  "command": [
+    "/workspace/scratch/9bbd63a0445f/hcsn-venv/bin/python",
+    "-m",
+    "experiments.continuous_spiking_followup.budget_training",
+    "--spec",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/mechanism/synthetic/ordinary/seed5104/SPEC.json",
+    "--output",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/mechanism/synthetic/ordinary/seed5104",
+    "--cache-dir",
+    "/workspace/scratch/9bbd63a0445f/hcsn-data"
+  ],
+  "ended_unix": 1793190698.2308145,
+  "exit_code": 0,
+  "id": "mechanism/synthetic/ordinary/seed5104",
+  "max_rss_platform_units": 319092,
+  "result_exists": true,
+  "rss_units": "KiB on Linux; bytes on macOS",
+  "started_unix": 1793190665.030784,
+  "wall_seconds": 33.200030459003756
+}
