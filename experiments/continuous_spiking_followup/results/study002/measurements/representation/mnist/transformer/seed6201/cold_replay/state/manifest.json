@@ -1,0 +1,58 @@
+{
+  "arrays": {
+    "elapsed": {
+      "bytes": 128,
+      "dtype": "float64",
+      "sha256": "f9cedc0c24479f692128f115037366f20b44a523ce1a8d369cbce786a0a88522",
+      "shape": [
+        16
+      ]
+    },
+    "layer_000__key": {
+      "bytes": 32768,
+      "dtype": "float32",
+      "sha256": "f7f00d45f30d82d23736b7d2e25cb784a088862a8cc45828f9453607348b4a54",
+      "shape": [
+        16,
+        4,
+        16,
+        8
+      ]
+    },
+    "layer_000__value": {
+      "bytes": 32768,
+      "dtype": "float32",
+      "sha256": "1b1e333c2b7ede019117a2092b4c380fb8fdb07fd0a4f102eee374ade42433b6",
+      "shape": [
+        16,
+        4,
+        16,
+        8
+      ]
+    }
+  },
+  "layer_keys": [
+    [
+      "key",
+      "value"
+    ]
+  ],
+  "payload_bytes": 61555,
+  "payload_sha256": "d5f5965073a186277b887789028c9d8184a30e3697038b35842dd0e4a3d65b69",
+  "snapshot": {
+    "batch_size": 16,
+    "config": {
+      "architecture": "transformer",
+      "classes": 10,
+      "depth": 1,
+      "input_dim": 64,
+      "match_cell_budget": false,
+      "seed": 6201,
+      "width": 32
+    },
+    "format": "hcsn-incremental-state-v2",
+    "model_sha256": "8ae5fba8119f42cf7ef38681405325540f6a574b7181f7062e485be61726ac09",
+    "processed_rows": 256,
+    "steps": 16
+  }
+}
