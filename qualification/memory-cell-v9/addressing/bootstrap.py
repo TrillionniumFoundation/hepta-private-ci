@@ -6,6 +6,5 @@ import sys
 
 HERE = Path(__file__).resolve().parent
 QUALIFICATION = HERE.parents[1]
-for root in (HERE, QUALIFICATION / "memory-cell-v8/addressing",
-             QUALIFICATION / "memory-cell-v7", QUALIFICATION / "memory-cell-v6"):
+for root in (HERE, QUALIFICATION / "memory-cell-v7", QUALIFICATION / "memory-cell-v6"):
     sys.path.insert(0, str(root))
