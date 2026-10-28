@@ -82,3 +82,21 @@ stopping, independent fixed-point recursion, infeasible high-utility candidates,
 explicit abstention/ties, stale identities, duplicate events and malformed
 protocol inputs. The small deterministic examples verify integration and do not
 claim a measured performance advantage for NDU.
+
+The executable also has five Rust protocol tests in `src/protocol_tests.rs`.
+They call the original recursion and candidate evaluator through the typed
+request parser, including later refusal cost, hard/resource/risk rejection,
+abstention, unresolved frontiers and exact request/snapshot identity. Run them
+using the repository runner:
+
+```sh
+just test --manifest-path "$PWD/tools/hia-ndu-bridge/Cargo.toml" \
+  -p hepta-hia-ndu-bridge --profile default --release --locked
+```
+
+The dedicated `.github/workflows/hia-ndu-bridge.yml` job embeds the actual source
+and compiler identity, runs those tests, builds the executable and sends a real
+stdin request. It retains test logs and source/binary/response evidence. This
+scoped job supplements the existing repository CI; it does not replace the
+blocking workspace, Bazel, platform or dependency gates, nor treat their failures
+as successful bridge qualification.

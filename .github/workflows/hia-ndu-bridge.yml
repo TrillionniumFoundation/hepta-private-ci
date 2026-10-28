@@ -1,0 +1,137 @@
+name: HIA native NDU bridge
+
+on:
+  pull_request:
+    paths:
+      - tools/hia-ndu-bridge/**
+      - codex-rs/hepta-ndu/**
+      - codex-rs/hepta-types/**
+      - codex-rs/hepta-contracts/**
+      - codex-rs/Cargo.toml
+      - scripts/run-nextest.py
+      - .github/workflows/hia-ndu-bridge.yml
+  push:
+    branches: [main]
+    paths:
+      - tools/hia-ndu-bridge/**
+      - codex-rs/hepta-ndu/**
+      - codex-rs/hepta-types/**
+      - codex-rs/hepta-contracts/**
+      - codex-rs/Cargo.toml
+      - scripts/run-nextest.py
+      - .github/workflows/hia-ndu-bridge.yml
+
+permissions:
+  contents: read
+
+jobs:
+  bounded-native-protocol:
+    name: Test original NDU protocol and executable identity
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CARGO_TARGET_DIR: ${{ runner.temp }}/hia-ndu-target
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install the repository Rust version
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - name: Install the repository test runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Bind actual source and compiler identity
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from hashlib import sha256
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          root = Path.cwd()
+          native = [root / "codex-rs/Cargo.toml"]
+          for name in ("hepta-ndu", "hepta-types", "hepta-contracts"):
+              crate = root / "codex-rs" / name
+              native.append(crate / "Cargo.toml")
+              native.extend((crate / "src").rglob("*.rs"))
+          bridge = root / "tools/hia-ndu-bridge"
+          wrapper = [bridge / "Cargo.toml", bridge / "Cargo.lock", *(bridge / "src").rglob("*.rs")]
+          inventories = {}
+          for name, paths in (("source", native), ("bridge", wrapper)):
+              inventory = {str(path.relative_to(root)): sha256(path.read_bytes()).hexdigest()
+                           for path in sorted(set(paths))}
+              inventories[name] = inventory
+          environment = {
+              "HEPTA_NDU_SOURCE_COMMIT": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+              "HEPTA_NDU_RUSTC": subprocess.check_output(["rustc", "--version"], text=True).strip(),
+          }
+          for name, inventory in inventories.items():
+              value = sha256(json.dumps(inventory, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+              environment["HEPTA_NDU_" + name.upper() + "_DIGEST"] = value
+          with open(os.environ["GITHUB_ENV"], "a") as output:
+              for key, value in environment.items():
+                  output.write(key + "=" + value + "\n")
+          evidence = {"environment": environment, "inventories": inventories}
+          Path(os.environ["RUNNER_TEMP"], "hia-ndu-source.json").write_text(json.dumps(evidence, indent=2) + "\n")
+          PY
+      - name: Run real Rust protocol tests through just
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --manifest-path "$GITHUB_WORKSPACE/tools/hia-ndu-bridge/Cargo.toml" \
+            -p hepta-hia-ndu-bridge --profile default --release --locked \
+            2>&1 | tee "$RUNNER_TEMP/hia-ndu-tests.log"
+      - name: Build and execute the typed transport
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo build --manifest-path tools/hia-ndu-bridge/Cargo.toml --release --locked
+          python3 - <<'PY'
+          from hashlib import sha256
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          binary = Path(os.environ["CARGO_TARGET_DIR"], "release/hepta-hia-ndu-bridge")
+          identity = json.loads(subprocess.check_output([str(binary), "--identity"]))
+          for field in ("source_commit", "source_digest", "bridge_digest", "rustc"):
+              assert identity[field] == os.environ["HEPTA_NDU_" + field.upper()]
+          request = {
+              "schema": "hepta.hia.ndu.request.v1", "objective_digest": "1" * 64,
+              "snapshot_digest": "2" * 64, "generation": 1,
+              "utility_unit": "fixture-points", "resource_unit": "microseconds",
+              "risk_unit": "probability", "resource_budget_q32": 0, "risk_ceiling_q32": 0,
+              "candidates": [{
+                  "id": "abstain", "verified": True, "verification_digest": "3" * 64,
+                  "support_digest": "4" * 64, "resource_cost_q32": 0, "risk_q32": 0,
+                  "uncertainty_q32": 0, "terminal_q32": 0,
+                  "events": [{"event_digest": "5" * 64, "preference_digest": "1" * 64,
+                              "instant_q32": 0, "discount_q32": 1 << 32}],
+              }],
+          }
+          payload = json.dumps(request, sort_keys=True, separators=(",", ":")).encode()
+          response = json.loads(subprocess.check_output([str(binary)], input=payload))
+          assert response["request_digest"] == sha256(payload).hexdigest()
+          assert response["identity"] == identity
+          assert response["advisory_candidate_id"] == "abstain"
+          assert response["authority"] == "DENY_ALL" and response["safety_certificate"] is False
+          evidence = {"identity": identity, "binary_sha256": sha256(binary.read_bytes()).hexdigest(),
+                      "request": request, "response": response}
+          Path(os.environ["RUNNER_TEMP"], "hia-ndu-transport.json").write_text(json.dumps(evidence, indent=2) + "\n")
+          PY
+      - name: Retain actual source, tests and transport evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hia-ndu-bridge-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/hia-ndu-*.json
+            ${{ runner.temp }}/hia-ndu-*.log
+          if-no-files-found: error
+      - name: Check the worktree remains clean
+        if: always()
+        uses: ./.github/actions/check-clean-worktree

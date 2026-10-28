@@ -3,6 +3,10 @@
 
 #![forbid(unsafe_code)]
 
+#[cfg(test)]
+#[path = "protocol_tests.rs"]
+mod tests;
+
 use std::collections::BTreeSet;
 use std::io::Read;
 use std::process::ExitCode;
