@@ -2,6 +2,7 @@
 //! supply their own current grant/fence. This is the actual durable owner API.
 
 use std::collections::BTreeSet;
+use std::os::unix::fs::PermissionsExt;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -66,6 +67,7 @@ impl Effect {
         };
         let signature = issuer.sign(&grant.signing_bytes().expect("grant bytes")).to_bytes().to_vec();
         let directory = tempfile::tempdir().expect("authority root");
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).expect("private authority root");
         let authority = FinalUseAuthority::open_state_dir(directory.path(), "memory-migration-security-fixture".into(), issuer.verifying_key().to_bytes(),
             FinalUseRevocations { authority_epoch: 1, revision: 1, revoked_grant_ids: BTreeSet::new() }).expect("durable final-use authority");
         Self { store, fence, intent, authority, signed: SignedFinalUseGrant { grant, signature }, binding, directory }
