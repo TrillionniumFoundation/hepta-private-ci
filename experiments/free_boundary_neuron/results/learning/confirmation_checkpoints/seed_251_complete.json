@@ -1,0 +1,1093 @@
+{
+  "arms": {
+    "direct:first_passage": {
+      "checkpoint": {
+        "bias": [
+          0.1602321505617669
+        ],
+        "head": [
+          [
+            1.782198897558973,
+            -2.3848838051631076
+          ],
+          [
+            0.4297423760916187,
+            -0.3409503809881309
+          ],
+          [
+            0.455193579853096,
+            -0.2543707615559658
+          ],
+          [
+            0.5453600407210885,
+            -0.38415822800826493
+          ],
+          [
+            0.5471809439080778,
+            -0.38492488195527025
+          ],
+          [
+            0.3932867434277505,
+            -0.3290612439669913
+          ]
+        ],
+        "readout": [
+          0.22169983156830253,
+          0.2758544062898823,
+          0.24445771761344423,
+          0.21418127918869406,
+          0.19934461000483766,
+          0.21415956420109555,
+          0.24855460279099395,
+          0.21040398789080172
+        ],
+        "weights": [
+          [
+            0.6001476325111964,
+            0.6799387369471802,
+            0.7647854961572611,
+            0.8598082025033069,
+            0.9563737385812564,
+            1.0593638732631558,
+            1.1299064398002523,
+            1.2407938252304493
+          ],
+          [
+            0.26593702436069355,
+            0.2823070357844079,
+            0.2877247287514295,
+            0.29801718466567495,
+            0.29605536604285,
+            0.3079414551319252,
+            0.30901344934747976,
+            0.34593148765741
+          ],
+          [
+            0.11756844371446021,
+            0.1130357345217977,
+            0.09137296935878628,
+            0.08224824198493924,
+            0.08215813293301133,
+            0.09251759123673234,
+            0.061758930206770896,
+            0.09175647401782286
+          ],
+          [
+            -0.0716846561315815,
+            -0.07042699554224571,
+            -0.09018351493149485,
+            -0.08719363412084537,
+            -0.07156038763067232,
+            -0.06671019042323449,
+            -0.06475963283404973,
+            -0.06660641895826125
+          ],
+          [
+            0.02848729623483704,
+            0.0168599867763547,
+            0.019461818843709174,
+            0.027956144503827496,
+            0.018708113883543355,
+            0.024334886894920988,
+            0.007966298031928715,
+            0.021139005597903715
+          ],
+          [
+            -0.06720012439097407,
+            -0.05688057798847215,
+            -0.05504446325068606,
+            -0.05679260351024429,
+            -0.060893168610657564,
+            -0.06411108659163049,
+            -0.059458248126595545,
+            -0.05369723000475729
+          ]
+        ]
+      },
+      "id_test": {
+        "abstentions": 0,
+        "accuracy_all": 0.80078125,
+        "action_evaluation_seconds": 0.0006739390009897761,
+        "active_cell_updates_until_decision": 37184,
+        "active_spikes_until_decision": 23084,
+        "actual_dense_neural_cell_updates": 131072,
+        "actual_dense_spikes": 80507,
+        "applied_decision_count": 1024,
+        "brier_at_decision": 0.17540335534145785,
+        "conditional_accuracy": 0.80078125,
+        "coverage": 1.0,
+        "dataset_sha256": "556dde8cd9b17286271867b37ae408c6654e82844c8eb956ebc811a37e9ebee7",
+        "episodes": 1024,
+        "fallback_count": 0,
+        "inference_seconds": 0.003174379002302885,
+        "log_loss_at_decision": 0.6740751904173992,
+        "mean_observations": 4.5390625,
+        "mean_utility": 0.48726562500000004,
+        "observations": 4648,
+        "serial_duration": 5057.6,
+        "source_of_probability": "learned_log_odds_readout_not_terminal_or_FPT_probability",
+        "utility_per_serial_second": 0.09865548876937678,
+        "utility_squared_sum": 922.7492000000001,
+        "utility_sum": 498.96000000000004
+      },
+      "ood_test": {
+        "abstentions": 7,
+        "accuracy_all": 0.69921875,
+        "action_evaluation_seconds": 0.0007576219977636356,
+        "active_cell_updates_until_decision": 44816,
+        "active_spikes_until_decision": 25329,
+        "actual_dense_neural_cell_updates": 131072,
+        "actual_dense_spikes": 72818,
+        "applied_decision_count": 1024,
+        "brier_at_decision": 0.27365089138327053,
+        "conditional_accuracy": 0.704031465093412,
+        "coverage": 0.9931640625,
+        "dataset_sha256": "c60a543c6c29f3667ff6dc90e88a46631edab44c6906d9d49c538e90e567a593",
+        "episodes": 1024,
+        "fallback_count": 0,
+        "inference_seconds": 0.0033346669988532085,
+        "log_loss_at_decision": 1.0763024902009222,
+        "mean_observations": 5.470703125,
+        "mean_utility": 0.1672314453125,
+        "observations": 5602,
+        "serial_duration": 6011.6,
+        "source_of_probability": "learned_log_odds_readout_not_terminal_or_FPT_probability",
+        "utility_per_serial_second": 0.028485760862332822,
+        "utility_squared_sum": 923.8804749999999,
+        "utility_sum": 171.245
+      },
+      "selected_fixed_thresholds": [
+        1.6,
+        -1.0
+      ],
+      "training": {
+        "actual_training_cell_updates": 1343488,
+        "checkpoint_sha256": "80ecf1f4ae33d65c4253687d98e64bb2876a4ec245e14e26f63abe689b68573e",
+        "clipped_gradient_steps": 0,
+        "diagnostic_forward_cell_updates": 32768,
+        "final_training_loss": -0.16104528682860753,
+        "initial_training_loss": -0.1256502185692837,
+        "max_gradient_norm": 3.8481403826305516,
+        "minibatch_size": 64,
+        "optimizer_forward_cell_updates": 1310720,
+        "parameter_change_l2": 1.5972760557242394,
+        "parameter_count": 69,
+        "projected_parameter_scalars": 0,
+        "selection_forward_cell_updates": 0,
+        "selection_seconds": 2.6377001631772146e-05,
+        "training_seconds": 3.1244953719979094,
+        "training_steps": 160,
+        "validation_threshold_evaluations": 0
+      }
+    },
+    "direct:standard": {
+      "checkpoint": {
+        "bias": [
+          0.1837320972442009
+        ],
+        "head": [
+          [
+            1.7148149667904502,
+            -2.3814480985233004
+          ],
+          [
+            0.3505013461479733,
+            -0.3441471915697272
+          ],
+          [
+            0.3219341310842854,
+            -0.2796589618236725
+          ],
+          [
+            0.4763980986001594,
+            -0.380229601798373
+          ],
+          [
+            0.4946547332241017,
+            -0.3824332639746233
+          ],
+          [
+            0.3069007015737749,
+            -0.3256477655953281
+          ]
+        ],
+        "readout": [
+          0.14027367876865504,
+          0.20111564264432863,
+          0.17963775639173674,
+          0.15774221344733666,
+          0.13188327543066905,
+          0.18624728868841758,
+          0.15377304070425438,
+          0.15059108019206105
+        ],
+        "weights": [
+          [
+            0.5286049371546158,
+            0.6157701756653666,
+            0.7080347056494606,
+            0.8134837650677536,
+            0.9191877356822472,
+            1.043994036804594,
+            1.1181493550960668,
+            1.2277862078657336
+          ],
+          [
+            0.3673350574293509,
+            0.4306456033501435,
+            0.4777055031677085,
+            0.49809215029740117,
+            0.5181029870298797,
+            0.5797015862811715,
+            0.6128860882254097,
+            0.633078127709785
+          ],
+          [
+            0.15406789002878207,
+            0.17441968636178573,
+            0.16359866537866694,
+            0.15596623314055977,
+            0.15036480976856528,
+            0.16634992095449996,
+            0.16113060151091754,
+            0.16001437200083532
+          ],
+          [
+            -0.02629133447014561,
+            -0.01972132633419633,
+            -0.036567824290715624,
+            -0.039722110058065335,
+            -0.02425931960128269,
+            -0.034488811442973284,
+            -0.02671256893354997,
+            -0.021107107616265296
+          ],
+          [
+            0.04917862598778492,
+            0.03975590123052518,
+            0.04808330169492768,
+            0.054663127360951136,
+            0.04538025506251522,
+            0.04808178482824571,
+            0.04233942571938135,
+            0.05437437774786463
+          ],
+          [
+            -0.0775558706144757,
+            -0.06798820437268699,
+            -0.07092329076630594,
+            -0.0754976938034263,
+            -0.07650688952945034,
+            -0.08394776010506913,
+            -0.07727316716878392,
+            -0.06018001717741773
+          ]
+        ]
+      },
+      "id_test": {
+        "abstentions": 2,
+        "accuracy_all": 0.830078125,
+        "action_evaluation_seconds": 0.0009858390003500972,
+        "active_cell_updates_until_decision": 49528,
+        "active_spikes_until_decision": 32486,
+        "actual_dense_neural_cell_updates": 131072,
+        "actual_dense_spikes": 86702,
+        "applied_decision_count": 1024,
+        "brier_at_decision": 0.1436657539054842,
+        "conditional_accuracy": 0.8317025440313112,
+        "coverage": 0.998046875,
+        "dataset_sha256": "556dde8cd9b17286271867b37ae408c6654e82844c8eb956ebc811a37e9ebee7",
+        "episodes": 1024,
+        "fallback_count": 0,
+        "inference_seconds": 0.004421188001288101,
+        "log_loss_at_decision": 0.5191659508795161,
+        "mean_observations": 6.0458984375,
+        "mean_utility": 0.508466796875,
+        "observations": 6191,
+        "serial_duration": 6600.6,
+        "source_of_probability": "learned_log_odds_readout_not_terminal_or_FPT_probability",
+        "utility_per_serial_second": 0.07888222282822772,
+        "utility_squared_sum": 871.9155,
+        "utility_sum": 520.67
+      },
+      "ood_test": {
+        "abstentions": 0,
+        "accuracy_all": 0.7255859375,
+        "action_evaluation_seconds": 0.0008590059987909626,
+        "active_cell_updates_until_decision": 58648,
+        "active_spikes_until_decision": 33444,
+        "actual_dense_neural_cell_updates": 131072,
+        "actual_dense_spikes": 74020,
+        "applied_decision_count": 1024,
+        "brier_at_decision": 0.23304137582505538,
+        "conditional_accuracy": 0.7255859375,
+        "coverage": 1.0,
+        "dataset_sha256": "c60a543c6c29f3667ff6dc90e88a46631edab44c6906d9d49c538e90e567a593",
+        "episodes": 1024,
+        "fallback_count": 0,
+        "inference_seconds": 0.003993487000116147,
+        "log_loss_at_decision": 0.8424336200225953,
+        "mean_observations": 7.1591796875,
+        "mean_utility": 0.14415527343750004,
+        "observations": 7331,
+        "serial_duration": 7740.600000000002,
+        "source_of_probability": "learned_log_odds_readout_not_terminal_or_FPT_probability",
+        "utility_per_serial_second": 0.019070227114177194,
+        "utility_squared_sum": 939.451075,
+        "utility_sum": 147.61500000000004
+      },
+      "selected_fixed_thresholds": [
+        1.6,
+        -1.0
+      ],
+      "training": {
+        "actual_training_cell_updates": 1343488,
+        "checkpoint_sha256": "27615c72a9236ec960f3e130f2f9aa7ea1be8b13b644827c296b5c432067f3bc",
+        "clipped_gradient_steps": 0,
+        "diagnostic_forward_cell_updates": 32768,
+        "final_training_loss": -0.11252778576350086,
+        "initial_training_loss": -0.1256502185692837,
+        "max_gradient_norm": 1.7120522616627518,
+        "minibatch_size": 64,
+        "optimizer_forward_cell_updates": 1310720,
+        "parameter_change_l2": 1.7266750011918546,
+        "parameter_count": 69,
+        "projected_parameter_scalars": 0,
+        "selection_forward_cell_updates": 0,
+        "selection_seconds": 3.0087998311500996e-05,
+        "training_seconds": 0.49687208800241933,
+        "training_steps": 160,
+        "validation_threshold_evaluations": 0
+      }
+    },
+    "fixed:first_passage": {
+      "checkpoint": {
+        "bias": [
+          -0.13822719290951382
+        ],
+        "readout": [
+          0.062303470064612725,
+          0.08534928714813238,
+          0.09840237600152066,
+          0.14547643061410065,
+          0.1464621227317762,
+          0.14530082680202103,
+          0.1458109880377107,
+          0.2142887043594095
+        ],
+        "weights": [
+          [
+            0.5802073978901928,
+            0.6548142024713529,
+            0.7422323627844163,
+            0.8306521795599464,
+            0.9304561608101052,
+            1.0202045196145766,
+            1.0894865001242937,
+            1.161520831444395
+          ],
+          [
+            0.18230739443162491,
+            0.21416806143725295,
+            0.24181066857466085,
+            0.2615373210012719,
+            0.26304661003200636,
+            0.2649387602486289,
+            0.31039432287159474,
+            0.27331734025809407
+          ],
+          [
+            0.15306471385657525,
+            0.1772792853039119,
+            0.17430360433094255,
+            0.18280010947304118,
+            0.17169369711524007,
+            0.19271538333490526,
+            0.193663821437919,
+            0.19672843426302544
+          ],
+          [
+            -0.06365600088153904,
+            -0.06482482713709964,
+            -0.08498638158818189,
+            -0.0887554572702616,
+            -0.07688967018665377,
+            -0.08224332027063352,
+            -0.0874533523767302,
+            -0.07902058842279384
+          ],
+          [
+            -0.04467143162693373,
+            -0.06142814594056917,
+            -0.05759354032370573,
+            -0.03721708406635064,
+            -0.0590148703787032,
+            -0.046315584753345636,
+            -0.05233070584125667,
+            -0.0525116504218351
+          ],
+          [
+            -0.03958956715004994,
+            -0.029802363049941515,
+            -0.03435539887060274,
+            -0.03542418021343833,
+            -0.04515448842715967,
+            -0.04478521683820369,
+            -0.04381886100923981,
+            -0.030812855483893297
+          ]
+        ]
+      },
+      "id_test": {
+        "abstentions": 6,
+        "accuracy_all": 0.8251953125,
+        "action_evaluation_seconds": 0.0010021460002462845,
+        "active_cell_updates_until_decision": 55192,
+        "active_spikes_until_decision": 32669,
+        "actual_dense_neural_cell_updates": 131072,
+        "actual_dense_spikes": 77649,
+        "applied_decision_count": 1024,
+        "brier_at_decision": 0.1375248544080619,
+        "conditional_accuracy": 0.8300589390962672,
+        "coverage": 0.994140625,
+        "dataset_sha256": "556dde8cd9b17286271867b37ae408c6654e82844c8eb956ebc811a37e9ebee7",
+        "episodes": 1024,
+        "fallback_count": 0,
+        "inference_seconds": 0.003638810001575621,
+        "log_loss_at_decision": 0.46377910363151276,
+        "mean_observations": 6.7373046875,
+        "mean_utility": 0.48783203125,
+        "observations": 6899,
+        "serial_duration": 7308.600000000002,
+        "source_of_probability": "learned_log_odds_readout_not_terminal_or_FPT_probability",
+        "utility_per_serial_second": 0.06834961552144048,
+        "utility_squared_sum": 867.5061999999999,
+        "utility_sum": 499.54
+      },
+      "ood_test": {
+        "abstentions": 10,
+        "accuracy_all": 0.71484375,
+        "action_evaluation_seconds": 0.0009065739977813791,
+        "active_cell_updates_until_decision": 64080,
+        "active_spikes_until_decision": 31987,
+        "actual_dense_neural_cell_updates": 131072,
+        "actual_dense_spikes": 67242,
+        "applied_decision_count": 1024,
+        "brier_at_decision": 0.22551725084370186,
+        "conditional_accuracy": 0.7218934911242604,
+        "coverage": 0.990234375,
+        "dataset_sha256": "c60a543c6c29f3667ff6dc90e88a46631edab44c6906d9d49c538e90e567a593",
+        "episodes": 1024,
+        "fallback_count": 0,
+        "inference_seconds": 0.003081808998103952,
+        "log_loss_at_decision": 0.7582024683374554,
+        "mean_observations": 7.822265625,
+        "mean_utility": 0.11070800781250001,
+        "observations": 8010,
+        "serial_duration": 8419.600000000002,
+        "source_of_probability": "learned_log_odds_readout_not_terminal_or_FPT_probability",
+        "utility_per_serial_second": 0.013464416361822412,
+        "utility_squared_sum": 919.963575,
+        "utility_sum": 113.36500000000001
+      },
+      "selected_fixed_thresholds": [
+        2.6,
+        -1.0
+      ],
+      "training": {
+        "actual_training_cell_updates": 1343488,
+        "checkpoint_sha256": "4a7c534badb63f3ccb763027fc9bf5e97c4b8c61c8cfb87826db05c0b8d19d09",
+        "clipped_gradient_steps": 0,
+        "diagnostic_forward_cell_updates": 32768,
+        "final_training_loss": -0.23911546276616713,
+        "initial_training_loss": -0.1256502185692837,
+        "max_gradient_norm": 2.6410926000178394,
+        "minibatch_size": 64,
+        "optimizer_forward_cell_updates": 1310720,
+        "parameter_change_l2": 0.7281670840945801,
+        "parameter_count": 57,
+        "projected_parameter_scalars": 0,
+        "selection_forward_cell_updates": 65536,
+        "selection_seconds": 0.018654997998964973,
+        "training_seconds": 2.992239644001529,
+        "training_steps": 160,
+        "validation_threshold_evaluations": 28
+      }
+    },
+    "fixed:standard": {
+      "checkpoint": {
+        "bias": [
+          -0.1300032025908465
+        ],
+        "readout": [
+          0.07771464137113022,
+          0.06520138925189807,
+          0.07701217080938771,
+          0.10506860593014043,
+          0.11146166762531971,
+          0.12506300889641,
+          0.11914723388647454,
+          0.14718688292562032
+        ],
+        "weights": [
+          [
+            0.5407257092639981,
+            0.622148078090179,
+            0.7147923346021133,
+            0.8140583325027924,
+            0.9232586392046378,
+            1.0472180105892732,
+            1.1154602140170586,
+            1.2272749215858032
+          ],
+          [
+            0.23283092187000098,
+            0.26418142744751705,
+            0.31083612002303723,
+            0.368305550970045,
+            0.39709967526401063,
+            0.43402078774364966,
+            0.4676392449271027,
+            0.5055170099995424
+          ],
+          [
+            0.19767263862770018,
+            0.20925165789092626,
+            0.2081343981699275,
+            0.21864009690808706,
+            0.21531909573076552,
+            0.22492719367292155,
+            0.21961689859365463,
+            0.228300101003572
+          ],
+          [
+            -0.0325959697168075,
+            -0.02888881746396435,
+            -0.050036392532123455,
+            -0.055635909127049084,
+            -0.03774938233512954,
+            -0.04830555108280115,
+            -0.04107151468035191,
+            -0.0430737909136713
+          ],
+          [
+            -0.03949670872130253,
+            -0.053185982845608715,
+            -0.047491903429345575,
+            -0.03754919986058988,
+            -0.04306501447794619,
+            -0.04121606870902253,
+            -0.04645423321842881,
+            -0.0417067504535459
+          ],
+          [
+            -0.05306445989501597,
+            -0.04229064416229234,
+            -0.04569451393078776,
+            -0.052522701564382095,
+            -0.05571974869594548,
+            -0.05487994994819358,
+            -0.05283969000499392,
+            -0.044159210125808826
+          ]
+        ]
+      },
+      "id_test": {
+        "abstentions": 7,
+        "accuracy_all": 0.822265625,
+        "action_evaluation_seconds": 0.0007848360000934917,
+        "active_cell_updates_until_decision": 53952,
+        "active_spikes_until_decision": 32743,
+        "actual_dense_neural_cell_updates": 131072,
+        "actual_dense_spikes": 80787,
+        "applied_decision_count": 1024,
+        "brier_at_decision": 0.13224413149694614,
+        "conditional_accuracy": 0.8279252704031466,
+        "coverage": 0.9931640625,
+        "dataset_sha256": "556dde8cd9b17286271867b37ae408c6654e82844c8eb956ebc811a37e9ebee7",
+        "episodes": 1024,
+        "fallback_count": 0,
+        "inference_seconds": 0.002830723999068141,
+        "log_loss_at_decision": 0.4314660806197654,
+        "mean_observations": 6.5859375,
+        "mean_utility": 0.48761718750000005,
+        "observations": 6744,
+        "serial_duration": 7153.600000000001,
+        "source_of_probability": "learned_log_odds_readout_not_terminal_or_FPT_probability",
+        "utility_per_serial_second": 0.06979982106911205,
+        "utility_squared_sum": 872.2701999999999,
+        "utility_sum": 499.32000000000005
+      },
+      "ood_test": {
+        "abstentions": 6,
+        "accuracy_all": 0.720703125,
+        "action_evaluation_seconds": 0.0008443689985142555,
+        "active_cell_updates_until_decision": 61128,
+        "active_spikes_until_decision": 33112,
+        "actual_dense_neural_cell_updates": 131072,
+        "actual_dense_spikes": 71387,
+        "applied_decision_count": 1024,
+        "brier_at_decision": 0.21660644902295814,
+        "conditional_accuracy": 0.724950884086444,
+        "coverage": 0.994140625,
+        "dataset_sha256": "c60a543c6c29f3667ff6dc90e88a46631edab44c6906d9d49c538e90e567a593",
+        "episodes": 1024,
+        "fallback_count": 0,
+        "inference_seconds": 0.0029921159984951373,
+        "log_loss_at_decision": 0.6730718385703149,
+        "mean_observations": 7.4619140625,
+        "mean_utility": 0.13085449218750003,
+        "observations": 7641,
+        "serial_duration": 8050.600000000002,
+        "source_of_probability": "learned_log_odds_readout_not_terminal_or_FPT_probability",
+        "utility_per_serial_second": 0.0166441010607905,
+        "utility_squared_sum": 917.4185249999999,
+        "utility_sum": 133.99500000000003
+      },
+      "selected_fixed_thresholds": [
+        2.0,
+        -1.0
+      ],
+      "training": {
+        "actual_training_cell_updates": 1343488,
+        "checkpoint_sha256": "1e36f5f0e2eed03e31a16bb76bd0e33b9f8b4f0414b845239e8c13c6cff42b5a",
+        "clipped_gradient_steps": 0,
+        "diagnostic_forward_cell_updates": 32768,
+        "final_training_loss": -0.32446872838445506,
+        "initial_training_loss": -0.1256502185692837,
+        "max_gradient_norm": 1.6105789120441525,
+        "minibatch_size": 64,
+        "optimizer_forward_cell_updates": 1310720,
+        "parameter_change_l2": 0.8984594247051441,
+        "parameter_count": 57,
+        "projected_parameter_scalars": 0,
+        "selection_forward_cell_updates": 65536,
+        "selection_seconds": 0.010929919000773225,
+        "training_seconds": 0.48743367999850307,
+        "training_steps": 160,
+        "validation_threshold_evaluations": 28
+      }
+    },
+    "free:first_passage": {
+      "checkpoint": {
+        "bias": [
+          -0.11192501622861843
+        ],
+        "readout": [
+          0.10438431736840728,
+          0.12681717829614333,
+          0.11189775377843203,
+          0.1986585854184963,
+          0.14250304895789873,
+          0.17533579052473877,
+          0.19743458873576997,
+          0.1796599754403841
+        ],
+        "weights": [
+          [
+            0.5466540222418482,
+            0.6086487399498781,
+            0.699869412572303,
+            0.7948678267605341,
+            0.9270374461048821,
+            0.9957786267652592,
+            1.048495492307428,
+            1.20064121386147
+          ],
+          [
+            0.23163234511085545,
+            0.2564244922389594,
+            0.2680386908325626,
+            0.31802398438756674,
+            0.3558304829008037,
+            0.3693069607197692,
+            0.3639334519317985,
+            0.39739009085905946
+          ],
+          [
+            0.08343009922524643,
+            0.10267543058701863,
+            0.09846734877729271,
+            0.13962597713518518,
+            0.11207009859636279,
+            0.12439404152894736,
+            0.15115498578218628,
+            0.12418097834150363
+          ],
+          [
+            -0.06764534298181546,
+            -0.06608763001016352,
+            -0.08845879866535154,
+            -0.07189708024195673,
+            -0.012369581396880517,
+            -0.016397854904431637,
+            -0.04837720883820328,
+            -0.022415276743637354
+          ],
+          [
+            -0.0783532752096163,
+            -0.096470203488738,
+            -0.09464627960235998,
+            -0.07732001395042552,
+            -0.03851833446735991,
+            -0.036654955640775956,
+            -0.08592101396175289,
+            -0.04295888188954943
+          ],
+          [
+            0.0010575835584211981,
+            0.014833373833229526,
+            0.010823407310400029,
+            0.020078303369459156,
+            0.04053560758497701,
+            0.043416792750876,
+            0.03752563447909349,
+            0.053635245053074966
+          ]
+        ]
+      },
+      "id_test": {
+        "abstentions": 1,
+        "accuracy_all": 0.802734375,
+        "action_evaluation_seconds": 0.0006653479977103416,
+        "active_cell_updates_until_decision": 34800,
+        "active_spikes_until_decision": 22178,
+        "actual_dense_neural_cell_updates": 131072,
+        "actual_dense_spikes": 77893,
+        "applied_decision_count": 1024,
+        "brier_at_decision": 0.14899031935040263,
+        "conditional_accuracy": 0.8035190615835777,
+        "coverage": 0.9990234375,
+        "dataset_sha256": "556dde8cd9b17286271867b37ae408c6654e82844c8eb956ebc811a37e9ebee7",
+        "episodes": 1024,
+        "fallback_count": 0,
+        "inference_seconds": 0.004800275000889087,
+        "log_loss_at_decision": 0.457965457831755,
+        "mean_observations": 4.248046875,
+        "mean_utility": 0.516611328125,
+        "observations": 4350,
+        "serial_duration": 4759.6,
+        "source_of_probability": "learned_log_odds_readout_not_terminal_or_FPT_probability",
+        "utility_per_serial_second": 0.11114589461299268,
+        "utility_squared_sum": 914.7841000000001,
+        "utility_sum": 529.01
+      },
+      "ood_test": {
+        "abstentions": 2,
+        "accuracy_all": 0.6611328125,
+        "action_evaluation_seconds": 0.0006139610013633501,
+        "active_cell_updates_until_decision": 23008,
+        "active_spikes_until_decision": 12651,
+        "actual_dense_neural_cell_updates": 131072,
+        "actual_dense_spikes": 67964,
+        "applied_decision_count": 1024,
+        "brier_at_decision": 0.21058149396944897,
+        "conditional_accuracy": 0.662426614481409,
+        "coverage": 0.998046875,
+        "dataset_sha256": "c60a543c6c29f3667ff6dc90e88a46631edab44c6906d9d49c538e90e567a593",
+        "episodes": 1024,
+        "fallback_count": 0,
+        "inference_seconds": 0.0034244259986735415,
+        "log_loss_at_decision": 0.6179613135354447,
+        "mean_observations": 2.80859375,
+        "mean_utility": 0.21537597656250002,
+        "observations": 2876,
+        "serial_duration": 3285.5999999999995,
+        "source_of_probability": "learned_log_odds_readout_not_terminal_or_FPT_probability",
+        "utility_per_serial_second": 0.0671247260774288,
+        "utility_squared_sum": 944.725825,
+        "utility_sum": 220.54500000000002
+      },
+      "selected_fixed_thresholds": [
+        1.6,
+        -1.0
+      ],
+      "training": {
+        "actual_training_cell_updates": 1343488,
+        "checkpoint_sha256": "427a65f6d1d3600f23d8aa2009d170d435a13875f4dcb7c0301c086746d62b74",
+        "clipped_gradient_steps": 0,
+        "diagnostic_forward_cell_updates": 32768,
+        "final_training_loss": -0.21502715516566168,
+        "initial_training_loss": -0.10986896856928363,
+        "max_gradient_norm": 1.6842788824775596,
+        "minibatch_size": 64,
+        "optimizer_forward_cell_updates": 1310720,
+        "parameter_change_l2": 0.7058863344772504,
+        "parameter_count": 57,
+        "projected_parameter_scalars": 0,
+        "selection_forward_cell_updates": 0,
+        "selection_seconds": 1.644899748498574e-05,
+        "training_seconds": 2.0598748289994546,
+        "training_steps": 160,
+        "validation_threshold_evaluations": 0
+      }
+    },
+    "free:standard": {
+      "checkpoint": {
+        "bias": [
+          -0.19097040386317432
+        ],
+        "readout": [
+          0.12978009851889497,
+          0.1475024170863542,
+          0.13699680846132176,
+          0.1508905098313763,
+          0.1334120234779026,
+          0.11986764921486796,
+          0.12181372463729367,
+          0.1445836502799581
+        ],
+        "weights": [
+          [
+            0.4449113127749488,
+            0.5061491031143968,
+            0.606219716061776,
+            0.7215696644445365,
+            0.8388978944111303,
+            0.9403586837525266,
+            1.0144640638445146,
+            1.1367435116015587
+          ],
+          [
+            0.30957289165882695,
+            0.3650196094230965,
+            0.39158221779113106,
+            0.41532694232034134,
+            0.4363157939370305,
+            0.46033735866457903,
+            0.49843536294578855,
+            0.5178205454470154
+          ],
+          [
+            0.09101022477365646,
+            0.11297997485182378,
+            0.09955006558149257,
+            0.09160134315855518,
+            0.08142222268251453,
+            0.0879641443561371,
+            0.082109838154293,
+            0.09028826836941362
+          ],
+          [
+            -0.03435356944572467,
+            -0.032314430412618625,
+            -0.04800827526212617,
+            -0.04829556711721241,
+            -0.030129611357206508,
+            -0.03998135720330777,
+            -0.030767111178317968,
+            -0.03444947541996319
+          ],
+          [
+            -0.04339244474623531,
+            -0.059493827784447395,
+            -0.05018544060142923,
+            -0.039926297103320636,
+            -0.043650240295232796,
+            -0.04260240923678527,
+            -0.04489489656132896,
+            -0.04541466770278776
+          ],
+          [
+            -0.009493593838907802,
+            0.00241246117822605,
+            0.003747894546461428,
+            -0.00023635804954261685,
+            -0.0020416453589645824,
+            -0.0009407324582665715,
+            0.005076686738091042,
+            0.012980287133128054
+          ]
+        ]
+      },
+      "id_test": {
+        "abstentions": 0,
+        "accuracy_all": 0.81640625,
+        "action_evaluation_seconds": 0.0005758160004916135,
+        "active_cell_updates_until_decision": 41000,
+        "active_spikes_until_decision": 24737,
+        "actual_dense_neural_cell_updates": 131072,
+        "actual_dense_spikes": 76181,
+        "applied_decision_count": 1024,
+        "brier_at_decision": 0.13802936701888183,
+        "conditional_accuracy": 0.81640625,
+        "coverage": 1.0,
+        "dataset_sha256": "556dde8cd9b17286271867b37ae408c6654e82844c8eb956ebc811a37e9ebee7",
+        "episodes": 1024,
+        "fallback_count": 0,
+        "inference_seconds": 0.003225400003429968,
+        "log_loss_at_decision": 0.4230598088942281,
+        "mean_observations": 5.0048828125,
+        "mean_utility": 0.5225,
+        "observations": 5125,
+        "serial_duration": 5534.6,
+        "source_of_probability": "learned_log_odds_readout_not_terminal_or_FPT_probability",
+        "utility_per_serial_second": 0.09667184620388103,
+        "utility_squared_sum": 890.5588,
+        "utility_sum": 535.04
+      },
+      "ood_test": {
+        "abstentions": 0,
+        "accuracy_all": 0.671875,
+        "action_evaluation_seconds": 0.0007413150015054271,
+        "active_cell_updates_until_decision": 26592,
+        "active_spikes_until_decision": 13651,
+        "actual_dense_neural_cell_updates": 131072,
+        "actual_dense_spikes": 64333,
+        "applied_decision_count": 1024,
+        "brier_at_decision": 0.20118176922111847,
+        "conditional_accuracy": 0.671875,
+        "coverage": 1.0,
+        "dataset_sha256": "c60a543c6c29f3667ff6dc90e88a46631edab44c6906d9d49c538e90e567a593",
+        "episodes": 1024,
+        "fallback_count": 0,
+        "inference_seconds": 0.003677896998851793,
+        "log_loss_at_decision": 0.5907971454016643,
+        "mean_observations": 3.24609375,
+        "mean_utility": 0.2177197265625,
+        "observations": 3324,
+        "serial_duration": 3733.5999999999995,
+        "source_of_probability": "learned_log_odds_readout_not_terminal_or_FPT_probability",
+        "utility_per_serial_second": 0.05971314548960789,
+        "utility_squared_sum": 926.0139750000001,
+        "utility_sum": 222.945
+      },
+      "selected_fixed_thresholds": [
+        1.6,
+        -1.0
+      ],
+      "training": {
+        "actual_training_cell_updates": 1343488,
+        "checkpoint_sha256": "99330433037525e362a40993e4e60381211c4f3e610cc0716d717e4370c60ac2",
+        "clipped_gradient_steps": 0,
+        "diagnostic_forward_cell_updates": 32768,
+        "final_training_loss": -0.21007247893428033,
+        "initial_training_loss": -0.10986896856928363,
+        "max_gradient_norm": 1.1161310477729018,
+        "minibatch_size": 64,
+        "optimizer_forward_cell_updates": 1310720,
+        "parameter_change_l2": 0.9631606605476819,
+        "parameter_count": 57,
+        "projected_parameter_scalars": 0,
+        "selection_forward_cell_updates": 0,
+        "selection_seconds": 2.5010001991176978e-05,
+        "training_seconds": 0.27869757900043624,
+        "training_steps": 160,
+        "validation_threshold_evaluations": 0
+      }
+    }
+  },
+  "data_hashes": {
+    "id_test": "556dde8cd9b17286271867b37ae408c6654e82844c8eb956ebc811a37e9ebee7",
+    "ood_test": "c60a543c6c29f3667ff6dc90e88a46631edab44c6906d9d49c538e90e567a593",
+    "train": "2ac9374920ca7fd3086101daf094f146b6de1edb37bb96cb8bf0666d363b44b1",
+    "validation": "e2a61f936a738b1d0cba6a34dba614f33f1b858db9525b7ef79c60cd3fdbf468"
+  },
+  "references": {
+    "id_test": {
+      "raw_belief_dp": {
+        "abstentions": 29,
+        "accuracy_all": 0.8125,
+        "action_evaluation_seconds": 0.0006869390017527621,
+        "active_cell_updates_until_decision": 0,
+        "active_spikes_until_decision": 0,
+        "actual_dense_neural_cell_updates": 0,
+        "actual_dense_spikes": 0,
+        "applied_decision_count": 1024,
+        "brier_at_decision": 0.12008028114643723,
+        "conditional_accuracy": 0.8361809045226131,
+        "coverage": 0.9716796875,
+        "dataset_sha256": "556dde8cd9b17286271867b37ae408c6654e82844c8eb956ebc811a37e9ebee7",
+        "episodes": 1024,
+        "fallback_count": 0,
+        "inference_seconds": 0.0019352959971001837,
+        "log_loss_at_decision": 0.3690671256013168,
+        "mean_observations": 5.94140625,
+        "mean_utility": 0.529755859375,
+        "observations": 6084,
+        "serial_duration": 6493.6,
+        "utility_per_serial_second": 0.08353917703585069,
+        "utility_squared_sum": 856.8995000000001,
+        "utility_sum": 542.47
+      },
+      "raw_belief_myopic_voc": {
+        "abstentions": 7,
+        "accuracy_all": 0.7265625,
+        "action_evaluation_seconds": 0.0006143500031612348,
+        "active_cell_updates_until_decision": 0,
+        "active_spikes_until_decision": 0,
+        "actual_dense_neural_cell_updates": 0,
+        "actual_dense_spikes": 0,
+        "applied_decision_count": 1024,
+        "brier_at_decision": 0.18701709273298817,
+        "conditional_accuracy": 0.7315634218289085,
+        "coverage": 0.9931640625,
+        "dataset_sha256": "556dde8cd9b17286271867b37ae408c6654e82844c8eb956ebc811a37e9ebee7",
+        "episodes": 1024,
+        "fallback_count": 0,
+        "inference_seconds": 0.0019539569984772243,
+        "log_loss_at_decision": 0.5549842640316776,
+        "mean_observations": 2.21484375,
+        "mean_utility": 0.42315429687500006,
+        "observations": 2268,
+        "serial_duration": 2677.5999999999995,
+        "utility_per_serial_second": 0.16182775619958176,
+        "utility_squared_sum": 985.1751000000006,
+        "utility_sum": 433.31000000000006
+      }
+    },
+    "ood_test": {
+      "raw_belief_dp": {
+        "abstentions": 4,
+        "accuracy_all": 0.708984375,
+        "action_evaluation_seconds": 0.0009213700031978078,
+        "active_cell_updates_until_decision": 0,
+        "active_spikes_until_decision": 0,
+        "actual_dense_neural_cell_updates": 0,
+        "actual_dense_spikes": 0,
+        "applied_decision_count": 1024,
+        "brier_at_decision": 0.1874039162515469,
+        "conditional_accuracy": 0.711764705882353,
+        "coverage": 0.99609375,
+        "dataset_sha256": "c60a543c6c29f3667ff6dc90e88a46631edab44c6906d9d49c538e90e567a593",
+        "episodes": 1024,
+        "fallback_count": 0,
+        "inference_seconds": 0.0027888730000995565,
+        "log_loss_at_decision": 0.5559909610463458,
+        "mean_observations": 3.6201171875,
+        "mean_utility": 0.292841796875,
+        "observations": 3707,
+        "serial_duration": 4116.6,
+        "utility_per_serial_second": 0.07284409464120876,
+        "utility_squared_sum": 913.31015,
+        "utility_sum": 299.87
+      },
+      "raw_belief_myopic_voc": {
+        "abstentions": 0,
+        "accuracy_all": 0.6259765625,
+        "action_evaluation_seconds": 0.0007668370017199777,
+        "active_cell_updates_until_decision": 0,
+        "active_spikes_until_decision": 0,
+        "actual_dense_neural_cell_updates": 0,
+        "actual_dense_spikes": 0,
+        "applied_decision_count": 1024,
+        "brier_at_decision": 0.2312390625,
+        "conditional_accuracy": 0.6259765625,
+        "coverage": 1.0,
+        "dataset_sha256": "c60a543c6c29f3667ff6dc90e88a46631edab44c6906d9d49c538e90e567a593",
+        "episodes": 1024,
+        "fallback_count": 0,
+        "inference_seconds": 0.0027428110006439965,
+        "log_loss_at_decision": 0.654847745460583,
+        "mean_observations": 1.0,
+        "mean_utility": 0.20945312499999993,
+        "observations": 1024,
+        "serial_duration": 1433.5999999999997,
+        "utility_per_serial_second": 0.149609375,
+        "utility_squared_sum": 1002.0631999999999,
+        "utility_sum": 214.47999999999993
+      }
+    }
+  },
+  "seed": 251
+}
