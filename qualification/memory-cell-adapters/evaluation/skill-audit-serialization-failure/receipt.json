@@ -1,0 +1,46 @@
+{
+  "argv": [
+    "/workspace/scratch/9bbd63a0445f/hcsn-venv/bin/python",
+    "-I",
+    "-B",
+    "/workspace/scratch/76e2020e4b36/hepta-memory-completion/qualification/memory-cell-adapters/evaluation/audit_skill_longrun.py",
+    "--run-root",
+    "/workspace/scratch/76e2020e4b36/skill-ci-artifacts/formal-01/restored/memory-adapter-skill-longrun-output/run-01-skill",
+    "--checkout-root",
+    "/workspace/scratch/76e2020e4b36/hepta-memory-completion",
+    "--initial-study",
+    "/workspace/scratch/76e2020e4b36/memory-adapter-formal-01",
+    "--bundle-root",
+    "/workspace/scratch/76e2020e4b36/skill-ci-artifacts/formal-01/restored/memory-adapter-skill-longrun-output",
+    "--output",
+    "/workspace/scratch/76e2020e4b36/skill-audit-formal-01/AUDIT-skill-longrun.json"
+  ],
+  "completed_child_cpu_seconds": 3.921301,
+  "environment": {
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "exit_code": 1,
+  "exited_monotonic_ns": 81127008471789,
+  "original_evidence_rewritten": false,
+  "pid": 12,
+  "schema": "hepta.memory.skill-audit-process.v1",
+  "source": {
+    "bytes": 1340,
+    "sha256": "bf0d53cf6559136ebaee6b1b00667c5b07fc96c01b6b530530710062d5476263"
+  },
+  "started_monotonic_ns": 81123062574629,
+  "started_unix_ns": 1793211801044572092,
+  "stderr": {
+    "bytes": 682,
+    "sha256": "d626e866a6c95600e67d729d113abb93fdf38bd1d5e5dc32da5a55bd54158e10"
+  },
+  "stdout": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "training_executed": false,
+  "wall_ns": 3945897160
+}
