@@ -145,6 +145,7 @@ def paired_bytes(export, parents):
         raise ValueError("both byte parent types or clean required")
     variants = {name: {} for name in ("zero", "frozen", "trained", "clean")}
     reports = {name: {} for name in variants}
+    rebuilds = {}
     started = time.perf_counter_ns()
     for kind in KINDS:
         meta = metadata(rows[kind], kind)
@@ -167,9 +168,10 @@ def paired_bytes(export, parents):
             variants[name][kind], reports[name][kind] = artifact(meta, arrays, deepcopy(report))
         reports["clean"][kind]["rebuild_parameters_identical"] = True
         reports["clean"][kind]["rebuild_receipt"] = rebuild_report
+        rebuilds[kind], _ = artifact(meta, rebuilt, rebuild_report)
     return {"schema": "hepta.memory.v9.paired-result.v1", "representation": "byte",
         "scope": export["scope"], "owner_cut_digest": export["owner_cut_digest"],
-        "configuration": CONFIG, "artifacts": variants,
+        "configuration": CONFIG, "artifacts": variants, "rebuilds": rebuilds,
         "receipt": {"variants": reports, "actual_fit_calls": 6,
             "wall_ns": time.perf_counter_ns() - started,
             "catalog_contains_explicit_values": False, "future_requests_seen": False,

@@ -91,6 +91,7 @@ def paired_catalog(export, parents):
     started = time.perf_counter_ns()
     variants = {name: {} for name in ("zero", "frozen", "trained", "clean")}
     reports = {name: {} for name in variants}
+    rebuilds = {}
     for kind in KINDS:
         selected = rows[kind]
         if not selected:
@@ -117,9 +118,10 @@ def paired_catalog(export, parents):
             variants[name][kind], reports[name][kind] = artifact(cell)
         reports["clean"][kind]["rebuild_parameters_identical"] = True
         reports["clean"][kind]["rebuild_parameter_digest"] = rebuilt.parameters_digest()
+        rebuilds[kind], _ = artifact(rebuilt)
     return {"schema": "hepta.memory.v9.paired-result.v1", "representation": "catalog",
         "scope": export["scope"], "owner_cut_digest": export["owner_cut_digest"],
-        "configuration": CONFIG, "artifacts": variants,
+        "configuration": CONFIG, "artifacts": variants, "rebuilds": rebuilds,
         "receipt": {"variants": reports, "actual_fit_calls": 6,
             "wall_ns": time.perf_counter_ns() - started,
             "catalog_contains_explicit_values": True, "future_requests_seen": False,
