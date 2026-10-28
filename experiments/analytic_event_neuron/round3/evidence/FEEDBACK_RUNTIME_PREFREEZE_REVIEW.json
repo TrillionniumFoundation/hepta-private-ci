@@ -1,0 +1,48 @@
+{
+  "checks": 461845,
+  "confirmation_generated": false,
+  "development_candidates_recomputed": 375,
+  "durable_owner_witness_pairs": 3840,
+  "failures": [],
+  "independent_runtime_fresh_processes": 2,
+  "independent_runtime_qualification_sha256": "eb33aa92222cc8a06524d107a5ec16263a585903038034a4b9f924751f6dd01b",
+  "independent_runtime_unique_development_histories": 4,
+  "maxima": {
+    "finite_step_weight_error": 3.9479530755670567e-13,
+    "native_cdf_error": 2.220446049250313e-16,
+    "posterior_error": 6.661338147750939e-16,
+    "quadrature_error": 1.0658141036401503e-14,
+    "quadrature_omitted_tail_bound": 4.578918913470306e-54
+  },
+  "owner_archive_files_verified": 19210,
+  "passed": true,
+  "prepared_training_seeds": [
+    607,
+    701,
+    809,
+    907,
+    1009
+  ],
+  "reference_correction": "Initial unsegmented half-infinite quad missed normal mass for four narrow-variance cases. Attempt and script retained under run/review_attempts; finite interval plus certified omitted-tail bound fixes the independent reference, with scientific source/models/data/gates unchanged.",
+  "retained_stage_states": 7680,
+  "schema": "hepta.paid-feedback.prefreeze-review.v1",
+  "scope_limits": [
+    "No confirmation data and no training refits.",
+    "Native tick values read/reconstructed; qualification executes actual native, but training ticks were not rerun.",
+    "Terminal error tails at native Q24 thresholds are not probability of gain for the chosen repair amplitude.",
+    "Continuous future optimal amplitude is a wait-value plug-in; Q24 loss bound1/(4*2^48) and learned follow-up mismatch remain explicit.",
+    "Zero/reset isolate sparse feature pathways; feedback remains available for shared amplitudes and wait values.",
+    "Separate target-free policy process is not a hostile filesystem-access control boundary.",
+    "Two-owner partial commits fail closed; no cross-owner atomicity or retention certificate."
+  ],
+  "source_sha256": {
+    "FEEDBACK_RUNTIME.md": "2c26773b1d890fd71bd30ecf68ebd89654283744b495512d2792ee7e9a9263ca",
+    "feedback.py": "4e8f2b01048af4cfff5d90b3215e88535b7f447a6ccc2ddb8c5506b518c882b6",
+    "feedback_audit.py": "ff7829057a2970a28fb0765d4e7905647c1b3e3634546db58bbad5410530b37b",
+    "feedback_study.py": "77ddd04fc08f783cab16b2c46b81e0c780f10e9e2c96d56eba7c0fbe48c76288",
+    "review_feedback_prefreeze.py": "47871a1cba11f4385ee875b12dadbe9a46fd2ec1aeb8e444ec4d8f52a7365ed1",
+    "runtime_feedback.py": "eee01cc5eaea553bfa4b6f7ade5cbce703501b9f13e9b220a649b69927f0d07f",
+    "runtime_feedback_study.py": "75ad90a0e0861e9c151e8702d19f2187862310e0abeecab815887bf8e2e564c1"
+  },
+  "trained_heads_recomputed": 25
+}

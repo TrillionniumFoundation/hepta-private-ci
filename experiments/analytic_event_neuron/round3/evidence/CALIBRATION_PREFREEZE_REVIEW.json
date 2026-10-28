@@ -1,0 +1,341 @@
+{
+  "artifacts_verified": 250,
+  "checkpoints": 60,
+  "checks": 15324,
+  "confirmation_generated": false,
+  "development_candidates_recomputed": 3300,
+  "failures": [],
+  "findings": [
+    {
+      "detail": "Replay and calibration fit each use512 labels/window; calibration additionally uses256 development labels for selection while replay uses0. Only fit budget is matched. Classical calibrated control matches the full budget.",
+      "severity": "interpretation",
+      "status": "disclosed"
+    }
+  ],
+  "independent_gradients": 60,
+  "maxima": {
+    "development_loss_error": 6.661338147750939e-16,
+    "gradient_error": 1.3877787807814457e-16,
+    "selected_prediction_error": 1.0325074129013956e-14
+  },
+  "passed": true,
+  "planned_dataset_coordinates": 245,
+  "prepared_dataset_coordinates": 180,
+  "prepared_sha256": "16b896a125c375537cd48d603d0da93958dfeec1e33c0badc57aa4e63d15fc91",
+  "schema": "hepta.analytic-event.calibration-prefreeze-review.v1",
+  "scope_limits": [
+    "Read-only evidence/math review; optimizers were not rerun.",
+    "Per-horizon Gaussian calibration does not define a new path semigroup.",
+    "Empirical retention selection has no pointwise bound; Q24 parameter study does not execute native runtime.",
+    "Paired SE reserve is a model-selection heuristic, not a simultaneous confidence bound."
+  ],
+  "selected_indices": [
+    {
+      "seed": 607,
+      "selected_index": 51,
+      "window": 0
+    },
+    {
+      "seed": 607,
+      "selected_index": 25,
+      "window": 1
+    },
+    {
+      "seed": 607,
+      "selected_index": 38,
+      "window": 2
+    },
+    {
+      "seed": 607,
+      "selected_index": 30,
+      "window": 3
+    },
+    {
+      "seed": 607,
+      "selected_index": 51,
+      "window": 4
+    },
+    {
+      "seed": 607,
+      "selected_index": 12,
+      "window": 5
+    },
+    {
+      "seed": 607,
+      "selected_index": 0,
+      "window": 6
+    },
+    {
+      "seed": 607,
+      "selected_index": 20,
+      "window": 7
+    },
+    {
+      "seed": 607,
+      "selected_index": 0,
+      "window": 8
+    },
+    {
+      "seed": 607,
+      "selected_index": 13,
+      "window": 9
+    },
+    {
+      "seed": 607,
+      "selected_index": 0,
+      "window": 10
+    },
+    {
+      "seed": 607,
+      "selected_index": 21,
+      "window": 11
+    },
+    {
+      "seed": 701,
+      "selected_index": 51,
+      "window": 0
+    },
+    {
+      "seed": 701,
+      "selected_index": 25,
+      "window": 1
+    },
+    {
+      "seed": 701,
+      "selected_index": 53,
+      "window": 2
+    },
+    {
+      "seed": 701,
+      "selected_index": 27,
+      "window": 3
+    },
+    {
+      "seed": 701,
+      "selected_index": 40,
+      "window": 4
+    },
+    {
+      "seed": 701,
+      "selected_index": 22,
+      "window": 5
+    },
+    {
+      "seed": 701,
+      "selected_index": 51,
+      "window": 6
+    },
+    {
+      "seed": 701,
+      "selected_index": 12,
+      "window": 7
+    },
+    {
+      "seed": 701,
+      "selected_index": 50,
+      "window": 8
+    },
+    {
+      "seed": 701,
+      "selected_index": 12,
+      "window": 9
+    },
+    {
+      "seed": 701,
+      "selected_index": 50,
+      "window": 10
+    },
+    {
+      "seed": 701,
+      "selected_index": 16,
+      "window": 11
+    },
+    {
+      "seed": 809,
+      "selected_index": 53,
+      "window": 0
+    },
+    {
+      "seed": 809,
+      "selected_index": 11,
+      "window": 1
+    },
+    {
+      "seed": 809,
+      "selected_index": 53,
+      "window": 2
+    },
+    {
+      "seed": 809,
+      "selected_index": 22,
+      "window": 3
+    },
+    {
+      "seed": 809,
+      "selected_index": 53,
+      "window": 4
+    },
+    {
+      "seed": 809,
+      "selected_index": 20,
+      "window": 5
+    },
+    {
+      "seed": 809,
+      "selected_index": 50,
+      "window": 6
+    },
+    {
+      "seed": 809,
+      "selected_index": 32,
+      "window": 7
+    },
+    {
+      "seed": 809,
+      "selected_index": 50,
+      "window": 8
+    },
+    {
+      "seed": 809,
+      "selected_index": 12,
+      "window": 9
+    },
+    {
+      "seed": 809,
+      "selected_index": 53,
+      "window": 10
+    },
+    {
+      "seed": 809,
+      "selected_index": 12,
+      "window": 11
+    },
+    {
+      "seed": 907,
+      "selected_index": 0,
+      "window": 0
+    },
+    {
+      "seed": 907,
+      "selected_index": 8,
+      "window": 1
+    },
+    {
+      "seed": 907,
+      "selected_index": 51,
+      "window": 2
+    },
+    {
+      "seed": 907,
+      "selected_index": 7,
+      "window": 3
+    },
+    {
+      "seed": 907,
+      "selected_index": 54,
+      "window": 4
+    },
+    {
+      "seed": 907,
+      "selected_index": 13,
+      "window": 5
+    },
+    {
+      "seed": 907,
+      "selected_index": 0,
+      "window": 6
+    },
+    {
+      "seed": 907,
+      "selected_index": 18,
+      "window": 7
+    },
+    {
+      "seed": 907,
+      "selected_index": 31,
+      "window": 8
+    },
+    {
+      "seed": 907,
+      "selected_index": 12,
+      "window": 9
+    },
+    {
+      "seed": 907,
+      "selected_index": 54,
+      "window": 10
+    },
+    {
+      "seed": 907,
+      "selected_index": 9,
+      "window": 11
+    },
+    {
+      "seed": 1009,
+      "selected_index": 0,
+      "window": 0
+    },
+    {
+      "seed": 1009,
+      "selected_index": 25,
+      "window": 1
+    },
+    {
+      "seed": 1009,
+      "selected_index": 50,
+      "window": 2
+    },
+    {
+      "seed": 1009,
+      "selected_index": 16,
+      "window": 3
+    },
+    {
+      "seed": 1009,
+      "selected_index": 25,
+      "window": 4
+    },
+    {
+      "seed": 1009,
+      "selected_index": 22,
+      "window": 5
+    },
+    {
+      "seed": 1009,
+      "selected_index": 0,
+      "window": 6
+    },
+    {
+      "seed": 1009,
+      "selected_index": 13,
+      "window": 7
+    },
+    {
+      "seed": 1009,
+      "selected_index": 0,
+      "window": 8
+    },
+    {
+      "seed": 1009,
+      "selected_index": 15,
+      "window": 9
+    },
+    {
+      "seed": 1009,
+      "selected_index": 53,
+      "window": 10
+    },
+    {
+      "seed": 1009,
+      "selected_index": 13,
+      "window": 11
+    }
+  ],
+  "source_sha256": {
+    "calibration.py": "f5086b8fd0f6652b8b2098b5b75cd78f2e6a873c3da908e54ac52c84db97649d",
+    "calibration_study.py": "1a26a50f427d3c6f1943ebe9f20ae3a98446244f8e5d0cbc4de992308c8aa9a4",
+    "calibration_validation.py": "2da5194af7d4f9101a4544b2a0e9d762e23e75c56c34c391df73fc263055bece",
+    "review_calibration_prepared.py": "2bfb8b47f027cf16e27b7d245b485f33ee1e456ada3703c80df4c76456d0fbea"
+  },
+  "successful_fit_receipts": 180
+}

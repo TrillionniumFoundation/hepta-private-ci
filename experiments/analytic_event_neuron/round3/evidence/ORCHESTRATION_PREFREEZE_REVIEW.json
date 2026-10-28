@@ -1,0 +1,248 @@
+{
+  "checks": [
+    {
+      "detail": null,
+      "name": "scientific_module_parses:audit.py",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "scientific_module_parses:run.py",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "scientific_module_parses:freeze.py",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "scientific_module_parses:statistics.py",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "fixed_primary_family_size",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "original_gates_unchanged",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "calibration_prepared_registration_exact",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "all_290_planned_data_seeds_distinct",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "freeze_verifies_exact_source_artifact_inventory",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "changed_prepared_bytes_rejected",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "missing_source_inventory_rejected",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "extra_source_inventory_rejected",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "changed_protocol_digest_rejected",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "frozen_artifact_path_escape_rejected",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "driver_arbitrary_protocol_rejected",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "unindexed_attempt_rejected:main/archives/seed_607_gaussian.tar.gz",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "unindexed_attempt_preserved:main/archives/seed_607_gaussian.tar.gz",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "unindexed_attempt_rejected:main/analysis/seed_607_gaussian.npz",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "unindexed_attempt_preserved:main/analysis/seed_607_gaussian.npz",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "unindexed_attempt_rejected:main/reports/seed_607_gaussian",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "unindexed_attempt_preserved:main/reports/seed_607_gaussian",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "unindexed_attempt_rejected:main/unpacked/seed_607_gaussian",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "unindexed_attempt_preserved:main/unpacked/seed_607_gaussian",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "resume_wrong_source_commit_rejected",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "resume_duplicate_scope_rejected",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "resume_unregistered_scope_rejected",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "statistics_altered_acceptance_gate_rejected",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "statistics_wrong_commit_rejected",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "statistics_incomplete_duplicate_scopes_rejected",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "invalid_published_commit_identity_rejected",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "overwrite_freeze_rejected",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "evidence_path_traversal_rejected",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "own_archive_all_members_hash_verified_before_delete",
+      "passed": true
+    },
+    {
+      "detail": 0.0,
+      "name": "paired_seed_then_whole_trajectory_bootstrap_independent_reference",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "bootstrap_seed_means_preserved",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "zero_difference_not_superiority_but_inside_NI_margin",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "classwise_ECE_independent_bin_reference",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "ECE_does_not_count_horizons_as_independent_samples",
+      "passed": true
+    },
+    {
+      "detail": {
+        "control_rows": 120,
+        "models": 11,
+        "transport_receipts": 617,
+        "unique_trajectories": 8
+      },
+      "name": "retained_full_development_replay_smoke_passed",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "scientific_sources_stable_during_review",
+      "passed": true
+    }
+  ],
+  "complete_scientific_inventory_count": 83,
+  "confirmation_generated": false,
+  "engineering_fixture_dataset_generation_explicitly_blocked": true,
+  "findings": [],
+  "native_execution_during_this_review": false,
+  "passed": true,
+  "planned_dataset_seed_count": 290,
+  "protocol_sha256": "db2d045c733e892e3beeb1de2bdd2e469837373e9ec9cef35ab4785dfae7cffc",
+  "publication_status": "Prospective prefreeze review; actual commit/blob verification remains a parent step",
+  "resolved_before_freeze": [
+    "Unindexed attempts preserved and rejected",
+    "Invocation protocol equality enforced",
+    "Resumption source_commit and registered coordinates checked",
+    "Confirmation audit requires ancestor model freeze binding",
+    "Full scientific inventory and protocol digest checked",
+    "Statistics reject changed protocol/gates and source_commit"
+  ],
+  "retained_development_audit_sha256": "70dc43e147221aaa595159f0845aed0ee1b1f1f91812b94651a33cef1a479287",
+  "review_script_sha256": "3f6718fb89edc18a58325a5c4af9d575cec5671aa07801281771cefb1338f3fe",
+  "reviewed_sources_sha256": {
+    "experiments/analytic_event_neuron/round3/audit.py": "3516ec7d1eaf791597bf41e1c0d612173607f1e5cf8341b98ca33562d4b71384",
+    "experiments/analytic_event_neuron/round3/freeze.py": "ed376a074ba333cbf14d2b133cc5c240789cb7db65217aeeae2bd955d7cd7072",
+    "experiments/analytic_event_neuron/round3/run.py": "7681c71f37123dae5e4bb3bca0ac17cd1d161f8d07f2d159303a310e4c85f652",
+    "experiments/analytic_event_neuron/round3/statistics.py": "f4fd01a14ecbd2e0f9748d58096ef112eca38f7329e6fdb3c78ce5d0061e59ca"
+  },
+  "schema": "hepta.round3.orchestration-prefreeze-review.v1",
+  "source_review": {
+    "all_event_packet_files_and_readbacks_covered": true,
+    "all_numeric_PNGs_independently_decoded_in_main_audit": true,
+    "all_prediction_and_control_rows_audited": true,
+    "analysis_artifact_hash_bound_before_statistics": true,
+    "archive_writer_verifies_each_own_member_before_removing_duplicate": true,
+    "monotonic_interval_certificate_linked_to_actual_actions": true,
+    "new_main_orchestrator_extracts_archives": false,
+    "physical_target_access_claim": "Per-control-function source order only; prediction metrics execute in the same process before control. No process memory isolation proof.",
+    "publication_commit_byte_identity": "Parent must independently verify remote Git blobs; a 40-digit commit string alone is not proof.",
+    "restoration_safety": "Separate publication restoration review still required.",
+    "source_inventory_and_protocol_immutable": true
+  }
+}
