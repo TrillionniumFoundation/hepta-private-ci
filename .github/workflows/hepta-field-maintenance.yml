@@ -1,0 +1,115 @@
+name: Hepta field maintenance generation
+
+on:
+  push:
+    branches:
+      - research/parameter-field-maintenance-20261028
+
+permissions:
+  contents: read
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+
+jobs:
+  tls-locks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact maintenance source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Initialize source-bound receipt
+        id: initialize
+        run: >-
+          python3 -B scripts/run_hepta_field_maintenance.py
+          --mode locks --phase initialize
+          --output-dir "$RUNNER_TEMP/hepta-field-maintenance-locks"
+
+      - name: Prepare canonical Bazel and just tools
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: hepta-field-maintenance-locks
+
+      - name: Install repository Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+
+      - name: Generate exact TLS and Bazel locks
+        id: generate
+        timeout-minutes: 35
+        run: >-
+          python3 -B scripts/run_hepta_field_maintenance.py
+          --mode locks --phase run
+          --output-dir "$RUNNER_TEMP/hepta-field-maintenance-locks"
+
+      - name: Preserve actual results and bounded failure evidence
+        if: always() && steps.initialize.outcome != 'skipped'
+        timeout-minutes: 3
+        run: >-
+          python3 -B scripts/run_hepta_field_maintenance.py
+          --mode locks --phase finalize --step-outcome "${{ steps.generate.outcome }}"
+          --output-dir "$RUNNER_TEMP/hepta-field-maintenance-locks"
+
+      - name: Upload source-bound lock artifacts
+        if: always() && steps.initialize.outcome != 'skipped'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: hepta-field-maintenance-locks-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-field-maintenance-locks/delivery/
+          if-no-files-found: error
+          retention-days: 14
+
+  app-server-schemas:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact maintenance source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Initialize source-bound receipt
+        id: initialize
+        run: >-
+          python3 -B scripts/run_hepta_field_maintenance.py
+          --mode schemas --phase initialize
+          --output-dir "$RUNNER_TEMP/hepta-field-maintenance-schemas"
+
+      - name: Prepare canonical just tools
+        uses: ./.github/actions/setup-ci
+
+      - name: Install repository Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+
+      - name: Generate stable and experimental schemas
+        id: generate
+        timeout-minutes: 35
+        run: >-
+          python3 -B scripts/run_hepta_field_maintenance.py
+          --mode schemas --phase run
+          --output-dir "$RUNNER_TEMP/hepta-field-maintenance-schemas"
+
+      - name: Preserve actual results and bounded failure evidence
+        if: always() && steps.initialize.outcome != 'skipped'
+        timeout-minutes: 3
+        run: >-
+          python3 -B scripts/run_hepta_field_maintenance.py
+          --mode schemas --phase finalize --step-outcome "${{ steps.generate.outcome }}"
+          --output-dir "$RUNNER_TEMP/hepta-field-maintenance-schemas"
+
+      - name: Upload source-bound generated schemas
+        if: always() && steps.initialize.outcome != 'skipped'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: hepta-field-maintenance-schemas-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-field-maintenance-schemas/delivery/
+          if-no-files-found: error
+          retention-days: 14
