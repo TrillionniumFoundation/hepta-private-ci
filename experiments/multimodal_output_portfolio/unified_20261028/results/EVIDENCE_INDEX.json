@@ -1,6 +1,6 @@
 {
   "additional_evidence": "Source files and compact result/audit receipts are versioned in the isolated research branch.",
-  "artifact_count": 7,
+  "artifact_count": 9,
   "artifacts": [
     {
       "bytes": 134772691,
@@ -71,6 +71,26 @@
       "saved_status": "succeeded",
       "scope": "selected_policy_critic_diagnostic",
       "sha256": "1ecc362188e50659c50fe8d2be2d6bbbe3c5b186b534a25118260a4036b7cb6b"
+    },
+    {
+      "bytes": 56962771,
+      "file_id": "file_00000000b66481f88e47dfa8a0452296",
+      "file_name": "native-joint-gradient-001-retired.tar.gz",
+      "library_file_id": "libfile_f23ab982273c8191b0292d362f320a90",
+      "library_version": 0,
+      "saved_status": "succeeded",
+      "scope": "native_joint_gradient_retired_001",
+      "sha256": "386e0a4408afdc4af05c842adce90b3dc50d14412db5a5db48de833fe2cd4e6b"
+    },
+    {
+      "bytes": 56980466,
+      "file_id": "file_00000000b11481f5afb7fe52ca9ff997",
+      "file_name": "native-joint-gradient-002-evidence.tar.gz",
+      "library_file_id": "libfile_d071707d753c8191a9a88649cc917641",
+      "library_version": 0,
+      "saved_status": "succeeded",
+      "scope": "native_joint_gradient_corrected_002",
+      "sha256": "b8a8da478ca4b4dd30e31afdbef02585e7664c82939a16a4c04084e44f6d00f9"
     }
   ],
   "base_sha": "d3c2d760eca5065fc966820379c35c6e8d56e855",
@@ -78,11 +98,24 @@
   "global_optimality_established": false,
   "historical_execution_sources_are_immutable": true,
   "native_authority": "DENY_ALL",
+  "native_joint_gradient_dependency_map": {
+    "corrected_run": "native_joint_gradient_corrected_002",
+    "initial_natural_checkpoint_and_source_arrays": "natural_initial archive; exact dependency hashes in NATIVE_JOINT_GRADIENT_EVIDENCE_PACKAGE.json",
+    "original_owner": "prior_read_only_dependency above",
+    "retired_missing_preparation_cost_run": "native_joint_gradient_retired_001"
+  },
   "new_future_tail_certificate": false,
+  "prior_read_only_dependency": {
+    "bytes": 76773374,
+    "file_name": "hepta_native_semantic_closure_v2_20261027.tar.gz",
+    "library_file_id": "libfile_8230340c97e481919f3284262811afaa",
+    "scope": "Previously saved source of the original owner binary/readout/calibration and strong inherited checkpoint; not counted as a new archive",
+    "sha256": "37f4e8b887948031f30b64eef07733f5542241565fabd51bd1e62cd767b75c6d"
+  },
   "promotion_approved": false,
   "raw_training_media_scope": "Fullpath training performs actual file roundtrips but retains stream hashes and costs, not every training image; qualification media and all checkpoints are retained. Natural exact artifact/codec retention is specified per frozen run.",
   "repository": "TrillionniumFoundation/hepta-private-ci",
   "research_branch": "research/ndu-unified-five-20261028",
   "schema": "hepta.ndu.unified-evidence-index.v1",
-  "total_saved_bytes": 265600520
+  "total_saved_bytes": 379543757
 }

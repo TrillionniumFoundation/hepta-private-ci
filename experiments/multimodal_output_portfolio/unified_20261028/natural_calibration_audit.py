@@ -107,7 +107,7 @@ def run(first_assets, first_results, expanded_assets, expanded_results, output):
               "any_policy_or_checkpoint_changed": False, "new_model_calls": 0,
               "generic_tail_certificate_applied": False, "tail_risk_certified": False,
               "audit_source_sha256": sha(__file__),
-              "interpretation": "Both natural capability decisions remain false. This diagnostic narrows the interpretation of passing calibration point gates; it is not a retuned acceptance rule."}
+              "interpretation": "Both natural capability decisions remain false. This diagnostic narrows the interpretation of passing calibration point gates. Acceptance rules were not changed after calibration."}
     with Path(output).open("x") as stream:
         json.dump(result, stream, indent=2, sort_keys=True)
         stream.write("\n")

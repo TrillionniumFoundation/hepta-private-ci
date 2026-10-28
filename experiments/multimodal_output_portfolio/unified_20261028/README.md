@@ -1,8 +1,9 @@
 # Unified NDU multimodal research — 2026-10-28
 
-This package implements a shared finite-horizon objective contract and three
-bounded research executions: full-path text/image learning, the existing native
-owner's continuation, and natural four-modality event reconstruction. Each study
+This package implements a shared finite-horizon objective contract and bounded
+research executions: full-path text/image learning, the existing native owner's
+continuation, natural four-modality event reconstruction, and actual complete
+trajectory learning through the original owner. Each study
 has its own frozen task, observer, execution law, cost convention, and evidence.
 The common schema makes those contracts comparable and auditable; it does not
 make different tasks or continuations the same experiment.
@@ -19,8 +20,12 @@ the strong controls or a globally optimal multimodal policy.
 | Full-path qualification | 27,648 bundles; independent reopening of 55,296 files; maximum score discrepancy 0 |
 | Risk minus strong prior | Mean fixed-seed CE difference -0.00557131, paired-source 95% interval [-0.01018463, -0.00109823] |
 | Risk minus matched mean | Approximately zero; two seeds select the exact prior and one selects transition-only updates |
-| Expanded natural qualification | 32 new videos, 93 events, 8 arms, 1,488 bundles; NDU64 minus uniform64 +0.00070077, source interval [-0.00001952, +0.00225515] |
-| NDU64 minus strong natural interpolation | -0.08694486, source interval [-0.11683931, -0.06187751]; semantic gates also fail |
+| Expanded natural qualification | 32 new videos, 93 events, 8 arms, 1,488 bundles; preselected primary remains NDU8 |
+| Primary NDU8 minus uniform8 | -0.00003903, source interval [-0.00013958, +0.00001454] |
+| Primary NDU8 minus strong interpolation | -0.08771081, source interval [-0.11766983, -0.06312469]; semantic gates also fail |
+| Secondary NDU64 minus uniform64 | +0.00070077, source interval [-0.00001952, +0.00225515] |
+| Secondary NDU64 minus strong interpolation | -0.08694486, source interval [-0.11683931, -0.06187751] |
+| Complete trajectory mechanism diagnostic | One new profile; 8 updates, 20 actual episodes, 25 four-media emissions, 340 native kernels; 13 neural components receive nonzero actual-return gradients |
 
 [Natural study details](natural_studies.md) preserve both the original and
 expanded experiments. [Selected-policy critic diagnostic](natural_selected_critic.md)
@@ -46,7 +51,10 @@ crosses the original owner in a separately bound transport diagnostic
 ([natural_native_check.py](natural_native_check.py)): 16 episodes, 20 neural
 forwards, 536 kernels and 16 cold recoveries. All eight full/fast pairs preserve
 actions, pre-codec tensors and final four-file hashes. This adds no semantic
-qualification; joint training through that native continuation remains open.
+qualification. The subsequent [complete trajectory diagnostic](native_joint_gradient.md)
+trains the natural neural generator under one new profile while executing the
+fixed original native continuation. The original readout and kernel parameters
+are not trained to maximize this new objective.
 
 ## Objective and execution identity
 
@@ -154,6 +162,46 @@ unhandled exception aborts the trial; excluding such episodes and reporting
 only successful outputs would invalidate evaluation. The tail guard added after
 native execution does not rewrite the archived native evidence.
 
+## Complete trajectories under one new profile
+
+[native_joint_gradient.py](native_joint_gradient.py) uses the same
+[native_joint_episode.py](native_joint_episode.py) for training and deployment.
+Its immutable profile binds actual stochastic four-media emissions, public
+transport feedback, a fresh stochastic retry when admitted, expiry/budget
+refusal, stopping, physical terminal readback, private scoring after owner close,
+and actual cost receipts. The parameter checkpoint and vocabulary are bound
+before each episode and remain fixed until its trajectory has finished.
+
+Eight fixed updates each use two complete training episodes. Four original
+development sources then execute the reloaded final checkpoint. All 20 episodes
+include cold recovery and 17 original kernels. There are 25 actual emissions,
+five real retries, eight refusals with failed terminal delivery, and 100 physical
+media files including intentionally corrupted transport files. The 13 neural
+components all receive nonzero actual-return gradients at every update.
+
+The score includes each genuinely new random emission once, including an emission
+whose codec or delivery fails. A fresh retry has a new conditional density;
+replaying an existing random action would not justify counting its score again.
+The batch estimator uses the mean complete-return moment cost times the sum of
+all current batch scores, with the previous batch's baseline. The independent
+review reconstructs original latent draws and checks normalized densities and
+all raw parameter gradients without rerunning the owner or updating the model.
+[Independent review details](NATIVE_JOINT_REVIEW.md) distinguish 40 neural
+forward replays from new owner episodes or qualification evidence.
+
+Per-episode input conversion, public-input identities and current-policy binding
+are charged alongside native recovery, generation, readback, failure and private
+terminal scoring. The corrected run bills 16.383601427 CPU seconds inside returns,
+including 0.348375 seconds of input/policy preparation; 3.508438573 seconds of
+one-time setup, training, checkpoint writes and reporting are recorded separately.
+The earlier run omitted preparation from returns and remains explicitly retired.
+Both executions and their sources are preserved; the corrected profile is
+`20adfb58197901642bf7281e9ff8a27426480588d34b70a48af7f377f99c4727`.
+
+This is a mechanism diagnostic on already allocated training/development data.
+It performs no new qualification, changes no prior capability decision, and
+supplies no evidence of optimal native action allocation or global optimality.
+
 ## Natural joint event reconstruction
 
 The natural study generates text, waveform, image, and short video for one event
@@ -167,7 +215,11 @@ actual delivered returns; a whole-batch score retains cross terms from shared
 runtime costs, with a baseline from the preceding batch. Measured CPU is treated
 as conditionally exogenous for fixed architecture; derivatives of platform timing
 with respect to parameters are not estimated. Study-specific moment regression
-and source bootstrap summaries do not automatically inherit `tail.py` guarantees.
+and source bootstrap summaries do not automatically inherit `tail.py` guarantees. The
+original natural training receipts do not establish exact per-output physical
+cost identity with deployment: draw-call timing was excluded and shared batch
+forward CPU was charged to both emission replicates. The separately bound native
+trajectory diagnostic does not change those earlier records.
 
 The expanded study preserves the original result, uses fresh held-out sources,
 and declares a new continuation for its enlarged candidate set. Inherited
@@ -232,6 +284,9 @@ python -B -m experiments.multimodal_output_portfolio.unified_20261028.natural_ex
 | Native actual failure/refusal branch | [NATIVE_FAILURE_SUMMARY.json](results/NATIVE_FAILURE_SUMMARY.json) |
 | Selected-action public continuation table | [NATIVE_PUBLIC_CONTINUATION_TABLE.json](results/NATIVE_PUBLIC_CONTINUATION_TABLE.json) |
 | Native archive and immutable provenance | [NATIVE_EVIDENCE_PACKAGE.json](results/NATIVE_EVIDENCE_PACKAGE.json) |
+| Complete trajectory profile and executed mechanism | [NATIVE_JOINT_GRADIENT_SUMMARY.json](results/NATIVE_JOINT_GRADIENT_SUMMARY.json) |
+| Complete trajectory independent density/gradient review | [NATIVE_JOINT_GRADIENT_INDEPENDENT_REVIEW.json](results/NATIVE_JOINT_GRADIENT_INDEPENDENT_REVIEW.json) |
+| Corrected per-episode cost boundary | [NATIVE_JOINT_GRADIENT_COST_SCOPE_AUDIT.json](results/NATIVE_JOINT_GRADIENT_COST_SCOPE_AUDIT.json) |
 | Full-path qualification and paired comparisons | [FULLPATH_RESULT.json](results/FULLPATH_RESULT.json) |
 | Independent full-path artifact/target audit | [FULLPATH_INDEPENDENT_AUDIT.json](results/FULLPATH_INDEPENDENT_AUDIT.json) |
 | Full-path training and gradient coverage | [FULLPATH_TRAINING_SUMMARY.json](results/FULLPATH_TRAINING_SUMMARY.json) |
@@ -239,6 +294,7 @@ python -B -m experiments.multimodal_output_portfolio.unified_20261028.natural_ex
 | Expanded natural qualification | [NATURAL_EXPANDED_RESULT.json](results/NATURAL_EXPANDED_RESULT.json) |
 | Attempt history, including retired runs | [ATTEMPTS.json](results/ATTEMPTS.json) |
 | Complete evidence and source identities | [EVIDENCE_INDEX.json](results/EVIDENCE_INDEX.json) |
+| Observed remote CI and unchanged parent paths | [CI_SCOPE_REVIEW.json](results/CI_SCOPE_REVIEW.json) |
 
 Full-path runs additionally write `PROFILE.json`, `PROTOCOL.json`, per-stage
 training/checkpoint records, `SELECTIONS.json`, and `DEVELOPMENT_SEAL.json` before
@@ -256,6 +312,7 @@ for the archived development and qualification directories before re-auditing.
 `COMPRESSED_RECORDS.json` pins both original and compressed SHA-256 values.
 The archive includes the exact executed sources; use those for historical replay.
 
-The current 384 qualification/retention pixels are now consumed. Future source
+The current 384 original MNIST test images (256 for qualification and 128 for
+retention) are now consumed. Future source
 allocation must exclude `results/FULLPATH_SOURCE_ALLOCATION.json` in addition to
 all previous manifests. The runner is not a global source-consumption registry.
