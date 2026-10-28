@@ -233,7 +233,9 @@ impl ProcessNode {
         self.input.take();
         let child = self.child.as_mut().expect("child");
         let status = tokio::time::timeout(DEADLINE, child.wait())
-            .await.expect("shutdown deadline").expect("reap stopped child");
+            .await
+            .expect("shutdown deadline")
+            .expect("reap stopped child");
         assert!(status.success());
         self.exit_status = Some(status.to_string());
         self.child.take();
@@ -243,8 +245,10 @@ impl ProcessNode {
     async fn record_exit_output(&mut self) {
         let mut trailer = Vec::new();
         let mut output = (&mut self.output).take((LIMIT + 1) as u64);
-        tokio::time::timeout(DEADLINE, output.read_to_end(&mut trailer)).await
-            .expect("bounded child EOF deadline").expect("child exit output");
+        tokio::time::timeout(DEADLINE, output.read_to_end(&mut trailer))
+            .await
+            .expect("bounded child EOF deadline")
+            .expect("child exit output");
         assert!(trailer.len() <= LIMIT, "child exit output bound");
         self.handshake_received_bytes += trailer.len() as u64;
     }

@@ -18,8 +18,11 @@ fn v9_fixture() -> WorkerFixture {
     std::fs::create_dir_all(addressing.join("v9_addressing")).unwrap();
     let script = addressing.join("worker.py");
     std::fs::copy(&old, &script).unwrap();
-    let profile =
-        source_profile(&script, Some("hepta.memory.v9.compatibility-intent-model.v1")).unwrap();
+    let profile = source_profile(
+        &script,
+        Some("hepta.memory.v9.compatibility-intent-model.v1"),
+    )
+    .unwrap();
     for path in &profile.required {
         if !path.exists() {
             std::fs::create_dir_all(path.parent().unwrap()).unwrap();

@@ -6,9 +6,9 @@ use std::time::Instant;
 use codex_hepta_types::Digest32;
 
 use crate::AssociativeMemoryAbstentionV1;
-use crate::memory_parameter_cell_v9::MemoryParameterCellV9;
 use crate::AssociativeMemoryError;
 use crate::AssociativeMemoryPredictionV1;
+use crate::memory_parameter_cell_v9::MemoryParameterCellV9;
 use crate::memory_population::MemoryCellPopulationV2;
 use crate::memory_population_cost::MemoryPopulationCostV2;
 
@@ -132,7 +132,9 @@ impl MemoryCellPopulationV2 {
                 kind: self.kind,
                 value: None,
                 confidence: 0.0,
-                confidence_kind: if self.numeric_profile() == crate::memory_byte_cell_v9::MEMORY_BYTE_NUMERIC_PROFILE_V9 {
+                confidence_kind: if self.numeric_profile()
+                    == crate::memory_byte_cell_v9::MEMORY_BYTE_NUMERIC_PROFILE_V9
+                {
                     "uncalibrated-minimum-byte-bit-margin"
                 } else {
                     "uncalibrated-softmax"

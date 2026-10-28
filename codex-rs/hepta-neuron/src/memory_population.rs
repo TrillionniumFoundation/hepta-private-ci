@@ -13,8 +13,8 @@ use codex_hepta_cognitive_types::MemoryCellKindV1;
 use codex_hepta_types::Digest32;
 use serde::Deserialize;
 
-use crate::memory_parameter_cell_v9::MemoryParameterCellV9;
 use crate::AssociativeMemoryError;
+use crate::memory_parameter_cell_v9::MemoryParameterCellV9;
 use crate::memory_population_cache::PopulationCache;
 use crate::memory_population_cost::MemoryPopulationCostV2;
 use crate::memory_population_cost::ShardCost;
@@ -80,60 +80,61 @@ impl MemoryCellPopulationV2 {
         }
         let header: Schema =
             serde_json::from_slice(bytes).map_err(|_| AssociativeMemoryError::InvalidArtifact)?;
-        let (kind, population, shards, routes, lineage, routing_source_cut) =
-            if header.schema == "hepta.memory.associative-native.v1"
-                || header.schema == crate::memory_byte_cell_v9::SCHEMA {
-                let model = MemoryParameterCellV9::from_bytes(bytes, expected)?;
-                (
-                    model.kind(),
-                    false,
-                    vec![ShardPayload {
-                        digest: expected.to_string(),
-                        payload: std::str::from_utf8(bytes)
-                            .map_err(|_| AssociativeMemoryError::InvalidArtifact)?
-                            .to_owned(),
-                    }],
-                    model
-                        .supports()
-                        .keys()
-                        .map(|key| (key.clone(), 0))
-                        .collect(),
-                    model.lineage_sources().to_vec(),
-                    None,
-                )
-            } else if header.schema == crate::memory_population_learned::SCHEMA {
-                let wire: LearnedPopulationWire = serde_json::from_slice(bytes)
-                    .map_err(|_| AssociativeMemoryError::InvalidArtifact)?;
-                let source_cut = wire.validate()?;
-                (
-                    wire.kind,
-                    true,
-                    wire.shards,
-                    wire.routes,
-                    wire.lineage_sources,
-                    Some(source_cut),
-                )
-            } else {
-                let wire: PopulationWire = serde_json::from_slice(bytes)
-                    .map_err(|_| AssociativeMemoryError::InvalidArtifact)?;
-                if wire.schema != MEMORY_POPULATION_SCHEMA_V2
-                    || wire.partition_profile != MEMORY_POPULATION_PARTITION_V2
-                    || !(1..=8).contains(&wire.shards.len())
-                    || !(1..=4096).contains(&wire.routes.len())
-                    || wire.shards.len() > wire.routes.len()
-                    || wire.kind == MemoryCellKindV1::Event
-                {
-                    return Err(AssociativeMemoryError::InvalidArtifact);
-                }
-                (
-                    wire.kind,
-                    true,
-                    wire.shards,
-                    wire.routes,
-                    wire.lineage_sources,
-                    None,
-                )
-            };
+        let (kind, population, shards, routes, lineage, routing_source_cut) = if header.schema
+            == "hepta.memory.associative-native.v1"
+            || header.schema == crate::memory_byte_cell_v9::SCHEMA
+        {
+            let model = MemoryParameterCellV9::from_bytes(bytes, expected)?;
+            (
+                model.kind(),
+                false,
+                vec![ShardPayload {
+                    digest: expected.to_string(),
+                    payload: std::str::from_utf8(bytes)
+                        .map_err(|_| AssociativeMemoryError::InvalidArtifact)?
+                        .to_owned(),
+                }],
+                model
+                    .supports()
+                    .keys()
+                    .map(|key| (key.clone(), 0))
+                    .collect(),
+                model.lineage_sources().to_vec(),
+                None,
+            )
+        } else if header.schema == crate::memory_population_learned::SCHEMA {
+            let wire: LearnedPopulationWire = serde_json::from_slice(bytes)
+                .map_err(|_| AssociativeMemoryError::InvalidArtifact)?;
+            let source_cut = wire.validate()?;
+            (
+                wire.kind,
+                true,
+                wire.shards,
+                wire.routes,
+                wire.lineage_sources,
+                Some(source_cut),
+            )
+        } else {
+            let wire: PopulationWire = serde_json::from_slice(bytes)
+                .map_err(|_| AssociativeMemoryError::InvalidArtifact)?;
+            if wire.schema != MEMORY_POPULATION_SCHEMA_V2
+                || wire.partition_profile != MEMORY_POPULATION_PARTITION_V2
+                || !(1..=8).contains(&wire.shards.len())
+                || !(1..=4096).contains(&wire.routes.len())
+                || wire.shards.len() > wire.routes.len()
+                || wire.kind == MemoryCellKindV1::Event
+            {
+                return Err(AssociativeMemoryError::InvalidArtifact);
+            }
+            (
+                wire.kind,
+                true,
+                wire.shards,
+                wire.routes,
+                wire.lineage_sources,
+                None,
+            )
+        };
         let mut supports = BTreeMap::new();
         let mut sources = BTreeSet::new();
         let mut shard_costs = Vec::new();
@@ -148,7 +149,8 @@ impl MemoryCellPopulationV2 {
                 .map_err(|_| AssociativeMemoryError::InvalidArtifact)?;
             let model = MemoryParameterCellV9::from_bytes(shard.payload.as_bytes(), digest)?;
             if model.kind() != kind
-                || numeric_profile.is_some_and(|profile| profile != model.numeric_profile()) {
+                || numeric_profile.is_some_and(|profile| profile != model.numeric_profile())
+            {
                 return Err(AssociativeMemoryError::InvalidArtifact);
             }
             let declared: BTreeSet<_> = model.lineage_sources().iter().cloned().collect();
@@ -208,7 +210,9 @@ impl MemoryCellPopulationV2 {
             digest: expected,
             parameter_digest,
             head_digest,
-            numeric_profile: numeric_profile.ok_or(AssociativeMemoryError::InvalidArtifact)?.to_string(),
+            numeric_profile: numeric_profile
+                .ok_or(AssociativeMemoryError::InvalidArtifact)?
+                .to_string(),
             population,
             routing_source_cut,
             supports,

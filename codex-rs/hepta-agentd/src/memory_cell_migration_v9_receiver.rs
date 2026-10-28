@@ -26,10 +26,22 @@ pub struct MemoryCellMigrationReceiverV9 {
 }
 
 impl MemoryCellMigrationReceiverV9 {
-    pub fn new(store: MemoryCellMigrationStoreV9, destination: String, source_key: VerifyingKey, receiver_key: SigningKey) -> Result<Self, String> {
-        if destination != store.expected.destination() { return Err("migration receiver destination differs from its configured image".into()); }
-        Ok(Self { store: Mutex::new(store), destination, source_key, receiver_key,
-            traffic: Arc::new(Mutex::new(MemoryCellMigrationTrafficV9::default())) })
+    pub fn new(
+        store: MemoryCellMigrationStoreV9,
+        destination: String,
+        source_key: VerifyingKey,
+        receiver_key: SigningKey,
+    ) -> Result<Self, String> {
+        if destination != store.expected.destination() {
+            return Err("migration receiver destination differs from its configured image".into());
+        }
+        Ok(Self {
+            store: Mutex::new(store),
+            destination,
+            source_key,
+            receiver_key,
+            traffic: Arc::new(Mutex::new(MemoryCellMigrationTrafficV9::default())),
+        })
     }
 
     pub fn traffic(&self) -> Result<MemoryCellMigrationTrafficV9, String> {
@@ -40,7 +52,11 @@ impl MemoryCellMigrationReceiverV9 {
         self.serve_observed(stream, &mut |_| {})
     }
 
-    pub(crate) fn serve_observed(&self, stream: TcpStream, observe: &mut dyn FnMut(&str)) -> Result<(), String> {
+    pub(crate) fn serve_observed(
+        &self,
+        stream: TcpStream,
+        observe: &mut dyn FnMut(&str),
+    ) -> Result<(), String> {
         let _attempt = Attempt::begin(Arc::clone(&self.traffic))?;
         if !stream.peer_addr().map_err(failure)?.ip().is_loopback() {
             return Err("migration receiver requires loopback transport".into());
@@ -48,9 +64,11 @@ impl MemoryCellMigrationReceiverV9 {
         let mut wire = Wire::new(stream, Arc::clone(&self.traffic), Instant::now() + DEADLINE);
         let request: Signed<Request> = wire.receive_json()?;
         verify(&request, &self.source_key, REQUEST_DOMAIN)?;
-        let request_digest = Sha256Digest::for_bytes(&serde_json::to_vec(&request.body).map_err(failure)?);
+        let request_digest =
+            Sha256Digest::for_bytes(&serde_json::to_vec(&request.body).map_err(failure)?);
         let request = request.body;
-        if request.destination != self.destination || request.payload_bytes > MAX_IMAGE_BYTES as u64 {
+        if request.destination != self.destination || request.payload_bytes > MAX_IMAGE_BYTES as u64
+        {
             return Err("migration destination or payload bound mismatch".into());
         }
         let outcome = match request.action {
@@ -69,10 +87,24 @@ impl MemoryCellMigrationReceiverV9 {
                 Outcome::Dispatch(result)
             }
             Action::Lookup => {
-                if request.payload_bytes != 0 { return Err("migration lookup contains payload".into()); }
-                Outcome::Lookup(self.store.lock().map_err(failure)?.lookup(&request.intent)?)
+                if request.payload_bytes != 0 {
+                    return Err("migration lookup contains payload".into());
+                }
+                Outcome::Lookup(
+                    self.store
+                        .lock()
+                        .map_err(failure)?
+                        .lookup(&request.intent)?,
+                )
             }
         };
-        wire.send_json(&sign(Response { request_digest, outcome }, &self.receiver_key, RESPONSE_DOMAIN)?)
+        wire.send_json(&sign(
+            Response {
+                request_digest,
+                outcome,
+            },
+            &self.receiver_key,
+            RESPONSE_DOMAIN,
+        )?)
     }
 }

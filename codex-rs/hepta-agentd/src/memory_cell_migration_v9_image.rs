@@ -93,25 +93,40 @@ impl MemoryCellMigrationManifestV9 {
     }
 
     pub fn digest(&self) -> Result<Sha256Digest, String> {
-        serde_json::to_vec(self).map(|raw| Sha256Digest::for_bytes(&raw)).map_err(failure)
+        serde_json::to_vec(self)
+            .map(|raw| Sha256Digest::for_bytes(&raw))
+            .map_err(failure)
     }
 
     pub(super) fn validate(&self) -> Result<(), String> {
-        if self.schema != "hepta.memory.migration.image.v9" || self.destination.is_empty() || self.destination.len() > 128
-            || self.generation == 0 || (self.generation == 1) != self.predecessor.is_none()
-            || self.files.is_empty() || self.files.len() > MAX_FILES
+        if self.schema != "hepta.memory.migration.image.v9"
+            || self.destination.is_empty()
+            || self.destination.len() > 128
+            || self.generation == 0
+            || (self.generation == 1) != self.predecessor.is_none()
+            || self.files.is_empty()
+            || self.files.len() > MAX_FILES
             || self.pin.owner_agent_id != self.pin.cognitive_anchor.owner_agent_id
-        { return Err("migration manifest schema, owner, generation or inventory".into()); }
-        if let Some(digest) = &self.predecessor { Sha256Digest::parse(digest.as_str().to_string()).map_err(failure)?; }
+        {
+            return Err("migration manifest schema, owner, generation or inventory".into());
+        }
+        if let Some(digest) = &self.predecessor {
+            Sha256Digest::parse(digest.as_str().to_string()).map_err(failure)?;
+        }
         let mut previous: Option<&str> = None;
         let mut bytes = 0_u64;
         for file in &self.files {
             validate_path(&file.path)?;
             Sha256Digest::parse(file.sha256.as_str().to_string()).map_err(failure)?;
-            bytes = bytes.checked_add(file.bytes).ok_or("migration inventory size overflow")?;
-            if previous.is_some_and(|prior| prior >= file.path.as_str()) || !matches!(file.mode, 0o400 | 0o444 | 0o600 | 0o644)
+            bytes = bytes
+                .checked_add(file.bytes)
+                .ok_or("migration inventory size overflow")?;
+            if previous.is_some_and(|prior| prior >= file.path.as_str())
+                || !matches!(file.mode, 0o400 | 0o444 | 0o600 | 0o644)
                 || bytes > MAX_IMAGE_BYTES as u64
-            { return Err("migration file order, duplicate, mode or inventory size".into()); }
+            {
+                return Err("migration file order, duplicate, mode or inventory size".into());
+            }
             previous = Some(&file.path);
         }
         Ok(())
@@ -133,8 +148,12 @@ impl MemoryCellMigrationImageV9 {
         pin: MemoryCellMigrationPinV9,
         files: BTreeMap<String, File>,
     ) -> Result<Self, String> {
-        if destination.is_empty() || destination.len() > 128 || generation == 0
-            || (generation == 1) != predecessor.is_none() || files.is_empty() || files.len() > MAX_FILES
+        if destination.is_empty()
+            || destination.len() > 128
+            || generation == 0
+            || (generation == 1) != predecessor.is_none()
+            || files.is_empty()
+            || files.len() > MAX_FILES
         {
             return Err("migration destination, generation or file inventory bound".into());
         }
@@ -144,27 +163,44 @@ impl MemoryCellMigrationImageV9 {
             validate_path(&path)?;
             let before = file.metadata().map_err(failure)?;
             let mode = before.permissions().mode() & 0o777;
-            if !before.is_file() || before.len() > MAX_IMAGE_BYTES as u64
+            if !before.is_file()
+                || before.len() > MAX_IMAGE_BYTES as u64
                 || !matches!(mode, 0o400 | 0o444 | 0o600 | 0o644)
             {
                 return Err("migration requires bounded regular non-executable data files".into());
             }
             let start = contents.len();
-            file.by_ref().take((MAX_IMAGE_BYTES - start + 1) as u64)
-                .read_to_end(&mut contents).map_err(failure)?;
+            file.by_ref()
+                .take((MAX_IMAGE_BYTES - start + 1) as u64)
+                .read_to_end(&mut contents)
+                .map_err(failure)?;
             let after = file.metadata().map_err(failure)?;
-            if contents.len() > MAX_IMAGE_BYTES || (contents.len() - start) as u64 != before.len()
-                || after.len() != before.len() || after.modified().map_err(failure)? != before.modified().map_err(failure)?
+            if contents.len() > MAX_IMAGE_BYTES
+                || (contents.len() - start) as u64 != before.len()
+                || after.len() != before.len()
+                || after.modified().map_err(failure)? != before.modified().map_err(failure)?
             {
                 return Err("migration source changed or image bound exceeded".into());
             }
-            inventory.push(ImageFile { path, bytes: before.len(), sha256: Sha256Digest::for_bytes(&contents[start..]), mode });
+            inventory.push(ImageFile {
+                path,
+                bytes: before.len(),
+                sha256: Sha256Digest::for_bytes(&contents[start..]),
+                mode,
+            });
         }
         let manifest = MemoryCellMigrationManifestV9 {
-            schema: "hepta.memory.migration.image.v9".into(), destination, generation, predecessor, pin, files: inventory,
+            schema: "hepta.memory.migration.image.v9".into(),
+            destination,
+            generation,
+            predecessor,
+            pin,
+            files: inventory,
         };
         let header = serde_json::to_vec(&manifest).map_err(failure)?;
-        if header.len() > MAX_HEADER_BYTES || MAGIC.len() + 4 + header.len() + contents.len() > MAX_IMAGE_BYTES {
+        if header.len() > MAX_HEADER_BYTES
+            || MAGIC.len() + 4 + header.len() + contents.len() > MAX_IMAGE_BYTES
+        {
             return Err("migration encoded image bound exceeded".into());
         }
         let mut bytes = MAGIC.to_vec();
@@ -174,38 +210,67 @@ impl MemoryCellMigrationImageV9 {
         Ok(Self { manifest, bytes })
     }
 
-    pub fn manifest(&self) -> &MemoryCellMigrationManifestV9 { &self.manifest }
-    pub fn bytes(&self) -> &[u8] { &self.bytes }
-    pub fn digest(&self) -> Sha256Digest { Sha256Digest::for_bytes(&self.bytes) }
+    pub fn manifest(&self) -> &MemoryCellMigrationManifestV9 {
+        &self.manifest
+    }
+    pub fn bytes(&self) -> &[u8] {
+        &self.bytes
+    }
+    pub fn digest(&self) -> Sha256Digest {
+        Sha256Digest::for_bytes(&self.bytes)
+    }
 }
 
 pub(super) fn decode(raw: &[u8]) -> Result<(MemoryCellMigrationManifestV9, Vec<&[u8]>), String> {
     if raw.len() > MAX_IMAGE_BYTES || !raw.starts_with(MAGIC) || raw.len() < MAGIC.len() + 4 {
         return Err("migration image framing".into());
     }
-    let size = u32::from_be_bytes(raw[MAGIC.len()..MAGIC.len() + 4].try_into().map_err(failure)?) as usize;
+    let size = u32::from_be_bytes(
+        raw[MAGIC.len()..MAGIC.len() + 4]
+            .try_into()
+            .map_err(failure)?,
+    ) as usize;
     let offset = MAGIC.len() + 4;
-    if size > MAX_HEADER_BYTES || offset + size > raw.len() { return Err("migration header bound".into()); }
-    let manifest: MemoryCellMigrationManifestV9 = serde_json::from_slice(&raw[offset..offset + size]).map_err(failure)?;
+    if size > MAX_HEADER_BYTES || offset + size > raw.len() {
+        return Err("migration header bound".into());
+    }
+    let manifest: MemoryCellMigrationManifestV9 =
+        serde_json::from_slice(&raw[offset..offset + size]).map_err(failure)?;
     manifest.validate()?;
     let mut offset = offset + size;
     let mut contents = Vec::new();
     for file in &manifest.files {
         let length = usize::try_from(file.bytes).map_err(failure)?;
-        let end = offset.checked_add(length).ok_or("migration length overflow")?;
+        let end = offset
+            .checked_add(length)
+            .ok_or("migration length overflow")?;
         let value = raw.get(offset..end).ok_or("migration truncated contents")?;
-        if Sha256Digest::for_bytes(value) != file.sha256 { return Err("migration file digest mismatch".into()); }
+        if Sha256Digest::for_bytes(value) != file.sha256 {
+            return Err("migration file digest mismatch".into());
+        }
         contents.push(value);
         offset = end;
     }
-    if offset != raw.len() { return Err("migration trailing contents".into()); }
+    if offset != raw.len() {
+        return Err("migration trailing contents".into());
+    }
     Ok((manifest, contents))
 }
 
 pub(super) fn validate_path(value: &str) -> Result<(), String> {
-    if value.is_empty() || value.len() > 256 || value.split('/').any(|part| part.is_empty() || part.ends_with(".hepta-v9-tmp"))
-        || !value.bytes().all(|byte| byte.is_ascii_alphanumeric() || b"/._:-".contains(&byte))
-        || Path::new(value).components().any(|part| !matches!(part, Component::Normal(_)))
-    { return Err("migration path must be a bounded normal relative data path".into()); }
+    if value.is_empty()
+        || value.len() > 256
+        || value
+            .split('/')
+            .any(|part| part.is_empty() || part.ends_with(".hepta-v9-tmp"))
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || b"/._:-".contains(&byte))
+        || Path::new(value)
+            .components()
+            .any(|part| !matches!(part, Component::Normal(_)))
+    {
+        return Err("migration path must be a bounded normal relative data path".into());
+    }
     Ok(())
 }

@@ -48,8 +48,6 @@ mod memory_cell_network;
 mod memory_cell_population_tests;
 #[cfg(test)]
 mod memory_cell_prospective_tests;
-#[cfg(test)]
-mod memory_cell_v9_continual_tests;
 mod memory_cell_release;
 mod memory_cell_runtime;
 #[cfg(test)]
@@ -61,6 +59,8 @@ mod memory_cell_training;
 mod memory_cell_training_test_support;
 #[cfg(test)]
 mod memory_cell_training_tests;
+#[cfg(test)]
+mod memory_cell_v9_continual_tests;
 mod neuron_runtime;
 mod objective_runtime;
 mod plasticity_anchor_journal;
@@ -224,11 +224,19 @@ pub use memory_cell_learning::MemoryCellLearningDecisionV1;
 pub use memory_cell_learning::MemoryCellLearningSinkV1;
 pub use memory_cell_learning::MemoryCellTrainingDecisionContextV1;
 #[cfg(unix)]
-pub use memory_cell_migration_v9::{
-    MemoryCellMigrationImageV9, MemoryCellMigrationManifestV9, MemoryCellMigrationPinV9,
-    MemoryCellMigrationProviderV9, MemoryCellMigrationReceiverV9, MemoryCellMigrationStoreV9,
-    MemoryCellMigrationTrafficV9,
-};
+pub use memory_cell_migration_v9::MemoryCellMigrationImageV9;
+#[cfg(unix)]
+pub use memory_cell_migration_v9::MemoryCellMigrationManifestV9;
+#[cfg(unix)]
+pub use memory_cell_migration_v9::MemoryCellMigrationPinV9;
+#[cfg(unix)]
+pub use memory_cell_migration_v9::MemoryCellMigrationProviderV9;
+#[cfg(unix)]
+pub use memory_cell_migration_v9::MemoryCellMigrationReceiverV9;
+#[cfg(unix)]
+pub use memory_cell_migration_v9::MemoryCellMigrationStoreV9;
+#[cfg(unix)]
+pub use memory_cell_migration_v9::MemoryCellMigrationTrafficV9;
 pub use memory_cell_network::MAX_MEMORY_CELL_NETWORK_NODES;
 pub use memory_cell_network::MemoryCellDeploymentV1;
 pub use memory_cell_network::MemoryCellNetworkCostV1;

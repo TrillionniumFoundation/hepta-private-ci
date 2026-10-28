@@ -44,11 +44,18 @@ async fn actual_v9_three_arm_suite_retains_worker_decisions_and_native_readouts(
         assert_eq!(report["fixture_sha256"], candidate["fixture_sha256"]);
         assert_eq!(report["binding_failures"], json!(0));
         assert_eq!(report["errors"], json!(0));
-        assert_eq!(report["worker"]["attempts"].as_u64().unwrap(),
-                   2 * report["native_rows_attempted"].as_u64().unwrap());
-        assert_eq!(report["worker"]["responses"], report["retained_worker_responses"]);
+        assert_eq!(
+            report["worker"]["attempts"].as_u64().unwrap(),
+            2 * report["native_rows_attempted"].as_u64().unwrap()
+        );
+        assert_eq!(
+            report["worker"]["responses"],
+            report["retained_worker_responses"]
+        );
     }
-    println!("MEMORY_CELL_V9_THREE_ARM_NATIVE_SUMMARY={}", json!({
+    println!(
+        "MEMORY_CELL_V9_THREE_ARM_NATIVE_SUMMARY={}",
+        json!({
         "fixture_sha256":candidate["fixture_sha256"],
         "frozen_v7_known_correct_coverage":baseline_v7["known_correct_coverage"],
         "frozen_v8_known_correct_coverage":baseline_v8["known_correct_coverage"],
@@ -56,11 +63,18 @@ async fn actual_v9_three_arm_suite_retains_worker_decisions_and_native_readouts(
         "frozen_v7_unsupported_route_rate":baseline_v7["unsupported_route_acceptance_rate"],
         "frozen_v8_unsupported_route_rate":baseline_v8["unsupported_route_acceptance_rate"],
         "candidate_v9_unsupported_route_rate":candidate["unsupported_route_acceptance_rate"],
-        "same_frozen_native_requests":true,"final_use_authority":false}));
+        "same_frozen_native_requests":true,"final_use_authority":false})
+    );
 }
 
-fn retained_worker_response(raw: Option<Vec<u8>>, query: &MemoryRequestV1, model: ContractDigestV1) -> Value {
-    let Some(raw) = raw else { return Value::Null; };
+fn retained_worker_response(
+    raw: Option<Vec<u8>>,
+    query: &MemoryRequestV1,
+    model: ContractDigestV1,
+) -> Value {
+    let Some(raw) = raw else {
+        return Value::Null;
+    };
     assert!(raw.len() <= 32_769 && raw.ends_with(b"\n"));
     let parsed: Value = serde_json::from_slice(&raw).unwrap();
     assert_eq!(parsed["query_id"], json!(query.query_id));
@@ -182,7 +196,10 @@ async fn measure_native_suite(arm: EvaluationArm) -> Value {
         let direct_elapsed = began.elapsed().as_nanos();
         direct_wall_ns += direct_elapsed;
         let direct_worker_response = retained_worker_response(
-            worker.take_last_validated_response().await, &query, model_digest);
+            worker.take_last_validated_response().await,
+            &query,
+            model_digest,
+        );
         let route = direct
             .as_ref()
             .ok()
@@ -203,7 +220,10 @@ async fn measure_native_suite(arm: EvaluationArm) -> Value {
         let control_elapsed = began.elapsed().as_nanos();
         control_wall_ns += control_elapsed;
         let control_worker_response = retained_worker_response(
-            worker.take_last_validated_response().await, &query, model_digest);
+            worker.take_last_validated_response().await,
+            &query,
+            model_digest,
+        );
         let count = counts.entry(case.category.clone()).or_default();
         count.rows += 1;
         count.routing_correct +=
@@ -268,9 +288,13 @@ async fn measure_native_suite(arm: EvaluationArm) -> Value {
         && errors == 0
         && binding_failures == 0;
     let counters = worker.metrics();
-    let retained_responses = results.iter().map(|row|
-        usize::from(!row["direct_worker_response"].is_null()) + usize::from(!row["control_worker_response"].is_null())
-    ).sum::<usize>();
+    let retained_responses = results
+        .iter()
+        .map(|row| {
+            usize::from(!row["direct_worker_response"].is_null())
+                + usize::from(!row["control_worker_response"].is_null())
+        })
+        .sum::<usize>();
     assert_eq!(retained_responses as u64, counters.validated_responses);
     let report = json!({"schema":"hepta.memory.v9.native-language-report.v1","fixture_path":input_path,
         "fixture_sha256":input_digest,"suite_digest":data.suite_digest,"model_digest":model_digest,

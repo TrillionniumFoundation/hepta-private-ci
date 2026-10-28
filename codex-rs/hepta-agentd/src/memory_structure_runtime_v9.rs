@@ -33,43 +33,72 @@ pub fn stage_memory_structure_v9(
 ) -> Result<MemoryStructurePublicationV9, String> {
     let selected = host.load_current()?;
     selected.validate_owner_snapshot(snapshot)?;
-    let selected_digest = selected.bundle_digest().to_string().parse::<Digest32>()
+    let selected_digest = selected
+        .bundle_digest()
+        .to_string()
+        .parse::<Digest32>()
         .map_err(|error| error.to_string())?;
     if request.selected_artifact_digest != selected_digest
         || request.baseline_generation.get() != selected.generation().get()
     {
-        return Err("memory structure proposal is not based on the selected owner version".to_string());
+        return Err(
+            "memory structure proposal is not based on the selected owner version".to_string(),
+        );
     }
-    let proposal = propose_memory_structure_v1(request, decision).map_err(|error| error.to_string())?;
+    let proposal =
+        propose_memory_structure_v1(request, decision).map_err(|error| error.to_string())?;
     let Some(proposed_digest) = decision.proposed_digest() else {
         host.revalidate(&selected)?;
-        return Ok(MemoryStructurePublicationV9 { proposal, publication: None });
+        return Ok(MemoryStructurePublicationV9 {
+            proposal,
+            publication: None,
+        });
     };
-    let candidate = candidate.ok_or_else(|| "positive structure decision needs exact candidate bytes".to_string())?;
+    let candidate = candidate
+        .ok_or_else(|| "positive structure decision needs exact candidate bytes".to_string())?;
     if Digest32::of_bytes(&candidate.payload) != proposed_digest
         || candidate.admission.validated_manifest.manifest.bytes_digest != proposed_digest
-        || candidate.admission.validated_manifest.manifest.generation != proposal.candidate_generation
+        || candidate.admission.validated_manifest.manifest.generation
+            != proposal.candidate_generation
     {
-        return Err("memory structure candidate differs from measured digest or generation".to_string());
+        return Err(
+            "memory structure candidate differs from measured digest or generation".to_string(),
+        );
     }
     let decoded = LoadedMemoryCellBundleV1::decode(&candidate.payload, proposed_digest)?;
     decoded.validate_owner_snapshot(snapshot)?;
-    let change = proposal.candidates.iter().flat_map(|item| &item.changes).next()
+    let change = proposal
+        .candidates
+        .iter()
+        .flat_map(|item| &item.changes)
+        .next()
         .ok_or_else(|| "positive structure proposal omitted its operation".to_string())?;
-    for (before, after) in [(selected.semantic(), decoded.semantic()), (selected.procedure(), decoded.procedure())] {
+    for (before, after) in [
+        (selected.semantic(), decoded.semantic()),
+        (selected.procedure(), decoded.procedure()),
+    ] {
         let valid = match change.operation {
             TopologyOperationV2::Split => after.shard_count() > before.shard_count(),
             TopologyOperationV2::Merge => after.shard_count() < before.shard_count(),
-            TopologyOperationV2::Add | TopologyOperationV2::Remove | TopologyOperationV2::Replace
-            | TopologyOperationV2::Rewire | TopologyOperationV2::Retire => false,
+            TopologyOperationV2::Add
+            | TopologyOperationV2::Remove
+            | TopologyOperationV2::Replace
+            | TopologyOperationV2::Rewire
+            | TopologyOperationV2::Retire => false,
         };
         if !valid {
-            return Err("proposed split/merge does not change both typed population cardinalities".to_string());
+            return Err(
+                "proposed split/merge does not change both typed population cardinalities"
+                    .to_string(),
+            );
         }
     }
     host.revalidate(&selected)?;
     let publication = host.publish(candidate, snapshot)?;
-    Ok(MemoryStructurePublicationV9 { proposal, publication: Some(publication) })
+    Ok(MemoryStructurePublicationV9 {
+        proposal,
+        publication: Some(publication),
+    })
 }
 
 /// Reclaim decoded parameters of the selected generation. Its next authorized
@@ -83,9 +112,14 @@ pub fn sleep_selected_memory_v9(
         return Err("sleep request refers to a superseded memory version".to_string());
     }
     let cells = [selected.semantic(), selected.procedure()];
-    for cell in cells { cell.sleep().map_err(|error| error.to_string())?; }
+    for cell in cells {
+        cell.sleep().map_err(|error| error.to_string())?;
+    }
     host.revalidate(&selected)?;
-    Ok([cells[0].cost().map_err(|error| error.to_string())?, cells[1].cost().map_err(|error| error.to_string())?])
+    Ok([
+        cells[0].cost().map_err(|error| error.to_string())?,
+        cells[1].cost().map_err(|error| error.to_string())?,
+    ])
 }
 
 #[cfg(test)]

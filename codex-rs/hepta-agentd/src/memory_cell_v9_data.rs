@@ -32,11 +32,15 @@ pub(super) enum Reader<'a> {
     Direct(&'a super::direct::DirectOwner),
 }
 
-pub(super) const FIXTURE_SHA: &str = "750ecabdcdbc0aa9f5bf253615efaff090800c3a96a2958e0d17a4df829c6502";
+pub(super) const FIXTURE_SHA: &str =
+    "750ecabdcdbc0aa9f5bf253615efaff090800c3a96a2958e0d17a4df829c6502";
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
-pub(super) struct Fixture { pub schema: String, pub stages: Vec<Stage> }
+pub(super) struct Fixture {
+    pub schema: String,
+    pub stages: Vec<Stage>,
+}
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -51,24 +55,37 @@ pub(super) struct Stage {
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct Fact {
-    pub entity: ContractIdV1, pub domain: String, pub event: i64,
-    pub semantic: Value, pub procedure: Value,
+    pub entity: ContractIdV1,
+    pub domain: String,
+    pub event: i64,
+    pub semantic: Value,
+    pub procedure: Value,
 }
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct Task {
-    pub id: String, pub family: String, pub queries: Vec<Query>,
-    pub coefficients: Vec<i64>, pub threshold: i64,
+    pub id: String,
+    pub family: String,
+    pub queries: Vec<Query>,
+    pub coefficients: Vec<i64>,
+    pub threshold: i64,
 }
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-pub(super) struct Query { pub entity: ContractIdV1, pub operation: MemoryOperationV1 }
+pub(super) struct Query {
+    pub entity: ContractIdV1,
+    pub operation: MemoryOperationV1,
+}
 
 pub(super) fn save(path: &Path, value: &Value) -> Value {
     let raw = serde_json::to_vec_pretty(value).unwrap();
-    let mut file = OpenOptions::new().create_new(true).write(true).open(path).unwrap();
+    let mut file = OpenOptions::new()
+        .create_new(true)
+        .write(true)
+        .open(path)
+        .unwrap();
     file.write_all(&raw).unwrap();
     file.sync_all().unwrap();
     json!({"path":path.file_name().unwrap().to_str().unwrap(),"bytes":raw.len(),"sha256":Digest32::of_bytes(&raw).to_string()})
@@ -92,15 +109,41 @@ pub(super) fn load_fixture(root: &Path) -> Fixture {
             assert!(!batch.is_empty() && batch.len() <= 64);
             for task in batch {
                 assert!(!task.id.is_empty() && !task.family.is_empty());
-                assert!((1..=8).contains(&task.queries.len()) && task.coefficients.len() == task.queries.len());
-                assert!(task.coefficients.iter().all(|value| (-16..=16).contains(value)));
-                assert!(task.queries.iter().all(|query| entities.contains(&query.entity)
-                    && !matches!(query.operation, MemoryOperationV1::History | MemoryOperationV1::Change)));
+                assert!(
+                    (1..=8).contains(&task.queries.len())
+                        && task.coefficients.len() == task.queries.len()
+                );
+                assert!(
+                    task.coefficients
+                        .iter()
+                        .all(|value| (-16..=16).contains(value))
+                );
+                assert!(
+                    task.queries
+                        .iter()
+                        .all(|query| entities.contains(&query.entity)
+                            && !matches!(
+                                query.operation,
+                                MemoryOperationV1::History | MemoryOperationV1::Change
+                            ))
+                );
             }
         }
-        assert!(stage.prefix.iter().flat_map(|task| &task.queries).all(|query| query.operation == MemoryOperationV1::Current));
+        assert!(
+            stage
+                .prefix
+                .iter()
+                .flat_map(|task| &task.queries)
+                .all(|query| query.operation == MemoryOperationV1::Current)
+        );
         if !old.is_empty() {
-            assert!(stage.retention.iter().flat_map(|task| &task.queries).all(|query| old.contains(&query.entity)));
+            assert!(
+                stage
+                    .retention
+                    .iter()
+                    .flat_map(|task| &task.queries)
+                    .all(|query| old.contains(&query.entity))
+            );
         }
     }
     data
@@ -108,24 +151,53 @@ pub(super) fn load_fixture(root: &Path) -> Fixture {
 
 pub(super) async fn append(owner: &ControlFixture, facts: &[Fact]) {
     for fact in facts {
-        for (kind, value) in [(MemoryCellKindV1::Event,json!(fact.event)),
-            (MemoryCellKindV1::Semantic,fact.semantic.clone()),(MemoryCellKindV1::Procedure,fact.procedure.clone())] {
-            let record = MemoryCellRecordV1 { schema:"hepta.memory.cell-record.v1".to_string(),
-                entity:fact.entity.clone(),kind,effective_at:20,value };
-            owner.store.write_memory_cell(&owner.access(),&CognitiveScope::AgentPrivate,
-                &record,MemoryCellWriteModeV1::Create).await.unwrap();
+        for (kind, value) in [
+            (MemoryCellKindV1::Event, json!(fact.event)),
+            (MemoryCellKindV1::Semantic, fact.semantic.clone()),
+            (MemoryCellKindV1::Procedure, fact.procedure.clone()),
+        ] {
+            let record = MemoryCellRecordV1 {
+                schema: "hepta.memory.cell-record.v1".to_string(),
+                entity: fact.entity.clone(),
+                kind,
+                effective_at: 20,
+                value,
+            };
+            owner
+                .store
+                .write_memory_cell(
+                    &owner.access(),
+                    &CognitiveScope::AgentPrivate,
+                    &record,
+                    MemoryCellWriteModeV1::Create,
+                )
+                .await
+                .unwrap();
         }
     }
 }
 
 fn expected(owner: &MemoryCellOwnerSnapshotV1, query: &Query) -> Value {
-    let value = |kind| owner.current(&query.entity, kind).unwrap().record.value.clone();
+    let value = |kind| {
+        owner
+            .current(&query.entity, kind)
+            .unwrap()
+            .record
+            .value
+            .clone()
+    };
     match query.operation {
         MemoryOperationV1::Current => value(MemoryCellKindV1::Event),
         MemoryOperationV1::Semantic => value(MemoryCellKindV1::Semantic),
         MemoryOperationV1::Procedure => value(MemoryCellKindV1::Procedure),
-        MemoryOperationV1::Apply => json!(execute_memory_cell_program_v1(&value(MemoryCellKindV1::Procedure),
-            value(MemoryCellKindV1::Event).as_i64().unwrap(), &value(MemoryCellKindV1::Semantic)).unwrap()),
+        MemoryOperationV1::Apply => json!(
+            execute_memory_cell_program_v1(
+                &value(MemoryCellKindV1::Procedure),
+                value(MemoryCellKindV1::Event).as_i64().unwrap(),
+                &value(MemoryCellKindV1::Semantic)
+            )
+            .unwrap()
+        ),
         MemoryOperationV1::History | MemoryOperationV1::Change => unreachable!("fixture contract"),
     }
 }
@@ -157,26 +229,44 @@ pub(super) async fn evaluate(owner: &ControlFixture, reader: &Reader<'_>, tasks:
             let mut request = request(snapshot.scope().clone());
             request.query_id = ContractIdV1::new(format!("query:v9:{}:{offset}", task.id)).unwrap();
             request.entity = query.entity.clone();
-            let (status,value,readout) = match reader {
+            let (status, value, readout) = match reader {
                 Reader::Native(resolver) => {
                     resolver.set(TestRoute::Read(query.operation));
-                    let readout = owner.client.memory_cell_read(request.clone()).await.unwrap();
-                    (readout.status,readout.value.clone(),serde_json::to_value(readout).unwrap())
-                },
-                Reader::Direct(direct) => direct.read(owner,&request,query.operation).await,
+                    let readout = owner
+                        .client
+                        .memory_cell_read(request.clone())
+                        .await
+                        .unwrap();
+                    (
+                        readout.status,
+                        readout.value.clone(),
+                        serde_json::to_value(readout).unwrap(),
+                    )
+                }
+                Reader::Direct(direct) => direct.read(owner, &request, query.operation).await,
             };
             let expected = expected(&snapshot, query);
             let ok = status == MemoryReadStatusV1::Ok;
             correct += usize::from(ok && value == expected);
-            target = target.checked_add(task.coefficients[offset].checked_mul(scalar(&expected,query.operation).unwrap()).unwrap()).unwrap();
-            total = total.and_then(|sum| ok.then(||scalar(&value,query.operation)).flatten()
-                .and_then(|number|task.coefficients[offset].checked_mul(number)).and_then(|number|sum.checked_add(number)));
+            target = target
+                .checked_add(
+                    task.coefficients[offset]
+                        .checked_mul(scalar(&expected, query.operation).unwrap())
+                        .unwrap(),
+                )
+                .unwrap();
+            total = total.and_then(|sum| {
+                ok.then(|| scalar(&value, query.operation))
+                    .flatten()
+                    .and_then(|number| task.coefficients[offset].checked_mul(number))
+                    .and_then(|number| sum.checked_add(number))
+            });
             requests.push(request);
             readouts.push(readout);
             expected_values.push(expected);
             queries += 1;
         }
-        let action = total.map(|sum|sum > task.threshold);
+        let action = total.map(|sum| sum > task.threshold);
         let target_action = target > task.threshold;
         decisions += usize::from(action == Some(target_action));
         let request_bytes = serde_json::to_vec(&requests).unwrap();
@@ -199,13 +289,19 @@ pub(super) fn logical_files(root: &Path) -> u64 {
         let path = entry.unwrap().path();
         let metadata = std::fs::symlink_metadata(&path).unwrap();
         assert!(!metadata.file_type().is_symlink());
-        bytes += if metadata.is_dir() { logical_files(&path) } else { metadata.len() };
+        bytes += if metadata.is_dir() {
+            logical_files(&path)
+        } else {
+            metadata.len()
+        };
     }
     bytes
 }
 
 pub(super) fn family_counts(tasks: &[Task]) -> BTreeMap<String, usize> {
     let mut result = BTreeMap::new();
-    for task in tasks { *result.entry(task.family.clone()).or_default() += 1; }
+    for task in tasks {
+        *result.entry(task.family.clone()).or_default() += 1;
+    }
     result
 }

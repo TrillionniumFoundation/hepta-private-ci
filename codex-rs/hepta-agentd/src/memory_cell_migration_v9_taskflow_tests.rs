@@ -46,7 +46,10 @@ impl AsyncAuthorizedEffectDriver for ObservedProvider {
 #[tokio::test]
 async fn memory_cell_v9_taskflow_distinct_runs_reopen_without_command_collision_or_redispatch() {
     let temporary = tempfile::tempdir().expect("owner root");
-    let root = temporary.path().canonicalize().expect("canonical owner root");
+    let root = temporary
+        .path()
+        .canonicalize()
+        .expect("canonical owner root");
     let fleet = HeptaFleetRoot::parse(root.join("fleet")).expect("fleet root");
     let registry = FleetRegistry::initialize(fleet.clone()).expect("owner registry");
     let workspace = root.join("workspace");
@@ -57,7 +60,10 @@ async fn memory_cell_v9_taskflow_distinct_runs_reopen_without_command_collision_
         ResourceBudget::local_default(),
     )
     .expect("manifest");
-    let layout = registry.register(manifest).expect("registered owner").layout;
+    let layout = registry
+        .register(manifest)
+        .expect("registered owner")
+        .layout;
     let payload = b"same immutable migration payload";
     let runs = ["migration-received", "migration-prepared"];
     let mut provider = ObservedProvider::default();
@@ -86,7 +92,10 @@ async fn memory_cell_v9_taskflow_distinct_runs_reopen_without_command_collision_
         assert_eq!(provider.dispatched_runs, before);
 
         let receipt = effect.execute(&mut provider, payload).await;
-        assert_eq!(receipt.observation, Some(TaskFlowStepObservation::Succeeded));
+        assert_eq!(
+            receipt.observation,
+            Some(TaskFlowStepObservation::Succeeded)
+        );
         let before = provider.dispatched_runs.clone();
         let retried = effect
             .store
@@ -109,7 +118,9 @@ async fn memory_cell_v9_taskflow_distinct_runs_reopen_without_command_collision_
     }
 
     assert_eq!(provider.dispatched_runs, runs.map(str::to_string).to_vec());
-    let store = AutomationStore::open(&layout).await.expect("reopened owner");
+    let store = AutomationStore::open(&layout)
+        .await
+        .expect("reopened owner");
     for (index, (intent, command, receipt)) in completed.iter().enumerate() {
         let restored = store
             .read_authorized_taskflow_effect_receipt(intent, command)
