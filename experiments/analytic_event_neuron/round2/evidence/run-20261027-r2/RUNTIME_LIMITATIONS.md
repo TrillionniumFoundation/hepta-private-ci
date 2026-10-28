@@ -1,0 +1,33 @@
+# Formal runtime confirmation: scope, failures, and limits
+
+The qualification checks passed in all 15 registered profiles. **The protected model with a pure count-only readout failed the numerical protection requirement: 27 of 60 delivered Gaussian heads exceeded the 0.02 pointwise NLL envelope, with a maximum finite bound of 0.04164963791754635.** These are violations of a supremum-over-outcomes certificate, not 27 observed realized-loss failures. Passing recovery and permission checks does not erase this experimental failure.
+
+## Coverage and numerical result
+
+Five registered seeds generated 80 fresh Gaussian histories after both freezes. The frozen qualification body exercises the first four histories per seed: 20 unique random histories, each evaluated at three horizons in three profiles, for 180 ordinary forecasts. The other 60 generated histories were not exercised and do not enlarge the evidence. There are also 30 fresh Python recovery processes and five deterministic extreme-tail fixtures. The 1,100 assertions cover engineering and numerical properties within this limited scope; they do not establish production calibration, retention efficacy, broad generalization, or a throughput advantage.
+
+The separately labeled anchor-guarded profile had zero Gaussian envelope violations in its 60 ordinary forecasts. The maximum actual native-input Gaussian bound, including tail fixtures, was 0.009975306464536416; the maximum delivered categorical NLL bound was 0.009206830736971039. The post-native categorical projection changed two ordinary outputs and all five tail fixtures. Actual native Q24 probability error was at most 3.933093517538566e-08 and native CDF error at most 2.220446049250313e-16 on these receipts. The guarded composition has an explicit frozen-anchor reference from the same public history, so it is not a pure count-only forecast. Its output distribution is an anchor-constrained categorical projection, not exactly the Gaussian CDF of the native mean and variance. These structural bounds do not transfer any measured calibration or utility result from the separate retention study.
+
+## State, witnesses, and authority
+
+The event receiver reconstructs mean and log-variance only from signed event counts. Model, public history, codec, generation, and state identities are bound in persisted receipts. Original native typed calls traverse the existing runtime, journal, and native witness. The raw native Q24 output is retained. The adapter records its corrected delivered Q24 output and protection certificates under a **separate delivery witness**; the original Rust witness does not certify the adapter projection.
+
+Adapter state, original native journal/witness, and delivery witness are separate owners. No atomic transaction across these owners is claimed. Partial commits remain explicit pending markers and fail closed until reconciliation. Stale CAS, rollback, missing observation, no-event propagation, duplicate replay, process restart, partial commit, and capacity cases are qualified, but this is not a proof for every failure ordering or filesystem crash. Model confidence remains zero, output remains abstaining, and authority remains DENY_ALL. This is a research adapter, not a production promotion.
+
+The native binary was reused from the previously verified build archive. It was not freshly compiled during this round. Its attested SHA256 is b519cae26325f818d9596aab34504490a0b5355b9eb633369878e6f07a50e179.
+
+## Cost accounting
+
+There were 320 unique successful native ticks, deduplicated by native case, sequence, and checkpoint-after hash across committed composite states and native-committed pending markers: 180 forecast ticks, 15 fresh-process continuation ticks, five deterministic tail ticks, and 120 other successful intervention ticks. Fifteen fresh-process cached duplicate replays added no ticks. Fifteen native-journal rollback rejection checks produced no successful tick receipt and are separately counted. Count-only profiles each contain 21 successful ticks; guarded profiles each contain 22.
+
+Summed qualification wall time was 28.545288864 seconds, parent process CPU time 2.704832297 seconds, successful native call roundtrip time 1.831345579 seconds, typed tick wall time 0.540508540 seconds, and native head execution time 22,745 microseconds. These timings are nested and must not be added. Qualification wall time includes recovery and negative checks. The shared host ran other studies concurrently, so these are descriptive costs rather than isolated speed benchmarks. Failed-request latency, complete child CPU, and total adapter file write amplification were not separately measured and remain null. Native journal bytes written were 148,480; sampled native resident memory peaked at 1,769,472 bytes, which is not a system peak; final profile file occupancy was 4,312,459 bytes, which is not total I/O volume.
+
+## Freeze and qualification-only amendment
+
+The main freeze binds 56 source files and 194 training artifacts. The original qualification helper admitted only a development split, although the protocol registered a runtime_confirmation split. This rejection was retained. Before any fresh runtime data generation, a separate qualification-only harness was published and frozen. It changed split admission and provenance while preserving the frozen qualification body, predictor, models, guards, worker, gates, and random seeds. Existing development fixture parity compared 3,898 normalized nodes with zero floating difference; only predeclared timing and path-derived identities were normalized. The original data split was never relabeled. Both freezes were verified before and after each formal profile and again during final accounting.
+
+## Evidence files
+
+RUNTIME_RESULTS.json has schema hepta.runtime-confirmation-results.v1 and contains profile results, coverage, provenance, and both_freezes_verified. RUNTIME_ACCOUNTING.json has schema hepta.runtime-confirmation-accounting.v1 and contains deduplicated counts, costs, numerical results, method, cost_limits, main_freeze_verified, and runtime_harness_freeze_verified. RUNTIME_EXECUTION.jsonl records profile execution. The two freeze receipts are FREEZE.json and RUNTIME_HARNESS_FREEZE.json.
+
+Each runtime_confirmation/seed_S directory retains DATA.npz and DATA_RECEIPT.json. Its analytic_count_only, protected_count_only, and protected_anchor_guarded subdirectories each retain RUNTIME_QUALIFICATION.json, FORECAST_RECEIPTS.json, RECOVERY_RECEIPTS.json, STRESS_RECEIPTS.json, recovery jobs and results, and owners/ state, journal, pending, and witness evidence. No evidence has been deleted.

@@ -1,0 +1,525 @@
+{
+  "action_disagreements": {
+    "analytic_vs_numeric": 231,
+    "event_vs_numeric": 229,
+    "event_vs_quantized": 0,
+    "gaussian_vs_probit": 0
+  },
+  "archives": [
+    {
+      "archive_sha256": "6fd173af396afbbfeffd6212c469e86a4b3eac4b095b8b2c0721ec316aabe247",
+      "delivery_texts_redecoded": 6912,
+      "files_hashed": 20738,
+      "observations_redecoded": 6912,
+      "png_images_independently_decoded": 54,
+      "sample_case_ids": [
+        "feedback2:confirmation:10010103:0",
+        "feedback2:confirmation:10010103:255"
+      ],
+      "seed": 101
+    },
+    {
+      "archive_sha256": "21cf3c64b146fc835f9ec4c7c5d5f36c6f40bb61952ef6071b5cf7407913839b",
+      "delivery_texts_redecoded": 6912,
+      "files_hashed": 20738,
+      "observations_redecoded": 6912,
+      "png_images_independently_decoded": 54,
+      "sample_case_ids": [
+        "feedback2:confirmation:10021103:0",
+        "feedback2:confirmation:10021103:255"
+      ],
+      "seed": 211
+    },
+    {
+      "archive_sha256": "cd50675eb772dedadb615f49de1a33c841ecfc17fc021c5208e9351bf97385ff",
+      "delivery_texts_redecoded": 6912,
+      "files_hashed": 20738,
+      "observations_redecoded": 6912,
+      "png_images_independently_decoded": 54,
+      "sample_case_ids": [
+        "feedback2:confirmation:10030703:0",
+        "feedback2:confirmation:10030703:255"
+      ],
+      "seed": 307
+    },
+    {
+      "archive_sha256": "560585b8c06977ed1cb66e74a93e2209bb694e7ed877c96ed5da329bab7a13f1",
+      "delivery_texts_redecoded": 6912,
+      "files_hashed": 20738,
+      "observations_redecoded": 6912,
+      "png_images_independently_decoded": 54,
+      "sample_case_ids": [
+        "feedback2:confirmation:10040103:0",
+        "feedback2:confirmation:10040103:255"
+      ],
+      "seed": 401
+    },
+    {
+      "archive_sha256": "91196e25ce1fb30dfe5e554c8e8c80b60cbd9be8f44f7f046159f5c39d203db7",
+      "delivery_texts_redecoded": 6912,
+      "files_hashed": 20738,
+      "observations_redecoded": 6912,
+      "png_images_independently_decoded": 54,
+      "sample_case_ids": [
+        "feedback2:confirmation:10050303:0",
+        "feedback2:confirmation:10050303:255"
+      ],
+      "seed": 503
+    }
+  ],
+  "arm_summary": {
+    "analytic": {
+      "calibration": {
+        "brier": 0.14247660608266877,
+        "clipped_binary_nll": 0.43335791201399776,
+        "ece": 0.024470356541021813
+      },
+      "clipped_probability_count": 0,
+      "cost": 0.0658359375,
+      "repairs": 565,
+      "squared_error": 0.3123638155644012,
+      "utility": 0.6218002469355988,
+      "wall_ns": 12860950.009375
+    },
+    "event": {
+      "calibration": {
+        "brier": 0.1428483729721332,
+        "clipped_binary_nll": 0.43619122515888253,
+        "ece": 0.02542663285193575
+      },
+      "clipped_probability_count": 0,
+      "cost": 0.06536718749999999,
+      "repairs": 569,
+      "squared_error": 0.31394559726563454,
+      "utility": 0.6206872152343654,
+      "wall_ns": 11871253.82421875
+    },
+    "gaussian": {
+      "calibration": {
+        "brier": 0.13894484969483556,
+        "clipped_binary_nll": 0.4169364685010312,
+        "ece": 0.01916682485594605
+      },
+      "clipped_probability_count": 70,
+      "cost": 0.07921875,
+      "repairs": 695,
+      "squared_error": 0.28205967623832995,
+      "utility": 0.6387215737616699,
+      "wall_ns": 22419090.2546875
+    },
+    "history": {
+      "calibration": {
+        "brier": 0.16821581516011413,
+        "clipped_binary_nll": 0.5095216974862264,
+        "ece": 0.048622013317129134
+      },
+      "clipped_probability_count": 0,
+      "cost": 0.0736875,
+      "repairs": 714,
+      "squared_error": 0.30537073099318296,
+      "utility": 0.620941769006817,
+      "wall_ns": 10825155.871875
+    },
+    "numeric": {
+      "calibration": {
+        "brier": 0.17024404717737096,
+        "clipped_binary_nll": 0.5158127570201029,
+        "ece": 0.06267252500397985
+      },
+      "clipped_probability_count": 0,
+      "cost": 0.0725625,
+      "repairs": 696,
+      "squared_error": 0.30155881658232975,
+      "utility": 0.6258786834176703,
+      "wall_ns": 12023564.88125
+    },
+    "probit": {
+      "calibration": {
+        "brier": 0.13894484969483556,
+        "clipped_binary_nll": 0.4169364685010312,
+        "ece": 0.019166824855946035
+      },
+      "clipped_probability_count": 70,
+      "cost": 0.07921875,
+      "repairs": 695,
+      "squared_error": 0.28205967623833,
+      "utility": 0.6387215737616699,
+      "wall_ns": 10479413.70703125
+    },
+    "quantized": {
+      "calibration": {
+        "brier": 0.1428483729721332,
+        "clipped_binary_nll": 0.43619122515888253,
+        "ece": 0.02542663285193575
+      },
+      "clipped_probability_count": 0,
+      "cost": 0.06536718749999999,
+      "repairs": 569,
+      "squared_error": 0.31394559726563454,
+      "utility": 0.6206872152343654,
+      "wall_ns": 11773313.96484375
+    },
+    "reset": {
+      "calibration": {
+        "brier": 0.251041666666225,
+        "clipped_binary_nll": 0.6952624072477336,
+        "ece": 0.01432291666279042
+      },
+      "clipped_probability_count": 0,
+      "cost": 0.22532812500000002,
+      "repairs": 1280,
+      "squared_error": 0.24154210013052313,
+      "utility": 0.5331297748694769,
+      "wall_ns": 10716586.79921875
+    },
+    "zero": {
+      "calibration": {
+        "brier": 0.251041666666225,
+        "clipped_binary_nll": 0.6952624072477336,
+        "ece": 0.01432291666279042
+      },
+      "clipped_probability_count": 0,
+      "cost": 0.22532812500000002,
+      "repairs": 1280,
+      "squared_error": 0.24154210013052313,
+      "utility": 0.5331297748694769,
+      "wall_ns": 11263164.9484375
+    }
+  },
+  "checks_by_category": {
+    "aggregate_summary": 81,
+    "archive": 380215,
+    "artifact_hash": 103685,
+    "calibration": 54,
+    "chronology": 103680,
+    "codec": 26880,
+    "comparisons": 63,
+    "cost_counts": 10,
+    "coverage": 11592,
+    "data_split": 10,
+    "decision": 34560,
+    "delivery": 34560,
+    "features": 66560,
+    "freeze": 1,
+    "identity": 15,
+    "native_record": 168960,
+    "posterior": 149716,
+    "prior_audit": 5,
+    "public_information": 57600,
+    "receipt": 103680,
+    "receipt_hash": 69120,
+    "sample_png": 17820,
+    "score": 80640,
+    "seed_summary": 360,
+    "text_readback": 34560,
+    "training_parameters": 165
+  },
+  "comparisons": {
+    "analytic_vs_gaussian": {
+      "independent_recomputation_matches": true,
+      "interval95": [
+        -0.04533788348464617,
+        0.00489925006847774
+      ],
+      "mean_difference": -0.016921326826071205,
+      "per_seed_mean": [
+        -0.06741136967396741,
+        0.011513914841886273,
+        -0.017796208443645545,
+        -0.008293667075991423,
+        -0.0026193037786379388
+      ]
+    },
+    "analytic_vs_history": {
+      "independent_recomputation_matches": true,
+      "interval95": [
+        -0.03583388748426065,
+        0.03419807243677987
+      ],
+      "mean_difference": 0.0008584779287817617,
+      "per_seed_mean": [
+        -0.06397163707422253,
+        0.0056675287352786815,
+        -0.006135717641111796,
+        0.01599445243737108,
+        0.052737763186593345
+      ]
+    },
+    "analytic_vs_numeric": {
+      "independent_recomputation_matches": true,
+      "interval95": [
+        -0.04031068830251885,
+        0.030173256203661333
+      ],
+      "mean_difference": -0.004078436482071466,
+      "per_seed_mean": [
+        -0.06576337024135412,
+        0.0006766163234782742,
+        -0.015191151327323535,
+        0.011795785087750142,
+        0.04808993774709191
+      ]
+    },
+    "event_vs_gaussian": {
+      "independent_recomputation_matches": true,
+      "interval95": [
+        -0.04593917120869704,
+        0.0038826208162130145
+      ],
+      "mean_difference": -0.01803435852730457,
+      "per_seed_mean": [
+        -0.06747178049339886,
+        0.011146984651686264,
+        -0.015534856717792568,
+        -0.013343924123456342,
+        -0.004968215953561334
+      ]
+    },
+    "event_vs_numeric": {
+      "independent_recomputation_matches": true,
+      "interval95": [
+        -0.040299688654673975,
+        0.02647221696173614
+      ],
+      "mean_difference": -0.005191468183304825,
+      "per_seed_mean": [
+        -0.06582378106078557,
+        0.0003096861332782643,
+        -0.01292979960147056,
+        0.00674552804028522,
+        0.04574102557216852
+      ]
+    },
+    "event_vs_quantized": {
+      "independent_recomputation_matches": true,
+      "interval95": [
+        0.0,
+        0.0
+      ],
+      "mean_difference": 0.0,
+      "per_seed_mean": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "event_vs_reset": {
+      "independent_recomputation_matches": true,
+      "interval95": [
+        0.062275348854368015,
+        0.11021720107915309
+      ],
+      "mean_difference": 0.08755744036488858,
+      "per_seed_mean": [
+        0.055649408614944704,
+        0.07922948227534408,
+        0.09558599405069546,
+        0.10755940218269294,
+        0.09976291470076562
+      ]
+    },
+    "event_vs_zero": {
+      "independent_recomputation_matches": true,
+      "interval95": [
+        0.061505390798035686,
+        0.11117907669473749
+      ],
+      "mean_difference": 0.08755744036488858,
+      "per_seed_mean": [
+        0.055649408614944704,
+        0.07922948227534408,
+        0.09558599405069546,
+        0.10755940218269294,
+        0.09976291470076562
+      ]
+    },
+    "gaussian_vs_probit": {
+      "independent_recomputation_matches": true,
+      "interval95": [
+        -2.7755575615628915e-18,
+        5.551115123125783e-18
+      ],
+      "mean_difference": 1.474514954580286e-18,
+      "per_seed_mean": [
+        4.336808689942018e-18,
+        -2.168404344971009e-18,
+        2.6020852139652106e-18,
+        2.6020852139652106e-18,
+        0.0
+      ]
+    }
+  },
+  "costs": {
+    "archive_wall_ns_nested_in_evaluation": 75161178646,
+    "evaluation_parent_cpu_ns": 212105818053,
+    "evaluation_wall_ns": 226171122205,
+    "native_kernel_tick_ns_nested_in_roundtrip": 1041651082,
+    "native_roundtrip_ns_nested_in_evaluation": 7827200755,
+    "prior_audit_wall_ns_separate": 82721206267
+  },
+  "episodes_fully_reconstructed": 11520,
+  "event_repair_amount_differs_from_unquantized_case_count": 1280,
+  "freeze_sha256": "db5aa2ff983e27bc0009562acb7b095cd6c06aabf3ddea1378eb4b75e0354f68",
+  "frozen_artifacts_verified": 194,
+  "frozen_sources_verified": 56,
+  "limitations": [
+    "All nine contrasts are secondary descriptive intervals; no multiplicity-adjusted production superiority is established.",
+    "Only five independent training seeds; 11,520 model episodes represent 1,280 paired unique confirmation trajectories, not 11,520 independent samples.",
+    "Event and direct quantization are exactly equivalent here; the experiment does not identify an incremental benefit of error-feedback recurrence or a new function class.",
+    "Zero/reset ablations retain a separate public-posterior repair-amount path. They test state-dependent decision gating, not removal of every feedback pathway.",
+    "Event repair amounts are quantized, while zero/reset repair amounts are continuous; event-versus-ablation differences are not a pure single-mechanism intervention.",
+    "score_started_ns is sampled after error and gain calculations. Source order places private target use after final delivery, but the timestamp is a scoring-record time, not independently observed first-target-access time.",
+    "The feedback native operation uses original sparse_tick in a fresh two-tick local research chain with native_owner_integration=false; this is not itself production owner/journal integration.",
+    "No native tick was reexecuted by this review. All prior full native replay audit records were verified and all saved tick inputs/checkpoint links/readout features were independently checked.",
+    "All archive bytes, text and JSON values were checked; PNG pixel decoding in this review covers 270 preselected images. The earlier audited execution reports full PNG decoding.",
+    "The packet counts/bytes are logical codec accounting; this feedback study applies packet dictionaries in-process and does not establish transport energy or network efficiency.",
+    "Low ECE of constant zero/reset scores is not evidence of strong prediction or utility: their Brier/log loss and all-repair utility remain worse.",
+    "CPU/IPC/kernel/archive times have nested scopes and must not be summed as disjoint costs; shared-host elapsed times do not establish hardware performance.",
+    "Training calibration parameters and heads use supervised training labels and development-only selection; explicit artifact ID sets are disjoint, but there is no process-memory isolation proof.",
+    "Numeric text and lossless PNG fixtures are controlled feedback transport, not natural-language or natural-image task capability."
+  ],
+  "logical_codec_accounting": {
+    "packet_bytes": {
+      "event": 505164,
+      "quantized": 505164
+    },
+    "packets": {
+      "event": 2560,
+      "quantized": 2560
+    },
+    "unit_events": {
+      "event": 199331,
+      "quantized": 199331
+    }
+  },
+  "maximum_absolute_recomputation_error": {
+    "aggregate_summary": 0.0,
+    "calibration": 0.0,
+    "comparisons": 0.0,
+    "decision": 5.551115123125783e-16,
+    "delivery": 4.440892098500626e-16,
+    "features": 0.0,
+    "posterior": 7.105427357601002e-15,
+    "score": 0.0,
+    "seed_summary": 1.1102230246251565e-16,
+    "training_parameters": 2.220446049250313e-16
+  },
+  "native_requests_inspected": 23040,
+  "native_ticks_record_inspected": 46080,
+  "native_ticks_reexecuted_in_this_review": 0,
+  "passed": true,
+  "prior_full_native_replay_ticks_verified": 46080,
+  "raw_evidence_sha256": {
+    "feedback_confirmation/seed_101/AUDIT.json": "1843a9eae4929b10b411dfa34d1cb95612cc20f1471ccffb658868f9f0adbee5",
+    "feedback_confirmation/seed_101/DATA.npz": "a2e2f4346a72e9a2d9f6cbcac6651c390aa3ead0721ddcae37a5d9d9c01f5bc0",
+    "feedback_confirmation/seed_101/ROWS.json.gz": "ecff4cad43a6241c8308c4cb362da228615e65f6bc4afc14c3c6389b63bda01d",
+    "feedback_confirmation/seed_101/SUMMARY.json": "4c5521015ef3e6bed144f361ee6022dbab92bbb01f9289ea01cee1092801fdac",
+    "feedback_confirmation/seed_101/evaluation_readbacks.tar.gz": "6fd173af396afbbfeffd6212c469e86a4b3eac4b095b8b2c0721ec316aabe247",
+    "feedback_confirmation/seed_211/AUDIT.json": "d0aea547c16d37cfda563f27555c9071b5ac35f7fd8f23635bd44ca82c5fbc99",
+    "feedback_confirmation/seed_211/DATA.npz": "f62606eff142468233d4d7216e42e420d7063ab268dad979291ee990d0ffecf1",
+    "feedback_confirmation/seed_211/ROWS.json.gz": "8cbef81b951cd9140c49329fa69d876e921606eab93f91e231c5c139c08482b9",
+    "feedback_confirmation/seed_211/SUMMARY.json": "3ec421f942689638f3f023d544e7efe2d7532530b6161a0f285822556eaef2fe",
+    "feedback_confirmation/seed_211/evaluation_readbacks.tar.gz": "21cf3c64b146fc835f9ec4c7c5d5f36c6f40bb61952ef6071b5cf7407913839b",
+    "feedback_confirmation/seed_307/AUDIT.json": "7d0c9997063d29b59f5cd9d4bfd078c255f0d48ee2958f869a7a5c301f87ed41",
+    "feedback_confirmation/seed_307/DATA.npz": "68e9132d94641ac403ef68a935d5fe4de8a10907a2429d4116c47a162eb00b6e",
+    "feedback_confirmation/seed_307/ROWS.json.gz": "abd3ebf4ffd53f1cff46100134fcda31fd91b5dcc61c628ee3459cbcf7a9a765",
+    "feedback_confirmation/seed_307/SUMMARY.json": "69791ed25d3bd12afb2037175052d063909bbfdd31ff344dcb107847d4a2c8c6",
+    "feedback_confirmation/seed_307/evaluation_readbacks.tar.gz": "cd50675eb772dedadb615f49de1a33c841ecfc17fc021c5208e9351bf97385ff",
+    "feedback_confirmation/seed_401/AUDIT.json": "8bf9dc2062854120853b004f72005f61ca40a50182367a2a64e1ec1b5a4dbcc2",
+    "feedback_confirmation/seed_401/DATA.npz": "86a92b15e09ffcec23f1b49dbe7829cecbb732dc95f0e64c201260a20649b588",
+    "feedback_confirmation/seed_401/ROWS.json.gz": "0b75cec8db36de593baf3b52a3454506f62f848fd986702f4ff2f3b8963d5f73",
+    "feedback_confirmation/seed_401/SUMMARY.json": "084c78c5886cfcd73872662e713327efd67bf5d3e37f409c4cc5f269354b1f69",
+    "feedback_confirmation/seed_401/evaluation_readbacks.tar.gz": "560585b8c06977ed1cb66e74a93e2209bb694e7ed877c96ed5da329bab7a13f1",
+    "feedback_confirmation/seed_503/AUDIT.json": "06e444d69ed528294663a4a0045124f7806a233b9da58b6ff3d3725bfcacdbd7",
+    "feedback_confirmation/seed_503/DATA.npz": "e4c3dccec9844c3e9bda0f811c6abfb868d88d4a98fd3ab89189be4b9a681b97",
+    "feedback_confirmation/seed_503/ROWS.json.gz": "50386fa21bb9d5985e5dad6ea237bae1308f29a52854a625d9315e576e9dbe60",
+    "feedback_confirmation/seed_503/SUMMARY.json": "2d42bebbad9023935a8c5608e157e8a47adbb5a2f166af3d89c2b87f5287ef53",
+    "feedback_confirmation/seed_503/evaluation_readbacks.tar.gz": "91196e25ce1fb30dfe5e554c8e8c80b60cbd9be8f44f7f046159f5c39d203db7"
+  },
+  "recommendation": "KEEP_RESEARCH; retain negative and equivalence outcomes; no production promotion from feedback results",
+  "results_sha256": "95aba9fb093378d7acd0c97bc91d3cd670670c9943704e6e877d201fb940d4ee",
+  "review_tool_recovery": "Read-only review attempts encountered a local variable-shadowing bug while recording the first archive hash and an overly broad requirement that constant zero/reset control heads change weights. The latter was corrected to check their zero gradient and zero parameter-change receipts explicitly; seed 211 legitimately retains initial weights for these two controls. The post-freeze review script was corrected; no experimental source, model, protocol, data or result changed, and no experiment was reexecuted.",
+  "review_wall_ns": 26456293365,
+  "reviewer": "retention_round2; did not author the feedback implementation or summary",
+  "schema": "hepta.analytic-event.feedback-independent-review.v1",
+  "scientific_conclusion": "Actual feedback/state-dependent choice is exercised; extra analytic/event coding superiority over numeric, history or classical Gaussian is not established.",
+  "scope": "Post-freeze independent artifact/statistical reconstruction without training, dataset generation or policy reevaluation",
+  "seed_reviews": [
+    {
+      "archive_wall_ns": 11055317019,
+      "episodes": 2304,
+      "evaluation_parent_cpu_ns": 28045237038,
+      "evaluation_wall_ns": 29467881902,
+      "native_requests": 4608,
+      "native_ticks_in_recorded_evaluation": 9216,
+      "prior_native_audit_wall_ns": 14367828145,
+      "prior_native_replay_passed": true,
+      "seed": 101
+    },
+    {
+      "archive_wall_ns": 15075787982,
+      "episodes": 2304,
+      "evaluation_parent_cpu_ns": 42915227902,
+      "evaluation_wall_ns": 43804575838,
+      "native_requests": 4608,
+      "native_ticks_in_recorded_evaluation": 9216,
+      "prior_native_audit_wall_ns": 13347968065,
+      "prior_native_replay_passed": true,
+      "seed": 211
+    },
+    {
+      "archive_wall_ns": 15089964848,
+      "episodes": 2304,
+      "evaluation_parent_cpu_ns": 41038269688,
+      "evaluation_wall_ns": 43857385817,
+      "native_requests": 4608,
+      "native_ticks_in_recorded_evaluation": 9216,
+      "prior_native_audit_wall_ns": 14251650061,
+      "prior_native_replay_passed": true,
+      "seed": 307
+    },
+    {
+      "archive_wall_ns": 15646598786,
+      "episodes": 2304,
+      "evaluation_parent_cpu_ns": 52309823544,
+      "evaluation_wall_ns": 57747889241,
+      "native_requests": 4608,
+      "native_ticks_in_recorded_evaluation": 9216,
+      "prior_native_audit_wall_ns": 28328127278,
+      "prior_native_replay_passed": true,
+      "seed": 401
+    },
+    {
+      "archive_wall_ns": 18293510011,
+      "episodes": 2304,
+      "evaluation_parent_cpu_ns": 47797259881,
+      "evaluation_wall_ns": 51293389407,
+      "native_requests": 4608,
+      "native_ticks_in_recorded_evaluation": 9216,
+      "prior_native_audit_wall_ns": 12425632718,
+      "prior_native_replay_passed": true,
+      "seed": 503
+    }
+  ],
+  "source_commit": "9c27481fcd6c2d1861a048ded9a11f988afd521f",
+  "source_sha256": {
+    "feedback.py": "dd538060c36f189b664401c89f7004d14ddbd66be9c0f086a9984c3b8ece157e",
+    "feedback_study.py": "f90afac6e523e7d96b4ffe81ccf1e4850ec428a03999fa289a87903db07d7ade",
+    "feedback_summary.py": "2e5fb9b3bef84a247c792c51146f25761a8dff3086738438790e3f72b4e86798"
+  },
+  "unchanged_constant_control_heads": [
+    {
+      "arm": "reset",
+      "reason": "constant input and zero recorded training gradient; 600 updates per L2 did not change weights",
+      "seed": 211
+    },
+    {
+      "arm": "zero",
+      "reason": "constant input and zero recorded training gradient; 600 updates per L2 did not change weights",
+      "seed": 211
+    }
+  ],
+  "unique_confirmation_trajectories": 1280
+}

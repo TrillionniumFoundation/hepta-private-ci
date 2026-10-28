@@ -1,0 +1,208 @@
+{
+  "checkpoint_sha256": "823416660437456a11c7f2170d81489e961d773fba6c55bfcea6eeeb1b862060",
+  "evaluation_cost": {
+    "fixed_mixture": {
+      "parent_cpu_ns": 9032403,
+      "wall_ns": 9034796
+    },
+    "frozen": {
+      "parent_cpu_ns": 3570985,
+      "wall_ns": 3569864
+    },
+    "likelihood_mixture": {
+      "parent_cpu_ns": 8573280,
+      "wall_ns": 8575636
+    },
+    "online": {
+      "parent_cpu_ns": 4124461,
+      "wall_ns": 4121486
+    },
+    "protected": {
+      "parent_cpu_ns": 4519897,
+      "wall_ns": 4541129
+    },
+    "protected_classical": {
+      "parent_cpu_ns": 80527688,
+      "wall_ns": 80614107
+    },
+    "protected_quantized": {
+      "parent_cpu_ns": 255033572,
+      "wall_ns": 255107851
+    },
+    "protected_quantized_classical": {
+      "parent_cpu_ns": 405294956,
+      "wall_ns": 405273990
+    },
+    "replay": {
+      "parent_cpu_ns": 3140321,
+      "wall_ns": 3145215
+    }
+  },
+  "holdouts_fit_or_select_model": false,
+  "law_for_scoring_only": "drift_shift",
+  "scores": {
+    "fixed_mixture": {
+      "new": {
+        "classwise_ece": 0.03725384725661054,
+        "coverage95": 0.94921875,
+        "event_nll": 0.2680320553110581,
+        "gaussian_nll": 1.1392704586808966,
+        "mse": 0.5971486188799227
+      },
+      "old": {
+        "classwise_ece": 0.04074126157534836,
+        "coverage95": 0.9583333333333333,
+        "event_nll": 0.5204911302258757,
+        "gaussian_nll": 1.0416069817116846,
+        "mse": 0.4962686347729755
+      },
+      "old_nll_degradation_from_initial": 0.07962194289157065
+    },
+    "frozen": {
+      "new": {
+        "classwise_ece": 0.06762771666603858,
+        "coverage95": 0.859375,
+        "event_nll": 0.32114533338384715,
+        "gaussian_nll": 1.3905481045948276,
+        "mse": 0.8441170476559858
+      },
+      "old": {
+        "classwise_ece": 0.02815459529520482,
+        "coverage95": 0.96484375,
+        "event_nll": 0.5023778602224755,
+        "gaussian_nll": 0.9619850388201139,
+        "mse": 0.41827138868488706
+      },
+      "old_nll_degradation_from_initial": 0.0
+    },
+    "likelihood_mixture": {
+      "new": {
+        "classwise_ece": 0.03916815681077257,
+        "coverage95": 0.9401041666666666,
+        "event_nll": 0.26956788268531384,
+        "gaussian_nll": 1.129051121047826,
+        "mse": 0.5864975556003195
+      },
+      "old": {
+        "classwise_ece": 0.0342518514503219,
+        "coverage95": 0.9596354166666666,
+        "event_nll": 0.5118708725977272,
+        "gaussian_nll": 1.040606169449835,
+        "mse": 0.49670001064200897
+      },
+      "old_nll_degradation_from_initial": 0.07862113062972108
+    },
+    "online": {
+      "new": {
+        "classwise_ece": 0.018544339569058193,
+        "coverage95": 0.9544270833333333,
+        "event_nll": 0.24542032164594943,
+        "gaussian_nll": 1.0573695066928082,
+        "mse": 0.5065986452537649
+      },
+      "old": {
+        "classwise_ece": 0.08724574871170827,
+        "coverage95": 0.8932291666666667,
+        "event_nll": 0.6087977345393364,
+        "gaussian_nll": 1.2682414763850307,
+        "mse": 0.7221348736871377
+      },
+      "old_nll_degradation_from_initial": 0.3062564375649171
+    },
+    "protected": {
+      "new": {
+        "classwise_ece": 0.06625722484314817,
+        "coverage95": 0.8697916666666667,
+        "event_nll": 0.31752779013200344,
+        "gaussian_nll": 1.3679271226747636,
+        "mse": 0.8281742656971331
+      },
+      "old": {
+        "classwise_ece": 0.027083172112671795,
+        "coverage95": 0.9674479166666666,
+        "event_nll": 0.5021600009747973,
+        "gaussian_nll": 0.9640100571791076,
+        "mse": 0.4186686640244135
+      },
+      "old_nll_degradation_from_initial": 0.0020250183589936317
+    },
+    "protected_classical": {
+      "new": {
+        "classwise_ece": 0.06625722484314815,
+        "coverage95": 0.8697916666666667,
+        "event_nll": 0.31752779013200344,
+        "gaussian_nll": 1.3679271226747636,
+        "mse": 0.8281742656971331
+      },
+      "old": {
+        "classwise_ece": 0.027083172112671805,
+        "coverage95": 0.9674479166666666,
+        "event_nll": 0.5021600009747972,
+        "gaussian_nll": 0.9640100571791075,
+        "mse": 0.4186686640244135
+      },
+      "old_nll_degradation_from_initial": 0.0020250183589936247
+    },
+    "protected_quantized": {
+      "new": {
+        "classwise_ece": 0.06741837851023387,
+        "coverage95": 0.8658854166666667,
+        "event_nll": 0.3193123933758053,
+        "gaussian_nll": 1.3790515968383579,
+        "mse": 0.8360973521741715,
+        "q24_classwise_ece": 0.06741838208917114,
+        "q24_event_nll": 0.31931239613743323
+      },
+      "old": {
+        "classwise_ece": 0.0269762215027044,
+        "coverage95": 0.9674479166666666,
+        "event_nll": 0.502242900632842,
+        "gaussian_nll": 0.9629335647278539,
+        "mse": 0.41842216330600224,
+        "q24_classwise_ece": 0.026976221448017493,
+        "q24_event_nll": 0.5022429008433931
+      },
+      "old_nll_degradation_from_initial": 0.000948525907740043
+    },
+    "protected_quantized_classical": {
+      "new": {
+        "classwise_ece": 0.06741837851023387,
+        "coverage95": 0.8658854166666667,
+        "event_nll": 0.3193123933758053,
+        "gaussian_nll": 1.3790515968383579,
+        "mse": 0.8360973521741715,
+        "q24_classwise_ece": 0.06741838208917114,
+        "q24_event_nll": 0.31931239613743323
+      },
+      "old": {
+        "classwise_ece": 0.0269762215027044,
+        "coverage95": 0.9674479166666666,
+        "event_nll": 0.502242900632842,
+        "gaussian_nll": 0.9629335647278539,
+        "mse": 0.41842216330600224,
+        "q24_classwise_ece": 0.026976221448017493,
+        "q24_event_nll": 0.5022429008433931
+      },
+      "old_nll_degradation_from_initial": 0.000948525907740043
+    },
+    "replay": {
+      "new": {
+        "classwise_ece": 0.03632636469064209,
+        "coverage95": 0.9466145833333333,
+        "event_nll": 0.26764917925018994,
+        "gaussian_nll": 1.1377277481518915,
+        "mse": 0.5960729409667547
+      },
+      "old": {
+        "classwise_ece": 0.03751887807676014,
+        "coverage95": 0.9622395833333333,
+        "event_nll": 0.5171100330997423,
+        "gaussian_nll": 1.0395706913786196,
+        "mse": 0.4921825726568886
+      },
+      "old_nll_degradation_from_initial": 0.07758565255850577
+    }
+  },
+  "seed": 307,
+  "window": 11
+}

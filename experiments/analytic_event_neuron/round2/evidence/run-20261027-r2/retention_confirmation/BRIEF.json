@@ -1,0 +1,199 @@
+{
+  "schema": "hepta.analytic-event.retention-brief.v2",
+  "derived_from_results_sha256": "47c0804ee0fef768025cc07e81ba1f60181c18bf2a226c1bc82e16274d62db2e",
+  "source_commit": "9c27481fcd6c2d1861a048ded9a11f988afd521f",
+  "phase": "confirmation",
+  "independent_training_seeds": 5,
+  "windows_per_seed": 12,
+  "checkpoint_reloads": 60,
+  "optimizations": 120,
+  "old_unique_holdout_trajectories": 1280,
+  "new_unique_holdout_trajectories": 15360,
+  "model_domain_trajectory_score_rows": 276480,
+  "arms": {
+    "frozen": {
+      "worst_old_gaussian_nll_degradation": 0.0,
+      "mean_shift_new": {
+        "gaussian_nll": 1.3110607119887492,
+        "event_nll": 0.32893793259152443,
+        "mse": 0.7595555132168239,
+        "coverage95": 0.8845920138888889,
+        "classwise_ece": 0.063732095521916
+      },
+      "mean_gaussian_new": {
+        "gaussian_nll": 1.0337970676301893,
+        "event_nll": 0.5266635295131267,
+        "mse": 0.4782162892877282,
+        "coverage95": 0.9472222222222223,
+        "classwise_ece": 0.03490833933377238
+      },
+      "scoring_wall_ns": 409757536,
+      "scoring_parent_cpu_ns": 361590843
+    },
+    "online": {
+      "worst_old_gaussian_nll_degradation": 0.28966639909581954,
+      "mean_shift_new": {
+        "gaussian_nll": 1.036997201314095,
+        "event_nll": 0.25956439168256024,
+        "mse": 0.48045875633028096,
+        "coverage95": 0.9490451388888889,
+        "classwise_ece": 0.019312304919879245
+      },
+      "mean_gaussian_new": {
+        "gaussian_nll": 1.034354901988704,
+        "event_nll": 0.526888252367264,
+        "mse": 0.4794937508228172,
+        "coverage95": 0.9460503472222221,
+        "classwise_ece": 0.03474161549182934
+      },
+      "scoring_wall_ns": 331083821,
+      "scoring_parent_cpu_ns": 329850588
+    },
+    "replay": {
+      "worst_old_gaussian_nll_degradation": 0.06891820635180392,
+      "mean_shift_new": {
+        "gaussian_nll": 1.098418814790108,
+        "event_nll": 0.27979488073911424,
+        "mse": 0.5471742729325421,
+        "coverage95": 0.9437934027777777,
+        "classwise_ece": 0.03591047959799256
+      },
+      "mean_gaussian_new": {
+        "gaussian_nll": 1.034028568080671,
+        "event_nll": 0.5263678726269466,
+        "mse": 0.4788763704048466,
+        "coverage95": 0.9473090277777777,
+        "classwise_ece": 0.034847172884482594
+      },
+      "scoring_wall_ns": 247776949,
+      "scoring_parent_cpu_ns": 247852146
+    },
+    "fixed_mixture": {
+      "worst_old_gaussian_nll_degradation": 0.07072640800129908,
+      "mean_shift_new": {
+        "gaussian_nll": 1.0988853699882537,
+        "event_nll": 0.27905265130743384,
+        "mse": 0.5486033312459249,
+        "coverage95": 0.9493055555555556,
+        "classwise_ece": 0.0369410051592727
+      },
+      "mean_gaussian_new": {
+        "gaussian_nll": 1.0327225476056714,
+        "event_nll": 0.5262669623316535,
+        "mse": 0.477786460319437,
+        "coverage95": 0.9476996527777777,
+        "classwise_ece": 0.034896810367920805
+      },
+      "scoring_wall_ns": 603412591,
+      "scoring_parent_cpu_ns": 595422976
+    },
+    "likelihood_mixture": {
+      "worst_old_gaussian_nll_degradation": 0.06597183578311112,
+      "mean_shift_new": {
+        "gaussian_nll": 1.090573740942004,
+        "event_nll": 0.28372427813958956,
+        "mse": 0.5391257138836796,
+        "coverage95": 0.9489149305555556,
+        "classwise_ece": 0.037635789834511
+      },
+      "mean_gaussian_new": {
+        "gaussian_nll": 1.0326253998697743,
+        "event_nll": 0.5262500634270486,
+        "mse": 0.47767493866704175,
+        "coverage95": 0.9476562500000001,
+        "classwise_ece": 0.034652602634652155
+      },
+      "scoring_wall_ns": 822675350,
+      "scoring_parent_cpu_ns": 802416782
+    },
+    "protected": {
+      "worst_old_gaussian_nll_degradation": 0.0007529009355885408,
+      "mean_shift_new": {
+        "gaussian_nll": 1.2915120688050354,
+        "event_nll": 0.325295829495384,
+        "mse": 0.7452834110117506,
+        "coverage95": 0.8908420138888888,
+        "classwise_ece": 0.062239723128312156
+      },
+      "mean_gaussian_new": {
+        "gaussian_nll": 1.0333490051238556,
+        "event_nll": 0.5264799524762634,
+        "mse": 0.47784020382658726,
+        "coverage95": 0.9494357638888888,
+        "classwise_ece": 0.034514128256844016
+      },
+      "scoring_wall_ns": 419817300,
+      "scoring_parent_cpu_ns": 419720654
+    },
+    "protected_classical": {
+      "worst_old_gaussian_nll_degradation": 0.0007529009355885187,
+      "mean_shift_new": {
+        "gaussian_nll": 1.2915120688050354,
+        "event_nll": 0.325295829495384,
+        "mse": 0.7452834110117506,
+        "coverage95": 0.8908420138888888,
+        "classwise_ece": 0.06223972312831216
+      },
+      "mean_gaussian_new": {
+        "gaussian_nll": 1.0333490051238556,
+        "event_nll": 0.5264799524762632,
+        "mse": 0.4778402038265872,
+        "coverage95": 0.9494357638888888,
+        "classwise_ece": 0.03451412825684402
+      },
+      "scoring_wall_ns": 4731326207,
+      "scoring_parent_cpu_ns": 4722825273
+    },
+    "protected_quantized": {
+      "worst_old_gaussian_nll_degradation": 0.00030616576500910474,
+      "mean_shift_new": {
+        "gaussian_nll": 1.3011155862555468,
+        "event_nll": 0.3270920131044704,
+        "mse": 0.7523717858125522,
+        "coverage95": 0.8878038194444445,
+        "classwise_ece": 0.06302844688140792,
+        "q24_event_nll": 0.32709202026102907,
+        "q24_classwise_ece": 0.06302845185553586
+      },
+      "mean_gaussian_new": {
+        "gaussian_nll": 1.0334968256565438,
+        "event_nll": 0.5265451650694507,
+        "mse": 0.47796766921399486,
+        "coverage95": 0.9485677083333334,
+        "classwise_ece": 0.03480947432407694
+      },
+      "scoring_wall_ns": 18156229912,
+      "scoring_parent_cpu_ns": 18069281910
+    },
+    "protected_quantized_classical": {
+      "worst_old_gaussian_nll_degradation": 0.00030616576500910474,
+      "mean_shift_new": {
+        "gaussian_nll": 1.3011155862555468,
+        "event_nll": 0.3270920131044704,
+        "mse": 0.7523717858125522,
+        "coverage95": 0.8878038194444445,
+        "classwise_ece": 0.06302844688140792,
+        "q24_event_nll": 0.32709202026102907,
+        "q24_classwise_ece": 0.06302845185553586
+      },
+      "mean_gaussian_new": {
+        "gaussian_nll": 1.0334968256565438,
+        "event_nll": 0.5265451650694507,
+        "mse": 0.47796766921399486,
+        "coverage95": 0.9485677083333334,
+        "classwise_ece": 0.03480947432407694
+      },
+      "scoring_wall_ns": 24453206185,
+      "scoring_parent_cpu_ns": 24376163609
+    }
+  },
+  "preparation_wall_ns": 9785899912,
+  "preparation_parent_cpu_ns": 50642203462,
+  "evaluation_wall_ns": 57466009139,
+  "evaluation_parent_cpu_ns": 57116771935,
+  "no_source_model_or_protocol_edits": true,
+  "statistical_or_gate_decisions_changed": false,
+  "full_outer_scoring_timing_includes_raw_npz_writes": true,
+  "final_publication_tar_compression_included": false,
+  "timing_shared_host_not_isolated_hardware_benchmark": true
+}

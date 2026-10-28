@@ -1,0 +1,59 @@
+{
+  "schema": "hepta.analytic-event.round2.final-report-review.v1",
+  "created_utc": "2026-10-28T01:08:33.136499+00:00",
+  "passed": true,
+  "scope": "Final read-only consistency review of README.md and ACCEPTANCE.json against already completed evidence; no scientific study or source/report edits.",
+  "checked_report_sha256": {
+    "README.md": "74a10d56c32ccd9220a7d83865bae795c9c9e851733cefac5fe4ab7e214b7d55",
+    "evidence/ACCEPTANCE.json": "0d16393aec883c5df0341f763f30c3804854924a00c5ca50a8218454d3af6fc0"
+  },
+  "checks": {
+    "format": 2,
+    "acceptance": 4,
+    "main_negative": 3,
+    "main_table": 12,
+    "return_decomposition": 4,
+    "metric_scope": 1,
+    "secondary_scope": 7,
+    "feedback": 17,
+    "retention": 4,
+    "retention_calibration": 8,
+    "runtime": 9,
+    "costs": 9,
+    "restoration": 4,
+    "provenance": 2,
+    "unchanged_reports": 2
+  },
+  "total_checks": 88,
+  "findings": [],
+  "critical_outcomes": {
+    "overall_decision": "KEEP_RESEARCH",
+    "production_promotion": false,
+    "event_superiority_passes": false,
+    "event_utility_noninferiority_001_passes": false,
+    "worst_event_training_seed": 503,
+    "worst_event_seed_delta": -0.016093572643290574,
+    "retention_passes_are_not_calibration_passes": true,
+    "unprotected_runtime_certificate_is_not_applicable": true,
+    "restored_archives": 9,
+    "restored_data_members": 1777,
+    "restored_statistics_exactly_match": true
+  },
+  "manual_review": [
+    "Template mathematical, event semantics, runtime amendment and reproducibility caveats retained.",
+    "Table values and final gate labels agree with frozen raw results.",
+    "Model comparisons, dependent horizons and repeated retention windows are not described as independent samples.",
+    "Final report preserves negative results and distinguishes full original model replay from independent review scope."
+  ],
+  "evidence_sha256": {
+    "RESULTS.json": "9850d3d789221ef1eb5beed1dae3f76260d9c5b517505fe2a4ce81774be2923d",
+    "FEEDBACK_RESULTS.json": "95aba9fb093378d7acd0c97bc91d3cd670670c9943704e6e877d201fb940d4ee",
+    "retention_confirmation/RESULTS.json": "47c0804ee0fef768025cc07e81ba1f60181c18bf2a226c1bc82e16274d62db2e",
+    "RUNTIME_RESULTS.json": "c3d13a347d8fb7cffd1510eef83b7e10dda09519ee50f49dc8e62ca6081702d7",
+    "RUNTIME_ACCOUNTING.json": "752b2f9561a4cc191b6af51469f28a0d66ef42136a5c1b1b6c464540150afd1d",
+    "EXECUTION_COSTS.json": "d1a0f3d09f82c695f2ce3751044c623345be590338e8bbf69ae8a30977817f0e",
+    "RESTORED_STATISTICS_REVIEW.json": "1e60cbe5c9d6e7361fe61e31e382d14a406020315c82cf4984a37c23c7d642a3"
+  },
+  "scientific_evaluation_or_training_calls": 0,
+  "report_body_edits": 0
+}
