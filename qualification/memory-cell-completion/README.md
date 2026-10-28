@@ -154,12 +154,15 @@ inventory; they do not parse their prompts, evaluate models or retune anything.
 Retain the evidence and the existing `FINALIZE_REQUEST.json` as reviewed,
 tracked inputs before triggering finalization. Use full Git history so both
 the native tested commit and independent adapter source-origin commit exist.
-For the currently retained long-run evidence, the three extra proof paths are:
+The completion workflow requires the three semantic proof paths and the
+separately retained skill proof below. The skill experiment's original FREEZE
+receipt must be received and retained before this finalization can run:
 
 ```text
 qualification/memory-cell-adapters/longrun/evidence/longrun64x3/RAW_FREEZE-run-01.json
 qualification/memory-cell-adapters/longrun/evidence/longrun64x3/RAW_FREEZE-run-02-resume.json
 qualification/memory-cell-adapters/longrun/evidence/longrun64x3-clean/RAW_FREEZE-run-03-clean.json
+qualification/memory-cell-adapters/skill_longrun/evidence/longrun64x3-skill/RAW_FREEZE-run-01-skill.json
 ```
 
 Run authentication with the token confined to that step. Use ordinary separate
@@ -182,6 +185,7 @@ python3 -B qualification/memory-cell-completion/finalize_preflight.py \
   --adapter-freeze qualification/memory-cell-adapters/longrun/evidence/longrun64x3/RAW_FREEZE-run-01.json \
   --adapter-freeze qualification/memory-cell-adapters/longrun/evidence/longrun64x3/RAW_FREEZE-run-02-resume.json \
   --adapter-freeze qualification/memory-cell-adapters/longrun/evidence/longrun64x3-clean/RAW_FREEZE-run-03-clean.json \
+  --adapter-freeze qualification/memory-cell-adapters/skill_longrun/evidence/longrun64x3-skill/RAW_FREEZE-run-01-skill.json \
   --output memory-v9-completion-preflight/receipt.json
 
 python3 -B qualification/memory-cell-v9/ci_finalize.py
