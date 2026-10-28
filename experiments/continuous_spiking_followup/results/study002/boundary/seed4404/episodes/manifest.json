@@ -1,0 +1,186 @@
+{
+  "arrays": {
+    "id_bayes_log_odds": {
+      "dtype": "<f4",
+      "nbytes": 4096,
+      "offset": 0,
+      "sha256": "ef0f0371b96031746ea40a84bc240d3eb71a117ba36670aefdc905b7a7dfa6d1",
+      "shape": [
+        64,
+        16
+      ]
+    },
+    "id_cost": {
+      "dtype": "<f4",
+      "nbytes": 256,
+      "offset": 4096,
+      "sha256": "e5608ac107dd8f44a161a9ada743bd90b2f53bb6090802d0bda9d9ca9c031580",
+      "shape": [
+        64
+      ]
+    },
+    "id_dt": {
+      "dtype": "<f4",
+      "nbytes": 4096,
+      "offset": 4352,
+      "sha256": "e9bac255f4adc7cb4ada9298e193a5ff66b434d15afabd458505325f29c398c7",
+      "shape": [
+        64,
+        16
+      ]
+    },
+    "id_episode_id": {
+      "dtype": "<U21",
+      "nbytes": 5376,
+      "offset": 8448,
+      "sha256": "1ec801375d3e61162e14a563da0f7cf02557cc4ec763211b1f5f31f9b92f486d",
+      "shape": [
+        64
+      ]
+    },
+    "id_label": {
+      "dtype": "<i8",
+      "nbytes": 512,
+      "offset": 13824,
+      "sha256": "2337dc03c357523fc626f55cd2a35cada6a76ed43c817e334a5392457cd2bedb",
+      "shape": [
+        64
+      ]
+    },
+    "id_observations": {
+      "dtype": "<f4",
+      "nbytes": 4096,
+      "offset": 14336,
+      "sha256": "7b7d8ae227c6b915f78a886af468ab146a53f494f832e7c66fe9a016807cd3e8",
+      "shape": [
+        64,
+        16
+      ]
+    },
+    "id_remaining_steps": {
+      "dtype": "<i8",
+      "nbytes": 8192,
+      "offset": 18432,
+      "sha256": "997fb2ad173e9fb90d875cf7cb0d3a27c3b66efaff5c93c1d3433fe666430c07",
+      "shape": [
+        64,
+        16
+      ]
+    },
+    "id_snr": {
+      "dtype": "<f4",
+      "nbytes": 256,
+      "offset": 26624,
+      "sha256": "690b38cf70825b98cb31fa8981eb7c6d3cd28ed85562bebc35d7e08a401146c4",
+      "shape": [
+        64
+      ]
+    },
+    "id_x": {
+      "dtype": "<f4",
+      "nbytes": 16384,
+      "offset": 26880,
+      "sha256": "921bcf54c4a8c0691d2faa61c505800f05e3683ca4a774c449a19cef70c420aa",
+      "shape": [
+        64,
+        16,
+        4
+      ]
+    },
+    "ood_bayes_log_odds": {
+      "dtype": "<f4",
+      "nbytes": 6144,
+      "offset": 43264,
+      "sha256": "d7e2a6def2dd9c0dea59a934a9dc44f0bf1dd02aad1f2fcd52e869c566659846",
+      "shape": [
+        64,
+        24
+      ]
+    },
+    "ood_cost": {
+      "dtype": "<f4",
+      "nbytes": 256,
+      "offset": 49408,
+      "sha256": "6c9dd49ed213b3fcbceb22df50fca2daa74a7cc0a26eef10f0c3c7a8730defad",
+      "shape": [
+        64
+      ]
+    },
+    "ood_dt": {
+      "dtype": "<f4",
+      "nbytes": 6144,
+      "offset": 49664,
+      "sha256": "4fcbec4ade9b5fcfda8422bf0b5f41c5b79645bf5e47e7af4a947470a1822770",
+      "shape": [
+        64,
+        24
+      ]
+    },
+    "ood_episode_id": {
+      "dtype": "<U22",
+      "nbytes": 5632,
+      "offset": 55808,
+      "sha256": "8c95cdd13574c66c60d74e7ea542b1c983abe45cd46d8e00f7d61c9b3e4687d9",
+      "shape": [
+        64
+      ]
+    },
+    "ood_label": {
+      "dtype": "<i8",
+      "nbytes": 512,
+      "offset": 61440,
+      "sha256": "8540654160b2cf8573e3122f7e2adb2fa85c0350933e301ca2f3b733f4941cde",
+      "shape": [
+        64
+      ]
+    },
+    "ood_observations": {
+      "dtype": "<f4",
+      "nbytes": 6144,
+      "offset": 61952,
+      "sha256": "fcd424199222506862d278d59edcbf6ff1918fa150db209e5714906767591ffa",
+      "shape": [
+        64,
+        24
+      ]
+    },
+    "ood_remaining_steps": {
+      "dtype": "<i8",
+      "nbytes": 12288,
+      "offset": 68096,
+      "sha256": "35956507eb20ba5a418a4a221b6cf085879105e6f4da5750303bff1d40cbb52a",
+      "shape": [
+        64,
+        24
+      ]
+    },
+    "ood_snr": {
+      "dtype": "<f4",
+      "nbytes": 256,
+      "offset": 80384,
+      "sha256": "3e86dbe151eebbff3672a3c428b230434615b1bb0ec3669b8eaf98bb82975166",
+      "shape": [
+        64
+      ]
+    },
+    "ood_x": {
+      "dtype": "<f4",
+      "nbytes": 24576,
+      "offset": 80640,
+      "sha256": "60d8b1208e8662a54ed0a3d103f9dcf8ea69f7eb74203b58c0d558dca646b117",
+      "shape": [
+        64,
+        24,
+        4
+      ]
+    }
+  },
+  "format": "hcsn_followup_arrays_v1",
+  "nbytes": 105216,
+  "parts": [
+    {
+      "file": "arrays_000.npz",
+      "sha256": "8b0e8b77781d22a1cee0d5278e3a519b3af8aa909404219019ccaa6819af758e"
+    }
+  ]
+}
