@@ -29,8 +29,6 @@ jobs:
     name: Test original NDU protocol and executable identity
     runs-on: ubuntu-24.04
     timeout-minutes: 20
-    env:
-      CARGO_TARGET_DIR: ${{ runner.temp }}/hia-ndu-target
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -46,6 +44,7 @@ jobs:
       - name: Bind actual source and compiler identity
         shell: bash
         run: |
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/hia-ndu-target" >> "$GITHUB_ENV"
           python3 - <<'PY'
           from hashlib import sha256
           import json
