@@ -399,15 +399,30 @@ jobs:
         working-directory: upstream-rusty-v8
         run: git submodule status --recursive > git_submodule_status.txt
 
+      # Upstream GN's find_std_rlibs.py uses ntpath.relpath between the
+      # checkout's Rust sysroot and its GN output directory. Windows cannot
+      # compute that relative path across distinct D:/E: volumes.
+      - name: Keep upstream V8 source-build outputs on the checkout volume
+        shell: pwsh
+        run: |
+          $checkoutVolume = [System.IO.Path]::GetPathRoot($env:GITHUB_WORKSPACE)
+          $targetVolume = [System.IO.Path]::GetPathRoot($env:RUNNER_TEMP)
+          if ($checkoutVolume -ine $targetVolume) {
+              throw "Upstream V8 GN outputs must share the checkout volume: $checkoutVolume vs $targetVolume"
+          }
+          $targetDir = Join-Path $env:RUNNER_TEMP "v8-source-target"
+          New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
+          "CARGO_TARGET_DIR=$targetDir" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
       - name: Restore upstream source-build cache
         uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
         with:
           path: |
             ${{ steps.setup_ci.outputs.cargo-target-dir }}/sccache
-            ${{ steps.setup_ci.outputs.cargo-target-dir }}/${{ matrix.target }}/release/gn_out
-          key: rusty-v8-source-${{ matrix.target }}-${{ matrix.runner }}-sandbox-${{ hashFiles('upstream-rusty-v8/Cargo.lock', 'upstream-rusty-v8/build.rs', 'upstream-rusty-v8/git_submodule_status.txt') }}
+            ${{ runner.temp }}/v8-source-target/${{ matrix.target }}/release/gn_out
+          key: rusty-v8-source-same-volume-${{ matrix.target }}-${{ matrix.runner }}-sandbox-${{ hashFiles('upstream-rusty-v8/Cargo.lock', 'upstream-rusty-v8/build.rs', 'upstream-rusty-v8/git_submodule_status.txt') }}
           restore-keys: |
-            rusty-v8-source-${{ matrix.target }}-${{ matrix.runner }}-sandbox-
+            rusty-v8-source-same-volume-${{ matrix.target }}-${{ matrix.runner }}-sandbox-
 
       - name: Install and start sccache
         shell: pwsh
