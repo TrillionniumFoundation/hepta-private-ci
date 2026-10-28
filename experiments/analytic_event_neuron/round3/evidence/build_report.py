@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import shutil
 import tarfile
 
 
@@ -27,6 +28,10 @@ def main_costs(root):
         raise ValueError("All registered scopes are required")
     rows = []
     for item in index["scopes"]:
+        if sha(root / item["archive"]) != item["archive_receipt"]["sha256"]:
+            raise ValueError("Completed main archive changed")
+        if sha(root / item["analysis"]) != item["analysis_sha256"]:
+            raise ValueError("Completed main analysis changed")
         values = {}
         with tarfile.open(root / item["archive"], "r|gz") as archive:
             for member in archive:
@@ -35,6 +40,8 @@ def main_costs(root):
                 if len(values) == 2:
                     break
         execution, audit = values["EXECUTION.json"], values["AUDIT.json"]
+        if not item["audit_passed"] or not audit["passed"]:
+            raise ValueError("An unaudited scope cannot enter the report")
         rows.append({"scope": item["scope"], "seed": item["seed"], "law": item["law"],
             "execution": execution, "audit": audit,
             "scope_wall_ns_including_replay_and_archive": item["scope_wall_ns_including_replay_and_archive"],
@@ -57,7 +64,39 @@ def main_costs(root):
         "archive_bytes": sum(r["archive_bytes"] for r in rows),
         "archived_members": sum(r["archived_members"] for r in rows),
     }
+    recovery = read(root / "MAIN_OPERATIONAL_RECOVERY.json")
+    identity = read(root / "MAIN_RESUME1_IDENTITY.json")
+    resume = read(root / "MAIN_RESUME1_EXECUTION.json")
+    if (not identity["all_original_data_and_model_identities_exact"]
+            or identity["operational_recovery_sha256"] != sha(root / "MAIN_OPERATIONAL_RECOVERY.json")
+            or resume["returncode"] != 0
+            or resume["source_commit"] != index["source_commit"]):
+        raise ValueError("Operational recovery or completed retry identity is invalid")
+    operational = {
+        "failed_attempt_scope": recovery["scope"],
+        "failed_attempts": 1,
+        "failed_original_files_retained": recovery["original_file_count"],
+        "failed_attempt_archive_sha256": recovery["archive"]["sha256"],
+        "failure_interpretation": recovery["failure_interpretation"],
+        "exception_class": recovery["exception_class"],
+        "exception_errno": recovery["exception_errno"],
+        "failed_attempt_costs": recovery["failed_attempt_costs"],
+        "failed_attempt_completed_control_count": None,
+        "failed_attempt_included_in_utility_estimation": False,
+        "retry_created_new_independent_sample": False,
+        "retry_data_and_model_bytes_identical": True,
+        "retry_deterministically_regenerated_original_data": True,
+        "recorded_resume": resume,
+        "resume_overlaps_successful_scope_timings_and_must_not_be_added": True,
+        "completed_registered_control_executions": 86400,
+        "all_attempt_control_executions": None,
+        "receipt_sha256": {name: sha(root / name) for name in (
+            "MAIN_OPERATIONAL_RECOVERY.json", "MAIN_RESUME1_IDENTITY.json", "MAIN_RESUME1_EXECUTION.json")},
+    }
     return {"schema": "hepta.analytic-event.round3.main-costs.v1", "sums": sums, "scopes": rows,
+        "sums_cover_completed_registered_scopes_only": True,
+        "operational_attempts": operational,
+        "failed_attempt_costs_unknown_not_zero": True,
         "scope_wall_excludes_dataset_and_model_prewrites": True,
         "wall_metrics_are_nested_and_must_not_be_added": True,
         "parent_cpu_excludes_native_child_cpu": True,
@@ -108,7 +147,7 @@ def figures(main, feedback, calibration, destination):
     fig, axes = plt.subplots(1, 3, figsize=(13, 5.5), layout="constrained", sharey=True)
     labels = [n.replace("calibrated_unconstrained", "unconstrained").replace("_", " ") for n in names]
     specifications = [
-        ("worst_window_old_nll_increase", "Worst-window old NLL increase", .02),
+        ("worst_window_old_nll_increase", "Worst-window old NLL increase\n(cross-seed mean)", .02),
         ("shifted_ece", "Shifted classwise ECE", .04),
         ("shifted_coverage95", "Shifted 95% interval coverage", None),
     ]
@@ -134,15 +173,36 @@ def figures(main, feedback, calibration, destination):
 
 
 def build(root, destination):
+    from .. import freeze
     root, destination = Path(root), Path(destination)
+    frozen = freeze.verify(root)
     for relative in ("main/RUN_INDEX.json", "FEEDBACK_INDEX.json", "CALIBRATION_INDEX.json", "RUNTIME_INDEX.json"):
-        if not read(root / relative)["complete"]:
+        index = read(root / relative)
+        if not index["complete"]:
             raise ValueError("Registered confirmation is incomplete: " + relative)
+        if index["source_commit"] != frozen["source_commit"]:
+            raise ValueError("Phase index has a different frozen source identity")
+        for entry in index["scopes"]:
+            for path, expected in entry.get("files_sha256", {}).items():
+                candidate = (root / path).resolve()
+                if not candidate.is_relative_to(root.resolve()) or sha(candidate) != expected:
+                    raise ValueError("Completed phase artifact changed: " + path)
+            if "result" in entry and sha(root / entry["result"]) != entry["sha256"]:
+                raise ValueError("Calibration result differs from the frozen phase receipt")
     main, feedback, calibration, runtime = [read(root / path) for path in (
         "MAIN_RESULTS.json", "FEEDBACK_RESULTS.json", "calibration_confirmation/RESULTS.json", "RUNTIME_RESULTS.json")]
-    for name, value in (("MAIN_RESULTS", main), ("FEEDBACK_RESULTS", feedback),
-                        ("CALIBRATION_RESULTS", calibration), ("RUNTIME_RESULTS", runtime)):
-        write(destination / "results" / (name + ".json"), value)
+    if (calibration["global_freeze_sha256"] != sha(root / "FREEZE.json")
+            or calibration["prepared_sha256"] != frozen["artifacts_sha256"]["calibration_prepared/PREPARED.json"]
+            or calibration["registration"] != read(freeze.PROJECT / "PROTOCOL.json")["calibration"]):
+        raise ValueError("Calibration result has a different freeze, prepared study, or registration")
+    if any(value["source_commit"] != frozen["source_commit"] for value in (main, feedback, runtime)):
+        raise ValueError("Result belongs to a different frozen scientific source")
+    if sha(root / "FEEDBACK_RESULTS.json") != read(root / "FEEDBACK_STATISTICS_EXECUTION.json")["results_sha256"]:
+        raise ValueError("Feedback result differs from its frozen statistics receipt")
+    (destination / "results").mkdir(parents=True, exist_ok=True)
+    for source, name in (("MAIN_RESULTS.json", "MAIN_RESULTS"), ("FEEDBACK_RESULTS.json", "FEEDBACK_RESULTS"),
+                         ("calibration_confirmation/RESULTS.json", "CALIBRATION_RESULTS"), ("RUNTIME_RESULTS.json", "RUNTIME_RESULTS")):
+        shutil.copyfile(root / source, destination / "results" / (name + ".json"))
     costs = main_costs(root)
     write(root / "MAIN_EXECUTION_COSTS.json", costs)
     write(destination / "results/MAIN_EXECUTION_COSTS.json", costs)
@@ -165,6 +225,8 @@ def build(root, destination):
         "fresh_native_build_this_round": False,
         "just_fmt": {"status": "NOT_RUN", "reason": "No Rust changes; partial checkout has no codex-rs tree and just is unavailable."},
         "gate_rule": "All scientific gates are the preconfirmation frozen gates; negative or equivalent outcomes are retained.",
+        "aggregate_boolean_scope": "Descriptive conjunction of the three main superiority gates, three feedback superiority gates, at least one calibration joint gate, and runtime qualification. Separate noninferiority and mismatch diagnostics remain individually reported; this is not a new registered decision rule.",
+        "frozen_source_and_prepared_binding": {"sources": len(frozen["sources_sha256"]), "prepared_artifacts": len(frozen["artifacts_sha256"]), "verified_before_and_after_reporting": True},
         "result_sha256": {str(p.relative_to(destination)): sha(p) for p in sorted((destination / "results").glob("*RESULTS.json"))},
     }
     acceptance["scientific_acceptance_complete"] = bool(
@@ -174,6 +236,7 @@ def build(root, destination):
         and acceptance["runtime_qualification_passed"])
     write(destination / "ACCEPTANCE.json", acceptance)
     figures(main, feedback, calibration, destination / "figures")
+    freeze.verify(root)
     return {"decision": acceptance["decision"], "scientific_acceptance_complete": acceptance["scientific_acceptance_complete"],
             "main_scope_count": len(costs["scopes"])}
 

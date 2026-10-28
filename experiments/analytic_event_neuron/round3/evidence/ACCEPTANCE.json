@@ -1,0 +1,110 @@
+{
+  "aggregate_boolean_scope": "Descriptive conjunction of the three main superiority gates, three feedback superiority gates, at least one calibration joint gate, and runtime qualification. Separate noninferiority and mismatch diagnostics remain individually reported; this is not a new registered decision rule.",
+  "calibration_and_retention": {
+    "calibrated": {
+      "passes_descriptive_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_new_nll_efficacy_gate": true,
+      "passes_original_bounded_retention_gate": true
+    },
+    "calibrated_classical": {
+      "passes_descriptive_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_new_nll_efficacy_gate": true,
+      "passes_original_bounded_retention_gate": true
+    },
+    "calibrated_q24": {
+      "passes_descriptive_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_new_nll_efficacy_gate": true,
+      "passes_original_bounded_retention_gate": true
+    },
+    "calibrated_q24_classical": {
+      "passes_descriptive_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_new_nll_efficacy_gate": true,
+      "passes_original_bounded_retention_gate": true
+    },
+    "calibrated_unconstrained": {
+      "passes_descriptive_calibration_gate": true,
+      "passes_joint_empirical_gate": false,
+      "passes_new_nll_efficacy_gate": false,
+      "passes_original_bounded_retention_gate": false
+    },
+    "frozen": {
+      "passes_descriptive_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_new_nll_efficacy_gate": false,
+      "passes_original_bounded_retention_gate": true
+    },
+    "online": {
+      "passes_descriptive_calibration_gate": true,
+      "passes_joint_empirical_gate": false,
+      "passes_new_nll_efficacy_gate": false,
+      "passes_original_bounded_retention_gate": false
+    },
+    "protected": {
+      "passes_descriptive_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_new_nll_efficacy_gate": true,
+      "passes_original_bounded_retention_gate": true
+    },
+    "protected_q24": {
+      "passes_descriptive_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_new_nll_efficacy_gate": true,
+      "passes_original_bounded_retention_gate": true
+    },
+    "replay": {
+      "passes_descriptive_calibration_gate": true,
+      "passes_joint_empirical_gate": false,
+      "passes_new_nll_efficacy_gate": false,
+      "passes_original_bounded_retention_gate": false
+    }
+  },
+  "decision": "KEEP_RESEARCH",
+  "feedback_event_noninferiority": true,
+  "feedback_registered_superiority": {
+    "analytic_vs_gaussian": false,
+    "analytic_vs_numeric": true,
+    "event_vs_gaussian": false
+  },
+  "fresh_native_build_this_round": false,
+  "frozen_source_and_prepared_binding": {
+    "prepared_artifacts": 329,
+    "sources": 83,
+    "verified_before_and_after_reporting": true
+  },
+  "gate_rule": "All scientific gates are the preconfirmation frozen gates; negative or equivalent outcomes are retained.",
+  "general_dqn_convergence_established": false,
+  "hardware_energy_advantage_established": false,
+  "implementation_and_registered_confirmation_complete": true,
+  "just_fmt": {
+    "reason": "No Rust changes; partial checkout has no codex-rs tree and just is unavailable.",
+    "status": "NOT_RUN"
+  },
+  "main_event_noninferiority": {
+    "margin": 0.01,
+    "original_superiority_gate_unchanged": true,
+    "passes_empirical_noninferiority": true,
+    "same_adjusted_interval_as_primary": true
+  },
+  "main_registered_superiority": {
+    "analytic_vs_history": true,
+    "analytic_vs_native": true,
+    "event_vs_continuous": false
+  },
+  "new_function_class_established": false,
+  "production_promotion": false,
+  "result_sha256": {
+    "results/CALIBRATION_RESULTS.json": "4222cfc15dbdc1d3086e605bb2d078ae34ee4e82449aa35d0e877736b4e11ba5",
+    "results/FEEDBACK_RESULTS.json": "9b6971ca4dbf5bee3d8ffacdf124ab9bf3af449d65915f1a0fb99bc81be8e9cc",
+    "results/MAIN_RESULTS.json": "f3a88a8bb8c5f8b8db6323394056fdb170470d966fd5f417c86cab0392ab4ccc",
+    "results/RUNTIME_RESULTS.json": "241af411e2ca1a17003033321348525f571a1ab78568d9f8509112b55a03e193"
+  },
+  "runtime_qualification_passed": true,
+  "schema": "hepta.analytic-event.round3.acceptance.v1",
+  "scientific_acceptance_complete": false,
+  "source_commit": "29174619dfc56cef1c16b34fbf98f85a1cd2e4c3",
+  "unlimited_retention_established": false
+}

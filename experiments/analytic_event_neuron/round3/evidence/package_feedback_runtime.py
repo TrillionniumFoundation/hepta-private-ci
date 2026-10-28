@@ -1,5 +1,6 @@
 """Package completed scopes and actually restore each bundle without new inference."""
 
+from contextlib import contextmanager
 import json
 import os
 from pathlib import Path
@@ -12,6 +13,27 @@ import time
 from experiments.analytic_event_neuron.round2 import restore_evidence
 from experiments.analytic_event_neuron.round3 import freeze
 from experiments.analytic_event_neuron.round3.evidence.package_evidence import package, sha
+
+
+@contextmanager
+def memory_materialize(repo, descriptor):
+    """Reuse the frozen safe restorer without a second on-disk assembled archive."""
+    if not descriptor.get('parts'):
+        path = restore_evidence.safe_child(repo, descriptor['path'])
+        restore_evidence.verify_file(path, descriptor)
+        yield path
+        return
+    fd = os.memfd_create('hepta-round3-evidence', flags=os.MFD_CLOEXEC)
+    with os.fdopen(fd, 'w+b') as assembled:
+        for part in descriptor['parts']:
+            source = restore_evidence.safe_child(repo, part['path'])
+            restore_evidence.verify_file(source, part)
+            with source.open('rb') as stream:
+                shutil.copyfileobj(stream, assembled, length=1024 * 1024)
+        assembled.flush()
+        path = Path(f'/proc/self/fd/{assembled.fileno()}')
+        restore_evidence.verify_file(path, descriptor)
+        yield path
 
 
 def execute(selections):
@@ -29,8 +51,6 @@ def execute(selections):
     reviews.mkdir(exist_ok=True)
     for selection in selections:
         free_before = os.statvfs('/tmp').f_bfree * os.statvfs('/tmp').f_frsize
-        if free_before < 250_000_000:
-            raise RuntimeError('Below authorized 250MB free-space threshold; no bundle started')
         phase = 'runtime' if selection == 'runtime' else 'feedback'
         index = json.loads((root / (phase.upper() + '_INDEX.json')).read_text())
         if not index['complete'] or index['source_commit'] != frozen['source_commit']:
@@ -49,6 +69,15 @@ def execute(selections):
         for path, expected in expected_files.items():
             if sha(root / path) != expected:
                 raise ValueError('Original scope changed: ' + path)
+        input_bytes = sum((root / path).stat().st_size for path in expected_files)
+        # These bounded-size phase inventories contain 9 or 40 ordinary files.
+        # One MiB (or 8 KiB per member) covers tar metadata, manifest and gzip
+        # expansion; package splitting holds the whole archive and its parts.
+        archive_overhead_bound = max(1024 * 1024, 8192 * len(expected_files))
+        estimated_peak_extra_bytes = 2 * (input_bytes + archive_overhead_bound)
+        required_free_bytes = estimated_peak_extra_bytes + 80_000_000
+        if free_before < required_free_bytes:
+            raise RuntimeError(f'Need {required_free_bytes} free bytes for estimated peak plus 80MB margin; no bundle started')
         started = time.perf_counter_ns()
         descriptor = package(root, relative, repo, destination, name, restore_root='run')
         package_ns = time.perf_counter_ns() - started
@@ -64,16 +93,20 @@ def execute(selections):
             'source_manifest_matches_completed_phase_index': False, 'restored': False,
             'temporary_restore_directory_removed': False, 'scientific_data_regenerated': False,
             'original_scope_or_prepared_files_changed': False, 'package_ns': package_ns,
-            'free_bytes_before': free_before, 'restore_script_sha256': sha(Path(restore_evidence.__file__)),
+            'free_bytes_before': free_before, 'input_bytes': input_bytes,
+            'estimated_peak_extra_bytes': estimated_peak_extra_bytes,
+            'required_free_bytes_including_80MB_margin': required_free_bytes,
+            'materialization_backend': 'Linux memfd for multipart; original path for single-file bundle',
+            'restore_script_sha256': sha(Path(restore_evidence.__file__)),
             'packager_sha256': sha(Path(__file__)), 'passed': False}
         try:
-            materialized = restore_evidence.materialize(repo, descriptor, temporary)
-            expected = restore_evidence.verify_members(materialized, descriptor['member_manifest'])
-            if expected != expected_files:
-                raise ValueError('Bundle inventory differs from completed phase index')
-            receipt['source_manifest_matches_completed_phase_index'] = True
-            restored = temporary / 'restored' / descriptor['restore_root']
-            restore_evidence.restore(materialized, restored, descriptor['member_manifest'], expected)
+            with memory_materialize(repo, descriptor) as materialized:
+                expected = restore_evidence.verify_members(materialized, descriptor['member_manifest'])
+                if expected != expected_files:
+                    raise ValueError('Bundle inventory differs from completed phase index')
+                receipt['source_manifest_matches_completed_phase_index'] = True
+                restored = temporary / 'restored' / descriptor['restore_root']
+                restore_evidence.restore(materialized, restored, descriptor['member_manifest'], expected)
             for relative_name, expected_sha in expected.items():
                 original, copy = root / relative_name, restored / relative_name
                 if sha(original) != expected_sha or sha(copy) != expected_sha:
