@@ -15,6 +15,7 @@ from .contract import (
     PLATFORM,
     load_contract,
     reject_compiler_overrides,
+    validate_synapse_labels,
 )
 from .files import atomic_publish, checksum, copy_file, describe, inventory, relative
 from .files import stage_directory, verify, write_bytes, write_json
@@ -144,6 +145,24 @@ class FileBoundaries(unittest.TestCase):
             (self.root / "logs/000-failure.stderr").read_bytes(), b"reason\n"
         )
         self.assertGreaterEqual(record["child_cpu_seconds"], 0)
+
+    def test_pinned_synapse_publisher_labels_and_mutations(self):
+        # Exact labels observed in the failed native-arm64 preflight artifact.
+        labels = {
+            "org.opencontainers.image.version": "1.159.0",
+            "gitsha1": "7b10e6b9bc2dacc33f0974c999f640b55ef831bc",
+        }
+        expected = example_contract()["synapse"]
+        validate_synapse_labels(labels, expected)
+        for changed in (
+            {**labels, "gitsha1": "0" * 40},
+            {**labels, "org.opencontainers.image.version": "1.158.0"},
+            {"org.opencontainers.image.version": "1.159.0"},
+            {**labels, "org.opencontainers.image.revision": "0" * 40},
+            None,
+        ):
+            with self.subTest(labels=changed), self.assertRaises(ValueError):
+                validate_synapse_labels(changed, expected)
 
     def test_contract_digest_and_platform_rejected_before_execution(self):
         contract = example_contract()
