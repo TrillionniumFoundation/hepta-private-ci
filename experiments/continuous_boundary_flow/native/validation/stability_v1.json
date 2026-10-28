@@ -1,0 +1,272 @@
+{
+  "adapter_sha256": "6bb7a8320a1c6aa53ba635f891b2145242262167037dad1d3b4d814815192f79",
+  "binary_sha256": "8c0e87a621cdc3c2f67ee651ebe0c0db0fce9125ec9e0ab18110b513e2c1a87f",
+  "case_count": 8,
+  "causal_receipt_stream_sha256": "8f07aa557ee2c0255ed3de4fc1593275b4605861f6269ec38bb2a0e7e9f44e92",
+  "checks_passed": 50691,
+  "durable_owner_execution": false,
+  "engineering_stream_initial_state_hex": "0x6a09e667f3bcc909",
+  "engineering_wall_seconds": 1.0426202490052674,
+  "fixture_stream_algorithm": "SplitMix64-explicit-integer-v1",
+  "input_stream_sha256": "7f06fcdb9892991320ab39b3b01646792b7553f4b5a627867f7a0fe1817fdcfd",
+  "longest_uninterrupted_case_ticks": 512,
+  "native_process_cost": {
+    "child_cpu_seconds": 0.743193,
+    "child_max_rss_kib": 27672,
+    "counters": {
+      "actual_kernel_calls": 8192,
+      "actual_ndu_calls": 4096,
+      "batch_ticks": 8192,
+      "event_validation_kernel_steps": 0,
+      "event_validation_ndu_calls": 0,
+      "native_errors": 1,
+      "native_physical_rpc_micros": 626129,
+      "original_journal_replay_steps": 0,
+      "owner_ticks": 0,
+      "python_roundtrip_ns": 792148581,
+      "request_bytes": 2324434,
+      "response_bytes": 5859909,
+      "rpc_calls": 517,
+      "total_native_kernel_calls": 8192,
+      "total_native_ndu_calls": 4096
+    },
+    "cpu_scope": "this exact native child PID from wait4",
+    "exit_code": 0,
+    "hardware_energy_measured": false,
+    "identity": {
+      "binary_sha256": "8c0e87a621cdc3c2f67ee651ebe0c0db0fce9125ec9e0ab18110b513e2c1a87f",
+      "owner_authority": "DENY_ALL",
+      "schema": "hepta.continuous-boundary.native-identity.v1",
+      "source_commit": "5898cd8b0f724c3152b6cc52856721f72e5e08be",
+      "source_manifest_digest": "1529aa95825b72642d3b7dd87e9b807a9ee2cbcf976005f81c9c2a042d91424c"
+    },
+    "schema": "hepta.continuous-boundary.native-process-cost.v1",
+    "wall_ns": 1041337274
+  },
+  "native_recommendations_do_not_end_transform_fixture": true,
+  "numeric_claim": "No out-of-bound state, overflow or causal/reference numerical drift in the declared finite fixture",
+  "primary_ticks": 4096,
+  "profile_file": "0adab3eebc86881584fdc3d97b554e0e80601799cf8302e567ced8ea8fb2c2c1.json",
+  "profile_sha256": "0adab3eebc86881584fdc3d97b554e0e80601799cf8302e567ced8ea8fb2c2c1",
+  "raw_sample_count": 64,
+  "raw_samples_file": "stability_samples_v1.jsonl",
+  "raw_samples_sha256": "8831503fa630672dab640c52a60fa928d19c88864acb7eb27a74fda0ffb5214c",
+  "reference_replay_ticks": 4096,
+  "reference_state_stream_sha256": "8c882439d8139d857bf5616376730984abbe474934792aa3ec5801c58d9abc63",
+  "report_every_ticks_per_case": 64,
+  "schema": "hepta.continuous-boundary.engineering-stability.v1",
+  "scientific_samples_added": 0,
+  "scope": "bounded native numerical fixture, not scientific efficacy or infinite-horizon stability",
+  "script_sha256": "09a690790ecee99b1854cc6ef4a6a40c9cf4cb1f9ce42d0ac161c5816b00cf43",
+  "sequence_limit_rejection": {
+    "error": "Pure case stopped or exhausted",
+    "ok": false,
+    "physical_rpc_micros": 25
+  },
+  "source_and_binary_unchanged_after_run": true,
+  "stage": "transform",
+  "success": true,
+  "ticks_per_case": 512,
+  "windows": [
+    {
+      "activation_max_q24": 134217728,
+      "activation_min_q24": 0,
+      "case_checkpoints": [
+        "263dba2d54bc99c0fe78ad30332c6e53e642bca7d19319f2042bcc1e63c69417",
+        "4d567b2341edb8fd1997e997c546e9c35a563b03dd40387f484e2db9c37b12cd",
+        "72dfa6b8ec44bce00b6c0efd99650f01fdfea5c7844d865c917073b64479b33e",
+        "1e5797393808b9f825931a03f335b7123c83ddb2b87fd6a022496dfb4113a35a",
+        "131117e884e116ba7da87519b383deee8a52dc98006d1f9f682db80ede5ffb5e",
+        "a529349b3e366f0846b25b56f3b17a4d38bfef0363ec231573da2e3bbb82fccf",
+        "d884d0b66acd450f00023a772fd5324fcbe1948a03272bc669447fd63fd1ceb3",
+        "aa09c5ec2f6f5aaf5530e6a5b77c7a7470ead859efae1db2e73ca21f61424279"
+      ],
+      "causal_ticks": 512,
+      "eligibility_l1_max_q24": 67108863,
+      "native_action_counts": {
+        "keep": 208,
+        "repair": 206,
+        "stop": 98
+      },
+      "projection_count": 6181,
+      "threshold_max_q24": 3544795,
+      "threshold_min_q24": 0,
+      "through_tick_per_case": 64
+    },
+    {
+      "activation_max_q24": 134217728,
+      "activation_min_q24": 0,
+      "case_checkpoints": [
+        "bfbddc34d3ae4c0b84a339373fd8b268f13577bea3d14f528f81d276e4d5dc3a",
+        "a96dbfb6c36bf19911981398bb708ac5d2bb2af8f7e51d4ef6461daf22ac449c",
+        "08ed83c8bd99f04e16795afd2f60f8b35af53d4cc90c889c1e2ed0360fedc7ee",
+        "dcd2b4d2b2a05f74bbb36f1c4a4714f83ab71699c164a2c3ef5f7fee365359f9",
+        "410f2634d8861bb26138baeba3e8f5ce09166f871390980f62f1f482fb2da347",
+        "3a7ed421fc6b8aa43bf7c55a269477fedd24384f7514912a44ed69e19da74173",
+        "1f0992fa885e0d7232081b35914e80a99b43accbeccd390f0beea83c112a54da",
+        "2efa4d4ae00a1f236312b67ca4338904f0ddf2d1d3516a943505b480467272c1"
+      ],
+      "causal_ticks": 1024,
+      "eligibility_l1_max_q24": 67108863,
+      "native_action_counts": {
+        "keep": 439,
+        "repair": 400,
+        "stop": 185
+      },
+      "projection_count": 10638,
+      "threshold_max_q24": 4817105,
+      "threshold_min_q24": 0,
+      "through_tick_per_case": 128
+    },
+    {
+      "activation_max_q24": 134217728,
+      "activation_min_q24": 0,
+      "case_checkpoints": [
+        "354215f9443bb2d3aa5ec64dedc3c02ea74262d26a7ac1b5eace9b3746ec5ce8",
+        "2e122938f6b393d7174b16db60e76f3c2f60832ec8228aa22b0a205ebfe77713",
+        "666f8c5c93d0bc7273c45059dfc43ac4cd311fe309a573dfb745411389cbde7d",
+        "773c8f453ead8e63ea243a4c8c50e393b33261d9f23fe758145a0f6f16e7ce2b",
+        "7472258498bcb2ae9c525e290076f1f3147dfad8e262967282fd557c7354f8c5",
+        "fb997ebf168f16a2312b6d7c44a51e4e7e0d4ae8b56a2bf356b755c2fbf36302",
+        "f76fb090bc729906812eede2b8d0cf784b8de27c28430f4fc8824ed0202a6ac3",
+        "6518fdefa7a7f2f74ecce5ac5370bd8c9434ed2b0b243a7b1a5349671929a7e4"
+      ],
+      "causal_ticks": 1536,
+      "eligibility_l1_max_q24": 67108863,
+      "native_action_counts": {
+        "keep": 682,
+        "repair": 557,
+        "stop": 297
+      },
+      "projection_count": 14922,
+      "threshold_max_q24": 6687050,
+      "threshold_min_q24": 0,
+      "through_tick_per_case": 192
+    },
+    {
+      "activation_max_q24": 134217728,
+      "activation_min_q24": 0,
+      "case_checkpoints": [
+        "a5cf0d5c608ba345b1a255c230046e21ca8176bce7ef28de170f39fe2bf17cb2",
+        "bfbe70c27b7a62846ea26c196f4ef5a01da23dc3ac4c35b81dda74cc721761d6",
+        "140c8d7450bb899ca7f5a1da51f6e3843ca74dcaa328fdd0b8ac387be12c62c6",
+        "881c3999a4592fc4ac91ce2489530fc266f1f34c9d0d06b7143d7c029b05f891",
+        "5b0670165bb125def8d89f1eb359d3daa46f7178b771bbe4bec5cc120706bcb4",
+        "e18a2ff0639bc440053bfcf57deac4dc1f0a676f3e7fc1f4f644c85da9a9ef91",
+        "f7b51583124b3b47653856ee140b4aec1def709d81da90387cb5f70371b71f32",
+        "1188dc1632b624cb5c3d8197800a309d773af5193d4580db7e40e29882a5f70e"
+      ],
+      "causal_ticks": 2048,
+      "eligibility_l1_max_q24": 67108863,
+      "native_action_counts": {
+        "keep": 918,
+        "repair": 721,
+        "stop": 409
+      },
+      "projection_count": 18868,
+      "threshold_max_q24": 8388608,
+      "threshold_min_q24": 0,
+      "through_tick_per_case": 256
+    },
+    {
+      "activation_max_q24": 134217728,
+      "activation_min_q24": 0,
+      "case_checkpoints": [
+        "02b2666ae30c5f97b9ab4c403f8648ed96224517685c5de98f1fe71a57e1abbe",
+        "c77a46ee329df99a1661ecbeb04196da340d8b75923c08caad40c85a8170d7c0",
+        "2752f04fa8b8f793ed9506d8cef3b1436727f24473cf536cfe198679d479b55c",
+        "31e19f137e3a30b7b48834e259bb4b21bea3848455dba3e448f294762b2cbf20",
+        "f19890933bd58d2224a6d6478951a3b65642cd900031f93192329f863dab90c5",
+        "7f5f5fa2a315ff7153fcef9ef02e52faaa1b307cf6b802d1cca3a4aa034fa678",
+        "251c70e7076e4ea3e855750350f5f87b50aef12cf8b19e0bda7b7f83ab0a9f86",
+        "48d6c46271f2695f79f0ff54ab81f7c6d0d5706ab8070172c5ae4a846c3f299d"
+      ],
+      "causal_ticks": 2560,
+      "eligibility_l1_max_q24": 67108863,
+      "native_action_counts": {
+        "keep": 1120,
+        "repair": 929,
+        "stop": 511
+      },
+      "projection_count": 22825,
+      "threshold_max_q24": 8388608,
+      "threshold_min_q24": 0,
+      "through_tick_per_case": 320
+    },
+    {
+      "activation_max_q24": 134217728,
+      "activation_min_q24": 0,
+      "case_checkpoints": [
+        "7248ec15dcfb7b843119a50fed5db6e889d60abd3b4eee0b947649714eb6effa",
+        "c5a545a75e460b299d623183d6e63d1b12f004b21b5a36efd8ee84af184f149e",
+        "14976b7639783fb7faa788a6b4bae9aad53d41a56b87414d7fb09062069b0759",
+        "734f50b53b3da5a8fe621b5d4480dbf42ea1844cc115834d8b4cee7fe5769d5b",
+        "fcd290fcca27f8bdcdf42b7f247fa53cc0bb77b784bd5c5f1069684382e869e8",
+        "a79e9e335106402ca50bfa3f96c2778629ae22d67a613332530f32139e6c5d97",
+        "0cd2a76df337ed1fb00858443e896285a10579fa139519bd59f0b10d9561083b",
+        "62c373e0ade21f792187646b15c376d4ce1a0714bfc791e83ae651e90dfbad7c"
+      ],
+      "causal_ticks": 3072,
+      "eligibility_l1_max_q24": 67108863,
+      "native_action_counts": {
+        "keep": 1346,
+        "repair": 1132,
+        "stop": 594
+      },
+      "projection_count": 26732,
+      "threshold_max_q24": 8388608,
+      "threshold_min_q24": 0,
+      "through_tick_per_case": 384
+    },
+    {
+      "activation_max_q24": 134217728,
+      "activation_min_q24": 0,
+      "case_checkpoints": [
+        "14154104b381ac2ed438b14dc44232391ce320c6d848c5a0703ef46379e776e1",
+        "f7d34a2a5c5c42e1b0a50cb33e2732af9c23558f1ab970968442079155a82c86",
+        "76fa9b0f6a25914254af4748d61488a863a7ad64f47619c298051e9e21f14002",
+        "b454dc474342961e3e046dfc890e87a39ba8ba62d339a7669f5c643ca59db6aa",
+        "0900a0f688ac4454ef104daba35d65bcb6e2d3618f097f63bc409023404a3bc5",
+        "35b19af544480d30ad0b79f8cb6a1d820ae4adaf41b1c236779e8101fba3a141",
+        "849e48a0d924f98561b769aefe987d41efc933cf404cb859c33918e65140eff6",
+        "fd201b53a7238be3d261b63b73978839dc180dd3bcb35b85d436c90388ffed5e"
+      ],
+      "causal_ticks": 3584,
+      "eligibility_l1_max_q24": 67108863,
+      "native_action_counts": {
+        "keep": 1578,
+        "repair": 1320,
+        "stop": 686
+      },
+      "projection_count": 30300,
+      "threshold_max_q24": 8388608,
+      "threshold_min_q24": 0,
+      "through_tick_per_case": 448
+    },
+    {
+      "activation_max_q24": 134217728,
+      "activation_min_q24": 0,
+      "case_checkpoints": [
+        "2a2acfc7f161a4f62bf9c6da515d8bc8baee8ea1c93e77f187762de481bb54f1",
+        "8cc09f040312b948dc57a2bc9eb66bcb04a2da30ff52d9b93e974083abcc9db3",
+        "36003981ac6cc7575e258b95d7fb841464d0a3b524439754a3ded86fe8459004",
+        "fa3e485ceda2fa5a3f0d9ca47d3cb17a647a5441bb855e511a1e2a9386bbb8ad",
+        "0052ae7d2972b04093815e0f62da068d50ce75d04ff50271025bd34dd0f00bbf",
+        "3080e6650ddd2948868f39881527a0e0fc0632324a92ef53a90f91dfa41621e0",
+        "505b965fdb93e545150ce49bb9de926f3f69bb7deb9af0eec76c96cfe4e87c94",
+        "c427df7e6fd171b29f23321f5266483de9819e706deffe9bedcddec3b97386bb"
+      ],
+      "causal_ticks": 4096,
+      "eligibility_l1_max_q24": 67108863,
+      "native_action_counts": {
+        "keep": 1788,
+        "repair": 1515,
+        "stop": 793
+      },
+      "projection_count": 34011,
+      "threshold_max_q24": 8388608,
+      "threshold_min_q24": 0,
+      "through_tick_per_case": 512
+    }
+  ]
+}
