@@ -1,5 +1,10 @@
 # Completion finalization integrity gate
 
+The five-work-package implementation, measured results, negative scientific
+gates and remaining native residual-profile boundary are summarized in
+[RESULTS.md](RESULTS.md). The native V9 and residual tensor evidence routes
+remain separate.
+
 `finalize_preflight.py` verifies retained native V9 CI evidence before calling
 the existing, unchanged `qualification/memory-cell-v9/ci_finalize.py`. It never
 runs that script itself, tests, training, fix/format, commits or pushes. It
