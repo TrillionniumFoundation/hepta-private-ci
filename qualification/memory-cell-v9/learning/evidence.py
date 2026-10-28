@@ -193,8 +193,7 @@ def verify_batch(batch, export, tasks, publication):
                 predicted = "mixed" if operation == "apply" else "source_evidence" if operation == "current" else "model_prediction"
                 require(readout["operation"] == operation and sorted(readout["source_ids"]) == sources, "readout source binding")
                 if not direct:
-                    expected_digests = publication.get("used_digests", {}).get(request["entity"], {})
-                    require(readout["cell_digests"] == sorted(expected_digests.get(kind, publication.get(f"{kind}_digest")) for kind in kinds)
+                    require(readout["cell_digests"] == sorted(publication[f"{kind}_digest"] for kind in kinds)
                             and readout["prediction_kind"] == predicted and readout["reason"] is None
                             and readout["hops"] == (3 if operation == "apply" else 1), "readout model binding")
                 if operation in KINDS:

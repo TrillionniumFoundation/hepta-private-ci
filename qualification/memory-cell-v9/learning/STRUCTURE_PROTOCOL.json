@@ -1,0 +1,23 @@
+{
+  "schema": "hepta.memory.v9.structure-protocol.v1",
+  "independent_fixture_sha256": "750ecabdcdbc0aa9f5bf253615efaff090800c3a96a2958e0d17a4df829c6502",
+  "stages": 3,
+  "fixed_inventory": [1,2,3,4,5,6,7,8],
+  "keep_shards": 2,
+  "configuration": {"seed":91317,"steps":600,"dimension":48,"total_hidden":64,"threshold":0.5},
+  "logical_resident_budget_bytes_per_type": 16384,
+  "future_forecast_queries": 100000,
+  "weights": {"error":1000000000,"byte":1,"wall_ns":1,"communication_byte":1},
+  "maximum_artifact_bytes": 16777216,
+  "maximum_retention_error_permyriad": 10000,
+  "workers": "Per stage: one fixed-2 bootstrap, seven other fixed fits, one selected learned fit, and one parameter-free selection worker. Exactly 27 fit workers plus 3 selection workers. Fits per stage are 72 + 2*selected_learned_count; no future result selects count or routes.",
+  "causal_order": "Append current facts; fit and publish fixed-2; complete source-current prefix; derive only address/coaccess observations; freeze learned and lightweight choices; train the other fixed candidates and selected learned model; publish each predeclared evaluation role; then evaluate future and retention.",
+  "selection": "For each k=1..8, build SHA-rank and existing causal-coaccess-greedy routes. Replay only completed prefix address order through an LRU proxy with per-shard bytes 4*(48*w+w+w*n+n)+331*n+8, where w is its share of total_hidden=64 and n its address count. Minimize (budget-rejected reads, loaded proxy bytes, k). This is a declared cost proxy, not a runtime measurement. Both learned and lightweight selectors receive exactly the same address set, observations and budget.",
+  "roles": ["keep-fixed-2","fixed-1","fixed-2","fixed-3","fixed-4","fixed-5","fixed-6","fixed-7","fixed-8","prefix-selected-fixed","prefix-selected-learned","direct-owner"],
+  "direct_owner": "Reuse the existing actual paginated control owner baseline, with at most 32768 logical cache bytes and same cut revalidation before/after every read. Current truth and programs come from cached owner rows, never expected fixture outputs.",
+  "parameter_training": "Every candidate uses current owner facts and clean training of all shards. Total hidden capacity and optimization limits match. Value catalogs remain explicit and charged. New domains/families are evaluator labels only.",
+  "structure_gate": "Feed actual results and costs to evaluate_memory_structure_v1 and stage_memory_structure_v9. Exclusive transport time is unknown, so use None and preserve MissingMeasurements/NoChange. If learned count equals baseline count, it is a repartition candidate, not a fabricated split/merge. Actual positive split/merge publication wiring is separately covered by clearly synthetic contract tests with independent selection.",
+  "resource_accounting": "Monitor the complete single-child experiment including all fixed/adaptive searches, training, publications, direct-owner acquisition, requests, evidence serialization, and shutdown. Retain request/response bytes, native cost snapshots, source/artifact stocks, sampled RSS/PSS/storage integrals with missing intervals, and parent tail wall. Per-role phase walls are not summed with the whole lifecycle. Sequential shared-process timing is not an isolated per-arm RSS benchmark.",
+  "scope": "Three sequential authored domain cohorts and repeated tasks are dependent observations. A learned partition is learned only from prior completed coaccess. No unseen-address semantics, autonomous objective invention, full-cost superiority or universal memory claim follows from correct recall.",
+  "publication_authority": false
+}

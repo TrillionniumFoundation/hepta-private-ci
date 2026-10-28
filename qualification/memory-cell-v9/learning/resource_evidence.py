@@ -8,7 +8,8 @@ from evidence import child_path, decode, digest, integer, require
 def verify_resources(directory, receipt, child_pid, parent_wall_ns):
     require(receipt["schema"] == "hepta.memory.v9.sampled-lifecycle.v1" and receipt["passed"] is True
             and receipt["exit_code"] == 0 and receipt["child_pid"] == child_pid
-            and receipt["full_cost_exact"] is False and receipt["monitor_error"] is None,
+            and receipt["full_cost_exact"] is False and receipt["monitor_error"] is None
+            and receipt["launch_error"] is None and receipt["cleanup"]["observed_tree_stopped"] is True,
             "resource child lifecycle failed or changed")
     wall = integer(receipt["wall_ns_through_observation_close"], "monitor wall", 1)
     require(integer(parent_wall_ns, "parent supervision wall", 1) >= wall, "parent wall omits child lifecycle")
@@ -26,7 +27,8 @@ def verify_resources(directory, receipt, child_pid, parent_wall_ns):
     samples = [decode(line) for line in sample_raw.splitlines()]
     require(len(samples) == receipt["sample_count"] and samples, "resource sample inventory")
     metrics = ("tree_rss_bytes", "tree_pss_bytes", "storage_logical_bytes", "storage_allocated_bytes")
-    totals = {key: {"trapezoid_numerator_byte_ns": 0, "observed_interval_ns": 0, "unobserved_interval_ns": 0} for key in metrics}
+    uncovered = sum(integer(receipt["sampling_gaps"][key], key) for key in ("before_first_sample_ns", "after_last_sample_ns"))
+    totals = {key: {"trapezoid_numerator_byte_ns": 0, "observed_interval_ns": 0, "unobserved_interval_ns": uncovered} for key in metrics}
     known = {(item["pid"], item["start_ticks"]) for item in receipt["observed_process_identities"]}
     peaks = {key: None for key in metrics}
     for index, current in enumerate(samples):
@@ -47,8 +49,9 @@ def verify_resources(directory, receipt, child_pid, parent_wall_ns):
                     totals[name]["observed_interval_ns"] += duration
                     totals[name]["trapezoid_numerator_byte_ns"] += (left + value) * duration
     for name, total in totals.items():
-        total["sampled_byte_ns_estimate"] = total["trapezoid_numerator_byte_ns"] // 2
+        total["sampled_byte_ns_estimate"] = total["trapezoid_numerator_byte_ns"] // 2 if total["observed_interval_ns"] else None
         total["exact_continuous_integral"] = False
+        total["estimate_scope"] = "observed inter-sample intervals only; unknown intervals excluded"
         require(receipt["integrals"][name] == total, "sampled integral mismatch or missing interval converted to zero")
     require(receipt["peaks_of_sequential_sample_sums"] == peaks, "sample peak mismatch")
     return {"receipt": receipt, "raw_samples_recomputed": True, "parent_supervision_wall_ns": parent_wall_ns,
