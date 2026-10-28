@@ -60,7 +60,7 @@
     "bootstrap_replicates": 4000,
     "bootstrap_seed": 2701027,
     "minimum_useful_net_utility_gain": 0.01,
-    "mismatch_noninferiority_margin": 0.05,
+    "mismatch_noninferiority_margin": 0.02,
     "event_accuracy_noninferiority_margin": 0.01,
     "resampling": "training seed then paired complete trajectory; horizons and model executions not independent"
   },
@@ -316,6 +316,12 @@
     {
       "change": "Add guarded Q24 parameters and categorical mass projection",
       "reason": "Floating-point density protection does not automatically survive two subsequent quantizers; mathematical gap found in engineering review",
+      "confirmation_generated": false,
+      "original_gates_changed": false
+    },
+    {
+      "change": "Restore original descriptive mismatch margin 0.02",
+      "reason": "Independent prefreeze review caught an unintended 0.05 transcription; corrected before any confirmation",
       "confirmation_generated": false,
       "original_gates_changed": false
     }

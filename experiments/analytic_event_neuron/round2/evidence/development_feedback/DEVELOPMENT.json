@@ -1,0 +1,116 @@
+{
+  "audit": {
+    "archive_files": 5186,
+    "checks": {
+      "archive": 19021,
+      "artifact_hash": 8641,
+      "choice": 1152,
+      "chronology": 5184,
+      "codec": 1472,
+      "coverage": 580,
+      "delivery": 1152,
+      "event": 1148,
+      "features": 1024,
+      "identity": 2,
+      "native": 6144,
+      "native_replay": 2304,
+      "png_bit_replay": 1728,
+      "posterior": 2880,
+      "readback": 1152,
+      "receipt": 6912,
+      "score": 2304,
+      "summary": 45
+    },
+    "episodes": 576,
+    "native_ticks_replayed": 2304,
+    "passed": true,
+    "schema": "hepta.feedback-audit.v2",
+    "scope": "Every confirmation readback, count packet, original native tick, frozen decision and score; not process-memory isolation proof",
+    "source_sha256": "071d7c27209989966b75e076822a8e47a695ec736cfdf7d73fdcd5338a7f156a",
+    "wall_ns": 1962433252
+  },
+  "confirmation_used": false,
+  "summary": {
+    "analytic": {
+      "cost": 0.03890625,
+      "episodes": 64,
+      "improvement_nll": 0.3737595071246652,
+      "repairs": 23,
+      "squared_error": 0.2483862814693174,
+      "utility": 0.7127074685306827,
+      "wall_ns": 5951678.015625
+    },
+    "event": {
+      "cost": 0.040781250000000005,
+      "episodes": 64,
+      "improvement_nll": 0.3761644301610937,
+      "repairs": 24,
+      "squared_error": 0.2465344012886079,
+      "utility": 0.7126843487113921,
+      "wall_ns": 5920504.90625
+    },
+    "gaussian": {
+      "cost": 0.04078125,
+      "episodes": 64,
+      "improvement_nll": 0.34077560834018916,
+      "repairs": 24,
+      "squared_error": 0.23763352165726614,
+      "utility": 0.7215852283427339,
+      "wall_ns": 4317607.6875
+    },
+    "history": {
+      "cost": 0.0225,
+      "episodes": 64,
+      "improvement_nll": 0.39642172825417377,
+      "repairs": 15,
+      "squared_error": 0.2927774795124837,
+      "utility": 0.6847225204875164,
+      "wall_ns": 5237681.609375
+    },
+    "numeric": {
+      "cost": 0.03703125,
+      "episodes": 64,
+      "improvement_nll": 0.41853542863050475,
+      "repairs": 22,
+      "squared_error": 0.24996683317133178,
+      "utility": 0.7130019168286683,
+      "wall_ns": 6648154.671875
+    },
+    "probit": {
+      "cost": 0.04078125,
+      "episodes": 64,
+      "improvement_nll": 0.34077560834018916,
+      "repairs": 24,
+      "squared_error": 0.23763352165726614,
+      "utility": 0.7215852283427339,
+      "wall_ns": 5597056.03125
+    },
+    "quantized": {
+      "cost": 0.040781250000000005,
+      "episodes": 64,
+      "improvement_nll": 0.3761644301610937,
+      "repairs": 24,
+      "squared_error": 0.2465344012886079,
+      "utility": 0.7126843487113921,
+      "wall_ns": 6710628.046875
+    },
+    "reset": {
+      "cost": 0.226875,
+      "episodes": 64,
+      "improvement_nll": 0.6925096965583968,
+      "repairs": 64,
+      "squared_error": 0.21211480803385707,
+      "utility": 0.561010191966143,
+      "wall_ns": 4681090.9375
+    },
+    "zero": {
+      "cost": 0.226875,
+      "episodes": 64,
+      "improvement_nll": 0.6925096965583968,
+      "repairs": 64,
+      "squared_error": 0.21211480803385707,
+      "utility": 0.561010191966143,
+      "wall_ns": 5548003.390625
+    }
+  }
+}

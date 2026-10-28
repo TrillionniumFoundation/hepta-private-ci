@@ -249,7 +249,8 @@ def main():
         if not result["passed"]:
             raise SystemExit(1)
     else:
-        with Native(BASE / "evidence/native/analytic_event", BASE / "evidence/native/BUILD_RECEIPT.json") as native:
+        binary_dir = args.run_dir / "native" if args.phase == "confirm" else BASE / "evidence/native"
+        with Native(binary_dir / "analytic_event", binary_dir / "BUILD_RECEIPT.json") as native:
             if args.phase == "train":
                 train_all(args.run_dir, native, protocol)
             else:

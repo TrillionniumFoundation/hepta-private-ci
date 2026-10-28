@@ -1,0 +1,22 @@
+{
+  "checks": [
+    {
+      "error": "score: utility",
+      "intervention": "utility",
+      "rejected": true
+    },
+    {
+      "error": "codec: Independent signed-count reconstruction",
+      "intervention": "event_count",
+      "rejected": true
+    },
+    {
+      "error": "cost: Native adapter roundtrip accounting",
+      "intervention": "native_cost",
+      "rejected": true
+    }
+  ],
+  "confirmation_used": false,
+  "passed": true,
+  "schema": "hepta.feedback-audit-negative.v2"
+}

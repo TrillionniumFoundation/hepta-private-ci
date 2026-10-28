@@ -1,0 +1,394 @@
+{
+  "holdout_used": false,
+  "models": {
+    "fixed_mixture": {
+      "adaptive": {
+        "kind": "filter",
+        "parameters": [
+          0.34774404177610146,
+          0.2046889718183207,
+          0.9120762485495639
+        ],
+        "planning_noise_scale": 0.9120762485495639,
+        "planning_q": 0.2046889718183207
+      },
+      "anchor": {
+        "kind": "filter",
+        "parameters": [
+          0.10828070721771066,
+          0.1850811302286124,
+          0.9845874186691084
+        ],
+        "planning_noise_scale": 0.9845874186691084,
+        "planning_q": 0.1850811302286124
+      },
+      "epsilon": 0.02,
+      "kind": "fixed_mixture",
+      "planning_noise_scale": 0.9845874186691084,
+      "planning_q": 0.1850811302286124,
+      "planning_scope": "anchor variance plug-in approximation; actual outcomes score control",
+      "prior": 0.5,
+      "routing": "fixed",
+      "schema": "hepta.analytic-event.protected-filter.v1"
+    },
+    "frozen": {
+      "kind": "filter",
+      "parameters": [
+        0.10828070721771066,
+        0.1850811302286124,
+        0.9845874186691084
+      ],
+      "planning_noise_scale": 0.9845874186691084,
+      "planning_q": 0.1850811302286124
+    },
+    "likelihood_mixture": {
+      "adaptive": {
+        "kind": "filter",
+        "parameters": [
+          0.34774404177610146,
+          0.2046889718183207,
+          0.9120762485495639
+        ],
+        "planning_noise_scale": 0.9120762485495639,
+        "planning_q": 0.2046889718183207
+      },
+      "anchor": {
+        "kind": "filter",
+        "parameters": [
+          0.10828070721771066,
+          0.1850811302286124,
+          0.9845874186691084
+        ],
+        "planning_noise_scale": 0.9845874186691084,
+        "planning_q": 0.1850811302286124
+      },
+      "epsilon": 0.02,
+      "kind": "likelihood_mixture",
+      "planning_noise_scale": 0.9845874186691084,
+      "planning_q": 0.1850811302286124,
+      "planning_scope": "anchor variance plug-in approximation; actual outcomes score control",
+      "prior": 0.5,
+      "routing": "likelihood",
+      "schema": "hepta.analytic-event.protected-filter.v1"
+    },
+    "online": {
+      "kind": "filter",
+      "parameters": [
+        0.34774404177610146,
+        0.2046889718183207,
+        0.9120762485495639
+      ],
+      "planning_noise_scale": 0.9120762485495639,
+      "planning_q": 0.2046889718183207
+    },
+    "protected": {
+      "adaptive": {
+        "kind": "filter",
+        "parameters": [
+          0.34774404177610146,
+          0.2046889718183207,
+          0.9120762485495639
+        ],
+        "planning_noise_scale": 0.9120762485495639,
+        "planning_q": 0.2046889718183207
+      },
+      "anchor": {
+        "kind": "filter",
+        "parameters": [
+          0.10828070721771066,
+          0.1850811302286124,
+          0.9845874186691084
+        ],
+        "planning_noise_scale": 0.9845874186691084,
+        "planning_q": 0.1850811302286124
+      },
+      "epsilon": 0.02,
+      "kind": "protected_filter",
+      "planning_noise_scale": 0.9845874186691084,
+      "planning_q": 0.1850811302286124,
+      "planning_scope": "anchor variance plug-in approximation; actual outcomes score control",
+      "prior": 0.5,
+      "routing": "likelihood",
+      "schema": "hepta.analytic-event.protected-filter.v1"
+    },
+    "protected_classical": {
+      "adaptive": {
+        "equivalent_classical_implementation": true,
+        "kind": "filter",
+        "parameters": [
+          0.34774404177610146,
+          0.2046889718183207,
+          0.9120762485495639
+        ],
+        "planning_noise_scale": 0.9120762485495639,
+        "planning_q": 0.2046889718183207
+      },
+      "anchor": {
+        "equivalent_classical_implementation": true,
+        "kind": "filter",
+        "parameters": [
+          0.10828070721771066,
+          0.1850811302286124,
+          0.9845874186691084
+        ],
+        "planning_noise_scale": 0.9845874186691084,
+        "planning_q": 0.1850811302286124
+      },
+      "epsilon": 0.02,
+      "kind": "protected_filter",
+      "planning_noise_scale": 0.9845874186691084,
+      "planning_q": 0.1850811302286124,
+      "planning_scope": "anchor variance plug-in approximation; actual outcomes score control",
+      "prior": 0.5,
+      "routing": "likelihood",
+      "schema": "hepta.analytic-event.protected-filter.v1"
+    },
+    "protected_quantized": {
+      "adaptive": {
+        "kind": "filter",
+        "parameters": [
+          0.34774404177610146,
+          0.2046889718183207,
+          0.9120762485495639
+        ],
+        "planning_noise_scale": 0.9120762485495639,
+        "planning_q": 0.2046889718183207
+      },
+      "anchor": {
+        "kind": "filter",
+        "parameters": [
+          0.10828070721771066,
+          0.1850811302286124,
+          0.9845874186691084
+        ],
+        "planning_noise_scale": 0.9845874186691084,
+        "planning_q": 0.1850811302286124
+      },
+      "epsilon": 0.02,
+      "event_probability_quantization": "anchor_constrained_q24_v1",
+      "kind": "protected_filter",
+      "output_quantization": "guarded_q24_v1",
+      "planning_noise_scale": 0.9845874186691084,
+      "planning_q": 0.1850811302286124,
+      "planning_scope": "anchor variance plug-in approximation; actual outcomes score control",
+      "prior": 0.5,
+      "routing": "likelihood",
+      "schema": "hepta.analytic-event.protected-filter.v1"
+    },
+    "protected_quantized_classical": {
+      "adaptive": {
+        "equivalent_classical_implementation": true,
+        "kind": "filter",
+        "parameters": [
+          0.34774404177610146,
+          0.2046889718183207,
+          0.9120762485495639
+        ],
+        "planning_noise_scale": 0.9120762485495639,
+        "planning_q": 0.2046889718183207
+      },
+      "anchor": {
+        "equivalent_classical_implementation": true,
+        "kind": "filter",
+        "parameters": [
+          0.10828070721771066,
+          0.1850811302286124,
+          0.9845874186691084
+        ],
+        "planning_noise_scale": 0.9845874186691084,
+        "planning_q": 0.1850811302286124
+      },
+      "epsilon": 0.02,
+      "event_probability_quantization": "anchor_constrained_q24_v1",
+      "kind": "protected_filter",
+      "output_quantization": "guarded_q24_v1",
+      "planning_noise_scale": 0.9845874186691084,
+      "planning_q": 0.1850811302286124,
+      "planning_scope": "anchor variance plug-in approximation; actual outcomes score control",
+      "prior": 0.5,
+      "routing": "likelihood",
+      "schema": "hepta.analytic-event.protected-filter.v1"
+    },
+    "replay": {
+      "kind": "filter",
+      "parameters": [
+        0.21802689247716678,
+        0.2650104582573183,
+        0.9450124267126202
+      ],
+      "planning_noise_scale": 0.9450124267126202,
+      "planning_q": 0.2650104582573183
+    }
+  },
+  "previous_checkpoint_sha256": "baba625ed46ee198b6cc35c155e5a780e8bbe149e4ef21e7184ca055814f09fd",
+  "routing_reads_environment_label": false,
+  "seed": 307,
+  "training": {
+    "online": {
+      "dataset_digests": [
+        "b428554dcb58cb2108d63e68d0d6630678e5769a652f036263eeb170cd940105"
+      ],
+      "final_parameters": [
+        0.34774404177610146,
+        0.2046889718183207,
+        0.9120762485495639
+      ],
+      "initial_parameters": [
+        0.12386416891162266,
+        0.1801033171503147,
+        1.0152635243743378
+      ],
+      "objective_trace": [
+        0.9259419808464358,
+        0.9259419620190028,
+        0.9259419782894365,
+        0.9259419811873195,
+        1.3560030357191735,
+        1.3560030074421396,
+        1.3560030282815574,
+        1.3560030374233094,
+        0.7152983863464178,
+        0.7152983865364317,
+        0.7152983862563937,
+        0.7152983864914723,
+        0.7152443274318181,
+        0.7152443274752196,
+        0.7152443273450917,
+        0.7152443275730288,
+        0.7151443559636677,
+        0.7151443558117414,
+        0.7151443558868105,
+        0.7151443560946618,
+        0.7149647972520188,
+        0.7149647969065681,
+        0.7149647971976516,
+        0.7149647973609357,
+        0.7146792811468674,
+        0.7146792807050469,
+        0.7146792811367989,
+        0.7146792812123014,
+        0.7144475920790129,
+        0.7144475918335895,
+        0.7144475920974,
+        0.7144475920975478,
+        0.7143965734805237,
+        0.714396573436071,
+        0.7143965734982366,
+        0.71439657348455,
+        0.7143928832004252,
+        0.7143928832121814,
+        0.7143928832129696,
+        0.714392883205471,
+        0.7143922389779309,
+        0.7143922389973308,
+        0.714392238988114,
+        0.7143922389834714,
+        0.7143906935084334,
+        0.714390693530595,
+        0.7143906935129603,
+        0.7143906935131412,
+        0.7143894649816123,
+        0.7143894649840596,
+        0.7143894649815978,
+        0.714389464981994,
+        0.7143894570163833,
+        0.7143894570165662,
+        0.7143894570163254,
+        0.7143894570163997,
+        0.7143894569233131,
+        0.7143894569233193,
+        0.7143894569233051,
+        0.7143894569233123
+      ],
+      "optimizer_message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+      "optimizer_success": true,
+      "training_trajectories": 256,
+      "training_wall_ns": 56595838
+    },
+    "replay": {
+      "dataset_digests": [
+        "f55f194fe18f741d66bc52a6da5647932db2ec729905f0ae2a92e6b0049a95c0",
+        "774170c1aa647c4822a91c0d5858d5b3766ce85074df3a007322235b5629134f"
+      ],
+      "final_parameters": [
+        0.21802689247716678,
+        0.2650104582573183,
+        0.9450124267126202
+      ],
+      "initial_parameters": [
+        0.1073625759945431,
+        0.18868604469533623,
+        1.0105199896149655
+      ],
+      "objective_trace": [
+        0.8667388695165675,
+        0.8667388606023252,
+        0.866738867902187,
+        0.8667388695958673,
+        1.934342453291936,
+        1.9343424144780763,
+        1.9343424394343005,
+        1.9343424556315343,
+        0.8148673587671943,
+        0.8148673590679871,
+        0.8148673578045809,
+        0.8148673587694386,
+        0.8136604111900787,
+        0.8136604113448851,
+        0.8136604102705692,
+        0.8136604111976015,
+        0.8096095649280666,
+        0.8096095645397035,
+        0.8096095641746891,
+        0.8096095649560068,
+        0.8010524842973634,
+        0.8010524837982346,
+        0.8010524841518577,
+        0.8010524843847585,
+        0.8003073064070338,
+        0.800307306180784,
+        0.8003073063954276,
+        0.8003073064591687,
+        0.8001979926299455,
+        0.8001979925954019,
+        0.8001979926474903,
+        0.8001979926569691,
+        0.8001825065617456,
+        0.8001825065963692,
+        0.8001825065746255,
+        0.8001825065779107,
+        0.8001766775929562,
+        0.8001766776428648,
+        0.8001766775984784,
+        0.8001766776020771,
+        0.8001724637170917,
+        0.8001724637459657,
+        0.800172463716674,
+        0.8001724637193984,
+        0.8001715600668646,
+        0.8001715600726552,
+        0.800171560065849,
+        0.8001715600667234,
+        0.8001715118419489,
+        0.8001715118423645,
+        0.8001715118417001,
+        0.8001715118418424,
+        0.8001715103792018,
+        0.8001715103791618,
+        0.8001715103791861,
+        0.8001715103791925,
+        0.8001715103720048,
+        0.8001715103720218,
+        0.8001715103720077,
+        0.8001715103720031
+      ],
+      "optimizer_message": "CONVERGENCE: RELATIVE REDUCTION OF F <= FACTR*EPSMCH",
+      "optimizer_success": true,
+      "training_trajectories": 256,
+      "training_wall_ns": 75521217
+    }
+  },
+  "training_dataset_sha256": "b428554dcb58cb2108d63e68d0d6630678e5769a652f036263eeb170cd940105",
+  "training_environment": "drift_shift",
+  "window": 1
+}
