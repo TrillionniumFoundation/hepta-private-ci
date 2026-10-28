@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.memory.v8.author-suite-lock.v1",
+  "author": "root evaluator, separate from addressing implementer",
+  "fitting_author_allowed_to_read_before_model_selection": false,
+  "external_third_party": false,
+  "iid_sampling_established": false,
+  "wrapper_variants_share_family": true,
+  "expected_fields_sent_to_worker": false,
+  "native_cell_budget": 8,
+  "native_hop_budget": 8,
+  "author_source_sha256": "97ef1301183290c5eec32fdc3d14ccf12226efdd7ae0595b0ac7c36fd5ec118e",
+  "files": {
+    "calibration.json": {
+      "bytes": 98686,
+      "sha256": "9ff41aea889f459df2dd8276ee2cbfcc8eb4bb87a29e688b9c28a82617739ffb",
+      "rows": 240,
+      "categories": {
+        "ambiguous_alias": 12,
+        "known": 120,
+        "time_conflict": 12,
+        "unknown_entity": 16,
+        "unsupported": 80
+      },
+      "families": 140,
+      "entities": 12
+    },
+    "held.json": {
+      "bytes": 95502,
+      "sha256": "0514a7443e249087e02a5a98b2096795ef25770de35e7cd2a910564d17ba4b16",
+      "rows": 240,
+      "categories": {
+        "ambiguous_alias": 12,
+        "known": 120,
+        "time_conflict": 12,
+        "unknown_entity": 16,
+        "unsupported": 80
+      },
+      "families": 140,
+      "entities": 12
+    }
+  },
+  "revision": 2,
+  "previous_lock_sha256": "3ceec60c3658c1c5017083b417d9f6310250c64844d66ce55bdf85c1c3dc41a0",
+  "repair_source_sha256": "954c33f8b97d957f596e9ce59b2dd5bab13181e23bc540d94c9b099f8d81f8a5",
+  "models_loaded_before_repair": 0,
+  "head_fits_before_repair": 0,
+  "model_predictions_before_repair": 0,
+  "reason": "Model-free preflight found one normalized calibration wording shared with public fitting data.",
+  "label_or_record_changes": false,
+  "changes": [
+    {
+      "id": "calibration-0020",
+      "old_text": "What reading had been recorded for Harbor valve 2 by 2025-02-01?",
+      "new_text": "At the reporting cutoff of 2025-02-01, retrieve the final observation already filed under Harbor valve 2."
+    },
+    {
+      "id": "calibration-0021",
+      "old_text": "For the inspection record: What reading had been recorded for Cedar gauge 7 by 2025-02-01?",
+      "new_text": "For the inspection record: At the reporting cutoff of 2025-02-01, retrieve the final observation already filed under Cedar gauge 7."
+    },
+    {
+      "id": "calibration-0174",
+      "old_text": "What reading had been recorded for Cedar gauge 1 by 2025-02-01?",
+      "new_text": "At the reporting cutoff of 2025-02-01, retrieve the final observation already filed under Cedar gauge 1."
+    }
+  ]
+}
