@@ -290,9 +290,19 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     let exhausted = supervisor.tick(now);
     assert_eq!(exhausted.faults.len(), 1);
     assert_eq!(exhausted.faults[0].agent_id, agent_id);
-    assert!(exhausted.faults[0].message.contains("restart budget"));
+    assert!(
+        exhausted.faults[0]
+            .message
+            .contains("exhausted its restart budget")
+    );
     let snapshot = supervisor.snapshot(&agent_id).expect("snapshot");
     assert!(!snapshot.active);
+    assert_eq!(control.spawn_count(&agent_id), 4);
+    // A spent persistent budget must not schedule a delayed fifth spawn.
+    assert_eq!(
+        supervisor.tick(now + Duration::from_secs(2)),
+        TickReport::default()
+    );
     assert_eq!(control.spawn_count(&agent_id), 4);
     Ok(())
 }
