@@ -1,0 +1,697 @@
+{
+  "admission": false,
+  "counts": {
+    "explicit_fixture_sgd_constructions": 2,
+    "explicit_random_draw_calls": 8,
+    "fixture_root_module_objects": 6,
+    "fresh_holdout_reads": 0,
+    "scientific_model_calls": 0,
+    "scientific_training_steps": 0,
+    "toy_backward_calls": 2,
+    "toy_forward_calls": 2,
+    "toy_optimizer_steps": 2
+  },
+  "evidence": {
+    "cross_object_replay": {
+      "after_full_record_sha256": "95694bdd798fb627300f8132e3afa95d82af8689987ded08da20373de25afb60",
+      "before_and_after_literal_equality": true,
+      "caches_keep_target_parameter_identity": true,
+      "checkpoint_bytes": 41767,
+      "checkpoint_sha256": "edb85918756ccc44ccd43ba39e499ef7574c9a7d1c018dfbb5c7dd4b697ca7da",
+      "fresh_distinct_target": true,
+      "incoming_nonzero_and_zero_and_none_gradients_exercised": true,
+      "outputs_input_hidden_loss_sha256": "657265b125c4ca95919d667f2646e5e2271a9ab2acbd4fc68102b3b451fd9314",
+      "restore_receipt": {
+        "autograd_version_counters_restored": false,
+        "cursor": {
+          "baseline_action_index": 2,
+          "clock": 240,
+          "decision_index": 5,
+          "guard_grain": 48,
+          "path_kind": "baseline",
+          "remaining_steps": 48,
+          "schedule_id": 6000,
+          "schedule_sha256": "921a95f8d16502451deac2c902b10b2fe990569a12a2c129a4f5ca7ff40f4c31",
+          "seed": 17,
+          "total_steps": 288
+        },
+        "environment_sha256": "40884b34e66299781ca8ccba392e3f6d2d27d4ca0bcf401cf12695272d50ad2a",
+        "remaining_schedule": [
+          {
+            "adapt_seed": 251,
+            "clean_seed": 253,
+            "condition": "clean",
+            "noise_seed": 257,
+            "step": 240
+          },
+          {
+            "adapt_seed": 252,
+            "clean_seed": 254,
+            "condition": "clean",
+            "noise_seed": 258,
+            "step": 241
+          },
+          {
+            "adapt_seed": 253,
+            "clean_seed": 255,
+            "condition": "clean",
+            "noise_seed": 259,
+            "step": 242
+          },
+          {
+            "adapt_seed": 254,
+            "clean_seed": 256,
+            "condition": "clean",
+            "noise_seed": 260,
+            "step": 243
+          },
+          {
+            "adapt_seed": 255,
+            "clean_seed": 257,
+            "condition": "clean",
+            "noise_seed": 261,
+            "step": 244
+          },
+          {
+            "adapt_seed": 256,
+            "clean_seed": 258,
+            "condition": "clean",
+            "noise_seed": 262,
+            "step": 245
+          },
+          {
+            "adapt_seed": 257,
+            "clean_seed": 259,
+            "condition": "clean",
+            "noise_seed": 263,
+            "step": 246
+          },
+          {
+            "adapt_seed": 258,
+            "clean_seed": 260,
+            "condition": "clean",
+            "noise_seed": 264,
+            "step": 247
+          },
+          {
+            "adapt_seed": 259,
+            "clean_seed": 261,
+            "condition": "clean",
+            "noise_seed": 265,
+            "step": 248
+          },
+          {
+            "adapt_seed": 260,
+            "clean_seed": 262,
+            "condition": "clean",
+            "noise_seed": 266,
+            "step": 249
+          },
+          {
+            "adapt_seed": 261,
+            "clean_seed": 263,
+            "condition": "clean",
+            "noise_seed": 267,
+            "step": 250
+          },
+          {
+            "adapt_seed": 262,
+            "clean_seed": 264,
+            "condition": "clean",
+            "noise_seed": 268,
+            "step": 251
+          },
+          {
+            "adapt_seed": 263,
+            "clean_seed": 265,
+            "condition": "clean",
+            "noise_seed": 269,
+            "step": 252
+          },
+          {
+            "adapt_seed": 264,
+            "clean_seed": 266,
+            "condition": "clean",
+            "noise_seed": 270,
+            "step": 253
+          },
+          {
+            "adapt_seed": 265,
+            "clean_seed": 267,
+            "condition": "clean",
+            "noise_seed": 271,
+            "step": 254
+          },
+          {
+            "adapt_seed": 266,
+            "clean_seed": 268,
+            "condition": "clean",
+            "noise_seed": 272,
+            "step": 255
+          },
+          {
+            "adapt_seed": 267,
+            "clean_seed": 269,
+            "condition": "clean",
+            "noise_seed": 273,
+            "step": 256
+          },
+          {
+            "adapt_seed": 268,
+            "clean_seed": 270,
+            "condition": "clean",
+            "noise_seed": 274,
+            "step": 257
+          },
+          {
+            "adapt_seed": 269,
+            "clean_seed": 271,
+            "condition": "clean",
+            "noise_seed": 275,
+            "step": 258
+          },
+          {
+            "adapt_seed": 270,
+            "clean_seed": 272,
+            "condition": "clean",
+            "noise_seed": 276,
+            "step": 259
+          },
+          {
+            "adapt_seed": 271,
+            "clean_seed": 273,
+            "condition": "clean",
+            "noise_seed": 277,
+            "step": 260
+          },
+          {
+            "adapt_seed": 272,
+            "clean_seed": 274,
+            "condition": "clean",
+            "noise_seed": 278,
+            "step": 261
+          },
+          {
+            "adapt_seed": 273,
+            "clean_seed": 275,
+            "condition": "clean",
+            "noise_seed": 279,
+            "step": 262
+          },
+          {
+            "adapt_seed": 274,
+            "clean_seed": 276,
+            "condition": "clean",
+            "noise_seed": 280,
+            "step": 263
+          },
+          {
+            "adapt_seed": 275,
+            "clean_seed": 277,
+            "condition": "clean",
+            "noise_seed": 281,
+            "step": 264
+          },
+          {
+            "adapt_seed": 276,
+            "clean_seed": 278,
+            "condition": "clean",
+            "noise_seed": 282,
+            "step": 265
+          },
+          {
+            "adapt_seed": 277,
+            "clean_seed": 279,
+            "condition": "clean",
+            "noise_seed": 283,
+            "step": 266
+          },
+          {
+            "adapt_seed": 278,
+            "clean_seed": 280,
+            "condition": "clean",
+            "noise_seed": 284,
+            "step": 267
+          },
+          {
+            "adapt_seed": 279,
+            "clean_seed": 281,
+            "condition": "clean",
+            "noise_seed": 285,
+            "step": 268
+          },
+          {
+            "adapt_seed": 280,
+            "clean_seed": 282,
+            "condition": "clean",
+            "noise_seed": 286,
+            "step": 269
+          },
+          {
+            "adapt_seed": 281,
+            "clean_seed": 283,
+            "condition": "clean",
+            "noise_seed": 287,
+            "step": 270
+          },
+          {
+            "adapt_seed": 282,
+            "clean_seed": 284,
+            "condition": "clean",
+            "noise_seed": 288,
+            "step": 271
+          },
+          {
+            "adapt_seed": 283,
+            "clean_seed": 285,
+            "condition": "clean",
+            "noise_seed": 289,
+            "step": 272
+          },
+          {
+            "adapt_seed": 284,
+            "clean_seed": 286,
+            "condition": "clean",
+            "noise_seed": 290,
+            "step": 273
+          },
+          {
+            "adapt_seed": 285,
+            "clean_seed": 287,
+            "condition": "clean",
+            "noise_seed": 291,
+            "step": 274
+          },
+          {
+            "adapt_seed": 286,
+            "clean_seed": 288,
+            "condition": "clean",
+            "noise_seed": 292,
+            "step": 275
+          },
+          {
+            "adapt_seed": 287,
+            "clean_seed": 289,
+            "condition": "clean",
+            "noise_seed": 293,
+            "step": 276
+          },
+          {
+            "adapt_seed": 288,
+            "clean_seed": 290,
+            "condition": "clean",
+            "noise_seed": 294,
+            "step": 277
+          },
+          {
+            "adapt_seed": 289,
+            "clean_seed": 291,
+            "condition": "clean",
+            "noise_seed": 295,
+            "step": 278
+          },
+          {
+            "adapt_seed": 290,
+            "clean_seed": 292,
+            "condition": "clean",
+            "noise_seed": 296,
+            "step": 279
+          },
+          {
+            "adapt_seed": 291,
+            "clean_seed": 293,
+            "condition": "clean",
+            "noise_seed": 297,
+            "step": 280
+          },
+          {
+            "adapt_seed": 292,
+            "clean_seed": 294,
+            "condition": "clean",
+            "noise_seed": 298,
+            "step": 281
+          },
+          {
+            "adapt_seed": 293,
+            "clean_seed": 295,
+            "condition": "clean",
+            "noise_seed": 299,
+            "step": 282
+          },
+          {
+            "adapt_seed": 294,
+            "clean_seed": 296,
+            "condition": "clean",
+            "noise_seed": 300,
+            "step": 283
+          },
+          {
+            "adapt_seed": 295,
+            "clean_seed": 297,
+            "condition": "clean",
+            "noise_seed": 301,
+            "step": 284
+          },
+          {
+            "adapt_seed": 296,
+            "clean_seed": 298,
+            "condition": "clean",
+            "noise_seed": 302,
+            "step": 285
+          },
+          {
+            "adapt_seed": 297,
+            "clean_seed": 299,
+            "condition": "clean",
+            "noise_seed": 303,
+            "step": 286
+          },
+          {
+            "adapt_seed": 298,
+            "clean_seed": 300,
+            "condition": "clean",
+            "noise_seed": 304,
+            "step": 287
+          }
+        ],
+        "scientific_kernel_replay": false,
+        "state_sha256": "edb85918756ccc44ccd43ba39e499ef7574c9a7d1c018dfbb5c7dd4b697ca7da"
+      },
+      "restored_sgd_momentum_groups_and_all_used_rngs": true
+    },
+    "equivalence": {
+      "copied_methods": [
+        {
+          "ast_equal": true,
+          "ast_sha256": "4e7d8e8a8fd4313f92dba5109278dc0998955986b7f6e47ce09b3fdbf28b861b",
+          "bytes_equal": true,
+          "copied_source_sha256": "b7a4630a2946c0eba8a4ddce32d9ee8f411774abce8646565384dca2195bb048",
+          "full_source_bytes": 3843,
+          "globals": [
+            {
+              "module": "builtins",
+              "name": "all",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "any",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "dict",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_torch_adapter_preparation_20261028.adapter",
+              "name": "generator_kind",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_torch_adapter_preparation_20261028.adapter",
+              "name": "generator_owner",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "id",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_torch_adapter_preparation_20261028.adapter",
+              "name": "independent",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "int",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "len",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "list",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_gru_adapter_preparation_20261028.contract",
+              "name": "model_parts",
+              "permitted_local_replacement": true,
+              "same_object": false
+            },
+            {
+              "module": "numpy",
+              "name": "np",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_preparation_20261028.codec",
+              "name": "require",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "set",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_torch_adapter_preparation_20261028.adapter",
+              "name": "storage_leaves",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "str",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "sys",
+              "name": "sys",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "torch",
+              "name": "torch",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "type",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "vars",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "zip",
+              "permitted_local_replacement": false,
+              "same_object": true
+            }
+          ],
+          "method": "_parts",
+          "original_source_sha256": "b7a4630a2946c0eba8a4ddce32d9ee8f411774abce8646565384dca2195bb048"
+        },
+        {
+          "ast_equal": true,
+          "ast_sha256": "f06ad881e54f6ce62b90e5ecf1a474ad2e6173034723bca74127c8c67a775897",
+          "bytes_equal": true,
+          "copied_source_sha256": "e9868e119789a41771f73084632b437179fb9d3930eff172d83da03af61b65b3",
+          "full_source_bytes": 1779,
+          "globals": [
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_torch_adapter_preparation_20261028.adapter",
+              "name": "array",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_preparation_20261028.branch_state",
+              "name": "branch_state",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_preparation_20261028.codec",
+              "name": "codec",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "list",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_gru_adapter_preparation_20261028.contract",
+              "name": "module_identity",
+              "permitted_local_replacement": true,
+              "same_object": false
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_torch_adapter_preparation_20261028.adapter",
+              "name": "native",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_preparation_20261028.codec",
+              "name": "require",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_torch_adapter_preparation_20261028.adapter",
+              "name": "runtime_descriptor",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "sorted",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "experiments.multimodal_output_portfolio.field_bridge_v6_torch_adapter_preparation_20261028.adapter",
+              "name": "storage_leaves",
+              "permitted_local_replacement": false,
+              "same_object": true
+            },
+            {
+              "module": "builtins",
+              "name": "vars",
+              "permitted_local_replacement": false,
+              "same_object": true
+            }
+          ],
+          "method": "_description",
+          "original_source_sha256": "e9868e119789a41771f73084632b437179fb9d3930eff172d83da03af61b65b3"
+        }
+      ],
+      "global_monkey_patch": false,
+      "only_local_global_replacements": [
+        "model_parts",
+        "module_identity"
+      ],
+      "runtime_exec_or_code_rewrite": false,
+      "strict_source_sha256": "59b32cbd4ac52dee2e3b0dec7f1c0b197d2c84dbd6fdf404156ad788d3d38e21",
+      "unchanged_inherited_methods": [
+        "__init__",
+        "capture",
+        "_mutable",
+        "_prepare",
+        "_apply",
+        "restore"
+      ]
+    },
+    "method_count": 18,
+    "rejections": [
+      {
+        "apply_calls": 0,
+        "case": "same_shape_wrong_cached_parameter",
+        "error": "ValueError: GRU cached tensor/weakref is not its registered parameter",
+        "public_state_objects_versions_and_rng_unchanged": true,
+        "rejected": true
+      },
+      {
+        "apply_calls": 0,
+        "case": "immutable_reference_cross_storage_alias",
+        "error": "ValueError: Shared tensor storage is outside this schema",
+        "public_state_objects_versions_and_rng_unchanged": true,
+        "rejected": true
+      },
+      {
+        "apply_calls": 0,
+        "case": "class_permute_hidden_override",
+        "error": "ValueError: GRU inherited method resolution changed",
+        "public_state_objects_versions_and_rng_unchanged": true,
+        "rejected": true
+      },
+      {
+        "apply_calls": 0,
+        "case": "stock_default_int_to_bool",
+        "error": "ValueError: Stock GRU/Module method code or defaults changed",
+        "public_state_objects_versions_and_rng_unchanged": true,
+        "rejected": true
+      }
+    ],
+    "sources_after": {
+      "adapter.py": {
+        "bytes": 6325,
+        "sha256": "ffdc3aef38040531e8f4933f05be7e672e83d6a8e753d493217f65a281276919"
+      },
+      "contract.py": {
+        "bytes": 11849,
+        "sha256": "ca7b33dca165aa22b953bb1528fefb80f8d8c4f26079c1cecba0ffd61e176827"
+      },
+      "equivalence.py": {
+        "bytes": 3260,
+        "sha256": "3952ae7f4347bb44694f0d779221de725b43a449629ae163e2eb72ec2e518d89"
+      },
+      "tests.py": {
+        "bytes": 16846,
+        "sha256": "11c16a15032e5cb94d116da6b3c1b0fc7852499fd67d884f09a86ef1f2f6cec6"
+      }
+    },
+    "sources_before": {
+      "adapter.py": {
+        "bytes": 6325,
+        "sha256": "ffdc3aef38040531e8f4933f05be7e672e83d6a8e753d493217f65a281276919"
+      },
+      "contract.py": {
+        "bytes": 11849,
+        "sha256": "ca7b33dca165aa22b953bb1528fefb80f8d8c4f26079c1cecba0ffd61e176827"
+      },
+      "equivalence.py": {
+        "bytes": 3260,
+        "sha256": "3952ae7f4347bb44694f0d779221de725b43a449629ae163e2eb72ec2e518d89"
+      },
+      "tests.py": {
+        "bytes": 16846,
+        "sha256": "11c16a15032e5cb94d116da6b3c1b0fc7852499fd67d884f09a86ef1f2f6cec6"
+      }
+    }
+  },
+  "kind": "independent_engineering_only_gru_extension_review",
+  "limits": [
+    "Only two tiny synthetic GRU steps; no scientific kernel/assets/holdout.",
+    "No pending autograd graph or concurrent writer; autograd version counters are not rewound.",
+    "Hidden input is local fixed test data; cross-step carried hidden state is not covered.",
+    "Runtime/builtin/dispatcher malicious replacement is outside this preparation contract.",
+    "Counts identify explicit fixtures and real toy calls. Inherited isolated preflight SGD/RNG constructors are validation work, not model steps.",
+    "The writer suite was read but not executed; no old adapter suite was repeated."
+  ],
+  "original_scientific_status": "FAIL",
+  "probe_sha256": "c256317eaea5c0dec071f804beb99da6b5979f7e69a278da9cb0533e88e326f9",
+  "scientific_kernel_replay": false,
+  "scientific_module_imports": [],
+  "status": "PASS"
+}
