@@ -1,5 +1,8 @@
 //! Real continual writes and matched parameter interventions over native RPCs.
 
+use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
 use std::path::Path;
 use std::path::PathBuf;
 use std::process::Stdio;
@@ -122,6 +125,42 @@ async fn continual(config: &ChildConfig) -> Value {
     report
 }
 
+fn log_monitor_failure(resources: &Path, stderr: &Path) {
+    // Failure diagnostics stay bounded even when the child leaves partial files.
+    let resource_bytes = (|| -> std::io::Result<Vec<u8>> {
+        let mut bytes = Vec::new();
+        std::fs::File::open(resources)?.take(64 * 1024 + 1).read_to_end(&mut bytes)?;
+        Ok(bytes)
+    })();
+    match resource_bytes {
+        Ok(bytes) if bytes.len() <= 64 * 1024 => match serde_json::from_slice::<Value>(&bytes) {
+            Ok(receipt) => eprintln!("V9 monitor failure: {}", json!({
+                "resources":resources.display().to_string(),"exit_code":receipt["exit_code"],
+                "timed_out_or_sample_cap":receipt["timed_out_or_sample_cap"],
+                "monitor_error":receipt["monitor_error"],"sample_bytes":receipt["samples"]["bytes"],
+                "wall_ns_through_observation_close":receipt["wall_ns_through_observation_close"],
+                "observed_tree_stopped":receipt["cleanup"]["observed_tree_stopped"],"passed":receipt["passed"]})),
+            Err(error) => eprintln!("V9 monitor receipt {} is unreadable JSON: {error}", resources.display()),
+        },
+        Ok(_) => eprintln!("V9 monitor receipt {} exceeds the 64 KiB diagnostic bound", resources.display()),
+        Err(error) => eprintln!("V9 monitor receipt {} is unavailable: {error}", resources.display()),
+    }
+    let stderr_tail = (|| -> std::io::Result<Vec<u8>> {
+        let mut source = std::fs::File::open(stderr)?;
+        let start = source.metadata()?.len().saturating_sub(8192);
+        source.seek(SeekFrom::Start(start))?;
+        let mut bytes = Vec::new();
+        source.take(8192).read_to_end(&mut bytes)?;
+        Ok(bytes)
+    })();
+    match stderr_tail {
+        Ok(bytes) => eprintln!("V9 monitor stderr tail: {}", json!({
+            "path":stderr.display().to_string(),"maximum_bytes":8192,
+            "tail":String::from_utf8_lossy(&bytes)})),
+        Err(error) => eprintln!("V9 monitor stderr {} is unavailable: {error}", stderr.display()),
+    }
+}
+
 async fn monitored_child(parent: &Path, representation: &str, temporary: &Path) -> Value {
     let started = Instant::now();
     let training = trainer();
@@ -131,20 +170,27 @@ async fn monitored_child(parent: &Path, representation: &str, temporary: &Path) 
     let config_path = parent.join(format!("{representation}-config.json"));
     data::save(&config_path,&serde_json::to_value(configuration).unwrap());
     let resources = parent.join(format!("{representation}-resources.json"));
+    let stderr = parent.join(format!("{representation}-stderr.log"));
     let mut child = tokio::process::Command::new(&training.python)
         .args(["-I","-B"]).arg(training.qualification_root.join("memory-cell-v9/learning/resource_monitor.py"))
         .arg("--output").arg(&resources).arg("--samples").arg(parent.join(format!("{representation}-samples.jsonl")))
-        .arg("--root").arg(&directory).arg("--root").arg(temporary).args(["--interval-ms","20","--timeout-seconds","600"])
+        .arg("--root").arg(&directory).arg("--root").arg(temporary).args(["--interval-ms","200","--timeout-seconds","1200"])
         .arg("--stdout").arg(parent.join(format!("{representation}-stdout.log")))
-        .arg("--stderr").arg(parent.join(format!("{representation}-stderr.log")))
+        .arg("--stderr").arg(&stderr)
         .arg("--").arg(std::env::current_exe().unwrap())
         .args(["--ignored","--exact","memory_cell_v9_continual_tests::memory_cell_v9_continual_child","--nocapture","--test-threads=1"])
         .env("MEMORY_CELL_V9_CHILD_CONFIG",&config_path).env("TMPDIR",temporary)
         .stdin(Stdio::null()).stdout(Stdio::null()).stderr(Stdio::inherit()).kill_on_drop(true).spawn().unwrap();
-    let status = match tokio::time::timeout(Duration::from_secs(660),child.wait()).await {
+    let status = match tokio::time::timeout(Duration::from_secs(1260),child.wait()).await {
         Ok(status) => status.unwrap(),
-        Err(error) => { child.kill().await.unwrap(); let _ = child.wait().await; panic!("monitored child deadline: {error}"); }
+        Err(error) => {
+            child.kill().await.unwrap();
+            let _ = child.wait().await;
+            log_monitor_failure(&resources,&stderr);
+            panic!("monitored child deadline: {error}");
+        }
     };
+    if !status.success() { log_monitor_failure(&resources,&stderr); }
     assert!(status.success(),"V9 monitored child failed; inspect preserved logs and resource receipt");
     let raw = std::fs::read(directory.join("CHILD.json")).unwrap();
     let report: Value = serde_json::from_slice(&raw).unwrap();

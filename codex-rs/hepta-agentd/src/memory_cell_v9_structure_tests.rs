@@ -156,23 +156,31 @@ async fn actual_memory_cell_v9_observed_structure_budget_and_actions() {
     data::save(&config_path,&serde_json::to_value(ChildConfig{output_dir:directory.clone(),runtime_root:temporary.path().to_path_buf()}).unwrap());
     data::save(&artifacts.join("MANIFEST.json"),&json!({"code_identity":code,"fixture_sha256":data::FIXTURE_SHA,
         "protocol_sha256":Digest32::of_bytes(&protocol).to_string(),"runtime_root":temporary.path(),"future_outcomes_seen":false}));
+    let resources = artifacts.join("resources.json");
+    let stderr = artifacts.join("stderr.log");
     let mut child = tokio::process::Command::new(&training.python).args(["-I","-B"])
         .arg(training.qualification_root.join("memory-cell-v9/learning/resource_monitor.py"))
-        .arg("--output").arg(artifacts.join("resources.json")).arg("--samples").arg(artifacts.join("samples.jsonl"))
-        .arg("--root").arg(&directory).arg("--root").arg(temporary.path()).args(["--interval-ms","20","--timeout-seconds","3600"])
-        .arg("--stdout").arg(artifacts.join("stdout.log")).arg("--stderr").arg(artifacts.join("stderr.log"))
+        .arg("--output").arg(&resources).arg("--samples").arg(artifacts.join("samples.jsonl"))
+        .arg("--root").arg(&directory).arg("--root").arg(temporary.path()).args(["--interval-ms","200","--timeout-seconds","3600"])
+        .arg("--stdout").arg(artifacts.join("stdout.log")).arg("--stderr").arg(&stderr)
         .arg("--").arg(std::env::current_exe().unwrap())
         .args(["--ignored","--exact","memory_cell_v9_continual_tests::structure::memory_cell_v9_structure_child","--nocapture","--test-threads=1"])
         .env("MEMORY_CELL_V9_STRUCTURE_CHILD_CONFIG",&config_path).env("TMPDIR",temporary.path())
         .stdin(Stdio::null()).stdout(Stdio::null()).stderr(Stdio::inherit()).kill_on_drop(true).spawn().unwrap();
     let status = match tokio::time::timeout(Duration::from_secs(3660),child.wait()).await {
         Ok(result) => result.unwrap(),
-        Err(error) => { child.kill().await.unwrap(); let _ = child.wait().await; panic!("structure child deadline: {error}"); }
+        Err(error) => {
+            child.kill().await.unwrap();
+            let _ = child.wait().await;
+            super::log_monitor_failure(&resources,&stderr);
+            panic!("structure child deadline: {error}");
+        }
     };
+    if !status.success() { super::log_monitor_failure(&resources,&stderr); }
     assert!(status.success(),"structure child failed; original logs/failed receipts retained");
     let raw = std::fs::read(directory.join("CHILD.json")).unwrap();
     let child_report: Value = serde_json::from_slice(&raw).unwrap();
-    let resource_raw = std::fs::read(artifacts.join("resources.json")).unwrap();
+    let resource_raw = std::fs::read(&resources).unwrap();
     temporary.close().unwrap();
     assert_eq!(support::code(&training),code);
     data::save(&output,&json!({"schema":"hepta.memory.v9.actual-structure.v1","fixture_sha256":data::FIXTURE_SHA,

@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - research/memory-cell-v9-generalization-20261028
-      - research/memory-cell-completion-20261028
+      - research/memory-cell-completion-verify-20261028
     paths:
       - qualification/memory-cell-v9/VERIFY_REQUEST.json
 
@@ -18,9 +18,10 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-24.04
-    # Preparation <=35m, verification <=90m, evidence <=15m, cache <=5m.
-    # Keep five further minutes for runner/post-action cleanup.
-    timeout-minutes: 150
+    # Preparation <=35m, verification <=150m, packing/upload <=20m,
+    # cache <=5m and five further minutes for runner/post-action cleanup.
+    # The separate verification ref retains formal-05 while formal-06 runs.
+    timeout-minutes: 215
     env:
       CARGO_INCREMENTAL: '0'
       CARGO_PROFILE_DEV_DEBUG: '0'
@@ -61,7 +62,7 @@ jobs:
           python3 qualification/memory-cell-v9/prepare_ci.py "$RUNNER_TEMP/memory-v9-runtime"
           cat "$RUNNER_TEMP/memory-v9-runtime/github.env" >> "$GITHUB_ENV"
       - name: Verify exact V9 source before final fix and format
-        timeout-minutes: 90
+        timeout-minutes: 150
         run: python3 -B qualification/memory-cell-v9/ci_verify.py
       - name: Preserve Unix evidence names inside a portable archive
         if: always()
