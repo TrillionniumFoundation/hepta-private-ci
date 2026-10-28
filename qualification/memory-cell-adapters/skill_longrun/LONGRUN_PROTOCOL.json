@@ -1,0 +1,53 @@
+{
+  "schema": "hepta.memory.adapter-skill-longrun-protocol.v1",
+  "scope": "Bounded canonical-address skill memory maintenance with actual public interpreter execution; no held language, native runtime, or superiority claim",
+  "seeds": [731, 732, 733],
+  "cycles_per_seed": 64,
+  "stage_indexing": "1 through 64 inclusive",
+  "initial_study": "/workspace/scratch/76e2020e4b36/memory-adapter-formal-01",
+  "initial_archive_sha256": "ac5a13169fcad61eda46ee4e42c67e5549c82da48a32c1121e9727baa2ee706f",
+  "start_gate": "Completed original TRAINING.json and matching successful training.process.json; verify restored source identities; do not compare historical monotonic clock with the new runner",
+  "update_workflow": "stage % 8",
+  "program_mutation": {
+    "vocabulary": ["keep", "reserve_gap", "pack", "cap", "add_reserve", "halve", "stop"],
+    "shape": "Exactly three opcodes in 0..5 followed by opcode 6 (stop)",
+    "first_candidate_code": "(37*stage + 17*workflow + seed) % 216",
+    "candidate_at_offset": "code=(first_candidate_code+offset)%216; program=[code//36,(code//6)%6,code%6,6]",
+    "selection": "Take the first offset in 0..215 whose four-opcode program differs from the previous source and whose final value differs on at least one fixed public execution probe. This selection consults authored source values only, never model predictions, loss, held queries, or scores."
+  },
+  "execution_probes": [
+    {"input": 0, "policy": [5, 3, 11], "max_steps": 4},
+    {"input": 7, "policy": [9, 2, 15], "max_steps": 4},
+    {"input": 17, "policy": [2, 7, 13], "max_steps": 4},
+    {"input": 5, "policy": [11, 1, 8], "max_steps": 4}
+  ],
+  "source_versioning": "Increment workflow version for each new active source; identity is SHA256(canonical([hepta.adapter.skill-longrun.source.v1, seed, workflow, version, stage, program]))",
+  "reentry": "At the following cycle reactivate the previously deleted workflow with a newly versioned program. Coalesce with the regular mutation if both address the same workflow. The final-cycle deletion remains inactive.",
+  "stale_probe": "Before each update fit, load actual previous checkpoint in manager, deny SQL source payload access, and require every changed active workflow to return stale_source without model forward. Manager separately owns source truth and is not target-blind.",
+  "fit": {"steps": 600, "batch_size": 32, "lr": 0.01, "train_head": true, "threads": 1, "sample_seed": "seed + stage", "replay": "all active skill rows"},
+  "support": "Replace checkpoint authorized source_ids with exactly the currently active training source set after each fit",
+  "deletion": {
+    "frequency": 8,
+    "workflow": "(stage // 8) % 8",
+    "timing": "After regular update and its fresh read",
+    "operation": "Mark source inactive and require old checkpoint to return revoked without prediction; rebuild by constructing the initial architecture and seed without loading prior fitted tensors",
+    "clean_initialization": "Retain a source-free, history-free untrained checkpoint for every seed on this runner; require each rebuild initial parameter digest to equal its retained untrained digest",
+    "rebuild_fit": "Same 600 steps, batch 32, lr .01, and all and only active skill sources"
+  },
+  "expected_fits": {"updates": 192, "clean_rebuilds": 24, "total_steps": 129600, "total_sample_presentations": 4147200},
+  "fresh_reads": {
+    "initial": 3,
+    "after_update": 192,
+    "after_rebuild": 24,
+    "sequence": "Every trainer exits before its fresh reader starts; every fresh reader exits before the next trainer",
+    "addresses": "All eight declared canonical workflow addresses, including inactive workflows",
+    "parameter_guard": "SQLite authorizer denies sources.payload and query_only forbids writes",
+    "baseline": "Actual exact SQL lookup through the same owner, immutable source snapshot, canonical address, interpreter and stop contract",
+    "execution": "For each successful skill read execute the predicted four-opcode program on all four fixed public probes with max_steps=4 and retain actual status, value and full trace",
+    "truth": "Reader accepts only artifact paths and identities and imports no target generator, manager, evaluator or trainer; source targets and expected executions are scored separately by manager and independent auditor"
+  },
+  "metrics": ["exact four-opcode program quality", "exact execution status/value/full trace on four public probes", "retention on unchanged active workflows", "corrected workflow quality", "revoked refusal", "stale refusal before fit", "owner stop without subsequent reads", "raw process requests/stdout/stderr/status", "source and parameter identities", "actual sample-schedule digest and reconstructed matching raw int64 schedule bytes", "full process wall and CPU including startup and failure", "sampled RSS/PSS and storage", "current and historical checkpoint bytes", "source SQLite and logical source JSON bytes", "shared encoder reference and canonical features"],
+  "failure_policy": "One fixed-budget attempt per phase. Preserve every request, stdout, stderr, exit status and timing. Failed fits keep the previous checkpoint for the ensuing read and count as execution failure; later scheduled cycles still replay current sources. Score all phases, including failures. No retuning, selective omission, early success stop, or best-checkpoint selection. Quality failure is reported independently from successful execution and evidence integrity.",
+  "resource_policy": {"simultaneous_training_workers": 1, "child_timeout_seconds": 180, "minimum_free_bytes_before_cycle": 20971520, "low_space_action": "Persist a failure marker and abort while retaining all evidence; no silent retry or deletion", "outer_monitor": "qualification/memory-cell-v9/learning/resource_monitor.py", "monitor_interval_ms": 200, "monitor_timeout_seconds": 3600, "monitor_watch": "Complete actual run directory, including retained checkpoints, SQLite snapshots, raw schedules and process receipts", "accounting": "Retain raw samples and unknown intervals; do not sum nested CPU scopes or independent process peaks"},
+  "cost_interpretation": "Exact SQL is a same-information lookup baseline. This workload contains eight workflows, full active canonical replay, synthetic bounded changes and four public probes over 64 cycles. It does not establish open-world skill acquisition, general program synthesis, native Agentd integration, topology emergence, storage compression, physical erasure or full lifecycle cost superiority. Historical checkpoints remain as evidence. Shared encoder is referenced but not executed or copied."
+}
