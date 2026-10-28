@@ -37,11 +37,12 @@ def junit_relative_path(config, justfile):
     """Accept the inspected 0.9.103 workspace/profile contract, not Cargo's target-dir."""
     profiles = config.get("profile", {})
     default, local = profiles.get("default", {}), profiles.get("local", {})
+    # A custom profile with no JUnit path does not inherit the default path.
     if (
         config.get("store", {}) not in ({}, {"dir": "target/nextest"})
         or default.get("junit") != {"path": "junit.xml"}
         or local.get("inherits") != "default"
-        or "junit" in local
+        or local.get("junit") != {"path": "junit.xml"}
         or any(
             "junit" in item
             for profile in (default, local)
@@ -230,9 +231,9 @@ def manifest_contract(document, extractor, mode):
         {"zip": "2.4.2", "zstd": "0.13", "serde_yaml": "0.9"}
         if mode == "baseline"
         else {
-            "zip": "9.1.2",
-            "zstd": "0.14.3",
-            "serde_yaml": {"package": "serde_norway", "version": "0.9.42"},
+            "zip": "=9.1.2",
+            "zstd": "=0.14.3",
+            "serde_yaml": {"package": "serde_norway", "version": "=0.9.42"},
         }
     )
     if {name: dependencies.get(name) for name in wanted} != wanted:

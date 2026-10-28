@@ -126,6 +126,8 @@ def bounded_read(path, maximum):
 
 
 def invoke(rec, out, root, label, argv, *, timeout=120, limit=LOG_CAP, check=True):
+    if any(attempt["label"] == label for attempt in rec["commands"]):
+        raise ValueError(f"command label already recorded: {label}")
     reserve(out, 2 * limit)
     remaining = rec.get("run_deadline_unix", time.time() + timeout) - time.time()
     if remaining <= 0:
@@ -279,7 +281,13 @@ def initialize(root, out, mode):
     try:
         rec.update(phase_environment(mode))
         actual = git(
-            rec, out, root, "initial_identity", "rev-parse", "HEAD", "HEAD^{tree}"
+            rec,
+            out,
+            root,
+            "initial_head_identity",
+            "rev-parse",
+            "HEAD",
+            "HEAD^{tree}",
         ).splitlines()
         if len(actual) != 2 or actual[0] != rec["source_head"]:
             raise ValueError("checkout does not match the fixed identity for this arm")

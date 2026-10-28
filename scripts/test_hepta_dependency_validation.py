@@ -53,6 +53,7 @@ class DependencyValidationTests(unittest.TestCase):
         config.parent.mkdir(parents=True)
         config.write_text(
             '[profile.default.junit]\npath = "junit.xml"\n[profile.local]\ninherits = "default"\n'
+            '[profile.local.junit]\npath = "junit.xml"\n'
         )
         (self.root / "justfile").write_text(
             'set working-directory := "codex-rs"\n    NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"\n'
@@ -63,6 +64,11 @@ class DependencyValidationTests(unittest.TestCase):
         self.spec = policy.GROUPS[0]
         self.regression = {"assert_line": 7}
         self.result = {"exit_code": 100, "timed_out": False}
+        self.candidate_dependencies = {
+            "zip": "=9.1.2",
+            "zstd": "=0.14.3",
+            "serde_yaml": {"package": "serde_norway", "version": "=0.9.42"},
+        }
 
     def parse(self, raw, **kwargs):
         return policy.junit_result(
@@ -225,6 +231,47 @@ class DependencyValidationTests(unittest.TestCase):
             )
         with self.assertRaises(ValueError):
             policy.manifest_contract(old, "Permissions::from_mode(mode)", "candidate")
+        self.assertEqual(
+            policy.manifest_contract(
+                {"workspace": {"dependencies": self.candidate_dependencies}},
+                "Permissions::from_mode(mode & 0o777)",
+                "candidate",
+            ),
+            self.candidate_dependencies,
+        )
+
+    def test_candidate_caret_and_resolved_version_drift_are_rejected(self):
+        for name, expected in self.candidate_dependencies.items():
+            version = expected["version"] if isinstance(expected, dict) else expected
+            for requirement in (version.removeprefix("="), "^" + version[1:]):
+                changed = copy.deepcopy(self.candidate_dependencies)
+                if isinstance(changed[name], dict):
+                    changed[name]["version"] = requirement
+                else:
+                    changed[name] = requirement
+                with (
+                    self.subTest(name=name, requirement=requirement),
+                    self.assertRaisesRegex(ValueError, "dependency declarations"),
+                ):
+                    policy.manifest_contract(
+                        {"workspace": {"dependencies": changed}},
+                        "Permissions::from_mode(mode & 0o777)",
+                        "candidate",
+                    )
+        changed = copy.deepcopy(self.candidate_dependencies)
+        changed["zip"] = "=9.1.3"
+        with self.assertRaisesRegex(ValueError, "dependency declarations"):
+            policy.manifest_contract(
+                {"workspace": {"dependencies": changed}},
+                "Permissions::from_mode(mode & 0o777)",
+                "candidate",
+            )
+        before, after = self.lock_pair()
+        for package in after["package"]:
+            if package["name"] == "zip":
+                package["version"] = "9.1.3"
+        with self.assertRaisesRegex(ValueError, "root package did not resolve exactly"):
+            policy.lock_delta(before, after)
 
     def test_real_extra_package_is_reported_for_review_not_blanket_approved(self):
         before, after = self.lock_pair()
@@ -377,6 +424,24 @@ class DependencyValidationTests(unittest.TestCase):
         self.assertIn("capture_error", stored["commands"][0])
         self.assertNotIn("exit_code", stored["commands"][0])
 
+    def test_duplicate_command_label_cannot_replace_prior_capture(self):
+        rec = self.receipt()
+        rec["commands"].append(
+            {"label": "reused", "command": ["original"], "state": "started"}
+        )
+        original = copy.deepcopy(rec)
+        retained = self.out / "payload/reused.stdout.log"
+        retained.write_bytes(b"original capture bytes\n")
+        with patch.object(runner, "capture") as capture:
+            with self.assertRaisesRegex(ValueError, "command label already recorded"):
+                runner.invoke(
+                    rec, self.out, self.root, "reused", ["not-executed"], limit=128
+                )
+        capture.assert_not_called()
+        self.assertEqual(rec, original)
+        self.assertEqual(retained.read_bytes(), b"original capture bytes\n")
+        self.assertEqual(list((self.out / "delivery").iterdir()), [])
+
     def test_payload_reservation_prevents_writing_over_the_bound(self):
         (self.out / "payload/old").write_bytes(b"123456")
         with patch.object(runner, "PAYLOAD_CAP", 10):
@@ -441,11 +506,34 @@ class DependencyValidationTests(unittest.TestCase):
         self.assertEqual(delta["lock_metadata_after"], {"version": 3})
         self.assertFalse(delta["dependency_graph_approved"])
 
+    def test_local_junit_path_must_be_explicit(self):
+        config = {
+            "profile": {
+                "default": {"junit": {"path": "junit.xml"}},
+                "local": {"inherits": "default", "junit": {"path": "junit.xml"}},
+            }
+        }
+        justfile = (self.root / "justfile").read_text()
+        self.assertEqual(
+            policy.junit_relative_path(config, justfile),
+            "codex-rs/target/nextest/local/junit.xml",
+        )
+        for local in (
+            {"inherits": "default"},
+            {"inherits": "default", "junit": {}},
+            {"inherits": "default", "junit": {"path": None}},
+        ):
+            with self.subTest(local=local):
+                changed = copy.deepcopy(config)
+                changed["profile"]["local"] = local
+                with self.assertRaisesRegex(ValueError, "unsupported nextest"):
+                    policy.junit_relative_path(changed, justfile)
+
     def test_unknown_store_profile_or_just_contract_fails_closed(self):
         config = {
             "profile": {
                 "default": {"junit": {"path": "junit.xml"}},
-                "local": {"inherits": "default"},
+                "local": {"inherits": "default", "junit": {"path": "junit.xml"}},
             }
         }
         justfile = (self.root / "justfile").read_text()

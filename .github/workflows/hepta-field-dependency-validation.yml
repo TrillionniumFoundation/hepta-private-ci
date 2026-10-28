@@ -11,7 +11,7 @@ permissions:
 env:
   # Root fills both reviewed identities after formatting and creating baseline B.
   # B contains the same runner/test bytes; this workflow is added only in C.
-  BASELINE_SHA: 8a5f64ae125bb779ff3cee1f235c3b6637681c79
+  BASELINE_SHA: a0bc9dae9ffcf24c0d31422b187841c7bacc21c6
   REGRESSION_SHA256: e2cc28f6af47b34aa6e9b17c0b5b546f9b11e58e8bcf0dc199685939571ed0d7
   CARGO_INCREMENTAL: "0"
   CARGO_BUILD_JOBS: "2"
