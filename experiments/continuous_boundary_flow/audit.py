@@ -569,3 +569,381 @@ def audit_costs(root, manifest):
     }
 
 
+def audit_run(run_dir):
+    """Verify a v1 bundle and independently reconstruct every primary statistic."""
+    import gzip
+
+    root = Path(run_dir).resolve()
+    manifest = read_json(root / "manifest.json")
+    require(
+        manifest.get("schema") == "hepta.continuous-boundary.study.v1",
+        "Unsupported manifest schema",
+    )
+    protocol = contained_path(root, manifest.get("protocol_path", "protocol.json"))
+    require(
+        digest_file(protocol) == manifest.get("protocol_sha256"),
+        "Frozen protocol SHA-256 mismatch",
+    )
+    frozen = read_json(protocol)
+    for field in (
+        "arms",
+        "seeds",
+        "splits",
+        "split_weights",
+        "primary_pairs",
+        "phase_ids",
+        "message_price_per_byte",
+        "minimum_effect",
+    ):
+        require(
+            field in frozen and frozen[field] == manifest.get(field),
+            f"Manifest changed the frozen protocol field: {field}",
+        )
+    selection_verified = False
+    for label in ("selection", "source"):
+        field = label + "_seal_sha256"
+        if field in manifest:
+            seal_path = checked_artifact(
+                root, {"path": label.upper() + "_SEAL.json", "sha256": manifest[field]}
+            )
+            if label == "selection":
+                seal = read_json(seal_path)
+                require(
+                    seal.get("protocol_sha256") == manifest["protocol_sha256"]
+                    and seal.get("checkpoints") == manifest.get("checkpoints"),
+                    "Selection seal and final checkpoints differ",
+                )
+                selection_verified = True
+    arms, seeds = manifest.get("arms", []), manifest.get("seeds", [])
+    require(arms and len(arms) == len(set(arms)), "Missing or duplicate arms")
+    require(
+        len(seeds) >= 8 and len(seeds) == len(set(seeds)),
+        "At least eight distinct training seeds required",
+    )
+    splits, weights = manifest.get("splits", {}), manifest.get("split_weights", {})
+    require(
+        set(splits) == {"test_id", "test_ood"} == set(weights),
+        "Both confirmation distributions required",
+    )
+    for key in splits:
+        require(
+            integer(splits[key], f"split count {key}") > 0,
+            "Empty confirmation distribution",
+        )
+        nonnegative(weights[key], f"split weight {key}")
+    require(
+        math.isclose(sum(weights.values()), 1, abs_tol=1e-12),
+        "Split weights must sum to one",
+    )
+    phases = manifest.get("phase_ids", {})
+    require(
+        set(phases) >= {"training", "development", "confirmation"},
+        "Incomplete phase identifiers",
+    )
+    phase_sets = []
+    for phase in ("training", "development", "confirmation"):
+        items = phases[phase]
+        require(
+            isinstance(items, list) and items and len(items) == len(set(items)),
+            f"Duplicate/empty {phase} identifiers",
+        )
+        require(
+            not any(set(items) & previous for previous in phase_sets),
+            "Training/development/confirmation overlap",
+        )
+        phase_sets.append(set(items))
+    pairs = manifest.get("primary_pairs", [])
+    require(
+        len(pairs) == 3 and len({p.get("name") for p in pairs}) == 3,
+        "Exactly three named primary comparisons required",
+    )
+    for pair in pairs:
+        require(
+            pair.get("treatment") in arms
+            and pair.get("control") in arms
+            and pair["treatment"] != pair["control"],
+            "Invalid primary comparison",
+        )
+    price = nonnegative(manifest.get("message_price_per_byte"), "message price")
+    effect = nonnegative(manifest.get("minimum_effect"), "minimum effect")
+    checkpoints, profiles = {}, {}
+    for entry in manifest.get("checkpoints", []):
+        key = (entry.get("arm"), entry.get("train_seed"))
+        require(
+            key[0] in arms and key[1] in seeds and key not in checkpoints,
+            "Invalid/duplicate checkpoint identity",
+        )
+        checkpoint_path = checked_artifact(root, entry)
+        checkpoints[key] = entry["sha256"]
+        checkpoint = read_json(checkpoint_path)
+        if key[0] not in REFERENCE_ARMS:
+            require(
+                checkpoint.get("arm") == key[0] and checkpoint.get("seed") == key[1],
+                "Checkpoint model identity mismatch",
+            )
+            profile_path = checked_artifact(
+                root,
+                {
+                    "path": checkpoint.get("profile_path"),
+                    "sha256": checkpoint.get("profile_sha256"),
+                },
+            )
+            profile = read_json(profile_path)
+            require(
+                profile.get("risk_ceiling_q24") == 2**24,
+                "Registered native risk ceiling changed",
+            )
+            require(
+                profile.get("kernel", {}).get("width") == 20
+                and len(profile.get("head_weights_q24", [])) == 3
+                and all(len(row) == 20 for row in profile["head_weights_q24"])
+                and len(profile.get("head_bias_q24", [])) == 3,
+                "Native head shape mismatch",
+            )
+            coefficients = [
+                x for row in profile["head_weights_q24"] for x in row
+            ] + profile["head_bias_q24"]
+            require(
+                all(
+                    isinstance(x, int)
+                    and not isinstance(x, bool)
+                    and -8 * 2**24 <= x <= 8 * 2**24
+                    for x in coefficients
+                ),
+                "Invalid frozen native head coefficient",
+            )
+            require(
+                profile["head_bias_q24"][2] == 0
+                and all(x == 0 for x in profile["head_weights_q24"][2]),
+                "Frozen native stop head must be literal zero",
+            )
+            profiles[key] = profile
+    require(
+        set(checkpoints) == {(a, s) for a in arms for s in seeds},
+        "Missing scheduled checkpoint",
+    )
+    groups = {(a, s, p): {} for a in arms for s in seeds for p in splits}
+    paired_inputs, paired_innovations, paths = {}, {}, set()
+    for entry in manifest.get("records", []):
+        require(entry.get("path") not in paths, "Repeated record artifact")
+        paths.add(entry.get("path"))
+        path = checked_artifact(root, entry)
+        opener = gzip.open if path.suffix == ".gz" else open
+        count = 0
+        with opener(path, "rt", encoding="utf-8") as handle:
+            for lineno, line in enumerate(handle, 1):
+                record = strict_json(line, f"{entry['path']}:{lineno}")
+                key = (record.get("arm"), record.get("train_seed"), record.get("split"))
+                require(key in groups, "Unscheduled arm, seed, or split")
+                episode_id = record.get("episode_id")
+                require(
+                    isinstance(episode_id, (str, int))
+                    and not isinstance(episode_id, bool),
+                    "Invalid episode identifier",
+                )
+                require(episode_id not in groups[key], "Duplicated episode record")
+                require(
+                    record.get("checkpoint_sha256") == checkpoints[key[:2]],
+                    "Record/checkpoint identity mismatch",
+                )
+                pair_key = (key[1], key[2], episode_id)
+                fingerprint = json.dumps(
+                    {"eval_seed": record.get("eval_seed"), "spec": record.get("spec")},
+                    sort_keys=True,
+                )
+                require(
+                    pair_key not in paired_inputs
+                    or paired_inputs[pair_key] == fingerprint,
+                    "Paired arms received different environment specifications or evaluation seeds",
+                )
+                paired_inputs[pair_key] = fingerprint
+                for step in record.get("steps", []):
+                    if "uniforms" in step:
+                        innovation_key = (*pair_key, step.get("elapsed"))
+                        require(
+                            innovation_key not in paired_innovations
+                            or paired_innovations[innovation_key] == step["uniforms"],
+                            "Paired arms received different per-window innovations",
+                        )
+                        paired_innovations[innovation_key] = step["uniforms"]
+                groups[key][episode_id] = audit_episode(
+                    record, price, profiles.get(key[:2])
+                )
+                count += 1
+        require(count == entry.get("count"), "Record artifact count mismatch")
+    for seed in seeds:
+        for split, expected in splits.items():
+            identifiers = set(groups[(arms[0], seed, split)])
+            require(len(identifiers) == expected, "Missing confirmation episode")
+            for arm in arms:
+                require(
+                    set(groups[(arm, seed, split)]) == identifiers,
+                    "Unpaired or missing confirmation episodes",
+                )
+    means = {}
+    for key, records in groups.items():
+        values = list(records.values())
+        scalar_keys = set(values[0]) - {"probabilities", "labels", "brier"}
+        means[key] = {
+            field: float(np.mean([row[field] for row in values]))
+            for field in scalar_keys
+        }
+        brier = [row["brier"] for row in values if row["brier"] is not None]
+        means[key]["brier_equal_episode"] = float(np.mean(brier)) if brier else None
+        means[key]["calibration_episodes"] = len(brier)
+    arm_metrics, seed_utilities = {}, {}
+    for arm in arms:
+        selected = [
+            row
+            for key, group in groups.items()
+            if key[0] == arm
+            for row in group.values()
+        ]
+        per_seed = {}
+        for seed in seeds:
+            per_seed[str(seed)] = {
+                field: sum(weights[p] * means[(arm, seed, p)][field] for p in splits)
+                for field in (
+                    "gross_utility",
+                    "net_utility",
+                    "failures",
+                    "repairs",
+                    "stops",
+                    "steps",
+                )
+            }
+            seed_utilities[(arm, seed)] = per_seed[str(seed)]["net_utility"]
+        p = [x for row in selected for x in row["probabilities"]]
+        y = [x for row in selected for x in row["labels"]]
+        per_split = {
+            split: {
+                field: float(np.mean([means[(arm, s, split)][field] for s in seeds]))
+                for field in (
+                    "gross_utility",
+                    "net_utility",
+                    "failures",
+                    "repairs",
+                    "stops",
+                    "steps",
+                )
+            }
+            for split in splits
+        }
+        brier_groups = [
+            (
+                weights[split] / len(seeds),
+                means[(arm, seed, split)]["brier_equal_episode"],
+            )
+            for seed in seeds
+            for split in splits
+            if means[(arm, seed, split)]["brier_equal_episode"] is not None
+        ]
+        arm_metrics[arm] = {
+            field: float(np.mean([v[field] for v in per_seed.values()]))
+            for field in (
+                "gross_utility",
+                "net_utility",
+                "failures",
+                "repairs",
+                "stops",
+                "steps",
+            )
+        }
+        arm_metrics[arm].update(
+            {
+                "episode_count": len(selected),
+                "seed_metrics": per_seed,
+                "split_metrics": per_split,
+                "total_counters": {
+                    field: sum(row[field] for row in selected) for field in COUNTERS
+                },
+                "brier_equal_episode": (
+                    sum(w * b for w, b in brier_groups)
+                    / sum(w for w, _ in brier_groups)
+                )
+                if brier_groups
+                else None,
+                "calibration_episodes": sum(
+                    row["brier"] is not None for row in selected
+                ),
+                "calibration_pooled_steps_descriptive": calibration_scores(p, y),
+                "stability_failure_episodes": sum(
+                    row["stability_failure"] for row in selected
+                ),
+                "native_activation_steps": sum(
+                    row["native_activation_steps"] for row in selected
+                ),
+                "native_score_steps": sum(
+                    row["native_score_steps"] for row in selected
+                ),
+                "physical_first_hit_steps_verified": sum(
+                    row["physical_first_hit_steps_verified"] for row in selected
+                ),
+            }
+        )
+    comparisons = []
+    for pair in pairs:
+        differences = [
+            seed_utilities[(pair["treatment"], s)]
+            - seed_utilities[(pair["control"], s)]
+            for s in seeds
+        ]
+        result = {
+            **pair,
+            **paired_summary(differences, len(pairs)),
+            "minimum_effect": effect,
+        }
+        result["minimum_effect_established"] = bool(
+            result["simultaneous_interval"][0] > effect
+        )
+        result["stability_passed"] = all(
+            arm_metrics[a]["stability_failure_episodes"] == 0
+            for a in (pair["treatment"], pair["control"])
+        )
+        result["benefit_gate_passed"] = (
+            result["minimum_effect_established"] and result["stability_passed"]
+        )
+        comparisons.append(result)
+    return {
+        "schema": "hepta.continuous-boundary.audit.v1",
+        "integrity_passed": True,
+        "protocol_sha256": manifest["protocol_sha256"],
+        "manifest_sha256": digest_file(root / "manifest.json"),
+        "n_training_seeds": len(seeds),
+        "selection_seal_verified": selection_verified,
+        "paired_innovation_windows_verified": len(paired_innovations),
+        "native_profile_checkpoints_verified": len(profiles),
+        "raw_episode_count": sum(len(v) for v in groups.values()),
+        "arm_metrics": arm_metrics,
+        "primary_comparisons": comparisons,
+        "costs": audit_costs(root, manifest),
+        "scope": {
+            "inference_unit": "independent training seed, paired episode innovations within seed",
+            "risk_target": "after-action first passage within the current physical window",
+            "calibration_limit": "Same analytic predictor across arms on different visited states; Brier differences are not learned risk-prediction gains",
+            "zero_exposure_calibration": "Stopped episodes/windows excluded; coverage reported",
+            "message_price_scope": "Q24 i64 semantic payload bytes, not JSON wire bytes or energy",
+            "native_scope": "Native source kernel and NDU calls; durable-owner execution is a separate artifact",
+            "integrity_limit": "Trusted manifest; not a cryptographic signature or defense against full-bundle rewriting",
+        },
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("run_dir", type=Path)
+    parser.add_argument("--output", type=Path)
+    args = parser.parse_args()
+    try:
+        result = audit_run(args.run_dir)
+    except (AuditError, KeyError, TypeError, OSError) as exc:
+        parser.exit(1, f"AUDIT REJECTED: {exc}\n")
+    rendered = json.dumps(result, indent=2, allow_nan=False) + "\n"
+    if args.output:
+        args.output.write_text(rendered, encoding="utf-8")
+    else:
+        print(rendered, end="")
+
+
+if __name__ == "__main__":
+    main()
