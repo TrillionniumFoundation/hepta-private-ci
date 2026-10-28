@@ -1,65 +1,115 @@
 {
   "archive_manifest": {
     "path": "EVIDENCE_ARCHIVE.json",
-    "sha256": "62351a40b8883c0c40e90ae600c588a40abad44f5797cb3d14a77b1da1095596"
+    "sha256": "1b14eb6977d2fae694614763b39bc635fbeb78756b416574af240894e158853d"
   },
-  "binary_parts": 303,
+  "binary_parts": 310,
   "branch": "research/first-passage-cell-20261028",
-  "created_at_utc": "2026-10-28T11:07:06.910663+00:00",
+  "ci_repair_receipts": {
+    "evidence/CI_PACKAGING_REPAIR.json": "4c9caf57bb4d7e0b03aa42e6568e68939eb0a8667b235f3ea61632f41591bd78",
+    "evidence/CODESPELL_ARCHIVE_REPAIR.json": "5f9c0c44cd14d89e672d4538da549dce1bedea37828d2f5e58db58c2ce091e21",
+    "evidence/INHERITED_FORMAT_REPAIR.json": "a674287385eb67273d24811fbfd3f38dd4ad0c9aef3974277f0e14296de28db1"
+  },
+  "cold_restoration_validation": {
+    "already_exact_direct": 16,
+    "corrupt_part_rejected_without_output": true,
+    "differing_existing_preserved": true,
+    "final_manifest_verify_only_exact": 53,
+    "originals_verified": 53,
+    "path": "evidence/CI_ARCHIVE_RESTORE_VALIDATION.json",
+    "restored_exact": 37,
+    "sha256": "343862552eafd01ed4d8072328e9664bf404975e64ef7ac31e9549963d4e57f1"
+  },
+  "created_at_utc": "2026-10-28T11:46:06.119614+00:00",
   "direct_npz": 16,
   "final_document_sha256": {
-    "README.md": "13ee4a679be79a1c77ea0f648332932d063dc9cc7d803d72bcfb7f36b3b199c5",
-    "RESULTS.md": "dc5d518a2c439e305f2c5cae664f3217b248bd388ec785cd2246dfb3a99d6d4c"
-  },
-  "final_manifest_local_check": {
-    "pass": true,
-    "path": "evidence/FINAL_ARCHIVE_LOCAL_VERIFICATION.json",
-    "sha256": "bafa817c8515e128e87571ebf4035c98ed25f73d2311d1e09f461c0a195d6c44",
-    "verified_originals": 52
+    "README.md": "da2fa011bc067b9386d89c0ba1cf7749a40ec1fcb49594e182ba8494adb84f2d",
+    "RESULTS.md": "50dbe74fcedb14102525d854a2722084655c5eecf151a6428e994a31e8d375e1"
   },
   "freeze_commit": "8ada7c46a23063722ee9b7089be608d4ab1c2fed",
   "freeze_sha256": "57858ef88f9a1ef03a9ade666a35fdbe7faafef651bdca8eee3514feb99b7fdd",
   "integrity_notes": [
-    "Multipart originals are restored by concatenation in manifest order with both SHA-256 and Git blob digest checks.",
-    "The exact original bytes are retained; no regeneration, recompression, or result filtering is used.",
-    "Remote verification uses returned Git blob identities and the GitHub tree; it does not claim binary UTF-8 connector readback.",
-    "The final receipt and two archive-availability document updates are committed after the verified payload, avoiding a self-referential commit identity."
+    "The storage repair changes only lossless part boundaries; all scientific originals, fitted parameters and 79 frozen files retain their exact identities.",
+    "The original native gzip is now reconstructed from two bounded parts, then the frozen native restore helper verifies the binary identity.",
+    "The payload tree contains no research-package file above the unchanged 512000-byte policy limit. No size allowlist or workflow was weakened.",
+    "Remote verification compares GitHub tree identities to locally verified bytes; it does not claim binary UTF-8 connector readback.",
+    "Only three narrow spelling configuration files and two AST-identical inherited script formatting repairs change outside the research package.",
+    "Repository-wide CI is evaluated on the final branch head separately from these exact-byte and scoped validation receipts."
   ],
-  "multipart_originals": 36,
+  "max_part_bytes": 500000,
+  "multipart_originals": 37,
   "native_archive": {
-    "bytes": 732464,
-    "git_blob_sha": "5b1cbb15c88b0e6533f1ccb68c9399d43bd103db",
-    "path": "evidence/native/hepta-first-passage-ndu.gz",
-    "sha256": "ab7fd99a54762631edddd9d4b6964852b13cd0131571f343a9eed6719493c772",
+    "original": {
+      "bytes": 732464,
+      "git_blob_sha": "5b1cbb15c88b0e6533f1ccb68c9399d43bd103db",
+      "parts": [
+        {
+          "bytes": 500000,
+          "git_blob_sha": "d424c3f1480c01efb6c2a4908b978d81451a79f7",
+          "path": "experiments/first_passage_cell/evidence/data_parts/ab7fd99a54762631edddd9d4b6964852b13cd0131571f343a9eed6719493c772/0000-500k.bin",
+          "sha256": "7b0fdaab7b8fbd8a2eba1c1ec03a60cedff6b898b1fb8e869b7bde05e40dd94e"
+        },
+        {
+          "bytes": 232464,
+          "git_blob_sha": "122ce0ea8c2a238f9d6e0c6df707a98d7cddf8fb",
+          "path": "experiments/first_passage_cell/evidence/data_parts/ab7fd99a54762631edddd9d4b6964852b13cd0131571f343a9eed6719493c772/0001-500k.bin",
+          "sha256": "a4d32b4f08dd3ef31a0242b8ac3dfa89453a8e9dcb2d1a537d356f2bc7e75c3d"
+        }
+      ],
+      "path": "experiments/first_passage_cell/evidence/native/hepta-first-passage-ndu.gz",
+      "sha256": "ab7fd99a54762631edddd9d4b6964852b13cd0131571f343a9eed6719493c772"
+    },
+    "storage": "two exact binary parts; materialize with restore_archives before restore_native",
     "uncompressed_binary_sha256": "83326cf07a435ab3bb5b72075feedf38237d90bcaac80a60d44337c7a9fdf5bf"
   },
-  "original_artifacts": 52,
-  "original_bytes": 145319237,
-  "package_tree": "a182f0234c5bffe21615106aaf4567b4dc8df8ef",
-  "payload_commit": "86d7c1b18e9b713344b07b4c592e1086dc817b3c",
-  "payload_tree": "34be6e7b61d50863f1420c67efaef431e634fe43",
-  "remote_verification": {
-    "archive_objects": 319,
-    "changes_outside_package": false,
-    "final_text_objects": 19,
-    "frozen_files_direct": 71,
-    "frozen_files_via_exact_archive": 8,
-    "method": "GitHub tree path, size, mode and Git blob SHA compared to local exact-byte identities; archive parts reconstruct the SHA-256-bound original files. This is tree identity verification, not a claim of binary connector readback.",
-    "native_archive_verified": true,
-    "package_tree": "a182f0234c5bffe21615106aaf4567b4dc8df8ef",
+  "native_archive_bytes": 732464,
+  "native_archive_originals": 1,
+  "original_artifacts": 53,
+  "original_bytes": 146051701,
+  "package_tree": "d9ebbc9a9ea30bd7361a5f2eac6960bd8e344e53",
+  "payload_commit": "558ce6aeb1368de2871a3c3981170fb854c64766",
+  "payload_tree": "79abc839c04be448f9792dc340285b19d79d3d68",
+  "previous_archive": {
+    "manifest_copy": "evidence/INITIAL_EVIDENCE_ARCHIVE.json",
     "payload_commit": "86d7c1b18e9b713344b07b4c592e1086dc817b3c",
-    "payload_tree": "34be6e7b61d50863f1420c67efaef431e634fe43",
-    "repository": "TrillionniumFoundation/hepta-private-ci",
-    "schema": "HeptaFirstPassageRemotePayloadVerificationV1",
-    "verified_frozen_files": 79,
-    "verified_payload_paths": 338
+    "receipt_commit": "338ec409ea119a4e01679b3dd1711306660b9983",
+    "receipt_copy": "evidence/ARCHIVE_PUBLICATION_INITIAL.json"
+  },
+  "pull_request": 4174,
+  "remote_verification": {
+    "binary_parts": 310,
+    "direct_npz": 16,
+    "frozen_files_direct": 71,
+    "frozen_files_unchanged": 79,
+    "frozen_files_via_exact_archive": 8,
+    "max_package_blob_bytes": 500000,
+    "method": "Remote GitHub tree path, mode, size and Git blob identities compared with the reviewed local files; exact original reconstruction independently validated. No claim of binary UTF-8 connector readback.",
+    "native_archive_storage": "Two verified parts; restore_archives reconstructs the exact previously published gzip before restore_native.",
+    "old_oversized_paths_removed": true,
+    "package_tree": "d9ebbc9a9ea30bd7361a5f2eac6960bd8e344e53",
+    "part_tree": "d0fb9987551d20f23aa61819a31587c341b0b147",
+    "payload_commit": "558ce6aeb1368de2871a3c3981170fb854c64766",
+    "payload_tree": "79abc839c04be448f9792dc340285b19d79d3d68",
+    "repository_limit_bytes": 512000,
+    "schema": "HeptaFirstPassageCIArchiveRemoteVerificationV1",
+    "scope_outside_package": [
+      ".codespellrc",
+      ".codespellignore",
+      ".codespell-frozen-lines",
+      "scripts/format.py",
+      "scripts/test_hepta_format_scope.py"
+    ],
+    "stored_archive_objects": 326,
+    "unchanged_codex_rs_tree": "346caa752c4443bb1e2837e195aba2736c354d4b",
+    "unchanged_github_tree": "13fe232803edd0dc91585c171101972a4cfd8b7d",
+    "verified_CI_support_files": 5,
+    "verified_package_files": 427
   },
   "repository": "TrillionniumFoundation/hepta-private-ci",
-  "restoration_validation": {
-    "path": "evidence/ARCHIVE_RESTORE_VALIDATION.json",
-    "sha256": "27b157e9b13fad469cb117728be75505a470f635e035a6a0eec26b189774fc63"
-  },
-  "schema": "HeptaFirstPassageArchivePublicationV1",
-  "scope": "Exact bytes and research evidence are archived. Scientific claims and policy parameters remain those fixed before confirmation. The original native owner remains a research adapter; no production authority is activated.",
-  "source_commit": "507bfcc131f30c88c5931f6101c45afdd5c71887"
+  "repository_limit_bytes": 512000,
+  "schema": "HeptaFirstPassageArchivePublicationV2",
+  "scientific_original_artifacts": 52,
+  "scientific_original_bytes": 145319237,
+  "source_commit": "507bfcc131f30c88c5931f6101c45afdd5c71887",
+  "stored_archive_objects": 326
 }
