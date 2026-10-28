@@ -154,10 +154,26 @@ fn install_registered_queue(
 }
 
 fn write_rejecting_prompt_hook(home: &Path) {
-    let script_path = home.join("queue_prompt_hook.py");
+    let script_path = home.join(if cfg!(windows) {
+        "queue_prompt_hook.ps1"
+    } else {
+        "queue_prompt_hook.py"
+    });
     let log_path = home.join("queue_prompt_hook.log");
-    let script = format!(
-        r#"import json
+    let script = if cfg!(windows) {
+        format!(
+            r#"$ErrorActionPreference = 'Stop'
+$payload = [Console]::In.ReadToEnd() | ConvertFrom-Json
+[IO.File]::AppendAllText('{log_path}', $payload.prompt + "`n")
+if ($payload.prompt -eq 'blocked') {{
+    @{{ decision = 'block'; reason = 'blocked by queue hook' }} | ConvertTo-Json -Compress
+}}
+"#,
+            log_path = log_path.display().to_string().replace('\'', "''"),
+        )
+    } else {
+        format!(
+            r#"import json
 from pathlib import Path
 import sys
 
@@ -167,8 +183,9 @@ with Path(r"{log_path}").open("a", encoding="utf-8") as log:
 if payload["prompt"] == "blocked":
     print(json.dumps({{"decision": "block", "reason": "blocked by queue hook"}}))
 "#,
-        log_path = log_path.display(),
-    );
+            log_path = log_path.display(),
+        )
+    };
     std::fs::write(&script_path, script)
         .unwrap_or_else(|error| panic!("write queue hook script: {error}"));
     let hooks = serde_json::json!({
@@ -176,7 +193,7 @@ if payload["prompt"] == "blocked":
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
+                    "command": prompt_hook_command(&script_path),
                 }]
             }]
         }
@@ -186,11 +203,37 @@ if payload["prompt"] == "blocked":
 }
 
 fn write_blocking_prompt_hook(home: &Path) {
-    let script_path = home.join("queue_blocking_prompt_hook.py");
+    let script_path = home.join(if cfg!(windows) {
+        "queue_blocking_prompt_hook.ps1"
+    } else {
+        "queue_blocking_prompt_hook.py"
+    });
     let entered_path = home.join("queue_blocking_prompt_hook.entered");
     let release_path = home.join("queue_blocking_prompt_hook.release");
-    let script = format!(
-        r#"import json
+    let script = if cfg!(windows) {
+        format!(
+            r#"$ErrorActionPreference = 'Stop'
+$payload = [Console]::In.ReadToEnd() | ConvertFrom-Json
+if ($payload.prompt -in @('delay exact persistence', 'delay exact rejection')) {{
+    [IO.File]::WriteAllText('{entered_path}', 'entered')
+    $deadline = [DateTime]::UtcNow.AddSeconds(20)
+    while (-not [IO.File]::Exists('{release_path}')) {{
+        if ([DateTime]::UtcNow -ge $deadline) {{
+            throw 'timed out waiting to release queue persistence hook'
+        }}
+        Start-Sleep -Milliseconds 10
+    }}
+    if ($payload.prompt -eq 'delay exact rejection') {{
+        @{{ decision = 'block'; reason = 'delayed queue rejection' }} | ConvertTo-Json -Compress
+    }}
+}}
+"#,
+            entered_path = entered_path.display().to_string().replace('\'', "''"),
+            release_path = release_path.display().to_string().replace('\'', "''"),
+        )
+    } else {
+        format!(
+            r#"import json
 from pathlib import Path
 import sys
 import time
@@ -206,9 +249,10 @@ if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
     if payload["prompt"] == "delay exact rejection":
         print(json.dumps({{"decision": "block", "reason": "delayed queue rejection"}}))
 "#,
-        entered_path = entered_path.display(),
-        release_path = release_path.display(),
-    );
+            entered_path = entered_path.display(),
+            release_path = release_path.display(),
+        )
+    };
     std::fs::write(&script_path, script)
         .unwrap_or_else(|error| panic!("write blocking queue hook script: {error}"));
     let hooks = serde_json::json!({
@@ -216,13 +260,27 @@ if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
+                    "command": prompt_hook_command(&script_path),
                 }]
             }]
         }
     });
     std::fs::write(home.join("hooks.json"), hooks.to_string())
         .unwrap_or_else(|error| panic!("write blocking queue hooks: {error}"));
+}
+
+fn prompt_hook_command(script_path: &Path) -> String {
+    if cfg!(windows) {
+        // Windows runners provide PowerShell, but need not provide python3.
+        // Only this generated test fixture is loaded; production hook policy
+        // and the real admission / persistence assertions are unchanged.
+        format!(
+            "powershell.exe -NoProfile -NonInteractive -ExecutionPolicy RemoteSigned -File \"{}\"",
+            script_path.display()
+        )
+    } else {
+        format!("python3 \"{}\"", script_path.display())
+    }
 }
 
 async fn wait_for_path(path: &Path) -> anyhow::Result<()> {

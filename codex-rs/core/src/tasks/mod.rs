@@ -1,3 +1,4 @@
+mod cleanup;
 mod compact;
 mod lifecycle;
 mod regular;

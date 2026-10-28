@@ -1,3 +1,6 @@
+#[path = "idle_dispatch.rs"]
+mod idle_dispatch;
+
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::path::Path;
@@ -15,11 +18,7 @@ use codex_core::ThreadManager;
 use codex_core::TurnInput;
 use codex_core::TurnInputRequest;
 use codex_extension_api::ExtensionEventSink;
-use codex_extension_api::ExtensionFuture;
 use codex_extension_api::ThreadIdleCause;
-use codex_extension_api::ThreadIdleInput;
-use codex_extension_api::ThreadLifecycleContributor;
-use codex_extension_api::ThreadResumeInput;
 use codex_history::RolloutItem;
 use codex_history::RolloutLine;
 use codex_protocol::ThreadId;
@@ -131,6 +130,7 @@ pub struct QueuedItemService {
     dispatch_locks: Arc<StdMutex<HashMap<ThreadId, Weak<Mutex<()>>>>>,
     resumed_threads: Arc<StdMutex<HashSet<ThreadId>>>,
     dispatch_owner_id: String,
+    idle_dispatches: Arc<idle_dispatch::IdleDispatchRegistry>,
 }
 
 struct OwnedDispatchRequest {
@@ -162,6 +162,7 @@ impl QueuedItemService {
             dispatch_locks: Arc::new(StdMutex::new(HashMap::new())),
             resumed_threads: Arc::new(StdMutex::new(HashSet::new())),
             dispatch_owner_id: Uuid::now_v7().to_string(),
+            idle_dispatches: Arc::default(),
         }
     }
 
@@ -1318,41 +1319,6 @@ async fn prepare_queued_user_input(mut input: TurnInput) -> Result<TurnInput, Qu
     .await
     .map_err(|error| QueueServiceError::InvalidAttachment(std::io::Error::other(error)))?
     .map_err(QueueServiceError::InvalidAttachment)
-}
-
-impl<C> ThreadLifecycleContributor<C> for QueuedItemService
-where
-    C: Send + Sync + 'static,
-{
-    fn on_thread_resume<'a>(&'a self, input: ThreadResumeInput<'a>) -> ExtensionFuture<'a, ()> {
-        Box::pin(async move {
-            if let Ok(thread_id) = ThreadId::from_string(input.thread_store.level_id()) {
-                self.resumed_threads
-                    .lock()
-                    .unwrap_or_else(std::sync::PoisonError::into_inner)
-                    .insert(thread_id);
-            }
-        })
-    }
-
-    fn on_thread_idle<'a>(&'a self, input: ThreadIdleInput<'a>) -> ExtensionFuture<'a, ()> {
-        Box::pin(async move {
-            if input.cause == ThreadIdleCause::Interrupted {
-                return;
-            }
-            let Ok(thread_id) = ThreadId::from_string(input.thread_store.level_id()) else {
-                tracing::warn!(
-                    level_id = input.thread_store.level_id(),
-                    "queue extension received an invalid thread id"
-                );
-                return;
-            };
-            let _guard = self.dispatch_guard(thread_id).await;
-            if let Err(error) = self.dispatch_if_idle(thread_id).await {
-                tracing::warn!(%thread_id, %error, "failed to dispatch queued user input");
-            }
-        })
-    }
 }
 
 fn queued_item_from_record(
