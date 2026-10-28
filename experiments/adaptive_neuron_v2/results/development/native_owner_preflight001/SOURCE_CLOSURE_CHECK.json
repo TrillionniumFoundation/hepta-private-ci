@@ -1,0 +1,13 @@
+{
+  "actual_copied_native_inputs": 76,
+  "batch_interface_compatible": true,
+  "build_cli": "--destination <fresh> --compiler <toolchain bin> --vendor-root <immutable vendor> --reproducible --source-seal <frozen seal>",
+  "development_only": true,
+  "hash_mismatches": [],
+  "inventory_count": 141,
+  "missing_inputs": [],
+  "note": "Support docs copied with the three crates are not compiler inputs; all Rust/TOML compiler inputs, original composed modules, repository lock and build recipe are included. Scientific runs require a new build with the committed seal.",
+  "passed": true,
+  "required_native_inputs": 76,
+  "unexpected_inputs": []
+}
