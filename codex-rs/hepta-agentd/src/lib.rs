@@ -43,6 +43,8 @@ mod memory_cell_language_runtime_tests;
 #[cfg(test)]
 mod memory_cell_language_v8_tests;
 #[cfg(test)]
+mod memory_cell_prospective_tests;
+#[cfg(test)]
 mod memory_cell_context_tests;
 mod memory_cell_network;
 mod memory_cell_training;
