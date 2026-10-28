@@ -41,7 +41,7 @@ const DEADLINE: Duration = Duration::from_secs(30);
 pub(super) enum Spec {
     Receiver { root: PathBuf, manifest: MemoryCellMigrationManifestV9, crash: Option<String> },
     Target { active: PathBuf, image_store: PathBuf, manifest: MemoryCellMigrationManifestV9,
-        payload: Sha256Digest, checkpoint: ReleaseCheckpoint },
+        payload: Sha256Digest, checkpoint: ReleaseCheckpoint, unavailable_source: Vec<PathBuf> },
 }
 
 pub(super) fn source_key() -> SigningKey { SigningKey::from_bytes(&[73; 32]) }
@@ -92,7 +92,8 @@ impl Process {
         let (status, trailer) = tokio::time::timeout(DEADLINE, async {
             let mut trailer = Vec::new();
             let mut output = self.output.take(LIMIT as u64);
-            let (_, status) = tokio::join!(output.read_to_end(&mut trailer), self.child.wait());
+            let (read, status) = tokio::join!(output.read_to_end(&mut trailer), self.child.wait());
+            read.expect("complete bounded process evidence");
             (status.expect("reap child"), trailer)
         }).await.expect("child exit deadline");
         assert!(trailer.len() < LIMIT);
