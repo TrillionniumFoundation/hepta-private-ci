@@ -1,0 +1,187 @@
+{
+  "actual_cost": {
+    "audit_native_roundtrip_ns": 39143016237,
+    "audit_wall_ns": 86411897352,
+    "evaluation_cpu_ns": 124461265785,
+    "evaluation_wall_ns": 218342083523,
+    "native_requests": 11569,
+    "native_roundtrip_ns": 23253211261,
+    "native_ticks": 18847
+  },
+  "all_archive_members_verified": 63061,
+  "all_delivery_pngs_decoded": 12443,
+  "all_native_calls_recomputed_by_this_review": false,
+  "checks": {
+    "accounting": 8583,
+    "action_score": 29036,
+    "action_value": 11062,
+    "archive": 292115,
+    "cdf": 19644,
+    "choice": 14518,
+    "chronology": 40785,
+    "coverage": 3460,
+    "delivery": 6912,
+    "fairness": 10628,
+    "fairness_law": 3634,
+    "feature": 23763,
+    "freeze": 834,
+    "identity": 3480,
+    "native_json": 12873,
+    "native_replay": 5376,
+    "owner": 15043,
+    "packet": 8582,
+    "png": 37329,
+    "posterior": 11062,
+    "privacy": 9011,
+    "q24_cdf": 8582,
+    "quadrature": 24,
+    "qualification": 4291,
+    "readback": 17974,
+    "runtime": 31277,
+    "scoring": 41472,
+    "sparse": 60650,
+    "summary": 81,
+    "transport": 139637
+  },
+  "control_executions": 3456,
+  "cpu_ns": 32854286296,
+  "derived_arrays": "reviews/FEEDBACK_INDEPENDENT_1009.npz",
+  "derived_arrays_sha256": "0eb6ccdca1554017f6439791efd611ebe7ee20e9fd9d97150f68afb3cf7bdcae",
+  "freeze_sha256": "75df6af8ce501e624fd2900f096b7c6a050e5c61cbb200fca4ada5fc54d81146",
+  "independent_quadrature_references": 12,
+  "independent_trajectories": 384,
+  "indexed_files_sha256": {
+    "feedback_confirmation/seed_1009/AUDIT.json": "13388fb74af674ad06d509690f92a41fa82a47c4a1c0c9320ae982c5da299468",
+    "feedback_confirmation/seed_1009/DATA.npz": "b0cc5837bc48f1655c450df0d6f7a8de5a138186dffd39e88d89dc4e3cb32592",
+    "feedback_confirmation/seed_1009/EXECUTION.json.gz": "0f49a3ffcb1385224cabfb498c68948aeec422a6bd1921173aa0463748199c7b",
+    "feedback_confirmation/seed_1009/PUBLIC.npz": "c3e534ad7f1e45e7330c0dd4fe9c35a5e5feac8985a9cfb1df55515fd4856390",
+    "feedback_confirmation/seed_1009/ROWS.json.gz": "9a51b6d8e44b0b8a638ca05f63267f0bafc4baa15ac14cff1d71869294941b24",
+    "feedback_confirmation/seed_1009/SUMMARY.json": "41eef0982eeb51e06fe2369b9698b433fbf1614fef02f2b1c043341c2e0320c3",
+    "feedback_confirmation/seed_1009/audit_native.tar.gz": "06d1d6197a5254846330dbc0b4ef5b72b013bb2955bd6898ee5984e985fe5f6e",
+    "feedback_confirmation/seed_1009/owners.tar.gz": "5c18af047fdc5e201a97ff738fb3c4e97499c092ef93b69e432141f56e34f0f3",
+    "feedback_confirmation/seed_1009/readbacks.tar.gz": "7e4f1f7a2bf3ba8e9cdd941898bdd8c312a172affac2c9265300819c3bc80a57"
+  },
+  "initial_terminal_zero_mass": {
+    "analytic": {
+      "initial_forecasts_with_any_zero_probability": 59,
+      "true_event_zero_probability_count": 0,
+      "zero_probabilities_by_category": [
+        37,
+        8,
+        22
+      ]
+    },
+    "event": {
+      "initial_forecasts_with_any_zero_probability": 59,
+      "true_event_zero_probability_count": 0,
+      "zero_probabilities_by_category": [
+        37,
+        8,
+        22
+      ]
+    },
+    "gaussian": {
+      "initial_forecasts_with_any_zero_probability": 0,
+      "true_event_zero_probability_count": 0,
+      "zero_probabilities_by_category": [
+        0,
+        0,
+        0
+      ]
+    },
+    "history": {
+      "initial_forecasts_with_any_zero_probability": 59,
+      "true_event_zero_probability_count": 0,
+      "zero_probabilities_by_category": [
+        37,
+        8,
+        22
+      ]
+    },
+    "numeric": {
+      "initial_forecasts_with_any_zero_probability": 59,
+      "true_event_zero_probability_count": 0,
+      "zero_probabilities_by_category": [
+        37,
+        8,
+        22
+      ]
+    },
+    "probit": {
+      "initial_forecasts_with_any_zero_probability": 0,
+      "true_event_zero_probability_count": 0,
+      "zero_probabilities_by_category": [
+        0,
+        0,
+        0
+      ]
+    },
+    "quantized": {
+      "initial_forecasts_with_any_zero_probability": 59,
+      "true_event_zero_probability_count": 0,
+      "zero_probabilities_by_category": [
+        37,
+        8,
+        22
+      ]
+    },
+    "reset": {
+      "initial_forecasts_with_any_zero_probability": 59,
+      "true_event_zero_probability_count": 0,
+      "zero_probabilities_by_category": [
+        37,
+        8,
+        22
+      ]
+    },
+    "zero": {
+      "initial_forecasts_with_any_zero_probability": 59,
+      "true_event_zero_probability_count": 0,
+      "zero_probabilities_by_category": [
+        37,
+        8,
+        22
+      ]
+    }
+  },
+  "maximum_absolute_errors": {
+    "action_score": 6.661338147750939e-16,
+    "action_value": 6.661338147750939e-16,
+    "cdf": 9.43689570931383e-16,
+    "delivery": 0.0,
+    "fairness": 0.0,
+    "fairness_law": 9.992007221626409e-16,
+    "feature": 0.0,
+    "native_json": 5.551115123125783e-17,
+    "posterior": 4.440892098500626e-16,
+    "privacy": 0.0,
+    "q24_cdf": 3.889075816942977e-08,
+    "quadrature": 6.661338147750939e-16,
+    "readback": 0.0,
+    "runtime": 0.0,
+    "scoring": 0.0,
+    "summary": 2.220446049250313e-16
+  },
+  "native_journal_and_anchor_original_vs_author_replay_bytes_exact": true,
+  "native_replay_performed_by_frozen_author_audit": {
+    "sparse_ticks": 14556,
+    "typed_ticks": 4291
+  },
+  "passed": true,
+  "reviewer_sha256": {
+    "review_feedback_confirmation.py": "486c30c004427f641e5d46ee1bccb869f4212af0be5083cdf197f6caa84d8867",
+    "review_feedback_evidence.py": "5d7b6d7e9d9b0c0d1235c6ae36e3de2552906b397199bd4b0961ade9e9c98dbf"
+  },
+  "schema": "hepta.round3.independent-feedback-review.v1",
+  "scope_limits": [
+    "No new native execution; opaque Rust state equations rely on prior complete frozen audit replay plus exact durable-byte equality.",
+    "Target-free worker payload and policy histories verified; no adversarial process/filesystem access control claim.",
+    "Terminal remaining-error probabilities; neither first passage nor repair-gain probabilities.",
+    "Q24 zero categories may exist even when all realized NLLs are finite; no anchored density-retention guarantee.",
+    "Action cost is the registered task penalty, not wall time or currency."
+  ],
+  "seed": 1009,
+  "source_commit": "29174619dfc56cef1c16b34fbf98f85a1cd2e4c3",
+  "total_checks": 871718,
+  "wall_ns": 34098566773
+}

@@ -1,0 +1,40 @@
+{
+  "absolute_gap": 1.3877787807814457e-17,
+  "arm": "event",
+  "case": "feedback3:confirmation:80060703:0",
+  "corrected_reviewer_sha256": "5d7b6d7e9d9b0c0d1235c6ae36e3de2552906b397199bd4b0961ade9e9c98dbf",
+  "correction": "Check each serialized native FP64 parameter within two ulps; Q24 parameters independently reconstructed from count-decoder inputs must still match exactly.",
+  "exact_constraints_preserved": [
+    "signed count packets and decoder states",
+    "Q24 input parameter vector",
+    "largest remainder probability simplex from recorded native FP64 probabilities",
+    "owner prefix state/witness SHA256 chains",
+    "native durable journal/anchor bytes versus prior full native replay",
+    "PNG/text/receipt IEEE values",
+    "delivered outputs, target scoring and actual action costs"
+  ],
+  "failure_receipts": {
+    "FEEDBACK_REVIEW_FAILURE_607_20261028T051524832064.json": "da880acddae53c65969986fcff60c1f0b13c440162145c71c98dd77104c4b5cd"
+  },
+  "gap_in_python_ulps": 1.0,
+  "python_count_decoder_native_input": [
+    0.619140625,
+    0.10190733018573851,
+    -0.17320508075688773,
+    0.17320508075688773
+  ],
+  "python_ulp": 1.3877787807814457e-17,
+  "recorded_rust_native_input": [
+    0.619140625,
+    0.10190733018573853,
+    -0.17320508075688773,
+    0.17320508075688773
+  ],
+  "schema": "hepta.round3.independent-review-numerical-premise-correction.v1",
+  "scientific_data_regenerated": false,
+  "scientific_files_modified": false,
+  "scientific_statistics_or_thresholds_changed": false,
+  "sequence": 2,
+  "source_of_comparison": "Python math.exp(decoded integer logvariance); native receipt input_parameters_fp64 emitted from parsed Rust f64 parameters across JSON IPC. Observed adjacent values are consistent with decimal-parser roundtrip rounding. No native execution was repeated.",
+  "successful_607_review_sha256": "4036323e91b084725ac0291c5d6d29c7b36b5883932f24eac06aa6da813ffbe4"
+}

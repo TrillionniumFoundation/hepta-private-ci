@@ -8,7 +8,7 @@ from pathlib import Path
 from .package_evidence import descriptor, sha
 
 
-def collect(run_dir, repo, output):
+def collect(run_dir, repo, output, only_seed=None):
     root, repo, output = Path(run_dir), Path(repo), Path(output)
     index = json.loads((root / "main/RUN_INDEX.json").read_text())
     previous = json.loads(output.read_text()) if output.exists() else []
@@ -17,6 +17,8 @@ def collect(run_dir, repo, output):
     destination.mkdir(parents=True, exist_ok=True)
     added = []
     for entry in index["scopes"]:
+        if only_seed is not None and entry["seed"] != only_seed:
+            continue
         name = "MAIN_" + entry["scope"]
         if name in known:
             if known[name]["sha256"] != entry["archive_receipt"]["sha256"]:
@@ -77,5 +79,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     for key in ("run-dir", "repo", "output"):
         parser.add_argument("--" + key, required=True, type=Path)
+    parser.add_argument("--only-seed", type=int)
     args = parser.parse_args()
-    print(json.dumps(collect(args.run_dir, args.repo, args.output)))
+    print(json.dumps(collect(args.run_dir, args.repo, args.output, args.only_seed)))

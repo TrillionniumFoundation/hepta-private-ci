@@ -1,0 +1,48 @@
+{
+  "checks": {
+    "accounting": 2,
+    "action_score": 6638,
+    "action_value": 2550,
+    "archive": 291751,
+    "cdf": 2552,
+    "choice": 3318,
+    "chronology": 33790,
+    "coverage": 771,
+    "delivery": 1536,
+    "feature": 1275,
+    "freeze": 417,
+    "identity": 792,
+    "packet": 4,
+    "png": 37251,
+    "posterior": 2552,
+    "privacy": 4756,
+    "q24_cdf": 2,
+    "quadrature": 24,
+    "qualification": 1,
+    "readback": 4090,
+    "runtime": 1286,
+    "scoring": 9216,
+    "transport": 114822
+  },
+  "maximum_absolute_errors": {
+    "action_score": 4.440892098500626e-16,
+    "action_value": 4.440892098500626e-16,
+    "cdf": 4.718447854656915e-16,
+    "delivery": 0.0,
+    "posterior": 8.881784197001252e-16,
+    "privacy": 0.0,
+    "q24_cdf": 2.9690940567261848e-08,
+    "quadrature": 5.440092820663267e-14,
+    "readback": 0.0,
+    "runtime": 1.3877787807814457e-17,
+    "scoring": 0.0
+  },
+  "passed": false,
+  "reviewer_sha256": {
+    "review_feedback_confirmation.py": "486c30c004427f641e5d46ee1bccb869f4212af0be5083cdf197f6caa84d8867",
+    "review_feedback_evidence.py": "6362b44ecebec49ab7eaa1a57d48d16b7325f5b2210eec2aa0904aa19e007382"
+  },
+  "scientific_files_modified": false,
+  "seed": 607,
+  "traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/d831a963ef2f/hepta-analytic/experiments/analytic_event_neuron/round3/evidence/review_feedback_confirmation.py\", line 303, in main\n    report = scope_review(root, args.seed, review)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/d831a963ef2f/hepta-analytic/experiments/analytic_event_neuron/round3/evidence/review_feedback_confirmation.py\", line 171, in scope_review\n    law = e.runtime_receipt(current, [case, arm], model, previous, review,\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/d831a963ef2f/hepta-analytic/experiments/analytic_event_neuron/round3/evidence/review_feedback_evidence.py\", line 223, in runtime_receipt\n    review.close(native['input_parameters_fp64'], decoded, 'runtime', 'count-only native input', 0)\n  File \"/workspace/scratch/d831a963ef2f/hepta-analytic/experiments/analytic_event_neuron/round3/evidence/review_feedback_evidence.py\", line 68, in close\n    self.require(np.isfinite(a).all() and np.isfinite(b).all() and gap <= tolerance, kind, message)\n  File \"/workspace/scratch/d831a963ef2f/hepta-analytic/experiments/analytic_event_neuron/round3/evidence/review_feedback_evidence.py\", line 58, in require\n    raise AssertionError(kind + ': ' + message)\nAssertionError: runtime: count-only native input\n"
+}
