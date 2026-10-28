@@ -365,15 +365,19 @@ class Evidence:
                 "original complete ordinary/model test selector required",
             )
         if name == "namespace-and-pidfd":
+            # Raw command bytes and digest were already authenticated above.
+            # Match actual PASS lines after removing nextest ANSI styling,
+            # just as ci.observed_test_counts does; do not alter the log.
+            visible = re.sub(r"\x1b\[[0-9;]*m", "", text)
             require(
                 all(
-                    re.search(r"PASS[^\n]*" + re.escape(test), text)
+                    re.search(r"PASS[^\n]*" + re.escape(test), visible)
                     for test in NAMESPACE_TESTS
                 ),
                 "original namespace controls must actually pass",
             )
             require(
-                len(re.findall(r"PASS[^\n]*pidfd_reaper::tests::", text)) >= 6,
+                len(re.findall(r"PASS[^\n]*pidfd_reaper::tests::", visible)) >= 6,
                 "all six pidfd controls must actually pass",
             )
         return {"record": name + ".json", "passed": passed, "raw": regular(log)}
