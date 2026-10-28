@@ -190,7 +190,7 @@ pub(super) fn decode(raw: &[u8]) -> Result<(MemoryCellMigrationManifestV9, Vec<&
 }
 
 pub(super) fn validate_path(value: &str) -> Result<(), String> {
-    if value.is_empty() || value.len() > 256 || value.split('/').any(|part| part.is_empty())
+    if value.is_empty() || value.len() > 256 || value.split('/').any(|part| part.is_empty() || part.ends_with(".hepta-v9-tmp"))
         || !value.bytes().all(|byte| byte.is_ascii_alphanumeric() || b"/._:-".contains(&byte))
         || Path::new(value).components().any(|part| !matches!(part, Component::Normal(_)))
     { return Err("migration path must be a bounded normal relative data path".into()); }
