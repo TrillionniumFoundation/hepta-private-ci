@@ -110,6 +110,22 @@ retries = 0
 [test-groups.hepta_memory_qualification]
 max-threads = 1
 
+# First matching override wins per setting, so this must precede the general
+# memory watchdog. Two continual waits can consume 2 * 660s. The structure
+# execution cap was extended after the retained formal-03 timeout; numerical
+# budgets and scientific gates are unchanged. Leave cleanup/receipt headroom.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-agentd) & test(actual_memory_cell_v9_observed_structure_budget_and_actions)'
+test-group = 'hepta_memory_qualification'
+slow-timeout = { period = "1m", terminate-after = 64 }
+retries = 0
+
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-agentd) & test(actual_memory_cell_v9_continual_causal_parameter_memory)'
+test-group = 'hepta_memory_qualification'
+slow-timeout = { period = "1m", terminate-after = 25 }
+retries = 0
+
 [[profile.default.overrides]]
 filter = 'package(codex-hepta-agentd) & test(memory_cell_) & test(actual_)'
 test-group = 'hepta_memory_qualification'

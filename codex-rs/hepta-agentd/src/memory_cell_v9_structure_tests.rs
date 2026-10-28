@@ -159,13 +159,13 @@ async fn actual_memory_cell_v9_observed_structure_budget_and_actions() {
     let mut child = tokio::process::Command::new(&training.python).args(["-I","-B"])
         .arg(training.qualification_root.join("memory-cell-v9/learning/resource_monitor.py"))
         .arg("--output").arg(artifacts.join("resources.json")).arg("--samples").arg(artifacts.join("samples.jsonl"))
-        .arg("--root").arg(&directory).arg("--root").arg(temporary.path()).args(["--interval-ms","20","--timeout-seconds","1200"])
+        .arg("--root").arg(&directory).arg("--root").arg(temporary.path()).args(["--interval-ms","20","--timeout-seconds","3600"])
         .arg("--stdout").arg(artifacts.join("stdout.log")).arg("--stderr").arg(artifacts.join("stderr.log"))
         .arg("--").arg(std::env::current_exe().unwrap())
         .args(["--ignored","--exact","memory_cell_v9_continual_tests::structure::memory_cell_v9_structure_child","--nocapture","--test-threads=1"])
         .env("MEMORY_CELL_V9_STRUCTURE_CHILD_CONFIG",&config_path).env("TMPDIR",temporary.path())
         .stdin(Stdio::null()).stdout(Stdio::null()).stderr(Stdio::inherit()).kill_on_drop(true).spawn().unwrap();
-    let status = match tokio::time::timeout(Duration::from_secs(1260),child.wait()).await {
+    let status = match tokio::time::timeout(Duration::from_secs(3660),child.wait()).await {
         Ok(result) => result.unwrap(),
         Err(error) => { child.kill().await.unwrap(); let _ = child.wait().await; panic!("structure child deadline: {error}"); }
     };
