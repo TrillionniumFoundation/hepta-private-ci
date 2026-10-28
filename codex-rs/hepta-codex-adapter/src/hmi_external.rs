@@ -170,15 +170,19 @@ impl HmiRequestsV1 {
                         .await?;
                 }
                 ThreadQueueReconcileOutcome::Cancelled => {
-                    let mut state=self.shared.state.lock().map_err(|_|HmiError::Fenced)?;
-                    if !state.fenced && state.cancel_requested && !state.output_enabled
+                    let mut state = self.shared.state.lock().map_err(|_| HmiError::Fenced)?;
+                    if !state.fenced
+                        && state.cancel_requested
+                        && !state.output_enabled
                         && state.active_turn.is_none()
-                        && state.pending.as_ref()==Some(&(client_id.to_owned(),response.payload_sha256.clone())) {
+                        && state.pending.as_ref()
+                            == Some(&(client_id.to_owned(), response.payload_sha256.clone()))
+                    {
                         // Core confirmed this exact queued input cannot dispatch.
                         // Free only its local pending slot; keep the sequence
                         // high-water and do not invent an observed model terminal.
-                        state.pending=None;
-                        state.queued_id=None;
+                        state.pending = None;
+                        state.queued_id = None;
                     }
                     return Ok(response);
                 }

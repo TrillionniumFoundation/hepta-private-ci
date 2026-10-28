@@ -50,7 +50,17 @@ impl HmiRequestsV1 {
         text: &str,
         mode: ThreadQueueReconcileMode,
     ) -> Result<ThreadQueueReconcileResponse, HmiError> {
-        self.submit_text_scoped(TextSubmission {current_generation,sequence,request_id,text,mode},None).await
+        self.submit_text_scoped(
+            TextSubmission {
+                current_generation,
+                sequence,
+                request_id,
+                text,
+                mode,
+            },
+            None,
+        )
+        .await
     }
 
     /// Validate the ingress epoch under the same lock that arms Core admission.
@@ -60,7 +70,13 @@ impl HmiRequestsV1 {
         input: TextSubmission<'_>,
         fence: Option<HmiOwnerAdmissionFenceV1>,
     ) -> Result<ThreadQueueReconcileResponse, HmiError> {
-        let TextSubmission {current_generation,sequence,request_id,text,mode}=input;
+        let TextSubmission {
+            current_generation,
+            sequence,
+            request_id,
+            text,
+            mode,
+        } = input;
         if text.trim().is_empty() || text.len() > MAX_TEXT_BYTES {
             return Err(HmiError::Invalid("text"));
         }
@@ -81,7 +97,9 @@ impl HmiRequestsV1 {
             if state.fenced || current_generation != self.shared.binding.organ_generation {
                 return Err(HmiError::Fenced);
             }
-            if let Some(fence)=&fence {fence.validate(&self.shared,&state)?;}
+            if let Some(fence) = &fence {
+                fence.validate(&self.shared, &state)?;
+            }
             if mode == ThreadQueueReconcileMode::AllowIfAbsent {
                 let identical =
                     state.pending.as_ref() == Some(&(client_id.clone(), digest.clone()));

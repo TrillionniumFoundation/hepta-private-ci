@@ -376,7 +376,9 @@ impl<R: AsyncRead + Unpin> HmiJsonlMediaEventsV1<R> {
                                     HmiMediaPresentationV1::Submitted
                                 }
                                 NativePresentationState::Unknown => HmiMediaPresentationV1::Unknown,
-                                NativePresentationState::Interrupted => HmiMediaPresentationV1::Interrupted,
+                                NativePresentationState::Interrupted => {
+                                    HmiMediaPresentationV1::Interrupted
+                                }
                             },
                             error,
                         },

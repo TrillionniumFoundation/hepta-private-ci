@@ -61,34 +61,57 @@ async fn cancel_owned(
 ) -> Value {
     let original = match owned.lock() {
         Ok(input) => input.clone(),
-        Err(_) => return json!({"status":"unknown","error":"original input lock poisoned","terminalObserved":false}),
+        Err(_) => {
+            return json!({"status":"unknown","error":"original input lock poisoned","terminalObserved":false});
+        }
     };
-    let Some(original) = original else { return Value::Null; };
+    let Some(original) = original else {
+        return Value::Null;
+    };
     // AuthBus acknowledgement can precede the relay's Core receipt. A single
     // Missing lookup cannot cancel that durable input. Keep reconciling its
     // original identity within the cleanup budget; never create a replacement.
     let result = tokio::time::timeout(Duration::from_secs(3), async {
         loop {
-            authority.check_current(requests.binding()).map_err(invalid)?;
-            let receipt = requests.cancel_owner_submission(
-                requests.binding().organ_generation,
-                &format!("hepta.authbus:{}", original.delivery),
-                &original.text,
-            ).await.map_err(invalid)?;
-            if !matches!(receipt.outcome, codex_app_server_protocol::ThreadQueueReconcileOutcome::Missing) {
+            authority
+                .check_current(requests.binding())
+                .map_err(invalid)?;
+            let receipt = requests
+                .cancel_owner_submission(
+                    requests.binding().organ_generation,
+                    &format!("hepta.authbus:{}", original.delivery),
+                    &original.text,
+                )
+                .await
+                .map_err(invalid)?;
+            if !matches!(
+                receipt.outcome,
+                codex_app_server_protocol::ThreadQueueReconcileOutcome::Missing
+            ) {
                 return Ok::<_, AgentdError>(receipt);
             }
             tokio::time::sleep(Duration::from_millis(25)).await;
         }
-    }).await.unwrap_or_else(|_| Err(invalid("Core cancellation receipt timed out; reconcile the original delivery ID")));
+    })
+    .await
+    .unwrap_or_else(|_| {
+        Err(invalid(
+            "Core cancellation receipt timed out; reconcile the original delivery ID",
+        ))
+    });
     match result {
         Ok(receipt) => {
-            let missing = matches!(receipt.outcome, codex_app_server_protocol::ThreadQueueReconcileOutcome::Missing);
+            let missing = matches!(
+                receipt.outcome,
+                codex_app_server_protocol::ThreadQueueReconcileOutcome::Missing
+            );
             json!({"deliveryId":original.delivery,"status":if missing {"unknown"} else {"requested"},
                 "reconciliation":receipt,"terminalObserved":false,
                 "error":missing.then_some("original input has no Core receipt; cancellation must reconcile the original delivery ID")})
         }
-        Err(error) => json!({"deliveryId":original.delivery,"status":"unknown","error":error.to_string(),"terminalObserved":false}),
+        Err(error) => {
+            json!({"deliveryId":original.delivery,"status":"unknown","error":error.to_string(),"terminalObserved":false})
+        }
     }
 }
 fn args(state: &AgentdState) -> Result<RemoteAppServerConnectArgs, AgentdError> {
@@ -221,17 +244,22 @@ fn submit(
             match host.evidence.authbus_delivery_status(id).await {
                 Ok(_) => Ok(()), // Existing durable input never rearms presentation after reconnect.
                 Err(codex_hepta_evidence::AuthBusOutboxError::NotFound) => {
-                    requests.observe_owner_submission(
-                        fence,
-                        requests.binding().organ_generation,
-                        input.sequence(),
-                        &format!("hepta.authbus:{delivery}"),
-                        input.text(),
-                    )
-                    .map_err(invalid)?;
-                    *owned.lock().map_err(|_|invalid("original input lock poisoned"))? = Some(OwnedSubmission {
-                        delivery: delivery.clone(), text: input.text().to_owned(),
-                    });
+                    requests
+                        .observe_owner_submission(
+                            fence,
+                            requests.binding().organ_generation,
+                            input.sequence(),
+                            &format!("hepta.authbus:{delivery}"),
+                            input.text(),
+                        )
+                        .map_err(invalid)?;
+                    *owned
+                        .lock()
+                        .map_err(|_| invalid("original input lock poisoned"))? =
+                        Some(OwnedSubmission {
+                            delivery: delivery.clone(),
+                            text: input.text().to_owned(),
+                        });
                     Ok(())
                 }
                 Err(error) => Err(invalid(error)),
@@ -419,7 +447,7 @@ pub(super) async fn serve<R: AsyncBufRead + Unpin>(
     };
     let interrupted = owner.interrupt().await;
     let pending_outcome=match pending {Some(future)=>Some(tokio::time::timeout(Duration::from_secs(5),future).await.unwrap_or_else(|_|json!({"type":"unknown","error":"original admission still ambiguous; reconcile original delivery ID"}))),None=>None};
-    let original_cancellation=cancel_owned(&requests,&authority,&owned).await;
+    let original_cancellation = cancel_owned(&requests, &authority, &owned).await;
     let _ = requests.revoke();
     let shutdown = match connection {
         Some(connection) => connection
