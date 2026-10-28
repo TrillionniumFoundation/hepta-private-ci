@@ -7,7 +7,7 @@ load("@rules_rust//rust:defs.bzl", "rust_library")
 rust_library(
     name = "aws-config",
     srcs = glob(["src/**/*.rs"]),
-    compile_data = glob(["src/**/*.md"]),
+    compile_data = glob(["src/**/*.md"], allow_empty = True),
     crate_features = [
         "credentials-login",
         "credentials-process",
