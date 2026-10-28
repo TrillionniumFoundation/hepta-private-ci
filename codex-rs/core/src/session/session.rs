@@ -60,6 +60,7 @@ pub(crate) struct Session {
     pub(crate) thread_id: ThreadId,
     pub(crate) installation_id: String,
     pub(super) tx_event: Sender<Event>,
+    pub(crate) terminal_publications: super::terminal_events::TerminalPublications,
     pub(super) agent_status: watch::Sender<AgentStatus>,
     pub(super) state: Mutex<SessionState>,
     /// Serializes rebuild/apply cycles for the running proxy; each cycle
@@ -1552,6 +1553,7 @@ impl Session {
                 thread_id,
                 installation_id,
                 tx_event: tx_event.clone(),
+                terminal_publications: Default::default(),
                 agent_status,
                 state: Mutex::new(state),
                 managed_network_proxy_refresh_lock: Semaphore::new(/*permits*/ 1),
