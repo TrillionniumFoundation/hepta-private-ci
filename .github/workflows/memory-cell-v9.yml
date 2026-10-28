@@ -63,17 +63,17 @@ jobs:
       - name: Verify exact V9 source before final fix and format
         timeout-minutes: 90
         run: python3 -B qualification/memory-cell-v9/ci_verify.py
+      - name: Preserve Unix evidence names inside a portable archive
+        if: always()
+        timeout-minutes: 5
+        run: python3 -B qualification/memory-cell-v9/pack_evidence.py
       # Preserve original measurements before the optional build-cache save.
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         timeout-minutes: 15
         with:
           name: memory-v9-verification-${{ github.sha }}
-          path: |
-            memory-v9-ci-output/
-            ${{ runner.temp }}/memory-v9-runtime/PREPARATION.json
-            ${{ runner.temp }}/memory-v9-runtime/V8_PREPARATION.json
-            ${{ runner.temp }}/memory-v9-runtime/V9_PREPARATION.json
+          path: memory-v9-evidence-transport/
           if-no-files-found: error
           retention-days: 30
       - uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7
