@@ -24,9 +24,9 @@ pub(super) struct Effect {
     pub fence: TaskFlowFence,
     pub intent: AuthorizedEffectIntent,
     authority: FinalUseAuthority,
-    signed: SignedFinalUseGrant,
-    binding: FinalUseBinding,
-    _directory: tempfile::TempDir,
+    pub signed: SignedFinalUseGrant,
+    pub binding: FinalUseBinding,
+    pub directory: tempfile::TempDir,
 }
 
 pub(super) fn now_ms() -> u64 {
@@ -68,7 +68,7 @@ impl Effect {
         let directory = tempfile::tempdir().expect("authority root");
         let authority = FinalUseAuthority::open_state_dir(directory.path(), "memory-migration-security-fixture".into(), issuer.verifying_key().to_bytes(),
             FinalUseRevocations { authority_epoch: 1, revision: 1, revoked_grant_ids: BTreeSet::new() }).expect("durable final-use authority");
-        Self { store, fence, intent, authority, signed: SignedFinalUseGrant { grant, signature }, binding, _directory: directory }
+        Self { store, fence, intent, authority, signed: SignedFinalUseGrant { grant, signature }, binding, directory }
     }
 
     pub async fn reject_invalid_grant(&self, driver: &mut ProviderEffectTaskFlowDriver<MemoryCellMigrationProviderV9>, payload: &[u8]) {
@@ -82,6 +82,13 @@ impl Effect {
     pub async fn execute(&self, driver: &mut ProviderEffectTaskFlowDriver<MemoryCellMigrationProviderV9>, payload: &[u8]) -> TaskFlowStepReceipt {
         self.store.execute_authorized_taskflow_effect_async(&self.authority, driver, &self.intent, payload,
             &self.fence, &self.signed, &self.binding, "authorized-transfer", now_ms()).await.expect("authorized transfer observation")
+    }
+
+    pub async fn reject_ambiguous_retry(&self, driver: &mut ProviderEffectTaskFlowDriver<MemoryCellMigrationProviderV9>, payload: &[u8]) {
+        let before = driver.adapter().traffic().expect("traffic");
+        assert!(self.store.execute_authorized_taskflow_effect_async(&self.authority, driver, &self.intent, payload,
+            &self.fence, &self.signed, &self.binding, "authorized-transfer", now_ms()).await.is_err());
+        assert_eq!(before, driver.adapter().traffic().expect("uncertainty never blindly redispatches"));
     }
 
     pub async fn recover(&self, driver: &ProviderEffectTaskFlowDriver<MemoryCellMigrationProviderV9>) -> AuthorizedEffectRecoveryResult {
