@@ -1,0 +1,112 @@
+{
+  "resources": {
+    "main": {
+      "unit": "hepta-runtime-job-1a1883ad0f6-96a-3f55",
+      "utc_epoch": 1793287115.7212725,
+      "systemctl_exit": 0,
+      "stderr": "",
+      "properties": {
+        "MainPID": "588551",
+        "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1883ad0f6-96a-3f55.service",
+        "MemoryCurrent": "7430144",
+        "MemoryPeak": "8310784",
+        "CPUUsageNSec": "322720000",
+        "TasksCurrent": "4",
+        "CPUQuotaPerSecUSec": "1s",
+        "MemoryMax": "268435456",
+        "ActiveState": "active"
+      },
+      "cgroup": {
+        "cpu.max": "100000 100000",
+        "memory.max": "268435456",
+        "memory.current": "7430144",
+        "memory.peak": "8310784",
+        "cgroup.procs": "588551\n588566"
+      },
+      "active_build_process_names": [
+        "cargo",
+        "rustc",
+        "cargo",
+        "rustc"
+      ]
+    },
+    "x230": {
+      "unit": "hepta-runtime-job-1a1883b068a-96a-3f56",
+      "utc_epoch": 1793287119.4523218,
+      "systemctl_exit": 0,
+      "stderr": "",
+      "properties": {
+        "MainPID": "493261",
+        "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1883b068a-96a-3f56.service",
+        "MemoryCurrent": "7401472",
+        "MemoryPeak": "7843840",
+        "CPUUsageNSec": "254729000",
+        "TasksCurrent": "4",
+        "CPUQuotaPerSecUSec": "1s",
+        "MemoryMax": "268435456",
+        "ActiveState": "active"
+      },
+      "cgroup": {
+        "cpu.max": "100000 100000",
+        "memory.max": "268435456",
+        "memory.current": "7401472",
+        "memory.peak": "7843840",
+        "cgroup.procs": "493261\n493268"
+      },
+      "active_build_process_names": [
+        "cargo",
+        "rustc"
+      ]
+    }
+  },
+  "activity": {
+    "main": {
+      "utc_epoch": 1793287468.3485284,
+      "interval_seconds": 3.0591595229925588,
+      "cpus": 48,
+      "build_processes": [
+        {
+          "pid": "473080",
+          "name": "cargo",
+          "state": "S",
+          "cpu_seconds": 0
+        },
+        {
+          "pid": "542832",
+          "name": "rustc",
+          "state": "S",
+          "cpu_seconds": 3.07
+        }
+      ],
+      "new_build_pids": [],
+      "active_build_cpu_seconds": 3.07
+    },
+    "x230": {
+      "utc_epoch": 1793287470.6548207,
+      "interval_seconds": 3.0224589239805937,
+      "cpus": 4,
+      "build_processes": [
+        {
+          "pid": "471580",
+          "name": "cargo",
+          "state": "S",
+          "cpu_seconds": 0
+        },
+        {
+          "pid": "494577",
+          "name": "rustc",
+          "state": "S",
+          "cpu_seconds": 3.02
+        }
+      ],
+      "new_build_pids": [],
+      "active_build_cpu_seconds": 3.02
+    }
+  },
+  "limitations": [
+    "Unrelated compilation consumed about one CPU on each shared host during the preflight; those processes are outside this task and are left running.",
+    "The representative live-model qualification also runs from main. Results are a contemporaneous counterbalanced shared-host comparison, not a dedicated-host or complete-system equal-consumption claim.",
+    "Worker cgroup caps are verified. Coordinator, SSH service, shared host activity and encoder residency are outside those worker limits.",
+    "No distributed speedup is presumed. Preserve all trials even if negative."
+  ]
+}
