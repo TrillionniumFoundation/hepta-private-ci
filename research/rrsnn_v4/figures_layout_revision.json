@@ -1,0 +1,89 @@
+{
+  "aggregate_changed": false,
+  "aggregate_sha256_before_and_after": "1ac919f5a07aebac96b3b7a49be9905a4f026ce5927d61464ba5aba3d12b8773",
+  "all_figure_evidence_objects_identical": true,
+  "all_native_input_hashes_unchanged": true,
+  "all_numeric_values_and_confidence_intervals_identical": true,
+  "change": "Only counterfactual panel-a legend location changed from best to upper left, avoiding overlap with the Primary/profile-A upper confidence limit.",
+  "development_validation_preserved": {
+    "not_relabelled_as_full_validation_of_new_source": true,
+    "path": "/workspace/scratch/38ad1e295a60/rrsnn_v4/figures_validation.json",
+    "sha256": "aabe148d050f7ccc56e5d58620f6f4ed6f810b97582bfc72d9ccd4c9d653bdb4",
+    "validated_source_sha256": "82d37f870876c30744239d7cbac5a264a61e319d312e284da5d8e94541595e10"
+  },
+  "experiment_sources_changed": false,
+  "files": [
+    {
+      "after_sha256": "b842b9561b4e33637a3d937cba3b9523194ead77712bdadcf654a3601277b909",
+      "before_sha256": "b842b9561b4e33637a3d937cba3b9523194ead77712bdadcf654a3601277b909",
+      "figure": 1,
+      "filename": "01_normalized_utility.png",
+      "render_bytes_identical": true
+    },
+    {
+      "after_sha256": "1ab743476a0b84bf42b30f9ca1141331c50f9e110c18c2c05602e1240c6ba2ce",
+      "before_sha256": "1ab743476a0b84bf42b30f9ca1141331c50f9e110c18c2c05602e1240c6ba2ce",
+      "figure": 1,
+      "filename": "01_normalized_utility.svg",
+      "render_bytes_identical": true
+    },
+    {
+      "after_sha256": "2d2aff34e03883d0f9036ff2f52a63ec8011a135f10b0be00a48adba03c79181",
+      "before_sha256": "2d2aff34e03883d0f9036ff2f52a63ec8011a135f10b0be00a48adba03c79181",
+      "figure": 2,
+      "filename": "02_gain_over_primary.png",
+      "render_bytes_identical": true
+    },
+    {
+      "after_sha256": "1857876f9730a9ef1b8f8802d03e0815e6fa628f00eddfbee449f3558ae0502c",
+      "before_sha256": "1857876f9730a9ef1b8f8802d03e0815e6fa628f00eddfbee449f3558ae0502c",
+      "figure": 2,
+      "filename": "02_gain_over_primary.svg",
+      "render_bytes_identical": true
+    },
+    {
+      "after_sha256": "1f803da5994b052166bda0adf0dd2b564d77294ecec2f972606d6182efb3b58d",
+      "before_sha256": "ed4a1fe3426cdfd3c37079c154236746e97e9022eedb9aeb4f102f18f0d84563",
+      "figure": 3,
+      "filename": "03_maturity_shock_counterfactual.png",
+      "render_bytes_identical": false
+    },
+    {
+      "after_sha256": "a74304c76da4775028b8cfefe3431117c25932e78ed5bbf04da06d4696dd7e9b",
+      "before_sha256": "35e6a9d9987fb13bdb54d2186808a74287bbe3f78a39699e8ec66bb66d320c71",
+      "figure": 3,
+      "filename": "03_maturity_shock_counterfactual.svg",
+      "render_bytes_identical": false
+    },
+    {
+      "after_sha256": "6b141db4a520f319f95abec2d4882a1b1de2fcab1dec1ee01bee05e9f2b23538",
+      "before_sha256": "6b141db4a520f319f95abec2d4882a1b1de2fcab1dec1ee01bee05e9f2b23538",
+      "figure": 4,
+      "filename": "04_native_owner_costs.png",
+      "render_bytes_identical": true
+    },
+    {
+      "after_sha256": "713c56e33d9b796899f2f5c19690ec1afcf97d78394f04c6450a790ad4c7449b",
+      "before_sha256": "713c56e33d9b796899f2f5c19690ec1afcf97d78394f04c6450a790ad4c7449b",
+      "figure": 4,
+      "filename": "04_native_owner_costs.svg",
+      "render_bytes_identical": true
+    }
+  ],
+  "final_figures_directory": "/workspace/scratch/38ad1e295a60/rrsnn_v4/results/figures",
+  "local_display_checks": {
+    "figures_1_2_4_previously_visually_inspected_and_byte_identical": true,
+    "legend_bbox_disjoint_from_all_panel_a_lines_and_CI_collections": true,
+    "revised_figure_3_visually_inspected": true,
+    "source_diff_is_only_legend_location": true,
+    "visible_text_inside_canvas": true
+  },
+  "new_manifest_sha256": "068aae6bf6c4775097baf598d135dce9e70ef04f55204eccdee0f29865aa93ef",
+  "new_source_sha256": "d3ec4a0428e970734b90e394dd945830fa3a3588f7ca6bf71ed9c78f8c4ed49f",
+  "old_figures_and_manifest_preserved_at": "/workspace/scratch/38ad1e295a60/rrsnn_v4/results/figures_history/layout_01",
+  "old_manifest_sha256": "a24be9a21e347dff86eb61693298b4b9a31248f1dd4e10aad184dafe20ecf72a",
+  "old_source_preserved_at": "/workspace/scratch/38ad1e295a60/rrsnn_v4/results/figures_history/layout_01/make_figures_source.py",
+  "old_source_sha256": "82d37f870876c30744239d7cbac5a264a61e319d312e284da5d8e94541595e10",
+  "recorded_at_utc": "2026-10-29T16:04:32.733827+00:00",
+  "schema": "rrsnn-v4-figure-layout-revision-1"
+}
