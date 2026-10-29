@@ -239,6 +239,14 @@ impl AgentdMemoryInventoryRuntimeV1 {
                     "memory inventory source owner changed before final use",
                 )
             })?;
+        // The source-owner check awaits SQLite. Recheck publication afterward
+        // so a withdrawal during that wait cannot escape this final fence.
+        self.release.revalidate(bundle).map_err(|_| {
+            (
+                MemoryReadStatusV1::Stale,
+                "memory inventory publication changed during source revalidation",
+            )
+        })?;
         Ok(readout)
     }
 }

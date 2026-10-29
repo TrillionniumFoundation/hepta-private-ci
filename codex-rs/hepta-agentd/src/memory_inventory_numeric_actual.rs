@@ -132,7 +132,7 @@ pub(super) fn verify(directory: &Path, pages: &[MemoryInventorySnapshotPageV1]) 
         "native_pid":std::process::id(),"owner_agent_id":owner.owner_agent_id,"scope":owner.scope,
         "owner_cut_digest":owner.owner_cut_digest,"absolute_tolerance":ABSOLUTE_TOLERANCE,
         "relative_tolerance":RELATIVE_TOLERANCE,"python_process_ledger_sha256":Digest32::of_bytes(&process_bytes).to_string(),
-        "scope":"Rust decoder and predictor over the exact artifacts before signed owner installation; reference bytes are from completed external fresh-reader processes",
+        "measurement_scope":"Rust decoder and predictor over the exact artifacts before signed owner installation; reference bytes are from completed external fresh-reader processes",
         "models":models});
     let bytes = serde_json::to_vec_pretty(&receipt).expect("native parity evidence JSON");
     let path = directory.join("RUST_NATIVE_PARITY.json");
