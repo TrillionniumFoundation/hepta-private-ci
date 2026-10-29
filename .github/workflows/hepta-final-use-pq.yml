@@ -1,0 +1,136 @@
+name: Hepta FinalUse PQ component observations
+
+# Dedicated same-repository draft PR entry. Existing maintenance jobs are unchanged.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - .github/workflows/hepta-final-use-pq.yml
+      - scripts/hepta_final_use_pq_ci.py
+      - scripts/test_hepta_final_use_pq_ci.py
+      - codex-rs/hepta-contracts/**
+      - codex-rs/hepta-infer-worker-host/**
+      - codex-rs/Cargo.lock
+      - MODULE.bazel.lock
+
+concurrency:
+  group: hepta-final-use-pq-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+  TESTED_SHA: ${{ github.event.pull_request.head.sha }}
+  BASE_SHA: ""
+  HEPTA_CI_LANE: source-head
+  PYTHONDONTWRITEBYTECODE: "1"
+  RUSTUP_TOOLCHAIN: "1.96.0"
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+
+jobs:
+  selected-observation:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'fix/hepta-final-use-mldsa65-v2-20261029'
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: ${{ matrix.phase == 'lock-artifact' && 45 || 120 }}
+    strategy:
+      fail-fast: false
+      matrix:
+        phase: [lock-artifact, native]
+    steps:
+      # PR workflow evaluation may use a prospective merge. The observation
+      # explicitly tests the pinned head; it never certifies that merge tree.
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind the actual same-repository candidate head event
+        env:
+          PHASE: ${{ matrix.phase }}
+          PYTHONPATH: scripts
+        shell: bash
+        run: |
+          python3 -c 'import os; import hepta_final_use_pq_ci as pq; pq.selection(os.environ["PHASE"], os.environ["SOURCE_SHA"], pq.pr_source())'
+      - uses: ./.github/actions/setup-bazel-ci
+        with:
+          target: aarch64-unknown-linux-gnu
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Prepare pinned tools and a new Cargo target
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev
+          rustup toolchain install 1.96.0 --profile minimal --component clippy --component rustfmt --component rust-src
+          records="$RUNNER_TEMP/hepta-final-use-pq-records"
+          mkdir "$records"
+          target="$(mktemp -d "$RUNNER_TEMP/hepta-pq-target.XXXXXX")"
+          printf 'PQ_RECORDS=%s\nCARGO_TARGET_DIR=%s\n' "$records" "$target" >> "$GITHUB_ENV"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git archive --format=tar "$SOURCE_SHA" | gzip -1 > "$records/source-input.tar.gz"
+          rustc --version --verbose > "$records/toolchain.txt"
+          cargo --version >> "$records/toolchain.txt"
+          cargo nextest --version >> "$records/toolchain.txt"
+          just --version >> "$records/toolchain.txt"
+          bazel --version >> "$records/toolchain.txt"
+          test "$(bazel --version)" = "bazel $(cat .bazelversion)"
+          printf 'workflow_event_commit=%s\ntested_head=%s\n' "$GITHUB_SHA" "$SOURCE_SHA" >> "$records/toolchain.txt"
+          sha256sum codex-rs/Cargo.lock MODULE.bazel.lock .bazelversion >> "$records/toolchain.txt"
+          printf 'Component observations only. Lock artifacts require separate review and a new commit. No whole-pipeline PQ, production trust backend or independent issuer qualification.\n' > "$records/SCOPE.txt"
+      - name: Exercise selected-source and executable-binding negative controls
+        shell: bash
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$PQ_RECORDS/controls.json" --minimum-tests 1 -- python3 -m unittest discover -v -s scripts -p test_hepta_final_use_pq_ci.py
+      - name: Generate the real lock only in a separate diagnostic worktree
+        if: matrix.phase == 'lock-artifact'
+        shell: bash
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$PQ_RECORDS/lock-owner.json" --timeout-seconds 2500 -- python3 scripts/hepta_final_use_pq_ci.py lock-artifact --output "$PQ_RECORDS/lock-proposal"
+      - name: Require the committed lock before any native build or test
+        if: matrix.phase == 'native'
+        shell: bash
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$PQ_RECORDS/lock-check.json" --timeout-seconds 1800 -- just bazel-lock-check
+      - name: Prepare the existing checksum-verified V8 archive and binding pair
+        if: matrix.phase == 'native'
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Build this source's real codex executable and retain Cargo JSON
+        if: matrix.phase == 'native'
+        shell: bash
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$PQ_RECORDS/build-codex.json" --timeout-seconds 5400 -- cargo build --manifest-path codex-rs/Cargo.toml -p codex-cli --bin codex --locked --message-format=json
+      - name: Require core, old host and each of the six new actual host cases
+        if: matrix.phase == 'native'
+        shell: bash
+        run: |
+          python3 scripts/hepta_final_use_pq_ci.py native --output "$PQ_RECORDS/native" --build-record "$PQ_RECORDS/build-codex.json"
+      - name: Require strict non-mutating component lint and formatting
+        if: matrix.phase == 'native'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$PQ_RECORDS/clippy.json" --timeout-seconds 1800 -- just clippy --locked -p codex-hepta-contracts -p codex-hepta-infer-worker-host -- -D warnings
+          python3 scripts/hepta_ci_exec.py --output "$PQ_RECORDS/format.json" -- cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-contracts --package codex-hepta-infer-worker-host -- --check
+      - name: Retain the final unchanged-source observation
+        if: always() && env.PQ_RECORDS != ''
+        shell: bash
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$PQ_RECORDS/source-exit.json" -- python3 -c 'pass'
+      - name: Retain real command logs, failures and unmerged lock proposals
+        if: always() && env.PQ_RECORDS != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-final-use-pq-${{ matrix.phase }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.PQ_RECORDS }}
+          if-no-files-found: error
+          retention-days: 14
