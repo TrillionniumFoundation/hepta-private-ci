@@ -1,0 +1,220 @@
+{
+  "result": {
+    "schema": "hepta.cell.independent-direct-numeric-stage.v1",
+    "state": "passed",
+    "steps": [
+      {
+        "name": "native_export",
+        "argv": [
+          "/home/qian-qi/.cargo/bin/cargo",
+          "run",
+          "--offline",
+          "-p",
+          "codex-hepta-neuron",
+          "--example",
+          "memory_residual_export_logits",
+          "--",
+          "hepta-neuron/tests/fixtures/residual-memory",
+          "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/semantic-isolated-r2/numeric-direct/native-logits.json"
+        ],
+        "cwd": "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2/codex-rs",
+        "timeout_seconds": 900,
+        "state": "passed",
+        "exit_code": 0,
+        "wall_seconds": 15.802943160990253
+      },
+      {
+        "name": "torch_comparison",
+        "argv": [
+          "/home/qian-qi/work/hepta-architecture-20261025/science-venv/bin/python",
+          "-B",
+          "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2/qualification/memory-cell-adapters/verify_direct_native.py",
+          "--source",
+          "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2/qualification/memory-cell-adapters",
+          "--restored",
+          "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/formal-restored",
+          "--fixtures",
+          "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2/codex-rs/hepta-neuron/tests/fixtures/residual-memory",
+          "--native",
+          "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/semantic-isolated-r2/numeric-direct/native-logits.json",
+          "--output",
+          "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/semantic-isolated-r2/numeric-direct/torch-native-comparison.json"
+        ],
+        "cwd": "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2",
+        "timeout_seconds": 180,
+        "state": "passed",
+        "exit_code": 0,
+        "wall_seconds": 5.079246687004343
+      }
+    ],
+    "prior_numeric_owner": "dpty-d9555f700261ff5a3480d44d3fbcbf3f65d608a0da8de8a3f2b3f05b87530cc3",
+    "prior_numeric_owner_terminal_state": "exited:1 after 600s lock timeout",
+    "cargo_home": "/tmp/hepta-native-owner-build-20261028/cargo-home",
+    "cargo_target": "/tmp/hepta-cell-native-target-20261029",
+    "offline": true,
+    "build_jobs": 4,
+    "cargo_lock_sha256": "2483b629f8bb55345ec2f9538d4106ef5f7cc140f7acdf0ab94048ef75f9389b",
+    "elapsed_seconds": 20.902036600047722,
+    "native_binary_sha256": "af40e76431e600724ab3288d9681353a48bc2be74efe0bcf5a3b009dcb1890b0",
+    "comparison": {
+      "all_passed": true,
+      "cases": 48,
+      "native_export_sha256": "4ce4dbb1d86598370488492e85e030d8d2468e63ffaf9f53c18dc1f86f8fbb20",
+      "results": [
+        {
+          "cases": 8,
+          "comparisons": [
+            {
+              "maximum_absolute_logit_error": 3.4332275390625e-05,
+              "original_batch_size": 1,
+              "typed_values_equal": true,
+              "within_predeclared_tolerance": true
+            },
+            {
+              "maximum_absolute_logit_error": 3.4332275390625e-05,
+              "original_batch_size": 8,
+              "typed_values_equal": true,
+              "within_predeclared_tolerance": true
+            }
+          ],
+          "kind": "semantic",
+          "parameter_sha256": "4cac583bd2967bb3ed828b31200b98b5e8c4e96a76d2eb2e07570acc1559b442",
+          "seed": 731
+        },
+        {
+          "cases": 8,
+          "comparisons": [
+            {
+              "maximum_absolute_logit_error": 1.52587890625e-05,
+              "original_batch_size": 1,
+              "typed_values_equal": true,
+              "within_predeclared_tolerance": true
+            },
+            {
+              "maximum_absolute_logit_error": 1.52587890625e-05,
+              "original_batch_size": 8,
+              "typed_values_equal": true,
+              "within_predeclared_tolerance": true
+            }
+          ],
+          "kind": "skill",
+          "parameter_sha256": "bf9dfd42f8a661f7b56834788f4bf311fc13529535ea858eb4021b2c3eec62f4",
+          "seed": 731
+        },
+        {
+          "cases": 8,
+          "comparisons": [
+            {
+              "maximum_absolute_logit_error": 4.1961669921875e-05,
+              "original_batch_size": 1,
+              "typed_values_equal": true,
+              "within_predeclared_tolerance": true
+            },
+            {
+              "maximum_absolute_logit_error": 4.1961669921875e-05,
+              "original_batch_size": 8,
+              "typed_values_equal": true,
+              "within_predeclared_tolerance": true
+            }
+          ],
+          "kind": "semantic",
+          "parameter_sha256": "03e2d72149fcd918d8874ecd015499f54c9f982a47ce38edd105704d6e7f809c",
+          "seed": 732
+        },
+        {
+          "cases": 8,
+          "comparisons": [
+            {
+              "maximum_absolute_logit_error": 1.33514404296875e-05,
+              "original_batch_size": 1,
+              "typed_values_equal": true,
+              "within_predeclared_tolerance": true
+            },
+            {
+              "maximum_absolute_logit_error": 1.33514404296875e-05,
+              "original_batch_size": 8,
+              "typed_values_equal": true,
+              "within_predeclared_tolerance": true
+            }
+          ],
+          "kind": "skill",
+          "parameter_sha256": "907e2cf743a6a479e37327cdba8be5053cd81c2ffab0eee9de2d566785ab9644",
+          "seed": 732
+        },
+        {
+          "cases": 8,
+          "comparisons": [
+            {
+              "maximum_absolute_logit_error": 2.6702880859375e-05,
+              "original_batch_size": 1,
+              "typed_values_equal": true,
+              "within_predeclared_tolerance": true
+            },
+            {
+              "maximum_absolute_logit_error": 3.4332275390625e-05,
+              "original_batch_size": 8,
+              "typed_values_equal": true,
+              "within_predeclared_tolerance": true
+            }
+          ],
+          "kind": "semantic",
+          "parameter_sha256": "20e1c994e10421a6a72eb3a36f487547312078086c7ea0be7cd59a3dc71d4711",
+          "seed": 733
+        },
+        {
+          "cases": 8,
+          "comparisons": [
+            {
+              "maximum_absolute_logit_error": 1.33514404296875e-05,
+              "original_batch_size": 1,
+              "typed_values_equal": true,
+              "within_predeclared_tolerance": true
+            },
+            {
+              "maximum_absolute_logit_error": 1.52587890625e-05,
+              "original_batch_size": 8,
+              "typed_values_equal": true,
+              "within_predeclared_tolerance": true
+            }
+          ],
+          "kind": "skill",
+          "parameter_sha256": "3f729497669a366f1a05fac228ce270dca0a958455a4b4b87a5dd1691057b5d5",
+          "seed": 733
+        }
+      ],
+      "schema": "hepta.memory.direct-original-torch-native-comparison.v1",
+      "source_sha256": "2421dc985a74b7b4edb80029a2b486d599ab8cf4409263e894aeb15878c289b4",
+      "tolerance": {
+        "absolute": 0.0001,
+        "relative": 1e-05
+      },
+      "torch_version": "2.10.0+cpu"
+    },
+    "native_export_sha256": "4ce4dbb1d86598370488492e85e030d8d2468e63ffaf9f53c18dc1f86f8fbb20",
+    "comparison_sha256": "73f2a44f7c3a5b4730196ad958960960301b48ca976b2069c98ad5c625e48508",
+    "direct_maximum_absolute_logit_error": 4.1961669921875e-05
+  },
+  "actual_original_pty": {
+    "session_id": "dpty-b954fa3d9b3bffe49ec39d7f14e7bf765612baf4beae9686c8a605610b38f388",
+    "offset": 0,
+    "next_offset": 5858,
+    "available_end": 5858,
+    "chunk_sha256": "8063a0041649ed5a02970591386f9a600159d734529c9da89d74656183804a90",
+    "output_complete": true,
+    "status": {
+      "boot": "14f92beb-43c6-4786-839e-b57307ae8048",
+      "bytes_seen": 5858,
+      "bytes_stored": 5858,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1793288789449,
+      "exit_code": 0,
+      "output_complete": true,
+      "owner_pid": 738286,
+      "pid": 738290,
+      "state": "exited"
+    }
+  },
+  "raw_response_file": "root-010-progress-2.json",
+  "raw_response_sha256": "d9a2512b93e60e9f7ebd8535e945c251cf34ad03d97e0a87e52fc58200ef81be"
+}

@@ -1,0 +1,462 @@
+{
+  "result": {
+    "schema": "hepta.cell.independent-semantic-python-stage.v1",
+    "state": "completed",
+    "steps": [
+      {
+        "name": "worker_config",
+        "argv": [
+          "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2/bin/python",
+          "-B",
+          "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2/qualification/memory-cell-adapters/prepare_semantic_worker_config.py",
+          "--python",
+          "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2/bin/python",
+          "--worker",
+          "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2/qualification/memory-cell-adapters/semantic_encoder_worker.py",
+          "--encoder-source",
+          "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2/qualification/memory-cell-adapters/encoder.py",
+          "--encoder",
+          "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/semantic-isolated-r2/semantic-attempt2/encoder",
+          "--output",
+          "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/semantic-isolated-r2/semantic-attempt2/encoder-config.json"
+        ],
+        "cwd": "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2",
+        "timeout_seconds": 60,
+        "state": "passed",
+        "exit_code": 0,
+        "wall_seconds": 0.1650979130063206
+      },
+      {
+        "name": "fit",
+        "argv": [
+          "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2/bin/python",
+          "-B",
+          "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2/qualification/memory-cell-adapters/train_semantic_router.py",
+          "fit",
+          "--training",
+          "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2/qualification/memory-cell-adapters/native-routing/formal-01/train.json",
+          "--calibration",
+          "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2/qualification/memory-cell-adapters/native-routing/formal-01/calibration.json",
+          "--aliases",
+          "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2/qualification/memory-cell-adapters/native-routing/formal-01/aliases.json",
+          "--protocol",
+          "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2/qualification/memory-cell-adapters/evidence/native-semantic-routing-20261029/PROTOCOL.json",
+          "--encoder-source",
+          "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2/qualification/memory-cell-adapters/encoder.py",
+          "--encoder-source-sha256",
+          "fc6d50ec0c5cfb1607e473a4b505d625e156c10a32ee6054449f84667e6ef0bd",
+          "--encoder",
+          "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/semantic-isolated-r2/semantic-attempt2/encoder",
+          "--output",
+          "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/semantic-isolated-r2/semantic-attempt2/semantic-fit"
+        ],
+        "cwd": "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2",
+        "timeout_seconds": 600,
+        "state": "passed",
+        "exit_code": 0,
+        "wall_seconds": 15.30706416699104
+      },
+      {
+        "name": "score_new_tasks",
+        "argv": [
+          "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2/bin/python",
+          "-B",
+          "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2/qualification/memory-cell-adapters/train_semantic_router.py",
+          "score",
+          "--model",
+          "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/semantic-isolated-r2/semantic-attempt2/semantic-fit/semantic-router.json",
+          "--model-sha256",
+          "c0b5c43fbaf7f1d2ea88355ba0a6a42eecbe45983050932419bc73b6ca7ca491",
+          "--queries",
+          "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2/qualification/memory-cell-adapters/evidence/native-semantic-routing-20261029/new-tasks.json",
+          "--encoder-source",
+          "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2/qualification/memory-cell-adapters/encoder.py",
+          "--encoder-source-sha256",
+          "fc6d50ec0c5cfb1607e473a4b505d625e156c10a32ee6054449f84667e6ef0bd",
+          "--encoder",
+          "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/semantic-isolated-r2/semantic-attempt2/encoder",
+          "--output",
+          "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/semantic-isolated-r2/semantic-attempt2/new_tasks-python.json"
+        ],
+        "cwd": "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2",
+        "timeout_seconds": 400,
+        "state": "passed",
+        "exit_code": 0,
+        "wall_seconds": 14.858848399948329
+      },
+      {
+        "name": "score_formal_held",
+        "argv": [
+          "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2/bin/python",
+          "-B",
+          "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2/qualification/memory-cell-adapters/train_semantic_router.py",
+          "score",
+          "--model",
+          "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/semantic-isolated-r2/semantic-attempt2/semantic-fit/semantic-router.json",
+          "--model-sha256",
+          "c0b5c43fbaf7f1d2ea88355ba0a6a42eecbe45983050932419bc73b6ca7ca491",
+          "--queries",
+          "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2/codex-rs/hepta-agentd/tests/fixtures/inventory/formal-held-reference.json",
+          "--encoder-source",
+          "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2/qualification/memory-cell-adapters/encoder.py",
+          "--encoder-source-sha256",
+          "fc6d50ec0c5cfb1607e473a4b505d625e156c10a32ee6054449f84667e6ef0bd",
+          "--encoder",
+          "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/semantic-isolated-r2/semantic-attempt2/encoder",
+          "--output",
+          "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/semantic-isolated-r2/semantic-attempt2/formal_held-python.json"
+        ],
+        "cwd": "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2",
+        "timeout_seconds": 400,
+        "state": "passed",
+        "exit_code": 0,
+        "wall_seconds": 10.849988979985937
+      },
+      {
+        "name": "score_old_challenge",
+        "argv": [
+          "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2/bin/python",
+          "-B",
+          "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2/qualification/memory-cell-adapters/train_semantic_router.py",
+          "score",
+          "--model",
+          "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/semantic-isolated-r2/semantic-attempt2/semantic-fit/semantic-router.json",
+          "--model-sha256",
+          "c0b5c43fbaf7f1d2ea88355ba0a6a42eecbe45983050932419bc73b6ca7ca491",
+          "--queries",
+          "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2/codex-rs/hepta-agentd/tests/fixtures/inventory/challenge-reference.json",
+          "--encoder-source",
+          "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2/qualification/memory-cell-adapters/encoder.py",
+          "--encoder-source-sha256",
+          "fc6d50ec0c5cfb1607e473a4b505d625e156c10a32ee6054449f84667e6ef0bd",
+          "--encoder",
+          "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/semantic-isolated-r2/semantic-attempt2/encoder",
+          "--output",
+          "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/semantic-isolated-r2/semantic-attempt2/old_challenge-python.json"
+        ],
+        "cwd": "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2",
+        "timeout_seconds": 400,
+        "state": "passed",
+        "exit_code": 0,
+        "wall_seconds": 10.49409354000818
+      }
+    ],
+    "frozen_model_selection": "original 400 train / 144 development only",
+    "prior_attempt_failed_before_training": "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/semantic-isolated-r2/stage2-python/RESULT.json",
+    "held_and_challenge_use": "regression_only",
+    "new_tasks_sha256": "2e5d2ba7d8cd4801d944bd5dc9ca7faa426bfa4bd7c69acf8d428ff4c6615a4f",
+    "elapsed_seconds": 52.20117710198974,
+    "fit": {
+      "model_sha256": "c0b5c43fbaf7f1d2ea88355ba0a6a42eecbe45983050932419bc73b6ca7ca491",
+      "selected": {
+        "known_correct": 48,
+        "known_wrong": 0,
+        "minimum_margin": 0.05,
+        "threshold": 0.5,
+        "unknown_accepted": 0
+      },
+      "learned_f32_parameters": 4620,
+      "serialized_bytes": 93657,
+      "wall_seconds": 11.678106868988834,
+      "cpu_seconds": 11.29102995
+    },
+    "model_path": "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/semantic-isolated-r2/semantic-attempt2/semantic-fit/semantic-router.json",
+    "encoder_config": "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/semantic-isolated-r2/semantic-attempt2/encoder-config.json",
+    "evaluations": {
+      "new_tasks": {
+        "path": "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/semantic-isolated-r2/semantic-attempt2/new_tasks-python.json",
+        "sha256": "a811c1a761c3e1c2bb2b949d25dabf19b67f2df531645c347208c77364be6f11",
+        "rows": 512,
+        "queries_sha256": "2e5d2ba7d8cd4801d944bd5dc9ca7faa426bfa4bd7c69acf8d428ff4c6615a4f",
+        "groups": {
+          "family:aggregation": {
+            "abstained": 5,
+            "correct": 5,
+            "total": 16,
+            "unknown_false_accept": 11
+          },
+          "family:compose": {
+            "abstained": 24,
+            "correct": 104,
+            "total": 128,
+            "unknown_false_accept": 0
+          },
+          "family:counterfactual": {
+            "abstained": 16,
+            "correct": 16,
+            "total": 16,
+            "unknown_false_accept": 0
+          },
+          "family:explanation": {
+            "abstained": 16,
+            "correct": 16,
+            "total": 16,
+            "unknown_false_accept": 0
+          },
+          "family:external": {
+            "abstained": 26,
+            "correct": 26,
+            "total": 32,
+            "unknown_false_accept": 6
+          },
+          "family:external_zh": {
+            "abstained": 8,
+            "correct": 8,
+            "total": 8,
+            "unknown_false_accept": 0
+          },
+          "family:identity": {
+            "abstained": 16,
+            "correct": 16,
+            "total": 16,
+            "unknown_false_accept": 0
+          },
+          "family:multiple_outputs": {
+            "abstained": 8,
+            "correct": 8,
+            "total": 16,
+            "unknown_false_accept": 8
+          },
+          "family:mutation": {
+            "abstained": 24,
+            "correct": 24,
+            "total": 32,
+            "unknown_false_accept": 8
+          },
+          "family:mutation_zh": {
+            "abstained": 8,
+            "correct": 8,
+            "total": 8,
+            "unknown_false_accept": 0
+          },
+          "family:negation": {
+            "abstained": 32,
+            "correct": 32,
+            "total": 32,
+            "unknown_false_accept": 0
+          },
+          "family:negation_zh": {
+            "abstained": 8,
+            "correct": 8,
+            "total": 8,
+            "unknown_false_accept": 0
+          },
+          "family:prediction": {
+            "abstained": 32,
+            "correct": 32,
+            "total": 32,
+            "unknown_false_accept": 0
+          },
+          "family:semantic": {
+            "abstained": 1,
+            "correct": 63,
+            "total": 64,
+            "unknown_false_accept": 0
+          },
+          "family:skill": {
+            "abstained": 0,
+            "correct": 64,
+            "total": 64,
+            "unknown_false_accept": 0
+          },
+          "family:temporal": {
+            "abstained": 12,
+            "correct": 12,
+            "total": 16,
+            "unknown_false_accept": 4
+          },
+          "family:translation": {
+            "abstained": 8,
+            "correct": 8,
+            "total": 8,
+            "unknown_false_accept": 0
+          },
+          "language:en": {
+            "abstained": 201,
+            "correct": 381,
+            "total": 424,
+            "unknown_false_accept": 37
+          },
+          "language:zh": {
+            "abstained": 43,
+            "correct": 69,
+            "total": 88,
+            "unknown_false_accept": 0
+          },
+          "role:compose": {
+            "abstained": 24,
+            "correct": 104,
+            "total": 128,
+            "unknown_false_accept": 0
+          },
+          "role:semantic": {
+            "abstained": 1,
+            "correct": 63,
+            "total": 64,
+            "unknown_false_accept": 0
+          },
+          "role:skill": {
+            "abstained": 0,
+            "correct": 64,
+            "total": 64,
+            "unknown_false_accept": 0
+          },
+          "role:unknown": {
+            "abstained": 219,
+            "correct": 219,
+            "total": 256,
+            "unknown_false_accept": 37
+          }
+        }
+      },
+      "formal_held": {
+        "path": "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/semantic-isolated-r2/semantic-attempt2/formal_held-python.json",
+        "sha256": "707473e905bb10ce289d112e2115462898d03c511283e0aefc69cd4aeec9385b",
+        "rows": 320,
+        "queries_sha256": "2c58f0ab5a5f5ffdafd6d99f51f51027ebccaf8b838bd6a105720532d0c102a9",
+        "groups": {
+          "family:compose": {
+            "abstained": 65,
+            "correct": 63,
+            "total": 128,
+            "unknown_false_accept": 0
+          },
+          "family:semantic": {
+            "abstained": 8,
+            "correct": 56,
+            "total": 64,
+            "unknown_false_accept": 0
+          },
+          "family:skill": {
+            "abstained": 6,
+            "correct": 58,
+            "total": 64,
+            "unknown_false_accept": 0
+          },
+          "family:unknown": {
+            "abstained": 64,
+            "correct": 64,
+            "total": 64,
+            "unknown_false_accept": 0
+          },
+          "language:en": {
+            "abstained": 143,
+            "correct": 241,
+            "total": 320,
+            "unknown_false_accept": 0
+          },
+          "role:compose": {
+            "abstained": 65,
+            "correct": 63,
+            "total": 128,
+            "unknown_false_accept": 0
+          },
+          "role:semantic": {
+            "abstained": 8,
+            "correct": 56,
+            "total": 64,
+            "unknown_false_accept": 0
+          },
+          "role:skill": {
+            "abstained": 6,
+            "correct": 58,
+            "total": 64,
+            "unknown_false_accept": 0
+          },
+          "role:unknown": {
+            "abstained": 64,
+            "correct": 64,
+            "total": 64,
+            "unknown_false_accept": 0
+          }
+        }
+      },
+      "old_challenge": {
+        "path": "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/semantic-isolated-r2/semantic-attempt2/old_challenge-python.json",
+        "sha256": "39e0e8bf0854b2a023e31fd68e8874adce15939161415f9684d098318a67226e",
+        "rows": 384,
+        "queries_sha256": "d5fd57ec0a44e8cf4fde9294cc565ad72453920a7e66a53aa71a155c83415060",
+        "groups": {
+          "family:compose": {
+            "abstained": 23,
+            "correct": 41,
+            "total": 64,
+            "unknown_false_accept": 0
+          },
+          "family:semantic": {
+            "abstained": 16,
+            "correct": 48,
+            "total": 64,
+            "unknown_false_accept": 0
+          },
+          "family:skill": {
+            "abstained": 0,
+            "correct": 64,
+            "total": 64,
+            "unknown_false_accept": 0
+          },
+          "family:unknown": {
+            "abstained": 186,
+            "correct": 186,
+            "total": 192,
+            "unknown_false_accept": 6
+          },
+          "language:en": {
+            "abstained": 225,
+            "correct": 339,
+            "total": 384,
+            "unknown_false_accept": 6
+          },
+          "role:compose": {
+            "abstained": 23,
+            "correct": 41,
+            "total": 64,
+            "unknown_false_accept": 0
+          },
+          "role:semantic": {
+            "abstained": 16,
+            "correct": 48,
+            "total": 64,
+            "unknown_false_accept": 0
+          },
+          "role:skill": {
+            "abstained": 0,
+            "correct": 64,
+            "total": 64,
+            "unknown_false_accept": 0
+          },
+          "role:unknown": {
+            "abstained": 186,
+            "correct": 186,
+            "total": 192,
+            "unknown_false_accept": 6
+          }
+        }
+      }
+    },
+    "quality_status": "measured; retain counts including failures; no automatic deployment"
+  },
+  "actual_original_pty": {
+    "session_id": "dpty-8990fde4f2f4531bfc90baa6a352b0b8655a281c3bc3a59de750731de5fde133",
+    "offset": 0,
+    "next_offset": 13152,
+    "available_end": 13152,
+    "chunk_sha256": "3155c7544729b7dfd4973a08aa9fd81ea1eff62f3fccb3ef4ac00f3379ae585a",
+    "output_complete": true,
+    "status": {
+      "boot": "14f92beb-43c6-4786-839e-b57307ae8048",
+      "bytes_seen": 13152,
+      "bytes_stored": 13152,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1793289445583,
+      "exit_code": 0,
+      "output_complete": true,
+      "owner_pid": 796596,
+      "pid": 796597,
+      "state": "exited"
+    }
+  },
+  "raw_response_file": "root-015-read.json",
+  "raw_response_sha256": "539fde59a735e29c27ce79790ce1381fa9e87d393b4251f8de2b47f7e593ff3f"
+}

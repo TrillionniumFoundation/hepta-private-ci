@@ -1,0 +1,459 @@
+{
+  "result": {
+    "schema": "hepta.cell.independent-environment-stage.v1",
+    "state": "ready",
+    "argv": [
+      "/home/qian-qi/work/hepta-architecture-20261025/science-venv/bin/python",
+      "-B",
+      "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2/qualification/memory-cell-adapters/prepare_semantic_environment.py",
+      "--environment",
+      "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2",
+      "--total-seconds",
+      "300",
+      "--wheel-seconds",
+      "60",
+      "--metadata-cache",
+      "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/semantic-isolated-r2/official-metadata",
+      "--metadata-cache-manifest-sha256",
+      "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+      "--metadata-offline"
+    ],
+    "cwd": "/home/qian-qi/worktrees/hepta-cell-semantic-isolated-20261029-r2",
+    "fresh_environment": "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2",
+    "script_sha256": "77249497bca1d9ea555f00e7aec63c1aa9c2e264f6fa3327bf83cd89dab677f6",
+    "exit_code": 0,
+    "bootstrap_result": {
+      "downloads": [
+        {
+          "bytes": 3250221,
+          "file": "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2/verified-wheels/tokenizers-0.22.1-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+          "name": "tokenizers",
+          "official_json": "https://pypi.org/pypi/tokenizers/0.22.1/json",
+          "prior_failures": [],
+          "sha256": "e2ef6063d7a84994129732b47e7915e8710f27f99f3a3260b8a38fc7ccd083f4",
+          "source": "https://pypi.tuna.tsinghua.edu.cn/packages/d0/c6/dc3a0db5a6766416c32c034286d7c2d406da1f498e4de04ab1b8959edd00/tokenizers-0.22.1-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+          "version": "0.22.1"
+        },
+        {
+          "bytes": 17382518,
+          "file": "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2/verified-wheels/onnxruntime-1.23.2-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+          "name": "onnxruntime",
+          "official_json": "https://pypi.org/pypi/onnxruntime/1.23.2/json",
+          "prior_failures": [],
+          "sha256": "8bace4e0d46480fbeeb7bbe1ffe1f080e6663a42d1086ff95c1551f2d39e7872",
+          "source": "https://pypi.tuna.tsinghua.edu.cn/packages/f2/2b/b57c8a2466a3126dbe0a792f56ad7290949b02f47b86216cd47d857e4b77/onnxruntime-1.23.2-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+          "version": "1.23.2"
+        },
+        {
+          "bytes": 46018,
+          "file": "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2/verified-wheels/coloredlogs-15.0.1-py2.py3-none-any.whl",
+          "name": "coloredlogs",
+          "official_json": "https://pypi.org/pypi/coloredlogs/15.0.1/json",
+          "prior_failures": [],
+          "sha256": "612ee75c546f53e92e70049c9dbfcc18c935a2b9a53b66085ce9ef6a6e5c0934",
+          "source": "https://pypi.tuna.tsinghua.edu.cn/packages/a7/06/3d6badcf13db419e25b07041d9c7b4a2c331d3f4e7134445ec5df57714cd/coloredlogs-15.0.1-py2.py3-none-any.whl",
+          "version": "15.0.1"
+        },
+        {
+          "bytes": 846435,
+          "file": "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2/verified-wheels/huggingface_hub-1.33.0-py3-none-any.whl",
+          "name": "huggingface-hub",
+          "official_json": "https://pypi.org/pypi/huggingface-hub/1.33.0/json",
+          "prior_failures": [],
+          "sha256": "04e434b06e100eddbce9a6e817d72693a7884b10a79bd67ab48080d5c07eb899",
+          "source": "https://pypi.tuna.tsinghua.edu.cn/packages/fc/16/963096d224b80909432dc16561a615fd33d2d13beef3ce4c63fa25e40867/huggingface_hub-1.33.0-py3-none-any.whl",
+          "version": "1.33.0"
+        },
+        {
+          "bytes": 26661,
+          "file": "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2/verified-wheels/flatbuffers-25.12.19-py2.py3-none-any.whl",
+          "name": "flatbuffers",
+          "official_json": "https://pypi.org/pypi/flatbuffers/25.12.19/json",
+          "prior_failures": [],
+          "sha256": "7634f50c427838bb021c2d66a3d1168e9d199b0607e6329399f04846d42e20b4",
+          "source": "https://pypi.tuna.tsinghua.edu.cn/packages/e8/2d/d2a548598be01649e2d46231d151a6c56d10b964d94043a335ae56ea2d92/flatbuffers-25.12.19-py2.py3-none-any.whl",
+          "version": "25.12.19"
+        },
+        {
+          "bytes": 343223,
+          "file": "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2/verified-wheels/protobuf-7.36.2-cp310-abi3-manylinux2014_x86_64.whl",
+          "name": "protobuf",
+          "official_json": "https://pypi.org/pypi/protobuf/7.36.2/json",
+          "prior_failures": [],
+          "sha256": "89f23aa53c24553a2416fd4fd1ec06f74fa42b14b546d8883128813f775bbfd2",
+          "source": "https://pypi.tuna.tsinghua.edu.cn/packages/db/f3/3996583dd2906297a637af12114deddf7658af6e683fedb83be061983fb5/protobuf-7.36.2-cp310-abi3-manylinux2014_x86_64.whl",
+          "version": "7.36.2"
+        },
+        {
+          "bytes": 306115,
+          "file": "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2/verified-wheels/joblib-1.6.0-py3-none-any.whl",
+          "name": "joblib",
+          "official_json": "https://pypi.org/pypi/joblib/1.6.0/json",
+          "prior_failures": [],
+          "sha256": "3dbbf9f6e4b592a2357b854608e980fe6390d131d7a82f011a377ef2ebef7aba",
+          "source": "https://pypi.tuna.tsinghua.edu.cn/packages/18/53/84099323c2ec4be98d935f63c033ac4151ee83836ca1050ede3b3aadf155/joblib-1.6.0-py3-none-any.whl",
+          "version": "1.6.0"
+        },
+        {
+          "bytes": 26362,
+          "file": "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2/verified-wheels/threadpoolctl-3.7.0-py3-none-any.whl",
+          "name": "threadpoolctl",
+          "official_json": "https://pypi.org/pypi/threadpoolctl/3.7.0/json",
+          "prior_failures": [],
+          "sha256": "cd8b60b5641b45c67bbf73c64c843235fc2d8a480c87389f52f5dbee893b86be",
+          "source": "https://pypi.tuna.tsinghua.edu.cn/packages/43/3f/f88a53f60a472b46f4023f56d204dd7de33d34c5d2acbfa0d70a674e639e/threadpoolctl-3.7.0-py3-none-any.whl",
+          "version": "3.7.0"
+        },
+        {
+          "bytes": 73517,
+          "file": "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2/verified-wheels/httpx-0.28.1-py3-none-any.whl",
+          "name": "httpx",
+          "official_json": "https://pypi.org/pypi/httpx/0.28.1/json",
+          "prior_failures": [],
+          "sha256": "d909fcccc110f8c7faf814ca82a9a4d816bc5a6dbfea25d6591d6985b8ba59ad",
+          "source": "https://pypi.tuna.tsinghua.edu.cn/packages/2a/39/e50c7c3a983047577ee07d2a9e53faf5a69493943ec3f6a384bdc792deb2/httpx-0.28.1-py3-none-any.whl",
+          "version": "0.28.1"
+        },
+        {
+          "bytes": 86794,
+          "file": "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2/verified-wheels/humanfriendly-10.0-py2.py3-none-any.whl",
+          "name": "humanfriendly",
+          "official_json": "https://pypi.org/pypi/humanfriendly/10.0/json",
+          "prior_failures": [],
+          "sha256": "1697e1a8a8f550fd43c2865cd84542fc175a61dcb779b6fee18cf6b6ccba1477",
+          "source": "https://pypi.tuna.tsinghua.edu.cn/packages/f0/0f/310fb31e39e2d734ccaa2c0fb981ee41f7bd5056ce9bc29b2248bd569169/humanfriendly-10.0-py2.py3-none-any.whl",
+          "version": "10.0"
+        },
+        {
+          "bytes": 22228,
+          "file": "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2/verified-wheels/cloudpickle-3.1.2-py3-none-any.whl",
+          "name": "cloudpickle",
+          "official_json": "https://pypi.org/pypi/cloudpickle/3.1.2/json",
+          "prior_failures": [],
+          "sha256": "9acb47f6afd73f60dc1df93bb801b472f05ff42fa6c84167d25cb206be1fbf4a",
+          "source": "https://pypi.tuna.tsinghua.edu.cn/packages/88/39/799be3f2f0f38cc727ee3b4f1445fe6d5e4133064ec2e4115069418a5bb6/cloudpickle-3.1.2-py3-none-any.whl",
+          "version": "3.1.2"
+        },
+        {
+          "bytes": 8900022,
+          "file": "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2/verified-wheels/scikit_learn-1.8.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+          "name": "scikit-learn",
+          "official_json": "https://pypi.org/pypi/scikit-learn/1.8.0/json",
+          "prior_failures": [
+            {
+              "error": "bounded wheel source timed out",
+              "url": "https://pypi.tuna.tsinghua.edu.cn/packages/38/cf/06896db3f71c75902a8e9943b444a56e727418f6b4b4a90c98c934f51ed4/scikit_learn-1.8.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl"
+            }
+          ],
+          "sha256": "8fdf95767f989b0cfedb85f7ed8ca215d4be728031f56ff5a519ee1e3276dc2e",
+          "source": "https://mirrors.bfsu.edu.cn/pypi/web/packages/38/cf/06896db3f71c75902a8e9943b444a56e727418f6b4b4a90c98c934f51ed4/scikit_learn-1.8.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+          "version": "1.8.0"
+        },
+        {
+          "bytes": 135082,
+          "file": "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2/verified-wheels/certifi-2026.10.23-py3-none-any.whl",
+          "name": "certifi",
+          "official_json": "https://pypi.org/pypi/certifi/2026.10.23/json",
+          "prior_failures": [],
+          "sha256": "e9b54de76e530bb6cf0ccd036787103acb58fd42ba930ea8bf948ddbaa2f61d1",
+          "source": "https://pypi.tuna.tsinghua.edu.cn/packages/32/d1/a3652fe2c19134d0d15922177821d863cbd7e842d53a21bbe7e8e3a1b5ac/certifi-2026.10.23-py3-none-any.whl",
+          "version": "2026.10.23"
+        },
+        {
+          "bytes": 78784,
+          "file": "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2/verified-wheels/httpcore-1.0.9-py3-none-any.whl",
+          "name": "httpcore",
+          "official_json": "https://pypi.org/pypi/httpcore/1.0.9/json",
+          "prior_failures": [],
+          "sha256": "2d400746a40668fc9dec9810239072b40b4484b640a8c38fd654a024c7a1bf55",
+          "source": "https://pypi.tuna.tsinghua.edu.cn/packages/7e/f5/f66802a942d491edb555dd61e3a9961140fd64c90bce1eafd741609d334d/httpcore-1.0.9-py3-none-any.whl",
+          "version": "1.0.9"
+        }
+      ],
+      "elapsed_seconds": 98.24915968399728,
+      "environment": "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2",
+      "imports": {
+        "packages": {
+          "numpy": {
+            "file": "/home/qian-qi/work/hepta-architecture-20261025/science-venv/lib/python3.13/site-packages/numpy/__init__.py",
+            "version": "2.3.5"
+          },
+          "onnxruntime": {
+            "file": "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2/lib/python3.13/site-packages/onnxruntime/__init__.py",
+            "version": "1.23.2"
+          },
+          "scikit-learn": {
+            "file": "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2/lib/python3.13/site-packages/sklearn/__init__.py",
+            "version": "1.8.0"
+          },
+          "scipy": {
+            "file": "/home/qian-qi/work/hepta-architecture-20261025/science-venv/lib/python3.13/site-packages/scipy/__init__.py",
+            "version": "1.17.0"
+          },
+          "threadpoolctl": {
+            "file": "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2/lib/python3.13/site-packages/threadpoolctl.py",
+            "version": "3.7.0"
+          },
+          "tokenizers": {
+            "file": "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2/lib/python3.13/site-packages/tokenizers/__init__.py",
+            "version": "0.22.1"
+          }
+        },
+        "prefix": "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2"
+      },
+      "lock_sha256": "ce26798531a89496f2f675ea39388854454a15257e4f9a61e378d370964aaf6f",
+      "metadata_attempt_seconds": [
+        20,
+        30
+      ],
+      "metadata_attempts": [],
+      "metadata_cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+      "metadata_offline": true,
+      "metadata_sources": [
+        {
+          "bytes": 20400,
+          "cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+          "sha256": "5fd51a6c16e2c277a4ac5e25e242514cc09ba0449b99be518fb25c31465f866b",
+          "source": "pinned_official_json_cache",
+          "url": "https://pypi.org/pypi/tokenizers/0.22.1/json"
+        },
+        {
+          "bytes": 24900,
+          "cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+          "sha256": "08b99b4d50b9638e04bb662cac2636b1db1459cb170a3f263698a1a72310df30",
+          "source": "pinned_official_json_cache",
+          "url": "https://pypi.org/pypi/onnxruntime/1.23.2/json"
+        },
+        {
+          "bytes": 44007,
+          "cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+          "sha256": "3a03f6c0768b1ff0fbd319286501fe34f4d8bc5917d90239a1c9caff203ab6ae",
+          "source": "pinned_official_json_cache",
+          "url": "https://pypi.org/pypi/scikit-learn/1.8.0/json"
+        },
+        {
+          "bytes": 548637,
+          "cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+          "sha256": "30bf290acad935967f13f4491c59fbd3184af382a7f6e0ee8e715e57b1fb1238",
+          "source": "pinned_official_json_cache",
+          "url": "https://pypi.org/pypi/huggingface-hub/json"
+        },
+        {
+          "bytes": 17456,
+          "cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+          "sha256": "a0a2e79e107b6a01e94b8dbcb3a77ef10c9a259e1888cd32aaa8407c348542b9",
+          "source": "pinned_official_json_cache",
+          "url": "https://pypi.org/pypi/huggingface-hub/1.33.0/json"
+        },
+        {
+          "bytes": 88449,
+          "cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+          "sha256": "6bc8d726a0e2c90ff15ff37f77ca1dacb5ee8171af175676d136c9ae7f863776",
+          "source": "pinned_official_json_cache",
+          "url": "https://pypi.org/pypi/coloredlogs/json"
+        },
+        {
+          "bytes": 14649,
+          "cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+          "sha256": "9867a11ae01df4d7097b75b7d86809fa0b75c3d066d6b05ff0eb613b68bda901",
+          "source": "pinned_official_json_cache",
+          "url": "https://pypi.org/pypi/coloredlogs/15.0.1/json"
+        },
+        {
+          "bytes": 41680,
+          "cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+          "sha256": "26db18491b78eab72f3904f3312b948b77f2b8fd97fec5888a7566c7e83eb94d",
+          "source": "pinned_official_json_cache",
+          "url": "https://pypi.org/pypi/flatbuffers/json"
+        },
+        {
+          "bytes": 2562,
+          "cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+          "sha256": "3800bcba3177624044bb53f06f4a588061c10034f93467a0d163549b0928045a",
+          "source": "pinned_official_json_cache",
+          "url": "https://pypi.org/pypi/flatbuffers/25.12.19/json"
+        },
+        {
+          "bytes": 2471556,
+          "cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+          "sha256": "3b7cb502426652f06653f744d41489118d80fcf1723d569db2c9f9a17e6668ff",
+          "source": "pinned_official_json_cache",
+          "url": "https://pypi.org/pypi/protobuf/json"
+        },
+        {
+          "bytes": 7940,
+          "cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+          "sha256": "090d6bb0e21b26299221770a798ec48c5d45dc4d71a374b44b5e0e7c3a7c47f1",
+          "source": "pinned_official_json_cache",
+          "url": "https://pypi.org/pypi/protobuf/7.36.2/json"
+        },
+        {
+          "bytes": 168478,
+          "cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+          "sha256": "d26d73afcf179911d9407c71e89ab9e23a6d43e308e5e6a250515a7b0ebd1cb2",
+          "source": "pinned_official_json_cache",
+          "url": "https://pypi.org/pypi/joblib/json"
+        },
+        {
+          "bytes": 8495,
+          "cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+          "sha256": "7b5f78a64b3685fd996ea5e641ae14b8990a40f3998a24a9e7adc03d84f7e7fa",
+          "source": "pinned_official_json_cache",
+          "url": "https://pypi.org/pypi/joblib/1.6.0/json"
+        },
+        {
+          "bytes": 47230,
+          "cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+          "sha256": "52247d0f5d40026d87d5f90dbc1cc00522c9d50c99fa736472780442e7f0479b",
+          "source": "pinned_official_json_cache",
+          "url": "https://pypi.org/pypi/threadpoolctl/json"
+        },
+        {
+          "bytes": 26978,
+          "cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+          "sha256": "4992649d4a9d522c81340716d1652452f9b89f73142b04d34157317e90e24bac",
+          "source": "pinned_official_json_cache",
+          "url": "https://pypi.org/pypi/threadpoolctl/3.7.0/json"
+        },
+        {
+          "bytes": 119911,
+          "cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+          "sha256": "bb69a37ba295d008ec1ae05b324c4f5e64fba48b7276189ebf2a2920dd2f1fc8",
+          "source": "pinned_official_json_cache",
+          "url": "https://pypi.org/pypi/httpx/json"
+        },
+        {
+          "bytes": 9117,
+          "cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+          "sha256": "293bfab7bf587fcd0825f1bd8eed8e6303285ba14801b15659853827cbe30796",
+          "source": "pinned_official_json_cache",
+          "url": "https://pypi.org/pypi/httpx/0.28.1/json"
+        },
+        {
+          "bytes": 148287,
+          "cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+          "sha256": "95ae47daefba2d8236577d7667b71a72afe37e72408d4def466087acc2092a26",
+          "source": "pinned_official_json_cache",
+          "url": "https://pypi.org/pypi/humanfriendly/json"
+        },
+        {
+          "bytes": 11475,
+          "cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+          "sha256": "665722712a34f81db0dabb0936cbb6e9754f925aa45b48f06aa4f3c12adec738",
+          "source": "pinned_official_json_cache",
+          "url": "https://pypi.org/pypi/humanfriendly/10.0/json"
+        },
+        {
+          "bytes": 73245,
+          "cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+          "sha256": "7401b3bc694060d6229f4f1f2510881db681fc1e7359f5d9caf4d740aa8f5cac",
+          "source": "pinned_official_json_cache",
+          "url": "https://pypi.org/pypi/cloudpickle/json"
+        },
+        {
+          "bytes": 9624,
+          "cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+          "sha256": "36cd9b8b2a3b6691c78f87bac524652edbe9e81cda0f13767577174de31954bc",
+          "source": "pinned_official_json_cache",
+          "url": "https://pypi.org/pypi/cloudpickle/3.1.2/json"
+        },
+        {
+          "bytes": 117842,
+          "cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+          "sha256": "08bd0534b646a844c933436e3f16632b0dbfabc2458fe7022250411f2909e1cb",
+          "source": "pinned_official_json_cache",
+          "url": "https://pypi.org/pypi/certifi/json"
+        },
+        {
+          "bytes": 4631,
+          "cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+          "sha256": "546ce90e02c152f5ff565baca6bc2a8f43c355855f637756f49a0143e312bdb2",
+          "source": "pinned_official_json_cache",
+          "url": "https://pypi.org/pypi/certifi/2026.10.23/json"
+        },
+        {
+          "bytes": 115200,
+          "cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+          "sha256": "d73786f0235ce97aa3239d411456be526320325e3b259b6fd25a0ce93775771c",
+          "source": "pinned_official_json_cache",
+          "url": "https://pypi.org/pypi/httpcore/json"
+        },
+        {
+          "bytes": 24057,
+          "cache_manifest_sha256": "13c5795ac184471ce61ed4b36ca7303fafc587828426df19e879e9104a614897",
+          "sha256": "e26eca5c3d288fe9e6446af9bcbca1038ba688629d5c8a2886c47d74718d87a2",
+          "source": "pinned_official_json_cache",
+          "url": "https://pypi.org/pypi/httpcore/1.0.9/json"
+        }
+      ],
+      "original_science_metadata_unchanged": true,
+      "python_version": "3.13.12 (main, Mar 10 2026, 18:17:38) [Clang 21.1.4 ]",
+      "read_only_reuse": {
+        "numpy": "2.3.5",
+        "scipy": "1.17.0"
+      },
+      "root_pins": {
+        "onnxruntime": "1.23.2",
+        "scikit-learn": "1.8.0",
+        "tokenizers": "0.22.1"
+      },
+      "runtime_instruction": "Use this Python with -B; encoder worker already supplies -I -u -B.",
+      "schema": "hepta.memory.semantic-environment.v1",
+      "science_python": "/home/qian-qi/work/hepta-architecture-20261025/science-venv/bin/python",
+      "science_site": "/home/qian-qi/work/hepta-architecture-20261025/science-venv/lib/python3.13/site-packages",
+      "script_sha256": "77249497bca1d9ea555f00e7aec63c1aa9c2e264f6fa3327bf83cd89dab677f6",
+      "site_packages": "/home/qian-qi/work/hepta-cell-semantic-isolated-env-20261029-r2/lib/python3.13/site-packages",
+      "status": "ready"
+    },
+    "elapsed_seconds": 98.68431200395571
+  },
+  "complete_original_pty": [
+    {
+      "session_id": "dpty-53d5d1a64d1a271b84b87f5edbe1c99c3ceb88af29530313b52641836915e343",
+      "offset": 0,
+      "next_offset": 16384,
+      "available_end": 18200,
+      "chunk_sha256": "2f567cbdaca3ed44301e3e9db80f75d7cc9d740d3f61ce9c37a54ed3f7262df3",
+      "output_complete": true,
+      "status": {
+        "boot": "14f92beb-43c6-4786-839e-b57307ae8048",
+        "bytes_seen": 18200,
+        "bytes_stored": 18200,
+        "capture_error": null,
+        "closed": false,
+        "created_unix_ms": 1793288469134,
+        "exit_code": 0,
+        "output_complete": true,
+        "owner_pid": 721908,
+        "pid": 721913,
+        "state": "exited"
+      },
+      "raw_response_file": "root-008-read.json",
+      "raw_response_sha256": "2a250017bca4663223ae149b5d58ee4bf27e6e3e179d1fc88ff62222907a9339"
+    },
+    {
+      "session_id": "dpty-53d5d1a64d1a271b84b87f5edbe1c99c3ceb88af29530313b52641836915e343",
+      "offset": 16384,
+      "next_offset": 18200,
+      "available_end": 18200,
+      "chunk_sha256": "13eeda639acda25b2d83b92a47dfa0a6d208134a862ea10e7918c052fa46d03b",
+      "output_complete": true,
+      "status": {
+        "boot": "14f92beb-43c6-4786-839e-b57307ae8048",
+        "bytes_seen": 18200,
+        "bytes_stored": 18200,
+        "capture_error": null,
+        "closed": false,
+        "created_unix_ms": 1793288469134,
+        "exit_code": 0,
+        "output_complete": true,
+        "owner_pid": 721908,
+        "pid": 721913,
+        "state": "exited"
+      },
+      "raw_response_file": "root-008-tail.json",
+      "raw_response_sha256": "deda8bce7bcadacd685d63c7173c0e9b2638b6a9b2fbb304fae9d72e7ab25fd9"
+    }
+  ],
+  "original_log_sha256": "1234da4a90540723858b7f41d1899fa4840ef7e8c9d79d7b899ebc692861fea6"
+}

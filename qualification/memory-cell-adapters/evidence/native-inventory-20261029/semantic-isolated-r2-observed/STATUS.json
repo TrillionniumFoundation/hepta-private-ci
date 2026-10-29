@@ -1,0 +1,95 @@
+{
+  "schema": "hepta.cell.observed-p1-state.v2",
+  "base_commit": "0f41c4968eea63727c69e2b979491e94a99a9dbb",
+  "existing_pr": 4290,
+  "existing_published_head": "2021bd35616c1a8092238d5f408caee510c688ab",
+  "source_count": 82,
+  "source_format_state": "pre-fix/fmt",
+  "direct_numeric": {
+    "state": "passed",
+    "cases": 48,
+    "original_batch_sizes": [
+      1,
+      8
+    ],
+    "maximum_absolute_logit_error": 4.1961669921875e-05,
+    "all_typed_equal": true,
+    "all_tolerances_passed": true
+  },
+  "semantic": {
+    "fit_state": "completed",
+    "quality": "failed acceptance; not enabled by default",
+    "score_unit": "complete route equality, not end-to-end parameter/owner answer",
+    "model_sha256": "c0b5c43fbaf7f1d2ea88355ba0a6a42eecbe45983050932419bc73b6ca7ca491",
+    "new_known_correct": 231,
+    "new_known_total": 256,
+    "new_unknown_false_accept": 37,
+    "new_unknown_total": 256,
+    "held_known_correct": 177,
+    "held_known_total": 256,
+    "held_unknown_false_accept": 0,
+    "held_unknown_total": 64,
+    "challenge_known_correct": 153,
+    "challenge_known_total": 192,
+    "challenge_unknown_false_accept": 6,
+    "challenge_unknown_total": 192,
+    "new_english_known_correct": 186,
+    "new_english_known_total": 192,
+    "new_english_unknown_false_accept": 37,
+    "new_english_unknown_total": 232,
+    "new_chinese_known_correct": 45,
+    "new_chinese_known_total": 64,
+    "new_chinese_unknown_false_accept": 0,
+    "new_chinese_unknown_total": 24
+  },
+  "native_semantic_and_owner": {
+    "session_id": "dpty-1850661469cff3cdb5328199ee910e8ad138a0f0ff249b0c206f17ae1be20704",
+    "start_acknowledged": true,
+    "current_terminal": "unknown",
+    "read_refusal": "request audit unavailable; dispatch refused",
+    "native_route_parity_claimed": false,
+    "actual_four_case_owner_pass_claimed": false
+  },
+  "unexecuted_followups": [
+    {
+      "path": "requests/018_restore_tooling_and_finish_owner.json",
+      "bytes": 25720,
+      "sha256": "3e6b7ec2004ab3700a40bc2d5e49d047efb4db5bd349ada8f9ed13c9da576356",
+      "idempotency_key": "hepta-cell-isolated-r2-original-tooling-owner-v1-20261029",
+      "tool": "hepta_runtime_full_operator.pty_start",
+      "dispatched": false,
+      "reason": "Runtime request audit unavailable; dispatch refused"
+    },
+    {
+      "path": "requests/019_scoped_fix_fmt_and_source.json",
+      "bytes": 7482,
+      "sha256": "e61553c3a95b922632595b1584a248f39d43ab7e7b644db06999cd2ac8b1d4a0",
+      "idempotency_key": "hepta-cell-isolated-r2-scoped-fix-fmt-v1-20261029",
+      "tool": "hepta_runtime_full_operator.pty_start",
+      "dispatched": false,
+      "reason": "Runtime request audit unavailable; dispatch refused"
+    },
+    {
+      "path": "requests/020_collect_complete_evidence.json",
+      "bytes": 11014,
+      "sha256": "2b48726416fc371b5339ae218d6019ce9fabc7773463ec2d51ef399a85907b0e",
+      "idempotency_key": "hepta-cell-isolated-r2-complete-evidence-archive-v1-20261029",
+      "tool": "hepta_runtime_full_operator.pty_start",
+      "dispatched": false,
+      "reason": "Runtime request audit unavailable; dispatch refused"
+    }
+  ],
+  "full_remote_raw_archive_received": false,
+  "observed_archive_scope": "all saved local original tool responses, exact request/script descriptors, received summaries and independent local audit",
+  "not_in_current_archive": [
+    "remote full per-case Python/Rust score artifacts",
+    "remote fitted head parameter bytes",
+    "current stage016 terminal",
+    "remote original stdout/stderr not yet read",
+    "post-fix/fmt source"
+  ],
+  "production_deployment": false,
+  "old_ngram_failure_retained": true,
+  "original_semantic_operation_unknown": true,
+  "old_unknown_operation_replayed": false
+}

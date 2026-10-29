@@ -1,0 +1,131 @@
+{
+  "result": {
+    "schema": "hepta.cell.exact-pinned-encoder-recovery.v1",
+    "state": "ready",
+    "source_base": "https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/",
+    "revision": "e8f8c211226b894fcb81acc59f3b34ba3efd5f42",
+    "asset_directory": "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/semantic-isolated-r2/semantic-attempt2/encoder",
+    "files": [
+      {
+        "relative": "1_Pooling/config.json",
+        "source_url": "https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/1_Pooling/config.json",
+        "bytes": 190,
+        "sha256": "4be450dde3b0273bb9787637cfbd28fe04a7ba6ab9d36ac48e92b11e350ffc23",
+        "attempts": [
+          {
+            "index": 1,
+            "socket_timeout_seconds": 20,
+            "started_elapsed_seconds": 0.0010012389975599945,
+            "final_hostname": "huggingface.co",
+            "state": "verified"
+          }
+        ]
+      },
+      {
+        "relative": "config.json",
+        "source_url": "https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/config.json",
+        "bytes": 645,
+        "sha256": "6300193cb75e01cf80c96decef7187dfb33094d97cc1490b7ead6ff134476e4e",
+        "attempts": [
+          {
+            "index": 1,
+            "socket_timeout_seconds": 20,
+            "started_elapsed_seconds": 0.0020205070031806827,
+            "final_hostname": "huggingface.co",
+            "state": "verified"
+          }
+        ]
+      },
+      {
+        "relative": "special_tokens_map.json",
+        "source_url": "https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/special_tokens_map.json",
+        "bytes": 239,
+        "sha256": "378eb3bf733eb16e65792d7e3fda5b8a4631387ca04d2015199c4d4f22ae554d",
+        "attempts": [
+          {
+            "index": 1,
+            "socket_timeout_seconds": 20,
+            "started_elapsed_seconds": 2.5455423750099726,
+            "final_hostname": "huggingface.co",
+            "state": "verified"
+          }
+        ]
+      },
+      {
+        "relative": "tokenizer_config.json",
+        "source_url": "https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer_config.json",
+        "bytes": 526,
+        "sha256": "5036ea374ffedd706e3bef33e2e0d6953cb868ef8a490e76e32ba0faa37a6b9b",
+        "attempts": [
+          {
+            "index": 1,
+            "socket_timeout_seconds": 20,
+            "started_elapsed_seconds": 7.018896116001997,
+            "final_hostname": "huggingface.co",
+            "state": "verified"
+          }
+        ]
+      },
+      {
+        "relative": "tokenizer.json",
+        "source_url": "https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/tokenizer.json",
+        "bytes": 9081518,
+        "sha256": "2c3387be76557bd40970cec13153b3bbf80407865484b209e655e5e4729076b8",
+        "attempts": [
+          {
+            "index": 1,
+            "socket_timeout_seconds": 20,
+            "started_elapsed_seconds": 6.678173164022155,
+            "final_hostname": "us.aws.cdn.hf.co",
+            "state": "verified"
+          }
+        ]
+      },
+      {
+        "relative": "onnx/model_quint8_avx2.onnx",
+        "source_url": "https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/e8f8c211226b894fcb81acc59f3b34ba3efd5f42/onnx/model_quint8_avx2.onnx",
+        "bytes": 118453870,
+        "sha256": "98a01d88b7de996cdea58c32ca71208c09968d143798814b2ea09d3439dc334f",
+        "attempts": [
+          {
+            "index": 1,
+            "socket_timeout_seconds": 20,
+            "started_elapsed_seconds": 0.0027629430405795574,
+            "final_hostname": "us.aws.cdn.hf.co",
+            "state": "verified"
+          }
+        ]
+      }
+    ],
+    "errors": [],
+    "prior_attempt": "../stage2-python/RESULT.json",
+    "prior_wrong_asset_directory_unchanged": true,
+    "tls_verification": "default certificate verification; HTTPS redirects only",
+    "maximum_seconds": 300,
+    "elapsed_seconds": 39.26418205304071,
+    "verified_total_bytes": 127536988
+  },
+  "actual_original_pty": {
+    "session_id": "dpty-170683621995c4324ce94a37361b160a0514d405df823e65a3eacaf938b7259b",
+    "offset": 0,
+    "next_offset": 4556,
+    "available_end": 4556,
+    "chunk_sha256": "7c6653dcf6f3b609d1af0d95de523c5b2f2ada30fff2ae69b95a19614638dc0b",
+    "output_complete": true,
+    "status": {
+      "boot": "14f92beb-43c6-4786-839e-b57307ae8048",
+      "bytes_seen": 4556,
+      "bytes_stored": 4556,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1793289284985,
+      "exit_code": 0,
+      "output_complete": true,
+      "owner_pid": 785501,
+      "pid": 785506,
+      "state": "exited"
+    }
+  },
+  "raw_response_file": "root-014-read.json",
+  "raw_response_sha256": "6a9f11d4e6af71e19d327455fdd4a6cc089ec10b393ddd60744641fec32f979d"
+}
