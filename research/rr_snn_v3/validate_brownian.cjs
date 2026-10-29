@@ -129,10 +129,11 @@ function validateRRBrownian(B) {
     ()=>B.firstPassageQuantile(0,1,0,1,1),()=>B.firstPassageQuantile(1,1,0,1,1),
     ()=>B.survivorQuantile(.5,1,-20,1,1),()=>B.killedCdf(-1,1,0,1,1),
     ()=>B.firstPassageScore(1,0,1,0),()=>B.probabilities(1e-100,0,1,1),
-    ()=>B.thresholdValue({evidence:1,drift:0,sigma:1,deadline:1,threshold:1,renewLoss:0})
+    ()=>B.thresholdValue({evidence:1,drift:0,sigma:1,deadline:1,threshold:1,renewLoss:0}),
+    ()=>B.firstPassageQuantile(.5,1,0,1,1e100)
   ];
   const rejected=invalid.map(fn=>{try{fn();return false;}catch{return true;}});
-  assert(rejected.every(Boolean),"11 invalid or unresolved numerical cases reject",rejected);
+  assert(rejected.every(Boolean),"12 invalid or unresolved numerical cases reject",rejected);
   return {schema:"rr-snn-v3-brownian-validation-1",execution:"pure JavaScript V8",
     passed:checks.length,checks,raw,claims:{analyticIntervalFormulas:true,
       inverseCdfNumerical:true,continuationQuadratureNumerical:true,

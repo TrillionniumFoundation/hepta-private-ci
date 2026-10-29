@@ -145,7 +145,10 @@ const RRBrownian = (() => {
       if(mid===lo||mid===hi)break;
       if(probabilities(x,mu,sigma,mid).logHit<Math.log(u))lo=mid;else hi=mid;
     }
-    return (lo+hi)/2;
+    const answer=(lo+hi)/2;
+    check(Math.abs(probabilities(x,mu,sigma,answer).logHit-Math.log(u))<5e-9,
+      "first passage inverse exceeds declared numerical resolution");
+    return answer;
   }
   function survivorQuantile(u,x,mu,sigma,t) {
     check(Number.isFinite(u)&&u>0&&u<1,"survivor quantile must be strictly between zero and one");
@@ -162,7 +165,10 @@ const RRBrownian = (() => {
       if(mid===lo||mid===hi)break;
       if(killedCdf(mid,x,mu,sigma,t)<target)lo=mid;else hi=mid;
     }
-    return (lo+hi)/2;
+    const answer=(lo+hi)/2;
+    check(Math.abs(killedCdf(answer,x,mu,sigma,t)/p.survival-u)<5e-9,
+      "survivor inverse exceeds declared numerical resolution");
+    return answer;
   }
   function interval(uHit,uEnd,x,mu,sigma,t) {
     const at=firstPassageQuantile(uHit,x,mu,sigma,t);

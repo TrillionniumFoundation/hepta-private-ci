@@ -95,7 +95,8 @@ No moving-boundary closed form is asserted.
 Parameters must be finite with x,sigma>0 and t>=0. Explicit work/magnitude
 caps reject unsupported values. Unresolved positive image subtraction
 rejects rather than silently returning an invalid law. Survivor inversion
-requires S>=1e-12; derivative overflow rejects.
+requires S>=1e-12; derivative overflow rejects. Inverse-CDF work caps
+also check the final probability residual, rejecting a poorly resolved root.
 
 Validation quadrature truncates beyond 12 Gaussian standard deviations.
 Reported error is fixture agreement, not a universal certified bound.
@@ -107,7 +108,7 @@ sigma=1 and t={.01,.1,1,10}; extreme cancellation explicitly rejects.
 There are 19 checks: independent normal-density quadrature, probability
 mass, CDF/density agreement, killed Chapman-Kolmogorov composition, 36
 hit/censored/endpoint derivative components, inverse CDF residuals,
-non-hitting mass, eleven rejection cases and the restricted policy example.
+non-hitting mass, twelve rejection cases and the restricted policy example.
 
 A fixed-seed diagnostic uses 4,096 conditional endpoints and a subsequent
 parameter switch, compared with independent killed-density integrals.
