@@ -41,6 +41,7 @@ use super::chain_final_use_guards;
 use super::now_unix_seconds;
 use super::secret_like;
 use crate::extension::HeptaMemoryThreadState;
+use crate::framing::canonical_workspace_path;
 use crate::framing::digest_many;
 use crate::framing::path_identity_bytes;
 use crate::framing::workspace_digest;
@@ -236,9 +237,11 @@ impl FederatedCognitiveExtension {
             return None;
         }
         let prepared = input.turn_store.get::<PreparedFederatedAttachment>()?;
+        let workspace = canonical_workspace_path(input.cwd)?;
         if prepared.thread_id != input.thread_id
             || prepared.turn_id != input.turn_id
-            || path_identity_bytes(prepared.workspace.as_path()) != path_identity_bytes(input.cwd)
+            || path_identity_bytes(prepared.workspace.as_path())
+                != path_identity_bytes(workspace.as_path())
         {
             return None;
         }
@@ -252,8 +255,10 @@ impl FederatedCognitiveExtension {
             return None;
         }
         let now = now_unix_seconds()?;
-        let access =
-            FederationConsumerAccess::new(self.consumer_agent_id()?, workspace_digest(input.cwd));
+        let access = FederationConsumerAccess::new(
+            self.consumer_agent_id()?,
+            workspace_digest(workspace.as_path()),
+        );
         let Ok(statuses) = self.revalidate_many(&access, &prepared.bindings, now).await else {
             return None;
         };
@@ -390,10 +395,9 @@ impl TurnInputContributor for FederatedCognitiveExtension {
             if primary_environments.next().is_some() {
                 return Vec::new();
             }
-            let workspace = primary.cwd.to_path_buf();
-            if !workspace.is_absolute() {
+            let Some(workspace) = canonical_workspace_path(&primary.cwd.to_path_buf()) else {
                 return Vec::new();
-            }
+            };
             let capture = capture_directive(&input.user_input);
             let Some(query) = capture.query else {
                 return Vec::new();

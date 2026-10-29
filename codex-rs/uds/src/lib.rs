@@ -331,7 +331,14 @@ mod platform {
     }
 
     pub(super) async fn is_stale_socket_path(socket_path: &Path) -> IoResult<bool> {
-        tokio::fs::try_exists(socket_path).await
+        // Native Windows AF_UNIX rendezvous entries are reparse points. Followed
+        // metadata can report a missing target even though the entry remains.
+        // Callers still probe the live socket before removing a stale entry.
+        match tokio::fs::symlink_metadata(socket_path).await {
+            Ok(_) => Ok(true),
+            Err(error) if error.kind() == io::ErrorKind::NotFound => Ok(false),
+            Err(error) => Err(error),
+        }
     }
 
     async fn spawn_blocking_io<T>(

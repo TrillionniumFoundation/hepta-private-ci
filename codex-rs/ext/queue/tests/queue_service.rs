@@ -153,6 +153,19 @@ fn install_registered_queue(
     Ok(service)
 }
 
+fn python_hook_command(script_path: &Path) -> String {
+    #[cfg(windows)]
+    {
+        // Windows runners provide python.exe; python3 can resolve to an app alias.
+        format!("python \"{}\"", script_path.display())
+    }
+    #[cfg(not(windows))]
+    {
+        let path = script_path.to_string_lossy().replace('\'', "'\\''");
+        format!("python3 '{path}'")
+    }
+}
+
 fn write_rejecting_prompt_hook(home: &Path) {
     let script_path = home.join("queue_prompt_hook.py");
     let log_path = home.join("queue_prompt_hook.log");
@@ -176,7 +189,7 @@ if payload["prompt"] == "blocked":
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
+                    "command": python_hook_command(&script_path),
                 }]
             }]
         }
@@ -216,7 +229,7 @@ if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
+                    "command": python_hook_command(&script_path),
                 }]
             }]
         }

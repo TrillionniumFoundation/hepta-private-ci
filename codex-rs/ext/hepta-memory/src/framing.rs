@@ -1,8 +1,29 @@
 use std::path::Path;
+use std::path::PathBuf;
+
+use codex_utils_path_uri::PathUri;
 
 use codex_hepta_contracts::Sha256Digest;
 use sha2::Digest;
 use sha2::Sha256;
+
+/// Restore the registered native spelling after a lossless workspace URI hop.
+/// Windows canonical roots have a verbatim prefix which file URIs omit. Only
+/// the canonical path or its exact URI rendering is accepted; arbitrary
+/// symlink, parent-component and relative aliases do not gain authority.
+pub(crate) fn canonical_workspace_path(path: &Path) -> Option<PathBuf> {
+    if !path.is_absolute() {
+        return None;
+    }
+    let canonical = std::fs::canonicalize(path).ok()?;
+    if path == canonical {
+        return Some(canonical);
+    }
+    let transported = PathUri::from_host_native_path(&canonical)
+        .ok()?
+        .to_path_buf();
+    (path == transported).then_some(canonical)
+}
 
 pub(crate) fn workspace_digest(path: &Path) -> Sha256Digest {
     codex_hepta_memory::workspace_binding_digest(path)
@@ -47,3 +68,7 @@ pub(crate) fn hash_part(hasher: &mut Sha256, part: &[u8]) {
     hasher.update((part.len() as u64).to_be_bytes());
     hasher.update(part);
 }
+
+#[cfg(test)]
+#[path = "framing_tests.rs"]
+mod tests;

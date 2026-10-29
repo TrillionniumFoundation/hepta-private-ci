@@ -353,7 +353,7 @@ async fn transcript_preview_for_history_mode(
                 detail: None,
             }
         };
-        let _: TurnStartResponse = request_handle
+        let started_turn: TurnStartResponse = request_handle
             .request_typed(ClientRequest::TurnStart {
                 request_id: RequestId::String(format!("preview-turn-start-{index}")),
                 params: TurnStartParams {
@@ -372,7 +372,9 @@ async fn transcript_preview_for_history_mode(
                 if matches!(
                     event,
                     AppServerEvent::ServerNotification(notification)
-                        if matches!(notification.as_ref(), ServerNotification::TurnCompleted(_))
+                        if matches!(notification.as_ref(), ServerNotification::TurnCompleted(completed)
+                            if completed.thread_id == thread_id.to_string()
+                                && completed.turn.id == started_turn.turn.id)
                 ) {
                     break;
                 }
