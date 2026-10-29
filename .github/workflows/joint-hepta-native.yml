@@ -27,7 +27,6 @@ jobs:
       OMP_NUM_THREADS: "2"
       MKL_NUM_THREADS: "2"
       OPENBLAS_NUM_THREADS: "2"
-      NATIVE_RESULTS: ${{ runner.temp }}/joint-hepta-native
     steps:
       - name: Checkout current generation and NDU source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -56,6 +55,12 @@ jobs:
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: "3.12.14"
+      - name: Initialize runner-local result directory
+        run: |
+          set -euo pipefail
+          native_results="$RUNNER_TEMP/joint-hepta-native"
+          mkdir -p "$native_results"
+          printf 'NATIVE_RESULTS=%s\n' "$native_results" >> "$GITHUB_ENV"
       - name: Install pinned numerical runtime and Rust toolchain
         run: |
           set -euo pipefail
