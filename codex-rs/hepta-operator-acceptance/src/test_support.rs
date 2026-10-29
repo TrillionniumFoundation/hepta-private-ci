@@ -47,7 +47,6 @@ pub(crate) fn ssh_keygen(root: &Path) -> Command {
     command
 }
 
-
 #[cfg(windows)]
 fn openssh_spawn_cwd(root: &Path) -> std::path::PathBuf {
     let path = root
@@ -58,10 +57,7 @@ fn openssh_spawn_cwd(root: &Path) -> std::path::PathBuf {
     };
     let bytes = dos_path.as_bytes();
     assert!(
-        bytes.len() >= 3
-            && bytes[0].is_ascii_alphabetic()
-            && bytes[1] == b':'
-            && bytes[2] == b'\\',
+        bytes.len() >= 3 && bytes[0].is_ascii_alphabetic() && bytes[1] == b':' && bytes[2] == b'\\',
         "Windows OpenSSH fixture requires a local drive-letter path: {root:?}"
     );
     let ordinary = std::path::PathBuf::from(dos_path);
@@ -80,16 +76,16 @@ fn openssh_spawn_cwd(root: &Path) -> std::path::PathBuf {
 #[test]
 fn openssh_subprocess_cwd_preserves_canonical_fixture_identity() {
     let temporary = private_tempdir("OpenSSH subprocess cwd test");
-    let root = temporary.path().canonicalize().expect("canonical fixture root");
+    let root = temporary
+        .path()
+        .canonicalize()
+        .expect("canonical fixture root");
     let spawn_cwd = openssh_spawn_cwd(&root);
     assert!(
         !spawn_cwd.to_string_lossy().starts_with(r"\\?\"),
         "OpenSSH must not inherit a Windows verbatim cwd"
     );
-    assert_eq!(
-        spawn_cwd.canonicalize().expect("revalidate test cwd"),
-        root
-    );
+    assert_eq!(spawn_cwd.canonicalize().expect("revalidate test cwd"), root);
 }
 
 // Keep canonical paths for trust checks, but do not pass Windows verbatim paths
