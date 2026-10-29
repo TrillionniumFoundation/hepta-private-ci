@@ -109,8 +109,8 @@ impl<D: ProcessDriver> Supervisor<D> {
                     record.lifecycle.generation,
                     SupervisorEventKind::RestartQueued,
                 );
-                // Preserve the distinct automatic-restart audit receipt with
-                // the durable claim's actual attempt number.
+                // Keep the typed in-memory event consistent with the separately
+                // persisted restart claim's actual attempt number.
                 slot.event(
                     record.lifecycle.generation,
                     SupervisorEventKind::AutomaticRestartQueued {
@@ -122,8 +122,8 @@ impl<D: ProcessDriver> Supervisor<D> {
             Err(RestartBudgetError::Exhausted) => {
                 slot.restart_pending = false;
                 slot.restart_not_before = None;
-                // Emit a durable, typed exhaustion event in addition to the
-                // fail-closed public fault; never queue another spawn.
+                // Emit a typed in-memory exhaustion event; the restart budget
+                // journal is the durable witness. Never queue another spawn.
                 slot.event(
                     record.lifecycle.generation,
                     SupervisorEventKind::AutomaticRestartBudgetExhausted {
