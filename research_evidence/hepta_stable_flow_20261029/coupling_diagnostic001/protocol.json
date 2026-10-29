@@ -1,0 +1,55 @@
+{
+  "created_unix": 1793280408.699084,
+  "duration": 8.0,
+  "flow": {
+    "g_call": 1.0,
+    "g_put": 2.0,
+    "g_recovery": 2.0,
+    "kappa": 1.0,
+    "tau_q": 1.5,
+    "tau_v": 1.0,
+    "tau_z": 6.0,
+    "x_star": 0.5
+  },
+  "forcing": {
+    "I_b": -0.5,
+    "I_v": 1.2
+  },
+  "formal_data_or_checkpoint_read": false,
+  "independent_reference": "Joint v/q/z/M NumPy RHS; DOP853 rtol2e-11 atol2e-13, repeated at 2e-12/2e-14",
+  "initial_memory": "zeros(4,3)",
+  "internal_steps": [
+    0.0625,
+    0.03125
+  ],
+  "interpretation": "A distinct constant physical forcing, with no parser or token replay. Numerical comparison, not a trained task, hyperparameter selection or replacement score.",
+  "key": [
+    0.6,
+    0.8,
+    0.0
+  ],
+  "modes": [
+    "analytic",
+    "matched_c1"
+  ],
+  "outer_steps": [
+    1.0,
+    0.5,
+    0.25,
+    0.125
+  ],
+  "purpose": "Separate boundary internal mesh error from endpoint-frozen memory coupling error",
+  "rates": {
+    "leak": "softplus(-3 - 1.2*(Call-Call_star))",
+    "write": "softplus(1.1*(Put-Put_star))"
+  },
+  "reference_scaled_max_tolerance": 1e-08,
+  "schema": "hepta-untrained-coupling-error-v1",
+  "source_sha256": "c43e6fbc1b43e42822045aa4689b6ec279da6a411511919da9e0cd542145622d",
+  "value": [
+    1.0,
+    -0.5,
+    0.2,
+    0.0
+  ]
+}

@@ -1,0 +1,264 @@
+{
+  "artifact_integrity_passed": true,
+  "bound_artifacts": [
+    {
+      "path": "research_evidence/hepta_stable_flow_20261029/coupling_diagnostic001/protocol.json",
+      "sha256": "446286a47a860f29395ba93a7522c567d8859a8f17fbadc577c358b09688d899"
+    },
+    {
+      "path": "research_evidence/hepta_stable_flow_20261029/coupling_diagnostic001/results.json",
+      "sha256": "5f6ec4bf778f7ee8969352c8197f582717ba4a58f8dcbf3d921dd2776ba9ed55"
+    },
+    {
+      "path": "research_evidence/hepta_stable_flow_20261029/coupling_diagnostic001/raw_arrays.npz",
+      "sha256": "cbb9c94bbaf7ced1253ad4651f3c34b81807c72d49274f1588dc8576d2bef3d8"
+    },
+    {
+      "path": "research_evidence/hepta_stable_flow_20261029/coupling_diagnostic001/coupling_diagnostic.py",
+      "sha256": "c43e6fbc1b43e42822045aa4689b6ec279da6a411511919da9e0cd542145622d"
+    },
+    {
+      "path": "experiments/call_put_stable_flow_analysis/coupling_diagnostic.py",
+      "sha256": "c43e6fbc1b43e42822045aa4689b6ec279da6a411511919da9e0cd542145622d"
+    }
+  ],
+  "checks": {
+    "all_raw_metrics_match": true,
+    "fixed_unit_key": true,
+    "independent_reduced_reference_agrees": true,
+    "live_source_sha_matches": true,
+    "memory_closed_form_reproduced_by_scalar_recurrence": true,
+    "no_formal_data_or_checkpoint_read_declared": true,
+    "parameters_currents_initialization_match": true,
+    "protocol_sha_matches": true,
+    "raw_sha_matches": true,
+    "source_snapshot_sha_matches": true
+  },
+  "created_unix": 1793280727.6174765,
+  "independent_reduction": "For constant key k, value u and zero initial memory, M=s*u*k^T exactly, ds/dt=gamma-(lambda+gamma*||k||^2)*s. This separate scalar equation rechecks the 15D stored joint reference without calling production RHS or memory kernels.",
+  "interpretation": [
+    "The tick-map intentionally uses post-flow rates held over each memory interval. The alternative jointly continuous equation is a diagnostic interpretation, not the registered task semantics.",
+    "Internal h refinement improves flow error without removing fixed outer-dt rate-hold discrepancy. Decreasing outer duration reduces that discrepancy in this fixed-forcing fixture.",
+    "The protocol defines only reference-resolution tolerance, not a new scientific pass threshold for coupling error. No task score, hyperparameter, frozen source, parser or registered training step is changed.",
+    "The largest errors are maxima over sampled trajectories, not terminal-only errors; this two-mode hand-set fixture establishes no universal bound."
+  ],
+  "method": "Read-only source review, SHA-256 binding, recomputation of all stored metrics, independent reduced scalar-memory 4D DOP853 at rtol3e-13/atol3e-15, and exact scalar affine recurrence at each recorded endpoint. No token parser, formal dataset or checkpoint was read.",
+  "rows": [
+    {
+      "cases": [
+        {
+          "all_finite": true,
+          "flow_scaled_error": 2.4613734626832903e-05,
+          "internal_step": 0.0625,
+          "memory_scaled_error": 0.009730551507605904,
+          "outer_step": 1.0,
+          "reference_resolved_flag_correct": true,
+          "reported_metrics_match": true,
+          "scalar_conditional_memory_recurrence_max_absolute_difference": 2.220446049250313e-16,
+          "shape_matches": true,
+          "terminal_memory_l2_error": 0.00043975178741831984
+        },
+        {
+          "all_finite": true,
+          "flow_scaled_error": 6.124438683172771e-06,
+          "internal_step": 0.03125,
+          "memory_scaled_error": 0.009730731033192016,
+          "outer_step": 1.0,
+          "reference_resolved_flag_correct": true,
+          "reported_metrics_match": true,
+          "scalar_conditional_memory_recurrence_max_absolute_difference": 1.1102230246251565e-16,
+          "shape_matches": true,
+          "terminal_memory_l2_error": 0.0004398524463119707
+        },
+        {
+          "all_finite": true,
+          "flow_scaled_error": 5.0660273013979906e-05,
+          "internal_step": 0.0625,
+          "memory_scaled_error": 0.006844730827926732,
+          "outer_step": 0.5,
+          "reference_resolved_flag_correct": true,
+          "reported_metrics_match": true,
+          "scalar_conditional_memory_recurrence_max_absolute_difference": 2.220446049250313e-16,
+          "shape_matches": true,
+          "terminal_memory_l2_error": 0.00025724045044814097
+        },
+        {
+          "all_finite": true,
+          "flow_scaled_error": 1.2708270994349916e-05,
+          "internal_step": 0.03125,
+          "memory_scaled_error": 0.006845492637235791,
+          "outer_step": 0.5,
+          "reference_resolved_flag_correct": true,
+          "reported_metrics_match": true,
+          "scalar_conditional_memory_recurrence_max_absolute_difference": 3.3306690738754696e-16,
+          "shape_matches": true,
+          "terminal_memory_l2_error": 0.00025735853676254225
+        },
+        {
+          "all_finite": true,
+          "flow_scaled_error": 5.6126854263245684e-05,
+          "internal_step": 0.0625,
+          "memory_scaled_error": 0.003797440005419022,
+          "outer_step": 0.25,
+          "reference_resolved_flag_correct": true,
+          "reported_metrics_match": true,
+          "scalar_conditional_memory_recurrence_max_absolute_difference": 2.220446049250313e-16,
+          "shape_matches": true,
+          "terminal_memory_l2_error": 0.00013870509804147645
+        },
+        {
+          "all_finite": true,
+          "flow_scaled_error": 1.4081917911889055e-05,
+          "internal_step": 0.03125,
+          "memory_scaled_error": 0.0037984216391846433,
+          "outer_step": 0.25,
+          "reference_resolved_flag_correct": true,
+          "reported_metrics_match": true,
+          "scalar_conditional_memory_recurrence_max_absolute_difference": 2.220446049250313e-16,
+          "shape_matches": true,
+          "terminal_memory_l2_error": 0.00013883273605700596
+        },
+        {
+          "all_finite": true,
+          "flow_scaled_error": 5.676833785617463e-05,
+          "internal_step": 0.0625,
+          "memory_scaled_error": 0.001994204710828773,
+          "outer_step": 0.125,
+          "reference_resolved_flag_correct": true,
+          "reported_metrics_match": true,
+          "scalar_conditional_memory_recurrence_max_absolute_difference": 5.551115123125783e-16,
+          "shape_matches": true,
+          "terminal_memory_l2_error": 7.180981079058974e-05
+        },
+        {
+          "all_finite": true,
+          "flow_scaled_error": 1.4237442410905385e-05,
+          "internal_step": 0.03125,
+          "memory_scaled_error": 0.001995216642768673,
+          "outer_step": 0.125,
+          "reference_resolved_flag_correct": true,
+          "reported_metrics_match": true,
+          "scalar_conditional_memory_recurrence_max_absolute_difference": 3.3306690738754696e-16,
+          "shape_matches": true,
+          "terminal_memory_l2_error": 7.194102225337874e-05
+        }
+      ],
+      "effective_parameter_max_absolute_difference": 2.220446049250313e-16,
+      "independent_reduced_4d_reference_max_scaled_difference": 1.443452565959189e-12,
+      "initial_state_max_absolute_difference": 0.0,
+      "mode": "analytic",
+      "projected_current_max_absolute_difference": 2.220446049250313e-16,
+      "reported_reference_matches": true,
+      "reported_two_tolerance_consistency_recomputed": 9.251206678957675e-12
+    },
+    {
+      "cases": [
+        {
+          "all_finite": true,
+          "flow_scaled_error": 2.1508814109325907e-05,
+          "internal_step": 0.0625,
+          "memory_scaled_error": 0.006444731842572502,
+          "outer_step": 1.0,
+          "reference_resolved_flag_correct": true,
+          "reported_metrics_match": true,
+          "scalar_conditional_memory_recurrence_max_absolute_difference": 3.3306690738754696e-16,
+          "shape_matches": true,
+          "terminal_memory_l2_error": 0.00024576741050508
+        },
+        {
+          "all_finite": true,
+          "flow_scaled_error": 5.351561235768098e-06,
+          "internal_step": 0.03125,
+          "memory_scaled_error": 0.006444717314215977,
+          "outer_step": 1.0,
+          "reference_resolved_flag_correct": true,
+          "reported_metrics_match": true,
+          "scalar_conditional_memory_recurrence_max_absolute_difference": 2.220446049250313e-16,
+          "shape_matches": true,
+          "terminal_memory_l2_error": 0.00024583443261441175
+        },
+        {
+          "all_finite": true,
+          "flow_scaled_error": 2.801105106502164e-05,
+          "internal_step": 0.0625,
+          "memory_scaled_error": 0.004600587184074921,
+          "outer_step": 0.5,
+          "reference_resolved_flag_correct": true,
+          "reported_metrics_match": true,
+          "scalar_conditional_memory_recurrence_max_absolute_difference": 2.220446049250313e-16,
+          "shape_matches": true,
+          "terminal_memory_l2_error": 0.00014213608024428158
+        },
+        {
+          "all_finite": true,
+          "flow_scaled_error": 7.015827509326786e-06,
+          "internal_step": 0.03125,
+          "memory_scaled_error": 0.004600879287239452,
+          "outer_step": 0.5,
+          "reference_resolved_flag_correct": true,
+          "reported_metrics_match": true,
+          "scalar_conditional_memory_recurrence_max_absolute_difference": 2.220446049250313e-16,
+          "shape_matches": true,
+          "terminal_memory_l2_error": 0.00014221106441548366
+        },
+        {
+          "all_finite": true,
+          "flow_scaled_error": 3.938922937592486e-05,
+          "internal_step": 0.0625,
+          "memory_scaled_error": 0.002566978561346315,
+          "outer_step": 0.25,
+          "reference_resolved_flag_correct": true,
+          "reported_metrics_match": true,
+          "scalar_conditional_memory_recurrence_max_absolute_difference": 2.220446049250313e-16,
+          "shape_matches": true,
+          "terminal_memory_l2_error": 7.642937370303401e-05
+        },
+        {
+          "all_finite": true,
+          "flow_scaled_error": 9.855518224903587e-06,
+          "internal_step": 0.03125,
+          "memory_scaled_error": 0.002567414243540019,
+          "outer_step": 0.25,
+          "reference_resolved_flag_correct": true,
+          "reported_metrics_match": true,
+          "scalar_conditional_memory_recurrence_max_absolute_difference": 3.3306690738754696e-16,
+          "shape_matches": true,
+          "terminal_memory_l2_error": 7.650922278309705e-05
+        },
+        {
+          "all_finite": true,
+          "flow_scaled_error": 3.938922937592486e-05,
+          "internal_step": 0.0625,
+          "memory_scaled_error": 0.001353627486971767,
+          "outer_step": 0.125,
+          "reference_resolved_flag_correct": true,
+          "reported_metrics_match": true,
+          "scalar_conditional_memory_recurrence_max_absolute_difference": 4.440892098500626e-16,
+          "shape_matches": true,
+          "terminal_memory_l2_error": 3.9541455357906214e-05
+        },
+        {
+          "all_finite": true,
+          "flow_scaled_error": 9.855518224903587e-06,
+          "internal_step": 0.03125,
+          "memory_scaled_error": 0.001354099923332314,
+          "outer_step": 0.125,
+          "reference_resolved_flag_correct": true,
+          "reported_metrics_match": true,
+          "scalar_conditional_memory_recurrence_max_absolute_difference": 4.440892098500626e-16,
+          "shape_matches": true,
+          "terminal_memory_l2_error": 3.9623380122107744e-05
+        }
+      ],
+      "effective_parameter_max_absolute_difference": 2.220446049250313e-16,
+      "independent_reduced_4d_reference_max_scaled_difference": 5.59343546102343e-13,
+      "initial_state_max_absolute_difference": 0.0,
+      "mode": "matched_c1",
+      "projected_current_max_absolute_difference": 2.220446049250313e-16,
+      "reported_reference_matches": true,
+      "reported_two_tolerance_consistency_recomputed": 3.864988853498503e-12
+    }
+  ],
+  "schema": "hepta-independent-coupling-audit-20261029-v1",
+  "status": "complete"
+}
