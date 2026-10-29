@@ -28,7 +28,7 @@
 ### Native 验证与最终源身份
 
 <!-- NATIVE_STATUS_BEGIN -->
-第三轮 native CI 的普通 Rust 测试完成 **969 passed、31 skipped**，随后因驱动未找到 JUnit 报告而失败；actual owner 尚未启动：[run 40906652698](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40906652698)。前两轮在普通测试的编译阶段失败，分别为 release wrapper 字段路径和未声明的测试断言依赖，均已修复。原始失败证据分别保存在 [attempt 01](../memory-cell-v10-ci/evidence/native-attempt-01/GITHUB_ORIGIN.json)、[attempt 02](../memory-cell-v10-ci/evidence/native-attempt-02/GITHUB_ORIGIN.json)、[attempt 03](../memory-cell-v10-ci/evidence/native-attempt-03/GITHUB_ORIGIN.json)。JUnit 路径修复后将重跑完整验证，尚未执行最终 `just fix`／`just fmt`。
+第三轮 native CI 的普通 Rust 测试完成 **969 passed、31 skipped**，随后因驱动未找到 JUnit 报告而失败；actual owner 尚未启动：[run 40906652698](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40906652698)。前两轮在普通测试的编译阶段失败，分别为 release wrapper 字段路径和未声明的测试断言依赖，均已修复。原始失败证据分别保存在 [attempt 01](../memory-cell-v10-ci/evidence/native-attempt-01/GITHUB_ORIGIN.json)、[attempt 02](../memory-cell-v10-ci/evidence/native-attempt-02/GITHUB_ORIGIN.json)、[attempt 03](../memory-cell-v10-ci/evidence/native-attempt-03/GITHUB_ORIGIN.json)。JUnit 路径已按 pinned nextest 实现修复，并增加旧报告清除和严格收集检查。第四轮完整验证已提交：[run 40909855139](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40909855139)，尚未执行最终 `just fix`／`just fmt`。
 <!-- NATIVE_STATUS_END -->
 
 原生实际生命周期与 Python 研究是两条独立证据链。研究的 32 周期不能冒充 native owner 已运行 32 周期；原生小规模参数读出也不能替代容量 32／64／128 的研究比较。原生 runtime 目前没有自动采用研究中的 split／merge 候选。
@@ -37,7 +37,7 @@
 
 ### 参数确实发生学习，但访问泛化不足
 
-Semantic 值是三个 0–15 整数，procedure 值是四个有界 opcode。容量表示每一种参数类型的地址数；三个 seed 是同一人工分布上的优化重复。下表要求完整值全部正确，不能用逐 bit 准确率替代。
+Semantic 值是三个 0–15 整数，procedure 值是四个有界 opcode。容量表示每一种参数类型的地址数；三个 seed 是同一人工分布上的优化重复。下表是在已知 canonical 地址上的完整值 exact match，地址由 oracle 给定，不包含寻址错误；要求完整值全部正确，不能用逐 bit 准确率替代。
 
 | 每类型容量 | Semantic residual | Procedure residual | Untrained | SQL |
 |---:|---:|---:|---:|---:|
@@ -73,13 +73,15 @@ SQL 对照实际执行逐条读取，使用同一来源信息和同一个有界�
 
 ### 动态分裂应由证据阻止晋升
 
+下表衡量预先声明的策略更正之后，canonical 地址上的完整 policy exact match；不是 held wording 的总体任务正确率。
+
 | 容量 | Dynamic children | Fixed experts | 等 adapter 参数 rank-8 | Merge |
 |---:|---:|---:|---:|---:|
 | 32 | 69/96 | 77/96 | 96/96 | 54/96 |
 | 64 | 66/192 | 76/192 | 132/192 | 41/192 |
 | 128 | 37/384 | 53/384 | 87/384 | 26/384 |
 
-Dynamic 在九个 seed×容量配置都低于 rank-8。九个分裂、九个合并质量门槛均失败。这是质量上的负结果，不能仅解释为成本尚未测全。子 adapter 和 merge 候选已实际训练保存，九次 sleep／wake 的参数与 raw 输出身份一致；这些机械动作没有产生已获准使用的更优拓扑。结构实验的 child 选择依赖真 registry 地址，属于 oracle-address 条件。[结构证据](research_results_zh.md#5-参数分化当前候选没有胜过增-rank)。
+Dynamic 的 canonical 正确数在九个 seed×容量配置都低于 rank-8。九个分裂、九个合并质量门槛均失败。这是质量上的负结果，不能仅解释为成本尚未测全。子 adapter 和 merge 候选已实际训练保存，九次 sleep／wake 的参数与 raw 输出身份一致；这些机械动作没有产生已获准使用的更优拓扑。结构实验的 child 选择依赖真 registry 地址，属于 oracle-address 条件。[结构证据](research_results_zh.md#5-参数分化当前候选没有胜过增-rank)。
 
 ### 持续维护仍有明显权衡
 
