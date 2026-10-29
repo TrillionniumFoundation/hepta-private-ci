@@ -221,6 +221,5 @@ class CliCrateRootRegressionTests(unittest.TestCase):
                 self.assertIn('include!("main.rs");', source)
 
 
-
 if __name__ == "__main__":
     unittest.main()
