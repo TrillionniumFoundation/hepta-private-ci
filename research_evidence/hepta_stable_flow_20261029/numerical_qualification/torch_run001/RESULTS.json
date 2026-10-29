@@ -1,0 +1,19 @@
+{
+  "identity": "new-untrained-stable-flow-qualification-20261029-v1",
+  "kernel_rows": 156,
+  "flow_rows": 60,
+  "cpu_seconds": 12.010698547,
+  "source_sha256": {
+    "experiments/call_put_stable_flow/numerics.py": "db2bd55fca0ab29be56d004a1b93352b0230f82ebb25e901eb424c8054ea1748",
+    "experiments/call_put_stable_flow/flow.py": "28b9ca69e0f1017dc49c6de7d0a28ebddc1c80b7af9b11c5fb2c4c2d7cef15de",
+    "experiments/call_put_stable_flow/tests/test_numerics.py": "287e37aaea605533d30e98e6d18abb9ad78793669c00b52fd74de9d2649d8e57",
+    "experiments/call_put_stable_flow/tests/test_flow.py": "2135c47ff637589f356e5637ef0cc04c72637f3143bdeac2cd80e12294a39b9b",
+    "research_evidence/hepta_stable_flow_20261029/numerical_qualification/run_torch_qualification.py": "3b5d5ef3152807e40c8f43623a598e3cfa33d54fe7da5fff2afa36341c2511a4"
+  },
+  "artifacts": {
+    "FLOW_COMPARISONS.json": "d042a9b139e2f8718a13f51df40ddc0e8a9adf966b2204913ddad52ae66c5887",
+    "FLOW_RAW.npz": "60ad7d8c0585375d0c442c70554825bc2dfe7470beaa58ad04ed17e0c2314de8",
+    "PROTOCOL.json": "443d391c4f4c94929be98eb510a80531890ab89c999d5ce8d604d1a3ca61a27f",
+    "KERNEL_RAW.json": "ea1474b4f876c02ac692243f13b41dc66866bdc7c5f2370ec906464d22168542"
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "passed": true,
+  "rows": [
+    {
+      "dtype": "torch.float32",
+      "case": "all_far",
+      "values_bitwise_equal": true,
+      "full_gradient_relative_l2_difference": 0.0,
+      "passed": true
+    },
+    {
+      "dtype": "torch.float32",
+      "case": "all_stopped",
+      "values_bitwise_equal": true,
+      "full_gradient_relative_l2_difference": 0.0,
+      "passed": true
+    },
+    {
+      "dtype": "torch.float32",
+      "case": "mixed_near_and_far",
+      "values_bitwise_equal": true,
+      "full_gradient_relative_l2_difference": 0.0,
+      "passed": true
+    },
+    {
+      "dtype": "torch.float32",
+      "case": "shared_scalar_kappa",
+      "values_bitwise_equal": true,
+      "full_gradient_relative_l2_difference": 1.1063703527479348e-07,
+      "passed": true
+    },
+    {
+      "dtype": "torch.float32",
+      "case": "per_head_kappa",
+      "values_bitwise_equal": true,
+      "full_gradient_relative_l2_difference": 0.0,
+      "passed": true
+    },
+    {
+      "dtype": "torch.float64",
+      "case": "all_far",
+      "values_bitwise_equal": true,
+      "full_gradient_relative_l2_difference": 0.0,
+      "passed": true
+    },
+    {
+      "dtype": "torch.float64",
+      "case": "all_stopped",
+      "values_bitwise_equal": true,
+      "full_gradient_relative_l2_difference": 0.0,
+      "passed": true
+    },
+    {
+      "dtype": "torch.float64",
+      "case": "mixed_near_and_far",
+      "values_bitwise_equal": true,
+      "full_gradient_relative_l2_difference": 0.0,
+      "passed": true
+    },
+    {
+      "dtype": "torch.float64",
+      "case": "shared_scalar_kappa",
+      "values_bitwise_equal": true,
+      "full_gradient_relative_l2_difference": 0.0,
+      "passed": true
+    },
+    {
+      "dtype": "torch.float64",
+      "case": "per_head_kappa",
+      "values_bitwise_equal": true,
+      "full_gradient_relative_l2_difference": 0.0,
+      "passed": true
+    }
+  ],
+  "sources": [
+    {
+      "name": "previous_numerics.py",
+      "sha256": "db2bd55fca0ab29be56d004a1b93352b0230f82ebb25e901eb424c8054ea1748"
+    },
+    {
+      "name": "current_numerics.py",
+      "sha256": "6499df238499265211cc3d8baaffef5ddc94a9501ffdae0b9599ffa6e367802f"
+    },
+    {
+      "name": "compare_execution_paths.py",
+      "sha256": "eb6d8aa6da533d98a7acb0d67c5ac851bfd6f20a91216dcb252e950c56235c2c"
+    }
+  ],
+  "raw_arrays_sha256": "a2156e4daf6c33a4cca03beaaad00a02198b3d1b678ced364587daf4f7d43ce9"
+}

@@ -1,0 +1,7 @@
+{
+  "development_only": true,
+  "training_updates_completed": 0,
+  "error_type": "AttributeError",
+  "error": "Local profile.py shadowed stdlib profile during Torch optimizer import, causing torch._dynamo circular import",
+  "remediation": "Preserve this failed attempt; use measure_update.py in a new attempt directory"
+}

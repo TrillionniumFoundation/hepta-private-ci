@@ -1,0 +1,28 @@
+{
+  "development_only": true,
+  "formal_validation_or_test_read": false,
+  "learning_rate": 0.003,
+  "model_config": {
+    "heads": 1,
+    "initial_leak": 0.001953125,
+    "initial_write": 1.0,
+    "key_dim": 16,
+    "max_step": 0.0625,
+    "value_dim": 8
+  },
+  "new_execution": true,
+  "source_sha256": {
+    "audit.py": "88765e918f60909f476d40e7b1bef618862768f247a1836020ee55df4f204d7e",
+    "data.py": "6360553bb21adef417e2b9663c865c82a9740111561608a45a4d255765afa623",
+    "flow.py": "0c2cff8aba381a6498bd7d666da1500c561f52ea8d2b9ec1a3f81332fb7dd3a9",
+    "memory.py": "2820ee2d9a67f60f415ee4aad6f101f21fb3119ca542e8a7c8a77ab1b4b9a5dc",
+    "models.py": "23057770711a050e86b9bf6e184f1c413c8dcb82127ecf8e6e638aea1096743e",
+    "numerics.py": "db2bd55fca0ab29be56d004a1b93352b0230f82ebb25e901eb424c8054ea1748",
+    "study.py": "4f43810a8124a9e88fc0241c4366a8e3ce5f5af98c2e17cd767135a431583dec",
+    "tests/test_data.py": "5eee7f9060e38c92fe01779659b286992a1262f20ea1ea47fe7b45b08c7dd9da",
+    "tests/test_flow.py": "ebfe993aa80103fec5dd15776a868dc6b42e97993116ba4ed5f4a29c0aca9e31",
+    "tests/test_memory.py": "6494b3416e246450165af9dd51b79327639d470e0584257ade56e723a8d1493e",
+    "tests/test_numerics.py": "287e37aaea605533d30e98e6d18abb9ad78793669c00b52fd74de9d2649d8e57"
+  },
+  "updates": 384
+}

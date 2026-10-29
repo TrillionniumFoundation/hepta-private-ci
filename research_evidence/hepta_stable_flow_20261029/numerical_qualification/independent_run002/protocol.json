@@ -1,0 +1,120 @@
+{
+  "version": "hepta-independent-continuous-audit-20261029-v2",
+  "scope": "New independent diagnostics; no historical run recovery",
+  "sources_sha256": {
+    "audit.py": "ba966b5d1ce6f6952f8719a47bc121cdb3a4d2a3058f9e18e21efb0a0b02c9cf",
+    "flow.py": "28b9ca69e0f1017dc49c6de7d0a28ebddc1c80b7af9b11c5fb2c4c2d7cef15de",
+    "numerics.py": "db2bd55fca0ab29be56d004a1b93352b0230f82ebb25e901eb424c8054ea1748"
+  },
+  "sealed_before_evaluation_unix": 1793275032.2484992,
+  "candidate_steps_in_order": [
+    0.0625,
+    0.03125
+  ],
+  "qualification_cases": [
+    "default",
+    "crossing"
+  ],
+  "refinement": {
+    "enabled": true,
+    "reason": "Original .25/.125 candidates failed the unchanged state error threshold; no task scores consulted",
+    "prior_run": "independent_run001"
+  },
+  "modes": [
+    "analytic",
+    "matched_c1",
+    "sigmoid"
+  ],
+  "default_drives": [
+    [
+      0.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.7,
+      -0.35,
+      0.175
+    ],
+    [
+      -1.0499999999999998,
+      0.35,
+      -0.175
+    ],
+    [
+      0.7,
+      -0.7,
+      0.0875
+    ],
+    [
+      -0.7,
+      0.7,
+      -0.0875
+    ]
+  ],
+  "crossing_drives": [
+    [
+      0.0,
+      0.0,
+      0.0
+    ],
+    [
+      2.0,
+      -1.0,
+      0.5
+    ],
+    [
+      -3.0,
+      1.0,
+      -0.5
+    ],
+    [
+      2.0,
+      -2.0,
+      0.25
+    ],
+    [
+      -2.0,
+      2.0,
+      -0.25
+    ]
+  ],
+  "durations": [
+    0.31,
+    0.73,
+    1.27,
+    0.41,
+    1.11
+  ],
+  "directions": {
+    "count": 4,
+    "seed": 20261029,
+    "distribution": "normalized iid standard normal"
+  },
+  "thresholds": {
+    "scaled_state_max": 0.001,
+    "directional_gradient_l2_relative": 0.01,
+    "oracle_scaled_state_change": 1e-08,
+    "oracle_fd_gradient_relative_change": 0.0001,
+    "same_step_dtype_scaled_state": 1e-05,
+    "same_step_dtype_gradient_relative": 0.0001
+  },
+  "oracle": {
+    "method": "independently rederived NumPy RHS, SciPy DOP853",
+    "rtol": 1e-11,
+    "atol": 1e-13,
+    "tight_rtol": 3e-13,
+    "tight_atol": 3e-15,
+    "finite_difference_epsilons": [
+      1e-05,
+      5e-06
+    ]
+  },
+  "decision": "First candidate passing every qualification case and structural check; no task scores",
+  "stress_scope": "Interior stiff parameters and invariant-rectangle edge states; report only, not domain certificate",
+  "limitations": [
+    "Four directional derivatives do not certify the full gradient",
+    "Local probes do not guarantee every learned parameter trajectory",
+    "Adaptive numerical reference and finite differences have finite tolerances"
+  ]
+}
