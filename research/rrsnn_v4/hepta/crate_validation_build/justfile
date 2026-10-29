@@ -1,0 +1,2 @@
+test *args:
+    RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 /workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/upstream_recipes/run-nextest.py --locked --offline --manifest-path /workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/patched_upstream/codex-rs/Cargo.toml {{args}}
