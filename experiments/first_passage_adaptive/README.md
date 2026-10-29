@@ -215,6 +215,13 @@ confirmation and credit reviews live in `review/`. The additive CI restores
 and checks the frozen evidence, runs regressions and rebuilds/replays the
 mechanical native fixtures. It does not run a new scientific confirmation.
 
+Historical owner replay explicitly materializes the manifest-pinned source
+commit `71b4305c6619ed9faff98062f0ff7f932f4abfd0` from Git and verifies every
+original blob before compilation. This preserves the study's identity when
+the production workspace receives independent security or compatibility
+updates. The repository's normal security and production-owner gates continue
+to qualify the current workspace; historical replay does not replace them.
+
 ## Remaining limits
 
 The finite-contract derivative, complete small meta-tree, registered threshold

@@ -1,0 +1,162 @@
+{
+  "schema": "hepta.fpt-adaptive.native-dependency-audit-projection.v1",
+  "source_commit": "71b4305c6619ed9faff98062f0ff7f932f4abfd0",
+  "historical_manifest_sha256": "9f30835df201d608cd6ca058597a3cfb6065490d4664798d61ac4f80ff37f8e8",
+  "audit_manifest_sha256": "43aeae79c0048f2a4be5d63a8789bbde3500b880e2a91df33b821d2312bbc7e8",
+  "license_sha256": "d17f227e4df5da1600391338865ce0f3055211760a36688f816941d58232d8dc",
+  "lock_sha256": "5826e8ffcd9946f949a0d54265de15f51f748e4bde3586533900e6a6819e438d",
+  "change": "Only the locally owned bridge package license is declared from the pinned repository license. Dependency graph, original build manifest, binary and frozen evidence remain unchanged. This audit projection was not the historical build input.",
+  "cargo_deny_version": "0.19.0",
+  "exit_code": 0,
+  "checks": {
+    "advisories": "ok",
+    "bans": "ok",
+    "licenses": "ok",
+    "sources": "ok"
+  },
+  "policy_sha256": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352",
+  "policy_changed": false,
+  "raw_log_sha256": "2f4bb6be8eb66b936579d65111e8d5387d9a1ccf2fc72b244e86574cdbb5b8c6",
+  "advisory_database_commit": "40f5be6fb12ed93fc591bf4ab23b7d793b3f2239",
+  "historical_manifest_result": "Without the separate bridge license declaration, the historical manifest passed advisories/bans/sources and failed the license check only for the locally owned bridge.",
+  "dependencies": [
+    {
+      "name": "block-buffer",
+      "version": "0.10.4",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "cfg-if",
+      "version": "1.0.5",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "codex-hepta-infer-core",
+      "version": "0.0.0",
+      "source": "local source bound by the frozen owner manifest"
+    },
+    {
+      "name": "codex-hepta-neuron",
+      "version": "0.0.0",
+      "source": "local source bound by the frozen owner manifest"
+    },
+    {
+      "name": "codex-hepta-types",
+      "version": "0.0.0",
+      "source": "local source bound by the frozen owner manifest"
+    },
+    {
+      "name": "cpufeatures",
+      "version": "0.2.17",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "crypto-common",
+      "version": "0.1.7",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "digest",
+      "version": "0.10.7",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "generic-array",
+      "version": "0.14.7",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "hepta-first-passage-owner-bridge",
+      "version": "0.1.0",
+      "source": "local source bound by the frozen owner manifest"
+    },
+    {
+      "name": "itoa",
+      "version": "1.0.18",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "libc",
+      "version": "0.2.191",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "memchr",
+      "version": "2.8.3",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "proc-macro2",
+      "version": "1.0.107",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "quote",
+      "version": "1.0.47",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "serde",
+      "version": "1.0.229",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "serde_core",
+      "version": "1.0.229",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "serde_derive",
+      "version": "1.0.229",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "serde_json",
+      "version": "1.0.154",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "sha2",
+      "version": "0.10.9",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "syn",
+      "version": "3.0.9",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "typenum",
+      "version": "1.20.1",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "unicode-ident",
+      "version": "1.0.27",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "version_check",
+      "version": "0.9.5",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "zmij",
+      "version": "1.0.23",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    }
+  ],
+  "command": [
+    "cargo",
+    "deny",
+    "--log-level",
+    "warn",
+    "--manifest-path",
+    "<separate-audit-projection>/Cargo.toml",
+    "--all-features",
+    "check",
+    "--config",
+    "<current-workspace>/codex-rs/deny.toml"
+  ],
+  "interpretation": "A dependency-policy check under the pinned advisory database, not a proof of absence of every vulnerability or current production-owner qualification."
+}

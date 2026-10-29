@@ -74,8 +74,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          git fetch --no-tags --depth=1 origin 71b4305c6619ed9faff98062f0ff7f932f4abfd0
+          python -m experiments.first_passage_adaptive.materialize_owner_sources \
+            --repository "$PWD" --output "$RUNNER_TEMP/fpt-owner-source"
           python -m experiments.first_passage_adaptive.native_build \
-            --source-root "$PWD" --output "$RUNNER_TEMP/fpt-owner-build" \
+            --source-root "$RUNNER_TEMP/fpt-owner-source" --output "$RUNNER_TEMP/fpt-owner-build" \
             --toolchain-bin "$(dirname "$(rustup which rustc)")" \
             --tools-bin "$(dirname "$(command -v just)")"
 
@@ -116,6 +119,7 @@ jobs:
           path: |
             ${{ runner.temp }}/fpt-owner-build/NATIVE_BUILD.json
             ${{ runner.temp }}/fpt-owner-build/Cargo.lock
+            ${{ runner.temp }}/fpt-owner-source/MATERIALIZATION.json
             ${{ runner.temp }}/fpt-native-execution
             ${{ runner.temp }}/fpt-credit
             ${{ runner.temp }}/fpt-credit-recovery-freeze.json
