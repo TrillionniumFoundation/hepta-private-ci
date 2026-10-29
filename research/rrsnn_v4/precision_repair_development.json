@@ -1,0 +1,3100 @@
+{
+  "schema": "rrsnn-v4-isolated-precision-development-1",
+  "all_passed": true,
+  "created_at_utc": "2026-10-29T15:44:31.395860+00:00",
+  "source_sha256": "4347e6c9798502d430a5af2ac2fbf6ace8b5712f000255b9f9c217af44c63e65",
+  "design_sha256": "19ed74e96a2010137842c63df2a00ed79c8b5d8837fa6c1d6154de1be385e778",
+  "controls_code_object_identical": true,
+  "changed_controls_global_bindings": [
+    "frozen_control_boundary"
+  ],
+  "broadcast_dtype_fixtures": [
+    {
+      "drift_dtype": "torch.float32",
+      "cost_dtype": "torch.float32",
+      "drift_scalar": false,
+      "cost_scalar": false,
+      "output_shape": [
+        3,
+        4
+      ],
+      "output_dtype": "torch.float32",
+      "maximum_value_error": 0.0,
+      "maximum_gradient_errors": [
+        0.0,
+        0.0
+      ],
+      "value_bitwise_equal": true,
+      "gradient_bitwise_equal": [
+        true,
+        true
+      ]
+    },
+    {
+      "drift_dtype": "torch.float64",
+      "cost_dtype": "torch.float64",
+      "drift_scalar": false,
+      "cost_scalar": false,
+      "output_shape": [
+        3,
+        4
+      ],
+      "output_dtype": "torch.float64",
+      "maximum_value_error": 1.894040480010517e-13,
+      "maximum_gradient_errors": [
+        5.475619957451272e-13,
+        3.552713678800501e-14
+      ],
+      "value_bitwise_equal": false,
+      "gradient_bitwise_equal": [
+        false,
+        false
+      ]
+    },
+    {
+      "drift_dtype": "torch.float32",
+      "cost_dtype": "torch.float64",
+      "drift_scalar": false,
+      "cost_scalar": false,
+      "output_shape": [
+        3,
+        4
+      ],
+      "output_dtype": "torch.float64",
+      "maximum_value_error": 1.894040480010517e-13,
+      "maximum_gradient_errors": [
+        0.0,
+        3.4638958368304884e-14
+      ],
+      "value_bitwise_equal": false,
+      "gradient_bitwise_equal": [
+        true,
+        false
+      ]
+    },
+    {
+      "drift_dtype": "torch.float64",
+      "cost_dtype": "torch.float32",
+      "drift_scalar": true,
+      "cost_scalar": false,
+      "output_shape": [
+        1,
+        4
+      ],
+      "output_dtype": "torch.float32",
+      "maximum_value_error": 0.0,
+      "maximum_gradient_errors": [
+        8.544276397515205e-13,
+        0.0
+      ],
+      "value_bitwise_equal": true,
+      "gradient_bitwise_equal": [
+        false,
+        true
+      ]
+    },
+    {
+      "drift_dtype": "torch.float32",
+      "cost_dtype": "torch.float64",
+      "drift_scalar": false,
+      "cost_scalar": true,
+      "output_shape": [
+        3,
+        1
+      ],
+      "output_dtype": "torch.float32",
+      "maximum_value_error": 0.0,
+      "maximum_gradient_errors": [
+        0.0,
+        3.1086244689504383e-15
+      ],
+      "value_bitwise_equal": true,
+      "gradient_bitwise_equal": [
+        true,
+        false
+      ]
+    },
+    {
+      "drift_dtype": "torch.float32",
+      "cost_dtype": "torch.float32",
+      "drift_scalar": true,
+      "cost_scalar": true,
+      "output_shape": [],
+      "output_dtype": "torch.float32",
+      "maximum_value_error": 0.0,
+      "maximum_gradient_errors": [
+        0.0,
+        0.0
+      ],
+      "value_bitwise_equal": true,
+      "gradient_bitwise_equal": [
+        true,
+        true
+      ]
+    }
+  ],
+  "unsupported_input_rejections_checked": true,
+  "production_checkpoint_loaded": false,
+  "heldout_scenarios_loaded": false,
+  "original_sources_unchanged": true,
+  "same_weight_state_sha256": "0b4f7398648e39cd41ba2c18e14eec19b5ce4bdaa75a6f47c5eb725144e67f63",
+  "normal_batch": {
+    "schema": "rrsnn-v4-frozen-boundary-comparison-1",
+    "summary": {
+      "episodes": 2,
+      "same_weights_and_initial_state": true,
+      "all_task_resource_invariants_passed": true,
+      "rows_with_any_action_divergence": 0,
+      "total_action_disagreements": 0,
+      "rows_with_event_divergence_beyond_tolerance": 0,
+      "rows_with_different_event_counts": 0,
+      "rows_with_different_delivered_pulses": 0,
+      "maximum_absolute_expected_utility_difference": 0.0,
+      "mean_expected_utility_root_minus_lambert": 0.0,
+      "maximum_type_aligned_event_time_difference": 0.0,
+      "observation_calls_with_different_rng_states": 0,
+      "boundary_maximum_absolute_difference": 0.0,
+      "drift_maximum_absolute_difference": 0.0,
+      "logits_maximum_absolute_difference": 0.0,
+      "trace_maximum_absolute_difference": 0.0
+    },
+    "dataset": "development",
+    "training_seed": 0,
+    "latent_replay": 0,
+    "latent_seed": 901991,
+    "same_weight_state_sha256": "0b4f7398648e39cd41ba2c18e14eec19b5ce4bdaa75a6f47c5eb725144e67f63",
+    "execution_order": [
+      "closed_form",
+      "root"
+    ],
+    "event_time_tolerance": 1e-07,
+    "methods": {
+      "lambert": "Frozen RRPolicy boundary_method=closed_form",
+      "brent": "Frozen RRPolicy boundary_method=root, independent scalar brentq bracket"
+    },
+    "timing": {
+      "closed_form": {
+        "model_step_cpu_seconds": 0.081622855,
+        "elapsed_seconds_including_task": 0.09651158400811255
+      },
+      "root": {
+        "model_step_cpu_seconds": 0.068570709,
+        "elapsed_seconds_including_task": 0.08035168699279893
+      }
+    },
+    "timing_scope": "Same instrumented model.step path, including diagnostic copies and RNG digests. Alternating method order. These are full diagnostic replay costs, not an optimized boundary-kernel microbenchmark.",
+    "coupling_scope": "Identical scenario, frozen weights, initialization and actor seed per replay. After a numerical branch changes random consumption, trajectories evolve naturally; divergence is recorded rather than forcing path equality.",
+    "control_difference_scope": "Recorded drift/logit/threshold differences follow each closed-loop history. After action or state divergence they include downstream effects, not only local root roundoff.",
+    "real_future_window": false,
+    "new_training_performed": false,
+    "step_comparisons": [
+      {
+        "call": 0,
+        "batch_serial": 0,
+        "observation_step": 0,
+        "batch_size": 2,
+        "time": [
+          0.0,
+          0.0
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 1,
+        "batch_serial": 0,
+        "observation_step": 1,
+        "batch_size": 2,
+        "time": [
+          0.25,
+          0.25
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 2,
+        "batch_serial": 0,
+        "observation_step": 2,
+        "batch_size": 2,
+        "time": [
+          0.5,
+          0.5
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 3,
+        "batch_serial": 0,
+        "observation_step": 3,
+        "batch_size": 2,
+        "time": [
+          1.0,
+          0.75
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 4,
+        "batch_serial": 0,
+        "observation_step": 4,
+        "batch_size": 2,
+        "time": [
+          1.5,
+          1.0
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 5,
+        "batch_serial": 0,
+        "observation_step": 5,
+        "batch_size": 2,
+        "time": [
+          2.0,
+          1.25
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 6,
+        "batch_serial": 0,
+        "observation_step": 6,
+        "batch_size": 2,
+        "time": [
+          2.5,
+          1.5
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 7,
+        "batch_serial": 0,
+        "observation_step": 7,
+        "batch_size": 2,
+        "time": [
+          3.0,
+          2.0
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 8,
+        "batch_serial": 0,
+        "observation_step": 8,
+        "batch_size": 2,
+        "time": [
+          3.5,
+          2.5
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 9,
+        "batch_serial": 0,
+        "observation_step": 9,
+        "batch_size": 2,
+        "time": [
+          3.75,
+          2.75
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 10,
+        "batch_serial": 0,
+        "observation_step": 10,
+        "batch_size": 2,
+        "time": [
+          4.0,
+          3.0
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 11,
+        "batch_serial": 0,
+        "observation_step": 11,
+        "batch_size": 2,
+        "time": [
+          4.0,
+          3.25
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 12,
+        "batch_serial": 0,
+        "observation_step": 12,
+        "batch_size": 2,
+        "time": [
+          4.0,
+          3.5
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 13,
+        "batch_serial": 0,
+        "observation_step": 13,
+        "batch_size": 2,
+        "time": [
+          4.0,
+          3.75
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 14,
+        "batch_serial": 0,
+        "observation_step": 14,
+        "batch_size": 2,
+        "time": [
+          4.0,
+          4.0
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      }
+    ],
+    "rows": [
+      {
+        "scenario_index": 0,
+        "scenario_digest": "2079532d5c2ef60cc4840a4f2ce56a95e38a36c1d35cadbd34e995fecf315dca",
+        "group": 0,
+        "condition": "A2",
+        "initial_state_sha256": "3efd849a248b9811f930db9ba01fdb40f8982b8b5002fa53f0268c54cf278b6d",
+        "query_seeds": [
+          901100,
+          901101,
+          901102,
+          901103
+        ],
+        "query_bits": [
+          [
+            0,
+            1,
+            1,
+            0
+          ],
+          [
+            1,
+            1,
+            1,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1
+          ]
+        ],
+        "oracle_expected_utility": 1.3485025152421481,
+        "counts_equal": true,
+        "event_type_sequence_equal": true,
+        "exact_event_log_equal": true,
+        "event_log_equal_with_time_tolerance": true,
+        "maximum_time_difference_if_type_aligned": 0.0,
+        "first_event_divergence_beyond_tolerance": null,
+        "count_root_minus_lambert": 0,
+        "action_disagreement_count": 0,
+        "action_disagreement_times": [],
+        "delivered_pulses_equal": true,
+        "expected_utility_root_minus_lambert": 0.0,
+        "realized_utility_root_minus_lambert": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "lambert": {
+          "actions": [
+            {
+              "time": 0.0,
+              "action": 0
+            },
+            {
+              "time": 0.25,
+              "action": 54
+            },
+            {
+              "time": 0.5,
+              "action": 24
+            },
+            {
+              "time": 1.0,
+              "action": 0
+            },
+            {
+              "time": 1.5,
+              "action": 0
+            },
+            {
+              "time": 2.0,
+              "action": 0
+            },
+            {
+              "time": 2.5,
+              "action": 2
+            },
+            {
+              "time": 3.0,
+              "action": 0
+            },
+            {
+              "time": 3.5,
+              "action": 0
+            },
+            {
+              "time": 3.75,
+              "action": 0
+            },
+            {
+              "time": 4.0,
+              "action": 0
+            }
+          ],
+          "delivered": [
+            {
+              "pulse_id": "item:0",
+              "item": 0,
+              "emitted_at": 0.25,
+              "delivered_at": 0.35,
+              "quality": 0.569782824730923
+            },
+            {
+              "pulse_id": "item:1",
+              "item": 1,
+              "emitted_at": 0.5,
+              "delivered_at": 0.6,
+              "quality": 0.5915553643668151
+            },
+            {
+              "pulse_id": "item:2",
+              "item": 2,
+              "emitted_at": 0.5,
+              "delivered_at": 0.6,
+              "quality": 0.5915553643668151
+            },
+            {
+              "pulse_id": "item:3",
+              "item": 3,
+              "emitted_at": 2.5,
+              "delivered_at": 2.6,
+              "quality": 0.7985162187593771
+            }
+          ],
+          "expected_utility": 1.164981803001871,
+          "normalized_utility": 0.8639077716460005,
+          "realized_query_utility": [
+            0.7098664372401782,
+            1.3936058269172857,
+            0.843442633428983,
+            1.5533090706691612
+          ],
+          "budget_final": 0,
+          "budget_spent": 4,
+          "renewals": 0,
+          "internal_spikes": 5,
+          "internal_spikes_per_neuron": [
+            0,
+            2,
+            1,
+            0,
+            1,
+            1,
+            0,
+            0
+          ],
+          "actual_internal_events": [
+            {
+              "time": 0.7619774275509786,
+              "batch": 0,
+              "component": 1,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 1.0,
+              "batch": 0,
+              "component": 5,
+              "cause": "ctmc_observation_remap"
+            },
+            {
+              "time": 1.6317802287588248,
+              "batch": 0,
+              "component": 1,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 2.103764032501881,
+              "batch": 0,
+              "component": 4,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 2.449572789206889,
+              "batch": 0,
+              "component": 2,
+              "cause": "ctmc_threshold"
+            }
+          ]
+        },
+        "brent": {
+          "actions": [
+            {
+              "time": 0.0,
+              "action": 0
+            },
+            {
+              "time": 0.25,
+              "action": 54
+            },
+            {
+              "time": 0.5,
+              "action": 24
+            },
+            {
+              "time": 1.0,
+              "action": 0
+            },
+            {
+              "time": 1.5,
+              "action": 0
+            },
+            {
+              "time": 2.0,
+              "action": 0
+            },
+            {
+              "time": 2.5,
+              "action": 2
+            },
+            {
+              "time": 3.0,
+              "action": 0
+            },
+            {
+              "time": 3.5,
+              "action": 0
+            },
+            {
+              "time": 3.75,
+              "action": 0
+            },
+            {
+              "time": 4.0,
+              "action": 0
+            }
+          ],
+          "delivered": [
+            {
+              "pulse_id": "item:0",
+              "item": 0,
+              "emitted_at": 0.25,
+              "delivered_at": 0.35,
+              "quality": 0.569782824730923
+            },
+            {
+              "pulse_id": "item:1",
+              "item": 1,
+              "emitted_at": 0.5,
+              "delivered_at": 0.6,
+              "quality": 0.5915553643668151
+            },
+            {
+              "pulse_id": "item:2",
+              "item": 2,
+              "emitted_at": 0.5,
+              "delivered_at": 0.6,
+              "quality": 0.5915553643668151
+            },
+            {
+              "pulse_id": "item:3",
+              "item": 3,
+              "emitted_at": 2.5,
+              "delivered_at": 2.6,
+              "quality": 0.7985162187593771
+            }
+          ],
+          "expected_utility": 1.164981803001871,
+          "normalized_utility": 0.8639077716460005,
+          "realized_query_utility": [
+            0.7098664372401782,
+            1.3936058269172857,
+            0.843442633428983,
+            1.5533090706691612
+          ],
+          "budget_final": 0,
+          "budget_spent": 4,
+          "renewals": 0,
+          "internal_spikes": 5,
+          "internal_spikes_per_neuron": [
+            0,
+            2,
+            1,
+            0,
+            1,
+            1,
+            0,
+            0
+          ],
+          "actual_internal_events": [
+            {
+              "time": 0.7619774275509786,
+              "batch": 0,
+              "component": 1,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 1.0,
+              "batch": 0,
+              "component": 5,
+              "cause": "ctmc_observation_remap"
+            },
+            {
+              "time": 1.6317802287588248,
+              "batch": 0,
+              "component": 1,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 2.103764032501881,
+              "batch": 0,
+              "component": 4,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 2.449572789206889,
+              "batch": 0,
+              "component": 2,
+              "cause": "ctmc_threshold"
+            }
+          ]
+        }
+      },
+      {
+        "scenario_index": 1,
+        "scenario_digest": "c90b8de2490aa2a51beff837c9fc7a0fbe3fc5de326aec2cad66f2dc90633e07",
+        "group": 1,
+        "condition": "A1",
+        "initial_state_sha256": "70f5a2f25ff5c7f719c6322f97de74046562dd546188252b3575e2f8c0617f37",
+        "query_seeds": [
+          901201,
+          901202,
+          901203,
+          901204
+        ],
+        "query_bits": [
+          [
+            1,
+            0,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            0
+          ],
+          [
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            0,
+            0,
+            1
+          ]
+        ],
+        "oracle_expected_utility": 1.9815383279765086,
+        "counts_equal": true,
+        "event_type_sequence_equal": true,
+        "exact_event_log_equal": true,
+        "event_log_equal_with_time_tolerance": true,
+        "maximum_time_difference_if_type_aligned": 0.0,
+        "first_event_divergence_beyond_tolerance": null,
+        "count_root_minus_lambert": 0,
+        "action_disagreement_count": 0,
+        "action_disagreement_times": [],
+        "delivered_pulses_equal": true,
+        "expected_utility_root_minus_lambert": 0.0,
+        "realized_utility_root_minus_lambert": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "lambert": {
+          "actions": [
+            {
+              "time": 0.0,
+              "action": 0
+            },
+            {
+              "time": 0.25,
+              "action": 80
+            },
+            {
+              "time": 0.5,
+              "action": 0
+            },
+            {
+              "time": 0.75,
+              "action": 0
+            },
+            {
+              "time": 1.0,
+              "action": 0
+            },
+            {
+              "time": 1.25,
+              "action": 0
+            },
+            {
+              "time": 1.5,
+              "action": 0
+            },
+            {
+              "time": 2.0,
+              "action": 0
+            },
+            {
+              "time": 2.5,
+              "action": 0
+            },
+            {
+              "time": 2.75,
+              "action": 0
+            },
+            {
+              "time": 3.0,
+              "action": 0
+            },
+            {
+              "time": 3.25,
+              "action": 0
+            },
+            {
+              "time": 3.5,
+              "action": 0
+            },
+            {
+              "time": 3.75,
+              "action": 0
+            },
+            {
+              "time": 4.0,
+              "action": 0
+            }
+          ],
+          "delivered": [
+            {
+              "pulse_id": "item:0",
+              "item": 0,
+              "emitted_at": 0.25,
+              "delivered_at": 0.35,
+              "quality": 0.569782824730923
+            },
+            {
+              "pulse_id": "item:1",
+              "item": 1,
+              "emitted_at": 0.25,
+              "delivered_at": 0.35,
+              "quality": 0.569782824730923
+            },
+            {
+              "pulse_id": "item:2",
+              "item": 2,
+              "emitted_at": 0.25,
+              "delivered_at": 0.35,
+              "quality": 0.569782824730923
+            },
+            {
+              "pulse_id": "item:3",
+              "item": 3,
+              "emitted_at": 0.25,
+              "delivered_at": 0.35,
+              "quality": 0.569782824730923
+            }
+          ],
+          "expected_utility": 1.4102124912090346,
+          "normalized_utility": 0.7116756064209487,
+          "realized_query_utility": [
+            1.139565649461846,
+            1.2535222144080307,
+            1.8802833216120458,
+            0.7976959546232922
+          ],
+          "budget_final": 1,
+          "budget_spent": 4,
+          "renewals": 0,
+          "internal_spikes": 1,
+          "internal_spikes_per_neuron": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          "actual_internal_events": [
+            {
+              "time": 0.6357046133087432,
+              "batch": 1,
+              "component": 4,
+              "cause": "ctmc_threshold"
+            }
+          ]
+        },
+        "brent": {
+          "actions": [
+            {
+              "time": 0.0,
+              "action": 0
+            },
+            {
+              "time": 0.25,
+              "action": 80
+            },
+            {
+              "time": 0.5,
+              "action": 0
+            },
+            {
+              "time": 0.75,
+              "action": 0
+            },
+            {
+              "time": 1.0,
+              "action": 0
+            },
+            {
+              "time": 1.25,
+              "action": 0
+            },
+            {
+              "time": 1.5,
+              "action": 0
+            },
+            {
+              "time": 2.0,
+              "action": 0
+            },
+            {
+              "time": 2.5,
+              "action": 0
+            },
+            {
+              "time": 2.75,
+              "action": 0
+            },
+            {
+              "time": 3.0,
+              "action": 0
+            },
+            {
+              "time": 3.25,
+              "action": 0
+            },
+            {
+              "time": 3.5,
+              "action": 0
+            },
+            {
+              "time": 3.75,
+              "action": 0
+            },
+            {
+              "time": 4.0,
+              "action": 0
+            }
+          ],
+          "delivered": [
+            {
+              "pulse_id": "item:0",
+              "item": 0,
+              "emitted_at": 0.25,
+              "delivered_at": 0.35,
+              "quality": 0.569782824730923
+            },
+            {
+              "pulse_id": "item:1",
+              "item": 1,
+              "emitted_at": 0.25,
+              "delivered_at": 0.35,
+              "quality": 0.569782824730923
+            },
+            {
+              "pulse_id": "item:2",
+              "item": 2,
+              "emitted_at": 0.25,
+              "delivered_at": 0.35,
+              "quality": 0.569782824730923
+            },
+            {
+              "pulse_id": "item:3",
+              "item": 3,
+              "emitted_at": 0.25,
+              "delivered_at": 0.35,
+              "quality": 0.569782824730923
+            }
+          ],
+          "expected_utility": 1.4102124912090346,
+          "normalized_utility": 0.7116756064209487,
+          "realized_query_utility": [
+            1.139565649461846,
+            1.2535222144080307,
+            1.8802833216120458,
+            0.7976959546232922
+          ],
+          "budget_final": 1,
+          "budget_spent": 4,
+          "renewals": 0,
+          "internal_spikes": 1,
+          "internal_spikes_per_neuron": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          "actual_internal_events": [
+            {
+              "time": 0.6357046133087432,
+              "batch": 1,
+              "component": 4,
+              "cause": "ctmc_threshold"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "strict_paired": {
+    "schema": "rrsnn-v4-frozen-boundary-comparison-1",
+    "summary": {
+      "episodes": 4,
+      "same_weights_and_initial_state": true,
+      "all_task_resource_invariants_passed": true,
+      "rows_with_any_action_divergence": 0,
+      "total_action_disagreements": 0,
+      "rows_with_event_divergence_beyond_tolerance": 0,
+      "rows_with_different_event_counts": 0,
+      "rows_with_different_delivered_pulses": 0,
+      "maximum_absolute_expected_utility_difference": 0.0,
+      "mean_expected_utility_root_minus_lambert": 0.0,
+      "maximum_type_aligned_event_time_difference": 0.0,
+      "observation_calls_with_different_rng_states": 0,
+      "boundary_maximum_absolute_difference": 0.0,
+      "drift_maximum_absolute_difference": 0.0,
+      "logits_maximum_absolute_difference": 0.0,
+      "trace_maximum_absolute_difference": 0.0
+    },
+    "dataset": "paired",
+    "training_seed": 0,
+    "latent_replay": 1,
+    "latent_seed": 901993,
+    "same_weight_state_sha256": "0b4f7398648e39cd41ba2c18e14eec19b5ce4bdaa75a6f47c5eb725144e67f63",
+    "execution_order": [
+      "root",
+      "closed_form"
+    ],
+    "event_time_tolerance": 1e-07,
+    "methods": {
+      "lambert": "Frozen RRPolicy boundary_method=closed_form",
+      "brent": "Frozen RRPolicy boundary_method=root, independent scalar brentq bracket"
+    },
+    "timing": {
+      "root": {
+        "model_step_cpu_seconds": 0.22266571899999998,
+        "elapsed_seconds_including_task": 0.2533797209907789
+      },
+      "closed_form": {
+        "model_step_cpu_seconds": 0.25861893599999997,
+        "elapsed_seconds_including_task": 0.29229669901542366
+      }
+    },
+    "timing_scope": "Same instrumented model.step path, including diagnostic copies and RNG digests. Alternating method order. These are full diagnostic replay costs, not an optimized boundary-kernel microbenchmark.",
+    "coupling_scope": "Identical scenario, frozen weights, initialization and actor seed per replay. After a numerical branch changes random consumption, trajectories evolve naturally; divergence is recorded rather than forcing path equality.",
+    "control_difference_scope": "Recorded drift/logit/threshold differences follow each closed-loop history. After action or state divergence they include downstream effects, not only local root roundoff.",
+    "real_future_window": false,
+    "new_training_performed": false,
+    "step_comparisons": [
+      {
+        "call": 0,
+        "batch_serial": 0,
+        "observation_step": 0,
+        "batch_size": 1,
+        "time": [
+          0.0
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 1,
+        "batch_serial": 0,
+        "observation_step": 1,
+        "batch_size": 1,
+        "time": [
+          0.25
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 2,
+        "batch_serial": 0,
+        "observation_step": 2,
+        "batch_size": 1,
+        "time": [
+          0.5
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 3,
+        "batch_serial": 0,
+        "observation_step": 3,
+        "batch_size": 1,
+        "time": [
+          1.0
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 4,
+        "batch_serial": 0,
+        "observation_step": 4,
+        "batch_size": 1,
+        "time": [
+          1.5
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 5,
+        "batch_serial": 0,
+        "observation_step": 5,
+        "batch_size": 1,
+        "time": [
+          2.0
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 6,
+        "batch_serial": 0,
+        "observation_step": 6,
+        "batch_size": 1,
+        "time": [
+          2.5
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 7,
+        "batch_serial": 0,
+        "observation_step": 7,
+        "batch_size": 1,
+        "time": [
+          3.0
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 8,
+        "batch_serial": 0,
+        "observation_step": 8,
+        "batch_size": 1,
+        "time": [
+          3.5
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 9,
+        "batch_serial": 0,
+        "observation_step": 9,
+        "batch_size": 1,
+        "time": [
+          3.75
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 10,
+        "batch_serial": 0,
+        "observation_step": 10,
+        "batch_size": 1,
+        "time": [
+          4.0
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 11,
+        "batch_serial": 1,
+        "observation_step": 0,
+        "batch_size": 1,
+        "time": [
+          0.0
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 12,
+        "batch_serial": 1,
+        "observation_step": 1,
+        "batch_size": 1,
+        "time": [
+          0.25
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 13,
+        "batch_serial": 1,
+        "observation_step": 2,
+        "batch_size": 1,
+        "time": [
+          0.5
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 14,
+        "batch_serial": 1,
+        "observation_step": 3,
+        "batch_size": 1,
+        "time": [
+          1.0
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 15,
+        "batch_serial": 1,
+        "observation_step": 4,
+        "batch_size": 1,
+        "time": [
+          1.5
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 16,
+        "batch_serial": 1,
+        "observation_step": 5,
+        "batch_size": 1,
+        "time": [
+          2.0
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 17,
+        "batch_serial": 1,
+        "observation_step": 6,
+        "batch_size": 1,
+        "time": [
+          2.5
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 18,
+        "batch_serial": 1,
+        "observation_step": 7,
+        "batch_size": 1,
+        "time": [
+          3.0
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 19,
+        "batch_serial": 1,
+        "observation_step": 8,
+        "batch_size": 1,
+        "time": [
+          3.5
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 20,
+        "batch_serial": 1,
+        "observation_step": 9,
+        "batch_size": 1,
+        "time": [
+          3.75
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 21,
+        "batch_serial": 1,
+        "observation_step": 10,
+        "batch_size": 1,
+        "time": [
+          4.0
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 22,
+        "batch_serial": 2,
+        "observation_step": 0,
+        "batch_size": 1,
+        "time": [
+          0.0
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 23,
+        "batch_serial": 2,
+        "observation_step": 1,
+        "batch_size": 1,
+        "time": [
+          0.25
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 24,
+        "batch_serial": 2,
+        "observation_step": 2,
+        "batch_size": 1,
+        "time": [
+          0.5
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 25,
+        "batch_serial": 2,
+        "observation_step": 3,
+        "batch_size": 1,
+        "time": [
+          1.0
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 26,
+        "batch_serial": 2,
+        "observation_step": 4,
+        "batch_size": 1,
+        "time": [
+          1.5
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 27,
+        "batch_serial": 2,
+        "observation_step": 5,
+        "batch_size": 1,
+        "time": [
+          2.0
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 28,
+        "batch_serial": 2,
+        "observation_step": 6,
+        "batch_size": 1,
+        "time": [
+          2.5
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 29,
+        "batch_serial": 2,
+        "observation_step": 7,
+        "batch_size": 1,
+        "time": [
+          3.0
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 30,
+        "batch_serial": 2,
+        "observation_step": 8,
+        "batch_size": 1,
+        "time": [
+          3.5
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 31,
+        "batch_serial": 2,
+        "observation_step": 9,
+        "batch_size": 1,
+        "time": [
+          3.75
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 32,
+        "batch_serial": 2,
+        "observation_step": 10,
+        "batch_size": 1,
+        "time": [
+          4.0
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 33,
+        "batch_serial": 3,
+        "observation_step": 0,
+        "batch_size": 1,
+        "time": [
+          0.0
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 34,
+        "batch_serial": 3,
+        "observation_step": 1,
+        "batch_size": 1,
+        "time": [
+          0.25
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 35,
+        "batch_serial": 3,
+        "observation_step": 2,
+        "batch_size": 1,
+        "time": [
+          0.5
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 36,
+        "batch_serial": 3,
+        "observation_step": 3,
+        "batch_size": 1,
+        "time": [
+          1.0
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 37,
+        "batch_serial": 3,
+        "observation_step": 4,
+        "batch_size": 1,
+        "time": [
+          1.5
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 38,
+        "batch_serial": 3,
+        "observation_step": 5,
+        "batch_size": 1,
+        "time": [
+          2.0
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 39,
+        "batch_serial": 3,
+        "observation_step": 6,
+        "batch_size": 1,
+        "time": [
+          2.5
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 40,
+        "batch_serial": 3,
+        "observation_step": 7,
+        "batch_size": 1,
+        "time": [
+          3.0
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 41,
+        "batch_serial": 3,
+        "observation_step": 8,
+        "batch_size": 1,
+        "time": [
+          3.5
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 42,
+        "batch_serial": 3,
+        "observation_step": 9,
+        "batch_size": 1,
+        "time": [
+          3.75
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      },
+      {
+        "call": 43,
+        "batch_serial": 3,
+        "observation_step": 10,
+        "batch_size": 1,
+        "time": [
+          4.0
+        ],
+        "same_observation": true,
+        "same_indices_after_observation": true,
+        "same_count_matrix": true,
+        "same_rng_after_observation": true,
+        "boundary_maximum_absolute_difference": 0.0,
+        "drift_maximum_absolute_difference": 0.0,
+        "logits_maximum_absolute_difference": 0.0,
+        "trace_maximum_absolute_difference": 0.0
+      }
+    ],
+    "rows": [
+      {
+        "scenario_index": 0,
+        "scenario_digest": "9ed23ae3cce1cdfda18117694f3a8f5fe95afc12bdb75f7a3c1d2bd3aab86c41",
+        "group": 0,
+        "condition": "A0",
+        "initial_state_sha256": "a06d5235ca15e747c878224a99169fe04e1f25761947753a342bce2d6deb9561",
+        "query_seeds": [
+          901300,
+          901301,
+          901302,
+          901303
+        ],
+        "query_bits": [
+          [
+            1,
+            1,
+            1,
+            0
+          ],
+          [
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1
+          ]
+        ],
+        "oracle_expected_utility": 2.219266133168509,
+        "counts_equal": true,
+        "event_type_sequence_equal": true,
+        "exact_event_log_equal": true,
+        "event_log_equal_with_time_tolerance": true,
+        "maximum_time_difference_if_type_aligned": 0.0,
+        "first_event_divergence_beyond_tolerance": null,
+        "count_root_minus_lambert": 0,
+        "action_disagreement_count": 0,
+        "action_disagreement_times": [],
+        "delivered_pulses_equal": true,
+        "expected_utility_root_minus_lambert": 0.0,
+        "realized_utility_root_minus_lambert": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "lambert": {
+          "actions": [
+            {
+              "time": 0.0,
+              "action": 0
+            },
+            {
+              "time": 0.25,
+              "action": 54
+            },
+            {
+              "time": 0.5,
+              "action": 24
+            },
+            {
+              "time": 1.0,
+              "action": 0
+            },
+            {
+              "time": 1.5,
+              "action": 0
+            },
+            {
+              "time": 2.0,
+              "action": 0
+            },
+            {
+              "time": 2.5,
+              "action": 2
+            },
+            {
+              "time": 3.0,
+              "action": 0
+            },
+            {
+              "time": 3.5,
+              "action": 0
+            },
+            {
+              "time": 3.75,
+              "action": 0
+            },
+            {
+              "time": 4.0,
+              "action": 0
+            }
+          ],
+          "delivered": [
+            {
+              "pulse_id": "item:0",
+              "item": 0,
+              "emitted_at": 0.25,
+              "delivered_at": 0.35,
+              "quality": 0.569782824730923
+            },
+            {
+              "pulse_id": "item:1",
+              "item": 1,
+              "emitted_at": 0.5,
+              "delivered_at": 0.6,
+              "quality": 0.5915553643668151
+            },
+            {
+              "pulse_id": "item:2",
+              "item": 2,
+              "emitted_at": 0.5,
+              "delivered_at": 0.6,
+              "quality": 0.5915553643668151
+            },
+            {
+              "pulse_id": "item:3",
+              "item": 3,
+              "emitted_at": 2.5,
+              "delivered_at": 2.6,
+              "quality": 0.7985162187593771
+            }
+          ],
+          "expected_utility": 1.9468228553078044,
+          "normalized_utility": 0.8772372209944332,
+          "realized_query_utility": [
+            1.930331495401009,
+            2.595763807077073,
+            2.595763807077073,
+            2.595763807077073
+          ],
+          "budget_final": 0,
+          "budget_spent": 4,
+          "renewals": 0,
+          "internal_spikes": 4,
+          "internal_spikes_per_neuron": [
+            0,
+            1,
+            1,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          "actual_internal_events": [
+            {
+              "time": 2.6583717245401486,
+              "batch": 0,
+              "component": 1,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 3.0,
+              "batch": 0,
+              "component": 3,
+              "cause": "ctmc_observation_remap"
+            },
+            {
+              "time": 3.520648478077495,
+              "batch": 0,
+              "component": 5,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 3.7677917263543383,
+              "batch": 0,
+              "component": 2,
+              "cause": "ctmc_threshold"
+            }
+          ]
+        },
+        "brent": {
+          "actions": [
+            {
+              "time": 0.0,
+              "action": 0
+            },
+            {
+              "time": 0.25,
+              "action": 54
+            },
+            {
+              "time": 0.5,
+              "action": 24
+            },
+            {
+              "time": 1.0,
+              "action": 0
+            },
+            {
+              "time": 1.5,
+              "action": 0
+            },
+            {
+              "time": 2.0,
+              "action": 0
+            },
+            {
+              "time": 2.5,
+              "action": 2
+            },
+            {
+              "time": 3.0,
+              "action": 0
+            },
+            {
+              "time": 3.5,
+              "action": 0
+            },
+            {
+              "time": 3.75,
+              "action": 0
+            },
+            {
+              "time": 4.0,
+              "action": 0
+            }
+          ],
+          "delivered": [
+            {
+              "pulse_id": "item:0",
+              "item": 0,
+              "emitted_at": 0.25,
+              "delivered_at": 0.35,
+              "quality": 0.569782824730923
+            },
+            {
+              "pulse_id": "item:1",
+              "item": 1,
+              "emitted_at": 0.5,
+              "delivered_at": 0.6,
+              "quality": 0.5915553643668151
+            },
+            {
+              "pulse_id": "item:2",
+              "item": 2,
+              "emitted_at": 0.5,
+              "delivered_at": 0.6,
+              "quality": 0.5915553643668151
+            },
+            {
+              "pulse_id": "item:3",
+              "item": 3,
+              "emitted_at": 2.5,
+              "delivered_at": 2.6,
+              "quality": 0.7985162187593771
+            }
+          ],
+          "expected_utility": 1.9468228553078044,
+          "normalized_utility": 0.8772372209944332,
+          "realized_query_utility": [
+            1.930331495401009,
+            2.595763807077073,
+            2.595763807077073,
+            2.595763807077073
+          ],
+          "budget_final": 0,
+          "budget_spent": 4,
+          "renewals": 0,
+          "internal_spikes": 4,
+          "internal_spikes_per_neuron": [
+            0,
+            1,
+            1,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          "actual_internal_events": [
+            {
+              "time": 2.6583717245401486,
+              "batch": 0,
+              "component": 1,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 3.0,
+              "batch": 0,
+              "component": 3,
+              "cause": "ctmc_observation_remap"
+            },
+            {
+              "time": 3.520648478077495,
+              "batch": 0,
+              "component": 5,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 3.7677917263543383,
+              "batch": 0,
+              "component": 2,
+              "cause": "ctmc_threshold"
+            }
+          ]
+        }
+      },
+      {
+        "scenario_index": 1,
+        "scenario_digest": "f5c9a45d80f469821a42eee9cd5826391a340bc3d5c92bc161e32501c3397c89",
+        "group": 0,
+        "condition": "A2",
+        "initial_state_sha256": "a06d5235ca15e747c878224a99169fe04e1f25761947753a342bce2d6deb9561",
+        "query_seeds": [
+          901300,
+          901301,
+          901302,
+          901303
+        ],
+        "query_bits": [
+          [
+            1,
+            1,
+            1,
+            0
+          ],
+          [
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1
+          ]
+        ],
+        "oracle_expected_utility": 2.120561508876617,
+        "counts_equal": true,
+        "event_type_sequence_equal": true,
+        "exact_event_log_equal": true,
+        "event_log_equal_with_time_tolerance": true,
+        "maximum_time_difference_if_type_aligned": 0.0,
+        "first_event_divergence_beyond_tolerance": null,
+        "count_root_minus_lambert": 0,
+        "action_disagreement_count": 0,
+        "action_disagreement_times": [],
+        "delivered_pulses_equal": true,
+        "expected_utility_root_minus_lambert": 0.0,
+        "realized_utility_root_minus_lambert": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "lambert": {
+          "actions": [
+            {
+              "time": 0.0,
+              "action": 0
+            },
+            {
+              "time": 0.25,
+              "action": 54
+            },
+            {
+              "time": 0.5,
+              "action": 24
+            },
+            {
+              "time": 1.0,
+              "action": 0
+            },
+            {
+              "time": 1.5,
+              "action": 0
+            },
+            {
+              "time": 2.0,
+              "action": 0
+            },
+            {
+              "time": 2.5,
+              "action": 0
+            },
+            {
+              "time": 3.0,
+              "action": 0
+            },
+            {
+              "time": 3.5,
+              "action": 0
+            },
+            {
+              "time": 3.75,
+              "action": 0
+            },
+            {
+              "time": 4.0,
+              "action": 0
+            }
+          ],
+          "delivered": [
+            {
+              "pulse_id": "item:0",
+              "item": 0,
+              "emitted_at": 0.25,
+              "delivered_at": 0.35,
+              "quality": 0.569782824730923
+            },
+            {
+              "pulse_id": "item:1",
+              "item": 1,
+              "emitted_at": 0.5,
+              "delivered_at": 0.6,
+              "quality": 0.5915553643668151
+            },
+            {
+              "pulse_id": "item:2",
+              "item": 2,
+              "emitted_at": 0.5,
+              "delivered_at": 0.6,
+              "quality": 0.5915553643668151
+            }
+          ],
+          "expected_utility": 1.4477486215507562,
+          "normalized_utility": 0.682719466278397,
+          "realized_query_utility": [
+            1.930331495401009,
+            1.930331495401009,
+            1.930331495401009,
+            1.930331495401009
+          ],
+          "budget_final": 1,
+          "budget_spent": 3,
+          "renewals": 0,
+          "internal_spikes": 3,
+          "internal_spikes_per_neuron": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            1
+          ],
+          "actual_internal_events": [
+            {
+              "time": 0.5543768169045031,
+              "batch": 0,
+              "component": 7,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 1.0359720623486341,
+              "batch": 0,
+              "component": 5,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 2.3945146715003087,
+              "batch": 0,
+              "component": 4,
+              "cause": "ctmc_threshold"
+            }
+          ]
+        },
+        "brent": {
+          "actions": [
+            {
+              "time": 0.0,
+              "action": 0
+            },
+            {
+              "time": 0.25,
+              "action": 54
+            },
+            {
+              "time": 0.5,
+              "action": 24
+            },
+            {
+              "time": 1.0,
+              "action": 0
+            },
+            {
+              "time": 1.5,
+              "action": 0
+            },
+            {
+              "time": 2.0,
+              "action": 0
+            },
+            {
+              "time": 2.5,
+              "action": 0
+            },
+            {
+              "time": 3.0,
+              "action": 0
+            },
+            {
+              "time": 3.5,
+              "action": 0
+            },
+            {
+              "time": 3.75,
+              "action": 0
+            },
+            {
+              "time": 4.0,
+              "action": 0
+            }
+          ],
+          "delivered": [
+            {
+              "pulse_id": "item:0",
+              "item": 0,
+              "emitted_at": 0.25,
+              "delivered_at": 0.35,
+              "quality": 0.569782824730923
+            },
+            {
+              "pulse_id": "item:1",
+              "item": 1,
+              "emitted_at": 0.5,
+              "delivered_at": 0.6,
+              "quality": 0.5915553643668151
+            },
+            {
+              "pulse_id": "item:2",
+              "item": 2,
+              "emitted_at": 0.5,
+              "delivered_at": 0.6,
+              "quality": 0.5915553643668151
+            }
+          ],
+          "expected_utility": 1.4477486215507562,
+          "normalized_utility": 0.682719466278397,
+          "realized_query_utility": [
+            1.930331495401009,
+            1.930331495401009,
+            1.930331495401009,
+            1.930331495401009
+          ],
+          "budget_final": 1,
+          "budget_spent": 3,
+          "renewals": 0,
+          "internal_spikes": 3,
+          "internal_spikes_per_neuron": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            1
+          ],
+          "actual_internal_events": [
+            {
+              "time": 0.5543768169045031,
+              "batch": 0,
+              "component": 7,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 1.0359720623486341,
+              "batch": 0,
+              "component": 5,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 2.3945146715003087,
+              "batch": 0,
+              "component": 4,
+              "cause": "ctmc_threshold"
+            }
+          ]
+        }
+      },
+      {
+        "scenario_index": 2,
+        "scenario_digest": "e30772e4f3087be91074e00ab94054b84c55539bea5fda57fd2d7e6ea5a73897",
+        "group": 0,
+        "condition": "B0",
+        "initial_state_sha256": "a06d5235ca15e747c878224a99169fe04e1f25761947753a342bce2d6deb9561",
+        "query_seeds": [
+          901300,
+          901301,
+          901302,
+          901303
+        ],
+        "query_bits": [
+          [
+            1,
+            1,
+            1,
+            0
+          ],
+          [
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1
+          ]
+        ],
+        "oracle_expected_utility": 2.217995140238937,
+        "counts_equal": true,
+        "event_type_sequence_equal": true,
+        "exact_event_log_equal": true,
+        "event_log_equal_with_time_tolerance": true,
+        "maximum_time_difference_if_type_aligned": 0.0,
+        "first_event_divergence_beyond_tolerance": null,
+        "count_root_minus_lambert": 0,
+        "action_disagreement_count": 0,
+        "action_disagreement_times": [],
+        "delivered_pulses_equal": true,
+        "expected_utility_root_minus_lambert": 0.0,
+        "realized_utility_root_minus_lambert": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "lambert": {
+          "actions": [
+            {
+              "time": 0.0,
+              "action": 0
+            },
+            {
+              "time": 0.25,
+              "action": 54
+            },
+            {
+              "time": 0.5,
+              "action": 24
+            },
+            {
+              "time": 1.0,
+              "action": 0
+            },
+            {
+              "time": 1.5,
+              "action": 0
+            },
+            {
+              "time": 2.0,
+              "action": 0
+            },
+            {
+              "time": 2.5,
+              "action": 0
+            },
+            {
+              "time": 3.0,
+              "action": 0
+            },
+            {
+              "time": 3.5,
+              "action": 0
+            },
+            {
+              "time": 3.75,
+              "action": 0
+            },
+            {
+              "time": 4.0,
+              "action": 0
+            }
+          ],
+          "delivered": [
+            {
+              "pulse_id": "item:0",
+              "item": 0,
+              "emitted_at": 0.25,
+              "delivered_at": 0.35,
+              "quality": 0.569782824730923
+            },
+            {
+              "pulse_id": "item:1",
+              "item": 1,
+              "emitted_at": 0.5,
+              "delivered_at": 0.6,
+              "quality": 0.5915553643668151
+            },
+            {
+              "pulse_id": "item:2",
+              "item": 2,
+              "emitted_at": 0.5,
+              "delivered_at": 0.6,
+              "quality": 0.5915553643668151
+            }
+          ],
+          "expected_utility": 1.4477486215507562,
+          "normalized_utility": 0.652728491278297,
+          "realized_query_utility": [
+            1.930331495401009,
+            1.930331495401009,
+            1.930331495401009,
+            1.930331495401009
+          ],
+          "budget_final": 1,
+          "budget_spent": 3,
+          "renewals": 0,
+          "internal_spikes": 8,
+          "internal_spikes_per_neuron": [
+            1,
+            1,
+            1,
+            2,
+            0,
+            1,
+            1,
+            1
+          ],
+          "actual_internal_events": [
+            {
+              "time": 0.7184754245916618,
+              "batch": 0,
+              "component": 7,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 1.0,
+              "batch": 0,
+              "component": 0,
+              "cause": "ctmc_observation_remap"
+            },
+            {
+              "time": 1.5596877831344467,
+              "batch": 0,
+              "component": 5,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 2.3272490576827165,
+              "batch": 0,
+              "component": 6,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 2.5,
+              "batch": 0,
+              "component": 1,
+              "cause": "ctmc_observation_remap"
+            },
+            {
+              "time": 2.607071987840813,
+              "batch": 0,
+              "component": 3,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 2.926952081186127,
+              "batch": 0,
+              "component": 2,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 3.4323860791065317,
+              "batch": 0,
+              "component": 3,
+              "cause": "ctmc_threshold"
+            }
+          ]
+        },
+        "brent": {
+          "actions": [
+            {
+              "time": 0.0,
+              "action": 0
+            },
+            {
+              "time": 0.25,
+              "action": 54
+            },
+            {
+              "time": 0.5,
+              "action": 24
+            },
+            {
+              "time": 1.0,
+              "action": 0
+            },
+            {
+              "time": 1.5,
+              "action": 0
+            },
+            {
+              "time": 2.0,
+              "action": 0
+            },
+            {
+              "time": 2.5,
+              "action": 0
+            },
+            {
+              "time": 3.0,
+              "action": 0
+            },
+            {
+              "time": 3.5,
+              "action": 0
+            },
+            {
+              "time": 3.75,
+              "action": 0
+            },
+            {
+              "time": 4.0,
+              "action": 0
+            }
+          ],
+          "delivered": [
+            {
+              "pulse_id": "item:0",
+              "item": 0,
+              "emitted_at": 0.25,
+              "delivered_at": 0.35,
+              "quality": 0.569782824730923
+            },
+            {
+              "pulse_id": "item:1",
+              "item": 1,
+              "emitted_at": 0.5,
+              "delivered_at": 0.6,
+              "quality": 0.5915553643668151
+            },
+            {
+              "pulse_id": "item:2",
+              "item": 2,
+              "emitted_at": 0.5,
+              "delivered_at": 0.6,
+              "quality": 0.5915553643668151
+            }
+          ],
+          "expected_utility": 1.4477486215507562,
+          "normalized_utility": 0.652728491278297,
+          "realized_query_utility": [
+            1.930331495401009,
+            1.930331495401009,
+            1.930331495401009,
+            1.930331495401009
+          ],
+          "budget_final": 1,
+          "budget_spent": 3,
+          "renewals": 0,
+          "internal_spikes": 8,
+          "internal_spikes_per_neuron": [
+            1,
+            1,
+            1,
+            2,
+            0,
+            1,
+            1,
+            1
+          ],
+          "actual_internal_events": [
+            {
+              "time": 0.7184754245916618,
+              "batch": 0,
+              "component": 7,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 1.0,
+              "batch": 0,
+              "component": 0,
+              "cause": "ctmc_observation_remap"
+            },
+            {
+              "time": 1.5596877831344467,
+              "batch": 0,
+              "component": 5,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 2.3272490576827165,
+              "batch": 0,
+              "component": 6,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 2.5,
+              "batch": 0,
+              "component": 1,
+              "cause": "ctmc_observation_remap"
+            },
+            {
+              "time": 2.607071987840813,
+              "batch": 0,
+              "component": 3,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 2.926952081186127,
+              "batch": 0,
+              "component": 2,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 3.4323860791065317,
+              "batch": 0,
+              "component": 3,
+              "cause": "ctmc_threshold"
+            }
+          ]
+        }
+      },
+      {
+        "scenario_index": 3,
+        "scenario_digest": "ace8ef95132e18099b054f1fd256c20943ed17dd42b491a0b47a0138fa7a2b95",
+        "group": 0,
+        "condition": "B2",
+        "initial_state_sha256": "a06d5235ca15e747c878224a99169fe04e1f25761947753a342bce2d6deb9561",
+        "query_seeds": [
+          901300,
+          901301,
+          901302,
+          901303
+        ],
+        "query_bits": [
+          [
+            1,
+            1,
+            1,
+            0
+          ],
+          [
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            1,
+            1,
+            1
+          ]
+        ],
+        "oracle_expected_utility": 1.699009147956852,
+        "counts_equal": true,
+        "event_type_sequence_equal": true,
+        "exact_event_log_equal": true,
+        "event_log_equal_with_time_tolerance": true,
+        "maximum_time_difference_if_type_aligned": 0.0,
+        "first_event_divergence_beyond_tolerance": null,
+        "count_root_minus_lambert": 0,
+        "action_disagreement_count": 0,
+        "action_disagreement_times": [],
+        "delivered_pulses_equal": true,
+        "expected_utility_root_minus_lambert": 0.0,
+        "realized_utility_root_minus_lambert": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "lambert": {
+          "actions": [
+            {
+              "time": 0.0,
+              "action": 0
+            },
+            {
+              "time": 0.25,
+              "action": 54
+            },
+            {
+              "time": 0.5,
+              "action": 24
+            },
+            {
+              "time": 1.0,
+              "action": 0
+            },
+            {
+              "time": 1.5,
+              "action": 0
+            },
+            {
+              "time": 2.0,
+              "action": 0
+            },
+            {
+              "time": 2.5,
+              "action": 0
+            },
+            {
+              "time": 3.0,
+              "action": 0
+            },
+            {
+              "time": 3.5,
+              "action": 0
+            },
+            {
+              "time": 3.75,
+              "action": 0
+            },
+            {
+              "time": 4.0,
+              "action": 0
+            }
+          ],
+          "delivered": [
+            {
+              "pulse_id": "item:0",
+              "item": 0,
+              "emitted_at": 0.25,
+              "delivered_at": 0.35,
+              "quality": 0.569782824730923
+            },
+            {
+              "pulse_id": "item:1",
+              "item": 1,
+              "emitted_at": 0.5,
+              "delivered_at": 0.6,
+              "quality": 0.5915553643668151
+            },
+            {
+              "pulse_id": "item:2",
+              "item": 2,
+              "emitted_at": 0.5,
+              "delivered_at": 0.6,
+              "quality": 0.5915553643668151
+            }
+          ],
+          "expected_utility": 1.4477486215507562,
+          "normalized_utility": 0.8521134940866858,
+          "realized_query_utility": [
+            1.930331495401009,
+            1.930331495401009,
+            1.930331495401009,
+            1.930331495401009
+          ],
+          "budget_final": 1,
+          "budget_spent": 3,
+          "renewals": 0,
+          "internal_spikes": 2,
+          "internal_spikes_per_neuron": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          "actual_internal_events": [
+            {
+              "time": 0.4622635841588485,
+              "batch": 0,
+              "component": 4,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 1.2655240029511485,
+              "batch": 0,
+              "component": 2,
+              "cause": "ctmc_threshold"
+            }
+          ]
+        },
+        "brent": {
+          "actions": [
+            {
+              "time": 0.0,
+              "action": 0
+            },
+            {
+              "time": 0.25,
+              "action": 54
+            },
+            {
+              "time": 0.5,
+              "action": 24
+            },
+            {
+              "time": 1.0,
+              "action": 0
+            },
+            {
+              "time": 1.5,
+              "action": 0
+            },
+            {
+              "time": 2.0,
+              "action": 0
+            },
+            {
+              "time": 2.5,
+              "action": 0
+            },
+            {
+              "time": 3.0,
+              "action": 0
+            },
+            {
+              "time": 3.5,
+              "action": 0
+            },
+            {
+              "time": 3.75,
+              "action": 0
+            },
+            {
+              "time": 4.0,
+              "action": 0
+            }
+          ],
+          "delivered": [
+            {
+              "pulse_id": "item:0",
+              "item": 0,
+              "emitted_at": 0.25,
+              "delivered_at": 0.35,
+              "quality": 0.569782824730923
+            },
+            {
+              "pulse_id": "item:1",
+              "item": 1,
+              "emitted_at": 0.5,
+              "delivered_at": 0.6,
+              "quality": 0.5915553643668151
+            },
+            {
+              "pulse_id": "item:2",
+              "item": 2,
+              "emitted_at": 0.5,
+              "delivered_at": 0.6,
+              "quality": 0.5915553643668151
+            }
+          ],
+          "expected_utility": 1.4477486215507562,
+          "normalized_utility": 0.8521134940866858,
+          "realized_query_utility": [
+            1.930331495401009,
+            1.930331495401009,
+            1.930331495401009,
+            1.930331495401009
+          ],
+          "budget_final": 1,
+          "budget_spent": 3,
+          "renewals": 0,
+          "internal_spikes": 2,
+          "internal_spikes_per_neuron": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          "actual_internal_events": [
+            {
+              "time": 0.4622635841588485,
+              "batch": 0,
+              "component": 4,
+              "cause": "ctmc_threshold"
+            },
+            {
+              "time": 1.2655240029511485,
+              "batch": 0,
+              "component": 2,
+              "cause": "ctmc_threshold"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "scope": "Development only: fresh untrained seed901990, two declared scenarios and one four-condition group. Fresh Brent is executed here, permitting full per-step controls/index/RNG comparisons. These do not establish full-state equivalence for the later 60 fixed-reference replays."
+}
