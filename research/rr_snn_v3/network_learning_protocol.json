@@ -52,7 +52,9 @@
       0,
       0
     ],
-    "selectByHoldout": false
+    "selectByHoldout": false,
+    "objective": "Per neuron: sum of pulse-channel NLL over 128 complete episodes plus 0.5*0.01*sum(theta^2), regularization once per fitted vector. Each Adam gradient is divided by the number of regime records.",
+    "trainableParameters": "Five pulse-rate weights per neuron; 10 parameters total, held fixed across episodes."
   },
   "data": {
     "horizon": 4,
@@ -108,7 +110,8 @@
     "heldout NLL per episode at initial/fitted/teacher weights",
     "analytic vs finite-difference score",
     "all gradients finite",
-    "network same-path restore"
+    "network same-path restore",
+    "paired heldout path NLL fitted-minus-initial mean and whole-episode bootstrap 95% interval"
   ],
   "failuresMustBeReported": true,
   "productionAuthority": false,
@@ -117,6 +120,30 @@
     "Deadline/queue field encoding follows event runtime API; physical data generation implementation must be frozen before heldout use.",
     "Fixed-epoch diagnostic evaluates all heldout episodes once after fitting; no architecture selection or superiority inference.",
     "Node hosted execution is distinct from dot target hardware; no wall-clock performance comparisons.",
-    "Initialization at t=0 observes the full maturity list after identical physical state and initial held rates; this specification was added before generating any training or heldout paths."
-  ]
+    "Initialization at t=0 observes the full maturity list after identical physical state and initial held rates; this specification was added before generating any training or heldout paths.",
+    "Independent design review before data generation: report fixed-up-channel constants in absolute joint path NLL; they cancel in paired differences. No L2 term in heldout likelihood."
+  ],
+  "bootstrap": {
+    "unit": "whole two-neuron episode within each of four maturity/shock strata",
+    "draws": 10000,
+    "seed": 700101,
+    "percentileRanksZeroBased": [
+      249,
+      9749
+    ],
+    "strataCounts": [
+      32,
+      32,
+      32,
+      32
+    ],
+    "scope": "conditional on this one fitted candidate; excludes training-set variability"
+  },
+  "evaluation": {
+    "absoluteNllIncludesFixedUpChannel": true,
+    "heldoutRegularization": 0,
+    "fullyObservedInternalJumps": true,
+    "delayedInputsAreDeterministicPastPathFunctions": true,
+    "extraDeliveryLikelihood": false
+  }
 }

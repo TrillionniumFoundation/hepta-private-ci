@@ -7,6 +7,9 @@
 const RRDelayedNetwork = (() => {
   const check=(ok,msg)=>{if(!ok)throw new Error(msg);};
   const copy=x=>JSON.parse(JSON.stringify(x));
+  const ordered=x=>Array.isArray(x)?x.map(ordered):x&&typeof x==="object"?
+    Object.fromEntries(Object.keys(x).sort().map(k=>[k,ordered(x[k])])):x;
+  const same=(a,b)=>JSON.stringify(ordered(a))===JSON.stringify(ordered(b));
   function coordinate(units,edges,encode,{identity,horizon,maxSteps=100000,restored=null}={}) {
     check(Array.isArray(units)&&units.length>0&&units.length<=64,"network unit cap");
     check(Number.isFinite(horizon)&&horizon>0,"network horizon");
@@ -29,8 +32,8 @@ const RRDelayedNetwork = (() => {
         "unknown network checkpoint fields");
       check(restored.schema==="rr-delayed-network-1"&&restored.identity===identity,
         "network checkpoint identity");
-      check(JSON.stringify(restored.edges)===JSON.stringify(graph),"network graph mismatch");
-      check(restored.time===time&&restored.horizon===horizon&&restored.cursors.length===units.length,"network restore clocks");
+      check(same(restored.edges,graph),"network graph mismatch");
+      check(restored.time===time&&restored.horizon===horizon&&restored.cursors.length===units.length&&restored.units.length===units.length,"network restore clocks");
       check(Number.isSafeInteger(restored.steps)&&restored.steps>=0&&restored.steps<=maxSteps&&
         restored.maxSteps===maxSteps,"network step counter mismatch");
       const expected=[];
@@ -40,7 +43,7 @@ const RRDelayedNetwork = (() => {
         history.pulses.forEach((pulse,ordinal)=>expected.push({from:i,ordinal,pulse:copy(pulse)}));
       }
       expected.sort((a,b)=>a.pulse.time-b.pulse.time||a.from-b.from||a.ordinal-b.ordinal);
-      check(JSON.stringify(expected)===JSON.stringify(restored.pulses),"network pulse history corruption");
+      check(same(expected,restored.pulses),"network pulse history corruption");
       cursors=copy(restored.cursors);pulses=copy(restored.pulses);steps=restored.steps;
     }
     function collect() {
@@ -117,6 +120,7 @@ const RRDelayedNetwork = (() => {
       loss+=hazard-r.count*logRate;
       for(let j=0;j<theta.length;j++)gradient[j]+=(hazard-r.count)*r.features[j];
     }
+    check(Number.isFinite(loss)&&gradient.every(Number.isFinite),"nonfinite path objective or gradient");
     return {loss,gradient};
   }
   function fit(initial,records,{steps=300,learningRate=.03,l2=.01}={}) {
@@ -134,19 +138,31 @@ const RRDelayedNetwork = (() => {
     }
     return {theta,history,final:likelihood(theta,records,l2)};
   }
-  function diagnostic(M,C,weights,seed,restored=null) {
+  function diagnostic(M,C,weights,seed,restored=null,override=null) {
     check(Array.isArray(weights)&&weights.length===2&&weights.every(row=>
       Array.isArray(row)&&row.length===5&&row.every(Number.isFinite)),"diagnostic weights");
     check(Number.isInteger(seed)&&seed>0&&seed<4294967296,"diagnostic seed");
-    const identity="rr-delayed-diagnostic-v1:"+JSON.stringify(weights);
-    const maturity=seed%2===0?[1,3]:[2,2],shock=Math.floor(seed/2)%2===0?2:0;
+    const scenario=override?copy(override):{maturity:seed%2===0?[1,3]:[2,2],
+      shock:Math.floor(seed/2)%2===0?2:0,pressureMode:"full"};
+    check(JSON.stringify(Object.keys(scenario).sort())===JSON.stringify(["maturity","pressureMode","shock"])&&
+      ["full","mean"].includes(scenario.pressureMode)&&[0,2].includes(scenario.shock)&&
+      Array.isArray(scenario.maturity)&&scenario.maturity.length===2&&
+      scenario.maturity.every(x=>Number.isFinite(x)&&x>0&&x<4),"invalid diagnostic scenario");
+    const {maturity,shock,pressureMode}=scenario;
+    // Short routing label; full weights/scenario are separately checked on restore.
+    // This label is not an authentication digest.
+    let label=2166136261;
+    for(const ch of JSON.stringify([weights,maturity,shock,pressureMode]))
+      label=Math.imul(label^ch.charCodeAt(0),16777619)>>>0;
+    const identity="RRN1:"+label.toString(16).padStart(8,"0");
     const baseFeatures=[1,0,0,0,0],dot=(w,f)=>w.reduce((s,x,j)=>s+x*f[j],0);
     let features=[[[...baseFeatures]],[[...baseFeatures]]];
     if(restored) {
       check(JSON.stringify(Object.keys(restored).sort())===
-        JSON.stringify(["schema","seed","weights","features","network"].sort()),"unknown diagnostic checkpoint fields");
+        JSON.stringify(["schema","seed","weights","features","network","scenario"].sort()),"unknown diagnostic checkpoint fields");
       check(restored.schema==="rr-network-diagnostic-1"&&restored.seed===seed&&
-        JSON.stringify(restored.weights)===JSON.stringify(weights),"diagnostic restore identity");
+        JSON.stringify(restored.weights)===JSON.stringify(weights)&&
+        same(restored.scenario,scenario),"diagnostic restore identity");
       check(Array.isArray(restored.features)&&restored.features.length===2&&restored.features.every(rows=>
         Array.isArray(rows)&&rows.length>0&&rows.length<=20000&&rows.every(f=>
           Array.isArray(f)&&f.length===5&&f.every(Number.isFinite))),"invalid restored feature history");
@@ -156,8 +172,12 @@ const RRDelayedNetwork = (() => {
       const hooks={
         input:(obs,data)=>{
           check(Array.isArray(data)&&data.length===2&&data.every(Number.isFinite),"diagnostic input");
-          const pressure=obs.obligations.filter(x=>x.status==="live").reduce((s,o)=>
-            s+(o.renewDebit+o.renewLoss)*Math.exp(-Math.max(0,o.deadline-obs.time)),0)/(1+obs.budget);
+          const live=obs.obligations.filter(x=>x.status==="live");
+          const totalCost=live.reduce((sum,o)=>sum+o.renewDebit+o.renewLoss,0);
+          const mean=live.length?live.reduce((sum,o)=>sum+o.deadline,0)/live.length:0;
+          const pressure=(pressureMode==="mean"?totalCost*Math.exp(-Math.max(0,mean-obs.time)):
+            live.reduce((sum,o)=>sum+(o.renewDebit+o.renewLoss)*
+              Math.exp(-Math.max(0,o.deadline-obs.time)),0))/(1+obs.budget);
           const f=[1,data[0],data[1],Math.tanh(obs.trace),pressure];
           features[i].push(f);
           return [3,Math.exp(dot(w,f))];
@@ -165,14 +185,17 @@ const RRDelayedNetwork = (() => {
         // Explicit value proxy, independent of learned rates. Actual renewable
         // obligations and utility charges remain in the event runtime.
         continuation:post=>.2*post.budget+
-          1.2*post.obligations.filter(o=>o.status==="renewed").length
+          1.2*post.obligations.filter(o=>o.status==="retained").length
       };
       const config={identity:identity+":unit"+i,evidence:[0,1],
         channels:[{id:"up",from:0,to:1,rate:3,spike:false},
           {id:"pulse",from:1,to:0,rate:Math.exp(dot(w,baseFeatures)),spike:true}],
         resetState:0,refractory:.05,traceTau:.6,pulseDebit:1,budgetCap:8,
         horizon:4,maxRecords:20000};
-      if(restored)return M.restore(restored.network.units[i],C,hooks,config.identity);
+      if(restored) {
+        check(same(restored.network.units[i].config,config),"restored physical config drift");
+        return M.restore(restored.network.units[i],C,hooks,config.identity);
+      }
       const initial={stateIndex:0,budget:6,seed:(seed^(i?0x9e3779b9:0))>>>0,
         obligations:maturity.map((deadline,j)=>({id:"memory"+j,deadline,renewDebit:1,
           renewLoss:.15,emitDebit:1,emitValue:.4,status:"live"})),
@@ -196,9 +219,10 @@ const RRDelayedNetwork = (() => {
         });
       });
     }
+    if(restored)records();
     return {runUntil:net.runUntil,observe:net.observe,pulses:net.pulses,
       statistics:net.statistics,records,
-      snapshot:()=>({schema:"rr-network-diagnostic-1",seed,weights:copy(weights),
+      snapshot:()=>({schema:"rr-network-diagnostic-1",seed,weights:copy(weights),scenario:copy(scenario),
         features:copy(features),network:net.snapshot()})};
   }
   return {coordinate,likelihood,fit,diagnostic};

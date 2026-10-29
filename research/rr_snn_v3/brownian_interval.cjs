@@ -57,9 +57,11 @@ const RRBrownian = (() => {
   function normalInterval(lo,hi) {
     check(lo<=hi,"normal interval order");
     if(lo===hi)return -Infinity;
-    if(hi<=0)return logdiff(logPhi(hi),logPhi(lo));
-    if(lo>=0)return logdiff(logPhi(-lo),logPhi(-hi));
-    return Math.log1p(-Math.exp(logPhi(lo))-Math.exp(logPhi(-hi)));
+    const value=hi<=0?logdiff(logPhi(hi),logPhi(lo)):
+      lo>=0?logdiff(logPhi(-lo),logPhi(-hi)):
+      Math.log1p(-Math.exp(logPhi(lo))-Math.exp(logPhi(-hi)));
+    check(Number.isFinite(value),"normal interval outside conditioned numerical domain");
+    return value;
   }
   function args(x,mu,sigma,t) {
     check([x,mu,sigma,t].every(Number.isFinite)&&x>0&&sigma>0&&t>=0,
@@ -79,7 +81,7 @@ const RRBrownian = (() => {
     const logHit=Math.min(0,logadd(logA,logB));
     // Direct difference avoids subtracting a rounded-to-one hit probability.
     const s1=logPhi(a+b),s2=logB;
-    check(s1>s2,"survival cancellation exceeds floating-point resolution");
+    check(s1-s2>1e-6,"survival log-difference outside conditioned numerical domain");
     const logSurvival=logdiff(s1,s2);
     return {hit:Math.exp(logHit),survival:Math.exp(logSurvival),logHit,logSurvival};
   }
@@ -122,8 +124,9 @@ const RRBrownian = (() => {
     const sd=args(x,mu,sigma,t);
     check(Number.isFinite(z)&&z>=0&&t>0,"invalid killed endpoint");
     if(z===0)return -Infinity;
-    const v=(z-x-mu*t)/sd;
-    return -.5*LOG2PI-Math.log(sd)-.5*v*v+log1mexp(-2*x*z/(sd*sd));
+    const v=(z-x-mu*t)/sd,q=2*x*z/(sd*sd);
+    check(q>0,"killed reflection scale outside conditioned numerical domain");
+    return -.5*LOG2PI-Math.log(sd)-.5*v*v+log1mexp(-q);
   }
   function killedCdf(z,x,mu,sigma,t) {
     const sd=args(x,mu,sigma,t);
@@ -132,7 +135,7 @@ const RRBrownian = (() => {
     const a=x/sd,b=mu*Math.sqrt(t)/sigma,c=z/sd;
     const logA=normalInterval(-a-b,c-a-b);
     const logB=-2*a*b+normalInterval(a-b,c+a-b);
-    check(logA>logB,"endpoint CDF cancellation exceeds floating-point resolution");
+    check(logA-logB>1e-6,"endpoint CDF log-difference outside conditioned numerical domain");
     return Math.exp(logdiff(logA,logB));
   }
   function firstPassageQuantile(u,x,mu,sigma,horizon) {
