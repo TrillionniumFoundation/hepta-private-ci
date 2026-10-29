@@ -1,0 +1,151 @@
+{
+  "archive_sha256": "f30f7c22a2de8d37ed4e8f704fb3fd815719e64ec1fcdba6872c07e8ad545259",
+  "archive_tool_sha256": "4bc5071fc84589808cc3aec40de4bc51fa2a87feb122945f008ce07f555a7278",
+  "compressed_bytes": 9921604,
+  "excluded_non_evidence": [
+    "__pycache__ directories",
+    "*.pyc files"
+  ],
+  "excluded_running_results": [
+    "study001",
+    "conditional001"
+  ],
+  "frozen_files_rehashed_against_original_manifest_and_unchanged": 38,
+  "groups": {
+    "data/native003": {
+      "bytes": 123531,
+      "members": 4
+    },
+    "results/analysis_preflight001.json": {
+      "bytes": 2839,
+      "members": 1
+    },
+    "results/closure001.json": {
+      "bytes": 20837,
+      "members": 1
+    },
+    "results/fast_solver001": {
+      "bytes": 653909,
+      "members": 1
+    },
+    "results/flow_repair001": {
+      "bytes": 167192,
+      "members": 3
+    },
+    "results/moving_flow001": {
+      "bytes": 948229,
+      "members": 5
+    },
+    "results/native001": {
+      "bytes": 186857,
+      "members": 91
+    },
+    "results/native002": {
+      "bytes": 39053742,
+      "members": 2739
+    },
+    "results/native002.process.log": {
+      "bytes": 147,
+      "members": 1
+    },
+    "results/native003": {
+      "bytes": 48098777,
+      "members": 10847
+    },
+    "results/native003.orchestrator.log": {
+      "bytes": 159,
+      "members": 1
+    },
+    "results/native003_adversarial001": {
+      "bytes": 133036,
+      "members": 138
+    },
+    "results/native003_adversarial001.log": {
+      "bytes": 237,
+      "members": 1
+    },
+    "results/native003_development001": {
+      "bytes": 191090,
+      "members": 86
+    },
+    "results/oracle_validation.json": {
+      "bytes": 23453,
+      "members": 1
+    },
+    "results/review001": {
+      "bytes": 2080880,
+      "members": 169
+    },
+    "results/scaling001": {
+      "bytes": 1086032,
+      "members": 55
+    },
+    "results/scaling002": {
+      "bytes": 351752,
+      "members": 18
+    }
+  },
+  "hardlink_staging_directory": "/workspace/scratch/58af017d4789/auxiliary-evidence-work-a4ek26nz/stage",
+  "initial_driver_sha256": "6c3e3d516e64a5086fc20496bdb898ba47daaa9c385e37dbc0e6135615555c60",
+  "initial_work_directory": "/workspace/scratch/58af017d4789/auxiliary-evidence-work-a4ek26nz",
+  "manifest": "auxiliary_evidence.json",
+  "manifest_sha256": "d84c5eff167f64a412c4f5c77a10bac393b14c3c8c2f52b37c09c89dfce41193",
+  "member_count": 14162,
+  "original_completed_members_rehashed_unchanged": 14162,
+  "part_bytes": 1048576,
+  "part_count": 10,
+  "restore_directory": "/tmp/hcsn-auxiliary-restore-autux3qu",
+  "restore_directory_removed_after_verification": true,
+  "restore_initial": {
+    "actual_extraction_to_new_empty_directory": true,
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/archive.py",
+      "restore",
+      "--manifest",
+      "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/artifacts/auxiliary_evidence.json",
+      "--destination",
+      "/tmp/hcsn-auxiliary-restore-autux3qu"
+    ],
+    "cpu_not_reported_reason": "Initial archival driver did not persist its wait4 receipt before a subsequent additional inventory-order assertion failed",
+    "cpu_seconds": null,
+    "log_sha256": "1221920e9980d5a60e5a150335058c92ed0f025d9a040a4a2ee60d553213bb92",
+    "stdout": {
+      "archive_sha256": "f30f7c22a2de8d37ed4e8f704fb3fd815719e64ec1fcdba6872c07e8ad545259",
+      "restored_or_already_identical": 14162
+    }
+  },
+  "restore_revalidation": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/archive.py",
+      "restore",
+      "--manifest",
+      "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/artifacts/auxiliary_evidence.json",
+      "--destination",
+      "/tmp/hcsn-auxiliary-restore-autux3qu"
+    ],
+    "complete_child_cpu_seconds": 6.267092999999999,
+    "returncode": 0,
+    "scope": "Second full archive.py restore verification; initial extraction files already exist with identical content",
+    "wall_seconds": 16.43701137599419,
+    "whole_child_peak_rss_kib": 44548
+  },
+  "restored_physical_members_independently_rehashed": 14162,
+  "running_study_outcomes_read": false,
+  "schema": "hcsn-auxiliary-evidence-archive-verification.v1",
+  "scientific_work_rerun": false,
+  "source_freeze_identity": "caa1a503288d4986bf2f0bc3608bc211a12e221a45c822bfbd19fdacce953bc3",
+  "staging_directory_removed_after_verification": true,
+  "status": "passed",
+  "uncompressed_file_bytes": 93122699,
+  "verification_development_note": {
+    "actual_extra_files": 0,
+    "actual_missing_files": 0,
+    "archive_tool_and_manifest_and_parts_changed": false,
+    "initial_additional_check": "Expected list used pathlib component sorting, physical list used full-string sorting; order differed at native002 vs native002.process.log",
+    "resolution": "Compare both physical and declared names under the same string ordering, then independently check every original and restored size/SHA256",
+    "source_archive_restore_succeeded": true
+  },
+  "verification_script_sha256": "ea62286c25db66f39e189633f481d838af223447a99ca590c01acb30509e2082"
+}
