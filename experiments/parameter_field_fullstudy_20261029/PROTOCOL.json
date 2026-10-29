@@ -1,0 +1,754 @@
+{
+  "schema": "hepta.parameter-field.fullstudy.protocol.1",
+  "study_id": "hepta.parameter-field.fullstudy.20261029.1",
+  "status": "REGISTERED_EXECUTION_REQUIRES_SOURCE_FREEZE_AND_RESOURCE_GATE",
+  "user_scope_authorized": true,
+  "execution_ready": true,
+  "purpose": "Evaluate a baseline-aligned field controller, its state abstraction, independent task and retention outcomes, complete cost, and the interaction with a trainable Hepta temporal module.",
+  "historical_policy": {
+    "old_protocols_sources_gates_and_results_immutable": true,
+    "v5_candidate_remains_rejected": true,
+    "historical_exact_regression_remains_failed_or_unresolved": true,
+    "new_results_apply_only_to_this_registered_scope": true,
+    "old_not_registered_labels_are_historical_scope_not_a_permanent_research_ban": true,
+    "old_primary_and_retention_roles_not_opened": true,
+    "no_threshold_changes_to_rescue_results": true
+  },
+  "source_references": {
+    "hepta_repository": "TrillionniumFoundation/hepta-private-ci",
+    "bridge_source_commit": "d8d81eab0e9b6082406193f7ff5a69bb1f7b806a",
+    "learning_kernel": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/learning.py",
+    "feature_kernel": "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/training_features.py",
+    "branch_state_preparation": "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028",
+    "torch_adapter_preparation": "experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028",
+    "next_candidate_proposal": "experiments/multimodal_output_portfolio/field_bridge_v5_20261027_review/NEXT_FIELD_CANDIDATE_PROPOSAL_20261028.md",
+    "hcsn_source_commit": "68eb16caa9c14c7b5729585c86d9c293018a987c",
+    "paper_repository": "TrillionniumFoundation/ICLR-2027",
+    "paper_commit": "f8df0a6075f58f3ab9431a889b773cdf8d6e771d",
+    "paper_revision": "revision_2026-09-26-r45",
+    "new_source_commit": null,
+    "new_dependency_hash_manifest": null,
+    "runtime_descriptor_sha256": null,
+    "historically_inspected_bridge_commit": "f20db50ec8f891d286465e635c68e83749b9b3b4",
+    "working_base_commit": "d8d81eab0e9b6082406193f7ff5a69bb1f7b806a"
+  },
+  "freeze_prerequisites": [
+    "Root replaces this draft with a separately named final protocol and source freeze before scientific model calls; a draft cannot authorize a runner.",
+    "Record exact Python, NumPy, CPU Torch, BLAS, thread, deterministic-algorithm, device and dispatch identities.",
+    "Verify recovered model, observer, corpus and prior-registry bytes against their existing identities.",
+    "Verify actual scientific-kernel capture, literal restore, paired replay, incoming gradients, RNG, immutable original guard and branch-order invariance before bank construction.",
+    "Audit actual f_bavail, inodes and serializer-measured bounds for raw evidence, failed writes, one archive and a full literal restore.",
+    "Verify the fixed stage-C warm-up, controller-bank, baseline, adaptation and operation counts against its executable dependency closure before model outcomes.",
+    "Complete the stage-C warm-up, controller-bank, baseline-selection and operation schedule before any stage-C outcomes.",
+    "Freeze source-pair allocation, all methods, seeds, schedules, effects, multiplicity, budgets and stopping rules before the applicable phase.",
+    "Distinguish current-run integrity from the unresolved historical exact-regression gate; do not change the latter's tolerance.",
+    "Endpoint and audit-observer access occurs only after the applicable complete-path seal and independent integrity check."
+  ],
+  "state_and_filtration": {
+    "complete_branch_checkpoint": [
+      "mutable parameters and buffers with names, types, shapes and bytes",
+      "complete supported CPU SGD state and immutable parameter-group semantics",
+      "incoming gradients, distinguishing None from zero",
+      "CPU, Python, NumPy and declared named-generator RNG states",
+      "clock, decision index, remaining scheduled microsteps and resource state",
+      "immutable original guard panel, baseline values and context identities",
+      "complete remaining paired schedule for replay infrastructure",
+      "controller history and immutable head, normalizer, baseline and threshold identities"
+    ],
+    "actual_cost_counters_external_to_rollback": true,
+    "controller_input_exclusions": [
+      "future random or data tapes, realized future marks and future labels",
+      "branch terminal returns at the current deployment decision",
+      "qualification or final endpoint tensors and outcomes",
+      "audit-observer outputs during training or policy fitting"
+    ],
+    "common_disclosed_stream": "Current legal H12 measurement, executed past actions, observed past guard outcomes, logical clock and already consumed resources. Complete-current-state intentionally receives additional current mutable model/optimizer state.",
+    "history_is_not_an_extra_future_information_channel": true,
+    "action_effect_identity": "Compare dynamically relevant state, optimizer, RNG, clock, guard, remaining budget and controller memory separately from provenance metadata; compare actual costs separately. Physical parameter equality alone is insufficient.",
+    "restore_boundary": "Between complete transactions with no pending autograd graph and no concurrent writer; PyTorch version counters are not claimed to be restored."
+  },
+  "task_and_data": {
+    "task": "Existing MNIST source-pair image and caption generation with the registered heavy_noise, missing, occlusion and clean conditions; this is a controlled small multimodal task.",
+    "pixel_domain": "Individual source digits are 28 by 28 (784 pixels); paired generated images are 28 by 56 (1568 pixels).",
+    "training_roles_A_B": [
+      "development_gradient",
+      "development_rehearsal",
+      "development_probe",
+      "development_guard"
+    ],
+    "development_endpoints_A": [
+      "development_task",
+      "development_clean"
+    ],
+    "previously_exposed_development_not_independent_confirmation": true,
+    "exclude_every_identity_from_V2_V3_V4_including_unopened_roles": true,
+    "allocation_rule": "Unique pixel identities, conflicting duplicate-label exclusion only, fixed salt hash ordering, consecutive role allocations and adjacent source pairs; no outcome or class-based selection.",
+    "allocation_salt": "hepta-parameter-field-fullstudy-20261029-v1",
+    "fresh_qualification": {
+      "official_partition": "train",
+      "total_images": 2648,
+      "task_images": 1024,
+      "task_pairs": 512,
+      "clean_images": 1624,
+      "clean_pairs": 812,
+      "access": "Only after stage-B paths, models, controller bytes and statistical procedure have been sealed; never used for features, guard, head fitting or action selection."
+    },
+    "fresh_final": {
+      "official_partition": "test",
+      "total_images": 3952,
+      "task_images": 1976,
+      "task_pairs": 988,
+      "clean_images": 1976,
+      "clean_pairs": 988,
+      "access": "Sealed until every final architecture, policy, training script, checkpoint and scoring/statistical script is frozen; one joint final opening. No final-driven refit or model choice."
+    },
+    "old_sealed_roles": [
+      "audit_gradient",
+      "audit_rehearsal",
+      "audit_probe",
+      "audit_guard",
+      "audit_task",
+      "audit_clean",
+      "primary",
+      "retention"
+    ],
+    "freshness_claim": "Disjoint from all recorded prior allocations and task outcomes, not proof of unknown pretraining exclusion, new writers or a new dataset population.",
+    "new_registry_sha256": "8108104ecf91b9a2d8c528b5c49be98cd8fb82797a7f03305604889d96f376be",
+    "new_allocation_sha256": "8a1e9af02f12a42d9eb0d312d91e8036169d2a8b2daa020255a724588b1e2b48"
+  },
+  "shared_guard48_learning": {
+    "fixed_model_seeds": [
+      17,
+      29,
+      43
+    ],
+    "ordinary_action_indices": {
+      "17": 2,
+      "29": 3,
+      "43": 3
+    },
+    "multipliers": [
+      0.0,
+      0.25,
+      1.0,
+      2.0
+    ],
+    "scheduled_microsteps": 288,
+    "macro_steps": 48,
+    "decisions_per_path": 6,
+    "optimizer": "Pinned original CPU SGD with momentum 0.9 and unchanged V3 learning, clipping, rehearsal and teacher-anchor settings.",
+    "learning_rate": 0.2,
+    "guard_min_delta": 0.0,
+    "guard_reference": "Immutable original model guard, not a moving accepted-state baseline.",
+    "rejection": "Restore full transaction entry state, consume the scheduled positions, advance logical time and charge all attempted work.",
+    "zero_action": "Execute and charge scheduled gradient and guard work without advancing parameters or momentum; not early termination.",
+    "same_kernel_for_labels_and_deployment": true
+  },
+  "controller_contract": {
+    "methods": [
+      "ordinary",
+      "field12",
+      "full_current_state",
+      "history6",
+      "fixed_taper_stage_B_only"
+    ],
+    "ordinary": "Fixed released baseline action by original model seed; no unnecessary feature instrumentation.",
+    "field12": {
+      "dimension": 12,
+      "features": [
+        "current_hard_value",
+        "adapt_image_bce",
+        "adapt_text_ce",
+        "clean_joint_loss",
+        "effective_operator_displacement",
+        "momentum_rms",
+        "normalized_learning_time",
+        "next_weighted_clipped_gradient_rms",
+        "gradient_momentum_cosine",
+        "response_image_bce_derivative_along_v",
+        "response_text_ce_derivative_along_v",
+        "clean_joint_loss_derivative_along_v"
+      ],
+      "context": "Fixed model, action set, original guard, feature/panel identities, frozen normalizer, baseline and head are additional declared context; not a context-free Markov sufficiency claim."
+    },
+    "full_current_state": {
+      "dimension": 54740,
+      "dimension_rule": "Flatten the complete current mutable parameter, buffer, momentum and incoming-gradient inventory, with declared absence masks and clock/resource coordinates, relative to the fixed immutable environment. Record exact ordered names and dimensions before fitting.",
+      "do_not_call_richer30_full_state": true,
+      "do_not_call_learned_predictor_optimal_oracle": true,
+      "no_random_projection_or_truncation_without_a_new_explicit_name": true,
+      "future_rng_state_or_remaining_tape_not_numeric_features": true,
+      "scope": "Complete current trainable parameters, moments, incoming gradients/masks, buffers, guard values, clock and SGD coordinates, augmented by H12; conditional on fixed immutable environment. Replay RNG and future tape are inaccessible to all heads. This learned high-dimensional predictor is not a full-information optimum."
+    },
+    "history6": {
+      "slots": 6,
+      "slot_dimension": 19,
+      "dimension": 114,
+      "slot_layout": "H12 (12), that completed slot executed-action one-hot (4), its observed guard accepted flag (1), its scheduled microsteps / 48 (1), slot-valid (1). The current decision slot contains only H12 and valid=1; its action/guard/work remain zero until observed.",
+      "padding": "Chronological slots from oldest to current; right-pad future slots with zeros. At most five completed slots precede the current slot; no future action or outcome is supplied.",
+      "no_extra_source_or_future_labels": true,
+      "cost_description": "Computes the same expensive H12 probes; do not call it a cheap controller. Low additional history arithmetic is not low total observation cost."
+    },
+    "label": "A_b(s,a;omega) = G_b(s,a;omega) - G_b(s,b;omega), using the same first guarded transaction and then the fixed ordinary baseline through the common terminal step 288.",
+    "label_scope": "Paired realized reference-tail contrast, not exact expected Q_b and not the replanned deployed policy's value.",
+    "baseline_advantage_structurally_zero": true,
+    "fit": {
+      "ridge": 1.0,
+      "fits_per_seed": 3,
+      "normalization": "Fit-partition-only coordinate means and population standard deviations; fixed 1e-8 scale floor. Retain actual means/scales and the number of constant coordinates; calibration and deployment never refit them.",
+      "numerics": "Float64 centered linear ridge with unpenalized intercept; penalty lambda=1 in the unaveraged squared-error objective. Full-state may use the algebraically identical dual solve.",
+      "outputs": "Three nonbaseline advantages; baseline output is exactly zero.",
+      "no_hyperparameter_grid_or_feature_selection": true,
+      "capacity_caveat": "Same linear family and penalty do not imply equal effective degrees of freedom across dimensions; publish ranks and conditioning."
+    },
+    "calibration": {
+      "per_seed_per_head_rule": "tau = max(0, max over calibration rows and nonbaseline actions of predicted_advantage minus realized_advantage).",
+      "deployment": "Choose a unique best nonbaseline action only if its predicted advantage is strictly greater than tau; otherwise choose baseline. Any tie keeps baseline.",
+      "missing_nonfinite_or_out_of_contract_input": "Record failure and baseline fallback only where prospectively supported; integrity failures stop the phase.",
+      "certificate": false,
+      "scope": "A maximum on twelve dependent calibration states is not a deployment-uniform or 95-percent conformal certificate.",
+      "greedy_diagnostics": "Calibration accuracy/regret are ungated greedy predictions; deployment is separately logged after strict tau and tie fallback."
+    },
+    "measurement_cost_scope": "Actual richer30 measurement followed by H12 selection; shared instrumentation builds all three representations. Report measured total implementation cost, not an optimized H12-only lower bound."
+  },
+  "stage_A": {
+    "name": "Aligned labels and complete-current-state/history mechanism development",
+    "source_scope": "Already exposed development roles only.",
+    "schedule_ids": [
+      6000,
+      6001,
+      6002,
+      6003
+    ],
+    "prefixes": [
+      "constant ordinary baseline",
+      "same scheduled old balanced exploration path"
+    ],
+    "fit_schedule_ids": [
+      6000,
+      6001,
+      6002
+    ],
+    "calibration_schedule_ids": [
+      6003
+    ],
+    "grouping": "Both prefixes and all six decision states of one schedule stay together; record exact duplicate state identities; rows are not independent samples.",
+    "bank_states_per_seed": 48,
+    "bank_states_total": 144,
+    "branch_tail_labels_total": 576,
+    "bank_microsteps": 103680,
+    "evaluation_paths": 48,
+    "evaluation_microsteps": 13824,
+    "total_scheduled_gradient_microsteps": 117504,
+    "bank_state_measurements": 144,
+    "evaluation_adaptive_state_measurements": 216,
+    "head_fits": 9,
+    "endpoint_barrier": "Seal all 48 paths before development task/clean scoring with both observers.",
+    "reports": [
+      "full per-action paired labels",
+      "prediction and calibration errors",
+      "action-intent and effective-transition coverage",
+      "first divergence",
+      "fallback and tie rates",
+      "retained and rejected work",
+      "per-seed and per-schedule endpoints",
+      "complete measured costs"
+    ],
+    "screen_only": {
+      "field_minus_ordinary_pooled_strict_min": 0.001,
+      "field_minus_history_pooled_strict_min": 0.0,
+      "each_seed_corresponding_delta_min": 0.0,
+      "ordinary_minus_frozen_pooled_min": 0.005,
+      "clean_delta_min_per_seed": -0.01,
+      "both_observers_required": true,
+      "full_state_contrast": "Always report; no automatic interpretation as optimal information loss.",
+      "historical_richer_screen_not_rewritten": true,
+      "claim": "Development mechanism only; favorable values do not establish original B03-B07 or independent efficacy."
+    },
+    "inactive_rule": "Zero field overrides together with complete same-guard baseline terminal identities rejects this candidate as inactive; do not lower tau."
+  },
+  "stage_B": {
+    "name": "Independent task, retention and full-cost assessment on fixed historical models",
+    "fixed_model_count": 3,
+    "schedule_ids": [
+      106000,
+      106001,
+      106002,
+      106003,
+      106004,
+      106005,
+      106006,
+      106007,
+      106008,
+      106009,
+      106010,
+      106011,
+      106012,
+      106013,
+      106014,
+      106015
+    ],
+    "methods": [
+      "ordinary",
+      "field12",
+      "full_current_state",
+      "history6",
+      "fixed_taper"
+    ],
+    "complete_training_paths": 240,
+    "scheduled_gradient_microsteps": 69120,
+    "adaptive_state_measurements": 864,
+    "new_head_fits": 0,
+    "checkpoints": "Use stage-A frozen heads, normalizers and taus; each path starts from the common original model/optimizer state and retains the unchanged original guard.",
+    "training_data_scope": "The exposed development adaptation panels remain fixed; independence is in withheld endpoint source pairs and new training schedules, not new pretrained models or unseen adaptation panels.",
+    "endpoint_access": "Open fresh qualification task/clean only after all 240 paths plus all three COMPLETE records and checkpoint hashes seal; audit observer is endpoint-only.",
+    "baseline_endpoint": "Also score each immutable original model as frozen reference; do not count repeated original outputs as new model replicas.",
+    "activity_failure_handling": "If field is inactive in A, retain and execute the prespecified comparison to quantify equality and cost; no adoption is possible from merely adding extra evaluation samples.",
+    "estimands": [
+      "ordinary minus frozen",
+      "field minus ordinary",
+      "field minus history",
+      "full-current-state minus field",
+      "each method clean minus frozen",
+      "measured total and phase-specific cost",
+      "fixed-taper minus field task",
+      "fixed-taper minus frozen clean",
+      "field minus fixed-taper actual cost"
+    ],
+    "replication_scope": "Inference is conditional on three fixed historical models; schedules are model-within training randomness and source pairs are task sampling units.",
+    "statistics": {
+      "bootstrap_draws": 8000,
+      "bootstrap_seed": 291029,
+      "resampling": "Paired schedule IDs independently within each fixed model, shared across methods and observers; one shared source-pair resample across models/methods/conditions for task, and a separate shared clean-pair resample; equal fixed-model and condition weights; do not resample three models as a model population.",
+      "formal_family_size_per_observer": 10,
+      "family_alpha": 0.05,
+      "interval": "Predeclared equal-tail percentile intervals with alpha/10 per observer; approximate resampling intervals, not finite-sample exact coverage.",
+      "formal_family": [
+        "ordinary-frozen task",
+        "field-ordinary task",
+        "field-history task",
+        "full-state-field task",
+        "ordinary-frozen clean",
+        "field-frozen clean",
+        "full-state-frozen clean",
+        "history-frozen clean",
+        "fixed-taper-field task (secondary)",
+        "fixed-taper-frozen clean (secondary)"
+      ],
+      "field_advantage_claim": "Both observers require lower interval bound(field-ordinary)>0.001 and lower bound(field-history)>0; field task differences must be nonnegative in each fixed model and field clean lower bound must exceed -0.01. Report every other contrast regardless of sign.",
+      "ordinary_gain_claim": "Both observers require lower interval bound(ordinary-frozen)>0 and clean lower bound>-0.01; report the 0.005 development target separately.",
+      "retention_margin": 0.01,
+      "one_outcome_look": true,
+      "no_80_percent_power_claim": true,
+      "secondary_scope": "Taper task/clean intervals belong to the same ten-comparison family; cost is reported in physical units, without a post-hoc exchange rate."
+    },
+    "primary_four_method_paths": 192,
+    "fixed_taper_paths": 48,
+    "fixed_taper": {
+      "action_indices_by_decision": {
+        "17": [
+          2,
+          2,
+          2,
+          1,
+          1,
+          0
+        ],
+        "29": [
+          3,
+          3,
+          2,
+          1,
+          1,
+          0
+        ],
+        "43": [
+          3,
+          3,
+          2,
+          1,
+          1,
+          0
+        ]
+      },
+      "rule": "For seed-specific baseline index b use [b,b,2,1,1,0].",
+      "additional_feature_probes": 0,
+      "head_fits": 0,
+      "description": "Predetermined discrete clock taper; not a tuned optimum or a fitted cosine scheduler.",
+      "scope": "Secondary cost/performance comparator; strong ordinary remains the historically selected constant b."
+    }
+  },
+  "stage_C": {
+    "name": "Trainable temporal architecture by controller factorial",
+    "paired_training_seeds": [
+      801,
+      802,
+      803,
+      804,
+      805,
+      806,
+      807,
+      808
+    ],
+    "main_arms": [
+      "dual_hepta+strong_baseline",
+      "dual_hepta+field",
+      "matched_ordinary+strong_baseline",
+      "matched_ordinary+field"
+    ],
+    "minimum_complete_final_training_paths": 32,
+    "all_main_arms_required": true,
+    "architecture": {
+      "portfolio_hidden": 32,
+      "text_encoder_width": 16,
+      "text_decoder_width": 32,
+      "temporal_input_width": 24,
+      "implementation": "TrainablePortfolio derived from the existing NeuralPortfolio; replace text_encoder and text_decoder only with matched input projections and the pinned _ContinuousCell(width, mode, direct).",
+      "dual": "Pinned FPT mean plus interval-reset event law.",
+      "ordinary": "Same state shape, active parameters and initial tensors with the pinned sigmoid event law.",
+      "explicit_state": [
+        "content",
+        "voltage",
+        "adaptation",
+        "event"
+      ],
+      "all_portfolio_parameters_trainable": true,
+      "shared_initialization": "Within a paired seed, common modules and matched temporal parameter tensors start bitwise equal; controller arms start from their common architecture checkpoint.",
+      "parameter_count": null,
+      "active_parameter_count": null,
+      "other_latent_actions": "Existing latent MLP actions remain; do not claim the entire generator or every controller has been replaced by Hepta.",
+      "not_claimed": [
+        "literal analytic Call-Put neuron",
+        "natural task-value-derived free boundary",
+        "unrestricted LLM backbone evidence"
+      ]
+    },
+    "baseline_selection": "Fixed action index 2, multiplier 1.0, for both architectures and every seed. No per-architecture outcome-driven reselection. This matched conventional baseline is not called the best tuned controller.",
+    "field_fitting": "Fit architecture-compatible field heads and baseline-aligned labels with the same lawful observations, action set, guard kernel, fitting budget and selection opportunities. Reusing incompatible old-generator heads without a declared transfer experiment is prohibited.",
+    "field_coordinate_5": "relative_full_parameter_displacement = ||theta-theta_warmstart||_2 / max(||theta_warmstart||_2, epsilon); C trains the full portfolio and has no old LoRA up/down operator. Record epsilon in the final implementation freeze.",
+    "boundary_gradient_state": "At each C microstep boundary zero_grad(set_to_none=True); incoming gradients are therefore all None by the declared algorithm, not omitted from state inventory.",
+    "warmup_steps_per_architecture_seed": 400,
+    "controller_bank_schedule": {
+      "schedule_ids": [
+        7000,
+        7001,
+        7002,
+        7003
+      ],
+      "prefixes": [
+        "constant baseline index 2",
+        "old balanced four-action exploration path indexed by schedule"
+      ],
+      "states_per_development_seed_per_architecture": 48,
+      "states_total": 192,
+      "four_action_tail_labels_total": 768,
+      "fitting": "Pool development seeds within each architecture; schedules 7000-7002 give 72 fit states and schedule 7003 gives 24 calibration states per architecture.",
+      "label": "A_b uses one candidate macro16 followed by baseline index 2 to common terminal step 96, with identical guarded transition and paired tape.",
+      "ridge": 1.0,
+      "head": "field12 only for C; one fit per architecture",
+      "baseline_advantage": 0.0,
+      "gate": "tau=max(0,max calibration overprediction); unique nonbaseline advantage must exceed tau strictly, else baseline."
+    },
+    "adaptation_steps_and_guard": {
+      "steps": 96,
+      "macro_steps": 16,
+      "decisions": 6,
+      "adaptation_batch_size": 32,
+      "rehearsal_batch_size": 16,
+      "adaptation_role": "fit_gradient",
+      "rehearsal_role": "fit_rehearsal",
+      "probe_role": "fit_probe",
+      "guard_role": "fit_guard",
+      "rehearsal_weight": 0.5,
+      "teacher_anchor": 0.1,
+      "teacher": "Each path architecture own immutable warmstart model",
+      "guard_reference": "Each architecture/seed own immutable warmstart reward-clean guard",
+      "guard_min_delta": 0.0,
+      "complete_rollback": true,
+      "optimizer": "Warm-up SGD state carried to adaptation; any exception must be declared before freeze, never silently reset.",
+      "multipliers": [
+        0.0,
+        0.25,
+        1.0,
+        2.0
+      ],
+      "baseline_action_index": 2
+    },
+    "maximum_total_scheduled_microsteps": 57152,
+    "freeze_blocker": "Actual active parameter/state counts, measured artifact layout and independent code/protocol agreement remain required; the listed algorithm values and sample counts cannot be tuned after outcomes.",
+    "final_endpoint_source": "The sealed 3952-image final allocation, with fixed common source-pair, condition and noise tapes across all main arms.",
+    "primary_interaction": "(J_dual_field - J_dual_baseline) - (J_ordinary_field - J_ordinary_baseline)",
+    "additional_task_estimands": [
+      "dual field increment",
+      "ordinary field increment",
+      "dual-field minus ordinary-field"
+    ],
+    "retention_estimands": "Each main arm relative to its immutable pre-adaptation architecture checkpoint; report task and retention jointly.",
+    "statistics": {
+      "bootstrap_draws": 8000,
+      "bootstrap_seed": 291030,
+      "resampling": "Resample the eight paired training seeds jointly across all four arms and observers, plus a shared task source-pair resample and a separate shared clean source-pair resample; report every seed-level effect.",
+      "formal_family_size_per_observer": 8,
+      "family_alpha": 0.05,
+      "formal_family": "Four declared task effects including interaction, plus four retention effects.",
+      "interval": "Equal-tail percentile intervals with alpha/8 per observer, explicitly approximate with only eight training seeds.",
+      "interaction_claim": "Lower interval bound(interaction)>0 under both observers, with the prespecified retention requirement; no superadditivity claim from a positive single arm.",
+      "retention_margin": 0.01,
+      "one_outcome_look": true,
+      "no_80_percent_power_claim": true
+    },
+    "optional_GRU": {
+      "enabled": false,
+      "status": "Optional diagnostic, not a replacement for any main arm.",
+      "activation_rule": "Can be enabled only in a distinct pre-outcome freeze with its own parameter/state/compute matching and budget; never after seeing main-arm results to choose a weaker comparator."
+    },
+    "development_seeds": [
+      701,
+      702
+    ],
+    "development_seed_role": "Two development seeds per architecture; both architectures share each seed and all designated data/noise opportunities. They are disjoint from evaluation seeds.",
+    "warmup": {
+      "batch_size": 32,
+      "optimizer": "CPU SGD",
+      "learning_rate": 0.01,
+      "momentum": 0.9,
+      "gradient_clip": 1.0,
+      "objective": "Original teacher-forced joint task loss; no teacher anchor during warm-up.",
+      "all_parameters_trainable": true,
+      "data_role": "fit_gradient",
+      "warmstarts_total": 20,
+      "development_warmstarts": 4,
+      "evaluation_warmstarts": 16
+    },
+    "work_counts": {
+      "warmup_microsteps": 8000,
+      "bank_microsteps": 46080,
+      "evaluation_microsteps": 3072,
+      "total_scheduled_gradient_microsteps": 57152,
+      "feature_work_separately_charged": true,
+      "bank_formula": "4 architecture/development-seed instances * 4 schedules * 2 prefixes * (4*21 + 6) * 16"
+    },
+    "checkpoint_evidence": {
+      "persistent_model_checkpoints": {
+        "development_warmstart": 4,
+        "evaluation_warmstart": 16,
+        "final_endpoints": 32
+      },
+      "branch_state": "Complete independently restored in-memory snapshot for each branch; persist all exact branch input/transition/output hashes, schedules, labels, trace and replay recipe.",
+      "scope": "Branch states not persisted as full tensor checkpoints are reconstructible/replay evidence, not literal restoration of original branch bytes. Do not claim every branch checkpoint was archived.",
+      "required_branch_replay": "Before final freeze specify deterministic independent replay coverage and charge it; disagreement is an integrity failure.",
+      "raw_cap_bytes": 367001600
+    },
+    "execution_plan": {
+      "development_seeds": [
+        701,
+        702
+      ],
+      "evaluation_seeds": [
+        801,
+        802,
+        803,
+        804,
+        805,
+        806,
+        807,
+        808
+      ],
+      "bank_schedules": [
+        7000,
+        7001,
+        7002,
+        7003
+      ],
+      "evaluation_schedule": 8000,
+      "hidden": 32,
+      "warmup_steps": 400,
+      "steps": 96,
+      "macro_steps": 16,
+      "batch_size": 32,
+      "rehearsal_batch_size": 16,
+      "learning_rate": 0.01,
+      "momentum": 0.9,
+      "gradient_clip": 1.0,
+      "teacher_anchor": 0.1,
+      "rehearsal_weight": 0.5,
+      "noise_scale": 0.15,
+      "multipliers": [
+        0.0,
+        0.25,
+        1.0,
+        2.0
+      ],
+      "baseline": 2,
+      "conditions": [
+        "heavy_noise",
+        "missing",
+        "occlusion",
+        "clean"
+      ],
+      "gradient_role": "fit_gradient",
+      "rehearsal_role": "fit_rehearsal",
+      "probe_role": "fit_probe",
+      "guard_role": "fit_guard",
+      "panel_batch_size": 32,
+      "refinement_charge": 0.002,
+      "threads": 1
+    },
+    "actual_parameter_counts": {
+      "per_mode_trainable": 540328,
+      "per_mode_temporal": 12064,
+      "matching": "all named tensors and complete initialization identical before mode-specific training"
+    },
+    "independent_replay": {
+      "instances": 4,
+      "schedule": 7000,
+      "prefix": "balanced",
+      "decision": 2,
+      "first_action": 1,
+      "prefix_blocks": 2,
+      "tail_blocks": 4,
+      "extra_physical_microsteps": 384,
+      "total_including_audit": 57536
+    }
+  },
+  "cost_and_evidence": {
+    "record": [
+      "bank construction",
+      "head fits",
+      "calibration",
+      "all feature and directional reverse work",
+      "all generator, teacher and both-observer work",
+      "accepted, rejected and zero-action transactions",
+      "checkpoint capture and restoration",
+      "CPU and elapsed time",
+      "peak resident memory",
+      "raw and archived bytes",
+      "independent audit and literal restore work"
+    ],
+    "scientific_reward_and_physical_cost_reported_separately": true,
+    "squared_parameter_norm_not_physical_energy": true,
+    "equal_gradient_counts_not_equal_total_compute": true,
+    "no_posthoc_utility_per_second_or_amortization_horizon": true,
+    "raw_required": [
+      "A: every parent and branch-terminal checkpoint; C: declared persistent warmstarts/endpoints plus complete branch trace/hash/reconstruction evidence, without a false literal-branch-archive claim",
+      "paired raw branch outputs and all four labels",
+      "complete selected-prefix traces",
+      "all final checkpoints",
+      "per-source raw task and clean outputs",
+      "both observer arrays",
+      "work receipts",
+      "failures and partial phases"
+    ],
+    "complete_archive_and_literal_restore": "Literal restore of every artifact that is actually persisted; reconstruction-only C branch states have an explicitly separate replay claim.",
+    "external_raw_persistence": "Requires the task's applicable destination authorization and current tool approval; this protocol does not bypass prior rejected raw-archive uploads.",
+    "production_authority": "No production selection, owner activation or deployment is implied by research completion."
+  },
+  "failure_and_completion": {
+    "integrity_failure": "Stop the affected scientific phase immediately, seal partial evidence and all work; do not score results as a scientific comparison.",
+    "resource_exhaustion": "Stop and preserve exact progress; do not omit raw files or discard failed branches to fit the budget.",
+    "dependency_block": "Record exact unavailable package, asset, symbol or unsupported runtime and attempted authorized resolution. Report prepared/not-executed or execution-incomplete; never replace the real kernel with a synthetic model while retaining the same study claim.",
+    "recovery": "Only a prospectively documented state-identical continuation after independent integrity review; no favorable-outcome retries.",
+    "inactive_candidate": "Preserve the inactive rejection and complete any separately prespecified comparisons; no threshold relaxation, optional sample enlargement or hidden comparator substitution.",
+    "permitted_dispositions": [
+      "prepared_not_executed",
+      "execution_incomplete",
+      "integrity_failed",
+      "completed_negative_or_inconclusive",
+      "favorable_development_only",
+      "independent_effect_established_for_registered_scope"
+    ],
+    "completion_is_not_all_effects_positive": true,
+    "report_every_prespecified_arm_seed_and_comparison": true,
+    "old_blocker_statuses_not_overwritten": true
+  },
+  "execution_resources": {
+    "storage": "isolated 4 GiB tmpfs under the task-owned workspace, created inside a private user/mount namespace; no other build artifacts removed",
+    "raw_cap_bytes": 1073741824,
+    "minimum_allocatable_bytes": 2147483648,
+    "minimum_available_inodes": 2000,
+    "A_B_per_seed_phase_cpu_seconds": 7200,
+    "A_B_per_seed_phase_wall_seconds": 10800,
+    "C_cpu_seconds": 43200,
+    "C_wall_seconds": 21600,
+    "C_training_evidence_cap_bytes": 367001600,
+    "A_B_threads_per_worker": 2,
+    "C_threads": 1,
+    "interop_threads": 1,
+    "max_parallel_workers": 4,
+    "backup": "Preallocated 1040 MiB task-owned archive file on separate host tmpfs; final gzip archive plus full literal member restore verification in private tmpfs; no raw external upload",
+    "old_workspace_disk_limit_not_waived": true,
+    "backup_reservation_bytes": 1090519040
+  },
+  "net_benefit_policy": {
+    "unconditional_net_gain": "Require task/retention gates and measured quality-cost Pareto improvement; do not choose a cost exchange rate after observing outcomes",
+    "report": "all physical CPU/wall/work counts, one-time label/fitting cost separately, deployed cost, and conditional break-even task-utility per CPU-second where defined",
+    "same_gradient_steps_is_not_same_total_cost": true
+  },
+  "resource_envelopes": {
+    "A": {
+      "per_seed_cpu_seconds": 7200,
+      "per_seed_wall_seconds": 10800,
+      "total_scheduled_gradient_microsteps": 117504
+    },
+    "B": {
+      "per_seed_cpu_seconds": 7200,
+      "per_seed_wall_seconds": 10800,
+      "total_scheduled_gradient_microsteps": 69120
+    },
+    "C": {
+      "cpu_seconds": 43200,
+      "wall_seconds": 21600,
+      "main_scheduled_gradient_microsteps": 57152,
+      "independent_replay_microsteps": 384,
+      "total_scheduled_gradient_microsteps": 57536
+    },
+    "engineering_preflight": {
+      "separate_from_scientific_paths": true,
+      "scheduled_gradient_microsteps": 432
+    },
+    "binding": "execution_resources gives actual global storage and runtime enforcement; no historical resource gate changed"
+  },
+  "stage_W": {
+    "name": "Prespecified H12 hidden momentum direction diagnostic",
+    "model_seeds": [
+      17,
+      29,
+      43
+    ],
+    "parent": {
+      "stage": "A_bank",
+      "schedule": 6000,
+      "prefix": "baseline",
+      "clock": 48
+    },
+    "directions": [
+      "next weighted clipped gradient",
+      "probe adapt image BCE gradient",
+      "probe adapt text CE gradient",
+      "probe clean joint gradient"
+    ],
+    "construction": "m_reflected = 2 * projection_on_direction_span(m) - m; all parameters and all other state unchanged; float64 SVD with relative rank cutoff1e-10 then float32 moments",
+    "near_field_criterion": "maximum absolute H12 difference / maximum(fit-only field standard deviation,1e-8) <= 1e-5",
+    "action_space": [
+      0.0,
+      0.25,
+      1.0,
+      2.0
+    ],
+    "labels": "first candidate guarded action then own baseline through common clock288; original four labels from exactly matched A bank parent",
+    "new_tail_count": 12,
+    "additional_scheduled_gradient_microsteps": 2880,
+    "original_replay_additions": 0,
+    "selection": "all three predetermined parents, no search or outcome-based direction choice",
+    "claims": "Constructed state diagnostic only; no guarantee of reachable policy occupancy, no new independent efficacy claim, no adjustment of numerical threshold after outcome",
+    "reports": [
+      "H12 drift",
+      "momentum residual norm",
+      "full-state difference",
+      "all original/reflected action advantages",
+      "action-order changes",
+      "postguard state differences",
+      "work and actual wall/CPU"
+    ]
+  }
+}
