@@ -5,6 +5,73 @@ use super::*;
 
 type LineageChange = (&'static str, fn(&mut TemporalComparisonInputsV1));
 
+#[test]
+fn product_freezer_rejects_extra_final_fold_window_before_consumption() {
+    let mut fixture = fixture();
+    fixture.cross_fold.folds[0]
+        .holdout_windows
+        .push(id("additional-final-fold-window"));
+    // The generic cross-fold contract permits this; the product runner does not.
+    assert!(
+        freeze_cross_fold_plan_v2(fixture.cross_fold.clone(), fixture.roles.clone()).is_ok()
+    );
+    let mut runner = runner();
+    let before = runner.holdout_anchor();
+    let frozen = freeze_product_evaluation_plan_v1(
+        fixture.cross_fold,
+        fixture.roles,
+        fixture.sources,
+        &fixture.candidate_plan,
+        &fixture.baseline_plan,
+    );
+    assert!(matches!(
+        &frozen,
+        Err(ProductEvaluationError::Binding("product final holdout window"))
+    ));
+    // Exercise the actual caller boundary: a successful freeze would proceed
+    // through the existing fenced owner and provider, not a replacement FSM.
+    let evaluated = frozen.and_then(|plan| {
+        runner.evaluate_temporal_comparison(
+            &plan,
+            &fixture.candidate_plan,
+            &fixture.baseline_plan,
+            &mut fixture.provider,
+        )
+    });
+    assert!(matches!(
+        evaluated,
+        Err(ProductEvaluationError::Binding("product final holdout window"))
+    ));
+    assert_eq!(runner.holdout_anchor(), before);
+    assert_eq!(fixture.provider.release_count, 0);
+}
+
+#[test]
+fn product_freezer_preserves_multiple_windows_in_nonfinal_fold() {
+    let mut fixture = fixture();
+    fixture.cross_fold.folds[1]
+        .holdout_windows
+        .push(id("additional-nonfinal-fold-window"));
+    let frozen = freeze_product_evaluation_plan_v1(
+        fixture.cross_fold,
+        fixture.roles,
+        fixture.sources,
+        &fixture.candidate_plan,
+        &fixture.baseline_plan,
+    )
+    .unwrap();
+    let receipt = runner()
+        .evaluate_temporal_comparison(
+            &frozen,
+            &fixture.candidate_plan,
+            &fixture.baseline_plan,
+            &mut fixture.provider,
+        )
+        .unwrap();
+    assert_eq!(receipt.product_plan, frozen);
+    assert_eq!(fixture.provider.release_count, 1);
+}
+
 fn runner() -> ProductEvaluationRunnerV1<MemoryCas> {
     ProductEvaluationRunnerV1::new(
         FencedFinalHoldoutOwnerV1::initialize(
