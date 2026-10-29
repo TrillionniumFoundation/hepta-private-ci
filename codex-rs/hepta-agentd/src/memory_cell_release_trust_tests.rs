@@ -63,11 +63,11 @@ async fn signed_selection_expires_with_its_actual_credential_and_cannot_revive_a
     short_host.load_current().expect("live selected reader");
     {
         let service = fixture.service.lock().expect("service");
-        let mut selected = short_host.selected.lock().expect("selected state");
+        let mut selected = short_host.inner.selected.lock().expect("selected state");
         assert!(
             super::revalidate_state(
                 &service,
-                &short_host.selection_verifier,
+                &short_host.inner.selection_verifier,
                 selected.as_mut().expect("installed"),
                 now + 11
             )
