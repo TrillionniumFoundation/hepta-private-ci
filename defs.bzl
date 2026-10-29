@@ -310,17 +310,28 @@ def codex_rust_crate(
 
     maybe_deps = []
 
-    # Generated package-wide aliases can introduce dev-only workspace edges
-    # into production libraries and form dependency cycles. First-party normal
-    # dependencies already come from all_crate_deps(); retain renamed external
-    # crates, but do not inject extra aliases to codex-rs workspace libraries.
-    # all_crate_deps() returns a select, so it cannot be iterated or tested for
-    # membership during Starlark package loading.
+    # aliases() contains Cargo dev-only labels, including platform-specific
+    # workspace test dependencies. Those labels introduce edges when attached
+    # to a production rust_library or rust_binary, even if all_crate_deps()
+    # selects only normal dependencies. Keep normal workspace renames plus all
+    # external renames, but never inject Cargo dev-only workspace aliases.
+    # Inspect generated normal buckets because all_crate_deps() is a select.
+    dependency_data = DEP_DATA[native.package_name()]
+    normal_workspace_alias_labels = {
+        dep: True
+        for dep in dependency_data.get("deps", [])
+        if str(dep).startswith("//codex-rs/")
+    }
+    for platform_deps in dependency_data.get("deps_by_platform", {}).values():
+        for dep in platform_deps:
+            if str(dep).startswith("//codex-rs/"):
+                normal_workspace_alias_labels[dep] = True
+
     normal_crate_deps = all_crate_deps()
     production_aliases = {
-        alias_name: label
-        for alias_name, label in aliases().items()
-        if "//codex-rs/" not in str(label)
+        dep: crate_name
+        for dep, crate_name in aliases().items()
+        if not str(dep).startswith("//codex-rs/") or dep in normal_workspace_alias_labels
     }
 
     if build_script_enabled and native.glob(["build.rs"], allow_empty = True):
@@ -432,7 +443,7 @@ def codex_rust_crate(
         cargo_env["CARGO_BIN_EXE_" + binary] = "$(rlocationpath :%s)" % binary
         rust_binary(
             name = binary,
-            aliases = aliases(),
+            aliases = production_aliases,
             crate_name = binary.replace("-", "_"),
             crate_root = main,
             deps = all_crate_deps() + maybe_deps + deps_extra,
