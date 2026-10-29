@@ -1,0 +1,1993 @@
+{
+  "schema": "hepta.analytic-event.release-source-readback.v5",
+  "commit": "0deb51fc76252fddf92c0207230222065548ad82",
+  "tree": "9dc78e8b92d7d501f41cd6bbc09c0e39d41568e0",
+  "round5_tree": "634bb0542e01a56fdbe2ef861e762fdd8e8145fa",
+  "verified_utc": "2026-10-29T00:51:42.192Z",
+  "verified_round5_blobs": 327,
+  "all_expected_bytes_match": true,
+  "complete_data_commit": "6c4d3b8ee40a4a1d8d4b7f09410a07c1b5017163",
+  "original_preservation_proof": "experiments/analytic_event_neuron/round5/evidence/publication/TREE_PRESERVATION.json",
+  "ancestry": [
+    {
+      "path": "",
+      "sha": "9dc78e8b92d7d501f41cd6bbc09c0e39d41568e0"
+    },
+    {
+      "path": "experiments",
+      "sha": "723c31a5a35c35a51cbe7946cacb79d97615a771"
+    },
+    {
+      "path": "experiments/analytic_event_neuron",
+      "sha": "c529019ca8d4ae9b08c7dcf8c38c01d1ab2696ce"
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5",
+      "sha": "634bb0542e01a56fdbe2ef861e762fdd8e8145fa"
+    }
+  ],
+  "blobs": [
+    {
+      "path": "experiments/analytic_event_neuron/round5/ACCEPTANCE.md",
+      "sha": "3ce9f58ae77146914beb8da875a341acd53241d9",
+      "mode": "100644",
+      "size": 30127
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/DEPENDENCIES.json",
+      "sha": "5376ac4721a464bdbb0fa37e9db05513b6b58a4e",
+      "mode": "100644",
+      "size": 4015
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/EVIDENCE_TRANSPORT.md",
+      "sha": "7ad274fb0249144c329db3350dee034ccccedae0",
+      "mode": "100644",
+      "size": 2275
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/INTEROP_CONTRACT.md",
+      "sha": "7fa8ba62588f64691c6d1baff37c65c2e4aa38b9",
+      "mode": "100644",
+      "size": 8271
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/PREDICTION_HEAD_CONTRACT.md",
+      "sha": "1784d00d1cbe0853eb466998492257b2d1436378",
+      "mode": "100644",
+      "size": 4126
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/REPRODUCTION.md",
+      "sha": "d974d4fb78805e325fef491ad04c077b9ad92fc8",
+      "mode": "100644",
+      "size": 5510
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/SELECTION_CONTRACT.md",
+      "sha": "fa64efa141816700aea79c596327061b4f8eebec",
+      "mode": "100644",
+      "size": 9305
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/__init__.py",
+      "sha": "a230743857622eee5800fd2ac7e3313ff887ad39",
+      "mode": "100644",
+      "size": 79
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/build_delivery.py",
+      "sha": "df4c57dd1f1071a9d896459677e39a9714046bd4",
+      "mode": "100644",
+      "size": 9831
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/FORMAT_CHECK.json",
+      "sha": "45fc0f8f1470a47a4e849695701766fdef9bf4eb",
+      "mode": "100644",
+      "size": 434
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/PREPARED_RESTORATION.json",
+      "sha": "9c9dce594277546750be180d25a41b56d44ddb62",
+      "mode": "100644",
+      "size": 329
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/REGISTRATION.json",
+      "sha": "2f18cbaa796b09c769b0de7176010d6c986b09cc",
+      "mode": "100644",
+      "size": 2571
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/SMOKE_RESTORATION.json",
+      "sha": "7a88e4681c31a24232a1618c1a610d5f056d9e9b",
+      "mode": "100644",
+      "size": 521
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/figures_001/MANIFEST.json",
+      "sha": "e369f5a717580d752c72066877d4f2127fcd4b89",
+      "mode": "100644",
+      "size": 1625
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/figures_001/archive.tar.xz.b64.part0000",
+      "sha": "fd5a830ca8590c697ecd41d4c9279d40db55408a",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/figures_001/archive.tar.xz.b64.part0001",
+      "sha": "406564b624d13f1dbe33bebf8f13551291bb1ead",
+      "mode": "100644",
+      "size": 168520
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/MANIFEST.json",
+      "sha": "846c6fe1a524e5ab87277b05a6f917351bf7729d",
+      "mode": "100644",
+      "size": 83410
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0000",
+      "sha": "c5b76c86a57c2d3f06aef02932d526031c96b2a5",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0001",
+      "sha": "b530006aa56b1f15e96c063a68f32fcc948f0377",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0002",
+      "sha": "7cfd8d16e93b420fceeae78be3039fa537ae0567",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0003",
+      "sha": "bf059c00550470d328eb13f55b983154641b7879",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0004",
+      "sha": "092e6436ab2076aaefa1630e737e9586ad3e8e6a",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0005",
+      "sha": "deadd2e270374213aae31c58148c5a550e237d1b",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0006",
+      "sha": "fff949fb51e7545addc416cab2c40fdc1b717f1b",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0007",
+      "sha": "b145bbb45ada2fe994826fc4bc86b6c658fa28f4",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0008",
+      "sha": "83681109b7d685671e85b787edf3db94dec3c135",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0009",
+      "sha": "8ef0d22fb835a8a31f76db3c044a90c97c95909f",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0010",
+      "sha": "cb11c6cb90af6807ef78e13df5d3adf419949656",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0011",
+      "sha": "1d781b8c70cf3e97496ef8dd2d72ef657bf63bea",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0012",
+      "sha": "590527c0d75b0dc952e92131ac8342a9693f9e9f",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0013",
+      "sha": "8710dbf01563abd56a79e589c19268405bb3de00",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0014",
+      "sha": "983fcef4de0236cdb3ee1bcb0b02102bdec4a967",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0015",
+      "sha": "a75fb81806e4adf75728f405e92f3762c88094c1",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0016",
+      "sha": "adf4741871b64cd9e3653737e84c922474360cee",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0017",
+      "sha": "bcdda4e848a3c93ffb12e957172d65c640825125",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0018",
+      "sha": "937b19891098a2ffe95d27293917cf8347f4a4b0",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0019",
+      "sha": "9aa115a1cc6afd2aa05018b590d71cba4d69bb0a",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0020",
+      "sha": "d88734d93106b65fbc26a61eb2cde6f5049edbc8",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0021",
+      "sha": "3ab20b012988b4add19a12ab91f3bd762cd26a93",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0022",
+      "sha": "60f7b5ed418ffd8aaf8f97ab30e9183886e5bfce",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0023",
+      "sha": "bde215f15e01300638d8ce0c214fb41491a58cfb",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0024",
+      "sha": "2e6e7b23afecdac801e790c3418b3a8ffa2333d3",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0025",
+      "sha": "7255f1f1de338c04b383df5c8ffb335a8db084ed",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0026",
+      "sha": "c4dcec0d8f0c5525164c60fa131c5cda219b0710",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0027",
+      "sha": "1801bd44746a1087445ee4d710765b4041ae90f4",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0028",
+      "sha": "3fb015e8d217c234dc4fc83a52fba13c3ef5274e",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0029",
+      "sha": "0514d8871aefdf4d0f2e377b8165e783df61adee",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0030",
+      "sha": "b4e778edc3d4c05b4a964e92e922d17e205b1436",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0031",
+      "sha": "5eec1aec09dd0ecf2f91f122ba403a421196bf72",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0032",
+      "sha": "2e771401f109a56ad6d2e240cc90afbf488e5793",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0033",
+      "sha": "04c2964a4a985d1904479bd90e413aac11d7ae2b",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0034",
+      "sha": "2f25b960789946ce65f95327840a5d64f0e36cb8",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0035",
+      "sha": "62bdb26abdf93cdc0ad2c21b82b077bcc1e6b6e7",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0036",
+      "sha": "fcd47cee790bda59e9349818cea7f870b2330c12",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0037",
+      "sha": "bb164dac96fdd911221a15ef3a096ca308f29a28",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0038",
+      "sha": "f4d8cdff0afce2976d4c4cb9f9c48cd3efc4c669",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0039",
+      "sha": "7d2136b43c1e2aa80566aa84d686fe199f4a3a5b",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0040",
+      "sha": "0fd15f6f95301431391608c68db4ec7d56d95a0a",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0041",
+      "sha": "09f341844e26313c1cf85055a2274e4be0871f7a",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0042",
+      "sha": "ad225ff27b89a72bb39f23502cd34c0b4cd74e91",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0043",
+      "sha": "2cb95a7f2c7b2e3e3773a54959f2a9674d80ff68",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0044",
+      "sha": "367314ec7635e9c9160ec1488cb3c42a6c5eb401",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0045",
+      "sha": "b266588d115b15fcdf514336ecc71e8595c34223",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0046",
+      "sha": "3c9d8208871a9089f6918c20b4df3db3e737b8e3",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0047",
+      "sha": "19ad7435974d2afd2d59c9e067ac5b0f0bb54952",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0048",
+      "sha": "d9970cbf0d9c0ed7352af7b038cee6de83abb5f1",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0049",
+      "sha": "93c38abd87583569e3fb1323efd361e75c7b6b14",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0050",
+      "sha": "1a4d3543f310cd5a32087fa288917f07f2cff935",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0051",
+      "sha": "5ca31c14e48f7c4af04ddd84f6d42c1b76996118",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0052",
+      "sha": "8966790936abee7c497e45292dc498adfc1a7164",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0053",
+      "sha": "1a3dae56153fc08c60d902262ce1626141afe503",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0054",
+      "sha": "e1bc481488ced0bae3793f31b09d9341ffdce8c1",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0055",
+      "sha": "fe41871fa4fde1ad5685d710ab3cd5202cb61018",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0056",
+      "sha": "136fff7b8982448f670ca630198a11703d6370da",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0057",
+      "sha": "0e0161d51a9add190bd5bc1f25c31b8f7cc45950",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0058",
+      "sha": "13ad46c897cde57a1f26758a6b3c38e70e3aee7f",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0059",
+      "sha": "0b7cc9a333b3caa45bcf633fb6f8e3d71400f36c",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0060",
+      "sha": "672e6536b47b5090c2216219bed998cebfb8cad1",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0061",
+      "sha": "54c145c2a1a4fe62165b495f19219357058f2907",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0062",
+      "sha": "bc5de92e01b7b3dacabc650f43ec0b56fe9c37f2",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0063",
+      "sha": "b9abe7002359cdd5ea9704a4911e381a28c29908",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0064",
+      "sha": "30c078383667e68d5fdf4ee856025796dfcf3f0f",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0065",
+      "sha": "0f0bedf4f5de07601ce0c41f427779c93829ecdd",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0066",
+      "sha": "2b092a9b958b03bc9615fe7124f441ab7456f6f8",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0067",
+      "sha": "46a4db8f270e8b8d9795858ddd5b821a4180e5ef",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0068",
+      "sha": "d42bed87b50431ced72d3aedca5ef36db1d76424",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0069",
+      "sha": "54abdbcf237e2e5afad44fcb4f0d2c5adcf8a2ec",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0070",
+      "sha": "d15ebdc7c749c594d74bddc5796bf0fde03453c3",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0071",
+      "sha": "58699f07307493535803a03714f2c2132b149169",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0072",
+      "sha": "0014d2cd547dc9cb962066ef954416063437cae6",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0073",
+      "sha": "fdf1ac03f814bb3e8efb2c155feb0a568e954f0e",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0074",
+      "sha": "ab55150dbef782c3ffe1bb0092fc37ea405a2bf1",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0075",
+      "sha": "0d5c8292a9a10376b65cc5654924192e97b015c1",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0076",
+      "sha": "c348e7fbc01039609c8d672fa02e385a0d1ab0de",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0077",
+      "sha": "5aad17b7f8a448a331a2e4bd0dd4ed871fc98ed1",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0078",
+      "sha": "c7571977aea8dd330e935b4ff56a561a6b349c74",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0079",
+      "sha": "df3c2b0861405af4a4750615919f127e7f9a5d3d",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0080",
+      "sha": "04de792b494473db3f3345ea8b20689797a60ec9",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0081",
+      "sha": "14be8d001846b9bb362de53f087bd439fe3f4a4f",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0082",
+      "sha": "c818e002fa10c93d83b4fcf576ebd6cb37dd0b1a",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0083",
+      "sha": "d673699c0ed62da594476003ae1f44e60ace0d49",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0084",
+      "sha": "b895e18c7b48ee2acae2bbf68884838335ef79b2",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0085",
+      "sha": "71f98e4be831bf6d6de2da5ca3bee1eba9a7ca16",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0086",
+      "sha": "8a2af0e7d01632a8105710a699b0b72f6cad2b3f",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0087",
+      "sha": "9896ada8c471881c161012434b16505f8c5ceea9",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0088",
+      "sha": "52aa87f4f6d237cadccbcc1c2fe93b2be846d4fd",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0089",
+      "sha": "919b1c6370057dd790c724ecbbbc90314c8b7308",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0090",
+      "sha": "b28fe0964df29947cd49cd0b12daa76f636b1fa8",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0091",
+      "sha": "e5a5ab1e7e0c5531c04642e51832e01083ea7292",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0092",
+      "sha": "5b72bf582074bf4ee408820f72e3d2cccc3755a1",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0093",
+      "sha": "a329035dd790411da502d290068aa410495f1ce4",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0094",
+      "sha": "1f68541394a0b7771564bd630bc879b61a59c0cb",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0095",
+      "sha": "8234346597f34ef963b4ab3dcf93e724ae053fc7",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0096",
+      "sha": "0d8b8dcba55d090d38280bf993ffaea2330083b1",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0097",
+      "sha": "5fa904a9e149c3c9af9cf5d6be921efb0167692c",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0098",
+      "sha": "4bc2b69ce10d21ed62ccbdfa17ebf5fa85c648e9",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0099",
+      "sha": "7e9b4cf23bc1e33e6dd85181c03e1617c34c6bf9",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0100",
+      "sha": "a85004b834f8bbbca58dbabad6bc336c4104d2c5",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0101",
+      "sha": "c4817cfefc3e1e9ad49e531122fe02fce639f99a",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0102",
+      "sha": "4aba041aa6b9577393785ada7bb2ee043d69e28d",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0103",
+      "sha": "aae2bc35f25c896ccf1c34a07ff9275df06dd976",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0104",
+      "sha": "897a4f95c37cfa4f7f00bec87a3baaf0f9f79760",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0105",
+      "sha": "c16fe3ba704bceb61169d4d9d4d3f4f26577ddbe",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0106",
+      "sha": "01cc8e462798f83dc112864b44d5df46aefa9d62",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0107",
+      "sha": "fef067290ab861f93c7edbc4f0c93273638ae8ce",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0108",
+      "sha": "05cddbc71ff2f29099a88f12b12cb7018ae5cf06",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0109",
+      "sha": "f6cb379acca9fd518da8c0203b24beed979c4ddb",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0110",
+      "sha": "0f962b56756e36d469b689e1fdebffd955418d0f",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0111",
+      "sha": "a92ad80117330ec901185385cda805b999c3f768",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0112",
+      "sha": "0bbee2f2e444669676f84ecb9d0147f1362b1a84",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0113",
+      "sha": "e19ab8ed473587f1fc03cdb856ae53fd1c64b0c8",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0114",
+      "sha": "7e1c9b018e23746653a8e7f0b5a4e6949d5a2045",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0115",
+      "sha": "153d021ecb77a334c20b816fc73682c58af6c0b2",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0116",
+      "sha": "f12815cfde82f995f4bfd3f29f3bfa7b8bc2f519",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0117",
+      "sha": "079c4450642dd6b99d8cfbc52aba94f2930e7022",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0118",
+      "sha": "f243b62f53753e279327e83b54bffc9f6acf641f",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0119",
+      "sha": "b3f1cceb9e43a456236f9144ab6635581f59ff81",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0120",
+      "sha": "2c8590830394333aef88c39d35b542f820abed0d",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0121",
+      "sha": "272a6f7024b044454d110feb3f2f6ba170062634",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0122",
+      "sha": "ae33279f2f5ce222de99e8fe2e907fac1f8593e3",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0123",
+      "sha": "39f867c87c22278320e00996e76c5ef176d0253c",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0124",
+      "sha": "1aa6e860ce8fd12e0f34c449704b8c47eb4d3081",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0125",
+      "sha": "ed810a2ff12c263b0ecf3d93ee01122b8b126ae5",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0126",
+      "sha": "948bbb47029c3df937f4bb7ae83cc22d41fbdfb9",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0127",
+      "sha": "f7997fcf8d30913ef2617a22d5f0ae30636246fa",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0128",
+      "sha": "c43cb9a116090da2beda5807a04e62dd91836026",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0129",
+      "sha": "3d4473e7af80e42bcabc297e3404f6714580a93e",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0130",
+      "sha": "e3510ff13ddc2a601d332676283908da7d59557a",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0131",
+      "sha": "250b0d9240ffc01345c8576544ee8c5983049418",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0132",
+      "sha": "b1a57e366a0530dbd672f8bfe731013bd23d80ad",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0133",
+      "sha": "5a40006ad3d89171890c481b5581a5d16296143a",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0134",
+      "sha": "ea36ba4d4c6d3dd88f8aeb1b55091b9db5e3f1c7",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0135",
+      "sha": "2e0c6e7d8263542a0d55edb2700ba9dc50d72932",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0136",
+      "sha": "b40e3f67da88d9d3c65b858a380dc3b08bcbf563",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0137",
+      "sha": "3fb155453b9d5d64d2364ccb5a3e950657d10b9d",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0138",
+      "sha": "8d38df0b058636e52eeb4759f2c6e19f843edb20",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0139",
+      "sha": "1915faadbceafa87d96b9a48cdf6f77ade1c04e3",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0140",
+      "sha": "63897c24680894a8a2d275cfdb268b506b1a7a82",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0141",
+      "sha": "a6a45a40f391ff0d1ae3f56029c347410638da26",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0142",
+      "sha": "796850a75ba42b7af57e9deedd7029ed3cdf9e74",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0143",
+      "sha": "421e7ae244b646c14744e8510c4b949c23f51b9e",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0144",
+      "sha": "6a232c7cc150d42e54745b665950744a6a9378a9",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0145",
+      "sha": "c25f8ac96d2a8bffcd4bf53ac0e30fa89ee07306",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0146",
+      "sha": "d78010c9fc46be0918930bfbbb928f09f39331f2",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0147",
+      "sha": "8618808b38c4f9daf4d20fcd2642ea016289a920",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0148",
+      "sha": "38f9279084fa0a0ecda47c6431e8f6d95a891911",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0149",
+      "sha": "e5ced94ddef684d26cd9faa221af9cf099cad58e",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0150",
+      "sha": "0da3e7a27ee6397146a481a70c1c2a853d80f7ab",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0151",
+      "sha": "62c3cb13780e8d8592f0e0dd064358519cd8971f",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0152",
+      "sha": "937950539d55196efefbe639cc555c49f3ea67b6",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0153",
+      "sha": "8b3e28b20b26ebb4b932acbf9ad6575f97475b0a",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0154",
+      "sha": "9d6decd99d8b5f9f151d8f53810798d903b04819",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0155",
+      "sha": "3c9ef732ae5ab0dabf75e7d36c10d6bcfa62d686",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0156",
+      "sha": "20fa951b95bb17222ec3bbe79fa552caa1898a2c",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0157",
+      "sha": "caa0f622d5aca704e95e9f85a62d2d582ecee0dd",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0158",
+      "sha": "7b622bd9936fe271368f6a353a8bf6a3659a90ec",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0159",
+      "sha": "c5d9a1122667b25ee15cb0d45add30ef017fde3b",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0160",
+      "sha": "ea26324efab0039e48dd6d572acb57d68fcbe6f2",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0161",
+      "sha": "8861efc777640c4d0aa545407e793d2cde8d4648",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0162",
+      "sha": "24ceaaa0ec7dfff0c507cbfd10ed6f724ae5554d",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0163",
+      "sha": "f8e37189a814ae8588f54846f49a64dd25a42b63",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0164",
+      "sha": "2abc5d878df4563e92306669df3d8b86e2559b7d",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0165",
+      "sha": "6a46c7933533a3c633c831dac8b377f3c2cae213",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0166",
+      "sha": "2a175b84945afd521f491f59b3c833e74f246185",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0167",
+      "sha": "97265965cc33d4e24d710b403e856218a77a576b",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0168",
+      "sha": "d5c48fa78a68bafe23f0cbe4cbeefd28ddac106f",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0169",
+      "sha": "2caa5418f763de53233181ea171ce8a8c7a30615",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0170",
+      "sha": "42b3538a2e02f9effdc9a0656a7ce8fc3efc69ed",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0171",
+      "sha": "1050dbfe7af86421e90777d25955c5ae95824b03",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_confirmation_001/archive.tar.xz.b64.part0172",
+      "sha": "3e28ca69533657847b3ae546cfc55fe6f7500554",
+      "mode": "100644",
+      "size": 66040
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/MANIFEST.json",
+      "sha": "950b231ec43724fb161246b865f07252965e6ebf",
+      "mode": "100644",
+      "size": 53442
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0000",
+      "sha": "0be74f0ae865a2960fb6b7f15b6e478c620f2bd0",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0001",
+      "sha": "f33fee7b654c70701b43d9e921dceb891424f02a",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0002",
+      "sha": "c65ac7f85f9032cb165a2f7f44e3a47eac94476b",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0003",
+      "sha": "8de43239cb1fae2c1a337b64830fc5a7c23fbe4f",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0004",
+      "sha": "2db4811b4831a61a48dabab14a5c2e9e0fca1fc0",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0005",
+      "sha": "5384f75b0a190bfe837bda93bc7d3e8d46a1cf20",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0006",
+      "sha": "11169f82bcfea3eec34b91ada2a62fc011526d0d",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0007",
+      "sha": "eca99ca722ed6564c545a8743a41229e43248c6e",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0008",
+      "sha": "4aaab343d818c822e295b6bd74dcb5c33ecf7d68",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0009",
+      "sha": "566265c31aad8670c510805295023c0396ddff89",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0010",
+      "sha": "66e59723c8d7ebc74261215183624455a988ba36",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0011",
+      "sha": "885d0940866e83ebccf427136539f59e1e60571c",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0012",
+      "sha": "649b5055269610d9d09ebef7b2a614935c39613a",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0013",
+      "sha": "c08eeacc0d52131c43f479d5263c21cda6ece44a",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0014",
+      "sha": "6f83313d735ca963f315ef9c0d924c415b9b9f5d",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0015",
+      "sha": "21bc02b39d3b835824714daee772ee35595ed741",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0016",
+      "sha": "b6d507c2fbfe964ef9e01f38ec90d64565d6d7fa",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0017",
+      "sha": "3b666d74e9f3a46f1cde263ee80cce3f39a5957a",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0018",
+      "sha": "40e803279c0d42342303c374f4f0a521ce24c6cf",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0019",
+      "sha": "e4d4d8593e21aa614ed910dd354ac3560139cabb",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0020",
+      "sha": "88df43cc74356c52246caccfe7239d4fe3d14919",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0021",
+      "sha": "1eb8265410e04ae4139f15f0ab7d68cdbb2b2045",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0022",
+      "sha": "70137ead3e6017de4303cff329d372ae862adcc9",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0023",
+      "sha": "d056f693fa4926ebf5f90443be4b844964eee078",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0024",
+      "sha": "fb832b18955def980fd95616a18424dccb3164c9",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0025",
+      "sha": "3c011906d021563f4278f738994281efc346bec4",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0026",
+      "sha": "f6d1bc2c8b534eec14ca9d7f711fcf9cc341acf6",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0027",
+      "sha": "273718098544a76333be434b6af684e0c5cce5dc",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0028",
+      "sha": "932cb9a8b49d45682b2ad45c86af34d4b7a51f14",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0029",
+      "sha": "d0e58da9a6ece4e1b9188dca2c25ba6c864b4bdc",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0030",
+      "sha": "1193b47ec4216228c5b70270a0485fbbb482b3b4",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0031",
+      "sha": "e7238472814bdcab8a8f0fe4a109413549ad654c",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0032",
+      "sha": "017f7ec06d63990e6c435748864d750db2ba1119",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0033",
+      "sha": "04889393dbbe3c86a6a629c13247f2cc2d46ce2d",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0034",
+      "sha": "2d9e9ae57f6397e95a102054b081e00a0cd0bf21",
+      "mode": "100644",
+      "size": 262144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_prepared_001/archive.tar.gz.b64.part0035",
+      "sha": "2cd98de445517c499e9770693bf5ac2722bcb281",
+      "mode": "100644",
+      "size": 252044
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_smoke_001/MANIFEST.json",
+      "sha": "228664a500f7ba18ca31034f59db0cc50bd227d2",
+      "mode": "100644",
+      "size": 3498
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/envelopes/selection_smoke_001/archive.tar.gz.b64.part0000",
+      "sha": "e69542d627a5dd02fb9fd1747449afd086e7e541",
+      "mode": "100644",
+      "size": 99772
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/prediction_head_validation_001/SOURCE_SNAPSHOT/MANIFEST.json",
+      "sha": "bd316877db04065d79b149d181501f1b3c1c7e7d",
+      "mode": "100644",
+      "size": 438
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/prediction_head_validation_001/SOURCE_SNAPSHOT/PREDICTION_HEAD_CONTRACT.md",
+      "sha": "1784d00d1cbe0853eb466998492257b2d1436378",
+      "mode": "100644",
+      "size": 4126
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/prediction_head_validation_001/SOURCE_SNAPSHOT/prediction_head.py",
+      "sha": "1bfae2bdda8f77a0c5e59f62719236eacf4ed154",
+      "mode": "100644",
+      "size": 5908
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/prediction_head_validation_001/SOURCE_SNAPSHOT/test_prediction_head.py",
+      "sha": "88745b05b5e5dc2ca46dd9e6d283a43563f400b4",
+      "mode": "100644",
+      "size": 8690
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/prediction_head_validation_001/execution/prediction_head_conformance_001.log",
+      "sha": "bd686978e2d73e3e353133e1187e43601785a82f",
+      "mode": "100644",
+      "size": 2038
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/prediction_head_validation_001/execution/prediction_head_conformance_001_COMPLETED.json",
+      "sha": "1c4c9279721e19ea81d1f0366e8562b037711204",
+      "mode": "100644",
+      "size": 734
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/prediction_head_validation_001/execution/prediction_head_conformance_001_STARTED.json",
+      "sha": "52574ff6851d4da385c17600e44c110a8eb3687b",
+      "mode": "100644",
+      "size": 440
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/prediction_head_validation_002/CONFORMANCE.json",
+      "sha": "eab03c80163c6947d7d17b45251cfb53186a3906",
+      "mode": "100644",
+      "size": 1888
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/prediction_head_validation_002/execution/prediction_head_conformance_002.log",
+      "sha": "894c676a57325ebd7aeb9e9cbab6b68b5f36bb91",
+      "mode": "100644",
+      "size": 1781
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/prediction_head_validation_002/execution/prediction_head_conformance_002_COMPLETED.json",
+      "sha": "94275331f0ecc3d888eb5653f0a584a5c0dff2ef",
+      "mode": "100644",
+      "size": 733
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/prediction_head_validation_002/execution/prediction_head_conformance_002_STARTED.json",
+      "sha": "bd45eac51ddfe0ecbcf785234f10187ab296fbb0",
+      "mode": "100644",
+      "size": 440
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/publication/COMPLETE_EVIDENCE.json",
+      "sha": "6071ccc20ceb04ed42e2b35c456708b9d03022f4",
+      "mode": "100644",
+      "size": 101258
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/publication/CONFIRMATION_CHUNKS_00.json",
+      "sha": "b52814966d18252bd4b403f4bf62f2bcde651585",
+      "mode": "100644",
+      "size": 4225
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/publication/CONFIRMATION_CHUNKS_01.json",
+      "sha": "bf04e7616bfd5158d26207b981c9b74ad36c6ebb",
+      "mode": "100644",
+      "size": 4226
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/publication/CONFIRMATION_CHUNKS_02.json",
+      "sha": "0b40811b4d14a1e3d2d24f671a48f8b08bf78808",
+      "mode": "100644",
+      "size": 4226
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/publication/CONFIRMATION_CHUNKS_03.json",
+      "sha": "09f974539e98caa972d21c37bc0f7a25190fd0c3",
+      "mode": "100644",
+      "size": 4226
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/publication/CONFIRMATION_CHUNKS_04.json",
+      "sha": "bbaaa2464d6b4ebafcc90d6f5df851def2ea4843",
+      "mode": "100644",
+      "size": 4226
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/publication/CONFIRMATION_CHUNKS_05.json",
+      "sha": "551d28bf090314470c02a62bd4312c3f6e70cba3",
+      "mode": "100644",
+      "size": 4226
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/publication/CONFIRMATION_CHUNKS_06.json",
+      "sha": "03980dbbe3f4c955f7bad6281884a5b319de8d8f",
+      "mode": "100644",
+      "size": 4226
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/publication/CONFIRMATION_CHUNKS_07.json",
+      "sha": "1375bfca2ec273172fe5b359162f4cdcd0bdd514",
+      "mode": "100644",
+      "size": 4226
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/publication/CONFIRMATION_CHUNKS_08.json",
+      "sha": "bd081ea96191740466b97f01feeeac0cf183495a",
+      "mode": "100644",
+      "size": 4227
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/publication/CONFIRMATION_CHUNKS_09.json",
+      "sha": "f4ec83a28c00020f7c7ff58037bf32ffcefe56c6",
+      "mode": "100644",
+      "size": 4228
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/publication/CONFIRMATION_CHUNKS_10.json",
+      "sha": "522b5572e76e09dda8599ba0b080b901d908156a",
+      "mode": "100644",
+      "size": 4228
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/publication/CONFIRMATION_CHUNKS_11.json",
+      "sha": "41379953b022064cee162cc92f79479212cbd110",
+      "mode": "100644",
+      "size": 4228
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/publication/CONFIRMATION_CHUNKS_12.json",
+      "sha": "2f30b4302931d0c597066356eeb720d2366bb1ce",
+      "mode": "100644",
+      "size": 4228
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/publication/CONFIRMATION_CHUNKS_13.json",
+      "sha": "dc885f6510d90d0d75ee4445ae1ad864a2cba775",
+      "mode": "100644",
+      "size": 4228
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/publication/CONFIRMATION_CHUNKS_14.json",
+      "sha": "cdf9afdb6329feb22c0a60bbe3e4625ffef0365f",
+      "mode": "100644",
+      "size": 2001
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/publication/PREPARED_CHUNKS_00.json",
+      "sha": "c8010cb44af21c6da6cd238bc24ea48ba586ef24",
+      "mode": "100644",
+      "size": 2297
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/publication/PREPARED_CHUNKS_01.json",
+      "sha": "0d1f46c74ea4b02372715213fb288cb5a867aa7f",
+      "mode": "100644",
+      "size": 2284
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/publication/PREPARED_CHUNKS_02.json",
+      "sha": "4bdfa145870b7a59df61b3f1a6ca89d50fb4f6d2",
+      "mode": "100644",
+      "size": 2285
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/publication/PREPARED_CHUNKS_03.json",
+      "sha": "3ab70facc7056564a1c84aaa8ce803e47c836d77",
+      "mode": "100644",
+      "size": 2285
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/publication/PREPARED_CHUNKS_04.json",
+      "sha": "1e5531061df154103f1142134458cc6da9a1b2f7",
+      "mode": "100644",
+      "size": 2285
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/publication/PREPARED_CHUNKS_05.json",
+      "sha": "1665bcdfbf4aa59c07f049b00f3934c2973df5ff",
+      "mode": "100644",
+      "size": 2285
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/publication/TREE_PRESERVATION.json",
+      "sha": "938f856c788075d26f1d462e9e081ba0277d1249",
+      "mode": "100644",
+      "size": 4988
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/recovery/REMOTE_RECOVERY_INVENTORY.json",
+      "sha": "ea0440aef47ce5f1d42eadc9d7f667bd63e381db",
+      "mode": "100644",
+      "size": 95190
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/recovery/WORKFLOW_NATIVE_SOURCE_DISCOVERY.json",
+      "sha": "f1fe4c74a7bb4d2b0700f5df3174c35fb74cde34",
+      "mode": "100644",
+      "size": 17124
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/recovery/bridge_scope.json",
+      "sha": "14c851cbd8ff144624a2467478559adea7684c92",
+      "mode": "100644",
+      "size": 15844
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/review_confirmation_001/REVIEW.json",
+      "sha": "2432fffaa1ba762de160ba1939a89a1e24799769",
+      "mode": "100644",
+      "size": 1523
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/review_confirmation_001/execution/independent_confirmation_review.log",
+      "sha": "0674696ada8dfa59fc1bd7606fa7a890b30f75b9",
+      "mode": "100644",
+      "size": 201
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/review_confirmation_001/execution/independent_confirmation_review_COMPLETED.json",
+      "sha": "3496d4e62810685c992ff3fc691937418baa41c1",
+      "mode": "100644",
+      "size": 1344
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/review_confirmation_001/execution/independent_confirmation_review_STARTED.json",
+      "sha": "03909d6acb2d5ffc93f428013abbc9bcde01ff12",
+      "mode": "100644",
+      "size": 1061
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/review_confirmation_002/REVIEW.json",
+      "sha": "8d2423ec4de8df96fbb4f0d9ed6e70bdd2639965",
+      "mode": "100644",
+      "size": 20951
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/review_confirmation_002/execution/independent_confirmation_review.log",
+      "sha": "9e9813eb4c023f8ca2f1ad908c4d32c7267445be",
+      "mode": "100644",
+      "size": 200
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/review_confirmation_002/execution/independent_confirmation_review_COMPLETED.json",
+      "sha": "12869a36a86452185977b76233082405843f000b",
+      "mode": "100644",
+      "size": 1420
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/review_confirmation_002/execution/independent_confirmation_review_STARTED.json",
+      "sha": "80a81efa3634490aa3918aa36992d1a6b086a173",
+      "mode": "100644",
+      "size": 1126
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/reviews/CONFIRMATION_AUDIT_LAUNCH_RECOVERY.json",
+      "sha": "6b32a5c68c483df51264699b048bfb78c95be6ef",
+      "mode": "100644",
+      "size": 1779
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/reviews/PREPARED_REVIEW.json",
+      "sha": "8b806a1767406ae2156075ec174ab060a8d2f4df",
+      "mode": "100644",
+      "size": 507131
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/reviews/SELECTION_SOURCE_REVIEW.json",
+      "sha": "6b1ce4ff44d4b5fe0e04b1fdfcf1685d50c393ce",
+      "mode": "100644",
+      "size": 9724
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/reviews/SMOKE_001_REVIEW.json",
+      "sha": "282358c0c3eebda38270a7f85f8dc9e961526ed0",
+      "mode": "100644",
+      "size": 29431
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/reviews/review_confirmation.py",
+      "sha": "d8eaf93d5e5a70b4ed5c0964046e8e4401a5d89c",
+      "mode": "100644",
+      "size": 21504
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/reviews/review_prepared.py",
+      "sha": "23c84a5bed6bc9381e7c1b042391b81f43b377bd",
+      "mode": "100644",
+      "size": 35562
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/selection_registered_001/CONFIRMATION_INDEX.json",
+      "sha": "2cc4bdea3c9215c09c7b721a3559af27638796ac",
+      "mode": "100644",
+      "size": 377730
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/selection_registered_001/CONFIRMATION_STARTED.json",
+      "sha": "7e17450fd3e14570c58b5d1a18e4aade1e4eda83",
+      "mode": "100644",
+      "size": 4557
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/selection_registered_001/FREEZE.json",
+      "sha": "9707eaa931e1dfed946f9fdc6454817d0054c849",
+      "mode": "100644",
+      "size": 45643
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/selection_registered_001/PRECONFIRMATION_PUBLICATION.json",
+      "sha": "ab0085d3237e18b5408f35031409a10349e4b4a9",
+      "mode": "100644",
+      "size": 28077
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/selection_registered_001/PREPARATION_STARTED.json",
+      "sha": "92afebdf7e9d458736101d76175e853bf2a2e304",
+      "mode": "100644",
+      "size": 57294
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/selection_registered_001/PREPARED_INDEX.json",
+      "sha": "681284c7b23c3aa5af725b0e7c1cf4d229c7de60",
+      "mode": "100644",
+      "size": 124947
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/selection_registered_001/RESULTS.json",
+      "sha": "bf77c8dd62ae0164942d0e4e2d372de8078be635",
+      "mode": "100644",
+      "size": 22895
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/selection_registered_001/execution/selection_registered_confirm_001.log",
+      "sha": "e660fb376a8814eb9dca0cb4ccb20891545db548",
+      "mode": "100644",
+      "size": 6298
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/selection_registered_001/execution/selection_registered_confirm_001_COMPLETED.json",
+      "sha": "d6b2a8614ada9cd34fb4f0007245e2e775961893",
+      "mode": "100644",
+      "size": 931
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/selection_registered_001/execution/selection_registered_confirm_001_STARTED.json",
+      "sha": "3af4e56eb5597697de876eba6bd762f873bcdb31",
+      "mode": "100644",
+      "size": 634
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/selection_registered_001/execution/selection_registered_freeze_001.log",
+      "sha": "fbb4547ae1dfe28e6785364f9b187c458a8b916e",
+      "mode": "100644",
+      "size": 186
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/selection_registered_001/execution/selection_registered_freeze_001_COMPLETED.json",
+      "sha": "428d1dadfa250b9f407ed3360d5304124ff4134c",
+      "mode": "100644",
+      "size": 915
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/selection_registered_001/execution/selection_registered_freeze_001_STARTED.json",
+      "sha": "41d6ebf9a35564c0a97786fb89dddaca4b3045b2",
+      "mode": "100644",
+      "size": 632
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/selection_registered_001/execution/selection_registered_prepare_001.log",
+      "sha": "9630f663bc37429004eddeb76158d524513cb42c",
+      "mode": "100644",
+      "size": 4632
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/selection_registered_001/execution/selection_registered_prepare_001_COMPLETED.json",
+      "sha": "f7e1965b561d15445faa571d4d238c7324c207ca",
+      "mode": "100644",
+      "size": 820
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/selection_registered_001/execution/selection_registered_prepare_001_STARTED.json",
+      "sha": "a2c6c2675fbaa7be0eaf8c4e08face411200120c",
+      "mode": "100644",
+      "size": 524
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/selection_review_validation_001/REVIEW_VALIDATION.json",
+      "sha": "8d89581eb336aab8c8f7e8f8d6bda51330765f93",
+      "mode": "100644",
+      "size": 19092
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/selection_review_validation_001/execution/selection_targeted_tests.log",
+      "sha": "cbda0bfe079aa9a91df9be71ea63d8ec14985d81",
+      "mode": "100644",
+      "size": 2441
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/selection_review_validation_001/execution/selection_targeted_tests_COMPLETED.json",
+      "sha": "e2b5a2c8428ff60e76fd04ee6117b8b2c8daf992",
+      "mode": "100644",
+      "size": 703
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/selection_review_validation_001/execution/selection_targeted_tests_STARTED.json",
+      "sha": "06a7cc86d8679e3548b3bd634a1fda3bf54353dd",
+      "mode": "100644",
+      "size": 427
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/source_history/smoke_001/MANIFEST.json",
+      "sha": "4ce45ad1f2affd06da76d95726e583b235c0f7d6",
+      "mode": "100644",
+      "size": 944
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/source_history/smoke_001/SELECTION_CONTRACT.md",
+      "sha": "6f143060fdcdf5489a8836494c9af518bf27aa65",
+      "mode": "100644",
+      "size": 7922
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/source_history/smoke_001/__init__.py",
+      "sha": "a230743857622eee5800fd2ac7e3313ff887ad39",
+      "mode": "100644",
+      "size": 79
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/source_history/smoke_001/selection_math.py",
+      "sha": "32a433af799d75767cde6f083881a02fc18c6cf3",
+      "mode": "100644",
+      "size": 5271
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/source_history/smoke_001/selection_study.py",
+      "sha": "9b4b617bbc63e6add7692cb3194c56f8e519f08d",
+      "mode": "100644",
+      "size": 25800
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/source_history/smoke_001/test_selection.py",
+      "sha": "afa9626a6b5ade830dab98e6d72dab631faa978c",
+      "mode": "100644",
+      "size": 7394
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/transport_validation_001/FIGURE_RESTORATION.json",
+      "sha": "c5746a6ab84bb3e03be2873680ceebf6e0d6213d",
+      "mode": "100644",
+      "size": 325
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/transport_validation_001/RESTORATION.json",
+      "sha": "311a73fe741004718d766615023fe5ada42c4b56",
+      "mode": "100644",
+      "size": 1192
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/transport_validation_001/execution/confirmation_archive_pack.log",
+      "sha": "ff0b0595ba5f7669ca4137578437bb41b1625008",
+      "mode": "100644",
+      "size": 145
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/transport_validation_001/execution/confirmation_archive_pack_COMPLETED.json",
+      "sha": "3f92cbd0e4c5db8eadbc72380619c3f1005b8bcc",
+      "mode": "100644",
+      "size": 1063
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence/transport_validation_001/execution/confirmation_archive_pack_STARTED.json",
+      "sha": "473ee3f310d18fd0920702f8d4bbb7aef0a5abee",
+      "mode": "100644",
+      "size": 775
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/evidence_io.py",
+      "sha": "d29daccbb48b934843432002ae8f7ba08260ab20",
+      "mode": "100644",
+      "size": 8306
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/figures/PROVENANCE.json",
+      "sha": "e586ca41beaae11ea9921db46652bdb7b82e8fcd",
+      "mode": "100644",
+      "size": 516
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/figures/selection_results.svg",
+      "sha": "2a8815b57bf939a4410c683e55663e1b8c8c5a2b",
+      "mode": "100644",
+      "size": 146902
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/interop.py",
+      "sha": "5ecbc76fae89def86af3b0fdfd6d650217d6a3ec",
+      "mode": "100644",
+      "size": 6546
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/plot_results.py",
+      "sha": "d930e4cd4c246f87891ba344cd25ae318b459868",
+      "mode": "100644",
+      "size": 5799
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/prediction_head.py",
+      "sha": "1bfae2bdda8f77a0c5e59f62719236eacf4ed154",
+      "mode": "100644",
+      "size": 5908
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/selection_math.py",
+      "sha": "32a433af799d75767cde6f083881a02fc18c6cf3",
+      "mode": "100644",
+      "size": 5271
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/selection_study.py",
+      "sha": "66d88a9bd8b963892eeb2cc65f21b84cd8f74d50",
+      "mode": "100644",
+      "size": 32440
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/test_interop.py",
+      "sha": "816b83f6df29802146192947d5e4f8931bf4a517",
+      "mode": "100644",
+      "size": 8544
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/test_prediction_head.py",
+      "sha": "217c4298ea344e121df0c2211b9f2f3c04e77400",
+      "mode": "100644",
+      "size": 8760
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/test_selection.py",
+      "sha": "56276060ec04c64f6f6dbe47f7ce7bd91b63e27a",
+      "mode": "100644",
+      "size": 13633
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/vendor/__init__.py",
+      "sha": "fdc0ad833aa0ec5db75d2800b273f1c2c1301607",
+      "mode": "100644",
+      "size": 80
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/vendor/first_passage_cell/__init__.py",
+      "sha": "4b649cb054a166a779edf8fdc41c443d8aad2f7c",
+      "mode": "100644",
+      "size": 76
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/vendor/first_passage_cell/cell.py",
+      "sha": "18583ac13b3c100f97daa698f2dfe0d9f8cfcae6",
+      "mode": "100644",
+      "size": 13879
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/vendor/first_passage_cell/filtering.py",
+      "sha": "fd94bb1af63f184dba2a979138f140d860ab7e28",
+      "mode": "100644",
+      "size": 6144
+    },
+    {
+      "path": "experiments/analytic_event_neuron/round5/vendor/first_passage_cell/kernels.py",
+      "sha": "ba36d943f405403ed7e26a607d28cd18a23055fa",
+      "mode": "100644",
+      "size": 15856
+    }
+  ]
+}

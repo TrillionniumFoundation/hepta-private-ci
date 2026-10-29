@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.analytic_event_neuron.round5.build_delivery",
+    "--verified-source-index",
+    "/workspace/scratch/d831a963ef2f/recovery/DELIVERY_SOURCE_INDEX.json",
+    "--output",
+    "/workspace/scratch/d831a963ef2f/hepta-round5-research-delivery.tar.xz",
+    "--receipt",
+    "/workspace/scratch/d831a963ef2f/recovery/DELIVERY_BUILD_RECEIPT.json"
+  ],
+  "cwd": "/workspace/scratch/d831a963ef2f/hepta-analytic",
+  "full_invocation_scope": true,
+  "label": "delivery_build_001",
+  "nested_component_times_must_not_be_added": true,
+  "schema": "hepta.analytic-event.round4.execution.v1",
+  "started_utc": "2026-10-29T00:52:11.740822+00:00"
+}
