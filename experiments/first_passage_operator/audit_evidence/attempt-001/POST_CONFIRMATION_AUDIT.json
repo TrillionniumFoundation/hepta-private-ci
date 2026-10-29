@@ -1,0 +1,334 @@
+{
+  "schema": "hepta.regenerative.post-confirmation-audit.v1",
+  "recorded_utc": "2026-10-29T07:54:07.730848+00:00",
+  "auditor_sha256": "80b0e28a6d18f53a83b96a66d317fa0a5d84141e1b096cf7291e00d6d4164f7a",
+  "auditor_written_after_confirmation": true,
+  "source_freeze": {
+    "frozen_files": 64,
+    "external_dependencies": 8,
+    "freeze_sha256": "901f5e7e315e6786897af21da45370f290aa9e287d1055e40d8dde765190b685"
+  },
+  "value": {
+    "contexts": 1024,
+    "seeds": 3,
+    "passed_mean_error_gates": 3,
+    "results": [
+      {
+        "seed": 3109,
+        "moment_rmse": 0.01821201323718602,
+        "maximum_absolute_moment_error": 0.26825687193633474,
+        "value_rmse_unit_l2_payoff": 0.018972245955844003,
+        "maximum_absolute_value_error": 0.31235077033973213,
+        "max_discounted_mass_defect": 1.1102230246251565e-16,
+        "mean_transition_total_variation": 0.045502631826365866,
+        "maximum_transition_total_variation": 0.5101403805583358,
+        "gate_passed": true
+      },
+      {
+        "seed": 3119,
+        "moment_rmse": 0.02002736391169894,
+        "maximum_absolute_moment_error": 0.3223948134793428,
+        "value_rmse_unit_l2_payoff": 0.021917160401239737,
+        "maximum_absolute_value_error": 0.3950929404391349,
+        "max_discounted_mass_defect": 2.220446049250313e-16,
+        "mean_transition_total_variation": 0.051702893701154495,
+        "maximum_transition_total_variation": 0.5864147462710965,
+        "gate_passed": true
+      },
+      {
+        "seed": 3121,
+        "moment_rmse": 0.01998706404442303,
+        "maximum_absolute_moment_error": 0.2882902401859062,
+        "value_rmse_unit_l2_payoff": 0.020914082680608053,
+        "maximum_absolute_value_error": 0.3259848049987578,
+        "max_discounted_mass_defect": 2.220446049250313e-16,
+        "mean_transition_total_variation": 0.046629581817030114,
+        "maximum_transition_total_variation": 0.5365728080562211,
+        "gate_passed": true
+      }
+    ],
+    "uniform_accuracy_certified": false
+  },
+  "network": {
+    "fits": 27,
+    "comparisons": [
+      {
+        "task": "evidence",
+        "baseline": "lif",
+        "mean_improvement": 0.01128492204044374,
+        "interval": [
+          -0.007392013051299318,
+          0.03034278926719782
+        ],
+        "passed": false
+      },
+      {
+        "task": "evidence",
+        "baseline": "rnn",
+        "mean_improvement": 0.010424738440012293,
+        "interval": [
+          -0.017165660337041085,
+          0.055773855817119584
+        ],
+        "passed": false
+      },
+      {
+        "task": "order",
+        "baseline": "lif",
+        "mean_improvement": -0.5243091546509286,
+        "interval": [
+          -0.6532761008150437,
+          -0.43728603255198184
+        ],
+        "passed": false
+      },
+      {
+        "task": "order",
+        "baseline": "rnn",
+        "mean_improvement": -0.5374816324344277,
+        "interval": [
+          -0.6673179830802787,
+          -0.45764925188787653
+        ],
+        "passed": false
+      },
+      {
+        "task": "delayed_match",
+        "baseline": "lif",
+        "mean_improvement": 0.0011872220529329004,
+        "interval": [
+          -0.0034925663923680325,
+          0.005466883580928657
+        ],
+        "passed": false
+      },
+      {
+        "task": "delayed_match",
+        "baseline": "rnn",
+        "mean_improvement": -0.27819177363529374,
+        "interval": [
+          -0.3136595781736483,
+          -0.22976512131071206
+        ],
+        "passed": false
+      }
+    ],
+    "task_metrics": [
+      {
+        "task": "evidence",
+        "kind": "first_passage",
+        "seed": 3109,
+        "bce": 0.02683575121382539,
+        "accuracy": 0.99365234375
+      },
+      {
+        "task": "evidence",
+        "kind": "lif",
+        "seed": 3109,
+        "bce": 0.05453296862513504,
+        "accuracy": 0.99560546875
+      },
+      {
+        "task": "evidence",
+        "kind": "rnn",
+        "seed": 3109,
+        "bce": 0.036119066907434064,
+        "accuracy": 0.9921875
+      },
+      {
+        "task": "evidence",
+        "kind": "first_passage",
+        "seed": 3163,
+        "bce": 0.04129127420533889,
+        "accuracy": 0.98095703125
+      },
+      {
+        "task": "evidence",
+        "kind": "lif",
+        "seed": 3163,
+        "bce": 0.03909894283806786,
+        "accuracy": 0.984375
+      },
+      {
+        "task": "evidence",
+        "kind": "rnn",
+        "seed": 3163,
+        "bce": 0.0320033581079145,
+        "accuracy": 0.98828125
+      },
+      {
+        "task": "evidence",
+        "kind": "first_passage",
+        "seed": 3203,
+        "bce": 0.04497932510589177,
+        "accuracy": 0.982421875
+      },
+      {
+        "task": "evidence",
+        "kind": "lif",
+        "seed": 3203,
+        "bce": 0.05332920518318435,
+        "accuracy": 0.9814453125
+      },
+      {
+        "task": "evidence",
+        "kind": "rnn",
+        "seed": 3203,
+        "bce": 0.07625814082974436,
+        "accuracy": 0.98046875
+      },
+      {
+        "task": "order",
+        "kind": "first_passage",
+        "seed": 3109,
+        "bce": 0.491187956137777,
+        "accuracy": 0.802734375
+      },
+      {
+        "task": "order",
+        "kind": "lif",
+        "seed": 3109,
+        "bce": 0.01745340125126462,
+        "accuracy": 0.998046875
+      },
+      {
+        "task": "order",
+        "kind": "rnn",
+        "seed": 3109,
+        "bce": 0.008604585216945248,
+        "accuracy": 1.0
+      },
+      {
+        "task": "order",
+        "kind": "first_passage",
+        "seed": 3163,
+        "bce": 0.669361687997352,
+        "accuracy": 0.63671875
+      },
+      {
+        "task": "order",
+        "kind": "lif",
+        "seed": 3163,
+        "bce": 0.01942413957996828,
+        "accuracy": 0.99658203125
+      },
+      {
+        "task": "order",
+        "kind": "rnn",
+        "seed": 3163,
+        "bce": 0.005037165813304278,
+        "accuracy": 1.0
+      },
+      {
+        "task": "order",
+        "kind": "first_passage",
+        "seed": 3203,
+        "bce": 0.4729940797070538,
+        "accuracy": 0.79052734375
+      },
+      {
+        "task": "order",
+        "kind": "lif",
+        "seed": 3203,
+        "bce": 0.0237387190581642,
+        "accuracy": 0.9931640625
+      },
+      {
+        "task": "order",
+        "kind": "rnn",
+        "seed": 3203,
+        "bce": 0.007457075508650062,
+        "accuracy": 1.0
+      },
+      {
+        "task": "delayed_match",
+        "kind": "first_passage",
+        "seed": 3109,
+        "bce": 0.692286662824211,
+        "accuracy": 0.5263671875
+      },
+      {
+        "task": "delayed_match",
+        "kind": "lif",
+        "seed": 3109,
+        "bce": 0.6943445009738061,
+        "accuracy": 0.50341796875
+      },
+      {
+        "task": "delayed_match",
+        "kind": "rnn",
+        "seed": 3109,
+        "bce": 0.4001129773514854,
+        "accuracy": 0.72265625
+      },
+      {
+        "task": "delayed_match",
+        "kind": "first_passage",
+        "seed": 3163,
+        "bce": 0.6942808838760562,
+        "accuracy": 0.50244140625
+      },
+      {
+        "task": "delayed_match",
+        "kind": "lif",
+        "seed": 3163,
+        "bce": 0.6944131648848418,
+        "accuracy": 0.47900390625
+      },
+      {
+        "task": "delayed_match",
+        "kind": "rnn",
+        "seed": 3163,
+        "bce": 0.44811245903641594,
+        "accuracy": 0.66015625
+      },
+      {
+        "task": "delayed_match",
+        "kind": "first_passage",
+        "seed": 3203,
+        "bce": 0.6936829891128954,
+        "accuracy": 0.50927734375
+      },
+      {
+        "task": "delayed_match",
+        "kind": "lif",
+        "seed": 3203,
+        "bce": 0.6950545361133136,
+        "accuracy": 0.52001953125
+      },
+      {
+        "task": "delayed_match",
+        "kind": "rnn",
+        "seed": 3203,
+        "bce": 0.3974497785193803,
+        "accuracy": 0.91015625
+      }
+    ],
+    "passed_advantage_gates": 0,
+    "maximum_bce_reconstruction_discrepancy": 2.042810365310288e-14,
+    "saturated_probability_entries": 0,
+    "scope": "reproduced registered empirical intervals; no population coverage theorem"
+  },
+  "control": {
+    "episodes": 3456,
+    "paired_scenarios": 1152,
+    "retained_parts": 216,
+    "native_calls": 17280,
+    "native_candidate_paths": 48179,
+    "replayed_transitions": 13824,
+    "maximum_actual_q32_error": 4.6409087683940697e-10,
+    "exact_out_of_domain_fallbacks": 1,
+    "scalar_choices_different_from_native_pareto_advisory": 0,
+    "replay_scope": "all recorded actions replayed with unchanged simulator; independent law validation is separate",
+    "authority": "DENY_ALL",
+    "safety_certificate": false
+  },
+  "status": "passed",
+  "wall_seconds": 8.526937531998556,
+  "limits": [
+    "A reproducibility audit does not change scientific acceptance gates.",
+    "Zero of six cross-task advantage gates passed.",
+    "Finite-domain average value accuracy is not a uniform approximation certificate.",
+    "Native receipts remain advisory and do not establish production safety."
+  ]
+}
