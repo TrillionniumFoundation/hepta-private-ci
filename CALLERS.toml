@@ -466,6 +466,11 @@ required = ["pub fn open_state_dir(", "pub fn open_state_dir_with_trust(", "pub 
 forbidden = ["impl Default for FinalUseAuthority", "pub fn permit_all"]
 
 [[protected_file]]
+path = "codex-rs/hepta-contracts/src/final_use_ml_dsa65_v2.rs"
+required = ["pub(super) enum IssuerVerifier", "pub(super) fn verify_strict(", "Self::Ed25519V1", "Self::MlDsa65V2", "key.verify_strict(", "key.verify_with_context(", "bind_key_id(input, key_id)", "FINAL_USE_ML_DSA65_V2_CONTEXT"]
+forbidden = ["pub fn permit_all", "verify_unchecked"]
+
+[[protected_file]]
 path = "codex-rs/hepta-contracts/src/final_use_control.rs"
 required = ["pub struct FinalUseApprovalVerifier", "pub struct FinalUseRevocationFeedVerifier", "pub struct FinalUseRevocationConvergenceVerifier", "pub struct FinalUseTrustKey", "pub fn new_with_keys(", "RevocationFeedStale", "verify_strict", "update_revocations", "missing_nodes"]
 forbidden = ["impl Default for FinalUseApprovalVerifier", "impl Default for FinalUseRevocationFeedVerifier", "permit_all"]

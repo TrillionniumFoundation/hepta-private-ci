@@ -38,7 +38,7 @@ impl IssuerVerifier {
         }
     }
 
-    pub(super) fn verify(&self, schema: u32, key_id: &str, input: &[u8], frame: &[u8]) -> bool {
+    pub(super) fn verify_strict(&self, schema: u32, key_id: &str, input: &[u8], frame: &[u8]) -> bool {
         match (self, schema) {
             (Self::Ed25519V1(key), 1) => ed25519_dalek::Signature::from_slice(frame)
                 .is_ok_and(|signature| key.verify_strict(input, &signature).is_ok()),

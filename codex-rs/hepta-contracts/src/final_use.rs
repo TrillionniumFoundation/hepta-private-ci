@@ -625,7 +625,7 @@ impl FinalUseAuthority {
         let verified = self.0.issuer_keys.iter().any(|candidate| {
             signed.grant.authority_epoch >= candidate.not_before_authority_epoch
                 && signed.grant.authority_epoch <= candidate.not_after_authority_epoch
-                && candidate.key.verify(
+                && candidate.key.verify_strict(
                     signed.grant.schema_version,
                     &candidate.key_id,
                     &input,
