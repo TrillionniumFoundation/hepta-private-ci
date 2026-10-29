@@ -1,0 +1,532 @@
+{
+  "schema": "core-resume-fixture-completion-witness-independent-source-review-v1",
+  "utc": "2026-10-29T01:41:34.647071+00:00",
+  "verdict": "SAFE_OWNER_FENCE_SNAPSHOT_PRIMITIVE_BUT_NOT_SUFFICIENT_AS_UNCONDITIONAL_QUIESCENCE_BARRIER",
+  "scope": "Independent read-only audit of parent proposal only; no source/mirror implementation, compilation, tests, CI, timers, retry or budget changes. Exact bf36 source preimages used forline/hashpins; live dirt observed but not modified.",
+  "proposal_reviewed": "After original abort_all_tasks.await, acquire active_turn as publication barrier, clone actual pending_start_transition_completions and pending_task_terminalization_completions Arc fences while locked, release all locks, await those original fences, then unchanged original inject and flush.",
+  "what_it_genuinely_proves": [
+    "Every materialized start/task terminalization registered before the snapshot is published together withits marker whileactive_turn isheld. Sameactive mutex covers both registration windows, so snapshot doesnot miss an in-flight check->register publication froman already acquired claim.",
+    "Registry entrymay outliveActiveTurn markerclear andoriginalabort mayreturn forTerminalizing orStarting. Holding actualArc acrossregistry removal retains theoriginal completion owner andwaits its realRelease/Acquire completion.",
+    "Taking start registry thenreleasingit, then task registry whileactive remainsheld creates no new nestedtwo-registry cycle seenin inspectedcode. Completion retirement doesnot reacquireactive whileholdingtheregistry. ThecopiedArc wait mustoccur onlyafterallactive/registryguardsdrop.",
+    "The wait doesnotclear registries, manufacture fences, signalcompletion, adopt cleanupwitnesses or seal shutdown. Thus itdoesnotweaken theproduction history injection fence byitself."
+  ],
+  "blockers_or_required_claim_limits": [
+    {
+      "id": "R1-RESERVATION-NO-WITNESS",
+      "severity": "BLOCKER_FOR_GENERIC_IDLE_CLAIM",
+      "source": [
+        8,
+        9,
+        14,
+        15
+      ],
+      "finding": "A caller-owned StartReservation exists beforematerializedcontext andhasnoStartTransitionCompletion. abort_all_tasks marksabortandreturnsStarting. Bothregistries canbeempty whileactive reservation stillowns theturn. Snapshotempty isnot idle andfabricating/defaultingafence wouldbefalse.",
+      "narrow_action": "If observed inthisfixture, reject/report exactunresolved reservation ratherthaninject, releaseitmanually, inventaNotify, drainshutdownorwaitabool. Waitingit requiresactual original reservation-owner/admission completion (currentlynotreturnedbythishelper), oraseparatelyreviewed production owner extension."
+    },
+    {
+      "id": "R2-LATER-OWNER",
+      "severity": "BLOCKER_FOR_UNCONDITIONAL_NO_RACE_FIXTURE_CLAIM",
+      "source": [
+        10,
+        11,
+        12,
+        18
+      ],
+      "finding": "A snapshot isnota lease. Afterdroppingactive itcanbe followed bynewpending-work reservation/transition/runningtask. ExistingInterrupted abort maystartpendingwork beforeoldtaskcompletion; startabortmay signalitsfence andthenstartpendingwork. A newowner isnot partoftheoldVec. Originalinjectmaythereforecorrectlyreject, orenqueue markerinto anewRunningTask ratherthanrecordimmediate durablefixture history.",
+      "narrow_action": "The one-shot wait canonlyclaim oldmaterialized-owner completion. To claimdirectidle persistence, fixturemustown/prove absenceoffuturestart/mailboxproducers. Finalresnapshot oris_complete checks detectsomecasesbutcannotatomicallybridge into unchangedinject; no retry/sleeploop maypretendotherwise."
+    },
+    {
+      "id": "R3-LOCKED-WAIT",
+      "severity": "BLOCKER_IF_ANY_GUARD_SURVIVES_AWAIT",
+      "source": [
+        6,
+        7,
+        8,
+        18,
+        19
+      ],
+      "finding": "Waitingfences withactive_turnheld blockstheterminalizers thatmustacquireit tocomplete. Holdingactive acrossoriginalinject isself-deadlockbecauseinjectlocksactiveagain. Takingterminalization_claim_lock afteractive reversesexistingabortclaimorder (claim->active). Holdingbothregistrymutexes acrossawaitalsopreventstheownerfromretiringitsentry.",
+      "narrow_action": "Lexicallyscope synchronouscloneonly, keepnamedguard (not let_=whichdropsimmediately), andexplicitlydropactivebeforethefirstwait. Donotaddclaim/admissiongatelocks tofakeatomicity."
+    },
+    {
+      "id": "R4-OWNER-FAIL-CLOSED",
+      "severity": "EXPECTED_UNRESOLVED_STATE_NOT_GREEN",
+      "source": [
+        2,
+        13,
+        16,
+        26
+      ],
+      "finding": "The originalcompletionmayremainpending afterpanic/hang/cancelled firstpoll orcallbackdependingonthecaller. Ordinaryabortdeliberatelyreturnsnonblocking inthosephases. Waitingcanthereforeconsume theexistingtestdeadline; itmustnotcomplete/drain/replay owner asfallback orstarta newwindow. No intrinsicguardlockcycle exists afterdroppinglocks, buta lifecyclecallback waitingonthefixturecanstillcreatealogicaldependencycycle.",
+      "narrow_action": "Useonlytheoriginalownerwait underexisting surroundingtestharnessdeadline; unresolved remainsFAIL/TIMEOUT, not proof ofsafeidle. Foraknownfixture callback dependency, fix theactualproducer/consumerhandshake ratherthantheownerfence."
+    },
+    {
+      "id": "R5-HISTORICAL-CAUSE",
+      "severity": "EVIDENCE_LIMIT",
+      "source": [
+        0,
+        1,
+        18
+      ],
+      "finding": "Original raw error isOR(shutdown_started, pending_task_terminalization) fromunchangedinject. Itrecordsneitherbranch, exactowner identity, reservationphase norwhichoneofthethreehelpercalls. Do notclaimthisproves a specificstart/finishrace. OriginalspawninitialinputreturnsStarted onlyafterAttached, soneitherassumeinitialcallerreservation isobserved.",
+      "narrow_action": "Describe theactualrefusal andsource-supported gap;retainbothactualFAILEDandoriginalsubsequentokrecordswithouttreatingthem asnewrepairqualification."
+    }
+  ],
+  "narrowest_reviewable_source_slice": {
+    "bounded_claim": "A localfixture-onlywait foralready publishedrealmaterializedstart/taskowners afterexistingabort. Itisnot agenericabort-to-idleAPI andmustnotpromiseabsenceofnewwork.",
+    "algorithm": [
+      "Keep originalabort_all_tasks(Interrupted).await exact.",
+      "Acquire same active_turn mutex. Clone Arc::clone(completion) from actualstartregistry, drop itsstdguard, thenactualtaskregistry, drop itsstdguard. Record or rejectanyknownunsupported active reservation/unknown owner instead ofcallingit completed. Do not construct/complete/remove anyowner.",
+      "Releaseactiveguard. Await eachoriginalStartTransitionCompletion::wait once; no timerextension/retry/sleep/yield orshutdownadoption.",
+      "Keeporiginalinject_response_items/ensure_rollout_materialized/flush assertions andbytesunchanged. Anycorrectrefusal stillfails; do notretry it orquietlyrouteintoanotherfixture.",
+      "Forfullquiescence, require actualfixtureproducer ownership showingno laterstart canbeadmitted. Ifthatcannotbeshown, reportthissourceaslimitedpendingownerwait ratherthanfullyfixedcorecase."
+    ],
+    "why_not_mutation_reservation_shortcut": "Existing reserve_history_mutation_if_idle installs activeSome(taskNone). Originalinject then correctlyrefuses transitions;usingit withouta reviewed consume-by-owner API wouldselfblock. begin_shutdown sealsstartsbutoriginalinjectalsorefusesshutdown. Neither isadrop-inwhilekeepinginjectexact.",
+    "possible_actual_owner_alternative": "An available EventDelivery terminalization handlecanwaitits realemittingowner acrossregistryretirement. A default TerminalEventCompletion(None), anoldTurnIdlookup, statusCompleted watch orclonedRunningTask.done notify isnot anequivalent terminal-persistence witness. Anylistener mustnotsteal eventsneededbyexistingconsumers orcreateextra source/fixtureeffects."
+  },
+  "lock_order_analysis": {
+    "start_publish": "active_turn ->start_admission_gate ->pendingstart registry sync registration;released beforeasyncowner work",
+    "task_publish": "terminalization_claim_lock ->active_turn ->pendingtask registry sync registration",
+    "snapshot": "active_turn ->one registryat atime ->clonedArc values;noawaitwhiletheregistryguardsareheld",
+    "retirement": "registry lock ->removeexactidentity/fence ->dropregistry ->completion.complete;sideeffectsalreadyfinished beforetaskfinish_*retirement",
+    "conclusion": "No observednewlock-orderdeadlock forproposal whenalllocksarereleased beforewait. Thisisnotproofaboutarbitraryextensioncallbackdependency."
+  },
+  "historical_raw": {
+    "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922845.full-decoded-log.original.txt",
+    "bytes": 767897,
+    "sha256": "6c45f08163e5513fc3026ef2dfbaed985b54b835254d38b7e26275b4434aa38d",
+    "case_failed_line": 4244,
+    "panic_and_exact_error_lines": [
+      4334,
+      4335
+    ],
+    "case_summary_line": 4342,
+    "summary": "88passed/1failed/0ignored/2251filtered, original16.87s excerpt",
+    "later_same_raw_ok_lines": [
+      4586,
+      4937
+    ],
+    "scope": "Theseareoriginalnestedrawrecords, not a new run or repairPASS; no full ZIP/BEP counts re-audit performedhere."
+  },
+  "source_pins": [
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/agent/control_tests.rs",
+      "relative": "codex-rs/core/src/agent/control_tests.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "6d4174b72688501e2100f2100131aaee4429778e",
+      "source_bytes": 162921,
+      "source_sha256": "41cfd055c5bc65fba64118f7c7a1c300d32a499bfe8f9d2cbc84533ff4ebb70d",
+      "lines": [
+        382,
+        405
+      ],
+      "purpose": "actual abort ->originalinject/materialize/flush helper",
+      "live_sha256_at_read": "41cfd055c5bc65fba64118f7c7a1c300d32a499bfe8f9d2cbc84533ff4ebb70d",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/agent/control_tests.rs",
+      "relative": "codex-rs/core/src/agent/control_tests.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "6d4174b72688501e2100f2100131aaee4429778e",
+      "source_bytes": 162921,
+      "source_sha256": "41cfd055c5bc65fba64118f7c7a1c300d32a499bfe8f9d2cbc84533ff4ebb70d",
+      "lines": [
+        4350,
+        4402
+      ],
+      "purpose": "actual failing fixture tree and original persistence calls",
+      "live_sha256_at_read": "41cfd055c5bc65fba64118f7c7a1c300d32a499bfe8f9d2cbc84533ff4ebb70d",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/tasks/mod.rs",
+      "relative": "codex-rs/core/src/tasks/mod.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "d0d59d13389f7ce0b826b67ee0b37059356c2d1e",
+      "source_bytes": 177589,
+      "source_sha256": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "lines": [
+        2738,
+        2791
+      ],
+      "purpose": "ordinary abort returns early for Starting/Terminalizing; failed owner swallowed and remains fenced",
+      "live_sha256_at_read": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/tasks/mod.rs",
+      "relative": "codex-rs/core/src/tasks/mod.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "d0d59d13389f7ce0b826b67ee0b37059356c2d1e",
+      "source_bytes": 177589,
+      "source_sha256": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "lines": [
+        730,
+        778
+      ],
+      "purpose": "start registry publication/remove-before-signal/snapshot",
+      "live_sha256_at_read": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/tasks/mod.rs",
+      "relative": "codex-rs/core/src/tasks/mod.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "d0d59d13389f7ce0b826b67ee0b37059356c2d1e",
+      "source_bytes": 177589,
+      "source_sha256": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "lines": [
+        792,
+        817
+      ],
+      "purpose": "task registry publication",
+      "live_sha256_at_read": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/tasks/mod.rs",
+      "relative": "codex-rs/core/src/tasks/mod.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "d0d59d13389f7ce0b826b67ee0b37059356c2d1e",
+      "source_bytes": 177589,
+      "source_sha256": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "lines": [
+        937,
+        980
+      ],
+      "purpose": "task registry retirement and snapshot accessor",
+      "live_sha256_at_read": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/tasks/mod.rs",
+      "relative": "codex-rs/core/src/tasks/mod.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "d0d59d13389f7ce0b826b67ee0b37059356c2d1e",
+      "source_bytes": 177589,
+      "source_sha256": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "lines": [
+        2215,
+        2296
+      ],
+      "purpose": "start publication under active-turn lock inclfullcleanup+registry",
+      "live_sha256_at_read": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/tasks/mod.rs",
+      "relative": "codex-rs/core/src/tasks/mod.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "d0d59d13389f7ce0b826b67ee0b37059356c2d1e",
+      "source_bytes": 177589,
+      "source_sha256": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "lines": [
+        1433,
+        1470
+      ],
+      "purpose": "task terminalization marker and registry published whileactive",
+      "live_sha256_at_read": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/tasks/mod.rs",
+      "relative": "codex-rs/core/src/tasks/mod.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "d0d59d13389f7ce0b826b67ee0b37059356c2d1e",
+      "source_bytes": 177589,
+      "source_sha256": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "lines": [
+        3751,
+        3816
+      ],
+      "purpose": "abort target detects existing owner/reservation and onlyrecordsabort",
+      "live_sha256_at_read": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/tasks/mod.rs",
+      "relative": "codex-rs/core/src/tasks/mod.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "d0d59d13389f7ce0b826b67ee0b37059356c2d1e",
+      "source_bytes": 177589,
+      "source_sha256": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "lines": [
+        400,
+        469
+      ],
+      "purpose": "caller reservation original owner release/drop, no completionfence",
+      "live_sha256_at_read": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/tasks/mod.rs",
+      "relative": "codex-rs/core/src/tasks/mod.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "d0d59d13389f7ce0b826b67ee0b37059356c2d1e",
+      "source_bytes": 177589,
+      "source_sha256": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "lines": [
+        2620,
+        2730
+      ],
+      "purpose": "new pending work can obtain later reservation and start",
+      "live_sha256_at_read": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/tasks/mod.rs",
+      "relative": "codex-rs/core/src/tasks/mod.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "d0d59d13389f7ce0b826b67ee0b37059356c2d1e",
+      "source_bytes": 177589,
+      "source_sha256": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "lines": [
+        3710,
+        3739
+      ],
+      "purpose": "ordinary Interrupted abort maystartnewpending work beforeoldcomplete",
+      "live_sha256_at_read": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/tasks/mod.rs",
+      "relative": "codex-rs/core/src/tasks/mod.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "d0d59d13389f7ce0b826b67ee0b37059356c2d1e",
+      "source_bytes": 177589,
+      "source_sha256": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "lines": [
+        4050,
+        4072
+      ],
+      "purpose": "start abort can completeoldfence thenstart pending replacement",
+      "live_sha256_at_read": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/tasks/mod.rs",
+      "relative": "codex-rs/core/src/tasks/mod.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "d0d59d13389f7ce0b826b67ee0b37059356c2d1e",
+      "source_bytes": 177589,
+      "source_sha256": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "lines": [
+        2792,
+        2919
+      ],
+      "purpose": "dedicated shutdown drain stronger seal/adoption semantics, notfixtureprimitive",
+      "live_sha256_at_read": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/tasks/mod.rs",
+      "relative": "codex-rs/core/src/tasks/mod.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "d0d59d13389f7ce0b826b67ee0b37059356c2d1e",
+      "source_bytes": 177589,
+      "source_sha256": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "lines": [
+        4182,
+        4222
+      ],
+      "purpose": "reservation cleared onlyoriginalidentityCAS",
+      "live_sha256_at_read": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/state/turn.rs",
+      "relative": "codex-rs/core/src/state/turn.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "527ed5603507ec44025a65ece423058e09d33717",
+      "source_bytes": 24978,
+      "source_sha256": "75d79f71e64261f4f3aeee3abef424d318025544ea7ac329236102464cb033d0",
+      "lines": [
+        32,
+        72
+      ],
+      "purpose": "reservation vsmaterializedstart/task distinctions",
+      "live_sha256_at_read": "75d79f71e64261f4f3aeee3abef424d318025544ea7ac329236102464cb033d0",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/state/turn.rs",
+      "relative": "codex-rs/core/src/state/turn.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "527ed5603507ec44025a65ece423058e09d33717",
+      "source_bytes": 24978,
+      "source_sha256": "75d79f71e64261f4f3aeee3abef424d318025544ea7ac329236102464cb033d0",
+      "lines": [
+        75,
+        109
+      ],
+      "purpose": "real atomic owner completion and lost-notify-safe wait",
+      "live_sha256_at_read": "75d79f71e64261f4f3aeee3abef424d318025544ea7ac329236102464cb033d0",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/session/session.rs",
+      "relative": "codex-rs/core/src/session/session.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "2057014b6e3fdd6c30e37cb9b6f86a23f079d346",
+      "source_bytes": 80404,
+      "source_sha256": "f67bffaf941976dffa044af5bcdc538b5b6a077eafffe09334b1cfa0a8ea94ca",
+      "lines": [
+        41,
+        105
+      ],
+      "purpose": "two independent exactowner registry tuples andactiveTurn",
+      "live_sha256_at_read": "f67bffaf941976dffa044af5bcdc538b5b6a077eafffe09334b1cfa0a8ea94ca",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/session/inject.rs",
+      "relative": "codex-rs/core/src/session/inject.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "4f6cdaf8c9d56ea775a54c135e0d2de375a4a0d0",
+      "source_bytes": 31467,
+      "source_sha256": "f9dc3d8d52c5a0c636c0df45731f1e26dc952cbe2ae443b61dc5083dd7979a2a",
+      "lines": [
+        140,
+        205
+      ],
+      "purpose": "original injection checks shutdown/pendingtask thenactive; idle vsqueue branches",
+      "live_sha256_at_read": "f9dc3d8d52c5a0c636c0df45731f1e26dc952cbe2ae443b61dc5083dd7979a2a",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/codex_thread.rs",
+      "relative": "codex-rs/core/src/codex_thread.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "8ecba73891ad76b73bdf5315d5c0d675056caa66",
+      "source_bytes": 47522,
+      "source_sha256": "b839c960e9d3edc64860f5ffe2052fc93e8f2441f1c74c1d132ef09306aa8fe1",
+      "lines": [
+        909,
+        946
+      ],
+      "purpose": "original inject wrapper newcontext/record/flush semantics",
+      "live_sha256_at_read": "b839c960e9d3edc64860f5ffe2052fc93e8f2441f1c74c1d132ef09306aa8fe1",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/session/turn_input.rs",
+      "relative": "codex-rs/core/src/session/turn_input.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "215af4dd2a36cf07915e2451040c19527bac3c9a",
+      "source_bytes": 41654,
+      "source_sha256": "7959e38afd075c5cad233a7d1ba59b3406b1de96d9076e444a51ce8ac33b9841",
+      "lines": [
+        361,
+        388
+      ],
+      "purpose": "ordinary spawn routing returnsStarted onlyafterAttached",
+      "live_sha256_at_read": "7959e38afd075c5cad233a7d1ba59b3406b1de96d9076e444a51ce8ac33b9841",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/agent/control.rs",
+      "relative": "codex-rs/core/src/agent/control.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "3d6adc42465b12aeeb6068ea18b5b856ae878cea",
+      "source_bytes": 32344,
+      "source_sha256": "1b96a6f76cf207402f03e8a6b1ff20bf388dfaa4ef9daf15ea8a8808d99dba21",
+      "lines": [
+        182,
+        213
+      ],
+      "purpose": "AgentControl send_input awaitsactualroutingStarted",
+      "live_sha256_at_read": "1b96a6f76cf207402f03e8a6b1ff20bf388dfaa4ef9daf15ea8a8808d99dba21",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/agent/control/spawn.rs",
+      "relative": "codex-rs/core/src/agent/control/spawn.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "b901073f6d1a3e7159bbe6a5b9ab9dd575b6b106",
+      "source_bytes": 53544,
+      "source_sha256": "866185b265c2fb4bc4eec8a471a12fcc4febcf5a596aa442252ab44063bd6f9f",
+      "lines": [
+        755,
+        790
+      ],
+      "purpose": "spawn initial input waitsactualsend thenwatcher",
+      "live_sha256_at_read": "866185b265c2fb4bc4eec8a471a12fcc4febcf5a596aa442252ab44063bd6f9f",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/agent/control.rs",
+      "relative": "codex-rs/core/src/agent/control.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "3d6adc42465b12aeeb6068ea18b5b856ae878cea",
+      "source_bytes": 32344,
+      "source_sha256": "1b96a6f76cf207402f03e8a6b1ff20bf388dfaa4ef9daf15ea8a8808d99dba21",
+      "lines": [
+        569,
+        658
+      ],
+      "purpose": "completionwatcher non-triggering result /no-newturn fragment",
+      "live_sha256_at_read": "1b96a6f76cf207402f03e8a6b1ff20bf388dfaa4ef9daf15ea8a8808d99dba21",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/session/mod.rs",
+      "relative": "codex-rs/core/src/session/mod.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "418864acb166a93c565e7562b35bb47c3f2618c5",
+      "source_bytes": 216524,
+      "source_sha256": "bc422b69e8a3c6dae853dac7fdee0d67c73a8eefb4d170be4356fcd8fedec438",
+      "lines": [
+        1286,
+        1310
+      ],
+      "purpose": "existing mutation reservation cannotbecombinedunchangedinject",
+      "live_sha256_at_read": "bc422b69e8a3c6dae853dac7fdee0d67c73a8eefb4d170be4356fcd8fedec438",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/event_delivery.rs",
+      "relative": "codex-rs/core/src/event_delivery.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "5951256d8f8956eefa316fdf4725219f0c79abf7",
+      "source_bytes": 3536,
+      "source_sha256": "3a04ffb45396fdc34db2e21feffcf19b904e0709e5e99d7548bb47ed99a556d6",
+      "lines": [
+        13,
+        29
+      ],
+      "purpose": "real emitter-owned terminalevent fence; defaultNone notownedproof",
+      "live_sha256_at_read": "3a04ffb45396fdc34db2e21feffcf19b904e0709e5e99d7548bb47ed99a556d6",
+      "live_matches_published_preimage": true
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/core/src/session/terminal_admission_tests.rs",
+      "relative": "codex-rs/core/src/session/terminal_admission_tests.rs",
+      "published_ref": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "published_blob": "c626e30d2d547524b57f31f93d4787a88ea60790",
+      "source_bytes": 13164,
+      "source_sha256": "a2eba7a2dc1c216dfd3d96d2858c5b32349dc521a82d975d6e6a8731ba70d416",
+      "lines": [
+        37,
+        82
+      ],
+      "purpose": "callbacks mayawaitcallerownedgate; no genericdeadlockfree wait guarantee",
+      "live_sha256_at_read": "a2eba7a2dc1c216dfd3d96d2858c5b32349dc521a82d975d6e6a8731ba70d416",
+      "live_matches_published_preimage": true
+    }
+  ],
+  "verification_needed_NOT_RUN": [
+    "Actual minimalfixture candidate source must preservealloriginalinject/flush/asserts/timers andproveclonedArc exactness; source-onlyreviewnotnewCI qualification.",
+    "Originalfailedcase andrelevantresumehelperconsumers onrequiredplatforms andactualintegratedpreview, underoldlimits, mustrun normallylater. No budgetreopeninghere.",
+    "If reservations/newowners appear inactualcontrolfixture, capturetheiractualnative/sourcecontext andretainrefusal. Do notmakefalsecompleteordrainsafetybypass toforcegreen."
+  ],
+  "READ": true,
+  "SOURCE_APPLIED": false,
+  "COMMITTED": false,
+  "PUBLISHED": false,
+  "BUILD_TEST_CI_NATIVE": "NOT_RUN",
+  "budgets_changed": false,
+  "task_complete": false,
+  "merge_ready": false,
+  "NO_GO": true
+}

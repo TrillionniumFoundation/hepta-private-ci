@@ -1957,3 +1957,89 @@ caller compilation, the new native regression and all original public-caller
 controls remain unexecuted for this source. This cannot close the four-lane
 deletion/terminal failures, ordinary FinalUse/UDS, model/genesis/I09-I10, release
 or WAN gates. Continue the existing acceptance order and limits; **NO_GO**.
+
+PN0's [FinalUse retained-owner entry checks](../qualification/pn0-ci/final-use-retained-owner-20261028/README.md)
+wire the ten existing contract entry points through the same retained Windows
+owner before the original clock/CAS/nonce/effect logic. The original state mutex
+guard is transferred and returned without unlocking; native refusal permanently
+fences that same shared state. This is the next existing owner/caller dependency,
+not a new factory or trust provider. It requires the prior shared native-owner
+source and leaves ordinary Windows FinalUse factories closed.
+
+The original contracts package actually ran on the recorded source WIP:
+176PASS/0FAIL/0skip on Linux. Scoped Linux and Windows-GNU cfg(test) Clippy both
+exited0 with the original strict flags; their three configuration warnings are
+retained. The original Windows tests remain byte-identical before one appended
+native negative-control source. No Windows binary was linked or executed, and
+the new attribute-drift control has no native result. Source comments/formatting
+and actual checked hashes are recorded separately. Published310b's original
+18/20 deletion and1/3 terminal outcomes do not qualify this uncommitted patch;
+old PASS never renews a new dependency/source tuple. Keep the original budgets,
+guards, acceptance order and all PN0–PN6 model/release/WAN exits; **NO_GO**.
+
+PN0's [Agentd peer admission and per-poll deadline follow-up](../qualification/pn0-ci/agentd-peer-deadline-20261028/README.md)
+places the existing peer check before connection admission or overload output.
+The accepted connection's original two-second deadline also bounds the original
+fifty-millisecond overload deadline; both actual futures check that same deadline
+before each poll and retain their original timer for wakeup and cancellation.
+The thirty-two-connection and frame limits are unchanged. Windows peer identity
+is still unsupported and refused, and this source stage does not supply a native
+identity provider or open the ordinary Windows caller path.
+
+The scoped UDS package ran thirteen tests on Linux: thirteen passed, zero skipped,
+including the original socket and peer tests and six new deadline controls.
+Scoped Linux strict Clippy and Windows-GNU cfg(test) Clippy exited zero; the
+original Linux configuration warnings remain recorded. No Agentd package or
+Windows native binary was built or executed. The gate cannot preempt a single
+synchronous poll, construction or destruction, and is not a physical time quota
+or a grant authority. Keep the original Windows deletion/terminal failures,
+FinalUse trust-provider and caller gaps, model/genesis/I09-I10, release, PN1 and
+WAN acceptance open in their existing order; **NO_GO**.
+
+PN0's [managed runner pipe and connection-worker ownership follow-up](../qualification/pn0-ci/runner-owned-handles-20261029/README.md)
+makes each real named pipe and duplicated connection-thread handle owned
+immediately after successful creation. Early returns now release those handles;
+successful pipe setup moves the same owners into the existing transport files.
+The original rights, fifteen-second waits, cancellation/join decisions, process
+cleanup, guard and all test bodies remain. This closes a source-level leak on
+second-pipe creation failure and handle-cleanup bypasses, while detached-worker
+pipe lifetime, process/Job/Unknown custody and complete isolation remain OPEN.
+
+The first actual Windows-GNU cfg(test) Clippy command failed because its native
+C dependency could not find the cross compiler. That failure is retained.
+After task-local real compiler setup, the identical project-default command
+exited0; its warnings were retained, without claiming strict-lint CI acceptance.
+Final formatting exited0 without changing source bytes. No Windows test binary
+was linked or run. Independently reread bf36's four native originals still show
+eighteen of twenty groups passed per lane and the same two deletion failures,
+with query6/6 and terminal1/3 separate. The historical child exit1 cause remains
+unknown; this ownership patch is not its explanation. Preserve the original
+ambient-read contract, all native assertions/limits, model/genesis/I09-I10 and
+every PN0–PN6 exit; **NO_GO**.
+
+PN0's [ordinary Windows Registry factory follow-up](../qualification/pn0-ci/ordinary-registry-native-factory-20261029/README.md)
+replaces the Windows path factory's unconditional refusal with a genuine native
+producer: retained parent/principal checks, exact creation/collision handling,
+the original opaque directory and marker lock, then full existing store/schema
+validation. Unsafe states still refuse. Agentd now consumes this public factory
+on both platforms; its separate runtime owner and bounds remain. A path does
+not become authority, and no FinalUse, peer or full-token guard is opened.
+
+Three new Windows test sources use that public factory for fresh/lock/cold
+readback and refusal of bare-existing or corrupt state. They supplement the
+unchanged original native cases. Actual Linux package validation ran all fifty
+tests, with zero skipped. Linux and Windows-GNU cfg(test) strict Clippy exited0
+with `-D warnings`; the preceding Windows failure is retained. Its correction
+only aligns test-only helpers with their already Unix-only test consumers,
+without changing a test body, test selector or lint flag. Final formatting
+changed only new-test line wrapping. Windows native and the complete Agentd
+consumer package have not been executed for this source.
+
+The new bf36 Bazel originals establish fourteen failed targets and twenty-five
+failed execution records, not twenty-five tests. Their schema provenance
+metadata has an append-only correction; raw records are preserved. The supplied
+single-lane112 receipt is not four-lane qualification. FinalUse still needs
+genuine protected time/external frontier input, Windows peer identity remains
+unsupported, and the core abort/inject lifecycle cause has no new witness.
+Keep those refusals, the original16+4, deadlines/resources, model/genesis/I09-I10,
+cross-error custody, PN1 and WAN gates OPEN; **NO_GO**.

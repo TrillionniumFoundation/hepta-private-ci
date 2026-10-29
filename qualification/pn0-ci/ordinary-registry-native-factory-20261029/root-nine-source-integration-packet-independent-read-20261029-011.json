@@ -1,0 +1,1265 @@
+{
+  "schema": "root-nine-source-integration-packet-independent-read-v1",
+  "recorded_utc": "2026-10-29T03:49:37.031156+00:00",
+  "reviewer": "windows_consumed_owner_cut",
+  "scope": "Read-only local packet/internal consistency plus locally available original five Git commits, current prior-nine ROG source bytes and original qualification files. No new source implementation/core investigation/runtime/source budget.",
+  "result": "NO_PACKET_OR_LOCAL_ORIGINAL_SOURCE_MISMATCH_FOUND_WITH_STATED_LIMITS; PRE_COMMIT_EVIDENCE_AND_FULL_QUALIFICATION_OPEN",
+  "packet": {
+    "directory": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/inbox/local-codex-Hepta-nine-source-root-integration-20261029-001",
+    "four_payloads": [
+      {
+        "path": "outputs/hepta-ROG-current-bf36-review-and-nine-source-intake-2026-10-29.json",
+        "bytes": 9034,
+        "sha256": "15342e040e7440ce92f30dc8557fa45f005b20eb570eb089ed3223fa6a07363d",
+        "actual_readback_match": true
+      },
+      {
+        "path": "outputs/hepta-ROG-five-commits-and-nine-sources-root-integration-2026-10-29.json",
+        "bytes": 18832,
+        "sha256": "89b6ae4150254753e7dfbe19b1020028ee9ec55f80d5b3d89b4ebef22f3b85dc",
+        "actual_readback_match": true
+      },
+      {
+        "path": "work/ci-follow/existing-source-owner-and-authority-entry-revalidation-20261029-001/actual-root-protected-source-and-nine-candidate-verification.json",
+        "bytes": 22290,
+        "sha256": "512f519e796b1f730b2143e57fa01b6508ccfce9348471ec551ef301ba5b0d23",
+        "actual_readback_match": true
+      },
+      {
+        "path": "work/ci-follow/existing-source-owner-and-authority-entry-revalidation-20261029-001/actual-five-commits-exact-before-after-blob-readback.json",
+        "bytes": 1929,
+        "sha256": "2feaf3d315efbddbc9bd49b35961f3aa84a9a4baec8fedd0a70d58776afd974e",
+        "actual_readback_match": true
+      }
+    ],
+    "total_verified_payload_bytes": 52085,
+    "delivery_not_review_integration_commit_publication_acceptance": true
+  },
+  "five_original_to_root_mapping": [
+    {
+      "original": "56367ca7771ccc6c959a690a34341ac504ba1192",
+      "original_parent": "aca32e0df184a4a0b1c094918d1cf3dbd20e4588",
+      "original_tree": "980fa2421c74c11b534e2bc833adda22dbb90026",
+      "original_subject": "fix(memory): bind local cognitive workspace consistently",
+      "original_author": "Tomasrgbsf <tomasbraynt@gmail.com> 1793201802 -0400",
+      "packet_root_commit": "6b269796ec6fb84ea0a72dc97fd0ca409f5757d6",
+      "packet_root_tree": "bb777766b7185cac440fbf7c444e972af5f09bd8",
+      "root_mapping_tables_agree": true,
+      "exact_original_raw_diff_pin": {
+        "bytes": 2031,
+        "sha256": "3a57700bca224ab29040beba70e1b2efd789428fefb7169ff59c6c604efdc235"
+      },
+      "raw_hash_equals_packet_claimed_root_equal_diff": true,
+      "changed_paths": [
+        {
+          "path": "codex-rs/ext/hepta-memory/src/cognitive/mod.rs",
+          "status": "M",
+          "old_mode": "100644",
+          "new_mode": "100644",
+          "old_blob": "91c3baa7792a9a00258ff55fb10c3bf8738b5538",
+          "new_blob": "ca8b118355ebff022e6755040b77013b3ee22722"
+        },
+        {
+          "path": "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+          "status": "M",
+          "old_mode": "100644",
+          "new_mode": "100644",
+          "old_blob": "9114a6184e7793e907cc316fa4327348e107d143",
+          "new_blob": "c70c0be761ff34c961e63cc6fb204425fbcb5017"
+        },
+        {
+          "path": "docs/DEVELOPMENT.md",
+          "status": "M",
+          "old_mode": "100644",
+          "new_mode": "100644",
+          "old_blob": "e11df51fd99032117f954c8ecd1ec43e3ce00b1e",
+          "new_blob": "bd05ca146017eb5f1a34e0fbec43f38d99b70af9"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-local-cognitive-workspace-20261028/README.md",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "0ec526678e646132ad56addbeb5375f980d23f78"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-local-cognitive-workspace-20261028/candidate.patch",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "85f60cd7ff5db17b4bdb722e4e8ac2597683bb0b"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-local-cognitive-workspace-20261028/clippy-started.json",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "b500dfde9a4ff07492617c31bf50277a3a9462e7"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-local-cognitive-workspace-20261028/clippy-terminal.json",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "22fd9bb0c8a631092f3ec15ce005278c042b294d"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-local-cognitive-workspace-20261028/evidence-manifest.json",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "29feed03e69f75b6d3cee55cadb18dba9e8f0224"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-local-cognitive-workspace-20261028/fmt-terminal.json",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "7f51796625341700eb3ed48caabb72a001d23c0b"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-local-cognitive-workspace-20261028/independent-source-review.json",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "a9f34ab6415d6a9777cebcca6e44c1395d62ae5c"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-local-cognitive-workspace-20261028/test-source-and-terminal.json",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "056f916e3d2ebd33889cac01d4f1d642e96fe13a"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-local-cognitive-workspace-20261028/test-started.json",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "8fcd380efeb3ef7daa9b5cd8b29739d35d937c52"
+        }
+      ],
+      "root_Git_object_independently_read": false,
+      "root_author_parent_commit_tree_authenticity": "PACKET_SELF_REPORT_ONLY: no actual root repository or unpublished root object supplied"
+    },
+    {
+      "original": "91272e293e2a7a8964e4147b80d4e4c3a4389d44",
+      "original_parent": "56367ca7771ccc6c959a690a34341ac504ba1192",
+      "original_tree": "08e8778a37ed2c29bf7f1fd71b319ec2f43c887a",
+      "original_subject": "docs(pn0): retain complete component verification logs",
+      "original_author": "Tomasrgbsf <tomasbraynt@gmail.com> 1793201826 -0400",
+      "packet_root_commit": "b463d314536038b74d0d42c9601e06ebb3e2c8f4",
+      "packet_root_tree": "37df120e94a154807941b7af93a30059d42e2646",
+      "root_mapping_tables_agree": true,
+      "exact_original_raw_diff_pin": {
+        "bytes": 517,
+        "sha256": "31b5290057db6914c2d9ffcdc07f5ba7134a21061ab11a17356129dc7ac3307c"
+      },
+      "raw_hash_equals_packet_claimed_root_equal_diff": true,
+      "changed_paths": [
+        {
+          "path": "qualification/pn0-ci/aca-local-cognitive-workspace-20261028/clippy.raw.log",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "101eec2790f75609bd8164669d35714de655806c"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-local-cognitive-workspace-20261028/fmt.raw.log",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-local-cognitive-workspace-20261028/test.raw.log",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "3bf06f29205e107d1db7b525d87c4d0c1510a9c1"
+        }
+      ],
+      "root_Git_object_independently_read": false,
+      "root_author_parent_commit_tree_authenticity": "PACKET_SELF_REPORT_ONLY: no actual root repository or unpublished root object supplied"
+    },
+    {
+      "original": "423695d7b511cc986ca6f9fc646c23004424317a",
+      "original_parent": "91272e293e2a7a8964e4147b80d4e4c3a4389d44",
+      "original_tree": "c66a79f774a431f5f61b3873cc80d4f6606550df",
+      "original_subject": "fix(agentd): compose retained Windows prompt store owners",
+      "original_author": "Tomasrgbsf <tomasbraynt@gmail.com> 1793202842 -0400",
+      "packet_root_commit": "73b97398acf4c5387920f70e1b62fc820648d3b6",
+      "packet_root_tree": "e463ff2c482dd5ad44a9f6581b370dc1ae086863",
+      "root_mapping_tables_agree": true,
+      "exact_original_raw_diff_pin": {
+        "bytes": 3749,
+        "sha256": "59a1b2fbd2aed19c6d5c33a12ef46bd93f66731e449b1665fcb1c097962dfcf7"
+      },
+      "raw_hash_equals_packet_claimed_root_equal_diff": true,
+      "changed_paths": [
+        {
+          "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+          "status": "M",
+          "old_mode": "100644",
+          "new_mode": "100644",
+          "old_blob": "a4a755a5adc6005cd917b3e8ccc3995d6d34fd67",
+          "new_blob": "18393f7ed8c7e5e4495c3646c2298c0a3705f475"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/prompt_runtime_windows.rs",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "865c8425a9bb7312f255d86e3e895db83de3337f"
+        },
+        {
+          "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+          "status": "M",
+          "old_mode": "100644",
+          "new_mode": "100644",
+          "old_blob": "3e7a9f2e33730e1cf40efcfc62fd35418597a4ed",
+          "new_blob": "98a81268cdcdf91f4d861a52088ae5cb81a943a8"
+        },
+        {
+          "path": "codex-rs/utils/windows-private-state/src/fresh_private_directory.rs",
+          "status": "M",
+          "old_mode": "100644",
+          "new_mode": "100644",
+          "old_blob": "ca9b656d7fb9ab6cb6af08feb5f7349a45673c13",
+          "new_blob": "4321fff3afdc5defff90bec9ab2feefc3bcfe22c"
+        },
+        {
+          "path": "codex-rs/utils/windows-private-state/src/parent_anchor.rs",
+          "status": "M",
+          "old_mode": "100644",
+          "new_mode": "100644",
+          "old_blob": "7818640160415fcd42dae5061baea1bf334f4c8a",
+          "new_blob": "d4aa5488310694442c4173be20ae26d03834becb"
+        },
+        {
+          "path": "codex-rs/utils/windows-private-state/src/parent_anchor_tests.rs",
+          "status": "M",
+          "old_mode": "100644",
+          "new_mode": "100644",
+          "old_blob": "b8c729b81f1d58a39e7437429cc914d6293bd77e",
+          "new_blob": "094d35e0ebe169176b9cc332273593e638d0f0a0"
+        },
+        {
+          "path": "codex-rs/utils/windows-private-state/src/private_owner_lock.rs",
+          "status": "M",
+          "old_mode": "100644",
+          "new_mode": "100644",
+          "old_blob": "6da66fa2978e622189efd8e11cf246fb32792b7a",
+          "new_blob": "3a1e76616c2e3d2cb4efea47902debd537d74a79"
+        },
+        {
+          "path": "docs/DEVELOPMENT.md",
+          "status": "M",
+          "old_mode": "100644",
+          "new_mode": "100644",
+          "old_blob": "bd05ca146017eb5f1a34e0fbec43f38d99b70af9",
+          "new_blob": "59200cc3b9a60790830557a7f842fc4d5747cd62"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-public-prompt-owner-20261028/README.md",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "dc76fc97e2cfe08066440ec238267457e9e51eac"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-public-prompt-owner-20261028/evidence-manifest.json",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "96c056a2092dd1b5ce8201b46dfaf697c666e1c3"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-public-prompt-owner-20261028/final-fmt-terminal.json",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "e64d7a947e0ff30044c749ed77f667403e6a53cd"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-public-prompt-owner-20261028/final-fmt.raw.log",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-public-prompt-owner-20261028/final-format-only.delta.patch",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "e746cfdda03b68691d984140c1a7760847a9fb1c"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-public-prompt-owner-20261028/initial-source-review.json",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "056f97df32fbcf89ebe44395f1960225ddb30897"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-public-prompt-owner-20261028/original-revision002-Windows-GNU-clippy.raw.log",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "5c0f23ed9498ae62bb81fcfc5966e31f24f260d8"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-public-prompt-owner-20261028/original-revision002-terminal.json",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "19b1ea6ec156ff1ae6de04de456fef0553346029"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-public-prompt-owner-20261028/revision002-source-review.json",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "90fcf93a3451411a64d6da4ad55f3435961d644a"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-public-prompt-owner-20261028/revision003-Windows-GNU-clippy.raw.log",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "ed6a799c6589064297f26b4ad407e900b4c45485"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-public-prompt-owner-20261028/revision003-source-manifest.json",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "d782ecffefe9fc4de6376ea1ef8a1d70606e156c"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-public-prompt-owner-20261028/revision003-source-review.json",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "01476fae55e6826599a67e9f496ba93ec9751bd9"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-public-prompt-owner-20261028/revision003-source.patch",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "382e08fe6ddb1f964130ee68bccdfd7dfe126150"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-public-prompt-owner-20261028/revision003-terminal.json",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "e6557d09a0d224055183750167709a8d0c3f0905"
+        }
+      ],
+      "root_Git_object_independently_read": false,
+      "root_author_parent_commit_tree_authenticity": "PACKET_SELF_REPORT_ONLY: no actual root repository or unpublished root object supplied"
+    },
+    {
+      "original": "d7543b064efc6e763e75fe06d0e5eb82492f39c1",
+      "original_parent": "423695d7b511cc986ca6f9fc646c23004424317a",
+      "original_tree": "b423d449da8695fcfd0a223a590797afb2999849",
+      "original_subject": "docs(pn0): preserve original patch bytes in lossless archive",
+      "original_author": "Tomasrgbsf <tomasbraynt@gmail.com> 1793202896 -0400",
+      "packet_root_commit": "873c9e712c6d65e96666aa2ddf029981fc6495a6",
+      "packet_root_tree": "157e5ba7f0da49a44fbd3007f6d3e0239dd50dd0",
+      "root_mapping_tables_agree": true,
+      "exact_original_raw_diff_pin": {
+        "bytes": 911,
+        "sha256": "836f43b07ec27c8598e48a6ecfd133014e4cdb211551773fa8e28dbe9ebc3001"
+      },
+      "raw_hash_equals_packet_claimed_root_equal_diff": true,
+      "changed_paths": [
+        {
+          "path": "qualification/pn0-ci/aca-public-prompt-owner-20261028/artifact-storage-correction.json",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "07a2b69838f54140ca2561b25910b82b07eb88ff"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-public-prompt-owner-20261028/evidence-manifest.json",
+          "status": "M",
+          "old_mode": "100644",
+          "new_mode": "100644",
+          "old_blob": "96c056a2092dd1b5ce8201b46dfaf697c666e1c3",
+          "new_blob": "8bde6a9310d7f612566b74cb5444c76adc7ff9c8"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-public-prompt-owner-20261028/original-artifact-diff-check.raw.log",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "a88813f649cd8b9ed51f0527999c72c46664599d"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-public-prompt-owner-20261028/revision003-source.patch",
+          "status": "D",
+          "old_mode": "100644",
+          "new_mode": "000000",
+          "old_blob": "382e08fe6ddb1f964130ee68bccdfd7dfe126150",
+          "new_blob": "0000000000000000000000000000000000000000"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-public-prompt-owner-20261028/revision003-source.patch.gz",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "16fd5c89d5a7def9c94b19f5f5e976a36d93f9cb"
+        }
+      ],
+      "root_Git_object_independently_read": false,
+      "root_author_parent_commit_tree_authenticity": "PACKET_SELF_REPORT_ONLY: no actual root repository or unpublished root object supplied"
+    },
+    {
+      "original": "d3284e385e2b6037dd86752ddd246b616144a87c",
+      "original_parent": "d7543b064efc6e763e75fe06d0e5eb82492f39c1",
+      "original_tree": "eed42a952ac5a713fc733b29707b4be3c20e00b2",
+      "original_subject": "docs(pn0): retain original whitespace diagnostics losslessly",
+      "original_author": "Tomasrgbsf <tomasbraynt@gmail.com> 1793202929 -0400",
+      "packet_root_commit": "42e8701fb92a65f8bd5b4c45df932ce08489e4e7",
+      "packet_root_tree": "d79f56ac93befb5c09a2b5efc602bab651c7c375",
+      "root_mapping_tables_agree": true,
+      "exact_original_raw_diff_pin": {
+        "bytes": 753,
+        "sha256": "3060d39b9714ba778ea2a1bd59b85d4397203453aa8864b8b00c972baf9bd7d2"
+      },
+      "raw_hash_equals_packet_claimed_root_equal_diff": true,
+      "changed_paths": [
+        {
+          "path": "qualification/pn0-ci/aca-public-prompt-owner-20261028/artifact-storage-second-check.raw.log.gz",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "7f69c18851833e484cabb6bf779334b6848b1661"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-public-prompt-owner-20261028/evidence-manifest.json",
+          "status": "M",
+          "old_mode": "100644",
+          "new_mode": "100644",
+          "old_blob": "8bde6a9310d7f612566b74cb5444c76adc7ff9c8",
+          "new_blob": "beede81db0361b3a7add94637122e7d3c6be646b"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-public-prompt-owner-20261028/original-artifact-diff-check.raw.log",
+          "status": "D",
+          "old_mode": "100644",
+          "new_mode": "000000",
+          "old_blob": "a88813f649cd8b9ed51f0527999c72c46664599d",
+          "new_blob": "0000000000000000000000000000000000000000"
+        },
+        {
+          "path": "qualification/pn0-ci/aca-public-prompt-owner-20261028/original-artifact-diff-check.raw.log.gz",
+          "status": "A",
+          "old_mode": "000000",
+          "new_mode": "100644",
+          "old_blob": "0000000000000000000000000000000000000000",
+          "new_blob": "7f677accdcebbd442d0afa39b5275c45a07c290f"
+        }
+      ],
+      "root_Git_object_independently_read": false,
+      "root_author_parent_commit_tree_authenticity": "PACKET_SELF_REPORT_ONLY: no actual root repository or unpublished root object supplied"
+    }
+  ],
+  "root_head_self_report": {
+    "head": "42e8701fb92a65f8bd5b4c45df932ce08489e4e7",
+    "tree": "d79f56ac93befb5c09a2b5efc602bab651c7c375",
+    "branch": "docs/audit-remediation-20261022",
+    "Git_object_or_actual_repository_not_provided": true,
+    "recorded_dirty_rows": 67,
+    "explained_dirty_rows": {
+      "nine_WIP_sources": 9,
+      "visible_qualification_files": 58,
+      "ignored_qualification_logs_not_in_status": 13
+    }
+  },
+  "nine_source_after_match": [
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "bytes": 39400,
+      "sha256": "0a6360b6572fc24001ac12a8686dbe2018a6c4484024d8742e1205cfe619f865",
+      "packet_tables_match_local_ROG_current_bytes": true,
+      "root_copied_file_actual_read": "NOT_AVAILABLE_HERE; root packet asserts exact copy",
+      "component_new_root_tests": "NOT_RUN_AT_PACKET_SNAPSHOT"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
+      "bytes": 15637,
+      "sha256": "39a69d36a99aaa569eec1cd5b0d0bb10cc94ab570256612dbdfe0f9814e518e8",
+      "packet_tables_match_local_ROG_current_bytes": true,
+      "root_copied_file_actual_read": "NOT_AVAILABLE_HERE; root packet asserts exact copy",
+      "component_new_root_tests": "NOT_RUN_AT_PACKET_SNAPSHOT"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_live_owner.rs",
+      "bytes": 1009,
+      "sha256": "750f2902c607cb8bb5663f72ab37785aa1571173b2ae620a93551feffa3ac19f",
+      "packet_tables_match_local_ROG_current_bytes": true,
+      "root_copied_file_actual_read": "NOT_AVAILABLE_HERE; root packet asserts exact copy",
+      "component_new_root_tests": "NOT_RUN_AT_PACKET_SNAPSHOT"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_windows_tests.rs",
+      "bytes": 12897,
+      "sha256": "cfc56ebac8e77cf4c362d7f63d9e5f1640a43616b9eed758929921ae7b63a79b",
+      "packet_tables_match_local_ROG_current_bytes": true,
+      "root_copied_file_actual_read": "NOT_AVAILABLE_HERE; root packet asserts exact copy",
+      "component_new_root_tests": "NOT_RUN_AT_PACKET_SNAPSHOT"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/control.rs",
+      "bytes": 8896,
+      "sha256": "4340ad44f9838195f8306dc0800f2c49f9128994e44c3ba3f5f60c92662470c9",
+      "packet_tables_match_local_ROG_current_bytes": true,
+      "root_copied_file_actual_read": "NOT_AVAILABLE_HERE; root packet asserts exact copy",
+      "component_new_root_tests": "NOT_RUN_AT_PACKET_SNAPSHOT"
+    },
+    {
+      "path": "codex-rs/uds/src/lib.rs",
+      "bytes": 14473,
+      "sha256": "23751dd9128234b4e5f19a8ae54806a491ddbec9865cdeff390c3217ae09f645",
+      "packet_tables_match_local_ROG_current_bytes": true,
+      "root_copied_file_actual_read": "NOT_AVAILABLE_HERE; root packet asserts exact copy",
+      "component_new_root_tests": "NOT_RUN_AT_PACKET_SNAPSHOT"
+    },
+    {
+      "path": "codex-rs/uds/src/deadline_guard.rs",
+      "bytes": 1608,
+      "sha256": "7905e7c432bf7ba0716e31bd7edc5890319d4a782d45f9e01958d6a18e0efdf5",
+      "packet_tables_match_local_ROG_current_bytes": true,
+      "root_copied_file_actual_read": "NOT_AVAILABLE_HERE; root packet asserts exact copy",
+      "component_new_root_tests": "NOT_RUN_AT_PACKET_SNAPSHOT"
+    },
+    {
+      "path": "codex-rs/uds/src/deadline_guard_tests.rs",
+      "bytes": 5147,
+      "sha256": "c1deefa46140cb02eb05c5728f4e5e18a1a945b48eb6bfd431271cf796dfdcf4",
+      "packet_tables_match_local_ROG_current_bytes": true,
+      "root_copied_file_actual_read": "NOT_AVAILABLE_HERE; root packet asserts exact copy",
+      "component_new_root_tests": "NOT_RUN_AT_PACKET_SNAPSHOT"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs",
+      "bytes": 26328,
+      "sha256": "1a48ca220fdec6c2f555fc0237ffa28216c2876ab6c3284145dc24556b0e5720",
+      "packet_tables_match_local_ROG_current_bytes": true,
+      "root_copied_file_actual_read": "NOT_AVAILABLE_HERE; root packet asserts exact copy",
+      "component_new_root_tests": "NOT_RUN_AT_PACKET_SNAPSHOT"
+    }
+  ],
+  "qualification_groups_local_prior_verified": [
+    {
+      "group": "runner-owned-handles-20261029",
+      "local_total_files": 25,
+      "manifest": {
+        "path": "qualification/pn0-ci/runner-owned-handles-20261029/manifest.json",
+        "bytes": 4613,
+        "sha256": "c15cc9f695e4eb046fad19b61a0582d5b2fc95c43ff3b81ac28c370526d70b55"
+      },
+      "listed_local_members_verified": [
+        {
+          "path": "qualification/pn0-ci/runner-owned-handles-20261029/README.md",
+          "bytes": 5988,
+          "sha256": "1b5a53c22a5e71e85a5c4e36c768dcd0cb88014d0ea8da551b6b555ebc04b583",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/runner-owned-handles-20261029/Windows-GNU-runner-cfgtest-clippy-started.json",
+          "bytes": 2493,
+          "sha256": "8c5db655110e11ea9fbfff9bc5fa3e6392e9e729a13937cba46568a7a0506e7a",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/runner-owned-handles-20261029/Windows-GNU-runner-cfgtest-clippy-terminal.json",
+          "bytes": 3426,
+          "sha256": "59c5fbcda3365c45c38ceae6c9b7c44decdb75d8cd71ff3151d3edd7dfd99c12",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/runner-owned-handles-20261029/Windows-GNU-runner-cfgtest-clippy-tool-ready-started.json",
+          "bytes": 2378,
+          "sha256": "df130e711be9b0f6746273615b9401a94eb287a031752fc6d18b0cafcc5cc31e",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/runner-owned-handles-20261029/Windows-GNU-runner-cfgtest-clippy-tool-ready-terminal.json",
+          "bytes": 3423,
+          "sha256": "d57ebb9cb0d2a7113c036c6f8c9447b18688914bd5983bbffc4bfdfec0ebe04a",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/runner-owned-handles-20261029/Windows-GNU-runner-cfgtest-clippy-tool-ready.raw.log",
+          "bytes": 28567,
+          "sha256": "31672686498bb64c2a98b9f731fe58c7e9fe8ae8c8c76be8ffa686d920da1922",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/runner-owned-handles-20261029/Windows-GNU-runner-cfgtest-clippy.raw.log",
+          "bytes": 42785,
+          "sha256": "7a4f804de90bd6d71fac6979d8db165e2f67cf248b034cbe95473a821d51d771",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/runner-owned-handles-20261029/actual-local-tool-preparation.json",
+          "bytes": 3335,
+          "sha256": "86f67d7479be4e757748884daf62d8f3414da476ca57093398fe48e693332db9",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/runner-owned-handles-20261029/actual-source-apply.json",
+          "bytes": 10132,
+          "sha256": "f132bce5de4f4f498744cb3e1518064b781011ec18b48514c8eb294958b5b88e",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/runner-owned-handles-20261029/apt-download.raw.log",
+          "bytes": 793,
+          "sha256": "4f5aabb6b84395686ac9d7d214d3d2ed6a5400471802939a2662ce301be8b73e",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/runner-owned-handles-20261029/compiler-probe.raw.log",
+          "bytes": 2037,
+          "sha256": "83afcfc63cd7cc57abeedc2b8f45a4be47759d10dc6b558b26f06c6bfd0c47dd",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/runner-owned-handles-20261029/current-bf36-native-originals-ROG-READ-ACK.json",
+          "bytes": 2625,
+          "sha256": "d30ba211fbdc4c74281f0244aac11241adbc9536f6e21353f79dbb7294693162",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/runner-owned-handles-20261029/current-bf36-native-originals-independent-read.json",
+          "bytes": 102437,
+          "sha256": "a77d8aa26394facf1621f26530813af54a39918628e321183a7655e07b2c2145",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/runner-owned-handles-20261029/final-fmt-started.json",
+          "bytes": 2369,
+          "sha256": "09c9ada59df8deb8cdf9b4494197b6ca8948e0093ac7c8901d1bebc8f3c425e9",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/runner-owned-handles-20261029/final-fmt-terminal.json",
+          "bytes": 3305,
+          "sha256": "c9415147b7e8c38597329073b63a91f65148d46b65022c2baa33b60e8ebb1722",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/runner-owned-handles-20261029/final-fmt.raw.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/runner-owned-handles-20261029/final-source-scope.json",
+          "bytes": 10831,
+          "sha256": "8d443ca33e84d473e8f757a4b17c5471accf59463ff7fe5da25f3a1bbe2cf079",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/runner-owned-handles-20261029/independent-source-review.json",
+          "bytes": 25029,
+          "sha256": "f5c47b54878e6a7ace66a277a586a7d1e66cb0ae90b66a1aa039e1fb42b3deed",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/runner-owned-handles-20261029/original113-Windows-subtree-pins.json",
+          "bytes": 24467,
+          "sha256": "2eb908b75683c54cf694ce2e5a22a49d2ffd3dcb68dc5150f87d8b843ebefceb",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/runner-owned-handles-20261029/protected39-source-pins.json",
+          "bytes": 10409,
+          "sha256": "d39e2fd0f6a2bb4a360a696b0026cc52bdef4e85de3722704ecc9cfa0aef9594",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/runner-owned-handles-20261029/reviewed-source-candidate-manifest.json",
+          "bytes": 2306,
+          "sha256": "3df42fe6aa3bc254b2b0fdf22c7eae08062d5ef0d939bc775709901f3c3dc85a",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/runner-owned-handles-20261029/reviewed-source.patch.gz",
+          "bytes": 1850,
+          "sha256": "2b6de59c0701c6fbcf4d8247da2e8ac8ceb0c29372531b08c4ce7b7dbb6b0ed7",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/runner-owned-handles-20261029/source-mechanical-verification.json",
+          "bytes": 3288,
+          "sha256": "ca8463f86c8922f1df0de39747a8b3c3527b2ee869d799d1edcef2101622d7da",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/runner-owned-handles-20261029/source-ownership-and-open-boundaries.json",
+          "bytes": 6736,
+          "sha256": "4579e782a29f60d684dd0211c094be8a05c0c4fb5ef49769eccc71103866060b",
+          "local_manifest_hash_match": true
+        }
+      ],
+      "additional_local_files_not_listed_by_this_manifest": [
+        {
+          "path": "qualification/pn0-ci/runner-owned-handles-20261029/manifest.json",
+          "bytes": 4613,
+          "sha256": "c15cc9f695e4eb046fad19b61a0582d5b2fc95c43ff3b81ac28c370526d70b55"
+        }
+      ],
+      "packet_member_count_and_failure_summary_agrees": true,
+      "root_copied_qualification_bytes_independently_read": false
+    },
+    {
+      "group": "agentd-peer-deadline-20261028",
+      "local_total_files": 23,
+      "manifest": {
+        "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/manifest.json",
+        "bytes": 5195,
+        "sha256": "46cf3d621f43452bdaec2f8a5871fe40a95396bdf74599796018c2446738a271"
+      },
+      "listed_local_members_verified": [
+        {
+          "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/Linux-UDS-package-started.json",
+          "bytes": 2311,
+          "sha256": "b98dbe75aeea8b516fade45e6becd50f03e402c6312e661cdc9a0cd895dda287",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/Linux-UDS-package-terminal.json",
+          "bytes": 3138,
+          "sha256": "e15593147ddecaa6ffd5453e63bb6362888ed005c95deecb77535e4173cae6cd",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/Linux-UDS-package.raw.log",
+          "bytes": 6048,
+          "sha256": "457a308fb9fbd577fb7d93f0358bf0cb0dccb52879fc9a4872992e6d92ef114f",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/Linux-UDS-strict-clippy-started.json",
+          "bytes": 2195,
+          "sha256": "230893d85b1608797d5df626e35ee090bc2876bca7cf1c774a73d28c24d3d731",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/Linux-UDS-strict-clippy-terminal.json",
+          "bytes": 3136,
+          "sha256": "7028d8335e3ec8e1581429b45e8f4968c736241d96891f15d519c61b0e7fb0d3",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/Linux-UDS-strict-clippy.raw.log",
+          "bytes": 1759,
+          "sha256": "04fd2ead6671b4aad035fa974fa5afe62381774951020510c8b349f16b9144ab",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/README.md",
+          "bytes": 4585,
+          "sha256": "7e8346db7244a2b9327609b4ebda87832dc98edb3ba3dd8cfab6d93169fe4dae",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/Windows-GNU-UDS-cfgtest-strict-started.json",
+          "bytes": 2240,
+          "sha256": "865cd0bbcaa2aecb6f1ac1e90aac646a54aa6c64bb6b788aa70cdcaee1b3b4d5",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/Windows-GNU-UDS-cfgtest-strict-terminal.json",
+          "bytes": 3180,
+          "sha256": "875b4a520b446b6f7eeff2f22b3251dd9965726bbd5805b5440537dff3e2d80e",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/Windows-GNU-UDS-cfgtest-strict.raw.log",
+          "bytes": 1553,
+          "sha256": "281c15cd9ebfacd8b5e26a57314a4a3da27f4d4ec90575c00439b988cc0bffb3",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/actual-source-apply.json",
+          "bytes": 2478,
+          "sha256": "ee59752f3d8612e895f9f0daf32fe507b4455dd4a3713ea64b8035ae08db14fc",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/final-fmt-only.delta.patch.gz",
+          "bytes": 303,
+          "sha256": "2682ad65c7e1ea9bb42f37be1d9efa3040bcbb1ce749c0157a74dc27a7aeabb3",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/final-fmt-started.json",
+          "bytes": 2100,
+          "sha256": "1a3e7accba31c07ae73ffb343f330e99d6d4cc4074e19309c9ce4af1602c1e67",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/final-fmt-terminal.json",
+          "bytes": 3039,
+          "sha256": "e4a66274123649d759bfe83b9d31c1cb60bd923dd4ddeb38a351839fdd81c1aa",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/final-fmt.raw.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/final-source-scope.json",
+          "bytes": 3879,
+          "sha256": "0d14f7b473d30fcc34715a1de9bc1e98a32673c796347229f7c5a092287830b1",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/independent-final-source-and-result-readback.json",
+          "bytes": 24116,
+          "sha256": "246470044415bbad7e00f4933f84b2396dff2acfff1e78d9096a2002e35a745a",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/original-68-Agentd-test-resource-pins.json",
+          "bytes": 19845,
+          "sha256": "4849b04bcd3b3b0cae36f901c649c6d7fe3daae50851d31ff74f4d019130c915",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/original-peer-gate-source-review-blocker.json",
+          "bytes": 10168,
+          "sha256": "1ae71961671a85b90207dc8bd7914000846e0b44b1583ec097503684ede376cb",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/original-peer-gate-source.patch.gz",
+          "bytes": 904,
+          "sha256": "32566b53d47bbeb5f4fa4ccb0715de572548d3394b1de3442dcb15587f1bd0b7",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/reviewed-revision004-source-manifest.json",
+          "bytes": 8092,
+          "sha256": "c243be8ced8a02ab0b873db69f2eb909fe93a2916044b09169ce63f85884cc0d",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/reviewed-revision004-source.patch.gz",
+          "bytes": 2918,
+          "sha256": "f7b19f10bdb6a8d560f6d375742e6f9b8eac30688129190f86ee80176b8297ef",
+          "local_manifest_hash_match": true
+        }
+      ],
+      "additional_local_files_not_listed_by_this_manifest": [
+        {
+          "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/manifest.json",
+          "bytes": 5195,
+          "sha256": "46cf3d621f43452bdaec2f8a5871fe40a95396bdf74599796018c2446738a271"
+        }
+      ],
+      "packet_member_count_and_failure_summary_agrees": true,
+      "root_copied_qualification_bytes_independently_read": false
+    },
+    {
+      "group": "final-use-retained-owner-20261028",
+      "local_total_files": 23,
+      "manifest": {
+        "path": "qualification/pn0-ci/final-use-retained-owner-20261028/evidence-manifest.json",
+        "bytes": 10773,
+        "sha256": "694da80f904b10002d0f1a11c72c20e05e7f1b6bf632df755f730e81a6f99777"
+      },
+      "listed_local_members_verified": [
+        {
+          "path": "qualification/pn0-ci/final-use-retained-owner-20261028/Linux-original-package.raw.log",
+          "bytes": 29234,
+          "sha256": "0c8a5bc398ab14514a8e8be970bb022be9d0ccc579212440411c7d8ce14d0f84",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/final-use-retained-owner-20261028/Linux-started.json",
+          "bytes": 1313,
+          "sha256": "738cd26281efe0d745c0e30e167e6f5b7729f23d5e6a790c3aa1c8d64da3f0ae",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/final-use-retained-owner-20261028/Linux-terminal.json",
+          "bytes": 1525,
+          "sha256": "1ee0390a4336b7c6fe066a4acabc1262b214ae55c91346096318f8970e384f29",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/final-use-retained-owner-20261028/Linux-strict-clippy.raw.log",
+          "bytes": 3562,
+          "sha256": "22bacedc4daecc0df12795af462ac28d3840b9daf6cfbd4c128e06fb14b8044c",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/final-use-retained-owner-20261028/Linux-strict-clippy-started.json",
+          "bytes": 481,
+          "sha256": "eb84d7f324b6ac1993c75c35bb75dd0ccf9e320436cb3991439b8d31aaa3211d",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/final-use-retained-owner-20261028/Linux-strict-clippy-terminal.json",
+          "bytes": 470,
+          "sha256": "e2f202357097103f36576215f09994f0ffd93c371683e79125d2d62431ec4e63",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/final-use-retained-owner-20261028/Windows-GNU-cfgtest-strict-clippy.raw.log",
+          "bytes": 4514,
+          "sha256": "c254dc9cbe433223101d3b0f14c68ba11275cfcfa2a1b3031debd6ed13abb9f4",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/final-use-retained-owner-20261028/Windows-GNU-cfgtest-strict-clippy-started.json",
+          "bytes": 526,
+          "sha256": "add2d9fa4b12fd1225c1cc14aeb4b3c4a1b1f09d662624d4b2ad70fc411f243c",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/final-use-retained-owner-20261028/Windows-GNU-cfgtest-strict-clippy-terminal.json",
+          "bytes": 516,
+          "sha256": "3d04a69fec860734d116620a835a145a5b2c335b335cfafe485e3c77be9e0892",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/final-use-retained-owner-20261028/actual-argument-comment-only-change.json",
+          "bytes": 830,
+          "sha256": "b9d29688ad7c6d9a230d89c5b1d7f79ceb8161e2c4f2b94bb48e91c4d4d793c9",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/final-use-retained-owner-20261028/original-source-manifest.json",
+          "bytes": 8628,
+          "sha256": "d57ae49b0bef21470f3a10e5ee2f2d39cf216aef42a580af36661bcaaf3946c8",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/final-use-retained-owner-20261028/historical-early-source-admission.json",
+          "bytes": 1457,
+          "sha256": "d9d3c605857d99c8644e6b76a4d1ad905ec1d0d48ed5a5112d0d0770cfe0acd7",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/final-use-retained-owner-20261028/implementation-source-review.json",
+          "bytes": 12643,
+          "sha256": "3fa7cc14e6d6ad3215439227025c3333faafa6930c7c58f70717d4d0c4a599a7",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/final-use-retained-owner-20261028/independent-source-review.json",
+          "bytes": 18958,
+          "sha256": "669ca56e1b762ac420d678a147d7579da6b9bb6085ec960e6b6c7f375750fe67",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/final-use-retained-owner-20261028/current310b-original-Windows-failures-review.json",
+          "bytes": 60028,
+          "sha256": "3f54a96c6d59906b65d0df69178f569eaa4a299b3b8c7ac6495be6a999164dbf",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/final-use-retained-owner-20261028/pinned-atomic-parameter-source.json",
+          "bytes": 1294,
+          "sha256": "72b5b747ff77ba8c6134d85e1b823a1c28febb9a2125de392909aa6c0ceba7e8",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/final-use-retained-owner-20261028/original-reviewed-source.patch.gz",
+          "bytes": 3200,
+          "sha256": "bffd6b9d70aa91f5f2128f70d7c13d05fbd1e393fa5c336b6607bb21d2878a3d",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/final-use-retained-owner-20261028/final-fmt.raw.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/final-use-retained-owner-20261028/final-fmt-terminal.json",
+          "bytes": 1621,
+          "sha256": "5d2689ea89a1b8c29fa11e98c5289362ace4afcc86e0b3052b571a633903209e",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/final-use-retained-owner-20261028/final-fmt-only.delta.patch.gz",
+          "bytes": 406,
+          "sha256": "0f3b7fe7dbfe999aeee46bfcbf87640d67487bd1a07d3896837be863c86100d8",
+          "local_manifest_hash_match": true
+        },
+        {
+          "path": "qualification/pn0-ci/final-use-retained-owner-20261028/final-source-scope.json",
+          "bytes": 1759,
+          "sha256": "bc3c2348cbdcde93b2a83b739cb3f0d851ae43a2381be10904f85f5820e84274",
+          "local_manifest_hash_match": true
+        }
+      ],
+      "additional_local_files_not_listed_by_this_manifest": [
+        {
+          "path": "qualification/pn0-ci/final-use-retained-owner-20261028/README.md",
+          "bytes": 3998,
+          "sha256": "ac92e8b0210c05d0022c334bdc33f5a13fd0f6c226010a96bc69209cf670fcbe"
+        },
+        {
+          "path": "qualification/pn0-ci/final-use-retained-owner-20261028/evidence-manifest.json",
+          "bytes": 10773,
+          "sha256": "694da80f904b10002d0f1a11c72c20e05e7f1b6bf632df755f730e81a6f99777"
+        }
+      ],
+      "packet_member_count_and_failure_summary_agrees": true,
+      "root_copied_qualification_bytes_independently_read": false
+    }
+  ],
+  "qualification_totals": {
+    "all_files": 71,
+    "manifest_listed_members": 67,
+    "current_manifest_files": 3,
+    "extra_FinalUse_README": 1,
+    "ignored_logs": 13,
+    "status_visible_files": 58,
+    "root_copies_claimed_but_not_byte_read_here": true
+  },
+  "all_13_ignored_original_log_paths": [
+    {
+      "path": "qualification/pn0-ci/runner-owned-handles-20261029/Windows-GNU-runner-cfgtest-clippy-tool-ready.raw.log",
+      "bytes": 28567,
+      "sha256": "31672686498bb64c2a98b9f731fe58c7e9fe8ae8c8c76be8ffa686d920da1922",
+      "ignore_rule": ".gitignore:47:*.log",
+      "present_in_local_prior_qualification": true,
+      "absent_from_packet_root_status_by_ignore_not_missing": true,
+      "future_commit_action": "Explicitly add this known evidence path despite ignore, or use a lossless archived copy with exact original hash in existing qualification location. Do not edit ignore/workflow/raw evidence."
+    },
+    {
+      "path": "qualification/pn0-ci/runner-owned-handles-20261029/Windows-GNU-runner-cfgtest-clippy.raw.log",
+      "bytes": 42785,
+      "sha256": "7a4f804de90bd6d71fac6979d8db165e2f67cf248b034cbe95473a821d51d771",
+      "ignore_rule": ".gitignore:47:*.log",
+      "present_in_local_prior_qualification": true,
+      "absent_from_packet_root_status_by_ignore_not_missing": true,
+      "future_commit_action": "Explicitly add this known evidence path despite ignore, or use a lossless archived copy with exact original hash in existing qualification location. Do not edit ignore/workflow/raw evidence."
+    },
+    {
+      "path": "qualification/pn0-ci/runner-owned-handles-20261029/apt-download.raw.log",
+      "bytes": 793,
+      "sha256": "4f5aabb6b84395686ac9d7d214d3d2ed6a5400471802939a2662ce301be8b73e",
+      "ignore_rule": ".gitignore:47:*.log",
+      "present_in_local_prior_qualification": true,
+      "absent_from_packet_root_status_by_ignore_not_missing": true,
+      "future_commit_action": "Explicitly add this known evidence path despite ignore, or use a lossless archived copy with exact original hash in existing qualification location. Do not edit ignore/workflow/raw evidence."
+    },
+    {
+      "path": "qualification/pn0-ci/runner-owned-handles-20261029/compiler-probe.raw.log",
+      "bytes": 2037,
+      "sha256": "83afcfc63cd7cc57abeedc2b8f45a4be47759d10dc6b558b26f06c6bfd0c47dd",
+      "ignore_rule": ".gitignore:47:*.log",
+      "present_in_local_prior_qualification": true,
+      "absent_from_packet_root_status_by_ignore_not_missing": true,
+      "future_commit_action": "Explicitly add this known evidence path despite ignore, or use a lossless archived copy with exact original hash in existing qualification location. Do not edit ignore/workflow/raw evidence."
+    },
+    {
+      "path": "qualification/pn0-ci/runner-owned-handles-20261029/final-fmt.raw.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ignore_rule": ".gitignore:47:*.log",
+      "present_in_local_prior_qualification": true,
+      "absent_from_packet_root_status_by_ignore_not_missing": true,
+      "future_commit_action": "Explicitly add this known evidence path despite ignore, or use a lossless archived copy with exact original hash in existing qualification location. Do not edit ignore/workflow/raw evidence."
+    },
+    {
+      "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/Linux-UDS-package.raw.log",
+      "bytes": 6048,
+      "sha256": "457a308fb9fbd577fb7d93f0358bf0cb0dccb52879fc9a4872992e6d92ef114f",
+      "ignore_rule": ".gitignore:47:*.log",
+      "present_in_local_prior_qualification": true,
+      "absent_from_packet_root_status_by_ignore_not_missing": true,
+      "future_commit_action": "Explicitly add this known evidence path despite ignore, or use a lossless archived copy with exact original hash in existing qualification location. Do not edit ignore/workflow/raw evidence."
+    },
+    {
+      "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/Linux-UDS-strict-clippy.raw.log",
+      "bytes": 1759,
+      "sha256": "04fd2ead6671b4aad035fa974fa5afe62381774951020510c8b349f16b9144ab",
+      "ignore_rule": ".gitignore:47:*.log",
+      "present_in_local_prior_qualification": true,
+      "absent_from_packet_root_status_by_ignore_not_missing": true,
+      "future_commit_action": "Explicitly add this known evidence path despite ignore, or use a lossless archived copy with exact original hash in existing qualification location. Do not edit ignore/workflow/raw evidence."
+    },
+    {
+      "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/Windows-GNU-UDS-cfgtest-strict.raw.log",
+      "bytes": 1553,
+      "sha256": "281c15cd9ebfacd8b5e26a57314a4a3da27f4d4ec90575c00439b988cc0bffb3",
+      "ignore_rule": ".gitignore:47:*.log",
+      "present_in_local_prior_qualification": true,
+      "absent_from_packet_root_status_by_ignore_not_missing": true,
+      "future_commit_action": "Explicitly add this known evidence path despite ignore, or use a lossless archived copy with exact original hash in existing qualification location. Do not edit ignore/workflow/raw evidence."
+    },
+    {
+      "path": "qualification/pn0-ci/agentd-peer-deadline-20261028/final-fmt.raw.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ignore_rule": ".gitignore:47:*.log",
+      "present_in_local_prior_qualification": true,
+      "absent_from_packet_root_status_by_ignore_not_missing": true,
+      "future_commit_action": "Explicitly add this known evidence path despite ignore, or use a lossless archived copy with exact original hash in existing qualification location. Do not edit ignore/workflow/raw evidence."
+    },
+    {
+      "path": "qualification/pn0-ci/final-use-retained-owner-20261028/Linux-original-package.raw.log",
+      "bytes": 29234,
+      "sha256": "0c8a5bc398ab14514a8e8be970bb022be9d0ccc579212440411c7d8ce14d0f84",
+      "ignore_rule": ".gitignore:47:*.log",
+      "present_in_local_prior_qualification": true,
+      "absent_from_packet_root_status_by_ignore_not_missing": true,
+      "future_commit_action": "Explicitly add this known evidence path despite ignore, or use a lossless archived copy with exact original hash in existing qualification location. Do not edit ignore/workflow/raw evidence."
+    },
+    {
+      "path": "qualification/pn0-ci/final-use-retained-owner-20261028/Linux-strict-clippy.raw.log",
+      "bytes": 3562,
+      "sha256": "22bacedc4daecc0df12795af462ac28d3840b9daf6cfbd4c128e06fb14b8044c",
+      "ignore_rule": ".gitignore:47:*.log",
+      "present_in_local_prior_qualification": true,
+      "absent_from_packet_root_status_by_ignore_not_missing": true,
+      "future_commit_action": "Explicitly add this known evidence path despite ignore, or use a lossless archived copy with exact original hash in existing qualification location. Do not edit ignore/workflow/raw evidence."
+    },
+    {
+      "path": "qualification/pn0-ci/final-use-retained-owner-20261028/Windows-GNU-cfgtest-strict-clippy.raw.log",
+      "bytes": 4514,
+      "sha256": "c254dc9cbe433223101d3b0f14c68ba11275cfcfa2a1b3031debd6ed13abb9f4",
+      "ignore_rule": ".gitignore:47:*.log",
+      "present_in_local_prior_qualification": true,
+      "absent_from_packet_root_status_by_ignore_not_missing": true,
+      "future_commit_action": "Explicitly add this known evidence path despite ignore, or use a lossless archived copy with exact original hash in existing qualification location. Do not edit ignore/workflow/raw evidence."
+    },
+    {
+      "path": "qualification/pn0-ci/final-use-retained-owner-20261028/final-fmt.raw.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "ignore_rule": ".gitignore:47:*.log",
+      "present_in_local_prior_qualification": true,
+      "absent_from_packet_root_status_by_ignore_not_missing": true,
+      "future_commit_action": "Explicitly add this known evidence path despite ignore, or use a lossless archived copy with exact original hash in existing qualification location. Do not edit ignore/workflow/raw evidence."
+    }
+  ],
+  "original_source_protection_checks": {
+    "Windows_original113_blobs_local_bf36_match": true,
+    "protected39_files_local_bf36_bytes_match": true,
+    "original68_Agentd_files_local_d328_bytes_match": true,
+    "packet_reports_no_mismatches": true,
+    "original_FinalUse8503_prefix": "Packet reports unchanged; local final test includes preserved prefix as previous component records; no re-execution here."
+  },
+  "stage_separation": {
+    "delivery": "Four actual JSON payload byte hashes independently verified; receiver queue stdout is delivery only.",
+    "intake_snapshot": {
+      "source_files_received": true,
+      "ROG_written_READ_REVIEW_receipt_received_and_hashed": true,
+      "root_independent_full_source_review_completed": false,
+      "root_source_integration": false,
+      "root_new_source_tests": false,
+      "new_commit_or_publication": false,
+      "original_native_acceptance": false
+    },
+    "later_integration_snapshot": {
+      "ROG_written_READ_REVIEW_current_bf36_received": true,
+      "root_source_dependency_review_and_integration": true,
+      "root_five_normal_cherry_pick_commits": true,
+      "nine_source_WIP_root_commit": false,
+      "root_new_source_tests_or_finalfmt": false,
+      "normal_push": false,
+      "new_source_native_qualification": false
+    },
+    "chronology": "Earlier intake source_integration=false and later integration=true are separate timestamped stages, not equivalent acceptance flags.",
+    "five_prerequisites": "Packet claims normal root append cherry-picks as committed; exact local original diff bytes match packet equality hashes. Actual root objects not independently available.",
+    "nine_WIP_sources": "Root packet explicitly says applied but not root-committed, not newly root-tested/finalformatted, not published/native qualified. Do not inherit local original component results onto new combined root source.",
+    "qualification_files": "Root claims copied original receipts; status67 omits13.log by original ignore. Not yet a complete root committed71-file preservation proof.",
+    "published_asof_packet": {
+      "Hepta": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "Chain": "d67e65035033172aceb5b3762a08ff6fea93fa33"
+    },
+    "remote_fresh_checks": "NOT_PERFORMED; no live remote source/CI/concurrency/protection inference.",
+    "toolchain_owner": "Only recorded active capture at packet snapshot; old PID/session is not probed or treated as continuing work, terminal success, compilation or native qualification.",
+    "011_registry_source_results": "Root later50/50 and strict Linux/GNU information is separate current workflow, not evidence that packet nine-source root snapshot was tested. No 011 source or tests touched by this review."
+  },
+  "findings_and_limits": [
+    {
+      "id": "I01",
+      "kind": "PRE_COMMIT_EVIDENCE_PRESERVATION_ACTION",
+      "blocking_new_source_test_claim": false,
+      "observation": "13 original log files exist and their original manifest hashes match locally. Root packet status hides exactly those files under original .gitignore:47. Root reports they were copied but not yet committed. This is not evidence of file loss.",
+      "action": "Before claiming complete source/evidence commit or publication, explicitly include these exact paths or preserve lossless archived bytes/hash. No ignore/workflow/original edits requested."
+    },
+    {
+      "id": "I02",
+      "kind": "COUNT_SCOPE_EXPLANATION",
+      "blocking": false,
+      "observation": "Local qualification total71 = (24+22+21 declared members=67) + three current manifests + FinalUse README.md. The latter README is not among its21 members; it exists and is pinned separately here. This explains the apparent67+3 arithmetic gap, not a missing member."
+    },
+    {
+      "id": "I03",
+      "kind": "STALE_SUMMARY_COUNT",
+      "blocking_source_equivalence": false,
+      "packet_location": "outputs/hepta-ROG-current-bf36-review-and-nine-source-intake-2026-10-29.json scope_limits[1]",
+      "observation": "Intake summary says ROG Linux176/UDS8; final local qualification manifest states UDS13PASS,0FAIL,0SKIP. Keep original packet bytes and add an accurate later note when documenting validation; never rewrite raw logs or infer new-root source qualification."
+    },
+    {
+      "id": "I04",
+      "kind": "INDEPENDENT_VERIFICATION_LIMIT",
+      "blocking_acceptance": true,
+      "observation": "Only four payload JSON files were delivered. Referenced raw intake archive, actual root cherry-pick receipts and root42e Git objects/repository are not supplied here. Original five objects and source bytes are locally verifiable, but actual unpublished root object author/parents/tree, root copies of qualification71 and fresh remote publication/CI remain unverified self-report."
+    }
+  ],
+  "actions": {
+    "report_write_only": true,
+    "source_or_original_packet_changed": false,
+    "git_ref_index_commit_push": false,
+    "fetch_remote_CI_dispatch_cancel": false,
+    "old_PID_or_toolchain_work_probed_resumed": false,
+    "fmt_build_test_native_or_budget": false
+  },
+  "task_complete": false,
+  "merge_ready": false,
+  "PN0_PN6_full_qualification": "OPEN/NO_GO",
+  "root_fresh_source_CI_or_publication_verified": false
+}

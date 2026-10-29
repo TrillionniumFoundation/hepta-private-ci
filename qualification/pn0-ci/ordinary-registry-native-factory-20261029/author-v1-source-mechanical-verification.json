@@ -1,0 +1,28 @@
+{
+  "schema": "ordinary-registry-native-factory-mechanical-source-proof-v1",
+  "source_only": true,
+  "hunk_replay": [
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/durable_store_platform.rs",
+      "hunks": 3,
+      "exact_replay": "PASS_SOURCE_ONLY"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+      "hunks": 1,
+      "exact_replay": "PASS_SOURCE_ONLY"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/prompt_runtime_windows.rs",
+      "hunks": 3,
+      "exact_replay": "PASS_SOURCE_ONLY"
+    }
+  ],
+  "unchanged_original_test_files": 182,
+  "native_runtime_store_and_directory_input_unchanged": true,
+  "opaque_constructor_executable_body_and_held_IO_unchanged": true,
+  "all_FinalUse_source_guard_signatures_providers_unmodified": true,
+  "dependencies_features_BUILD_unchanged": true,
+  "no_live_edit_index_ref_commit_push": true,
+  "fmt_compile_tests_native_budget_NOT_RUN": true
+}

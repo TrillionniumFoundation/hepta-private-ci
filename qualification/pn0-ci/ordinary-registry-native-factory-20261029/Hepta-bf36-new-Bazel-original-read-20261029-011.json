@@ -1,0 +1,1001 @@
+{
+  "schema": "bf36-new-Bazel-originals-independent-read-v1",
+  "reviewed_utc": "2026-10-29T01:34:40.000367+00:00",
+  "reviewer": "/root/e153_windows_raw_review",
+  "READ": "COMPLETE_PACKET_BYTES_AND_BOUNDED_ORIGINAL_FAILURE_REVIEW",
+  "result": "ORIGINAL_FAILURES_CONFIRMED_WITH_ONE_SCHEMA_PROVENANCE_METADATA_INCONSISTENCY",
+  "scope": "This new Bazel packet only. Safe local archive/ZIP read, data decompression and wire-frame/Spawn statistics,11exactsource bindings, captured logs/annotations and112receipt self-consistency. No packet Python script/test/build/CI/network/VM/source/ref action; old8MB deletion packet not repeated.",
+  "packet": [
+    {
+      "path": "work/coordination/inbox/local-codex-Hepta-bf36-new-Bazel-originals-20261029-001/actual-existing-thread-queue.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "work/coordination/inbox/local-codex-Hepta-bf36-new-Bazel-originals-20261029-001/actual-existing-thread-queue.stdout.original",
+      "bytes": 101,
+      "sha256": "edd00eb4f8b4df8421eb445fc848cb37e95d06388ca32311576740eba5cc5210"
+    },
+    {
+      "path": "work/coordination/inbox/local-codex-Hepta-bf36-new-Bazel-originals-20261029-001/actual-queue-and-delivery-receipt.json",
+      "bytes": 1653,
+      "sha256": "849f1df0771c21bf1e2bf9237eae451b2b124d65528a6a11539594579d5c6e5e"
+    },
+    {
+      "path": "work/coordination/inbox/local-codex-Hepta-bf36-new-Bazel-originals-20261029-001/actual-queue-owner-start.json",
+      "bytes": 752,
+      "sha256": "2bc2a168ab6a3de4fae5d4e0bc9689a3f86954ca8e1c8cc2f088db11bb969ed4"
+    },
+    {
+      "path": "work/coordination/inbox/local-codex-Hepta-bf36-new-Bazel-originals-20261029-001/outputs/hepta-bf36-new-Bazel-failure-original-member-hashes-2026-10-29.json",
+      "bytes": 104719,
+      "sha256": "06c945a0830142ea17386bcf0a1b12d77c51d5f56859056bd646554254e21d84"
+    },
+    {
+      "path": "work/coordination/inbox/local-codex-Hepta-bf36-new-Bazel-originals-20261029-001/outputs/hepta-bf36-new-Bazel-original-failures-and-source-boundaries-2026-10-29.json",
+      "bytes": 19224,
+      "sha256": "9899f7851c67a13668b95cb8c233bcc9107d87e5fae28390f4727a124f9ee1d8"
+    },
+    {
+      "path": "work/coordination/inbox/local-codex-Hepta-bf36-new-Bazel-originals-20261029-001/outputs/hepta-bf36-new-Windows-Bazel-and-macOS-failures-originals-2026-10-29.tar.xz",
+      "bytes": 15302276,
+      "sha256": "dc77af56d616a2f3045c1f9160ef9e94dd85aae84a3d091defa891cd01110073"
+    },
+    {
+      "path": "work/coordination/inbox/local-codex-Hepta-bf36-new-Bazel-originals-20261029-001/outputs/hepta-bf36-x64-base-merge-original-112-contract-2026-10-29.json",
+      "bytes": 102943,
+      "sha256": "7606eec07364cc9a485662ab762ef97039fa3e76d42a79c8c7b4af094bb621e7"
+    }
+  ],
+  "transport_receipt": {
+    "pin": {
+      "path": "work/coordination/inbox/local-codex-Hepta-bf36-new-Bazel-originals-20261029-001/actual-queue-and-delivery-receipt.json",
+      "bytes": 1653,
+      "sha256": "849f1df0771c21bf1e2bf9237eae451b2b124d65528a6a11539594579d5c6e5e"
+    },
+    "all4_payload_length_SHA_match": true,
+    "transport_queue_not_content_or_acceptance_ACK": true
+  },
+  "archive": {
+    "pin": {
+      "path": "work/coordination/inbox/local-codex-Hepta-bf36-new-Bazel-originals-20261029-001/outputs/hepta-bf36-new-Windows-Bazel-and-macOS-failures-originals-2026-10-29.tar.xz",
+      "bytes": 15302276,
+      "sha256": "dc77af56d616a2f3045c1f9160ef9e94dd85aae84a3d091defa891cd01110073"
+    },
+    "inventory": {
+      "path": "work/coordination/inbox/local-codex-Hepta-bf36-new-Bazel-originals-20261029-001/outputs/hepta-bf36-new-Bazel-failure-original-member-hashes-2026-10-29.json",
+      "bytes": 104719,
+      "sha256": "06c945a0830142ea17386bcf0a1b12d77c51d5f56859056bd646554254e21d84"
+    },
+    "members": 376,
+    "uncompressed_bytes": 28837780,
+    "all376size_SHA_and_isolated_readbacks_verified": true,
+    "evidence_root": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence",
+    "safe_extraction": "Unique relative normal POSIX regular files only; no links/sparse/special/absolute/dotdot/backslash. New isolated evidence directory with0600 data, no scripts executed.",
+    "reader_safety_caps": {
+      "tar_members": 512,
+      "tar_member_bytes": 8388608,
+      "tar_total_bytes": 67108864,
+      "ZIP_member_bytes": 8388608,
+      "decoded_compact_bytes_each": 67108864,
+      "frame_bytes": 8388608
+    },
+    "caps_are_evidence_parser_safety_not_project_acceptance_changes": true
+  },
+  "source_objects": {
+    "head": {
+      "sha": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "tree": "803e1e9b12efa4dd236ecd99333a717b5d52b033",
+      "ordered_parents": [
+        "310b5369bad666367f17a6e005d29ada9d123cd7"
+      ]
+    },
+    "actual_preview": {
+      "sha": "c4f58e535d69a8748484df722743e279cbb1dea5",
+      "tree": "803e1e9b12efa4dd236ecd99333a717b5d52b033",
+      "ordered_parents": [
+        "c38e7727220f32c7410f59083c5ea7878bbae078",
+        "bf36d10a54db1d9453409a432cb4641c9fbe38e8"
+      ]
+    }
+  },
+  "source_state_before": {
+    "head": "d3284e385e2b6037dd86752ddd246b616144a87c",
+    "tree": "eed42a952ac5a713fc733b29707b4be3c20e00b2",
+    "branch": "fix/hepta-final-use-live-owner-20261028",
+    "index_sha256": "a880022fabef27c670c8de21da6801e2d1808b17a93ef856d6d611902c445ac9",
+    "status_sha256": "70074f3f2520639f27f513288bcf7792d3cd818a1a1e6421118bd2e44bddd084",
+    "status_bytes": 5597
+  },
+  "source_state_after": {
+    "head": "d3284e385e2b6037dd86752ddd246b616144a87c",
+    "tree": "eed42a952ac5a713fc733b29707b4be3c20e00b2",
+    "branch": "fix/hepta-final-use-live-owner-20261028",
+    "index_sha256": "a880022fabef27c670c8de21da6801e2d1808b17a93ef856d6d611902c445ac9",
+    "status_sha256": "70074f3f2520639f27f513288bcf7792d3cd818a1a1e6421118bd2e44bddd084",
+    "status_bytes": 5597
+  },
+  "source_refs_index_status_equal_during_final_read": true,
+  "reviewer_source_writes": false,
+  "metadata": {
+    "pin": {
+      "path": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/actual-four-new-Bazel-original-failure-metadata.json",
+      "bytes": 199853,
+      "sha256": "a49d93cef2754e4933ed371e940ef5099061a3db75f91b4323b4018203b31f1d"
+    },
+    "captured_job_count": 36,
+    "captured_artifact_count": 8,
+    "captured_all_pages_complete": true,
+    "run": 40789310190,
+    "attempt": 1
+  },
+  "official_three_artifacts": [
+    {
+      "artifact_id": 12862732918,
+      "name": "bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-1",
+      "official_ZIP": {
+        "path": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/official-failure-artifact-12862732918/original.zip",
+        "bytes": 5017238,
+        "sha256": "05d176fe9fcd2da3f0d296063efea3b971524d2515345878392010a750b8f26c"
+      },
+      "captured_digest": "sha256:05d176fe9fcd2da3f0d296063efea3b971524d2515345878392010a750b8f26c",
+      "member": {
+        "name": "execution-log-test-test-windows-shard-4167.zst",
+        "bytes": 5018279,
+        "sha256": "ef7afbdfd1c7a2b422b5009280609aa9c66ea3e8181e306145708f47637ca4b4",
+        "CRC": 3223202187
+      },
+      "ZIP_CRC_size_SHA_verified": true,
+      "integrity_receipt": {
+        "path": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/official-failure-artifact-12862732918/full-original-integrity.json",
+        "bytes": 1524,
+        "sha256": "376e429b0085a4f9252d33d1b2ba20a9513266f02eb5738da124dea960aeb275"
+      },
+      "recorded_reader": {
+        "path": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/official-failure-artifact-12862732918/complete-original-execution-record-reader.json",
+        "bytes": 15197,
+        "sha256": "b308d0e44b0c23f7858e297eff5539b473d67b023bd3df46312483e1981efac4"
+      },
+      "decoded_original_bytes": 30121484,
+      "decoded_original_SHA256": "f95943fb8776c1ac28400f96798141969579bec729aecef54bd9a6ec745a35ea",
+      "length_delimited_frames": 92574,
+      "outer_entry_types": {
+        "invocation": 1,
+        "symlink_action": 433,
+        "file": 70900,
+        "input_set": 17881,
+        "spawn": 2738,
+        "runfiles_tree": 235,
+        "directory": 386
+      },
+      "spawn_records": 2738,
+      "failure_records": [
+        {
+          "target": "//codex-rs/exec-server:exec-server-exec_process-test",
+          "exit_code_wire_value": 101,
+          "status": "NON_ZERO_EXIT",
+          "entry_sha256": "81196eb113b40fcd3ed49e17ac76182c9b20a475c306de9649fb395bd3d86d76"
+        },
+        {
+          "target": "//codex-rs/ext/hepta-memory:hepta-memory-unit-tests",
+          "exit_code_wire_value": 1,
+          "status": "NON_ZERO_EXIT",
+          "entry_sha256": "d0e650cca072b15a734cae562451ecbd764833400f342502d682d9a92c2a9767"
+        },
+        {
+          "target": "//codex-rs/core:core-unit-tests",
+          "exit_code_wire_value": 1,
+          "status": "NON_ZERO_EXIT",
+          "entry_sha256": "9d7ac377e7b9a50ae0e2d6e40b1909e295c87138a76201de63db31a021f65d29"
+        },
+        {
+          "target": "//codex-rs/core:core-unit-tests",
+          "exit_code_wire_value": 1,
+          "status": "NON_ZERO_EXIT",
+          "entry_sha256": "fcdf7708a07ef2da6106692a50ec36a909fa54fee0dff96fbe4875696565b6f2"
+        },
+        {
+          "target": "//codex-rs/core:core-unit-tests",
+          "exit_code_wire_value": 1,
+          "status": "NON_ZERO_EXIT",
+          "entry_sha256": "2f234173c8c01067d4060f06406767401425a51814a53f24a9e8a7362d2562be"
+        }
+      ],
+      "failure_target_counts": {
+        "//codex-rs/exec-server:exec-server-exec_process-test": 1,
+        "//codex-rs/ext/hepta-memory:hepta-memory-unit-tests": 1,
+        "//codex-rs/core:core-unit-tests": 3
+      },
+      "all_failed_entry_sha_and_target_counts_equal_recorded_reader": true,
+      "all_frames_consumed_to_EOF": true,
+      "all_nonzero_ids_unique": true,
+      "decoded_file_materialized_by_reviewer": false
+    },
+    {
+      "artifact_id": 12863442893,
+      "name": "bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-2",
+      "official_ZIP": {
+        "path": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/official-failure-artifact-12863442893/original.zip",
+        "bytes": 4745805,
+        "sha256": "4b4971b825bc0ac27572e0d4d39b6bb99fe58e734bb9fa8fd3c5dd95c55ac08c"
+      },
+      "captured_digest": "sha256:4b4971b825bc0ac27572e0d4d39b6bb99fe58e734bb9fa8fd3c5dd95c55ac08c",
+      "member": {
+        "name": "execution-log-test-test-windows-shard-3783.zst",
+        "bytes": 4746922,
+        "sha256": "d4b4e9b74243dbd82828cf3c5d848373f492596e446be7f66c78a7336a78e0bc",
+        "CRC": 558357491
+      },
+      "ZIP_CRC_size_SHA_verified": true,
+      "integrity_receipt": {
+        "path": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/official-failure-artifact-12863442893/full-original-integrity.json",
+        "bytes": 1523,
+        "sha256": "1135f4d2e8c6640446311b8648b7bff36a02800c7843696fc58391d7e8ffce26"
+      },
+      "recorded_reader": {
+        "path": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/official-failure-artifact-12863442893/complete-original-execution-record-reader.json",
+        "bytes": 49190,
+        "sha256": "ef7a002326e9041bbd889354e04648a1029c296deddfe1c19406879ef1e27221"
+      },
+      "decoded_original_bytes": 29334742,
+      "decoded_original_SHA256": "389d614df50738eeacdf1211f617762e74bc453b4ee02fadfab6c737f023a06c",
+      "length_delimited_frames": 87093,
+      "outer_entry_types": {
+        "invocation": 1,
+        "symlink_action": 433,
+        "file": 66017,
+        "input_set": 17300,
+        "spawn": 2718,
+        "runfiles_tree": 229,
+        "directory": 395
+      },
+      "spawn_records": 2718,
+      "failure_records": [
+        {
+          "target": "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests",
+          "exit_code_wire_value": 1,
+          "status": "NON_ZERO_EXIT",
+          "entry_sha256": "7612611f116bf018aa32163de26b03c8ef62baec04b7207bb234635a7fa105f6"
+        },
+        {
+          "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+          "exit_code_wire_value": 1,
+          "status": "NON_ZERO_EXIT",
+          "entry_sha256": "a33e561370d4f417fa1e9453f5bb4a846384dc09cb05c51d4501752a711a222f"
+        },
+        {
+          "target": "//codex-rs/hepta-memory:hepta-memory-unit-tests",
+          "exit_code_wire_value": 1,
+          "status": "NON_ZERO_EXIT",
+          "entry_sha256": "f90e319e03adf54714d01d6925c50be9942696101a69b5388d721fa2397e18c5"
+        },
+        {
+          "target": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests",
+          "exit_code_wire_value": 1,
+          "status": "NON_ZERO_EXIT",
+          "entry_sha256": "537581fc8b40e2a397a7d2a6247edb390f829a6a353001289830a70cc101a37c"
+        },
+        {
+          "target": "//codex-rs/app-server:app-server-all-test",
+          "exit_code_wire_value": 1,
+          "status": "NON_ZERO_EXIT",
+          "entry_sha256": "a1a4afdb3fa5c2042b196a735fb3f876b5d5fb829eddf52c5119cec4047e0452"
+        },
+        {
+          "target": "//codex-rs/app-server:app-server-all-test",
+          "exit_code_wire_value": 1,
+          "status": "NON_ZERO_EXIT",
+          "entry_sha256": "39c654213760fbd8a4619a5ea893bd4c270fa0eb8eb8e6efbc1abcffdde7ced7"
+        },
+        {
+          "target": "//codex-rs/app-server:app-server-all-test",
+          "exit_code_wire_value": 1,
+          "status": "NON_ZERO_EXIT",
+          "entry_sha256": "17ea2024fb0fbf9a99586daccc08e89428d71110e70c5c5151a07de01dba3fbc"
+        },
+        {
+          "target": "//codex-rs/app-server:app-server-all-test",
+          "exit_code_wire_value": 1,
+          "status": "NON_ZERO_EXIT",
+          "entry_sha256": "e455809c295cf3295631eb0a31dfcda171718f9a6da9ae22c7664c4f1309d708"
+        },
+        {
+          "target": "//codex-rs/app-server:app-server-all-test",
+          "exit_code_wire_value": 1,
+          "status": "NON_ZERO_EXIT",
+          "entry_sha256": "656aec3ea1a022aca78af04767bee30a1a51977543edadee3a240438e0ca4347"
+        },
+        {
+          "target": "//codex-rs/app-server:app-server-all-test",
+          "exit_code_wire_value": 1,
+          "status": "NON_ZERO_EXIT",
+          "entry_sha256": "2fbb8b7cf7db9f5920a168a5d9a493b4851ceedcff1e7e9aacaf158f27429cf1"
+        },
+        {
+          "target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test",
+          "exit_code_wire_value": 101,
+          "status": "NON_ZERO_EXIT",
+          "entry_sha256": "16455ecfbc24eeb1e99c136584804667b5e4ad18031665ff8058f5cb5b1dee8f"
+        },
+        {
+          "target": "//codex-rs/app-server:app-server-all-test",
+          "exit_code_wire_value": 1,
+          "status": "NON_ZERO_EXIT",
+          "entry_sha256": "16fc919333f7c95ee64dbf504c03d975caabc687435f8facc864592cd7fbc8db"
+        },
+        {
+          "target": "//codex-rs/cli:cli-sandbox_cloud_config-test",
+          "exit_code_wire_value": 101,
+          "status": "NON_ZERO_EXIT",
+          "entry_sha256": "70d8848a918eba8467e8dff5b94f0fdfa04138669837589203251b49a7ba563c"
+        },
+        {
+          "target": "//codex-rs/core:core-responses_headers-test",
+          "exit_code_wire_value": 101,
+          "status": "NON_ZERO_EXIT",
+          "entry_sha256": "f733585d5c90eb3997b49f97bbe891598f54256d7db7d4be8d1f7e5630524e1f"
+        },
+        {
+          "target": "//codex-rs/app-server:app-server-all-test",
+          "exit_code_wire_value": 1,
+          "status": "NON_ZERO_EXIT",
+          "entry_sha256": "fd5bf979a21d6c19a164265c795cb4ef72df473f8fc493f0e87b60fb1dcb8451"
+        },
+        {
+          "target": "//codex-rs/app-server:app-server-all-test",
+          "exit_code_wire_value": 1,
+          "status": "NON_ZERO_EXIT",
+          "entry_sha256": "640b102a6c02f2738ea2fc5104c95cbc5715a6b239009caf540f0bfc4cf4ddb1"
+        },
+        {
+          "target": "//codex-rs/app-server:app-server-all-test",
+          "exit_code_wire_value": 1,
+          "status": "NON_ZERO_EXIT",
+          "entry_sha256": "8558d97022fbfef475d712ef454f66a8b1f0ebab68b069b115447b846cd9c82d"
+        }
+      ],
+      "failure_target_counts": {
+        "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests": 1,
+        "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests": 1,
+        "//codex-rs/hepta-memory:hepta-memory-unit-tests": 1,
+        "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests": 1,
+        "//codex-rs/app-server:app-server-all-test": 10,
+        "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test": 1,
+        "//codex-rs/cli:cli-sandbox_cloud_config-test": 1,
+        "//codex-rs/core:core-responses_headers-test": 1
+      },
+      "all_failed_entry_sha_and_target_counts_equal_recorded_reader": true,
+      "all_frames_consumed_to_EOF": true,
+      "all_nonzero_ids_unique": true,
+      "decoded_file_materialized_by_reviewer": false
+    },
+    {
+      "artifact_id": 12863646702,
+      "name": "bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-3",
+      "official_ZIP": {
+        "path": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/official-failure-artifact-12863646702/original.zip",
+        "bytes": 4902992,
+        "sha256": "d6d7d854f87098957eecc0d305cb35e9e65153c65066b5d01fbeafa432daa3ba"
+      },
+      "captured_digest": "sha256:d6d7d854f87098957eecc0d305cb35e9e65153c65066b5d01fbeafa432daa3ba",
+      "member": {
+        "name": "execution-log-test-test-windows-shard-3218.zst",
+        "bytes": 4904020,
+        "sha256": "93d5c283a8b03438ea16b94c6bced72ff5000451f3a9a1b77cd9c1b136c2a298",
+        "CRC": 3098397982
+      },
+      "ZIP_CRC_size_SHA_verified": true,
+      "integrity_receipt": {
+        "path": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/official-failure-artifact-12863646702/full-original-integrity.json",
+        "bytes": 1524,
+        "sha256": "327336b8b6b98b50c1443293518063e57651c0e1a456dd46dd0e88b459858a88"
+      },
+      "recorded_reader": {
+        "path": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/official-failure-artifact-12863646702/complete-original-execution-record-reader.json",
+        "bytes": 9994,
+        "sha256": "e0fe662e97fca3fcf0818c39b32a0bd15863e6690b0792eac49251a7c4b02d55"
+      },
+      "decoded_original_bytes": 29545748,
+      "decoded_original_SHA256": "7b80d92aeda3daced4df2d3e7d09ffae1daae2d57d15eec60e3fab9aeee2b6a7",
+      "length_delimited_frames": 89673,
+      "outer_entry_types": {
+        "invocation": 1,
+        "symlink_action": 433,
+        "file": 68335,
+        "input_set": 17583,
+        "spawn": 2707,
+        "runfiles_tree": 233,
+        "directory": 381
+      },
+      "spawn_records": 2707,
+      "failure_records": [
+        {
+          "target": "//codex-rs/ext/queue:queue-queue_service-test",
+          "exit_code_wire_value": 101,
+          "status": "NON_ZERO_EXIT",
+          "entry_sha256": "0b73b337d76431701c76280b153ef0d0efb624668edb9aabd5d0872c4c3e7cb7"
+        },
+        {
+          "target": "//codex-rs/hepta-matrixd:hepta-matrixd-unit-tests",
+          "exit_code_wire_value": 1,
+          "status": "NON_ZERO_EXIT",
+          "entry_sha256": "e0e6cacfe54593cd0239c04b1484daef7d9c7049ee57fc00d4b70ef7879cacbb"
+        },
+        {
+          "target": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+          "exit_code_wire_value": 1,
+          "status": "NON_ZERO_EXIT",
+          "entry_sha256": "dc2f334ea89934c60f33c9cb1985d30eb98ffa8fbd0ff505f9548e10df5d9b0b"
+        }
+      ],
+      "failure_target_counts": {
+        "//codex-rs/ext/queue:queue-queue_service-test": 1,
+        "//codex-rs/hepta-matrixd:hepta-matrixd-unit-tests": 1,
+        "//codex-rs/hepta-agentd:hepta-agentd-unit-tests": 1
+      },
+      "all_failed_entry_sha_and_target_counts_equal_recorded_reader": true,
+      "all_frames_consumed_to_EOF": true,
+      "all_nonzero_ids_unique": true,
+      "decoded_file_materialized_by_reviewer": false
+    }
+  ],
+  "compact_totals": {
+    "frames": 269340,
+    "spawn_records": 8163,
+    "nonzero_or_nonempty_status_spawn_records": 25,
+    "distinct_failed_targets": 14,
+    "failure_target_counts": {
+      "//codex-rs/exec-server:exec-server-exec_process-test": 1,
+      "//codex-rs/ext/hepta-memory:hepta-memory-unit-tests": 1,
+      "//codex-rs/core:core-unit-tests": 3,
+      "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests": 1,
+      "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests": 1,
+      "//codex-rs/hepta-memory:hepta-memory-unit-tests": 1,
+      "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests": 1,
+      "//codex-rs/app-server:app-server-all-test": 10,
+      "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test": 1,
+      "//codex-rs/cli:cli-sandbox_cloud_config-test": 1,
+      "//codex-rs/core:core-responses_headers-test": 1,
+      "//codex-rs/ext/queue:queue-queue_service-test": 1,
+      "//codex-rs/hepta-matrixd:hepta-matrixd-unit-tests": 1,
+      "//codex-rs/hepta-agentd:hepta-agentd-unit-tests": 1
+    },
+    "decoded_bytes_total": 89001974,
+    "method": "libzstd data-only decompression in memory, length-delimited varints and complete outer/payload wire-field consumption, all8163Spawn exit/status/target fields and25failed-entry SHA compared to delivered reader. No packet code or project binary executed.",
+    "scope_limit": "Wire/field statistics do not independently validate every semantic nested protobuf value, nor identify unique libtest cases or actual OS birth/wait ownership.25 is execution-record count, not25tests.",
+    "all3decoded_original_SHA_match": true
+  },
+  "three_complete_job_logs": [
+    {
+      "job_id": 123170922803,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+      "state": "completed",
+      "conclusion": "failure",
+      "complete_raw": {
+        "path": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt",
+        "bytes": 1364560,
+        "sha256": "39d45be2033ce1d75462fbaee05082fae144c97d467fede64d83559c50c5fb45"
+      },
+      "line_count": 8727,
+      "actual_merge_checkout": {
+        "start_line": 184,
+        "end_line": 184,
+        "lines": [
+          "2026-10-28T23:45:29.2806758Z HEAD is now at c4f58e5 Merge bf36d10a54db1d9453409a432cb4641c9fbe38e8 into c38e7727220f32c7410f59083c5ea7878bbae078"
+        ]
+      },
+      "failure_summary_lines": [
+        {
+          "line": 3506,
+          "text": "2026-10-29T00:16:10.1203837Z test result: FAILED. 71 passed; 7 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.65s"
+        },
+        {
+          "line": 4337,
+          "text": "2026-10-29T00:20:37.1031791Z test result: FAILED. 46 passed; 8 failed; 2 ignored; 0 measured; 169 filtered out; finished in 0.14s"
+        },
+        {
+          "line": 4541,
+          "text": "2026-10-29T00:23:10.4659785Z test result: FAILED. 64 passed; 4 failed; 4 ignored; 0 measured; 202 filtered out; finished in 40.47s"
+        },
+        {
+          "line": 4788,
+          "text": "2026-10-29T00:23:10.5967120Z test result: FAILED. 39 passed; 4 failed; 0 ignored; 0 measured; 231 filtered out; finished in 12.24s"
+        },
+        {
+          "line": 5364,
+          "text": "2026-10-29T00:36:31.5329173Z test result: FAILED. 51 passed; 14 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.10s"
+        },
+        {
+          "line": 5439,
+          "text": "2026-10-29T00:38:49.4522870Z test result: FAILED. 0 passed; 3 failed; 0 ignored; 0 measured; 182 filtered out; finished in 0.07s"
+        },
+        {
+          "line": 5588,
+          "text": "2026-10-29T00:39:22.1268167Z test result: FAILED. 69 passed; 1 failed; 0 ignored; 0 measured; 880 filtered out; finished in 59.30s"
+        },
+        {
+          "line": 5737,
+          "text": "2026-10-29T00:39:42.6660512Z test result: FAILED. 68 passed; 1 failed; 0 ignored; 0 measured; 881 filtered out; finished in 71.14s"
+        },
+        {
+          "line": 5858,
+          "text": "2026-10-29T00:39:44.7876641Z test result: FAILED. 46 passed; 1 failed; 1 ignored; 0 measured; 902 filtered out; finished in 39.56s"
+        },
+        {
+          "line": 6079,
+          "text": "2026-10-29T00:39:45.0112839Z test result: FAILED. 65 passed; 1 failed; 0 ignored; 0 measured; 884 filtered out; finished in 60.64s"
+        },
+        {
+          "line": 6103,
+          "text": "2026-10-29T00:39:45.2713533Z test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.12s"
+        },
+        {
+          "line": 6130,
+          "text": "2026-10-29T00:39:54.3577242Z test result: FAILED. 3 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.52s"
+        },
+        {
+          "line": 6278,
+          "text": "2026-10-29T00:40:45.9340496Z test result: FAILED. 59 passed; 1 failed; 1 ignored; 0 measured; 889 filtered out; finished in 78.94s"
+        },
+        {
+          "line": 6417,
+          "text": "2026-10-29T00:40:45.9532608Z test result: FAILED. 59 passed; 1 failed; 1 ignored; 0 measured; 889 filtered out; finished in 71.60s"
+        },
+        {
+          "line": 6556,
+          "text": "2026-10-29T00:40:45.9723885Z test result: FAILED. 59 passed; 1 failed; 1 ignored; 0 measured; 889 filtered out; finished in 44.00s"
+        },
+        {
+          "line": 6838,
+          "text": "2026-10-29T00:40:51.4343246Z test result: FAILED. 60 passed; 1 failed; 1 ignored; 0 measured; 888 filtered out; finished in 89.61s"
+        },
+        {
+          "line": 7104,
+          "text": "2026-10-29T00:40:51.4678441Z test result: FAILED. 60 passed; 1 failed; 1 ignored; 0 measured; 888 filtered out; finished in 72.17s"
+        },
+        {
+          "line": 7358,
+          "text": "2026-10-29T00:40:51.4898314Z test result: FAILED. 60 passed; 1 failed; 1 ignored; 0 measured; 888 filtered out; finished in 65.78s"
+        },
+        {
+          "line": 7785,
+          "text": "2026-10-29T00:41:06.8920544Z test result: FAILED. 59 passed; 1 failed; 1 ignored; 0 measured; 889 filtered out; finished in 44.00s"
+        },
+        {
+          "line": 7808,
+          "text": "2026-10-29T00:41:06.9541617Z test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.12s"
+        },
+        {
+          "line": 7833,
+          "text": "2026-10-29T00:41:07.0368384Z test result: FAILED. 3 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.52s"
+        },
+        {
+          "line": 7869,
+          "text": "2026-10-29T00:41:07.1197035Z test result: FAILED. 0 passed; 3 failed; 0 ignored; 0 measured; 182 filtered out; finished in 0.07s"
+        },
+        {
+          "line": 8033,
+          "text": "2026-10-29T00:41:07.2164334Z test result: FAILED. 51 passed; 14 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.10s"
+        },
+        {
+          "line": 8168,
+          "text": "2026-10-29T00:41:07.2923132Z test result: FAILED. 71 passed; 7 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.65s"
+        },
+        {
+          "line": 8370,
+          "text": "2026-10-29T00:41:07.3855104Z test result: FAILED. 39 passed; 4 failed; 0 ignored; 0 measured; 231 filtered out; finished in 12.24s"
+        },
+        {
+          "line": 8572,
+          "text": "2026-10-29T00:41:07.4739041Z test result: FAILED. 46 passed; 8 failed; 2 ignored; 0 measured; 169 filtered out; finished in 0.14s"
+        }
+      ],
+      "raw_failed_name_occurrences_are_not_BEP_unique_tests": true
+    },
+    {
+      "job_id": 123170922845,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+      "state": "completed",
+      "conclusion": "failure",
+      "complete_raw": {
+        "path": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922845.full-decoded-log.original.txt",
+        "bytes": 767897,
+        "sha256": "6c45f08163e5513fc3026ef2dfbaed985b54b835254d38b7e26275b4434aa38d"
+      },
+      "line_count": 6068,
+      "actual_merge_checkout": {
+        "start_line": 175,
+        "end_line": 175,
+        "lines": [
+          "2026-10-28T23:45:42.7617510Z HEAD is now at c4f58e5 Merge bf36d10a54db1d9453409a432cb4641c9fbe38e8 into c38e7727220f32c7410f59083c5ea7878bbae078"
+        ]
+      },
+      "failure_summary_lines": [
+        {
+          "line": 3831,
+          "text": "2026-10-29T00:21:54.3799093Z test result: FAILED. 2 passed; 1 failed; 21 ignored; 0 measured; 0 filtered out; finished in 0.13s"
+        },
+        {
+          "line": 3988,
+          "text": "2026-10-29T00:22:37.1708113Z test result: FAILED. 74 passed; 6 failed; 0 ignored; 0 measured; 20 filtered out; finished in 4.13s"
+        },
+        {
+          "line": 4342,
+          "text": "2026-10-29T00:30:54.3777801Z test result: FAILED. 88 passed; 1 failed; 0 ignored; 0 measured; 2251 filtered out; finished in 16.87s"
+        },
+        {
+          "line": 4778,
+          "text": "2026-10-29T00:30:54.6582846Z test result: FAILED. 78 passed; 1 failed; 0 ignored; 0 measured; 2261 filtered out; finished in 37.64s"
+        },
+        {
+          "line": 5127,
+          "text": "2026-10-29T00:30:54.7541602Z test result: FAILED. 78 passed; 1 failed; 0 ignored; 0 measured; 2261 filtered out; finished in 37.62s"
+        },
+        {
+          "line": 5567,
+          "text": "2026-10-29T00:31:26.0350892Z test result: FAILED. 78 passed; 1 failed; 0 ignored; 0 measured; 2261 filtered out; finished in 37.62s"
+        },
+        {
+          "line": 5757,
+          "text": "2026-10-29T00:31:26.0918574Z test result: FAILED. 2 passed; 1 failed; 21 ignored; 0 measured; 0 filtered out; finished in 0.13s"
+        },
+        {
+          "line": 5888,
+          "text": "2026-10-29T00:31:26.1557010Z test result: FAILED. 74 passed; 6 failed; 0 ignored; 0 measured; 20 filtered out; finished in 4.13s"
+        }
+      ],
+      "raw_failed_name_occurrences_are_not_BEP_unique_tests": true
+    },
+    {
+      "job_id": 123170922906,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+      "state": "completed",
+      "conclusion": "failure",
+      "complete_raw": {
+        "path": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt",
+        "bytes": 691690,
+        "sha256": "eb398dea5293ec99da8b1021914f5e052e6535b48ebc6f6ee178735b9dabb4d3"
+      },
+      "line_count": 5627,
+      "actual_merge_checkout": {
+        "start_line": 183,
+        "end_line": 183,
+        "lines": [
+          "2026-10-28T23:45:33.3649160Z HEAD is now at c4f58e5 Merge bf36d10a54db1d9453409a432cb4641c9fbe38e8 into c38e7727220f32c7410f59083c5ea7878bbae078"
+        ]
+      },
+      "failure_summary_lines": [
+        {
+          "line": 4232,
+          "text": "2026-10-29T00:34:30.8424488Z test result: FAILED. 31 passed; 4 failed; 0 ignored; 0 measured; 0 filtered out; finished in 63.53s"
+        },
+        {
+          "line": 4439,
+          "text": "2026-10-29T00:37:12.5331098Z test result: FAILED. 39 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.45s"
+        },
+        {
+          "line": 4613,
+          "text": "2026-10-29T00:38:53.2243004Z test result: FAILED. 57 passed; 11 failed; 1 ignored; 0 measured; 113 filtered out; finished in 16.62s"
+        },
+        {
+          "line": 4791,
+          "text": "2026-10-29T00:38:53.2437719Z test result: FAILED. 64 passed; 14 failed; 0 ignored; 0 measured; 104 filtered out; finished in 1.67s"
+        },
+        {
+          "line": 4883,
+          "text": "2026-10-29T00:38:53.2618740Z test result: FAILED. 28 passed; 7 failed; 0 ignored; 0 measured; 147 filtered out; finished in 38.23s"
+        },
+        {
+          "line": 5207,
+          "text": "2026-10-29T00:39:20.1257000Z test result: FAILED. 31 passed; 4 failed; 0 ignored; 0 measured; 0 filtered out; finished in 63.53s"
+        },
+        {
+          "line": 5317,
+          "text": "2026-10-29T00:39:20.2049768Z test result: FAILED. 64 passed; 14 failed; 0 ignored; 0 measured; 104 filtered out; finished in 1.67s"
+        },
+        {
+          "line": 5409,
+          "text": "2026-10-29T00:39:20.2126038Z test result: FAILED. 28 passed; 7 failed; 0 ignored; 0 measured; 147 filtered out; finished in 38.23s"
+        },
+        {
+          "line": 5472,
+          "text": "2026-10-29T00:39:20.2829991Z test result: FAILED. 39 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.45s"
+        }
+      ],
+      "raw_failed_name_occurrences_are_not_BEP_unique_tests": true
+    }
+  ],
+  "complete_job_raw_bytes": 2824147,
+  "exact_bf36_source_files": [
+    {
+      "path": ".bazelversion",
+      "bytes": 6,
+      "sha256": "14ebdd5f5d8dfccb0fc574ea9aabecc07d7cdd99d53e4fc01e58f9c3d23d18ef",
+      "Git_blob_oid": "b13d146a7b02b96e4c30340e69388d539c9721be",
+      "raw_copy": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/exact-bf36-readonly-source/.bazelversion",
+      "actual_packet_file": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/exact-bf36-readonly-source/.bazelversion",
+      "actual_local_bf36_preimage_equal": true
+    },
+    {
+      "path": "codex-rs/uds/src/lib.rs",
+      "bytes": 14398,
+      "sha256": "b81907ec7757b85cce001328f272c9d1c3467e42b8772d667b09b17a7d455c75",
+      "Git_blob_oid": "9fe8556c9681be665fa7606a5978fd7b35ed7e42",
+      "raw_copy": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/exact-bf36-readonly-source/codex-rs/uds/src/lib.rs",
+      "actual_packet_file": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/exact-bf36-readonly-source/codex-rs/uds/src/lib.rs",
+      "actual_local_bf36_preimage_equal": true
+    },
+    {
+      "path": "codex-rs/uds/src/lib_tests.rs",
+      "bytes": 5638,
+      "sha256": "a5e437bb409156b954b989dad6d3928038088cd8deba9a54b06dd315d883e3d4",
+      "Git_blob_oid": "9c2d25cd72fdfbbb74b04705d0bd69872570f01b",
+      "raw_copy": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/exact-bf36-readonly-source/codex-rs/uds/src/lib_tests.rs",
+      "actual_packet_file": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/exact-bf36-readonly-source/codex-rs/uds/src/lib_tests.rs",
+      "actual_local_bf36_preimage_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-matrixd/src/control.rs",
+      "bytes": 36655,
+      "sha256": "b7b32d9968c21986be64868e632f3b4dc18a41c4e5395566032bd1923345185b",
+      "Git_blob_oid": "ee46d46b10465e65858237a040dd160c9c47fcf6",
+      "raw_copy": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/exact-bf36-readonly-source/codex-rs/hepta-matrixd/src/control.rs",
+      "actual_packet_file": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/exact-bf36-readonly-source/codex-rs/hepta-matrixd/src/control.rs",
+      "actual_local_bf36_preimage_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-matrixd/src/control_lifecycle_tests.rs",
+      "bytes": 12229,
+      "sha256": "524553bb142584925ca0e6738d4ab66a6a3927bdd0e13bcfccd7024a8d232877",
+      "Git_blob_oid": "8edd9b9925ce5ca94b2cbb201dcd0e597c5754a0",
+      "raw_copy": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/exact-bf36-readonly-source/codex-rs/hepta-matrixd/src/control_lifecycle_tests.rs",
+      "actual_packet_file": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/exact-bf36-readonly-source/codex-rs/hepta-matrixd/src/control_lifecycle_tests.rs",
+      "actual_local_bf36_preimage_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/durable_store_platform.rs",
+      "bytes": 5319,
+      "sha256": "977d167aff7b707480e731190affcece1afe3fc2ef8e270194079989d6b66c46",
+      "Git_blob_oid": "43a48b18d2f7f24b508ca242b335d12339d59910",
+      "raw_copy": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/exact-bf36-readonly-source/codex-rs/hepta-prompt-registry/src/durable_store_platform.rs",
+      "actual_packet_file": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/exact-bf36-readonly-source/codex-rs/hepta-prompt-registry/src/durable_store_platform.rs",
+      "actual_local_bf36_preimage_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store_io.rs",
+      "bytes": 8066,
+      "sha256": "febde7c29b947473a77e215937f4c9e4a7de9dc877c488da1fe32157dd33bd93",
+      "Git_blob_oid": "5dc155c4d3a26b09c75a0660a4514a22c0182aef",
+      "raw_copy": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/exact-bf36-readonly-source/codex-rs/hepta-contracts/src/final_use_store_io.rs",
+      "actual_packet_file": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/exact-bf36-readonly-source/codex-rs/hepta-contracts/src/final_use_store_io.rs",
+      "actual_local_bf36_preimage_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_tests.rs",
+      "bytes": 12835,
+      "sha256": "936dc7b4950f2ab2e32dce0f68712cf5e3e72c90f08e6cf16efb8ff21d765d18",
+      "Git_blob_oid": "d0677425dceb6df750d75abd29a1933ba70efd5c",
+      "raw_copy": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/exact-bf36-readonly-source/codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_tests.rs",
+      "actual_packet_file": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/exact-bf36-readonly-source/codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_tests.rs",
+      "actual_local_bf36_preimage_equal": true
+    },
+    {
+      "path": "codex-rs/core/src/agent/control_tests.rs",
+      "bytes": 162921,
+      "sha256": "41cfd055c5bc65fba64118f7c7a1c300d32a499bfe8f9d2cbc84533ff4ebb70d",
+      "Git_blob_oid": "6d4174b72688501e2100f2100131aaee4429778e",
+      "raw_copy": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/exact-bf36-readonly-source/codex-rs/core/src/agent/control_tests.rs",
+      "actual_packet_file": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/exact-bf36-readonly-source/codex-rs/core/src/agent/control_tests.rs",
+      "actual_local_bf36_preimage_equal": true
+    },
+    {
+      "path": "codex-rs/core/src/tasks/mod.rs",
+      "bytes": 177589,
+      "sha256": "9562454dafe52ee72e848b400437fd39d90c41df09f113807fa64c3a4ba31b02",
+      "Git_blob_oid": "d0d59d13389f7ce0b826b67ee0b37059356c2d1e",
+      "raw_copy": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/exact-bf36-readonly-source/codex-rs/core/src/tasks/mod.rs",
+      "actual_packet_file": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/exact-bf36-readonly-source/codex-rs/core/src/tasks/mod.rs",
+      "actual_local_bf36_preimage_equal": true
+    },
+    {
+      "path": "codex-rs/core/src/session/inject.rs",
+      "bytes": 31467,
+      "sha256": "f9dc3d8d52c5a0c636c0df45731f1e26dc952cbe2ae443b61dc5083dd7979a2a",
+      "Git_blob_oid": "4f6cdaf8c9d56ea775a54c135e0d2de375a4a0d0",
+      "raw_copy": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/exact-bf36-readonly-source/codex-rs/core/src/session/inject.rs",
+      "actual_packet_file": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/exact-bf36-readonly-source/codex-rs/core/src/session/inject.rs",
+      "actual_local_bf36_preimage_equal": true
+    }
+  ],
+  "source_binding": "All11 provided source copies, including.bazelversion9.3.0, exactly equal locally present actualbf36 Git bytes, SHA256, size and Git blob IDs. Current raw checkout is c4f58 merge with same tree; no entire-build source-before/after fingerprint was recomputed by this reviewer.",
+  "original_failure_boundaries": [
+    {
+      "area": "ordinaryRegistry/FinalUse/worker",
+      "raw_fact": "Complete logs show UnsafeStateDirectory/RegistryOpen refusal and14ordinary_cpu_target case names in one original library result; other prompt/service and state positive fixtures stop before later intended behavior.",
+      "ordinary_worker14_original_case_names": [
+        "ordinary_cpu_target::tests::original_child_observer_keeps_durability_failure_and_disk_only_recreation_unknown",
+        "ordinary_cpu_target::tests::source_route::controlled::controlled_budget_and_child_scope_refuse_before_registration_without_changing_original_caps",
+        "ordinary_cpu_target::tests::source_route::controlled::controlled_cross_owner_is_rejected_before_any_entry",
+        "ordinary_cpu_target::tests::source_route::controlled::controlled_original_operation_lease_reservation_and_issuer_cannot_be_rebound",
+        "ordinary_cpu_target::tests::source_route::controlled::controlled_signed_ids_never_become_funding_native_entry_or_terminal_release",
+        "ordinary_cpu_target::tests::source_route::controlled::controlled_signed_memory_headroom_remains_indeterminate_without_funding",
+        "ordinary_cpu_target::tests::source_route::nonzero_actual_child_never_becomes_source_rejected_or_applied",
+        "ordinary_cpu_target::tests::source_route::races::expiry_after_actual_sqlite_entry_await_prevents_spawn_and_retains_slot",
+        "ordinary_cpu_target::tests::source_route::races::lost_acknowledgement_and_lost_child_owner_stay_unknown_without_respawn",
+        "ordinary_cpu_target::tests::source_route::races::lost_acknowledgement_keeps_original_child_observer_and_never_respawns",
+        "ordinary_cpu_target::tests::source_route::races::revocation_after_actual_sqlite_entry_await_prevents_spawn_and_retains_slot",
+        "ordinary_cpu_target::tests::source_route::signed_source_commits_only_after_original_child_observation_and_never_repeats",
+        "ordinary_cpu_target::tests::source_route::wrong_original_authority_rejects_before_permanent_entry_or_spawn",
+        "ordinary_cpu_target::tests::unsigned_dispatch_and_missing_entry_never_spawn_or_complete"
+      ],
+      "raw_example": {
+        "start_line": 5284,
+        "end_line": 5285,
+        "lines": [
+          "2026-10-29T00:36:31.3107587Z thread 'ordinary_cpu_target::tests::source_route::controlled::controlled_budget_and_child_scope_refuse_before_registration_without_changing_original_caps' (7384) panicked at hepta-infer-worker-host/src\\ordinary_cpu_source_route_tests.rs:98:6:",
+          "2026-10-29T00:36:31.3109884Z original durable FinalUse owner: UnsafeStateDirectory"
+        ]
+      },
+      "source_fact": "Windows ordinaryRegistry lock_directory at33–34 refuses; ordinaryFinalUse prepare_directory at96–97 refuses. Worker source_route authority helper at76–98 calls original public open_state_dir_with_clock and expects owner. Existing opaque native owner interfaces are not equivalent to ordinary factory completion.",
+      "classification": "Correct fail-closed guard, still production/caller functionality OPEN. No guard bypass, scope fixture replacement or fakeauthority authorized."
+    },
+    {
+      "area": "WindowsUDS/Matrix",
+      "raw_fact": "Original Matrix control_shutdown_joins_in_flight_connections and health_tracks_real_task_state_and_owner_uds_serves_exact_identity fail with deadline/ConnectionReset observations.",
+      "source_fact": "udsWindows ensure_current_user_peer at326–331 returnsUnsupported. Matrixserve_connection at413 consumes this actual gate before frame read.",
+      "inference_limit": "Available static rejection path only. No new native instrumented witness proves every reported socket failure used it; no peer-Ok substitute or completedWindowsidentity claim."
+    },
+    {
+      "area": "core abort/inject",
+      "raw": {
+        "job": 123170922845,
+        "file": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922845.full-decoded-log.original.txt",
+        "exact_excerpt": {
+          "start_line": 4332,
+          "end_line": 4336,
+          "lines": [
+            "2026-10-29T00:30:54.3773661Z ---- agent::control::tests::resume_agent_from_rollout_uses_edge_data_when_descendant_metadata_source_is_stale stdout ----",
+            "2026-10-29T00:30:54.3774351Z ",
+            "2026-10-29T00:30:54.3774790Z thread 'agent::control::tests::resume_agent_from_rollout_uses_edge_data_when_descendant_metadata_source_is_stale' (1968) panicked at core/src\\agent\\control_tests.rs:393:10:",
+            "2026-10-29T00:30:54.3775714Z inject thread resume context: InvalidRequest(\"turn is terminalizing or shutting down and cannot accept injected context\")",
+            "2026-10-29T00:30:54.3776477Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+          ]
+        }
+      },
+      "source_order": "control_tests.rs persist_thread_for_tree_resume calls abort_all_tasks then inject_response_items and expect at393. tasks/mod.rs2738–2791 ordinaryabort returns for existingStarting/Terminalizing owners; inject.rs149–160 repeats terminalization/shutdown rejection before and after acquiring active lock.",
+      "inference_limit": "Source exposes a possible lifecycle-order issue; actual phase/owner witness is absent. Do not prove race, call it transient, or weaken terminalization fence from this packet. Root handles lifecycle investigation."
+    }
+  ],
+  "mac_Clippy": {
+    "job": 123170922827,
+    "original_tool_response": {
+      "path": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922827.raw-log-tool.original.json",
+      "bytes": 974,
+      "sha256": "ead63da742ea48e7104059dd71a4766c6cfba2da776bdd7d28798e0ffce6d9ea"
+    },
+    "actual_tool_result": "404BlobNotFound",
+    "annotation": {
+      "path": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/failed-job123170922827-all-annotations-page1.original.json",
+      "bytes": 855,
+      "sha256": "c14b46e9e4f792a2c3c587720fc4b4fa59f1e7bcbac42dcb706993b5f1fdceb1"
+    },
+    "captured_annotation_messages": [
+      "The hosted runner lost communication with the server. Anything in your workflow that terminates the runner process, starves it for CPU/Memory, or blocks its network access can cause this error.",
+      "Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times."
+    ],
+    "full_job_log_delivered": false,
+    "native_end_cause": "UNKNOWN",
+    "transient_classification_or_retry_authorization": false
+  },
+  "single_x64_base112_receipt": {
+    "pin": {
+      "path": "work/coordination/inbox/local-codex-Hepta-bf36-new-Bazel-originals-20261029-001/outputs/hepta-bf36-x64-base-merge-original-112-contract-2026-10-29.json",
+      "bytes": 102943,
+      "sha256": "7606eec07364cc9a485662ab762ef97039fa3e76d42a79c8c7b4af094bb621e7"
+    },
+    "source_tuples": {
+      "base_sha": "c38e7727220f32c7410f59083c5ea7878bbae078",
+      "lane": "base-merge",
+      "native_execution_required": false,
+      "paired_candidate": {
+        "base_sha": "9fedf7ecbbe07177069c030592b4e03dcffebb81",
+        "lane": "base-merge",
+        "native_execution_required": false,
+        "requires_source_head_success": true,
+        "schema_version": 1,
+        "source_sha": "d67e65035033172aceb5b3762a08ff6fea93fa33",
+        "source_tree": "6edd38dd5180e880e56db5194bb308f425e9a685",
+        "tested_sha": "a3336f6c637db6f10ef219e7e33a326ea11c3100",
+        "tested_tree": "6edd38dd5180e880e56db5194bb308f425e9a685"
+      },
+      "requires_source_head_success": true,
+      "schema_version": 1,
+      "source_sha": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "source_tree": "803e1e9b12efa4dd236ecd99333a717b5d52b033",
+      "tested_sha": "c4f58e535d69a8748484df722743e279cbb1dea5",
+      "tested_tree": "803e1e9b12efa4dd236ecd99333a717b5d52b033"
+    },
+    "artifact_metadata": {
+      "path": "outputs/hepta-bf36-x64-base-merge-pair-original-12862553847-2026-10-29.zip",
+      "bytes": 62271103,
+      "sha256": "a864806a8692f45182a45af9f3a8152d7fe85abbcaa1445f08cac024ff84dfbc"
+    },
+    "declared_steps": 56,
+    "listed_command_records": 112,
+    "all112receipt_entries_internally_passed_exit0_minima_and_SHA_format": true,
+    "record_names_unique": true,
+    "underlying_62271103B_ZIP_delivered": false,
+    "underlying_metadata_archive_and_inventory_delivered_here": false,
+    "qualification_scope": "Only receipt self-consistency/read. Captured assertions of2121archiveCRC/SHA and112rawlog joins were NOT independently rechecked without62MBoriginalZIP.1/4Linuxlane receipt cannot establish four-lane PairPASS. Syntheticstudy != ordinarythree-modeltraining/evaluation/download/authorizedinstall/readback."
+  },
+  "original_pair_ARM_cancellations": {
+    "gate": {
+      "path": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/PN0-d67e-Hepta-bf36-first-Bazel-failure-and-pair-terminal-current-source-gate-20261029-051/current-head-publication-intent-readonly-receipt.json",
+      "bytes": 2015396,
+      "sha256": "88bc418ce8c1fb7ab9df819e5a6e53deec697f57388a4655d7fab2a029920c4d"
+    },
+    "two_cancelled_jobs": [
+      {
+        "id": 123170269687,
+        "name": "pair (ubuntu-24.04-arm, base-merge)",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "head_sha": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40789310103/job/123170269687"
+      },
+      {
+        "id": 123170269681,
+        "name": "pair (ubuntu-24.04-arm, source-head)",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "head_sha": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40789310103/job/123170269681"
+      }
+    ],
+    "pair_run_record": {
+      "path": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/PN0-d67e-Hepta-bf36-first-Bazel-failure-and-pair-terminal-current-source-gate-20261029-051/hepta-latest-run40789310103.original.json",
+      "bytes": 14868,
+      "sha256": "306d79f10033a556d60b0320d12b37706eea30607f53399808be1bc07a26f8d7"
+    },
+    "pair_run_conclusion": "cancelled",
+    "not_completion_descendant_wait_or_refund_evidence": true,
+    "no_reviewer_cancellation_or_rerun": true
+  },
+  "findings": [
+    {
+      "id": "EVIDENCE-PROTO-GIT-OID",
+      "severity": "P2",
+      "status": "METADATA_INCONSISTENCY_REQUIRING_CORRECTED_ADDENDUM",
+      "file": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/all-three-complete-original-execution-record-readers.json",
+      "field": "official_schema_Git_blob",
+      "recorded": "19f68f22a4d62c4fd1c7c0217aa6a7cb0",
+      "recorded_hex_length": 33,
+      "actual_attached_proto_content_Git_blob": "538a621d05f44987380f8cf1c24d7325a6d994e6",
+      "prefix_match": false,
+      "attached_proto": {
+        "path": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/bazel93-official-spawn.proto",
+        "bytes": 15858,
+        "sha256": "c617dd0040b3f5ad9f02f8fa6bb5e04bd0d03b037de791b08ccf792ec8dfa05a"
+      },
+      "descriptor": {
+        "path": "work/coordination/reviews/bf36-Bazel-originals-20261029-011-evidence/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/bazel93-official-spawn.descriptor.original.pb",
+        "bytes": 5750,
+        "sha256": "7862398447de3d73918a926c7b5f9b5a8e687aeaaaa643509b79186dfae25a67"
+      },
+      "meaning": "Recorded Git object identifier neither matches nor abbreviates attached source bytes. SHA256/ZIP/compact statistics still match; official remote Git provenance was not verified in this no-network review.",
+      "action": "Preserve this original receipt and issue corrected metadata with actual captured source identity; do not silently rewrite original or claim remote object verified."
+    }
+  ],
+  "qualification": {
+    "APPLY_COMMIT_PUBLISH": "NOT_DONE",
+    "new_runtime_tests_or_CI": "NOT_RUN",
+    "CI_retry_cancel_dispatch_network_permissions": "NOT_DONE",
+    "old_budgets_reset": false,
+    "Windowsoriginaldeletion_and_fullchain": "OPEN",
+    "ordinarymodelthree_round_genesis_I09_I10_PN1_release_WAN": "OPEN",
+    "all_pairs_pass": "NOT_QUALIFIED",
+    "task_complete": false,
+    "merge_ready": false,
+    "NO_GO": true
+  }
+}

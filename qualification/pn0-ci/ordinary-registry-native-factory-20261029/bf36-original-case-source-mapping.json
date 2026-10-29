@@ -1,0 +1,604 @@
+{
+  "schema": "bf36-original-registry-and-FinalUse-failure-source-mapping-v1",
+  "original_source": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+  "actual_source_d328": "d3284e385e2b6037dd86752ddd246b616144a87c",
+  "archive_pin": {
+    "bytes": 15302276,
+    "sha256": "dc77af56d616a2f3045c1f9160ef9e94dd85aae84a3d091defa891cd01110073"
+  },
+  "source_readers": [
+    {
+      "member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "bytes": 408682,
+      "sha256": "38d22fe35a91dd52097fbce87cf4c6c0ef9d106ac3b9454eb975ae907dc47fc9",
+      "scope": "existing original unique-failure-section reader, not BEP final-case oracle"
+    },
+    {
+      "member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922845.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "bytes": 7431,
+      "sha256": "836a9e79465b026ab1a338e95594019aaf17834367291e826ae4d95515c70984",
+      "scope": "existing original unique-failure-section reader, not BEP final-case oracle"
+    },
+    {
+      "member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "bytes": 14455,
+      "sha256": "662c45b6e7dc4818b31e615b28b190d15a3c140e70f225d15593ed2e4924f431",
+      "scope": "existing original unique-failure-section reader, not BEP final-case oracle"
+    }
+  ],
+  "original_cases_qualification": "Observed distinct failure sections in original reader, not a claim of full final BEP unique case counts or PASS derivation. Original target source failed before downstream semantics. No rerun performed.",
+  "observed_counts": [
+    {
+      "category": "compatibility_FinalUse_NO_protected_time_external_CAS_OPEN",
+      "target": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "failure_section_observations": 3
+    },
+    {
+      "category": "compatibility_FinalUse_NO_protected_time_external_CAS_OPEN",
+      "target": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests",
+      "failure_section_observations": 14
+    },
+    {
+      "category": "compatibility_FinalUse_NO_protected_time_external_CAS_OPEN",
+      "target": "//codex-rs/hepta-memory:hepta-memory-unit-tests",
+      "failure_section_observations": 4
+    },
+    {
+      "category": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test",
+      "failure_section_observations": 3
+    },
+    {
+      "category": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "target": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "failure_section_observations": 29
+    },
+    {
+      "category": "generic_registry_genuine_producer_added_in_011_NOT_RUN",
+      "target": "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests",
+      "failure_section_observations": 7
+    }
+  ],
+  "observations": [
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "prompt_delivery::tests::compiler_rejects_registry_and_context_model_drift",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests",
+      "original_failure_body": "\nthread 'prompt_delivery::tests::compiler_rejects_registry_and_context_model_drift' (7152) panicked at hepta-intelligence/src\\prompt_delivery_tests.rs:43:57:\nopen durable registry: UnsafeStateDirectory\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+      "source_status": "generic_registry_genuine_producer_added_in_011_NOT_RUN",
+      "remaining": "same admitted_registry helper later requires compatibility FinalUse at source line65; remains OPEN even if registry native proof succeeds",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "prompt_delivery::tests::exercised_registry_payload_is_the_exact_context_attachment_input",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests",
+      "original_failure_body": "\nthread 'prompt_delivery::tests::exercised_registry_payload_is_the_exact_context_attachment_input' (6276) panicked at hepta-intelligence/src\\prompt_delivery_tests.rs:43:57:\nopen durable registry: UnsafeStateDirectory\n",
+      "source_status": "generic_registry_genuine_producer_added_in_011_NOT_RUN",
+      "remaining": "same admitted_registry helper later requires compatibility FinalUse at source line65; remains OPEN even if registry native proof succeeds",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "prompt_delivery::tests::revocation_after_exercise_prevents_delivery_of_the_selected_realization",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests",
+      "original_failure_body": "\nthread 'prompt_delivery::tests::revocation_after_exercise_prevents_delivery_of_the_selected_realization' (5488) panicked at hepta-intelligence/src\\prompt_delivery_tests.rs:43:57:\nopen durable registry: UnsafeStateDirectory\n",
+      "source_status": "generic_registry_genuine_producer_added_in_011_NOT_RUN",
+      "remaining": "same admitted_registry helper later requires compatibility FinalUse at source line65; remains OPEN even if registry native proof succeeds",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "prompt_pipeline::tests::exercised_portfolio_compiles_attaches_and_observes_exact_delivery",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests",
+      "original_failure_body": "\nthread 'prompt_pipeline::tests::exercised_portfolio_compiles_attaches_and_observes_exact_delivery' (4404) panicked at hepta-intelligence/src\\prompt_delivery_tests.rs:43:57:\nopen durable registry: UnsafeStateDirectory\n",
+      "source_status": "generic_registry_genuine_producer_added_in_011_NOT_RUN",
+      "remaining": "same admitted_registry helper later requires compatibility FinalUse at source line65; remains OPEN even if registry native proof succeeds",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "prompt_pipeline::tests::serialization_without_selected_prompt_bytes_fails_closed",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests",
+      "original_failure_body": "\nthread 'prompt_pipeline::tests::serialization_without_selected_prompt_bytes_fails_closed' (368) panicked at hepta-intelligence/src\\prompt_delivery_tests.rs:43:57:\nopen durable registry: UnsafeStateDirectory\n",
+      "source_status": "generic_registry_genuine_producer_added_in_011_NOT_RUN",
+      "remaining": "same admitted_registry helper later requires compatibility FinalUse at source line65; remains OPEN even if registry native proof succeeds",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "prompt_pipeline::tests::revocation_after_compilation_blocks_attachment_preparation",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests",
+      "original_failure_body": "\nthread 'prompt_pipeline::tests::revocation_after_compilation_blocks_attachment_preparation' (9192) panicked at hepta-intelligence/src\\prompt_delivery_tests.rs:43:57:\nopen durable registry: UnsafeStateDirectory\n",
+      "source_status": "generic_registry_genuine_producer_added_in_011_NOT_RUN",
+      "remaining": "same admitted_registry helper later requires compatibility FinalUse at source line65; remains OPEN even if registry native proof succeeds",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "prompt_pipeline::tests::materialization_drift_after_compilation_blocks_attachment_preparation",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests",
+      "original_failure_body": "\nthread 'prompt_pipeline::tests::materialization_drift_after_compilation_blocks_attachment_preparation' (9676) panicked at hepta-intelligence/src\\prompt_delivery_tests.rs:43:57:\nopen durable registry: UnsafeStateDirectory\n\n",
+      "source_status": "generic_registry_genuine_producer_added_in_011_NOT_RUN",
+      "remaining": "same admitted_registry helper later requires compatibility FinalUse at source line65; remains OPEN even if registry native proof succeeds",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "production_writer::verified_dispatch::tests::compatibility_default_preserves_delivery_and_typed_final_use_errors",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-memory:hepta-memory-unit-tests",
+      "original_failure_body": "\nthread 'production_writer::verified_dispatch::tests::compatibility_default_preserves_delivery_and_typed_final_use_errors' (3256) panicked at hepta-memory/src\\production_verified_dispatch_tests.rs:62:10:\nactual durable FinalUse authority: UnsafeStateDirectory\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+      "source_status": "compatibility_FinalUse_NO_protected_time_external_CAS_OPEN",
+      "remaining": "current candidate does not change any FinalUse constructor or trust provider",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "production_writer::verified_dispatch::tests::final_boundary_rechecks_expiry_and_revocation_after_preparation",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-memory:hepta-memory-unit-tests",
+      "original_failure_body": "\nthread 'production_writer::verified_dispatch::tests::final_boundary_rechecks_expiry_and_revocation_after_preparation' (2332) panicked at hepta-memory/src\\production_verified_dispatch_tests.rs:62:10:\nactual durable FinalUse authority: UnsafeStateDirectory\n",
+      "source_status": "compatibility_FinalUse_NO_protected_time_external_CAS_OPEN",
+      "remaining": "current candidate does not change any FinalUse constructor or trust provider",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "production_writer::verified_dispatch::tests::original_bound_request_crosses_only_its_pinned_authority_once",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-memory:hepta-memory-unit-tests",
+      "original_failure_body": "\nthread 'production_writer::verified_dispatch::tests::original_bound_request_crosses_only_its_pinned_authority_once' (1288) panicked at hepta-memory/src\\production_verified_dispatch_tests.rs:62:10:\nactual durable FinalUse authority: UnsafeStateDirectory\n",
+      "source_status": "compatibility_FinalUse_NO_protected_time_external_CAS_OPEN",
+      "remaining": "current candidate does not change any FinalUse constructor or trust provider",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "production_writer::verified_dispatch::tests::owner_preflight_is_non_consuming_and_never_replaces_the_final_live_check",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-memory:hepta-memory-unit-tests",
+      "original_failure_body": "\nthread 'production_writer::verified_dispatch::tests::owner_preflight_is_non_consuming_and_never_replaces_the_final_live_check' (5732) panicked at hepta-memory/src\\production_verified_dispatch_tests.rs:62:10:\nactual durable FinalUse authority: UnsafeStateDirectory\n\n",
+      "source_status": "compatibility_FinalUse_NO_protected_time_external_CAS_OPEN",
+      "remaining": "current candidate does not change any FinalUse constructor or trust provider",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "ordinary_cpu_target::tests::original_child_observer_keeps_durability_failure_and_disk_only_recreation_unknown",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests",
+      "original_failure_body": "\nthread 'ordinary_cpu_target::tests::original_child_observer_keeps_durability_failure_and_disk_only_recreation_unknown' (2504) panicked at hepta-infer-worker-host/src\\ordinary_cpu_target_tests.rs:67:10:\nreal FinalUse owner: UnsafeStateDirectory\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+      "source_status": "compatibility_FinalUse_NO_protected_time_external_CAS_OPEN",
+      "remaining": "current candidate does not change any FinalUse constructor or trust provider",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "ordinary_cpu_target::tests::source_route::controlled::controlled_budget_and_child_scope_refuse_before_registration_without_changing_original_caps",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests",
+      "original_failure_body": "\nthread 'ordinary_cpu_target::tests::source_route::controlled::controlled_budget_and_child_scope_refuse_before_registration_without_changing_original_caps' (7384) panicked at hepta-infer-worker-host/src\\ordinary_cpu_source_route_tests.rs:98:6:\noriginal durable FinalUse owner: UnsafeStateDirectory\n",
+      "source_status": "compatibility_FinalUse_NO_protected_time_external_CAS_OPEN",
+      "remaining": "current candidate does not change any FinalUse constructor or trust provider",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "ordinary_cpu_target::tests::source_route::controlled::controlled_original_operation_lease_reservation_and_issuer_cannot_be_rebound",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests",
+      "original_failure_body": "\nthread 'ordinary_cpu_target::tests::source_route::controlled::controlled_original_operation_lease_reservation_and_issuer_cannot_be_rebound' (668) panicked at hepta-infer-worker-host/src\\ordinary_cpu_source_route_tests.rs:98:6:\noriginal durable FinalUse owner: UnsafeStateDirectory\n",
+      "source_status": "compatibility_FinalUse_NO_protected_time_external_CAS_OPEN",
+      "remaining": "current candidate does not change any FinalUse constructor or trust provider",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "ordinary_cpu_target::tests::source_route::controlled::controlled_cross_owner_is_rejected_before_any_entry",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests",
+      "original_failure_body": "\nthread 'ordinary_cpu_target::tests::source_route::controlled::controlled_cross_owner_is_rejected_before_any_entry' (6552) panicked at hepta-infer-worker-host/src\\ordinary_cpu_source_route_tests.rs:98:6:\noriginal durable FinalUse owner: UnsafeStateDirectory\n",
+      "source_status": "compatibility_FinalUse_NO_protected_time_external_CAS_OPEN",
+      "remaining": "current candidate does not change any FinalUse constructor or trust provider",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "ordinary_cpu_target::tests::source_route::controlled::controlled_signed_ids_never_become_funding_native_entry_or_terminal_release",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests",
+      "original_failure_body": "\nthread 'ordinary_cpu_target::tests::source_route::controlled::controlled_signed_ids_never_become_funding_native_entry_or_terminal_release' (7764) panicked at hepta-infer-worker-host/src\\ordinary_cpu_source_route_tests.rs:98:6:\noriginal durable FinalUse owner: UnsafeStateDirectory\n",
+      "source_status": "compatibility_FinalUse_NO_protected_time_external_CAS_OPEN",
+      "remaining": "current candidate does not change any FinalUse constructor or trust provider",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "ordinary_cpu_target::tests::source_route::nonzero_actual_child_never_becomes_source_rejected_or_applied",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests",
+      "original_failure_body": "\nthread 'ordinary_cpu_target::tests::source_route::nonzero_actual_child_never_becomes_source_rejected_or_applied' (7456) panicked at hepta-infer-worker-host/src\\ordinary_cpu_source_route_tests.rs:98:6:\noriginal durable FinalUse owner: UnsafeStateDirectory\n",
+      "source_status": "compatibility_FinalUse_NO_protected_time_external_CAS_OPEN",
+      "remaining": "current candidate does not change any FinalUse constructor or trust provider",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "ordinary_cpu_target::tests::source_route::races::expiry_after_actual_sqlite_entry_await_prevents_spawn_and_retains_slot",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests",
+      "original_failure_body": "\nthread 'ordinary_cpu_target::tests::source_route::races::expiry_after_actual_sqlite_entry_await_prevents_spawn_and_retains_slot' (5512) panicked at hepta-infer-worker-host/src\\ordinary_cpu_source_route_tests.rs:98:6:\noriginal durable FinalUse owner: UnsafeStateDirectory\n",
+      "source_status": "compatibility_FinalUse_NO_protected_time_external_CAS_OPEN",
+      "remaining": "current candidate does not change any FinalUse constructor or trust provider",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "ordinary_cpu_target::tests::source_route::controlled::controlled_signed_memory_headroom_remains_indeterminate_without_funding",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests",
+      "original_failure_body": "\nthread 'ordinary_cpu_target::tests::source_route::controlled::controlled_signed_memory_headroom_remains_indeterminate_without_funding' (5976) panicked at hepta-infer-worker-host/src\\ordinary_cpu_source_route_tests.rs:98:6:\noriginal durable FinalUse owner: UnsafeStateDirectory\n",
+      "source_status": "compatibility_FinalUse_NO_protected_time_external_CAS_OPEN",
+      "remaining": "current candidate does not change any FinalUse constructor or trust provider",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "ordinary_cpu_target::tests::source_route::races::lost_acknowledgement_and_lost_child_owner_stay_unknown_without_respawn",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests",
+      "original_failure_body": "\nthread 'ordinary_cpu_target::tests::source_route::races::lost_acknowledgement_and_lost_child_owner_stay_unknown_without_respawn' (9100) panicked at hepta-infer-worker-host/src\\ordinary_cpu_source_route_tests.rs:98:6:\noriginal durable FinalUse owner: UnsafeStateDirectory\n",
+      "source_status": "compatibility_FinalUse_NO_protected_time_external_CAS_OPEN",
+      "remaining": "current candidate does not change any FinalUse constructor or trust provider",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "ordinary_cpu_target::tests::source_route::races::lost_acknowledgement_keeps_original_child_observer_and_never_respawns",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests",
+      "original_failure_body": "\nthread 'ordinary_cpu_target::tests::source_route::races::lost_acknowledgement_keeps_original_child_observer_and_never_respawns' (4464) panicked at hepta-infer-worker-host/src\\ordinary_cpu_source_route_tests.rs:98:6:\noriginal durable FinalUse owner: UnsafeStateDirectory\n",
+      "source_status": "compatibility_FinalUse_NO_protected_time_external_CAS_OPEN",
+      "remaining": "current candidate does not change any FinalUse constructor or trust provider",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "ordinary_cpu_target::tests::unsigned_dispatch_and_missing_entry_never_spawn_or_complete",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests",
+      "original_failure_body": "\nthread 'ordinary_cpu_target::tests::unsigned_dispatch_and_missing_entry_never_spawn_or_complete' (5956) panicked at hepta-infer-worker-host/src\\ordinary_cpu_target_tests.rs:67:10:\nreal FinalUse owner: UnsafeStateDirectory\n",
+      "source_status": "compatibility_FinalUse_NO_protected_time_external_CAS_OPEN",
+      "remaining": "current candidate does not change any FinalUse constructor or trust provider",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "ordinary_cpu_target::tests::source_route::races::revocation_after_actual_sqlite_entry_await_prevents_spawn_and_retains_slot",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests",
+      "original_failure_body": "\nthread 'ordinary_cpu_target::tests::source_route::races::revocation_after_actual_sqlite_entry_await_prevents_spawn_and_retains_slot' (5944) panicked at hepta-infer-worker-host/src\\ordinary_cpu_source_route_tests.rs:98:6:\noriginal durable FinalUse owner: UnsafeStateDirectory\n",
+      "source_status": "compatibility_FinalUse_NO_protected_time_external_CAS_OPEN",
+      "remaining": "current candidate does not change any FinalUse constructor or trust provider",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "ordinary_cpu_target::tests::source_route::signed_source_commits_only_after_original_child_observation_and_never_repeats",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests",
+      "original_failure_body": "\nthread 'ordinary_cpu_target::tests::source_route::signed_source_commits_only_after_original_child_observation_and_never_repeats' (5432) panicked at hepta-infer-worker-host/src\\ordinary_cpu_source_route_tests.rs:98:6:\noriginal durable FinalUse owner: UnsafeStateDirectory\n",
+      "source_status": "compatibility_FinalUse_NO_protected_time_external_CAS_OPEN",
+      "remaining": "current candidate does not change any FinalUse constructor or trust provider",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "ordinary_cpu_target::tests::source_route::wrong_original_authority_rejects_before_permanent_entry_or_spawn",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests",
+      "original_failure_body": "\nthread 'ordinary_cpu_target::tests::source_route::wrong_original_authority_rejects_before_permanent_entry_or_spawn' (3720) panicked at hepta-infer-worker-host/src\\ordinary_cpu_source_route_tests.rs:98:6:\noriginal durable FinalUse owner: UnsafeStateDirectory\n\n",
+      "source_status": "compatibility_FinalUse_NO_protected_time_external_CAS_OPEN",
+      "remaining": "current candidate does not change any FinalUse constructor or trust provider",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test",
+      "original_failure_body": "\nthread 'runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence' (2508) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\nagent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "runtime::tests::qualification_host_binds_one_local_turn_and_replays_exactly_once",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test",
+      "original_failure_body": "\nthread 'runtime::tests::qualification_host_binds_one_local_turn_and_replays_exactly_once' (10172) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\nagent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922803.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test",
+      "original_failure_body": "\nthread 'runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence' (5184) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\nagent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit' (5280) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:\nAgentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen' (2712) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:\nAgentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "automation::service_tests::production_constructor_never_resumes_a_draining_owner",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'automation::service_tests::production_constructor_never_resumes_a_draining_owner' (6488) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:\nAgentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement' (9848) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:\nAgentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn' (7620) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:\nAgentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen' (6684) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:\nAgentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding' (9460) panicked at hepta-agentd/src\\browser_servo.rs:904:10:\nauthority: UnsafeStateDirectory\n",
+      "source_status": "compatibility_FinalUse_NO_protected_time_external_CAS_OPEN",
+      "remaining": "current candidate does not change any FinalUse constructor or trust provider",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary' (6780) panicked at hepta-agentd/src\\browser_servo.rs:904:10:\nauthority: UnsafeStateDirectory\n",
+      "source_status": "compatibility_FinalUse_NO_protected_time_external_CAS_OPEN",
+      "remaining": "current candidate does not change any FinalUse constructor or trust provider",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "browser_servo::tests::non_effect_calls_never_enter_final_use_authority",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'browser_servo::tests::non_effect_calls_never_enter_final_use_authority' (4636) panicked at hepta-agentd/src\\browser_servo.rs:904:10:\nauthority: UnsafeStateDirectory\n",
+      "source_status": "compatibility_FinalUse_NO_protected_time_external_CAS_OPEN",
+      "remaining": "current candidate does not change any FinalUse constructor or trust provider",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation' (6336) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:\nAgentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation' (7560) panicked at hepta-agentd/src\\cognitive_ranker_tests.rs:698:74:\ncalled `Result::unwrap()` on an `Err` value: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host' (6012) panicked at hepta-agentd/src\\prompt_runtime_tests.rs:511:33:\npipeline owner: RegistryOpen(\"UnsafeStateDirectory\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "named pipeline test subsequently opens compatibility FinalUse; still OPEN after init",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "runtime::tests::automation_generation_change_during_open_remains_fail_closed",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'runtime::tests::automation_generation_change_during_open_remains_fail_closed' (4616) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\nagent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor' (6560) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\nagent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "runtime::tests::automation_owner_mismatch_remains_fail_closed",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'runtime::tests::automation_owner_mismatch_remains_fail_closed' (6516) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\nagent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently' (10136) panicked at hepta-agentd/src\\plasticity_runtime_lifetime_tests.rs:249:80:\nstate: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation' (1852) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\nagent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "runtime::tests::generation_change_during_open_is_fenced_before_serving",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'runtime::tests::generation_change_during_open_is_fenced_before_serving' (2492) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\nagent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store' (7880) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\nagent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation' (5372) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\nagent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe' (3720) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\nagent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane' (5608) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\nagent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "runtime::tests::stale_generation_is_fenced_before_cognitive_store_open",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'runtime::tests::stale_generation_is_fenced_before_cognitive_store_open' (7460) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\nagent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "runtime::tests::unavailable_automation_store_degrades_without_startup_failure",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'runtime::tests::unavailable_automation_store_degrades_without_startup_failure' (8828) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\nagent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error' (504) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:\nagent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")\n\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it' (2152) panicked at hepta-agentd/src\\state_isolation_tests.rs:220:47:\nruntime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress' (3108) panicked at hepta-agentd/src\\state_isolation_tests.rs:123:46:\nruntime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent' (1104) panicked at hepta-agentd/src\\state_isolation_tests.rs:163:47:\nruntime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access' (1244) panicked at hepta-agentd/src\\state_isolation_tests.rs:639:47:\nruntime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "state::isolation_tests::serving_agent_survives_unrelated_registry_corruption",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'state::isolation_tests::serving_agent_survives_unrelated_registry_corruption' (10208) panicked at hepta-agentd/src\\state_isolation_tests.rs:92:46:\nruntime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership' (9604) panicked at hepta-agentd/src\\state_isolation_tests.rs:659:47:\nruntime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    },
+    {
+      "original_member": "work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/job123170922906.full-decoded-log.original.txt.independent-unique-failure-sections.json",
+      "test": "state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences",
+      "target_from_source_module_and_original_log": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "original_failure_body": "\nthread 'state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences' (5088) panicked at hepta-agentd/src\\state_isolation_tests.rs:174:46:\nruntime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")\n\n",
+      "source_status": "existing_d328_prompt_init_producer_present_NATIVE_NOT_RUN",
+      "remaining": "downstream semantic assertions were not reached in this bf36 original failure; d328 exact-source Windows native NOT_RUN",
+      "actual_PASS_claimed": false
+    }
+  ]
+}

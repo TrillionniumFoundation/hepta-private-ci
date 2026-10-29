@@ -2,7 +2,6 @@
 //! Paths locate parents only; actual OS capture, namespace inspection and the
 //! original marker/schema protocols produce and retain both store owners.
 
-use super::AgentdPromptPipelineError;
 use super::AgentdPromptRuntimeError;
 use super::LOCK_FILE;
 use super::MAX_DURABLE_STATE_BYTES;
@@ -21,7 +20,6 @@ use codex_hepta_contracts::windows_private_owner::OwnerLockOrigin;
 use codex_hepta_contracts::windows_private_owner::ParentAnchor;
 use codex_hepta_contracts::windows_private_owner::PrivateStoreDirectory;
 use codex_hepta_contracts::windows_private_owner::StageReplaceError;
-use codex_hepta_prompt_registry::DurablePromptRegistry;
 use std::io::Write;
 use std::os::windows::ffi::OsStrExt;
 use std::path::Component;
@@ -57,16 +55,6 @@ fn directory_input(directory: &Path) -> Result<PrivateStoreDirectory, AgentdProm
             Err(AgentdPromptRuntimeError::Unavailable)
         }
     }
-}
-
-pub(super) fn open_registry(
-    directory: &Path,
-    maximum_records: usize,
-) -> Result<DurablePromptRegistry, AgentdPromptPipelineError> {
-    let input = directory_input(directory)
-        .map_err(|error| AgentdPromptPipelineError::RegistryOpen(error.to_string()))?;
-    DurablePromptRegistry::open_windows_private(input, maximum_records)
-        .map_err(|error| AgentdPromptPipelineError::RegistryOpen(error.to_string()))
 }
 
 impl PromptRuntimeStore {

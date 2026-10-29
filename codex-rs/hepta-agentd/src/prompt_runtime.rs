@@ -561,12 +561,9 @@ impl AgentdPromptPipelineOwner {
         runtime_directory: &Path,
         maximum_registry_records: usize,
     ) -> Result<Self, AgentdPromptPipelineError> {
-        #[cfg(not(windows))]
         let registry =
             DurablePromptRegistry::open_state_dir(registry_directory, maximum_registry_records)
                 .map_err(|error| AgentdPromptPipelineError::RegistryOpen(error.to_string()))?;
-        #[cfg(windows)]
-        let registry = windows::open_registry(registry_directory, maximum_registry_records)?;
         let runtime = AgentdPromptRuntimeOwner::open_state_dir(runtime_directory)
             .map_err(AgentdPromptPipelineError::RuntimeOpen)?;
         #[cfg(windows)]
