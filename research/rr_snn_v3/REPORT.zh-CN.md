@@ -6,7 +6,7 @@
 
 总体科研与 Hepta 验收仍未通过。新的固定模型虽然改善了留出路径似然，但独立生成轨迹的发放数量低于合成真模型；新版本还没有完成同规格终效用架构比较，也没有真实 Hepta owner、独立真实未来窗口或真实 Cell 规模的资源收据。验收账本明确保留 allBlockersClosed=false、heptaQualified=false、activationAllowed=false。
 
-[最终 Node 执行](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40868845250)对应源码提交 1b1351fb37b8f6db1ee5684ca6e5cfb284539c9e。环境为 GitHub 托管 Linux x64、Node v22.23.4。本报告中的实际进程结果来自该运行；它不能代表 dot 目标机的性能。
+[最终 Node 执行](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40870313419)对应源码提交 13712a4a024a85f60dde6eb9a55877d34f186e03。环境为 GitHub 托管 Linux x64、Node v22.23.4。本报告中的实际进程结果来自该运行；它不能代表 dot 目标机的性能。
 
 ## 1. 从 He 与 Xiong 模型迁移了什么
 
@@ -117,7 +117,7 @@
 
 单神经元与循环网络分别执行四个实际故障点：追加之前、部分尾记录、完整追加之后但 witness 之前、witness 推进之后但发布之前。独立 Node 子进程被 SIGKILL 后从真实文件重启；每次最终状态一致，精确重试追加数量为零。过期头、排他锁冲突、完整记录损坏和已确认历史回滚按预期类别拒绝。
 
-[单神经元实际结果](evidence/fs_single_neuron_results_40868845250.json)与[网络实际结果](evidence/fs_network_results_40868845250.json)保留环境及源码身份。网络 profile 为可靠核对历史而从初态重放，代价明确，尚未优化为可扩展生产恢复；监督式进程崩溃测试也不等于断电持久性或任意多写者证明。
+[单神经元实际结果](evidence/fs_single_neuron_results_40870313419.json)与[网络实际结果](evidence/fs_network_results_40870313419.json)保留环境及源码身份。网络 profile 为可靠核对历史而从初态重放，代价明确，尚未优化为可扩展生产恢复；监督式进程崩溃测试也不等于断电持久性或任意多写者证明。
 
 ## 8. 为什么仍不能写成“全部 blocker 闭合”
 
@@ -158,6 +158,6 @@ node research/rr_snn_v3/verify_node.cjs
 
 该命令运行所有验证器及两个固定实验，不需要 npm 依赖。独立生成诊断使用已经归档的精确拟合 artifact，避免把另一次运行产生的微小浮点差异当成同一冻结参数。
 
-[最终完整执行收据](evidence/node_receipt_40868845250.json)记录所有入口、原始 stdout 摘要和源文件身份。[原始 CI 压缩包](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40868845250/artifacts/12894478078)保留至 2026-11-12，SHA-256 为 9454f4435d55951579712346b7d6e3ca82fc75774eccc3cc7b44a08d136f30c1。源码、指标、配对轨迹、实际进程结果和收据另已提交保存。
+[最终完整执行收据](evidence/node_receipt_40870313419.json)记录所有入口、原始 stdout 摘要和源文件身份。[原始 CI 压缩包](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40870313419/artifacts/12895946276)保留至 2026-11-12，SHA-256 为 6c7f5b8ea023a57ec72b1df6451447b479357d0d0ed83fed397f14c3abd51995。源码、指标、配对轨迹、实际进程结果和收据另已提交保存。
 
 当前工程结论是：限定模型已经具有可复跑的解析原语、实际循环脉冲、完整路径学习和联合恢复实现。当前科研决策是：保持研究候选状态，Hepta 接受与激活为 false。

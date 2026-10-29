@@ -4,16 +4,16 @@ The bounded reference now has analytic interval primitives, physical marked spik
 resource-aware deadlines, a trainable delayed recurrent network, complete-state
 replay, and actual Linux process-crash evidence. **Hepta qualification is not passed.**
 
-The latest [Node execution](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40868845250)
+The latest [Node execution](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40870313419)
 completed all eleven entrypoints at source commit
-1b1351fb37b8f6db1ee5684ca6e5cfb284539c9e. The nineteen executable source files
+13712a4a024a85f60dde6eb9a55877d34f186e03. The nineteen executable source files
 match the retained receipt. The frozen fitted model improved heldout path
 likelihood, but independent free generation revealed lower pulse counts than
 its synthetic generating model. That discrepancy is retained.
 
 Start with [the full Chinese report](REPORT.zh-CN.md),
 [acceptance status](evidence/acceptance_status.json), and
-[the actual Node receipt](evidence/node_receipt_40868845250.json).
+[the actual Node receipt](evidence/node_receipt_40870313419.json).
 
 ## Components and evidence
 
@@ -81,8 +81,8 @@ Cell counts must not be replaced by neuron counts or policy-row counts.
   precedes the fresh generation paths.
 - [Final source identities](evidence/source_identity_check_final.json) bind nineteen
   executable files to the successful Node run.
-- [Raw CI artifact](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40868845250/artifacts/12894478078)
-  has SHA-256 9454f4435d55951579712346b7d6e3ca82fc75774eccc3cc7b44a08d136f30c1
+- [Raw CI artifact](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40870313419/artifacts/12895946276)
+  has SHA-256 6c7f5b8ea023a57ec72b1df6451447b479357d0d0ed83fed397f14c3abd51995
   and expires 2026-11-12. Permanent source, reference results, episode audits,
   actual process results and execution receipts are retained in this branch.
 
