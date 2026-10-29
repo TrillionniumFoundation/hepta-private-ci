@@ -1,0 +1,86 @@
+{
+  "schema": "rr-diagnostic-objective-audit-1",
+  "decisionCases": 108,
+  "cases": [
+    {
+      "maturity": [
+        1,
+        3
+      ],
+      "shock": 0,
+      "physicalPulses": 0,
+      "retained": 4,
+      "terminalTotalBudget": 10,
+      "score": 6.2,
+      "theoreticalUpper": 6.2
+    },
+    {
+      "maturity": [
+        1,
+        3
+      ],
+      "shock": 2,
+      "physicalPulses": 0,
+      "retained": 4,
+      "terminalTotalBudget": 6,
+      "score": 5.4,
+      "theoreticalUpper": 5.4
+    },
+    {
+      "maturity": [
+        2,
+        2
+      ],
+      "shock": 0,
+      "physicalPulses": 0,
+      "retained": 4,
+      "terminalTotalBudget": 10,
+      "score": 6.2,
+      "theoreticalUpper": 6.2
+    },
+    {
+      "maturity": [
+        2,
+        2
+      ],
+      "shock": 2,
+      "physicalPulses": 0,
+      "retained": 4,
+      "terminalTotalBudget": 6,
+      "score": 5.4,
+      "theoreticalUpper": 5.4
+    }
+  ],
+  "impliedScore": ".2 * final total budget + 1.2 * retained count + emitted reward - renewal loss",
+  "algebra": {
+    "renewalIncrement": 0.85,
+    "deadlineEmitIncrementUpper": 0,
+    "perUnitScore": ".2 * (6 + added - removed - ordinaryPulses - retained) + 1.05 * retained",
+    "perUnitUpper": "3.1 - .2 * shock",
+    "twoUnitUpper": "6.2 - .4 * shock",
+    "gapIdentityPerUnit": ".2 * ((1-added)+(removed+ordinaryPulses-shock)) + .85*(2-retained)",
+    "integerScaledGap": "20*(Uzero-U) = 4*((1-added)+(removed+ordinaryPulses-shock)) + 17*(2-retained)",
+    "bounds": [
+      "added<=1",
+      "retained<=2",
+      "removed+ordinaryPulses>=shock",
+      "if ordinaryPulses>=1 then removed+ordinaryPulses>=shock+1"
+    ],
+    "assumptions": [
+      "complete nonaborted trajectories of the fixed diagnostic",
+      "same two obligations per unit; costs and events fixed as diagnostic",
+      "shock is 0 or 2 at 1.5; refill is 1 at 2.5; budget starts at 6",
+      "deadline policy uses the unchanged .2 budget +1.2 retained continuation",
+      "ordinary physical pulses have no task reward in this implied additive score"
+    ],
+    "strictLossIfAnyOrdinaryPulseAtLeast": 0.2
+  },
+  "scope": {
+    "valueWeightedTask": false,
+    "matchedArchitectureBenchmark": false,
+    "registeredR4Utility": false,
+    "calibrationAcceptance": false,
+    "finiteDiagnosticDegeneracyEstablished": true,
+    "generalRRSNNImpossibility": false
+  }
+}

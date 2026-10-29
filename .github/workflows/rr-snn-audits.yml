@@ -1,0 +1,39 @@
+name: RR-SNN frozen candidate audits
+
+on:
+  push:
+    branches: [dot/rr-snn-v3-audits-20261029]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rr-snn-audits-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Checkout exact research candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          sparse-checkout: research/rr_snn_v3
+      - name: Set up Node
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 22
+      - name: Audit the unchanged fixed candidate
+        env:
+          RR_RESULTS_DIR: ${{ runner.temp }}/rr-snn-audits
+        run: node research/rr_snn_v3/verify_audits.cjs
+      - name: Retain actual audit output and source identities
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: rr-snn-audits-${{ github.sha }}
+          path: ${{ runner.temp }}/rr-snn-audits
+          if-no-files-found: error
+          retention-days: 14

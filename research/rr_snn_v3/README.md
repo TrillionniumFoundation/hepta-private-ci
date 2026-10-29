@@ -87,3 +87,7 @@ Cell counts must not be replaced by neuron counts or policy-row counts.
   actual process results and execution receipts are retained in this branch.
 
 All research PRs remain separate bounded review units; see the report for links.
+
+## Frozen-candidate diagnostic addendum
+
+[The added audit](DIAGNOSTIC_AUDITS.zh-CN.md) bounds the original training objective gap without refitting. It also proves that an implied budget/retention score for the present diagnostic rewards zero ordinary pulses. Two new audit entrypoints make these findings executable. This is not a registered R4 value task or a matched architecture benchmark; the existing generation discrepancy and all unmet integration requirements remain.
