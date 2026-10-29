@@ -197,6 +197,7 @@ def codex_rust_crate(
         rustc_env_files = [],
         deps_extra = [],
         integration_compile_data_extra = [],
+        integration_test_dependency_replacements = {},
         integration_test_args = [],
         unit_test_args = [],
         unit_test_runfile_env = {},
@@ -247,6 +248,9 @@ def codex_rust_crate(
         deps_extra: Extra normal deps beyond @crates resolution.
             Typically only needed when features add additional deps.
         integration_compile_data_extra: Extra compile_data for integration tests.
+        integration_test_dependency_replacements: Mapping from generated test target
+            names to test-only workspace dependency replacements. These affect only
+            the named integration test harness, not the library or spawned binaries.
         integration_test_args: Optional args for integration test binaries.
         unit_test_args: Optional args for the unit test binary.
         unit_test_runfile_env: Binary runfiles exported to the unit-test launcher.
@@ -545,6 +549,11 @@ def codex_rust_crate(
             test_kwargs["shard_count"] = test_shard_count
             test_kwargs["flaky"] = True
 
+        test_deps = rust_test_dependencies(
+            integration_test_dependency_replacements.get(test_name, {}),
+            normal_dev = True,
+        ) + maybe_deps + deps_extra
+
         integration_test_binary = test_name + "-bin"
 
         # There are four generated integration-test shapes:
@@ -575,7 +584,7 @@ def codex_rust_crate(
                 srcs = [test],
                 data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
                 compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
-                deps = all_crate_deps(normal = True, normal_dev = True) + maybe_deps + deps_extra,
+                deps = test_deps,
                 # Bazel has emitted both `codex-rs/<crate>/...` and
                 # `../codex-rs/<crate>/...` paths for `file!()`. Strip either
                 # prefix so Insta records Cargo-like metadata such as `core/tests/...`.
@@ -615,7 +624,7 @@ def codex_rust_crate(
                 srcs = [test],
                 data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
                 compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
-                deps = all_crate_deps(normal = True, normal_dev = True) + maybe_deps + deps_extra,
+                deps = test_deps,
                 # Bazel has emitted both `codex-rs/<crate>/...` and
                 # `../codex-rs/<crate>/...` paths for `file!()`. Strip either
                 # prefix so Insta records Cargo-like metadata such as `core/tests/...`.
@@ -690,7 +699,7 @@ def codex_rust_crate(
             srcs = [test],
             data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
             compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
-            deps = all_crate_deps(normal = True, normal_dev = True) + maybe_deps + deps_extra,
+            deps = test_deps,
             rustc_flags = rustc_flags_extra + WINDOWS_RUSTC_LINK_FLAGS + [
                 "--remap-path-prefix=../codex-rs=",
                 "--remap-path-prefix=codex-rs=",
