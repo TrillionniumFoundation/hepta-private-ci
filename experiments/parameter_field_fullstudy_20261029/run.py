@@ -163,7 +163,8 @@ def main():
         write_json(out / "COMPLETE.json", {"complete": True, "phase": args.phase, "seed": args.seed,
                    "registered_commit": freeze["registered_commit"], "source_freeze_sha256": file_hash(args.freeze),
                    "costs": context.costs.snapshot(), "path_count": len(paths["paths"]), "assets": identities,
-                   "wall_seconds": time.monotonic() - budget.wall, "cpu_seconds": time.process_time() - budget.cpu})
+                   "wall_seconds": time.monotonic() - budget.wall, "cpu_seconds": time.process_time() - budget.cpu,
+                   "process_cpu_seconds_total": time.process_time()})
     except BaseException as error:
         write_json(out / "FAILED.json", {"complete": False, "error_type": type(error).__name__, "message": str(error),
                    "costs": context.costs.snapshot(), "partial_evidence_preserved": True,

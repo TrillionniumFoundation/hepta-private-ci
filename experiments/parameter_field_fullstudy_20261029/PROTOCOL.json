@@ -26,7 +26,7 @@
     "paper_repository": "TrillionniumFoundation/ICLR-2027",
     "paper_commit": "f8df0a6075f58f3ab9431a889b773cdf8d6e771d",
     "paper_revision": "revision_2026-09-26-r45",
-    "new_source_commit": null,
+    "new_source_commit": "See phase-specific SOURCE_FREEZE records; self-referential protocol commit hashes are intentionally external.",
     "new_dependency_hash_manifest": null,
     "runtime_descriptor_sha256": null,
     "historically_inspected_bridge_commit": "f20db50ec8f891d286465e635c68e83749b9b3b4",
@@ -706,7 +706,12 @@
       "separate_from_scientific_paths": true,
       "scheduled_gradient_microsteps": 432
     },
-    "binding": "execution_resources gives actual global storage and runtime enforcement; no historical resource gate changed"
+    "binding": "execution_resources gives actual global storage and runtime enforcement; no historical resource gate changed",
+    "W": {
+      "cpu_seconds": 7200,
+      "wall_seconds": 10800,
+      "total_scheduled_gradient_microsteps": 2880
+    }
   },
   "stage_W": {
     "name": "Prespecified H12 hidden momentum direction diagnostic",
