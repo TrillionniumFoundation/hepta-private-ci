@@ -108,8 +108,10 @@ class JsonProcess:
 
 
 class CodexDriver:
-    def __init__(self, process, backend, cwd, tool):
+    def __init__(self, process, backend, cwd, tool, *, max_tool_calls=3, instructions=INSTRUCTIONS):
         self.process, self.backend, self.cwd, self.tool = process, backend, cwd, tool
+        self.tools = tool if isinstance(tool, list) else [tool]
+        self.max_tool_calls, self.instructions = max_tool_calls, instructions
         self.next_id = 1
         self.deferred = []
         self.completed_scopes = set()
@@ -172,9 +174,9 @@ class CodexDriver:
         try:
             start = self.request("thread/start", {"model": "qwen38-flash-next-uc", "modelProvider": "qualification",
                 "cwd": str(self.cwd), "approvalPolicy": "never", "sandbox": "read-only", "ephemeral": False,
-                "baseInstructions": INSTRUCTIONS, "developerInstructions": "", "environments": [],
-                "dynamicTools": [{"type": "function", "name": self.tool["name"], "description": self.tool["description"],
-                                  "inputSchema": self.tool["parameters"]}]}, timeout=remaining(deadline))
+                "baseInstructions": self.instructions, "developerInstructions": "", "environments": [],
+                "dynamicTools": [{"type": "function", "name": tool["name"], "description": tool["description"],
+                                  "inputSchema": tool["parameters"]} for tool in self.tools]}, timeout=remaining(deadline))
             thread_id = start["thread"]["id"]
             if not isinstance(thread_id, str) or not thread_id:
                 raise LaneAbort("thread/start returned no thread identity")
@@ -196,13 +198,14 @@ class CodexDriver:
                     self._scope(params, thread_id, turn_id)
                     call_id = params["callId"]
                     if ("id" not in value or not isinstance(call_id, str) or not call_id
-                            or params.get("tool") != "hepta_probe" or call_id in seen_calls or calls >= 3):
+                            or params.get("tool") not in {tool["name"] for tool in self.tools}
+                            or call_id in seen_calls or calls >= self.max_tool_calls):
                         raise LaneAbort("unexpected, duplicate or over-budget dynamic tool")
                     seen_calls.add(call_id)
                     calls += 1
                     backend_session = session + ":" + call_id
                     self.backend.send({"op": "tool", "session": backend_session, "input": prompt,
-                                       "call_id": call_id, "arguments": params["arguments"]})
+                                       "call_id": call_id, "arguments": params["arguments"], "name": params["tool"]})
                     result = self.backend.receive(deadline)
                     if result.get("session") != backend_session:
                         raise LaneAbort("tool backend reply belongs to a different operation session")
@@ -264,3 +267,4 @@ class CodexDriver:
             raise LaneAbort(str(error), {"status": "lane_aborted", "error": str(error),
                             "thread_id": thread_id, "turn_id": turn_id,
                             "elapsed_ms": (time.monotonic() - begin) * 1000}) from error
+

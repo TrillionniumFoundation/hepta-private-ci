@@ -1,4 +1,4 @@
-//! Owner for isolated, read-only qualification sessions, not a production writer.
+//! Owner for isolated qualification sessions, not a production writer.
 use anyhow::Context;
 use anyhow::Result;
 use anyhow::bail;
@@ -24,6 +24,8 @@ use crate::runtime_bridge::AdmittedTool;
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct FixtureConfig {
+    #[serde(default)]
+    pub representative: bool,
     pub host: String,
     pub script: String,
     pub script_sha256: String,
@@ -205,10 +207,17 @@ impl TurnOwner for SessionOwner {
         struct Args {
             task: String,
         }
-        let args: Args = serde_json::from_slice(&call.arguments)?;
-        if call.name != "hepta_probe" || !["sum", "lines", "digest"].contains(&args.task.as_str()) {
-            bail!("qualification tool proposal outside the frozen three-operation fixture");
-        }
+        let command_args = if self.fixture.representative {
+            crate::representative::validate_call(call)?;
+            vec!["-I".to_owned(), "-B".to_owned(), "-S".to_owned(), self.fixture.script.clone(),
+                call.name.clone(), String::from_utf8(call.arguments.clone())?, self.fixture.data.clone()]
+        } else {
+            let args: Args = serde_json::from_slice(&call.arguments)?;
+            if call.name != "hepta_probe" || !["sum", "lines", "digest"].contains(&args.task.as_str()) {
+                bail!("qualification tool proposal outside the frozen three-operation fixture");
+            }
+            vec!["-I".to_owned(), "-S".to_owned(), self.fixture.script.clone(), args.task, self.fixture.data.clone()]
+        };
         for (path, expected) in [
             (&self.fixture.script, &self.fixture.script_sha256),
             (&self.fixture.data, &self.fixture.data_sha256),
@@ -227,7 +236,7 @@ impl TurnOwner for SessionOwner {
         let key = format!("qualification:tool:{digest}");
         let params: ProcessStartParams = serde_json::from_value(json!({
             "host":self.fixture.host,"executable":"/usr/bin/python3",
-            "args":["-I","-S",self.fixture.script,args.task,self.fixture.data],"cwd":self.fixture.cwd,
+            "args":command_args,"cwd":self.fixture.cwd,
             "idempotency_key":key,"timeout_seconds":self.fixture.tool_timeout_seconds,
             "cpu_quota_percent":100,"memory_max_bytes":268435456,"nice":10
         }))?;
@@ -268,3 +277,4 @@ impl AdmissionResolver for SessionOwner {
         bail!("original tool admission is unavailable")
     }
 }
+
