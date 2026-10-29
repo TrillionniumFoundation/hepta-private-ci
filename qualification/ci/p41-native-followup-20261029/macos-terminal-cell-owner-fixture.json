@@ -1,0 +1,23 @@
+{
+  "schema": "hepta.p41.native-test-fixture-followup.v1",
+  "evidence_type": "owning_native_failure_and_unverified_source_candidate",
+  "source_before": "621ca0581b7c2cff207169a0c95f369af9874958",
+  "source_test_file": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+  "original_source_blob": "dc06eca8abfc6c85e1f32ea0846c75dd9883d80e",
+  "observation_date_utc": "2026-10-29",
+  "original_run_id": 40930035354,
+  "original_job_id": 123646730106,
+  "target": "//codex-rs/hepta-agentd:hepta-agentd-terminal_cell_owner-test",
+  "test": "clean_agent_recall_replay_training_load_and_source_withdrawal",
+  "observed_error": "Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+  "source_observation": "Fixture passes tempfile::tempdir().path().to_path_buf() directly to HeptaFleetRoot::parse; the macOS test path is under /var/folders/... while canonical resolution can traverse /private/var.",
+  "scope": "One test fixture only: canonicalize the existing private TempDir before deriving fleet root. No production authority or assertions changed.",
+  "caveat": "macOS /var alias is a plausible direct cause based on source and observed error; not proven closed until native owning test passes on new exact head.",
+  "state": "PENDING_OWNING_NATIVE_RESULT",
+  "frozen_multimodal_receipts_modified": false,
+  "production_permission_change": false,
+  "required_ci_waived": false,
+  "mode": "SHADOW_ONLY",
+  "authority": "DENY_ALL",
+  "admission": "HOLD_NO_GO"
+}
