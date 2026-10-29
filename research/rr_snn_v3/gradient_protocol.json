@@ -1,0 +1,60 @@
+{
+  "schema": "rr-snn-v3-ctmc-gradient-validation/v1",
+  "base_commit": "68dd3861899307f8b258a8a83302de26ec33cbb9",
+  "model": {
+    "true_rates": [
+      1.2,
+      0.65
+    ],
+    "initial_state": "floor(path_index / 4) modulo 2",
+    "horizons": [
+      0.35,
+      0.8,
+      1.7,
+      3.2
+    ],
+    "horizon_choice": "path_index modulo 4",
+    "all_jumps_observed": true,
+    "final_censor_exposure_included": true
+  },
+  "rng": "mulberry32; (uint32+0.5)/2^32; separate frozen streams",
+  "train": {
+    "seed": 1375731729,
+    "paths": 512
+  },
+  "holdout": {
+    "seed": 2684358657,
+    "paths": 2048,
+    "generated_after_protocol_commit": true,
+    "not_used_for_model_selection": true
+  },
+  "optimizer": {
+    "initial_rates": [
+      0.35,
+      2.2
+    ],
+    "steps": 400,
+    "learning_rate": 0.1,
+    "loss": "complete path NLL per training path",
+    "parameterization": "exp(theta)",
+    "no_early_stopping": true
+  },
+  "checks": {
+    "gradient_absolute_error": 2e-8,
+    "two_state_absolute_error": 2e-11,
+    "optimizer_relative_error_to_MLE": 1e-7,
+    "finite_difference_step": 0.00001,
+    "max_jumps_per_path": 512
+  },
+  "report_only": [
+    "rates versus true rates",
+    "heldout full-path NLL",
+    "heldout count/exposure rates",
+    "first-event Brier",
+    "deliberately final-censor-omitting MLE"
+  ],
+  "limits": [
+    "finite homogeneous two-state CTMC with complete jumps",
+    "not SNN architecture superiority"
+  ]
+}
