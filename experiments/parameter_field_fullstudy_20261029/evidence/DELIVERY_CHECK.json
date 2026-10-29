@@ -1,0 +1,42 @@
+{
+  "at_utc": "2026-10-29T08:30:43.420917+00:00",
+  "verified_freezes": [
+    {
+      "freeze": "A_SOURCE_FREEZE.json",
+      "source_files": 65
+    },
+    {
+      "freeze": "C_SOURCE_FREEZE.json",
+      "source_files": 86
+    },
+    {
+      "freeze": "A_ATTEMPT02_SOURCE_FREEZE.json",
+      "source_files": 70
+    },
+    {
+      "freeze": "C_ATTEMPT02_SOURCE_FREEZE.json",
+      "source_files": 93
+    },
+    {
+      "freeze": "OPS_ATTEMPT02_SOURCE_FREEZE.json",
+      "source_files": 6
+    }
+  ],
+  "memory_admission": {
+    "current": 8055123968,
+    "limit": 8589934592,
+    "inactive_file": 438226944,
+    "file_dirty": 193531904,
+    "file_writeback": 0,
+    "clean_inactive_file": 244695040,
+    "effective_current": 7810428928,
+    "oom": 8,
+    "oom_kill": 4,
+    "required_headroom": 1879048192,
+    "allowed": false
+  },
+  "new_science_workers_started": 0,
+  "current_raw_entries": [],
+  "status": "ADMISSION_BLOCKED",
+  "additional_effective_bytes_required": 1099542528
+}
