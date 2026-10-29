@@ -1,0 +1,32 @@
+{
+  "schema": "hepta.fullstudy.final-prelaunch-check.1",
+  "at_utc": "2026-10-29T08:21:25.297460+00:00",
+  "status": "ADMISSION_BLOCKED",
+  "memory": {
+    "current": 8584249344,
+    "limit": 8589934592,
+    "inactive_file": 471592960,
+    "file_dirty": 18485248,
+    "file_writeback": 0,
+    "clean_inactive_file": 453107712,
+    "effective_current": 8131141632,
+    "oom": 8,
+    "oom_kill": 4,
+    "required_headroom": 1879048192,
+    "allowed": false
+  },
+  "additional_effective_bytes_required": 1420255232,
+  "source_freezes_verified": true,
+  "verified_jobs": [
+    "A-17",
+    "A-29",
+    "A-43",
+    "C"
+  ],
+  "queue_sha256": "a983f2113261999a2e8c9c972a9fc88346987831b456392e27e66ffd07dd6d67",
+  "amendment_sha256": "583b3f8c7866b2d2a289e32cc9162472fd23ddc0b7897d0066863fd427173dd3",
+  "scientific_workers_started": 0,
+  "gradient_microsteps": 0,
+  "torch_imported": false,
+  "new_endpoint_roles_opened": []
+}
