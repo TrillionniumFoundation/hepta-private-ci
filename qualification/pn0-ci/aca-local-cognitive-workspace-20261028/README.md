@@ -11,3 +11,5 @@ Scoped `just clippy --locked -p codex-hepta-memory-extension --lib -- -D warning
 Final `just fmt` exited 0 in 0.133480 seconds and left both tested source hashes unchanged. Tests were not repeated after formatting, as the repository requires.
 
 This path-based helper does not hold filesystem descriptors or prove namespace custody across asynchronous work. The four original Windows lanes, twenty deletion groups, query and terminal groups retain their separate outcomes: 18/20, 6/6 and 1/3 per lane. No native Windows run occurred for this patch. Ordinary Windows storage owners, token/ACL/loader/desktop/stdio/Job/caller and Unknown terminal custody remain separate open PN0 work. The original model, I09/I10, release, PN1, WAN and expired-budget gates remain unchanged; `task_complete=false`, `merge_ready=false`, **NO_GO**.
+
+The original test and Clippy output now use deterministic gzip transport. See the [frozen record index](../frozen-record-encoding-20261029/manifest.json). The original manifest names and SHA256 values apply to the exact decoded bytes; the original log text is unchanged.

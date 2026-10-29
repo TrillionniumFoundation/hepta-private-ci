@@ -106,3 +106,5 @@ desktop/stdio/Job/caller and terminal ownership, ordinary real-model three-round
 installation, genesis, I09/I10/next-task readback, release, PN1 and independent
 WAN retain their original order and bounds. No unknown charge is refunded.
 `task_complete=false`, `merge_ready=false`, **NO_GO**.
+
+One frozen independent source review now uses deterministic gzip transport. The [frozen record index](../frozen-record-encoding-20261029/manifest.json) maps its original path and Git blob to the archive and verifies exact decoded bytes. Its original wording and claim limits remain unchanged.
