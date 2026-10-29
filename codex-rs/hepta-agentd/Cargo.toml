@@ -112,3 +112,11 @@ core_test_support = { workspace = true }
 sqlx = { workspace = true }
 tempfile = { workspace = true }
 wiremock = { workspace = true }
+
+# cargo-shear 1.11.2 misses this direct, production-reachable dependency even
+# though src/shared_terminal_cell.rs and src/cognitive_ranker.rs import it.
+# Removing it reproducibly causes E0432/E0433 in the native Architecture
+# module-lifecycle check (run 40794667151). Retain normal Cargo compilation,
+# native tests and lockfile verification; exclude only this false positive.
+[package.metadata.cargo-shear]
+ignored = ["codex-hepta-bellman-operator"]
