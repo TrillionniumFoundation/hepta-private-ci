@@ -1,0 +1,398 @@
+{
+  "schema": "hepta.value-learning.training.v1",
+  "fits": [
+    {
+      "seed": 3109,
+      "best_step": 2600,
+      "development_mse": 0.03940683605211281,
+      "train_mse": 0.00018300001863868267,
+      "parameter_count": 10716,
+      "changes": {
+        "trunk.0.weight": 4.019407848282005,
+        "trunk.0.bias": 1.295202032036574,
+        "trunk.2.weight": 12.842737524836616,
+        "trunk.2.bias": 1.1360651098727022,
+        "trunk.4.weight": 12.230326067270283,
+        "trunk.4.bias": 0.9076101190972902,
+        "trunk.6.weight": 8.211009418460893,
+        "trunk.6.bias": 0.34842822174336213
+      },
+      "all_parameter_tensors_changed": true,
+      "history": [
+        {
+          "step": 0,
+          "development_mse": 0.12436458551217563
+        },
+        {
+          "step": 100,
+          "development_mse": 0.05198406581214641
+        },
+        {
+          "step": 200,
+          "development_mse": 0.04724593781773395
+        },
+        {
+          "step": 300,
+          "development_mse": 0.044562467365870884
+        },
+        {
+          "step": 400,
+          "development_mse": 0.042377604438402716
+        },
+        {
+          "step": 500,
+          "development_mse": 0.04197315899496324
+        },
+        {
+          "step": 600,
+          "development_mse": 0.041304159051218196
+        },
+        {
+          "step": 700,
+          "development_mse": 0.04108486087003845
+        },
+        {
+          "step": 800,
+          "development_mse": 0.040819043008607454
+        },
+        {
+          "step": 900,
+          "development_mse": 0.04047623165771544
+        },
+        {
+          "step": 1000,
+          "development_mse": 0.040322202618352364
+        },
+        {
+          "step": 1100,
+          "development_mse": 0.040212754674332676
+        },
+        {
+          "step": 1200,
+          "development_mse": 0.04011508433443562
+        },
+        {
+          "step": 1300,
+          "development_mse": 0.040482652713942656
+        },
+        {
+          "step": 1400,
+          "development_mse": 0.03995837705536013
+        },
+        {
+          "step": 1500,
+          "development_mse": 0.03991007872253673
+        },
+        {
+          "step": 1600,
+          "development_mse": 0.04002198841995264
+        },
+        {
+          "step": 1700,
+          "development_mse": 0.03979524451579815
+        },
+        {
+          "step": 1800,
+          "development_mse": 0.03980113308665523
+        },
+        {
+          "step": 1900,
+          "development_mse": 0.03969343793727191
+        },
+        {
+          "step": 2000,
+          "development_mse": 0.03971152839729084
+        },
+        {
+          "step": 2100,
+          "development_mse": 0.039566611319926163
+        },
+        {
+          "step": 2200,
+          "development_mse": 0.03957301681258608
+        },
+        {
+          "step": 2300,
+          "development_mse": 0.039712634588556714
+        },
+        {
+          "step": 2400,
+          "development_mse": 0.039531423687336656
+        },
+        {
+          "step": 2500,
+          "development_mse": 0.039488346447759205
+        },
+        {
+          "step": 2600,
+          "development_mse": 0.03940683605211281
+        }
+      ],
+      "model_path": "value_evidence/model-3109.npz",
+      "model_sha256": "06ad78b824ba8448db6484db9090972baada000f043a9e62937ae5b133ce86f2",
+      "wall_seconds": 6.859290876003797
+    },
+    {
+      "seed": 3119,
+      "best_step": 2500,
+      "development_mse": 0.039554972716051566,
+      "train_mse": 0.0002299213495740577,
+      "parameter_count": 10716,
+      "changes": {
+        "trunk.0.weight": 4.466469349070805,
+        "trunk.0.bias": 1.53198922435325,
+        "trunk.2.weight": 12.521717365452318,
+        "trunk.2.bias": 1.2267725130259186,
+        "trunk.4.weight": 11.649375942184566,
+        "trunk.4.bias": 0.8330506693676247,
+        "trunk.6.weight": 7.962712970763835,
+        "trunk.6.bias": 0.35558827564735795
+      },
+      "all_parameter_tensors_changed": true,
+      "history": [
+        {
+          "step": 0,
+          "development_mse": 0.12642911671063256
+        },
+        {
+          "step": 100,
+          "development_mse": 0.05161423065801447
+        },
+        {
+          "step": 200,
+          "development_mse": 0.04712224970081135
+        },
+        {
+          "step": 300,
+          "development_mse": 0.044395925251609236
+        },
+        {
+          "step": 400,
+          "development_mse": 0.043059615027455894
+        },
+        {
+          "step": 500,
+          "development_mse": 0.04210468532593998
+        },
+        {
+          "step": 600,
+          "development_mse": 0.04160057165382726
+        },
+        {
+          "step": 700,
+          "development_mse": 0.041376673408452774
+        },
+        {
+          "step": 800,
+          "development_mse": 0.0411731690577741
+        },
+        {
+          "step": 900,
+          "development_mse": 0.040783084650844945
+        },
+        {
+          "step": 1000,
+          "development_mse": 0.04059370643091442
+        },
+        {
+          "step": 1100,
+          "development_mse": 0.04042306106982921
+        },
+        {
+          "step": 1200,
+          "development_mse": 0.04025375455153583
+        },
+        {
+          "step": 1300,
+          "development_mse": 0.040208468153171514
+        },
+        {
+          "step": 1400,
+          "development_mse": 0.04009576762167046
+        },
+        {
+          "step": 1500,
+          "development_mse": 0.04011978427940749
+        },
+        {
+          "step": 1600,
+          "development_mse": 0.04004332340939872
+        },
+        {
+          "step": 1700,
+          "development_mse": 0.04004641994639258
+        },
+        {
+          "step": 1800,
+          "development_mse": 0.0399481633572868
+        },
+        {
+          "step": 1900,
+          "development_mse": 0.039786722969917775
+        },
+        {
+          "step": 2000,
+          "development_mse": 0.039718236680767294
+        },
+        {
+          "step": 2100,
+          "development_mse": 0.039700632334397946
+        },
+        {
+          "step": 2200,
+          "development_mse": 0.0397436593161419
+        },
+        {
+          "step": 2300,
+          "development_mse": 0.03972183132740605
+        },
+        {
+          "step": 2400,
+          "development_mse": 0.039776509072198124
+        },
+        {
+          "step": 2500,
+          "development_mse": 0.039554972716051566
+        },
+        {
+          "step": 2600,
+          "development_mse": 0.03960901846092929
+        }
+      ],
+      "model_path": "value_evidence/model-3119.npz",
+      "model_sha256": "1361c117d04a1f2e490e67c179a222eb2827be1c26f2e0ddea8a495aa9040e5b",
+      "wall_seconds": 6.265327609995438
+    },
+    {
+      "seed": 3121,
+      "best_step": 2600,
+      "development_mse": 0.039451602610967286,
+      "train_mse": 0.00024281326149006317,
+      "parameter_count": 10716,
+      "changes": {
+        "trunk.0.weight": 4.209941455195701,
+        "trunk.0.bias": 1.3581150294275304,
+        "trunk.2.weight": 13.663019009962023,
+        "trunk.2.bias": 1.0934053083243442,
+        "trunk.4.weight": 12.08080560717769,
+        "trunk.4.bias": 0.8056738525613039,
+        "trunk.6.weight": 8.669476649572509,
+        "trunk.6.bias": 0.36648019240103763
+      },
+      "all_parameter_tensors_changed": true,
+      "history": [
+        {
+          "step": 0,
+          "development_mse": 0.127841973555672
+        },
+        {
+          "step": 100,
+          "development_mse": 0.051805937809117915
+        },
+        {
+          "step": 200,
+          "development_mse": 0.04697962836068375
+        },
+        {
+          "step": 300,
+          "development_mse": 0.0443524873180349
+        },
+        {
+          "step": 400,
+          "development_mse": 0.04265637816543325
+        },
+        {
+          "step": 500,
+          "development_mse": 0.04192305112401924
+        },
+        {
+          "step": 600,
+          "development_mse": 0.04165446908772419
+        },
+        {
+          "step": 700,
+          "development_mse": 0.04109907278070502
+        },
+        {
+          "step": 800,
+          "development_mse": 0.04078191029184052
+        },
+        {
+          "step": 900,
+          "development_mse": 0.040576594196052806
+        },
+        {
+          "step": 1000,
+          "development_mse": 0.04033130747722072
+        },
+        {
+          "step": 1100,
+          "development_mse": 0.04023205202780185
+        },
+        {
+          "step": 1200,
+          "development_mse": 0.04015514640743987
+        },
+        {
+          "step": 1300,
+          "development_mse": 0.03999419603472972
+        },
+        {
+          "step": 1400,
+          "development_mse": 0.040087182846343945
+        },
+        {
+          "step": 1500,
+          "development_mse": 0.03991945340121863
+        },
+        {
+          "step": 1600,
+          "development_mse": 0.039776061629030995
+        },
+        {
+          "step": 1700,
+          "development_mse": 0.03972113433517676
+        },
+        {
+          "step": 1800,
+          "development_mse": 0.03964612333960618
+        },
+        {
+          "step": 1900,
+          "development_mse": 0.039631264526133254
+        },
+        {
+          "step": 2000,
+          "development_mse": 0.03960264459803839
+        },
+        {
+          "step": 2100,
+          "development_mse": 0.039561371175495526
+        },
+        {
+          "step": 2200,
+          "development_mse": 0.039545957705531355
+        },
+        {
+          "step": 2300,
+          "development_mse": 0.03951161979241675
+        },
+        {
+          "step": 2400,
+          "development_mse": 0.03951178766054781
+        },
+        {
+          "step": 2500,
+          "development_mse": 0.039460769876303384
+        },
+        {
+          "step": 2600,
+          "development_mse": 0.039451602610967286
+        }
+      ],
+      "model_path": "value_evidence/model-3121.npz",
+      "model_sha256": "8b612bf8c91d04783582e3c0e19d9ff38f5cbd615a25db6cbfd8abcaa49473d9",
+      "wall_seconds": 6.460439057002077
+    }
+  ]
+}

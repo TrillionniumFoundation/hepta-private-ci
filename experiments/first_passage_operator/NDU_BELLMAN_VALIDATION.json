@@ -1,0 +1,1229 @@
+{
+  "schema": "hepta.operator.ndu-development-validation.v1",
+  "passed": true,
+  "scenario": {
+    "identity": "operator-development-native",
+    "inputs": [
+      0.0,
+      0.0
+    ],
+    "level": 0.4,
+    "repair_cost": 0.2,
+    "noise_seed": 1001
+  },
+  "objective": {
+    "schema": "hepta.regenerative.maintenance-objective.v1",
+    "recursive_profile": "hepta.ndu.recursive-utility.scalar.q32.v1",
+    "running_rate": 0.6,
+    "failure_penalty": 0.5,
+    "control_interval": 0.5,
+    "maximum_horizon": 2.0,
+    "utility_unit": "task-return",
+    "discount_per_control_interval": 1.0,
+    "repair_charge": "actual public price once per executed repair"
+  },
+  "forecast_receipts": [
+    {
+      "schema": "hepta.regenerative.native-evaluation.v1",
+      "request": {
+        "schema": "hepta.first-passage.ndu.request.v1",
+        "recursive_profile": "hepta.ndu.recursive-utility.scalar.q32.v1",
+        "objective_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+        "snapshot_digest": "cc73220c80217090d3a97ec81e7595f1426d2178dce655b7989a9b2620caeb21",
+        "generation": 1,
+        "utility_unit": "task-return",
+        "resource_unit": "task-cost",
+        "risk_unit": "probability",
+        "resource_budget_q32": 4294967296000000,
+        "risk_ceiling_q32": 4294967296,
+        "candidates": [
+          {
+            "id": "abstain",
+            "verified": true,
+            "verification_digest": "c3c94b69c684ade7da53111c25c359055033f44fa98638c160330504b9804746",
+            "support_digest": "5f71a4504791feff0be52e94da5e001685661774be83a09fd4c19e1f60ed8097",
+            "resource_cost_q32": 0,
+            "risk_q32": 0,
+            "uncertainty_q32": 0,
+            "terminal_q32": 0,
+            "events": [
+              {
+                "event_digest": "1764cbf0a781101c87d188b7ee1b885a816ad0bf2247ff384e36c5910504dd61",
+                "preference_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+                "instant_q32": 0,
+                "discount_q32": 4294967296
+              }
+            ]
+          },
+          {
+            "id": "wait",
+            "verified": true,
+            "verification_digest": "7748bfea852f6bbec5360e196c35ee0e65389d49f7cc86a1396b7a80ece1dcf3",
+            "support_digest": "c3cae3dca4315b8076395c57762a69e494228cdc4f9e8d33e24a0aec9e396268",
+            "resource_cost_q32": 0,
+            "risk_q32": 1697142237,
+            "uncertainty_q32": 0,
+            "terminal_q32": 2420640740,
+            "events": [
+              {
+                "event_digest": "3466bc56f169a6cf579f70a9d8b118b14ae49f2c0bc3f0e9ba933dde6182aba6",
+                "preference_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+                "instant_q32": 384579829,
+                "discount_q32": 4294967296
+              }
+            ]
+          },
+          {
+            "id": "repair",
+            "verified": true,
+            "verification_digest": "489b9fe84b050ac8059fba583f55056a4bdfaa6893ac12070f33abb86bf28de2",
+            "support_digest": "09ad08a16c819a1eb0cb65999ae99907445ce631f58295eab751f5fa5f68dbc9",
+            "resource_cost_q32": 858993459,
+            "risk_q32": 6683568,
+            "uncertainty_q32": 0,
+            "terminal_q32": 2609194720,
+            "events": [
+              {
+                "event_digest": "e0b85fef6231a58ea90abba3d1d3977b65e6ce81a61fbdb456e2b7103394ce60",
+                "preference_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+                "instant_q32": 271402767,
+                "discount_q32": 4294967296
+              }
+            ]
+          }
+        ]
+      },
+      "response": {
+        "advisory_candidate_id": "repair",
+        "authority": "DENY_ALL",
+        "disposition": "UniqueParetoRecommendation",
+        "evaluated_candidate_ids": [
+          "abstain",
+          "repair",
+          "wait"
+        ],
+        "evaluation_digest": "29e2ae5ba3095bf3e6355e69836fb695814d0982c5974d2b1871970a68a992c5",
+        "evaluation_policy_digest": "7b529f13572bedfd79ecbd745eb52b923b31cafb1bf32a23f4c0bd3aeedf7431",
+        "generation": 1,
+        "identity": {
+          "algorithms": [
+            "codex_hepta_ndu::evaluate_recursive_utility",
+            "codex_hepta_ndu::evaluate_candidates_with_policy"
+          ],
+          "authority": "DENY_ALL",
+          "bridge_digest": "29e1d4e295a6603bcdaaf0b01206b58b26bca7ca6d7e82eac52af6d993b0c915",
+          "recursive_profile": "hepta.ndu.recursive-utility.scalar.q32.v1",
+          "rustc": "rustc 1.95.0 (59807616e 2026-04-14)",
+          "safety_certificate": false,
+          "schema": "hepta.first-passage.ndu.identity.v1",
+          "source_commit": "ed6f8c6645c927249cec0d3395f6bae21f278739",
+          "source_digest": "4c2df16a69c6579ae8b5bc2683acc1060bc31c7c5790e70e3161b9dd6fc89a0d"
+        },
+        "objective_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+        "optimality_scope": "bounded-supplied-candidate-paths-only",
+        "pareto_candidate_ids": [
+          "repair"
+        ],
+        "paths": [
+          {
+            "id": "abstain",
+            "projection_count": 0,
+            "recursive_evidence_digest": "08b94853c2bdb5047ba9b1b77e0a4cf822a96b23945638880a77763e708c3b40",
+            "resource_cost_q32": 0,
+            "risk_q32": 0,
+            "support_digest": "5f71a4504791feff0be52e94da5e001685661774be83a09fd4c19e1f60ed8097",
+            "values_q32": [
+              0,
+              0
+            ],
+            "verification_digest": "c3c94b69c684ade7da53111c25c359055033f44fa98638c160330504b9804746"
+          },
+          {
+            "id": "wait",
+            "projection_count": 0,
+            "recursive_evidence_digest": "7218c26def1fde586a17b722c155ef37765816631e6ef723475e8a15010b6bb0",
+            "resource_cost_q32": 0,
+            "risk_q32": 1697142237,
+            "support_digest": "c3cae3dca4315b8076395c57762a69e494228cdc4f9e8d33e24a0aec9e396268",
+            "values_q32": [
+              2805220569,
+              2420640740
+            ],
+            "verification_digest": "7748bfea852f6bbec5360e196c35ee0e65389d49f7cc86a1396b7a80ece1dcf3"
+          },
+          {
+            "id": "repair",
+            "projection_count": 0,
+            "recursive_evidence_digest": "8061cd1cccd1c7c8099cdb8720691056c2348b5dfd39bfbe997158d5fcfa8913",
+            "resource_cost_q32": 858993459,
+            "risk_q32": 6683568,
+            "support_digest": "09ad08a16c819a1eb0cb65999ae99907445ce631f58295eab751f5fa5f68dbc9",
+            "values_q32": [
+              2880597487,
+              2609194720
+            ],
+            "verification_digest": "489b9fe84b050ac8059fba583f55056a4bdfaa6893ac12070f33abb86bf28de2"
+          }
+        ],
+        "rejected": [],
+        "request_digest": "91a64415125194454b02c2191743d8a7064a4b867595eb11543a3a80df823ce8",
+        "safety_certificate": false,
+        "schema": "hepta.first-passage.ndu.response.v1",
+        "snapshot_digest": "cc73220c80217090d3a97ec81e7595f1426d2178dce655b7989a9b2620caeb21",
+        "status": "advisory",
+        "utility_profile_digest": "fb0b4dfc6c5646f0987fa26680adbf096888814eac7f4e88292e80f0b3d7e925"
+      },
+      "snapshot": {
+        "continuation_plan": "FINITE_HORIZON_REPLAN_SAME_BELLMAN_RECURSION",
+        "observation": {
+          "task_profile": "hepta-maintenance-renewal-v1",
+          "level": 0.4,
+          "time": 0.0,
+          "inputs": [
+            0.0,
+            0.0
+          ],
+          "repair_cost": 0.2,
+          "remaining_duration": 2.0,
+          "refractory_remaining": 0.0,
+          "decision_index": 0,
+          "legal_actions": [
+            "wait",
+            "repair",
+            "stop"
+          ]
+        },
+        "objective": {
+          "schema": "hepta.regenerative.maintenance-objective.v1",
+          "recursive_profile": "hepta.ndu.recursive-utility.scalar.q32.v1",
+          "running_rate": 0.6,
+          "failure_penalty": 0.5,
+          "control_interval": 0.5,
+          "maximum_horizon": 2.0,
+          "utility_unit": "task-return",
+          "discount_per_control_interval": 1.0,
+          "repair_charge": "actual public price once per executed repair"
+        },
+        "objective_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+        "native_binary_sha256": "83326cf07a435ab3bb5b72075feedf38237d90bcaac80a60d44337c7a9fdf5bf",
+        "native_source_manifest_sha256": "4c2df16a69c6579ae8b5bc2683acc1060bc31c7c5790e70e3161b9dd6fc89a0d"
+      },
+      "action_values": {
+        "STOP": 0.0,
+        "WAIT": 0.6531413106713444,
+        "REPAIR": 0.6706913670059294
+      },
+      "native_candidate_to_action": {
+        "abstain": "STOP",
+        "wait": "WAIT",
+        "repair": "REPAIR"
+      },
+      "binary_sha256": "83326cf07a435ab3bb5b72075feedf38237d90bcaac80a60d44337c7a9fdf5bf",
+      "source_manifest_sha256": "4c2df16a69c6579ae8b5bc2683acc1060bc31c7c5790e70e3161b9dd6fc89a0d"
+    },
+    {
+      "schema": "hepta.regenerative.native-evaluation.v1",
+      "request": {
+        "schema": "hepta.first-passage.ndu.request.v1",
+        "recursive_profile": "hepta.ndu.recursive-utility.scalar.q32.v1",
+        "objective_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+        "snapshot_digest": "51e59d9eef54ffdb57b240b1ea97c2210b0c37e68456a05aff3f38a2e46bd92f",
+        "generation": 1,
+        "utility_unit": "task-return",
+        "resource_unit": "task-cost",
+        "risk_unit": "probability",
+        "resource_budget_q32": 4294967296000000,
+        "risk_ceiling_q32": 4294967296,
+        "candidates": [
+          {
+            "id": "abstain",
+            "verified": true,
+            "verification_digest": "20b2bf45071ed4cc49a8f2b810745b6ead0e91677eb9be8810e3cf11d2f29343",
+            "support_digest": "7fc9e39963ded3376f1fb99cbf74310c5824862817cc01975e9a4302ca32bded",
+            "resource_cost_q32": 0,
+            "risk_q32": 0,
+            "uncertainty_q32": 0,
+            "terminal_q32": 0,
+            "events": [
+              {
+                "event_digest": "6f4ef07ace59fbf6abb3d42f1710e5d06d0ace92b404ed74e190cdf4b41d137e",
+                "preference_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+                "instant_q32": 0,
+                "discount_q32": 4294967296
+              }
+            ]
+          },
+          {
+            "id": "wait",
+            "verified": true,
+            "verification_digest": "31949d1d994de8e4aee99a9bbb32d4dafb65b0cd5c1a0b8e56109d7d11e33aa5",
+            "support_digest": "360aaceade68a0aab41453a551f6309d666daea658c09f4f59bc4e8642cfbc97",
+            "resource_cost_q32": 0,
+            "risk_q32": 258866339,
+            "uncertainty_q32": 0,
+            "terminal_q32": 1481190185,
+            "events": [
+              {
+                "event_digest": "f93bd0a87274c1eb6a567919a81a37bd1bbf7d2350a6737f179d478c62f05d96",
+                "preference_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+                "instant_q32": 1151915753,
+                "discount_q32": 4294967296
+              }
+            ]
+          },
+          {
+            "id": "repair",
+            "verified": true,
+            "verification_digest": "fecef342a6bc526e077e2b129c61f7896f38a2882f6eef04e62099e1f999e697",
+            "support_digest": "6e8ee0c247c6c3466c12e96201fcd0f027fc5e47c942832b1606f82a605e1e45",
+            "resource_cost_q32": 858993459,
+            "risk_q32": 6683568,
+            "uncertainty_q32": 0,
+            "terminal_q32": 1773607825,
+            "events": [
+              {
+                "event_digest": "a56cd089da79e8c5c3a4d5cdf1b8d50c94471baab21f2e86fbcc0fdbe100564e",
+                "preference_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+                "instant_q32": 271402767,
+                "discount_q32": 4294967296
+              }
+            ]
+          }
+        ]
+      },
+      "response": {
+        "advisory_candidate_id": "wait",
+        "authority": "DENY_ALL",
+        "disposition": "UniqueParetoRecommendation",
+        "evaluated_candidate_ids": [
+          "abstain",
+          "repair",
+          "wait"
+        ],
+        "evaluation_digest": "f7264519aacc532e073cffb89378166e226be3748db6a3fb93b1d48303c5a341",
+        "evaluation_policy_digest": "7b529f13572bedfd79ecbd745eb52b923b31cafb1bf32a23f4c0bd3aeedf7431",
+        "generation": 1,
+        "identity": {
+          "algorithms": [
+            "codex_hepta_ndu::evaluate_recursive_utility",
+            "codex_hepta_ndu::evaluate_candidates_with_policy"
+          ],
+          "authority": "DENY_ALL",
+          "bridge_digest": "29e1d4e295a6603bcdaaf0b01206b58b26bca7ca6d7e82eac52af6d993b0c915",
+          "recursive_profile": "hepta.ndu.recursive-utility.scalar.q32.v1",
+          "rustc": "rustc 1.95.0 (59807616e 2026-04-14)",
+          "safety_certificate": false,
+          "schema": "hepta.first-passage.ndu.identity.v1",
+          "source_commit": "ed6f8c6645c927249cec0d3395f6bae21f278739",
+          "source_digest": "4c2df16a69c6579ae8b5bc2683acc1060bc31c7c5790e70e3161b9dd6fc89a0d"
+        },
+        "objective_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+        "optimality_scope": "bounded-supplied-candidate-paths-only",
+        "pareto_candidate_ids": [
+          "wait"
+        ],
+        "paths": [
+          {
+            "id": "abstain",
+            "projection_count": 0,
+            "recursive_evidence_digest": "debe7439ff7e94f22eaa3141c0bc09acaa4044eea6cf59f115b643ef50ed9997",
+            "resource_cost_q32": 0,
+            "risk_q32": 0,
+            "support_digest": "7fc9e39963ded3376f1fb99cbf74310c5824862817cc01975e9a4302ca32bded",
+            "values_q32": [
+              0,
+              0
+            ],
+            "verification_digest": "20b2bf45071ed4cc49a8f2b810745b6ead0e91677eb9be8810e3cf11d2f29343"
+          },
+          {
+            "id": "wait",
+            "projection_count": 0,
+            "recursive_evidence_digest": "d4c1ae42f158b5ea275a32ab46b2377a5b2d72a14ec1c5c8316aac4cecde2b92",
+            "resource_cost_q32": 0,
+            "risk_q32": 258866339,
+            "support_digest": "360aaceade68a0aab41453a551f6309d666daea658c09f4f59bc4e8642cfbc97",
+            "values_q32": [
+              2633105938,
+              1481190185
+            ],
+            "verification_digest": "31949d1d994de8e4aee99a9bbb32d4dafb65b0cd5c1a0b8e56109d7d11e33aa5"
+          },
+          {
+            "id": "repair",
+            "projection_count": 0,
+            "recursive_evidence_digest": "964a42e4237f4aeae12a4c57d1ae63e4c7a47ee620ed33d1f7ee566b0a025bf4",
+            "resource_cost_q32": 858993459,
+            "risk_q32": 6683568,
+            "support_digest": "6e8ee0c247c6c3466c12e96201fcd0f027fc5e47c942832b1606f82a605e1e45",
+            "values_q32": [
+              2045010592,
+              1773607825
+            ],
+            "verification_digest": "fecef342a6bc526e077e2b129c61f7896f38a2882f6eef04e62099e1f999e697"
+          }
+        ],
+        "rejected": [],
+        "request_digest": "aabfde2d12440e9cd9e116604b2534ca177471e543a457394c0531a917c562f9",
+        "safety_certificate": false,
+        "schema": "hepta.first-passage.ndu.response.v1",
+        "snapshot_digest": "51e59d9eef54ffdb57b240b1ea97c2210b0c37e68456a05aff3f38a2e46bd92f",
+        "status": "advisory",
+        "utility_profile_digest": "fb0b4dfc6c5646f0987fa26680adbf096888814eac7f4e88292e80f0b3d7e925"
+      },
+      "snapshot": {
+        "continuation_plan": "FINITE_HORIZON_REPLAN_SAME_BELLMAN_RECURSION",
+        "observation": {
+          "task_profile": "hepta-maintenance-renewal-v1",
+          "level": 0.6699039666937173,
+          "time": 0.5,
+          "inputs": [
+            0.0,
+            0.0
+          ],
+          "repair_cost": 0.2,
+          "remaining_duration": 1.5,
+          "refractory_remaining": 0.0,
+          "decision_index": 1,
+          "legal_actions": [
+            "wait",
+            "repair",
+            "stop"
+          ]
+        },
+        "objective": {
+          "schema": "hepta.regenerative.maintenance-objective.v1",
+          "recursive_profile": "hepta.ndu.recursive-utility.scalar.q32.v1",
+          "running_rate": 0.6,
+          "failure_penalty": 0.5,
+          "control_interval": 0.5,
+          "maximum_horizon": 2.0,
+          "utility_unit": "task-return",
+          "discount_per_control_interval": 1.0,
+          "repair_charge": "actual public price once per executed repair"
+        },
+        "objective_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+        "native_binary_sha256": "83326cf07a435ab3bb5b72075feedf38237d90bcaac80a60d44337c7a9fdf5bf",
+        "native_source_manifest_sha256": "4c2df16a69c6579ae8b5bc2683acc1060bc31c7c5790e70e3161b9dd6fc89a0d"
+      },
+      "action_values": {
+        "STOP": 0.0,
+        "WAIT": 0.6130677503533661,
+        "REPAIR": 0.476141132414341
+      },
+      "native_candidate_to_action": {
+        "abstain": "STOP",
+        "wait": "WAIT",
+        "repair": "REPAIR"
+      },
+      "binary_sha256": "83326cf07a435ab3bb5b72075feedf38237d90bcaac80a60d44337c7a9fdf5bf",
+      "source_manifest_sha256": "4c2df16a69c6579ae8b5bc2683acc1060bc31c7c5790e70e3161b9dd6fc89a0d"
+    },
+    {
+      "schema": "hepta.regenerative.native-evaluation.v1",
+      "request": {
+        "schema": "hepta.first-passage.ndu.request.v1",
+        "recursive_profile": "hepta.ndu.recursive-utility.scalar.q32.v1",
+        "objective_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+        "snapshot_digest": "11a1ce9a40b712e91f8341abd79ffaa2a3148dc1bacdfa57c987e9efd1c141f1",
+        "generation": 1,
+        "utility_unit": "task-return",
+        "resource_unit": "task-cost",
+        "risk_unit": "probability",
+        "resource_budget_q32": 4294967296000000,
+        "risk_ceiling_q32": 4294967296,
+        "candidates": [
+          {
+            "id": "abstain",
+            "verified": true,
+            "verification_digest": "7b94b2f7e327168e3c90979beb91c3840981b8d58a29c955cfa49c69be70e151",
+            "support_digest": "e6ab212509b24cadbe35b196c0f8835a0f4efe75c304ebbe56c6a72474ff51e0",
+            "resource_cost_q32": 0,
+            "risk_q32": 0,
+            "uncertainty_q32": 0,
+            "terminal_q32": 0,
+            "events": [
+              {
+                "event_digest": "82ed313546aa3b8d82b76959ee009701cfe8ef5523109ae0f961876b5d805f3f",
+                "preference_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+                "instant_q32": 0,
+                "discount_q32": 4294967296
+              }
+            ]
+          },
+          {
+            "id": "wait",
+            "verified": true,
+            "verification_digest": "5e3d08149d6fa536cd0014f6a5da17486e12ce2de27beb0690a30d6cbb94ce5a",
+            "support_digest": "b661b2cbf9f865a40edeffafeb46cf7421e79511fa3e4347b0fcd3256ee3ec6e",
+            "resource_cost_q32": 0,
+            "risk_q32": 1184775004,
+            "uncertainty_q32": 0,
+            "terminal_q32": 629997461,
+            "events": [
+              {
+                "event_digest": "cf05efcd222d4aeb4d7ef20a45af6f5cff556f50f16fffc708e3946ba9557d48",
+                "preference_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+                "instant_q32": 658778610,
+                "discount_q32": 4294967296
+              }
+            ]
+          },
+          {
+            "id": "repair",
+            "verified": true,
+            "verification_digest": "9746d1f143fb673c25d37e3f5ef60e8ef1e4e2adbc049891fb4056648dc16707",
+            "support_digest": "da49ab9fe3eef3ef8fc950fe3a6858f401eb00616b652c162ce94dbc0d62377d",
+            "resource_cost_q32": 858993459,
+            "risk_q32": 6683568,
+            "uncertainty_q32": 0,
+            "terminal_q32": 990841510,
+            "events": [
+              {
+                "event_digest": "5028e2611c81d3a336a34c9cf6c66cc449ada8c24f1fac024188e84dcb98dc90",
+                "preference_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+                "instant_q32": 271402767,
+                "discount_q32": 4294967296
+              }
+            ]
+          }
+        ]
+      },
+      "response": {
+        "advisory_candidate_id": "wait",
+        "authority": "DENY_ALL",
+        "disposition": "UniqueParetoRecommendation",
+        "evaluated_candidate_ids": [
+          "abstain",
+          "repair",
+          "wait"
+        ],
+        "evaluation_digest": "73b12a32c346aefc954d74d851cf104276903d634155d7a7115c512614759236",
+        "evaluation_policy_digest": "7b529f13572bedfd79ecbd745eb52b923b31cafb1bf32a23f4c0bd3aeedf7431",
+        "generation": 1,
+        "identity": {
+          "algorithms": [
+            "codex_hepta_ndu::evaluate_recursive_utility",
+            "codex_hepta_ndu::evaluate_candidates_with_policy"
+          ],
+          "authority": "DENY_ALL",
+          "bridge_digest": "29e1d4e295a6603bcdaaf0b01206b58b26bca7ca6d7e82eac52af6d993b0c915",
+          "recursive_profile": "hepta.ndu.recursive-utility.scalar.q32.v1",
+          "rustc": "rustc 1.95.0 (59807616e 2026-04-14)",
+          "safety_certificate": false,
+          "schema": "hepta.first-passage.ndu.identity.v1",
+          "source_commit": "ed6f8c6645c927249cec0d3395f6bae21f278739",
+          "source_digest": "4c2df16a69c6579ae8b5bc2683acc1060bc31c7c5790e70e3161b9dd6fc89a0d"
+        },
+        "objective_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+        "optimality_scope": "bounded-supplied-candidate-paths-only",
+        "pareto_candidate_ids": [
+          "wait"
+        ],
+        "paths": [
+          {
+            "id": "abstain",
+            "projection_count": 0,
+            "recursive_evidence_digest": "6134475282d2924a68daa4b05b4c52863c28cb1f33d60c938a35b3e031155d5a",
+            "resource_cost_q32": 0,
+            "risk_q32": 0,
+            "support_digest": "e6ab212509b24cadbe35b196c0f8835a0f4efe75c304ebbe56c6a72474ff51e0",
+            "values_q32": [
+              0,
+              0
+            ],
+            "verification_digest": "7b94b2f7e327168e3c90979beb91c3840981b8d58a29c955cfa49c69be70e151"
+          },
+          {
+            "id": "wait",
+            "projection_count": 0,
+            "recursive_evidence_digest": "7add84c6d9080f686465ff59ab5a4863ed763e361121a548bb4d4649f08563f8",
+            "resource_cost_q32": 0,
+            "risk_q32": 1184775004,
+            "support_digest": "b661b2cbf9f865a40edeffafeb46cf7421e79511fa3e4347b0fcd3256ee3ec6e",
+            "values_q32": [
+              1288776071,
+              629997461
+            ],
+            "verification_digest": "5e3d08149d6fa536cd0014f6a5da17486e12ce2de27beb0690a30d6cbb94ce5a"
+          },
+          {
+            "id": "repair",
+            "projection_count": 0,
+            "recursive_evidence_digest": "46a8527d4b691b015780ef4adf0c05d0281266464f52cc2d572142d17fee0a80",
+            "resource_cost_q32": 858993459,
+            "risk_q32": 6683568,
+            "support_digest": "da49ab9fe3eef3ef8fc950fe3a6858f401eb00616b652c162ce94dbc0d62377d",
+            "values_q32": [
+              1262244277,
+              990841510
+            ],
+            "verification_digest": "9746d1f143fb673c25d37e3f5ef60e8ef1e4e2adbc049891fb4056648dc16707"
+          }
+        ],
+        "rejected": [],
+        "request_digest": "a911539fd413f604d2859fd228ab638baeb7fb23c2e7173bcac69f0380a359d0",
+        "safety_certificate": false,
+        "schema": "hepta.first-passage.ndu.response.v1",
+        "snapshot_digest": "11a1ce9a40b712e91f8341abd79ffaa2a3148dc1bacdfa57c987e9efd1c141f1",
+        "status": "advisory",
+        "utility_profile_digest": "fb0b4dfc6c5646f0987fa26680adbf096888814eac7f4e88292e80f0b3d7e925"
+      },
+      "snapshot": {
+        "continuation_plan": "FINITE_HORIZON_REPLAN_SAME_BELLMAN_RECURSION",
+        "observation": {
+          "task_profile": "hepta-maintenance-renewal-v1",
+          "level": 0.4674714333403923,
+          "time": 1.0,
+          "inputs": [
+            0.0,
+            0.0
+          ],
+          "repair_cost": 0.2,
+          "remaining_duration": 1.0,
+          "refractory_remaining": 0.0,
+          "decision_index": 2,
+          "legal_actions": [
+            "wait",
+            "repair",
+            "stop"
+          ]
+        },
+        "objective": {
+          "schema": "hepta.regenerative.maintenance-objective.v1",
+          "recursive_profile": "hepta.ndu.recursive-utility.scalar.q32.v1",
+          "running_rate": 0.6,
+          "failure_penalty": 0.5,
+          "control_interval": 0.5,
+          "maximum_horizon": 2.0,
+          "utility_unit": "task-return",
+          "discount_per_control_interval": 1.0,
+          "repair_charge": "actual public price once per executed repair"
+        },
+        "objective_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+        "native_binary_sha256": "83326cf07a435ab3bb5b72075feedf38237d90bcaac80a60d44337c7a9fdf5bf",
+        "native_source_manifest_sha256": "4c2df16a69c6579ae8b5bc2683acc1060bc31c7c5790e70e3161b9dd6fc89a0d"
+      },
+      "action_values": {
+        "STOP": 0.0,
+        "WAIT": 0.3000665621366352,
+        "REPAIR": 0.2938891474623233
+      },
+      "native_candidate_to_action": {
+        "abstain": "STOP",
+        "wait": "WAIT",
+        "repair": "REPAIR"
+      },
+      "binary_sha256": "83326cf07a435ab3bb5b72075feedf38237d90bcaac80a60d44337c7a9fdf5bf",
+      "source_manifest_sha256": "4c2df16a69c6579ae8b5bc2683acc1060bc31c7c5790e70e3161b9dd6fc89a0d"
+    },
+    {
+      "schema": "hepta.regenerative.native-evaluation.v1",
+      "request": {
+        "schema": "hepta.first-passage.ndu.request.v1",
+        "recursive_profile": "hepta.ndu.recursive-utility.scalar.q32.v1",
+        "objective_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+        "snapshot_digest": "2178fd8a9661d625582f4f57c2ff3f9afc45cb81565e70526541e51a47304d7d",
+        "generation": 1,
+        "utility_unit": "task-return",
+        "resource_unit": "task-cost",
+        "risk_unit": "probability",
+        "resource_budget_q32": 4294967296000000,
+        "risk_ceiling_q32": 4294967296,
+        "candidates": [
+          {
+            "id": "abstain",
+            "verified": true,
+            "verification_digest": "36d0e3f8a011913f45401d528bac46241910eebf1f0ee157cdafc41376ee2830",
+            "support_digest": "dfcf4a42c0ab3c8d4314688a7e66290767442c84ed48724706c340b94861c8c1",
+            "resource_cost_q32": 0,
+            "risk_q32": 0,
+            "uncertainty_q32": 0,
+            "terminal_q32": 0,
+            "events": [
+              {
+                "event_digest": "67ffc26d432c0f184b10bc95d93c6ec7315a70e6e33a145aaa1114cc04b325fc",
+                "preference_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+                "instant_q32": 0,
+                "discount_q32": 4294967296
+              }
+            ]
+          },
+          {
+            "id": "wait",
+            "verified": true,
+            "verification_digest": "75371fc9207c28f542e931cf167cfe1224481250c3a5f6f5d79dd9c017bba2cc",
+            "support_digest": "55227864aa5d4c8627bbc53244a861c60c3202ea8c29ded427c1f9cf8619ed32",
+            "resource_cost_q32": 0,
+            "risk_q32": 3423008901,
+            "uncertainty_q32": 0,
+            "terminal_q32": 0,
+            "events": [
+              {
+                "event_digest": "285fb19c81bd034231ad2eb8ce60ecde7def4cf20cb761113afd63e6125ad942",
+                "preference_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+                "instant_q32": -543188877,
+                "discount_q32": 4294967296
+              }
+            ]
+          },
+          {
+            "id": "repair",
+            "verified": true,
+            "verification_digest": "7e831e4e5452ddd9d820e40abb23867c34cbf4ef6757e365ea8e9aada2ff111b",
+            "support_digest": "be00e3f4f3a32a903e2308dd0217220f6e83ee9bcebd664d3ccc974d38c39394",
+            "resource_cost_q32": 858993459,
+            "risk_q32": 6683568,
+            "uncertainty_q32": 0,
+            "terminal_q32": 0,
+            "events": [
+              {
+                "event_digest": "9eae7a276d3ef672176d019eb32ca7ef797abf5cd5f2d2749b5c68e76fb1de59",
+                "preference_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+                "instant_q32": 271402767,
+                "discount_q32": 4294967296
+              }
+            ]
+          }
+        ]
+      },
+      "response": {
+        "advisory_candidate_id": "repair",
+        "authority": "DENY_ALL",
+        "disposition": "UniqueParetoRecommendation",
+        "evaluated_candidate_ids": [
+          "abstain",
+          "repair",
+          "wait"
+        ],
+        "evaluation_digest": "9513b6b222546ba139280b6327310529863d3a4b181b40a9ad3360638ca76c37",
+        "evaluation_policy_digest": "7b529f13572bedfd79ecbd745eb52b923b31cafb1bf32a23f4c0bd3aeedf7431",
+        "generation": 1,
+        "identity": {
+          "algorithms": [
+            "codex_hepta_ndu::evaluate_recursive_utility",
+            "codex_hepta_ndu::evaluate_candidates_with_policy"
+          ],
+          "authority": "DENY_ALL",
+          "bridge_digest": "29e1d4e295a6603bcdaaf0b01206b58b26bca7ca6d7e82eac52af6d993b0c915",
+          "recursive_profile": "hepta.ndu.recursive-utility.scalar.q32.v1",
+          "rustc": "rustc 1.95.0 (59807616e 2026-04-14)",
+          "safety_certificate": false,
+          "schema": "hepta.first-passage.ndu.identity.v1",
+          "source_commit": "ed6f8c6645c927249cec0d3395f6bae21f278739",
+          "source_digest": "4c2df16a69c6579ae8b5bc2683acc1060bc31c7c5790e70e3161b9dd6fc89a0d"
+        },
+        "objective_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+        "optimality_scope": "bounded-supplied-candidate-paths-only",
+        "pareto_candidate_ids": [
+          "repair"
+        ],
+        "paths": [
+          {
+            "id": "abstain",
+            "projection_count": 0,
+            "recursive_evidence_digest": "efdc87f8aaa5f0c4feed6458400638189fc7c187fc8e46d8e57f0c7aa7633971",
+            "resource_cost_q32": 0,
+            "risk_q32": 0,
+            "support_digest": "dfcf4a42c0ab3c8d4314688a7e66290767442c84ed48724706c340b94861c8c1",
+            "values_q32": [
+              0,
+              0
+            ],
+            "verification_digest": "36d0e3f8a011913f45401d528bac46241910eebf1f0ee157cdafc41376ee2830"
+          },
+          {
+            "id": "wait",
+            "projection_count": 0,
+            "recursive_evidence_digest": "da29a5ead8ac222def1acfa24d2928fdc6c8802c5926603083755b3c0a0ab652",
+            "resource_cost_q32": 0,
+            "risk_q32": 3423008901,
+            "support_digest": "55227864aa5d4c8627bbc53244a861c60c3202ea8c29ded427c1f9cf8619ed32",
+            "values_q32": [
+              -543188877,
+              0
+            ],
+            "verification_digest": "75371fc9207c28f542e931cf167cfe1224481250c3a5f6f5d79dd9c017bba2cc"
+          },
+          {
+            "id": "repair",
+            "projection_count": 0,
+            "recursive_evidence_digest": "e5a53ba2cbc9103a6ac172453d4fbebb3b55e0e52958b08ddfd00699377221a3",
+            "resource_cost_q32": 858993459,
+            "risk_q32": 6683568,
+            "support_digest": "be00e3f4f3a32a903e2308dd0217220f6e83ee9bcebd664d3ccc974d38c39394",
+            "values_q32": [
+              271402767,
+              0
+            ],
+            "verification_digest": "7e831e4e5452ddd9d820e40abb23867c34cbf4ef6757e365ea8e9aada2ff111b"
+          }
+        ],
+        "rejected": [],
+        "request_digest": "88f74591ae3328514bc1507b12e3455fb7526fccab9da3db7e187401f160f7fc",
+        "safety_certificate": false,
+        "schema": "hepta.first-passage.ndu.response.v1",
+        "snapshot_digest": "2178fd8a9661d625582f4f57c2ff3f9afc45cb81565e70526541e51a47304d7d",
+        "status": "advisory",
+        "utility_profile_digest": "fb0b4dfc6c5646f0987fa26680adbf096888814eac7f4e88292e80f0b3d7e925"
+      },
+      "snapshot": {
+        "continuation_plan": "FINITE_HORIZON_REPLAN_SAME_BELLMAN_RECURSION",
+        "observation": {
+          "task_profile": "hepta-maintenance-renewal-v1",
+          "level": 0.19177974876473045,
+          "time": 1.5,
+          "inputs": [
+            0.0,
+            0.0
+          ],
+          "repair_cost": 0.2,
+          "remaining_duration": 0.5,
+          "refractory_remaining": 0.0,
+          "decision_index": 3,
+          "legal_actions": [
+            "wait",
+            "repair",
+            "stop"
+          ]
+        },
+        "objective": {
+          "schema": "hepta.regenerative.maintenance-objective.v1",
+          "recursive_profile": "hepta.ndu.recursive-utility.scalar.q32.v1",
+          "running_rate": 0.6,
+          "failure_penalty": 0.5,
+          "control_interval": 0.5,
+          "maximum_horizon": 2.0,
+          "utility_unit": "task-return",
+          "discount_per_control_interval": 1.0,
+          "repair_charge": "actual public price once per executed repair"
+        },
+        "objective_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+        "native_binary_sha256": "83326cf07a435ab3bb5b72075feedf38237d90bcaac80a60d44337c7a9fdf5bf",
+        "native_source_manifest_sha256": "4c2df16a69c6579ae8b5bc2683acc1060bc31c7c5790e70e3161b9dd6fc89a0d"
+      },
+      "action_values": {
+        "STOP": 0.0,
+        "WAIT": -0.12647101585753262,
+        "REPAIR": 0.06319088093005121
+      },
+      "native_candidate_to_action": {
+        "abstain": "STOP",
+        "wait": "WAIT",
+        "repair": "REPAIR"
+      },
+      "binary_sha256": "83326cf07a435ab3bb5b72075feedf38237d90bcaac80a60d44337c7a9fdf5bf",
+      "source_manifest_sha256": "4c2df16a69c6579ae8b5bc2683acc1060bc31c7c5790e70e3161b9dd6fc89a0d"
+    }
+  ],
+  "actual_receipt": {
+    "schema": "hepta.regenerative.native-evaluation.v1",
+    "request": {
+      "schema": "hepta.first-passage.ndu.request.v1",
+      "recursive_profile": "hepta.ndu.recursive-utility.scalar.q32.v1",
+      "objective_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+      "snapshot_digest": "a0a3449378364e8ef46b8ebfed374636e4d53075ba73a8592bd0403e4c4eff87",
+      "generation": 1,
+      "utility_unit": "task-return",
+      "resource_unit": "task-cost",
+      "risk_unit": "probability",
+      "resource_budget_q32": 4294967296000000,
+      "risk_ceiling_q32": 4294967296,
+      "candidates": [
+        {
+          "id": "realized",
+          "verified": true,
+          "verification_digest": "8bc98f6b0c1f0e9b1039903a619d85c36ba328ebb17db1463dd7c2891c94c008",
+          "support_digest": "d8febbb8b5a6823125f1e3955a82db6ac9624310c669e889d2226741127c7fa0",
+          "resource_cost_q32": 1717986918,
+          "risk_q32": 0,
+          "uncertainty_q32": 0,
+          "terminal_q32": 0,
+          "events": [
+            {
+              "event_digest": "8607d0876579bd030880c807bc906392a9793351e7eca797ece6f280d44e1cfe",
+              "preference_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+              "instant_q32": 274877907,
+              "discount_q32": 4294967296
+            },
+            {
+              "event_digest": "e56b16356df975117f057c90196449e97e7622543e5d7690695ce78982eafa03",
+              "preference_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+              "instant_q32": 1288490189,
+              "discount_q32": 4294967296
+            },
+            {
+              "event_digest": "b0d794e8db90b9e277adbf8348d7c46269239f53f5bf59acd03c8becc6d071e6",
+              "preference_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+              "instant_q32": 1288490189,
+              "discount_q32": 4294967296
+            },
+            {
+              "event_digest": "b5373f54377372a1ff0e03a52f01eb99f5b53c0618c0dd5052a7da2795a298f6",
+              "preference_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+              "instant_q32": 274877907,
+              "discount_q32": 4294967296
+            }
+          ]
+        },
+        {
+          "id": "abstain",
+          "verified": true,
+          "verification_digest": "538ca9ccf8513c20c5d8ac7d1d64dd1a6b22d42daaf977f920f5f2f83c853757",
+          "support_digest": "d1cce47a23e7673ad5b2e85885882d76927f7a345a8d2d7d44afe3e4a451b32c",
+          "resource_cost_q32": 0,
+          "risk_q32": 0,
+          "uncertainty_q32": 0,
+          "terminal_q32": 0,
+          "events": [
+            {
+              "event_digest": "317809f3c6cabec1ca28c93c2040f30e3f0b6caf1a99b2059b06c1842aa67d40",
+              "preference_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+              "instant_q32": 0,
+              "discount_q32": 4294967296
+            }
+          ]
+        }
+      ]
+    },
+    "response": {
+      "advisory_candidate_id": "realized",
+      "authority": "DENY_ALL",
+      "disposition": "UniqueParetoRecommendation",
+      "evaluated_candidate_ids": [
+        "abstain",
+        "realized"
+      ],
+      "evaluation_digest": "667a68cdcc711a64db8f7d5b7227958b12ac9814469038bdcf4cbc9094157e37",
+      "evaluation_policy_digest": "7b529f13572bedfd79ecbd745eb52b923b31cafb1bf32a23f4c0bd3aeedf7431",
+      "generation": 1,
+      "identity": {
+        "algorithms": [
+          "codex_hepta_ndu::evaluate_recursive_utility",
+          "codex_hepta_ndu::evaluate_candidates_with_policy"
+        ],
+        "authority": "DENY_ALL",
+        "bridge_digest": "29e1d4e295a6603bcdaaf0b01206b58b26bca7ca6d7e82eac52af6d993b0c915",
+        "recursive_profile": "hepta.ndu.recursive-utility.scalar.q32.v1",
+        "rustc": "rustc 1.95.0 (59807616e 2026-04-14)",
+        "safety_certificate": false,
+        "schema": "hepta.first-passage.ndu.identity.v1",
+        "source_commit": "ed6f8c6645c927249cec0d3395f6bae21f278739",
+        "source_digest": "4c2df16a69c6579ae8b5bc2683acc1060bc31c7c5790e70e3161b9dd6fc89a0d"
+      },
+      "objective_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+      "optimality_scope": "bounded-supplied-candidate-paths-only",
+      "pareto_candidate_ids": [
+        "realized"
+      ],
+      "paths": [
+        {
+          "id": "realized",
+          "projection_count": 0,
+          "recursive_evidence_digest": "0a27bb5881647f7619f3432367e6e65b9d00546cb6906c878d2bec1f0cb26922",
+          "resource_cost_q32": 1717986918,
+          "risk_q32": 0,
+          "support_digest": "d8febbb8b5a6823125f1e3955a82db6ac9624310c669e889d2226741127c7fa0",
+          "values_q32": [
+            3126736192,
+            2851858285,
+            1563368096,
+            274877907,
+            0
+          ],
+          "verification_digest": "8bc98f6b0c1f0e9b1039903a619d85c36ba328ebb17db1463dd7c2891c94c008"
+        },
+        {
+          "id": "abstain",
+          "projection_count": 0,
+          "recursive_evidence_digest": "9ffa0f78a4c27ae80f19d02e65030d924d4aabbb8364e26b27ed553ae7d7d1fd",
+          "resource_cost_q32": 0,
+          "risk_q32": 0,
+          "support_digest": "d1cce47a23e7673ad5b2e85885882d76927f7a345a8d2d7d44afe3e4a451b32c",
+          "values_q32": [
+            0,
+            0
+          ],
+          "verification_digest": "538ca9ccf8513c20c5d8ac7d1d64dd1a6b22d42daaf977f920f5f2f83c853757"
+        }
+      ],
+      "rejected": [],
+      "request_digest": "ab0c9b9229d6f35f68a570a7775d1233e8a76a21cd23c483fbebfa1f45ab84f6",
+      "safety_certificate": false,
+      "schema": "hepta.first-passage.ndu.response.v1",
+      "snapshot_digest": "a0a3449378364e8ef46b8ebfed374636e4d53075ba73a8592bd0403e4c4eff87",
+      "status": "advisory",
+      "utility_profile_digest": "fb0b4dfc6c5646f0987fa26680adbf096888814eac7f4e88292e80f0b3d7e925"
+    },
+    "snapshot": {
+      "schema": "hepta.regenerative.ndu-snapshot.v1",
+      "recursive_profile": "hepta.ndu.recursive-utility.scalar.q32.v1",
+      "profile": {
+        "schema": "hepta.regenerative.maintenance-objective.v1",
+        "recursive_profile": "hepta.ndu.recursive-utility.scalar.q32.v1",
+        "running_rate": 0.6,
+        "failure_penalty": 0.5,
+        "control_interval": 0.5,
+        "maximum_horizon": 2.0,
+        "utility_unit": "task-return",
+        "discount_per_control_interval": 1.0,
+        "repair_charge": "actual public price once per executed repair"
+      },
+      "horizon": 2.0,
+      "model_digest": "99b6304a5719686e93dbc63fd918b598b74527082c26b9702664c980e23f5e8f",
+      "event_clock": "continuous-first-passage-with-deterministic-refractory",
+      "objective_digest": "4ca293d8cf39e2e0eef769b61211f2a246858cb450c456f9ce276d7f289c9fb9",
+      "native_binary_sha256": "83326cf07a435ab3bb5b72075feedf38237d90bcaac80a60d44337c7a9fdf5bf",
+      "native_source_manifest_sha256": "4c2df16a69c6579ae8b5bc2683acc1060bc31c7c5790e70e3161b9dd6fc89a0d",
+      "model": {
+        "drift": -0.55,
+        "weights": [
+          0.0,
+          0.0
+        ],
+        "sigma": 0.32,
+        "barrier": 0.0,
+        "reset_gap": 0.9,
+        "refractory": 0.06,
+        "interaction": 0.0
+      },
+      "public_observation": {
+        "task_profile": "hepta-maintenance-renewal-v1",
+        "level": 0.4,
+        "time": 0.0,
+        "inputs": [
+          0.0,
+          0.0
+        ],
+        "repair_cost": 0.2,
+        "remaining_duration": 2.0,
+        "refractory_remaining": 0.0,
+        "decision_index": 0,
+        "legal_actions": [
+          "wait",
+          "repair",
+          "stop"
+        ]
+      },
+      "inference_checkpoint_digest": "7190e62e5ba9899beee6a26c28dadb62a4e81c44b059da276f21d654dbfb8e16",
+      "context": {},
+      "outcome_kind": "realized-external-transitions",
+      "transitions": [
+        {
+          "task_profile": "hepta-maintenance-renewal-v1",
+          "scenario_id": "operator-development-native",
+          "observation": {
+            "task_profile": "hepta-maintenance-renewal-v1",
+            "level": 0.4,
+            "time": 0.0,
+            "inputs": [
+              0.0,
+              0.0
+            ],
+            "repair_cost": 0.2,
+            "remaining_duration": 2.0,
+            "refractory_remaining": 0.0,
+            "decision_index": 0,
+            "legal_actions": [
+              "wait",
+              "repair",
+              "stop"
+            ]
+          },
+          "action": "repair",
+          "outcome": {
+            "profile": "hepta-first-passage-cell-v1",
+            "model_digest": "99b6304a5719686e93dbc63fd918b598b74527082c26b9702664c980e23f5e8f",
+            "start_time": 0.0,
+            "time": 0.5,
+            "level": 0.6699039666937173,
+            "elapsed_duration": 0.5,
+            "active_duration": 0.44,
+            "refractory_remaining": 0.0,
+            "failure_count": 0,
+            "events": [],
+            "random_counter": 2
+          },
+          "interventions": [
+            {
+              "time": 0.0,
+              "kind": "repair"
+            }
+          ],
+          "running_reward": 0.264,
+          "failure_cost": 0.0,
+          "action_cost": 0.2,
+          "reward": 0.064,
+          "cumulative_reward": 0.064,
+          "done": false
+        },
+        {
+          "task_profile": "hepta-maintenance-renewal-v1",
+          "scenario_id": "operator-development-native",
+          "observation": {
+            "task_profile": "hepta-maintenance-renewal-v1",
+            "level": 0.6699039666937173,
+            "time": 0.5,
+            "inputs": [
+              0.0,
+              0.0
+            ],
+            "repair_cost": 0.2,
+            "remaining_duration": 1.5,
+            "refractory_remaining": 0.0,
+            "decision_index": 1,
+            "legal_actions": [
+              "wait",
+              "repair",
+              "stop"
+            ]
+          },
+          "action": "wait",
+          "outcome": {
+            "profile": "hepta-first-passage-cell-v1",
+            "model_digest": "99b6304a5719686e93dbc63fd918b598b74527082c26b9702664c980e23f5e8f",
+            "start_time": 0.5,
+            "time": 1.0,
+            "level": 0.4674714333403923,
+            "elapsed_duration": 0.5,
+            "active_duration": 0.5,
+            "refractory_remaining": 0.0,
+            "failure_count": 0,
+            "events": [],
+            "random_counter": 4
+          },
+          "interventions": [],
+          "running_reward": 0.3,
+          "failure_cost": 0.0,
+          "action_cost": 0.0,
+          "reward": 0.3,
+          "cumulative_reward": 0.364,
+          "done": false
+        },
+        {
+          "task_profile": "hepta-maintenance-renewal-v1",
+          "scenario_id": "operator-development-native",
+          "observation": {
+            "task_profile": "hepta-maintenance-renewal-v1",
+            "level": 0.4674714333403923,
+            "time": 1.0,
+            "inputs": [
+              0.0,
+              0.0
+            ],
+            "repair_cost": 0.2,
+            "remaining_duration": 1.0,
+            "refractory_remaining": 0.0,
+            "decision_index": 2,
+            "legal_actions": [
+              "wait",
+              "repair",
+              "stop"
+            ]
+          },
+          "action": "wait",
+          "outcome": {
+            "profile": "hepta-first-passage-cell-v1",
+            "model_digest": "99b6304a5719686e93dbc63fd918b598b74527082c26b9702664c980e23f5e8f",
+            "start_time": 1.0,
+            "time": 1.5,
+            "level": 0.19177974876473045,
+            "elapsed_duration": 0.5,
+            "active_duration": 0.5,
+            "refractory_remaining": 0.0,
+            "failure_count": 0,
+            "events": [],
+            "random_counter": 6
+          },
+          "interventions": [],
+          "running_reward": 0.3,
+          "failure_cost": 0.0,
+          "action_cost": 0.0,
+          "reward": 0.3,
+          "cumulative_reward": 0.6639999999999999,
+          "done": false
+        },
+        {
+          "task_profile": "hepta-maintenance-renewal-v1",
+          "scenario_id": "operator-development-native",
+          "observation": {
+            "task_profile": "hepta-maintenance-renewal-v1",
+            "level": 0.19177974876473045,
+            "time": 1.5,
+            "inputs": [
+              0.0,
+              0.0
+            ],
+            "repair_cost": 0.2,
+            "remaining_duration": 0.5,
+            "refractory_remaining": 0.0,
+            "decision_index": 3,
+            "legal_actions": [
+              "wait",
+              "repair",
+              "stop"
+            ]
+          },
+          "action": "repair",
+          "outcome": {
+            "profile": "hepta-first-passage-cell-v1",
+            "model_digest": "99b6304a5719686e93dbc63fd918b598b74527082c26b9702664c980e23f5e8f",
+            "start_time": 1.5,
+            "time": 2.0,
+            "level": 0.7518406098423693,
+            "elapsed_duration": 0.5,
+            "active_duration": 0.44,
+            "refractory_remaining": 0.0,
+            "failure_count": 0,
+            "events": [],
+            "random_counter": 8
+          },
+          "interventions": [
+            {
+              "time": 1.5,
+              "kind": "repair"
+            }
+          ],
+          "running_reward": 0.264,
+          "failure_cost": 0.0,
+          "action_cost": 0.2,
+          "reward": 0.064,
+          "cumulative_reward": 0.728,
+          "done": true
+        }
+      ],
+      "plan_policy": "ACTUALLY_EXECUTED_ACTIONS",
+      "bias_is_reward": false,
+      "objective": {
+        "schema": "hepta.regenerative.maintenance-objective.v1",
+        "recursive_profile": "hepta.ndu.recursive-utility.scalar.q32.v1",
+        "running_rate": 0.6,
+        "failure_penalty": 0.5,
+        "control_interval": 0.5,
+        "maximum_horizon": 2.0,
+        "utility_unit": "task-return",
+        "discount_per_control_interval": 1.0,
+        "repair_charge": "actual public price once per executed repair"
+      }
+    },
+    "action_values": {
+      "REALIZED": 0.7280000001192093,
+      "ABSTAIN": 0.0
+    },
+    "native_candidate_to_action": {
+      "realized": "REALIZED",
+      "abstain": "ABSTAIN"
+    },
+    "binary_sha256": "83326cf07a435ab3bb5b72075feedf38237d90bcaac80a60d44337c7a9fdf5bf",
+    "source_manifest_sha256": "4c2df16a69c6579ae8b5bc2683acc1060bc31c7c5790e70e3161b9dd6fc89a0d",
+    "realized_return": 0.728,
+    "realized_native_return": 0.7280000001192093,
+    "roundoff_bound": 1.1641532182693481e-09
+  },
+  "calls": 5,
+  "native_binary_sha256": "83326cf07a435ab3bb5b72075feedf38237d90bcaac80a60d44337c7a9fdf5bf",
+  "source_sha256": {
+    "ndu_value.py": "d909549691e0f2b06fad8c47d34f9dc343e209262d8910496dc7b18fefa2fdf0",
+    "bellman.py": "10e27cb7b35c94ec8f5213f5f507ee92e1dd2111b002eaa5ae7cb33439a19d80"
+  }
+}
