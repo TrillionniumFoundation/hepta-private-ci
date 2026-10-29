@@ -89,17 +89,17 @@ jobs:
           python -m experiments.first_passage_adaptive.credit_execution freeze \
             --checkpoint experiments/first_passage_adaptive/evidence/train_20261029_v2/checkpoint.json \
             --owner-build "$RUNNER_TEMP/fpt-owner-build/NATIVE_BUILD.json" \
-            --output "$RUNNER_TEMP/fpt-credit-freeze.json"
+            --output "$RUNNER_TEMP/fpt-credit/SOURCE_FREEZE.json"
           python -m experiments.first_passage_adaptive.credit_execution run \
             --checkpoint experiments/first_passage_adaptive/evidence/train_20261029_v2/checkpoint.json \
             --owner-build "$RUNNER_TEMP/fpt-owner-build/NATIVE_BUILD.json" \
-            --freeze "$RUNNER_TEMP/fpt-credit-freeze.json" --output "$RUNNER_TEMP/fpt-credit-execution"
+            --freeze "$RUNNER_TEMP/fpt-credit/SOURCE_FREEZE.json" --output "$RUNNER_TEMP/fpt-credit/run"
           python -m experiments.first_passage_adaptive.credit_recovery freeze \
-            --input "$RUNNER_TEMP/fpt-credit-execution" \
+            --input "$RUNNER_TEMP/fpt-credit/run" \
             --owner-build "$RUNNER_TEMP/fpt-owner-build/NATIVE_BUILD.json" \
             --output "$RUNNER_TEMP/fpt-credit-recovery-freeze.json"
           python -m experiments.first_passage_adaptive.credit_recovery run \
-            --input "$RUNNER_TEMP/fpt-credit-execution" \
+            --input "$RUNNER_TEMP/fpt-credit/run" \
             --owner-build "$RUNNER_TEMP/fpt-owner-build/NATIVE_BUILD.json" \
             --freeze "$RUNNER_TEMP/fpt-credit-recovery-freeze.json" \
             --output "$RUNNER_TEMP/fpt-credit-recovery"
@@ -117,8 +117,7 @@ jobs:
             ${{ runner.temp }}/fpt-owner-build/NATIVE_BUILD.json
             ${{ runner.temp }}/fpt-owner-build/Cargo.lock
             ${{ runner.temp }}/fpt-native-execution
-            ${{ runner.temp }}/fpt-credit-freeze.json
-            ${{ runner.temp }}/fpt-credit-execution
+            ${{ runner.temp }}/fpt-credit
             ${{ runner.temp }}/fpt-credit-recovery-freeze.json
             ${{ runner.temp }}/fpt-credit-recovery
           if-no-files-found: warn

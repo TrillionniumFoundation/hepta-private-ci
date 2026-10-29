@@ -1,0 +1,15 @@
+{
+  "schema": "hepta.first-passage.ci-path-repair.v1",
+  "failed_head": "a875c63ee841237e32e96e8b5b14626f6c527d89",
+  "failed_run_id": 40874997374,
+  "failed_job_id": 123451424499,
+  "failure": "credit_recovery.freeze requires its input run directory to have a parent SOURCE_FREEZE.json; workflow wrote the freeze to a different sibling location",
+  "repair": "Use RUNNER_TEMP/fpt-credit/SOURCE_FREEZE.json and RUNNER_TEMP/fpt-credit/run consistently; preserve all test and recovery gates.",
+  "failed_run_retained_artifact": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40874997374/artifacts/12896759154",
+  "science_source_protocol_model_changes": false,
+  "scientific_confirmation_reopened": false,
+  "component_freezes_sha256": {
+    "evidence/ADAPTIVE_FREEZE.json": "61dc449591527b823af41bb9f931b37299daa67b1554dfab525664e8f04daa46",
+    "evidence/THRESHOLD_FREEZE.json": "3c494a13762286ce73e4579c8feab0fad93f840ba1c40a4c29fd6f390234bb20"
+  }
+}
