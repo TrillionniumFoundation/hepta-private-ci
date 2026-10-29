@@ -1,0 +1,156 @@
+{
+  "arms": {
+    "ordinary": {
+      "evaluation": {
+        "actual_draws": 32,
+        "empirical_CE_has_finite_sample_bias": true,
+        "failures": 0,
+        "mean_cost": 0.02366038943499999,
+        "mean_net": 0.7977357509466938,
+        "mean_utility": 0.8213961403816938,
+        "negative_net_return_fraction": 0.0,
+        "population_ce": 0.7777280422600374,
+        "population_ce_with_audit": 0.7775917834946471,
+        "sources": 16,
+        "strategy": "dynamic"
+      },
+      "native": {
+        "actual_tensor_restore_count": 1,
+        "closed_episode_count": 32,
+        "episode_count": 32,
+        "first_episode_reopen_and_tensor_restore_observed": true,
+        "native_readout_selects_generator_action": false,
+        "native_recovery_count": 1,
+        "native_tick_count": 587,
+        "tensor_restore_scope": "same-process numerical restore and independent native-owner process reopen; no wall-clock restoration"
+      }
+    },
+    "student": {
+      "evaluation": {
+        "actual_draws": 32,
+        "empirical_CE_has_finite_sample_bias": true,
+        "failures": 0,
+        "mean_cost": 0.025780918813218753,
+        "mean_net": 0.8416341722096303,
+        "mean_utility": 0.8674150910228491,
+        "negative_net_return_fraction": 0.0,
+        "population_ce": 0.8322824754994118,
+        "population_ce_with_audit": 0.8321539957761419,
+        "sources": 16,
+        "strategy": "greedy"
+      },
+      "native": {
+        "actual_tensor_restore_count": 1,
+        "closed_episode_count": 32,
+        "episode_count": 32,
+        "first_episode_reopen_and_tensor_restore_observed": true,
+        "native_readout_selects_generator_action": false,
+        "native_recovery_count": 1,
+        "native_tick_count": 524,
+        "tensor_restore_scope": "same-process numerical restore and independent native-owner process reopen; no wall-clock restoration"
+      }
+    },
+    "teacher": {
+      "evaluation": {
+        "actual_draws": 32,
+        "empirical_CE_has_finite_sample_bias": true,
+        "failures": 0,
+        "mean_cost": 0.026121897626406244,
+        "mean_net": 0.8491425085778175,
+        "mean_utility": 0.8752644062042236,
+        "negative_net_return_fraction": 0.0,
+        "population_ce": 0.8454960823856775,
+        "population_ce_with_audit": 0.8453723864097035,
+        "sources": 16,
+        "strategy": "planner"
+      },
+      "native": {
+        "actual_tensor_restore_count": 1,
+        "closed_episode_count": 32,
+        "episode_count": 32,
+        "first_episode_reopen_and_tensor_restore_observed": true,
+        "native_readout_selects_generator_action": false,
+        "native_recovery_count": 1,
+        "native_tick_count": 500,
+        "tensor_restore_scope": "same-process numerical restore and independent native-owner process reopen; no wall-clock restoration"
+      }
+    }
+  },
+  "comparisons": {
+    "student_minus_ordinary": {
+      "ce_difference_including_final_audit_seal_sensitivity": 0.054562212281494826,
+      "ce_difference_registered_complete_serving_cost": 0.05455443323937437,
+      "excludes_training_seed_uncertainty": true,
+      "positive_lower_bound": false,
+      "replicates": 1000,
+      "source_bootstrap_95": [
+        -0.0052908688062599345,
+        0.11834459328835042
+      ],
+      "unique_sources": 16
+    },
+    "student_minus_teacher": {
+      "ce_difference_including_final_audit_seal_sensitivity": -0.01321839063356156,
+      "ce_difference_registered_complete_serving_cost": -0.013213606886265716,
+      "excludes_training_seed_uncertainty": true,
+      "positive_lower_bound": false,
+      "replicates": 1000,
+      "source_bootstrap_95": [
+        -0.04536666884079044,
+        0.005784273217022689
+      ],
+      "unique_sources": 16
+    },
+    "teacher_minus_ordinary": {
+      "ce_difference_including_final_audit_seal_sensitivity": 0.06778060291505639,
+      "ce_difference_registered_complete_serving_cost": 0.06776804012564008,
+      "excludes_training_seed_uncertainty": true,
+      "positive_lower_bound": true,
+      "replicates": 1000,
+      "source_bootstrap_95": [
+        0.02376889842234364,
+        0.12268363452929491
+      ],
+      "unique_sources": 16
+    }
+  },
+  "cost_accounting": {
+    "break_even_basis": "positive observed serving cost saving",
+    "cost_only_break_even_episodes": 116,
+    "distillation_tariff_cost": 0.03950560438199997,
+    "incremental_distillation_plus_load_cost": 0.03947421239199998,
+    "loading_scope": "checkpoint file/manifest/source verification, tensor construction and strict load; excludes Python startup/imports",
+    "model_loading": {
+      "ordinary": {
+        "cpu": 0.05040099999999992,
+        "tariff_cost": 0.0010361912020000084,
+        "wall": 0.02817120200001
+      },
+      "student": {
+        "cpu": 0.04991499999999993,
+        "tariff_cost": 0.001026622604000009,
+        "wall": 0.028322604000010188
+      },
+      "teacher": {
+        "cpu": 0.051295999999999786,
+        "tariff_cost": 0.0010580145939999958,
+        "wall": 0.03209459400000014
+      }
+    },
+    "observed_teacher_minus_student_serving_cost": 0.00034097881318749176,
+    "original_distillation_seconds": {
+      "cpu": 1.9188359999999989,
+      "wall": 1.1288843819999954
+    },
+    "quality_noninferiority_established": false,
+    "scope": "registered tariff units, measured source/deployment hosts; excludes candidate selection/common pretraining and uncertainty in extrapolation",
+    "student_primary_ce_change": -0.013213606886265716
+  },
+  "native_execution_closed_loop": true,
+  "natural_semantic_qualification": false,
+  "profile_sha256": "cf2cef3e7f25992bfe23d5dc10bfaef7a2e1ab0e46fdd0e206d57ffa06983b88",
+  "research_effect_qualified": false,
+  "schema": "hepta.joint-generation.full-checkpoint-native-deployment.v1",
+  "total_cpu_seconds": 18.819025000000003,
+  "total_wall_seconds": 19.548954956000017
+}

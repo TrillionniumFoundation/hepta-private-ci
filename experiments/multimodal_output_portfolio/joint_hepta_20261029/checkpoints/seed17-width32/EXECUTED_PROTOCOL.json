@@ -1,0 +1,88 @@
+{
+  "actor_lr": 0.001,
+  "arms": [
+    "ordinary_fixed_mean",
+    "ordinary_dynamic_mean",
+    "hepta_fixed_mean",
+    "hepta_dynamic_mean",
+    "hepta_dynamic_risk",
+    "hepta_dynamic_risk_actor_only"
+  ],
+  "auxiliary_loss_changes_pure_NDU_optimum": true,
+  "base_commit": "a50c8974ac23c20c5174f7c3ad542a96e5652854",
+  "bootstrap_replicates": 1000,
+  "clip_each_parameter_group": 5.0,
+  "confidence": 0.95,
+  "critic_lr": 0.003,
+  "depth": 1,
+  "development_source_ids": [
+    0,
+    31
+  ],
+  "distillation_teacher": "one-step public-state critic planner; approximate and measured",
+  "distillation_test_sources": 16,
+  "distillation_train_sources": 32,
+  "distillation_updates": 256,
+  "evaluation_draws_per_source": 2,
+  "generator_lr": 1e-05,
+  "gradient_clipping_changes_optimizer_update": true,
+  "joint_batch": 8,
+  "joint_updates": 64,
+  "mechanism_only": true,
+  "moment_objective": "unbiased unnormalised score with independent leave-one-out baseline; gamma0 mean control",
+  "namespace_splits": [
+    "train",
+    "development",
+    "test"
+  ],
+  "no_test_driven_selection": true,
+  "paired_comparisons": [
+    [
+      "hepta_dynamic_risk",
+      "hepta_dynamic_mean",
+      "NDU risk preference"
+    ],
+    [
+      "hepta_dynamic_mean",
+      "hepta_fixed_mean",
+      "dynamic allocation"
+    ],
+    [
+      "hepta_dynamic_mean",
+      "ordinary_dynamic_mean",
+      "first-passage operator"
+    ],
+    [
+      "hepta_dynamic_risk",
+      "hepta_dynamic_risk_actor_only",
+      "joint generator training"
+    ]
+  ],
+  "physical_cost_gradient": "score treats timing conditional law as parameter-exogenous; direct timing derivative unmodelled",
+  "plugin_empirical_CE_finite_sample_bias": true,
+  "pretraining_batch": 32,
+  "pretraining_lr": 0.001,
+  "pretraining_updates": 384,
+  "qualification_rule": "All four paired comparisons must have positive source-bootstrap lower bounds at both widths in every seed; natural semantic observer gate remains separate. No claim from unit tests or nonzero gradients.",
+  "schema": "hepta.joint-generation.training-protocol.v1",
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "semantic_qualification": false,
+  "statistical_unit": "unique_source; seed replication reported separately",
+  "supervised_weight_during_joint": 0.05,
+  "test_source_ids": [
+    0,
+    63
+  ],
+  "train_source_ids": [
+    0,
+    255
+  ],
+  "widths": [
+    32,
+    64
+  ]
+}

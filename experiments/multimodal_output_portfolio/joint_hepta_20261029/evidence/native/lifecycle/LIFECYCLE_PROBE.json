@@ -1,0 +1,2802 @@
+{
+  "actual_native_owner": true,
+  "cold_recovery_exact": true,
+  "expiry_prevented_third_dispatch": true,
+  "expiry_receipt": {
+    "actual_dispatched_actions": 2,
+    "cpu_accounting_scope": "Native CPU includes ticks and recovery; host-process CPU includes dispatcher and overlaps the caller's episode meter; other children are caller-metered",
+    "failures": [],
+    "final": {
+      "aborted": false,
+      "action": "stop",
+      "actual_dispatched_actions": 2,
+      "executed": false,
+      "native_closed_status": {
+        "checkpoint": "0d96e0e2e2e020b4b5492d03eff0ffd3ede2efa2485877b2d48e44620a8bf811",
+        "durable_event_count": 8,
+        "eligibility_q24": [
+          0,
+          3222221,
+          197299,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expires": 6,
+        "host_poisoned": false,
+        "owner_authority": "DENY_ALL",
+        "sequence": 8
+      },
+      "native_process_reaped": true,
+      "native_stop_tick": {
+        "activation_q24": [
+          0,
+          9452046,
+          1904142,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "bound_event_evidence_digest": "950f1e83c2f81fe9feaa70ae2ea16cf9df2e959b25baf9e9aecdaf3e06160c5a",
+        "checkpoint_after": "0d96e0e2e2e020b4b5492d03eff0ffd3ede2efa2485877b2d48e44620a8bf811",
+        "checkpoint_before": "edb83f43d97c6ea2cb0446a1c2e8e449be4d0f0e0e60741d04f842018ed3396e",
+        "checkpoint_bytes": 648,
+        "confidence_ppm": 0,
+        "duplicate_event_ignored": false,
+        "eligibility_after_q24": [
+          0,
+          3222221,
+          197299,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "eligibility_before_q24": [
+          0,
+          6444442,
+          394598,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "event_id": "joint.expiry.stop",
+        "evidence_digest": "46d04d8400ad1791538ed0783ea55dea222f2b3c49c733519a5a570c8bf5ff54",
+        "execution_micros": 709,
+        "feedback_q24": 0,
+        "journal_bytes_written": 464,
+        "model_latency_micros": 2,
+        "model_resident_bytes": 46572,
+        "native_abstain": true,
+        "native_transition_executed": true,
+        "ood_ppm": 1000000,
+        "owner_authority": "DENY_ALL",
+        "phase": 3,
+        "proposed_repair": true,
+        "queue_age_micros": 0,
+        "readout_logit": 0.0,
+        "readout_scalar_input": false,
+        "readout_target_input": false,
+        "sequence": 8,
+        "transient_allocation_bytes": 204,
+        "write_amplification_ppm": 716050
+      },
+      "reason": "native_abstain_before_dispatch"
+    },
+    "finished": true,
+    "history": [
+      {
+        "action": "continue",
+        "action_index": 0,
+        "action_trace": {
+          "step": 0
+        },
+        "artifact_refs": {
+          "text": "/home/runner/work/_temp/joint-hepta-deployment/lifecycle/artifact-2.txt"
+        },
+        "artifact_sha256": {
+          "text": "bcbee8f0f511bca4e9f524a048d2a171d4c91471e7bd77485562908c4461d9ce"
+        },
+        "dispatch_wall_seconds": 0.00017496499998514992,
+        "executed": true,
+        "feedback_tick": {
+          "activation_q24": [
+            0,
+            16777216,
+            4194304,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "bound_event_evidence_digest": "c4a2bb8d798a6e05cf5ea3e40f85e18f86cbc6b022cd7b9cd52125b8cbd510fe",
+          "checkpoint_after": "a435c2a299e46ed236563d4e846c6376123aac98dbca2651819407dc8b7d493a",
+          "checkpoint_before": "080de749d816774837e440d548e00e1c7f566c513034646c54c5e3b81079bca1",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_after_q24": [
+            0,
+            16777216,
+            1048576,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "eligibility_before_q24": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_id": "joint.expiry.action.0.feedback",
+          "evidence_digest": "a91d3247aa7d5e4a108103a7629d5be751070d4f8eaab5f68dadb695c9387c42",
+          "execution_micros": 740,
+          "feedback_q24": 16777216,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 18389,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "phase": 1,
+          "proposed_repair": true,
+          "queue_age_micros": 0,
+          "readout_logit": 0.0,
+          "readout_scalar_input": false,
+          "readout_target_input": false,
+          "sequence": 2,
+          "transient_allocation_bytes": 204,
+          "write_amplification_ppm": 716050
+        },
+        "final_state_digest": null,
+        "gate": {
+          "activation_q24": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "bound_event_evidence_digest": "80a7b25c50e7031b4a31130b24a99aff1417d5f7c3310a00d9c5d5ab701a41ef",
+          "checkpoint_after": "080de749d816774837e440d548e00e1c7f566c513034646c54c5e3b81079bca1",
+          "checkpoint_before": "0000000000000000000000000000000000000000000000000000000000000000",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_after_q24": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "eligibility_before_q24": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_id": "joint.expiry.action.0.gate",
+          "evidence_digest": "7b9705b8b8b02bca3d2dd97ec864ee49c80b8f0e01b8f4a71789b737450dc1ad",
+          "execution_micros": 761,
+          "feedback_q24": 0,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 11246,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "phase": 0,
+          "proposed_repair": true,
+          "queue_age_micros": 0,
+          "readout_logit": 0.0,
+          "readout_scalar_input": false,
+          "readout_target_input": false,
+          "sequence": 1,
+          "transient_allocation_bytes": 204,
+          "write_amplification_ppm": 716050
+        },
+        "hold_tick": {
+          "activation_q24": [
+            0,
+            12569805,
+            3132621,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "bound_event_evidence_digest": "23002d3520f9078519e901bc12885fdf32690c2d8c8be93b1aa1b12e788ae2b4",
+          "checkpoint_after": "efa024df67319ef60fb68c60bc5eef908293d0c88ff00c7a5d78b4cd4100a957",
+          "checkpoint_before": "a435c2a299e46ed236563d4e846c6376123aac98dbca2651819407dc8b7d493a",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_after_q24": [
+            0,
+            8388608,
+            524288,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "eligibility_before_q24": [
+            0,
+            16777216,
+            1048576,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_id": "joint.expiry.action.0.hold",
+          "evidence_digest": "a91d3247aa7d5e4a108103a7629d5be751070d4f8eaab5f68dadb695c9387c42",
+          "execution_micros": 687,
+          "feedback_q24": 0,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 22946,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "phase": 2,
+          "proposed_repair": true,
+          "queue_age_micros": 0,
+          "readout_logit": 0.0,
+          "readout_scalar_input": false,
+          "readout_target_input": false,
+          "sequence": 3,
+          "transient_allocation_bytes": 204,
+          "write_amplification_ppm": 716050
+        },
+        "native_abstain_after_dispatch": false,
+        "public_feedback": 1.0,
+        "verified_artifact_bytes": 25
+      },
+      {
+        "action": "continue",
+        "action_index": 1,
+        "action_trace": {
+          "step": 1
+        },
+        "artifact_refs": {
+          "text": "/home/runner/work/_temp/joint-hepta-deployment/lifecycle/artifact-3.txt"
+        },
+        "artifact_sha256": {
+          "text": "2d498026700ffac32fd18242cbdc2cb2293bbcf943050b1109f7bacb57e77319"
+        },
+        "dispatch_wall_seconds": 0.00013445999999817104,
+        "executed": true,
+        "feedback_tick": {
+          "activation_q24": [
+            0,
+            23680615,
+            5789287,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "bound_event_evidence_digest": "17bfb1f770d5eea0e8b4f69b64b0968744e17fe727d0f40cc262a2fc5e9406e5",
+          "checkpoint_after": "975493c1cd494c15911f47118460c7c20a686addd2a87f1a4a1e1f3198de8ed3",
+          "checkpoint_before": "afc4150a8d7d572b7e5ef72ac3dded8165b27e9e19fd3e550a95036ca03a0f9a",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_after_q24": [
+            0,
+            25777767,
+            1578394,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "eligibility_before_q24": [
+            0,
+            4194304,
+            262144,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_id": "joint.expiry.action.1.feedback",
+          "evidence_digest": "ffc9fb1d5b6894573f2d8f22195c61235961d669349bc1076e759b0bd8c409a8",
+          "execution_micros": 795,
+          "feedback_q24": 16777216,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 32081,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "phase": 1,
+          "proposed_repair": true,
+          "queue_age_micros": 0,
+          "readout_logit": 0.0,
+          "readout_scalar_input": false,
+          "readout_target_input": false,
+          "sequence": 5,
+          "transient_allocation_bytes": 204,
+          "write_amplification_ppm": 716050
+        },
+        "final_state_digest": null,
+        "gate": {
+          "activation_q24": [
+            0,
+            9361818,
+            2283930,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "bound_event_evidence_digest": "ed532b854a79f59451b0ff286bff3a93234031f09d590126932faca333a898a1",
+          "checkpoint_after": "afc4150a8d7d572b7e5ef72ac3dded8165b27e9e19fd3e550a95036ca03a0f9a",
+          "checkpoint_before": "efa024df67319ef60fb68c60bc5eef908293d0c88ff00c7a5d78b4cd4100a957",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_after_q24": [
+            0,
+            4194304,
+            262144,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "eligibility_before_q24": [
+            0,
+            8388608,
+            524288,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_id": "joint.expiry.action.1.gate",
+          "evidence_digest": "14229f9c12edf4cf5548b248d6897ddc80269daf48491375f2c9ff6e40cf8f95",
+          "execution_micros": 726,
+          "feedback_q24": 0,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 27506,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "phase": 0,
+          "proposed_repair": true,
+          "queue_age_micros": 0,
+          "readout_logit": 0.0,
+          "readout_scalar_input": false,
+          "readout_target_input": false,
+          "sequence": 4,
+          "transient_allocation_bytes": 204,
+          "write_amplification_ppm": 716050
+        },
+        "hold_tick": {
+          "activation_q24": [
+            0,
+            17590068,
+            4171572,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "bound_event_evidence_digest": "ad16284ae056277c106a89dde88852f15bcbfd80214e8b499d9915bd3b753e52",
+          "checkpoint_after": "68aeb2280111354078d72fcceea6ceda7abcf6c25e9694c51c9bc9addc0f25e8",
+          "checkpoint_before": "975493c1cd494c15911f47118460c7c20a686addd2a87f1a4a1e1f3198de8ed3",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_after_q24": [
+            0,
+            12888884,
+            789197,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "eligibility_before_q24": [
+            0,
+            25777767,
+            1578394,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_id": "joint.expiry.action.1.hold",
+          "evidence_digest": "ffc9fb1d5b6894573f2d8f22195c61235961d669349bc1076e759b0bd8c409a8",
+          "execution_micros": 725,
+          "feedback_q24": 0,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 37470,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "phase": 2,
+          "proposed_repair": true,
+          "queue_age_micros": 0,
+          "readout_logit": 0.0,
+          "readout_scalar_input": false,
+          "readout_target_input": false,
+          "sequence": 6,
+          "transient_allocation_bytes": 204,
+          "write_amplification_ppm": 716050
+        },
+        "native_abstain_after_dispatch": false,
+        "public_feedback": 1.0,
+        "verified_artifact_bytes": 25
+      }
+    ],
+    "host_process_cpu_seconds_during_guard_lifetime": 0.007745608000000015,
+    "identity": {
+      "allowed_actions": [
+        "continue",
+        "stop"
+      ],
+      "binary_sha256": "00c183e2433ba96412c5e248753721a4211c34831ad531f2d5742e9f16f8d3c9",
+      "case": "joint.expiry",
+      "full_daemon_activation": false,
+      "generator_model_sha256": "89752e09801b23c7f99446bd1de92c716fffc9716f9a209104bc4c4748b8246f",
+      "max_actions": 8,
+      "native_build_receipt_sha256": "4b4f32640e5cec7b8cea5d567220938823196de21196eba8f9387e30b289d33b",
+      "native_calibration_sha256": "3bc94156619bb0545f16497750d3513bd35cebb57160af46c3beb3c7ff2791fa",
+      "native_readout_role": "constant untrained diagnostic; not action selector",
+      "native_readout_selected_host_action": false,
+      "native_readout_sha256": "9e78649d21d81ecd90bfe4ecd6c93898b94d810f5e95e8b5955de6ef5380bf8c",
+      "ndu_profile_sha256": "ec705f69acc661ab01cf72b0d34ce4da02a05dceddd329a5a745b13b1a3c2415",
+      "owner_authority": "DENY_ALL",
+      "permit_scope": "bounded local research dispatcher only",
+      "schema": "hepta.joint-output.native-guard.v1",
+      "source_commit": "a50c8974ac23c20c5174f7c3ad542a96e5652854",
+      "trained_tensor_model_executed_inside_native_port": false
+    },
+    "native_checkpoint_peak_bytes": 648,
+    "native_execution_micros": 5811,
+    "native_host_processing_micros": 80749,
+    "native_journal_bytes_written": 3712,
+    "native_owner_cpu_seconds": 0.075895,
+    "native_policy_readout_used_for_action": false,
+    "native_process_cpu": [
+      {
+        "cpu_seconds": 0.075895,
+        "measurement": "POSIX wait4 usage of this exact native child PID",
+        "pid": 3436,
+        "returncode": 0,
+        "stderr_tail": "",
+        "system_seconds": 0.005913,
+        "termination_signals": [],
+        "user_seconds": 0.069982
+      }
+    ],
+    "native_process_reaped": true,
+    "native_tick_count": 8,
+    "recoveries": [],
+    "transcript": [
+      {
+        "host_roundtrip_wall_seconds": 0.0689498330000049,
+        "request": {
+          "calibration": "/home/runner/work/_temp/joint-hepta-deployment/lifecycle/expiry/NATIVE_DOMAIN_PROOF.json",
+          "calibration_sha256": "3bc94156619bb0545f16497750d3513bd35cebb57160af46c3beb3c7ff2791fa",
+          "case": "joint.expiry",
+          "command": "Open",
+          "directory": "/home/runner/work/_temp/joint-hepta-deployment/lifecycle/expiry/owner",
+          "expires": 6,
+          "model": "/home/runner/work/_temp/joint-hepta-deployment/lifecycle/expiry/NATIVE_DIAGNOSTIC_HEAD.json",
+          "model_sha256": "9e78649d21d81ecd90bfe4ecd6c93898b94d810f5e95e8b5955de6ef5380bf8c"
+        },
+        "response": {
+          "ok": true,
+          "physical_receipt_processing_micros": 68081,
+          "result": {
+            "checkpoint": "0000000000000000000000000000000000000000000000000000000000000000",
+            "durable_event_count": 0,
+            "eligibility_q24": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "expires": 6,
+            "host_poisoned": false,
+            "owner_authority": "DENY_ALL",
+            "sequence": 0
+          }
+        }
+      },
+      {
+        "bound_evidence": {
+          "action": "continue",
+          "action_index": 0,
+          "action_trace": {
+            "step": 0
+          },
+          "identity_sha256": "c0a6d58dca19c898070e8c0952cae09d2b85d1e2cce17f75b4f45038947b13fd",
+          "previous_artifact_sha256": {}
+        },
+        "host_roundtrip_wall_seconds": 0.0017760809999742833,
+        "request": {
+          "command": "Tick",
+          "event_id": "joint.expiry.action.0.gate",
+          "feedback_q24": 0,
+          "phase": 0,
+          "receipt_digest": "7b9705b8b8b02bca3d2dd97ec864ee49c80b8f0e01b8f4a71789b737450dc1ad"
+        },
+        "response": {
+          "ok": true,
+          "physical_receipt_processing_micros": 1577,
+          "result": {
+            "activation_q24": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "bound_event_evidence_digest": "80a7b25c50e7031b4a31130b24a99aff1417d5f7c3310a00d9c5d5ab701a41ef",
+            "checkpoint_after": "080de749d816774837e440d548e00e1c7f566c513034646c54c5e3b81079bca1",
+            "checkpoint_before": "0000000000000000000000000000000000000000000000000000000000000000",
+            "checkpoint_bytes": 648,
+            "confidence_ppm": 1000000,
+            "duplicate_event_ignored": false,
+            "eligibility_after_q24": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "eligibility_before_q24": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "event_id": "joint.expiry.action.0.gate",
+            "evidence_digest": "7b9705b8b8b02bca3d2dd97ec864ee49c80b8f0e01b8f4a71789b737450dc1ad",
+            "execution_micros": 761,
+            "feedback_q24": 0,
+            "journal_bytes_written": 464,
+            "model_latency_micros": 2,
+            "model_resident_bytes": 11246,
+            "native_abstain": false,
+            "native_transition_executed": true,
+            "ood_ppm": 0,
+            "owner_authority": "DENY_ALL",
+            "phase": 0,
+            "proposed_repair": true,
+            "queue_age_micros": 0,
+            "readout_logit": 0.0,
+            "readout_scalar_input": false,
+            "readout_target_input": false,
+            "sequence": 1,
+            "transient_allocation_bytes": 204,
+            "write_amplification_ppm": 716050
+          }
+        }
+      },
+      {
+        "bound_evidence": {
+          "action": "continue",
+          "action_index": 0,
+          "action_trace": {
+            "step": 0
+          },
+          "actual_output_bytes": 25,
+          "artifact_sha256": {
+            "text": "bcbee8f0f511bca4e9f524a048d2a171d4c91471e7bd77485562908c4461d9ce"
+          },
+          "final_state_digest": null,
+          "identity_sha256": "c0a6d58dca19c898070e8c0952cae09d2b85d1e2cce17f75b4f45038947b13fd",
+          "previous_artifact_sha256": {},
+          "public_feedback": 1.0
+        },
+        "host_roundtrip_wall_seconds": 0.001584565000001703,
+        "request": {
+          "command": "Tick",
+          "event_id": "joint.expiry.action.0.feedback",
+          "feedback_q24": 16777216,
+          "phase": 1,
+          "receipt_digest": "a91d3247aa7d5e4a108103a7629d5be751070d4f8eaab5f68dadb695c9387c42"
+        },
+        "response": {
+          "ok": true,
+          "physical_receipt_processing_micros": 1409,
+          "result": {
+            "activation_q24": [
+              0,
+              16777216,
+              4194304,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "bound_event_evidence_digest": "c4a2bb8d798a6e05cf5ea3e40f85e18f86cbc6b022cd7b9cd52125b8cbd510fe",
+            "checkpoint_after": "a435c2a299e46ed236563d4e846c6376123aac98dbca2651819407dc8b7d493a",
+            "checkpoint_before": "080de749d816774837e440d548e00e1c7f566c513034646c54c5e3b81079bca1",
+            "checkpoint_bytes": 648,
+            "confidence_ppm": 1000000,
+            "duplicate_event_ignored": false,
+            "eligibility_after_q24": [
+              0,
+              16777216,
+              1048576,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "eligibility_before_q24": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "event_id": "joint.expiry.action.0.feedback",
+            "evidence_digest": "a91d3247aa7d5e4a108103a7629d5be751070d4f8eaab5f68dadb695c9387c42",
+            "execution_micros": 740,
+            "feedback_q24": 16777216,
+            "journal_bytes_written": 464,
+            "model_latency_micros": 2,
+            "model_resident_bytes": 18389,
+            "native_abstain": false,
+            "native_transition_executed": true,
+            "ood_ppm": 0,
+            "owner_authority": "DENY_ALL",
+            "phase": 1,
+            "proposed_repair": true,
+            "queue_age_micros": 0,
+            "readout_logit": 0.0,
+            "readout_scalar_input": false,
+            "readout_target_input": false,
+            "sequence": 2,
+            "transient_allocation_bytes": 204,
+            "write_amplification_ppm": 716050
+          }
+        }
+      },
+      {
+        "bound_evidence": {
+          "action": "continue",
+          "action_index": 0,
+          "action_trace": {
+            "step": 0
+          },
+          "actual_output_bytes": 25,
+          "artifact_sha256": {
+            "text": "bcbee8f0f511bca4e9f524a048d2a171d4c91471e7bd77485562908c4461d9ce"
+          },
+          "final_state_digest": null,
+          "identity_sha256": "c0a6d58dca19c898070e8c0952cae09d2b85d1e2cce17f75b4f45038947b13fd",
+          "previous_artifact_sha256": {},
+          "public_feedback": 1.0
+        },
+        "host_roundtrip_wall_seconds": 0.002739953000002515,
+        "request": {
+          "command": "Tick",
+          "event_id": "joint.expiry.action.0.hold",
+          "feedback_q24": 0,
+          "phase": 2,
+          "receipt_digest": "a91d3247aa7d5e4a108103a7629d5be751070d4f8eaab5f68dadb695c9387c42"
+        },
+        "response": {
+          "ok": true,
+          "physical_receipt_processing_micros": 2582,
+          "result": {
+            "activation_q24": [
+              0,
+              12569805,
+              3132621,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "bound_event_evidence_digest": "23002d3520f9078519e901bc12885fdf32690c2d8c8be93b1aa1b12e788ae2b4",
+            "checkpoint_after": "efa024df67319ef60fb68c60bc5eef908293d0c88ff00c7a5d78b4cd4100a957",
+            "checkpoint_before": "a435c2a299e46ed236563d4e846c6376123aac98dbca2651819407dc8b7d493a",
+            "checkpoint_bytes": 648,
+            "confidence_ppm": 1000000,
+            "duplicate_event_ignored": false,
+            "eligibility_after_q24": [
+              0,
+              8388608,
+              524288,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "eligibility_before_q24": [
+              0,
+              16777216,
+              1048576,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "event_id": "joint.expiry.action.0.hold",
+            "evidence_digest": "a91d3247aa7d5e4a108103a7629d5be751070d4f8eaab5f68dadb695c9387c42",
+            "execution_micros": 687,
+            "feedback_q24": 0,
+            "journal_bytes_written": 464,
+            "model_latency_micros": 2,
+            "model_resident_bytes": 22946,
+            "native_abstain": false,
+            "native_transition_executed": true,
+            "ood_ppm": 0,
+            "owner_authority": "DENY_ALL",
+            "phase": 2,
+            "proposed_repair": true,
+            "queue_age_micros": 0,
+            "readout_logit": 0.0,
+            "readout_scalar_input": false,
+            "readout_target_input": false,
+            "sequence": 3,
+            "transient_allocation_bytes": 204,
+            "write_amplification_ppm": 716050
+          }
+        }
+      },
+      {
+        "bound_evidence": {
+          "action": "continue",
+          "action_index": 1,
+          "action_trace": {
+            "step": 1
+          },
+          "identity_sha256": "c0a6d58dca19c898070e8c0952cae09d2b85d1e2cce17f75b4f45038947b13fd",
+          "previous_artifact_sha256": {
+            "text": "bcbee8f0f511bca4e9f524a048d2a171d4c91471e7bd77485562908c4461d9ce"
+          }
+        },
+        "host_roundtrip_wall_seconds": 0.0016494150000028185,
+        "request": {
+          "command": "Tick",
+          "event_id": "joint.expiry.action.1.gate",
+          "feedback_q24": 0,
+          "phase": 0,
+          "receipt_digest": "14229f9c12edf4cf5548b248d6897ddc80269daf48491375f2c9ff6e40cf8f95"
+        },
+        "response": {
+          "ok": true,
+          "physical_receipt_processing_micros": 1494,
+          "result": {
+            "activation_q24": [
+              0,
+              9361818,
+              2283930,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "bound_event_evidence_digest": "ed532b854a79f59451b0ff286bff3a93234031f09d590126932faca333a898a1",
+            "checkpoint_after": "afc4150a8d7d572b7e5ef72ac3dded8165b27e9e19fd3e550a95036ca03a0f9a",
+            "checkpoint_before": "efa024df67319ef60fb68c60bc5eef908293d0c88ff00c7a5d78b4cd4100a957",
+            "checkpoint_bytes": 648,
+            "confidence_ppm": 1000000,
+            "duplicate_event_ignored": false,
+            "eligibility_after_q24": [
+              0,
+              4194304,
+              262144,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "eligibility_before_q24": [
+              0,
+              8388608,
+              524288,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "event_id": "joint.expiry.action.1.gate",
+            "evidence_digest": "14229f9c12edf4cf5548b248d6897ddc80269daf48491375f2c9ff6e40cf8f95",
+            "execution_micros": 726,
+            "feedback_q24": 0,
+            "journal_bytes_written": 464,
+            "model_latency_micros": 2,
+            "model_resident_bytes": 27506,
+            "native_abstain": false,
+            "native_transition_executed": true,
+            "ood_ppm": 0,
+            "owner_authority": "DENY_ALL",
+            "phase": 0,
+            "proposed_repair": true,
+            "queue_age_micros": 0,
+            "readout_logit": 0.0,
+            "readout_scalar_input": false,
+            "readout_target_input": false,
+            "sequence": 4,
+            "transient_allocation_bytes": 204,
+            "write_amplification_ppm": 716050
+          }
+        }
+      },
+      {
+        "bound_evidence": {
+          "action": "continue",
+          "action_index": 1,
+          "action_trace": {
+            "step": 1
+          },
+          "actual_output_bytes": 25,
+          "artifact_sha256": {
+            "text": "2d498026700ffac32fd18242cbdc2cb2293bbcf943050b1109f7bacb57e77319"
+          },
+          "final_state_digest": null,
+          "identity_sha256": "c0a6d58dca19c898070e8c0952cae09d2b85d1e2cce17f75b4f45038947b13fd",
+          "previous_artifact_sha256": {
+            "text": "bcbee8f0f511bca4e9f524a048d2a171d4c91471e7bd77485562908c4461d9ce"
+          },
+          "public_feedback": 1.0
+        },
+        "host_roundtrip_wall_seconds": 0.0016700440000079197,
+        "request": {
+          "command": "Tick",
+          "event_id": "joint.expiry.action.1.feedback",
+          "feedback_q24": 16777216,
+          "phase": 1,
+          "receipt_digest": "ffc9fb1d5b6894573f2d8f22195c61235961d669349bc1076e759b0bd8c409a8"
+        },
+        "response": {
+          "ok": true,
+          "physical_receipt_processing_micros": 1509,
+          "result": {
+            "activation_q24": [
+              0,
+              23680615,
+              5789287,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "bound_event_evidence_digest": "17bfb1f770d5eea0e8b4f69b64b0968744e17fe727d0f40cc262a2fc5e9406e5",
+            "checkpoint_after": "975493c1cd494c15911f47118460c7c20a686addd2a87f1a4a1e1f3198de8ed3",
+            "checkpoint_before": "afc4150a8d7d572b7e5ef72ac3dded8165b27e9e19fd3e550a95036ca03a0f9a",
+            "checkpoint_bytes": 648,
+            "confidence_ppm": 1000000,
+            "duplicate_event_ignored": false,
+            "eligibility_after_q24": [
+              0,
+              25777767,
+              1578394,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "eligibility_before_q24": [
+              0,
+              4194304,
+              262144,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "event_id": "joint.expiry.action.1.feedback",
+            "evidence_digest": "ffc9fb1d5b6894573f2d8f22195c61235961d669349bc1076e759b0bd8c409a8",
+            "execution_micros": 795,
+            "feedback_q24": 16777216,
+            "journal_bytes_written": 464,
+            "model_latency_micros": 2,
+            "model_resident_bytes": 32081,
+            "native_abstain": false,
+            "native_transition_executed": true,
+            "ood_ppm": 0,
+            "owner_authority": "DENY_ALL",
+            "phase": 1,
+            "proposed_repair": true,
+            "queue_age_micros": 0,
+            "readout_logit": 0.0,
+            "readout_scalar_input": false,
+            "readout_target_input": false,
+            "sequence": 5,
+            "transient_allocation_bytes": 204,
+            "write_amplification_ppm": 716050
+          }
+        }
+      },
+      {
+        "bound_evidence": {
+          "action": "continue",
+          "action_index": 1,
+          "action_trace": {
+            "step": 1
+          },
+          "actual_output_bytes": 25,
+          "artifact_sha256": {
+            "text": "2d498026700ffac32fd18242cbdc2cb2293bbcf943050b1109f7bacb57e77319"
+          },
+          "final_state_digest": null,
+          "identity_sha256": "c0a6d58dca19c898070e8c0952cae09d2b85d1e2cce17f75b4f45038947b13fd",
+          "previous_artifact_sha256": {
+            "text": "bcbee8f0f511bca4e9f524a048d2a171d4c91471e7bd77485562908c4461d9ce"
+          },
+          "public_feedback": 1.0
+        },
+        "host_roundtrip_wall_seconds": 0.0015192029999866463,
+        "request": {
+          "command": "Tick",
+          "event_id": "joint.expiry.action.1.hold",
+          "feedback_q24": 0,
+          "phase": 2,
+          "receipt_digest": "ffc9fb1d5b6894573f2d8f22195c61235961d669349bc1076e759b0bd8c409a8"
+        },
+        "response": {
+          "ok": true,
+          "physical_receipt_processing_micros": 1332,
+          "result": {
+            "activation_q24": [
+              0,
+              17590068,
+              4171572,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "bound_event_evidence_digest": "ad16284ae056277c106a89dde88852f15bcbfd80214e8b499d9915bd3b753e52",
+            "checkpoint_after": "68aeb2280111354078d72fcceea6ceda7abcf6c25e9694c51c9bc9addc0f25e8",
+            "checkpoint_before": "975493c1cd494c15911f47118460c7c20a686addd2a87f1a4a1e1f3198de8ed3",
+            "checkpoint_bytes": 648,
+            "confidence_ppm": 1000000,
+            "duplicate_event_ignored": false,
+            "eligibility_after_q24": [
+              0,
+              12888884,
+              789197,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "eligibility_before_q24": [
+              0,
+              25777767,
+              1578394,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "event_id": "joint.expiry.action.1.hold",
+            "evidence_digest": "ffc9fb1d5b6894573f2d8f22195c61235961d669349bc1076e759b0bd8c409a8",
+            "execution_micros": 725,
+            "feedback_q24": 0,
+            "journal_bytes_written": 464,
+            "model_latency_micros": 2,
+            "model_resident_bytes": 37470,
+            "native_abstain": false,
+            "native_transition_executed": true,
+            "ood_ppm": 0,
+            "owner_authority": "DENY_ALL",
+            "phase": 2,
+            "proposed_repair": true,
+            "queue_age_micros": 0,
+            "readout_logit": 0.0,
+            "readout_scalar_input": false,
+            "readout_target_input": false,
+            "sequence": 6,
+            "transient_allocation_bytes": 204,
+            "write_amplification_ppm": 716050
+          }
+        }
+      },
+      {
+        "bound_evidence": {
+          "action": "continue",
+          "action_index": 2,
+          "action_trace": {
+            "step": 2
+          },
+          "identity_sha256": "c0a6d58dca19c898070e8c0952cae09d2b85d1e2cce17f75b4f45038947b13fd",
+          "previous_artifact_sha256": {
+            "text": "2d498026700ffac32fd18242cbdc2cb2293bbcf943050b1109f7bacb57e77319"
+          }
+        },
+        "host_roundtrip_wall_seconds": 0.0015305949999913082,
+        "request": {
+          "command": "Tick",
+          "event_id": "joint.expiry.action.2.gate",
+          "feedback_q24": 0,
+          "phase": 0,
+          "receipt_digest": "141a5f81a6f7a704755b13dc4a63a9bdb2572fdac2289bf8f40b3621da08c9be"
+        },
+        "response": {
+          "ok": true,
+          "physical_receipt_processing_micros": 1380,
+          "result": {
+            "activation_q24": [
+              0,
+              12969729,
+              2905857,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "bound_event_evidence_digest": "f9616242535ade00b5bd36fec950bf2abe95f43e682bfbf6ce67a64de7cef000",
+            "checkpoint_after": "edb83f43d97c6ea2cb0446a1c2e8e449be4d0f0e0e60741d04f842018ed3396e",
+            "checkpoint_before": "68aeb2280111354078d72fcceea6ceda7abcf6c25e9694c51c9bc9addc0f25e8",
+            "checkpoint_bytes": 648,
+            "confidence_ppm": 0,
+            "duplicate_event_ignored": false,
+            "eligibility_after_q24": [
+              0,
+              6444442,
+              394598,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "eligibility_before_q24": [
+              0,
+              12888884,
+              789197,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "event_id": "joint.expiry.action.2.gate",
+            "evidence_digest": "141a5f81a6f7a704755b13dc4a63a9bdb2572fdac2289bf8f40b3621da08c9be",
+            "execution_micros": 668,
+            "feedback_q24": 0,
+            "journal_bytes_written": 464,
+            "model_latency_micros": 1,
+            "model_resident_bytes": 42030,
+            "native_abstain": true,
+            "native_transition_executed": true,
+            "ood_ppm": 1000000,
+            "owner_authority": "DENY_ALL",
+            "phase": 0,
+            "proposed_repair": true,
+            "queue_age_micros": 0,
+            "readout_logit": 0.0,
+            "readout_scalar_input": false,
+            "readout_target_input": false,
+            "sequence": 7,
+            "transient_allocation_bytes": 204,
+            "write_amplification_ppm": 716050
+          }
+        }
+      },
+      {
+        "bound_evidence": {
+          "action_trace": {
+            "step": 2
+          },
+          "final_artifact_sha256": {
+            "text": "2d498026700ffac32fd18242cbdc2cb2293bbcf943050b1109f7bacb57e77319"
+          },
+          "identity_sha256": "c0a6d58dca19c898070e8c0952cae09d2b85d1e2cce17f75b4f45038947b13fd",
+          "terminal_reason": "native_abstain_before_dispatch"
+        },
+        "host_roundtrip_wall_seconds": 0.0014761039999768855,
+        "request": {
+          "command": "Tick",
+          "event_id": "joint.expiry.stop",
+          "feedback_q24": 0,
+          "phase": 3,
+          "receipt_digest": "46d04d8400ad1791538ed0783ea55dea222f2b3c49c733519a5a570c8bf5ff54"
+        },
+        "response": {
+          "ok": true,
+          "physical_receipt_processing_micros": 1321,
+          "result": {
+            "activation_q24": [
+              0,
+              9452046,
+              1904142,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "bound_event_evidence_digest": "950f1e83c2f81fe9feaa70ae2ea16cf9df2e959b25baf9e9aecdaf3e06160c5a",
+            "checkpoint_after": "0d96e0e2e2e020b4b5492d03eff0ffd3ede2efa2485877b2d48e44620a8bf811",
+            "checkpoint_before": "edb83f43d97c6ea2cb0446a1c2e8e449be4d0f0e0e60741d04f842018ed3396e",
+            "checkpoint_bytes": 648,
+            "confidence_ppm": 0,
+            "duplicate_event_ignored": false,
+            "eligibility_after_q24": [
+              0,
+              3222221,
+              197299,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "eligibility_before_q24": [
+              0,
+              6444442,
+              394598,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "event_id": "joint.expiry.stop",
+            "evidence_digest": "46d04d8400ad1791538ed0783ea55dea222f2b3c49c733519a5a570c8bf5ff54",
+            "execution_micros": 709,
+            "feedback_q24": 0,
+            "journal_bytes_written": 464,
+            "model_latency_micros": 2,
+            "model_resident_bytes": 46572,
+            "native_abstain": true,
+            "native_transition_executed": true,
+            "ood_ppm": 1000000,
+            "owner_authority": "DENY_ALL",
+            "phase": 3,
+            "proposed_repair": true,
+            "queue_age_micros": 0,
+            "readout_logit": 0.0,
+            "readout_scalar_input": false,
+            "readout_target_input": false,
+            "sequence": 8,
+            "transient_allocation_bytes": 204,
+            "write_amplification_ppm": 716050
+          }
+        }
+      },
+      {
+        "host_roundtrip_wall_seconds": 0.00016453500001034627,
+        "request": {
+          "command": "Close"
+        },
+        "response": {
+          "ok": true,
+          "physical_receipt_processing_micros": 64,
+          "result": {
+            "checkpoint": "0d96e0e2e2e020b4b5492d03eff0ffd3ede2efa2485877b2d48e44620a8bf811",
+            "durable_event_count": 8,
+            "eligibility_q24": [
+              0,
+              3222221,
+              197299,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "expires": 6,
+            "host_poisoned": false,
+            "owner_authority": "DENY_ALL",
+            "sequence": 8
+          }
+        }
+      }
+    ]
+  },
+  "passed": true,
+  "recovery_receipt": {
+    "actual_dispatched_actions": 2,
+    "cpu_accounting_scope": "Native CPU includes ticks and recovery; host-process CPU includes dispatcher and overlaps the caller's episode meter; other children are caller-metered",
+    "failures": [],
+    "final": {
+      "aborted": false,
+      "action": "stop",
+      "actual_dispatched_actions": 2,
+      "executed": false,
+      "native_closed_status": {
+        "checkpoint": "454d0cf84b3ccdd5e024d92406b8270875e85f1c7c4cc70f9452671f5421c6de",
+        "durable_event_count": 7,
+        "eligibility_q24": [
+          0,
+          6444442,
+          394598,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expires": 64,
+        "host_poisoned": false,
+        "owner_authority": "DENY_ALL",
+        "sequence": 7
+      },
+      "native_process_reaped": true,
+      "native_stop_tick": {
+        "activation_q24": [
+          0,
+          12969729,
+          2905857,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "bound_event_evidence_digest": "703f00319ce518253b95ab689e979d8104c83d3f94f3cc32418834a90a7921aa",
+        "checkpoint_after": "454d0cf84b3ccdd5e024d92406b8270875e85f1c7c4cc70f9452671f5421c6de",
+        "checkpoint_before": "7ac99284de57a8d5cc7dbd887100550bf42260ea269c90bfb22d146f43853d89",
+        "checkpoint_bytes": 648,
+        "confidence_ppm": 1000000,
+        "duplicate_event_ignored": false,
+        "eligibility_after_q24": [
+          0,
+          6444442,
+          394598,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "eligibility_before_q24": [
+          0,
+          12888884,
+          789197,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "event_id": "joint.lifecycle.stop",
+        "evidence_digest": "d632b1861c8d20fc7e6b5917b960aedebf12f312e7ed174adc7ec3ab9260a593",
+        "execution_micros": 795,
+        "feedback_q24": 0,
+        "journal_bytes_written": 464,
+        "model_latency_micros": 2,
+        "model_resident_bytes": 45716,
+        "native_abstain": false,
+        "native_transition_executed": true,
+        "ood_ppm": 0,
+        "owner_authority": "DENY_ALL",
+        "phase": 3,
+        "proposed_repair": true,
+        "queue_age_micros": 0,
+        "readout_logit": 0.0,
+        "readout_scalar_input": false,
+        "readout_target_input": false,
+        "sequence": 7,
+        "transient_allocation_bytes": 204,
+        "write_amplification_ppm": 716050
+      },
+      "reason": "policy_stop"
+    },
+    "finished": true,
+    "history": [
+      {
+        "action": "continue",
+        "action_index": 0,
+        "action_trace": {
+          "step": 0
+        },
+        "artifact_refs": {
+          "text": "/home/runner/work/_temp/joint-hepta-deployment/lifecycle/artifact-0.txt"
+        },
+        "artifact_sha256": {
+          "text": "563f5fb3b1f08514a2a1c935f3a4984058b4b30421cf0a880027932d96b005a2"
+        },
+        "dispatch_wall_seconds": 0.00017841199999679702,
+        "executed": true,
+        "feedback_tick": {
+          "activation_q24": [
+            0,
+            16777216,
+            4194304,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "bound_event_evidence_digest": "1f12bf640ffac051beaea401b242816ad3a04cccc5c9a3dfaff7014861c844dd",
+          "checkpoint_after": "9b694af5d57ba9be5495b2094d2d391c42a12bd4e356f4259e775c9acf68d094",
+          "checkpoint_before": "270c1c73e3b01de11d3211ce844e3999ad6dab10683080e4a56685f9f026bcc7",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_after_q24": [
+            0,
+            16777216,
+            1048576,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "eligibility_before_q24": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_id": "joint.lifecycle.action.0.feedback",
+          "evidence_digest": "c1abc78a4100fe7a3588bca00d11652a02dccdf71918e75b38a4a8d6651769ba",
+          "execution_micros": 725,
+          "feedback_q24": 16777216,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 1,
+          "model_resident_bytes": 18424,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "phase": 1,
+          "proposed_repair": true,
+          "queue_age_micros": 0,
+          "readout_logit": 0.0,
+          "readout_scalar_input": false,
+          "readout_target_input": false,
+          "sequence": 2,
+          "transient_allocation_bytes": 204,
+          "write_amplification_ppm": 716050
+        },
+        "final_state_digest": null,
+        "gate": {
+          "activation_q24": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "bound_event_evidence_digest": "3863c7de8da2be5c13607e91a8056500b44d2a3c16bb9e3a6aacf8d96e3adf07",
+          "checkpoint_after": "270c1c73e3b01de11d3211ce844e3999ad6dab10683080e4a56685f9f026bcc7",
+          "checkpoint_before": "0000000000000000000000000000000000000000000000000000000000000000",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_after_q24": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "eligibility_before_q24": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_id": "joint.lifecycle.action.0.gate",
+          "evidence_digest": "b74144719087b11596edb03dfd7750131676ea728f1c88cdc6125acfd5f10ac4",
+          "execution_micros": 684,
+          "feedback_q24": 0,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 11272,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "phase": 0,
+          "proposed_repair": true,
+          "queue_age_micros": 0,
+          "readout_logit": 0.0,
+          "readout_scalar_input": false,
+          "readout_target_input": false,
+          "sequence": 1,
+          "transient_allocation_bytes": 204,
+          "write_amplification_ppm": 716050
+        },
+        "hold_tick": {
+          "activation_q24": [
+            0,
+            12569805,
+            3132621,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "bound_event_evidence_digest": "fc644d4306cbc99cf5a14ae3ebc35f98b584b6f73a76420287d5f804078759ea",
+          "checkpoint_after": "5512474fcdcd36095986490309233faa8ce9ce999378fa5d6537e14c2c3bab8c",
+          "checkpoint_before": "9b694af5d57ba9be5495b2094d2d391c42a12bd4e356f4259e775c9acf68d094",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_after_q24": [
+            0,
+            8388608,
+            524288,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "eligibility_before_q24": [
+            0,
+            16777216,
+            1048576,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_id": "joint.lifecycle.action.0.hold",
+          "evidence_digest": "c1abc78a4100fe7a3588bca00d11652a02dccdf71918e75b38a4a8d6651769ba",
+          "execution_micros": 671,
+          "feedback_q24": 0,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 1,
+          "model_resident_bytes": 22990,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "phase": 2,
+          "proposed_repair": true,
+          "queue_age_micros": 0,
+          "readout_logit": 0.0,
+          "readout_scalar_input": false,
+          "readout_target_input": false,
+          "sequence": 3,
+          "transient_allocation_bytes": 204,
+          "write_amplification_ppm": 716050
+        },
+        "native_abstain_after_dispatch": false,
+        "public_feedback": 1.0,
+        "verified_artifact_bytes": 25
+      },
+      {
+        "action": "continue",
+        "action_index": 1,
+        "action_trace": {
+          "step": 1
+        },
+        "artifact_refs": {
+          "text": "/home/runner/work/_temp/joint-hepta-deployment/lifecycle/artifact-1.txt"
+        },
+        "artifact_sha256": {
+          "text": "c639a52e68310fd7e17181e00926413c7d179d73a242ea625bc034dc0d2e5e04"
+        },
+        "dispatch_wall_seconds": 0.00021015100000454368,
+        "executed": true,
+        "feedback_tick": {
+          "activation_q24": [
+            0,
+            23680615,
+            5789287,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "bound_event_evidence_digest": "e22e63fe7e38545352d0b8227321c64625901bead31ac1ed3e79e12e6171ad9f",
+          "checkpoint_after": "063a79bc69bea0f03a7d7fa63385fd64db22a1e88f546957b4ddef019fcb0074",
+          "checkpoint_before": "e502d4c90efe25901a9e1369b68e308c53052b3e666bb187ca920e3fe14b61cc",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_after_q24": [
+            0,
+            25777767,
+            1578394,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "eligibility_before_q24": [
+            0,
+            4194304,
+            262144,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_id": "joint.lifecycle.action.1.feedback",
+          "evidence_digest": "6b7f23e4e240da4b0cd0f787eb6a5ef8b39af8f11ae3eef11262c6865c136456",
+          "execution_micros": 708,
+          "feedback_q24": 16777216,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 35767,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "phase": 1,
+          "proposed_repair": true,
+          "queue_age_micros": 0,
+          "readout_logit": 0.0,
+          "readout_scalar_input": false,
+          "readout_target_input": false,
+          "sequence": 5,
+          "transient_allocation_bytes": 204,
+          "write_amplification_ppm": 716050
+        },
+        "final_state_digest": null,
+        "gate": {
+          "activation_q24": [
+            0,
+            9361818,
+            2283930,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "bound_event_evidence_digest": "ee1decb5bd9aa935ff451078522d9f00b998e1061f0a5fc95220263668be8749",
+          "checkpoint_after": "e502d4c90efe25901a9e1369b68e308c53052b3e666bb187ca920e3fe14b61cc",
+          "checkpoint_before": "5512474fcdcd36095986490309233faa8ce9ce999378fa5d6537e14c2c3bab8c",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_after_q24": [
+            0,
+            4194304,
+            262144,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "eligibility_before_q24": [
+            0,
+            8388608,
+            524288,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_id": "joint.lifecycle.action.1.gate",
+          "evidence_digest": "05813e786b090d86e6ca945b171674ce3877ca03c8a5a2aa67846b666f5316f3",
+          "execution_micros": 836,
+          "feedback_q24": 0,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 31183,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "phase": 0,
+          "proposed_repair": true,
+          "queue_age_micros": 0,
+          "readout_logit": 0.0,
+          "readout_scalar_input": false,
+          "readout_target_input": false,
+          "sequence": 4,
+          "transient_allocation_bytes": 204,
+          "write_amplification_ppm": 716050
+        },
+        "hold_tick": {
+          "activation_q24": [
+            0,
+            17590068,
+            4171572,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "bound_event_evidence_digest": "d1bbe793516ef0b875c19c92a3f78c55e35d2f9c418cf0c9c072dec6faea422c",
+          "checkpoint_after": "7ac99284de57a8d5cc7dbd887100550bf42260ea269c90bfb22d146f43853d89",
+          "checkpoint_before": "063a79bc69bea0f03a7d7fa63385fd64db22a1e88f546957b4ddef019fcb0074",
+          "checkpoint_bytes": 648,
+          "confidence_ppm": 1000000,
+          "duplicate_event_ignored": false,
+          "eligibility_after_q24": [
+            0,
+            12888884,
+            789197,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "eligibility_before_q24": [
+            0,
+            25777767,
+            1578394,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "event_id": "joint.lifecycle.action.1.hold",
+          "evidence_digest": "6b7f23e4e240da4b0cd0f787eb6a5ef8b39af8f11ae3eef11262c6865c136456",
+          "execution_micros": 836,
+          "feedback_q24": 0,
+          "journal_bytes_written": 464,
+          "model_latency_micros": 2,
+          "model_resident_bytes": 41165,
+          "native_abstain": false,
+          "native_transition_executed": true,
+          "ood_ppm": 0,
+          "owner_authority": "DENY_ALL",
+          "phase": 2,
+          "proposed_repair": true,
+          "queue_age_micros": 0,
+          "readout_logit": 0.0,
+          "readout_scalar_input": false,
+          "readout_target_input": false,
+          "sequence": 6,
+          "transient_allocation_bytes": 204,
+          "write_amplification_ppm": 716050
+        },
+        "native_abstain_after_dispatch": false,
+        "public_feedback": 1.0,
+        "verified_artifact_bytes": 25
+      }
+    ],
+    "host_process_cpu_seconds_during_guard_lifetime": 0.01700576000000001,
+    "identity": {
+      "allowed_actions": [
+        "continue",
+        "stop"
+      ],
+      "binary_sha256": "00c183e2433ba96412c5e248753721a4211c34831ad531f2d5742e9f16f8d3c9",
+      "case": "joint.lifecycle",
+      "full_daemon_activation": false,
+      "generator_model_sha256": "89752e09801b23c7f99446bd1de92c716fffc9716f9a209104bc4c4748b8246f",
+      "max_actions": 8,
+      "native_build_receipt_sha256": "4b4f32640e5cec7b8cea5d567220938823196de21196eba8f9387e30b289d33b",
+      "native_calibration_sha256": "3bc94156619bb0545f16497750d3513bd35cebb57160af46c3beb3c7ff2791fa",
+      "native_readout_role": "constant untrained diagnostic; not action selector",
+      "native_readout_selected_host_action": false,
+      "native_readout_sha256": "9e78649d21d81ecd90bfe4ecd6c93898b94d810f5e95e8b5955de6ef5380bf8c",
+      "ndu_profile_sha256": "ec705f69acc661ab01cf72b0d34ce4da02a05dceddd329a5a745b13b1a3c2415",
+      "owner_authority": "DENY_ALL",
+      "permit_scope": "bounded local research dispatcher only",
+      "schema": "hepta.joint-output.native-guard.v1",
+      "source_commit": "a50c8974ac23c20c5174f7c3ad542a96e5652854",
+      "trained_tensor_model_executed_inside_native_port": false
+    },
+    "native_checkpoint_peak_bytes": 648,
+    "native_execution_micros": 5255,
+    "native_host_processing_micros": 148315,
+    "native_journal_bytes_written": 3248,
+    "native_owner_cpu_seconds": 0.145323,
+    "native_policy_readout_used_for_action": false,
+    "native_process_cpu": [
+      {
+        "cpu_seconds": 0.07195,
+        "measurement": "POSIX wait4 usage of this exact native child PID",
+        "pid": 3434,
+        "returncode": 0,
+        "stderr_tail": "",
+        "system_seconds": 0.004928,
+        "termination_signals": [],
+        "user_seconds": 0.067022
+      },
+      {
+        "cpu_seconds": 0.07337300000000001,
+        "measurement": "POSIX wait4 usage of this exact native child PID",
+        "pid": 3435,
+        "returncode": 0,
+        "stderr_tail": "",
+        "system_seconds": 0.002974,
+        "termination_signals": [],
+        "user_seconds": 0.070399
+      }
+    ],
+    "native_process_reaped": true,
+    "native_tick_count": 7,
+    "recoveries": [
+      {
+        "after": {
+          "checkpoint": "5512474fcdcd36095986490309233faa8ce9ce999378fa5d6537e14c2c3bab8c",
+          "durable_event_count": 3,
+          "eligibility_q24": [
+            0,
+            8388608,
+            524288,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "expires": 64,
+          "host_poisoned": false,
+          "owner_authority": "DENY_ALL",
+          "sequence": 3
+        },
+        "before": {
+          "checkpoint": "5512474fcdcd36095986490309233faa8ce9ce999378fa5d6537e14c2c3bab8c",
+          "durable_event_count": 3,
+          "eligibility_q24": [
+            0,
+            8388608,
+            524288,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "expires": 64,
+          "host_poisoned": false,
+          "owner_authority": "DENY_ALL",
+          "sequence": 3
+        },
+        "ledger_validation_kernel_steps": 3,
+        "new_os_process": true,
+        "same_native_state": true,
+        "trained_tensor_runtime_restore": "separate caller-owned checkpoint",
+        "wall_seconds": 0.07996274299998163
+      }
+    ],
+    "transcript": [
+      {
+        "host_roundtrip_wall_seconds": 0.07057399200002124,
+        "request": {
+          "calibration": "/home/runner/work/_temp/joint-hepta-deployment/lifecycle/recovery/NATIVE_DOMAIN_PROOF.json",
+          "calibration_sha256": "3bc94156619bb0545f16497750d3513bd35cebb57160af46c3beb3c7ff2791fa",
+          "case": "joint.lifecycle",
+          "command": "Open",
+          "directory": "/home/runner/work/_temp/joint-hepta-deployment/lifecycle/recovery/owner",
+          "expires": 64,
+          "model": "/home/runner/work/_temp/joint-hepta-deployment/lifecycle/recovery/NATIVE_DIAGNOSTIC_HEAD.json",
+          "model_sha256": "9e78649d21d81ecd90bfe4ecd6c93898b94d810f5e95e8b5955de6ef5380bf8c"
+        },
+        "response": {
+          "ok": true,
+          "physical_receipt_processing_micros": 69766,
+          "result": {
+            "checkpoint": "0000000000000000000000000000000000000000000000000000000000000000",
+            "durable_event_count": 0,
+            "eligibility_q24": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "expires": 64,
+            "host_poisoned": false,
+            "owner_authority": "DENY_ALL",
+            "sequence": 0
+          }
+        }
+      },
+      {
+        "bound_evidence": {
+          "action": "continue",
+          "action_index": 0,
+          "action_trace": {
+            "step": 0
+          },
+          "identity_sha256": "4b9ec150f789636a1d4f1115e2e8935f227d6fc0f643f669f07b248f337906bf",
+          "previous_artifact_sha256": {}
+        },
+        "host_roundtrip_wall_seconds": 0.0015861979999840514,
+        "request": {
+          "command": "Tick",
+          "event_id": "joint.lifecycle.action.0.gate",
+          "feedback_q24": 0,
+          "phase": 0,
+          "receipt_digest": "b74144719087b11596edb03dfd7750131676ea728f1c88cdc6125acfd5f10ac4"
+        },
+        "response": {
+          "ok": true,
+          "physical_receipt_processing_micros": 1417,
+          "result": {
+            "activation_q24": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "bound_event_evidence_digest": "3863c7de8da2be5c13607e91a8056500b44d2a3c16bb9e3a6aacf8d96e3adf07",
+            "checkpoint_after": "270c1c73e3b01de11d3211ce844e3999ad6dab10683080e4a56685f9f026bcc7",
+            "checkpoint_before": "0000000000000000000000000000000000000000000000000000000000000000",
+            "checkpoint_bytes": 648,
+            "confidence_ppm": 1000000,
+            "duplicate_event_ignored": false,
+            "eligibility_after_q24": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "eligibility_before_q24": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "event_id": "joint.lifecycle.action.0.gate",
+            "evidence_digest": "b74144719087b11596edb03dfd7750131676ea728f1c88cdc6125acfd5f10ac4",
+            "execution_micros": 684,
+            "feedback_q24": 0,
+            "journal_bytes_written": 464,
+            "model_latency_micros": 2,
+            "model_resident_bytes": 11272,
+            "native_abstain": false,
+            "native_transition_executed": true,
+            "ood_ppm": 0,
+            "owner_authority": "DENY_ALL",
+            "phase": 0,
+            "proposed_repair": true,
+            "queue_age_micros": 0,
+            "readout_logit": 0.0,
+            "readout_scalar_input": false,
+            "readout_target_input": false,
+            "sequence": 1,
+            "transient_allocation_bytes": 204,
+            "write_amplification_ppm": 716050
+          }
+        }
+      },
+      {
+        "bound_evidence": {
+          "action": "continue",
+          "action_index": 0,
+          "action_trace": {
+            "step": 0
+          },
+          "actual_output_bytes": 25,
+          "artifact_sha256": {
+            "text": "563f5fb3b1f08514a2a1c935f3a4984058b4b30421cf0a880027932d96b005a2"
+          },
+          "final_state_digest": null,
+          "identity_sha256": "4b9ec150f789636a1d4f1115e2e8935f227d6fc0f643f669f07b248f337906bf",
+          "previous_artifact_sha256": {},
+          "public_feedback": 1.0
+        },
+        "host_roundtrip_wall_seconds": 0.0014745409999932235,
+        "request": {
+          "command": "Tick",
+          "event_id": "joint.lifecycle.action.0.feedback",
+          "feedback_q24": 16777216,
+          "phase": 1,
+          "receipt_digest": "c1abc78a4100fe7a3588bca00d11652a02dccdf71918e75b38a4a8d6651769ba"
+        },
+        "response": {
+          "ok": true,
+          "physical_receipt_processing_micros": 1309,
+          "result": {
+            "activation_q24": [
+              0,
+              16777216,
+              4194304,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "bound_event_evidence_digest": "1f12bf640ffac051beaea401b242816ad3a04cccc5c9a3dfaff7014861c844dd",
+            "checkpoint_after": "9b694af5d57ba9be5495b2094d2d391c42a12bd4e356f4259e775c9acf68d094",
+            "checkpoint_before": "270c1c73e3b01de11d3211ce844e3999ad6dab10683080e4a56685f9f026bcc7",
+            "checkpoint_bytes": 648,
+            "confidence_ppm": 1000000,
+            "duplicate_event_ignored": false,
+            "eligibility_after_q24": [
+              0,
+              16777216,
+              1048576,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "eligibility_before_q24": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "event_id": "joint.lifecycle.action.0.feedback",
+            "evidence_digest": "c1abc78a4100fe7a3588bca00d11652a02dccdf71918e75b38a4a8d6651769ba",
+            "execution_micros": 725,
+            "feedback_q24": 16777216,
+            "journal_bytes_written": 464,
+            "model_latency_micros": 1,
+            "model_resident_bytes": 18424,
+            "native_abstain": false,
+            "native_transition_executed": true,
+            "ood_ppm": 0,
+            "owner_authority": "DENY_ALL",
+            "phase": 1,
+            "proposed_repair": true,
+            "queue_age_micros": 0,
+            "readout_logit": 0.0,
+            "readout_scalar_input": false,
+            "readout_target_input": false,
+            "sequence": 2,
+            "transient_allocation_bytes": 204,
+            "write_amplification_ppm": 716050
+          }
+        }
+      },
+      {
+        "bound_evidence": {
+          "action": "continue",
+          "action_index": 0,
+          "action_trace": {
+            "step": 0
+          },
+          "actual_output_bytes": 25,
+          "artifact_sha256": {
+            "text": "563f5fb3b1f08514a2a1c935f3a4984058b4b30421cf0a880027932d96b005a2"
+          },
+          "final_state_digest": null,
+          "identity_sha256": "4b9ec150f789636a1d4f1115e2e8935f227d6fc0f643f669f07b248f337906bf",
+          "previous_artifact_sha256": {},
+          "public_feedback": 1.0
+        },
+        "host_roundtrip_wall_seconds": 0.0014476300000012543,
+        "request": {
+          "command": "Tick",
+          "event_id": "joint.lifecycle.action.0.hold",
+          "feedback_q24": 0,
+          "phase": 2,
+          "receipt_digest": "c1abc78a4100fe7a3588bca00d11652a02dccdf71918e75b38a4a8d6651769ba"
+        },
+        "response": {
+          "ok": true,
+          "physical_receipt_processing_micros": 1298,
+          "result": {
+            "activation_q24": [
+              0,
+              12569805,
+              3132621,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "bound_event_evidence_digest": "fc644d4306cbc99cf5a14ae3ebc35f98b584b6f73a76420287d5f804078759ea",
+            "checkpoint_after": "5512474fcdcd36095986490309233faa8ce9ce999378fa5d6537e14c2c3bab8c",
+            "checkpoint_before": "9b694af5d57ba9be5495b2094d2d391c42a12bd4e356f4259e775c9acf68d094",
+            "checkpoint_bytes": 648,
+            "confidence_ppm": 1000000,
+            "duplicate_event_ignored": false,
+            "eligibility_after_q24": [
+              0,
+              8388608,
+              524288,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "eligibility_before_q24": [
+              0,
+              16777216,
+              1048576,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "event_id": "joint.lifecycle.action.0.hold",
+            "evidence_digest": "c1abc78a4100fe7a3588bca00d11652a02dccdf71918e75b38a4a8d6651769ba",
+            "execution_micros": 671,
+            "feedback_q24": 0,
+            "journal_bytes_written": 464,
+            "model_latency_micros": 1,
+            "model_resident_bytes": 22990,
+            "native_abstain": false,
+            "native_transition_executed": true,
+            "ood_ppm": 0,
+            "owner_authority": "DENY_ALL",
+            "phase": 2,
+            "proposed_repair": true,
+            "queue_age_micros": 0,
+            "readout_logit": 0.0,
+            "readout_scalar_input": false,
+            "readout_target_input": false,
+            "sequence": 3,
+            "transient_allocation_bytes": 204,
+            "write_amplification_ppm": 716050
+          }
+        }
+      },
+      {
+        "host_roundtrip_wall_seconds": 9.710099999438171e-05,
+        "request": {
+          "command": "Status"
+        },
+        "response": {
+          "ok": true,
+          "physical_receipt_processing_micros": 15,
+          "result": {
+            "checkpoint": "5512474fcdcd36095986490309233faa8ce9ce999378fa5d6537e14c2c3bab8c",
+            "durable_event_count": 3,
+            "eligibility_q24": [
+              0,
+              8388608,
+              524288,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "expires": 64,
+            "host_poisoned": false,
+            "owner_authority": "DENY_ALL",
+            "sequence": 3
+          }
+        }
+      },
+      {
+        "host_roundtrip_wall_seconds": 0.00011022500001445223,
+        "request": {
+          "command": "Close"
+        },
+        "response": {
+          "ok": true,
+          "physical_receipt_processing_micros": 34,
+          "result": {
+            "checkpoint": "5512474fcdcd36095986490309233faa8ce9ce999378fa5d6537e14c2c3bab8c",
+            "durable_event_count": 3,
+            "eligibility_q24": [
+              0,
+              8388608,
+              524288,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "expires": 64,
+            "host_poisoned": false,
+            "owner_authority": "DENY_ALL",
+            "sequence": 3
+          }
+        }
+      },
+      {
+        "host_roundtrip_wall_seconds": 0.06893531600002234,
+        "request": {
+          "calibration": "/home/runner/work/_temp/joint-hepta-deployment/lifecycle/recovery/NATIVE_DOMAIN_PROOF.json",
+          "calibration_sha256": "3bc94156619bb0545f16497750d3513bd35cebb57160af46c3beb3c7ff2791fa",
+          "case": "joint.lifecycle",
+          "command": "Resume",
+          "directory": "/home/runner/work/_temp/joint-hepta-deployment/lifecycle/recovery/owner",
+          "expires": 64,
+          "model": "/home/runner/work/_temp/joint-hepta-deployment/lifecycle/recovery/NATIVE_DIAGNOSTIC_HEAD.json",
+          "model_sha256": "9e78649d21d81ecd90bfe4ecd6c93898b94d810f5e95e8b5955de6ef5380bf8c"
+        },
+        "response": {
+          "ok": true,
+          "physical_receipt_processing_micros": 68197,
+          "result": {
+            "checkpoint": "5512474fcdcd36095986490309233faa8ce9ce999378fa5d6537e14c2c3bab8c",
+            "durable_event_count": 3,
+            "eligibility_q24": [
+              0,
+              8388608,
+              524288,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "expires": 64,
+            "host_poisoned": false,
+            "owner_authority": "DENY_ALL",
+            "sequence": 3
+          }
+        }
+      },
+      {
+        "bound_evidence": {
+          "action": "continue",
+          "action_index": 1,
+          "action_trace": {
+            "step": 1
+          },
+          "identity_sha256": "4b9ec150f789636a1d4f1115e2e8935f227d6fc0f643f669f07b248f337906bf",
+          "previous_artifact_sha256": {
+            "text": "563f5fb3b1f08514a2a1c935f3a4984058b4b30421cf0a880027932d96b005a2"
+          }
+        },
+        "host_roundtrip_wall_seconds": 0.0017568760000017392,
+        "request": {
+          "command": "Tick",
+          "event_id": "joint.lifecycle.action.1.gate",
+          "feedback_q24": 0,
+          "phase": 0,
+          "receipt_digest": "05813e786b090d86e6ca945b171674ce3877ca03c8a5a2aa67846b666f5316f3"
+        },
+        "response": {
+          "ok": true,
+          "physical_receipt_processing_micros": 1594,
+          "result": {
+            "activation_q24": [
+              0,
+              9361818,
+              2283930,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "bound_event_evidence_digest": "ee1decb5bd9aa935ff451078522d9f00b998e1061f0a5fc95220263668be8749",
+            "checkpoint_after": "e502d4c90efe25901a9e1369b68e308c53052b3e666bb187ca920e3fe14b61cc",
+            "checkpoint_before": "5512474fcdcd36095986490309233faa8ce9ce999378fa5d6537e14c2c3bab8c",
+            "checkpoint_bytes": 648,
+            "confidence_ppm": 1000000,
+            "duplicate_event_ignored": false,
+            "eligibility_after_q24": [
+              0,
+              4194304,
+              262144,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "eligibility_before_q24": [
+              0,
+              8388608,
+              524288,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "event_id": "joint.lifecycle.action.1.gate",
+            "evidence_digest": "05813e786b090d86e6ca945b171674ce3877ca03c8a5a2aa67846b666f5316f3",
+            "execution_micros": 836,
+            "feedback_q24": 0,
+            "journal_bytes_written": 464,
+            "model_latency_micros": 2,
+            "model_resident_bytes": 31183,
+            "native_abstain": false,
+            "native_transition_executed": true,
+            "ood_ppm": 0,
+            "owner_authority": "DENY_ALL",
+            "phase": 0,
+            "proposed_repair": true,
+            "queue_age_micros": 0,
+            "readout_logit": 0.0,
+            "readout_scalar_input": false,
+            "readout_target_input": false,
+            "sequence": 4,
+            "transient_allocation_bytes": 204,
+            "write_amplification_ppm": 716050
+          }
+        }
+      },
+      {
+        "bound_evidence": {
+          "action": "continue",
+          "action_index": 1,
+          "action_trace": {
+            "step": 1
+          },
+          "actual_output_bytes": 25,
+          "artifact_sha256": {
+            "text": "c639a52e68310fd7e17181e00926413c7d179d73a242ea625bc034dc0d2e5e04"
+          },
+          "final_state_digest": null,
+          "identity_sha256": "4b9ec150f789636a1d4f1115e2e8935f227d6fc0f643f669f07b248f337906bf",
+          "previous_artifact_sha256": {
+            "text": "563f5fb3b1f08514a2a1c935f3a4984058b4b30421cf0a880027932d96b005a2"
+          },
+          "public_feedback": 1.0
+        },
+        "host_roundtrip_wall_seconds": 0.0015249340000025313,
+        "request": {
+          "command": "Tick",
+          "event_id": "joint.lifecycle.action.1.feedback",
+          "feedback_q24": 16777216,
+          "phase": 1,
+          "receipt_digest": "6b7f23e4e240da4b0cd0f787eb6a5ef8b39af8f11ae3eef11262c6865c136456"
+        },
+        "response": {
+          "ok": true,
+          "physical_receipt_processing_micros": 1374,
+          "result": {
+            "activation_q24": [
+              0,
+              23680615,
+              5789287,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "bound_event_evidence_digest": "e22e63fe7e38545352d0b8227321c64625901bead31ac1ed3e79e12e6171ad9f",
+            "checkpoint_after": "063a79bc69bea0f03a7d7fa63385fd64db22a1e88f546957b4ddef019fcb0074",
+            "checkpoint_before": "e502d4c90efe25901a9e1369b68e308c53052b3e666bb187ca920e3fe14b61cc",
+            "checkpoint_bytes": 648,
+            "confidence_ppm": 1000000,
+            "duplicate_event_ignored": false,
+            "eligibility_after_q24": [
+              0,
+              25777767,
+              1578394,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "eligibility_before_q24": [
+              0,
+              4194304,
+              262144,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "event_id": "joint.lifecycle.action.1.feedback",
+            "evidence_digest": "6b7f23e4e240da4b0cd0f787eb6a5ef8b39af8f11ae3eef11262c6865c136456",
+            "execution_micros": 708,
+            "feedback_q24": 16777216,
+            "journal_bytes_written": 464,
+            "model_latency_micros": 2,
+            "model_resident_bytes": 35767,
+            "native_abstain": false,
+            "native_transition_executed": true,
+            "ood_ppm": 0,
+            "owner_authority": "DENY_ALL",
+            "phase": 1,
+            "proposed_repair": true,
+            "queue_age_micros": 0,
+            "readout_logit": 0.0,
+            "readout_scalar_input": false,
+            "readout_target_input": false,
+            "sequence": 5,
+            "transient_allocation_bytes": 204,
+            "write_amplification_ppm": 716050
+          }
+        }
+      },
+      {
+        "bound_evidence": {
+          "action": "continue",
+          "action_index": 1,
+          "action_trace": {
+            "step": 1
+          },
+          "actual_output_bytes": 25,
+          "artifact_sha256": {
+            "text": "c639a52e68310fd7e17181e00926413c7d179d73a242ea625bc034dc0d2e5e04"
+          },
+          "final_state_digest": null,
+          "identity_sha256": "4b9ec150f789636a1d4f1115e2e8935f227d6fc0f643f669f07b248f337906bf",
+          "previous_artifact_sha256": {
+            "text": "563f5fb3b1f08514a2a1c935f3a4984058b4b30421cf0a880027932d96b005a2"
+          },
+          "public_feedback": 1.0
+        },
+        "host_roundtrip_wall_seconds": 0.001793101999993496,
+        "request": {
+          "command": "Tick",
+          "event_id": "joint.lifecycle.action.1.hold",
+          "feedback_q24": 0,
+          "phase": 2,
+          "receipt_digest": "6b7f23e4e240da4b0cd0f787eb6a5ef8b39af8f11ae3eef11262c6865c136456"
+        },
+        "response": {
+          "ok": true,
+          "physical_receipt_processing_micros": 1621,
+          "result": {
+            "activation_q24": [
+              0,
+              17590068,
+              4171572,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "bound_event_evidence_digest": "d1bbe793516ef0b875c19c92a3f78c55e35d2f9c418cf0c9c072dec6faea422c",
+            "checkpoint_after": "7ac99284de57a8d5cc7dbd887100550bf42260ea269c90bfb22d146f43853d89",
+            "checkpoint_before": "063a79bc69bea0f03a7d7fa63385fd64db22a1e88f546957b4ddef019fcb0074",
+            "checkpoint_bytes": 648,
+            "confidence_ppm": 1000000,
+            "duplicate_event_ignored": false,
+            "eligibility_after_q24": [
+              0,
+              12888884,
+              789197,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "eligibility_before_q24": [
+              0,
+              25777767,
+              1578394,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "event_id": "joint.lifecycle.action.1.hold",
+            "evidence_digest": "6b7f23e4e240da4b0cd0f787eb6a5ef8b39af8f11ae3eef11262c6865c136456",
+            "execution_micros": 836,
+            "feedback_q24": 0,
+            "journal_bytes_written": 464,
+            "model_latency_micros": 2,
+            "model_resident_bytes": 41165,
+            "native_abstain": false,
+            "native_transition_executed": true,
+            "ood_ppm": 0,
+            "owner_authority": "DENY_ALL",
+            "phase": 2,
+            "proposed_repair": true,
+            "queue_age_micros": 0,
+            "readout_logit": 0.0,
+            "readout_scalar_input": false,
+            "readout_target_input": false,
+            "sequence": 6,
+            "transient_allocation_bytes": 204,
+            "write_amplification_ppm": 716050
+          }
+        }
+      },
+      {
+        "bound_evidence": {
+          "action_trace": {
+            "step": 2
+          },
+          "final_artifact_sha256": {
+            "text": "c639a52e68310fd7e17181e00926413c7d179d73a242ea625bc034dc0d2e5e04"
+          },
+          "identity_sha256": "4b9ec150f789636a1d4f1115e2e8935f227d6fc0f643f669f07b248f337906bf",
+          "terminal_reason": "policy_stop"
+        },
+        "host_roundtrip_wall_seconds": 0.0017859090000058586,
+        "request": {
+          "command": "Tick",
+          "event_id": "joint.lifecycle.stop",
+          "feedback_q24": 0,
+          "phase": 3,
+          "receipt_digest": "d632b1861c8d20fc7e6b5917b960aedebf12f312e7ed174adc7ec3ab9260a593"
+        },
+        "response": {
+          "ok": true,
+          "physical_receipt_processing_micros": 1623,
+          "result": {
+            "activation_q24": [
+              0,
+              12969729,
+              2905857,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "bound_event_evidence_digest": "703f00319ce518253b95ab689e979d8104c83d3f94f3cc32418834a90a7921aa",
+            "checkpoint_after": "454d0cf84b3ccdd5e024d92406b8270875e85f1c7c4cc70f9452671f5421c6de",
+            "checkpoint_before": "7ac99284de57a8d5cc7dbd887100550bf42260ea269c90bfb22d146f43853d89",
+            "checkpoint_bytes": 648,
+            "confidence_ppm": 1000000,
+            "duplicate_event_ignored": false,
+            "eligibility_after_q24": [
+              0,
+              6444442,
+              394598,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "eligibility_before_q24": [
+              0,
+              12888884,
+              789197,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "event_id": "joint.lifecycle.stop",
+            "evidence_digest": "d632b1861c8d20fc7e6b5917b960aedebf12f312e7ed174adc7ec3ab9260a593",
+            "execution_micros": 795,
+            "feedback_q24": 0,
+            "journal_bytes_written": 464,
+            "model_latency_micros": 2,
+            "model_resident_bytes": 45716,
+            "native_abstain": false,
+            "native_transition_executed": true,
+            "ood_ppm": 0,
+            "owner_authority": "DENY_ALL",
+            "phase": 3,
+            "proposed_repair": true,
+            "queue_age_micros": 0,
+            "readout_logit": 0.0,
+            "readout_scalar_input": false,
+            "readout_target_input": false,
+            "sequence": 7,
+            "transient_allocation_bytes": 204,
+            "write_amplification_ppm": 716050
+          }
+        }
+      },
+      {
+        "host_roundtrip_wall_seconds": 0.00016769100000146864,
+        "request": {
+          "command": "Close"
+        },
+        "response": {
+          "ok": true,
+          "physical_receipt_processing_micros": 67,
+          "result": {
+            "checkpoint": "454d0cf84b3ccdd5e024d92406b8270875e85f1c7c4cc70f9452671f5421c6de",
+            "durable_event_count": 7,
+            "eligibility_q24": [
+              0,
+              6444442,
+              394598,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "expires": 64,
+            "host_poisoned": false,
+            "owner_authority": "DENY_ALL",
+            "sequence": 7
+          }
+        }
+      }
+    ]
+  },
+  "schema": "hepta.joint-output.native-lifecycle-probe.v1",
+  "stop_prevented_later_dispatch": true
+}

@@ -1,0 +1,26 @@
+{
+  "all_repository_workflows_claimed_green": false,
+  "conclusion": "success",
+  "job_id": 123320806292,
+  "job_name": "operator-and-contract",
+  "local_rust_formatter": {
+    "executed_successfully": false,
+    "full_rust_worktree_present": false,
+    "observed_error": "just: command not found",
+    "production_rust_changed": false
+  },
+  "pytest": {
+    "collected": 28,
+    "passed": 28,
+    "seconds": 6.26
+  },
+  "run_id": 40835998756,
+  "schema": "hepta.joint-generation.source-validation.v1",
+  "source_commit": "8eca54312d46cc8f4eb6e00ba4338007ba366496",
+  "source_gate_total": 93,
+  "unittest": {
+    "passed": 65,
+    "seconds": 1.214,
+    "tests": 65
+  }
+}

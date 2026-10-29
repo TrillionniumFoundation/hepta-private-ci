@@ -15,6 +15,22 @@ population exponential-utility profile at gamma=2. General recursive preference
 drivers, a task-value neuronal free boundary and large-scale semantic generation
 remain research extensions.
 
+## Completed execution and current findings
+
+The registered 3-seed × 2-width × 6-arm study, natural diagnostic and observer,
+and 96 actual native-gated deployments have completed. The trained deployment
+source passes **65 unittest + 28 pytest tests**. See the full
+[execution and acceptance report](evidence/RESULTS.md),
+[all-six-configuration results](evidence/mechanism_results.json),
+[natural independent inspection](evidence/natural_inspection.json), and
+[preserved original checkpoints](checkpoints/README.md).
+
+Stable mechanism benefit is **not established**. Student serving cost in the
+native check is about 1.305% lower, but CE also declines and quality
+noninferiority is unproved. The natural observer development gate fails, so
+fresh calibration media remain unopened and semantic qualification stays false.
+Successful execution does not override these research findings.
+
 ## One task contract
 
 `JointGenerationProfile` extends `unified_20261028/profile.py` rather than
@@ -216,7 +232,7 @@ start on an intentional `[joint-study]` commit tag. Natural tasks use
 `[joint-native]`. Routine code fixes run the source gate and all-arm smoke test
 without silently re-consuming a natural calibration cohort.
 
-The exact CI run IDs, tested commits, failed gates and measured findings belong
-in the evidence report after execution. A successful workflow means its
+Exact CI run IDs, tested commits, failed gates and measured findings are retained
+in [evidence/RESULTS.md](evidence/RESULTS.md). A successful workflow means its
 implemented checks passed; it does not override the research qualification
 fields in `RESULTS.json`.
