@@ -1,0 +1,57 @@
+audio_backbone analytic 6101
+audio_backbone analytic 6102
+audio_backbone analytic 6103
+audio_backbone cfc 6101
+audio_backbone cfc 6102
+audio_backbone cfc 6103
+audio_backbone continuous_rnn 6101
+audio_backbone continuous_rnn 6102
+audio_backbone continuous_rnn 6103
+audio_backbone lif_snn 6101
+audio_backbone lif_snn 6102
+audio_backbone lif_snn 6103
+audio_backbone mamba1 6101
+audio_backbone mamba1 6102
+audio_backbone mamba1 6103
+audio_backbone transformer 6101
+audio_backbone transformer 6102
+audio_backbone transformer 6103
+audio_backbone two_gates 6101
+audio_backbone two_gates 6102
+audio_backbone two_gates 6103
+multimodal_backbone analytic 6101
+multimodal_backbone analytic 6102
+multimodal_backbone analytic 6103
+multimodal_backbone cfc 6101
+multimodal_backbone cfc 6102
+multimodal_backbone cfc 6103
+multimodal_backbone continuous_rnn 6101
+multimodal_backbone continuous_rnn 6102
+multimodal_backbone continuous_rnn 6103
+multimodal_backbone lif_snn 6101
+multimodal_backbone lif_snn 6102
+multimodal_backbone lif_snn 6103
+multimodal_backbone mamba1 6101
+multimodal_backbone mamba1 6102
+multimodal_backbone mamba1 6103
+multimodal_backbone transformer 6101
+multimodal_backbone transformer 6102
+multimodal_backbone transformer 6103
+multimodal_backbone two_gates 6101
+multimodal_backbone two_gates 6102
+multimodal_backbone two_gates 6103
+/workspace/scratch/45b3735e7225/hepta-cfb/experiments/call_put_followup_diagnostics/audio.py:177: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)
+  trajectory.append({"update": update, "validation": validation, "train_minibatch_ce": float(loss), "cpu_seconds": time.process_time() - cpu})
+probe_trained raw_linear_7201
+probe_trained raw_linear_7202
+probe_trained raw_linear_7203
+probe_trained raw_mlp64_7201
+probe_trained raw_mlp64_7202
+probe_trained raw_mlp64_7203
+probe_trained log_cmvn_linear_7201
+probe_trained log_cmvn_linear_7202
+probe_trained log_cmvn_linear_7203
+probe_trained log_cmvn_mlp64_7201
+probe_trained log_cmvn_mlp64_7202
+probe_trained log_cmvn_mlp64_7203

@@ -1,0 +1,159 @@
+{
+  "archive": {
+    "bytes": 93231319,
+    "filename": "followup_evidence.tar.gz",
+    "sha256": "3f180654b82bb161a7fd786e3bd7e1d74114fdb5cbf665bc0c139e043029dabf"
+  },
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-I",
+    "-S",
+    "/tmp/hepta-followup-relocated-a5qekmp9/experiments/call_put_closure/package_followup.py",
+    "verify",
+    "--root",
+    "/tmp/hepta-followup-relocated-a5qekmp9"
+  ],
+  "cwd": "/tmp",
+  "dependency_scope": "The relocated verifier received no concatenated original archive. Its reported declared_not_supplied is retained; the exact original dependency was independently streamed and verified from all seven parts before packaging.",
+  "fresh_extraction_path": "/tmp/hepta-followup-relocated-a5qekmp9",
+  "fresh_extraction_removed_after_success": true,
+  "identity_sha256": "4d4c2deed5b119cfe30778c1b377ddb3f5c0af085e35d1145f27902e6858bedc",
+  "original_dependency_verification": {
+    "bytes": 207264800,
+    "method": "Stream each original part in manifest order, verify every part size/hash and combined archive size/hash without creating a concatenated file",
+    "parts": [
+      {
+        "bytes": 33554432,
+        "path": "rebuild001_complete_evidence.tar.gz.part-000",
+        "sha256": "c6d14e0f2edd8121f23890b2ac1700347fae23262c2d5786318c4f6329c1b237"
+      },
+      {
+        "bytes": 33554432,
+        "path": "rebuild001_complete_evidence.tar.gz.part-001",
+        "sha256": "ca6226fd5279d1b898ed452fbb1d514e4256eefb55a82919a6fd5786d39d39af"
+      },
+      {
+        "bytes": 33554432,
+        "path": "rebuild001_complete_evidence.tar.gz.part-002",
+        "sha256": "c684c1c3fc6a332ac04a106727acae62399e306405db0f4e6559ca91a43b7357"
+      },
+      {
+        "bytes": 33554432,
+        "path": "rebuild001_complete_evidence.tar.gz.part-003",
+        "sha256": "b1ab913ebbd76c331ceaa34eb719b7025a6cb16b3f35d24cc89c4cece0d6d749"
+      },
+      {
+        "bytes": 33554432,
+        "path": "rebuild001_complete_evidence.tar.gz.part-004",
+        "sha256": "6da2b2654eddbc4ea5aea22551487ef556fa438c087b592e8fd9da9e521182b6"
+      },
+      {
+        "bytes": 33554432,
+        "path": "rebuild001_complete_evidence.tar.gz.part-005",
+        "sha256": "e359afaaa36696cecb8243c78dcb6a2f43bfac9a9161d4b16eb1ad9ab221e9d0"
+      },
+      {
+        "bytes": 5938208,
+        "path": "rebuild001_complete_evidence.tar.gz.part-006",
+        "sha256": "7b03536117935da5c33b7b9cbcfa3048c8849ec06daafae1e687d9d1bfa152ee"
+      }
+    ],
+    "parts_manifest_sha256": "b28eeaabaf36a78cacb1f64662f03c668a43bf93c24545fca391789134681cfa",
+    "sha256": "d3be953325ff8e4fc2ffaf94c6a3dd9084892501598cbda92efe747cca594cf7"
+  },
+  "prepack_receipt_sha256": "82a085634ece5decf82d4660afe5826564453c3a055c30bcae9496e3c0a2ee30",
+  "recorded_at_utc": "2026-10-29T04:59:20.602489+00:00",
+  "report_gate": {
+    "path": "experiments/call_put_closure/results/report002/REPORT.html",
+    "sha256": "cd51c1d85cc55f6dfd9addb6f92b56c5b063f7b3e39496c079edd5f1354257d7",
+    "summary": {
+      "bound_inputs": 20,
+      "bound_outputs": 9,
+      "bytes": 2557763,
+      "receipt_sha256": "50d538e26b0d8f30f56ca540e17f0f602ff59bb42605b28e47b982ee310bb50e"
+    }
+  },
+  "returncode": 0,
+  "schema": "hepta-followup-relocated-verification-v1",
+  "source_receipt_sha256": "ce0561671991cee7539080abf94c40ea82c2f12345c985697174e533e5f79db6",
+  "status": "verified",
+  "verification": {
+    "bytes": 140653854,
+    "dependency": "declared_not_supplied",
+    "files": 3394,
+    "gates": {
+      "balanced": {
+        "path": "experiments/call_put_audio_balance/results/balanced001/COMPLETE.json",
+        "sha256": "3811eea587b097d8f872ac0d0aaf2cf9df05703756217135b2e6a4e309090e69",
+        "summary": {
+          "candidates": 18,
+          "checkpoints": 72,
+          "selected_aliases": 18
+        }
+      },
+      "balanced_appendix": {
+        "path": "experiments/call_put_audio_balance/results/balanced001/appendix001/SUMMARY.json",
+        "sha256": "085eed0cc05bceb749bf7813ad2855b8b48f56633bc10d2540f40cae5bc6b640",
+        "summary": {
+          "aliases": 6,
+          "intervention_aliases": 18,
+          "physical_checkpoints": 6
+        }
+      },
+      "content": {
+        "path": "experiments/call_put_next/results/followup001/TRAIN_COMPLETE.json",
+        "sha256": "aec97c6c41df628497a7bcb298e72c4a085e3795948759bfe8b855a16e942df2",
+        "summary": {
+          "candidates": 84,
+          "checkpoints": 504,
+          "selected_aliases": 252
+        }
+      },
+      "content_runtime": {
+        "path": "experiments/call_put_next/results/followup001/RUNTIME.json",
+        "sha256": "49a5e989a48e20e95ee9abf04c03bba43064c471c6ae2890e28cb262701e3826",
+        "summary": {
+          "measured_models": 14,
+          "parity_failures_retained": 1
+        }
+      },
+      "normalized": {
+        "path": "experiments/call_put_followup_diagnostics/results/normalized001/COMPLETE.json",
+        "sha256": "f62f4047e36665e1d082ca07cb08dced46b643afc4b9788054d7bd2d8eda19f3",
+        "summary": {
+          "candidates": 36,
+          "checkpoints": 144,
+          "selected_aliases": 36
+        }
+      },
+      "report": {
+        "path": "experiments/call_put_closure/results/report002/REPORT.html",
+        "sha256": "cd51c1d85cc55f6dfd9addb6f92b56c5b063f7b3e39496c079edd5f1354257d7",
+        "summary": {
+          "bound_inputs": 20,
+          "bound_outputs": 9,
+          "bytes": 2557763,
+          "receipt_sha256": "50d538e26b0d8f30f56ca540e17f0f602ff59bb42605b28e47b982ee310bb50e"
+        }
+      },
+      "runtime": {
+        "path": "experiments/call_put_followup_runtime/results/runtime004/SUMMARY.json",
+        "sha256": "cc308930c017b75736f6b5e2dc8f546c2fa92867dffd6d795e1dc9da388b8238",
+        "summary": {
+          "architectures": 7,
+          "measured_cases": 21
+        }
+      },
+      "selected_solver": {
+        "path": "experiments/call_put_selected_solver/results/selected001/SUMMARY.json",
+        "sha256": "e4143cad77accad713499012f1b30e9720f5b5d9bd8f2e2631766bf806f8a87b",
+        "summary": {
+          "aliases": 36,
+          "physical_checkpoints": 36
+        }
+      }
+    },
+    "manifest_sha256": "e4522d283beedc5ae34c5dcc8b359b2f50cf0c748a3b1b02e1daba9fa72401b6",
+    "status": "verified"
+  }
+}
