@@ -1,0 +1,17 @@
+{
+  "parity_scope": "240 native Adam transitions compared to helper; 240 actual full-vector displacement norm matches",
+  "portable_source_sha256": {
+    "mechanism.py": "9deda3c873eeeb8bf1aa5559aca1ecc0604150b321b50e5389d32d1e439cf0c9",
+    "test_mechanism.py": "29aa226cdef19a48c7f6a90abb677f5ab1fecfba346fd7762abbee8e6e701085"
+  },
+  "preparation_review_limitation": "Independent static reviewer accidentally ran one interrupted broader file search. No matches returned; its non-source read scope cannot be guaranteed. No model import or numerical execution resulted and no selection/gate was changed from it. Worker read-scope claims do not cover preparation.",
+  "rust_checks": "Not run: no Rust files changed and no runnable full repository checkout in this publication task.",
+  "status": "PASS_ALL_EIGHT_LITERAL_TESTS_AND_NATIVE_ENGINE_PARITY",
+  "tests": {
+    "errors": 0,
+    "failures": 0,
+    "run": 8
+  },
+  "tests_included_in_same_complete_child_resource_receipt": true,
+  "worker_read_scope": "Exact six FIT files and all12 final-state bundles;42 distinct payload paths; no DEV/TEST payload opens in guarded worker"
+}
