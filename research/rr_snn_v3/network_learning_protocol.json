@@ -1,0 +1,149 @@
+{
+  "schema": "rr-snn-delayed-network-learning-protocol-1",
+  "registeredBeforeTrainAndHeldoutGeneration": true,
+  "scope": "R3 complete-path likelihood learning diagnostic; not R4 architecture utility comparison or R5 actual future window",
+  "architecture": {
+    "units": 2,
+    "finiteStatesPerUnit": 2,
+    "fixedUpRate": 3,
+    "pulseDebit": 1,
+    "refractory": 0.05,
+    "traceTau": 0.6,
+    "positiveAxonalDelays": [
+      0.1,
+      0.15
+    ],
+    "resourceBudgetPerUnit": 6,
+    "weightsSharedAcrossEpisodes": true,
+    "budgetCap": 8
+  },
+  "features": [
+    "bias",
+    "observed external drive",
+    "delivered presynaptic pulse mark",
+    "tanh(actual own pulse trace)",
+    "current renewal pressure"
+  ],
+  "teacherWeights": [
+    [
+      0.4,
+      0.35,
+      0.45,
+      -0.25,
+      0.3
+    ],
+    [
+      0.2,
+      -0.25,
+      0.35,
+      -0.2,
+      0.25
+    ]
+  ],
+  "optimizer": {
+    "method": "Adam complete-path NLL",
+    "updates": 300,
+    "learningRate": 0.03,
+    "l2": 0.01,
+    "initialWeights": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "selectByHoldout": false,
+    "objective": "Per neuron: sum of pulse-channel NLL over 128 complete episodes plus 0.5*0.01*sum(theta^2), regularization once per fitted vector. Each Adam gradient is divided by the number of regime records.",
+    "trainableParameters": "Five pulse-rate weights per neuron; 10 parameters total, held fixed across episodes."
+  },
+  "data": {
+    "horizon": 4,
+    "train": {
+      "episodes": 128,
+      "seeds": [
+        10000,
+        10127
+      ]
+    },
+    "heldout": {
+      "episodes": 128,
+      "seeds": [
+        50000,
+        50127
+      ]
+    },
+    "developmentSeeds": [
+      9000,
+      9999
+    ],
+    "publicInputs": [
+      0.5,
+      1.5,
+      2.5,
+      3.5
+    ],
+    "drive": [
+      0.5,
+      -0.5,
+      0.5,
+      -0.5
+    ],
+    "initialObservationAtZero": true,
+    "maturityBySeedParity": {
+      "even": [
+        1,
+        3
+      ],
+      "odd": [
+        2,
+        2
+      ]
+    },
+    "shockAt1_5ByFloorSeedOver2Parity": {
+      "even": 2,
+      "odd": 0
+    },
+    "refillAt2_5": 1
+  },
+  "metrics": [
+    "train NLL per episode",
+    "heldout NLL per episode at initial/fitted/teacher weights",
+    "analytic vs finite-difference score",
+    "all gradients finite",
+    "network same-path restore",
+    "paired heldout path NLL fitted-minus-initial mean and whole-episode bootstrap 95% interval"
+  ],
+  "failuresMustBeReported": true,
+  "productionAuthority": false,
+  "oldV2HoldoutUsed": false,
+  "notes": [
+    "Deadline/queue field encoding follows event runtime API; physical data generation implementation must be frozen before heldout use.",
+    "Fixed-epoch diagnostic evaluates all heldout episodes once after fitting; no architecture selection or superiority inference.",
+    "Node hosted execution is distinct from dot target hardware; no wall-clock performance comparisons.",
+    "Initialization at t=0 observes the full maturity list after identical physical state and initial held rates; this specification was added before generating any training or heldout paths.",
+    "Independent design review before data generation: report fixed-up-channel constants in absolute joint path NLL; they cancel in paired differences. No L2 term in heldout likelihood."
+  ],
+  "bootstrap": {
+    "unit": "whole two-neuron episode within each of four maturity/shock strata",
+    "draws": 10000,
+    "seed": 700101,
+    "percentileRanksZeroBased": [
+      249,
+      9749
+    ],
+    "strataCounts": [
+      32,
+      32,
+      32,
+      32
+    ],
+    "scope": "conditional on this one fitted candidate; excludes training-set variability"
+  },
+  "evaluation": {
+    "absoluteNllIncludesFixedUpChannel": true,
+    "heldoutRegularization": 0,
+    "fullyObservedInternalJumps": true,
+    "delayedInputsAreDeterministicPastPathFunctions": true,
+    "extraDeliveryLikelihood": false
+  }
+}
