@@ -12,6 +12,42 @@ All additions are isolated under `experiments/hcsn_free_boundary_v1`.
 Production Rust code, owner authority, and the original native kernel remain
 unchanged. This is a research branch, not a production deployment.
 
+## Completed result
+
+The 244-search / 488-candidate primary study completed with zero failed
+searches and all 244 passing the recorded integrity audit. The scalar oracle
+and joint trainability checks pass. **The primary positive mechanism claims
+pass 0/6, and the descriptive 2-point content screens pass 0/6.** The learned
+native value controller also loses to a validation-selected ordinary read
+schedule once the stronger comparator and complete measured CPU charges are
+included.
+
+An additional input-conditioned learned threshold has 16 completed searches;
+the free-minus-conditional effect is -0.8301 percentage points, with a nominal
+95% interval spanning zero. A separate fresh exactly-128-update diagnostic
+has 18 successful free-model searches and reuses 126 baseline searches. At
+128 updates the free model has higher means than the ordinary two-gate model
+on five of six tasks, but is below the best tested candidate on all six.
+These descriptive observations do not revise the equal-CPU primary results.
+
+Start with [RESULTS.md](RESULTS.md) for the Chinese six-item acceptance report,
+including the original-model distinction, mean-closure failure, distributional
+repairs, statistics, timing, execution utility, and remaining limits. Detailed
+English reports:
+
+- [Primary matrix and original strict-128 coverage](results/study001/analysis001/REPORT.md).
+- [Additional conditional threshold](results/conditional001/REPORT.md).
+- [Separate fixed-update diagnostic](results/equal_updates_core002/analysis002/REPORT.md)
+  and its [final audit/addenda](results/equal_updates_core002/FINAL_AUDIT.md).
+- [Trained native control](results/native003/REPORT.md) and the
+  [stronger ordinary-control audit](results/native003_adversarial001/REPORT.md).
+
+The fixed-update diagnostic preserves its first audit, which rejected a
+storage-retention discrepancy, and the second audit that independently
+verified all extra files and kept them out of checkpoint selection. Neither
+training nor primary evidence was rewritten. Source bytes and all raw result
+bundles are retained, including development and adverse results.
+
 ## Contracts and implementations
 
 | Object | Implemented meaning | Evidence |
@@ -43,6 +79,9 @@ silent replacement of the frozen main study.
 The recorded environment uses Python 3.12.14, NumPy 2.3.5, SciPy 1.17.0, and
 PyTorch 2.8.0+cpu. CPU experiments set all numerical-library thread counts to one.
 Run commands from the repository root, with a CPU PyTorch installation available.
+High-precision fast-solver references use mpmath 1.3.0; the optional figure
+renderer uses Matplotlib 3.10.8. [ENVIRONMENT.json](ENVIRONMENT.json) records
+the actual environment rather than asserting a cross-platform installation lock.
 
 ```bash
 export OMP_NUM_THREADS=1
@@ -128,6 +167,26 @@ python -m experiments.hcsn_free_boundary_v1.archive restore --manifest experimen
 The restorer verifies every part, the concatenated archive, and every member.
 It rejects unsafe paths and refuses to overwrite different existing content.
 
+### Complete result bundles
+
+The archives include full initial/CPU-gate/128/selected numeric checkpoints,
+minibatch and gradient logs, predictions, validation locks, process costs,
+native journals, recovery evidence and preserved prior analyses. Restore the
+result bundles from the repository root:
+
+```bash
+python -m experiments.hcsn_free_boundary_v1.archive restore --manifest experiments/hcsn_free_boundary_v1/artifacts/auxiliary_evidence.json --destination experiments/hcsn_free_boundary_v1
+python -m experiments.hcsn_free_boundary_v1.archive restore --manifest experiments/hcsn_free_boundary_v1/artifacts/study001_evidence.json --destination experiments/hcsn_free_boundary_v1
+python -m experiments.hcsn_free_boundary_v1.archive restore --manifest experiments/hcsn_free_boundary_v1/artifacts/conditional001_evidence.json --destination experiments/hcsn_free_boundary_v1
+python -m experiments.hcsn_free_boundary_v1.archive restore --manifest experiments/hcsn_free_boundary_v1/artifacts/equal_updates_core002_evidence.json --destination experiments/hcsn_free_boundary_v1/results/equal_updates_core002
+```
+
+The last bundle is rooted at the separate diagnostic directory, so its
+destination differs. Use the manifest's ordered parts and hashes; part sizes
+need not match across bundles. Restoration verifies existing identical files
+without copying them. Each bundle has an adjacent verification receipt.
+The stream implementation avoids a second complete compressed temporary copy.
+
 FSDD attribution: Jakobovski/free-spoken-digit-dataset and its contributors;
 commit `26eb9aaf76e81b692f806f9140c2d2777410d7a1`, CC-BY-SA-4.0. Retain that
 attribution and license when redistributing the audio or its derivatives.
@@ -140,7 +199,7 @@ The CfC cell and Apache-2.0 license are copied unmodified from the pinned
 Mamba-1 is an inspectable CPU reference implementation. CPU rankings here do
 not represent optimized CUDA Mamba, FlashAttention, or neuromorphic hardware.
 
-## Reading the eventual outcome
+## Interpreting the completed outcome
 
 Mechanism execution, mathematical validity, predictive superiority, and economic
 utility are different acceptance conditions. A working gradient or native action
