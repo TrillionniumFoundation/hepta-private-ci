@@ -1,0 +1,24 @@
+{
+  "schema": "rrsnn.v4-descriptive-mechanism-reporting-design.1",
+  "scope": "Post-freeze reporting extension specified while main evaluation is running, before reading its aggregate; not an additional confirmatory acceptance gate.",
+  "reporter_sha256": "3bc1efccad84f9c4dc14ad4cd547779b2ba1eed50ee91951df43cfc217fc45bd",
+  "families": [
+    "fp_no_rollover",
+    "rr_mean_maturity",
+    "rr_shuffle_maturity",
+    "rr_fixed_boundary",
+    "rr_frozen_resource"
+  ],
+  "datasets": [
+    "test",
+    "shift",
+    "paired"
+  ],
+  "pairing_and_bootstrap": "Reuse frozen aggregate.compare, PairedBootstrap and their original 10000 draws/seeds; average latent paths within each training-seed/scenario; preserve all four counterfactual conditions.",
+  "direction": "rr_full minus each named ablation; report every family regardless of sign",
+  "primary_acceptance_changed": false,
+  "selection_or_weights_changed": false,
+  "original_main_aggregate_sha_must_match_every_source": true,
+  "created_at_utc": "2026-10-29T15:41:55.708164+00:00",
+  "frozen_source_guard": "All14 pre-data source hashes checked, plus main aggregate selection/pre-data/training protocol identities and reporting design source hash"
+}
