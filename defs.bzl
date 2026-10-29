@@ -310,6 +310,17 @@ def codex_rust_crate(
 
     maybe_deps = []
 
+    # rules_rs's generated aliases(package_name=None) does not take dependency
+    # kinds. These production libraries have no Cargo-renamed direct crates,
+    # but their package-wide alias map can add dev-only workspace edges:
+    # network-proxy -> windows-sandbox -> protocol -> network-proxy and
+    # exec-server -> test-binary-support -> arg0 -> exec-server.
+    # Preserve all actual deps and all aliases in test-only targets.
+    production_aliases = {} if native.package_name() in [
+        "codex-rs/network-proxy",
+        "codex-rs/exec-server",
+    ] else aliases()
+
     if build_script_enabled and native.glob(["build.rs"], allow_empty = True):
         cargo_build_script(
             name = name + "-build-script",
@@ -326,7 +337,7 @@ def codex_rust_crate(
         lib_rule = rust_proc_macro if proc_macro else rust_library
         lib_rule(
             name = name,
-            aliases = aliases(),
+            aliases = production_aliases,
             crate_name = crate_name,
             crate_features = crate_features,
             deps = all_crate_deps() + maybe_deps + deps_extra,
