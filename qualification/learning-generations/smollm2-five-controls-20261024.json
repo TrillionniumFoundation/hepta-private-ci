@@ -1,0 +1,251 @@
+{
+  "all_required_controls_executed": true,
+  "authenticated_inference_accepted": false,
+  "calibration_selected_control": "fresh-budget-matched-lora",
+  "consumption_not_assumed_equal": true,
+  "experiment": "4eb748aee63bb946b93c5df6780833691dc3a90e91dd1d8e6d29d1c93b9c7420",
+  "gain_vs_strongest_evaluation_control": [0, 1],
+  "independent_accepted": false,
+  "output_byte_metric": "equal-source-group-exact-output-bytes",
+  "positive_vs_all_controls": false,
+  "prospective_accepted": false,
+  "public_network_ready": false,
+  "public_reward_eligible": false,
+  "roster": "c0d23740146b4bf473a7427e8365200ace59ffd4d39b4b924acc7136bb5bf115",
+  "schema": "hepta-controlled-smollm-five-controls-observation-v1",
+  "scope": "actual-local-short-LLM-pilot-no-future-independent-quality-or-native-admission",
+  "scores": {
+    "budget-matched-full-tune": {
+      "calibration": [1, 2],
+      "evaluation": [1, 2]
+    },
+    "candidate": {
+      "calibration": [1, 2],
+      "evaluation": [1, 2]
+    },
+    "current-backbone": {
+      "calibration": [0, 1],
+      "evaluation": [0, 1]
+    },
+    "fresh-budget-matched-lora": {
+      "calibration": [1, 2],
+      "evaluation": [1, 2]
+    },
+    "randomized-rank-matched-lora": {
+      "calibration": [0, 1],
+      "evaluation": [0, 1]
+    }
+  },
+  "source": "65ccc6454befd96fa5ce1f5bdde2c56cb6cbb741cf495b8d24a758039f99f755",
+  "training_budget_matched_by_steps_and_token_schedule": true,
+  "phases": [
+    {
+      "name": "loader-1thread",
+      "outcome": "success",
+      "exit_code": 0,
+      "observed_wall_ns": 39329776478,
+      "child_cpu_ns": 42903994000,
+      "waited_child_peak_rss_bytes": 1151401984,
+      "waited_child_reaped": true,
+      "owned_child_reap_resolved": true,
+      "cleanup_method": "wait4",
+      "waited_child_observation_error": null,
+      "budget": {
+        "rss_bytes": 8589934592,
+        "wall_seconds": 600
+      }
+    },
+    {
+      "name": "loader-reference",
+      "outcome": "success",
+      "exit_code": 0,
+      "observed_wall_ns": 24102812373,
+      "child_cpu_ns": 56888630000,
+      "waited_child_peak_rss_bytes": 1152307200,
+      "waited_child_reaped": true,
+      "owned_child_reap_resolved": true,
+      "cleanup_method": "wait4",
+      "waited_child_observation_error": null,
+      "budget": {
+        "rss_bytes": 8589934592,
+        "wall_seconds": 600
+      }
+    },
+    {
+      "name": "train-candidate",
+      "outcome": "success",
+      "exit_code": 0,
+      "observed_wall_ns": 60868782636,
+      "child_cpu_ns": 79358807000,
+      "waited_child_peak_rss_bytes": 3076366336,
+      "waited_child_reaped": true,
+      "owned_child_reap_resolved": true,
+      "cleanup_method": "wait4",
+      "waited_child_observation_error": null,
+      "budget": {
+        "rss_bytes": 17179869184,
+        "wall_seconds": 1800
+      }
+    },
+    {
+      "name": "train-current-backbone",
+      "outcome": "success",
+      "exit_code": 0,
+      "observed_wall_ns": 16586278056,
+      "child_cpu_ns": 22223391000,
+      "waited_child_peak_rss_bytes": 1151950848,
+      "waited_child_reaped": true,
+      "owned_child_reap_resolved": true,
+      "cleanup_method": "wait4",
+      "waited_child_observation_error": null,
+      "budget": {
+        "rss_bytes": 17179869184,
+        "wall_seconds": 1800
+      }
+    },
+    {
+      "name": "train-fresh-budget-matched-lora",
+      "outcome": "success",
+      "exit_code": 0,
+      "observed_wall_ns": 61183771165,
+      "child_cpu_ns": 79837063000,
+      "waited_child_peak_rss_bytes": 3078934528,
+      "waited_child_reaped": true,
+      "owned_child_reap_resolved": true,
+      "cleanup_method": "wait4",
+      "waited_child_observation_error": null,
+      "budget": {
+        "rss_bytes": 17179869184,
+        "wall_seconds": 1800
+      }
+    },
+    {
+      "name": "train-budget-matched-full-tune",
+      "outcome": "success",
+      "exit_code": 0,
+      "observed_wall_ns": 75702283660,
+      "child_cpu_ns": 112604110000,
+      "waited_child_peak_rss_bytes": 6148440064,
+      "waited_child_reaped": true,
+      "owned_child_reap_resolved": true,
+      "cleanup_method": "wait4",
+      "waited_child_observation_error": null,
+      "budget": {
+        "rss_bytes": 17179869184,
+        "wall_seconds": 1800
+      }
+    },
+    {
+      "name": "train-randomized-rank-matched-lora",
+      "outcome": "success",
+      "exit_code": 0,
+      "observed_wall_ns": 17609522857,
+      "child_cpu_ns": 22945363000,
+      "waited_child_peak_rss_bytes": 1152929792,
+      "waited_child_reaped": true,
+      "owned_child_reap_resolved": true,
+      "cleanup_method": "wait4",
+      "waited_child_observation_error": null,
+      "budget": {
+        "rss_bytes": 17179869184,
+        "wall_seconds": 1800
+      }
+    },
+    {
+      "name": "evaluate-candidate",
+      "outcome": "success",
+      "exit_code": 0,
+      "observed_wall_ns": 26161974993,
+      "child_cpu_ns": 60515906000,
+      "waited_child_peak_rss_bytes": 1151512576,
+      "waited_child_reaped": true,
+      "owned_child_reap_resolved": true,
+      "cleanup_method": "wait4",
+      "waited_child_observation_error": null,
+      "budget": {
+        "rss_bytes": 8589934592,
+        "wall_seconds": 600
+      }
+    },
+    {
+      "name": "evaluate-current-backbone",
+      "outcome": "success",
+      "exit_code": 0,
+      "observed_wall_ns": 25456211156,
+      "child_cpu_ns": 60012088000,
+      "waited_child_peak_rss_bytes": 1151950848,
+      "waited_child_reaped": true,
+      "owned_child_reap_resolved": true,
+      "cleanup_method": "wait4",
+      "waited_child_observation_error": null,
+      "budget": {
+        "rss_bytes": 8589934592,
+        "wall_seconds": 600
+      }
+    },
+    {
+      "name": "evaluate-fresh-budget-matched-lora",
+      "outcome": "success",
+      "exit_code": 0,
+      "observed_wall_ns": 25989927456,
+      "child_cpu_ns": 59927525000,
+      "waited_child_peak_rss_bytes": 1152741376,
+      "waited_child_reaped": true,
+      "owned_child_reap_resolved": true,
+      "cleanup_method": "wait4",
+      "waited_child_observation_error": null,
+      "budget": {
+        "rss_bytes": 8589934592,
+        "wall_seconds": 600
+      }
+    },
+    {
+      "name": "evaluate-budget-matched-full-tune",
+      "outcome": "success",
+      "exit_code": 0,
+      "observed_wall_ns": 28003942720,
+      "child_cpu_ns": 61097781000,
+      "waited_child_peak_rss_bytes": 1539289088,
+      "waited_child_reaped": true,
+      "owned_child_reap_resolved": true,
+      "cleanup_method": "wait4",
+      "waited_child_observation_error": null,
+      "budget": {
+        "rss_bytes": 8589934592,
+        "wall_seconds": 600
+      }
+    },
+    {
+      "name": "evaluate-randomized-rank-matched-lora",
+      "outcome": "success",
+      "exit_code": 0,
+      "observed_wall_ns": 26207253471,
+      "child_cpu_ns": 61366688000,
+      "waited_child_peak_rss_bytes": 1153015808,
+      "waited_child_reaped": true,
+      "owned_child_reap_resolved": true,
+      "cleanup_method": "wait4",
+      "waited_child_observation_error": null,
+      "budget": {
+        "rss_bytes": 8589934592,
+        "wall_seconds": 600
+      }
+    }
+  ],
+  "source_commit": "ef2a6958a6f3d8fdfaea25fbc58fb1ecd188134c",
+  "source_tree": "abbc28203d6affb92dea676bdc0a3d50c21dc24c",
+  "raw_archive_sha256": "c0f1a77a8c02a9b9a55fecddf572f5377445c98deaf46aec745c3ab4002180ad",
+  "source_unchanged": true,
+  "evidence_boundary": {
+    "runtime": "actual upstream-pinned SmolLM2-135M public smoke model, CPU strict-v1, 4 threads, 10 training steps",
+    "engineer_input": "declared public smoke fixtures; no unseen-data prerequisite or claim",
+    "scope": "Existing Chain experiment CLI and original per-child supervisors; not a Hepta Session or funded U execution",
+    "product_installation": false,
+    "three_round_closed": false,
+    "network_transfer_integrated_with_loader": false,
+    "original_product_terminal_deadline_seconds": 8,
+    "experiment_budgets_do_not_replace_product_deadline": true,
+    "raw_materials": "Retained local raw archive; its SHA256 above fixes all phase receipts and logs. This compact projection supplies no external trust/selection authority."
+  },
+  "original_assessment_schema": "llm-runtime-actual-pilot-assessment-v1"
+}

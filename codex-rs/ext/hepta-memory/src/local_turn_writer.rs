@@ -1173,7 +1173,12 @@ mod tests {
     }
 
     async fn prepared() -> (TempDir, CognitiveStore, QualificationTurnWriterInput) {
-        let temp = TempDir::new().expect("temp");
+        let temp = TempDir::new_in(
+            tempfile::env::temp_dir()
+                .canonicalize()
+                .expect("canonical temporary parent"),
+        )
+        .expect("temp");
         let fleet_root = temp.path().join("fleet");
         fs::create_dir_all(&fleet_root).expect("fleet root");
         let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet");

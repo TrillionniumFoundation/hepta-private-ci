@@ -454,6 +454,10 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), MatrixdControlError> {
         Err(_) if !socket_path.exists() => return Ok(()),
         Err(error) => return Err(error.into()),
     }
+    // Windows can report ConnectionRefused for an absent AF_UNIX path too.
+    if !tokio::fs::try_exists(socket_path).await? {
+        return Ok(());
+    }
     if codex_uds::is_stale_socket_path(socket_path).await? {
         tokio::fs::remove_file(socket_path).await?;
         Ok(())
@@ -551,6 +555,20 @@ pub enum MatrixdControlError {
     Json(#[from] serde_json::Error),
     #[error(transparent)]
     Protocol(#[from] codex_hepta_matrix_protocol::MatrixProtocolError),
+}
+
+#[cfg(test)]
+fn control_test_directory(prefix: &str) -> std::io::Result<tempfile::TempDir> {
+    // Keep Darwin's short socket path fixture while using the platform temp
+    // directory on Windows, where an absolute /tmp directory does not exist.
+    // Windows' canonical temp parent is longer: reserve room for the actual
+    // fleet/run/identity socket suffix, retaining tempfile's random component.
+    let prefix = if cfg!(windows) { "m" } else { prefix };
+    #[cfg(unix)]
+    let root = std::path::PathBuf::from("/tmp");
+    #[cfg(not(unix))]
+    let root = std::env::temp_dir();
+    tempfile::Builder::new().prefix(prefix).tempdir_in(root)
 }
 
 #[cfg(test)]
@@ -907,9 +925,7 @@ mod tests {
         // The product fleet root deliberately leaves Darwin `sun_path`
         // headroom. The SSD test harness uses a much deeper TMPDIR, so put
         // this socket-binding fixture under the canonical short temp root.
-        let temp = tempfile::Builder::new()
-            .prefix("hmx-control-")
-            .tempdir_in("/tmp")?;
+        let temp = control_test_directory("hmx-control-")?;
         let fake = Arc::new(FakeTransport::default());
         let (state, connections) = state(&temp, fake).await?;
         connections.set_agentd_connected(/*connected*/ false);

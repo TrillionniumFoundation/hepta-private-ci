@@ -391,7 +391,12 @@ mod tests {
         LocalCompactExecutor,
         CompactCheckpoint,
     ) {
-        let temp = TempDir::new().expect("temp");
+        let temp = TempDir::new_in(
+            tempfile::env::temp_dir()
+                .canonicalize()
+                .expect("canonical temporary parent"),
+        )
+        .expect("temp");
         let store = opened_store(&temp).await;
         let current_fence = fence("h14-fence");
         let checkpoint = checkpoint(current_fence.clone());

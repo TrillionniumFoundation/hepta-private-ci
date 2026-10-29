@@ -1,0 +1,297 @@
+{
+  "schema": "cold-release-audit-input-pins-v1",
+  "sealed_utc": "2026-10-26T10:28:18.591197+00:00",
+  "source_scope": {
+    "controlled_native_I09": {
+      "chain": {
+        "head": "4c8c2ee70d8aba1fc959900741e89335ddcd71f8",
+        "tree": "1cd27084a7fef9e4d6e4984a5780cf4c3951e72c",
+        "status": ""
+      },
+      "hepta": {
+        "head": "8d25c5d71f7401a383b4c80046c8b26811abe394",
+        "tree": "7d1aa7abb787610b03cd8a319a3f905f33acb2ea",
+        "status": ""
+      }
+    },
+    "Hepta_source_only_current_review": {
+      "head": "71a8850fb30e57c77ff58dc08cb6cc78f53ad1c8",
+      "tree": "37cec9fd1966249cf8dec2e869d4f737795609c6",
+      "ordered_parents": [
+        "727f1f25c68385e7b8d50223c11593ba4a6477f6"
+      ]
+    },
+    "Chain_runtime_source_local": {
+      "head": "ec0acdff5717b8f584b26f30f1162bd9bf1cc888",
+      "tree": "49de9450a7738b15f3dc63b808f957ce49804df2",
+      "basis": "retained clean-source admission and exact local file hashes; later53fb review verifies its seven-path delta has no model/loader runtime source changes"
+    },
+    "Chain_new_CI_requirements_source": {
+      "head": "53fb654b532ed8e737e0dea635a31dce3b73b3cc",
+      "tree": "d82ba0c7bbaea04200f11d38f6e9c4dccac81f78",
+      "source_only": true
+    },
+    "original_LAN_profile": "lan72h-630f871-20261025-setup3; separate original eight-material transport profile, not an I09 cold-runtime owner"
+  },
+  "pins": [
+    {
+      "path": "work/ci-follow/cold-release-role-cap-local-independent-review-20261026-001/report.json",
+      "bytes": 16237,
+      "sha256": "fa48083b044d68455346b4d8f372bb135a6dad9f30a27ce2021a17a5bf40621e",
+      "type": "regular"
+    },
+    {
+      "path": "outputs/runtime-release-readiness-2026-10-25.json",
+      "bytes": 8538,
+      "sha256": "65f7b475e8e79b9eac7d943d78d497b4921c7e61898d4ed8d5ac7b4407945f40",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/smollm-runtime-declared-inventory-rog-20261025-001/attempt1.stdout.json",
+      "bytes": 5809392,
+      "sha256": "e1aa612fbef8db0ca32cff576eaacfda373aac4a7cd94c9ea54c07baeee7451c",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/smollm-runtime-declared-inventory-independent-readback-20261025-001/independent-summary.json",
+      "bytes": 44776,
+      "sha256": "63e898cf0226b995af71539bc72904f3c188ea7ee4ef943d61bdea4b09da1bd3",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/smollm-runtime-record-content-rog-20261025-001/attempt1.stdout.json",
+      "bytes": 9242613,
+      "sha256": "d451d66deee0867772a7347527eefa2beae4f23c4fbdb9df088525e0cead432a",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/smollm-runtime-record-content-independent-review-20261025-001/independent-receipt.json",
+      "bytes": 4411,
+      "sha256": "7371ab69800ce241878c3ed4e9bb0e450106e0e19f4785086acc01446bb2d1ee",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/smollm-runtime-record-content-independent-review-20261025-001/runtime-capacity-interface-addendum.json",
+      "bytes": 2046,
+      "sha256": "50603284ca6ffdd2f005b7fb759b5dfd76a36bb334d6e9bc0bcc9b3aaa4c88d3",
+      "type": "regular"
+    },
+    {
+      "path": "work/pn3-persistent-repair-feasibility-review-20261025/review.json",
+      "bytes": 18812,
+      "sha256": "c2f54668694d7d631bc14d5c0cb29928c1b09e47c23911c182a0654cb94557a8",
+      "type": "regular"
+    },
+    {
+      "path": "work/read-only-lan-filesystem-capability-20261025/receipt.json",
+      "bytes": 7677,
+      "sha256": "4a3acf6297d3d4330bb60b2adb40dcfcaa924d04835276319336bea8cfcae1e1",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/lan72h-setup3-terminal-root-observation-20261026-001/failure-observed.json",
+      "bytes": 1675,
+      "sha256": "053ecfdc26169349158033e8a8009fd7de655cad8e16ef1c2033b059d4b37688",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/lan72h-component-driver-20261025/review-v5/plan-approved-setup3.json",
+      "bytes": 11870,
+      "sha256": "5678a9c4fee8faf2a680bf408bddf2b5d87e9b783cb220cffe3b90d502d0e001",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/lan72h-component-driver-20261025/review-v5/node.py",
+      "bytes": 13283,
+      "sha256": "7975114d5888d9acdd975c1fc9dde63d32c782d3511e7f494beac38a75b19baa",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/lan72h-component-driver-20261025/review-v5/stage.py",
+      "bytes": 4262,
+      "sha256": "d1a34ba6a7a00f0c839c513e8f1be899fd2c014c5003ed11d13edbdd8d978b63",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/lan-cell-pilot-preparation-20261025T161151Z/source/trillionnium/crates/trnm-data-availability/src/cell/cache_budget.rs",
+      "bytes": 16301,
+      "sha256": "a8f06ff894cc69a770a062728d6437fc1c1f50b4d695c48c5d39d3455813564a",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/lan-cell-pilot-preparation-20261025T161151Z/source/trillionnium/crates/trnm-data-availability/src/bin/trnm-cell.rs",
+      "bytes": 18295,
+      "sha256": "8cc3736e43ce8506d75d22424fbedb851739fc0d99bde49a7e8d8b8e08c02bad",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/Hepta71a-initial-model-read-owner-independent-source-review-20261026-001/independent-receipt.json",
+      "bytes": 7265,
+      "sha256": "ec3cd27c4edcf0c635c6e75cbb5e9d3f3e6ba6e5837e9f4bfd81355b2edd0fbe",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/rog-model-I09-I10-53fb727-independent-readonly-20261026-001/independent-receipt.json",
+      "bytes": 6519,
+      "sha256": "60ac1f7c394d1c3307380bd86941f19745a7f527ea809afb972685d726566f53",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/rog-model-I09-I10-53fb727-independent-readonly-20261026-001/reviewed-fixed-source-text/1-after.txt",
+      "bytes": 4678,
+      "sha256": "178b2fe89a7bf58f2d127b195d82e4fa9b5c19d93cb3526d8789edf3df901017",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/rog-model-I09-I10-53fb727-independent-readonly-20261026-001/reviewed-fixed-source-text/0-after.txt",
+      "bytes": 6554,
+      "sha256": "88b2ecf08c655544e55eef26221e0e5400900105b5b65584b6151a94d43d5b36",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/pn1-ec0-public-component-source-admission-20261026-001/clean-source-admission.json",
+      "bytes": 2130,
+      "sha256": "62ffb397f52b4d4194506b928d25cbd11209be9f0e1e8bb54e6c6661dff886d3",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/pn1-public-component-source-SSH-prefetch-20261026-001/ownedsource/scripts/llm_runtime_pilot.py",
+      "bytes": 112715,
+      "sha256": "65ccc6454befd96fa5ce1f5bdde2c56cb6cbb741cf495b8d24a758039f99f755",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/pn1-public-component-source-SSH-prefetch-20261026-001/ownedsource/scripts/llm_neural_read_worker.py",
+      "bytes": 10834,
+      "sha256": "791fbe67ae7d2b2e0551e5f9f6fd77797ed9f8c210e7ca47f9acb6ac02895769",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/pn1-public-component-source-SSH-prefetch-20261026-001/ownedsource/scripts/llm_inherited_runtime.py",
+      "bytes": 16249,
+      "sha256": "1c356c4e8e9a114ac7b6348cac4bed9a6fc72d53ce71ce00139c3deed8733596",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/pn1-public-component-source-SSH-prefetch-20261026-001/ownedsource/scripts/llm_cell_release.py",
+      "bytes": 9401,
+      "sha256": "ad9d9a7124c04d87bf039d704b6f16ef34b4fde45c578a05e211719aa372c028",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/pn1-public-component-source-SSH-prefetch-20261026-001/ownedsource/scripts/run_llm_cell_native_handoff.py",
+      "bytes": 19555,
+      "sha256": "f4b2d84469d0bf8a7fb1e9c137043bf9831dc3247d9e7bc8c1eebcdf6a42ce03",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/pn1-public-component-source-SSH-prefetch-20261026-001/ownedsource/config/pon/model-family-smollm2-135m-v1.json",
+      "bytes": 5293,
+      "sha256": "0837bbfb31f3f2b9a8731545c9f742aee1ebd32daed392a936a3ec9719537e52",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/pn1-public-component-source-SSH-prefetch-20261026-001/ownedsource/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md",
+      "bytes": 343793,
+      "sha256": "28a366a428ab4868615f78d7eacce3728184b723cb763b415208e21e5e008098",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/cold-release-runtime-and-Cell-loader-readonly-audit-20261026-001/fixed-small-original-data/smollm_neural_profile.rs.txt",
+      "bytes": 5291,
+      "sha256": "0ba2502b2a712f17ed10079ae6472e6f6880e4e2e080b1921b5cd37ff30b07c2",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/cold-release-runtime-and-Cell-loader-readonly-audit-20261026-001/fixed-small-original-data/smollm_cell_wire.rs.txt",
+      "bytes": 4588,
+      "sha256": "b150714eea7a3b8516d45888191173f47321a62227e3d11941aaba74df0cd2f8",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/cold-release-runtime-and-Cell-loader-readonly-audit-20261026-001/fixed-small-original-data/11-actual-run-full-raw-manifest.json",
+      "bytes": 31056,
+      "sha256": "061d6689e9e175de08a32e0bafda509f99ba289524d2f0176cffffda4572a76f",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/cold-release-runtime-and-Cell-loader-readonly-audit-20261026-001/fixed-small-original-data/12-actual-I09-result-and-limits.json",
+      "bytes": 11906,
+      "sha256": "30373976724d2eb7ee5ef2e878989c3cee10fec44c8d3cd9dd8330837a428f75",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/cold-release-runtime-and-Cell-loader-readonly-audit-20261026-001/fixed-small-original-data/13-execution-material-manifest.json",
+      "bytes": 7485,
+      "sha256": "c9b2c3b02303c09a962c718e35d22c0f953f46632093607f08e60ebd8a1721a0",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/cold-release-runtime-and-Cell-loader-readonly-audit-20261026-001/fixed-small-original-data/14-actual-execution-final-freeze.json",
+      "bytes": 2630,
+      "sha256": "f31aa8bb1d944b3061f2e29a792951ef4986d84c4004f4bb46a07a40491fd3ae",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/cold-release-runtime-and-Cell-loader-readonly-audit-20261026-001/fixed-source-and-I09-original-read.stdout.json",
+      "bytes": 68521,
+      "sha256": "367a10322da83c451fb5c0e6905a6c42c1e268bd0ff389557c1dc4c930010709",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/cold-release-runtime-and-Cell-loader-readonly-audit-20261026-001/fixed-source-and-I09-original-read-receipt.json",
+      "bytes": 540,
+      "sha256": "8bd76b56a9f609e334d0563b799cf9dd585fdb16bd4f690cd6b2fb95179c46f7",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/Hepta71a-initial-model-read-owner-independent-source-review-20261026-001/source-data/smollm_cell_material.rs.context.txt",
+      "bytes": 11692,
+      "sha256": "d48c496954adf27e1ba00569cbd184dbbd6112013d69d3663c7fdbe77151999a",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/Hepta71a-initial-model-read-owner-independent-source-review-20261026-001/source-data/smollm_neural_driver.rs.after.txt",
+      "bytes": 15579,
+      "sha256": "c8f1f163ff492a3121be108c280290802b7b7e10ea7830a7e04db17e2e5a91ff",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/Hepta71a-initial-model-read-owner-independent-source-review-20261026-001/source-data/smollm_neural_read.rs.after.txt",
+      "bytes": 27909,
+      "sha256": "4d1ed3e9d996724db13d00b3df47a35e1293feb4b77a8835684d946b1dfbc2f1",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/Hepta71a-initial-model-read-owner-independent-source-review-20261026-001/source-data/smollm_neural_session.rs.context.txt",
+      "bytes": 12449,
+      "sha256": "ce36279387e1137ea88a92a7ad03916c9b6173f713e5e4261d2dd4b354e0f360",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/Hepta71a-initial-model-read-owner-independent-source-review-20261026-001/source-data/smollm_neural_session_owner.rs.context.txt",
+      "bytes": 16385,
+      "sha256": "bd04ce33f173072814c9aa38bda63b7ff950025275821d6135879064088599dc",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/Hepta71a-initial-model-read-owner-independent-source-review-20261026-001/source-data/smollm_initial_host.rs.after.txt",
+      "bytes": 12902,
+      "sha256": "aec96357158ac2d023100481cd9a238a43c595bbff8fe76b64644d254ca4bc6b",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/Hepta71a-initial-model-read-owner-independent-source-review-20261026-001/source-data/selected_initial_smollm.rs.context.txt",
+      "bytes": 4506,
+      "sha256": "3fbfa91e9b664edc0fde77201e7a61a4caf577ccebe4313087e1457d29ee087a",
+      "type": "regular"
+    },
+    {
+      "path": "work/ci-follow/Hepta71a-initial-model-read-owner-independent-source-review-20261026-001/source-data/final_use_authorizer.rs.context.txt",
+      "bytes": 10261,
+      "sha256": "0e0e483ef6b992787c6fe1c140c302b9225c1b8896ffead17bf174a593d243ed",
+      "type": "regular"
+    }
+  ],
+  "no_large_original_wheel_library_weight_or_DB_bytes_delivered_or_rehashed_here": true
+}

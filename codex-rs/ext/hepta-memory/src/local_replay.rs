@@ -601,7 +601,12 @@ mod tests {
         CompactCheckpoint,
         CompactFence,
     ) {
-        let temp = TempDir::new().expect("temp");
+        let temp = TempDir::new_in(
+            tempfile::env::temp_dir()
+                .canonicalize()
+                .expect("canonical temporary parent"),
+        )
+        .expect("temp");
         let store = opened_store(&temp).await;
         let current_fence = fence("h15-fence");
         let checkpoint = checkpoint(current_fence.clone());
@@ -861,7 +866,12 @@ mod tests {
     #[tokio::test]
     async fn expired_active_bound_lease_rejects_h14_and_h16_without_writes() {
         let (temp, turn_store, lease, executor, checkpoint, _current_fence) = {
-            let temp = TempDir::new().expect("temp");
+            let temp = TempDir::new_in(
+                tempfile::env::temp_dir()
+                    .canonicalize()
+                    .expect("canonical temporary parent"),
+            )
+            .expect("temp");
             let store = opened_store(&temp).await;
             let current_fence = fence("h15-expiry");
             let checkpoint = checkpoint(current_fence.clone());

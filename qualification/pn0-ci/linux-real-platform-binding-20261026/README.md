@@ -1,0 +1,16 @@
+# PN0 Linux matrix target binding — source/routing repair, not musl qualification
+
+The original GNU/musl matrix names and cache keys did not select a target. Keyed Linux CI also appended `--config=ci-linux` after caller flags, so its GNU RBE default could override an earlier explicit platform.
+
+The existing two Linux rows now pass `//:local_linux` for GNU and the pinned `@rules_rs//rs/platforms:x86_64-unknown-linux-musl` platform for musl. The latter carries both LLVM and rules_rs libc constraints; selecting only LLVM's musl platform can leave Rust's default glibc selector active. The shared Linux wrapper repeats only explicitly supplied target platform flags after the CI config. Host/exec selection remains the original GNU route, including host-loaded proc macros and V8 generators. Windows/macOS routing, all four rows, original target rosters, features, filters, actions, credentials/cache policy, concurrency and every time/resource limit remain unchanged.
+
+The real shell and Python wrappers were exercised through the existing recording Bazel executable, without launching Bazel/compiler/network/native code. Two new routing tests cover GNU/musl, joined/split platform forms and keyed/keyless paths. On original production source, all nine old tests passed, but the new keyed test produced four real failed subcases: the platform preceded `ci-linux`. After the exact two-file source correction, the identical 11-test suite passed (3.225 s, zero skips). Every original test method body remained byte-identical. Original RED logs and corrected logs remain separate and complete. These are argument-routing controls, not a compiler/toolchain or throughput measurement.
+
+Actual GNU/musl toolchain resolution, std/sysroot/C++/V8 ABI, remote-execution compatibility, musl ELF and execution, test/compatibility inventory and the original 60-minute results remain **OPEN**. Existing Wine targets are declared GNU-only: GNU keeps them; musl naming cannot count them as musl coverage. The existing release-binaries mapping still uses the incomplete LLVM musl platform and remains a separate unqualified release-path issue; this change does not silently declare release closure or remove any lane/test.
+
+The pinned actual repository/toolchain source and parser checks establish a reviewable route only. No prebuilt artifact substitution, security ignore, original assertion, runner increase, target deletion, deadline extension or old timeout relabel occurred. Original Windows native twenty groups and all pair steps are untouched. `task_complete=false`, `merge_ready=false`, **NO_GO**.
+
+`members.json` pins the historical source/primary evidence, original source-generator helper errors, exact proposal, new controls and RED/PASS logs. Every archive member was read back. This ordinary archive is not a fresh prepared package, native or resource qualification.
+
+
+Storage note: the original artifacts listed in the PN0 source-history index remain in immutable source ancestor `9d88e3e5acdd65272581b32735af8a08cfb65dbc`, with exact path/blob/SHA256/length. See `qualification/pn0-ci/SOURCE_HISTORY_EVIDENCE.md` from the repository root before replaying the original manifests. These manifests and failures retain their original pinned9d scope; this is not current-head qualification.

@@ -7,9 +7,19 @@ print_failed_bazel_action_summary=0
 remote_download_toplevel=0
 windows_msvc_host_platform=0
 windows_cross_compile=0
+configured_query=0
+local_default_config=0
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --configured-query)
+      configured_query=1
+      shift
+      ;;
+    --local-default-config)
+      local_default_config=1
+      shift
+      ;;
     --print-failed-test-logs)
       print_failed_bazel_test_logs=1
       shift
@@ -69,7 +79,8 @@ run_bazel() (
     return
   fi
 
-  "$(dirname "${BASH_SOURCE[0]}")/run_bazel_with_buildbuddy.py" "$@"
+  # Bazel labels are opaque arguments even when RUNNER_OS selects another config.
+  MSYS2_ARG_CONV_EXCL='*' "$(dirname "${BASH_SOURCE[0]}")/run_bazel_with_buildbuddy.py" "$@"
 )
 
 run_bazel_with_startup_args() {
@@ -94,6 +105,14 @@ case "${RUNNER_OS:-}" in
     fi
     ;;
 esac
+
+if [[ $local_default_config -eq 1 ]]; then
+  if [[ $configured_query -ne 1 || -n "${RUNNER_OS:-}" || $windows_cross_compile -eq 1 || $windows_msvc_host_platform -eq 1 ]]; then
+    echo "Local default config requires a configured query outside CI." >&2
+    exit 1
+  fi
+  ci_config=""
+fi
 
 print_bazel_test_log_tails() {
   local console_log="$1"
@@ -274,7 +293,34 @@ if [[ ${#bazel_args[@]} -eq 0 || ${#bazel_targets[@]} -eq 0 ]]; then
   exit 1
 fi
 
+if [[ $configured_query -eq 1 && "${bazel_args[0]}" != "cquery" ]]; then
+  echo "Configured query output mode requires cquery." >&2
+  exit 1
+fi
+
 post_config_bazel_args=()
+if [[ "${RUNNER_OS:-}" == "Linux" ]]; then
+  # ci-linux supplies a GNU default target. Repeat the caller's explicit
+  # platform after that config so keyed and keyless Linux builds agree.
+  # Leave host/exec platforms and all other caller/config ordering unchanged.
+  copy_next_platform=0
+  for arg in "${bazel_args[@]}"; do
+    if [[ $copy_next_platform -eq 1 ]]; then
+      post_config_bazel_args+=("$arg")
+      copy_next_platform=0
+      continue
+    fi
+    case "$arg" in
+      --platforms)
+        post_config_bazel_args+=("$arg")
+        copy_next_platform=1
+        ;;
+      --platforms=*)
+        post_config_bazel_args+=("$arg")
+        ;;
+    esac
+  done
+fi
 if [[ "${RUNNER_OS:-}" == "Windows" && $windows_msvc_host_platform -eq 1 ]]; then
   has_host_platform_override=0
   for arg in "${bazel_args[@]}"; do
@@ -416,16 +462,42 @@ bazel_run_args=(
   "${bazel_args[@]}"
 )
 if [[ -n "${BUILDBUDDY_API_KEY:-}" ]]; then
-  echo "BuildBuddy API key is available; using remote Bazel configuration."
+  configuration_message="BuildBuddy API key is available; using remote Bazel configuration."
 else
-  echo "BuildBuddy API key is not available; using local Bazel configuration."
+  configuration_message="BuildBuddy API key is not available; using local Bazel configuration."
+fi
+# Keep machine query output separate from wrapper and Bazel diagnostics.
+if [[ $configured_query -eq 1 ]]; then
+  printf '%s\n' "$configuration_message" >&2
+else
+  printf '%s\n' "$configuration_message"
 fi
 # Preserve cross intent until the shared wrapper can choose a coherent local
 # GNU LLVM fallback. Do not replace it with an MSVC host in this shell layer.
-bazel_run_args+=("--config=${ci_config}")
+if [[ -n "$ci_config" ]]; then
+  bazel_run_args+=("--config=${ci_config}")
+fi
 if (( ${#post_config_bazel_args[@]} > 0 )); then
   bazel_run_args+=("${post_config_bazel_args[@]}")
 fi
+# cquery must finish successfully before its label records are observable. Do
+# not merge stderr into these records or emit a prefix from a failed query.
+if [[ $configured_query -eq 1 ]]; then
+  set +e
+  run_bazel_with_startup_args \
+    --noexperimental_remote_repo_contents_cache \
+    "${bazel_run_args[@]}" \
+    -- \
+    "${bazel_targets[@]}" > "$bazel_console_log"
+  bazel_status=$?
+  set -e
+  if [[ $bazel_status -ne 0 ]]; then
+    exit "$bazel_status"
+  fi
+  cat "$bazel_console_log"
+  exit 0
+fi
+
 set +e
 # Work around Bazel 9 remote repo contents cache / overlay materialization
 # failures seen in CI (for example "is not a symlink" or permission errors

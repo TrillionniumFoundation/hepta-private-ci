@@ -433,7 +433,7 @@ artifact/dataset lineage and unlearning
 
 The observing store or adapter, not the policy being evaluated, records effect and outcome facts. A policy cannot label its own action successful. Memory persistence is not long-term learning.
 
-The first closed loop must include no-intervention baselines, single-factor and pairwise ablations, timing ablations, model-version isolation, support-aware OPE and future-time validation.
+The causal/longitudinal learning claim must include no-intervention baselines, single-factor and pairwise ablations, timing ablations, model-version isolation, support-aware OPE and future-time validation. The controlled engineering loop may use declared public or previously seen tasks and does not require an unseen future dataset.
 
 ### Shared experience and isolated multi-Agent workspaces
 
@@ -630,6 +630,978 @@ Implement `EMB-0` through `EMB-3`: shared sensor/body/reflex/actuation types, co
 
 Implement `ASM-0` through `ASM-4` against an owner-authorized, non-privileged Debian/POSIX fixture. Progress from read-only discovery to manifest/contract synthesis, credential-free sandboxing, reversible migration and explicit host enrollment. Cross-host or autonomous propagation is prohibited.
 
+### Audit remediation within the existing roadmap
+
+The following P0/P1/P2 labels are **audit severity**, not replacements for the
+P0–P8 delivery phases above or new work packages. Apply these exit conditions
+inside the named existing packages and their Development/Activation/Evidence
+DAGs. Source presence, a documentation pass and a controlled experiment remain
+separate from product composition, qualification and beneficial model evolution.
+
+| Severity / existing work                                                                                                                                                                                                           | Accountable modules and owners                                                                                                                                                | Required interface change and exit condition                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P0 — real neural upgrade loop; `NEU-1-LOCAL-MODEL-BAKEOFF`, `LRN-1-DURABLE-EPISODE-LEDGER`, `LRN-2-CAUSAL-EVALUATION`, `ART-1-LEARNING-ARTIFACT-REGISTRY`, `ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK`, `INT-2-AGENTD-CODEX-COMPOSITION` | `learning.*` / `neuron.runtime`: learning-platform; `intelligence.control`: intelligence-platform; `runtime.agentd`: agent-runtime; inference-platform owns loading/execution | Extend the existing manifest/evaluation/runtime-receipt adapters with registered versions for exact installed parent, full release closure and next-task readback. A named ordinary product caller completes three rounds on one real pretrained neural model; each round starts from the actually installed parent. Evaluate on named reproducible tasks, perform cross-node fetch/load, local selection and next-task use. Public or previously seen tasks are valid for engineering tests; unseen data and independent data custody are not prerequisites. No-update is valid; three beneficial releases require three separately measured, installed improvements on the declared tasks. See [Lane E sequence](lane-e/END_TO_END_LEARNING_SEQUENCE.md#8-real-neural-model-upgrade-through-the-ordinary-product-path). |
+| P0 — PoN security qualification; `TASKFLOW-1-EXECUTION-BOUNDARY`, `P0.8D-VERTICAL-SLICE`, `P0.9-EXTERNAL-GATES`                                                                                                                    | automation-platform / agent-runtime compose; qualification-plane consumes independent Chain evidence                                                                          | Keep `ProviderEffectIntent` and `AutomationEffectChainObservation` as bounded settlement evidence. Chain PN1 must independently close work correctness, effective-cost/hardness and honest-service resistance. A correct transcript or local CI pass cannot substitute for the latter two decisions; an unqualified work profile cannot enter public deployment. No observation issues FinalUse or model-install authority.                                                                                                                                                                                                                                                                                                                                                                                               |
+| P1 — bounded state/resource and reorg recovery; `P0.8C-RESOURCE-BUDGETS`, `TASKFLOW-1-EXECUTION-BOUNDARY`, `ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK`                                                                                   | runtime-control, automation-platform, learning-platform; Chain owns authenticated state                                                                                       | Chain's existing node owns I03–I05 parent/witness execution and retention; Hepta consumes bounded I08 task observations under their explicit verifier/trust contract, without becoming another state executor or replaying full history per task. Declare admission, pending obligations, fetch, CPU/memory/disk and reconciliation limits. PN2 qualifies migration/reorg recovery; Hepta rejects stale/oversized input and preserves Unknown effects without duplicate dispatch.                                                                                                                                                                                                                                                                                                                                         |
+| P1 — P2P release availability; `ART-1-LEARNING-ARTIFACT-REGISTRY`, `ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK`, `INFER-V4-T4`, `INFER-V4-T5`                                                                                             | learning-platform owns artifact facts; inference-platform owns loader/device use; Chain data-availability owner supplies bytes/retention evidence                             | Versioned manifest adapter binds base, tokenizer, runtime, quantization, tensor inventory, routing and all Cell dependencies. Fetch is verified before safe loader entry. Test interruption, poisoned peers, missing dependency, incompatible tensor and replica loss/repair; content addressing alone proves neither availability nor quality. See [artifact integration](modules/learning.artifacts/TECHNICAL.md#p2p-release-closure-and-loader-integration-target).                                                                                                                                                                                                                                                                                                                                                    |
+| P1 — independent evidence and withdrawal; `LRN-2-CAUSAL-EVALUATION`, `LONG-1-TEMPORAL-HOLDOUT`, `LONG-2-RETENTION-FORGETTING`, `LONG-3-UNLEARNING-NON-RESURRECTION`                                                                | learning-platform with qualification-plane independent evaluation; artifact/ledger writers remain unchanged                                                                   | Pre-register objective, metrics, future windows, evaluator/controller separation and negative controls; retain failed/plateau/no-update rounds. Forged benchmark numbers and hash-valid poisoned weights must not qualify a release. Withdrawal/reorg/restore tests cannot resurrect a revoked artifact or repeat a committed external effect.                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| P2 — throughput after the above boundaries; `P0.8C-RESOURCE-BUDGETS`, `INFER-V4-T4`, `INFER-V4-T5`                                                                                                                                 | runtime-control and inference-platform; agent-runtime owns composition overhead                                                                                               | Measure complete task latency and throughput including fetch, hash, decoding, device transfer and Chain observation. Optimize immutable-base sharing, compatible batching, prefetch and bounded caches; preserve revocation freshness and generation fences. Compare p50/p95/p99, sustained rate, error rate and all resource ceilings under the same hardware/network/load; report cold and warm paths separately.                                                                                                                                                                                                                                                                                                                                                                                                       |
+
+PN0's dependency baseline is owned by `security-authority` with the affected
+package owners. Resolve advisories against the candidate's actual Cargo, pnpm
+and Python locks and selected features; default-branch alerts alone do not
+identify the candidate or prove runtime reachability. Apply compatible patches
+first, then separately validate API-family upgrades. Cargo changes must refresh
+the existing Bazel lock in the same change. Keep unresolved advisories and
+failed checks visible; an exception or an unused feature is not a repaired lock.
+
+The first npm security slice pins Handlebars 4.7.10 and proxy-addr 2.0.8 through
+the existing root resolution policy. Three tests in the existing TypeScript SDK
+suite exercise AST rejection, prototype-constructor denial and mapped-IPv6 proxy
+trust, with ordinary-template and correctly scoped-subnet controls. The old
+locked packages fail all three; the official patched packages pass. These are
+SDK development dependencies through ts-jest and the MCP SDK/Express graph;
+this is not evidence of a deployed exploit or closure of the remaining Cargo,
+npm, Python, build or exact-source CI gates. Complete PN0 before treating later
+PoN or model experiments as a qualified integration baseline.
+
+Cross-repository qualification follows the Chain plan's single
+[PN0–PN6 convergence sequence](https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/ef2a6958a6f3d8fdfaea25fbc58fb1ecd188134c/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md#6-one-executable-convergence-sequence):
+PN0 exact-source/security baseline → PN1 work security and PN2 bounded state →
+PN3 real-model closure → PN4 five-budget/effect-liability qualification →
+PN5 independent-operator WAN/discovery/availability → PN6 governed migration and
+activation. The link fixes this paired contract revision; execution still resolves
+both actual repository commits, contract versions and evidence anew. Offline,
+controlled PN3 work may run alongside PN1/PN2 but does not waive them or qualify
+a public network. PN5 requires at least three independent operators and 72 hours
+of WAN operation with discovery and replica repair, rather than three processes
+controlled by one administrator. Existing package predecessors remain mandatory;
+this ordering adds cross-repository evidence dependencies without a second DAG,
+optimizer, durable journal or authority issuer. Parameter, topology, executable
+and consensus upgrades retain their separate admission and release boundaries.
+
+The 2026-10-25 audit refines the same sequence as follows. These are required
+implementation and acceptance slices of the packages above; no row declares a
+gate passed or supplies an additional roadmap, authority issuer or state owner.
+
+| Existing phase | Hepta deliverable / dependency                                                                                                                                                           | Exit evidence required from the paired source                                                                                                                                                                                                                                                                                                                  |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| PN0            | Fix the repository pair, contract versions, enabled features, model/runtime identities and required security/CI receipts.                                                                | Reproduce the source and prospective merge results; retain unresolved advisories, failures and skipped/queued jobs. Matching trees alone do not close the baseline.                                                                                                                                                                                            |
+| PN1            | Consume Chain's separate work-correctness, effective-cost and honest-service decisions. Keep local model/effect authority independent of chainwork.                                      | Chain tests structured inputs, preprocessing/amortization, hardware advantage, cheap invalid proofs and continuously changing work identities, including at least 4097 actual W1 identities and service after its 4096-entry priority table fills. Retain the original campaign unchanged; a fixed-packet replay cannot replace the capacity/churn supplement. |
+| PN2            | Bound observation, closure-fetch, task admission, retained Unknown effects and recovery in the existing owners.                                                                          | Oversize/stale inputs reject before mutation; restart/reorg preserves original identities. Measure current-row work and history-growth cost separately; bound hot-path observations through verified/current snapshots and retain required full audits at recovery.                                                                                            |
+| PN3            | Compose I06–I10 through the ordinary caller and actual neural backend in [Lane E](lane-e/END_TO_END_LEARNING_SEQUENCE.md#8-real-neural-model-upgrade-through-the-ordinary-product-path). | Three mechanism cycles each prove the actual installed parent, authorized training/evaluation and ordinary next-task readback. No-update retains and runs that parent. Report successful cross-node installation separately; three beneficial releases require three measured improvements.                                                                    |
+| PN4            | Qualify complete-unit training, evaluation, fetch/load, process retirement and effect reconciliation under the declared five-budget contract.                                            | Bind the original operation to limits, actual consumption, terminal owner and funded obligation. A local reservation or process exit is not a Chain funding lock or whole-unit resource return. Long-lived target capacity must be qualified beyond the 16 permanent fixture entries.                                                                          |
+| PN5            | Exercise I08–I10 with discovery, independent custodians, replica loss/repair and ordinary callers over WAN.                                                                              | At least three independently administered failure domains and at least 72 hours; include partitions, churn, restart, eclipse attempts and provider loss. Same-administrator hosts, extra keys or loopback processes do not satisfy independence.                                                                                                               |
+| PN6            | Apply governed migration and separately authorized activation after predecessor evidence closes.                                                                                         | Revalidate current withdrawal, compatibility, authority and rollback at the actual installed generation. Chain settlement never supplies local CURRENT/FinalUse or deployment authority.                                                                                                                                                                       |
+
+Before PN4/PN5 execution, freeze numerical workload, hardware/network, cache,
+resource, deadline and error-rate limits in the existing qualification record.
+Report unique confirmed Chain goodput, accepted installed releases per hour,
+verified Cell bytes per second, inference tokens per second and ordinary-task
+latency separately. Cold and warm paths include discovery, hashing, decode,
+device transfer and observation. Recompute p50/p95/p99 from retained per-attempt
+raw traces with all-attempt counts and explicit failure/censoring denominators.
+Completed-sample quantiles are conditional on completion and cannot establish
+all-attempt p99 when failures/timeouts are censored; never invent their durations.
+Summary fields or a short successful burst cannot establish sustained tail latency. Optimizations
+must compare the same workload and limits with overload/fault cases retained.
+
+PN0's current native pair pins Chain source
+`630f871293e48588e0a1ceae7ceb64973d3ec31d`, tree
+`c32644ac308156d1be4a05bcf83bb40705765c3c`, and preserves main base
+`9fedf7ecbbe07177069c030592b4e03dcffebb81`. The source-head lane executes
+that source; the base-merge lane uses published qualification object
+`a8950fcb2b0f7a0b33e9a313b6fd2785a88a7b3b`, ordered parents
+`[9fedf7ec, 630f8712]`, with the unchanged canonical merge-tree checks.
+The separate actual #328 integration preview is
+`32622f287d96bcb4ba18e827c42bd57c0d34349d`, ordered parents
+`[57c1ed54, 630f8712]`. Both trees reproduce the source tree, but the main
+qualification object is not that PR preview or a performed merge. Publishing the qualification object did not merge #328 or activate a runtime. All 65 pair
+steps, including 57 executable run bodies, native commands, minimum-test counts
+and four Linux lanes are preserved;
+their current head/merge execution receipts and Windows sixteen-group results
+must still finish before merge eligibility can be claimed.
+
+The preceding source `a6209f91d6cb8211e7d193279c920ddeb5a37a2f`
+used tree `6a7c4d581cdeb91d82fba96a0026ce2f526dce23`, main qualification
+`d8bc149e8a6ee339a29cda4da5219bb38d1c2524` and actual integration preview
+`a1ddc0f7fc77e168b52bb92b52aaa215bf796363`; these observations remain historical
+and do not qualify the current source. The current source retains the raw-U
+retirement implementation and both local and 4060 original-model outcomes in
+the existing paired evidence, including the unresolved first-query failure.
+
+The previous native pair pinned Chain source
+`ef2a6958a6f3d8fdfaea25fbc58fb1ecd188134c`, tree
+`abbc28203d6affb92dea676bdc0a3d50c21dc24c`, against unchanged default main
+`9fedf7ecbbe07177069c030592b4e03dcffebb81`. Its source-head lane tests that source;
+its base-merge lane pins the published main qualification object
+`81d9d829228c8c23ab52ead7ab4f35800891ae85`, with ordered parents `[9fedf7ec, ef2a6958]`
+and the original exact merge-tree checks. The separate original-integration base
+`57c1ed545d067937cbd7aaa7570d5f22123265e6` now has actual GitHub PR preview
+`9147b4bbe3721c655d33e16ecd41dc36ba8bb57f`, ordered parents `[57c1ed54, ef2a6958]`.
+Both prospective trees equal the source tree; their different parent identities
+and required executions remain distinct. The qualification branch
+`fix/chain-retirement-preparation-main-pair-20261024` publishes the main object;
+it is not an executed GitHub PR merge. On 2026-10-25 the fourteen baseline
+execution jobs passed on source and actual original-integration preview;
+three baseline aggregation jobs and all thirteen priority jobs remained queued in
+[40120511787](https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/40120511787)
+and [40120511792](https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/40120511792).
+Publication, a matching tree or a pin refresh supplies no passing execution.
+
+The source preserves all concurrent `8e0f7adc` fixes, the TCL4 cache,
+fresh host child preparation and private C-to-A launch composition. Its
+retirement-preparation slice `01c65582` passes 159 controls with zero skips,
+strict workspace Clippy, exact Cargo graph and source-integrity checks. The
+actual original concurrent native driver reports zero ThreadSanitizer warnings;
+the earlier eighteen warnings remain failures of source `9cf5de77`. The nine
+tested native/test/workflow/inventory/Rust objects remain exact in this pair.
+Original C retains its A wait slot after unknown syscall results; original O retains C,
+and one fixed C/A owner root survives loss of all temporary caller references.
+The root is retained even after a timely receipt, pending actual retirement.
+The preborn native worker is preparation only; its activation/retirement
+successor is unpublished and is not supplied by this paired source.
+This supplies no funded entry, real fresh-cgroup execution or whole-U return.
+Scope-only preparation still requires the original caller to retain its cap.
+The controlled empty-child observation on source `03b67a95` remains partial,
+with the original conservative overall outcome Unknown. Neither it nor these
+controls qualify the later combined source as a successful native model run.
+The original eight-second terminal deadline and retained assertions stay fixed.
+Historical campaign measurements remain tied to their recorded source; no
+current campaign, work-hardness or public qualification is inferred. Both native
+pair lanes, CodeQL, full Windows and original integration CI remain required.
+
+This PN2/PN3 pair now uses fresh TCL4/schema4, rejecting TCL1/TCL2/TCL3 without
+an old-writer fallback.
+It requires explicit shared `--cache-max-bytes`, `--cache-max-chunks`,
+`--cache-max-manifests` and `--cache-max-db-bytes` on all six Cell writers,
+discovery fetch and the existing handoff script. Stored limits must match on reopen;
+repeated fetches and failed downloads
+retain their committed occupancy, while exact content retries do not charge twice.
+Serving reads the existing cache without creating or repairing it. These limits
+cover live payload, manifest wire bytes, 32-byte content keys and catalog rows.
+Each writer reapplies and reads back the immutable 4096-byte-page main-image cap.
+One persistent OS writer lock serializes complete zero-WAL checkpoint admission
+and a spill-free FULL transaction, sharing the original five-second contention
+budget. A pinned reader refuses the next write before mutation. For main cap C,
+the locked SQLite 3.46.0 protocol derives WAL length
+`32 + (C/4096 + 16) * 4120` and separate SHM length
+`32768 * (1 + ceil((C/4096 + 16)/4096))`, including FULL-sector padding.
+Cold catalog audit precedes checkpoint; automatic and close-time checkpoints
+are disabled, so a coherent cold copy must retain committed WAL too. The original
+TCL3 WAL-over-main-cap counterexample remains test-only with unchanged assertions.
+Allocated blocks, backing reservation, initialization rollback journal,
+TEMP/memory/output, global ledger roots and funded I05 duties remain open;
+arbitrary SQL/custom VFS/namespace replacement are outside this cache-owner
+protocol. Source/preview qualification and cross-repository pins must advance
+together before merge; the old published pair is not relabeled as TCL4 evidence.
+Disposable cache deletion or
+quota refusal cannot retire M12 paid retention, release an AuthBus reservation,
+authorize installation or qualify the three real-model upgrade rounds.
+
+Inference-platform's existing neural Session now reserves one of two fixed
+custodians before model-process birth. Each custodian keeps the original Child
+and directory handle in a rooted slot; Drop only requests cleanup on the same
+generation. Thread creation failure, cleanup panic, I/O failure or incomplete
+terminal receipts cannot discard that owner or recycle its slot. Foreground
+access refuses a busy slot without waiting behind cleanup. All load/ready reads,
+load return and durable load settlement recheck the same original startup
+deadline/cancellation before delivering the port. The original complete signed
+FinalUse claim, response framing and successful supervisor/worker receipt
+requirements remain intact. The two-package suite passes 361 cases, including
+the actual CLI signed-call/replay control; the twelve inherited opt-in cases
+remain separately required when their environments are supplied. These custody
+and deadline controls grant no real-model, full containment, funding or resource
+return qualification. Actual model tests remain tied to their explicit pinned
+inputs and current source, without extending the two-second read, 120-second
+startup or eight-second terminal bounds.
+
+PN4's source-to-destination interface carries the original verified request and
+one-shot FinalUse token in a sealed `ProductionVerifiedDispatch`. Physical targets
+must finish asynchronous preparation before consuming it at the synchronous
+worker-entry boundary; the compatibility default still validates delivery only.
+Before irreversible admission, a target checks that the sealed request came
+from its configured authority instance. This non-consuming identity comparison
+does not validate expiry or revocation; the final entry check remains required.
+The ordinary CPU destination now binds a fixed program, arguments and working
+directory to the complete intent, commits dedupe and one of sixteen permanent
+lifetime entries in the same destination transaction, and retains the actual
+Child at the final synchronous spawn boundary. Unsigned delivery and a different
+authority instance cannot allocate an entry. Signed source-route controls cover
+expiry/revocation across the actual SQLite wait, lost acknowledgement, lost Child
+ownership, and nonzero exit without redispatch. Only the original Child's timely
+zero exit plus durable terminal storage establishes an ordinary exit fact; the
+eight-second bound applies to first exit observation. This source composition
+does not qualify legacy adapters, pool/process cold recovery, outer resource
+release or model acceptance, and does not change the original retained-charge
+failure. The existing three rounds of real model upgrades and the five-budget
+qualification remain open.
+
+The next PN4 slice registers a bounded `ControlledAggregateBinding` on that same
+sealed dispatcher destination seam. Its canonical payload fixes the original
+operation/lease, declared reservation and settlement issuer, source/scope/policy,
+planned budget and whole-unit scope. Child-only scope, a sixteen-GiB model plan
+inside A8, and any extension of U16/A8 or the eight-second observer bound refuse
+registration. Memory accepts positive controller shares with A+C at most U16,
+including A8/C128 MiB headroom; CPU 400% and tasks 256 remain exact allocations.
+The original declaration-only constructor still supplies no funding or native
+authority. Its same-plan successor `LedgerFundedControlledAggregate::reserve`
+uses the existing AuthBus owner, current signed time, current policy and issuer,
+and the existing whole-unit quota. The fresh
+`hepta.authbus.controlled-aggregate-ledger.v1` effect binds the immutable plan and
+admission inputs before AuthBus derives its reservation ID; the final registered
+payload and signed FinalUse binding then include that actual ID. Bao V3, its
+ledger and all existing signatures remain unchanged.
+`ControlledAggregateTarget::ledger_funded_unavailable` checks the original sealed
+authority, complete registration and exact source request binding, rereads the
+original reservation and issuer, and retains dispatch liability in that same
+ledger. It still returns `Indeterminate`: funding does not create a native
+whole-unit owner, physical entry, terminal receipt, refund or activation.
+Seven real SQLite/signed-source test groups cover restart, current trust,
+foreign authority/binding, exhausted quota and invalid grants. The combined
+five-package Linux suite passes 354 tests with zero skipped; these are not
+Windows or resource-return receipts. The existing Agentd grant-provider port now
+has `SignedFinalUseGrantCourier`: one protected immutable grant file, capped at
+16 KiB, exact five-field binding, current issuer/epoch/revocation and original
+one-shot nonce checks. Its non-consuming readiness check creates no capability;
+the original claim, frontier CAS and final entry checks remain mandatory.
+The real signer CLI feeds the exact-cut recovered Agentd writer and original
+ordinary Child target in a controlled test, including replay refusal and
+Indeterminate-to-Committed reconciliation. Its SourceLease is an explicitly
+signed fixture; production source verification and the native whole-unit lifetime
+owner must still compose before settlement or a real-model round can qualify.
+The ordinary Child route, all its assertions and
+the original eight-second bound remain unchanged.
+
+The same controlled path exposed fresh SQLite sidecars created with mode 0644.
+`cognitive.store` now creates the new database exclusively with mode 0600 before
+opening SQLite, without adopting or chmodding existing objects. Its consuming
+`close(self)` retains the original owner guard until the pool finishes closing;
+default Drop and unconverted callers do not gain that asynchronous guarantee.
+The original recovery equality now exercises a genuine prior writer lease.
+Controlled pair fixtures implement the bounded Health/Drain protocol and retain
+all complete executable hashes, process counts, assertions and the 60-second
+test cutoff. A dedicated first-party fixture omits only its link-time debug
+information. These are controlled fixtures, not real Agentd/model qualification.
+
+At published owner-native source `0cb5b74d`, the combined ten-package ordinary
+Linux suite ran 1,042 passing cases; its 17 inherited explicit qualifications
+remain separately accounted. The
+original four-case durability qualification first produced two passes and two
+60-second watchdog failures. Its two thousand-operation cases now use the
+existing serialized, ten-minute durability-capacity budget, with their complete
+workloads, child bounds and assertions retained. The earlier 1,000 child-process
+kill/reopen/replay study passed in 582.764 seconds; the SQLite study twice timed
+out at 600.030 seconds. The original failures are retained. The same-read journal
+reuse and atomic rehydration change `df1b0c7f` keeps every fresh database read,
+full chain/metadata check and original write-owner lease check, while avoiding
+replay of an already verified in-memory snapshot and an extra read before the
+same write transaction. Five row texts are borrowed from their actual SQL rows.
+Its 279 routine cases and all four original qualifications pass: SQLite 1,000
+operations in 554.851 seconds, 1,000 real child-process cycles in 467.420 seconds,
+and both original crash probes. This closes that finite controlled timeout; it
+does not establish sustained throughput, eight-second runtime acceptance,
+Windows execution, global I05 bounds or real model qualification. The separate
+4,096-event count boundary is repaired by `0ca2b9dd`: the loader reads at most
+4,097 rows and still refuses oversize state; the original write transaction
+rejects a new 4,097th event before its first insert. Full valid cold reopen and
+no-event replay remain legal; refused writes preserve database/WAL bytes, and a
+valid oversized cold database remains intact and rejected. All three new real
+SQLite controls and 282 ordinary memory cases pass. The combined owner, atomic
+rehydration and capacity source `cd30140a` passes 1,045 ordinary cases; its 17
+inherited qualifications remain separately accounted. Per-row byte costs,
+global history/retention and physical filesystem bounds remain separate exits.
+
+Within the same PN0/PN4 boundary, AuthBus owns current settlement-issuer trust.
+`AuthBusAuthorityStore::settle` retains its registration parameter as an exact
+consistency hint, then reads the signed issuer/epoch from the durable registry
+inside its existing `BEGIN IMMEDIATE` before any first settlement quota mutation.
+Signature verification uses that current registered key and lifecycle state;
+a caller-created key, invented epoch or pre-revocation snapshot cannot supply
+trust. Bao's prior registry lookup does not replace this transaction check.
+Five real SQLite controls cover missing registration, key/epoch substitution,
+snapshot revocation and a second owner's revocation commit blocking settlement.
+Existing retained terminal receipts still support exact historical reads without
+a new quota mutation. This closes that local issuer-validation gap; it does not
+qualify PN4 aggregate funding, outer resource return or real-model acceptance.
+
+The earlier Chain `6724ed1` campaign did not observe genuine paid-credit
+depletion. On Chain `873d5cb`, all three baseline phases and all three late-product
+phases pass their original criteria. Each of the three from-zero phases now
+observes genuine depletion, but only after its third honest round has ended;
+none has a complete depleted meter sample inside any honest round. That required
+overlap is their sole failed phase predicate. All original honest confirmations,
+receiver/client state comparisons, actor completion and accounting observations
+remain successful. These are separate source-bound results: the older failure is
+not the current failure, and the three current from-zero trials remain failed.
+These PN0 repairs preserve both sets of observations, the original fixed round
+schedule and every assertion; no inferred charge, reduced budget or replacement
+workload qualifies the original campaign.
+
+PN0's first compatible dependency patch candidate updates OpenSSL to 0.10.81,
+cmov to 0.5.4, gix-packetline to 0.21.5, gix-sec to 0.13.3 and quinn-proto to
+0.11.15, with their required compatible helpers, through the existing Cargo and
+Bazel lock generators. Rust 1.96, manifests, source feature selections, registry
+checks and advisory policies stay fixed. Cargo's compatible Windows dependency
+edge re-selection still requires target-specific CI. This slice does not close
+the remaining vulnerable dependencies or the full PN0 security baseline; native
+consumer checks and the original security gates remain required.
+
+PN0's V8 canary build jobs outside Intel macOS use the Rust release build's bounded
+90-minute CI budget. In run 39880109276, both x86_64 macOS and both aarch64 GNU
+Linux variants reached GitHub's 30-minute job limit while V8 compilation was
+still progressing without a BuildBuddy key. The full build matrix, artifact
+checks and Cargo smoke steps remain required. This infrastructure budget does
+not change runtime or model resource limits; successful exact-source CI is
+still needed to establish that the cold builds complete.
+
+The existing Intel macOS V8 matrix runner uses a bounded 150-minute cold-build job
+budget. On source `2a098b36`, Intel macOS jobs
+[120336831957](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39911485825/job/120336831957)
+and [120336832064](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39911485825/job/120336832064)
+both reached GitHub's confirmed 90-minute limit in the original Bazel build step.
+The sandbox build had completed 11,870 of 14,054 actions, including only 84 actions
+in its last 918 seconds; the release build had completed 12,232, including 166
+in its last 900 seconds. Both were still compiling generated C++ and had not
+reached staging or Cargo smoke linking. The original cancellations remain failed
+completion evidence. Action counts do not establish remaining build time, so
+150 minutes is a bounded CI budget, not evidence that either build will finish.
+The twelve matrix entries, every original build, stage, artifact and smoke
+command, the Windows source-build budget, per-test limits, runtime budgets and
+the eight-second controlled-test deadline remain unchanged. Successful current
+source and merge-candidate hosted CI must still prove completion.
+
+PN0's separate Windows V8 source-build job uses the same bounded 90-minute
+CI budget. On source `2a098b36`, jobs
+[120336831595](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39911485825/job/120336831595)
+and [120336831651](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39911485825/job/120336831651)
+both reached the original 30-minute limit during upstream V8 compilation.
+Neither reached artifact staging or Cargo smoke linking. Their cancellations
+remain failed completion evidence. Both original targets, source and artifact
+checks, sandbox feature and smoke linking remain required on the successor;
+this CI build budget changes no per-test or kernel/model runtime deadline.
+
+On paired source `3d64db09`, Windows source jobs 120740945588 and 120740945600
+also exhausted 90 minutes after cold cache misses. Their last Cargo messages name
+V8 150.4.0, but hide its build-script output; the actual long subphase is unknown.
+The existing job now emits verbose Cargo/GN diagnostics and bounded before/after
+sccache/configuration receipts, without changing its source, target, release,
+sandbox, stage, smoke or time-budget requirements. Cancelled jobs have no final
+receipt and remain incomplete. Intel Mac Bazel job 120746373851 also exhausted
+90 minutes with only 22 of 593 tests reported. Its keyless wrapper now retains
+`ci-macos`' endpoint-free CI base and local test strategy; credentialed BuildBuddy
+selection remains separate. These changes do not establish completion or a cold
+build speedup; exact-source hosted head/merge results remain required.
+
+Intel Mac V8 jobs 120740945666 and 120740945758 completed Bazel staging but
+failed the original Cargo smoke with E0514: its dependencies used Rust 1.96,
+while V8's packaged `rust-toolchain.toml` selected 1.91 for its build script.
+The smoke's existing direct Cargo 1.96 binary invocation now also sets
+`RUSTUP_TOOLCHAIN=1.96.0` for all child compiler and rustdoc proxies. Its fresh
+target directory, targets, sandbox features, staged inputs and assertions remain
+unchanged. Local shell controls do not prove native Mac linking or runtime;
+both original smoke variants still require exact-source hosted completion.
+
+Both macOS Bazel test jobs use that same bounded 90-minute CI budget;
+the Linux targets retain 60 minutes. Job 120216507102 reached its confirmed
+60-minute limit with 63 of 588 tests completed and build actions still running.
+Its original test selection, per-test limits, failure handling and cache rules
+remain unchanged. The cancelled run is incomplete evidence, and completion on
+the successor still requires exact-source hosted CI. ARM macOS job
+120216507167 also exhausted 60 minutes with only 168 of 588 tests complete.
+Its five failing test targets are independent blockers, with their original
+assertions retained; the additional job time does not resolve those failures.
+
+The PN0 successor addresses those 23 reported method failures: six artifact
+reader, eleven memory, two Bao HTTPS, two state recovery and two Seatbelt
+projection cases. It canonicalizes already-created trusted fixture roots and
+stabilizes direct metadata carveout ordering without removing paths, permissions,
+symlink rejection or any original assertion. Linux runs under a temporary-parent
+alias retain the original red results, then pass the learning package's 108 tests
+(with its one existing ignored test), the state/protocol packages' 516 tests
+(with no skips), and the thirteen selected memory and two Bao tests. Four
+additional protocol fixture failures discovered by that alias run were separately
+reproduced against the original production source and repaired without changing
+their assertions. These results bind each component's tested source; no combined
+native rerun or macOS success is claimed. Exact-source hosted CI remains required,
+and Windows' explicit Unix-only durable owner/FinalUse backends remain separate
+blockers. The job-time increase does not close them.
+
+The bounded Windows directory-handle candidate opens actual write-capable handles
+with backup semantics for the Agentd test ledger/witness and Bao lease-parent
+flushes. Five Agentd retrieval-learning tests and ten Bao lease-lifecycle tests
+pass on Linux against each component's tested source; that does not compile or
+execute the Windows branches. Both file and directory sync errors still propagate,
+and the existing negative assertions remain intact. Six focused core/queue tests
+also pass on Linux with preserved tracing context, deterministic test timers and
+private, quoted hook fixtures. Two guardian tests retain actual early outcomes and
+bounded persistence warnings on failure; both pass on Linux with their original
+assertions and five-second request observation intact. These diagnostics do not
+resolve the original Windows failures. Exact-source Windows native CI is pending,
+including the separate unsupported private-owner backend boundary;
+these handle repairs do not qualify owner SID/DACL checks or FinalUse durability.
+
+The full native Windows ARM tests for the preserved source
+`797daea26ccb53202e9c6b84d9bc5fcc2d77ef04` and actual GitHub original-base
+preview `18e9703ec14b6b22f13bae5aecb16795b6218d10` remain red:
+[source run](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40076783217),
+[preview run](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40076829654).
+Across the seven executed shard lanes, 31,469 case executions passed, 614 failed
+and 61 timed out; these are lane executions, not distinct tests. The fourth
+source shard never ran project tests because its archive download failed.
+The 150 additional inventory entries absent from the complete preview's executed
+set remain unexplained. Neither missing group is accepted as passing or waived.
+Private-owner construction, parent delete-child access, effective anonymous
+impersonation level, directory volume reopening and other original failures
+remain separate PN0 blockers; the original eight-second terminal deadline and
+all assertions stay required. The later isolated source `291ae1b5` also has four
+completed Windows ARM shards in
+[run 40096855579](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40096855579):
+18,386 executions, 18,000 passed, 354 failed and 32 timed out. Those terminal
+counts exclude transient first-attempt failures. That source predates the new
+explicit store backends. Its failures include the restriction BOOLEAN readback,
+anonymous-token diagnostics, ordinary private-owner guards, parent deletion,
+Matrix socket paths and V8 feature identity. The BOOLEAN query now decodes only
+its one reported byte; other token DWORD fields retain exact four-byte checks.
+Anonymous-token queries execute without diagnostic I/O until the original
+identity has been restored, retaining all original error and sticky assertions.
+The V8 Cargo package now enables its existing sandbox feature by default,
+matching the checksum-verified sandbox artifact already selected by the full CI
+and the existing Bazel target. The original linked-library identity assertion
+is unchanged. All six Linux V8 tests pass against the original verified artifact
+pair; this is not a Windows native result.
+The published owner-native candidate is `0cb5b74d` with actual original-base
+preview `c9d1b1dd`; the ordered preview parents are `[c38e7727, 0cb5b74d]` and
+the computed and GitHub trees match. Its
+[original full native workflow](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40111835033)
+and [source/preview Windows diagnostics](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40111843149)
+are separate from the actual two ARM diagnostic lanes. Both source and preview
+ran all 37 library cases: 14 passed and 23 failed; all four primary-owner and all
+five original security cases passed. The four original synchronous-stage cases,
+four principal cases and four volume cases also passed in each lane. Three
+FinalUse owners, three Registry owners and three real owner-lock cases still
+fail with `WrongOwner`; the owner-lock child entry alone is not that protocol.
+The nine sandbox groups did not execute because of compilation failures
+(inner-module `PathBuf` import and serialization of a nonserializable runtime
+filesystem policy). These are NOT_RUN, not passing or assertion failures.
+The import is repaired and request binding uses the original fallible raw-policy
+codec, retaining all filesystem fields and network identity. Its two real-code
+portable codec controls and all 25 existing Linux sandbox cases pass. A complete
+local MSVC check was attempted and stopped in the AWS-LC native build because
+this host lacks the Windows C toolchain; it is not native acceptance. Fresh
+Windows compilation/execution and x64 source/preview lanes remain required.
+Owner diagnostics add only bounded test-time ancestor/SID observations; no
+trusted subject, production guard, original assertion or eight-second cutoff is
+relaxed.
+
+The same PN0 CI repair runs all 819 existing Hepta Python regressions. The first
+full run exposed five wiring failures: multiline YAML dependency formatting,
+an obsolete path-filter owner, and inconsistent Clippy argument expectations.
+The actual dependency list is now checked independent of line wrapping, with
+exact membership and duplicate rejection; automatic trigger coverage is checked
+against `blocking-ci` and its real scope selector. The original strict
+`-D warnings` behavior is restored in the dependency executor and all command
+expectations agree. No test, lane, assertion intent or terminal deadline is
+removed. All 819 pass in the repaired source. These include command stand-ins
+and source-wiring controls, not 819 native product or model executions.
+
+The same PN0 signature-portability slice now uses one bounded in-process verifier
+in `hepta-operator-acceptance::sshsig` for operator and G5 read-only trust
+verification. It checks SSHSIG V1 framing, exact pinned raw Ed25519 key and
+principal, exact nonempty namespace, SHA-256/SHA-512 and strict Ed25519 signatures.
+The policy digest, revocation checks, signature schema and authority flags are
+unchanged. It removes the production Unix-descriptor and executable-path
+dependency. Test fixtures still require real OpenSSH: Unix uses the original OS
+path; Windows obtains the system directory from the OS, without a PATH or
+SystemRoot fallback. All 25 package tests pass on Linux, including OpenSSH
+interoperability, altered message/principal/domain/key, every binary packet byte
+mutation, every truncation and trailing data. MSVC checking is not native
+acceptance. Windows execution, the existing unsupported private-owner guard and
+all original signed-consumer controls remain required; this verifier alone grants
+no acceptance or promotion authority. The two Matrix control fixtures use the
+platform temporary directory on Windows and retain the short Unix socket root;
+all 40 Matrixd tests pass on Linux. That fixture repair does not establish Windows
+peer identity or durable owner support.
+
+Within this existing PN0/P0 Windows storage item, the small
+`utils/windows-private-state` utility supplies OS mechanisms without importing the
+sandbox, C++/V8, serialization or protocol stack. Its current C1 mechanisms and C2a
+read-only `CurrentUser::capture_effective` / `validate_owner_descriptor` observe
+the same held object against the captured effective TokenUser. C2a requires the
+current owner and a protected, non-NULL DACL containing exactly one ordinary,
+non-inherited full-control allow ACE for that owner; SYSTEM and Administrators
+are not implicit exceptions. A descriptor observation is not a private-owner
+capability. Cross-target compilation is not native execution. The existing workflow
+now requires all 37 utility library controls by exact name, retaining the five
+original descriptor cases, plus four process-lock, four principal-continuity and
+four local-volume controls. Its original nine required
+receipts retain the original three deletion tests, four mechanism probes and
+eight ACL controls. A tenth mandatory receipt exercises a `cfg(test)`-only
+all-access-restriction token candidate, with explicit read/execute and write
+capabilities against the same broad parent-delete counterexample. This is a
+primitive experiment: native results remain pending, existing failed regressions
+are retained, and candidate success grants no production sandbox admission.
+Owner support and power-loss qualification remain false.
+
+The V3 SID declaration registry uses the fresh `cap_sid.v3.json` namespace,
+256 total registered roots, 4096-byte root keys, 184-byte SID strings and a 4 MiB
+record bound. It retains one original locked checkpoint containing the exact
+bounded record bytes and one create-only fixed stage; data-only rollback,
+MAX+1, missing or damaged state, legacy objects and an uncertain stage refuse
+without identity eviction, truncation, migration or automatic cleanup. This is
+bounded declaration persistence, not a trusted namespace or external rollback
+anchor; joint checkpoint/data rollback, power-loss qualification and C2b remain
+open. Windows persistence controls still require native execution.
+
+`FilesystemCapabilityPlan` now declares at most 64 read and 64 write roots,
+binds their SIDs and generation to the current registry, and separates network,
+desktop and child-object roles. Public construction and deserialization only
+produce declarations. The actual registry producer and read-only validator
+reject stale generations, role reassignment and request/root mismatches; they
+produce no prepared ACL or qualified token. Plan version 2 and setup/runner version 7 carry the parent
+producer's concrete root selection and bounded original profile/TEMP/TMP context.
+The runner compares resolved permissions, cwd, home and explicit context against
+the same marker declaration; it does not enumerate the sandbox user's ambient
+profile. Root context is wire data and cannot certify restrictive ACLs. Every framed message rejects other
+versions. Setup uses fresh v7 state paths, preserves occupied markers, and caps
+its encoded argument at 16 KiB and complete command line below 32767 UTF-16
+units. Provision-only or different-plan markers cannot confirm filesystem
+declarations; refresh refuses plan changes rather than replacing history. Early
+marker/users readers enforce the same 4 MiB bound. Login retry preserves existing
+credentials and markers and refuses automatic history reset. These
+are declaration/interface checks. Setup now prepares real bounded read ACLs and
+retains same-handle exact readback, with a distinct restrictive SID for each read
+root. A shared global read SID cannot widen earlier tokens when a later plan
+registers another root. The lifetime registry keeps the same 256-root capacity;
+identities are not evicted or recycled. Prepared read ACLs alone do not admit a
+full token, neutralize parent DELETE_CHILD rights or complete setup. Actual
+old-token/new-disjoint-root, full token and setup native regressions remain open.
+
+The original token owner now also exposes an explicitly
+`UnqualifiedFullRestrictionToken` OS mechanism. It requires a real unfiltered
+primary token, reads bounded input/output token state, applies only the supplied
+nonambient restricting SIDs and preserves the base default DACL. Its original
+full-restriction native candidate keeps every filesystem assertion; native
+execution remains required. This does not supply managed credentials, retained
+prepared ACLs, PE/DLL loading, desktop, stdio or containment. Setup's real read
+handles end with its process; a serialized marker cannot replace final readiness
+in the executing owner. All original production launch guards remain closed.
+
+The isolated four-lane Windows diagnostics on published source `394d1c75`
+and actual preview `1dddb018` completed on both x64 and ARM in
+[40117218852](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40117218852).
+All lanes passed the four live-principal, four volume, four held-stage, four
+private-state mechanism, eight ACL and test-only full-restriction controls.
+Each lane still failed 23 of 37 private-state library cases, three original
+FinalUse cases, three Registry cases, three owner-lock cases and both original
+broad-identity/legacy deletion regressions. The parent-anchor diagnostics place
+the owner failures at the initial ancestor with the exact TrustedInstaller SID.
+The successor admits only that exact OS namespace owner/maintenance identity;
+it adds three exact/nearby-SID and mutation controls, and leaves private-child
+user-only ownership unchanged. Fresh source/actual-preview execution remains
+required: this addresses the observed initial cause without claiming all deeper
+ancestors or production sandbox admission will pass. The two deletion failures
+remain independent blockers.
+
+The later source `07731d31` and actual original-base preview `ccff5bed` pass the
+original private-state, FinalUse, Registry, owner-lock and held-RX controls in both
+ARM diagnostic lanes; broad-identity deletion and the guarded legacy route still
+fail. The complete [source workflow](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40177457993)
+and [actual-preview workflow](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40178472384)
+then fail all four ARM test shards. The source executes 18,491 cases: 18,113 pass,
+343 fail and 35 time out. Retained original shard filters are not failed cases.
+The complete failure catalogue includes five native-TLS failures, sixteen shadow
+directory-sync access failures and two terminal-owner fixture directory opens;
+other owner refusals, event waits, terminalization, paths, Matrix, recovery and
+PTY failures remain separately assigned. No common cause is inferred for them.
+
+Within the same PN0 item, the source successor integrates held writable directory
+synchronization with disk/directory/non-reparse identity checks, and typed native
+TLS fallback with explicit certificate/trust/revocation denial. The original
+route, one-replay and deadline gates remain. Its five complete related Linux
+packages pass 632 cases on clean `86853701`; fourteen inherited conditional cases
+are accounted separately, without a new ignore or changed assertion. The actual
+CLI dependency is built on that source before the successful complete run; the
+prior missing-binary failure is retained. Scoped fix, strict Clippy and formatting
+pass. Component MSVC checking is `NOT_NATIVE`. Fresh complete Windows source and
+actual-preview execution, original deletion refusals and the complete qualified
+runner route remain open; process/token prerequisites cannot replace that route.
+The terminal-owner fixture separately requests the Windows directory-open and
+flush access required by the OS, keeping its original owner and all assertions.
+Its full three local cases, including the original history/concurrency profile,
+pass; this still requires the original Windows native target to execute.
+
+The original four x64/ARM source-head/base-merge diagnostic archives are preserved
+unchanged in [the failure manifest](../qualification/windows-delete-boundary/07731d31-original-failures/manifest.json).
+All 64 log hashes and each lane's before/after source identity were verified;
+every lane passed fourteen groups and failed the same broad-identity and legacy
+deletion groups. These are historical failures, never current-source passes.
+
+The same PN0 sandbox item retains seven source-backed blockers below. Security-authority
+coordinates the sandbox package owners; runtime-control owns the PN4 process-owner
+composition. Paths in the first six rows are under
+`codex-rs/windows-sandbox-rs/src/`. The interface contracts below remain admission
+requirements. The bounded mechanisms described after the table implement only
+part of them and do not transfer sandbox ownership to `utils/windows-private-state`.
+
+| Existing responsibility and source blocker                                                                                                                                                                           | Interface correction and dependency                                                                                                                                                                                                                                                                                                                                                         | Native acceptance still required                                                                                                                                                                                                                                                                              |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| PN0 token/roles: `token.rs` uses `WRITE_RESTRICTED` and ambient restricting identities; `cap.rs` now bounds V3 SID declarations; bounded role declarations exist; full token/role admission remains open.            | `FilesystemCapabilityPlan` and the bounded registry declare separate read, write, desktop, child-object and network-route roles; prepared token/ACL admission remains a dependency. `create_full_filesystem_token_from` takes accepted fresh base credentials and prepared ACLs, without write-only restriction or ambient user/logon/Everyone/Users fallback.                              | State numeric limits and reject MAX+1, stale generations and uncertain cleanup without truncation, recycling live authority or history reset. Read back actual restricting SIDs, ordinary user/groups and privileges; flag omission does not cleanse an already restricted base token.                        |
+| PN0 setup/RX: `setup.rs`, `bin/setup_main/win.rs`, `bin/setup_main/win/setup_runtime_bin.rs`, `elevated/ipc_framed.rs` and `bin/command_runner/win.rs` skip or complete independently of restrictive read readiness. | Version-7 setup/runner role payloads, `SpawnRequest`, `SETUP_VERSION` and bounded same-declaration markers are wired; native verification and restrictive RX remain open. `ReadAclSubjects` separates normal identity from each active restrictive RX subject; `PreparedFilesystemAclContext` comes from actual bounded setup/readback, cannot be deserialized or replaced by `ready=true`. | Builtin/sandbox-group RX cannot skip capability RX. Require explicit read/execute on declared runtime/helper roots and bounded same-plan helper completion, not PID/mutex/log presence. Missing, stale or ungrantable loader roots reject or remain unsupported; no blanket drive grants or ambient fallback. |
+| PN0 mutation ACL: `acl.rs` generic-write deny overlaps read/synchronization rights; `token_tests.rs` requires the repaired read.                                                                                     | Add `ensure_filesystem_mutation_deny` for explicit write-data/append/EA/attributes/delete/delete-child rights, excluding generic masks (`FILE_GENERIC_WRITE`/`GENERIC_WRITE`) and shared `SYNCHRONIZE`/`READ_CONTROL` bits; review `WRITE_DAC`/`WRITE_OWNER` separately. Change only an authorized managed subject ACE.                                                                     | Keep original outside broad ACLs, before-repair write, identical after-repair read, both `PermissionDenied` writes and repeated-repair/idempotence assertions. A failed read is not a deletion refusal; add actual DACL/owner mutation controls while preserving old ACL mask controls.                       |
+| PN0 default-object roles: `token.rs::set_default_dacl` grants every capability `GENERIC_ALL`; `elevated/runner_pipe.rs` has a separate parent-owned control channel.                                                 | Start with explicit `PreserveBase`. If real child IPC requires it, separately review a per-session `ChildObjectCapability` policy; read-root and network-route SIDs must never gain generic-all object rights.                                                                                                                                                                              | Inspect actual process/thread and child-created pipe/event/mutex descriptors; execute PowerShell pipelines and cross-session negatives. Preserve parent runner-pipe DACL and peer-PID checks; the child cannot reopen that control pipe.                                                                      |
+| PN0 desktop: `desktop.rs` copies all restricting SIDs into full-access desktop grants.                                                                                                                               | Require a distinct per-session `DesktopCapability` through typed private launch context; do not derive desktop authority from read-root/restricted SID enumeration. Full profiles reject default or unavailable private desktops.                                                                                                                                                           | Two sessions sharing read roots must use their own desktop and refuse the other's window/message writes. Prove real image/GUI initialization; preserve old raw-token readonly/default-desktop and network compatibility controls as separate observations.                                                    |
+| PN0 stdio: `process.rs` has a global inheritable-stdio fallback; `acl.rs::allow_null_device` mutates shared NUL ACLs.                                                                                                | `OwnedChildStdio`/closed-stdio plans duplicate only exact endpoints and always supply an explicit handle list when inheriting. Pass preopened NUL or closed endpoints; retain RAII cleanup and exclude runner/token/Job/store/ancestor handles.                                                                                                                                             | Test open/closed stdin, split/merged output, EOF, backpressure, cancellation and ConPTY. A deliberately inheritable unrelated sentinel and private/control handles must stay inaccessible; no device-wide ACL repair may manufacture success.                                                                 |
+| PN4 controlled containment: `process.rs`, `conpty/mod.rs` and `codex-rs/utils/pty/src/win/job.rs` currently select a breakaway-enabled Job.                                                                          | The controlled route uses `create_without_breakaway`, atomic `PROC_THREAD_ATTRIBUTE_JOB_LIST` assignment and the original retained process owner until terminal reconciliation. Preserve unrelated interactive descendant-lifetime contracts.                                                                                                                                               | Execute breakaway attempts, child/grandchild pipelines and cancellation/process-death cases under the original eight-second terminal bound. Actual PE/DLL/script execution is required; `FILE_EXECUTE` handle access, exit code or PID lookup does not prove launch, containment or resource return.          |
+
+The next implementation slice adds retained library-side bounded root preparation
+in `prepared_filesystem.rs` and the private `create_full_filesystem_token_from`
+mechanism. Preparation grants only the declared root role on an original held
+object, retains query handles and complete descriptors, checks effective access
+with the exact base and output tokens, and permanently refuses changed bindings.
+Read roles receive RX only; write roles exclude parent `FILE_DELETE_CHILD`,
+`WRITE_DAC` and `WRITE_OWNER`. Existing generic or excess role grants are refused.
+The token's original default DACL remains unchanged, all surviving privileges
+are checked, and query/duplication-only source authority is retained to compare
+the same TokenId/ModifiedId. The existing total 128-subject launch bound includes
+the distinct desktop role; an overfull filesystem union is refused, not truncated.
+
+`OwnedChildStdio` now duplicates only exact endpoints and always supplies a handle
+list without changing their original inheritance bits. `DesktopCapability` uses
+a fresh OS-random session role; desktop creation supplies a protected DACL
+atomically and reads it back without repairing occupied names. The private
+`PreparedProcessContext` retains the exact token, private desktop and a
+non-breakaway Job; pipe and ConPTY mechanisms consume that context. Controlled
+Jobs refuse descendant-preservation requests, while the original interactive
+lifetime contract remains. These are mechanisms, not accepted production callers.
+
+Four additional diagnostic groups exercise bounded ACL/full-token operations,
+stdio sentinel exclusion, separate session desktops and controlled versus
+interactive Job flags. All original sixteen groups, exact failing tests, script,
+assertions and deadlines remain. The combined twenty-group receipts still report
+production admission false. Neither bounded root readback nor an AccessCheck
+proves descendant ACLs, PE/DLL initialization, namespace confinement, terminal
+reconciliation or the legacy full-disk-read contract. Do not replace that contract
+with the finite platform defaults, rewrite its fixture, or use these new bounded
+tests to supersede either original red. The existing direct/elevated/runner guards
+remain closed until that complete route passes fresh native execution.
+
+The existing setup/RX dependency also includes the query-only library API
+`observe_filesystem_read_acl` and opaque `HeldFilesystemReadAcl::revalidate`.
+It retains at most 64 non-inheritable query handles, complete bounded owner/DACL
+bytes and identities for every exact root in the original ReadV3 plan. Missing
+root RX, mutation rights, another declared root's role, changed registry/plan or
+changed path binding refuse; the first revalidation failure is permanent for
+that observation. It neither creates ACLs nor replaces the setup-binary-only
+`PreparedFilesystemAclContext`. Fresh managed normal identities, effective
+tokens, descendants and PE/DLL loading remain predecessor requirements for the
+production launch factory. The original Linux sandbox suite passes all 30
+portable controls with zero skips; three new native Windows controls remain
+NOT_RUN locally. The existing four-lane source/actual-preview diagnostics now
+requires those exact three named results as an additional receipt, preserving
+all original fifteen groups, assertions and deadlines. MSVC component compilation
+is not native execution or whole-package qualification.
+
+Collect all twenty source-head/base-merge receipts, including the original sixteen;
+a primitive pass cannot replace an original red. Continue within PN0 in dependency order:
+bounded role plan and versioned setup/runner fields, explicit RX/readiness,
+mutation deny plus full-token/default-object policy, then desktop/stdio/controlled
+Job and real direct/elevated/broker caller/WFP integration. Expose only opaque
+validated library-to-runner inputs. The ordinary legacy test must keep its actual
+spawn call, script, time limits and final tuple; its current guard refusal remains
+a failure until that complete route passes, with no test-only bypass. Sandbox
+and unsupported Windows owner guards stay closed. The independent storage order
+C2a native readback → C2b trusted parent/creation → C3/C4 consumers → C5 is unchanged;
+no token, descriptor or fixture result supplies a `PrivateDirectory`, FinalUse
+backend, registry backend, cold-recovery or resource-release qualification.
+
+Within the same PN0/PN4 item, local source checkpoint `01f2757d` separates the
+four-file opaque prepared process/pipe/ConPTY owner prerequisite from terminal
+observation. It is reviewed source only, not compiled or native qualification.
+The retained six-file terminal candidate still needs the original controlled
+session to own one fixed attempt slot before birth and retain the complete
+original child, Job, token/root/desktop and pipe owners on a failed wait. Pending
+or Unknown occupies that slot and forbids the next birth; no caller/harness
+transfer with this lifetime is wired yet. Keep the same absolute eight seconds,
+actual exit0/7/259 and reduced-rights sticky-refusal assertions. Stop requests,
+Err-drop, a new deadline or late cleanup cannot establish observed exit or
+recycle authority. The original twenty native groups and broad-identity/legacy
+failures remain required; no detached reaper or second registry is introduced.
+
+The same existing item now includes the private query-only root observer in
+`prepared_filesystem_existing.rs` and six controls in
+`prepared_filesystem_readback_tests.rs`. It consumes the same held root, actual
+read-role token and bounded descriptor; it queries existing grants without
+requesting `WRITE_DAC`, creating roots or repairing ACLs. Missing or excessive
+roles, changed identity, inheritance-only grants and uncertain readback refuse.
+This is a finite root proof, not whole-filesystem read, loader admission or
+production launch authority. The three reviewed source stages are integrated
+into the existing local candidate; all six Windows controls and the complete
+Windows package compile remain NOT_RUN. Keep every original native group and
+deletion failure, the eight-second cutoff and the existing resource limits.
+
+The parent startup path now consumes that observer using only the actual
+`CreateProcessWithLogonW` process and its held token. It validates the original
+request/role plan before birth, retains the query context in the original
+managed-process owner, and revalidates it around existing token/liveness
+readback during the pipe handshake. Missing or broad setup grants can refuse
+early; no ACL is repaired. These parent-local handles do not cross IPC or
+establish a child capability, loader or complete-lifetime handoff. The existing
+`into_files` handoff still ends this startup owner. All guards and original
+Windows failures remain; this source step has not been compiled or run natively.
+
+The next source slice repairs terminal facts in the original command runner.
+Both its first wait and its existing post-termination wait now require a
+signalled original process handle and a successful exit-code query on that same
+handle. A failed wait, failed query or unexpected wait result cannot publish an
+`Exit` frame or preserve descendants. Timeout UI code 192 is emitted only after
+that actual root exit is observed; a real signalled exit code 259 remains valid.
+The request timeout conversion and the existing 5000ms termination wait are
+unchanged. Three added native test sources use actual owned children and reduced
+views of their original handles, retaining the eight-second child deadline.
+The four-lane diagnostic explicitly selects the runner binary for those three
+cases. Its separate `result-v3.json` requires the original twenty groups, all
+six query-existing controls and all three terminal controls; the original
+receipts remain intact. These new native controls have not been compiled or
+executed. Security-authority and runtime-control still own the complete
+production handoff: an error return or Job close does not
+retain all owners on Unknown or prove resource return. The fixed prebirth slot,
+parent-death/error custody, loader and original twenty-group/four-lane native
+acceptance remain open, including both original deletion failures. All guards,
+ambient-read behavior and existing assertions stay unchanged.
+
+The following are implementation slices of that same PN0 item, not a second
+roadmap. The read-only volume and live-principal observation APIs below are
+implemented mechanisms. Create-only namespace and protected-directory
+prerequisites are now source implementations; the complete opaque role backend
+and consumer composition in this table still require implementation and native
+qualification.
+
+| Existing slice                       | Module responsibility and interface change                                                                                                                                                                                                                                         | Dependency and acceptance                                                                                                                                                                                                                             |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| C2b: private namespace and creation  | The OS utility owns held-handle local-volume inspection, trusted namespace bootstrap, atomic protected creation, and opaque `PrivateDirectory`, `HeldInput`, `StagedFile`, lock and journal handles. Fleet/Agentd owns obtaining its real home/run parents through that bootstrap. | Follow C2a native readback; qualify local NTFS/device and parent provenance before any owner factory. Require positive and negative native controls below; no consumer activation in a mechanism-only slice.                                          |
+| C3: FinalUse owner                   | `hepta-contracts` consumes the completed opaque backend and passes the exact already-synced stage into snapshot/claims replacement. It retains the only FinalUse journal, lock lifetime, replay checks, external frontier/clock composition and Unknown/fenced state.              | Depends on C2b, including trusted parent admission. Preserve all existing consumer assertions and [FinalUse storage requirements](../codex-rs/hepta-contracts/FINAL_USE.md#durable-schema-and-storage-protocol); no second authority or replay reset. |
+| C4: registry and real runtime caller | `hepta-prompt-registry` consumes lock, bounded mutable payload/journal, input and stage roles. Fleet/Agentd passes qualified home/run guards and converts the actual `prompt-runtime` store as well.                                                                               | Depends on C2b and the existing owner integration order. Retain [registry V3 and recovery rules](modules/prompt.registry/TECHNICAL.md#native-storage-v3-immutable-payload-extents); Windows permission/sync no-ops cannot qualify the pipeline.       |
+| C5: existing native qualification    | The existing Windows workflow and four native shards test source-head and base-merge candidates and the original consumer suites.                                                                                                                                                  | After the corresponding implementations, require complete native receipts, lock/process-death, recovery and controlled-run evidence. Safe mechanisms alone do not close sandbox isolation, power-loss persistence or whole-project qualification.     |
+
+C2b also provides the observation API `CapturedPrincipal::capture_effective` plus
+`revalidate_effective`: it retains only a query handle to the actual effective
+token and compares kernel-read token instance, modification and authentication
+IDs, token type, usable impersonation level and the bounded original SID. Thread
+tokens take precedence; only `ERROR_NO_TOKEN` permits process-token fallback.
+Any error or drift permanently refuses that observation. Its four mandatory
+native controls cover unchanged context, same-SID token replacement, actual token
+modification and degraded/unqueryable impersonation. Cross-compilation is
+`NOT_NATIVE`; this primitive supplies no namespace, private owner, funding,
+restart authority or production sandbox qualification. The existing setup helper
+still needs the create-only held-parent/profile/checkpoint producer below.
+
+The preserved source and actual preview's full native Windows runs expose why
+the anonymous-token fixture failed: it produced a type-2, level-2 token, rather
+than the anonymous impersonation level required by the original assertion.
+The replacement test-only fixture uses real `DuplicateTokenEx` to create a
+type-2, level-0 token and independently reads its kernel `TokenStatistics` before
+installing it on the thread. It never supplies the operation's result or permits
+process fallback. The exact `ERROR_CANT_OPEN_ANONYMOUS` assertion, sticky refusal
+and original controls are unchanged. Only a fresh native Windows run can close
+the failures; MSVC checking remains `NOT_NATIVE`.
+
+C2b must derive provenance from actual held kernel objects. Agentd currently
+derives `prompt-registry` from `identity.home_root` and `prompt-runtime` from
+`identity.run_root`; Fleet registration and canonical path spelling do not prove
+a private Windows parent. A proposed internal namespace-anchor operation must
+traverse a bounded ancestor chain from the actual local volume, reject reparse
+components, retain required non-inheritable handles without delete sharing, and
+validate who can mutate that namespace. It needs minimal read/traverse/security
+query access for OS ancestors, rather than the C1 root's general write access.
+The ancestor policy must explicitly account for privileged OS mutators; any
+SYSTEM/Administrators allowance would be a separately reviewed namespace policy,
+not a relaxation of C2a's private-child DACL. Unknown owners, ACL forms and
+untrusted mutation rights reject. No asserted path, boolean or receipt may mint
+the opaque guards.
+
+A restrictive child ACL is insufficient: parent `DELETE_CHILD` can authorize
+removing or renaming it. Omitting delete sharing protects live handles but does
+not prevent whole-root replacement after the last handle closes or the process
+dies. Recreating the root can erase both initialization marker and replay state.
+Bootstrap must therefore establish a trusted namespace across restart, preserving
+the existing owner-controlled namespace premise on Unix too. Conservatively
+reject untrusted write/create/mutation rights; directory rights alias file data
+rights and cannot be classified as harmless by their friendly names. Retained
+ancestor handles and depth must be bounded, with no unbounded global cache.
+
+`volume::inspect_local_ntfs(&File)` now queries the same held object for NTFS,
+persistent ACL support and volume identity, plus native
+`FileFsDeviceInformation` with successful status and exact initialized output
+length. It rejects remote/unsupported devices and incomplete queries. A mapped drive
+such as `Z:` can report NTFS while still being remote; path syntax and filesystem
+name alone are insufficient. These observations do not prove power-loss behavior.
+The utility uses `OpenFileById` with the held object's volume hint and kernel-read
+file ID to obtain its own synchronous,
+read-attributes handle and verifies both identities; arbitrary overlapped input
+cannot leave native output storage pending after return. It returns
+`LocalNtfsObservation`, not a trusted parent or owner guard.
+Four required `native_volume` integration controls cover actual local file and
+directory queries, a non-disk handle, and an overlapped held object renamed while
+its former path is replaced. The existing Windows workflow retains all ten prior receipts and
+the five original owner-descriptor controls. Fifteen mandatory receipts now
+include the complete library, process-lock, principal, volume, original FinalUse
+and registry targets. The same workflow adds ARM64 source/merge execution while
+retaining both original x64 lanes; artifacts identify their runner and lane.
+The source check binds the fixed runner/target pair to the actual Windows
+architecture and compiler host. Every receipt requires exactly its named cases
+and one complete summary; a green total, duplicate output or a different test
+cannot replace an original case. Filtered groups still allow only unrelated
+cases to be omitted by their explicit selector. The
+preserved source and actual preview's full native runs
+locate `AccessDenied` (5) at the directory's old `ReOpenFile` call; local file
+queries pass. The additive `inspect_local_ntfs_observed` API reports at most nine
+fixed query stages and the original captured Win32/NT status, with no path or
+handle exposure. Its existing wrapper, query-only access mask, same-object
+identity checks and error results are unchanged. The three original native
+controls and their positive assertions remain mandatory; no new native result
+closes this failure. Actual SMB or mapped-remote rejection remains a required,
+unexecuted C2b acceptance item;
+no fabricated flags or skipped remote test count toward those four controls.
+Trusted ancestor admission, protected creation and C3–C5 remain open; production
+Windows owner support and power-loss qualification remain false. The added
+overlapped-directory/rename control also requires the new ID-based query to
+remain attached to the original held object.
+
+C3/C4 retain the exact original stage through the same store publication.
+The safe OS helper now accepts only `SynchronousStageFile`, produced by actual
+relative CREATE_NEW with SYNCHRONIZE and FILE_SYNCHRONOUS_IO_NONALERT; there is
+no arbitrary-File adapter, clone, raw handle or caller-set synchronization flag.
+The internal owner path uses its same proven native-open producer and retains
+the original lock/context through completion. Publication calls native
+`NtSetInformationFile(FileRenameInformation)` with the held non-null destination
+root and bounded literal leaf, preserving real stage synchronization and checking
+both completed NT and I/O status. It never converts the source or destination to
+paths. The original four controls and all their assertions remain mandatory.
+The earlier Win32 route's actual source-291 positive test failed with error 87;
+both actual ARM source-`0cb5b74d` and preview-`c9d1b1dd` lanes now pass all four
+original stage cases. This closes that finite error-87 mechanism regression,
+while their original opaque-owner consumers still fail with `WrongOwner`.
+Cross-target checks and the 227-case Linux contracts/registry suite do not
+establish cold-owner, x64 or power-loss acceptance.
+
+C3 and C4 now expose explicit `open_windows_private` entry points consuming the
+actual opaque fresh/existing directory capability. FinalUse shares its original
+marker, lock, claims, journal, migration and external-frontier recovery; registry
+shares its original V1/V2-to-V3 migration, extent digest and restore logic.
+Complete cold validation precedes migration or orphan-tail trimming. Entering
+the native publication helper makes subsequent uncertain I/O indeterminate and
+keeps poison/reopen semantics. No second store or journal is introduced.
+The ordinary path constructors remain refused. Six new real-file native
+consumer controls are present but not yet executed on this combined source;
+parent admission, process-death, full caller composition and native qualification
+remain blockers.
+
+The C2b prerequisite `CapturedPrimaryOwner` now captures and retains the real
+query-only primary token with unchanged effective-principal continuity checks.
+It additionally requires elevated, unrestricted, non-AppContainer state, a
+non-inherited handle, and an actual enabled, non-deny-only Administrators SID.
+Kernel group queries are bounded to 64KiB and 256 groups; failed validation is
+sticky. Its four native controls cover the real primary context, same-SID
+impersonation, refusal after context restoration and an actual restricted token.
+They remain unexecuted on Windows in this increment. Capturing a primary token
+does not provide the protected-parent producer, create a directory or open an
+ordinary Windows store owner.
+
+The next C2b source increment holds the actual volume-GUID ancestry and rejects
+reparse points, untrusted owners/mutators and uncertain ACE forms. Untrusted
+ancestor access is limited to read/execute and sibling-directory creation;
+DELETE/DELETE_CHILD, file creation and security mutation remain refused. The
+new directory uses atomic `FILE_CREATE` with a protected, sole-captured-owner
+descriptor, followed by held identity, ACL, volume and primary-token readback.
+An uncertain created object stays retained as `UnverifiedCreatedDirectory`.
+Actual self and parent namespace synchronization propagate errors; no global
+volume flush, path upgrade or sync no-op supplies success. Private shared
+context retains ancestry and token lifetime, and mutex poison stays failed.
+The root requests no unnecessary DELETE access while retaining no-delete
+sharing, so a second owner can reach the original OS-lock competition instead
+of failing a preliminary sharing check. Its real two-process lock test and the
+consumer backend remain dependencies. These native controls are unexecuted;
+cross-target checks do not open the ordinary constructors or qualify durability.
+
+Creation must use one internal native-open implementation with typed
+existing-versus-new requests: `FILE_CREATE`, the captured SID/protected descriptor
+in `OBJECT_ATTRIBUTES`, held `RootDirectory`, validated leaf and no inherited
+handle. Require `FILE_CREATED`, then validate the same handle before yielding a
+guard. An existing object uses `FILE_OPEN` and verification only: no `OPEN_IF`,
+ACL repair, unsafe adoption, truncation or treating AccessDenied as absence.
+Every factory rechecks effective-principal continuity. Guards retain the root and
+parent provenance and expose only each role's required operations, without raw
+handle/`File` escape or public constructors. Stages need DELETE access on their
+original handle for later exact-handle rename; there is no SHARE_DELETE fallback.
+The lock role must still let a second owner process reach `File::try_lock` and
+receive `StateLocked`; journal/payload roles must cover actual append/seek/sync
+needs rather than pretending that read-input and stage roles are sufficient.
+
+C2b acceptance requires actual local NTFS and remote-device controls, restrictive
+descriptor readback at creation, collision/non-repair controls, reparse/hardlink
+and invalid-leaf rejection, principal drift, bounded provenance and child-process
+handle non-inheritance. Include a prepared parent DELETE_CHILD attack and
+whole-root replacement after last-close; failed attack preparation is a failed
+test. C3/C4 additionally require exact staged-handle rename, real file sync before
+and parent sync after publication, two-process lock/process-death controls, and
+original precommit versus indeterminate poison/reopen assertions. Neither design
+text nor passing C2a changes the unsupported Windows owner guards.
+
+The next PN0 DNS dependency candidate retains the original Rama alpha.4
+resolver trait and constructor signatures, and vendors its published `rama-dns`
+source, archive provenance and licenses.
+Only the resolver adapter and its dependency edge move to Hickory 0.26.3;
+the foreign Hickory builder/configuration types now use that version. Original
+clone/boxed/global behavior, initialization errors and explicit resolver
+configuration retain their boundaries. The generated graph contains no Hickory
+0.25 path. After checking the frozen RustSec database and the full strict policy,
+this candidate removes only `RUSTSEC-2026-0118` and `RUSTSEC-2026-0119` from both
+synchronized ignore lists. Its existing third-party `async-trait` wrapper moves
+from `hickory-proto` to `hickory-net` with the upstream runtime/UDP code; the ban
+and first-party restrictions stay in force. Scoped real UDP/TCP and production
+network-proxy tests, exact-source CI and Windows checks remain required. Other
+PN0 dependencies and exceptions remain open; this adapter creates no additional
+DNS executor or release authority.
+
+The vendored `rama-dns` directory is a non-workspace Cargo patch, materialized
+by the existing `@crates` generator. Its exact `.bazelignore` entry follows the
+other non-workspace patches: recursive workspace discovery must not load its
+vendored BUILD against workspace-only `DEP_DATA`. The generated external target
+remains a dependency of `network-proxy` through `rama-tcp`; no workspace test
+target is excluded. The original candidate's Bazel loading failures occurred
+before test execution. Target discovery and configured analysis validate this
+boundary repair; they do not replace native tests or exact-source hosted CI.
+
+PN0's separate tar parser slice pins the official 0.4.46 patch for
+[GHSA-3pv8-6f4r-ffg2](https://github.com/composefs/tar-rs/security/advisories/GHSA-3pv8-6f4r-ffg2)
+and refreshes the original Cargo and Bazel locks. The actual plugin archive
+consumer now tests a PAX size header followed by a GNU longname and file, with
+complete following-file extraction, byte-limit, path and link controls. The
+0.4.45 consumer failed three of six scoped tests at a parser checksum error;
+this was not a demonstrated path escape. The patched Linux consumer passed all
+433 library tests. The extractor, path/link checks, limits and advisory policy
+are unchanged. Compatible Windows dependency edge re-selection still needs
+target-specific CI, and this parser slice does not close the full PN0 baseline.
+
+PN0's Python SDK code-generation slice replaces datamodel-code-generator 0.31.2
+with 0.64.0 through the existing Python test dependency and uv lock. The nine
+matched generator advisories concern untrusted schema/import/reference handling;
+this developer tool is not a model-serving dependency. The maintenance entrypoint
+keeps Python 3.10 syntax, existing Enum classes, plain discriminator literals,
+required nullable account email, the existing omitted-section request value,
+and the original validation behavior for omitted empty-list defaults. An exact
+17-field AST postprocessor refuses unexpected generator shapes and preserves
+all other syntax. This preserves the existing omitted-default behavior for
+subclass validators unless callers configure validation themselves.
+The generated artifact is a mechanical regeneration exception; all 888 existing
+model/enum names, field requirements, defaults, aliases and constraints are
+compared. Inline literal titles and redundant RootModel population settings
+change; eight unconstrained list annotations become list[Any]. Existing SDK
+tests and deterministic regeneration must pass with the CI-pinned uv version.
+Real external-service tests remain opt-in and separate from this scoped check;
+the remaining dependency and exact-source CI gates are still required.
+
 ## 20. First vertical learning slice
 
 `C1-PROMPTED-MEMORY-RETRIEVAL-RANK` executes:
@@ -735,3 +1707,339 @@ V8 closes the remaining V8.1 review gaps rather than merely adding prose:
 - the global document system invokes module, adaptive, readiness, CNS and HNMF verifiers and binds their digests into exact-candidate receipts.
 
 The documentation gate is necessary but does not waive unrelated repository failures. A failed repository check must be attributed and closed or explicitly excluded by an independent policy authority; documentation source success cannot turn a red product matrix green.
+
+### PN3 / I09–I10 cold release contract clarification — 2026-10-26 (OPEN)
+
+This refines the existing PN3/I09–I10 and PN5 implementation order. It creates no
+new roadmap, budget, authority or passing gate. The pinned cold-release audit
+below supersedes any inference that unlike capacity measurements, by themselves,
+prove a universal runtime contradiction. All historical failed runs remain failed.
+
+| Original observation or cap                 | Exact scope retained                                                                                                                                         | Required accounting                                                                                                                                         |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 922,881,591 B installed-runtime observation | Sum of existing RECORD pathname lengths in the old 29-distribution venv; not a complete interpreter root, wheel archive size, physical peak or new admission | Complete the missing dependency closure and meter the actual retained representation; do not grant fit from this sum                                        |
+| 432,269,632 B `libtorch_cpu.so`             | Already included in that runtime sum                                                                                                                         | Do not add it a second time or treat it as an admitted I09 base role                                                                                        |
+| 512 MiB Cell cache                          | Original logical chunk/manifest accounting and separate main-DB image bound, both enforced; WAL/SHM are not free                                             | Each cache must satisfy both constraints; simultaneously retained caches and destinations also enter the host total                                         |
+| 300 MiB fixed I09 base role                 | Per-file bound for the unchanged eight base roles; adapter files remain 2MiB each and sidecar 64KiB                                                          | Reject an extra or oversized role under that old version; do not redefine it as a general runtime/VM limit or silently enlarge it                           |
+| 2 GiB per original LAN data-host root       | Original cooperative controlled-root forecast/accounting, including both slots, cache DB/WAL/SHM, binaries, output and metadata                              | Count every overlapping staging/install/archive/old-version/held object; metadata64MiB remains inside the total. This is not a filesystem hardquota         |
+| Pocket4 provider-0133 UNKNOWN 1GiB          | Original NETWORK response reservation                                                                                                                        | Keep the charge and original failed outcome. Do not subtract it as measured disk use, refund it from SSH255/path absence, restart it or probe a replacement |
+
+The original frozen LAN forecast is 1,964,390,944B; its 183,092,704B margin cannot
+admit another 269,060,552B weight file. That historical additional-weight NO_GO is
+preserved. It is neither a current free-space measurement nor proof that the old
+run exceeded its limit. A new cold root cannot borrow or reset that frozen plan.
+Single-cache capacity also does not establish impossibility of bounded chunk
+consumption into an independently admitted destination within the same host root.
+Every overlapping representation still counts; an area called “outside cache” is
+not an accounting exemption. No new root or complete cold run has been admitted.
+
+Implement these interfaces through the existing owners, in this dependency order:
+
+1. **PN3/I09 release declaration → runtime identity.** Add a reviewed, explicitly
+   versioned `runtime_root` contract alongside the existing release/profile owner.
+   The interface must bind platform/ABI and marker/extras selection, interpreter
+   and stdlib/base-image identity, actual original wheel bytes/lengths/provenance,
+   installed-file hashes/modes, native/system-loader dependency closure and the
+   import/`.pth`/pyc/generated-file policy. Match the exact source and inference
+   arithmetic profile. A requirements file or six project-source hashes alone
+   cannot satisfy this contract. New stored/signed contracts need fresh namespaces;
+   the old eleven-role version and its digests continue to reject extra roles.
+2. **M09 fetch/materialize → admitted private namespace.** Consume that manifest
+   and existing model/adapter materials through bounded verified chunks. Return
+   only an owner-constructed runtime/material capability tied to the actual held
+   namespace and release identity, rather than a caller-supplied ready flag or
+   unchecked path. Connect it to the same owner's cache/destination/DB/WAL/SHM,
+   extraction scratch, archive, old/new version, metadata and UNKNOWN ledger.
+   Reserve the complete peak before effects, then charge actual overlap. Retirement
+   requires proven release of readers/held handles and custody responsibility;
+   a hash, unlink or expired connection alone cannot refund retained/unknown work.
+3. **Existing Hepta loader → original execution authority.** Bind the admitted root
+   to `SmolLmNeuralReadConfigV1`, execution-profile identity and the namespace used
+   by the actual interpreter, imports and HF material opens. Preserve existing
+   offline/local-files-only/trust-remote-code refusal and reject unknown ambient
+   site/user/`.pth`/library-path or online fallback. Continue original ResourceGrant,
+   CURRENT/selector window, FinalUse, parameter, Ready and forward checks. Verified
+   Cell bytes do not grant installation, CURRENT, a new key or execution authority.
+   A completed forward is separate from shutdown and actual OS-child terminal.
+4. **PN3/I10 selection/artifact/TaskFlow → ordinary next-task readback.** Use the
+   original resource/effect owners and installation path; join actual evaluated
+   parent identity, cross-node download, authorization, local selected generation
+   and the next ordinary task's actual loaded bytes. Keep revocation, reorg, denial,
+   late cancellation and terminal/funding reconciliation. Report mechanical closure
+   and measured benefit separately; a no-benefit candidate remains rejected.
+   Three denials cannot replace the required three successful installation/readback
+   rounds, and three successful transfers cannot replace them either.
+5. **PN5 custody/repair → original WAN acceptance.** After the complete loader and
+   release close, retain the existing three independent complete replicas,
+   renewal/repair and version-retention requirements. The union of node files is
+   useful only while all referenced versions have the required custody and a
+   recoverable manifest. Discovery or a signed advertisement does not prove bytes,
+   persistence or repair. Keep the preregistered at-least-72-hour experiment across
+   three independent administrators/failure domains, every original fault/load
+   cohort, confirmed goodput, cold loading, repair and recovery objectives.
+   Same-administrator LAN and loopback observations cannot satisfy this WAN gate.
+
+Acceptance remains fail-closed and evidence-based. A fresh destination must have no
+preinstalled model/runtime cache; offline acquisition, installation and first actual
+forward must use only the declared release. Capture exact source/runtime/parent and
+manifest identities, actual bytes/time/overlapping peak, custody and actual child
+terminal. Missing wheel/library, incomplete dependency, replaced ancestor, cache
+retirement while still needed, full disk, permission failure, crash and unknown
+termination must refuse without a new dispatch, hidden allowance or early refund.
+Keep all applicable original fetch/call/owner/cleanup/resource bounds. The old
+35-second eleven-material cohort retains its original scope; complete cold success
+cannot exclude runtime acquisition or inherit the preinstalled-environment PASS.
+If the complete work has no admitted budget under the original envelope, keep
+NO_GO rather than inventing a timer, resetting phases or omitting dependencies.
+
+Current proof remains partial: original SQLite3.51.3 I09 run002 fetched eleven
+materials (272,190,131payload B /269chunks) in4.257682651s and its original signed
+native load/query/terminal-unload case passed in10.357s using the existing runtime.
+The controller still failed (exit1,180.167288273s) at I10 selected installation
+UNAVAILABLE. Its native receipt stays UNVERIFIED; full cold release, ordinary
+installation/next task, three model rounds/benefit, Windows and WAN remain OPEN.
+The 71a selected-initial API is not registered into an ordinary initial Agentd route
+in the reviewed source, and its three real-model tests remain ignored/NOT_RUN.
+The separate two-field fixture source patch is not compiler or model qualification.
+
+Pinned audit: [cold-release evidence](../evidence/pon-upgrade-implementation-20261018/native-rounds/cold-release-contract-20261026/REPORT.md). Audit receipt SHA256
+`4e6cdcf05bdd58b897c529de67af03ae1dc8453f11953956ab3dcfe7c378022b`;
+report SHA256 `8ca0b29590fa53c0a3e9ae94ea30915fdd9e0b409c7b7a305c28bf47d221bcd6`.
+This contract and its interfaces are pending implementation/native verification.
+`task_complete=false`, `merge_ready=false`; PN0–PN6 and every original acceptance
+criterion, limit and failure observation remain in force.
+
+PN0 retained [155264e3 four-lane original Windows failures](../qualification/windows-delete-boundary/155264e3-original-failures/README.md)
+keep all original twenty groups per lane: eighteen passed and broad-identity-delete /
+legacy-delete-boundary failed. These are historical failures, not later-source qualification.
+
+### PN0 existing CI closed-world inventory repair — 2026-10-26 (PARTIAL)
+
+[Original six-job failures and local repair evidence](../qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/README.md) retain blocking run 40312011219 attempt 1 at `155264e3b5d3dcdafa244cd0c31c336ab25a207f`. The independent caller inventory now classifies two explicitly non-authorizing methods and enumerates the two reviewed observed paths. `shares_owner` only compares original opaque owners; `check_unclaimed_grant` only checks readiness and cannot replace claim or final live validation. The canonical raw caller remains the sealed wrapper; the ordinary CPU target consumes that wrapper after preparation and enters the original synchronous physical boundary.
+
+The unchanged 17 original closed-world tests reproduced two failures before the inventory repair and then passed with zero skips. Canonical caller self-test and verification passed on unchanged inputs. No scanner, CALLERS, authority implementation, original assertion or acceptance bound changed. This closes only that local inventory mismatch. It does not close original Windows isolation, the three failing Windows Bazel shards, Clippy platform incompatibility, dependency advisories or any model/release/WAN gate. Existing PN0–PN6, historical failures and `merge_ready=false` remain in force; exact published-head and actual merge qualification must be obtained separately.
+
+### PN0 dependency advisory migration and native timeout attribution — 2026-10-26 (PARTIAL)
+
+[Exact source, original failures and local validation](../qualification/pn0-ci/155264e3-dependency-migration-and-original-timeouts-20261026/README.md) keep the existing PN0–PN6 implementation order and every original acceptance bound. The local AWS 1.8.12 fork preserves normal credential interfaces and all 22 AWS versions while updating p256/elliptic-curve/crypto-bigint/ctutils; zstd and zstd-safe move to their fixed versions. Cargo deny's four policy checks, the five normal AWS-auth library tests, and all 90 original HTTP-client library tests passed. The latter includes real zstd encode/decode and prepared-body reuse, while other compression consumers and platforms remain open. The source fork and Cargo/Bazel lock changes are one reviewable stage, with original licensing, signed-wire format and fail-on-entropy-error behavior retained.
+
+Seven private DPoP controls have not executed successfully: the original collector failed and its corrected same-window revision reached the original child deadline; both failures and the exhausted 600 s window remain recorded. Normal Bazel package materialization passed, while consumer analysis timed out. Neither result is cross-platform or Windows qualification. All five hosted cancelled jobs were independently confirmed to have exceeded the original 60-minute limit. SDK download-cache restoration and real GNU/musl target binding are separately reviewable source issues; their throughput/runtime benefit is unmeasured.
+
+Next complete the real compression consumer and seven DPoP validation, generated Bazel consumer/toolchain qualification, then the exact paired source and actual-preview CI. Keep original four Windows lanes and twenty groups, pair steps, security policy, tests, deadlines and resource limits. No cache workaround, partial build or local source review closes those gates. Model rounds, benefit rejection, full release/Cell loader/custody repair and independent 72-hour WAN acceptance remain unchanged; `task_complete=false`, `merge_ready=false`, **NO_GO**.
+
+PN0 [SDK download-cache interface correction](../qualification/pn0-ci/sdk-original-namespace-download-cache-20261026/README.md) adds the missing restore and binds save to its actual cache-hit output. The existing cache namespace, pinned action, original jobs, commands, tests, concurrency and 60/20-minute limits remain exact. This is source-level correction only: action-cache reuse, measured throughput, a 60-minute PASS and actual musl qualification remain unknown/open. Keep original timeout and security failures; the exact paired CI and PN0–PN6 acceptance sequence are unchanged.
+
+PN0 [Linux target-routing correction](../qualification/pn0-ci/linux-real-platform-binding-20261026/README.md) explicitly binds the existing GNU/musl rows to their complete pinned target platforms and preserves that caller choice after keyed CI's GNU default. The existing recording-wrapper suite reproduced four keyed subcase failures on original source; the same 11 tests then passed, retaining all nine original test bodies and every job/feature/limit. Real musl compilation, ABI, execution and compatibility inventory remain unverified. GNU-only Wine coverage stays with GNU; the old release mapping's incomplete libc constraint remains a separate OPEN gate. Original hosted timeouts, four Windows lanes, exact paired CI and PN0–PN6 acceptance are unchanged; **NO_GO**.
+
+PN0 [ROG bounded startup/terminal and journal source integration](../qualification/pn0-ci/rog-d66-bounded-source-integration-20261026/README.md) preserves all ten original ROG commits endingd66 as a real local source merge. Windows-GNU cfg(test) type/lint checking returned0 with retained warnings; no binary link, MSVC/gnullvm, strict-warning or native PASS follows. Twenty synthetic receipt-parser and seventeen unchanged caller-unit tests passed. The original twenty native groups, four lanes, guard, two deletion failures and Unknown custody remain required. The private original-journal joins preserve initial/evaluated separation and nonce accounting, but do not prove model execution, I10 or three rounds. Source map history and the sole conflict are retained; actual merged-source bindings must be recorded separately from execution. No PR merge, production activation, old budget reset or source-head CI qualification is granted. **NO_GO**.
+
+PN0 [ROG host development failure and source-map observations](../qualification/pn0-ci/rog-d66-host-first-RED-and-source-map-20261026/README.md) permanently retain the first actual scoped host-lint failure on 82f6e9e. Its original 560-second work fence was exhausted before the host Checking label; all 10,198 source files and Cargo pins remained exact, with no autofix, retry or new allocation. This does not close previous model900/worker600 failures. The original forty-map verifier separately passed after preserving and correcting two earlier source-observation failures, without changing policy, tests or authority claims. Source-map consistency and Windows-GNU compile-only success grant no native Windows or model qualification. The normal production dependency graph already reaches core/core-plugins; deleting real dev tests cannot cut those production paths. All original PN0–PN6 acceptance, exact paired CI, two Windows deletion failures, three real model rounds with separate benefit evaluation, complete Cell cold release/custody repair and independent WAN remain required; **NO_GO**.
+
+PN0 [exact paired source interface](../qualification/pn0-ci/paired-source-bd8184-20261026/README.md) binds Chain `bd81849bb47b10e912cfea84f7532ccc1175e4ee` to the real ordered main snapshot `96175153365914375739e5ccf6dd47b84a9e97a2` (parents main9fed then sourcebd8184; treef1df). This is a source-input binding, not an execution receipt or the actual PR preview. The original56 pair steps,112 commands per lane and9 Windows-ledger steps remain exact. Resolve each actual Hepta head/base/preview independently; old PASS does not qualify the new tuple. Keep the old Legacy-path growth timeout, both Windows deletion failures and all original PN0-PN6 model/release/WAN gates; **NO_GO**.
+
+### PN0 Windows terminal regression and source follow-up — 2026-10-27 (OPEN)
+
+[Four original native artifacts and source follow-up](../qualification/pn0-ci/windows-0c03-terminal-regression-20261027/manifest.json)
+preserve run40427967275 attempt1 at exact Hepta
+`0c03d808d6898c2a91ae456bfefcfc5abe925468` and actual PR preview
+`0806e7ae5c555d327818fa0c044baa5e73884c91`. Each of four native lanes
+still passed eighteen of the original twenty groups; broad-identity-delete and
+legacy-delete-boundary failed. The separate six query controls passed. All three
+terminal controls now failed, compared with one pass and two failures at9d.
+The first complete-handle observations returned Exited1 instead of expected0/7;
+reduced-rights and later7/259 checks were not reached. No observation proves
+CMD syntax, a stale executable or another historical root cause.
+
+The local source follow-up restores the original9d private Command argument
+construction and retains the original scripts, seven checks, stdio, rights,
+eight-second deadline, cleanup and Result/panic propagation. Failure-only
+diagnostics query the same full owned child handle once after original cleanup,
+and preserve the original try-wait, optional kill and wait results. Query failure
+is UNKNOWN. Output is capped at4096bytes, which is no runtime bound; parent
+arguments do not prove the actual child command line. Source review and formatting
+passed; this follow-up has no compile or native qualification. Production guards
+and the complete token/ACL/PE-DLL/namespace/desktop/stdio/Job/caller chain remain
+required. Restoring a previous helper cannot close the two original failures.
+
+On the same published0c source, the single transport-failure YAML retry actually
+passed the original ten response-context/terminal-owner tests,808 consumer tests
+and strict Clippy. Its original failed attempt remains. The new pair workflow
+reported SUCCESS. Its [new exact-source execution receipt](../qualification/pn0-ci/paired-source-bd8184-20261026/hepta-0c03-actual-original-pair-execution.json)
+independently verifies four Linux lanes with112 original wrapper commands each
+(448 total), all56 original steps per Linux lane, and both Windows-ledger lanes
+with9 original steps each. Six official artifact digests and all member CRCs,
+per-command log hashes, minimum test counts and before/after source were checked.
+Four original auxiliary format-copy exit1 results and conditional diagnostic
+skips remain; this does not mean every nested process exited0 or prove independent
+kernel birth/terminal accounting for each wrapper. The study remains synthetic
+local learning, not three ordinary real-model rounds or Windows isolation.
+Neither result qualifies the later local source follow-up. A Mac
+release job separately hit its original sixty-minute maximum before compilation
+finished; the cancelled result remains a failure observation without a restart
+or longer limit. All existing PN0–PN6 exits, four native lanes, original twenty
+groups, pair steps, resources, historical failures, model/release/WAN requirements
+and NO_GO remain; task_complete=false and merge_ready=false.
+
+PN0's next [exact paired source input](../qualification/pn0-ci/paired-source-c96022b-20261027/source-input-binding.json)
+now binds published Chain `c96022b897c1235fdbdbfcfa32764403511c6aab`
+to main `9fedf7ecbbe07177069c030592b4e03dcffebb81` through qualification
+object `b5cee4e071c633e77c7317d2c6259d5dd7e0be14`, ordered main then source.
+The [actual Git object readback](../qualification/pn0-ci/paired-source-c96022b-20261027/actual-source-and-preview-identities.json)
+separately binds PR328 preview `bbf666833c1e136df84c555f2ba0a7f97fdde038`
+to its own base/source parents; both trees are
+`4d49d614c7f0f81b861f359a872d014de21ca0a2`. Only the three source/qualification
+hash occurrences changed in the pair workflow. All original56 steps,112 commands
+per Linux lane,9 Windows-ledger steps, assertions and resource limits remain.
+These are source identities, not new-source execution receipts. Retain the
+previous bd/0c results as history; no old PASS qualifies this new tuple. Publication
+must preserve every still-active original run. All PN0–PN6 acceptance gates,
+Windows isolation, paid identities, real model rounds, release/custody and WAN
+requirements remain unchanged; task_complete=false, merge_ready=false, NO_GO.
+
+PN0's [original Mac authorized-read failures and source correction](../qualification/pn0-ci/mac-authorized-read-0c03-original-failures-20261027/manifest.json)
+retain all seven complete job logs. Before its original90-minute cancellation,
+Mac ARM actually failed the authorized-read RPC case and three filesystem cases;
+the separate Mac release job's60-minute deadline is a different observation.
+The remote adapter now preserves only three exact already-sanitized server error
+classes; unknown or provider-bearing messages retain fixed redaction. The Darwin
+policy comparison folds only verified root-owned system aliases and checks every
+equivalent deny spelling first, without resolving mutable descendants. The original
+kernel capability probe, stable handle, unique-link/inode check, secure reopen,
+bound, original tests and assertions remain. The historical runner's actual alias
+spelling is still UNKNOWN. Independent source review and parse/format observations
+do not close the original Mac failures; original native execution remains required.
+This source stage also grants no Windows isolation, model, release or WAN acceptance.
+Keep PN0–PN6, all original limits and failures, and NO_GO.
+
+The [new local mapping check](../qualification/pn0-ci/mac-authorized-read-0c03-original-failures-20261027/actual-local-mapping-test-result.json)
+actually ran through `just test` on Linux: both selected tests passed, with260
+other tests filtered out. The new mapping unit contains seven behavior cases;
+the second test preserves fixed transport-error redaction. This is a separate
+local role, not a reset of prior SDK, supervisor, host, model or PN1 budgets.
+Darwin system-alias policy, original RPC/filesystem failures and Windows native
+isolation remain unqualified; the original native jobs must still execute.
+
+PN0's [local cognitive workspace identity follow-up](../qualification/pn0-ci/aca-local-cognitive-workspace-20261028/README.md)
+uses the existing checked canonical workspace in the original preparation,
+both attachment revalidations and tool-call scope validator. The same value
+feeds the existing access digest and source binding. The fourth consumer is
+necessary because the actual tool transport normalizes Windows verbatim path
+prefixes; leaving its raw comparison would introduce a new scope mismatch.
+The original helper, tests, turn/content/revision checks, assertions and limits
+remain unchanged. This path-only check grants no held namespace authority.
+
+The original package command actually completed on the recorded two-file Linux
+candidate:100 passed,0 failed,0 skipped, exit0, with unchanged source hashes.
+Scoped strict Clippy also exited0; it changed no source. Full raw outputs and
+independent source review are retained. No Windows native
+execution or published-head qualification follows. Keep the original four lanes'
+20 deletion groups at18/20, query at6/6 and terminal at1/3 separately; ordinary
+Windows storage/caller/loader/Job and Unknown custody remain OPEN. Continue the
+existing PN0–PN6 dependency order and all original model, I09/I10, release, PN1
+and WAN gates without changing any deadline, resource or historical failure.
+`task_complete=false`, `merge_ready=false`, **NO_GO**.
+
+PN0's [ordinary Windows prompt-store source follow-up](../qualification/pn0-ci/aca-public-prompt-owner-20261028/README.md)
+keeps `AgentdState::new` and the public pipeline entry while composing actual
+native namespace owners into the existing registry and runtime stores. Runtime
+I/O retains the real marker lock, original S1 format and8MiB cap; fresh state
+must be durable before return, while cold existing-marker/missing-state fails.
+Create-only semantics, all principal/ACL/volume/ancestor checks and ordinary
+registry/FinalUse guards remain. Supported canonical disk spelling reaches those
+same native checks. Shared revalidation and post-rename refusal keep authoritative
+views closed after namespace or durability failure. Cross-error Created custody
+is still OPEN; normal error return only closes held handles without repair.
+
+The initial canonical-caller source defect and first actual Windows-GNU strict
+Clippy failure are retained. Corrected private-state library cfg(test) Clippy
+exited0 with the original `-D warnings`; no binary was linked or run. Agentd
+caller compilation, the new native regression and all original public-caller
+controls remain unexecuted for this source. This cannot close the four-lane
+deletion/terminal failures, ordinary FinalUse/UDS, model/genesis/I09-I10, release
+or WAN gates. Continue the existing acceptance order and limits; **NO_GO**.
+
+PN0's [FinalUse retained-owner entry checks](../qualification/pn0-ci/final-use-retained-owner-20261028/README.md)
+wire the ten existing contract entry points through the same retained Windows
+owner before the original clock/CAS/nonce/effect logic. The original state mutex
+guard is transferred and returned without unlocking; native refusal permanently
+fences that same shared state. This is the next existing owner/caller dependency,
+not a new factory or trust provider. It requires the prior shared native-owner
+source and leaves ordinary Windows FinalUse factories closed.
+
+The original contracts package actually ran on the recorded source WIP:
+176PASS/0FAIL/0skip on Linux. Scoped Linux and Windows-GNU cfg(test) Clippy both
+exited0 with the original strict flags; their three configuration warnings are
+retained. The original Windows tests remain byte-identical before one appended
+native negative-control source. No Windows binary was linked or executed, and
+the new attribute-drift control has no native result. Source comments/formatting
+and actual checked hashes are recorded separately. Published310b's original
+18/20 deletion and1/3 terminal outcomes do not qualify this uncommitted patch;
+old PASS never renews a new dependency/source tuple. Keep the original budgets,
+guards, acceptance order and all PN0–PN6 model/release/WAN exits; **NO_GO**.
+
+PN0's [Agentd peer admission and per-poll deadline follow-up](../qualification/pn0-ci/agentd-peer-deadline-20261028/README.md)
+places the existing peer check before connection admission or overload output.
+The accepted connection's original two-second deadline also bounds the original
+fifty-millisecond overload deadline; both actual futures check that same deadline
+before each poll and retain their original timer for wakeup and cancellation.
+The thirty-two-connection and frame limits are unchanged. Windows peer identity
+is still unsupported and refused, and this source stage does not supply a native
+identity provider or open the ordinary Windows caller path.
+
+The scoped UDS package ran thirteen tests on Linux: thirteen passed, zero skipped,
+including the original socket and peer tests and six new deadline controls.
+Scoped Linux strict Clippy and Windows-GNU cfg(test) Clippy exited zero; the
+original Linux configuration warnings remain recorded. No Agentd package or
+Windows native binary was built or executed. The gate cannot preempt a single
+synchronous poll, construction or destruction, and is not a physical time quota
+or a grant authority. Keep the original Windows deletion/terminal failures,
+FinalUse trust-provider and caller gaps, model/genesis/I09-I10, release, PN1 and
+WAN acceptance open in their existing order; **NO_GO**.
+
+PN0's [managed runner pipe and connection-worker ownership follow-up](../qualification/pn0-ci/runner-owned-handles-20261029/README.md)
+makes each real named pipe and duplicated connection-thread handle owned
+immediately after successful creation. Early returns now release those handles;
+successful pipe setup moves the same owners into the existing transport files.
+The original rights, fifteen-second waits, cancellation/join decisions, process
+cleanup, guard and all test bodies remain. This closes a source-level leak on
+second-pipe creation failure and handle-cleanup bypasses, while detached-worker
+pipe lifetime, process/Job/Unknown custody and complete isolation remain OPEN.
+
+The first actual Windows-GNU cfg(test) Clippy command failed because its native
+C dependency could not find the cross compiler. That failure is retained.
+After task-local real compiler setup, the identical project-default command
+exited0; its warnings were retained, without claiming strict-lint CI acceptance.
+Final formatting exited0 without changing source bytes. No Windows test binary
+was linked or run. Independently reread bf36's four native originals still show
+eighteen of twenty groups passed per lane and the same two deletion failures,
+with query6/6 and terminal1/3 separate. The historical child exit1 cause remains
+unknown; this ownership patch is not its explanation. Preserve the original
+ambient-read contract, all native assertions/limits, model/genesis/I09-I10 and
+every PN0–PN6 exit; **NO_GO**.
+
+PN0's [ordinary Windows Registry factory follow-up](../qualification/pn0-ci/ordinary-registry-native-factory-20261029/README.md)
+replaces the Windows path factory's unconditional refusal with a genuine native
+producer: retained parent/principal checks, exact creation/collision handling,
+the original opaque directory and marker lock, then full existing store/schema
+validation. Unsafe states still refuse. Agentd now consumes this public factory
+on both platforms; its separate runtime owner and bounds remain. A path does
+not become authority, and no FinalUse, peer or full-token guard is opened.
+
+Three new Windows test sources use that public factory for fresh/lock/cold
+readback and refusal of bare-existing or corrupt state. They supplement the
+unchanged original native cases. Actual Linux package validation ran all fifty
+tests, with zero skipped. Linux and Windows-GNU cfg(test) strict Clippy exited0
+with `-D warnings`; the preceding Windows failure is retained. Its correction
+only aligns test-only helpers with their already Unix-only test consumers,
+without changing a test body, test selector or lint flag. Final formatting
+changed only new-test line wrapping. Windows native and the complete Agentd
+consumer package have not been executed for this source.
+
+The new bf36 Bazel originals establish fourteen failed targets and twenty-five
+failed execution records, not twenty-five tests. Their schema provenance
+metadata has an append-only correction; raw records are preserved. The supplied
+single-lane112 receipt is not four-lane qualification. FinalUse still needs
+genuine protected time/external frontier input, Windows peer identity remains
+unsupported, and the core abort/inject lifecycle cause has no new witness.
+Keep those refusals, the original16+4, deadlines/resources, model/genesis/I09-I10,
+cross-error custody, PN1 and WAN gates OPEN; **NO_GO**.

@@ -8,6 +8,29 @@ use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 use tokio::sync::Notify;
 
+#[tokio::test]
+async fn missing_socket_can_bind_and_live_socket_is_not_replaced() -> anyhow::Result<()> {
+    let temp = control_test_directory("hmx-missing-")?;
+    let socket = temp.path().canonicalize()?.join("control");
+    assert!(!tokio::fs::try_exists(&socket).await?);
+
+    prepare_socket(&socket).await?;
+    assert!(!tokio::fs::try_exists(&socket).await?);
+    let listener = UnixListener::bind(&socket).await?;
+    let error = prepare_socket(&socket)
+        .await
+        .expect_err("a live endpoint must not be removed or replaced");
+    let MatrixdControlError::Io(error) = error else {
+        panic!("a live endpoint must return its actual I/O refusal");
+    };
+    assert_eq!(error.kind(), ErrorKind::AddrInUse);
+
+    drop(listener);
+    prepare_socket(&socket).await?;
+    assert!(!tokio::fs::try_exists(&socket).await?);
+    Ok(())
+}
+
 #[derive(Default)]
 struct LifecycleTransport {
     effects: Mutex<Vec<&'static str>>,
@@ -47,9 +70,7 @@ struct Fixture {
 
 impl Fixture {
     async fn new() -> anyhow::Result<Self> {
-        let temp = tempfile::Builder::new()
-            .prefix("hmx-lifecycle-")
-            .tempdir_in("/tmp")?;
+        let temp = control_test_directory("hmx-lifecycle-")?;
         let agent_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
         let layout = HeptaFleetRoot::parse(temp.path().canonicalize()?)?
             .layout()

@@ -1,0 +1,58 @@
+{
+  "schema": "hepta.pn0.final-source-format-provenance.v1",
+  "recorded_utc": "2026-10-28T09:16:35.126262+00:00",
+  "local_parent": "ca586c865747d079356ad04fa9c3b495796b44c6",
+  "native_results_on_archived_pre_format_snapshot": true,
+  "native_exact_committed_snapshot_not_claimed": true,
+  "required_scoped_fix_actual_wait": 0,
+  "required_scoped_fix_seconds": 351.142233828,
+  "only_Clippy_autoedit": "model-provider-info tests: move final provider value instead of cloning it; no later use, no assertion or input changed",
+  "final_formatter": {
+    "started_utc": "2026-10-28T09:14:24.361777+00:00",
+    "pid": 2107232,
+    "birth": "2107232 (just) D 2107230 2107229 2107229 0 -1 4194304 2 0 0 0 0 0 0 0 20 0 1 0 25653035 4939776 0 18446744073709551615 0 0 140726462474774 0 0 0 0 0 0 1 0 0 17 3 0 0 0 0 0 0 0 0 140726462474774 0 0 0 0\n",
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "tests_after_fmt_not_planned": true,
+    "finished_utc": "2026-10-28T09:14:26.354482+00:00",
+    "actual_wait": 0,
+    "seconds": 1.994523554,
+    "raw": {
+      "final-fmt.stdout.original": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "final-fmt.stderr.original": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  "formatter_changes": [
+    {
+      "path": "codex-rs/core/src/client.rs",
+      "diff_lines": 13
+    },
+    {
+      "path": "codex-rs/model-provider-info/src/model_provider_info_tests.rs",
+      "diff_lines": 73
+    },
+    {
+      "path": "codex-rs/protocol/src/models.rs",
+      "diff_lines": 22
+    }
+  ],
+  "formatter_changes_reviewed": "Rust import order and equivalent layout/parentheses/comma wrapping only; no new endpoint/guard/assertion/resource/timeout behavior",
+  "pair_contract_reverse_hash_substitution_exact": true,
+  "current_pair_source": "5a2a0ec55ab954e624ecdb77a9a5c866ac0c4708",
+  "current_pair_main_qualification": "02167535fa53f7ba599da9c7693e5e392d3c11a7",
+  "diff_check_actual_wait": 0,
+  "full_core_dependent_tests_and_lint_NOT_QUALIFIED": true,
+  "six_oom_originals_preserved": true,
+  "Mac_Windows_fullsuite_release_W1_model_WAN_not_qualified": true,
+  "tests_not_repeated_after_fix_or_fmt": true,
+  "task_complete": false,
+  "merge_ready": false
+}

@@ -12,8 +12,8 @@ use super::valid_head;
 use serde::Deserialize;
 use serde::Serialize;
 use std::collections::BTreeSet;
+#[cfg(not(windows))]
 use std::fs::File;
-use std::io::Read;
 use std::io::Seek;
 use std::io::SeekFrom;
 use std::io::Write;
@@ -68,19 +68,30 @@ struct StoredV3 {
 }
 
 #[derive(Clone, Copy, Deserialize, Eq, PartialEq, Serialize)]
-enum StoreTrust {
+pub(super) enum StoreTrust {
     SingleKey([u8; 32]),
     IssuerKeyRing([u8; 32]),
 }
 
 pub(super) struct Store {
-    root: File,
+    root: io::Directory,
     signer_id: String,
     trust: StoreTrust,
+    #[cfg(not(windows))]
     _lock: File,
 }
 
 impl Store {
+    /// Probe the actual retained Windows namespace and original owner marker.
+    /// The caller holds the authority state lock and permanently fences state
+    /// on any refusal; this never reopens or manufactures store authority.
+    #[cfg(windows)]
+    pub(super) fn revalidate_owner(&self) -> Result<(), FinalUseError> {
+        self.root
+            .revalidate_shared()
+            .map_err(|_| FinalUseError::Unavailable)
+    }
+
     pub(super) fn open(
         root: &Path,
         signer_id: &str,
@@ -133,15 +144,55 @@ impl Store {
         initial: FinalUseRevocations,
         allow_startup_head_advance: bool,
     ) -> Result<(Self, State), FinalUseError> {
-        let root = prepare_directory(root)?;
-        let initialized = entry_exists(&root, "authority.lock")?;
-        let lock = open_private(&root, "authority.lock", Access::Create)?;
-        lock.try_lock().map_err(|_| FinalUseError::StateLocked)?;
+        let opened = io::lock_directory(root)?;
+        Self::open_locked(
+            opened,
+            signer_id,
+            trust,
+            initial,
+            allow_startup_head_advance,
+            #[cfg(windows)]
+            /*frontier_store*/
+            None,
+        )
+    }
+
+    #[cfg(windows)]
+    pub(super) fn open_windows(
+        directory: crate::windows_private_owner::PrivateStoreDirectory,
+        signer_id: &str,
+        trust: StoreTrust,
+        initial: FinalUseRevocations,
+        frontier_store: &dyn crate::AuthorityFrontierStore<super::FinalUseFrontier>,
+    ) -> Result<(Self, State), FinalUseError> {
+        let opened = io::LockedDirectory::from_windows(directory)?;
+        Self::open_locked(
+            opened,
+            signer_id,
+            trust,
+            initial,
+            /*allow_startup_head_advance*/ false,
+            Some(frontier_store),
+        )
+    }
+
+    fn open_locked(
+        opened: io::LockedDirectory,
+        signer_id: &str,
+        trust: StoreTrust,
+        initial: FinalUseRevocations,
+        allow_startup_head_advance: bool,
+        #[cfg(windows)] frontier_store: Option<
+            &dyn crate::AuthorityFrontierStore<super::FinalUseFrontier>,
+        >,
+    ) -> Result<(Self, State), FinalUseError> {
+        let initialized = opened.initialized;
         let store = Self {
-            root,
+            root: opened.root,
             signer_id: signer_id.to_owned(),
             trust,
-            _lock: lock,
+            #[cfg(not(windows))]
+            _lock: opened.lock,
         };
         let has_state = entry_exists(&store.root, "authority.json")?;
         let mut state = if has_state {
@@ -207,6 +258,8 @@ impl Store {
                 return Err(FinalUseError::InvalidTrust);
             }
             state.failed = false;
+            #[cfg(windows)]
+            io::validate_windows_prewrite(&state, &initial, signer_id, frontier_store)?;
             if header.schema != STATE_SCHEMA_V3 {
                 // Publish a complete legacy nonce set before its journal-based
                 // snapshot. Retrying an interrupted migration is idempotent.
@@ -228,6 +281,8 @@ impl Store {
                 used_nonces: Default::default(),
                 failed: false,
             };
+            #[cfg(windows)]
+            io::validate_windows_prewrite(&state, &initial, signer_id, frontier_store)?;
             store.replace_claims(initial.authority_epoch, &state.used_nonces)?;
             store.persist_snapshot(&initial)?;
             state
@@ -302,7 +357,7 @@ impl Store {
         file.write_all(&bytes)
             .and_then(|()| file.sync_all())
             .map_err(|_| FinalUseError::Unavailable)?;
-        replace_state(&self.root)?;
+        replace_state(&self.root, &file)?;
         self.root.sync_all().map_err(|_| FinalUseError::Unavailable)
     }
 
@@ -345,7 +400,7 @@ impl Store {
         authority_epoch: u64,
         claims: &BTreeSet<[u8; 32]>,
     ) -> Result<(), FinalUseError> {
-        if authority_epoch == 0 || claims.len() > MAX_CLAIMS {
+        if authority_epoch == 0 || claims.len() > MAX_CLAIMS || claims.contains(&[0; 32]) {
             return Err(FinalUseError::InvalidTrust);
         }
         let mut file = open_private(&self.root, "authority.claims.next", Access::Create)?;
@@ -359,132 +414,19 @@ impl Store {
                 .map_err(|_| FinalUseError::Unavailable)?;
         }
         file.sync_all().map_err(|_| FinalUseError::Unavailable)?;
-        replace_claims(&self.root)?;
+        replace_claims(&self.root, &file)?;
         self.root.sync_all().map_err(|_| FinalUseError::Unavailable)
     }
 }
 
-fn read_bounded(directory: &File, name: &str, maximum: usize) -> Result<Vec<u8>, FinalUseError> {
-    let mut bytes = Vec::new();
-    open_private(directory, name, Access::Read)?
-        .take(u64::try_from(maximum).map_err(|_| FinalUseError::InvalidTrust)? + 1)
-        .read_to_end(&mut bytes)
-        .map_err(|_| FinalUseError::Unavailable)?;
-    if bytes.len() > maximum {
-        return Err(FinalUseError::InvalidTrust);
-    }
-    Ok(bytes)
-}
-
-enum Access {
-    Read,
-    Write,
-    Create,
-}
-
-#[cfg(unix)]
-fn prepare_directory(root: &Path) -> Result<File, FinalUseError> {
-    use std::os::unix::fs::DirBuilderExt;
-    use std::os::unix::fs::MetadataExt;
-    if let Err(error) = std::fs::DirBuilder::new().mode(0o700).create(root)
-        && error.kind() != std::io::ErrorKind::AlreadyExists
-    {
-        return Err(FinalUseError::Unavailable);
-    }
-    let directory: File = rustix::fs::open(
-        root,
-        rustix::fs::OFlags::RDONLY
-            | rustix::fs::OFlags::DIRECTORY
-            | rustix::fs::OFlags::NOFOLLOW
-            | rustix::fs::OFlags::CLOEXEC,
-        rustix::fs::Mode::empty(),
-    )
-    .map_err(|_| FinalUseError::UnsafeStateDirectory)?
-    .into();
-    let metadata = directory
-        .metadata()
-        .map_err(|_| FinalUseError::Unavailable)?;
-    if !metadata.is_dir()
-        || metadata.mode() & 0o077 != 0
-        || metadata.uid() != rustix::process::geteuid().as_raw()
-    {
-        return Err(FinalUseError::UnsafeStateDirectory);
-    }
-    Ok(directory)
-}
-
-#[cfg(unix)]
-fn open_private(directory: &File, name: &str, access: Access) -> Result<File, FinalUseError> {
-    use rustix::fs::Mode;
-    use rustix::fs::OFlags;
-    use std::os::unix::fs::MetadataExt;
-    let flags = match access {
-        Access::Read => OFlags::RDONLY,
-        Access::Write => OFlags::RDWR,
-        Access::Create => OFlags::RDWR | OFlags::CREATE,
-    } | OFlags::NOFOLLOW
-        | OFlags::CLOEXEC;
-    let file: File = rustix::fs::openat(directory, name, flags, Mode::RUSR | Mode::WUSR)
-        .map_err(|_| FinalUseError::Unavailable)?
-        .into();
-    let metadata = file.metadata().map_err(|_| FinalUseError::Unavailable)?;
-    if !metadata.is_file()
-        || metadata.mode() & 0o077 != 0
-        || metadata.nlink() != 1
-        || metadata.uid() != rustix::process::geteuid().as_raw()
-    {
-        return Err(FinalUseError::UnsafeStateDirectory);
-    }
-    Ok(file)
-}
-
-#[cfg(not(unix))]
-fn prepare_directory(_root: &Path) -> Result<File, FinalUseError> {
-    Err(FinalUseError::UnsafeStateDirectory)
-}
-#[cfg(not(unix))]
-fn open_private(_directory: &File, _name: &str, _access: Access) -> Result<File, FinalUseError> {
-    Err(FinalUseError::UnsafeStateDirectory)
-}
-
-#[cfg(unix)]
-fn entry_exists(directory: &File, name: &str) -> Result<bool, FinalUseError> {
-    match rustix::fs::statat(directory, name, rustix::fs::AtFlags::SYMLINK_NOFOLLOW) {
-        Ok(_) => Ok(true),
-        Err(rustix::io::Errno::NOENT) => Ok(false),
-        Err(_) => Err(FinalUseError::Unavailable),
-    }
-}
-
-#[cfg(unix)]
-fn replace_state(directory: &File) -> Result<(), FinalUseError> {
-    rustix::fs::renameat(directory, "authority.next", directory, "authority.json")
-        .map_err(|_| FinalUseError::Unavailable)
-}
-
-#[cfg(unix)]
-fn replace_claims(directory: &File) -> Result<(), FinalUseError> {
-    rustix::fs::renameat(
-        directory,
-        "authority.claims.next",
-        directory,
-        "authority.claims",
-    )
-    .map_err(|_| FinalUseError::Unavailable)
-}
-
-#[cfg(not(unix))]
-fn entry_exists(_directory: &File, _name: &str) -> Result<bool, FinalUseError> {
-    Err(FinalUseError::UnsafeStateDirectory)
-}
-#[cfg(not(unix))]
-fn replace_state(_directory: &File) -> Result<(), FinalUseError> {
-    Err(FinalUseError::UnsafeStateDirectory)
-}
-#[cfg(not(unix))]
-fn replace_claims(_directory: &File) -> Result<(), FinalUseError> {
-    Err(FinalUseError::UnsafeStateDirectory)
-}
+#[path = "final_use_store_io.rs"]
+mod io;
+use io::Access;
+use io::entry_exists;
+use io::open_private;
+use io::read_bounded;
+use io::replace_claims;
+use io::replace_state;
 
 #[cfg(all(test, unix))]
 #[path = "final_use_store_tests.rs"]

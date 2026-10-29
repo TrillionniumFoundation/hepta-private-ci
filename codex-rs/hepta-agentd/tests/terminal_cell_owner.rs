@@ -360,7 +360,12 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
     use codex_hepta_paths::HeptaFleetRoot;
     use std::sync::Arc;
 
-    let temp = tempfile::tempdir().unwrap();
+    let temp = tempfile::tempdir_in(
+        tempfile::env::temp_dir()
+            .canonicalize()
+            .expect("canonical temporary parent"),
+    )
+    .unwrap();
     let fleet = HeptaFleetRoot::parse(temp.path().to_path_buf())
         .unwrap()
         .layout();

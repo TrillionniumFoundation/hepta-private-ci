@@ -99,111 +99,70 @@ fn cur_project_cwd(project_storage: &Path, external_agent_home: &Path) -> Option
 
 fn decode_cur_project_path(encoded: &str) -> Option<PathBuf> {
     #[cfg(not(windows))]
-    let mut path = PathBuf::from("/");
+    let root = PathBuf::from("/");
 
     #[cfg(windows)]
-    let (encoded, mut path) = {
+    let (encoded, root) = {
         let (drive, encoded) = decode_cur_windows_project_drive(encoded)?;
         (encoded, PathBuf::from(format!("{drive}:\\")))
     };
 
-    let encoded = encoded.strip_prefix('-').unwrap_or(encoded);
-    for component in encoded.split('-') {
-        if component.is_empty()
-            || matches!(component, "." | "..")
-            || component.contains(['/', '\\', ':'])
-        {
-            return None;
-        }
-        path.push(component);
+    let components = encoded
+        .strip_prefix('-')
+        .unwrap_or(encoded)
+        .split('-')
+        .take(MAX_CUR_PROJECT_PATH_PROBES + 1)
+        .collect::<Vec<_>>();
+    if components.len() > MAX_CUR_PROJECT_PATH_PROBES
+        || components.iter().any(|component| {
+            component.is_empty()
+                || matches!(*component, "." | "..")
+                || component.contains(['/', '\\', ':'])
+        })
+    {
+        return None;
     }
 
     let mut matched_path = None;
+    let mut pending = vec![(root, 0)];
     let mut probes = 0;
-    let mut inspect = |candidate: PathBuf| {
-        if probes >= MAX_CUR_PROJECT_PATH_PROBES {
-            return None;
-        }
-        probes += 1;
-        if candidate.is_dir() {
-            if matched_path
-                .as_ref()
-                .is_some_and(|matched_path| matched_path != &candidate)
-            {
-                return None;
-            }
-            matched_path = Some(candidate);
-        }
-        Some(())
-    };
-    inspect(path.clone())?;
-
-    for suffix_length in 2..=4 {
-        let mut parent = path.as_path();
-        let mut suffix = Vec::with_capacity(suffix_length);
-        for _ in 0..suffix_length {
-            let Some(component) = parent.file_name().and_then(|name| name.to_str()) else {
-                break;
-            };
-            suffix.push(component);
-            let Some(ancestor) = parent.parent() else {
-                break;
-            };
-            parent = ancestor;
-        }
-        if suffix.len() != suffix_length {
-            break;
-        }
-        suffix.reverse();
-
-        for separator in CUR_PROJECT_SEPARATORS {
-            inspect(parent.join(suffix.join(separator)))?;
-        }
-    }
-
-    let mut ancestor = path.parent();
-    while let Some(right) = ancestor {
-        let Some(right_name) = right.file_name().and_then(|name| name.to_str()) else {
-            break;
-        };
-        let Some(left) = right.parent() else {
-            break;
-        };
-        let Some(left_name) = left.file_name().and_then(|name| name.to_str()) else {
-            break;
-        };
-        let Some(prefix) = left.parent() else {
-            break;
-        };
-        let Ok(trailing) = path.strip_prefix(right) else {
-            return None;
-        };
-
-        for separator in CUR_PROJECT_SEPARATORS {
-            let merged_prefix = prefix.join(format!("{left_name}{separator}{right_name}"));
-            if probes >= MAX_CUR_PROJECT_PATH_PROBES {
-                return None;
-            }
-            probes += 1;
-            if !merged_prefix.is_dir() {
+    while let Some((prefix, offset)) = pending.pop() {
+        let remaining = &components[offset..];
+        for length in 1..=remaining.len().min(4) {
+            // Retain the original pairwise ancestor and two-to-four-part leaf
+            // reconstructions, but compose them across existing prefixes.
+            if length > 2 && length != remaining.len() {
                 continue;
             }
-
-            if probes >= MAX_CUR_PROJECT_PATH_PROBES {
-                return None;
+            let separators = if length == 1 {
+                &[""][..]
+            } else {
+                &CUR_PROJECT_SEPARATORS[..]
+            };
+            for separator in separators {
+                let candidate = prefix.join(remaining[..length].join(separator));
+                // Every branch shares this budget. Even an already-found full
+                // match is unusable if uniqueness cannot be checked within it.
+                if probes >= MAX_CUR_PROJECT_PATH_PROBES {
+                    return None;
+                }
+                probes += 1;
+                if !candidate.is_dir() {
+                    continue;
+                }
+                if length < remaining.len() {
+                    pending.push((candidate, offset + length));
+                } else {
+                    if matched_path
+                        .as_ref()
+                        .is_some_and(|matched_path| matched_path != &candidate)
+                    {
+                        return None;
+                    }
+                    matched_path = Some(candidate);
+                }
             }
-            probes += 1;
-            let candidate = merged_prefix.join(trailing);
-            if !candidate.is_dir()
-                || matched_path
-                    .as_ref()
-                    .is_some_and(|matched_path| matched_path != &candidate)
-            {
-                return None;
-            }
-            matched_path = Some(candidate);
         }
-        ancestor = Some(left);
     }
 
     matched_path

@@ -1,0 +1,677 @@
+{
+  "schema": "independent-evidence-doc-readonly-review-v1",
+  "recorded_utc": "2026-10-26T20:04:49.412993+00:00",
+  "candidate_manifest_sha256": "14c8183a56df7ea474cd3c31e4ea4e9860c3811bc424dd65fa33e0fb01945274",
+  "source_base": "82f6e9e906afd21c3fcef1ae5d872d79b4a3b1f0",
+  "source_tree": "f766fb9170af7566c0bce4ac38a3b52842448496",
+  "candidate8_files_readback": [
+    {
+      "path": "docs/DEVELOPMENT.md",
+      "bytes": 161943,
+      "sha256": "8ec23ffdc95f4f0043166f7690651fffc22facc33567e6b50382b50b40da6cdb"
+    },
+    {
+      "path": "qualification/pn0-ci/rog-d66-host-first-RED-and-source-map-20261026/README.md",
+      "bytes": 3096,
+      "sha256": "31cba3e770bafdf531620e93126f16e44110fdbedce1ced6ad55a3c561cfccf8"
+    },
+    {
+      "path": "qualification/pn0-ci/rog-d66-host-first-RED-and-source-map-20261026/original-host-first-RED.tar.gz",
+      "bytes": 1129912,
+      "sha256": "ed77000b94b0f8a25855282ba88b8b931ee13c9d791f721fefb65825a6505ca7"
+    },
+    {
+      "path": "qualification/pn0-ci/rog-d66-host-first-RED-and-source-map-20261026/original-host-manifest.json",
+      "bytes": 8281,
+      "sha256": "923a8bb5044e084b0a87cbfbafd61330a8b4e968447223490abb2aa27f6a691b"
+    },
+    {
+      "path": "qualification/pn0-ci/rog-d66-host-first-RED-and-source-map-20261026/original-host-receipt.json",
+      "bytes": 4308,
+      "sha256": "b8cdd0e81d765ed195a92e827e7bea2907359f13455270f75e0cf9b1821c5929"
+    },
+    {
+      "path": "qualification/pn0-ci/rog-d66-host-first-RED-and-source-map-20261026/source-map-final-PASS-receipt.json",
+      "bytes": 894,
+      "sha256": "0f4a18fc18b1de3fc6689f3818e423a8c066fc64cbc2b0c790e8d8edcdd9ca1c"
+    },
+    {
+      "path": "qualification/pn0-ci/rog-d66-host-first-RED-and-source-map-20261026/source-map-first-FAIL-receipt.json",
+      "bytes": 919,
+      "sha256": "d1dc78bf85a6ad923f565976c7125342e5789f45b02633e1a4344ccb617a4f21"
+    },
+    {
+      "path": "qualification/pn0-ci/rog-d66-host-first-RED-and-source-map-20261026/source-map-second-FAIL-receipt.json",
+      "bytes": 832,
+      "sha256": "bb2696b55f6c86c0c9d888f3d89328c607fbb31e4ca2c480484c721e72e0c1b3"
+    }
+  ],
+  "archive": {
+    "sha256": "ed77000b94b0f8a25855282ba88b8b931ee13c9d791f721fefb65825a6505ca7",
+    "exact_members": 33,
+    "frozen_entries": 32,
+    "self_manifest_exact": true,
+    "safe_regular_relative_paths": true,
+    "each_original_source_file_byte_exact": true,
+    "member_readback": [
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/conditional-admission-receipt.json",
+        "bytes": 6011,
+        "sha256": "958aade8b68d0c71b368f2a6d5d89242c8d53985225dc6208d05b8f726e95c78",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/active-scoped-Cargo-before.json",
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/actual-role-birth-observation.json",
+        "bytes": 438,
+        "sha256": "6c9d436576224afbe000d55abd146495e1e7e55fb851a1b8ed5b406c56a1bba0",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/actual-role-caps.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/actual-role-caps.stdout",
+        "bytes": 215,
+        "sha256": "929e2985e95d5054dc65f2daaaaf6e26c4c31de60901e7f552f87023a8e79e89",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/all-autofix-source-after.diff",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/durable-original/child.json",
+        "bytes": 116,
+        "sha256": "04fc521a6b2c55f447afd3122bb25b8acce68385d9e426f3e54471bc9a24d645",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/durable-original/exit.json",
+        "bytes": 305,
+        "sha256": "75460c1bce1dd14199274b6660f579297bfcf6d2fc6c11be2987942d4669cb6e",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/durable-original/launch.json",
+        "bytes": 95,
+        "sha256": "727b0a7341d90da9e473ed5ed72bd72e0377cd117d1cc8dcd324984e9793e1cf",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/durable-original/owner-intent.json",
+        "bytes": 329,
+        "sha256": "aca34c989af1de486a6f13a0399155d0a38587ba862696c6b02c0c3035c543fc",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/durable-original/request.json",
+        "bytes": 900,
+        "sha256": "dd276c0097f9e59a46e39b7abc2202d4df4e61151c5ef04bd760bafe6e4a1aa6",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/durable-original/runner.py",
+        "bytes": 8988,
+        "sha256": "d7701cbf0913e94668309e4c9b6e023f9e5fbcba6aeb9c77d1e82055c3f9e346",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/durable-original/started.json",
+        "bytes": 329,
+        "sha256": "aca34c989af1de486a6f13a0399155d0a38587ba862696c6b02c0c3035c543fc",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/durable-original/stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/durable-original/stdout.log",
+        "bytes": 1131,
+        "sha256": "134ca2f1104aae0963f4ff84491734d8fa8642344528e741285673991b9dea03",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/final-source-admission.json",
+        "bytes": 1320,
+        "sha256": "5815494f9984511a47352826ac96dec97f5e9d2689ea5ac8c7f9e29169d15b30",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/owner-constant-and-start-metadata-only.patch",
+        "bytes": 1709,
+        "sha256": "b12e2c40827b5e9b110e41f72c665fc56b852880d9ce68e35c323e975446f35a",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/owner.py",
+        "bytes": 2144,
+        "sha256": "b8b1c717c560d5ebbdfbd2150b6b4c198f4f4ec7230b6ace1892823156408d30",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/payload-owner-birth-observation.json",
+        "bytes": 432,
+        "sha256": "4ba3926348a152b92f6e02e3207a380efbe658bd01dd384254d8a47c3f593c0c",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/post-terminal-source-integrity.json",
+        "bytes": 645,
+        "sha256": "76d6c78c38e3b10b2fffcdd25868687b56169710fd700c298aa0f2c5c72f8a1c",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/result.json",
+        "bytes": 1267,
+        "sha256": "c6c554fb93d2ae92b64019a030b58904db7cff0de2a596e1c22523708b454d53",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/root-status-before.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/source-after-status.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/start.mcp.json",
+        "bytes": 1469,
+        "sha256": "8bff4f825955fcad210a7b8683024e579fa5a095324d7768dbc4b6b62860b7dd",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/started.json",
+        "bytes": 577,
+        "sha256": "90bc4f222c46baedfc4dcec39226687affab4674d2e2c3ffe90b70cf89166623",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/stderr.log",
+        "bytes": 52428,
+        "sha256": "90bb1884649dcc427d065ad4cf10220e66566f0591664e0ee8baefb96e0eb139",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/stdout.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/terminal-status.mcp.json",
+        "bytes": 631,
+        "sha256": "44cefd577bb5d220375d10061ca87c01a75a3987103d3e2fa267758d752be8bd",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/tracked-source-after.json",
+        "bytes": 2383442,
+        "sha256": "b056ebbce903f471609b7e8ab8b747cc4dbe3d5c5249b05bacf6d6e09e603f83",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/lint-actual-001/tracked-source-before.json",
+        "bytes": 2383442,
+        "sha256": "b056ebbce903f471609b7e8ab8b747cc4dbe3d5c5249b05bacf6d6e09e603f83",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/normal-host-resolve-closure.json",
+        "bytes": 216417,
+        "sha256": "24a68bcecd9831cdf7351138fd30d2e165cf5932602e69a9e2c7d5a73984f5ce",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/original-first-RED-receipt.json",
+        "bytes": 4308,
+        "sha256": "b8cdd0e81d765ed195a92e827e7bea2907359f13455270f75e0cf9b1821c5929",
+        "original_manifest_match": true
+      },
+      {
+        "path": "work/ci-follow/Hepta-incoming-host-scoped-development-lint-admission-20261026-001/frozen-final-manifest.json",
+        "bytes": 8281,
+        "sha256": "923a8bb5044e084b0a87cbfbafd61330a8b4e968447223490abb2aa27f6a691b",
+        "original_manifest_match": true
+      }
+    ]
+  },
+  "actual_host_failure": {
+    "owner_work_seconds": 560.209557299997,
+    "owner_child_exit": -9,
+    "original_owner_actual_child_reaped": true,
+    "durable_exit": 1,
+    "durable_output_complete": true,
+    "durable_outer_timeout": false,
+    "tracked_files_before_after_exact_count": 10198,
+    "all_autoedits_none": true,
+    "original_host_receipt_byte_exact": true,
+    "no_host_type_lint_PASS": true,
+    "no_newCI_native_or_model_PASS": true
+  },
+  "development_doc": {
+    "original_bytes": 160840,
+    "original_sha256": "db8f8162cf0f8683fada485fac4681eef3d9b98ffea7b73e96dcc53e10e9de07",
+    "candidate_bytes": 161943,
+    "candidate_sha256": "8ec23ffdc95f4f0043166f7690651fffc22facc33567e6b50382b50b40da6cdb",
+    "all_original_bytes_preserved_prefix": true,
+    "sole_existing_PN0_append": true
+  },
+  "maps": {
+    "historical_failure_count": 2,
+    "final_static_PASS_count": 1,
+    "receipts": [
+      {
+        "path": "source-map-first-FAIL-receipt.json",
+        "sha256": "d1dc78bf85a6ad923f565976c7125342e5789f45b02633e1a4344ccb617a4f21",
+        "source": "891322114027fe161be4f8811d5722e4881411db",
+        "tree": "06281944ef1f2ed5c3e89913bbac8bd67d68ac57",
+        "exit_code": 1,
+        "seconds": 9.838820353004849,
+        "original_receipt_exact": true,
+        "original_stdout_stderr_hashes_verified": true
+      },
+      {
+        "path": "source-map-second-FAIL-receipt.json",
+        "sha256": "bb2696b55f6c86c0c9d888f3d89328c607fbb31e4ca2c480484c721e72e0c1b3",
+        "source": "37254a26d440438ba5f053ee13e07347fdfd1f21",
+        "tree": "43625333b30a3df1d3cf594555ac7f805c717916",
+        "exit_code": 1,
+        "seconds": 10.243950914999004,
+        "original_receipt_exact": true,
+        "original_stdout_stderr_hashes_verified": true
+      },
+      {
+        "path": "source-map-final-PASS-receipt.json",
+        "sha256": "0f4a18fc18b1de3fc6689f3818e423a8c066fc64cbc2b0c790e8d8edcdd9ca1c",
+        "source": "82f6e9e906afd21c3fcef1ae5d872d79b4a3b1f0",
+        "tree": "f766fb9170af7566c0bce4ac38a3b52842448496",
+        "exit_code": 0,
+        "seconds": 11.796686021989444,
+        "original_receipt_exact": true,
+        "original_stdout_stderr_hashes_verified": true
+      }
+    ],
+    "final_scope": "source_navigation_and_declared_evidence_not_build_or_execution",
+    "productionImplementationProved": false,
+    "reviewed_registry_module_count": 40,
+    "input_selector_records": [
+      {
+        "module": "platform.types",
+        "map_path": "docs/modules/platform.types/IMPLEMENTATION_MAP.json",
+        "map_sha256": "bed7b4df066d6bfb52927ac27b70084d6ca3022aae2b6c556b5c05bbc2c58309",
+        "source_identity_policy": "candidate_or_exact_observation_v1",
+        "selector_count": 25,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "platform.wire",
+        "map_path": "docs/modules/platform.wire/IMPLEMENTATION_MAP.json",
+        "map_sha256": "8312c8d0dc012a2ee22c7629da04a9c8cfb0c0e277e53fcb11cfa48ef9dfffab",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 22,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "kernel.authority",
+        "map_path": "docs/modules/kernel.authority/IMPLEMENTATION_MAP.json",
+        "map_sha256": "89fa7d041c5d609df3566f7fcf452976bad8deee7093bae076fd00c43198d170",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 26,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "kernel.operations",
+        "map_path": "docs/modules/kernel.operations/IMPLEMENTATION_MAP.json",
+        "map_sha256": "db346755cf2cce3b35c39b715940d49fba595b03c08db8a0097f6d915a9a3237",
+        "source_identity_policy": "candidate_or_exact_observation_v1",
+        "selector_count": 37,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "kernel.evidence",
+        "map_path": "docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json",
+        "map_sha256": "75eda67a1db201aad0aa4f9afc9954418463b5a6b498443e1cdabbaddb0e513b",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 10,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "runtime.supervisor",
+        "map_path": "docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json",
+        "map_sha256": "04f82d5f111a1a7b66b24678e2b74317294c472bfb2cb189f23a086f7ebc29e4",
+        "source_identity_policy": "candidate_or_exact_observation_v1",
+        "selector_count": 20,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "runtime.fleet",
+        "map_path": "docs/modules/runtime.fleet/IMPLEMENTATION_MAP.json",
+        "map_sha256": "ca0ac5d6394ca222c25f5ad1fc33baccd7770a61c36d0a92db5e9517f35c80c9",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 4,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "runtime.agentd",
+        "map_path": "docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json",
+        "map_sha256": "e280aa199e6ac765a4f0073cda3bab2ecbb85bf3fbfe80f7f1b9aac36606dd56",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 16,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "runtime.codex",
+        "map_path": "docs/modules/runtime.codex/IMPLEMENTATION_MAP.json",
+        "map_sha256": "a5664b92297fd58b05519e073a81155502240338d8411240b9f87eb7b2126a4d",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 28,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "auth.authbus",
+        "map_path": "docs/modules/auth.authbus/IMPLEMENTATION_MAP.json",
+        "map_sha256": "65cfdbbbda6863323e568c15126c0a4e5934510477301fb1c83b1d505dc651c6",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 6,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "secrets.heptabao",
+        "map_path": "docs/modules/secrets.heptabao/IMPLEMENTATION_MAP.json",
+        "map_sha256": "05359bf59aa80cf425de5aeff96302557efa8277618c2eab8dd254bca9286fc9",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 7,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "inference.control",
+        "map_path": "docs/modules/inference.control/IMPLEMENTATION_MAP.json",
+        "map_sha256": "bf33764981751a430b8595e698d9dbfaf67bcdecdcc7004300f3fb56f8dcf67a",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 5,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "inference.worker",
+        "map_path": "docs/modules/inference.worker/IMPLEMENTATION_MAP.json",
+        "map_sha256": "1129ac2103a6a526112dbbfdfc6552881fcfad1ebb441cdb1249782b9e8ae5ff",
+        "source_identity_policy": "candidate_or_exact_observation_v1",
+        "selector_count": 25,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "objective.compiler",
+        "map_path": "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json",
+        "map_sha256": "fe5a33b1ee471854f083a208171bd02bd44c6140089e4de23df83eb94338c6ff",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 27,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "utility.ndu",
+        "map_path": "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json",
+        "map_sha256": "c91e0ff19f0cccb21151ce85ab9c113d44ea3101b5daa11b8f3dc6f34f606c8b",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 36,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "neuron.runtime",
+        "map_path": "docs/modules/neuron.runtime/IMPLEMENTATION_MAP.json",
+        "map_sha256": "a88c529d383b0c296c93c111b66d2450ddcb2e7dea5ebc40065b9e7bfb6fbdcf",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 25,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "intuition.policy",
+        "map_path": "docs/modules/intuition.policy/IMPLEMENTATION_MAP.json",
+        "map_sha256": "fed9c4b22bedd23984cfe1aa254d4a545e492347a455031f5f4e5b1b48d4156c",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 4,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "prompt.registry",
+        "map_path": "docs/modules/prompt.registry/IMPLEMENTATION_MAP.json",
+        "map_sha256": "ab7b3e86cfbf7d0d16206161f315ad817c66648d4ebcce6c6154cd9594e0de30",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 4,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "prompt.optimizer",
+        "map_path": "docs/modules/prompt.optimizer/IMPLEMENTATION_MAP.json",
+        "map_sha256": "2c3ead4d5fc350ec3fbcb34f7d156704009069252d8a42a2a215f715ac6685b0",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 4,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "context.compiler",
+        "map_path": "docs/modules/context.compiler/IMPLEMENTATION_MAP.json",
+        "map_sha256": "a3a2ef0ceee33db3d1cafb035db87f9fea42ab416df92a4108a69ae092bb5997",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 13,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "intelligence.control",
+        "map_path": "docs/modules/intelligence.control/IMPLEMENTATION_MAP.json",
+        "map_sha256": "bdfc393de775c135c799ea6472851efad0ff9f4bf06bcdf82f2201a49a8f4438",
+        "source_identity_policy": "candidate_or_exact_observation_v1",
+        "selector_count": 42,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "cognitive.types",
+        "map_path": "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json",
+        "map_sha256": "652f67f6f0fb3140204dfa6de23f6334b471d69cb6d66d3afc94169cea86e112",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 11,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "cognitive.store",
+        "map_path": "docs/modules/cognitive.store/IMPLEMENTATION_MAP.json",
+        "map_sha256": "979a8a67b42524d34e54145a61a0d6514abec40cbd3c41596e9d6524b9147cd5",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 19,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "cognitive.read",
+        "map_path": "docs/modules/cognitive.read/IMPLEMENTATION_MAP.json",
+        "map_sha256": "c6c6ac8e3d8d86f6907660ad6a880085c14316ce64931a0d3daaf9955e4808b9",
+        "source_identity_policy": "candidate_or_exact_observation_v1",
+        "selector_count": 29,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "memory.retrieval",
+        "map_path": "docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json",
+        "map_sha256": "435186f0fbbf271750d159327e184686546c843cad78d4b925e1cf9f0dd3d369",
+        "source_identity_policy": "candidate_or_exact_observation_v1",
+        "selector_count": 44,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "memory.federation",
+        "map_path": "docs/modules/memory.federation/IMPLEMENTATION_MAP.json",
+        "map_sha256": "1c8aa326fb0701d64f855528a49052e0c0c2c0943bb26bee293d42fc6e219df4",
+        "source_identity_policy": "candidate_or_exact_observation_v1",
+        "selector_count": 26,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "knowledge.graph",
+        "map_path": "docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json",
+        "map_sha256": "c93e0042c9eb69be6e53ea1c5aaa1f2ccbc3504dce12d67bbc45729f60eedf93",
+        "source_identity_policy": "candidate_or_exact_observation_v1",
+        "selector_count": 40,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "compact.engine",
+        "map_path": "docs/modules/compact.engine/IMPLEMENTATION_MAP.json",
+        "map_sha256": "26a6fa4fceae0b10428dc63ae76f435a81f0133697a4cc29cef08a83ee8d7d70",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 4,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "learning.ledger",
+        "map_path": "docs/modules/learning.ledger/IMPLEMENTATION_MAP.json",
+        "map_sha256": "c80889b136993ea9732623e437349b7e027b98f605f5745bee8531445cbf6eb9",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 44,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "learning.operator",
+        "map_path": "docs/modules/learning.operator/IMPLEMENTATION_MAP.json",
+        "map_sha256": "e42a8820eb6f2756bf0d4201405604af292eb0912973eb965e74dba780576efb",
+        "source_identity_policy": "candidate_or_exact_observation_v1",
+        "selector_count": 18,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "learning.eval",
+        "map_path": "docs/modules/learning.eval/IMPLEMENTATION_MAP.json",
+        "map_sha256": "59226751bc91da85cecf4f017cabef1c8fd27de64d12a0223562aced4e18daf9",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 25,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "learning.artifacts",
+        "map_path": "docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json",
+        "map_sha256": "575f1fd5338a8170cf9ab17587a7decfc3c7205ef3f6a4775aa6097bfbc3fb80",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 23,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "learning.plasticity",
+        "map_path": "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json",
+        "map_sha256": "0667bc9bf2aca7278f663d57fd34b91fcc037f6ca9c348b0177df0c6c47b24c5",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 42,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "automation.taskflow",
+        "map_path": "docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json",
+        "map_sha256": "e387e139a3bdac050f8b8eee83c59b3158fa3142828bf348a5f4fbf76ba3f27b",
+        "source_identity_policy": "candidate_or_exact_observation_v1",
+        "selector_count": 33,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "channel.matrix",
+        "map_path": "docs/modules/channel.matrix/IMPLEMENTATION_MAP.json",
+        "map_sha256": "94bae828d4be7c028d336eea8fd320fb2eea0f869a27a4859dea87c21f4e6d6e",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 12,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "browser.servo",
+        "map_path": "docs/modules/browser.servo/IMPLEMENTATION_MAP.json",
+        "map_sha256": "8f4182e904f540ad5d7bffba3818f03788defcc9d352f38e0edc86a6f38d9732",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 5,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "ui.control",
+        "map_path": "docs/modules/ui.control/IMPLEMENTATION_MAP.json",
+        "map_sha256": "4c62af3d21d679ba0396de43d865041fe1be96196cb5e024bdfb7045d811ec23",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 4,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "ui.native",
+        "map_path": "docs/modules/ui.native/IMPLEMENTATION_MAP.json",
+        "map_sha256": "e569ca689e68646ee357621e6372dde88c9c7b3061975b2c63da64f2caefb9a8",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 4,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "control.runtime",
+        "map_path": "docs/modules/control.runtime/IMPLEMENTATION_MAP.json",
+        "map_sha256": "6942eb3bbeb37f973869af0223319eccb43e13ffd7e872f2816f3d860a3266bd",
+        "source_identity_policy": "legacy_shared_batch",
+        "selector_count": 6,
+        "matching_candidate_paths": []
+      },
+      {
+        "module": "control.engineering",
+        "map_path": "docs/modules/control.engineering/IMPLEMENTATION_MAP.json",
+        "map_sha256": "982588c73cd329e0778644f1db19c37fb73bba825681f969b44e42c543791386",
+        "source_identity_policy": "candidate_or_exact_observation_v1",
+        "selector_count": 31,
+        "matching_candidate_paths": []
+      }
+    ],
+    "changed_path_intersections": [],
+    "documentation_candidate_does_not_change_mapped_inputs": true,
+    "original_final_PASS_remains_bound_to82f6_not_future_commit": true,
+    "no_verifier_rerun_performed": true
+  },
+  "credentials": {
+    "credential_value_patterns_checked": [
+      "github_token",
+      "private_key",
+      "aws_access_key",
+      "credential_header_value",
+      "credential_assignment"
+    ],
+    "actual_credential_values_detected": [],
+    "explicit_proposed_environment_keys": [
+      "CARGO_BUILD_JOBS",
+      "PYTHONDONTWRITEBYTECODE"
+    ],
+    "archive_has_operational_paths_PIDs_hashes_and_source_inventory": true,
+    "scope": "Syntactic audit plus explicit environment review; no tokens/credential values observed, not a universal entropy proof",
+    "credential_value_pattern_literals": {
+      "github_token": "(?:gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,})",
+      "private_key": "-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----",
+      "aws_access_key": "(?:AKIA|ASIA)[A-Z0-9]{16}",
+      "credential_header_value": "(?im)^(?:authorization|proxy-authorization):[ \\t]*(?:Bearer|Basic)[ \\t]+[A-Za-z0-9+/._=-]{20,}",
+      "credential_assignment": "(?im)^\\s*(?:export\\s+)?(?:GITHUB_TOKEN|GH_TOKEN|OPENAI_API_KEY|AWS_SECRET_ACCESS_KEY|AWS_SESSION_TOKEN|ANTHROPIC_API_KEY|PASSWORD)\\s*[=:]\\s*[\"']?[A-Za-z0-9+/_=-]{20,}"
+    },
+    "JSON_sensitive_credential_value_fields": [],
+    "all_archived_and_text_payload_members_checked": 40
+  },
+  "scope": {
+    "root_Git_or_source_modified": false,
+    "workflow_code_tests_limits_acceptance_modified": false,
+    "CI_or_runtime_network_build_test_verify_started": false
+  },
+  "decision": "APPROVE_FINITE_EVIDENCE_AND_PN0_PROSE_ONLY",
+  "blocking_findings": [],
+  "merge_ready": false,
+  "native_or_new_CI_pass": false
+}

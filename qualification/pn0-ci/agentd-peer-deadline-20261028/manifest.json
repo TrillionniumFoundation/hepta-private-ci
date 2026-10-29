@@ -1,0 +1,142 @@
+{
+  "schema": "PN0-agentd-peer-deadline-component-evidence-v1",
+  "source_base": "d3284e385e2b6037dd86752ddd246b616144a87c",
+  "published_input": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+  "members": [
+    {
+      "name": "Linux-UDS-package-started.json",
+      "bytes": 2311,
+      "sha256": "b98dbe75aeea8b516fade45e6becd50f03e402c6312e661cdc9a0cd895dda287"
+    },
+    {
+      "name": "Linux-UDS-package-terminal.json",
+      "bytes": 3138,
+      "sha256": "e15593147ddecaa6ffd5453e63bb6362888ed005c95deecb77535e4173cae6cd"
+    },
+    {
+      "name": "Linux-UDS-package.raw.log",
+      "bytes": 6048,
+      "sha256": "457a308fb9fbd577fb7d93f0358bf0cb0dccb52879fc9a4872992e6d92ef114f"
+    },
+    {
+      "name": "Linux-UDS-strict-clippy-started.json",
+      "bytes": 2195,
+      "sha256": "230893d85b1608797d5df626e35ee090bc2876bca7cf1c774a73d28c24d3d731"
+    },
+    {
+      "name": "Linux-UDS-strict-clippy-terminal.json",
+      "bytes": 3136,
+      "sha256": "7028d8335e3ec8e1581429b45e8f4968c736241d96891f15d519c61b0e7fb0d3"
+    },
+    {
+      "name": "Linux-UDS-strict-clippy.raw.log",
+      "bytes": 1759,
+      "sha256": "04fd2ead6671b4aad035fa974fa5afe62381774951020510c8b349f16b9144ab"
+    },
+    {
+      "name": "README.md",
+      "bytes": 4585,
+      "sha256": "7e8346db7244a2b9327609b4ebda87832dc98edb3ba3dd8cfab6d93169fe4dae"
+    },
+    {
+      "name": "Windows-GNU-UDS-cfgtest-strict-started.json",
+      "bytes": 2240,
+      "sha256": "865cd0bbcaa2aecb6f1ac1e90aac646a54aa6c64bb6b788aa70cdcaee1b3b4d5"
+    },
+    {
+      "name": "Windows-GNU-UDS-cfgtest-strict-terminal.json",
+      "bytes": 3180,
+      "sha256": "875b4a520b446b6f7eeff2f22b3251dd9965726bbd5805b5440537dff3e2d80e"
+    },
+    {
+      "name": "Windows-GNU-UDS-cfgtest-strict.raw.log",
+      "bytes": 1553,
+      "sha256": "281c15cd9ebfacd8b5e26a57314a4a3da27f4d4ec90575c00439b988cc0bffb3"
+    },
+    {
+      "name": "actual-source-apply.json",
+      "bytes": 2478,
+      "sha256": "ee59752f3d8612e895f9f0daf32fe507b4455dd4a3713ea64b8035ae08db14fc"
+    },
+    {
+      "name": "final-fmt-only.delta.patch.gz",
+      "bytes": 303,
+      "sha256": "2682ad65c7e1ea9bb42f37be1d9efa3040bcbb1ce749c0157a74dc27a7aeabb3"
+    },
+    {
+      "name": "final-fmt-started.json",
+      "bytes": 2100,
+      "sha256": "1a3e7accba31c07ae73ffb343f330e99d6d4cc4074e19309c9ce4af1602c1e67"
+    },
+    {
+      "name": "final-fmt-terminal.json",
+      "bytes": 3039,
+      "sha256": "e4a66274123649d759bfe83b9d31c1cb60bd923dd4ddeb38a351839fdd81c1aa"
+    },
+    {
+      "name": "final-fmt.raw.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "final-source-scope.json",
+      "bytes": 3879,
+      "sha256": "0d14f7b473d30fcc34715a1de9bc1e98a32673c796347229f7c5a092287830b1"
+    },
+    {
+      "name": "independent-final-source-and-result-readback.json",
+      "bytes": 24116,
+      "sha256": "246470044415bbad7e00f4933f84b2396dff2acfff1e78d9096a2002e35a745a"
+    },
+    {
+      "name": "original-68-Agentd-test-resource-pins.json",
+      "bytes": 19845,
+      "sha256": "4849b04bcd3b3b0cae36f901c649c6d7fe3daae50851d31ff74f4d019130c915"
+    },
+    {
+      "name": "original-peer-gate-source-review-blocker.json",
+      "bytes": 10168,
+      "sha256": "1ae71961671a85b90207dc8bd7914000846e0b44b1583ec097503684ede376cb"
+    },
+    {
+      "name": "original-peer-gate-source.patch.gz",
+      "bytes": 904,
+      "sha256": "32566b53d47bbeb5f4fa4ccb0715de572548d3394b1de3442dcb15587f1bd0b7"
+    },
+    {
+      "name": "reviewed-revision004-source-manifest.json",
+      "bytes": 8092,
+      "sha256": "c243be8ced8a02ab0b873db69f2eb909fe93a2916044b09169ce63f85884cc0d"
+    },
+    {
+      "name": "reviewed-revision004-source.patch.gz",
+      "bytes": 2918,
+      "sha256": "f7b19f10bdb6a8d560f6d375742e6f9b8eac30688129190f86ee80176b8297ef"
+    }
+  ],
+  "final_scope_file": "final-source-scope.json",
+  "original_FinalUse4_preserved": {
+    "codex-rs/hepta-contracts/src/final_use.rs": "0a6360b6572fc24001ac12a8686dbe2018a6c4484024d8742e1205cfe619f865",
+    "codex-rs/hepta-contracts/src/final_use_live_owner.rs": "750f2902c607cb8bb5663f72ab37785aa1571173b2ae620a93551feffa3ac19f",
+    "codex-rs/hepta-contracts/src/final_use_store.rs": "39a69d36a99aaa569eec1cd5b0d0bb10cc94ab570256612dbdfe0f9814e518e8",
+    "codex-rs/hepta-contracts/src/final_use_windows_tests.rs": "cfc56ebac8e77cf4c362d7f63d9e5f1640a43616b9eed758929921ae7b63a79b"
+  },
+  "existing_DEVELOPMENT_prefix_sha256": "a7e114481091855093a3ca0aa1f65635c75ef6af21f9b0033dd2a4dd54ea1e3b",
+  "new_code_files": 4,
+  "Linux_UDS_tests": {
+    "passed": 13,
+    "failed": 0,
+    "skipped": 0
+  },
+  "Agentd_package": "NOT_RUN",
+  "Windows_native": "NOT_RUN",
+  "strict_clippy_linux_and_GNU_cfgtest": "actual exit0 separately; not native",
+  "original_guard_and_quotas": "unchanged",
+  "APPLY_to_ROG_WIP": true,
+  "COMMITTED": false,
+  "PUBLISHED": false,
+  "task_complete": false,
+  "merge_ready": false,
+  "NO_GO": true,
+  "reviewer_final_state": "Final reviewer completion received before freezing this manifest; intermediate locally assembled manifest/report retained separately outside qualification"
+}

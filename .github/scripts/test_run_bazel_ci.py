@@ -409,6 +409,62 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertIn(">>> referenced by native-archive.o", summary)
         self.assertIn("actual failing test diagnostic", result.stdout)
 
+    def test_authenticated_linux_explicit_target_follows_ci_default(self) -> None:
+        self.env["RUNNER_OS"] = "Linux"
+        self.env["BUILDBUDDY_API_KEY"] = "test-only-token"
+        for platform in (
+            "//:local_linux",
+            "@rules_rs//rs/platforms:x86_64-unknown-linux-musl",
+        ):
+            for flags in ((f"--platforms={platform}",), ("--platforms", platform)):
+                with self.subTest(platform=platform, flags=flags):
+                    result, calls = self.run_wrapper(
+                        "--", "test", *flags, "--", "//fake:target"
+                    )
+                    self.assertEqual(
+                        result.returncode, 0, result.stdout + result.stderr
+                    )
+                    args = calls[-1]
+                    indices = [
+                        index
+                        for index, value in enumerate(args)
+                        if value == "--platforms" or value.startswith("--platforms=")
+                    ]
+                    self.assertGreater(indices[-1], args.index("--config=ci-linux"))
+                    self.assertEqual(
+                        tuple(args[indices[-1] : indices[-1] + len(flags)]), flags
+                    )
+                    self.assertEqual(args[args.index("--") + 1 :], ["//fake:target"])
+
+    def test_keyless_linux_preserves_explicit_target_and_gnu_host_default(self) -> None:
+        self.env["RUNNER_OS"] = "Linux"
+        for platform in (
+            "//:local_linux",
+            "@rules_rs//rs/platforms:x86_64-unknown-linux-musl",
+        ):
+            for flags in ((f"--platforms={platform}",), ("--platforms", platform)):
+                with self.subTest(platform=platform, flags=flags):
+                    result, calls = self.run_wrapper(
+                        "--", "test", *flags, "--", "//fake:target"
+                    )
+                    self.assertEqual(
+                        result.returncode, 0, result.stdout + result.stderr
+                    )
+                    args = calls[-1]
+                    indices = [
+                        index
+                        for index, value in enumerate(args)
+                        if value == "--platforms" or value.startswith("--platforms=")
+                    ]
+                    self.assertEqual(
+                        tuple(args[indices[-1] : indices[-1] + len(flags)]), flags
+                    )
+                    self.assertNotIn("--config=ci-linux", args)
+                    self.assertFalse(
+                        any(value.startswith("--host_platform=") for value in args)
+                    )
+                    self.assertEqual(args[args.index("--") + 1 :], ["//fake:target"])
+
 
 if __name__ == "__main__":
     unittest.main()

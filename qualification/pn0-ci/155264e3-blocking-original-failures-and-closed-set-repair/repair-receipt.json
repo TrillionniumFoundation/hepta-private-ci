@@ -1,0 +1,136 @@
+{
+  "schema": "hepta-pn0-closed-world-source-repair-v1",
+  "recorded_utc": "2026-10-26T16:02:46.320417+00:00",
+  "original_source": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+  "actual_preview": "5c78e40b510c35cbeaa4849790516997c976f1b4",
+  "ordered_parents": [
+    "c38e7727220f32c7410f59083c5ea7878bbae078",
+    "155264e3b5d3dcdafa244cd0c31c336ab25a207f"
+  ],
+  "original_run": 40312011219,
+  "attempt": 1,
+  "root_source_before_inventory_repair": "05a373ccdae72d929464bfeb277f37d1859ecf9a",
+  "source_only_QA_data_change": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+  "scanner_canonical_CALLERS_and_original_asserts_unchanged": {
+    "CALLERS.toml": "355e6f94491023eb4c4d44767582d340c41b727f7725357718dfabe78b95c2f2",
+    "codex-rs/hepta-contracts/CALLERS.toml": "6a6966d66ec8d93c3ff9b56ec51df52a45d463c96c96d6b66b6a34721f079478",
+    "scripts/verify_hepta_callers.py": "e42fb09f4165067053852821a4b901e21c4a521468a01d11150feb605bf7e21b",
+    "scripts/hepta_typed_callers.py": "a0c5a77a7579e6cb72b8b22039f16c99796dcc95d79f439f1174ccffb87f82a3",
+    "qa/b4-no-bypass/test_kernel_authority_closed_world.py": "868dc981a1d0333d76702f8c70babee4f523e0c28c232a002191ac8bc176d937",
+    "qa/b4-no-bypass/test_verify_hepta_callers.py": "19586542c7be4cc3cc49700e07c2c83b7da33013c26bcc9699b11d77d099ba58"
+  },
+  "original_17tests": "FAIL:2",
+  "after_original_17tests": "PASS:17,0skip",
+  "canonical_selftest_exit": 0,
+  "canonical_verify_exit": 0,
+  "not_native_or_new_CI_qualification": true,
+  "other_failures_retained_open": [
+    "Windows18of20 each4lanes",
+    "WindowsBazel3testshards",
+    "WindowsBazelClippy177incompatibletargets",
+    "fiveCargoDenyadvisories",
+    "ordinarythree-modelrounds",
+    "fullreleasecustodyrepair",
+    "independent72hWAN"
+  ],
+  "four_original_artifact_zip_digest_verified": "original-independent-receipt.json; exact ZIPs retained in original local raw archive, not duplicated here",
+  "task_complete": false,
+  "merge_ready": false,
+  "files": [
+    {
+      "path": "original-logs/job-121613021761.decoded-full.log",
+      "bytes": 86742,
+      "sha256": "91002b5a5b8370a0df3ece2d0506b121daf0212d5e2a81243001d6222f550f0a"
+    },
+    {
+      "path": "original-logs/job-121613021780.decoded-full.log",
+      "bytes": 196665,
+      "sha256": "803a1299dbfba9795a4793b9ead9c4e3574e27e655cdbb57b714f5a54ec50fa5"
+    },
+    {
+      "path": "original-logs/job-121613022912.decoded-full.log",
+      "bytes": 861933,
+      "sha256": "af3da538771d8ba96af194692b7edc565ddaadd52653bc5cebee62ce335ea62f"
+    },
+    {
+      "path": "original-logs/job-121613022949.decoded-full.log",
+      "bytes": 861283,
+      "sha256": "405a6f4e6f95662534171e438945f486641fcb8b92340e3e2ff6f5a73cccc8bf"
+    },
+    {
+      "path": "original-logs/job-121613023005.decoded-full.log",
+      "bytes": 696957,
+      "sha256": "2165a4e5f8f7db60b3a2554c56c0d777476dbfc93f41fb25a0c9df127b5f53f4"
+    },
+    {
+      "path": "original-logs/job-121613023226.decoded-full.log",
+      "bytes": 1121885,
+      "sha256": "dfa9625c1dbc0f128a91ca9d893db5f3c65aff1dfc1e88e4cdbc517da31c07fe"
+    },
+    {
+      "path": "original-independent-receipt.json",
+      "bytes": 5291,
+      "sha256": "729ffa3af0b3a0b99850a41a57bfdb6ce7138b7ccb8f16f0f9d6c21df7983969"
+    },
+    {
+      "path": "review/candidate.patch",
+      "bytes": 746,
+      "sha256": "fe73df4a3e9c49019a3d44c806f8b72614085b0f6ab9333cf777191c8cd09041"
+    },
+    {
+      "path": "review/role-review.json",
+      "bytes": 3681,
+      "sha256": "4bd4e173c863fdd1d9c1fc41b48f8e1f85aeca48b4445a85e2f6e96325863b2c"
+    },
+    {
+      "path": "local-original-and-after/after-2-stderr.log",
+      "bytes": 116,
+      "sha256": "70b5d78a8f94715e2ecdff0d5ca4ffa74cd6cc264eecb1205d9ad02817675d16"
+    },
+    {
+      "path": "local-original-and-after/after-2-stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "local-original-and-after/after-apply-receipt.json",
+      "bytes": 2023,
+      "sha256": "ee26deda1b3f1f9cc3ec68b8a1ce42d01a160805a32a543c9dea208502c82ee1"
+    },
+    {
+      "path": "local-original-and-after/baseline-0-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "local-original-and-after/baseline-0-stdout.log",
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda"
+    },
+    {
+      "path": "local-original-and-after/baseline-1-stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "local-original-and-after/baseline-1-stdout.log",
+      "bytes": 16026,
+      "sha256": "31afee59885532188a826f881fc49c8c7cfffaea4f06372b7e08058089706c57"
+    },
+    {
+      "path": "local-original-and-after/baseline-2-stderr.log",
+      "bytes": 1874,
+      "sha256": "0e6e8fb9607110215645c21d4292ac4a51fbb4e8eb444eee90405a5897298a3a"
+    },
+    {
+      "path": "local-original-and-after/baseline-2-stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "local-original-and-after/baseline-receipt.json",
+      "bytes": 2233,
+      "sha256": "6c78d128ee6376571d20cb03e96532f72461be57e10a2889b4c5424e4e0f70b3"
+    }
+  ]
+}

@@ -18,6 +18,7 @@ common --noenable_runfiles
 
 common --enable_platform_specific_config
 common:linux --host_platform=//:local_linux
+common:linux --extra_toolchains=//:linux_x86_64_musl_tests_on_gnu_host_toolchain
 common:windows --host_platform=//:local_windows
 common --@rules_cc//cc/toolchains/args/archiver_flags:use_libtool_on_macos=False
 common --@llvm//config:experimental_stub_libgcc_s
@@ -93,9 +94,9 @@ common:remote --jobs=800
 common:ci --remote_download_minimal
 common:ci --keep_going
 common:ci --verbose_failures
-common:ci --build_metadata=REPO_URL=https://github.com/openai/codex.git
+common:ci --build_metadata=REPO_URL=https://github.com/TrillionniumFoundation/hepta-private-ci.git
 common:ci --build_metadata=ROLE=CI
-common:ci --build_metadata=VISIBILITY=PUBLIC
+# Private verification CI must not opt invocations into anonymous public access.
 # rules_rust derives debug level from Bazel toolchain/compilation-mode settings,
 # not Cargo profiles. Keep CI Rust actions explicit and lean.
 common:ci --@rules_rust//rust/settings:extra_rustc_flag=-Cdebuginfo=0

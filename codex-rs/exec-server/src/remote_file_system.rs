@@ -513,6 +513,23 @@ fn map_authorized_read_remote_error(error: ExecServerError) -> io::Error {
         ExecServerError::Server { code, .. } if code == METHOD_NOT_FOUND_ERROR_CODE => {
             unsupported_authorized_read()
         }
+        ExecServerError::Server { code, message }
+            if code == INVALID_REQUEST_ERROR_CODE && message == "Permission denied" =>
+        {
+            io::Error::new(io::ErrorKind::PermissionDenied, "Permission denied")
+        }
+        ExecServerError::Server {
+            code: -32603,
+            message,
+        } if message == "authorized file read exceeds bound" => io::Error::new(
+            io::ErrorKind::InvalidData,
+            "authorized file read exceeds bound",
+        ),
+        ExecServerError::Server { code, message }
+            if code == NOT_FOUND_ERROR_CODE && message == "No such file or directory" =>
+        {
+            io::Error::new(io::ErrorKind::NotFound, "No such file or directory")
+        }
         ExecServerError::Server {
             code: INVALID_REQUEST_ERROR_CODE | -32602,
             ..

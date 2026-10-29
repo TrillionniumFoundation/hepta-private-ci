@@ -23,7 +23,9 @@ jobs:
     # signal without putting PR latency back on the critical path. When
     # Code-mode unit tests run on every Bazel target. When authenticated RBE
     # is available, the Windows-cross shards exercise the source-built V8 path.
-    timeout-minutes: 60
+    # Both keyless macOS cold builds reached 60 minutes with tests pending.
+    # Preserve all test timeouts; use the existing release job budget here.
+    timeout-minutes: ${{ (matrix.os == 'macos-15-intel' || matrix.os == 'macos-15') && 90 || 60 }}
     strategy:
       fail-fast: false
       matrix:
@@ -37,8 +39,10 @@ jobs:
           # Linux
           - os: ubuntu-24.04
             target: x86_64-unknown-linux-gnu
+            bazel_platform: //:local_linux
           - os: ubuntu-24.04
             target: x86_64-unknown-linux-musl
+            bazel_platform: "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
           # 2026-02-27 Bazel tests have been flaky on arm in CI.
           # Disable until we can investigate and stabilize them.
           # - os: ubuntu-24.04-arm
@@ -81,6 +85,7 @@ jobs:
       - name: bazel test //...
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+          BAZEL_TARGET_PLATFORM: ${{ matrix.bazel_platform }}
         shell: bash
         run: |
           bazel_targets=(
@@ -102,6 +107,11 @@ jobs:
             --test_verbose_timeout_warnings
             --build_metadata=COMMIT_SHA=${GITHUB_SHA}
           )
+          # A matrix label/cache key does not choose a toolchain. Keep the
+          # execution host GNU; only the Linux target follows this mapping.
+          if [[ -n "${BAZEL_TARGET_PLATFORM:-}" ]]; then
+            bazel_test_args+=("--platforms=${BAZEL_TARGET_PLATFORM}")
+          fi
           ./.github/scripts/run-bazel-ci.sh \
             "${bazel_wrapper_args[@]}" \
             -- \

@@ -6,6 +6,8 @@ struct Driver {
     indeterminate: bool,
     corrupt_neuron_head: bool,
     loaded: usize,
+    unload_failures: usize,
+    unload_handles: Vec<DriverModelHandle>,
 }
 
 impl ModelDriver for Driver {
@@ -40,7 +42,14 @@ impl ModelDriver for Driver {
         })
     }
 
-    fn unload(&mut self, _handle: DriverModelHandle) -> Result<(), Error> {
+    fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error> {
+        self.unload_handles.push(handle);
+        if self.unload_failures > 0 {
+            self.unload_failures -= 1;
+            return Err(Error::DriverFailure(
+                "controlled uncertain unload".to_owned(),
+            ));
+        }
         self.loaded = self.loaded.saturating_sub(1);
         Ok(())
     }
@@ -270,4 +279,72 @@ fn neuron_feature_worker_projects_exact_inference_control_receipt() {
     );
     assert!(!receipt.receipt_digest.is_zero());
     assert!(!receipt.authority.grants_any());
+}
+
+#[test]
+fn uncertain_unload_keeps_exact_handle_capacity_and_fences_both_run_routes() {
+    let mut resource = grant();
+    resource.maximum_models = 1;
+    let driver = Driver {
+        unload_failures: 1,
+        ..Driver::default()
+    };
+    let mut worker = InferenceWorker::new(
+        /*now_ms*/ 100,
+        "worker.cleanup".to_owned(),
+        /*generation*/ 3,
+        resource,
+        driver,
+    )
+    .unwrap();
+    let loaded = worker.load_model(/*now_ms*/ 100, manifest()).unwrap();
+    assert_eq!(
+        worker.unload_model(/*now_ms*/ 100, "model.1"),
+        Err(Error::DriverFailure(
+            "controlled uncertain unload".to_owned()
+        ))
+    );
+    assert_eq!(worker.models.len(), 1);
+    assert_eq!(worker.driver.loaded, 1);
+    assert_eq!(
+        worker.run(/*now_ms*/ 100, "model.1", request()),
+        Err(Error::ModelCleanupPending)
+    );
+    assert_eq!(
+        worker.run_neuron_features(/*now_ms*/ 100, "model.1", neuron_feature_request()),
+        Err(Error::ModelCleanupPending)
+    );
+    assert_eq!(
+        worker.load_model(/*now_ms*/ 100, manifest()),
+        Err(Error::ModelAlreadyLoaded)
+    );
+    let mut other = manifest();
+    other.model_id = "model.2".to_owned();
+    assert_eq!(
+        worker.load_model(/*now_ms*/ 100, other),
+        Err(Error::ModelCapacity)
+    );
+    assert_eq!(
+        worker.unload_model(/*now_ms*/ 10_000, "model.1"),
+        Err(Error::GrantExpired)
+    );
+    assert_eq!(worker.driver.unload_handles.len(), 1);
+    assert!(
+        worker
+            .unload_model(/*now_ms*/ 100, "model.1")
+            .unwrap()
+            .terminal_observed
+    );
+    assert!(worker.models.is_empty());
+    assert_eq!(worker.driver.loaded, 0);
+    assert_eq!(worker.driver.unload_handles.len(), 2);
+    assert_eq!(
+        worker.driver.unload_handles[0],
+        worker.driver.unload_handles[1]
+    );
+    assert_eq!(worker.driver.unload_handles[0].opaque_id, loaded.handle_id);
+    assert_eq!(
+        worker.unload_model(/*now_ms*/ 100, "model.1"),
+        Err(Error::ModelNotLoaded)
+    );
 }

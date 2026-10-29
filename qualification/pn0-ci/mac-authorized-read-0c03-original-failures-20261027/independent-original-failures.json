@@ -1,0 +1,584 @@
+{
+  "schema": "PN0-seven-new-terminal-original-independent-v1",
+  "recorded_utc": "2026-10-27T02:39:08.877498+00:00",
+  "scope": "Offline independent verification of existing collector completed02:24:52Z; no API/network/source/test/CI/process mutation or download restart.",
+  "collector_receipt": {
+    "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/seven-new-terminal-complete-original-logs-receipt.json",
+    "bytes": 36394,
+    "sha256": "d4fb300f17d07058193f7fbbc41bb37aa03e27cc8c22c5e9a3c6eacbd4526ac4"
+  },
+  "all7_complete_raw_bytes": 9763231,
+  "all7_source_attempt_annotations_range_SHA256_wait_verified": true,
+  "official_blob_MD5_available_verified": 5,
+  "official_blob_MD5_header_absent": 2,
+  "exact_head_workflow_source": [
+    {
+      "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/exact-public-source/blocking-ci.yml",
+      "bytes": 8755,
+      "sha256": "948571f133ca44df83f97aa81045458ca5dbb74bd10bb675d557283fefda302f",
+      "exact_head_blob_matches": true
+    },
+    {
+      "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/exact-public-source/bazel.yml",
+      "bytes": 21192,
+      "sha256": "153f22a7dd230ca58a795c05826f632591fe83838dffc9e0e4310fcb96ff1556",
+      "exact_head_blob_matches": true
+    },
+    {
+      "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/exact-public-source/v8-canary.yml",
+      "bytes": 19185,
+      "sha256": "60853f7da5413d8e701917cc7d1aade1220e2cc21c8b04ffdc58979260787f9a",
+      "exact_head_blob_matches": true
+    }
+  ],
+  "preview_scope_note": "0806 observed in all7 complete original checkout logs; local git0806 object absent128, so this verifier does not independently reconstruct orderedparents/tree. Earlier exactpair evidence separate.",
+  "jobs": [
+    {
+      "job_id": 121968346599,
+      "name": "CI required",
+      "run_id": 40427967279,
+      "attempt": 1,
+      "head": "0c03d808d6898c2a91ae456bfefcfc5abe925468",
+      "actual_checkout": "0806e7ae5c555d327818fa0c044baa5e73884c91",
+      "actual_checkout_in_complete_raw": true,
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-10-27T02:12:54Z",
+      "completed_at": "2026-10-27T02:13:03Z",
+      "annotations": [
+        {
+          "annotation_level": "failure",
+          "message": "Process completed with exit code 1."
+        }
+      ],
+      "all_annotations_complete": true,
+      "raw": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/job-logs/job121968346599-full-original.log",
+        "bytes": 18472,
+        "sha256": "9d4429a72ad3602847e1a5458cfddca4fd87e90990628a0ccbbebb4255c95c86"
+      },
+      "wire": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/job-logs/ROG-official-readonly-ranges/job121968346599-complete-range.http-original",
+        "bytes": 19541,
+        "sha256": "b85dffaaafb1ba0f352e207457ada8bece969b8c07f19bfe6657c8d4d4697300"
+      },
+      "HTTP206_range_body_SHA256_verified": true,
+      "official_MD5": "VERIFIED",
+      "local_remote_log_reader_wait_zero": true,
+      "wait_receipt": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/job-logs/ROG-official-readonly-ranges/job121968346599-complete-range.receipt.json",
+        "bytes": 2191,
+        "sha256": "c59e60899414579838b8e66dc55098d73b29089118450c59d6fb4e07682ab88e"
+      },
+      "metadata": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/official-metadata/job121968346599-source-and-all-annotations.json",
+        "bytes": 9432,
+        "sha256": "31c6981d38d56d14162e0e9f8f1bed5121f08f0de18e0287286d6d91341394b2"
+      },
+      "critical_line_anchors": [
+        {
+          "line": 237,
+          "text": "2026-10-27T02:13:01.9052602Z CI gate rejected: CI dependencies did not succeed: bazel: failure, blob-size-policy: failure, repo-checks: failure, sdk: failure"
+        },
+        {
+          "line": 238,
+          "text": "2026-10-27T02:13:01.9099252Z ##[error]Process completed with exit code 1."
+        }
+      ],
+      "last_progress": null
+    },
+    {
+      "job_id": 121938664647,
+      "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+      "run_id": 40427967279,
+      "attempt": 1,
+      "head": "0c03d808d6898c2a91ae456bfefcfc5abe925468",
+      "actual_checkout": "0806e7ae5c555d327818fa0c044baa5e73884c91",
+      "actual_checkout_in_complete_raw": true,
+      "status": "completed",
+      "conclusion": "cancelled",
+      "started_at": "2026-10-27T00:42:06Z",
+      "completed_at": "2026-10-27T02:12:36Z",
+      "annotations": [
+        {
+          "annotation_level": "failure",
+          "message": "The job has exceeded the maximum execution time of 1h30m0s"
+        },
+        {
+          "annotation_level": "failure",
+          "message": "The operation was canceled."
+        },
+        {
+          "annotation_level": "warning",
+          "message": "just@1.51.0 for 'aarch64_macos' is not supported; fallback to cargo-binstall"
+        },
+        {
+          "annotation_level": "notice",
+          "message": "Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times."
+        }
+      ],
+      "all_annotations_complete": true,
+      "raw": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/job-logs/job121938664647-full-original.log",
+        "bytes": 1579729,
+        "sha256": "e849154b65e04c44ad514779b9ff7c641ab95374556673c5ffe5ae152a116120"
+      },
+      "wire": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/job-logs/ROG-official-readonly-ranges/job121938664647-complete-range.http-original",
+        "bytes": 1580804,
+        "sha256": "4d025abfac30719c365df11d9b707f70a290cf34aec67e8e471ee9841ae41572"
+      },
+      "HTTP206_range_body_SHA256_verified": true,
+      "official_MD5": "VERIFIED",
+      "local_remote_log_reader_wait_zero": true,
+      "wait_receipt": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/job-logs/ROG-official-readonly-ranges/job121938664647-complete-range.receipt.json",
+        "bytes": 2096,
+        "sha256": "31ae32cc05567ae97ddeaf0cb11141cefaca66bb82070a194e4c6d5820178b8a"
+      },
+      "metadata": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/official-metadata/job121938664647-source-and-all-annotations.json",
+        "bytes": 12545,
+        "sha256": "6c979ad4231fa3e27091ccd7f4012d79b4074b77ce34906bd87aa4762bc47e34"
+      },
+      "critical_line_anchors": [
+        {
+          "line": 728,
+          "text": "2026-10-27T00:42:48.1005510Z ERROR: /Users/runner/work/hepta-private-ci/hepta-private-ci/BUILD.bazel:23:26: name 'Label' is not defined"
+        },
+        {
+          "line": 782,
+          "text": "2026-10-27T00:42:52.8675470Z ERROR: package contains errors: : name 'Label' is not defined"
+        },
+        {
+          "line": 10316,
+          "text": "2026-10-27T01:59:25.8605090Z FAIL: //codex-rs/exec-server:exec-server-authorized_read_rpc-test (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_arm64-fastbuild/testlogs/codex-rs/exec-server/exec-server-authorized_read_rpc-test/test.log)"
+        },
+        {
+          "line": 10477,
+          "text": "2026-10-27T02:03:08.2738720Z FAIL: //codex-rs/exec-server:exec-server-file_system_unix-test (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_arm64-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_unix-test/test.log)"
+        },
+        {
+          "line": 10939,
+          "text": "2026-10-27T02:12:28.8611120Z ##[error]The operation was canceled."
+        }
+      ],
+      "last_progress": {
+        "line": 10938,
+        "text": "2026-10-27T02:12:26.1687490Z [15,833 / 16,766] 79 / 317 tests, 2 failed; Testing //codex-rs/ext/mcp:mcp-hosted_apps_mcp-test; 3s darwin-sandbox ... (30 actions, 4 running)"
+      }
+    },
+    {
+      "job_id": 121938664595,
+      "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+      "run_id": 40427967279,
+      "attempt": 1,
+      "head": "0c03d808d6898c2a91ae456bfefcfc5abe925468",
+      "actual_checkout": "0806e7ae5c555d327818fa0c044baa5e73884c91",
+      "actual_checkout_in_complete_raw": true,
+      "status": "completed",
+      "conclusion": "cancelled",
+      "started_at": "2026-10-27T00:42:08Z",
+      "completed_at": "2026-10-27T02:12:51Z",
+      "annotations": [
+        {
+          "annotation_level": "failure",
+          "message": "The job has exceeded the maximum execution time of 1h30m0s"
+        },
+        {
+          "annotation_level": "failure",
+          "message": "The operation was canceled."
+        },
+        {
+          "annotation_level": "warning",
+          "message": "just@1.51.0 for 'x86_64_macos' is not supported; fallback to cargo-binstall"
+        }
+      ],
+      "all_annotations_complete": true,
+      "raw": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/job-logs/job121938664595-full-original.log",
+        "bytes": 1535156,
+        "sha256": "637816ee4d1686dbc338e5c2d94a75ab5c6635d6380abab95349b63ccfb5df87"
+      },
+      "wire": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/job-logs/ROG-official-readonly-ranges/job121938664595-complete-range.http-original",
+        "bytes": 1536231,
+        "sha256": "e8d372f7bbb02325610a68698c5b402f2c8d10cf4476c712c6bf691e6694c335"
+      },
+      "HTTP206_range_body_SHA256_verified": true,
+      "official_MD5": "VERIFIED",
+      "local_remote_log_reader_wait_zero": true,
+      "wait_receipt": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/job-logs/ROG-official-readonly-ranges/job121938664595-complete-range.receipt.json",
+        "bytes": 2208,
+        "sha256": "49aa03bb2a85d4280f285ed5877ba6c4922c54ed341739c58442cc0ec508bfc2"
+      },
+      "metadata": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/official-metadata/job121938664595-source-and-all-annotations.json",
+        "bytes": 12091,
+        "sha256": "f96053ffff6246cf8107ea59ff75866d6bee1a65549eeb2cdd473eccc069285b"
+      },
+      "critical_line_anchors": [
+        {
+          "line": 792,
+          "text": "2026-10-27T00:43:51.2344230Z ERROR: /Users/runner/work/hepta-private-ci/hepta-private-ci/BUILD.bazel:23:26: name 'Label' is not defined"
+        },
+        {
+          "line": 856,
+          "text": "2026-10-27T00:44:03.2864730Z ERROR: package contains errors: : name 'Label' is not defined"
+        },
+        {
+          "line": 10793,
+          "text": "2026-10-27T02:12:40.0833970Z ##[error]The operation was canceled."
+        }
+      ],
+      "last_progress": {
+        "line": 10792,
+        "text": "2026-10-27T02:12:38.6314230Z [12,621 / 14,948] 20 / 317 tests; Compiling src/compiler/turboshaft/use-map.cc; 16s darwin-sandbox ... (30 actions, 4 running)"
+      }
+    },
+    {
+      "job_id": 121938657766,
+      "name": "Build release aarch64-apple-darwin",
+      "run_id": 40427967213,
+      "attempt": 1,
+      "head": "0c03d808d6898c2a91ae456bfefcfc5abe925468",
+      "actual_checkout": "0806e7ae5c555d327818fa0c044baa5e73884c91",
+      "actual_checkout_in_complete_raw": true,
+      "status": "completed",
+      "conclusion": "cancelled",
+      "started_at": "2026-10-27T00:42:05Z",
+      "completed_at": "2026-10-27T02:12:39Z",
+      "annotations": [
+        {
+          "annotation_level": "failure",
+          "message": "The job has exceeded the maximum execution time of 1h30m0s"
+        },
+        {
+          "annotation_level": "failure",
+          "message": "The operation was canceled."
+        },
+        {
+          "annotation_level": "warning",
+          "message": "Unexpected input(s) 'toolchain', valid inputs are ['targets', 'target', 'components']"
+        },
+        {
+          "annotation_level": "warning",
+          "message": "just@1.51.0 for 'aarch64_macos' is not supported; fallback to cargo-binstall"
+        },
+        {
+          "annotation_level": "notice",
+          "message": "Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times."
+        }
+      ],
+      "all_annotations_complete": true,
+      "raw": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/job-logs/job121938657766-full-original.log",
+        "bytes": 900197,
+        "sha256": "614ec50fc232074a820c0678c9c0537b6b61cbdc71f6daca5b9104e58125948a"
+      },
+      "wire": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/job-logs/ROG-official-readonly-ranges/job121938657766-complete-range.http-original",
+        "bytes": 901269,
+        "sha256": "258e56b5f81ed2af18c10dc58edfea3a9af652747de9cf5e3ab1cb1ac36c29b2"
+      },
+      "HTTP206_range_body_SHA256_verified": true,
+      "official_MD5": "VERIFIED",
+      "local_remote_log_reader_wait_zero": true,
+      "wait_receipt": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/job-logs/ROG-official-readonly-ranges/job121938657766-complete-range.receipt.json",
+        "bytes": 2199,
+        "sha256": "50ec511939ca965297c3a0f9ec80b960f3678545b5c6e39a24b7b2384593972a"
+      },
+      "metadata": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/official-metadata/job121938657766-source-and-all-annotations.json",
+        "bytes": 13649,
+        "sha256": "a3616c75ae6424f1af52848b32d1f7662f4e7c8d19c813eff7298ccf36c397a4"
+      },
+      "critical_line_anchors": [
+        {
+          "line": 7914,
+          "text": "2026-10-27T02:12:30.8878210Z ##[error]The operation was canceled."
+        }
+      ],
+      "last_progress": {
+        "line": 7913,
+        "text": "2026-10-27T02:12:29.9515590Z [14,392 / 14,794] Compiling external/v8+/icu/torque-generated/src/builtins/proxy-get-property-tq-csa.cc [for tool]; 6s darwin-sandbox ... (30 actions, 3 running)"
+      }
+    },
+    {
+      "job_id": 121938657737,
+      "name": "Build ptrcomp-sandbox x86_64-pc-windows-msvc from source",
+      "run_id": 40427967213,
+      "attempt": 1,
+      "head": "0c03d808d6898c2a91ae456bfefcfc5abe925468",
+      "actual_checkout": "0806e7ae5c555d327818fa0c044baa5e73884c91",
+      "actual_checkout_in_complete_raw": true,
+      "status": "completed",
+      "conclusion": "cancelled",
+      "started_at": "2026-10-27T00:42:04Z",
+      "completed_at": "2026-10-27T02:12:41Z",
+      "annotations": [
+        {
+          "annotation_level": "failure",
+          "message": "The job has exceeded the maximum execution time of 1h30m0s"
+        },
+        {
+          "annotation_level": "failure",
+          "message": "The operation was canceled."
+        },
+        {
+          "annotation_level": "warning",
+          "message": "Unexpected input(s) 'toolchain', valid inputs are ['targets', 'target', 'components']"
+        },
+        {
+          "annotation_level": "warning",
+          "message": "just@1.51.0 for 'x86_64_windows' is not supported; fallback to cargo-binstall"
+        }
+      ],
+      "all_annotations_complete": true,
+      "raw": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/job-logs/job121938657737-full-original.log",
+        "bytes": 2393459,
+        "sha256": "38c6125540e0a77bf3b7dfda9b5be1236d8cd801e3cc533a34bb2fa02bba2f39"
+      },
+      "wire": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/job-logs/ROG-official-readonly-ranges/job121938657737-complete-range.http-original",
+        "bytes": 2394398,
+        "sha256": "38dc9a191006f8246fbbd15ac30164b1175444285c7cbb1b28d370223f4e28f2"
+      },
+      "HTTP206_range_body_SHA256_verified": true,
+      "official_MD5": "HEADER_NOT_PRESENT",
+      "local_remote_log_reader_wait_zero": true,
+      "wait_receipt": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/job-logs/ROG-official-readonly-ranges/job121938657737-complete-range.receipt.json",
+        "bytes": 2077,
+        "sha256": "5a71d86a157de3c612ad326f99d55a92395b1d0dc6337f9661ad188cbc1944a9"
+      },
+      "metadata": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/official-metadata/job121938657737-source-and-all-annotations.json",
+        "bytes": 15516,
+        "sha256": "1511f3f874566a4a4bfd9ab27e84f6d2999d03a1b1f7bfc56bd3b98c2bfb1722"
+      },
+      "critical_line_anchors": [
+        {
+          "line": 13118,
+          "text": "2026-10-27T02:12:25.6117182Z ##[error]The operation was canceled."
+        }
+      ],
+      "last_progress": {
+        "line": 13117,
+        "text": "2026-10-27T02:12:21.7416823Z [v8 150.4.0] [2191/2421] CXX obj/v8/v8_compiler/node-marker.obj"
+      }
+    },
+    {
+      "job_id": 121938657705,
+      "name": "Build ptrcomp-sandbox aarch64-apple-darwin",
+      "run_id": 40427967213,
+      "attempt": 1,
+      "head": "0c03d808d6898c2a91ae456bfefcfc5abe925468",
+      "actual_checkout": "0806e7ae5c555d327818fa0c044baa5e73884c91",
+      "actual_checkout_in_complete_raw": true,
+      "status": "completed",
+      "conclusion": "cancelled",
+      "started_at": "2026-10-27T00:42:05Z",
+      "completed_at": "2026-10-27T02:12:40Z",
+      "annotations": [
+        {
+          "annotation_level": "failure",
+          "message": "The job has exceeded the maximum execution time of 1h30m0s"
+        },
+        {
+          "annotation_level": "failure",
+          "message": "The operation was canceled."
+        },
+        {
+          "annotation_level": "warning",
+          "message": "Unexpected input(s) 'toolchain', valid inputs are ['targets', 'target', 'components']"
+        },
+        {
+          "annotation_level": "warning",
+          "message": "just@1.51.0 for 'aarch64_macos' is not supported; fallback to cargo-binstall"
+        },
+        {
+          "annotation_level": "notice",
+          "message": "Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times."
+        }
+      ],
+      "all_annotations_complete": true,
+      "raw": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/job-logs/job121938657705-full-original.log",
+        "bytes": 878057,
+        "sha256": "7458b548f050fc18f44789c5329e5743a302dc6daae167cefc75e37b0f97e604"
+      },
+      "wire": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/job-logs/ROG-official-readonly-ranges/job121938657705-complete-range.http-original",
+        "bytes": 879129,
+        "sha256": "2e764a63765fa459dd8cb82c8ae47e7601361c72e732eb3d1ca6f7663801afb2"
+      },
+      "HTTP206_range_body_SHA256_verified": true,
+      "official_MD5": "VERIFIED",
+      "local_remote_log_reader_wait_zero": true,
+      "wait_receipt": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/job-logs/ROG-official-readonly-ranges/job121938657705-complete-range.receipt.json",
+        "bytes": 2196,
+        "sha256": "da3d4de7abc4f62917cb6de81f98db6a50388e024ab966c60c4271eac5a077fe"
+      },
+      "metadata": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/official-metadata/job121938657705-source-and-all-annotations.json",
+        "bytes": 13569,
+        "sha256": "419782679e60af05a5414572bb76aecf7c195af9e43d962b86667330f3af2d46"
+      },
+      "critical_line_anchors": [
+        {
+          "line": 7790,
+          "text": "2026-10-27T02:12:32.4987640Z ##[error]The operation was canceled."
+        }
+      ],
+      "last_progress": {
+        "line": 7789,
+        "text": "2026-10-27T02:12:32.2049560Z [13,960 / 14,794] Compiling src/compiler/js-generic-lowering.cc [for tool]; 12s darwin-sandbox ... (30 actions, 4 running)"
+      }
+    },
+    {
+      "job_id": 121938657466,
+      "name": "Build ptrcomp-sandbox aarch64-pc-windows-msvc from source",
+      "run_id": 40427967213,
+      "attempt": 1,
+      "head": "0c03d808d6898c2a91ae456bfefcfc5abe925468",
+      "actual_checkout": "0806e7ae5c555d327818fa0c044baa5e73884c91",
+      "actual_checkout_in_complete_raw": true,
+      "status": "completed",
+      "conclusion": "cancelled",
+      "started_at": "2026-10-27T00:42:03Z",
+      "completed_at": "2026-10-27T02:12:43Z",
+      "annotations": [
+        {
+          "annotation_level": "failure",
+          "message": "The job has exceeded the maximum execution time of 1h30m0s"
+        },
+        {
+          "annotation_level": "failure",
+          "message": "The operation was canceled."
+        },
+        {
+          "annotation_level": "warning",
+          "message": "Unexpected input(s) 'toolchain', valid inputs are ['targets', 'target', 'components']"
+        },
+        {
+          "annotation_level": "warning",
+          "message": "just@1.51.0 for 'x86_64_windows' is not supported; fallback to cargo-binstall"
+        }
+      ],
+      "all_annotations_complete": true,
+      "raw": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/job-logs/job121938657466-full-original.log",
+        "bytes": 2458161,
+        "sha256": "9fb3157b82fe81982b392284410d61bdb8be58519816612b4526e81ed43b965f"
+      },
+      "wire": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/job-logs/ROG-official-readonly-ranges/job121938657466-complete-range.http-original",
+        "bytes": 2459100,
+        "sha256": "2737d8cf048c758c2200dbc02b74598b173a1039cf73577ce56c83768bf5311a"
+      },
+      "HTTP206_range_body_SHA256_verified": true,
+      "official_MD5": "HEADER_NOT_PRESENT",
+      "local_remote_log_reader_wait_zero": true,
+      "wait_receipt": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/job-logs/ROG-official-readonly-ranges/job121938657466-complete-range.receipt.json",
+        "bytes": 2208,
+        "sha256": "87cc2c6becbc6d890c7359e80ff5002b7d20585173ed94ed5e000b7b754522f9"
+      },
+      "metadata": {
+        "path": "work/ci-follow/PN0-new-terminal-seven-jobs-original-readonly-20261027T0223Z-001/official-metadata/job121938657466-source-and-all-annotations.json",
+        "bytes": 15614,
+        "sha256": "2b26c908718de4f47817765413b539516a9b72029017d24875698727a9c10571"
+      },
+      "critical_line_anchors": [
+        {
+          "line": 13246,
+          "text": "2026-10-27T02:12:20.4493180Z ##[error]The operation was canceled."
+        }
+      ],
+      "last_progress": {
+        "line": 13245,
+        "text": "2026-10-27T02:12:13.4890936Z [v8 150.4.0] [2257/4431] CXX win_clang_x64/obj/v8/v8_compiler/graph-assembler.obj"
+      }
+    }
+  ],
+  "contract": {
+    "bazel_timeout_line28": "${{ (matrix.os == 'macos-15-intel' || matrix.os == 'macos-15') && 90 || 60 }}",
+    "bazel_fail_fast_false_line30": true,
+    "V8_timeout_line79": "${{ matrix.runner == 'macos-15-intel' && 150 || 90 }}",
+    "V8_fail_fast_false_line92": true,
+    "all6_new_cancelled_original_minutes": 90,
+    "old_different_release_60min_job": 121938664646,
+    "no_fail_fast_or_root_cancel_proved": true,
+    "other_active_intel150min_not_polled": true
+  },
+  "actual_native_failures_before_cancel": {
+    "job": 121938664647,
+    "RPC": {
+      "target": "//codex-rs/exec-server:exec-server-authorized_read_rpc-test",
+      "exit": 101,
+      "passed": 0,
+      "failed": 1,
+      "ignored": 0,
+      "assertion": "capability advertisement must match a valid authorized-read RPC",
+      "source": "exec-server/tests/authorized_read_rpc.rs:94:5",
+      "left": true,
+      "right": false
+    },
+    "filesystem": {
+      "target": "//codex-rs/exec-server:exec-server-file_system_unix-test",
+      "exit": 101,
+      "passed": 102,
+      "failed": 3,
+      "ignored": 0,
+      "failed_tests": [
+        "file_system_bounded_authorized_read_enforces_limit_without_prefix::local",
+        "file_system_bounded_authorized_read_enforces_limit_without_prefix::remote",
+        "file_system_bounded_authorized_read_rejects_symlink_and_parent_escape::remote"
+      ],
+      "exact_bound_failure": "Permission denied",
+      "remote_escape_failure": "unexpected sandbox error message: remote authorized file read was rejected"
+    },
+    "excerpts": [
+      {
+        "first_line": 10316,
+        "last_line": 10339,
+        "text": "10316: 2026-10-27T01:59:25.8605090Z FAIL: //codex-rs/exec-server:exec-server-authorized_read_rpc-test (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_arm64-fastbuild/testlogs/codex-rs/exec-server/exec-server-authorized_read_rpc-test/test.log)\n10317: 2026-10-27T01:59:25.8707100Z INFO: From Testing //codex-rs/exec-server:exec-server-authorized_read_rpc-test:\n10318: 2026-10-27T01:59:25.8808260Z ==================== Test output for //codex-rs/exec-server:exec-server-authorized_read_rpc-test:\n10319: 2026-10-27T01:59:25.8909090Z \n10320: 2026-10-27T01:59:25.9009650Z running 1 test\n10321: 2026-10-27T01:59:25.9102490Z test authorized_read_rpc_is_capability_gated_and_denies_outside_root ... FAILED\n10322: 2026-10-27T01:59:25.9199090Z \n10323: 2026-10-27T01:59:25.9299910Z failures:\n10324: 2026-10-27T01:59:25.9399790Z \n10325: 2026-10-27T01:59:25.9500650Z ---- authorized_read_rpc_is_capability_gated_and_denies_outside_root stdout ----\n10326: 2026-10-27T01:59:25.9600780Z \n10327: 2026-10-27T01:59:25.9701800Z thread 'authorized_read_rpc_is_capability_gated_and_denies_outside_root' (297460) panicked at exec-server/tests/authorized_read_rpc.rs:94:5:\n10328: 2026-10-27T01:59:25.9802200Z assertion `left == right` failed: capability advertisement must match a valid authorized-read RPC\n10329: 2026-10-27T01:59:25.9903380Z   left: true\n10330: 2026-10-27T01:59:26.0004270Z  right: false\n10331: 2026-10-27T01:59:26.0105350Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n10332: 2026-10-27T01:59:26.0205480Z \n10333: 2026-10-27T01:59:26.0341710Z \n10334: 2026-10-27T01:59:26.0442560Z failures:\n10335: 2026-10-27T01:59:26.0582040Z     authorized_read_rpc_is_capability_gated_and_denies_outside_root\n10336: 2026-10-27T01:59:26.0680880Z \n10337: 2026-10-27T01:59:26.0781970Z test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s\n10338: 2026-10-27T01:59:26.0882920Z \n10339: 2026-10-27T01:59:26.0983800Z ================================================================================"
+      },
+      {
+        "first_line": 10477,
+        "last_line": 10485,
+        "text": "10477: 2026-10-27T02:03:08.2738720Z FAIL: //codex-rs/exec-server:exec-server-file_system_unix-test (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_arm64-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_unix-test/test.log)\n10478: 2026-10-27T02:03:08.2846880Z INFO: From Testing //codex-rs/exec-server:exec-server-file_system_unix-test:\n10479: 2026-10-27T02:03:08.2948310Z ==================== Test output for //codex-rs/exec-server:exec-server-file_system_unix-test:\n10480: 2026-10-27T02:03:08.3048940Z \n10481: 2026-10-27T02:03:08.3149450Z running 105 tests\n10482: 2026-10-27T02:03:08.3250670Z test file_system_bounded_authorized_read_enforces_limit_without_prefix::local ... FAILED\n10483: 2026-10-27T02:03:08.3255500Z test file_system_bounded_authorized_read_enforces_limit_without_prefix::remote ... FAILED\n10484: 2026-10-27T02:03:08.3274540Z test file_system_bounded_authorized_read_rejects_symlink_and_parent_escape::local ... ok\n10485: 2026-10-27T02:03:08.3369440Z test file_system_bounded_authorized_read_rejects_symlink_and_parent_escape::remote ... FAILED"
+      },
+      {
+        "first_line": 10588,
+        "last_line": 10616,
+        "text": "10588: 2026-10-27T02:03:09.4115760Z failures:\n10589: 2026-10-27T02:03:09.4247320Z \n10590: 2026-10-27T02:03:09.4450290Z ---- file_system_bounded_authorized_read_enforces_limit_without_prefix::local stdout ----\n10591: 2026-10-27T02:03:09.4548810Z Error: mode=local, exact bound\n10592: 2026-10-27T02:03:09.4649520Z \n10593: 2026-10-27T02:03:09.4749950Z Caused by:\n10594: 2026-10-27T02:03:09.4850660Z     Permission denied\n10595: 2026-10-27T02:03:09.4951040Z \n10596: 2026-10-27T02:03:09.5051900Z ---- file_system_bounded_authorized_read_enforces_limit_without_prefix::remote stdout ----\n10597: 2026-10-27T02:03:09.5152010Z Error: mode=remote, exact bound\n10598: 2026-10-27T02:03:09.5272380Z \n10599: 2026-10-27T02:03:09.5373290Z Caused by:\n10600: 2026-10-27T02:03:09.5373520Z     remote authorized file read was rejected\n10601: 2026-10-27T02:03:09.5474090Z \n10602: 2026-10-27T02:03:09.5578610Z ---- file_system_bounded_authorized_read_rejects_symlink_and_parent_escape::remote stdout ----\n10603: 2026-10-27T02:03:09.5679380Z \n10604: 2026-10-27T02:03:09.5799120Z thread 'file_system_bounded_authorized_read_rejects_symlink_and_parent_escape::remote' (308781) panicked at exec-server/tests/file_system_unix.rs:74:13:\n10605: 2026-10-27T02:03:09.5900960Z unexpected sandbox error message: remote authorized file read was rejected\n10606: 2026-10-27T02:03:09.6002440Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n10607: 2026-10-27T02:03:09.6110720Z \n10608: 2026-10-27T02:03:09.6217880Z \n10609: 2026-10-27T02:03:09.6349630Z failures:\n10610: 2026-10-27T02:03:09.6468910Z     file_system_bounded_authorized_read_enforces_limit_without_prefix::local\n10611: 2026-10-27T02:03:09.6570050Z     file_system_bounded_authorized_read_enforces_limit_without_prefix::remote\n10612: 2026-10-27T02:03:09.6671160Z     file_system_bounded_authorized_read_rejects_symlink_and_parent_escape::remote\n10613: 2026-10-27T02:03:09.6771930Z \n10614: 2026-10-27T02:03:09.6872600Z test result: FAILED. 102 passed; 3 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.31s\n10615: 2026-10-27T02:03:09.6971390Z \n10616: 2026-10-27T02:03:09.7071970Z ================================================================================"
+      }
+    ],
+    "not_timeout_only": true,
+    "historical_runtime_cause": "UNKNOWN; original log no actual /var alias path proof.",
+    "failures_closed": false
+  },
+  "aggregate_CI_required": {
+    "job": 121968346599,
+    "actual_exit": 1,
+    "line237": "CI dependencies did not succeed: bazel: failure, blob-size-policy: failure, repo-checks: failure, sdk: failure",
+    "not_new_independent_compiler_error": true
+  },
+  "limits": {
+    "90min_performance_cause": "UNKNOWN",
+    "V8_documentation_example_error_text_not_compiler_failure": true,
+    "MacIntel_original_Label_then_missing_exports_errors": true,
+    "MacIntel_no_executed_test_FAILURE_observed": true,
+    "no_transient_retry_admitted": true,
+    "task_complete": false,
+    "merge_ready": false
+  },
+  "all_original_assertions_caps_deadlines_history_preserved": true,
+  "no_source_workflow_test_CI_rerun_dispatch_cancel_push_protection_changes": true
+}

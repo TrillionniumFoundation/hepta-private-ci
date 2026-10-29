@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.audit.ancestor-raw-artifact-storage.v1",
+  "schemaVersion": 1,
+  "recorded_utc": "2026-10-28T12:52:11.951637+00:00",
+  "scope": "Storage-only repair of the already-published original Matrixd failure archive. No native qualification or refund.",
+  "original_policy_failure": {
+    "run": 40690255424,
+    "attempt": 1,
+    "job": 122822942177,
+    "source": "aca32e0df184a4a0b1c094918d1cf3dbd20e4588",
+    "actual_preview": "09575e9c3983f79d00b15f3424a4eae561bbed6e",
+    "original_archive_bytes": 5032609,
+    "original_maximum_bytes": 512000,
+    "full_original_job_log_gzip": "blob-policy-original-failure.log.gz",
+    "log_original_bytes": 1366662,
+    "log_original_SHA256": "8ef14a122e82ed27533b937abbd912a1521dd588195a0677e77ab6e347a426dc",
+    "compressed_bytes": 149738,
+    "compressed_SHA256": "9c02170718745b039135b9aca011d06b3134e552019ca507a6f6ab057dcd7f47"
+  },
+  "retention": {
+    "kind": "source_history_ancestor",
+    "pinnedEvidenceMustBeAncestorOfSource": true,
+    "mutableBranchIsNotEvidenceAnchor": true,
+    "evidenceCommit": "42ea2efefe414de11d3c06e1b1f2bb943c103aa5",
+    "evidenceTree": "0947e0f0f6045bf40c391c673a812b04b68807e5",
+    "path": "qualification/pn0-ci/20261028-matrixd-missing-socket-source-fix/original-source-native-results-and-failures.tar.gz",
+    "gitBlobSha": "19e3357d5c70501dd9728f71281e3ce421d13aa9",
+    "bytes": 5032609,
+    "sha256": "072b1092ea3ec2fb5b5fb968182aca07ba48d7dbce6a06093c9e413bb8cd579d",
+    "availableAt": "42ea2efefe414de11d3c06e1b1f2bb943c103aa5:qualification/pn0-ci/20261028-matrixd-missing-socket-source-fix/original-source-native-results-and-failures.tar.gz",
+    "readback_all_members_verified": 41,
+    "original_manifest_unchanged": "manifest.json",
+    "materialization": "Verify the anchor is an ancestor, recover the exact git blob, verify length and SHA256, then verify every original manifest member before replaying original evidence. Missing ancestry, blob or bytes must refuse."
+  },
+  "current_layout": "The unchanged original manifest describes the pinned ancestor layout. Recover its named archive from the immutable ancestor before replay. The complete original archive is preserved in published Git history and a separately verified local original copy.",
+  "existing_pattern": "qualification/pn0-ci/source-history-artifacts-9d88-v1.json; no new hidden future archive or new remote upload is introduced.",
+  "policy_workflow_allowlist_scanner_limit_unchanged": true,
+  "original_failures_tests_resources_and_native_unknowns_unchanged": true,
+  "authorityFlags": {
+    "execution": false,
+    "installation": false,
+    "promotion": false,
+    "budgetRefund": false,
+    "qualification": false
+  },
+  "task_complete": false,
+  "merge_ready": false
+}

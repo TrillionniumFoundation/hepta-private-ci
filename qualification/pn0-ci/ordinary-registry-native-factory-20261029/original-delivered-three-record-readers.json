@@ -1,0 +1,68 @@
+{
+  "schema": "bf36-three-current-Windows-failed-Bazel-complete-official-execution-record-readers-v1",
+  "recorded_utc": "2026-10-29T01:16:42.701032+00:00",
+  "official_schema_primary_source": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/protobuf/spawn.proto",
+  "official_schema_Git_blob": "19f68f22a4d62c4fd1c7c0217aa6a7cb0",
+  "exact_Bazel_version_from_current_source": "9.3.0",
+  "schema_file": {
+    "path": "/home/qian-qi/Documents/Codex/2026-10-25/github-trillionnium-chain-https-github-com/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/bazel93-official-spawn.proto",
+    "bytes": 15858,
+    "sha256": "c617dd0040b3f5ad9f02f8fa6bb5e04bd0d03b037de791b08ccf792ec8dfa05a"
+  },
+  "descriptor": {
+    "path": "/home/qian-qi/Documents/Codex/2026-10-25/github-trillionnium-chain-https-github-com/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/bazel93-official-spawn.descriptor.original.pb",
+    "bytes": 5750,
+    "sha256": "7862398447de3d73918a926c7b5f9b5a8e687aeaaaa643509b79186dfae25a67"
+  },
+  "readers": [
+    {
+      "artifact": 12862732918,
+      "report": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-25/github-trillionnium-chain-https-github-com/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/official-failure-artifact-12862732918/complete-original-execution-record-reader.json",
+        "bytes": 15197,
+        "sha256": "b308d0e44b0c23f7858e297eff5539b473d67b023bd3df46312483e1981efac4"
+      },
+      "failed_targets": {
+        "//codex-rs/exec-server:exec-server-exec_process-test": 1,
+        "//codex-rs/ext/hepta-memory:hepta-memory-unit-tests": 1,
+        "//codex-rs/core:core-unit-tests": 3
+      },
+      "parsed_frames": 92574
+    },
+    {
+      "artifact": 12863442893,
+      "report": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-25/github-trillionnium-chain-https-github-com/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/official-failure-artifact-12863442893/complete-original-execution-record-reader.json",
+        "bytes": 49190,
+        "sha256": "ef7a002326e9041bbd889354e04648a1029c296deddfe1c19406879ef1e27221"
+      },
+      "failed_targets": {
+        "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests": 1,
+        "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests": 1,
+        "//codex-rs/hepta-memory:hepta-memory-unit-tests": 1,
+        "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests": 1,
+        "//codex-rs/app-server:app-server-all-test": 10,
+        "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test": 1,
+        "//codex-rs/cli:cli-sandbox_cloud_config-test": 1,
+        "//codex-rs/core:core-responses_headers-test": 1
+      },
+      "parsed_frames": 87093
+    },
+    {
+      "artifact": 12863646702,
+      "report": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-25/github-trillionnium-chain-https-github-com/work/ci-follow/Hepta-bf36-first-Bazel-blocking-original-failures-20261029-001/official-failure-artifact-12863646702/complete-original-execution-record-reader.json",
+        "bytes": 9994,
+        "sha256": "e0fe662e97fca3fcf0818c39b32a0bd15863e6690b0792eac49251a7c4b02d55"
+      },
+      "failed_targets": {
+        "//codex-rs/ext/queue:queue-queue_service-test": 1,
+        "//codex-rs/hepta-matrixd:hepta-matrixd-unit-tests": 1,
+        "//codex-rs/hepta-agentd:hepta-agentd-unit-tests": 1
+      },
+      "parsed_frames": 89673
+    }
+  ],
+  "original_failures_not_closed_by_parse_or_source_inference": true,
+  "no_native_build_test_retry_or_guard_relaxation": true
+}

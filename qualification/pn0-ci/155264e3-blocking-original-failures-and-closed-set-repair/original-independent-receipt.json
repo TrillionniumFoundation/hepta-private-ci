@@ -1,0 +1,112 @@
+{
+  "QA_candidate": {
+    "baseline": "05a373ccdae72d929464bfeb277f37d1859ecf9a",
+    "baseline_blob": "3bcc1751701ce5da7d5d830b09a3c4ef898c2303",
+    "candidate_file": {
+      "bytes": 18438,
+      "sha256": "1fcb799fc8e1d82764b0a435934bbb0830186c95872b528074a0f3c8ddb89533"
+    },
+    "changed_files": [
+      "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json"
+    ],
+    "existing_checks_command_in_role_review": true,
+    "patch": {
+      "bytes": 746,
+      "sha256": "fe73df4a3e9c49019a3d44c806f8b72614085b0f6ab9333cf777191c8cd09041"
+    },
+    "path": "/home/qian-qi/Documents/Codex/2026-10-25/github-trillionnium-chain-https-github-com/work/ci-follow/hepta155-blocking40312011219-six-failures-readonly-20261026-001/qa-closed-set-candidate",
+    "role_review": {
+      "bytes": 3681,
+      "sha256": "4bd4e173c863fdd1d9c1fc41b48f8e1f85aeca48b4445a85e2f6e96325863b2c"
+    },
+    "run_or_applied": false,
+    "source_scanner_asserts_canonical_CALLERS_original_behavior_tests_unchanged": true
+  },
+  "actual_checkout_preview": "5c78e40b510c35cbeaa4849790516997c976f1b4",
+  "all_necessary_checks_pass": false,
+  "attempt": 1,
+  "base": "c38e7727220f32c7410f59083c5ea7878bbae078",
+  "existing_repairs_not_reapplied": {
+    "all17_0e313_code_paths_same155_05a": true,
+    "all_relevant_closedworld_and_guard_sources_same155_05a": true,
+    "root_model_fixtures2_differ_already": true
+  },
+  "four_original_artifact_ZIPs_GitHub_SHA256_match": true,
+  "full_text_logs": {
+    "count": 6,
+    "encoding_scope": "Connector full decoded UTF8 re-encoded byte-for-byte text;not independent rawHTTP/wire authentication. BOM and CRLF preserved; recordedUTF16 body lengths exactly match connector fullcontent.",
+    "not_MCP_tail": true
+  },
+  "head": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+  "historical_Mac_and_Windows_security_failures_preserved": true,
+  "merge_ready": false,
+  "no_cancel_dispatch_rerun_push_workflow_assertion_budget_or_product_source_changes": true,
+  "ordered_parents": [
+    "c38e7727220f32c7410f59083c5ea7878bbae078",
+    "155264e3b5d3dcdafa244cd0c31c336ab25a207f"
+  ],
+  "recorded_utc": "2026-10-26T15:55:15.630451+00:00",
+  "roots": {
+    "Windows_Bazel_Clippy": "Primary full log lines6850-6876: platform-incompatible explicit *-windows-cross-bin targets;1322/1499top-level targets succeeded then notalltargets analyzed. Do not call this Rust E0063/E0659;executionartifact archived without replay.",
+    "Windows_Bazel_test_shard1": "Actual test assertion failures include agent full-history prompt comparison,environment wait tracing and guardian assessment;raw failures require original causal reproduction,not generic retry.",
+    "Windows_Bazel_test_shard2": "Multiple actual UnsafeStateDirectory failures and original Windows filesystem guard/isolation/delete-boundary failures;no compile or Linux fixturePASS closes them.",
+    "Windows_Bazel_test_shard3": "Actual queue rejection contract,control socket lifecycle,UnsafeStateDirectory and service failures;not assumed transient.",
+    "cargo_deny": "5 real advisory errors:0387 crypto-bigint0.5.5>=0.7.6;0385 ctutils0.4.2>=0.4.4;0391 zstd0.13.3>=0.14.3;0398+0403 zstd-safe7.2.4>=8.2.0. Root independently owns primary advisories/dependency remediation;no lock/ignore edits here.",
+    "repo_checks": "2 actual QA closed-world drift assertions, not quota/network; actual source identical to root05a. Reviewed minimal1JSON inventory candidate preserves scanner/asserts/canonicalCALLERS and full guard chain."
+  },
+  "run_id": 40312011219,
+  "run_primary_snapshot_state": "queued",
+  "schema": "hepta155-blocking-ci-six-failures-primary-readonly-receipt-v1",
+  "six_failure_jobs": [
+    {
+      "conclusion": "failure",
+      "head_sha": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+      "id": 121613021761,
+      "name": "repo-checks / build-test",
+      "run_attempt": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "failure",
+      "head_sha": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+      "id": 121613021780,
+      "name": "cargo-deny / cargo-deny",
+      "run_attempt": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "failure",
+      "head_sha": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+      "id": 121613022912,
+      "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+      "run_attempt": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "failure",
+      "head_sha": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+      "id": 121613022949,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+      "run_attempt": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "failure",
+      "head_sha": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+      "id": 121613023005,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+      "run_attempt": 1,
+      "status": "completed"
+    },
+    {
+      "conclusion": "failure",
+      "head_sha": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+      "id": 121613023226,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+      "run_attempt": 1,
+      "status": "completed"
+    }
+  ],
+  "task_complete": false,
+  "tree": "0b9dede8b0d6812bd4c6a95d9572e886468c5c7f"
+}

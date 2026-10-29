@@ -1,0 +1,26 @@
+{
+  "schema": "exact-merged-source-map-verifier-v1",
+  "recorded_utc": "2026-10-26T19:14:07.780735+00:00",
+  "source_HEAD": "891322114027fe161be4f8811d5722e4881411db",
+  "source_tree": "06281944ef1f2ed5c3e89913bbac8bd67d68ac57",
+  "command": [
+    "python3",
+    "-B",
+    "scripts/hepta-implementation-maps.py",
+    "verify",
+    "--profile",
+    "qualification",
+    "--expected-sha",
+    "891322114027fe161be4f8811d5722e4881411db",
+    "--expected-tree",
+    "06281944ef1f2ed5c3e89913bbac8bd67d68ac57"
+  ],
+  "exit_code": 1,
+  "seconds": 9.838820353004849,
+  "map_source_anchor": "86eb6e2458499623d68fa781d6b285c3971cb332",
+  "map_not_runtime_or_model_or_PR_qualification": true,
+  "before_after_source_clean": true,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "5f7c6ce48744aa210724f351e14ea59d5f4650feec5f0cb5445a44d0ebe841d7",
+  "merge_ready": false
+}

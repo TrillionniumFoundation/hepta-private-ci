@@ -1,0 +1,176 @@
+{
+  "schema": "trnm.controlled-i09-sqlite3513-eleven-material-owner-observation.v1",
+  "scope": "Separate run002 finite engineering observation. I09 controlled byte closure/native read passes; original overall I10 handoff fails exit1. No installation authority.",
+  "run": "root-i09-eleven-material-native-positive-20261026-002",
+  "actual_source": {
+    "chain": {
+      "head": "4c8c2ee70d8aba1fc959900741e89335ddcd71f8",
+      "tree": "1cd27084a7fef9e4d6e4984a5780cf4c3951e72c",
+      "status": ""
+    },
+    "hepta": {
+      "head": "8d25c5d71f7401a383b4c80046c8b26811abe394",
+      "tree": "7d1aa7abb787610b03cd8a319a3f905f33acb2ea",
+      "status": ""
+    }
+  },
+  "not_rebinding_original_run001": {
+    "preserved_descriptor": "i09-eleven-material-controlled-20261026.json",
+    "source_chain": "915f933c2f81151998c9cab6d6b959ad842fb965",
+    "source_hepta": "da4a92026e235556afc3e4a186153d1698618089",
+    "unchanged": true
+  },
+  "actual_engine": {
+    "binary": {
+      "bytes": 3242608,
+      "sha256": "9974e444f0d8e096df182d57b6f7f038e5e6daed8c67066d36c71c569e1f140f",
+      "workspace_path": "work/root-chain-862631a-sqlite3513-cell-release-build-20261026/trnm-cell"
+    },
+    "producer_and_consumer_DB_last_writer_version_number": 3051003,
+    "producer_and_consumer_DB_last_writer_version": "3.51.3",
+    "fresh_DB_inodes_distinct_from_run001": true,
+    "not_full_SDK_or_PN1_qualification": true
+  },
+  "transport": {
+    "material_count": 11,
+    "chunks": 269,
+    "downloaded_bytes": 272190131,
+    "aggregate_transfer_seconds": 4.2576826509975945,
+    "original_limit_seconds": 35,
+    "includes_cache_only_materialize_and_final_readback": true,
+    "supplier_count": 1,
+    "scope": "single-host controlled loopback, notWAN or independentoperator",
+    "received_response_bytes": 272204931,
+    "connections": 280,
+    "max_response_bytes": 555919638,
+    "max_connections": 560,
+    "fresh_consumer_cached_chunks_before_acquisition": 0,
+    "all_eleven_cache_materializations_additional_network_bytes": 0,
+    "provider_natural_exit_before_native": 0,
+    "provider_final_counters": {
+      "schema": "trnm.cell.serve.bounded.v1",
+      "connections": 280,
+      "overloaded": 0,
+      "completed": 280,
+      "peak_active_workers": 2,
+      "sent_response_bytes": 272204931
+    }
+  },
+  "native": {
+    "selector": "smollm_neural_read::tests::native::real_cell_release_original_signed_load_query_and_terminal_unload",
+    "nextest_run_id": "6b3906b7-ac85-4f68-9ff0-9aa70120d23f",
+    "profile": "local",
+    "actual_passed": 1,
+    "actual_failed": 0,
+    "actual_timedout": 0,
+    "original_selector_excluded": 131,
+    "actual_retries": 0,
+    "case_seconds": 10.357,
+    "command_including_compile_seconds": 131.0491740419966,
+    "native_stdout_summary": "1 test run:1 passed,131 skipped; skipped are selector exclusions, not executed cases",
+    "deadline_profile_unchanged": "Original30s*2=60s per attempt, retry1 unchanged; actualfirst attemptPASS"
+  },
+  "actual_model": {
+    "generation": 3,
+    "parameter_sha256": "30504b3d1e4d6e17841b073e1457b119b5f65d2ffe083611a78bff592c391a29",
+    "ready_sha256": "214ba33f752dbc1e7cb3374bf80ea1a31b7ee171564ec06d26d79317890128ac",
+    "sidecar_sha256": "774dc9e474609af7c45e66e8cd4cbfa455c368973453dc9c9029036bdcaed3d7",
+    "closure_commitment": "07cd8d81bf0bcd3f749adeb9e96b2542d0557ec91e69432f7bb2a1280eb35c2b",
+    "readback_sha256": "ff59d7e14d17610dfc6aad3c8a7208226b5b4b560899a2950d8c8d009104034d",
+    "actual_logits_sha256": "42b3893680dc3d22119519a861e4417362046e30f0f18db18ef8e1300b964a9b",
+    "actual_execution_ns": 67453520,
+    "actual_input_tokens": 48
+  },
+  "authorization_and_journal": {
+    "authorizer_binding_calls": 3,
+    "durable_nonce_claim_records": 2,
+    "durable_nonce_epoch": 9,
+    "original_legacy_field_original_final_use_claims": 3,
+    "explanation": "Three authorizer bindings are Load, Query and denied Query. Only the first two burn nonce claims; the denied query executes no forward.",
+    "original_control_requests": 3,
+    "terminal_states_and_consumed_tokens": [
+      [
+        "completed",
+        0
+      ],
+      [
+        "completed",
+        1
+      ],
+      [
+        "failed",
+        0
+      ]
+    ],
+    "cold_journal_reopen_exact": true
+  },
+  "terminal": {
+    "original_supervisor_outcome": "success",
+    "cleanup_method": "wait4",
+    "waited_child_reaped": true,
+    "owned_child_reap_resolved": true,
+    "RSS_scope": "Original direct-child observations/exact wait4 only, not funded WholeU. RSS gap reconciliation remains in raw."
+  },
+  "original_deadlines": {
+    "transfer_seconds": 35,
+    "nextest_seconds": 60,
+    "startup_seconds": 120,
+    "read_seconds": 2,
+    "IO_cap_ms": 1500,
+    "Hepta_Session_shutdown_seconds": 10,
+    "separate_Chain_terminal_seconds": 8
+  },
+  "overall": {
+    "status": "failed",
+    "controller_exit": 1,
+    "elapsed_seconds": 180.1672882730054,
+    "error": "I10 selected installation UNAVAILABLE; controlled byte-closure load is not installation authority",
+    "native_receipt_status": "UNVERIFIED",
+    "installation_I10_success": false,
+    "ordinary_cognitive_context": false,
+    "three_round_improvement": false,
+    "independent_custody_WAN": false,
+    "public_reward": false,
+    "CLI_Agentd_execution_proven": false,
+    "CLI_note": "New dev CLI hash verified as source provenance only; this selected case directly owns PythonSmolLM, not CLI/Agentd end-to-end execution."
+  },
+  "raw_evidence": {
+    "regular_files": 97,
+    "regular_bytes": 818673612,
+    "large_weights_and_DBs_retained_in_place_not_copied_into_bank": true,
+    "full_raw_manifest": {
+      "workspace_path": "work/root-i09-eleven-material-native-positive-preparation-20261026-002/11-actual-run-full-raw-manifest.json",
+      "bytes": 31056,
+      "sha256": "061d6689e9e175de08a32e0bafda509f99ba289524d2f0176cffffda4572a76f"
+    },
+    "actual_result": {
+      "workspace_path": "work/root-i09-eleven-material-native-positive-preparation-20261026-002/12-actual-I09-result-and-limits.json",
+      "bytes": 11906,
+      "sha256": "30373976724d2eb7ee5ef2e878989c3cee10fec44c8d3cd9dd8330837a428f75"
+    },
+    "execution_material_manifest": {
+      "workspace_path": "work/root-i09-eleven-material-native-positive-preparation-20261026-002/13-execution-material-manifest.json",
+      "bytes": 7485,
+      "sha256": "c9b2c3b02303c09a962c718e35d22c0f953f46632093607f08e60ebd8a1721a0"
+    },
+    "terminal_freeze": {
+      "workspace_path": "work/root-i09-eleven-material-native-positive-preparation-20261026-002/14-actual-execution-final-freeze.json",
+      "bytes": 2630,
+      "sha256": "f31aa8bb1d944b3061f2e29a792951ef4986d84c4004f4bb46a07a40491fd3ae"
+    },
+    "projection_scope": "Mirror of existing frozen root receipts, with receipt hashes checked during preparation; not a new97-file independent raw audit or test/model execution."
+  },
+  "qualification": {
+    "I10": false,
+    "selected_installation": false,
+    "CURRENT": false,
+    "ordinary": false,
+    "three_rounds": false,
+    "quality_gain": false,
+    "independent_custody": false,
+    "WAN": false,
+    "public_reward": false,
+    "funded_WholeU": false,
+    "full_SQLite_PN1_or_SDK_acceptance": false
+  }
+}

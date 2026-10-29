@@ -85,6 +85,148 @@ Configuration is immutable for one process generation. Changes affecting authori
 
 ## 5. Contracts, ports and compatibility
 
+The PN4 `controlled_aggregate` adapter uses the existing sealed
+`ProductionVerifiedDispatch` destination port. `ControlledAggregateRegistration`
+freezes one bounded `ControlledAggregateBinding` before source preparation and
+binds its canonical payload to the operation, lease and FinalUse request.
+`ResourceScope::ChildAggregate` cannot be registered for whole-unit settlement;
+`ResourceBudget` keeps U16/A8, a positive controller share and the original
+eight-second bound. A+C memory may leave headroom below U16, including A8/C128
+MiB; CPU 400% and tasks 256 remain exact allocations. A default sixteen-GiB model
+plan therefore remains refused.
+Reservation and settlement-issuer fields are declarations, not verified funding
+or authority. `ControlledAggregateTarget::unavailable` checks the original
+FinalUse authority instance and complete registration, then retains
+`Indeterminate`: it has no physical-entry callback, native owner, settlement
+receipt or AuthBus release. The existing PN4 integration sequence must supply
+original funding/issuer verification and native whole-unit lifetime ownership
+before a future target can cross an actual worker boundary. The same PN4 item
+now also provides `LedgerFundedControlledAggregate::reserve`, which uses the
+existing `AuthBusAuthorityHost`, signed trusted time, current issuer/policy and
+whole-unit quota. Its fresh `hepta.authbus.controlled-aggregate-ledger.v1` effect
+fixes every plan/admission field except the reservation ID derived by that
+ledger. The final payload and signed binding include the returned actual ID.
+`ledger_funded_unavailable` checks the sealed authority, complete registration
+and exact request binding, then rereads original funding and retains liability
+through the existing dispatch/indeterminate transitions. It creates no second
+ledger or key owner and cannot dispatch a native worker, return resources or
+refund. Seven real SQLite/signed-source test groups cover this narrower funding
+composition. `SignedFinalUseGrantCourier` now implements the existing Agentd
+provider for one immutable protected regular file capped at 16 KiB and one exact
+FinalUse binding. Readiness validation is non-consuming; dispatch still uses the
+original signed claim, frontier CAS, nonce owner and final clock checks. The real
+signer CLI, recovered writer and ordinary Child route have a controlled test;
+its SourceLease remains an explicitly signed fixture. Production source policy
+and native whole-unit lifetime-owner integration remain required. No second
+ledger, key or nonce store is created. Existing ordinary Child observations retain their narrower
+semantics, original assertions and eight-second deadline.
+
+The private SmolLM process driver consumes `SmolLmRuntimeIdentityV1`: only the
+parameter digest/generation and executable family/profile copied from the
+existing qualified pin. The unchanged read port retains that complete evaluated
+pin, including its objective/dataset binding, exact request equality and original
+compatibility/FinalUse scope. This private factoring grants no initial admission
+and does not interpret missing evaluation fields as an initial qualification.
+
+The separate initial-only preparation owns its original config, opaque selected
+positive-zero material, concrete original CURRENT reader and warm session in one
+private object. It joins actual Ready/settled load IDs and fixed measured roots
+to the exact selected gen1 parameter bytes before exposing a bounded read-only
+observation. The initial physical port has no evaluated pin and refuses the old
+neural inference trait before admission. It provides no ordinary task route,
+installation, efficacy or reward authority. CURRENT/selector/callback errors are
+sticky; post-load rejection retains the same original session for cleanup, and
+shutdown failure retains it. Startup remains 120 seconds, neural shutdown ten
+seconds, and the separate Chain terminal cutoff eight seconds.
+
+`PreparedSelectedInitialSmolLmV1::with_current_initial_read` now adds a distinct
+initial-only query interface in the same owner. Its private borrowed permit is
+bound to the original physical port; the existing signed control, FinalUse and
+nonce owners still perform admission and settlement. The caller supplies the
+original at-most-two-second execution window. Before/after CURRENT, selection,
+load and forward checks bind the observed scores to the exact initial material.
+The callback receives historical observations: a later error cannot retract
+values it copied and grants no ordinary-task authority. Errors keep material
+unavailable and retain the original session for cleanup. The evaluated trait
+still rejects this initial port. The first source-bound validation on
+`155264e3b5d3dcdafa244cd0c31c336ab25a207f` built the full current CLI in a fresh
+target in 360.862 seconds. The host library then failed compilation with seven
+ambiguous `assert_eq` references and one observer fixture missing its physical
+identity and scope; no library or real-model test executed. The original missing
+debug-directory preflight failure and this compile failure are both retained.
+The four-line successor `fa0ce3e02` explicitly imports the existing assertion
+macro and supplies those fixture fields from its existing pin/digest, preserving
+all assertions. Formatting passes; the successor has not been recompiled or
+qualified. The original 900-second allocation is not restarted. All nine
+original/new real-model cases and the remaining strict checks stay NOT_RUN.
+Agentd composition, selection, installation and next-task acceptance remain open.
+
+The selected-initial owner retains one cleanup task across cancellation of an
+await; a later await consumes that exact result. An uncertain driver unload keeps
+its original model handle and capacity fenced against both run routes. Retrying
+physical unload uses the first Session shutdown's fixed 10-second cutoff, never
+a renewed window; a missing/late receipt remains unknown, including when a later
+call reports `ModelNotLoaded`. This does not change Chain's separate 8-second raw-U
+boundary or issue a resource receipt.
+
+The PN3 SmolLM read owner retains bounded measurement observations in its
+existing mailbox: one validated actual worker Ready and one last successfully
+settled forward. `smollm_neural_measurement.rs` owns opaque, non-serializable
+load/forward observations; the original driver supplies actual response values
+and exact raw-byte hashes. The original control owner attaches its unique load,
+request and reservation IDs after successful settlement. No expected config
+field is copied into an observed root. A new entered read clears the previous
+forward slot; failed/unknown execution exposes no new forward proof. An unload
+attempt closes observation access while retaining evidence on failure; exact
+terminal unload clears both slots. A previously bound load ID cannot be rebound
+or reopened by a later settlement call. This is ephemeral observation state, with no
+history, new writer, journal or recovery authority. The read-only observation
+callback holds the same original worker guard with the worker-to-mailbox lock
+order. Concurrent or recursive reads fail before admission instead of queueing
+behind the callback; the callback must remain bounded and may not dispatch effects.
+
+An explicit fixed-initial-backbone sub-proof checks the actual observed backbone,
+tokenizer and contract against the code-owned SmolLM2 initial commitments. A
+valid generic/trained observation does not automatically receive this proof.
+The proof also remains bound to its actual parameter bytes, generation, Ready
+hash and original control load ID; the initial constructor must match those
+against the original selected initial material. Ready does not return the raw
+269,060,552-byte upstream file hash, so this observation does not claim that
+missing direct receipt. The worker itself retains its original real material
+hash checks and loaded-tensor contract comparison.
+
+The original real-worker native check writes the additional test-only
+`actual-neural-measurement-v1.json` observation after releasing the owner guard.
+It records this one actual settled forward and its unique control IDs under a
+fresh schema, without changing the existing native result V1 or executing an
+additional load/forward/claim.
+
+The additive controlled Cell route uses a separate 64 KiB declaration and
+an opaque, non-cloneable `VerifiedCellMaterialV1`. Its factory verifies the
+fixed original family, six local executable source pins, exact eleven role/path
+roster, actual parent/model/profile identities and every payload, then
+reconstructs the original TCM1/TCR1 bytes and domain identities. The witness
+consumes its checked config, pin and parameters only through the original
+signed read port; it issues no grant or selected-installation authority.
+The new native selector reuses all original claims and assertions and emits
+a fresh controlled-load readback. Original V1 inputs/results are unchanged.
+The subsequent [source-bound eleven-material controlled native case](../../../qualification/learning-generations/real-model-owner-controlled-20261025/i09-eleven-material-controlled-20261026.json)
+passes on Chain `915f933c` / Hepta `da4a920`; declaration unit controls alone do
+not establish that execution. Three authorizer binding calls yield two durable
+nonce claims. The overall handoff remains failed/exit1 because I10 selected
+installation is unavailable. This route does not close ordinary-task use,
+three installed-parent rounds, full runtime closure, durable custody or reward.
+
+The ordinary neural read still uses its original FinalUse/resource admission,
+120-second startup, two-second request and original neural unload boundary
+(currently ten seconds in `Session::shutdown`). The separate Chain aggregate
+terminal boundary remains eight seconds and is untouched. No existing
+evaluated/SystemLongitudinal/child gate changes. Agentd currently drops
+the forward receipt when producing scores; a separately reviewed versioned
+ordinary-task wire is still required. `CognitiveContextSnapshot` V1 and its
+`deny_unknown_fields` schema are unchanged. These observations do not grant
+installation, selection, efficacy, reward or execution authority.
+
 Produced contracts:
 
 None.

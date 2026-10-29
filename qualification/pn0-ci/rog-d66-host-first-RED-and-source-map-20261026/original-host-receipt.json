@@ -1,0 +1,91 @@
+{
+  "schema": "hepta.new-incoming-host.scoped-developerlint.original-first-RED.v1",
+  "recorded_utc": "2026-10-26T19:41:29.152923+00:00",
+  "source_head": "82f6e9e906afd21c3fcef1ae5d872d79b4a3b1f0",
+  "source_tree": "f766fb9170af7566c0bce4ac38a3b52842448496",
+  "role": "new incoming source ordinary scoped development lint only",
+  "command": [
+    "/home/qian-qi/.cargo/bin/just",
+    "fix",
+    "-p",
+    "codex-hepta-infer-worker-host",
+    "--locked",
+    "--offline"
+  ],
+  "real_job": {
+    "host": "main",
+    "id": "1a179b12937-96a-1387",
+    "InvocationID": "898d375b8cb24e48a1af36924fb7a142",
+    "backend_runner_pid": 593668,
+    "payload_owner_pid": 593676,
+    "payload_owner_birth_ticks": 12068290,
+    "just_child_pid": 593682,
+    "just_child_birth_ticks": 12068296,
+    "original_owner_start_monotonic": 120682.957543813,
+    "durable_terminal": "failed/exit1/outputcomplete/notoutertimeout"
+  },
+  "overall": "FAIL_FIRST_ORIGINAL_560_DEADLINE;NOT_RETRIED_OR_RESTARTED",
+  "original_owner": {
+    "result_path": "lint-actual-001/result.json",
+    "result_sha256": "c6c554fb93d2ae92b64019a030b58904db7cff0de2a596e1c22523708b454d53",
+    "exit_code": -9,
+    "child_timed_out": true,
+    "violation": "deadline",
+    "seconds": 560.209557299997,
+    "direct_child_reaped": true,
+    "original_start_preserved": true
+  },
+  "role_caps_observed": {
+    "CPUQuotaPerSecUSec": "2s",
+    "MemoryMax": 8589934592,
+    "unitKillMode": "control-group",
+    "unitRuntimeMax": "infinity;not claimedasunit620cap",
+    "outer620_enforced_by_original_runtime_runner_own_monotonic_deadline": true,
+    "actual_nice": 19,
+    "unit_nice_adjustment": 10,
+    "log_cap_aggregate_bytes": 8388608,
+    "actual_stdout_bytes": 0,
+    "actual_stderr_bytes": 52428,
+    "observed_request_not_native_or_fair_hardware_qualification": true
+  },
+  "raw_stderr": {
+    "path": "lint-actual-001/stderr.log",
+    "sha256": "90bb1884649dcc427d065ad4cf10220e66566f0591664e0ee8baefb96e0eb139",
+    "all_bytes_retained": true,
+    "Rust_error_lines_observed": 0,
+    "warning_lines_observed": 42,
+    "host_check_label_observed": false,
+    "last_progress": "Checking codex-core-plugins; dependency graph incomplete",
+    "interpretation": "Actual finite development-window timeout during dependency checking. Not evidence that new source compiles, and not proof of a Rust source error. No success inferred from absence of error lines."
+  },
+  "source_integrity": {
+    "recorded_utc": "2026-10-26T19:40:34.507878+00:00",
+    "head": "82f6e9e906afd21c3fcef1ae5d872d79b4a3b1f0",
+    "tree": "f766fb9170af7566c0bce4ac38a3b52842448496",
+    "all10198_tracked_files_before_after_byte_mode_exact": true,
+    "changed_tracked_files": [],
+    "Git_status_empty": true,
+    "all_autoedit_diff_bytes": 0,
+    "actual_known_payload_owner593676_absent": true,
+    "actual_known_just_leader593682_absent": true,
+    "actual_backend_runner593668_absent": true,
+    "scoped_Cargo_clippy_rustc_current_processes": [],
+    "note": "This is actual postterminalprocess/sourceobservation, not completeoriginalnativeowned-tree/resourcequalification."
+  },
+  "no_autoedits": "all10198trackedfiles+modebeforeafterexact;emptydiff andcleanGit;Cargo3pinsunchanged;no finalfmt/retestrequiredsolelyfornonexistentcodechanges",
+  "original_other_failures": "Originalmodel900/rootworker600/SDK/supervisor/DPoP/Windows/native/pairbudgetsandfailuresremainunaltered;this newsource devlintFAIL closesnone.",
+  "V8": "No archive/binding/setup/envbypass added; selectednormalhostclosure excludesv8/code-mode-runtime. No modelCLI/weight/load/install/testexecution.",
+  "terminal_limits": "Known payload/just/backendPIDs absent and no current scopedCargo/clippy/rustc observed after durableterminal. This is not full originalnativeowned-tree/wait4/resource-return qualification.",
+  "budget": "560workfence consumed; original620role exhausted/closed. No retry/resume/new620 accepted by this receipt.",
+  "qualification": {
+    "new_host_typecheck_completed": false,
+    "scoped_clippy_passed": false,
+    "new_mechanism_tests_executed": false,
+    "old_model900_or_worker600_closed": false,
+    "native_or_ABI_qualified": false,
+    "I10_or_three_rounds": false,
+    "exact_public_pair_CI_passed": false,
+    "merge_ready": false,
+    "task_complete": false
+  }
+}

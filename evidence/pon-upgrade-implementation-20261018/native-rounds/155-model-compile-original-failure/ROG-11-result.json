@@ -1,0 +1,13 @@
+{
+  "schema": "initial-query-validation-result-v1",
+  "result": "FAIL",
+  "tested_head": "155264e3b5d3dcdafa244cd0c31c336ab25a207f",
+  "authority": "NONE",
+  "overall_I10": "NOT_QUALIFIED",
+  "retained_failure_material": true,
+  "manual_retries": 0,
+  "error": "ValueError('STAGE_FAILED:1')",
+  "traceback": "Traceback (most recent call last):\n  File \"/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/hepta-initial-query-validation-preparation-20261026-001/revision3/validate-once.py\", line 508, in pipeline\n    receipts.append(command(step, number, a, run, env, identity, owners[\"observed_test_counts\"]))\n                    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/hepta-initial-query-validation-preparation-20261026-001/revision3/validate-once.py\", line 371, in command\n    require(code == 0 and selected_ok, f\"STAGE_FAILED:{number}\")\n    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/hepta-initial-query-validation-preparation-20261026-001/revision3/validate-once.py\", line 29, in require\n    raise ValueError(reason)\nValueError: STAGE_FAILED:1\n",
+  "no_cleanup_or_redispatch": true,
+  "finished_wall_ns": 1793017456333830982
+}

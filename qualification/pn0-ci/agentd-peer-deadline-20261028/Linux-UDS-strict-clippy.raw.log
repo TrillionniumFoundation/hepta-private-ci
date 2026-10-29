@@ -1,0 +1,36 @@
+cargo clippy --tests {args}
+    Checking socket2 v0.6.3
+    Checking mio v1.2.0
+    Checking bytes v1.12.1
+    Checking linux-raw-sys v0.12.1
+    Checking rustix v1.1.4
+    Checking tokio v1.53.1
+    Checking tempfile v3.27.0
+    Checking codex-uds v0.0.0 (/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/uds)
+warning: `tokio::sync::MutexGuard` does not refer to a reachable type
+ --> /home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/clippy.toml:4:5
+  |
+4 |     "tokio::sync::MutexGuard",
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: add `allow-invalid = true` to the entry to suppress this warning
+
+warning: `tokio::sync::RwLockReadGuard` does not refer to a reachable type
+ --> /home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/clippy.toml:5:5
+  |
+5 |     "tokio::sync::RwLockReadGuard",
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: add `allow-invalid = true` to the entry to suppress this warning
+
+warning: `tokio::sync::RwLockWriteGuard` does not refer to a reachable type
+ --> /home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/clippy.toml:6:5
+  |
+6 |     "tokio::sync::RwLockWriteGuard",
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: add `allow-invalid = true` to the entry to suppress this warning
+
+warning: `codex-uds` (lib) generated 3 warnings
+warning: `codex-uds` (lib test) generated 3 warnings (3 duplicates)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.82s

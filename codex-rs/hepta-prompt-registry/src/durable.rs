@@ -11,6 +11,7 @@ use std::cell::Cell;
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::fmt;
+#[cfg(not(windows))]
 use std::fs::File;
 use std::io::Read;
 use std::io::Write;
@@ -41,7 +42,7 @@ use crate::PromptRegistryV2Error;
 use crate::PromptRoleV2;
 use crate::RealizationDeliveryV2;
 use crate::RegistryReceipt;
-#[cfg(test)]
+#[cfg(all(test, unix))]
 use crate::VerifiedAdmission;
 use crate::admission::map_final_use_error;
 use crate::final_use_realization_binding;
@@ -53,6 +54,13 @@ use crate::protocol::LEGACY_UNRESOLVED_MODEL_VERSION;
 
 #[path = "durable_payloads.rs"]
 mod payloads;
+#[path = "durable_store_platform.rs"]
+mod platform;
+use platform::Directory;
+#[cfg(windows)]
+use platform::entry_exists;
+#[cfg(windows)]
+use platform::open_private;
 
 const STORE_SCHEMA: u32 = 2;
 const MAX_STATE_BYTES: u64 = 32 * 1024 * 1024;
@@ -106,29 +114,43 @@ impl DurablePromptRegistry {
         Ok(&self.registry)
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     fn diagnostic_registry(&self) -> &PromptRegistry {
         &self.registry
     }
 
+    #[cfg(not(windows))]
     #[must_use]
     pub const fn requires_reopen(&self) -> bool {
         self.poisoned
+    }
+
+    /// Also probe the same retained Windows owner; native refusal is sticky.
+    /// This diagnostic does not replace the per-operation admission barrier.
+    #[cfg(windows)]
+    #[must_use]
+    pub fn requires_reopen(&self) -> bool {
+        self.poisoned || self.store.root.revalidate_shared().is_err()
     }
 
     fn ensure_available(&self) -> Result<(), DurableRegistryError> {
         if self.poisoned {
             return Err(DurableRegistryError::ReopenRequired);
         }
+        #[cfg(windows)]
+        self.store
+            .root
+            .revalidate_shared()
+            .map_err(|_| DurableRegistryError::ReopenRequired)?;
         Ok(())
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     fn fail_directory_sync_after_rename_once(&self) {
         self.store.fail_directory_sync_after_rename_once.set(true);
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     fn fail_storage_full_before_rename_once(&self) {
         self.store.fail_storage_full_before_rename_once.set(true);
     }
@@ -140,7 +162,7 @@ impl DurablePromptRegistry {
         self.commit(|registry| registry.register_factor(factor))
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     pub(crate) fn admit_factor_verified(
         &mut self,
         admission: VerifiedAdmission,
@@ -177,7 +199,7 @@ impl DurablePromptRegistry {
             .map_err(DurableRegistryError::Admission)?
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     pub(crate) fn register_realization_payload_v2(
         &mut self,
         binding: PromptRealizationBindingV2,
@@ -240,7 +262,7 @@ impl DurablePromptRegistry {
             .map_err(DurableRegistryError::Admission)?
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     pub(crate) fn retire_factor(
         &mut self,
         factor_id: &StableId,
@@ -254,7 +276,7 @@ impl DurablePromptRegistry {
         })
     }
 
-    #[cfg(test)]
+    #[cfg(all(test, unix))]
     pub(crate) fn revoke_factor(
         &mut self,
         factor_id: &StableId,
@@ -404,9 +426,7 @@ impl DurablePromptRegistry {
         &mut self,
         mutation: impl FnOnce(&mut PromptRegistry) -> Result<RegistryReceipt, Error>,
     ) -> Result<RegistryReceipt, DurableRegistryError> {
-        if self.poisoned {
-            return Err(DurableRegistryError::ReopenRequired);
-        }
+        self.ensure_available()?;
         let mut next = self.registry.clone();
         let receipt = mutation(&mut next).map_err(DurableRegistryError::Core)?;
         if receipt.disposition != crate::MutationDisposition::Unchanged {
@@ -416,7 +436,13 @@ impl DurablePromptRegistry {
                     self.poisoned = true;
                     return Err(DurableRegistryError::IndeterminateDurability);
                 }
-                Err(error) => return Err(error),
+                Err(error) => {
+                    #[cfg(windows)]
+                    if self.store.root.revalidate_shared().is_err() {
+                        self.poisoned = true;
+                    }
+                    return Err(error);
+                }
             }
         }
         Ok(receipt)
@@ -547,7 +573,7 @@ struct StoredLifecycleEvent {
     event_digest: [u8; 32],
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 fn stored_v2(registry: &PromptRegistry) -> StoredV2 {
     let mut stored = stored_metadata(registry);
     stored.payloads = registry
@@ -1230,7 +1256,8 @@ enum StoredAny {
 }
 
 struct Store {
-    root: File,
+    root: Directory,
+    #[cfg(not(windows))]
     _lock: File,
     payloads: payloads::PayloadState,
     #[cfg(test)]
@@ -1241,14 +1268,17 @@ struct Store {
 
 impl Store {
     fn open(directory: &Path) -> Result<(Self, Option<StoredAny>), DurableRegistryError> {
-        let root = prepare_directory(directory)?;
-        let initialized = entry_exists(&root, "registry.lock")?;
-        let lock = open_private(&root, "registry.lock", Access::Create)?;
-        lock.try_lock()
-            .map_err(|_| DurableRegistryError::StateLocked)?;
+        Self::open_locked(platform::lock_directory(directory)?)
+    }
+
+    fn open_locked(
+        opened: platform::LockedDirectory,
+    ) -> Result<(Self, Option<StoredAny>), DurableRegistryError> {
+        let initialized = opened.initialized;
         let mut store = Self {
-            root,
-            _lock: lock,
+            root: opened.root,
+            #[cfg(not(windows))]
+            _lock: opened.lock,
             payloads: payloads::PayloadState::default(),
             #[cfg(test)]
             fail_directory_sync_after_rename_once: Cell::new(false),
@@ -1316,7 +1346,7 @@ impl Store {
         file.write_all(&bytes)
             .and_then(|()| file.sync_all())
             .map_err(map_precommit_io)?;
-        replace_state(&self.root)?;
+        replace_state(&self.root, &file)?;
         // After rename succeeds the durable outcome is unknown if directory
         // fsync fails. The caller must poison this writer and reopen/reconcile;
         // treating this as an ordinary pre-commit failure could overwrite a
@@ -1404,12 +1434,12 @@ fn open_private(
     Ok(file)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn prepare_directory(_root: &Path) -> Result<File, DurableRegistryError> {
     Err(DurableRegistryError::UnsafeStateDirectory)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn open_private(
     _directory: &File,
     _name: &str,
@@ -1427,19 +1457,32 @@ fn entry_exists(directory: &File, name: &str) -> Result<bool, DurableRegistryErr
     }
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn entry_exists(_directory: &File, _name: &str) -> Result<bool, DurableRegistryError> {
     Err(DurableRegistryError::UnsafeStateDirectory)
 }
 
 #[cfg(unix)]
-fn replace_state(directory: &File) -> Result<(), DurableRegistryError> {
+fn replace_state(directory: &File, _stage: &File) -> Result<(), DurableRegistryError> {
     rustix::fs::renameat(directory, "registry.next", directory, "registry.json")
         .map_err(|_| DurableRegistryError::Unavailable)
 }
 
-#[cfg(not(unix))]
-fn replace_state(_directory: &File) -> Result<(), DurableRegistryError> {
+#[cfg(windows)]
+fn replace_state(
+    _directory: &Directory,
+    stage: &codex_hepta_contracts::windows_private_owner::OriginalStoreFile<'_>,
+) -> Result<(), DurableRegistryError> {
+    use codex_hepta_contracts::windows_private_owner::StageReplaceError;
+    stage
+        .replace_synced("registry.json")
+        .map_err(|error| match error {
+            StageReplaceError::Indeterminate(_) => DurableRegistryError::IndeterminateDurability,
+            StageReplaceError::BeforePublication(_) => DurableRegistryError::Unavailable,
+        })
+}
+#[cfg(not(any(unix, windows)))]
+fn replace_state(_directory: &File, _stage: &File) -> Result<(), DurableRegistryError> {
     Err(DurableRegistryError::UnsafeStateDirectory)
 }
 

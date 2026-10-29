@@ -1,10 +1,14 @@
 use super::*;
 use codex_app_server_client::RemoteAppServerObservedEvent;
 use codex_app_server_protocol::AgentMessageDeltaNotification;
+use codex_app_server_protocol::ThreadItem;
 use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
 use codex_app_server_protocol::TurnStartedNotification;
+
+#[path = "native_output_tests.rs"]
+mod completed_output;
 
 fn binding() -> CodexTurnBinding {
     let payload_digest = Digest32::of_bytes(b"test-turn-payload");
@@ -42,11 +46,11 @@ fn observed(notification: ServerNotification) -> RemoteAppServerObservedEvent {
 }
 
 fn observe_for_test(
+    observation: &mut NativeTurnObservation,
     output: &mut NativeRunOutput,
     notification: ServerNotification,
 ) -> std::result::Result<bool, String> {
-    let binding = binding();
-    observe_event(output, &observed(notification), &binding)
+    observation.observe_event(output, &observed(notification))
 }
 
 fn output() -> NativeRunOutput {
@@ -132,8 +136,10 @@ fn lost_turn_start_ack_reconciles_only_the_exact_in_progress_thread() {
 #[test]
 fn only_the_bound_turn_can_complete_the_native_request() {
     let mut output = output();
+    let mut observation = NativeTurnObservation::new(binding());
     assert!(
         !observe_for_test(
+            &mut observation,
             &mut output,
             terminal("thread-b", "turn-a", TurnStatus::Completed)
         )
@@ -141,6 +147,7 @@ fn only_the_bound_turn_can_complete_the_native_request() {
     );
     assert!(
         !observe_for_test(
+            &mut observation,
             &mut output,
             terminal("thread-a", "turn-b", TurnStatus::Completed)
         )
@@ -149,6 +156,7 @@ fn only_the_bound_turn_can_complete_the_native_request() {
     assert_eq!(output.status, NativeRunStatus::Indeterminate);
     assert!(
         observe_for_test(
+            &mut observation,
             &mut output,
             terminal("thread-a", "turn-a", TurnStatus::Interrupted)
         )
@@ -163,6 +171,7 @@ fn only_the_bound_turn_can_complete_the_native_request() {
 #[test]
 fn output_is_observed_bounded_and_never_predeclares_success() {
     let mut output = output();
+    let mut observation = NativeTurnObservation::new(binding());
     let delta = |thread: &str, text: String| {
         ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
             thread_id: thread.to_string(),
@@ -171,12 +180,27 @@ fn output_is_observed_bounded_and_never_predeclares_success() {
             delta: text,
         })
     };
-    observe_for_test(&mut output, delta("unrelated", "discard".to_string())).unwrap();
-    observe_for_test(&mut output, delta("thread-a", "model output".to_string())).unwrap();
+    observe_for_test(
+        &mut observation,
+        &mut output,
+        delta("unrelated", "discard".to_string()),
+    )
+    .unwrap();
+    observe_for_test(
+        &mut observation,
+        &mut output,
+        delta("thread-a", "model output".to_string()),
+    )
+    .unwrap();
     assert_eq!(output.output, "model output");
     assert_eq!(output.status, NativeRunStatus::Indeterminate);
     assert!(
-        observe_for_test(&mut output, delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))).is_err()
+        observe_for_test(
+            &mut observation,
+            &mut output,
+            delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))
+        )
+        .is_err()
     );
     assert_eq!(output.output, "model output");
     assert!(!output.terminal_observed);
@@ -185,8 +209,10 @@ fn output_is_observed_bounded_and_never_predeclares_success() {
 #[test]
 fn in_progress_is_not_a_terminal_observation() {
     let mut output = output();
+    let mut observation = NativeTurnObservation::new(binding());
     assert!(
         observe_for_test(
+            &mut observation,
             &mut output,
             terminal("thread-a", "turn-a", TurnStatus::InProgress)
         )
@@ -221,11 +247,12 @@ fn actual_usage_is_bound_monotonic_and_survives_terminal_failure() {
         })
     };
     let mut output = output();
-    observe_for_test(&mut output, usage("unrelated", 99)).unwrap();
+    let mut observation = NativeTurnObservation::new(binding());
+    observe_for_test(&mut observation, &mut output, usage("unrelated", 99)).unwrap();
     assert_eq!(output.observed_output_tokens, None);
-    observe_for_test(&mut output, usage("thread-a", 42)).unwrap();
-    assert!(observe_for_test(&mut output, usage("thread-a", -1)).is_err());
-    assert!(observe_for_test(&mut output, usage("thread-a", 41)).is_err());
+    observe_for_test(&mut observation, &mut output, usage("thread-a", 42)).unwrap();
+    assert!(observe_for_test(&mut observation, &mut output, usage("thread-a", -1)).is_err());
+    assert!(observe_for_test(&mut observation, &mut output, usage("thread-a", 41)).is_err());
     assert_eq!(output.observed_output_tokens, Some(42));
     let mut failed = terminal("thread-a", "turn-a", TurnStatus::Failed);
     if let ServerNotification::TurnCompleted(ref mut notification) = failed {
@@ -235,7 +262,7 @@ fn actual_usage_is_bound_monotonic_and_survives_terminal_failure() {
             additional_details: None,
         });
     }
-    assert!(observe_for_test(&mut output, failed).unwrap());
+    assert!(observe_for_test(&mut observation, &mut output, failed).unwrap());
     assert_eq!(output.status, NativeRunStatus::Failed);
     assert_eq!(output.boundary_status, NativeBoundaryStatus::Failed);
     assert_eq!(output.observed_output_tokens, Some(42));
@@ -279,6 +306,7 @@ async fn owner_loss_stays_denied_after_interrupt_grace_observes_completed() {
         // This output is bound to the started thread/turn. The same health
         // reducer runs in observe(), before its error triggers TurnInterrupt.
         let mut output = output();
+        let mut observation = NativeTurnObservation::new(binding());
         verify_owner_health(
             &mut output,
             async { Ok(ready_owner()) },
@@ -297,6 +325,7 @@ async fn owner_loss_stays_denied_after_interrupt_grace_observes_completed() {
         // Grace has no owner parameter: it can still establish provider facts.
         assert!(
             observe_for_test(
+                &mut observation,
                 &mut output,
                 terminal("thread-a", "turn-a", TurnStatus::Completed)
             )
@@ -324,6 +353,7 @@ async fn owner_loss_stays_denied_after_interrupt_grace_observes_completed() {
 #[tokio::test]
 async fn owner_timeout_and_terminal_first_selection_cannot_authorize_success() {
     let mut timed_out = output();
+    let mut observation = NativeTurnObservation::new(binding());
     verify_owner_health(
         &mut timed_out,
         async { Ok(ready_owner()) },
@@ -337,6 +367,7 @@ async fn owner_timeout_and_terminal_first_selection_cannot_authorize_success() {
             .is_err()
     );
     observe_for_test(
+        &mut observation,
         &mut timed_out,
         terminal("thread-a", "turn-a", TurnStatus::Completed),
     )
@@ -346,6 +377,8 @@ async fn owner_timeout_and_terminal_first_selection_cannot_authorize_success() {
     assert!(!timed_out.succeeded());
 
     let mut terminal_first = output();
+
+    let mut observation = NativeTurnObservation::new(binding());
     verify_owner_health(
         &mut terminal_first,
         async { Ok(ready_owner()) },
@@ -355,6 +388,7 @@ async fn owner_timeout_and_terminal_first_selection_cannot_authorize_success() {
     .unwrap();
     // select! can consume Completed before a simultaneously ready health tick.
     observe_for_test(
+        &mut observation,
         &mut terminal_first,
         terminal("thread-a", "turn-a", TurnStatus::Completed),
     )
@@ -378,7 +412,9 @@ async fn owner_timeout_and_terminal_first_selection_cannot_authorize_success() {
 #[tokio::test]
 async fn success_requires_both_matching_completion_and_final_ready_owner() {
     let mut output = output();
+    let mut observation = NativeTurnObservation::new(binding());
     observe_for_test(
+        &mut observation,
         &mut output,
         terminal("thread-a", "turn-a", TurnStatus::Completed),
     )
@@ -450,8 +486,14 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    let host = CognitiveTestHost::start(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        codex_utils_cargo_bin::cargo_bin("codex")?,
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
@@ -660,6 +702,7 @@ fn late_completed_cannot_upgrade_cancelled_or_timed_out_boundary() {
         NativeBoundaryStatus::TimedOut,
     ] {
         let mut value = output();
+        let mut observation = NativeTurnObservation::new(binding());
         value.boundary_status = boundary_status;
         value.stop_reason = Some(match boundary_status {
             NativeBoundaryStatus::Cancelled => LOCAL_CANCELLED.to_string(),
@@ -668,6 +711,7 @@ fn late_completed_cannot_upgrade_cancelled_or_timed_out_boundary() {
         });
         assert!(
             observe_for_test(
+                &mut observation,
                 &mut value,
                 terminal("thread-a", "turn-a", TurnStatus::Completed),
             )
@@ -764,3 +808,6 @@ fn final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift() {
         .is_err()
     );
 }
+
+#[path = "native_app_server_observation_tests.rs"]
+mod observation_tests;

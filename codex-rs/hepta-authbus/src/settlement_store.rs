@@ -23,6 +23,7 @@ use crate::authority_store::storage;
 use crate::authority_store::u64_bytes;
 use crate::quota_store::load_quota;
 use crate::quota_store::load_reservation;
+use crate::trust_store::load_settlement_issuer;
 
 impl AuthBusAuthorityStore {
     pub async fn mark_dispatch_attempted(
@@ -212,8 +213,27 @@ impl AuthBusAuthorityStore {
         ) {
             return Err(AuthBusAuthorityError::InvalidTransition);
         }
+        // The caller's registration is only a consistency hint. Resolve current
+        // trust after acquiring this same write transaction; a pre-lock snapshot
+        // must not survive an issuer revocation, rotation or key substitution.
+        let current = load_settlement_issuer(
+            &mut tx,
+            &evidence.claims.issuer_id,
+            evidence.claims.key_epoch,
+        )
+        .await?;
+        if current.revoked {
+            return Err(AuthBusAuthorityError::SettlementIssuerRevoked);
+        }
+        if issuer.issuer_id != current.issuer_id
+            || issuer.key_epoch != current.key_epoch
+            || issuer.verifying_key != current.verifying_key
+            || issuer.revoked != current.revoked
+        {
+            return Err(AuthBusAuthorityError::SettlementIssuerMismatch);
+        }
         let authenticated = evidence.authenticate(
-            issuer,
+            &current,
             &reservation.reservation_id,
             &reservation.operation_id,
             time.wall_time_ms,

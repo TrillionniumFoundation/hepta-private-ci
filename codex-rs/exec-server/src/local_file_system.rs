@@ -5,8 +5,6 @@ use codex_file_system::MAX_WALK_RESPONSE_BYTES;
 use codex_file_system::WALK_RESPONSE_ITEM_OVERHEAD_BYTES;
 #[cfg(target_os = "macos")]
 use codex_protocol::models::PermissionProfile;
-#[cfg(target_os = "macos")]
-use codex_protocol::permissions::ReadDenyMatcher;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_utils_path_uri::PathUri;
 use std::collections::HashSet;
@@ -47,6 +45,10 @@ use crate::WriteFileOptions;
 use crate::no_follow;
 use crate::regular_file;
 use crate::sandboxed_file_system::SandboxedFileSystem;
+
+#[cfg(target_os = "macos")]
+#[path = "local_file_system_authorized_policy.rs"]
+mod authorized_policy;
 
 const MAX_READ_FILE_BYTES: u64 = 512 * 1024 * 1024;
 
@@ -1414,12 +1416,7 @@ fn authorize_stable_file_path(
     let policy = permissions
         .materialize_project_roots_with_workspace_roots(&workspace_roots)
         .file_system_sandbox_policy();
-    let denied_by_pattern = ReadDenyMatcher::new(&policy, cwd.as_path())
-        .is_some_and(|matcher| matcher.is_read_denied(final_path));
-    if denied_by_pattern || !policy.can_read_path_with_cwd(final_path, cwd.as_path()) {
-        return Err(authorized_read_error(io::ErrorKind::PermissionDenied));
-    }
-    Ok(())
+    authorized_policy::authorize(final_path, &policy, cwd.as_path())
 }
 
 #[cfg(target_os = "macos")]

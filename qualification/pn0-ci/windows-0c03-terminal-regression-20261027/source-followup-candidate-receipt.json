@@ -1,0 +1,108 @@
+{
+  "schema": "hepta-private-cmd-rollback-failure-diagnostic-source-candidate-v1",
+  "recorded_utc": "2026-10-27T01:50:14.819732+00:00",
+  "status": "SOURCE_ONLY_UNCOMPILED_UNAPPLIED_NO_GO",
+  "author_scope": "private command_runner process_observation_tests.rs only; no root or ROG production source writes",
+  "input_public_source": "0c03d808d6898c2a91ae456bfefcfc5abe925468",
+  "repository_path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win/process_observation_tests.rs",
+  "files": [
+    {
+      "path": "base-public0c03.rs",
+      "bytes": 5168,
+      "sha256": "da1d4557aba8793a8101f4feb61970335ebd5420362989ebdfc3efd828ac448f"
+    },
+    {
+      "path": "rollback-only.rs",
+      "bytes": 5112,
+      "sha256": "bfdbf62a5b0137af12faf08c090bcf7cb2084f794b8a676936f0db01c3fef0b0"
+    },
+    {
+      "path": "rollback-only.patch",
+      "bytes": 814,
+      "sha256": "1ffc128b0668e2f11fcd5315571349a9dd3daf3de06caa02e0698f02d37ea98d"
+    },
+    {
+      "path": "combined-candidate.rs",
+      "bytes": 7823,
+      "sha256": "7a7d3d547bd90e76ec9f3839f502d795ff5ee95d224e01e97a7d795f75eac4a1"
+    },
+    {
+      "path": "combined-public0c03.patch",
+      "bytes": 4896,
+      "sha256": "82ac0e961c7aa1efb73db5b10f1674048375325270b1b63ce3d5f9abeb3a3138"
+    }
+  ],
+  "patches": [
+    {
+      "path": "rollback-only.patch",
+      "kind": "minimal exact9d helper source-byte restoration",
+      "claim": "baseline rollback only; not originaltwo failures fix; not raw_arg causality proof"
+    },
+    {
+      "path": "combined-public0c03.patch",
+      "kind": "baseline rollback plus optional bounded trusted-parent failure diagnostic",
+      "choice": "root may select rollback alone; combined diagnosis is optional and has no native qualification"
+    }
+  ],
+  "static_preservation": {
+    "original7assert_eq_ensure_token_bytes": true,
+    "all_original_tests_from_reduced_tail_bytes": true,
+    "original_failure_result_panic_and_deadline_propagation_tail_bytes": true,
+    "original_stdio_block_and_fixedscripts": true,
+    "owned_child_call_count_order": [
+      "spawn",
+      "try_wait",
+      "kill",
+      "wait"
+    ],
+    "new_native_query_calls": 1,
+    "original_observer_and_production_guards_untouched": true
+  },
+  "diagnostic": {
+    "when": "existing checked failure or originalwait error, after original child cleanup/wait and before original result/panic propagation",
+    "original_return_values": "capture original single try_wait result, optional originalkill result, originalwait result; no new state polling or termination authority",
+    "image": "one QueryFullProcessImageNameW using original fullownedChild handle; flags0Win32; fixed32768 UTF16buffer; error immediateUNKNOWN+originalWin32error; nofallback or propagation",
+    "fields": [
+      "original pre_cleanup stdExitStatus/error",
+      "whether original cleanup issuedkill and original result",
+      "originalwait result",
+      "image_state and observed image orUNKNOWN",
+      "fixed parent program and parent args explicitlynot_wire"
+    ],
+    "output_cap_bytes": 4096,
+    "output_implementation": "standard fixedarray Cursor, no growing buffer/customformatter; formatting exhaustion or UTF8 boundary cut sets firstheader truncated=1; one stderr.write, no retry, Result ignored",
+    "write_failure_limit": "IO errors or shortwrites may suppress any diagnostic bytes, including marker. The code does not retry and cannot turn original failure into success or replace its propagation.",
+    "not_captured": [
+      "environment or credentials",
+      "childstderr/stdout",
+      "actual childcommandline",
+      "actual PEhash",
+      "binarysource digest"
+    ],
+    "not_intercepted": "originaldeadline-only ensure path remains literal and unchanged",
+    "additional_child_spawn_wait_kill_or_timeout": false,
+    "no_new_loop_retry_or_question_mark_propagation": true
+  },
+  "actual_binding": "existing windows-sys0.52.0, existingWin32_Foundation+Threading; nofeature/dependency/lock changes; prior0.61cachedsignaturesuperseded for this source review",
+  "review_evidence": [
+    "static-source-preservation.json",
+    "primary-binding-feature-and-capacity-review.json",
+    "windows-sys-0.52.0-threading.rs",
+    "original-package-Cargo.toml",
+    "rust196-cursor.rs"
+  ],
+  "previous_diagnosis_retained": "../Hepta-Windows-CMD-helper-regression-diagnosis-20261027-001/diagnosis-final.json",
+  "native_compile_or_tests_executed": [],
+  "root_modified": false,
+  "commit_push_dispatch_or_rerun": false,
+  "original_scripts_assertions_stdio_deadline_resource_caps_workflow_profiles_or_protection_changed": false,
+  "qualification": {
+    "original4lane_native_success": false,
+    "original2production_failures_closed": false,
+    "new_terminal_regression_closed": false,
+    "production_guard_enabled": false,
+    "merge_ready": false
+  },
+  "independent_review": "requested from pair_refresh_2350; pending at initialfreeze; not an approval or executionreceipt",
+  "next_action_owner": "root decides optionaldiagnostic/sourceintegration and budget admission; source reads and preserved predicates are not native closure"
+}

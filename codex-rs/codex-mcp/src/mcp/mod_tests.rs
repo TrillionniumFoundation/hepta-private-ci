@@ -491,3 +491,134 @@ async fn effective_mcp_servers_preserve_runtime_servers() {
         other => panic!("expected streamable http transport, got {other:?}"),
     }
 }
+
+#[test]
+fn effective_mcp_servers_use_only_exact_selected_environment_cwd() {
+    let selected_cwd = PathUri::parse("file:///selected/work").expect("selected cwd URI");
+    let foreign_cwd = PathUri::parse("file:///C:/selected/work").expect("foreign cwd URI");
+    let explicit_cwd = PathUri::parse("file:///D:/configured/tool").expect("configured cwd URI");
+    let unrelated_cwd = PathUri::parse("file:///unrelated/work").expect("unrelated cwd URI");
+    let remote = McpServerConfig {
+        auth: McpServerAuth::OAuth,
+        transport: McpServerTransportConfig::Stdio {
+            command: "selected-mcp-server".to_string(),
+            args: vec!["--selected-runtime".to_string()],
+            env: Some(HashMap::from([(
+                "MCP_RUNTIME".to_string(),
+                "selected".to_string(),
+            )])),
+            env_vars: Vec::new(),
+            cwd: None,
+        },
+        environment_id: "selected-remote".to_string(),
+        enabled: true,
+        required: true,
+        supports_parallel_tool_calls: true,
+        omit_tools_from: None,
+        disabled_reason: None,
+        startup_timeout_sec: None,
+        tool_timeout_sec: None,
+        default_tools_approval_mode: None,
+        enabled_tools: None,
+        disabled_tools: None,
+        scopes: None,
+        oauth: None,
+        oauth_resource: None,
+        tools: HashMap::new(),
+    };
+    let with_cwd = |mut server: McpServerConfig, cwd: PathUri| {
+        let McpServerTransportConfig::Stdio {
+            cwd: configured, ..
+        } = &mut server.transport
+        else {
+            unreachable!("test server uses stdio");
+        };
+        *configured = Some(cwd.into());
+        server
+    };
+    let mut local = remote.clone();
+    local.environment_id = codex_config::DEFAULT_MCP_SERVER_ENVIRONMENT_ID.to_string();
+    let mut remote_http = remote.clone();
+    remote_http.transport = McpServerTransportConfig::StreamableHttp {
+        url: "https://selected.example/mcp".to_string(),
+        bearer_token_env_var: None,
+        http_headers: Some(HashMap::from([(
+            "X-Runtime".to_string(),
+            "selected".to_string(),
+        )])),
+        env_http_headers: None,
+        http_headers_helper: None,
+    };
+    let mut local_http = remote_http.clone();
+    local_http.environment_id = codex_config::DEFAULT_MCP_SERVER_ENVIRONMENT_ID.to_string();
+    let cases = [
+        (
+            "exact selected remote cwd",
+            remote.clone(),
+            HashMap::from([
+                (remote.environment_id.clone(), selected_cwd.clone()),
+                ("unrelated-remote".to_string(), unrelated_cwd.clone()),
+                (local.environment_id.clone(), unrelated_cwd.clone()),
+            ]),
+            with_cwd(remote.clone(), selected_cwd.clone()),
+        ),
+        (
+            "foreign selected URI is preserved",
+            remote.clone(),
+            HashMap::from([(remote.environment_id.clone(), foreign_cwd.clone())]),
+            with_cwd(remote.clone(), foreign_cwd),
+        ),
+        (
+            "explicit configured cwd wins",
+            with_cwd(remote.clone(), explicit_cwd.clone()),
+            HashMap::from([(remote.environment_id.clone(), selected_cwd.clone())]),
+            with_cwd(remote.clone(), explicit_cwd),
+        ),
+        (
+            "missing map remains missing",
+            remote.clone(),
+            HashMap::new(),
+            remote.clone(),
+        ),
+        (
+            "wrong environment and local entries cannot be inherited",
+            remote.clone(),
+            HashMap::from([
+                ("unrelated-remote".to_string(), unrelated_cwd.clone()),
+                (local.environment_id.clone(), unrelated_cwd.clone()),
+            ]),
+            remote,
+        ),
+        (
+            "local stdio remains unchanged",
+            local.clone(),
+            HashMap::from([(local.environment_id.clone(), selected_cwd.clone())]),
+            local,
+        ),
+        (
+            "remote HTTP remains unchanged",
+            remote_http.clone(),
+            HashMap::from([(remote_http.environment_id.clone(), selected_cwd.clone())]),
+            remote_http,
+        ),
+        (
+            "local HTTP remains unchanged",
+            local_http.clone(),
+            HashMap::from([(local_http.environment_id.clone(), selected_cwd)]),
+            local_http,
+        ),
+    ];
+
+    for (case, server, environment_cwds, expected) in cases {
+        let mut config = test_mcp_config(PathBuf::new());
+        config.environment_cwds = environment_cwds;
+        let effective = effective_mcp_servers_from_configured(
+            HashMap::from([("sample".to_string(), server)]),
+            &config,
+            /*auth*/ None,
+        );
+
+        assert_eq!(effective.len(), 1, "{case}");
+        assert_eq!(effective["sample"].config(), &expected, "{case}");
+    }
+}

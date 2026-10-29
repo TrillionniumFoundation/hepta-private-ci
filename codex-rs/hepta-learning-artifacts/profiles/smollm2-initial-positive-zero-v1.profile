@@ -1,0 +1,11 @@
+hepta.learning-artifacts.smollm2-initial-positive-zero.v1
+upstream=HuggingFaceTB/SmolLM2-135M-Instruct@12fd25f77366fa6b3b4b768ec3050bf629380bac
+upstream_model_sha256=5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c
+upstream_model_bytes=269060552
+fp32_backbone_index_root=c320c094769446c21d7e4a33795d7f9310b5e4c8ca5a6fecca40207b1f735b7c
+tokenizer_files_root=a1883207efeacecee399f4dc699d2b547eb2d6ddb7500522933ed76c1521fb93
+target_contract=2bb480a2becd44b7f4e4b03e557e270ed92a4bb952e0a634562d23d7f0f97e46
+storage=F32-little-endian-positive-zero-all-A-and-B
+layout=30-layers-q_proj-v_proj-rank4-in576-out576-or192-alpha8-over1
+expression=x-Wt-plus-alpha-over-rank-times-x-At-Bt-v1;dropout=false;bias=none
+scope=expected-upstream-identities-and-selected-adapter-bytes-only-no-load-or-authority

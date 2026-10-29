@@ -188,6 +188,55 @@ fn locked_file_store_replays_takeover_and_rejects_backup_rollback() {
 }
 
 #[test]
+fn held_file_alias_does_not_mask_backup_rollback_after_store_drop() {
+    let temp = TempFile::new();
+    let store = match LockedFileFinalHoldoutCasStoreV1::create(temp.create(), digest("binding")) {
+        Ok(value) => value,
+        Err(error) => panic!("create store: {error}"),
+    };
+    let first = owner(store, /*minimum*/ None);
+    let first_anchor = first.anchor();
+    let store = first.into_store();
+    drop(store);
+
+    let backup = match fs::read(&temp.path) {
+        Ok(value) => value,
+        Err(error) => panic!("read backup: {error}"),
+    };
+    let store = match LockedFileFinalHoldoutCasStoreV1::recover(
+        temp.open(),
+        digest("binding"),
+        Some(first_anchor),
+    ) {
+        Ok(value) => value,
+        Err(error) => panic!("recover store: {error}"),
+    };
+    let mut second = owner(store, Some(first_anchor));
+    if let Err(error) = second.consume(&plan("plan-1")) {
+        panic!("consume: {error}");
+    }
+    let committed = second.anchor();
+    assert!(committed.record_count > first_anchor.record_count);
+    let store = second.into_store();
+    // Keep an alias alive without using it for reads, writes, or lock changes.
+    let alias = match store.file.try_clone() {
+        Ok(value) => value,
+        Err(error) => panic!("retain file alias: {error}"),
+    };
+    drop(store);
+
+    if let Err(error) = fs::write(&temp.path, &backup) {
+        panic!("restore backup: {error}");
+    }
+    assert_eq!(
+        LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), Some(committed),)
+            .err(),
+        Some(LockedFileCasErrorV1::Rollback)
+    );
+    drop(alias);
+}
+
+#[test]
 fn child_process_observes_lock_then_recovers_after_owner_exit() {
     if let Ok(path) = std::env::var("HEPTA_FENCED_CAS_CHILD") {
         let file = match OpenOptions::new().read(true).write(true).open(path) {

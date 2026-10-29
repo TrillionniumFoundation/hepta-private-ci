@@ -614,10 +614,24 @@ pub unsafe fn add_deny_write_ace(path: &Path, psid: *mut c_void) -> Result<bool>
     add_deny_ace(path, psid, DenyAceKind::Write)
 }
 
+/// Deny filesystem mutation without denying the read/synchronization rights.
+///
+/// This operates only on an already-authorized managed subject; it does not
+/// create role authority. Legacy generic-write denies are deliberately kept by
+/// `add_deny_write_ace` for their original diagnostic controls. New full-token
+/// callers must use this narrower operation and verify restrictive RX separately.
+///
+/// # Safety
+/// `psid` must identify the managed role authorized for this exact existing path.
+pub unsafe fn ensure_filesystem_mutation_deny(path: &Path, psid: *mut c_void) -> Result<bool> {
+    add_deny_ace(path, psid, DenyAceKind::FilesystemMutation)
+}
+
 #[derive(Clone, Copy)]
 enum DenyAceKind {
     Read,
     Write,
+    FilesystemMutation,
 }
 
 impl DenyAceKind {
@@ -631,6 +645,18 @@ impl DenyAceKind {
                     | FILE_WRITE_EA
                     | FILE_WRITE_ATTRIBUTES
                     | GENERIC_WRITE_MASK
+                    | DELETE
+                    | FILE_DELETE_CHILD
+            }
+            // FILE_GENERIC_WRITE also contains READ_CONTROL and SYNCHRONIZE.
+            // Denying it prevents an unchanged full-token read from succeeding.
+            // Security-descriptor mutation is not a data write and is reviewed
+            // separately by full-token admission and its negative controls.
+            Self::FilesystemMutation => {
+                FILE_WRITE_DATA
+                    | FILE_APPEND_DATA
+                    | FILE_WRITE_EA
+                    | FILE_WRITE_ATTRIBUTES
                     | DELETE
                     | FILE_DELETE_CHILD
             }
@@ -712,7 +738,35 @@ unsafe fn add_deny_ace(path: &Path, psid: *mut c_void, kind: DenyAceKind) -> Res
                 p_new_dacl,
                 std::ptr::null_mut(),
             );
-            acl_api_result(path, "SetSecurityInfo", code3).map(|()| true)
+            acl_api_result(path, "SetSecurityInfo", code3).and_then(|()| {
+                // Read back through the exact retained object. A successful
+                // setter alone cannot mint restrictive-ACL readiness.
+                let mut readback_sd = std::ptr::null_mut();
+                let mut readback_acl = std::ptr::null_mut();
+                let code = GetSecurityInfo(
+                    handle,
+                    SE_FILE_OBJECT,
+                    DACL_SECURITY_INFORMATION,
+                    std::ptr::null_mut(),
+                    std::ptr::null_mut(),
+                    &mut readback_acl,
+                    std::ptr::null_mut(),
+                    &mut readback_sd,
+                );
+                let verified =
+                    acl_api_result(path, "GetSecurityInfo readback", code).and_then(|()| {
+                        anyhow::ensure!(
+                            kind.already_present(readback_acl, psid, scope),
+                            "deny ACL readback differs for {}",
+                            path.display()
+                        );
+                        Ok(true)
+                    });
+                if !readback_sd.is_null() {
+                    LocalFree(readback_sd as HLOCAL);
+                }
+                verified
+            })
         };
         if !p_new_dacl.is_null() {
             LocalFree(p_new_dacl as HLOCAL);

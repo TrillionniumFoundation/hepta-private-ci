@@ -1,0 +1,1657 @@
+{
+  "schema": "Hepta310b-four-Windows-originals-independent-readback-v1",
+  "created_utc": "2026-10-28T18:00:17.507267+00:00",
+  "reviewer": "/root/e153_windows_raw_review",
+  "packet": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/inbox/local-codex-Hepta310b-Windows-originals-20261028-001",
+  "scope": "All existing recursively delivered packet regular-file bytes; four official artifact ZIPs and every decompressed member; four complete Windows job logs, captured run/jobs/artifact API pages, static helper literals and native receipt/hash chains; separately delivered Linux release log. Artifact helper/reader source was read/AST-parsed only, never executed. No source/runtime/native/VM/CI/network execution or mutation, polling, retries, source fixes or budget resets. New review report only.",
+  "READ": true,
+  "REVIEW": "COMPLETE_WITHIN_DELIVERED_ORIGINALS",
+  "APPLY": false,
+  "published": "No publication performed or live server queried",
+  "inventory": {
+    "manifest_sha256": "2ed65b75ff777fb6852a6c71ddb105813c61cef00da82c967dfeafa502629685",
+    "manifest_payload_count": 20,
+    "manifest_payload_bytes": 8805115,
+    "all_recursive_files_count": 25,
+    "all_recursive_files_bytes": 8814706,
+    "all_manifest_payload_size_SHA_verified": true,
+    "queue21_including_manifest_size_SHA_verified": true,
+    "queue21_bytes": 8809050,
+    "inventory": [
+      {
+        "path": "actual-existing-thread-queue.stderr.original",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "manifest_covered": false
+      },
+      {
+        "path": "actual-existing-thread-queue.stdout.original",
+        "bytes": 101,
+        "sha256": "86b199aa27e1bf3f87746ad571d5d0e32abbc343619e4152a8e7201501f5f73b",
+        "manifest_covered": false
+      },
+      {
+        "path": "actual-queue-and-delivery-receipt.json",
+        "bytes": 4805,
+        "sha256": "7f972b0ed21a1ef918a641e4f12f4c2bea4b02b5740ec99eba134fdd81fdc0a5",
+        "manifest_covered": false
+      },
+      {
+        "path": "actual-queue-owner-start.json",
+        "bytes": 750,
+        "sha256": "a90fc8917c355f184d4f430a50a8be0d251811c6bfaecfe4923b97c40ee1bb0f",
+        "manifest_covered": false
+      },
+      {
+        "path": "current310b-originals-message.txt",
+        "bytes": 2502,
+        "sha256": "09c01cceed660115887ad24b57d81d0d06f7528aef42117c1d3150022e1daf9e",
+        "manifest_covered": true
+      },
+      {
+        "path": "delivery-manifest.json",
+        "bytes": 3935,
+        "sha256": "2ed65b75ff777fb6852a6c71ddb105813c61cef00da82c967dfeafa502629685",
+        "manifest_covered": false
+      },
+      {
+        "path": "originals/Windows-current-attempt-jobs.page1.connector.original.json",
+        "bytes": 66524,
+        "sha256": "4c196c2f897d7f5133f9e1360209950594aeb0b21ce935be25fe6fc4586fb69e",
+        "manifest_covered": true
+      },
+      {
+        "path": "originals/Windows-run-current.connector.original.json",
+        "bytes": 32147,
+        "sha256": "450336a6307561bdd838592b7e470d39a861f17c26e07922e89cc47f971a30df",
+        "manifest_covered": true
+      },
+      {
+        "path": "originals/Windows40731176821.artifacts-page1.connector.original.json",
+        "bytes": 7683,
+        "sha256": "50b236d967d472b2ea51a82286fca607f0aa1f60282029678d945436e9ebd00d",
+        "manifest_covered": true
+      },
+      {
+        "path": "originals/actual-independent-current310b-Linux-release-HTTP503-triage.json",
+        "bytes": 3773,
+        "sha256": "32ca712e7b51b63fefc8a13e1f130c32dbebcf05314e773bbea7b6882e9dc810",
+        "manifest_covered": true
+      },
+      {
+        "path": "originals/actual-independent-current310b-four-original-Windows-reader.json",
+        "bytes": 57343,
+        "sha256": "2d06c8c9005e656ce7880c8043370bcf018ef565ed6a70b6d94f45664f0553f6",
+        "manifest_covered": true
+      },
+      {
+        "path": "originals/artifact12834599606.direct-GitHub-original-integrity.json",
+        "bytes": 10805,
+        "sha256": "128a10e970820c756ca82fe95354d95a29f1bd66be035233159796a2b96a76df",
+        "manifest_covered": true
+      },
+      {
+        "path": "originals/artifact12834599606.original.zip",
+        "bytes": 92345,
+        "sha256": "7900e260cbf22c3c2d7811cfe3e0144f6600dcd94a94dc6a922d52f4473c5ccd",
+        "manifest_covered": true
+      },
+      {
+        "path": "originals/artifact12835783247.direct-GitHub-original-integrity.json",
+        "bytes": 10801,
+        "sha256": "618a97e9260d500ee646454aba664221c4bd9e76c532e1feb05559e41a868316",
+        "manifest_covered": true
+      },
+      {
+        "path": "originals/artifact12835783247.original.zip",
+        "bytes": 92286,
+        "sha256": "5dbfde79442a099c83cac753ea8b0eb2273b3dec9515997a903b6087b3670231",
+        "manifest_covered": true
+      },
+      {
+        "path": "originals/artifact12835937649.direct-GitHub-original-integrity.json",
+        "bytes": 10802,
+        "sha256": "ec7e29ee75750f96b8b16a3673d0063075c3feead41d0096ca6f793e88366f5e",
+        "manifest_covered": true
+      },
+      {
+        "path": "originals/artifact12835937649.original.zip",
+        "bytes": 92237,
+        "sha256": "768d07f1302eb7007a0998616c215865c2053d9e630c6244a84188e0a32889e2",
+        "manifest_covered": true
+      },
+      {
+        "path": "originals/artifact12837122626.direct-GitHub-original-integrity.json",
+        "bytes": 10801,
+        "sha256": "c15e717508f4400c2b5a8977308b3f29cdf75ade83fe107d3eb66976daf05c9d",
+        "manifest_covered": true
+      },
+      {
+        "path": "originals/artifact12837122626.original.zip",
+        "bytes": 92150,
+        "sha256": "03a46a385d516a3720de39e86f706d355a78510e69166d4ee30450e57b6fdecd",
+        "manifest_covered": true
+      },
+      {
+        "path": "originals/job122967596137.full-log.decoded.original.txt",
+        "bytes": 2027360,
+        "sha256": "7e7d81f18703a2fc08a4d48c04402a0a3a323e1ecf751749868a4d5d5f6f6702",
+        "manifest_covered": true
+      },
+      {
+        "path": "originals/job122967596475.full-log.decoded.original.txt",
+        "bytes": 2024157,
+        "sha256": "b0573e8aa5555266b0951247066de0d2dd9f207e835536b3bc877bb89d447942",
+        "manifest_covered": true
+      },
+      {
+        "path": "originals/job122967596650.full-log.decoded.original.txt",
+        "bytes": 2025441,
+        "sha256": "c4bbcf4376dbd16a175f1b43a3f4e93f4bf5a5b282643f3693d4eb8189befba6",
+        "manifest_covered": true
+      },
+      {
+        "path": "originals/job122967596674.full-log.decoded.original.txt",
+        "bytes": 2027304,
+        "sha256": "0f4f86c14f3733c0537465bdc8d6802f8e3bfbc505232043142e04ab63d8f6b9",
+        "manifest_covered": true
+      },
+      {
+        "path": "originals/job122975146074.full-log.decoded.original.txt",
+        "bytes": 107944,
+        "sha256": "1318d62fbb6b927b54d75adcc7299c107d3033318fb681cb8de84de7afb6f920",
+        "manifest_covered": true
+      },
+      {
+        "path": "originals/read_original_four_windows_contracts_once.py",
+        "bytes": 10710,
+        "sha256": "66c1f39af29b25159af476c828fb9ceb3f2f5e56117c7a1968fe111ce09ca82d",
+        "manifest_covered": true
+      }
+    ],
+    "four_queue_supplements_not_manifest_covered": "Original stdout/stderr, queue owner start and queue/delivery receipt freshly hashed here; stdout/stderr also exact matched queue receipt strings."
+  },
+  "source": {
+    "name": "hepta",
+    "repo": "TrillionniumFoundation/hepta-private-ci",
+    "role": "head",
+    "sha": "310b5369bad666367f17a6e005d29ada9d123cd7",
+    "tree": "d3b88496e8077d17c0c82476da9876168082d10e",
+    "ordered_parents": [
+      "7709080a1e054dda4837053091f19bc0a5e5af0e"
+    ]
+  },
+  "actual_PR_preview": {
+    "name": "hepta",
+    "repo": "TrillionniumFoundation/hepta-private-ci",
+    "role": "actual-preview",
+    "sha": "06e1c3d810d70a67eb92d11513f708cac7ed95b6",
+    "tree": "d3b88496e8077d17c0c82476da9876168082d10e",
+    "ordered_parents": [
+      "c38e7727220f32c7410f59083c5ea7878bbae078",
+      "310b5369bad666367f17a6e005d29ada9d123cd7"
+    ]
+  },
+  "original_Windows_run": {
+    "id": 40731176821,
+    "attempt": 1,
+    "head_sha": "310b5369bad666367f17a6e005d29ada9d123cd7",
+    "status": "completed",
+    "conclusion": "failure",
+    "captured_run_jobs_artifacts_API_pages_complete_for_four_lanes": true,
+    "live_current_state_requeried": false
+  },
+  "four_routes": [
+    {
+      "artifact_id": 12837122626,
+      "job_id": 122967596475,
+      "job_name": "Native Windows deletion boundary (windows-latest, source-head)",
+      "artifact_name": "hepta-windows-delete-boundary-windows-latest-source-head-40731176821-1",
+      "official_zip_bytes": 92150,
+      "official_zip_sha256": "03a46a385d516a3720de39e86f706d355a78510e69166d4ee30450e57b6fdecd",
+      "official_digest_from_delivered_API": "sha256:03a46a385d516a3720de39e86f706d355a78510e69166d4ee30450e57b6fdecd",
+      "all_member_CRC_and_SHA_verified": true,
+      "source_before_after_exact_bytes_equal": true,
+      "source": {
+        "base_sha": "c38e7727220f32c7410f59083c5ea7878bbae078",
+        "lane": "source-head",
+        "native": {
+          "runner": "windows-latest",
+          "runner_arch": "X64",
+          "target": "x86_64-pc-windows-msvc"
+        },
+        "parents": [
+          "7709080a1e054dda4837053091f19bc0a5e5af0e"
+        ],
+        "source_sha": "310b5369bad666367f17a6e005d29ada9d123cd7",
+        "symlink_placeholders": 0,
+        "tested_sha": "310b5369bad666367f17a6e005d29ada9d123cd7",
+        "tracked_bytes_sha256": "3d084dd0039ce10ba7b8bee8c5f954b2500299e81978152568619e15d71913da",
+        "tracked_files": 10295,
+        "tree": "d3b88496e8077d17c0c82476da9876168082d10e"
+      },
+      "helper_sha256": "6cf3dfe235c24820013f5377bf7b2f852b726a59c540d2e47a829cfa3722e552",
+      "helper_matches_full_job_heredoc": true,
+      "full_job_helper_lines": [
+        7262,
+        7674
+      ],
+      "full_job_bytes": 2024157,
+      "full_job_sha256": "b0573e8aa5555266b0951247066de0d2dd9f207e835536b3bc877bb89d447942",
+      "original_twenty": {
+        "passed": 18,
+        "failed": 2,
+        "failed_groups": [
+          "broad-identity-delete",
+          "legacy-delete-boundary"
+        ]
+      },
+      "query": {
+        "passed": 6,
+        "failed": 0
+      },
+      "terminal": {
+        "passed": 1,
+        "failed": 2,
+        "unique_names": [
+          "win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query",
+          "win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit",
+          "win::process_observation::tests::actual_live_child_is_pending_until_original_stdin_closes"
+        ]
+      },
+      "v3_v2_original_result_receipt_log_hash_chain_verified": true,
+      "raw_findings": {
+        "broad-identity-delete": {
+          "artifact_member": "broad-identity-delete.log",
+          "sha256": "fc782cd89effedf75dbbcbc76c3ef02d3b38da01d79009135c93f1b72f131a0d",
+          "first_panic_line": 174,
+          "first_panic": "thread 'token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces' (8956) panicked at windows-sandbox-rs\\src\\token_tests.rs:486:5:",
+          "summary": {
+            "line": 245,
+            "text": "     Summary [   0.040s] 1 test run: 0 passed, 1 failed, 224 skipped"
+          },
+          "full_job_panic_raw_lines": [
+            {
+              "line": 10728,
+              "text": "2026-10-28T17:27:53.4068283Z thread 'token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces' (8956) panicked at windows-sandbox-rs\\src\\token_tests.rs:486:5:"
+            },
+            {
+              "line": 10765,
+              "text": "2026-10-28T17:27:53.4225464Z thread 'token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces' (1704) panicked at windows-sandbox-rs\\src\\token_tests.rs:486:5:"
+            }
+          ],
+          "observation": "Two observed None values instead of PermissionDenied under original four-operation assertion; per-descriptor diagnostic allows outside parent FILE_DELETE_CHILD64 while object DELETE is denied. Original deletion boundary remains failed.",
+          "first_assertion_raw_line": 175,
+          "first_diff_raw_lines": [
+            {
+              "line": 185,
+              "text": "<    None,"
+            },
+            {
+              "line": 186,
+              "text": "<    None,"
+            },
+            {
+              "line": 187,
+              "text": ">    Some("
+            },
+            {
+              "line": 188,
+              "text": ">        PermissionDenied,"
+            },
+            {
+              "line": 190,
+              "text": ">    Some("
+            },
+            {
+              "line": 191,
+              "text": ">        PermissionDenied,"
+            }
+          ],
+          "typed_observation": {
+            "restriction_cap_a": true,
+            "restriction_cap_b": true,
+            "restriction_logon": false,
+            "restriction_everyone": false,
+            "outside_parent_FILE_DELETE_CHILD_desired": 64,
+            "outside_parent_AccessCheck_allowed": true,
+            "outside_parent_AccessCheck_granted": 64,
+            "outside_object_DELETE_AccessCheck_allowed": false,
+            "two_raw_delete_results_None": true,
+            "reference": "Complete original ACL/assertion line retained in delivered member and full job; no giant ACL dump copied here."
+          }
+        },
+        "legacy-delete-boundary": {
+          "artifact_member": "legacy-delete-boundary.log",
+          "sha256": "a057a01d844199668e106d15984ae927333180d2bd894d299082d5bb7e82e50e",
+          "first_panic_line": 174,
+          "first_panic": "thread 'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots' (6452) panicked at windows-sandbox-rs\\src\\unified_exec\\tests.rs:769:10:",
+          "summary": {
+            "line": 205,
+            "text": "     Summary [   0.033s] 1 test run: 0 passed, 1 failed, 224 skipped"
+          },
+          "full_job_panic_raw_lines": [
+            {
+              "line": 11003,
+              "text": "2026-10-28T17:27:55.0728864Z thread 'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots' (6452) panicked at windows-sandbox-rs\\src\\unified_exec\\tests.rs:769:10:"
+            },
+            {
+              "line": 11020,
+              "text": "2026-10-28T17:27:55.0887363Z thread 'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots' (8672) panicked at windows-sandbox-rs\\src\\unified_exec\\tests.rs:769:10:"
+            }
+          ],
+          "observation": "Public production isolation guard refuses before spawning the original legacy session; the positive delete boundary test does not reach its later assertions.",
+          "first_failure_excerpt": [
+            {
+              "line": 174,
+              "text": "thread 'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots' (6452) panicked at windows-sandbox-rs\\src\\unified_exec\\tests.rs:769:10:"
+            },
+            {
+              "line": 175,
+              "text": "spawn legacy delete session: Windows filesystem isolation is unavailable: neither the direct token nor the account broker is qualified"
+            }
+          ]
+        },
+        "command-runner-terminal": {
+          "artifact_member": "command-runner-terminal.log",
+          "sha256": "749ba8c80697721b4142ca17c0af9c025922533a8a1138c59578723aefb0c4c5",
+          "first_panic_line": 311,
+          "first_panic": "thread 'win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit' (7900) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:171:9:",
+          "summary": {
+            "line": 412,
+            "text": "     Summary [   0.087s] 3 tests run: 1 passed, 2 failed, 1 skipped"
+          },
+          "full_job_panic_raw_lines": [
+            {
+              "line": 13472,
+              "text": "2026-10-28T17:28:26.3870467Z thread 'win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit' (7900) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:171:9:"
+            },
+            {
+              "line": 13498,
+              "text": "2026-10-28T17:28:26.4031000Z thread 'win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit' (2816) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:171:9:"
+            },
+            {
+              "line": 13524,
+              "text": "2026-10-28T17:28:26.4188050Z thread 'win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query' (4220) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:158:13:"
+            },
+            {
+              "line": 13550,
+              "text": "2026-10-28T17:28:26.4347274Z thread 'win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query' (1304) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:158:13:"
+            }
+          ],
+          "nested_FAILED_attempt_lines": 4,
+          "distinct_failed_tests": {
+            "win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit": 2,
+            "win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query": 2
+          },
+          "original_nextest_retry_lines": [
+            {
+              "line": 332,
+              "text": "  TRY 1 FAIL [   0.014s] codex-windows-sandbox::bin/codex-command-runner win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit"
+            },
+            {
+              "line": 333,
+              "text": "   RETRY 2/2 [         ] codex-windows-sandbox::bin/codex-command-runner win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit"
+            },
+            {
+              "line": 358,
+              "text": "  TRY 2 FAIL [   0.016s] codex-windows-sandbox::bin/codex-command-runner win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit"
+            },
+            {
+              "line": 384,
+              "text": "  TRY 1 FAIL [   0.014s] codex-windows-sandbox::bin/codex-command-runner win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query"
+            },
+            {
+              "line": 385,
+              "text": "   RETRY 2/2 [         ] codex-windows-sandbox::bin/codex-command-runner win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query"
+            },
+            {
+              "line": 410,
+              "text": "  TRY 2 FAIL [   0.014s] codex-windows-sandbox::bin/codex-command-runner win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query"
+            },
+            {
+              "line": 413,
+              "text": "  TRY 2 FAIL [   0.016s] codex-windows-sandbox::bin/codex-command-runner win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit"
+            },
+            {
+              "line": 414,
+              "text": "  TRY 2 FAIL [   0.014s] codex-windows-sandbox::bin/codex-command-runner win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query"
+            }
+          ],
+          "observation": "First full-rights observation is actual Exited1 instead of7. Zero/7/259 loop stops at first expected0 with actual1. Original Child pre-cleanup/wait agrees1 without cleanup kill; image query31 is UNKNOWN. Reduced-rights negative controls and later7/259 not reached. Parent builder args are not actual command wire or a demonstrated root cause.",
+          "first_failure_excerpt": [
+            {
+              "line": 311,
+              "text": "thread 'win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit' (7900) panicked at windows-sandbox-rs\\src\\bin\\command_runner\\win\\process_observation_tests.rs:171:9:"
+            },
+            {
+              "line": 312,
+              "text": "assertion failed: `(left == right)`"
+            },
+            {
+              "line": 313,
+              "text": ""
+            },
+            {
+              "line": 314,
+              "text": "Diff < left / right > :"
+            },
+            {
+              "line": 315,
+              "text": " Exited("
+            },
+            {
+              "line": 316,
+              "text": "<    1,"
+            },
+            {
+              "line": 317,
+              "text": ">    7,"
+            },
+            {
+              "line": 318,
+              "text": " )"
+            }
+          ],
+          "first_diagnostic_per_failed_test": [
+            {
+              "line": 322,
+              "text": "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 7\"]"
+            },
+            {
+              "line": 374,
+              "text": "owned observation failure truncated=0: pre_cleanup=Ok(Some(ExitStatus(ExitStatus(1)))) cleanup_kill=None wait=Ok(ExitStatus(ExitStatus(1))) image_state=UNKNOWN_QUERY_FAILED actual_image=None image_error=Some(31) parent_program=\"C:\\\\Windows\\\\System32/cmd.exe\" parent_args_not_wire=[\"/D\", \"/C\", \"exit /b 0\"]"
+            }
+          ],
+          "all_four_attempt_diagnostics_recomputed_and_matched": true
+        }
+      },
+      "guard_flags": {
+        "production_sandbox_admitted": false,
+        "windows_private_state_owners_supported": false,
+        "power_loss_qualified": false
+      },
+      "member_audit": {
+        "count": 55,
+        "all_member_sizes_CRC32_SHA256_recomputed": true,
+        "exact_receipt": "originals/artifact12837122626.direct-GitHub-original-integrity.json",
+        "receipt_bytes": 10801,
+        "receipt_sha256": "c15e717508f4400c2b5a8977308b3f29cdf75ade83fe107d3eb66976daf05c9d",
+        "complete_independent_recomputed_member_metadata_canonical_json_sha256": "34795d885e12ae651e9746f2ee6d596035250168b9233b76d19e432bc2b1a3d3",
+        "sorted_names_equal_common_55_member_inventory": true
+      },
+      "case_counts_columns": [
+        "passed",
+        "failed",
+        "returncode",
+        "minimum_tests"
+      ],
+      "case_counts": {
+        "partial-delete-deny": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "broad-identity-delete": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "legacy-delete-boundary": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "private-relative-rename": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "private-held-sharing": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "private-no-reparse": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "private-native-flush": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "acl-unit-controls": [
+          8,
+          0,
+          0,
+          8
+        ],
+        "private-owner-descriptor": [
+          40,
+          0,
+          0,
+          40
+        ],
+        "full-restriction-candidate": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "held-read-acl": [
+          3,
+          0,
+          0,
+          3
+        ],
+        "private-local-ntfs": [
+          4,
+          0,
+          0,
+          4
+        ],
+        "private-principal-continuity": [
+          4,
+          0,
+          0,
+          4
+        ],
+        "private-owner-lock": [
+          4,
+          0,
+          0,
+          4
+        ],
+        "original-final-use-windows": [
+          7,
+          0,
+          0,
+          7
+        ],
+        "original-registry-windows": [
+          3,
+          0,
+          0,
+          3
+        ],
+        "bounded-filesystem-preparation": [
+          2,
+          0,
+          0,
+          2
+        ],
+        "explicit-stdio": [
+          2,
+          0,
+          0,
+          2
+        ],
+        "session-desktop": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "controlled-job": [
+          2,
+          0,
+          0,
+          2
+        ],
+        "query-existing-readback": [
+          6,
+          0,
+          0,
+          6
+        ],
+        "command-runner-terminal": [
+          1,
+          2,
+          1,
+          3
+        ]
+      },
+      "case_hash_joins": "All22 original receipt/log SHA joins verified; complete per-member hashes retained in referenced integrity receipt."
+    },
+    {
+      "artifact_id": 12835937649,
+      "job_id": 122967596650,
+      "job_name": "Native Windows deletion boundary (windows-latest, base-merge)",
+      "artifact_name": "hepta-windows-delete-boundary-windows-latest-base-merge-40731176821-1",
+      "official_zip_bytes": 92237,
+      "official_zip_sha256": "768d07f1302eb7007a0998616c215865c2053d9e630c6244a84188e0a32889e2",
+      "official_digest_from_delivered_API": "sha256:768d07f1302eb7007a0998616c215865c2053d9e630c6244a84188e0a32889e2",
+      "all_member_CRC_and_SHA_verified": true,
+      "source_before_after_exact_bytes_equal": true,
+      "source": {
+        "base_sha": "c38e7727220f32c7410f59083c5ea7878bbae078",
+        "lane": "base-merge",
+        "native": {
+          "runner": "windows-latest",
+          "runner_arch": "X64",
+          "target": "x86_64-pc-windows-msvc"
+        },
+        "parents": [
+          "c38e7727220f32c7410f59083c5ea7878bbae078",
+          "310b5369bad666367f17a6e005d29ada9d123cd7"
+        ],
+        "source_sha": "310b5369bad666367f17a6e005d29ada9d123cd7",
+        "symlink_placeholders": 0,
+        "tested_sha": "06e1c3d810d70a67eb92d11513f708cac7ed95b6",
+        "tracked_bytes_sha256": "3d084dd0039ce10ba7b8bee8c5f954b2500299e81978152568619e15d71913da",
+        "tracked_files": 10295,
+        "tree": "d3b88496e8077d17c0c82476da9876168082d10e"
+      },
+      "helper_sha256": "6cf3dfe235c24820013f5377bf7b2f852b726a59c540d2e47a829cfa3722e552",
+      "helper_matches_full_job_heredoc": true,
+      "full_job_helper_lines": [
+        7279,
+        7691
+      ],
+      "full_job_bytes": 2025441,
+      "full_job_sha256": "c4bbcf4376dbd16a175f1b43a3f4e93f4bf5a5b282643f3693d4eb8189befba6",
+      "original_twenty": {
+        "passed": 18,
+        "failed": 2,
+        "failed_groups": [
+          "broad-identity-delete",
+          "legacy-delete-boundary"
+        ]
+      },
+      "query": {
+        "passed": 6,
+        "failed": 0
+      },
+      "terminal": {
+        "passed": 1,
+        "failed": 2,
+        "unique_names": [
+          "win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query",
+          "win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit",
+          "win::process_observation::tests::actual_live_child_is_pending_until_original_stdin_closes"
+        ]
+      },
+      "v3_v2_original_result_receipt_log_hash_chain_verified": true,
+      "raw_findings": {
+        "broad-identity-delete": {
+          "artifact_member": "broad-identity-delete.log",
+          "sha256": "a7e6645b1a11ddc2cfcfba7fcae1ac56d78002fc5deea63b34a0bbd71efe7132",
+          "first_panic_line": 174,
+          "summary": {
+            "line": 245,
+            "text": "     Summary [   0.050s] 1 test run: 0 passed, 1 failed, 224 skipped"
+          },
+          "full_job_panic_raw_line_numbers": [
+            10745,
+            10782
+          ],
+          "raw_observation_matches_first_route_same_case": true,
+          "common_detailed_observation_route_artifact_id": 12837122626,
+          "first_assertion_raw_line": 175,
+          "observed_two_None_where_PermissionDenied_required": true,
+          "outside_parent_FILE_DELETE_CHILD64_allowed": true
+        },
+        "legacy-delete-boundary": {
+          "artifact_member": "legacy-delete-boundary.log",
+          "sha256": "96f62ef2b313d76dda2437ed52142d851fcfb09e24756be83d5ea1cb422b97f4",
+          "first_panic_line": 174,
+          "summary": {
+            "line": 205,
+            "text": "     Summary [   0.041s] 1 test run: 0 passed, 1 failed, 224 skipped"
+          },
+          "full_job_panic_raw_line_numbers": [
+            11020,
+            11037
+          ],
+          "raw_observation_matches_first_route_same_case": true,
+          "common_detailed_observation_route_artifact_id": 12837122626,
+          "guard_refusal_raw_line": 175,
+          "guard_refused_before_session_spawn": true
+        },
+        "command-runner-terminal": {
+          "artifact_member": "command-runner-terminal.log",
+          "sha256": "a4294a3f426a54fb4237aa82feb0a5806a31f1f9b9b359aa124e22f86c743262",
+          "first_panic_line": 311,
+          "summary": {
+            "line": 412,
+            "text": "     Summary [   0.140s] 3 tests run: 1 passed, 2 failed, 1 skipped"
+          },
+          "full_job_panic_raw_line_numbers": [
+            13489,
+            13515,
+            13541,
+            13567
+          ],
+          "raw_observation_matches_first_route_same_case": true,
+          "common_detailed_observation_route_artifact_id": 12837122626,
+          "nested_FAILED_attempt_lines": 4,
+          "distinct_failed_tests": {
+            "win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit": 2,
+            "win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query": 2
+          },
+          "original_retry_raw_lines": [
+            332,
+            333,
+            358,
+            384,
+            385,
+            410,
+            413,
+            414
+          ],
+          "diagnostic_first7_first0_raw_lines": [
+            322,
+            374
+          ],
+          "all_four_attempt_diagnostics_recomputed_and_matched": true,
+          "observe_and_Child_wait_actual_exit": 1,
+          "cleanup_kill": null,
+          "image_query_error": 31,
+          "reduced_rights_later7_259_unreached": true
+        }
+      },
+      "guard_flags": {
+        "production_sandbox_admitted": false,
+        "windows_private_state_owners_supported": false,
+        "power_loss_qualified": false
+      },
+      "member_audit": {
+        "count": 55,
+        "all_member_sizes_CRC32_SHA256_recomputed": true,
+        "exact_receipt": "originals/artifact12835937649.direct-GitHub-original-integrity.json",
+        "receipt_bytes": 10802,
+        "receipt_sha256": "ec7e29ee75750f96b8b16a3673d0063075c3feead41d0096ca6f793e88366f5e",
+        "complete_independent_recomputed_member_metadata_canonical_json_sha256": "d6211a4f3e88482b7b87374f3bd120babc9dd23a527472b13278c3870b72c83e",
+        "sorted_names_equal_common_55_member_inventory": true
+      },
+      "case_counts_columns": [
+        "passed",
+        "failed",
+        "returncode",
+        "minimum_tests"
+      ],
+      "case_counts": {
+        "partial-delete-deny": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "broad-identity-delete": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "legacy-delete-boundary": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "private-relative-rename": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "private-held-sharing": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "private-no-reparse": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "private-native-flush": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "acl-unit-controls": [
+          8,
+          0,
+          0,
+          8
+        ],
+        "private-owner-descriptor": [
+          40,
+          0,
+          0,
+          40
+        ],
+        "full-restriction-candidate": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "held-read-acl": [
+          3,
+          0,
+          0,
+          3
+        ],
+        "private-local-ntfs": [
+          4,
+          0,
+          0,
+          4
+        ],
+        "private-principal-continuity": [
+          4,
+          0,
+          0,
+          4
+        ],
+        "private-owner-lock": [
+          4,
+          0,
+          0,
+          4
+        ],
+        "original-final-use-windows": [
+          7,
+          0,
+          0,
+          7
+        ],
+        "original-registry-windows": [
+          3,
+          0,
+          0,
+          3
+        ],
+        "bounded-filesystem-preparation": [
+          2,
+          0,
+          0,
+          2
+        ],
+        "explicit-stdio": [
+          2,
+          0,
+          0,
+          2
+        ],
+        "session-desktop": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "controlled-job": [
+          2,
+          0,
+          0,
+          2
+        ],
+        "query-existing-readback": [
+          6,
+          0,
+          0,
+          6
+        ],
+        "command-runner-terminal": [
+          1,
+          2,
+          1,
+          3
+        ]
+      },
+      "case_hash_joins": "All22 original receipt/log SHA joins verified; complete per-member hashes retained in referenced integrity receipt."
+    },
+    {
+      "artifact_id": 12835783247,
+      "job_id": 122967596674,
+      "job_name": "Native Windows deletion boundary (windows-11-arm, source-head)",
+      "artifact_name": "hepta-windows-delete-boundary-windows-11-arm-source-head-40731176821-1",
+      "official_zip_bytes": 92286,
+      "official_zip_sha256": "5dbfde79442a099c83cac753ea8b0eb2273b3dec9515997a903b6087b3670231",
+      "official_digest_from_delivered_API": "sha256:5dbfde79442a099c83cac753ea8b0eb2273b3dec9515997a903b6087b3670231",
+      "all_member_CRC_and_SHA_verified": true,
+      "source_before_after_exact_bytes_equal": true,
+      "source": {
+        "base_sha": "c38e7727220f32c7410f59083c5ea7878bbae078",
+        "lane": "source-head",
+        "native": {
+          "runner": "windows-11-arm",
+          "runner_arch": "ARM64",
+          "target": "aarch64-pc-windows-msvc"
+        },
+        "parents": [
+          "7709080a1e054dda4837053091f19bc0a5e5af0e"
+        ],
+        "source_sha": "310b5369bad666367f17a6e005d29ada9d123cd7",
+        "symlink_placeholders": 0,
+        "tested_sha": "310b5369bad666367f17a6e005d29ada9d123cd7",
+        "tracked_bytes_sha256": "3d084dd0039ce10ba7b8bee8c5f954b2500299e81978152568619e15d71913da",
+        "tracked_files": 10295,
+        "tree": "d3b88496e8077d17c0c82476da9876168082d10e"
+      },
+      "helper_sha256": "6cf3dfe235c24820013f5377bf7b2f852b726a59c540d2e47a829cfa3722e552",
+      "helper_matches_full_job_heredoc": true,
+      "full_job_helper_lines": [
+        7312,
+        7724
+      ],
+      "full_job_bytes": 2027304,
+      "full_job_sha256": "0f4f86c14f3733c0537465bdc8d6802f8e3bfbc505232043142e04ab63d8f6b9",
+      "original_twenty": {
+        "passed": 18,
+        "failed": 2,
+        "failed_groups": [
+          "broad-identity-delete",
+          "legacy-delete-boundary"
+        ]
+      },
+      "query": {
+        "passed": 6,
+        "failed": 0
+      },
+      "terminal": {
+        "passed": 1,
+        "failed": 2,
+        "unique_names": [
+          "win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query",
+          "win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit",
+          "win::process_observation::tests::actual_live_child_is_pending_until_original_stdin_closes"
+        ]
+      },
+      "v3_v2_original_result_receipt_log_hash_chain_verified": true,
+      "raw_findings": {
+        "broad-identity-delete": {
+          "artifact_member": "broad-identity-delete.log",
+          "sha256": "7b5e1dbd1a749a00e00b8d5bfbeab9751d3d66a9cc864c26a0651f5245094e1f",
+          "first_panic_line": 174,
+          "summary": {
+            "line": 245,
+            "text": "     Summary [   0.063s] 1 test run: 0 passed, 1 failed, 224 skipped"
+          },
+          "full_job_panic_raw_line_numbers": [
+            10776,
+            10813
+          ],
+          "raw_observation_matches_first_route_same_case": true,
+          "common_detailed_observation_route_artifact_id": 12837122626,
+          "first_assertion_raw_line": 175,
+          "observed_two_None_where_PermissionDenied_required": true,
+          "outside_parent_FILE_DELETE_CHILD64_allowed": true
+        },
+        "legacy-delete-boundary": {
+          "artifact_member": "legacy-delete-boundary.log",
+          "sha256": "d2ad00d913927aa1af614abc4574ad350b4ed08be62a34a13116fd46ed610d71",
+          "first_panic_line": 174,
+          "summary": {
+            "line": 205,
+            "text": "     Summary [   0.070s] 1 test run: 0 passed, 1 failed, 224 skipped"
+          },
+          "full_job_panic_raw_line_numbers": [
+            11051,
+            11068
+          ],
+          "raw_observation_matches_first_route_same_case": true,
+          "common_detailed_observation_route_artifact_id": 12837122626,
+          "guard_refusal_raw_line": 175,
+          "guard_refused_before_session_spawn": true
+        },
+        "command-runner-terminal": {
+          "artifact_member": "command-runner-terminal.log",
+          "sha256": "6bb7b7ae6029460cede76874ba8efb05049a76b7c1cca810e6d3da177da24892",
+          "first_panic_line": 311,
+          "summary": {
+            "line": 412,
+            "text": "     Summary [   0.240s] 3 tests run: 1 passed, 2 failed, 1 skipped"
+          },
+          "full_job_panic_raw_line_numbers": [
+            13520,
+            13546,
+            13572,
+            13598
+          ],
+          "raw_observation_matches_first_route_same_case": true,
+          "common_detailed_observation_route_artifact_id": 12837122626,
+          "nested_FAILED_attempt_lines": 4,
+          "distinct_failed_tests": {
+            "win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit": 2,
+            "win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query": 2
+          },
+          "original_retry_raw_lines": [
+            332,
+            333,
+            358,
+            384,
+            385,
+            410,
+            413,
+            414
+          ],
+          "diagnostic_first7_first0_raw_lines": [
+            322,
+            374
+          ],
+          "all_four_attempt_diagnostics_recomputed_and_matched": true,
+          "observe_and_Child_wait_actual_exit": 1,
+          "cleanup_kill": null,
+          "image_query_error": 31,
+          "reduced_rights_later7_259_unreached": true
+        }
+      },
+      "guard_flags": {
+        "production_sandbox_admitted": false,
+        "windows_private_state_owners_supported": false,
+        "power_loss_qualified": false
+      },
+      "member_audit": {
+        "count": 55,
+        "all_member_sizes_CRC32_SHA256_recomputed": true,
+        "exact_receipt": "originals/artifact12835783247.direct-GitHub-original-integrity.json",
+        "receipt_bytes": 10801,
+        "receipt_sha256": "618a97e9260d500ee646454aba664221c4bd9e76c532e1feb05559e41a868316",
+        "complete_independent_recomputed_member_metadata_canonical_json_sha256": "6be7d45b5b7b088966983b703c3b4f04cdfa5abf177ac3e68772841d5918d4b1",
+        "sorted_names_equal_common_55_member_inventory": true
+      },
+      "case_counts_columns": [
+        "passed",
+        "failed",
+        "returncode",
+        "minimum_tests"
+      ],
+      "case_counts": {
+        "partial-delete-deny": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "broad-identity-delete": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "legacy-delete-boundary": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "private-relative-rename": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "private-held-sharing": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "private-no-reparse": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "private-native-flush": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "acl-unit-controls": [
+          8,
+          0,
+          0,
+          8
+        ],
+        "private-owner-descriptor": [
+          40,
+          0,
+          0,
+          40
+        ],
+        "full-restriction-candidate": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "held-read-acl": [
+          3,
+          0,
+          0,
+          3
+        ],
+        "private-local-ntfs": [
+          4,
+          0,
+          0,
+          4
+        ],
+        "private-principal-continuity": [
+          4,
+          0,
+          0,
+          4
+        ],
+        "private-owner-lock": [
+          4,
+          0,
+          0,
+          4
+        ],
+        "original-final-use-windows": [
+          7,
+          0,
+          0,
+          7
+        ],
+        "original-registry-windows": [
+          3,
+          0,
+          0,
+          3
+        ],
+        "bounded-filesystem-preparation": [
+          2,
+          0,
+          0,
+          2
+        ],
+        "explicit-stdio": [
+          2,
+          0,
+          0,
+          2
+        ],
+        "session-desktop": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "controlled-job": [
+          2,
+          0,
+          0,
+          2
+        ],
+        "query-existing-readback": [
+          6,
+          0,
+          0,
+          6
+        ],
+        "command-runner-terminal": [
+          1,
+          2,
+          1,
+          3
+        ]
+      },
+      "case_hash_joins": "All22 original receipt/log SHA joins verified; complete per-member hashes retained in referenced integrity receipt."
+    },
+    {
+      "artifact_id": 12834599606,
+      "job_id": 122967596137,
+      "job_name": "Native Windows deletion boundary (windows-11-arm, base-merge)",
+      "artifact_name": "hepta-windows-delete-boundary-windows-11-arm-base-merge-40731176821-1",
+      "official_zip_bytes": 92345,
+      "official_zip_sha256": "7900e260cbf22c3c2d7811cfe3e0144f6600dcd94a94dc6a922d52f4473c5ccd",
+      "official_digest_from_delivered_API": "sha256:7900e260cbf22c3c2d7811cfe3e0144f6600dcd94a94dc6a922d52f4473c5ccd",
+      "all_member_CRC_and_SHA_verified": true,
+      "source_before_after_exact_bytes_equal": true,
+      "source": {
+        "base_sha": "c38e7727220f32c7410f59083c5ea7878bbae078",
+        "lane": "base-merge",
+        "native": {
+          "runner": "windows-11-arm",
+          "runner_arch": "ARM64",
+          "target": "aarch64-pc-windows-msvc"
+        },
+        "parents": [
+          "c38e7727220f32c7410f59083c5ea7878bbae078",
+          "310b5369bad666367f17a6e005d29ada9d123cd7"
+        ],
+        "source_sha": "310b5369bad666367f17a6e005d29ada9d123cd7",
+        "symlink_placeholders": 0,
+        "tested_sha": "06e1c3d810d70a67eb92d11513f708cac7ed95b6",
+        "tracked_bytes_sha256": "3d084dd0039ce10ba7b8bee8c5f954b2500299e81978152568619e15d71913da",
+        "tracked_files": 10295,
+        "tree": "d3b88496e8077d17c0c82476da9876168082d10e"
+      },
+      "helper_sha256": "6cf3dfe235c24820013f5377bf7b2f852b726a59c540d2e47a829cfa3722e552",
+      "helper_matches_full_job_heredoc": true,
+      "full_job_helper_lines": [
+        7310,
+        7722
+      ],
+      "full_job_bytes": 2027360,
+      "full_job_sha256": "7e7d81f18703a2fc08a4d48c04402a0a3a323e1ecf751749868a4d5d5f6f6702",
+      "original_twenty": {
+        "passed": 18,
+        "failed": 2,
+        "failed_groups": [
+          "broad-identity-delete",
+          "legacy-delete-boundary"
+        ]
+      },
+      "query": {
+        "passed": 6,
+        "failed": 0
+      },
+      "terminal": {
+        "passed": 1,
+        "failed": 2,
+        "unique_names": [
+          "win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query",
+          "win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit",
+          "win::process_observation::tests::actual_live_child_is_pending_until_original_stdin_closes"
+        ]
+      },
+      "v3_v2_original_result_receipt_log_hash_chain_verified": true,
+      "raw_findings": {
+        "broad-identity-delete": {
+          "artifact_member": "broad-identity-delete.log",
+          "sha256": "0b9d91d24bca1d3861d517820f0ebbab9ffb6115e7f905b22a2d49971137e75b",
+          "first_panic_line": 174,
+          "summary": {
+            "line": 245,
+            "text": "     Summary [   0.062s] 1 test run: 0 passed, 1 failed, 224 skipped"
+          },
+          "full_job_panic_raw_line_numbers": [
+            10774,
+            10811
+          ],
+          "raw_observation_matches_first_route_same_case": true,
+          "common_detailed_observation_route_artifact_id": 12837122626,
+          "first_assertion_raw_line": 175,
+          "observed_two_None_where_PermissionDenied_required": true,
+          "outside_parent_FILE_DELETE_CHILD64_allowed": true
+        },
+        "legacy-delete-boundary": {
+          "artifact_member": "legacy-delete-boundary.log",
+          "sha256": "e78cb8491c54471cf2496197c7093755ed66325a111f86b5e18a5c780447642f",
+          "first_panic_line": 174,
+          "summary": {
+            "line": 205,
+            "text": "     Summary [   0.065s] 1 test run: 0 passed, 1 failed, 224 skipped"
+          },
+          "full_job_panic_raw_line_numbers": [
+            11049,
+            11066
+          ],
+          "raw_observation_matches_first_route_same_case": true,
+          "common_detailed_observation_route_artifact_id": 12837122626,
+          "guard_refusal_raw_line": 175,
+          "guard_refused_before_session_spawn": true
+        },
+        "command-runner-terminal": {
+          "artifact_member": "command-runner-terminal.log",
+          "sha256": "dc82b865e6b4d1bd828238d893f87816178e44ee979215adf44ac2f84d89892a",
+          "first_panic_line": 311,
+          "summary": {
+            "line": 412,
+            "text": "     Summary [   0.205s] 3 tests run: 1 passed, 2 failed, 1 skipped"
+          },
+          "full_job_panic_raw_line_numbers": [
+            13518,
+            13544,
+            13570,
+            13596
+          ],
+          "raw_observation_matches_first_route_same_case": true,
+          "common_detailed_observation_route_artifact_id": 12837122626,
+          "nested_FAILED_attempt_lines": 4,
+          "distinct_failed_tests": {
+            "win::process_observation::tests::actual_wait_and_query_rights_failures_do_not_publish_exit": 2,
+            "win::process_observation::tests::original_signalled_exit_zero_seven_and_259_require_successful_query": 2
+          },
+          "original_retry_raw_lines": [
+            332,
+            333,
+            358,
+            384,
+            385,
+            410,
+            413,
+            414
+          ],
+          "diagnostic_first7_first0_raw_lines": [
+            322,
+            374
+          ],
+          "all_four_attempt_diagnostics_recomputed_and_matched": true,
+          "observe_and_Child_wait_actual_exit": 1,
+          "cleanup_kill": null,
+          "image_query_error": 31,
+          "reduced_rights_later7_259_unreached": true
+        }
+      },
+      "guard_flags": {
+        "production_sandbox_admitted": false,
+        "windows_private_state_owners_supported": false,
+        "power_loss_qualified": false
+      },
+      "member_audit": {
+        "count": 55,
+        "all_member_sizes_CRC32_SHA256_recomputed": true,
+        "exact_receipt": "originals/artifact12834599606.direct-GitHub-original-integrity.json",
+        "receipt_bytes": 10805,
+        "receipt_sha256": "128a10e970820c756ca82fe95354d95a29f1bd66be035233159796a2b96a76df",
+        "complete_independent_recomputed_member_metadata_canonical_json_sha256": "f090af53f9fbbe21b069fabd6b3445f6b6b570ce593450967d4e0aedfffc9be8",
+        "sorted_names_equal_common_55_member_inventory": true
+      },
+      "case_counts_columns": [
+        "passed",
+        "failed",
+        "returncode",
+        "minimum_tests"
+      ],
+      "case_counts": {
+        "partial-delete-deny": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "broad-identity-delete": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "legacy-delete-boundary": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "private-relative-rename": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "private-held-sharing": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "private-no-reparse": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "private-native-flush": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "acl-unit-controls": [
+          8,
+          0,
+          0,
+          8
+        ],
+        "private-owner-descriptor": [
+          40,
+          0,
+          0,
+          40
+        ],
+        "full-restriction-candidate": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "held-read-acl": [
+          3,
+          0,
+          0,
+          3
+        ],
+        "private-local-ntfs": [
+          4,
+          0,
+          0,
+          4
+        ],
+        "private-principal-continuity": [
+          4,
+          0,
+          0,
+          4
+        ],
+        "private-owner-lock": [
+          4,
+          0,
+          0,
+          4
+        ],
+        "original-final-use-windows": [
+          7,
+          0,
+          0,
+          7
+        ],
+        "original-registry-windows": [
+          3,
+          0,
+          0,
+          3
+        ],
+        "bounded-filesystem-preparation": [
+          2,
+          0,
+          0,
+          2
+        ],
+        "explicit-stdio": [
+          2,
+          0,
+          0,
+          2
+        ],
+        "session-desktop": [
+          1,
+          0,
+          0,
+          1
+        ],
+        "controlled-job": [
+          2,
+          0,
+          0,
+          2
+        ],
+        "query-existing-readback": [
+          6,
+          0,
+          0,
+          6
+        ],
+        "command-runner-terminal": [
+          1,
+          2,
+          1,
+          3
+        ]
+      },
+      "case_hash_joins": "All22 original receipt/log SHA joins verified; complete per-member hashes retained in referenced integrity receipt."
+    }
+  ],
+  "total_zip_members_verified": 220,
+  "total_case_receipt_log_joins_verified": 88,
+  "all_four_helper_pins_equal": "6cf3dfe235c24820013f5377bf7b2f852b726a59c540d2e47a829cfa3722e552",
+  "source_and_helper_limits": {
+    "tracked_files": 10295,
+    "tracked_bytes_sha256": "3d084dd0039ce10ba7b8bee8c5f954b2500299e81978152568619e15d71913da",
+    "all_lanes_same_tree_and_aggregate_source_inventory_record": true,
+    "source_before_after_byte_equal_per_lane": true,
+    "source_file_contents_or_whole_Git_tree_reconstructed": false,
+    "workflow_SHA256_claim_from_delivered_reader": "5957af19f9513b0e8c1cf335b4e94280f3e93381bbb363e28fd869ab4836fabd",
+    "workflow_yaml_original_in_packet": false,
+    "helper_match_to_actual_full_log_heredoc_independently_verified": true,
+    "checker_match_to_external_exact_git_workflow_not_repeated": true,
+    "original_60min_limit": "Recorded by peer reader; full workflow bytes are not supplied in this packet. No limit modified by this review.",
+    "test_source_line_refs": "Original logs identify token_tests.rs486, unified_exec/tests.rs769 and process_observation_tests.rs158/171; complete current Rust source files and actual CMD wire/stderr are not part of packet. The raw observed values are preserved without inventing a root cause."
+  },
+  "original_outcomes_per_lane": {
+    "original_twenty": {
+      "passed": 18,
+      "failed": 2
+    },
+    "query_six": {
+      "passed": 6,
+      "failed": 0
+    },
+    "terminal_three": {
+      "passed": 1,
+      "failed": 2
+    },
+    "terminal_nested_FAILURES": "Two distinct original test names each attempted twice by nextest. Four nested FAILED entries per lane are not four distinct failing tests. The one filtered nonselected case and original retry profile are visible; neither is a new skip or waiver introduced here."
+  },
+  "failure_interpretation": {
+    "broad": "Original boundary remains broken: raw first assertion observes two None values where four PermissionDenied results were required; peer/task source mapping identifies outside remove_file/remove_dir success. Parent FILE_DELETE_CHILD64 is allowed by actual diagnostic despite both object DELETE AccessChecks denying. AccessCheck alone does not qualify safety.",
+    "legacy": "Correct production qualification guard refuses before session spawn; later original positive isolation assertions remain unexecuted. Do not remove guard or call this passing.",
+    "terminal": "Actual process Exit1 is independently shared by observe and Child pre/wait; no cleanup kill. First full-rights7 and first0 assertions fail; reduced rights plus later7/259 unreachable. QueryFullProcessImageName error31 means unknown image; builder args are not wire evidence. CMD syntax/path/API/root cause remains UNKNOWN.",
+    "query": "Six existing-query controls pass per lane; this does not qualify descendants, ambient read, original terminal failures or full sandbox."
+  },
+  "Linux_release_separate_scope": {
+    "run": 40731176654,
+    "attempt": 1,
+    "job_id": 122975146074,
+    "log_bytes": 107944,
+    "log_sha256": "1318d62fbb6b927b54d75adcc7299c107d3033318fb681cb8de84de7afb6f920",
+    "raw_lines": [
+      {
+        "line": 128,
+        "text": "2026-10-28T17:11:43.8519298Z HEAD is now at 06e1c3d Merge 310b5369bad666367f17a6e005d29ada9d123cd7 into c38e7727220f32c7410f59083c5ea7878bbae078"
+      },
+      {
+        "line": 1180,
+        "text": "2026-10-28T17:12:24.3283355Z fatal: unable to access 'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxxabi.git/': The requested URL returned error: 503"
+      },
+      {
+        "line": 1182,
+        "text": "2026-10-28T17:12:24.6282936Z fatal: unable to access 'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxxabi.git/': The requested URL returned error: 503"
+      },
+      {
+        "line": 1184,
+        "text": "2026-10-28T17:12:24.6364868Z fatal: unable to access 'https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxxabi.git/': The requested URL returned error: 503"
+      },
+      {
+        "line": 1185,
+        "text": "2026-10-28T17:12:24.6530124Z ERROR: Analysis of target '//third_party/v8:rusty_v8_release_pair_x86_64_unknown_linux_gnu' failed; build aborted: Analysis failed"
+      },
+      {
+        "line": 1186,
+        "text": "2026-10-28T17:12:24.6833861Z INFO: Elapsed time: 18.185s, Critical Path: 0.03s"
+      },
+      {
+        "line": 1188,
+        "text": "2026-10-28T17:12:24.6857946Z ERROR: Build did NOT complete successfully"
+      }
+    ],
+    "actual_scope": "Remote HTTP503 during original libcxxabi git fetch; Bazel analysis aborted at18.185s. No successful native target build.",
+    "exact_fixed_commit_from_triage": "8f11bb1d4438d0239d0dfc1bd9456a9f31629dda",
+    "claimed_subsequent_HTTP200": "Recorded triage statement only; original HTTP200 response bytes not delivered, no new network performed. HTTP200 would not prove full git fetch/build success.",
+    "rerun_admission": "NOT_GRANTED_BY_THIS_READBACK; triage explicitly holds while original parent active and requires fresh terminal/source/attempt/concurrency proof first. No polling or rerun performed.",
+    "scope5min_checkout": "No complete original scope5min job log supplied; timeout reason is not independently adjudicated and cannot inherit HTTP503 retry justification."
+  },
+  "delivered_peer_reader_treatment": "Read and all supplied byte/hash/outcome claims cross-checked against delivered raw ZIP/log/API bytes; its script requires packet-external checkout/gate/workflow and was never executed. No packet-external files/artifacts were fetched.",
+  "internal_integrity_mismatches_found": [],
+  "actionable_open_items": [
+    "Repair original broad-identity deletion boundary through complete qualified production token/ACL/caller chain; preserve ambient-read contract and original asserts.",
+    "Keep legacy/direct/account-broker qualification guard closed until original complete native acceptance passes.",
+    "Investigate first actual full-rights child Exit1 with original process/terminal evidence; preserve original8s/allasserts. CMD helper modifications remain root-peer exclusive and are not implemented here.",
+    "Run original necessary native checks only through separately admitted workflow after actual new source integration; component/query PASS cannot substitute.",
+    "Keep Linux503 as a separate dependency-analysis failure and scope5min timeout unqualified; no automatic retry authorization."
+  ],
+  "original_PN0_PN6_failures_caps_guards_unknown_costs_and_expired_budgets": "PRESERVED; no reset/skip/xfail/assertion/resource/deadline/source or production change by this review",
+  "disposition": "DELIVERED_ORIGINALS_INTEGRITY_SOURCE_AND_FAILURE_READBACK_MATCHED; ORIGINAL_NATIVE_FAILURES_STILL_OPEN",
+  "native_executions_by_this_review": 0,
+  "CI_actions_by_this_review": 0,
+  "merge_ready": false,
+  "task_complete": false,
+  "NO_GO": true,
+  "report_storage_scope": "Bounded report references every original through delivered inventory, full ZIP metadata receipts and recomputed metadata digest; it does not duplicate all220 member hashes or giant repeated ACL dumps. All original packet bytes unchanged.",
+  "common_zip_member_names_sorted": [
+    "SCOPE.txt",
+    "acl-unit-controls.json",
+    "acl-unit-controls.log",
+    "bounded-filesystem-preparation.json",
+    "bounded-filesystem-preparation.log",
+    "broad-identity-delete.json",
+    "broad-identity-delete.log",
+    "cargo.txt",
+    "check.py",
+    "command-runner-terminal.json",
+    "command-runner-terminal.log",
+    "controlled-job.json",
+    "controlled-job.log",
+    "explicit-stdio.json",
+    "explicit-stdio.log",
+    "full-restriction-candidate.json",
+    "full-restriction-candidate.log",
+    "held-read-acl.json",
+    "held-read-acl.log",
+    "just.txt",
+    "legacy-delete-boundary.json",
+    "legacy-delete-boundary.log",
+    "nextest.txt",
+    "original-final-use-windows.json",
+    "original-final-use-windows.log",
+    "original-registry-windows.json",
+    "original-registry-windows.log",
+    "partial-delete-deny.json",
+    "partial-delete-deny.log",
+    "private-held-sharing.json",
+    "private-held-sharing.log",
+    "private-local-ntfs.json",
+    "private-local-ntfs.log",
+    "private-native-flush.json",
+    "private-native-flush.log",
+    "private-no-reparse.json",
+    "private-no-reparse.log",
+    "private-owner-descriptor.json",
+    "private-owner-descriptor.log",
+    "private-owner-lock.json",
+    "private-owner-lock.log",
+    "private-principal-continuity.json",
+    "private-principal-continuity.log",
+    "private-relative-rename.json",
+    "private-relative-rename.log",
+    "query-existing-readback.json",
+    "query-existing-readback.log",
+    "result-v2.json",
+    "result-v3.json",
+    "result.json",
+    "rustc.txt",
+    "session-desktop.json",
+    "session-desktop.log",
+    "source-after.json",
+    "source-before.json"
+  ]
+}

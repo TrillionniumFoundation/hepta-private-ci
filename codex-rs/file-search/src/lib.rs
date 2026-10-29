@@ -1,6 +1,7 @@
 use crossbeam_channel::Receiver;
 use crossbeam_channel::Sender;
 use crossbeam_channel::after;
+use crossbeam_channel::bounded;
 use crossbeam_channel::never;
 use crossbeam_channel::select;
 use crossbeam_channel::unbounded;
@@ -133,10 +134,14 @@ impl Default for FileSearchOptions {
 }
 
 pub trait SessionReporter: Send + Sync + 'static {
-    /// Called when the debounced top-N changes.
+    /// Called once with the initial state before walking starts, then when the debounced top-N changes.
+    ///
+    /// The initial snapshot has no query or indexed entries and is not a completion.
+    /// All callbacks run on the matcher thread, including the initial update.
     fn on_update(&self, snapshot: &FileSearchSnapshot);
 
-    /// Called when the session becomes idle or is cancelled. Guaranteed to be called at least once per update_query.
+    /// Called when the current query becomes idle or the session is cancelled.
+    /// Guaranteed to be called at least once per update_query.
     fn on_complete(&self);
 }
 
@@ -207,11 +212,16 @@ pub fn create_session(
         work_tx,
     });
 
+    let (initial_snapshot_tx, initial_snapshot_rx) = bounded(/*cap*/ 1);
     let matcher_inner = inner.clone();
-    thread::spawn(move || matcher_worker(matcher_inner, work_rx, nucleo));
+    thread::spawn(move || matcher_worker(matcher_inner, work_rx, nucleo, initial_snapshot_tx));
 
     let walker_inner = inner.clone();
-    thread::spawn(move || walker_worker(walker_inner, override_matcher, injector));
+    thread::spawn(move || {
+        if initial_snapshot_rx.recv().is_ok() {
+            walker_worker(walker_inner, override_matcher, injector);
+        }
+    });
 
     Ok(FileSearchSession { inner })
 }
@@ -500,6 +510,7 @@ fn matcher_worker(
     inner: Arc<SessionInner>,
     work_rx: Receiver<WorkSignal>,
     mut nucleo: Nucleo<IndexedEntry>,
+    initial_snapshot_delivered: Sender<()>,
 ) -> anyhow::Result<()> {
     const TICK_TIMEOUT_MS: u64 = 10;
     let config = Config::DEFAULT.match_paths();
@@ -507,7 +518,25 @@ fn matcher_worker(
     let cancel_requested = || inner.cancelled.load(Ordering::Relaxed);
     let shutdown_requested = || inner.shutdown.load(Ordering::Relaxed);
 
+    if cancel_requested() || shutdown_requested() {
+        inner.reporter.on_complete();
+        return Ok(());
+    }
+
+    // The walker cannot run until this callback returns, so this is the real
+    // initial state. Keep it on this thread: callers may hold their own locks
+    // while create_session returns.
+    inner.reporter.on_update(&FileSearchSnapshot::default());
+    if cancel_requested() || shutdown_requested() {
+        inner.reporter.on_complete();
+        return Ok(());
+    }
+    initial_snapshot_delivered
+        .send(())
+        .map_err(|_| anyhow::anyhow!("file search walker exited before initialization"))?;
+
     let mut last_query = String::new();
+    let mut query_started = false;
     let mut next_notify = never();
     let mut will_notify = false;
     let mut walk_complete = false;
@@ -529,6 +558,7 @@ fn matcher_worker(
                             append,
                         );
                         last_query = query;
+                        query_started = true;
                         will_notify = true;
                         next_notify = after(Duration::from_millis(0));
                     }
@@ -594,7 +624,7 @@ fn matcher_worker(
                     };
                     inner.reporter.on_update(&snapshot);
                 }
-                if !status.running && walk_complete {
+                if !status.running && walk_complete && query_started {
                     inner.reporter.on_complete();
                 }
             }

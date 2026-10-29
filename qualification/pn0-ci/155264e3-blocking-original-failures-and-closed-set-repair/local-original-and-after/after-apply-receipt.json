@@ -1,0 +1,43 @@
+{
+  "source_base": "05a373ccdae72d929464bfeb277f37d1859ecf9a",
+  "patch_sha256": "fe73df4a3e9c49019a3d44c806f8b72614085b0f6ab9333cf777191c8cd09041",
+  "applied_only_QA_inventory": true,
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "test_*.py"
+  ],
+  "exit_code": 0,
+  "seconds": 2.0215146710106637,
+  "logs": [
+    {
+      "path": "work/ci-follow/Hepta-root-QA-closed-set-real-red-green-20261026-001/after-2-stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "work/ci-follow/Hepta-root-QA-closed-set-real-red-green-20261026-001/after-2-stderr.log",
+      "bytes": 116,
+      "sha256": "70b5d78a8f94715e2ecdff0d5ca4ffa74cd6cc264eecb1205d9ad02817675d16"
+    }
+  ],
+  "unchanged_source_and_assertion_pins": {
+    "scripts/verify_hepta_callers.py": "e42fb09f4165067053852821a4b901e21c4a521468a01d11150feb605bf7e21b",
+    "qa/b4-no-bypass/test_kernel_authority_closed_world.py": "868dc981a1d0333d76702f8c70babee4f523e0c28c232a002191ac8bc176d937",
+    "codex-rs/hepta-contracts/src/final_use.rs": "fde6acfb9ed13da256a91875b94a0ac2c2b1dc3bb4c8740adae10d318066f48c",
+    "codex-rs/hepta-memory/src/production_verified_dispatch.rs": "650107322019366180d58d3349f5132f39c0cd92412efef76140225d37f19cc3",
+    "codex-rs/hepta-memory/src/production_verified_dispatch_tests.rs": "612487366bbc8042068331c54ea610f1177f878290a5747a574ad48bf462e9dd",
+    "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_target.rs": "57a5a3a347e72eac5f4a92c3ebc9fa32d364ace39714927a148e6281393600c6",
+    "codex-rs/hepta-infer-worker-host/src/final_use_grant_courier.rs": "984ff379f1842cb4b74778b7fdb24b8a1fc88eb0bb61b45aafc7704506649003"
+  },
+  "before_17_original_tests": "FAIL:2 closed-world mismatches",
+  "after_17_original_tests": "PASS",
+  "prior_canonical_selftest_and_verify_pass_on_unchanged_inputs": true,
+  "not_native_authority_or_CI_qualification": true,
+  "merge_ready": false
+}

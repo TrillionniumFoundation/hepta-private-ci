@@ -42,11 +42,28 @@ const COGNITIVE_CONTROL_UNAVAILABLE_MESSAGE: &str =
 const COGNITIVE_READ_UNAVAILABLE_CODE: &str = "cognitive_read_unavailable";
 
 impl AgentdState {
+    #[cfg(test)]
     pub(crate) async fn response(
         &self,
         request_id: u64,
         spawn_generation: u64,
         method: crate::AgentdMethod,
+    ) -> Result<AgentdResponse, AgentdError> {
+        self.response_with_execution(
+            request_id,
+            spawn_generation,
+            method,
+            &crate::NeuralCognitiveExecutionV1::bounded_read(),
+        )
+        .await
+    }
+
+    pub(crate) async fn response_with_execution(
+        &self,
+        request_id: u64,
+        spawn_generation: u64,
+        method: crate::AgentdMethod,
+        execution: &crate::NeuralCognitiveExecutionV1,
     ) -> Result<AgentdResponse, AgentdError> {
         if spawn_generation != self.identity.spawn_generation {
             return Err(AgentdError::GenerationFenced(format!(
@@ -276,6 +293,7 @@ impl AgentdState {
                     &query,
                     limit,
                     crate::cognitive_context::CognitiveContextReadAdapters {
+                        execution,
                         ranker: self.cognitive_ranker.get(),
                         current_retrieval: self.cognitive_retrieval_context.get(),
                         learning_sink: self.cognitive_retrieval_learning.get(),

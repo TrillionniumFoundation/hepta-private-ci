@@ -1,0 +1,345 @@
+{
+  "schema": "d328-final-use-retained-owner-barrier-independent-source-review-v1",
+  "created_utc": "2026-10-28T18:12:51.069192+00:00",
+  "reviewer": "/root/e153_windows_raw_review",
+  "candidate": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/d328-final-use-retained-owner-barrier-source-candidate-20261028-005",
+  "base_head": "d3284e385e2b6037dd86752ddd246b616144a87c",
+  "base_tree": "eed42a952ac5a713fc733b29707b4be3c20e00b2",
+  "manifest_sha256": "d57ae49b0bef21470f3a10e5ee2f2d39cf216aef42a580af36661bcaaf3946c8",
+  "patch": {
+    "path": "d328-final-use-retained-owner-barrier.patch",
+    "bytes": 12029,
+    "sha256": "63d32a9ab3f69bf4ce8f5a79fa356b7bd3a4a9533b7155a497d4eb281bbbb5e2",
+    "added_lines": 165,
+    "removed_lines": 32
+  },
+  "READ": true,
+  "REVIEW": "COMPLETE_FOR_FROZEN_SOURCE_ONLY",
+  "APPLY": false,
+  "committed": false,
+  "published": false,
+  "scope": "Independent read-only review of frozen four-file patch and actual local immutable d328 base Git blobs, all ten actual callers, retained native owner implementation and original protected test/guard/build paths. No source/mirror/index/ref changes, Rust compilation/formatting/tests/native/VM/CI/network actions or budget reset. Only this new report is written outside source worktrees.",
+  "mechanical_source_binding": {
+    "three_original_mirror_files_equal_actual_d328_bytes": true,
+    "four_after_files_match_final_manifest_size_SHA": true,
+    "all_four_unified_hunks_replayed_in_memory_to_exact_after_bytes": true,
+    "source_files": [
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use.rs",
+        "before_present": true,
+        "before_bytes": 39684,
+        "before_sha256": "fde6acfb9ed13da256a91875b94a0ac2c2b1dc3bb4c8740adae10d318066f48c",
+        "before_git_blob": "32c5f8f823f898d88b429c4fa3dea2d07910be75",
+        "after_bytes": 39400,
+        "after_sha256": "0a6360b6572fc24001ac12a8686dbe2018a6c4484024d8742e1205cfe619f865",
+        "after_git_blob": "0385b5546a636b9062d99047fe306c6b0594ea08",
+        "after_lines": 1055,
+        "added_lines": 14,
+        "removed_lines": 32,
+        "emitted_hunk_replay": "EXACT_AFTER_BYTES"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_live_owner.rs",
+        "before_present": false,
+        "before_bytes": 0,
+        "before_sha256": null,
+        "before_git_blob": null,
+        "after_bytes": 1009,
+        "after_sha256": "750f2902c607cb8bb5663f72ab37785aa1571173b2ae620a93551feffa3ac19f",
+        "after_git_blob": "e7e44bb748f3de84e7ae6ab0c5cce01027c1d410",
+        "after_lines": 34,
+        "added_lines": 34,
+        "removed_lines": 0,
+        "emitted_hunk_replay": "EXACT_AFTER_BYTES"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
+        "before_present": true,
+        "before_bytes": 15199,
+        "before_sha256": "adb38a55572b34077fa08be9b45bd8f4811738d10e0205dbe58b9baeac93af86",
+        "before_git_blob": "84890afa419ce4919bc32daf504784cba3e8d593",
+        "after_bytes": 15637,
+        "after_sha256": "39a69d36a99aaa569eec1cd5b0d0bb10cc94ab570256612dbdfe0f9814e518e8",
+        "after_git_blob": "78e2ea64c2169340441b758272d21ca1a88b8d78",
+        "after_lines": 433,
+        "added_lines": 10,
+        "removed_lines": 0,
+        "emitted_hunk_replay": "EXACT_AFTER_BYTES"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_windows_tests.rs",
+        "before_present": true,
+        "before_bytes": 8503,
+        "before_sha256": "fd028a28e8425b031f4065517b66a57531c77896b85a9a95b8086dc6351d7829",
+        "before_git_blob": "a9b203d6d00b2fbf43d472ab1490a289fc71da22",
+        "after_bytes": 12713,
+        "after_sha256": "b7bca7cf745d5e003cbf9346d5b6442cc74764e5e85419e5f94e503426397141",
+        "after_git_blob": "a6b3cb55b71e3dd60b950671201ff9f146531943",
+        "after_lines": 354,
+        "added_lines": 107,
+        "removed_lines": 0,
+        "emitted_hunk_replay": "EXACT_AFTER_BYTES"
+      }
+    ],
+    "final_use_exact_inverse": {
+      "remove_new_child_module_declaration": true,
+      "restore_ten_original_failed_branches": true,
+      "restore_original_mut_state_binding_in_update_and_claim": true,
+      "result_equals_original_39684_bytes_exactly": true,
+      "original_before_sha256": "fde6acfb9ed13da256a91875b94a0ac2c2b1dc3bb4c8740adae10d318066f48c"
+    },
+    "native_tests_original_prefix": {
+      "bytes": 8503,
+      "sha256": "fd028a28e8425b031f4065517b66a57531c77896b85a9a95b8086dc6351d7829",
+      "complete_before_bytes_are_after_prefix": true,
+      "appended_bytes": 4210,
+      "new_test_execution": "NOT_RUN"
+    },
+    "protected_exact_base_pins": [
+      {
+        "path": "AGENTS.md",
+        "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+        "bytes": 22519,
+        "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+        "patch_excludes_path": true
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_store_io.rs",
+        "git_blob": "5dc155c4d3a26b09c75a0660a4514a22c0182aef",
+        "bytes": 8066,
+        "sha256": "febde7c29b947473a77e215937f4c9e4a7de9dc877c488da1fe32157dd33bd93",
+        "patch_excludes_path": true
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_windows.rs",
+        "git_blob": "6d66664f78a87c5f8f974d94223ca18e26d922c6",
+        "bytes": 4208,
+        "sha256": "c07fb42ccdd07e0d8889a136a25f37535531d4585055006bb61303002c28062b",
+        "patch_excludes_path": true
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_trust.rs",
+        "git_blob": "043ffd75a20c42935959a98d37f40e3d7229c407",
+        "bytes": 2313,
+        "sha256": "7d468026631ae10908c084c66a4bd49f2caac67ed96ae1a4d3572df886cde352",
+        "patch_excludes_path": true
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+        "git_blob": "4abe82b93130d0ae7efa4e704863eda766339c76",
+        "bytes": 30454,
+        "sha256": "ed0576ebdc3424fe6f6db4f3d6b5ad5a8688052714d9c104c467799530944371",
+        "patch_excludes_path": true
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_store_tests.rs",
+        "git_blob": "b481cf7d5a233e377a4b058b8c3cee3dfb40dfdc",
+        "bytes": 5615,
+        "sha256": "f5550d5ec1b54f70493ece536d97442ccc9fc02cd63d36e9fdeeb4472b17da8c",
+        "patch_excludes_path": true
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
+        "git_blob": "56c0a1a9430b9845020e43e7436736be0d8097f0",
+        "bytes": 41841,
+        "sha256": "51b79d090247c27ace0f03804046a8966ff61ac86e8082b8d8b4908a2e916b2d",
+        "patch_excludes_path": true
+      },
+      {
+        "path": "codex-rs/utils/windows-private-state/src/private_owner_lock.rs",
+        "git_blob": "3a1e76616c2e3d2cb4efea47902debd537d74a79",
+        "bytes": 7825,
+        "sha256": "9f6ef5f7ac348bf2ebac9c3872b19df16776ea88c47b2009aab05ca3f91f1c82",
+        "patch_excludes_path": true
+      },
+      {
+        "path": "codex-rs/utils/windows-private-state/src/parent_anchor.rs",
+        "git_blob": "d4aa5488310694442c4173be20ae26d03834becb",
+        "bytes": 8706,
+        "sha256": "790b4ac7105d585fa07793b584426cd919ac50a1f2e07170236aef91e49e0bf2",
+        "patch_excludes_path": true
+      },
+      {
+        "path": "codex-rs/hepta-contracts/BUILD.bazel",
+        "git_blob": "04098e1179d086e61e1602576c59484287d3a293",
+        "bytes": 4603,
+        "sha256": "37039c59c18cc5f108fea97f09d4d5759856bbbfc81220121806944955821775",
+        "patch_excludes_path": true
+      },
+      {
+        "path": "defs.bzl",
+        "git_blob": "10a20d3aab25870f03205b446575c5e8510ba509",
+        "bytes": 32777,
+        "sha256": "f8495f7c1fe8e340efdd16d972e3e522dff1b4db5a4830f3a36a28e62524f618",
+        "patch_excludes_path": true
+      }
+    ]
+  },
+  "ten_existing_entry_points": [
+    {
+      "function": "pub fn enter(self,",
+      "matching_inner": "self.owner",
+      "guard_continuously_held": true,
+      "mutable_after_check": false,
+      "after_helper_line": 326,
+      "reviewed_preserved_order": "same token.owner; binding checked before lock; original clock/head and claimed-head equality retained; consumed token returns original EnteredUseToken only after barrier"
+    },
+    {
+      "function": "pub fn frontier(&self)",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": false,
+      "after_helper_line": 493,
+      "reviewed_preserved_order": "coherent read of matching owner frontier under original state guard"
+    },
+    {
+      "function": "pub fn capacity(&self)",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": false,
+      "after_helper_line": 507,
+      "reviewed_preserved_order": "original bounded nonce/revocation read under matching owner guard; MAX_CLAIMS values unchanged"
+    },
+    {
+      "function": "pub fn revocation_head(&self)",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": false,
+      "after_helper_line": 526,
+      "reviewed_preserved_order": "original head clone only after native barrier; no external frontier manufactured"
+    },
+    {
+      "function": "pub fn update_revocations(&self,",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": true,
+      "after_helper_line": 538,
+      "reviewed_preserved_order": "original monotonic epoch/revision/revocation checks, active dispatch fence and external-CAS-before-local-persist unchanged"
+    },
+    {
+      "function": "pub fn check_unclaimed_grant(",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": false,
+      "after_helper_line": 576,
+      "reviewed_preserved_order": "signature/binding verification still precedes state acquisition; time/head/nonce/capacity checks unchanged"
+    },
+    {
+      "function": "pub fn claim(",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": true,
+      "after_helper_line": 623,
+      "reviewed_preserved_order": "original signing input, current time/head/nonce/capacity, nonce consumption, external CAS, local append and post-I/O clock recheck unchanged; no refunds"
+    },
+    {
+      "function": "fn enter_verified_effect(",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": false,
+      "after_helper_line": 765,
+      "reviewed_preserved_order": "original Arc identity/binding and live grant checks precede active_dispatch increment; guard drops before original effect callback/await; ActiveDispatchGuard lifetime unchanged"
+    },
+    {
+      "function": "fn validate_token_live_witness(",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": false,
+      "after_helper_line": 807,
+      "reviewed_preserved_order": "matching Arc/binding and original live clock/head checks precede witness; state guard released on return before consumer callback"
+    },
+    {
+      "function": "fn with_dispatch_boundary_witness<T>(",
+      "matching_inner": "self.0",
+      "guard_continuously_held": true,
+      "mutable_after_check": false,
+      "after_helper_line": 835,
+      "reviewed_preserved_order": "matching Arc/binding and original clock/head checks precede witness; original state guard stays held through synchronous dispatch boundary callback and drops at original line"
+    }
+  ],
+  "production_semantic_review": [
+    {
+      "property": "Same state guard, same authority owner",
+      "review": "Each existing caller acquires its own matching self.owner.state or self.0.state guard, moves that actual MutexGuard into Inner::ensure_live_state and receives the exact guard back. No second state acquisition, temporary unlocked window, reconstructed State, cloned store or caller-supplied authority is added."
+    },
+    {
+      "property": "Existing failed-state admission retained",
+      "review": "Helper first rejects state.failed exactly as old sites did. Windows additionally probes the same Inner.store retained owner; any native refusal sets state.failed=true while that original state mutex is still held and returns Unavailable. All Arc clones share that state failure; a later successful attribute read cannot revive it."
+    },
+    {
+      "property": "Real native producer consumed",
+      "review": "Store::revalidate_owner delegates directly to its Windows io::Directory alias of existing opaque OwnerLock, calling existing revalidate_shared. That method uses original shared native context Mutex and validates retained marker identity/descriptor/current principal/all held namespace ancestry; no raw path, token, receipt, synthetic flag or replacement principal grants authority."
+    },
+    {
+      "property": "Lock ordering and callbacks",
+      "review": "The authority State lock is held while the existing native owner context mutex is entered, matching state-to-store I/O order used by existing claim/persist paths. Native context guard is dropped inside OwnerLock revalidation before any existing clock/frontier/effect callback. State guard lifetime and original callback boundaries remain mechanically byte-equivalent outside added barrier."
+    },
+    {
+      "property": "Non-Windows preservation",
+      "review": "Non-Windows helper only performs the original failed check and returns the same State guard. Store native probe and mutable failed transition are Windows-cfg only. No ordinary factory, parser/schema, trust/clock/CAS contract, provider, nonce state, capacity, deadline or production activation change."
+    },
+    {
+      "property": "Build inclusion and visibility",
+      "review": "New final_use_live_owner.rs is a private child of final_use, uses parent-private Inner/State and a pub(super) method available to parent callers; existing BUILD/common Rust source globs cover the new source file. No BUILD or Cargo modification is required by this patch."
+    },
+    {
+      "property": "Per-entry limitation",
+      "review": "This is an actual retained-owner check at each listed admission boundary. It does not hold the native context mutex across user code, stop an already-entered asynchronous effect, prove crash/power-loss durability or establish that externally mutable attributes cannot change after a sample. Original active-effect semantics remain unchanged; full Windows qualification remains open."
+    }
+  ],
+  "new_native_negative_control_source_review": {
+    "path": "codex-rs/hepta-contracts/src/final_use_windows_tests.rs",
+    "source_sha256": "b7bca7cf745d5e003cbf9346d5b6442cc74764e5e85419e5f94e503426397141",
+    "test": "native_retained_owner_drift_fences_preclaimed_entries_and_stays_failed",
+    "boundaries": [
+      "TokenEntry",
+      "RevocationRead",
+      "ConsumerEntry",
+      "EffectEntry",
+      "DispatchEntry"
+    ],
+    "source_findings": [
+      "Each boundary uses a distinct existing genuine native Fixture, original explicit-owner constructor and real signed claim. Existing in-memory Frontier and SystemAuthorityClock are explicitly test fixtures, not protected external production trust.",
+      "The grant is claimed through original signature, binding, epoch, nonce, CAS and actual store persistence before touching its own marker. The new test adds no private State constructor or fake owner input.",
+      "Safe Rust fs::Permissions changes only readonly attributes on the already-owned authority.lock path. Parent/marker held handles deny deletion/replacement; this source does not change DACL/SID, global attributes, a service/driver, ordinary factory support or any production guard.",
+      "Original identity includes file attributes, so an actual successful readonly drift is source-reasoned to make retained marker revalidation refuse; no actual native mutation or failure has been observed by this review.",
+      "The test asserts Unavailable and zero callbacks at each entry, directly checks same shared State.failed, restores its own original permissions and verifies frontier remains refused. Restoring fixture attributes does not reset or reconstruct the failed authority.",
+      "RestoreOwnedMarkerPermissions tries restore on ordinary error or panic; original Fixture Drop remains unchanged, removing only that fixture files/directory after later locals drop.",
+      "Filesystem attribute setter availability and compatibility with existing full-file byte lock are UNEXECUTED; inability to set attributes or restore is a real possible native test failure, not waived or silently bypassed.",
+      "The five-boundary source case does not dynamically cover all ten entry points, all possible descriptors/principal changes, asynchronous race windows or full production PN0."
+    ],
+    "execution": "SOURCE_ONLY_NOT_RUN"
+  },
+  "source_admission_record_note": {
+    "path": "source-admission.json",
+    "bytes": 1457,
+    "sha256": "d9d3c605857d99c8644e6b76a4d1ad905ec1d0d48ed5a5112d0d0770cfe0acd7",
+    "observed_fields": {
+      "source_frozen_for_review": false,
+      "new_native_tests": "NOT_ADDED: existing full-file marker lock makes external write/truncate disturbance unproven; no authorized non-ACL/non-private-helper disturbance proven and native execution prohibited",
+      "source_edit_attempt_history": "First generator stopped on missing generic<T> in textual witness function selector before any source mirror edit; before/after existing files remained identical base. Selector corrected; this was a generator lookup error, not Rust/native test output."
+    },
+    "finding": "This is an earlier preparation record: it still says not frozen and no native test added, whereas final manifest and actual patch contain the append-only negative-control source. Treat it as historical preparation or append a final-state clarification; do not present it as final admission.",
+    "severity": "P2_METADATA_LABEL_CLARIFICATION",
+    "blocks_reviewed_production_source": false
+  },
+  "blocking_findings": [],
+  "disposition": "NO_NEW_STATIC_BLOCKER_IN_FROZEN_63D3_PRODUCTION_SOURCE",
+  "qualification": {
+    "Rust_format": "NOT_RUN",
+    "compile": "NOT_RUN",
+    "tests": "NOT_RUN",
+    "native_negative_control": "NOT_RUN",
+    "Windows_production_owner_support": "NOT_QUALIFIED",
+    "ordinary_Windows_FinalUse_factory": "ORIGINAL_GUARD_CLOSED_UNCHANGED",
+    "original_four_lane_deletion_and_terminal_failures": "OPEN",
+    "real_model_three_round_genesis_I09_I10_WAN": "OPEN",
+    "clock_frontier_production_trust": "NOT_ESTABLISHED_BY_THIS_TEST_FIXTURE",
+    "no_new_source_or_qualification_authority_from_review": true
+  },
+  "original_assertions_test_bodies_guards_caps_and_expired_budgets_preserved": true,
+  "budget_started_or_reset": false,
+  "merge_ready": false,
+  "task_complete": false,
+  "NO_GO": true
+}

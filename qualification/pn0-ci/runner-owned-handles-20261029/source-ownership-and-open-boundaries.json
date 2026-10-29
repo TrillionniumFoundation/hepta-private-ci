@@ -1,0 +1,126 @@
+{
+  "schema": "pn0-existing-runner-pipe-and-connection-handle-source-ownership-v1",
+  "source_only": true,
+  "native_NOT_RUN": true,
+  "changed_path": "codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs",
+  "actual_consumers": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+      "base_line": 228,
+      "function": "run_windows_sandbox_capture_for_permission_profile -> retry_runner_spawn_once closure -> spawn_runner_transport",
+      "original_qualified_filesystem_gate_at_line": 104,
+      "gate_remains_closed_and_byte_unchanged": true
+    },
+    {
+      "function": "connect_pipe_with_timeout -> try_take_completed_connect_result",
+      "changed_signature": "private BorrowedHandle parameter; both original production calls updated",
+      "after_lines": [
+        244,
+        328,
+        344
+      ]
+    }
+  ],
+  "owners": [
+    {
+      "owner": "first server named pipe",
+      "native_producer": "runner_pipe::create_named_pipe -> actual CreateNamedPipeW success, rejects 0/INVALID_HANDLE_VALUE",
+      "adoption": "exact returned handle uniquely adopted immediately before second pipe creation",
+      "after_lines": [
+        418
+      ],
+      "borrow": "connect_pipe_with_timeout receives only .as_raw_handle() numeric alias while caller retains owner",
+      "success_transfer": "File::from(h_pipe_in) consumes the same OwnedHandle without re-adoption"
+    },
+    {
+      "owner": "second server named pipe",
+      "native_producer": "same existing native factory, unchanged DACL/noninheritance/flags/buffer settings",
+      "adoption": "exact returned handle uniquely adopted immediately after success",
+      "after_lines": [
+        421
+      ],
+      "borrow": "connect_pipe_with_timeout receives only .as_raw_handle() numeric alias while caller retains owner",
+      "success_transfer": "File::from(h_pipe_out) consumes same OwnedHandle"
+    },
+    {
+      "owner": "actual connection helper thread duplicate",
+      "native_producer": "existing DuplicateHandle(GetCurrentThread(), DUPLICATE_SAME_ACCESS), unchanged rights and flags",
+      "adoption": "duplicate success branch immediately uniquely adopts exact handle into OwnedHandle",
+      "after_lines": [
+        304
+      ],
+      "channel": "the original sync_channel now infers Result<OwnedHandle>; send moves same owner; failed send drops SendError and nested owner; queued success is dropped if receiver is dropped",
+      "parent_borrow": "try_take only BorrowedHandle; wait/cancel use same owner .as_raw_handle(); no additional duplicate/reopen/PID lookup",
+      "terminal_drop": "all returns and ? exits after receive naturally drop one owner; no final manual thread CloseHandle remains"
+    }
+  ],
+  "all_error_success_paths": [
+    {
+      "path": "all root/plan/managed account checks before first pipe",
+      "effect": "unchanged, no new owner exists"
+    },
+    {
+      "path": "first create_named_pipe Err",
+      "effect": "unchanged Err; no valid pipe to own"
+    },
+    {
+      "path": "second create_named_pipe Err",
+      "effect": "first OwnedHandle drops on ? return; fixes real original first-pipe leak"
+    },
+    {
+      "path": "unwind after either pipe creation",
+      "effect": "owned valid handles are dropped by normal RAII; no claim about process/Job/custody on panic"
+    },
+    {
+      "path": "CreateProcessWithLogonW failure",
+      "effect": "capture original GetLastError then explicit drop(in), drop(out), same original CloseHandle order; same error"
+    },
+    {
+      "path": "existing original PI/token/filesystem readback Err or connect Err",
+      "effect": "existing thread PI close then unchanged conditional TerminateProcess/CloseHandle process; explicit drop(in), drop(out) retains original cleanup order"
+    },
+    {
+      "path": "successful pipe connections",
+      "effect": "both owners moved into two File fields; later send/request/startup failure and final success use exactly original RunnerTransport/process cleanup"
+    },
+    {
+      "path": "connection DuplicateHandle failure",
+      "effect": "unchanged error publication then return; no valid duplicate owner to drop"
+    },
+    {
+      "path": "connection duplicate publication send fails",
+      "effect": "send error temporary drops duplicated handle; original worker still follows unchanged connect control flow, no new forced join/termination"
+    },
+    {
+      "path": "parent disconnected before receiving duplicate",
+      "effect": "channel/result owner dropped if queued; unchanged parent recv error and JoinHandle detach semantics"
+    },
+    {
+      "path": "normal connection result",
+      "effect": "unchanged join then result; acquired duplicate owner drops at scope return"
+    },
+    {
+      "path": "timeout/Cancel success/failure/ERROR_NOT_FOUND/incomplete helper",
+      "effect": "all original checks, join/detach choice and errors byte-preserved except borrowing; actual duplicate closes through RAII at same function return"
+    },
+    {
+      "path": "either try_take_completed_connect_result ? early return",
+      "effect": "owned thread duplicate now drops on return, fixing original bypass of trailing CloseHandle"
+    },
+    {
+      "path": "result sender disconnected",
+      "effect": "original join and error unchanged; owned duplicate drops"
+    }
+  ],
+  "unqualified_boundaries_still_OPEN": [
+    "No genuine ambient-read-preserving full restriction producer added: report009 information gap remains; original root read grace and allow/read/deny semantics unchanged.",
+    "Original broad identity native outside deletion oracle, legacy refusal and all four lane failures remain open; no new fixture/token/Everyone/Logon SID, guard activation or read-contract DTO.",
+    "No process PI/Job/child terminal ownership or Unknown custody completion; parent termination attempt remains original unchecked call.",
+    "Raw pipe alias enters a worker that may detach on timeout; unchanged cancellation path closes parent pipe but does not prove helper termination or eliminate every stale/reused numeric-handle risk. This patch does not add Arc keepalive or change detach/join.",
+    "RAII Drop does not report CloseHandle failure, nor prove successful OS reclamation/native execution.",
+    "No new methods/export, simulated producer, private prepared binder, public authority, dependency/feature/BUILD or source test changes.",
+    "Windows GNU compile, Rust fmt/Clippy, Windows native original groups, full PN0 acceptance and merge readiness are all NOT_RUN/OPEN for this new source."
+  ],
+  "safety_evidence": "source-mechanical-verification.json / protected-tests-and-safety-source-pins.json / raw-handle-owner-use-inventory.json",
+  "no_commit_push_ref_live_edit": true
+}

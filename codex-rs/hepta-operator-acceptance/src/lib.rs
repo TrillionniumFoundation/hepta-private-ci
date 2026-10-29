@@ -8,6 +8,7 @@ mod preflight;
 mod qualification_evidence;
 mod qualification_runs;
 mod receipt_store;
+mod sshsig;
 mod trust;
 
 use serde::Deserialize;

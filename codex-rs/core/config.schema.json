@@ -1080,6 +1080,20 @@
       },
       "type": "object"
     },
+    "ContentItemKindsCapability": {
+      "additionalProperties": false,
+      "description": "Owner-declared support for the `content_item_kinds` wire field at one exact endpoint.\n\nThis grants no other internal metadata fields. The binding is checked again against the resolved endpoint after authentication selection; it is never inferred from a provider name.",
+      "properties": {
+        "endpoint": {
+          "description": "Exact HTTP(S) provider base URL authorized to receive content classifications.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "endpoint"
+      ],
+      "type": "object"
+    },
     "CurrentTimeReminderConfigToml": {
       "additionalProperties": false,
       "properties": {
@@ -2097,6 +2111,14 @@
         "base_url": {
           "description": "Base URL for the provider's OpenAI-compatible API.",
           "type": "string"
+        },
+        "content_item_kinds_capability": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/ContentItemKindsCapability"
+            }
+          ],
+          "description": "Explicit support for content classifications at one exact configured and resolved endpoint. Other internal fields remain private, and omission retains the strict endpoint policy."
         },
         "env_http_headers": {
           "additionalProperties": {

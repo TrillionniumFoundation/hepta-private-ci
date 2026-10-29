@@ -29,6 +29,10 @@ thiserror = { workspace = true }
 tokio = { workspace = true, features = ["io-util", "macros", "net", "process", "rt", "sync", "time"] }
 toml = { workspace = true }
 
+[target.'cfg(windows)'.dependencies]
+winapi-util = { workspace = true }
+windows-sys = { version = "0.52", features = ["Win32_Foundation", "Win32_Storage_FileSystem"] }
+
 [dev-dependencies]
 codex-hepta-bellman-operator = { path = "../hepta-bellman-operator" }
 codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval" }

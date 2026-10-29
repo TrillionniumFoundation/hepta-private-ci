@@ -1,0 +1,4257 @@
+{
+  "schema": "final-use-production-provider-inventory-source-review-v1",
+  "created_utc": "2026-10-29T02:12:14.469598+00:00",
+  "status": "NO_QUALIFIED_WINDOWS_FINALUSE_PROTECTED_TIME_AND_EXTERNAL_CAS_COMPOSITION_FOUND_IN_INSPECTED_SOURCE",
+  "finding": "The existing constructors and consumers require genuine protected time plus independently durable exact frontier CAS. No concrete Windows FinalUse composition supplying both was found in the complete actual source scopes below. Existing ordinary caller swaps cannot be justified with the memory frontier, SystemTime, self-signed DTOs, or held private namespace alone.",
+  "limits": "This is a source inventory, not a global impossibility claim or an assertion about providers outside these source trees, generated/compiled dependencies or deployment systems. No service, external deployment or driver was contacted; no provider was implemented.",
+  "root_boundaries": {
+    "Hepta_published": {
+      "root": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024",
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "tree": "803e1e9b12efa4dd236ecd99333a717b5d52b033"
+    },
+    "Hepta_live": {
+      "root": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024",
+      "head": "d3284e385e2b6037dd86752ddd246b616144a87c",
+      "head_tree": "eed42a952ac5a713fc733b29707b4be3c20e00b2",
+      "read_only_WIP_differences": [
+        {
+          "path": "codex-rs/ext/hepta-memory/src/cognitive/mod.rs",
+          "published_sha256": "ee1d6bf6f4d6b3b05f9470fa963796174b5b437dfb42e08ab79dca6e4f700565",
+          "live_sha256": "79319d51fa727a65879f2ee1ac01ca05ed82f39292f56a4a4f4b2acf0c597256"
+        },
+        {
+          "path": "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+          "published_sha256": "5e9b7b3a4f78cc008d04f7fff60557673ed35bfce0eb4652ffff9d1c5efd939f",
+          "live_sha256": "72492180b7bd962ef7dc605e7a6d980d43fe0814dadd34d7d042a5ae316c65b1"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/control.rs",
+          "published_sha256": "c0a338c105a621632e0823273ded807e83aaefdab4f57f06470d73a8c0376651",
+          "live_sha256": "4340ad44f9838195f8306dc0800f2c49f9128994e44c3ba3f5f60c92662470c9"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
+          "published_sha256": "ee55c15436b1646f6feca8de0aa531e2e0c5f05c440c8cf22ec3891a2695e4db",
+          "live_sha256": "f96d1d44d97c6fe50bd1d972503c46fdeab692dc96378a662dc760b641794b98"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/prompt_runtime_windows.rs",
+          "published_sha256": null,
+          "live_sha256": "8181d1891f3ffaedd5f88a503674c1654db32fc145a2c01296401b3bb8b8080a"
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use.rs",
+          "published_sha256": "fde6acfb9ed13da256a91875b94a0ac2c2b1dc3bb4c8740adae10d318066f48c",
+          "live_sha256": "0a6360b6572fc24001ac12a8686dbe2018a6c4484024d8742e1205cfe619f865"
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_live_owner.rs",
+          "published_sha256": null,
+          "live_sha256": "750f2902c607cb8bb5663f72ab37785aa1571173b2ae620a93551feffa3ac19f"
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
+          "published_sha256": "adb38a55572b34077fa08be9b45bd8f4811738d10e0205dbe58b9baeac93af86",
+          "live_sha256": "39a69d36a99aaa569eec1cd5b0d0bb10cc94ab570256612dbdfe0f9814e518e8"
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_windows_tests.rs",
+          "published_sha256": "fd028a28e8425b031f4065517b66a57531c77896b85a9a95b8086dc6351d7829",
+          "live_sha256": "cfc56ebac8e77cf4c362d7f63d9e5f1640a43616b9eed758929921ae7b63a79b"
+        },
+        {
+          "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+          "published_sha256": "836c494f4998bd507604c1e49d6071c24dff4dddc4f9f7d2ffeb40e091af7638",
+          "live_sha256": "ab226b6bd30f4089f6599748662de3b1a011ce03d67aaff05d0ba5bfc21c07a6"
+        },
+        {
+          "path": "codex-rs/hepta-prompt-registry/src/durable_store_platform.rs",
+          "published_sha256": "977d167aff7b707480e731190affcece1afe3fc2ef8e270194079989d6b66c46",
+          "live_sha256": "b9d6f00f4fb7d12e50093dff0d0a3c6557d33705e84ed8b71df720e7a118777c"
+        },
+        {
+          "path": "codex-rs/hepta-prompt-registry/src/ordinary_windows_factory_tests.rs",
+          "published_sha256": null,
+          "live_sha256": "4ccc18376e4e49f275adea45510b41c9d1ebd867fe24abda81172724eff07804"
+        },
+        {
+          "path": "codex-rs/third_party/aws-smithy-json-0.61.9/src/deserialize.rs",
+          "published_sha256": "a526c18be42f2e12017be332d9b44d8d3c46e53084e16a261ca96e074c115753",
+          "live_sha256": "1354295cf138384426e12834ade67d8ad58a7aafd0ba3e64c7c1ae046a6d0352"
+        },
+        {
+          "path": "codex-rs/third_party/aws-smithy-json-0.61.9/src/deserialize/token.rs",
+          "published_sha256": "f9e3e46784ebdd489b7de07011d97adcfd58ea832e013213b87c667b4e06fd79",
+          "live_sha256": "6ab3335cec6753262b4e734c8f1ebee07c683f7cdc6d3c5a3d8652efa7f6bc02"
+        },
+        {
+          "path": "codex-rs/third_party/aws-smithy-json-0.61.9/src/escape.rs",
+          "published_sha256": "21c7e4bb594b1fd70b9c40c9b1687e8ea18f5aef172da4cece5d988d5ed61bce",
+          "live_sha256": "6f3b38a31aa030c0c271d37a57209006705f6b3596f73ab402b3ac4747b6dfc7"
+        },
+        {
+          "path": "codex-rs/uds/src/deadline_guard.rs",
+          "published_sha256": null,
+          "live_sha256": "7905e7c432bf7ba0716e31bd7edc5890319d4a782d45f9e01958d6a18e0efdf5"
+        },
+        {
+          "path": "codex-rs/uds/src/deadline_guard_tests.rs",
+          "published_sha256": null,
+          "live_sha256": "c1deefa46140cb02eb05c5728f4e5e18a1a945b48eb6bfd431271cf796dfdcf4"
+        },
+        {
+          "path": "codex-rs/uds/src/lib.rs",
+          "published_sha256": "b81907ec7757b85cce001328f272c9d1c3467e42b8772d667b09b17a7d455c75",
+          "live_sha256": "23751dd9128234b4e5f19a8ae54806a491ddbec9865cdeff390c3217ae09f645"
+        },
+        {
+          "path": "codex-rs/utils/windows-private-state/src/fresh_private_directory.rs",
+          "published_sha256": "a7131dc59d7aaa3d50bb7609d27e52cac37aecc0a5b1128e791cdab441dbeaeb",
+          "live_sha256": "99bd2f7a256c90fdae8c54de80cf08b63c2d70b7e2fcd7bb535be6047a856e4e"
+        },
+        {
+          "path": "codex-rs/utils/windows-private-state/src/parent_anchor.rs",
+          "published_sha256": "f5d9e518cd97d1847ed282abfe1863917a803126ead3651a5811c8047b9369f2",
+          "live_sha256": "790b4ac7105d585fa07793b584426cd919ac50a1f2e07170236aef91e49e0bf2"
+        },
+        {
+          "path": "codex-rs/utils/windows-private-state/src/parent_anchor_tests.rs",
+          "published_sha256": "b80336930cd939919831bc13d700de81d1e13a3331c989d000deb0158ecce46b",
+          "live_sha256": "7c8ad289fa41d9bab6c1e7689b7972ebedd22631d4488528242ba6fae2d65038"
+        },
+        {
+          "path": "codex-rs/utils/windows-private-state/src/private_owner_lock.rs",
+          "published_sha256": "dabd1859af978a048a299beb861df93ac06074f2923d7e9ea8db961dc072109b",
+          "live_sha256": "9f6ef5f7ac348bf2ebac9c3872b19df16776ea88c47b2009aab05ca3f91f1c82"
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs",
+          "published_sha256": "e0603e2923838288a563041043e5db74bb5185b7c1358a8f4009491aa0a4de29",
+          "live_sha256": "1a48ca220fdec6c2f555fc0237ffa28216c2876ab6c3284145dc24556b0e5720"
+        }
+      ],
+      "readback_changed_files": []
+    },
+    "Chain": {
+      "root": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/chain-model-release-closure-20261025",
+      "commit": "4821f61f1a8603ce07107b1496ee947fb1d86647",
+      "tree": "23846b01f3d5fbac0398972b49d04dbd5c31cc8b",
+      "clean_at_inventory": true
+    }
+  },
+  "coverage": {
+    "utc": "2026-10-29T02:00:33.055205+00:00",
+    "source_scope": "All actualpublishedbf36 codex-rs Rust blobs plusallcurrent nonignored/hidden live codex-rs Rust files; alltrackedChain4821 trillionnium/scripts/formal Rust+Python source blobs. No coord/cache/provider claim used asproduction. Lexicalsourceinventory, notcompile/type-resolution/globaldeploymentproof.",
+    "Hepta_published": {
+      "label": "Hepta-bf36",
+      "roots": "codex-rs",
+      "extensions": [
+        ".rs"
+      ],
+      "tree_paths": 5475,
+      "fully_read": 5475,
+      "read_failures": [],
+      "read_bytes": 83367109,
+      "read_origins": {
+        "actual-live-byte-equal-Gitblob": 5457,
+        "immutable-Gitblob-read": 18
+      },
+      "all_matching_lines": 132,
+      "all_matching_files": 42,
+      "coverage_canonical_bytes": 1352626,
+      "coverage_canonical_sha256": "449a5b9f68679964e0bd9c0d12442acb668dca00a91f08e0765c47f0afe24513",
+      "coverage_gzip": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/reviews/FinalUse-provider-source-inventory-20261029-011/Hepta-bf36-all-source-coverage.json.gz",
+        "bytes": 441238,
+        "sha256": "9a77921f5a25b6ed415ab197dcdefe90c3266f4551d3a585f74f364bee327034"
+      },
+      "matches_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/reviews/FinalUse-provider-source-inventory-20261029-011/Hepta-bf36-all-matches.json"
+    },
+    "Hepta_live": {
+      "label": "Hepta-current-live-including-untracked-source",
+      "root": "codex-rs",
+      "files": 5480,
+      "read_bytes": 83400423,
+      "coverage_canonical_sha256": "2fdc108b49af7ed76ebf73bacbad4bcf3de270d55b36954b1bd2d0648181c65d",
+      "gzip_bytes": 433290,
+      "gzip_sha256": "0e132935d90a1a5246024dca314bbad6b5e0d76ecb42950db6efef17816bae0c",
+      "matches": 132,
+      "matched_files": 42,
+      "live_extra_paths_relative_bf36": 5,
+      "extra_path_scope": "Five liveonlyRustpaths, not a countofallmodified preexistingfiles; sourcehashdifferencesareincoverage."
+    },
+    "Chain": {
+      "label": "Chain-4821",
+      "roots": "trillionnium scripts formal",
+      "extensions": [
+        ".rs",
+        ".py"
+      ],
+      "tree_paths": 1270,
+      "fully_read": 1270,
+      "read_failures": [],
+      "read_bytes": 18578525,
+      "read_origins": {
+        "actual-live-byte-equal-Gitblob": 1270
+      },
+      "all_matching_lines": 6,
+      "all_matching_files": 3,
+      "coverage_canonical_bytes": 335897,
+      "coverage_canonical_sha256": "a07ad12ad89a788463c524a5f762f13c604f9fa3823223f21a6609202ec582b9",
+      "coverage_gzip": {
+        "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/reviews/FinalUse-provider-source-inventory-20261029-011/Chain-4821-all-source-coverage.json.gz",
+        "bytes": 104459,
+        "sha256": "aa458de1516be6b6a59fd4c105251cbac1cdd70df9ba903b77af96574ab62770"
+      },
+      "matches_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/reviews/FinalUse-provider-source-inventory-20261029-011/Chain-4821-all-matches.json"
+    },
+    "head_Hepta_live": "d3284e385e2b6037dd86752ddd246b616144a87c",
+    "head_Chain": "4821f61f1a8603ce07107b1496ee947fb1d86647"
+  },
+  "coverage_method": {
+    "published": "All 5475 Git-listed codex-rs Rust blobs were fully read: 5457 live files only where raw Git blob identity matched bf36, and 18 immutable Git blobs for differing live paths. Zero read failures.",
+    "live": "All 5480 actual nonignored and hidden codex-rs Rust files were fully read, including untracked parent WIP. The original live corpus was later rehashed with zero changes. Five extra paths is not a count of all modified existing files.",
+    "Chain": "All 1270 tracked Rust/Python source blobs under trillionnium, scripts and formal were fully read and byte-equal to clean 4821. Relevant Cargo metadata was separately read from the actual immutable object.",
+    "method_limit": "Lexical full-source interface, method, alias and constructor inventory plus concrete body/cfg/caller review; not a compiler/type-resolution or generated-dependency proof. No coordination/cache claim was treated as production.",
+    "primary_pattern": "\\b(?:ProtectedAuthorityClock|ExternalFreshnessFrontier|AuthorityClock|AuthorityFrontierStore|SystemAuthorityClock|ExternalCheckpointStoreV2|ExternalMonotonicWatermarkV2)\\b|\\bfn\\s+(?:now_unix_ms|compare_and_set)\\b|FinalUseAuthority\\s*::\\s*(?:open_[A-Za-z0-9_]+|new)",
+    "secondary_pattern": "\\b(?:ControlledTrustedTimeProvider|SignedTrustedTimeAttestation|HoldoutAnchorAuthorityV1|FinalHoldoutCasStoreV1|ReplayCheckpointFile)\\b|\\bfn\\s+trusted_time\\b",
+    "published_primary_matches": {
+      "lines": 132,
+      "files": 42
+    },
+    "published_secondary_matches": {
+      "lines": 51,
+      "files": 24
+    },
+    "aliases": "No source alias of AuthorityClock, AuthorityFrontierStore or FinalUseAuthority was found in inspected source."
+  },
+  "exact_existing_interfaces": {
+    "ProtectedAuthorityClock_exact_name_hits": 0,
+    "ExternalFreshnessFrontier_exact_name_hits": 0,
+    "actual_traits": [
+      "AuthorityClock at authority_trust.rs:32",
+      "AuthorityFrontierStore<F> at authority_trust.rs:57"
+    ],
+    "contract_anchors": [
+      "H1",
+      "H4",
+      "H5",
+      "H6"
+    ]
+  },
+  "all_AuthorityClock_impls": [
+    {
+      "type": "SystemAuthorityClock",
+      "path": "codex-rs/hepta-contracts/src/authority_trust.rs",
+      "line": 39,
+      "classification": "non-test; compatibility/testing SystemTime, explicitly no attestation claim",
+      "source_sha256": "7d468026631ae10908c084c66a4bd49f2caac67ed96ae1a4d3572df886cde352"
+    },
+    {
+      "type": "FixedClock",
+      "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "line": 1214,
+      "classification": "test module #[cfg(all(test, unix))] at authority_lease.rs:1202",
+      "source_sha256": "4d009658997801e6e9f23d8a1f6fca26faa39cf177c9996f1060af1d6ae70f94"
+    },
+    {
+      "type": "FixedClock",
+      "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+      "line": 20,
+      "classification": "test module included by final_use.rs:1071 #[cfg(all(test, unix))]",
+      "source_sha256": "ed0576ebdc3424fe6f6db4f3d6b5ad5a8688052714d9c104c467799530944371"
+    },
+    {
+      "type": "ManualClock",
+      "path": "codex-rs/hepta-bao-adapter/tests/final_use_host.rs",
+      "line": 61,
+      "classification": "integration test crate, cfg(unix) module; AtomicU64",
+      "source_sha256": "3bac22258b80b6dd653706b4378c703e3a29c78b4feaf0652052fbad608c7e4a"
+    },
+    {
+      "type": "FixedClock",
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "line": 168,
+      "classification": "test module #[cfg(all(test, unix))] at authority_port.rs:149",
+      "source_sha256": "64338702d7ab53cfc348937c7ee1ca91184ad13bfaec3a091f94ad174cccb941"
+    },
+    {
+      "type": "ManualClock",
+      "path": "codex-rs/hepta-fleet/src/revocation_control.rs",
+      "line": 370,
+      "classification": "test module #[cfg(test)] at revocation_control.rs:340",
+      "source_sha256": "4ac319765c2acfd9a6ec37ce16fed736caa2e9c8ca1ca01210479466929b3f83"
+    },
+    {
+      "type": "Clock",
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_grant_courier_tests.rs",
+      "line": 22,
+      "classification": "test module included by final_use_grant_courier.rs:134 #[cfg(all(test, unix))]",
+      "source_sha256": "2da8968be6c7b6add14850f2a4ec276a757c844961fbb5af09c39fb450ab02db"
+    },
+    {
+      "type": "TestClock",
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_tests.rs",
+      "line": 35,
+      "classification": "ordinary_cpu_target.rs:213 #[cfg(test)]; nested include ordinary_cpu_target_tests.rs:9",
+      "source_sha256": "936dc7b4950f2ab2e32dce0f68712cf5e3e72c90f08e6cf16efb8ff21d765d18"
+    },
+    {
+      "type": "TestClock",
+      "path": "codex-rs/hepta-memory/src/production_verified_dispatch_tests.rs",
+      "line": 26,
+      "classification": "test module included by production_verified_dispatch.rs:62 #[cfg(test)]",
+      "source_sha256": "612487366bbc8042068331c54ea610f1177f878290a5747a574ad48bf462e9dd"
+    }
+  ],
+  "all_AuthorityFrontierStore_impls": [
+    {
+      "type": "MemoryFrontierStore",
+      "frontier_type": "AuthorityLeaseFrontier",
+      "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "line": 1223,
+      "classification": "#[cfg(all(test, unix))] at authority_lease.rs:1202",
+      "storage": "process Mutex memory fixture; no external durability or rollback-independent custody",
+      "source_sha256": "4d009658997801e6e9f23d8a1f6fca26faa39cf177c9996f1060af1d6ae70f94"
+    },
+    {
+      "type": "MemoryFinalUseFrontier",
+      "frontier_type": "FinalUseFrontier",
+      "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+      "line": 29,
+      "classification": "test include by final_use.rs:1071",
+      "storage": "process Mutex memory fixture; no external durability or rollback-independent custody",
+      "source_sha256": "ed0576ebdc3424fe6f6db4f3d6b5ad5a8688052714d9c104c467799530944371"
+    },
+    {
+      "type": "Frontier",
+      "frontier_type": "FinalUseFrontier",
+      "path": "codex-rs/hepta-contracts/src/final_use_windows_tests.rs",
+      "line": 28,
+      "classification": "test include by final_use_windows.rs:109",
+      "storage": "process Mutex memory fixture; no external durability or rollback-independent custody",
+      "source_sha256": "fd028a28e8425b031f4065517b66a57531c77896b85a9a95b8086dc6351d7829"
+    }
+  ],
+  "constructor_and_ordinary_caller_trace": {
+    "all_50_constructor_calls": [
+      {
+        "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+        "line": 948,
+        "text": "        let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "34f428d88147739ffedea96cd2502b66f288ee3c443e87b99b9cd84ea29a0f76",
+        "classification": "ordinary HTTP automation"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+        "line": 1061,
+        "text": "        let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "34f428d88147739ffedea96cd2502b66f288ee3c443e87b99b9cd84ea29a0f76",
+        "classification": "ordinary PoN automation"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+        "line": 99,
+        "text": "    let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "1d13b8f141dde8de5c8709c8371681d17204e6d50c1bf356f3ecebfe306d3211",
+        "classification": "ordinary browser CLI"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/browser_servo.rs",
+        "line": 894,
+        "text": "        let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "2a1b9a4697094f0303082e4874bd12b560579220f2528f130b39ddf399afd0f9",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/operations_host_tests.rs",
+        "line": 113,
+        "text": "    let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "70a3a312c0b394c7ab6f93bf2ddcc887d1499cf7702e876ae13bb023440a89d0",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/operations_host_tests.rs",
+        "line": 192,
+        "text": "    let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "70a3a312c0b394c7ab6f93bf2ddcc887d1499cf7702e876ae13bb023440a89d0",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
+        "line": 525,
+        "text": "    let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "0724d395f98ceb1f64259036c94157f8f8ece37b3725670befd5dd85b26c981a",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/tests/support/neural_native_owner.rs",
+        "line": 162,
+        "text": "        let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "c212b3480e1e2a9646644ed4559cf9788d85912f7b1c239ce0d7fe7197de780c",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
+        "line": 207,
+        "text": "    let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "a721a018ae8a07154a6c15d15cdfbc8a787fa35cd5dea16a11f3c175305c3dce",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-bao-adapter/examples/consume_secret.rs",
+        "line": 58,
+        "text": "    let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "057e605cc615b167bf8779babd6547166d8b7ea1d0fde0c793e05e5da31f4c65",
+        "classification": "example executable; not production qualification"
+      },
+      {
+        "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+        "line": 247,
+        "text": "        let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "ddf06452709ddec72e8a0b268df3705dfa8d8ebc2e248a779b7b1b378bfec702",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+        "line": 124,
+        "text": "    let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "7a61d40f74da627f584bd74cb76584d458c11787f469c6a7db54227bc0ae2c8b",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-bao-adapter/tests/final_use_host.rs",
+        "line": 168,
+        "text": "        let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "3bac22258b80b6dd653706b4378c703e3a29c78b4feaf0652052fbad608c7e4a",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-bao-adapter/tests/final_use_host.rs",
+        "line": 305,
+        "text": "        let authority = FinalUseAuthority::open_state_dir_with_clock(",
+        "source_sha256": "3bac22258b80b6dd653706b4378c703e3a29c78b4feaf0652052fbad608c7e4a",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
+        "line": 724,
+        "text": "        let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "51b79d090247c27ace0f03804046a8966ff61ac86e8082b8d8b4908a2e916b2d",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_nonce_tests.rs",
+        "line": 53,
+        "text": "    FinalUseAuthority::open_state_dir_with_clock(",
+        "source_sha256": "6af9febc896d72b97d082bdb94afe22581da8f6dcd624fb7b34f49b7d9852b7f",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_nonce_tests.rs",
+        "line": 269,
+        "text": "        FinalUseAuthority::open_state_dir_with_trust(",
+        "source_sha256": "6af9febc896d72b97d082bdb94afe22581da8f6dcd624fb7b34f49b7d9852b7f",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_nonce_tests.rs",
+        "line": 354,
+        "text": "        FinalUseAuthority::open_state_dir_with_issuer_keys(",
+        "source_sha256": "6af9febc896d72b97d082bdb94afe22581da8f6dcd624fb7b34f49b7d9852b7f",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+        "line": 78,
+        "text": "    let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "ed0576ebdc3424fe6f6db4f3d6b5ad5a8688052714d9c104c467799530944371",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+        "line": 315,
+        "text": "    FinalUseAuthority::open_state_dir(",
+        "source_sha256": "ed0576ebdc3424fe6f6db4f3d6b5ad5a8688052714d9c104c467799530944371",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+        "line": 355,
+        "text": "    let authority = FinalUseAuthority::open_state_dir_with_clock(",
+        "source_sha256": "ed0576ebdc3424fe6f6db4f3d6b5ad5a8688052714d9c104c467799530944371",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+        "line": 406,
+        "text": "    let authority = FinalUseAuthority::open_state_dir_with_trust(",
+        "source_sha256": "ed0576ebdc3424fe6f6db4f3d6b5ad5a8688052714d9c104c467799530944371",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+        "line": 425,
+        "text": "        FinalUseAuthority::open_state_dir_with_trust(",
+        "source_sha256": "ed0576ebdc3424fe6f6db4f3d6b5ad5a8688052714d9c104c467799530944371",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+        "line": 452,
+        "text": "    let authority = FinalUseAuthority::open_state_dir_with_issuer_keys(",
+        "source_sha256": "ed0576ebdc3424fe6f6db4f3d6b5ad5a8688052714d9c104c467799530944371",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+        "line": 524,
+        "text": "    let retired = FinalUseAuthority::open_state_dir_with_issuer_keys(",
+        "source_sha256": "ed0576ebdc3424fe6f6db4f3d6b5ad5a8688052714d9c104c467799530944371",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+        "line": 598,
+        "text": "    let authority = FinalUseAuthority::open_state_dir_with_trust(",
+        "source_sha256": "ed0576ebdc3424fe6f6db4f3d6b5ad5a8688052714d9c104c467799530944371",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+        "line": 635,
+        "text": "        FinalUseAuthority::open_state_dir_with_trust(",
+        "source_sha256": "ed0576ebdc3424fe6f6db4f3d6b5ad5a8688052714d9c104c467799530944371",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+        "line": 760,
+        "text": "    let reopened = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "ed0576ebdc3424fe6f6db4f3d6b5ad5a8688052714d9c104c467799530944371",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/final_use_windows_tests.rs",
+        "line": 102,
+        "text": "    Ok(FinalUseAuthority::open_windows_private_with_trust(",
+        "source_sha256": "fd028a28e8425b031f4065517b66a57531c77896b85a9a95b8086dc6351d7829",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/tests/final_use_linearization.rs",
+        "line": 49,
+        "text": "        let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "ca77c0eae30d530bd760e284091bcfc7ac266f815add1564e2c6b4827d184ca9",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-control-plane/src/organ_runtime_tests.rs",
+        "line": 1064,
+        "text": "    let authority = codex_hepta_contracts::FinalUseAuthority::open_state_dir(",
+        "source_sha256": "8406a1eee302ebce0a6ff03a506bcd4ed88624e4b09774e5570f84d563f5f94a",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+        "line": 81,
+        "text": "        let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "0e0e483ef6b992787c6fe1c140c302b9225c1b8896ffead17bf174a593d243ed",
+        "classification": "ordinary runtime Unix authorizer"
+      },
+      {
+        "path": "codex-rs/hepta-infer-worker-host/src/final_use_grant_courier_tests.rs",
+        "line": 44,
+        "text": "        let authority = FinalUseAuthority::open_state_dir_with_clock(",
+        "source_sha256": "2da8968be6c7b6add14850f2a4ec276a757c844961fbb5af09c39fb450ab02db",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_tests.rs",
+        "line": 85,
+        "text": "    FinalUseAuthority::open_state_dir_with_clock(",
+        "source_sha256": "936dc7b4950f2ab2e32dce0f68712cf5e3e72c90f08e6cf16efb8ff21d765d18",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_target_tests.rs",
+        "line": 55,
+        "text": "        let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "de487c4975ea5e6babaec5c6cc780eb6bd36f602fe38a17f7f26d48b5a9c4a40",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-infer-worker-host/src/smollm_neural_read_tests.rs",
+        "line": 36,
+        "text": "        let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "74fe6a38fed068195e9606f2a97923e7730b90fab6fc53ad03d889a3cff6f302",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs",
+        "line": 64,
+        "text": "    let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "fbf580484a96974b1a1b24d75db8628caabeedfc94d1f747747d8c1faedda399",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs",
+        "line": 199,
+        "text": "    FinalUseAuthority::open_state_dir(",
+        "source_sha256": "a96740787cdedda04fd4fc757f0dba678c6942698ecec6ce68a991925742b4f0",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/production_verified_dispatch_tests.rs",
+        "line": 51,
+        "text": "        let authority = FinalUseAuthority::open_state_dir_with_clock(",
+        "source_sha256": "612487366bbc8042068331c54ea610f1177f878290a5747a574ad48bf462e9dd",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/production_writer.rs",
+        "line": 3682,
+        "text": "        let final_use = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "cb1b55233cd82275be17cea7dc14193959475b9558f679b75dcbcc33dda067f3",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/production_writer.rs",
+        "line": 3908,
+        "text": "        let final_use = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "cb1b55233cd82275be17cea7dc14193959475b9558f679b75dcbcc33dda067f3",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+        "line": 183,
+        "text": "    let authority = must(codex_hepta_contracts::FinalUseAuthority::open_state_dir(",
+        "source_sha256": "6e927dc3bdb58a6c543ce62e64b8d41879a690ccd3501f3f9fd3541ac73ed1b7",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-operations/src/durable_store_tests.rs",
+        "line": 178,
+        "text": "    let authority = codex_hepta_contracts::FinalUseAuthority::open_state_dir(",
+        "source_sha256": "cb1d60dd3c49ee6a5460b995f8472d422bbb6dd116eb869a64c8ede23730ba7a",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-operations/src/fault_tests.rs",
+        "line": 185,
+        "text": "    let authority = codex_hepta_contracts::FinalUseAuthority::open_state_dir(",
+        "source_sha256": "1988736c0249a54fb9a21b1c87ee799c65dccb66287e54b7a7f8576a72b56451",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs",
+        "line": 485,
+        "text": "    let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "8292a5492a517fc6f7e2b7a8db2c3b403398947d16166503ea66f629732290a8",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+        "line": 2013,
+        "text": "        let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "836c494f4998bd507604c1e49d6071c24dff4dddc4f9f7d2ffeb40e091af7638",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+        "line": 2162,
+        "text": "        let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "836c494f4998bd507604c1e49d6071c24dff4dddc4f9f7d2ffeb40e091af7638",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+        "line": 2412,
+        "text": "        let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "836c494f4998bd507604c1e49d6071c24dff4dddc4f9f7d2ffeb40e091af7638",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-runtime/src/organs_tests.rs",
+        "line": 312,
+        "text": "    let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "9ef01e34ba11e25f7e593bbed4c927b132d45b9b1e473d921aa4d980b1f734f1",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      },
+      {
+        "path": "codex-rs/hepta-supervisor/tests/final_use_courier_cli.rs",
+        "line": 216,
+        "text": "    let authority = FinalUseAuthority::open_state_dir(",
+        "source_sha256": "139f9e7624cf456f72d5db084bacf1ad1b4f820dd58064b54d79202307979bd4",
+        "classification": "test source or enclosing cfg(test)/cfg(all(test,unix)) module"
+      }
+    ],
+    "non_test_summary": "Four actual non-test ordinary call sites across automation_effect_host.rs (HTTP and PoN), hepta-agentd-browser.rs and final_use_authorizer.rs all use compatibility open_state_dir. One additional call is consume_secret.rs example. The remaining 45 calls are tests.",
+    "Windows_call_summary": "Only found open_windows_private_with_trust invocation is final_use_windows_tests.rs:102 with SystemAuthorityClock and Frontier(Mutex). No invocation of open_windows_private_with_issuer_keys was found.",
+    "ordinary_runtime_config": "FinalUseAuthorizerConfig lines44–55 has a Unix grant endpoint/public trust/local state but no protected-clock or external-frontier provider fields. Its ordinary constructor opens compatibility authority at81. Signed grant transport and peer UID are not time/frontier providers; non-Unix request_grant refuses at156–159.",
+    "guard": "Ordinary Windows lock_directory at final_use_store_io.rs:184 correctly returns UnsafeStateDirectory. The held private namespace and root/live-owner checks do not manufacture clock, external CAS or independent custody. They must not be bypassed or relabeled as provider qualification.",
+    "anchors": [
+      "H3",
+      "H4",
+      "H5",
+      "H7",
+      "H8",
+      "H9",
+      "H10",
+      "H11",
+      "H12",
+      "H13",
+      "H14",
+      "H15",
+      "H16",
+      "H17",
+      "H18"
+    ]
+  },
+  "related_producers_and_false_positives": [
+    {
+      "name": "ControlledTrustedTimeProvider",
+      "finding": "Only concrete implementation found is SignedClock in controlled_ledger_source_route_tests.rs:14, an AtomicU64 test clock with fixed-key signing. It is not a protected FinalUse AuthorityClock.",
+      "anchors": [
+        "H21"
+      ]
+    },
+    {
+      "name": "SignedTrustedTimeAttestation / TrustedTimeSample",
+      "finding": "Actual claims, signatures and verification DTOs exist. They do not independently create empirical time truth. The HTTPS consumer trusted_time interface has a test implementation, not a protected AuthorityClock adapter.",
+      "paths": [
+        "codex-rs/hepta-authbus/src/trust.rs",
+        "codex-rs/hepta-authbus/src/authority.rs",
+        "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+      ],
+      "anchors": [
+        "H22"
+      ]
+    },
+    {
+      "name": "ceremony::trusted_time",
+      "finding": "Actual body uses SystemTime. A trusted name does not constitute protected clock provenance.",
+      "anchors": [
+        "H24"
+      ]
+    },
+    {
+      "name": "ReplayCheckpointFile",
+      "finding": "Real Unix owner-private checkpoint persistence with predecessor checks and file replacement exists. It has a replay checkpoint schema, no AuthorityFrontierStore impl or independently established rollback-resistant custody. Its non-Unix path validator correctly refuses.",
+      "anchors": [
+        "H23"
+      ]
+    },
+    {
+      "name": "HoldoutAnchorAuthorityV1",
+      "finding": "Actual independent anchor interface exists in durable_holdout.rs:47; concrete implementations found are test anchors. No production adapter to FinalUseFrontier or protected time was found."
+    },
+    {
+      "name": "LockedFileFinalHoldoutCasStoreV1",
+      "finding": "A genuine concrete locked-file CAS backend exists in fenced_holdout_file.rs:61/170. It is a different holdout domain. The source explicitly assumes linearizable locks/fsync for shared-host coordination and independently retained minimum anchor for recovery. It provides no current FinalUseFrontier adapter, protected clock or independent anchor producer by itself. Do not state that this source has no concrete CAS anywhere.",
+      "anchors": [
+        "H19",
+        "H20"
+      ]
+    }
+  ],
+  "Chain_concrete_provider_inventory": {
+    "present": [
+      "ExternalCheckpointAuthorityV2 held Unix append log/lock/anchor backend with exact predecessor/generation CAS and fsync/poison semantics",
+      "UnixExternalCheckpointStoreV2 actual Unix socket client implementing ExternalCheckpointStoreV2 at lib.rs:844",
+      "Actual run_daemon and CLI source; neither was started or run"
+    ],
+    "boundary": [
+      "Backend is #![cfg(unix)], not an existing Windows transport",
+      "Checkpoint canonical record is 672 bytes and includes whole-node application, authority and effect roots. FinalUseFrontier is a distinct three-field head/nonce-state digest schema.",
+      "No actual AuthorityClock, AuthorityFrontierStore<FinalUseFrontier> or FinalUseFrontier adapter found in the 1270-file source scope",
+      "HOST_ATTESTATION, CORE_ADMISSION, CONSENSUS_RUNTIME and PRODUCTION_ACTIVATION remain false; operational-integration/production-candidate metadata false",
+      "Peer-lease local live time floor is explicitly not a persisted external protected-time anchor"
+    ],
+    "ExternalMonotonicWatermarkV2": "Only documentation mention at checkpoint-types/record.rs:240 found; no concrete symbol implementation found in this inspected source.",
+    "conclusion": "Real Unix cross-process CAS source is useful existing work, but a wrapper cannot manufacture the missing whole-node inputs, independent custody, protected time or Windows native consumer qualification. No ready genuine Windows FinalUse producer composition was found.",
+    "anchors": [
+      "C1",
+      "C2",
+      "C3",
+      "C4",
+      "C5",
+      "C6",
+      "C7"
+    ]
+  },
+  "existing_consumer_wiring_cut": {
+    "ready_source_slice": false,
+    "reason": "There is no found genuine clock+frontier composition to pass to the existing Windows owner. A caller-only change would substitute a fixture or reference an unimplemented provider. No such source change is proposed or made.",
+    "missing_existing_interfaces_or_inputs": [
+      "Concrete protected AuthorityClock producer with real provenance and uncertainty semantics available to the ordinary Windows host",
+      "Concrete AuthorityFrontierStore<FinalUseFrontier> implementation with exact durable load/CAS and custody surviving local authority namespace rollback/replacement",
+      "Actual ordinary host configuration/transport which obtains those genuine providers, passes them alongside the held namespace and retains issuer/key trust",
+      "Source-bound native qualification of that same ordinary composition; stale/ahead/uncertain provider conditions must still fail closed"
+    ],
+    "retained_consumers": [
+      "AuthorityClock::now_unix_ms",
+      "AuthorityFrontierStore::load/compare_and_set",
+      "FinalUseAuthority::open_windows_private_with_trust",
+      "FinalUseAuthority::open_windows_private_with_issuer_keys",
+      "validate_windows_prewrite",
+      "persist_or_fence"
+    ],
+    "no_parallel_plan": "This inventory records the dependency boundary of existing PN0 FinalUse. It does not add a new service, backend, provider roadmap, driver or document track."
+  },
+  "actual_source_pins": [
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-agentd/src/authbus_checkpoint.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-agentd/src/authbus_checkpoint.rs",
+      "bytes": 8069,
+      "sha256": "d9461bf95f45746a8dd7d5939c3263592fecd5ee7361c224d8af1f1deae81431",
+      "git_blob": "d50920dc20fb15ef92c7b2f22298522fe1415684",
+      "lines": 266
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-agentd/src/authbus_ingress.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-agentd/src/authbus_ingress.rs",
+      "bytes": 9602,
+      "sha256": "bec2b35373a7fd6cb9c4ccd1808c827d800a974c2d431870f12bbe70336ccfa0",
+      "git_blob": "f2872a21e8eb91207565ab0c19c1dd5425bae58d",
+      "lines": 264
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "bytes": 88723,
+      "sha256": "34f428d88147739ffedea96cd2502b66f288ee3c443e87b99b9cd84ea29a0f76",
+      "git_blob": "7b843b69ac87db3fb3aaefd2ac7e20d8c7f72aef",
+      "lines": 2296
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+      "bytes": 6460,
+      "sha256": "1d13b8f141dde8de5c8709c8371681d17204e6d50c1bf356f3ecebfe306d3211",
+      "git_blob": "fdea3a28f6c97ea94085ff24bf81dd27aed3e36f",
+      "lines": 183
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-agentd/src/browser_servo.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-agentd/src/browser_servo.rs",
+      "bytes": 40314,
+      "sha256": "2a1b9a4697094f0303082e4874bd12b560579220f2528f130b39ddf399afd0f9",
+      "git_blob": "d6232415313fa47c332a309c9c377aad8d6e6278",
+      "lines": 1135
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-agentd/src/cognitive_process_product.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-agentd/src/cognitive_process_product.rs",
+      "bytes": 9422,
+      "sha256": "978c7a2fddadc47c3730d77d9429c8cc90cfc47e81295f3413b6ac3a308c3640",
+      "git_blob": "7ae0277d805e62a30630726898a4c19337ff9e7d",
+      "lines": 256
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-agentd/src/operations_host_tests.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-agentd/src/operations_host_tests.rs",
+      "bytes": 9588,
+      "sha256": "70a3a312c0b394c7ab6f93bf2ddcc887d1499cf7702e876ae13bb023440a89d0",
+      "git_blob": "7fe1301144ff0754e57e0a19cd4c1296d910a97b",
+      "lines": 280
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
+      "bytes": 28882,
+      "sha256": "0724d395f98ceb1f64259036c94157f8f8ece37b3725670befd5dd85b26c981a",
+      "git_blob": "32b9ecb144e075cce5f48f2490fb629dcf6d7e7d",
+      "lines": 758
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-agentd/tests/support/neural_native_owner.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-agentd/tests/support/neural_native_owner.rs",
+      "bytes": 8661,
+      "sha256": "c212b3480e1e2a9646644ed4559cf9788d85912f7b1c239ce0d7fe7197de780c",
+      "git_blob": "9c5a49503bab4f5c9dedf63c51841d9a139e6e2f",
+      "lines": 245
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-authbus/src/authority.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-authbus/src/authority.rs",
+      "bytes": 6833,
+      "sha256": "3d904fecf0785eff0d038ba00fe33316e3a71407e871c828980051cb6ec503d9",
+      "git_blob": "a7db14c60eec2ebd5d57d8d28896c1a4642dd493",
+      "lines": 212
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-authbus/src/host.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-authbus/src/host.rs",
+      "bytes": 18672,
+      "sha256": "66686ca7ad0efe6d041d3c521e11fbda64988a26685f981f4d5d2160c77b6ca0",
+      "git_blob": "9056fd52bf58e081ebfe997d4935f37531d57272",
+      "lines": 600
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-authbus/src/lib.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-authbus/src/lib.rs",
+      "bytes": 7450,
+      "sha256": "8ab2216e84304a9bd4b029758e27bc4d01665e0b2f45331a8832ca85b1e28371",
+      "git_blob": "08a7a785e557690d35c536291b86c70b22dfcb9f",
+      "lines": 236
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-authbus/src/trust.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-authbus/src/trust.rs",
+      "bytes": 4041,
+      "sha256": "fe2edfeebae33225bca32e3b99b91e345c2c1ee6b6f6c422791ec789ca2783fa",
+      "git_blob": "e57ef9ec5d97ab4d572496a4d1beaf7cb804db4f",
+      "lines": 142
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-authbus/src/trust_store.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-authbus/src/trust_store.rs",
+      "bytes": 13147,
+      "sha256": "719871b3b63daa561284bd05f05f6de467a7b452b69f4863ce621382e38181f8",
+      "git_blob": "22a9aa26caf1385a497a1a505b42d0cea0620b6e",
+      "lines": 371
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-authbus/src/trust_store_tests.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-authbus/src/trust_store_tests.rs",
+      "bytes": 5026,
+      "sha256": "5311b3ae6b1d190cbc326b173cd6f4e698963422d7ff417a960e134753e4baac",
+      "git_blob": "61116a08a4dc844e5e098e0d94bf3cb08cc9bc2c",
+      "lines": 155
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-automation/tests/authorized_effect.rs",
+      "bytes": 43027,
+      "sha256": "a721a018ae8a07154a6c15d15cdfbc8a787fa35cd5dea16a11f3c175305c3dce",
+      "git_blob": "0cd3498bfe7c6764941c502bcd51cf372ba22a4e",
+      "lines": 1268
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-bao-adapter/examples/consume_secret.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-bao-adapter/examples/consume_secret.rs",
+      "bytes": 3446,
+      "sha256": "057e605cc615b167bf8779babd6547166d8b7ea1d0fde0c793e05e5da31f4c65",
+      "git_blob": "c5b23e65b0041d18ad1baf820e4f0bfa5632e6a7",
+      "lines": 92
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "bytes": 10052,
+      "sha256": "ddf06452709ddec72e8a0b268df3705dfa8d8ebc2e248a779b7b1b378bfec702",
+      "git_blob": "7840a3aab99080c99849c04553611fd728df1332",
+      "lines": 282
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "bytes": 21480,
+      "sha256": "83318f02edfdd6ea1328ef6c5564a6c0faab1868883e35e81d7a8ec1b2e1fdfd",
+      "git_blob": "8c9671afde79d02ede251fc6a5bab3c6e263c885",
+      "lines": 606
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+      "bytes": 24918,
+      "sha256": "7a61d40f74da627f584bd74cb76584d458c11787f469c6a7db54227bc0ae2c8b",
+      "git_blob": "13fa3cd6721c30a965d04d7e35c23427ebe56157",
+      "lines": 754
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-bao-adapter/tests/final_use_host.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-bao-adapter/tests/final_use_host.rs",
+      "bytes": 14445,
+      "sha256": "3bac22258b80b6dd653706b4378c703e3a29c78b4feaf0652052fbad608c7e4a",
+      "git_blob": "92836c83dc9cfc2a71fabace83783f58d9c993a9",
+      "lines": 409
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-contracts/src/authority_lease.rs",
+      "bytes": 62044,
+      "sha256": "4d009658997801e6e9f23d8a1f6fca26faa39cf177c9996f1060af1d6ae70f94",
+      "git_blob": "d59bb4bf8582502c085253d87c6f81f59823c027",
+      "lines": 1710
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-contracts/src/authority_trust.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-contracts/src/authority_trust.rs",
+      "bytes": 2313,
+      "sha256": "7d468026631ae10908c084c66a4bd49f2caac67ed96ae1a4d3572df886cde352",
+      "git_blob": "043ffd75a20c42935959a98d37f40e3d7229c407",
+      "lines": 66
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-contracts/src/final_use.rs",
+      "bytes": 39684,
+      "sha256": "fde6acfb9ed13da256a91875b94a0ac2c2b1dc3bb4c8740adae10d318066f48c",
+      "git_blob": "32c5f8f823f898d88b429c4fa3dea2d07910be75",
+      "lines": 1073
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-contracts/src/final_use_control.rs",
+      "bytes": 41841,
+      "sha256": "51b79d090247c27ace0f03804046a8966ff61ac86e8082b8d8b4908a2e916b2d",
+      "git_blob": "56c0a1a9430b9845020e43e7436736be0d8097f0",
+      "lines": 1190
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-contracts/src/final_use_nonce_tests.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-contracts/src/final_use_nonce_tests.rs",
+      "bytes": 14335,
+      "sha256": "6af9febc896d72b97d082bdb94afe22581da8f6dcd624fb7b34f49b7d9852b7f",
+      "git_blob": "5f13b950a423d421ff2d1220d9f5fa1af06fed69",
+      "lines": 387
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-contracts/src/final_use_store.rs",
+      "bytes": 15199,
+      "sha256": "adb38a55572b34077fa08be9b45bd8f4811738d10e0205dbe58b9baeac93af86",
+      "git_blob": "84890afa419ce4919bc32daf504784cba3e8d593",
+      "lines": 423
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-contracts/src/final_use_store_io.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-contracts/src/final_use_store_io.rs",
+      "bytes": 8066,
+      "sha256": "febde7c29b947473a77e215937f4c9e4a7de9dc877c488da1fe32157dd33bd93",
+      "git_blob": "5dc155c4d3a26b09c75a0660a4514a22c0182aef",
+      "lines": 245
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-contracts/src/final_use_tests.rs",
+      "bytes": 30454,
+      "sha256": "ed0576ebdc3424fe6f6db4f3d6b5ad5a8688052714d9c104c467799530944371",
+      "git_blob": "4abe82b93130d0ae7efa4e704863eda766339c76",
+      "lines": 890
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-contracts/src/final_use_windows.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-contracts/src/final_use_windows.rs",
+      "bytes": 4208,
+      "sha256": "c07fb42ccdd07e0d8889a136a25f37535531d4585055006bb61303002c28062b",
+      "git_blob": "6d66664f78a87c5f8f974d94223ca18e26d922c6",
+      "lines": 111
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-contracts/src/final_use_windows_tests.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-contracts/src/final_use_windows_tests.rs",
+      "bytes": 8503,
+      "sha256": "fd028a28e8425b031f4065517b66a57531c77896b85a9a95b8086dc6351d7829",
+      "git_blob": "a9b203d6d00b2fbf43d472ab1490a289fc71da22",
+      "lines": 247
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-contracts/src/lib.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-contracts/src/lib.rs",
+      "bytes": 13655,
+      "sha256": "31f0868f63647a54f653c53f0e2154b51c1ea4a75af9783033a16477195c2b3c",
+      "git_blob": "bbcfb796e1ced50f7758e8bb2e5ec6453cf05c0c",
+      "lines": 325
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-contracts/tests/final_use_linearization.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-contracts/tests/final_use_linearization.rs",
+      "bytes": 3063,
+      "sha256": "ca77c0eae30d530bd760e284091bcfc7ac266f815add1564e2c6b4827d184ca9",
+      "git_blob": "5088cb4bdf8a7a09a64c4d100f36a0b5c05e89a7",
+      "lines": 85
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-control-plane/src/organ_runtime_tests.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-control-plane/src/organ_runtime_tests.rs",
+      "bytes": 43792,
+      "sha256": "8406a1eee302ebce0a6ff03a506bcd4ed88624e4b09774e5570f84d563f5f94a",
+      "git_blob": "bdffe2d2f5083f1d309835c48daa181a00a81708",
+      "lines": 1355
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-fleet/src/authority_port.rs",
+      "bytes": 10539,
+      "sha256": "64338702d7ab53cfc348937c7ee1ca91184ad13bfaec3a091f94ad174cccb941",
+      "git_blob": "9897a42d77a58c75f8eff6f498f1c7f1cd81c6de",
+      "lines": 289
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-fleet/src/revocation_control.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-fleet/src/revocation_control.rs",
+      "bytes": 19798,
+      "sha256": "4ac319765c2acfd9a6ec37ce16fed736caa2e9c8ca1ca01210479466929b3f83",
+      "git_blob": "6d60b7d6923bc0b1ef8c4f71857f903a8bf6bd52",
+      "lines": 551
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-infer-worker-host/src/controlled_funding.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-infer-worker-host/src/controlled_funding.rs",
+      "bytes": 8025,
+      "sha256": "4212a83884a1523855f1e89545ee4fe33a5e1ea2d89288118a5998f22dd9e63e",
+      "git_blob": "ed71393abdfea79d63fb257372cf1022e187b60a",
+      "lines": 212
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-infer-worker-host/src/controlled_ledger_source_route_tests.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-infer-worker-host/src/controlled_ledger_source_route_tests.rs",
+      "bytes": 21756,
+      "sha256": "51ee672a1822a27980e99d6a3db9d5f3aa5eb01d9e1f32b532424a1b5faeae1e",
+      "git_blob": "c317cf5f7de9bba10e8093d75b1295a2ad51cc54",
+      "lines": 603
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+      "bytes": 10261,
+      "sha256": "0e0e483ef6b992787c6fe1c140c302b9225c1b8896ffead17bf174a593d243ed",
+      "git_blob": "5ba248accf42aea808b51929b73ccc4fde400c48",
+      "lines": 274
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_grant_courier.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-infer-worker-host/src/final_use_grant_courier.rs",
+      "bytes": 5448,
+      "sha256": "984ff379f1842cb4b74778b7fdb24b8a1fc88eb0bb61b45aafc7704506649003",
+      "git_blob": "70cdf9f82f47a585a617dbd29fa82fa170028737",
+      "lines": 136
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_grant_courier_tests.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-infer-worker-host/src/final_use_grant_courier_tests.rs",
+      "bytes": 7958,
+      "sha256": "2da8968be6c7b6add14850f2a4ec276a757c844961fbb5af09c39fb450ab02db",
+      "git_blob": "2d154ad611c6df32d27b354eb3235a756d9e7598",
+      "lines": 231
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_tests.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-infer-worker-host/src/ordinary_cpu_source_route_tests.rs",
+      "bytes": 12835,
+      "sha256": "936dc7b4950f2ab2e32dce0f68712cf5e3e72c90f08e6cf16efb8ff21d765d18",
+      "git_blob": "d0677425dceb6df750d75abd29a1933ba70efd5c",
+      "lines": 394
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_target.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-infer-worker-host/src/ordinary_cpu_target.rs",
+      "bytes": 8274,
+      "sha256": "57a5a3a347e72eac5f4a92c3ebc9fa32d364ace39714927a148e6281393600c6",
+      "git_blob": "39ade433890d9fd294159e4c5b7fc80aa45bbeba",
+      "lines": 215
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_target_tests.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-infer-worker-host/src/ordinary_cpu_target_tests.rs",
+      "bytes": 7766,
+      "sha256": "de487c4975ea5e6babaec5c6cc780eb6bd36f602fe38a17f7f26d48b5a9c4a40",
+      "git_blob": "31f2876da2d96b6b40557dbdcc82638183f4704f",
+      "lines": 241
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_neural_read_tests.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-infer-worker-host/src/smollm_neural_read_tests.rs",
+      "bytes": 23287,
+      "sha256": "74fe6a38fed068195e9606f2a97923e7730b90fab6fc53ad03d889a3cff6f302",
+      "git_blob": "4cbd3878d4d3535596b2d0ebafe58afffa2dce5d",
+      "lines": 641
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-intelligence-eval/src/durable_holdout.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-intelligence-eval/src/durable_holdout.rs",
+      "bytes": 12794,
+      "sha256": "42a2d84a399278431ef546b0ab85655fa6475c2a43e92f70e3a1f9e797654175",
+      "git_blob": "a8e58eb73cf7154b1d5dd53755b612e58aaf2676",
+      "lines": 339
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-intelligence-eval/src/durable_holdout_tests.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-intelligence-eval/src/durable_holdout_tests.rs",
+      "bytes": 14732,
+      "sha256": "8d827eb1519ab03cfc770453527233bfae53ae00608b4a2d6ee50324cb2e18fa",
+      "git_blob": "44d7ac7bdd22bdc0369a6c4418f26ef45b776e60",
+      "lines": 462
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
+      "bytes": 12255,
+      "sha256": "79362d3c0002afcb04921fec1f99b76508ae94a72c01fe501ac524c4155f81e5",
+      "git_blob": "65d71a566c92610b2c8dfd655d66a66d3400d4b7",
+      "lines": 385
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
+      "bytes": 16374,
+      "sha256": "fc6aac39433282bab75a1f452ea9d13e568a68ad60f8f0a421f9dd0bd6b28b6f",
+      "git_blob": "79db6bfe6ba3c644ed67c985c7eb6e778a42608e",
+      "lines": 475
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_tests.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-intelligence-eval/src/fenced_holdout_tests.rs",
+      "bytes": 8067,
+      "sha256": "5026da322b811d06670348b717c66a6320a396555b9f8b8126374746263c90ee",
+      "git_blob": "efcf8aaa8134bf66b5ddd70dad145f42c65ca3ec",
+      "lines": 249
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "bytes": 14971,
+      "sha256": "da28fa713e727b305142bd4668b6cf8243d7c53acc0186727ad50f6b3dc21b13",
+      "git_blob": "c4c4ba2d56e45e80e75f24f40d97229ab34174c9",
+      "lines": 390
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-intelligence-eval/src/longitudinal_time.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-intelligence-eval/src/longitudinal_time.rs",
+      "bytes": 8146,
+      "sha256": "d455220de2b728faa2e06b497da87000b41cf28b2f8cd9953d5af84ee70b0d44",
+      "git_blob": "a75053280ae55e6329eab4276034cbfebb8d23b3",
+      "lines": 205
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "bytes": 36095,
+      "sha256": "15e82c5fb2b58ec0fffbb74e2b05be75ede0f3d0e21603b95e047edd6ca9fcf4",
+      "git_blob": "d407375ed7a8f645523e58f0f9435b0359b6f25d",
+      "lines": 963
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+      "bytes": 20146,
+      "sha256": "e1839e9bebe3ef67d299e5e3ebc19fca9bc85e98bc19ba5292cebcd7f022c4e0",
+      "git_blob": "0f40cf0d5cadaec0d690be89570d7369b0ada1d2",
+      "lines": 562
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_test_support.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-intelligence/src/evaluated_shadow_test_support.rs",
+      "bytes": 22978,
+      "sha256": "3099b3af3bdd3c4251b9e4b410ea17510476d0b434a46ec1c345954d55dc810f",
+      "git_blob": "39b84f90e1545d149674d3a4fd0b42d1588c1277",
+      "lines": 604
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs",
+      "bytes": 18274,
+      "sha256": "fbf580484a96974b1a1b24d75db8628caabeedfc94d1f747747d8c1faedda399",
+      "git_blob": "83968ef898c964a9d933022d04ddc8506f9de707",
+      "lines": 504
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs",
+      "bytes": 13552,
+      "sha256": "a96740787cdedda04fd4fc757f0dba678c6942698ecec6ce68a991925742b4f0",
+      "git_blob": "ac96e86b614f95a5da9fb68d13752b26bc857933",
+      "lines": 378
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-memory/src/production_verified_dispatch.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-memory/src/production_verified_dispatch.rs",
+      "bytes": 2448,
+      "sha256": "650107322019366180d58d3349f5132f39c0cd92412efef76140225d37f19cc3",
+      "git_blob": "a017df1e0427561ed5960d4815f1813d76388e3e",
+      "lines": 64
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-memory/src/production_verified_dispatch_tests.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-memory/src/production_verified_dispatch_tests.rs",
+      "bytes": 9056,
+      "sha256": "612487366bbc8042068331c54ea610f1177f878290a5747a574ad48bf462e9dd",
+      "git_blob": "a93bc7c0a760f7f05f2a14f8977f1a83851cd016",
+      "lines": 244
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-memory/src/production_writer.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-memory/src/production_writer.rs",
+      "bytes": 148418,
+      "sha256": "cb1b55233cd82275be17cea7dc14193959475b9558f679b75dcbcc33dda067f3",
+      "git_blob": "1c4052ab77ddc68fd3aa83b747ef1d5c3e746d6c",
+      "lines": 3962
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-ndu/src/owner_tests.rs",
+      "bytes": 9738,
+      "sha256": "6e927dc3bdb58a6c543ce62e64b8d41879a690ccd3501f3f9fd3541ac73ed1b7",
+      "git_blob": "10e11464f64cc4cf9cb0a99046aed31bc0131f8d",
+      "lines": 298
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-operations/src/durable_store_tests.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-operations/src/durable_store_tests.rs",
+      "bytes": 23446,
+      "sha256": "cb1d60dd3c49ee6a5460b995f8472d422bbb6dd116eb869a64c8ede23730ba7a",
+      "git_blob": "0a47a7584c2ec5b7745f7d2a91b7a0965f12b87e",
+      "lines": 674
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-operations/src/fault_tests.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-operations/src/fault_tests.rs",
+      "bytes": 13727,
+      "sha256": "1988736c0249a54fb9a21b1c87ee799c65dccb66287e54b7a7f8576a72b56451",
+      "git_blob": "2d9fdf9e32b7a114349c7500915165340b564839",
+      "lines": 383
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-operator-acceptance/src/ceremony.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-operator-acceptance/src/ceremony.rs",
+      "bytes": 6170,
+      "sha256": "8b2181e16a1292c07b310db7ab304a5686c13fabb368b50eca8e2ea85d99d075",
+      "git_blob": "cdd5ce0e9b56c7b49f8b5ce053153812808337b3",
+      "lines": 178
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs",
+      "bytes": 23639,
+      "sha256": "8292a5492a517fc6f7e2b7a8db2c3b403398947d16166503ea66f629732290a8",
+      "git_blob": "100a37fd11a9d73285423e9954d9cbdd02afa280",
+      "lines": 649
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-prompt-registry/src/durable.rs",
+      "bytes": 109938,
+      "sha256": "836c494f4998bd507604c1e49d6071c24dff4dddc4f9f7d2ffeb40e091af7638",
+      "git_blob": "3e7a9f2e33730e1cf40efcfc62fd35418597a4ed",
+      "lines": 2874
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-runtime/src/organs_tests.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-runtime/src/organs_tests.rs",
+      "bytes": 30516,
+      "sha256": "9ef01e34ba11e25f7e593bbed4c927b132d45b9b1e473d921aa4d980b1f734f1",
+      "git_blob": "8d9b121c9e3c703c8ebd0412ca7487b3748c441b",
+      "lines": 754
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-shadow-qualification/src/lane_e_closure_tests.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-shadow-qualification/src/lane_e_closure_tests.rs",
+      "bytes": 27926,
+      "sha256": "42d795b20c9b6c14d0186ab8a755ccd717f6fc0b86f017a00a563e85b99ef035",
+      "git_blob": "1091e73ea971f82bde1513388ee0abeeb71dba34",
+      "lines": 690
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-shadow-qualification/tests/lane_e_api_contract.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-shadow-qualification/tests/lane_e_api_contract.rs",
+      "bytes": 8962,
+      "sha256": "116de333ce4b7a1326575742ac3f53567499d0d263001d1e1c9bdf815b93f160",
+      "git_blob": "d431b321b34f9ce88ab16c0d34da49fb7c93c9df",
+      "lines": 167
+    },
+    {
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-supervisor/tests/final_use_courier_cli.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/hepta-windows-portable-tools-20261024/codex-rs/hepta-supervisor/tests/final_use_courier_cli.rs",
+      "bytes": 12327,
+      "sha256": "139f9e7624cf456f72d5db084bacf1ad1b4f820dd58064b54d79202307979bd4",
+      "git_blob": "6445051b3ebed21b56a812ca37f31af05e80a6dd",
+      "lines": 325
+    },
+    {
+      "commit": "4821f61f1a8603ce07107b1496ee947fb1d86647",
+      "path": "trillionnium/crates/trnm-checkpoint-store/Cargo.toml",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/chain-model-release-closure-20261025/trillionnium/crates/trnm-checkpoint-store/Cargo.toml",
+      "bytes": 1057,
+      "sha256": "fdae031e687aaccd0a8b22bdd4ba916ee6c77cd61a90ee5d54d1a5533b416ab1",
+      "git_blob": "86bf7216ee32ad2c63c5925e8fa7ae5a2d35b5f9",
+      "lines": 41
+    },
+    {
+      "commit": "4821f61f1a8603ce07107b1496ee947fb1d86647",
+      "path": "trillionnium/crates/trnm-checkpoint-store/src/lib.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/chain-model-release-closure-20261025/trillionnium/crates/trnm-checkpoint-store/src/lib.rs",
+      "bytes": 66727,
+      "sha256": "315bc92214ec7b77fabbe5de9858fe742a1b00adef50573a7205fade056726f2",
+      "git_blob": "7403d4b2ded74146d0a197625ff2495bce85ed69",
+      "lines": 1743
+    },
+    {
+      "commit": "4821f61f1a8603ce07107b1496ee947fb1d86647",
+      "path": "trillionnium/crates/trnm-checkpoint-store/src/main.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/chain-model-release-closure-20261025/trillionnium/crates/trnm-checkpoint-store/src/main.rs",
+      "bytes": 5841,
+      "sha256": "529b1acd46027b73d1c11ceb678e97b18e034d592f084314c7be47b3f93d55f9",
+      "git_blob": "160130e0346ce3e6057310e8860454cfe6d91911",
+      "lines": 151
+    },
+    {
+      "commit": "4821f61f1a8603ce07107b1496ee947fb1d86647",
+      "path": "trillionnium/crates/trnm-checkpoint-types/src/record.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/chain-model-release-closure-20261025/trillionnium/crates/trnm-checkpoint-types/src/record.rs",
+      "bytes": 16010,
+      "sha256": "591a253e098517a43bcd0215f1507e0ba1be1047b59948bdada371cb0458804c",
+      "git_blob": "c0676685842b962cf3b301d1f9aec9292f0422ed",
+      "lines": 412
+    },
+    {
+      "commit": "4821f61f1a8603ce07107b1496ee947fb1d86647",
+      "path": "trillionnium/crates/trnm-peer-lease/src/store.rs",
+      "live_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/chain-model-release-closure-20261025/trillionnium/crates/trnm-peer-lease/src/store.rs",
+      "bytes": 59352,
+      "sha256": "6b467dcdf7abd8bd5da0b848abbfb2e7df2029246e031e3609c85a3fbc425027",
+      "git_blob": "80ef797b9f4369fb0a2c56a2e8c7a1b7bfacd339",
+      "lines": 1530
+    }
+  ],
+  "exact_source_anchors": [
+    {
+      "id": "H1",
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-contracts/src/authority_trust.rs",
+      "line_start": 26,
+      "line_end": 66,
+      "meaning": "Exact AuthorityClock and AuthorityFrontierStore<F> contracts; SystemAuthorityClock is compatibility time.",
+      "exact_lines": [
+        {
+          "line": 26,
+          "text": ""
+        },
+        {
+          "line": 27,
+          "text": "/// Host-owned trusted wall/monotonic-time projection."
+        },
+        {
+          "line": 28,
+          "text": "///"
+        },
+        {
+          "line": 29,
+          "text": "/// Production implementations are expected to bind this to an attested or"
+        },
+        {
+          "line": 30,
+          "text": "/// otherwise protected time source. The system clock implementation below is a"
+        },
+        {
+          "line": 31,
+          "text": "/// compatibility/testing implementation, not an attestation claim."
+        },
+        {
+          "line": 32,
+          "text": "pub trait AuthorityClock: Send + Sync {"
+        },
+        {
+          "line": 33,
+          "text": "    fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError>;"
+        },
+        {
+          "line": 34,
+          "text": "}"
+        },
+        {
+          "line": 35,
+          "text": ""
+        },
+        {
+          "line": 36,
+          "text": "#[derive(Clone, Copy, Debug, Default)]"
+        },
+        {
+          "line": 37,
+          "text": "pub struct SystemAuthorityClock;"
+        },
+        {
+          "line": 38,
+          "text": ""
+        },
+        {
+          "line": 39,
+          "text": "impl AuthorityClock for SystemAuthorityClock {"
+        },
+        {
+          "line": 40,
+          "text": "    fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {"
+        },
+        {
+          "line": 41,
+          "text": "        let millis = SystemTime::now()"
+        },
+        {
+          "line": 42,
+          "text": "            .duration_since(UNIX_EPOCH)"
+        },
+        {
+          "line": 43,
+          "text": "            .map_err(|_| AuthorityTrustError::Unavailable)?"
+        },
+        {
+          "line": 44,
+          "text": "            .as_millis();"
+        },
+        {
+          "line": 45,
+          "text": "        u64::try_from(millis).map_err(|_| AuthorityTrustError::Unavailable)"
+        },
+        {
+          "line": 46,
+          "text": "    }"
+        },
+        {
+          "line": 47,
+          "text": "}"
+        },
+        {
+          "line": 48,
+          "text": ""
+        },
+        {
+          "line": 49,
+          "text": "/// Externally durable compare-and-set frontier."
+        },
+        {
+          "line": 50,
+          "text": "///"
+        },
+        {
+          "line": 51,
+          "text": "/// The external store must survive rollback/replacement of the local authority"
+        },
+        {
+          "line": 52,
+          "text": "/// directory. compare_and_set must durably commit next only when the current"
+        },
+        {
+          "line": 53,
+          "text": "/// value exactly equals expected. Authority owners call it before committing"
+        },
+        {
+          "line": 54,
+          "text": "/// the corresponding local state. If the local commit then fails, the owner"
+        },
+        {
+          "line": 55,
+          "text": "/// fences itself; reopening observes an external frontier ahead of local state"
+        },
+        {
+          "line": 56,
+          "text": "/// and fails closed until operator recovery."
+        },
+        {
+          "line": 57,
+          "text": "pub trait AuthorityFrontierStore<F>: Send + Sync {"
+        },
+        {
+          "line": 58,
+          "text": "    fn load(&self, owner_id: &str) -> Result<F, AuthorityTrustError>;"
+        },
+        {
+          "line": 59,
+          "text": ""
+        },
+        {
+          "line": 60,
+          "text": "    fn compare_and_set("
+        },
+        {
+          "line": 61,
+          "text": "        &self,"
+        },
+        {
+          "line": 62,
+          "text": "        owner_id: &str,"
+        },
+        {
+          "line": 63,
+          "text": "        expected: &F,"
+        },
+        {
+          "line": 64,
+          "text": "        next: &F,"
+        },
+        {
+          "line": 65,
+          "text": "    ) -> Result<(), AuthorityTrustError>;"
+        },
+        {
+          "line": 66,
+          "text": "}"
+        }
+      ]
+    },
+    {
+      "id": "H2",
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "line_start": 170,
+      "line_end": 178,
+      "meaning": "FinalUseFrontier covers complete head and claimed nonce state in three fields.",
+      "exact_lines": [
+        {
+          "line": 170,
+          "text": "/// Externally durable anti-rollback frontier for one exact local authority"
+        },
+        {
+          "line": 171,
+          "text": "/// state. The digest covers the complete revocation head and claimed nonce set."
+        },
+        {
+          "line": 172,
+          "text": "#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]"
+        },
+        {
+          "line": 173,
+          "text": "#[serde(deny_unknown_fields)]"
+        },
+        {
+          "line": 174,
+          "text": "pub struct FinalUseFrontier {"
+        },
+        {
+          "line": 175,
+          "text": "    pub authority_epoch: u64,"
+        },
+        {
+          "line": 176,
+          "text": "    pub revocation_revision: u64,"
+        },
+        {
+          "line": 177,
+          "text": "    pub state_sha256: [u8; 32],"
+        },
+        {
+          "line": 178,
+          "text": "}"
+        }
+      ]
+    },
+    {
+      "id": "H3",
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "line_start": 350,
+      "line_end": 378,
+      "meaning": "Compatibility constructor explicitly is not a production trust composition.",
+      "exact_lines": [
+        {
+          "line": 350,
+          "text": "    /// Compatibility constructor using the process system clock and no"
+        },
+        {
+          "line": 351,
+          "text": "    /// external rollback oracle. It is not a production trust composition. A"
+        },
+        {
+          "line": 352,
+          "text": "    /// production-oriented rotating-issuer host uses"
+        },
+        {
+          "line": 353,
+          "text": "    /// `open_state_dir_with_issuer_keys` with protected time and frontier"
+        },
+        {
+          "line": 354,
+          "text": "    /// implementations."
+        },
+        {
+          "line": 355,
+          "text": "    pub fn open_state_dir("
+        },
+        {
+          "line": 356,
+          "text": "        directory: &std::path::Path,"
+        },
+        {
+          "line": 357,
+          "text": "        signer_id: String,"
+        },
+        {
+          "line": 358,
+          "text": "        verifying_key: [u8; 32],"
+        },
+        {
+          "line": 359,
+          "text": "        head: FinalUseRevocations,"
+        },
+        {
+          "line": 360,
+          "text": "    ) -> Result<Self, FinalUseError> {"
+        },
+        {
+          "line": 361,
+          "text": "        Self::open_state_dir_with_clock("
+        },
+        {
+          "line": 362,
+          "text": "            directory,"
+        },
+        {
+          "line": 363,
+          "text": "            signer_id,"
+        },
+        {
+          "line": 364,
+          "text": "            verifying_key,"
+        },
+        {
+          "line": 365,
+          "text": "            head,"
+        },
+        {
+          "line": 366,
+          "text": "            Arc::new(SystemAuthorityClock),"
+        },
+        {
+          "line": 367,
+          "text": "        )"
+        },
+        {
+          "line": 368,
+          "text": "    }"
+        },
+        {
+          "line": 369,
+          "text": ""
+        },
+        {
+          "line": 370,
+          "text": "    /// Clock-injected constructor for qualification and hosts that have an"
+        },
+        {
+          "line": 371,
+          "text": "    /// independently protected time source but no external rollback oracle."
+        },
+        {
+          "line": 372,
+          "text": "    pub fn open_state_dir_with_clock("
+        },
+        {
+          "line": 373,
+          "text": "        directory: &std::path::Path,"
+        },
+        {
+          "line": 374,
+          "text": "        signer_id: String,"
+        },
+        {
+          "line": 375,
+          "text": "        verifying_key: [u8; 32],"
+        },
+        {
+          "line": 376,
+          "text": "        head: FinalUseRevocations,"
+        },
+        {
+          "line": 377,
+          "text": "        clock: Arc<dyn AuthorityClock>,"
+        },
+        {
+          "line": 378,
+          "text": "    ) -> Result<Self, FinalUseError> {"
+        }
+      ]
+    },
+    {
+      "id": "H4",
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "line_start": 402,
+      "line_end": 425,
+      "meaning": "Trust constructor receives actual clock and loads external frontier for exact comparison.",
+      "exact_lines": [
+        {
+          "line": 402,
+          "text": "    /// Single-issuer external-trust constructor: protected time plus an"
+        },
+        {
+          "line": 403,
+          "text": "    /// externally durable CAS frontier. The external frontier must exactly"
+        },
+        {
+          "line": 404,
+          "text": "    /// match local state on open and every mutation advances it before the"
+        },
+        {
+          "line": 405,
+          "text": "    /// corresponding local fsync/rename. This preserves the V1 one-key trust"
+        },
+        {
+          "line": 406,
+          "text": "    /// model; rotating production issuers use `open_state_dir_with_issuer_keys`."
+        },
+        {
+          "line": 407,
+          "text": "    pub fn open_state_dir_with_trust("
+        },
+        {
+          "line": 408,
+          "text": "        directory: &std::path::Path,"
+        },
+        {
+          "line": 409,
+          "text": "        signer_id: String,"
+        },
+        {
+          "line": 410,
+          "text": "        verifying_key: [u8; 32],"
+        },
+        {
+          "line": 411,
+          "text": "        head: FinalUseRevocations,"
+        },
+        {
+          "line": 412,
+          "text": "        clock: Arc<dyn AuthorityClock>,"
+        },
+        {
+          "line": 413,
+          "text": "        frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>,"
+        },
+        {
+          "line": 414,
+          "text": "    ) -> Result<Self, FinalUseError> {"
+        },
+        {
+          "line": 415,
+          "text": "        let key ="
+        },
+        {
+          "line": 416,
+          "text": "            VerifyingKey::from_bytes(&verifying_key).map_err(|_| FinalUseError::InvalidTrust)?;"
+        },
+        {
+          "line": 417,
+          "text": "        if !identifier(&signer_id) || key.is_weak() || !valid_head(&head) {"
+        },
+        {
+          "line": 418,
+          "text": "            return Err(FinalUseError::InvalidTrust);"
+        },
+        {
+          "line": 419,
+          "text": "        }"
+        },
+        {
+          "line": 420,
+          "text": "        clock.now_unix_ms().map_err(map_trust_error)?;"
+        },
+        {
+          "line": 421,
+          "text": "        let (store, state) = store::Store::open_exact(directory, &signer_id, verifying_key, head)?;"
+        },
+        {
+          "line": 422,
+          "text": "        let observed = frontier_for_state(&state);"
+        },
+        {
+          "line": 423,
+          "text": "        let trusted = frontier_store.load(&signer_id).map_err(map_trust_error)?;"
+        },
+        {
+          "line": 424,
+          "text": "        if trusted != observed {"
+        },
+        {
+          "line": 425,
+          "text": "            return Err(FinalUseError::AntiRollbackViolation);"
+        }
+      ]
+    },
+    {
+      "id": "H5",
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "line_start": 443,
+      "line_end": 466,
+      "meaning": "Rotating issuer constructor still requires concrete clock/frontier and custody qualification.",
+      "exact_lines": [
+        {
+          "line": 443,
+          "text": "    /// Production-oriented constructor with a bounded issuer key ring,"
+        },
+        {
+          "line": 444,
+          "text": "    /// protected host time and an external anti-rollback frontier. The complete"
+        },
+        {
+          "line": 445,
+          "text": "    /// trust-set digest is pinned in durable store schema V2. V1 single-key"
+        },
+        {
+          "line": 446,
+          "text": "    /// state is not silently migrated into this trust model. Deployment still"
+        },
+        {
+          "line": 447,
+          "text": "    /// must qualify the concrete clock/frontier and private-key custody."
+        },
+        {
+          "line": 448,
+          "text": "    pub fn open_state_dir_with_issuer_keys("
+        },
+        {
+          "line": 449,
+          "text": "        directory: &std::path::Path,"
+        },
+        {
+          "line": 450,
+          "text": "        signer_id: String,"
+        },
+        {
+          "line": 451,
+          "text": "        issuer_keys: Vec<FinalUseIssuerTrustKey>,"
+        },
+        {
+          "line": 452,
+          "text": "        head: FinalUseRevocations,"
+        },
+        {
+          "line": 453,
+          "text": "        clock: Arc<dyn AuthorityClock>,"
+        },
+        {
+          "line": 454,
+          "text": "        frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>,"
+        },
+        {
+          "line": 455,
+          "text": "    ) -> Result<Self, FinalUseError> {"
+        },
+        {
+          "line": 456,
+          "text": "        if !identifier(&signer_id) || !valid_head(&head) {"
+        },
+        {
+          "line": 457,
+          "text": "            return Err(FinalUseError::InvalidTrust);"
+        },
+        {
+          "line": 458,
+          "text": "        }"
+        },
+        {
+          "line": 459,
+          "text": "        clock.now_unix_ms().map_err(map_trust_error)?;"
+        },
+        {
+          "line": 460,
+          "text": "        let (issuer_keys, issuer_trust_sha256) = pin_issuer_keys(issuer_keys)?;"
+        },
+        {
+          "line": 461,
+          "text": "        let (store, state) ="
+        },
+        {
+          "line": 462,
+          "text": "            store::Store::open_key_ring_exact(directory, &signer_id, issuer_trust_sha256, head)?;"
+        },
+        {
+          "line": 463,
+          "text": "        let observed = frontier_for_state(&state);"
+        },
+        {
+          "line": 464,
+          "text": "        let trusted = frontier_store.load(&signer_id).map_err(map_trust_error)?;"
+        },
+        {
+          "line": 465,
+          "text": "        if trusted != observed {"
+        },
+        {
+          "line": 466,
+          "text": "            return Err(FinalUseError::AntiRollbackViolation);"
+        }
+      ]
+    },
+    {
+      "id": "H6",
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "line_start": 874,
+      "line_end": 894,
+      "meaning": "Real external compare_and_set precedes local persist; uncertainty fences the owner.",
+      "exact_lines": [
+        {
+          "line": 874,
+          "text": "    fn persist_or_fence("
+        },
+        {
+          "line": 875,
+          "text": "        &self,"
+        },
+        {
+          "line": 876,
+          "text": "        state: &mut std::sync::MutexGuard<'_, State>,"
+        },
+        {
+          "line": 877,
+          "text": "        next: State,"
+        },
+        {
+          "line": 878,
+          "text": "    ) -> Result<(), FinalUseError> {"
+        },
+        {
+          "line": 879,
+          "text": "        if let Some(frontier_store) = &self.0.frontier_store {"
+        },
+        {
+          "line": 880,
+          "text": "            let expected = frontier_for_state(state);"
+        },
+        {
+          "line": 881,
+          "text": "            let advanced = frontier_for_state(&next);"
+        },
+        {
+          "line": 882,
+          "text": "            if let Err(error) ="
+        },
+        {
+          "line": 883,
+          "text": "                frontier_store.compare_and_set(&self.0.signer_id, &expected, &advanced)"
+        },
+        {
+          "line": 884,
+          "text": "            {"
+        },
+        {
+          "line": 885,
+          "text": "                state.failed = true;"
+        },
+        {
+          "line": 886,
+          "text": "                return Err(map_trust_error(error));"
+        },
+        {
+          "line": 887,
+          "text": "            }"
+        },
+        {
+          "line": 888,
+          "text": "        }"
+        },
+        {
+          "line": 889,
+          "text": "        if self.0.store.persist(&next).is_err() {"
+        },
+        {
+          "line": 890,
+          "text": "            state.failed = true;"
+        },
+        {
+          "line": 891,
+          "text": "            return Err(FinalUseError::Unavailable);"
+        },
+        {
+          "line": 892,
+          "text": "        }"
+        },
+        {
+          "line": 893,
+          "text": "        **state = next;"
+        },
+        {
+          "line": 894,
+          "text": "        Ok(())"
+        }
+      ]
+    },
+    {
+      "id": "H7",
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-contracts/src/final_use_windows.rs",
+      "line_start": 24,
+      "line_end": 52,
+      "meaning": "Windows trust constructor requires held namespace, injected clock and actual external frontier.",
+      "exact_lines": [
+        {
+          "line": 24,
+          "text": "impl FinalUseAuthority {"
+        },
+        {
+          "line": 25,
+          "text": "    /// Open the original one-key owner using a real private namespace capability."
+        },
+        {
+          "line": 26,
+          "text": "    /// Cold marker/schema/trust/claims and actual external frontier are checked"
+        },
+        {
+          "line": 27,
+          "text": "    /// before migration or recovery writes. No path or receipt grants authority."
+        },
+        {
+          "line": 28,
+          "text": "    pub fn open_windows_private_with_trust("
+        },
+        {
+          "line": 29,
+          "text": "        directory: crate::windows_private_owner::PrivateStoreDirectory,"
+        },
+        {
+          "line": 30,
+          "text": "        signer_id: String,"
+        },
+        {
+          "line": 31,
+          "text": "        verifying_key: [u8; 32],"
+        },
+        {
+          "line": 32,
+          "text": "        head: FinalUseRevocations,"
+        },
+        {
+          "line": 33,
+          "text": "        clock: Arc<dyn AuthorityClock>,"
+        },
+        {
+          "line": 34,
+          "text": "        frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>,"
+        },
+        {
+          "line": 35,
+          "text": "    ) -> Result<Self, FinalUseError> {"
+        },
+        {
+          "line": 36,
+          "text": "        let key ="
+        },
+        {
+          "line": 37,
+          "text": "            VerifyingKey::from_bytes(&verifying_key).map_err(|_| FinalUseError::InvalidTrust)?;"
+        },
+        {
+          "line": 38,
+          "text": "        if !identifier(&signer_id) || key.is_weak() || !valid_head(&head) {"
+        },
+        {
+          "line": 39,
+          "text": "            return Err(FinalUseError::InvalidTrust);"
+        },
+        {
+          "line": 40,
+          "text": "        }"
+        },
+        {
+          "line": 41,
+          "text": "        clock.now_unix_ms().map_err(map_trust_error)?;"
+        },
+        {
+          "line": 42,
+          "text": "        let (store, state) = store::Store::open_windows("
+        },
+        {
+          "line": 43,
+          "text": "            directory,"
+        },
+        {
+          "line": 44,
+          "text": "            &signer_id,"
+        },
+        {
+          "line": 45,
+          "text": "            store::StoreTrust::SingleKey(verifying_key),"
+        },
+        {
+          "line": 46,
+          "text": "            head,"
+        },
+        {
+          "line": 47,
+          "text": "            frontier_store.as_ref(),"
+        },
+        {
+          "line": 48,
+          "text": "        )?;"
+        },
+        {
+          "line": 49,
+          "text": "        let observed = frontier_for_state(&state);"
+        },
+        {
+          "line": 50,
+          "text": "        let trusted = frontier_store.load(&signer_id).map_err(map_trust_error)?;"
+        },
+        {
+          "line": 51,
+          "text": "        if trusted != observed {"
+        },
+        {
+          "line": 52,
+          "text": "            return Err(FinalUseError::AntiRollbackViolation);"
+        }
+      ]
+    },
+    {
+      "id": "H8",
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-contracts/src/final_use_windows.rs",
+      "line_start": 70,
+      "line_end": 95,
+      "meaning": "Rotating-key Windows constructor preserves the same real provider boundary.",
+      "exact_lines": [
+        {
+          "line": 70,
+          "text": "    /// Open the original rotating issuer owner through the same held capability."
+        },
+        {
+          "line": 71,
+          "text": "    /// This retains original V3/legacy migrations and external anti-rollback checks."
+        },
+        {
+          "line": 72,
+          "text": "    pub fn open_windows_private_with_issuer_keys("
+        },
+        {
+          "line": 73,
+          "text": "        directory: crate::windows_private_owner::PrivateStoreDirectory,"
+        },
+        {
+          "line": 74,
+          "text": "        signer_id: String,"
+        },
+        {
+          "line": 75,
+          "text": "        issuer_keys: Vec<FinalUseIssuerTrustKey>,"
+        },
+        {
+          "line": 76,
+          "text": "        head: FinalUseRevocations,"
+        },
+        {
+          "line": 77,
+          "text": "        clock: Arc<dyn AuthorityClock>,"
+        },
+        {
+          "line": 78,
+          "text": "        frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>,"
+        },
+        {
+          "line": 79,
+          "text": "    ) -> Result<Self, FinalUseError> {"
+        },
+        {
+          "line": 80,
+          "text": "        if !identifier(&signer_id) || !valid_head(&head) {"
+        },
+        {
+          "line": 81,
+          "text": "            return Err(FinalUseError::InvalidTrust);"
+        },
+        {
+          "line": 82,
+          "text": "        }"
+        },
+        {
+          "line": 83,
+          "text": "        clock.now_unix_ms().map_err(map_trust_error)?;"
+        },
+        {
+          "line": 84,
+          "text": "        let (issuer_keys, issuer_trust_sha256) = pin_issuer_keys(issuer_keys)?;"
+        },
+        {
+          "line": 85,
+          "text": "        let (store, state) = store::Store::open_windows("
+        },
+        {
+          "line": 86,
+          "text": "            directory,"
+        },
+        {
+          "line": 87,
+          "text": "            &signer_id,"
+        },
+        {
+          "line": 88,
+          "text": "            store::StoreTrust::IssuerKeyRing(issuer_trust_sha256),"
+        },
+        {
+          "line": 89,
+          "text": "            head,"
+        },
+        {
+          "line": 90,
+          "text": "            frontier_store.as_ref(),"
+        },
+        {
+          "line": 91,
+          "text": "        )?;"
+        },
+        {
+          "line": 92,
+          "text": "        let observed = frontier_for_state(&state);"
+        },
+        {
+          "line": 93,
+          "text": "        let trusted = frontier_store.load(&signer_id).map_err(map_trust_error)?;"
+        },
+        {
+          "line": 94,
+          "text": "        if trusted != observed {"
+        },
+        {
+          "line": 95,
+          "text": "            return Err(FinalUseError::AntiRollbackViolation);"
+        }
+      ]
+    },
+    {
+      "id": "H9",
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-contracts/src/final_use_store_io.rs",
+      "line_start": 183,
+      "line_end": 203,
+      "meaning": "Ordinary Windows path factory correctly refuses; held namespace is a separate capability.",
+      "exact_lines": [
+        {
+          "line": 183,
+          "text": "#[cfg(windows)]"
+        },
+        {
+          "line": 184,
+          "text": "pub(super) fn lock_directory(_path: &Path) -> Result<LockedDirectory, FinalUseError> {"
+        },
+        {
+          "line": 185,
+          "text": "    // Ordinary path factories stay closed pending complete native qualification."
+        },
+        {
+          "line": 186,
+          "text": "    Err(FinalUseError::UnsafeStateDirectory)"
+        },
+        {
+          "line": 187,
+          "text": "}"
+        },
+        {
+          "line": 188,
+          "text": "#[cfg(windows)]"
+        },
+        {
+          "line": 189,
+          "text": "impl LockedDirectory {"
+        },
+        {
+          "line": 190,
+          "text": "    pub(super) fn from_windows("
+        },
+        {
+          "line": 191,
+          "text": "        input: crate::windows_private_owner::PrivateStoreDirectory,"
+        },
+        {
+          "line": 192,
+          "text": "    ) -> Result<Self, FinalUseError> {"
+        },
+        {
+          "line": 193,
+          "text": "        use crate::windows_private_owner::OwnerLockError;"
+        },
+        {
+          "line": 194,
+          "text": "        use crate::windows_private_owner::OwnerLockOrigin;"
+        },
+        {
+          "line": 195,
+          "text": "        let root = input"
+        },
+        {
+          "line": 196,
+          "text": "            .lock_original_marker(\"authority.lock\")"
+        },
+        {
+          "line": 197,
+          "text": "            .map_err(|error| match error {"
+        },
+        {
+          "line": 198,
+          "text": "                OwnerLockError::StateLocked => FinalUseError::StateLocked,"
+        },
+        {
+          "line": 199,
+          "text": "                OwnerLockError::Rejected(_) => FinalUseError::UnsafeStateDirectory,"
+        },
+        {
+          "line": 200,
+          "text": "            })?;"
+        },
+        {
+          "line": 201,
+          "text": "        let initialized = root.origin() == &OwnerLockOrigin::Existing;"
+        },
+        {
+          "line": 202,
+          "text": "        Ok(Self { root, initialized })"
+        },
+        {
+          "line": 203,
+          "text": "    }"
+        }
+      ]
+    },
+    {
+      "id": "H10",
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-contracts/src/final_use_store_io.rs",
+      "line_start": 228,
+      "line_end": 245,
+      "meaning": "Windows prewrite fails closed unless a real loaded frontier exactly matches state.",
+      "exact_lines": [
+        {
+          "line": 228,
+          "text": "pub(super) fn validate_windows_prewrite("
+        },
+        {
+          "line": 229,
+          "text": "    state: &super::State,"
+        },
+        {
+          "line": 230,
+          "text": "    initial: &super::FinalUseRevocations,"
+        },
+        {
+          "line": 231,
+          "text": "    signer_id: &str,"
+        },
+        {
+          "line": 232,
+          "text": "    frontier: Option<&dyn crate::AuthorityFrontierStore<super::super::FinalUseFrontier>>,"
+        },
+        {
+          "line": 233,
+          "text": ") -> Result<(), FinalUseError> {"
+        },
+        {
+          "line": 234,
+          "text": "    if &state.head != initial {"
+        },
+        {
+          "line": 235,
+          "text": "        return Err(FinalUseError::InvalidTrust);"
+        },
+        {
+          "line": 236,
+          "text": "    }"
+        },
+        {
+          "line": 237,
+          "text": "    let trusted = frontier"
+        },
+        {
+          "line": 238,
+          "text": "        .ok_or(FinalUseError::Unavailable)?"
+        },
+        {
+          "line": 239,
+          "text": "        .load(signer_id)"
+        },
+        {
+          "line": 240,
+          "text": "        .map_err(super::super::map_trust_error)?;"
+        },
+        {
+          "line": 241,
+          "text": "    if trusted != super::super::frontier_for_state(state) {"
+        },
+        {
+          "line": 242,
+          "text": "        return Err(FinalUseError::AntiRollbackViolation);"
+        },
+        {
+          "line": 243,
+          "text": "    }"
+        },
+        {
+          "line": 244,
+          "text": "    Ok(())"
+        },
+        {
+          "line": 245,
+          "text": "}"
+        }
+      ]
+    },
+    {
+      "id": "H11",
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-contracts/src/final_use_windows_tests.rs",
+      "line_start": 1,
+      "line_end": 5,
+      "meaning": "Memory frontier is explicitly test-only, not external durability or production qualification.",
+      "exact_lines": [
+        {
+          "line": 1,
+          "text": "//! Native filesystem/crypto controls; the in-memory frontier is a test fixture,"
+        },
+        {
+          "line": 2,
+          "text": "//! not external durability, attestation or production Windows qualification."
+        },
+        {
+          "line": 3,
+          "text": "use super::*;"
+        },
+        {
+          "line": 4,
+          "text": "use crate::AuthorityTrustError;"
+        },
+        {
+          "line": 5,
+          "text": "use crate::SystemAuthorityClock;"
+        }
+      ]
+    },
+    {
+      "id": "H12",
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-contracts/src/final_use_windows_tests.rs",
+      "line_start": 101,
+      "line_end": 109,
+      "meaning": "Only Windows trust-constructor call supplies SystemAuthorityClock and process-memory Frontier.",
+      "exact_lines": [
+        {
+          "line": 101,
+          "text": "fn open(input: PrivateStoreDirectory, frontier: Arc<Frontier>) -> Result<FinalUseAuthority> {"
+        },
+        {
+          "line": 102,
+          "text": "    Ok(FinalUseAuthority::open_windows_private_with_trust("
+        },
+        {
+          "line": 103,
+          "text": "        input,"
+        },
+        {
+          "line": 104,
+          "text": "        \"security-owner\".into(),"
+        },
+        {
+          "line": 105,
+          "text": "        SigningKey::from_bytes(&[47; 32]).verifying_key().to_bytes(),"
+        },
+        {
+          "line": 106,
+          "text": "        head(),"
+        },
+        {
+          "line": 107,
+          "text": "        Arc::new(SystemAuthorityClock),"
+        },
+        {
+          "line": 108,
+          "text": "        frontier,"
+        },
+        {
+          "line": 109,
+          "text": "    )?)"
+        }
+      ]
+    },
+    {
+      "id": "H13",
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+      "line_start": 39,
+      "line_end": 64,
+      "meaning": "Ordinary runtime config has no protected clock/frontier provider inputs.",
+      "exact_lines": [
+        {
+          "line": 39,
+          "text": "/// Protected host configuration for the independent final-use authority port."
+        },
+        {
+          "line": 40,
+          "text": "///"
+        },
+        {
+          "line": 41,
+          "text": "/// `verifying_key` is public. The private signing key is intentionally absent."
+        },
+        {
+          "line": 42,
+          "text": "#[derive(Clone, Debug, Deserialize)]"
+        },
+        {
+          "line": 43,
+          "text": "#[serde(deny_unknown_fields)]"
+        },
+        {
+          "line": 44,
+          "text": "pub struct FinalUseAuthorizerConfig {"
+        },
+        {
+          "line": 45,
+          "text": "    pub issuer_socket: PathBuf,"
+        },
+        {
+          "line": 46,
+          "text": "    pub issuer_uid: u32,"
+        },
+        {
+          "line": 47,
+          "text": "    pub signer_id: String,"
+        },
+        {
+          "line": 48,
+          "text": "    pub verifying_key: [u8; 32],"
+        },
+        {
+          "line": 49,
+          "text": "    pub authority_state_dir: PathBuf,"
+        },
+        {
+          "line": 50,
+          "text": "    pub authority_epoch: u64,"
+        },
+        {
+          "line": 51,
+          "text": "    pub revocation_revision: u64,"
+        },
+        {
+          "line": 52,
+          "text": "    #[serde(default)]"
+        },
+        {
+          "line": 53,
+          "text": "    pub revoked_grant_ids: BTreeSet<String>,"
+        },
+        {
+          "line": 54,
+          "text": "    pub issuer_timeout_ms: u64,"
+        },
+        {
+          "line": 55,
+          "text": "}"
+        },
+        {
+          "line": 56,
+          "text": ""
+        },
+        {
+          "line": 57,
+          "text": "/// Production runtime.codex authorizer. The independent endpoint decides"
+        },
+        {
+          "line": 58,
+          "text": "/// whether to issue a grant; this process only verifies and consumes it."
+        },
+        {
+          "line": 59,
+          "text": "pub struct UnixFinalUseAuthorizer {"
+        },
+        {
+          "line": 60,
+          "text": "    issuer_socket: PathBuf,"
+        },
+        {
+          "line": 61,
+          "text": "    issuer_uid: u32,"
+        },
+        {
+          "line": 62,
+          "text": "    issuer_timeout: Duration,"
+        },
+        {
+          "line": 63,
+          "text": "    authority: FinalUseAuthority,"
+        },
+        {
+          "line": 64,
+          "text": "}"
+        }
+      ]
+    },
+    {
+      "id": "H14",
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+      "line_start": 73,
+      "line_end": 97,
+      "meaning": "Ordinary runtime authorizer uses compatibility FinalUseAuthority.",
+      "exact_lines": [
+        {
+          "line": 73,
+          "text": "    pub fn from_config(config: FinalUseAuthorizerConfig) -> Result<Self> {"
+        },
+        {
+          "line": 74,
+          "text": "        if !config.issuer_socket.is_absolute() || !config.authority_state_dir.is_absolute() {"
+        },
+        {
+          "line": 75,
+          "text": "            return Err(\"final-use authority socket and state directory must be absolute\".into());"
+        },
+        {
+          "line": 76,
+          "text": "        }"
+        },
+        {
+          "line": 77,
+          "text": "        let issuer_timeout = Duration::from_millis(config.issuer_timeout_ms);"
+        },
+        {
+          "line": 78,
+          "text": "        if issuer_timeout.is_zero() || issuer_timeout > MAX_ISSUER_TIMEOUT {"
+        },
+        {
+          "line": 79,
+          "text": "            return Err(\"final-use issuer timeout must be 1..=30000 ms\".into());"
+        },
+        {
+          "line": 80,
+          "text": "        }"
+        },
+        {
+          "line": 81,
+          "text": "        let authority = FinalUseAuthority::open_state_dir("
+        },
+        {
+          "line": 82,
+          "text": "            &config.authority_state_dir,"
+        },
+        {
+          "line": 83,
+          "text": "            config.signer_id,"
+        },
+        {
+          "line": 84,
+          "text": "            config.verifying_key,"
+        },
+        {
+          "line": 85,
+          "text": "            FinalUseRevocations {"
+        },
+        {
+          "line": 86,
+          "text": "                authority_epoch: config.authority_epoch,"
+        },
+        {
+          "line": 87,
+          "text": "                revision: config.revocation_revision,"
+        },
+        {
+          "line": 88,
+          "text": "                revoked_grant_ids: config.revoked_grant_ids,"
+        },
+        {
+          "line": 89,
+          "text": "            },"
+        },
+        {
+          "line": 90,
+          "text": "        )?;"
+        },
+        {
+          "line": 91,
+          "text": "        Ok(Self {"
+        },
+        {
+          "line": 92,
+          "text": "            issuer_socket: config.issuer_socket,"
+        },
+        {
+          "line": 93,
+          "text": "            issuer_uid: config.issuer_uid,"
+        },
+        {
+          "line": 94,
+          "text": "            issuer_timeout,"
+        },
+        {
+          "line": 95,
+          "text": "            authority,"
+        },
+        {
+          "line": 96,
+          "text": "        })"
+        },
+        {
+          "line": 97,
+          "text": "    }"
+        }
+      ]
+    },
+    {
+      "id": "H15",
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+      "line_start": 156,
+      "line_end": 159,
+      "meaning": "Non-Unix grant transport correctly refuses.",
+      "exact_lines": [
+        {
+          "line": 156,
+          "text": "    #[cfg(not(unix))]"
+        },
+        {
+          "line": 157,
+          "text": "    async fn request_grant(&self, _binding: &FinalUseBinding) -> Result<IssuerResponse> {"
+        },
+        {
+          "line": 158,
+          "text": "        Err(\"runtime.codex final-use Unix authority port is unsupported on this platform\".into())"
+        },
+        {
+          "line": 159,
+          "text": "    }"
+        }
+      ]
+    },
+    {
+      "id": "H16",
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "line_start": 938,
+      "line_end": 958,
+      "meaning": "Real HTTP automation caller uses compatibility constructor.",
+      "exact_lines": [
+        {
+          "line": 938,
+          "text": "        let authority_root = identity"
+        },
+        {
+          "line": 939,
+          "text": "            .layout"
+        },
+        {
+          "line": 940,
+          "text": "            .automation_root()"
+        },
+        {
+          "line": 941,
+          "text": "            .join(\"final-use-authority\");"
+        },
+        {
+          "line": 942,
+          "text": "        fs::create_dir_all(&authority_root)?;"
+        },
+        {
+          "line": 943,
+          "text": "        #[cfg(unix)]"
+        },
+        {
+          "line": 944,
+          "text": "        {"
+        },
+        {
+          "line": 945,
+          "text": "            use std::os::unix::fs::PermissionsExt;"
+        },
+        {
+          "line": 946,
+          "text": "            fs::set_permissions(&authority_root, fs::Permissions::from_mode(0o700))?;"
+        },
+        {
+          "line": 947,
+          "text": "        }"
+        },
+        {
+          "line": 948,
+          "text": "        let authority = FinalUseAuthority::open_state_dir("
+        },
+        {
+          "line": 949,
+          "text": "            &authority_root,"
+        },
+        {
+          "line": 950,
+          "text": "            config.final_use_signer_id,"
+        },
+        {
+          "line": 951,
+          "text": "            final_use_verifying_key,"
+        },
+        {
+          "line": 952,
+          "text": "            initial_revocations,"
+        },
+        {
+          "line": 953,
+          "text": "        )"
+        },
+        {
+          "line": 954,
+          "text": "        .map_err(|error| {"
+        },
+        {
+          "line": 955,
+          "text": "            AgentdError::Protocol(format!("
+        },
+        {
+          "line": 956,
+          "text": "                \"open automation final-use authority state: {error}\""
+        },
+        {
+          "line": 957,
+          "text": "            ))"
+        },
+        {
+          "line": 958,
+          "text": "        })?;"
+        }
+      ]
+    },
+    {
+      "id": "H17",
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "line_start": 1051,
+      "line_end": 1071,
+      "meaning": "Real PoN automation caller uses compatibility constructor.",
+      "exact_lines": [
+        {
+          "line": 1051,
+          "text": "        let authority_root = identity"
+        },
+        {
+          "line": 1052,
+          "text": "            .layout"
+        },
+        {
+          "line": 1053,
+          "text": "            .automation_root()"
+        },
+        {
+          "line": 1054,
+          "text": "            .join(\"final-use-authority\");"
+        },
+        {
+          "line": 1055,
+          "text": "        fs::create_dir_all(&authority_root)?;"
+        },
+        {
+          "line": 1056,
+          "text": "        #[cfg(unix)]"
+        },
+        {
+          "line": 1057,
+          "text": "        {"
+        },
+        {
+          "line": 1058,
+          "text": "            use std::os::unix::fs::PermissionsExt;"
+        },
+        {
+          "line": 1059,
+          "text": "            fs::set_permissions(&authority_root, fs::Permissions::from_mode(0o700))?;"
+        },
+        {
+          "line": 1060,
+          "text": "        }"
+        },
+        {
+          "line": 1061,
+          "text": "        let authority = FinalUseAuthority::open_state_dir("
+        },
+        {
+          "line": 1062,
+          "text": "            &authority_root,"
+        },
+        {
+          "line": 1063,
+          "text": "            config.final_use_signer_id,"
+        },
+        {
+          "line": 1064,
+          "text": "            final_use_verifying_key,"
+        },
+        {
+          "line": 1065,
+          "text": "            initial_revocations,"
+        },
+        {
+          "line": 1066,
+          "text": "        )"
+        },
+        {
+          "line": 1067,
+          "text": "        .map_err(|error| {"
+        },
+        {
+          "line": 1068,
+          "text": "            AgentdError::Protocol(format!("
+        },
+        {
+          "line": 1069,
+          "text": "                \"open automation final-use authority state: {error}\""
+        },
+        {
+          "line": 1070,
+          "text": "            ))"
+        },
+        {
+          "line": 1071,
+          "text": "        })?;"
+        }
+      ]
+    },
+    {
+      "id": "H18",
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+      "line_start": 99,
+      "line_end": 108,
+      "meaning": "Real browser CLI caller uses compatibility constructor.",
+      "exact_lines": [
+        {
+          "line": 99,
+          "text": "    let authority = FinalUseAuthority::open_state_dir("
+        },
+        {
+          "line": 100,
+          "text": "        &config.authority_state_dir,"
+        },
+        {
+          "line": 101,
+          "text": "        config.signer_id,"
+        },
+        {
+          "line": 102,
+          "text": "        config.verifying_key,"
+        },
+        {
+          "line": 103,
+          "text": "        FinalUseRevocations {"
+        },
+        {
+          "line": 104,
+          "text": "            authority_epoch: config.authority_epoch,"
+        },
+        {
+          "line": 105,
+          "text": "            revision: config.revocation_revision,"
+        },
+        {
+          "line": 106,
+          "text": "            revoked_grant_ids: config.revoked_grant_ids,"
+        },
+        {
+          "line": 107,
+          "text": "        },"
+        },
+        {
+          "line": 108,
+          "text": "    )?;"
+        }
+      ]
+    },
+    {
+      "id": "H19",
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
+      "line_start": 1,
+      "line_end": 7,
+      "meaning": "Concrete holdout CAS backend declares shared-filesystem and independently retained anchor assumptions.",
+      "exact_lines": [
+        {
+          "line": 1,
+          "text": "//! Concrete locked-file CAS backend for the fenced final-holdout owner."
+        },
+        {
+          "line": 2,
+          "text": "//!"
+        },
+        {
+          "line": 3,
+          "text": "//! One process keeps an exclusive OS file lock for the lifetime of this store."
+        },
+        {
+          "line": 4,
+          "text": "//! On a shared filesystem whose locks and fsync are linearizable across hosts,"
+        },
+        {
+          "line": 5,
+          "text": "//! the same format can coordinate host failover. Recovery accepts an"
+        },
+        {
+          "line": 6,
+          "text": "//! independently retained minimum anchor and fails closed on rollback."
+        },
+        {
+          "line": 7,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "H20",
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
+      "line_start": 61,
+      "line_end": 85,
+      "meaning": "A real concrete different-domain locked-file CAS backend exists.",
+      "exact_lines": [
+        {
+          "line": 61,
+          "text": "pub struct LockedFileFinalHoldoutCasStoreV1 {"
+        },
+        {
+          "line": 62,
+          "text": "    file: AcquiredFile,"
+        },
+        {
+          "line": 63,
+          "text": "    binding: Digest32,"
+        },
+        {
+          "line": 64,
+          "text": "    state: Option<FinalHoldoutCasRecordV1>,"
+        },
+        {
+          "line": 65,
+          "text": "    length: u64,"
+        },
+        {
+          "line": 66,
+          "text": "    poisoned: bool,"
+        },
+        {
+          "line": 67,
+          "text": "}"
+        },
+        {
+          "line": 68,
+          "text": ""
+        },
+        {
+          "line": 69,
+          "text": "impl LockedFileFinalHoldoutCasStoreV1 {"
+        },
+        {
+          "line": 70,
+          "text": "    pub fn create(file: File, binding: Digest32) -> Result<Self, LockedFileCasErrorV1> {"
+        },
+        {
+          "line": 71,
+          "text": "        let mut file = acquire(file, binding)?;"
+        },
+        {
+          "line": 72,
+          "text": "        if file.metadata().map_err(io_error)?.len() != 0 {"
+        },
+        {
+          "line": 73,
+          "text": "            return Err(LockedFileCasErrorV1::AlreadyInitialized);"
+        },
+        {
+          "line": 74,
+          "text": "        }"
+        },
+        {
+          "line": 75,
+          "text": "        let mut header = MAGIC.to_vec();"
+        },
+        {
+          "line": 76,
+          "text": "        header.extend_from_slice(binding.as_array());"
+        },
+        {
+          "line": 77,
+          "text": "        header.extend_from_slice(Digest32::of_bytes(&header).as_array());"
+        },
+        {
+          "line": 78,
+          "text": "        file.seek(SeekFrom::Start(0)).map_err(io_error)?;"
+        },
+        {
+          "line": 79,
+          "text": "        file.write_all(&header)"
+        },
+        {
+          "line": 80,
+          "text": "            .and_then(|()| file.sync_all())"
+        },
+        {
+          "line": 81,
+          "text": "            .map_err(|_| LockedFileCasErrorV1::Indeterminate)?;"
+        },
+        {
+          "line": 82,
+          "text": "        Ok(Self {"
+        },
+        {
+          "line": 83,
+          "text": "            file,"
+        },
+        {
+          "line": 84,
+          "text": "            binding,"
+        },
+        {
+          "line": 85,
+          "text": "            state: None,"
+        }
+      ]
+    },
+    {
+      "id": "H21",
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-infer-worker-host/src/controlled_ledger_source_route_tests.rs",
+      "line_start": 12,
+      "line_end": 29,
+      "meaning": "Only ControlledTrustedTimeProvider implementation found is a test clock and fixed-key signing fixture.",
+      "exact_lines": [
+        {
+          "line": 12,
+          "text": "struct SignedClock(AtomicU64);"
+        },
+        {
+          "line": 13,
+          "text": ""
+        },
+        {
+          "line": 14,
+          "text": "impl ControlledTrustedTimeProvider for SignedClock {"
+        },
+        {
+          "line": 15,
+          "text": "    fn signed_time(&self) -> Result<SignedTrustedTimeAttestation, String> {"
+        },
+        {
+          "line": 16,
+          "text": "        let revision = self.0.fetch_add(1, Ordering::SeqCst);"
+        },
+        {
+          "line": 17,
+          "text": "        let claims = TrustedTimeAttestationClaims {"
+        },
+        {
+          "line": 18,
+          "text": "            issuer_id: StableId::new(\"time:controlled\").map_err(|e| e.to_string())?,"
+        },
+        {
+          "line": 19,
+          "text": "            key_epoch: Generation::new(1).map_err(|e| e.to_string())?,"
+        },
+        {
+          "line": 20,
+          "text": "            wall_time_ms: 1_000 + revision,"
+        },
+        {
+          "line": 21,
+          "text": "            source_revision: revision,"
+        },
+        {
+          "line": 22,
+          "text": "            source_digest: Digest32::of_bytes(&revision.to_be_bytes()),"
+        },
+        {
+          "line": 23,
+          "text": "        };"
+        },
+        {
+          "line": 24,
+          "text": "        let signature = SigningKey::from_bytes(&[121; 32])"
+        },
+        {
+          "line": 25,
+          "text": "            .sign(&claims.signing_bytes())"
+        },
+        {
+          "line": 26,
+          "text": "            .to_bytes();"
+        },
+        {
+          "line": 27,
+          "text": "        Ok(SignedTrustedTimeAttestation { claims, signature })"
+        },
+        {
+          "line": 28,
+          "text": "    }"
+        },
+        {
+          "line": 29,
+          "text": "}"
+        }
+      ]
+    },
+    {
+      "id": "H22",
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-intelligence-eval/src/longitudinal_time.rs",
+      "line_start": 1,
+      "line_end": 7,
+      "meaning": "Signed attestation DTO does not independently prove time truth.",
+      "exact_lines": [
+        {
+          "line": 1,
+          "text": "//! Signed observed-time admission; window names alone are not calendar evidence."
+        },
+        {
+          "line": 2,
+          "text": "//!"
+        },
+        {
+          "line": 3,
+          "text": "//! The host supplies a trusted Unix-microsecond clock, preregistered duration"
+        },
+        {
+          "line": 4,
+          "text": "//! policy, and current signer configuration. Signatures authenticate the"
+        },
+        {
+          "line": 5,
+          "text": "//! observer's attestation, not empirical truth or reliable clocks by themselves."
+        },
+        {
+          "line": 6,
+          "text": "use std::collections::BTreeSet;"
+        },
+        {
+          "line": 7,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "H23",
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-agentd/src/authbus_checkpoint.rs",
+      "line_start": 142,
+      "line_end": 145,
+      "meaning": "Replay checkpoint file Windows path validation refuses; this is another schema and custody domain.",
+      "exact_lines": [
+        {
+          "line": 142,
+          "text": "#[cfg(not(unix))]"
+        },
+        {
+          "line": 143,
+          "text": "fn validate_path(_path: &Path, _identity: &AgentdIdentity) -> Result<(), AgentdError> {"
+        },
+        {
+          "line": 144,
+          "text": "    Err(invalid("
+        },
+        {
+          "line": 145,
+          "text": "        \"external replay checkpoint currently requires Unix ownership checks\","
+        }
+      ]
+    },
+    {
+      "id": "H24",
+      "commit": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+      "path": "codex-rs/hepta-operator-acceptance/src/ceremony.rs",
+      "line_start": 105,
+      "line_end": 113,
+      "meaning": "Helper named trusted_time actually uses SystemTime.",
+      "exact_lines": [
+        {
+          "line": 105,
+          "text": "pub(crate) fn trusted_time() -> Result<u64, AcceptanceError> {"
+        },
+        {
+          "line": 106,
+          "text": "    let seconds = SystemTime::now()"
+        },
+        {
+          "line": 107,
+          "text": "        .duration_since(UNIX_EPOCH)"
+        },
+        {
+          "line": 108,
+          "text": "        .map_err(|_| invalid(\"trusted host clock is before the Unix epoch\"))?"
+        },
+        {
+          "line": 109,
+          "text": "        .as_secs();"
+        },
+        {
+          "line": 110,
+          "text": "    if seconds == 0 {"
+        },
+        {
+          "line": 111,
+          "text": "        return Err(invalid(\"trusted host clock returned zero\"));"
+        },
+        {
+          "line": 112,
+          "text": "    }"
+        },
+        {
+          "line": 113,
+          "text": "    Ok(seconds)"
+        }
+      ]
+    },
+    {
+      "id": "C1",
+      "commit": "4821f61f1a8603ce07107b1496ee947fb1d86647",
+      "path": "trillionnium/crates/trnm-checkpoint-types/src/record.rs",
+      "line_start": 16,
+      "line_end": 52,
+      "meaning": "672-byte whole-node schema and explicit no-runtime-authority evidence boundary.",
+      "exact_lines": [
+        {
+          "line": 16,
+          "text": "pub const EXTERNAL_CHECKPOINT_RECORD_BYTES_V2: usize = 672;"
+        },
+        {
+          "line": 17,
+          "text": ""
+        },
+        {
+          "line": 18,
+          "text": "/// Canonical fields committed by one whole-node external checkpoint."
+        },
+        {
+          "line": 19,
+          "text": "#[derive(Debug, Clone, Copy, PartialEq, Eq)]"
+        },
+        {
+          "line": 20,
+          "text": "pub struct ExternalCheckpointFieldsV2 {"
+        },
+        {
+          "line": 21,
+          "text": "    pub scope: [u8; 32],"
+        },
+        {
+          "line": 22,
+          "text": "    pub generation: u64,"
+        },
+        {
+          "line": 23,
+          "text": "    pub predecessor_checksum: [u8; 32],"
+        },
+        {
+          "line": 24,
+          "text": ""
+        },
+        {
+          "line": 25,
+          "text": "    pub authority_journal_id: [u8; 32],"
+        },
+        {
+          "line": 26,
+          "text": "    pub authority_verifier_profile_ref: [u8; 32],"
+        },
+        {
+          "line": 27,
+          "text": "    pub authority_revision: u64,"
+        },
+        {
+          "line": 28,
+          "text": "    pub authority_state_record_checksum: [u8; 32],"
+        },
+        {
+          "line": 29,
+          "text": "    pub authority_record_chain_checksum: [u8; 32],"
+        },
+        {
+          "line": 30,
+          "text": ""
+        },
+        {
+          "line": 31,
+          "text": "    pub application_host_config_ref: [u8; 32],"
+        },
+        {
+          "line": 32,
+          "text": "    pub application_projection_profile_ref: [u8; 32],"
+        },
+        {
+          "line": 33,
+          "text": "    pub application_authority_binding_manifest_checksum: [u8; 32],"
+        },
+        {
+          "line": 34,
+          "text": "    pub application_committed_head_row_checksum: [u8; 32],"
+        },
+        {
+          "line": 35,
+          "text": "    pub application_recovery_closure_checksum: [u8; 32],"
+        },
+        {
+          "line": 36,
+          "text": "    pub application_block_id: BlockId,"
+        },
+        {
+          "line": 37,
+          "text": "    pub application_height: u64,"
+        },
+        {
+          "line": 38,
+          "text": "    pub application_state_root: StateRoot,"
+        },
+        {
+          "line": 39,
+          "text": "    pub application_generation: u64,"
+        },
+        {
+          "line": 40,
+          "text": "    pub application_timestamp_ms: u64,"
+        },
+        {
+          "line": 41,
+          "text": ""
+        },
+        {
+          "line": 42,
+          "text": "    pub effect_journal_id: [u8; 32],"
+        },
+        {
+          "line": 43,
+          "text": "    pub effect_profile_checksum: [u8; 32],"
+        },
+        {
+          "line": 44,
+          "text": "    pub effect_exact_watermark: EffectWatermarkV2,"
+        },
+        {
+          "line": 45,
+          "text": "}"
+        },
+        {
+          "line": 46,
+          "text": ""
+        },
+        {
+          "line": 47,
+          "text": "/// Versioned data value. Canonical shape validation does not prove that local"
+        },
+        {
+          "line": 48,
+          "text": "/// stores hold these roots or that an external frontier is current. A consuming"
+        },
+        {
+          "line": 49,
+          "text": "/// host must perform that independent join; no verified runtime owner is supplied."
+        },
+        {
+          "line": 50,
+          "text": "#[derive(Debug, Clone, Copy, PartialEq, Eq)]"
+        },
+        {
+          "line": 51,
+          "text": "pub struct ExternalCheckpointV2 {"
+        },
+        {
+          "line": 52,
+          "text": "    fields: ExternalCheckpointFieldsV2,"
+        }
+      ]
+    },
+    {
+      "id": "C2",
+      "commit": "4821f61f1a8603ce07107b1496ee947fb1d86647",
+      "path": "trillionnium/crates/trnm-checkpoint-types/src/record.rs",
+      "line_start": 237,
+      "line_end": 262,
+      "meaning": "Actual different-domain ExternalCheckpointStoreV2 CAS interface.",
+      "exact_lines": [
+        {
+          "line": 237,
+          "text": "/// Independently administered CAS storage for whole-node checkpoints."
+        },
+        {
+          "line": 238,
+          "text": "///"
+        },
+        {
+          "line": 239,
+          "text": "/// This is a second CAS domain and must not be implemented by delegating to"
+        },
+        {
+          "line": 240,
+          "text": "/// `ExternalMonotonicWatermarkV2`.  Implementations must durably isolate one"
+        },
+        {
+          "line": 241,
+          "text": "/// value per scope from the Safety/App/signer namespaces.  For a first value,"
+        },
+        {
+          "line": 242,
+          "text": "/// `expected` must be `None`, `target.generation()` must be zero, and its"
+        },
+        {
+          "line": 243,
+          "text": "/// predecessor must be zero.  For a successor, the target must preserve scope,"
+        },
+        {
+          "line": 244,
+          "text": "/// advance generation by exactly one, and name `expected.checkpoint_checksum()`"
+        },
+        {
+          "line": 245,
+          "text": "/// as predecessor; implementations should call"
+        },
+        {
+          "line": 246,
+          "text": "/// [`ExternalCheckpointV2::validate_successor_of`] or enforce the same"
+        },
+        {
+          "line": 247,
+          "text": "/// checks.  An uncertain result must be resolved by a fresh `load`."
+        },
+        {
+          "line": 248,
+          "text": "pub trait ExternalCheckpointStoreV2 {"
+        },
+        {
+          "line": 249,
+          "text": "    fn load("
+        },
+        {
+          "line": 250,
+          "text": "        &mut self,"
+        },
+        {
+          "line": 251,
+          "text": "        scope: [u8; 32],"
+        },
+        {
+          "line": 252,
+          "text": "    ) -> Result<Option<ExternalCheckpointV2>, ExternalCheckpointStoreErrorV2>;"
+        },
+        {
+          "line": 253,
+          "text": ""
+        },
+        {
+          "line": 254,
+          "text": "    fn compare_and_advance("
+        },
+        {
+          "line": 255,
+          "text": "        &mut self,"
+        },
+        {
+          "line": 256,
+          "text": "        expected: Option<ExternalCheckpointV2>,"
+        },
+        {
+          "line": 257,
+          "text": "        target: ExternalCheckpointV2,"
+        },
+        {
+          "line": 258,
+          "text": "    ) -> Result<(), ExternalCheckpointStoreErrorV2>;"
+        },
+        {
+          "line": 259,
+          "text": "}"
+        },
+        {
+          "line": 260,
+          "text": ""
+        },
+        {
+          "line": 261,
+          "text": "fn validate_fields_v2("
+        },
+        {
+          "line": 262,
+          "text": "    fields: &ExternalCheckpointFieldsV2,"
+        }
+      ]
+    },
+    {
+      "id": "C3",
+      "commit": "4821f61f1a8603ce07107b1496ee947fb1d86647",
+      "path": "trillionnium/crates/trnm-checkpoint-store/src/lib.rs",
+      "line_start": 1,
+      "line_end": 38,
+      "meaning": "Unix-only concrete backend; host-attestation and production activation remain false.",
+      "exact_lines": [
+        {
+          "line": 1,
+          "text": "//! Bounded Unix transport and append-only CAS store for owner checkpoints."
+        },
+        {
+          "line": 2,
+          "text": "//! No signer, host attestation, ledger runtime or activation is provided."
+        },
+        {
+          "line": 3,
+          "text": "//! Use a fresh private V2 namespace and independently reconcile local roots."
+        },
+        {
+          "line": 4,
+          "text": ""
+        },
+        {
+          "line": 5,
+          "text": "#![cfg(unix)]"
+        },
+        {
+          "line": 6,
+          "text": "#![forbid(unsafe_code)]"
+        },
+        {
+          "line": 7,
+          "text": ""
+        },
+        {
+          "line": 8,
+          "text": "use std::{"
+        },
+        {
+          "line": 9,
+          "text": "    collections::BTreeMap,"
+        },
+        {
+          "line": 10,
+          "text": "    error::Error,"
+        },
+        {
+          "line": 11,
+          "text": "    fmt,"
+        },
+        {
+          "line": 12,
+          "text": "    fs::{self, File, OpenOptions},"
+        },
+        {
+          "line": 13,
+          "text": "    io::{self, Read, Write},"
+        },
+        {
+          "line": 14,
+          "text": "    os::unix::{"
+        },
+        {
+          "line": 15,
+          "text": "        fs::{FileTypeExt, MetadataExt, OpenOptionsExt, PermissionsExt},"
+        },
+        {
+          "line": 16,
+          "text": "        net::{UnixListener, UnixStream},"
+        },
+        {
+          "line": 17,
+          "text": "    },"
+        },
+        {
+          "line": 18,
+          "text": "    path::{Component, Path, PathBuf},"
+        },
+        {
+          "line": 19,
+          "text": "    process,"
+        },
+        {
+          "line": 20,
+          "text": "    time::Duration,"
+        },
+        {
+          "line": 21,
+          "text": "};"
+        },
+        {
+          "line": 22,
+          "text": ""
+        },
+        {
+          "line": 23,
+          "text": "use fs2::FileExt;"
+        },
+        {
+          "line": 24,
+          "text": "use sha2::{Digest, Sha256};"
+        },
+        {
+          "line": 25,
+          "text": "use trnm_checkpoint_types::{"
+        },
+        {
+          "line": 26,
+          "text": "    ExternalCheckpointStoreErrorV2, ExternalCheckpointStoreV2, ExternalCheckpointV2,"
+        },
+        {
+          "line": 27,
+          "text": "    EXTERNAL_CHECKPOINT_RECORD_BYTES_V2,"
+        },
+        {
+          "line": 28,
+          "text": "};"
+        },
+        {
+          "line": 29,
+          "text": ""
+        },
+        {
+          "line": 30,
+          "text": "/// This adapter is a cross-process CAS transport, not operational node"
+        },
+        {
+          "line": 31,
+          "text": "/// integration.  The canonical node gate remains independently false."
+        },
+        {
+          "line": 32,
+          "text": "pub const EXTERNAL_CHECKPOINT_UNIX_ADAPTER_V2: bool = true;"
+        },
+        {
+          "line": 33,
+          "text": "pub const EXTERNAL_CHECKPOINT_PRIVATE_KEY_HANDLING_V2: bool = false;"
+        },
+        {
+          "line": 34,
+          "text": "pub const EXTERNAL_CHECKPOINT_CONSENSUS_RUNTIME_V2: bool = false;"
+        },
+        {
+          "line": 35,
+          "text": "pub const EXTERNAL_CHECKPOINT_CORE_ADMISSION_V2: bool = false;"
+        },
+        {
+          "line": 36,
+          "text": "pub const EXTERNAL_CHECKPOINT_SAFETY_RULES_V2: bool = false;"
+        },
+        {
+          "line": 37,
+          "text": "pub const EXTERNAL_CHECKPOINT_HOST_ATTESTATION_V2: bool = false;"
+        },
+        {
+          "line": 38,
+          "text": "pub const EXTERNAL_CHECKPOINT_PRODUCTION_ACTIVATION_V2: bool = false;"
+        }
+      ]
+    },
+    {
+      "id": "C4",
+      "commit": "4821f61f1a8603ce07107b1496ee947fb1d86647",
+      "path": "trillionnium/crates/trnm-checkpoint-store/src/lib.rs",
+      "line_start": 179,
+      "line_end": 200,
+      "meaning": "Concrete append log, held root/lock/anchor identities and poison state.",
+      "exact_lines": [
+        {
+          "line": 179,
+          "text": "pub struct ExternalCheckpointAuthorityV2 {"
+        },
+        {
+          "line": 180,
+          "text": "    log_path: PathBuf,"
+        },
+        {
+          "line": 181,
+          "text": "    anchor_path: PathBuf,"
+        },
+        {
+          "line": 182,
+          "text": "    lock_path: PathBuf,"
+        },
+        {
+          "line": 183,
+          "text": "    directory_path: PathBuf,"
+        },
+        {
+          "line": 184,
+          "text": "    directory: File,"
+        },
+        {
+          "line": 185,
+          "text": "    directory_identity: CheckpointPathIdentityV2,"
+        },
+        {
+          "line": 186,
+          "text": "    log: File,"
+        },
+        {
+          "line": 187,
+          "text": "    log_identity: CheckpointPathIdentityV2,"
+        },
+        {
+          "line": 188,
+          "text": "    _lock: File,"
+        },
+        {
+          "line": 189,
+          "text": "    lock_identity: CheckpointPathIdentityV2,"
+        },
+        {
+          "line": 190,
+          "text": "    anchor_identity: Option<CheckpointPathIdentityV2>,"
+        },
+        {
+          "line": 191,
+          "text": "    current: BTreeMap<[u8; 32], ExternalCheckpointV2>,"
+        },
+        {
+          "line": 192,
+          "text": "    head_hash: [u8; 32],"
+        },
+        {
+          "line": 193,
+          "text": "    record_count: u64,"
+        },
+        {
+          "line": 194,
+          "text": "    poisoned: bool,"
+        },
+        {
+          "line": 195,
+          "text": "}"
+        },
+        {
+          "line": 196,
+          "text": ""
+        },
+        {
+          "line": 197,
+          "text": "impl ExternalCheckpointAuthorityV2 {"
+        },
+        {
+          "line": 198,
+          "text": "    /// Open and authenticate the entire append-only journal.  No repair or"
+        },
+        {
+          "line": 199,
+          "text": "    /// truncation is attempted.  A partial tail, stale anchor, or hash-chain"
+        },
+        {
+          "line": 200,
+          "text": "    /// mismatch is a hard startup failure."
+        }
+      ]
+    },
+    {
+      "id": "C5",
+      "commit": "4821f61f1a8603ce07107b1496ee947fb1d86647",
+      "path": "trillionnium/crates/trnm-checkpoint-store/src/lib.rs",
+      "line_start": 844,
+      "line_end": 861,
+      "meaning": "Actual Unix socket client implements checkpoint CAS.",
+      "exact_lines": [
+        {
+          "line": 844,
+          "text": "impl ExternalCheckpointStoreV2 for UnixExternalCheckpointStoreV2 {"
+        },
+        {
+          "line": 845,
+          "text": "    fn load("
+        },
+        {
+          "line": 846,
+          "text": "        &mut self,"
+        },
+        {
+          "line": 847,
+          "text": "        scope: [u8; 32],"
+        },
+        {
+          "line": 848,
+          "text": "    ) -> Result<Option<ExternalCheckpointV2>, ExternalCheckpointStoreErrorV2> {"
+        },
+        {
+          "line": 849,
+          "text": "        self.load_checked(scope).map_err(map_store_error_v2)"
+        },
+        {
+          "line": 850,
+          "text": "    }"
+        },
+        {
+          "line": 851,
+          "text": ""
+        },
+        {
+          "line": 852,
+          "text": "    fn compare_and_advance("
+        },
+        {
+          "line": 853,
+          "text": "        &mut self,"
+        },
+        {
+          "line": 854,
+          "text": "        expected: Option<ExternalCheckpointV2>,"
+        },
+        {
+          "line": 855,
+          "text": "        target: ExternalCheckpointV2,"
+        },
+        {
+          "line": 856,
+          "text": "    ) -> Result<(), ExternalCheckpointStoreErrorV2> {"
+        },
+        {
+          "line": 857,
+          "text": "        self.compare_and_advance_checked(expected, target)"
+        },
+        {
+          "line": 858,
+          "text": "            .map_err(map_store_error_v2)"
+        },
+        {
+          "line": 859,
+          "text": "    }"
+        },
+        {
+          "line": 860,
+          "text": "}"
+        },
+        {
+          "line": 861,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "C6",
+      "commit": "4821f61f1a8603ce07107b1496ee947fb1d86647",
+      "path": "trillionnium/crates/trnm-checkpoint-store/Cargo.toml",
+      "line_start": 14,
+      "line_end": 31,
+      "meaning": "Operational-integration and production-candidate metadata are explicitly false.",
+      "exact_lines": [
+        {
+          "line": 14,
+          "text": "append_only_hash_chain = true"
+        },
+        {
+          "line": 15,
+          "text": "cross_process_cas = true"
+        },
+        {
+          "line": 16,
+          "text": "strict_scope_expected_target_cas = true"
+        },
+        {
+          "line": 17,
+          "text": "private_key_handling = false"
+        },
+        {
+          "line": 18,
+          "text": "consensus_runtime = false"
+        },
+        {
+          "line": 19,
+          "text": "core_admission = false"
+        },
+        {
+          "line": 20,
+          "text": "authority_rules = false"
+        },
+        {
+          "line": 21,
+          "text": "host_attestation = false"
+        },
+        {
+          "line": 22,
+          "text": "validator_runtime = false"
+        },
+        {
+          "line": 23,
+          "text": "production_signature_producer = false"
+        },
+        {
+          "line": 24,
+          "text": "external_node_checkpoint_operational_integration = false"
+        },
+        {
+          "line": 25,
+          "text": "external_node_checkpoint_production_activation = false"
+        },
+        {
+          "line": 26,
+          "text": "production_candidate = false"
+        },
+        {
+          "line": 27,
+          "text": "module = \"M03\""
+        },
+        {
+          "line": 28,
+          "text": "role = \"portable-component\""
+        },
+        {
+          "line": 29,
+          "text": "profile = \"portable-local-v2\""
+        },
+        {
+          "line": 30,
+          "text": "production_activation = false"
+        },
+        {
+          "line": 31,
+          "text": "consensus_authority = false"
+        }
+      ]
+    },
+    {
+      "id": "C7",
+      "commit": "4821f61f1a8603ce07107b1496ee947fb1d86647",
+      "path": "trillionnium/crates/trnm-peer-lease/src/store.rs",
+      "line_start": 1,
+      "line_end": 8,
+      "meaning": "Live process clock floor is not a persisted external protected time anchor.",
+      "exact_lines": [
+        {
+          "line": 1,
+          "text": "use std::{"
+        },
+        {
+          "line": 2,
+          "text": "    collections::{BTreeMap, BTreeSet},"
+        },
+        {
+          "line": 3,
+          "text": "    fs::{self, File, OpenOptions},"
+        },
+        {
+          "line": 4,
+          "text": "    io::{self, Read, Seek, SeekFrom, Write},"
+        },
+        {
+          "line": 5,
+          "text": "    path::{Path, PathBuf},"
+        },
+        {
+          "line": 6,
+          "text": "    sync::atomic::{AtomicU64, Ordering},"
+        },
+        {
+          "line": 7,
+          "text": "    time::{SystemTime, UNIX_EPOCH},"
+        },
+        {
+          "line": 8,
+          "text": "};"
+        }
+      ]
+    }
+  ],
+  "evidence_artifacts": [
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/reviews/FinalUse-provider-source-inventory-20261029-011/Chain-4821-all-matches.json",
+      "bytes": 1639,
+      "sha256": "80939bc3a7284b1171c402c0377d02afe6e6b2d5f901418c9219cfd293f0d1ea"
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/reviews/FinalUse-provider-source-inventory-20261029-011/Chain-4821-all-source-coverage.json.gz",
+      "bytes": 104459,
+      "sha256": "aa458de1516be6b6a59fd4c105251cbac1cdd70df9ba903b77af96574ab62770"
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/reviews/FinalUse-provider-source-inventory-20261029-011/Hepta-bf36-all-matches.json",
+      "bytes": 32736,
+      "sha256": "d58185613de84cd2c3a1212871620092c4abcbf122efba794f0e62b973a104c9"
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/reviews/FinalUse-provider-source-inventory-20261029-011/Hepta-bf36-all-source-coverage.json.gz",
+      "bytes": 441238,
+      "sha256": "9a77921f5a25b6ed415ab197dcdefe90c3266f4551d3a585f74f364bee327034"
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/reviews/FinalUse-provider-source-inventory-20261029-011/Hepta-bf36-related-time-CAS-all-matches.json",
+      "bytes": 12417,
+      "sha256": "ed70ea5d012234e2be0087d4502080b3a6c8fb76a92d6c6eb25209dd89ae68fa"
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/reviews/FinalUse-provider-source-inventory-20261029-011/Hepta-live-all-matches.json",
+      "bytes": 31812,
+      "sha256": "09ed87304ea818c1b62154b1374ca875e194deb7875f29468eb83254da18087b"
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/reviews/FinalUse-provider-source-inventory-20261029-011/Hepta-live-all-source-coverage.json.gz",
+      "bytes": 433290,
+      "sha256": "0e132935d90a1a5246024dca314bbad6b5e0d76ecb42950db6efef17816bae0c"
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/reviews/FinalUse-provider-source-inventory-20261029-011/coverage-summary.json",
+      "bytes": 3243,
+      "sha256": "de83798b172785dd10f31ea89efa03fc4805b3195fdc13ee930a9409875a839c"
+    },
+    {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-22/github-trillionnium-chain-https-github-com/work/coordination/reviews/FinalUse-provider-source-inventory-20261029-011/related-and-final-readback.json",
+      "bytes": 408,
+      "sha256": "74bbd29fc6717827cef3cf879d73e8c001da70a9323c7a4cbce7edba2c703e5b"
+    }
+  ],
+  "actions_and_qualification": {
+    "read": true,
+    "review": true,
+    "source_apply": false,
+    "source_commit": false,
+    "source_publish": false,
+    "source_WIP_mutation": false,
+    "build_test_training_model_CI": false,
+    "network_service_driver_global_ACL": false,
+    "budget_reset_or_extension": false,
+    "native_qualification": "NOT_RUN by this review",
+    "old_900_600_and_other_exhausted_budgets": "unchanged; no new execution window",
+    "original_assertions_deadlines_caps_and_guard": "unchanged, including correct Windows ordinary factory refusal; no private-constructor substitution or full guard activation",
+    "original_failures_unknowns_and_costs": "preserved",
+    "task_complete": false,
+    "merge_ready": false
+  }
+}

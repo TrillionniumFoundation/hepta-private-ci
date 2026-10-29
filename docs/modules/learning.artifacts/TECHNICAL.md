@@ -111,6 +111,95 @@ The target [HNMF contract](../../hnmf/TECHNICAL.md) and
 [migration sequence](../../hnmf/MIGRATION.md#7a-shared-experience-delivery-through-existing-owners)
 retain current source, wire and capability states.
 
+### P2P release closure and loader integration target
+
+Within `ART-1-LEARNING-ARTIFACT-REGISTRY` and
+`ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK`, learning-platform owns immutable manifests,
+lineage, withdrawal and lifecycle; it does not become a peer-discovery service,
+model trainer or selector. inference-platform (`INFER-V4-T4` / `INFER-V4-T5`)
+owns decoding, device loading and loaded-root readback. Chain's existing
+data-availability owner supplies I09 bytes and retention/repair evidence.
+
+Extend the existing manifest admission through a registered bounded versioned
+adapter: preserve V1 readability and the full V2/V3 sidecar. A runnable release
+selects an immutable dependency graph containing exact base weights, tokenizer,
+runtime/loader identity, quantization/precision, tensor names/shapes/order,
+shared organ and Cell adapters/heads, routing/topology and state compatibility.
+Bind graph root, parent release, complete chunk inventory, byte counts and
+compatibility digest. The union of cached Cell blobs is an archive; it cannot
+identify a runnable model or guarantee all historical versions remain available.
+
+Fetch the closure before switching a route. Bound graph depth/count, total bytes,
+per-peer/global concurrency, queues, memory, disk and retry/deadline; reject
+cycles, missing dependencies, unknown critical formats and decompression/shape
+bombs before allocation. Check chunk hashes while downloading and complete
+content roots after assembly. Only then enter the trusted safe loader, which
+checks tensor compatibility and refuses executable/pickle-like payload code.
+Publish a load/readback receipt for the exact selected root after successful
+local loading; download completion alone cannot satisfy I10 installation.
+
+P2P discovery, magnet-like references, DHT and content hashes confer no local
+permission, quality or newest-head authority. Respect source/export/privacy scope
+before advertising or fetching. Cache GC remains reference-aware; explicit archive
+retention, minimum independent replicas, expiry/renewal, repair deadline and
+funding belong to declared provider obligations, not every opportunistic cache.
+An unavailable required dependency blocks installation. Revoked roots may remain
+physically retrievable; current withdrawal/selection checks must still deny use.
+Global deletion or parameter unlearning needs separate owner evidence.
+
+Acceptance: two nodes transfer a real release and the ordinary loader serves a
+subsequent task; interrupted multi-source downloads resume without accepting bad
+chunks. Fault cases cover poisoned/slow/eclipsing peers, scope mismatch, revoked
+or stale manifest, shared-base GC, dependency loss, incompatible shapes/runtime,
+disk exhaustion and repair after provider loss. PN5 additionally requires
+independent-operator WAN retention/renewal/repair evidence. Cold/warm p50/p95/p99
+include verification, decoding and device transfer. Prefetch and immutable-base
+sharing preserve bounded resources and revocation freshness; per-token WAN fetch
+cannot be presented as a qualified interactive inference path without measurements.
+These are unmet integration acceptance conditions, not new source/status claims.
+
+#### BT-style transport inside the existing I09/I10 boundary
+
+Evolve the existing TCM1/TCR1 and TCL4 data path incrementally: keep immutable
+content identities, bounded resumable chunk fetch and full-object verification.
+Register the full-release dependency adapter before changing accepted formats;
+the present configured-peer TCP/rendezvous path is not a deployed DHT or an
+arbitrary-model loader. A magnet-like locator names content and optional discovery
+hints; only a selected, scope-authorized release closure may reach I10. Discovery
+and transfer remain the Chain data owner's responsibility, not a new registry
+or downloader inside `learning.artifacts`.
+
+| Existing boundary  | Required implementation / acceptance                                                                                                                                                                                                                                                     |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Provider discovery | Bound lookup depth, responses, identities, expiry and global/per-peer work. Test false provider claims, stale records, sybils/eclipse, bootstrap loss and timeouts; a signature does not establish availability or independent custody.                                                  |
+| Chunk transport    | Support multi-source, resumable verified chunks with bounded queues/concurrency and backpressure. Retain partial-byte accounting across interruption/restart; corrupt, duplicated and late chunks cannot alter the content identity or evade the shared budget.                          |
+| Durable custody    | Distinguish disposable cache from provider-pinned obligations with replica/failure-domain policy, expiry/renewal, audit and repair deadlines. PN4 must bind an actual funded Chain lock/obligation before claiming funded custody; a local reservation/retention record is insufficient. |
+| Replica repair     | Detect complete-closure loss, select authorized surviving providers, verify replacement bytes and restore the declared independent replica floor before deadline. PN5 tests origin outage and failure-domain loss, not only copying among one administrator's hosts.                     |
+| Local load         | Prefetch the fixed closure into bounded SSD, RAM and device tiers; hash/decode/load before route publication. Keep per-tier occupancy and duplicate/shared-base accounting. Cold failure preserves the still-authorized old runnable route and reports the missing dependency.           |
+
+An archive indexes many immutable releases; each runnable release pins one
+compatible dependency closure. The global union of all historical Cell objects
+does not define a single executable model, guarantee every release remains
+retrievable or authorize independent "latest Cell" substitution. Declare which
+versions are retained and funded. Start with independently held full replicas;
+evaluate cold-history erasure coding and bounded delta chains only after restore,
+repair and complete-snapshot evidence exists. Full fine-tuning may change most
+chunks; report actual cross-version deduplication rather than assuming savings.
+
+Define separate cold and warm workloads for full base, adapter-only and shared
+Cell loads. Measure time to first usable ordinary task, verified goodput, peer
+churn, hash/decode/device time, tokens/second, cache hit rate, repair latency and
+SSD/RAM/VRAM peaks. Retain per-attempt raw traces, all-attempt counts and explicit
+failure/timeout censoring denominators. Report completed-sample p50/p95/p99 as
+conditional; do not infer an all-attempt tail from censored failures or invent
+their durations. A summary `rawTrace` label without samples is not tail evidence.
+Compare bounded prefetch/batching with demand-load on the same
+network and hardware. Dynamic Cell fetch must fit the declared task deadline;
+per-token WAN cold fetch requires its own interactive-latency qualification.
+Private weights require authorized export and an explicit transport/access
+security contract; content hashes alone provide integrity, not confidentiality,
+backdoor resistance or revocation of copies already distributed.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:

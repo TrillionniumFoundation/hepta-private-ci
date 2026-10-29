@@ -1,0 +1,24 @@
+{
+  "utc": "2026-10-28T18:17:50.192625+00:00",
+  "official_pinned_source": "https://raw.githubusercontent.com/rust-lang/rust/1.96.0/library/core/src/sync/atomic.rs",
+  "bytes": 199166,
+  "sha256": "b279d2459bdb008adea5b7c4797f099428a62a88b8e95b30a7f90fab041e76a6",
+  "parameter_evidence": [
+    {
+      "line": 536,
+      "snippet": "    pub const fn new(v: bool) -> AtomicBool {\n        // SAFETY:\n        // `Atomic<T>` is essentially a transparent wrapper around `T`.\n        unsafe { transmute(v) }"
+    },
+    {
+      "line": 1483,
+      "snippet": "    pub const fn new(p: *mut T) -> AtomicPtr<T> {\n        // SAFETY:\n        // `Atomic<T>` is essentially a transparent wrapper around `T`.\n        unsafe { transmute(p) }"
+    },
+    {
+      "line": 2628,
+      "snippet": "            pub const fn new(v: $int_type) -> Self {\n                // SAFETY:\n                // `Atomic<T>` is essentially a transparent wrapper around `T`.\n                unsafe { transmute(v) }"
+    },
+    {
+      "line": 3160,
+      "snippet": "            pub fn fetch_add(&self, val: $int_type, order: Ordering) -> $int_type {\n                // SAFETY: data races are prevented by atomic intrinsics.\n                unsafe { atomic_add(self.as_ptr(), val, order) }\n            }"
+    }
+  ]
+}
