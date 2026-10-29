@@ -1,0 +1,661 @@
+{
+  "schema": "hepta.analytic-event.round5.independent-smoke-review.v1",
+  "reviewer": "r4_remote_recovery",
+  "reviewed_utc": "2026-10-29 00:10:06 UTC",
+  "attempt": "selection_smoke_001",
+  "verdict": "pass_development_smoke_integrity_and_provenance",
+  "scope": "Completed development attempt only. The source_history/smoke_001 bytes define this attempt. This review neither evaluates the current patched source nor authorizes formal preparation, freeze or confirmation.",
+  "blocking_findings_in_completed_smoke": [],
+  "formal_confirmation_qualified": false,
+  "formal_confirmation_qualification_reason": "The development_smoke profile has its own namespace, one seed, two windows and zero confirmation rows; it is intentionally ineligible for the registered confirmation freeze.",
+  "summary": {
+    "source_and_artifact_integrity": "All 102 inherited frozen sources and all five preserved Round5 source files match the attempt's start/prepared identities; every prepared artifact and every envelope member matches.",
+    "data_provenance": "Seven raw datasets contain 256 disjoint query trajectories: 128 unique training queries and 128 unique development queries. The 32 retained old rows are a prefix reused from the 64-row anchor collection. All generator identifiers match independently derived namespace tuples and are disjoint from the 250 planned formal identifiers.",
+    "fit_provenance": "Five component fits and four prior fits report success. All change actual parameters or prior logits; all saved initial/final component objectives and all 17 saved prior objective/gradient evaluations reproduce exactly from saved training arrays. Every fit digest binds the intended training-only collection.",
+    "selection_provenance": "All 252 candidate records and all 12 selected indices reproduce exactly with the preserved selector source on the saved development arrays. The six selectors within each window share the same 64 labelled development queries. Selected model dictionaries reconstruct exactly.",
+    "checkpoint_and_archive": "Both checkpoint chains and their original zero-error reload receipts are consistent. A separate read-only reconstruction comparison checks all eight arms over 96 saved query rows per window and yields exact forecasts. Independent envelope decoding verifies one 74,827-byte archive and all 15 original members, totaling 217,014 bytes.",
+    "holdout_boundary": "This attempt contains no confirmation collection, confirmation-start receipt or freeze. Its saved source uses training arrays for fitting and separate development arrays for selection. Review code prevented any call to dataset generation or optimization, and neither was invoked."
+  },
+  "observations": [
+    {
+      "id": "SMOKE-OBS-01",
+      "severity": "scope",
+      "finding": "This attempt validates training, serialization and selection mechanics; it does not establish the candidate-range hypothesis.",
+      "evidence": "Every selector chooses the anchor in window 0. In window 1 the full-range exact-mixture and moment priors are both 0.05, below their fitted legacy caps 0.5300648828339197 and 0.5159763115784439. Legacy selected priors are 0.07950973242508796 and 0.051597631157844395. The grids are not nested, and full-range development NLL is worse in both comparisons in this one smoke window.",
+      "implication": "Do not treat development candidate losses as confirmation endpoints, count them as fresh tests or infer benefit from the successful execution."
+    },
+    {
+      "id": "SMOKE-OBS-02",
+      "severity": "evidence_limit",
+      "finding": "Inherited component optimizer traces retain scalar objective values and initial/final parameters, rather than the raw optimizer parameter vector at every evaluation.",
+      "evidence": "Five component traces contain 52, 40, 44, 60 and 56 objective evaluations. Their saved initial/final objectives reproduce exactly; the final finite-difference evaluation need not equal the unperturbed final objective, so this audit checks the final objective against the last quartet. Four prior traces retain logit, objective and gradient and were all replayed.",
+      "implication": "The records support nine fit invocations, status, input identity and actual updates. Objective-evaluation counts are not optimizer iteration counts, and the entire component search path cannot be independently replayed without refitting."
+    },
+    {
+      "id": "SMOKE-OBS-03",
+      "severity": "cost_scope",
+      "finding": "Cost receipts have distinct nested scopes and are not additive.",
+      "evidence": "Full command wall time is 1.791906673 s and subprocess CPU is 4.322721 s. Preparation-internal wall time is 0.826643638 s and parent CPU is 2.719083797 s. The inherited component-fit timer excludes assembly of staged training histories; the inherited prior-fit timer excludes component-cache construction. The preparation timer starts after source/schedule checks and ends before writing PREPARED.json.",
+      "implication": "Use the outer command receipt for observed full invocation cost. Count shared fits once. CPU may exceed wall time when numerical libraries use threads. No hardware energy, financial cost or native execution measurement is established."
+    },
+    {
+      "id": "SMOKE-OBS-04",
+      "severity": "evidence_limit",
+      "finding": "Historical checkpoint-reload tests used two training rows per arm; this audit checks 96 saved rows per arm per window.",
+      "evidence": "Every checked distribution array agrees exactly and changing saved-data targets, IDs, regime metadata and unselected action observations in memory leaves initial forecasts unchanged.",
+      "implication": "This strengthens saved-data consistency without adding independent trajectories or establishing out-of-sample robustness."
+    },
+    {
+      "id": "SMOKE-OBS-05",
+      "severity": "reproducibility_limit",
+      "finding": "The smoke artifact binds source and raw bytes but contains no explicit package-version or BLAS-thread manifest for its original invocation.",
+      "evidence": "The completed execution receipt records command, working directory, timestamps, CPU and wall time. This read-only review reproduces numerical records exactly in the current available environment.",
+      "implication": "Do not infer cross-environment timing reproducibility from this smoke. Current patched formal source/preparation require their own review and identity binding."
+    }
+  ],
+  "actions_performed": {
+    "fresh_data_generation": false,
+    "optimizer_execution": false,
+    "confirmation_execution": false,
+    "native_execution": false,
+    "source_or_original_evidence_changes": false,
+    "envelope_extracted_to_disk": false,
+    "remote_writes": false,
+    "only_file_written": "experiments/analytic_event_neuron/round5/evidence/reviews/SMOKE_001_REVIEW.json"
+  },
+  "audit": {
+    "all_asserted_checks_passed": true,
+    "archive_integrity": {
+      "all_encoded_decoded_archive_member_and_live_bytes_match": true,
+      "archive_bytes": 74827,
+      "archive_sha256": "1dcd8be6b18fee3b70f4457dc0447a71ca51372e242ca11fd5ede690bb342434",
+      "chunk_count": 1,
+      "manifest_sha256": "a817ebbdd2def189ba405482af8ad1bbf04ee331e14db32cb64a0eebdeb9f014",
+      "member_count": 15,
+      "original_bytes_verified": 217014,
+      "restore_review_method": "Decode and read tar entirely in memory; compare every file byte with original smoke; no disk extraction or new archive reconstruction.",
+      "root_restoration_receipt_agrees": true
+    },
+    "audit_forbidden_operation_calls": {
+      "generation": 0,
+      "optimization": 0
+    },
+    "checkpoint_reloads": [
+      {
+        "altered_hidden_metadata_target_action_observation_forecast_errors": {
+          "frozen": 0,
+          "gaussian_full_range": 0,
+          "mixture_full_range": 0,
+          "mixture_legacy": 0,
+          "moment_full_range": 0,
+          "moment_legacy": 0,
+          "replay_legacy": 0,
+          "same_weight_moment_full": 0
+        },
+        "checkpoint_sha256": "1ef851324ea275492311d952ca7046b5d081e99cc117d3c29d3cb8eff9f22c09",
+        "exact_reconstructed_vs_saved_model_forecast_errors": {
+          "frozen": 0,
+          "gaussian_full_range": 0,
+          "mixture_full_range": 0,
+          "mixture_legacy": 0,
+          "moment_full_range": 0,
+          "moment_legacy": 0,
+          "replay_legacy": 0,
+          "same_weight_moment_full": 0
+        },
+        "original_reload_errors": {
+          "frozen": 0,
+          "gaussian_full_range": 0,
+          "mixture_full_range": 0,
+          "mixture_legacy": 0,
+          "moment_full_range": 0,
+          "moment_legacy": 0,
+          "replay_legacy": 0,
+          "same_weight_moment_full": 0
+        },
+        "original_reload_receipt_rows_per_arm": 2,
+        "raw_rows_per_arm_checked": 96,
+        "window": 0
+      },
+      {
+        "altered_hidden_metadata_target_action_observation_forecast_errors": {
+          "frozen": 0,
+          "gaussian_full_range": 0,
+          "mixture_full_range": 0,
+          "mixture_legacy": 0,
+          "moment_full_range": 0,
+          "moment_legacy": 0,
+          "replay_legacy": 0,
+          "same_weight_moment_full": 0
+        },
+        "checkpoint_sha256": "30f9e1f0b7593d4c01d771d913714d2b2f106d58e06a4c9adbe4bec19c7e481b",
+        "exact_reconstructed_vs_saved_model_forecast_errors": {
+          "frozen": 0,
+          "gaussian_full_range": 0,
+          "mixture_full_range": 0,
+          "mixture_legacy": 0,
+          "moment_full_range": 0,
+          "moment_legacy": 0,
+          "replay_legacy": 0,
+          "same_weight_moment_full": 0
+        },
+        "original_reload_errors": {
+          "frozen": 0,
+          "gaussian_full_range": 0,
+          "mixture_full_range": 0,
+          "mixture_legacy": 0,
+          "moment_full_range": 0,
+          "moment_legacy": 0,
+          "replay_legacy": 0,
+          "same_weight_moment_full": 0
+        },
+        "original_reload_receipt_rows_per_arm": 2,
+        "raw_rows_per_arm_checked": 96,
+        "window": 1
+      }
+    ],
+    "component_fits": [
+      {
+        "correlated_training_stage_rows": 256,
+        "dataset_digests": [
+          "ae4bb44fb111c1dcbb8b46054380379ba5edbcb789e590d756bc764dbdfff8c1"
+        ],
+        "final_objective": 0.6179470207867089,
+        "final_objective_distance_to_last_four_trace_values": 0,
+        "final_parameters": [
+          0.111613740990984,
+          0.1630875850157836,
+          0.779226147781166
+        ],
+        "fit": "anchor",
+        "initial_objective": 0.7604283703548218,
+        "initial_objective_error": 0,
+        "initial_parameters": [
+          0,
+          0.4,
+          1.4
+        ],
+        "objective_trace_evaluations": 52,
+        "optimizer_success": true,
+        "parameter_delta_l2": 0.6737546253275496,
+        "training_trajectories": 64,
+        "training_wall_ns": 83952369
+      },
+      {
+        "correlated_training_stage_rows": 128,
+        "dataset_digests": [
+          "fcfe3186a7d2d708bbd5c103c642d6f69e687f3925bf8e112a2b9ab880f27e24"
+        ],
+        "final_objective": 0.6751094212080413,
+        "final_objective_distance_to_last_four_trace_values": 0,
+        "final_parameters": [
+          0.07724904916087869,
+          0.17149740723303983,
+          0.9436299597343755
+        ],
+        "fit": "window_0_online",
+        "initial_objective": 0.6855612942444896,
+        "initial_objective_error": 0,
+        "initial_parameters": [
+          0.111613740990984,
+          0.1630875850157836,
+          0.779226147781166
+        ],
+        "objective_trace_evaluations": 40,
+        "optimizer_success": true,
+        "parameter_delta_l2": 0.1681673884528455,
+        "training_trajectories": 32,
+        "training_wall_ns": 63935264
+      },
+      {
+        "correlated_training_stage_rows": 256,
+        "dataset_digests": [
+          "ef5b4d72515bcebe77fb12151640662d3a087220ea6e20eeafa378778691bbef",
+          "fcfe3186a7d2d708bbd5c103c642d6f69e687f3925bf8e112a2b9ab880f27e24"
+        ],
+        "final_objective": 0.6276984504088821,
+        "final_objective_distance_to_last_four_trace_values": 0,
+        "final_parameters": [
+          0.11111065114391089,
+          0.15691862729903805,
+          0.8630909905791809
+        ],
+        "fit": "window_0_replay",
+        "initial_objective": 0.6288693001216334,
+        "initial_objective_error": 0,
+        "initial_parameters": [
+          0.111613740990984,
+          0.1630875850157836,
+          0.779226147781166
+        ],
+        "objective_trace_evaluations": 44,
+        "optimizer_success": true,
+        "parameter_delta_l2": 0.08409293071501901,
+        "training_trajectories": 64,
+        "training_wall_ns": 67223740
+      },
+      {
+        "correlated_training_stage_rows": 128,
+        "dataset_digests": [
+          "308e07b788eaf5b3f24cadfaf1769099260c794a0855c75e6337fb688337a229"
+        ],
+        "final_objective": 0.6653186838055425,
+        "final_objective_distance_to_last_four_trace_values": 0,
+        "final_parameters": [
+          0.2819016561302006,
+          0.16676530129326553,
+          0.9444224734382234
+        ],
+        "fit": "window_1_online",
+        "initial_objective": 0.8521536185142711,
+        "initial_objective_error": 0,
+        "initial_parameters": [
+          0.07724904916087869,
+          0.17149740723303983,
+          0.9436299597343755
+        ],
+        "objective_trace_evaluations": 60,
+        "optimizer_success": true,
+        "parameter_delta_l2": 0.20470884310145415,
+        "training_trajectories": 32,
+        "training_wall_ns": 101992023
+      },
+      {
+        "correlated_training_stage_rows": 256,
+        "dataset_digests": [
+          "ef5b4d72515bcebe77fb12151640662d3a087220ea6e20eeafa378778691bbef",
+          "308e07b788eaf5b3f24cadfaf1769099260c794a0855c75e6337fb688337a229"
+        ],
+        "final_objective": 0.6380412239122666,
+        "final_objective_distance_to_last_four_trace_values": 0,
+        "final_parameters": [
+          0.2130343841255297,
+          0.17023070546730756,
+          0.8078334941531525
+        ],
+        "fit": "window_1_replay",
+        "initial_objective": 0.690435418341819,
+        "initial_objective_error": 0,
+        "initial_parameters": [
+          0.11111065114391089,
+          0.15691862729903805,
+          0.8630909905791809
+        ],
+        "objective_trace_evaluations": 56,
+        "optimizer_success": true,
+        "parameter_delta_l2": 0.11670068415111792,
+        "training_trajectories": 64,
+        "training_wall_ns": 103883664
+      }
+    ],
+    "costs": {
+      "execution": {
+        "children_system_seconds": 0.12182,
+        "children_user_seconds": 4.200901,
+        "command": [
+          "python",
+          "-m",
+          "experiments.analytic_event_neuron.round5.selection_study",
+          "smoke",
+          "--run-dir",
+          "experiments/analytic_event_neuron/round5/evidence/selection_smoke_001"
+        ],
+        "cwd": "/workspace/scratch/d831a963ef2f/hepta-analytic",
+        "financial_cost": null,
+        "finished_utc": "2026-10-29T00:01:36.156501+00:00",
+        "full_invocation_scope": true,
+        "label": "r5_selection_development_smoke_001",
+        "log": "execution/r5_selection_development_smoke_001.log",
+        "native_energy": null,
+        "nested_component_times_must_not_be_added": true,
+        "returncode": 0,
+        "schema": "hepta.analytic-event.round4.execution.v1",
+        "started_utc": "2026-10-29T00:01:34.362346+00:00",
+        "wall_ns": 1791906673
+      },
+      "native_runtime_measured": false,
+      "nested_timings_not_added": true,
+      "prepared_parent_cpu_ns": 2719083797,
+      "prepared_wall_ns": 826643638,
+      "shared_fit_counted_once": true
+    },
+    "counts": {
+      "candidate_evaluations": 252,
+      "component_fits": 5,
+      "optimizer_fits": 9,
+      "prior_fits": 4,
+      "selectors": 12
+    },
+    "data": {
+      "confirmation_data_present": false,
+      "development_unique_trajectories": 128,
+      "namespace": "hepta.aen.r5.selection.development-smoke.v1",
+      "planned_formal_identities_checked_for_disjointness": 250,
+      "raw_arrays_regenerated": false,
+      "retained_replay_rows": 32,
+      "rows": [
+        {
+          "dataset_digest": "ae4bb44fb111c1dcbb8b46054380379ba5edbcb789e590d756bc764dbdfff8c1",
+          "generator_seed": 3718290676295413,
+          "law": "gaussian",
+          "path": "prepared/seed_99001/ORIGINAL_TRAIN.npz",
+          "raw_sha256": "c85d71df25553e5ff2ff17b31f6267259d6d82055345a1b329ee3d91433176ff",
+          "rows": 64,
+          "split": "train"
+        },
+        {
+          "dataset_digest": "fcfe3186a7d2d708bbd5c103c642d6f69e687f3925bf8e112a2b9ab880f27e24",
+          "generator_seed": 2446194661927758,
+          "law": "gaussian",
+          "path": "prepared/seed_99001/window_00_TRAIN.npz",
+          "raw_sha256": "634ef1b8e863d460cf71b6f21279d24fd2441930f57b4405d26f05f3c472e664",
+          "rows": 32,
+          "split": "retention_train"
+        },
+        {
+          "dataset_digest": "609e3cbf5c8ab4b90ce8e7e4669cbefa4bc77cf4af42fa53635c93e6454b0d80",
+          "generator_seed": 3708491648336334,
+          "law": "gaussian",
+          "path": "prepared/seed_99001/window_00_OLD_DEV.npz",
+          "raw_sha256": "098b084fbed9f26da9f754002765ab84001b6b13f3de5e6a2898330bac4279b2",
+          "rows": 32,
+          "split": "calibration_development"
+        },
+        {
+          "dataset_digest": "2141d8db8b474669870617f68dbb07b8ced8bd2dc41098e947335ac0f4457279",
+          "generator_seed": 4910262745262587,
+          "law": "gaussian",
+          "path": "prepared/seed_99001/window_00_NEW_DEV.npz",
+          "raw_sha256": "b3e73ecd319a5170f978c403db96c7f2fb9e0a5b56a099bae689071895a0b3a0",
+          "rows": 32,
+          "split": "calibration_development"
+        },
+        {
+          "dataset_digest": "308e07b788eaf5b3f24cadfaf1769099260c794a0855c75e6337fb688337a229",
+          "generator_seed": 6185428340598029,
+          "law": "drift_shift",
+          "path": "prepared/seed_99001/window_01_TRAIN.npz",
+          "raw_sha256": "51d3ae5af0fedfb515e558a5830411c86e1e1d59b34a6e66abdf7ab64b1f29fb",
+          "rows": 32,
+          "split": "retention_train"
+        },
+        {
+          "dataset_digest": "1fc911caccb3d44cd265d28c4845bd27f404c943f294a10825d5e9b3b170ddb4",
+          "generator_seed": 1087739183952777,
+          "law": "gaussian",
+          "path": "prepared/seed_99001/window_01_OLD_DEV.npz",
+          "raw_sha256": "0d25d121d4ecb7ef9e539981a558cd21850763e35df59311449b9cdadfb32195",
+          "rows": 32,
+          "split": "calibration_development"
+        },
+        {
+          "dataset_digest": "dca41160646bd5e8153c39cccb690d91bc715ac690832f55527eee8386fce7d3",
+          "generator_seed": 6273244918476642,
+          "law": "drift_shift",
+          "path": "prepared/seed_99001/window_01_NEW_DEV.npz",
+          "raw_sha256": "893d1dbd0d449527173f286827e5027d50016b83fa093df36f3bb01d28c50946",
+          "rows": 32,
+          "split": "calibration_development"
+        }
+      ],
+      "training_unique_trajectories": 128,
+      "unique_trajectories": 256
+    },
+    "prior_fits": [
+      {
+        "dataset_digests": [
+          "ef5b4d72515bcebe77fb12151640662d3a087220ea6e20eeafa378778691bbef",
+          "fcfe3186a7d2d708bbd5c103c642d6f69e687f3925bf8e112a2b9ab880f27e24"
+        ],
+        "final_objective": 0.8963811351115869,
+        "fit": "window_0_mixture_prior",
+        "fitted_prior": 0.42864669612140677,
+        "initial_objective": 0.8964841851237064,
+        "max_recomputed_objective_or_gradient_error": 0,
+        "objective_trace_evaluations": 5,
+        "optimizer_success": true,
+        "prior_logit_change": 0.28737473670057023,
+        "training_parent_cpu_ns": 73415914,
+        "training_trajectories": 64,
+        "training_wall_ns": 31989745
+      },
+      {
+        "dataset_digests": [
+          "ef5b4d72515bcebe77fb12151640662d3a087220ea6e20eeafa378778691bbef",
+          "fcfe3186a7d2d708bbd5c103c642d6f69e687f3925bf8e112a2b9ab880f27e24"
+        ],
+        "final_objective": 0.8969011097802113,
+        "fit": "window_0_moment_prior",
+        "fitted_prior": 0.43350275137350336,
+        "initial_objective": 0.8969839386989602,
+        "max_recomputed_objective_or_gradient_error": 0,
+        "objective_trace_evaluations": 4,
+        "optimizer_success": true,
+        "prior_logit_change": 0.2675740805799763,
+        "training_parent_cpu_ns": 10484850,
+        "training_trajectories": 64,
+        "training_wall_ns": 6479444
+      },
+      {
+        "dataset_digests": [
+          "ef5b4d72515bcebe77fb12151640662d3a087220ea6e20eeafa378778691bbef",
+          "308e07b788eaf5b3f24cadfaf1769099260c794a0855c75e6337fb688337a229"
+        ],
+        "final_objective": 0.9383933991466198,
+        "fit": "window_1_mixture_prior",
+        "fitted_prior": 0.5300648828339197,
+        "initial_objective": 0.93855133202524,
+        "max_recomputed_objective_or_gradient_error": 0,
+        "objective_trace_evaluations": 4,
+        "optimizer_success": true,
+        "prior_logit_change": 0.12040478290304087,
+        "training_parent_cpu_ns": 70523516,
+        "training_trajectories": 64,
+        "training_wall_ns": 11462673
+      },
+      {
+        "dataset_digests": [
+          "ef5b4d72515bcebe77fb12151640662d3a087220ea6e20eeafa378778691bbef",
+          "308e07b788eaf5b3f24cadfaf1769099260c794a0855c75e6337fb688337a229"
+        ],
+        "final_objective": 0.938889715674756,
+        "fit": "window_1_moment_prior",
+        "fitted_prior": 0.5159763115784439,
+        "initial_objective": 0.9389313218186496,
+        "max_recomputed_objective_or_gradient_error": 0,
+        "objective_trace_evaluations": 4,
+        "optimizer_success": true,
+        "prior_logit_change": 0.06392700809534918,
+        "training_parent_cpu_ns": 44299964,
+        "training_trajectories": 64,
+        "training_wall_ns": 8333318
+      }
+    ],
+    "registration_sha256": "1fcbcc0fdce97cfb0f2fb34d75f7089d13d06a0dc2f55568deade9e3249dcd0a",
+    "review_method": "Read-only replay of preserved-source candidate math, saved-data losses and objective/gradient evaluations; no generation, fitting, confirmation or native execution. Original smoke source is loaded in an isolated module namespace, not from current patched Round5 source.",
+    "selectors": [
+      {
+        "all_candidate_and_provenance_fields_exactly_reproduced": true,
+        "arm": "replay_legacy",
+        "candidates": 21,
+        "eligible_candidates": 21,
+        "selected_index": 0,
+        "selected_new_nll": 0.9914864974494773,
+        "selected_old_upper_heuristic": 0,
+        "selected_prior": null,
+        "selected_strength": 0,
+        "selection_parent_cpu_ns": 56737152,
+        "selection_wall_ns": 16801719,
+        "window": 0
+      },
+      {
+        "all_candidate_and_provenance_fields_exactly_reproduced": true,
+        "arm": "gaussian_full_range",
+        "candidates": 21,
+        "eligible_candidates": 14,
+        "selected_index": 0,
+        "selected_new_nll": 0.9914864974494773,
+        "selected_old_upper_heuristic": 0,
+        "selected_prior": null,
+        "selected_strength": 0,
+        "selection_parent_cpu_ns": 56232406,
+        "selection_wall_ns": 16271760,
+        "window": 0
+      },
+      {
+        "all_candidate_and_provenance_fields_exactly_reproduced": true,
+        "arm": "mixture_legacy",
+        "candidates": 21,
+        "eligible_candidates": 21,
+        "selected_index": 0,
+        "selected_new_nll": 0.9914864974494773,
+        "selected_old_upper_heuristic": 0,
+        "selected_prior": 0,
+        "selected_strength": 0,
+        "selection_parent_cpu_ns": 55882967,
+        "selection_wall_ns": 16175175,
+        "window": 0
+      },
+      {
+        "all_candidate_and_provenance_fields_exactly_reproduced": true,
+        "arm": "mixture_full_range",
+        "candidates": 21,
+        "eligible_candidates": 13,
+        "selected_index": 0,
+        "selected_new_nll": 0.9914864974494773,
+        "selected_old_upper_heuristic": 0,
+        "selected_prior": 0,
+        "selected_strength": 0,
+        "selection_parent_cpu_ns": 31674264,
+        "selection_wall_ns": 11136032,
+        "window": 0
+      },
+      {
+        "all_candidate_and_provenance_fields_exactly_reproduced": true,
+        "arm": "moment_legacy",
+        "candidates": 21,
+        "eligible_candidates": 21,
+        "selected_index": 0,
+        "selected_new_nll": 0.9914864974494773,
+        "selected_old_upper_heuristic": 0,
+        "selected_prior": 0,
+        "selected_strength": 0,
+        "selection_parent_cpu_ns": 24231263,
+        "selection_wall_ns": 16252942,
+        "window": 0
+      },
+      {
+        "all_candidate_and_provenance_fields_exactly_reproduced": true,
+        "arm": "moment_full_range",
+        "candidates": 21,
+        "eligible_candidates": 13,
+        "selected_index": 0,
+        "selected_new_nll": 0.9914864974494773,
+        "selected_old_upper_heuristic": 0,
+        "selected_prior": 0,
+        "selected_strength": 0,
+        "selection_parent_cpu_ns": 49154454,
+        "selection_wall_ns": 35152001,
+        "window": 0
+      },
+      {
+        "all_candidate_and_provenance_fields_exactly_reproduced": true,
+        "arm": "replay_legacy",
+        "candidates": 21,
+        "eligible_candidates": 5,
+        "selected_index": 4,
+        "selected_new_nll": 1.3819778654821409,
+        "selected_old_upper_heuristic": 0.01598224443170637,
+        "selected_prior": null,
+        "selected_strength": 0.2,
+        "selection_parent_cpu_ns": 62070686,
+        "selection_wall_ns": 12193074,
+        "window": 1
+      },
+      {
+        "all_candidate_and_provenance_fields_exactly_reproduced": true,
+        "arm": "gaussian_full_range",
+        "candidates": 21,
+        "eligible_candidates": 4,
+        "selected_index": 3,
+        "selected_new_nll": 1.3725800603510672,
+        "selected_old_upper_heuristic": 0.01982721051888597,
+        "selected_prior": null,
+        "selected_strength": 0.15000000000000002,
+        "selection_parent_cpu_ns": 52000401,
+        "selection_wall_ns": 21183041,
+        "window": 1
+      },
+      {
+        "all_candidate_and_provenance_fields_exactly_reproduced": true,
+        "arm": "mixture_legacy",
+        "candidates": 21,
+        "eligible_candidates": 4,
+        "selected_index": 3,
+        "selected_new_nll": 1.3410784588089193,
+        "selected_old_upper_heuristic": 0.01924370574507088,
+        "selected_prior": 0.07950973242508796,
+        "selected_strength": 0.15000000000000002,
+        "selection_parent_cpu_ns": 88407065,
+        "selection_wall_ns": 16511902,
+        "window": 1
+      },
+      {
+        "all_candidate_and_provenance_fields_exactly_reproduced": true,
+        "arm": "mixture_full_range",
+        "candidates": 21,
+        "eligible_candidates": 2,
+        "selected_index": 1,
+        "selected_new_nll": 1.3694879644999045,
+        "selected_old_upper_heuristic": 0.01218003153819427,
+        "selected_prior": 0.05,
+        "selected_strength": 0.05,
+        "selection_parent_cpu_ns": 90220914,
+        "selection_wall_ns": 17649596,
+        "window": 1
+      },
+      {
+        "all_candidate_and_provenance_fields_exactly_reproduced": true,
+        "arm": "moment_legacy",
+        "candidates": 21,
+        "eligible_candidates": 3,
+        "selected_index": 2,
+        "selected_new_nll": 1.3702684967836563,
+        "selected_old_upper_heuristic": 0.014309372035552007,
+        "selected_prior": 0.051597631157844395,
+        "selected_strength": 0.1,
+        "selection_parent_cpu_ns": 17300151,
+        "selection_wall_ns": 11585870,
+        "window": 1
+      },
+      {
+        "all_candidate_and_provenance_fields_exactly_reproduced": true,
+        "arm": "moment_full_range",
+        "candidates": 21,
+        "eligible_candidates": 2,
+        "selected_index": 1,
+        "selected_new_nll": 1.371959755820889,
+        "selected_old_upper_heuristic": 0.01388156507337241,
+        "selected_prior": 0.05,
+        "selected_strength": 0.05,
+        "selection_parent_cpu_ns": 11248183,
+        "selection_wall_ns": 11246898,
+        "window": 1
+      }
+    ],
+    "source_integrity": {
+      "inherited_freeze_sha256": "e7fd9c474e0c4a0ad56ad910a643ab84970da430600e6f8caccae2849c824c2d",
+      "inherited_frozen_sources": 102,
+      "original_paths_sha256": {
+        "experiments/analytic_event_neuron/round5/SELECTION_CONTRACT.md": "c460325e2482df16fa9fd90e9a3c94cb44749fec9f8e3610e9c2f9719fc72878",
+        "experiments/analytic_event_neuron/round5/__init__.py": "b02ccc3b03e70e66e4338ce36e0a12cc76e38a8ec50845e315a4695e39dee4b5",
+        "experiments/analytic_event_neuron/round5/selection_math.py": "ea1344a6c4c5a81d9fa932f4f70e938e9d37cb9a695301c5bcabe87055d9f72b",
+        "experiments/analytic_event_neuron/round5/selection_study.py": "4a0dbdd6cf831cba06ca2b2cdbbbbc2f85045f3452eb963cbad82691091bc1e0",
+        "experiments/analytic_event_neuron/round5/test_selection.py": "bb02b73194ff0a9d0479adb61820a9551787de3442c5f280dd251fe174b84f7b"
+      },
+      "prepared_sha256": "ee6efb86ec6a9bdb9a0882a30734140da26eb0f54d03b3b888c8d8753c4cc913",
+      "preserved_smoke_sources": 5,
+      "source_history_manifest_sha256": "5beda85bd7a831b7f2e8c5d02f0b2b7e20c1d0975b2409fd5e3bc6d9b39a664e"
+    }
+  }
+}
