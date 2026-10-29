@@ -110,7 +110,13 @@ class V8SmokeToolchainTests(unittest.TestCase):
                     self.assertEqual(result.returncode, 0, result.stdout)
                     self.assertEqual(record["env"]["RUSTUP_TOOLCHAIN"], "1.96.0")
                     self.assertEqual(record["dependency_toolchain"], "1.96.0")
-                    expected = ["test", "-p", "codex-v8-poc"]
+                    # The staged artifact selects features without changing production defaults.
+                    expected = [
+                        "test",
+                        "-p",
+                        "codex-v8-poc",
+                        "--no-default-features",
+                    ]
                     if sandbox == "true":
                         expected += ["--features", "sandbox"]
                     self.assertEqual(record["args"], expected)
