@@ -87,7 +87,8 @@ jobs:
         with:
           python-version: "3.12.14"
       - name: Install registered CPU training runtime
-        run: python -m pip install --disable-pip-version-check --only-binary=:all: --extra-index-url https://download.pytorch.org/whl/cpu torch==2.14.1+cpu numpy==2.3.5 scipy==1.16.3 Pillow==12.3.0
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: --extra-index-url https://download.pytorch.org/whl/cpu torch==2.14.1+cpu numpy==2.3.5 scipy==1.16.3 Pillow==12.3.0
       - name: Train every frozen mechanism arm and retain every physical rollout
         run: |
           set -euo pipefail

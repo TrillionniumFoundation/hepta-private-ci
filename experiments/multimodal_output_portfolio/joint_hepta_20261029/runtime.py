@@ -9,6 +9,7 @@ recursively. Training/setup and cold model loading are reported by the runner.
 from dataclasses import asdict, dataclass
 import hashlib
 import json
+import math
 from pathlib import Path
 import resource
 import time
@@ -149,7 +150,7 @@ def execute(model, public, observe, directory, *, seed, context_id, source_id,
     states.append(_snapshot(profile, state, context=context_id, input_sha=input_sha, model_sha=model_sha,
                             policy_sha=policy_sha, index=0, elapsed=0, budget=budget, generation=generation))
     failure = None
-    artifacts, observed, total_log_probability = {}, -1.0, state.shared.sum() * 0
+    artifacts, observed, raw_observed, total_log_probability = {}, -1.0, None, state.shared.sum() * 0
 
     def record(action, law, *, terminal="ongoing", artifacts=None):
         nonlocal budget, previous_wall, previous_cpu
@@ -234,7 +235,7 @@ def execute(model, public, observe, directory, *, seed, context_id, source_id,
         if failure or action == "stop":
             break
 
-    terminal_kind = "refused" if failure else "delivered"
+    terminal_kind = "failed" if failure and failure.startswith("execution_failed") else "refused" if failure else "delivered"
     critics.append(model.delivery_critic(model.features(state, budget / INITIAL_BUDGET).detach())[0, 0])
     if not failure:
         try:
@@ -243,9 +244,12 @@ def execute(model, public, observe, directory, *, seed, context_id, source_id,
                 total_log_probability = total_log_probability + emission_score[0]
 
             def deliver():
-                nonlocal artifacts, observed
+                nonlocal artifacts, observed, raw_observed
                 readback, artifacts = write_read(sampled, directory / "outputs", audio_rate, frame_ms)
                 observed = float(observe(readback))
+                if not math.isfinite(observed) or not profile.ndu.utility_bounds[0] <= observed <= profile.ndu.utility_bounds[1]:
+                    raise ValueError("Observer returned nonfinite or out-of-contract utility")
+                raw_observed = observed
                 names = {"text": "text.txt", "image": "image.png", "audio": "audio.wav", "video": "video.gif"}
                 return {"artifact_refs": {m: str(directory / "outputs" / n) for m, n in names.items()},
                         "artifact_sha256": artifacts, "public_feedback": 0.0,
@@ -284,6 +288,7 @@ def execute(model, public, observe, directory, *, seed, context_id, source_id,
             "profile_sha256": profile.digest, "state_chain": [asdict(s) for s in states],
             "events": [asdict(e) for e in events], "outcome": asdict(outcome), "actions": action_log,
             "net_return": net, "actual_cost": sum(c.amount for c in costs), "failure": failure,
+            "raw_observed_utility_before_native_refusal": raw_observed,
             "parameter_snapshot_sha256": model_sha, "source_id": source_id, "seed": seed,
             "policy_snapshot_sha256": policy_sha,
             "strategy": strategy, "emission_law": "degenerate_mean_argmax" if deterministic_emission else "stochastic",
