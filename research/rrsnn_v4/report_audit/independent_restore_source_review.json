@@ -1,0 +1,47 @@
+{
+  "schema": "rrsnn-v4-independent-restore-source-review-1",
+  "created_at_utc": "2026-10-29T17:37:42.745940+00:00",
+  "reviewer": "/root/r5_real_execution",
+  "status": "approved_for_final_git_publication_and_single_bounded_restore",
+  "source_path": "restore_delivery.py",
+  "source_sha256": "47930c2448d19c5db3bbd2e71e6cdc397fac5d5e8c499aaf3dc741581f39f681",
+  "source_lines": 217,
+  "prior_candidate_sha256": "ff4f047b10254dba7222e58404c5e3c117eeac74ab49c83f2f344817562aac8e",
+  "minimal_snapshot_and_count_delta_reverses_exactly_to_prior_sha256": true,
+  "review_method": "Full217-line static read of prior candidate, exact isolated snapshot/count delta check to final candidate, AST/compile of final module and embedded wrapper only. No execution of helper functions, extraction, verifier subprocess or actor.",
+  "entrypoints_reviewed_sha256": {
+    "__init__.py": "227d288ec36b913d650a35915373df53b20d7c22cf3547f6106ffece9af6f0cb",
+    "build_closeout.py": "56690e29b01db894f403d6e0dc0591cd3c44a06926c9db3e7534877e538c79ff",
+    "delivery_behavior_diagnostic.py": "957e2314c5ccad817097ef6c4afa52716e4925b91d837e3e1ebe4e7549494175"
+  },
+  "checks": {
+    "new_destination": "Existing nonsymlink parent, nonexistent destination, outside source ROOT, created mode0700. Receipt is new, distinct from destination, and outside restored tree.",
+    "source_identity": "Required restoration/init/two-verifier sources must exist in supplied map. Every copied source is nonsymlink regular content checked with exact Git blob SHA1 formula; map bytes rehashed after copying. Immutable40-hex source commit recorded.",
+    "zip_paths": "Rejects absolute/empty/dot/dotdot path segments, backslashes, NUL and colon; rejects duplicate names/JSON keys, outside-prefix raw paths, symlink and other nonregular metadata, setuid/setgid/sticky bits, directories and encrypted entries. Exact manifest/member set and counts required.",
+    "member_integrity": "Each raw member byte length and SHA256 matches manifest; summed raw size/count checked. ZIP CRC is checked by zipfile.read. Archive SHA is read before/after, both metadata hashes recorded.",
+    "overlap_and_preservation": "Exclusive creation for new files; source/core/resources overlap accepted only for identical bytes and ordinary mode, otherwise fail. No source/old-evidence deletion or overwrite.",
+    "elf_permissions": "Requires exactly four named ELF members with ordinary executable bits. No executable is launched by restoration. Retains archive permission bits, with special bits rejected.",
+    "whole_tree": "Final patch includes root directory, all subdirectories and regular files via lstat, rejects symlinks/FIFOs/other special objects. File entries include SHA256,size,mode,mtime_ns,ctime_ns; directories include type,mode,mtime_ns,ctime_ns. Atime intentionally excluded. Created regular file count must match the snapshot file count.",
+    "verifier_resolution": "Runs same sys.executable with PYTHONPATH=new destination, cwd=new destination, bytecode writing off, optimization off. Wrapper checks resolved spec.origin and executed __file__ against intended restored module, calls exact --verify-only entry, timeout600s.",
+    "verifier_read_only_scope": "Reviewed builder branch calls load_complete only. Behavior verifier recomputes and compares existing diagnostic without its write branch. Restored tree checked after each completed subprocess; both exits must be0. No training, benchmark, actor, model deployment or production activation is invoked.",
+    "failure_receipt": "For exceptions inside established receipt scope, records failed status/error and preserves partial new destination; receipt flush+fsync in finally. Preflight invalid paths may fail before safe receipt creation; arbitrary SIGKILL durability is not claimed."
+  },
+  "resolved_findings": [
+    {
+      "finding": "Prior snapshot covered only regular files and did not represent empty directories or reject all special objects.",
+      "resolution": "Final snapshot uses lstat for root/dirs/files, rejects special objects, records object type and metadata, separates file count from object count.",
+      "closed": true
+    }
+  ],
+  "required_external_bindings": [
+    "Coordinator supplies a Git blob map independently verified against the named immutable final source commit; the helper itself does not fetch or authenticate remote Git state.",
+    "Coordinator binds both input archive paths to the independently saved expected archive SHA256 receipts and verifies the returned archive identities. Internal manifests and checksums alone are not provenance.",
+    "This is a single-owner, same-runtime new-directory restoration of trusted local artifacts, not a concurrent adversarial filesystem isolation proof or fresh-environment dependency rebuild."
+  ],
+  "remaining_source_blockers": [],
+  "actual_restore_executed_by_reviewer": false,
+  "actual_restore_result": "pending root authorization/publication and one actual execution",
+  "final_git_publication_verified_by_this_review": false,
+  "archive_restore_or_fresh_download_verified_by_this_review": false,
+  "production_activation_allowed": false
+}
