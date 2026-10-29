@@ -4,6 +4,7 @@ import copy
 from pathlib import Path
 import subprocess
 import sys
+import tempfile
 from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
@@ -375,6 +376,62 @@ class DiverseReaderTests(unittest.TestCase):
             target.COMMANDS["scoped-rust"], target.original.COMMANDS["scoped-rust"]
         )
         self.assertEqual(target.COMMANDS["diverse-chain-controls"], 14)
+
+
+class DiverseExclusionPartsTests(unittest.TestCase):
+    def test_complete_exclusions_reject_reordered_or_missing_parts(self):
+        parts = target.EXCLUSION_PATHS
+        raw = b"".join(path.read_bytes() for path in parts)
+        expected = set(target.original.decode(raw)["excluded_prompt_sha256"])
+        self.assertEqual(target.excluded_prompts(), expected)
+        for changed in (tuple(reversed(parts)), parts[:1]):
+            with (
+                self.subTest(parts=changed),
+                patch.object(target, "EXCLUSION_PATHS", changed),
+                self.assertRaises(ValueError),
+            ):
+                target.excluded_prompts()
+
+    def test_changed_oversized_or_symlinked_exclusion_part_refuses(self):
+        originals = tuple(path.read_bytes() for path in target.EXCLUSION_PATHS)
+        with tempfile.TemporaryDirectory() as directory:
+            parts = tuple(Path(directory) / f"part-{index}" for index in (0, 1))
+            for path, raw in zip(parts, originals, strict=True):
+                path.write_bytes(raw)
+            with patch.object(target, "EXCLUSION_PATHS", parts):
+                for bad in (b"X" + originals[0][1:], b" " * 512001):
+                    parts[0].write_bytes(bad)
+                    with self.subTest(bytes=len(bad)), self.assertRaises(ValueError):
+                        target.excluded_prompts()
+            parts[0].write_bytes(originals[0])
+            link = Path(directory) / "linked-part"
+            link.symlink_to(parts[0])
+            with (
+                patch.object(target, "EXCLUSION_PATHS", (link, parts[1])),
+                self.assertRaises(ValueError),
+            ):
+                target.excluded_prompts()
+
+    def test_exclusion_part_replacement_after_identity_read_refuses(self):
+        originals = tuple(path.read_bytes() for path in target.EXCLUSION_PATHS)
+        with tempfile.TemporaryDirectory() as directory:
+            parts = tuple(Path(directory) / f"part-{index}" for index in (0, 1))
+            for path, raw in zip(parts, originals, strict=True):
+                path.write_bytes(raw)
+            original_regular = target.regular
+
+            def replace_after_identity(path, maximum=None):
+                identity = original_regular(path, maximum)
+                if Path(path) == parts[0]:
+                    parts[0].write_bytes(originals[0][:-1] + b" ")
+                return identity
+
+            with (
+                patch.object(target, "EXCLUSION_PATHS", parts),
+                patch.object(target, "regular", replace_after_identity),
+                self.assertRaisesRegex(ValueError, "exclusion part changed"),
+            ):
+                target.excluded_prompts()
 
 
 if __name__ == "__main__":

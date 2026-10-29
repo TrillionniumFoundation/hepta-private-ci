@@ -15,17 +15,19 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
+use crate::prompt_delivery::tests::FixtureDirectory;
 use crate::prompt_delivery::tests::admitted_registry;
 use crate::prompt_delivery::tests::canonical_selection;
+use crate::prompt_delivery::tests::fixture_directory;
 use crate::prompt_delivery::tests::revoke_registry;
 
 fn fixture() -> (
-    tempfile::TempDir,
+    FixtureDirectory,
     DurablePromptRegistry,
     SelectedPromptPortfolioV1,
     PromptExerciseRequestV1,
 ) {
-    let temp = tempfile::tempdir().expect("tempdir");
+    let temp = fixture_directory();
     let (registry, tuple, _, _, _) = admitted_registry(&temp.path().join("registry"), b"payload:a");
     let selected = canonical_selection(&registry, &tuple, 100);
     (
@@ -173,7 +175,7 @@ fn serialization_without_selected_prompt_bytes_fails_closed() {
 
 #[test]
 fn revocation_after_compilation_blocks_attachment_preparation() {
-    let temp = tempfile::tempdir().expect("tempdir");
+    let temp = fixture_directory();
     let (mut registry, tuple, authority, signing_key, now) =
         admitted_registry(&temp.path().join("registry"), b"payload:a");
     let selected = canonical_selection(&registry, &tuple, 100);

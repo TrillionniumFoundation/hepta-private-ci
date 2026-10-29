@@ -50,9 +50,9 @@ jobs:
           import re
 
           REPOSITORY = "TrillionniumFoundation/Trillionnium-Chain"
-          BRANCH = "fix/chain-diverse60-neural-profile-20261029"
-          EXPECTED_TREE = "1f4c5a62483cb686627a9acb16c3626c7e68f1c8"
-          EXPECTED_COMMIT = "0bd7019a06e34c69fcbc84f23dda8510689b9a8d"
+          BRANCH = "fix/chain-diverse-inventory-20261029"
+          EXPECTED_TREE = "b4508063fae0a4bfdd081e62531dc008e83c8961"
+          EXPECTED_COMMIT = "c5728d02a7b64909302252f4986e33b56b91faa2"
           MAX_RESPONSE = 1024 * 1024
 
 
@@ -191,7 +191,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git --no-replace-objects -C ../chain-diverse rev-parse HEAD)" = "$DIVERSE_TRAINING_CHAIN_SHA"
-          test "$(git --no-replace-objects -C ../chain-diverse rev-parse 'HEAD^{tree}')" = "1f4c5a62483cb686627a9acb16c3626c7e68f1c8"
+          test "$(git --no-replace-objects -C ../chain-diverse rev-parse 'HEAD^{tree}')" = "b4508063fae0a4bfdd081e62531dc008e83c8961"
           (cd ../chain-diverse && bash scripts/project-preflight.sh --audit)
       - name: Initialize evidence before runtime prerequisites
         run: |
@@ -446,7 +446,7 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/binary-reader-controls.json" --timeout-seconds 60 --minimum-tests 8 -- python3 scripts/test_hepta_neural_evidence_binary_v2.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/diverse-trace-controls.json" --timeout-seconds 60 --minimum-tests 9 -- python3 scripts/test_hepta_neural_diverse_v3.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/diverse-training-controls.json" --timeout-seconds 60 --minimum-tests 7 -- python3 scripts/test_hepta_neural_study_diverse_v3.py -v
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/diverse-reader-controls.json" --timeout-seconds 60 --minimum-tests 13 -- python3 scripts/test_hepta_neural_evidence_diverse_v3.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/diverse-reader-controls.json" --timeout-seconds 60 --minimum-tests 16 -- python3 scripts/test_hepta_neural_evidence_diverse_v3.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/diverse-chain-controls.json" --timeout-seconds 60 --minimum-tests 14 -- python3 ../chain-diverse/scripts/test_llm_binary_diverse60_observed_v3.py -v
           python3 scripts/hepta_workspace.py
       - name: Build the actual pinned two-node Cell executable

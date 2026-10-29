@@ -27,7 +27,12 @@ pub(super) fn training_rows() -> TestResult<Vec<Value>> {
 }
 
 pub(super) fn excluded_prompts() -> TestResult<std::collections::BTreeSet<String>> {
-    let raw = include_bytes!("../fixtures/smollm-consumed-prompts-all-through-a593-v3.json");
+    // Both bounded source blobs reconstruct the original, independently pinned JSON bytes.
+    let raw = concat!(
+        include_str!("../fixtures/smollm-consumed-prompts-all-through-a593-v3.json.part-01"),
+        include_str!("../fixtures/smollm-consumed-prompts-all-through-a593-v3.json.part-02"),
+    )
+    .as_bytes();
     if Digest32::of_bytes(raw).to_string() != EXCLUSION_SHA {
         return Err("complete frozen prompt exclusions changed".into());
     }

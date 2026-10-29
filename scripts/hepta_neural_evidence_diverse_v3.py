@@ -26,11 +26,13 @@ COMMANDS = {
     **binary.COMMANDS,
     "diverse-trace-controls": 9,
     "diverse-training-controls": 7,
-    "diverse-reader-controls": 13,
+    "diverse-reader-controls": 16,
     "diverse-chain-controls": 14,
 }
-EXCLUSION_PATH = Path(__file__).resolve().parents[1] / (
-    "codex-rs/hepta-infer-worker-host/fixtures/smollm-consumed-prompts-all-through-a593-v3.json"
+EXCLUSION_PATHS = tuple(
+    Path(__file__).resolve().parents[1]
+    / f"codex-rs/hepta-infer-worker-host/fixtures/smollm-consumed-prompts-all-through-a593-v3.json.part-{number:02}"
+    for number in (1, 2)
 )
 
 
@@ -51,13 +53,29 @@ def published_source(item):
 
 def excluded_prompts():
     require(
-        type(study_driver.EXCLUSION_SHA) is str
-        and re.fullmatch("[0-9a-f]{64}", study_driver.EXCLUSION_SHA)
-        and regular(EXCLUSION_PATH, 1024 * 1024)["sha256"]
-        == study_driver.EXCLUSION_SHA,
+        len(EXCLUSION_PATHS) == 2
+        and type(study_driver.EXCLUSION_SHA) is str
+        and re.fullmatch("[0-9a-f]{64}", study_driver.EXCLUSION_SHA),
+        "two bounded parts of the frozen exclusion fixture required",
+    )
+    pieces = []
+    for path in EXCLUSION_PATHS:
+        identity = regular(path, 512000)
+        with original.open_regular(path) as stream:
+            part = stream.read(512001)
+        require(
+            len(part) == identity["bytes"]
+            and hashlib.sha256(part).hexdigest() == identity["sha256"],
+            "exclusion part changed",
+        )
+        pieces.append(part)
+    raw = b"".join(pieces)
+    require(
+        len(raw) <= 1024 * 1024
+        and hashlib.sha256(raw).hexdigest() == study_driver.EXCLUSION_SHA,
         "exact frozen all-observed prompt exclusions",
     )
-    value = read(EXCLUSION_PATH)
+    value = original.decode(raw)
     work.closed(
         value,
         "schema encoding formal_study_count formal_unique_prompts labels_or_scores_included "

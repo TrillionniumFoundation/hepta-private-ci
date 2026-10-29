@@ -23,8 +23,8 @@ require, canonical, sha = original.require, original.canonical, original.sha
 pin, read_pin, save = original.pin, original.read_pin, original.save
 SCHEMA = work.STUDY_SCHEMA
 # Publishing supplies exact identities; an unpublished candidate cannot execute.
-TRAINING_COMMIT = "0bd7019a06e34c69fcbc84f23dda8510689b9a8d"
-TRAINING_TREE = "1f4c5a62483cb686627a9acb16c3626c7e68f1c8"
+TRAINING_COMMIT = "c5728d02a7b64909302252f4986e33b56b91faa2"
+TRAINING_TREE = "b4508063fae0a4bfdd081e62531dc008e83c8961"
 EXCLUSION_SHA = "946d33b8f3cd95949f8eaf3623948639cf68c58214ad8b8f191ae0c2088606e4"
 
 
