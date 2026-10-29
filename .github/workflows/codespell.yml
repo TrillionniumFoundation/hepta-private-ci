@@ -24,6 +24,9 @@ jobs:
       - name: Codespell
         uses: codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579 # v2.2
         with:
+          config: .codespellrc
+          # Use only the repository's skip rules, without action defaults.
+          skip: ""
           ignore_words_file: .codespellignore
 
       - name: Check for a clean worktree
