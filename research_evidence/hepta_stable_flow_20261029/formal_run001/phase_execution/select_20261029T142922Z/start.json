@@ -1,0 +1,30 @@
+{
+  "command": [
+    "/workspace/scratch/45b3735e7225/hepta-oct29-venv/bin/python",
+    "-m",
+    "experiments.call_put_stable_flow.study",
+    "select",
+    "--output",
+    "/workspace/scratch/45b3735e7225/hepta-cfb/research_evidence/hepta_stable_flow_20261029/formal_run001"
+  ],
+  "phase": "select",
+  "protocol_sha256": "f94ff6491a2e98c1288ee2476404943f920042800d468435eba46d5235c0197b",
+  "runner_source_sha256": "a230a7924285d7cd3aa7e18ed9d5935ae49c9b0081c1b0ed8383cad757b17cf3",
+  "supporting": [
+    {
+      "sha256": "6dc691a5aeb0eb638c24df951da1f4be17eb87b7bdba44a36eb5c6f9e14a6416",
+      "snapshot": "support_00_training_complete_integrity_audit.json",
+      "source": "/workspace/scratch/45b3735e7225/hepta-cfb/research_evidence/hepta_stable_flow_20261029/independent_review/training_complete_integrity_audit.json"
+    }
+  ],
+  "thread_environment": {
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONHASHSEED": "0",
+    "PYTHONUNBUFFERED": "1",
+    "VECLIB_MAXIMUM_THREADS": "1"
+  },
+  "unix_time": 1793284162.7966535
+}
