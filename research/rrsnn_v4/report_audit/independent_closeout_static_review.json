@@ -1,0 +1,105 @@
+{
+  "schema": "rrsnn-v4-independent-closeout-static-review-1",
+  "created_at_utc": "2026-10-29T16:14:12.789939+00:00",
+  "reviewer": "/root/r5_real_execution",
+  "status": "passes_for_static_template_and_builder_scope",
+  "reviewed_sha256": {
+    "build_closeout.py": "c10aa579a40d74208eae60a62893b87949eac01c1f8b5424f30625d3e831d884",
+    "REPORT_TEMPLATE.zh-CN.md": "d836b8e28180997eb8afb4c45dfcec6bb7b9d118873229e3b2409df045cd639d",
+    "results/aggregate.json": "1ac919f5a07aebac96b3b7a49be9905a4f026ce5927d61464ba5aba3d12b8773",
+    "results/mechanism_contrasts.json": "6468c31ed77072794ed0a9997f49a11a88886c37b2fc240b560500e9582dba09",
+    "results/delivery_behavior_diagnostic.json": "25d5c7fd79cd72fdbdc761afa1b23f330f6d807a8fd324c482a631eaa912171b",
+    "results/delivery_behavior_diagnostic_provenance.json": "29aa158bffc22f505754e3e4b8ade55a889d695795e768e9a65bbb70e27cc929",
+    "results/precision_repair_report.json": "b35da0c6f7e1ed333b191dca66862ecea87f532d39c60332136942113f8cbbe1",
+    "precision_audit/independent_repair_result_review.json": "5f7c25fb6318ff609569c862758823a20fa5f4c27e14840e1e5c0f4eff08841e",
+    "hepta/r5_local_status.json": "9b476b15498e9380e77822ef7c45d2f032a9bafd5f04d05a116923dc5f457df3",
+    "hepta/rr_bridge_results/trained_latest.json": "ea46a817da890d049e2a88870df91f54a475b51e4b7a9c4bfe94f258a056fd6c",
+    "hepta/bootstrap_repair_results/proof_latest.json": "2a684268e7dbfe7f43cc570d7400f8b01224b415ea7cd14360a18eee0913f825",
+    "hepta/ci_observation/observation.json": "c19d6f11a55e791cd67ce7ca02ff8e1f64d715f44e9219d22d9ed3be69e261b2",
+    "model_validation.json": "29ebc332c6db7bbf5e37ed45aec6b2e9443769b84367eef642ba760c3ec7ae30",
+    "baseline_validation_results.json": "a4e6f0189c71f750b0ac70a8879be1fb494670c7f0f70b6c3b8e8667bb989a59",
+    "results/probability_calibration/summary.json": "304687fbc05db989e74491b1f3b8b2b0be8517b649e167af8e8d64c411513e8c"
+  },
+  "authorized_narrow_edits": [
+    "Added behavior.aggregate_sha256 equality guard against current main aggregate.",
+    "Clarified all three behavior percentages use every one of the 5,120 paths per split as denominator."
+  ],
+  "checks": {
+    "builder_syntax_parsed_without_execution": true,
+    "template_tokens_exactly_match_builder_tokens": true,
+    "template_token_count": 21,
+    "read_only_cli_branch_calls_load_complete_and_print_only": true,
+    "resource_matrix_completion_required_before_generation": true,
+    "primary_utility_acceptance_matches_pre_data_freeze": true,
+    "current_test_and_shift_primary_ci_upper_bounds_below_zero": true,
+    "normalized_utility_percent_and_gain_percentage_point_scales_distinct": true,
+    "all_five_mechanism_contrasts_retained_and_current_test_shift_intervals_include_zero": true,
+    "behavior_three_denominators_and_table_value_mappings_match_fixed_diagnostic": true,
+    "behavior_guard_binds_current_main_aggregate": true,
+    "counterfactual_effect_difference_sign_unambiguous": true,
+    "original_and_repaired_event_failures_not_conflated": true,
+    "original_453_combined_failures_distinguish_202_type_mismatches_and_251_aligned_time_failures": true,
+    "development_probe_limited_to_recorded_fields": true,
+    "native_bootstrap_and_first_joint_bridge_checkpoint_scopes_distinct": true,
+    "isolated_precision_repair_not_claimed_native_bridge_qualified": true,
+    "exact_event_baseline_and_score_gradient_claims_match_original_validation_receipts": true,
+    "owner_tick_vs_queue_vs_batch_units_and_scope_correct": true,
+    "no_full_cell_dot_future_window_global_optimality_or_production_activation_claim": true,
+    "all_14_frozen_sources_unchanged": true
+  },
+  "current_primary_gain_summary": {
+    "test": {
+      "ci95": [
+        -56.275504709626595,
+        -40.261291490499424
+      ],
+      "mean": -47.84416506916263,
+      "training_seed_means": [
+        -37.99635076307125,
+        -61.72013310872517,
+        -44.81388027133072,
+        -43.00445892344153,
+        -51.68600227924445
+      ]
+    },
+    "shift": {
+      "ci95": [
+        -63.832672902400866,
+        -50.40915782688043
+      ],
+      "mean": -57.32195849552549,
+      "training_seed_means": [
+        -48.79757972176269,
+        -63.57497356992667,
+        -60.60035557076118,
+        -50.03028052089715,
+        -63.60660309427979
+      ]
+    },
+    "paired": {
+      "ci95": [
+        -59.4881279549922,
+        -51.08044657641383
+      ],
+      "mean": -55.350782766186306,
+      "training_seed_means": [
+        -48.90141313249015,
+        -53.449652673385934,
+        -60.73237801308689,
+        -53.121135910147935,
+        -60.54933410182062
+      ]
+    }
+  },
+  "remaining_static_blockers": [],
+  "not_yet_verified": [
+    "Final 80-condition resource completion and the rendered resource table after its completion.",
+    "Rendered REPORT.zh-CN.md and results/closeout.json identities, all final instantiated numbers and source-evidence SHA links."
+  ],
+  "execution_performed": "Only syntax parsing, text inspection, JSON reads, hashes and direct arithmetic on existing aggregate/diagnostic evidence. No report generation, no actor, no training, no performance run.",
+  "scope_limits": [
+    "The --verify-only branch checks complete evidence and hashes; it does not itself recompute and compare the rendered Markdown document. A separate final numeric audit remains required.",
+    "No external bibliography re-verification or independent production qualification was performed by this static review.",
+    "This receipt does not assert all experiment or production gates pass. The negative original numerical and utility conclusions remain in force."
+  ]
+}
