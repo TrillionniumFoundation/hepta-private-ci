@@ -1,0 +1,418 @@
+{
+  "schema": "rr-snn-addendum-node-audit-1",
+  "sourceCommit": "cdafba54311c42202bb0e9c957dc8c2145031778",
+  "node": "v22.23.4",
+  "v8": "12.4.254.21-node.57",
+  "platform": "linux",
+  "arch": "x64",
+  "allPassed": true,
+  "baseVerifiedCommit": "13712a4a024a85f60dde6eb9a55877d34f186e03",
+  "baseVerifiedRun": 40870313419,
+  "records": [
+    {
+      "file": "audit_network_optimization.cjs",
+      "status": 0,
+      "signal": null,
+      "success": true,
+      "error": null,
+      "result": {
+        "schema": "rr-snn-frozen-fit-optimization-audit-1",
+        "training": {
+          "episodes": 128,
+          "seeds": [
+            10000,
+            10127
+          ],
+          "horizon": 4
+        },
+        "objective": {
+          "regularization": 0.01,
+          "appliedOncePerNeuronVector": true,
+          "fixedUpChannelConstantsCancel": true,
+          "optimizerGradientDivisionByRecordCountDoesNotChangeMinimizer": true
+        },
+        "geometry": {
+          "objective": "lambda/2 * ||theta||^2 + sum(E_r * exp(f_r.theta) - N_r * f_r.theta)",
+          "hessian": "lambda * I + sum(E_r * exp(f_r.theta) * f_r * f_r^T)",
+          "domain": "intersection of the closed slabs -40 <= f_r.theta <= 40",
+          "strongConvexity": "E_r >= 0 and lambda > 0 imply Hessian >= lambda * I",
+          "objectiveBound": "F(theta)-F*_D <= ||gradient F(theta)||^2/(2*lambda)",
+          "parameterBound": "||theta-theta*_D|| <= ||gradient F(theta)||/lambda",
+          "appliesToConstrainedOptimum": true,
+          "floatingPointQualification": "Computed gradients and bounds use Float64; this is not a directed-rounding interval certificate."
+        },
+        "units": [
+          {
+            "unit": 0,
+            "records": 1142,
+            "regularizedPulseNll": 177.20488591482018,
+            "gradient": [
+              -0.00003149561191806427,
+              -0.0000036979257467817384,
+              -0.000010579721690717747,
+              -0.000014309848909987988,
+              -0.0000033401302260149812
+            ],
+            "gradientL2": 0.0000365172148681754,
+            "gradientLInfinity": 0.00003149561191806427,
+            "gradientArchiveMaxDiff": 9.992007221626409e-15,
+            "logRateRange": [
+              0.15167890575662646,
+              0.955391246319819
+            ],
+            "hessian": [
+              [
+                441.00619298086497,
+                36.997243395881895,
+                171.99425183450407,
+                128.9659261117189,
+                50.24313266786219
+              ],
+              [
+                36.997243395881895,
+                57.82679488693297,
+                0,
+                4.618902687705844,
+                2.3829520584636366
+              ],
+              [
+                171.99425183450407,
+                0,
+                172.00425183450406,
+                56.23308530122762,
+                22.95386662755746
+              ],
+              [
+                128.9659261117189,
+                4.618902687705844,
+                56.23308530122762,
+                73.76502479204736,
+                16.851821382792455
+              ],
+              [
+                50.24313266786219,
+                2.3829520584636366,
+                22.95386662755746,
+                16.851821382792455,
+                11.730340034162243
+              ]
+            ],
+            "strongConvexityLowerBound": 0.01,
+            "objectiveGapUpperBound": 6.667534908642452e-8,
+            "objectiveGapUpperBoundPerTrainingEpisode": 5.209011647376916e-10,
+            "parameterL2DistanceUpperBound": 0.00365172148681754
+          },
+          {
+            "unit": 1,
+            "records": 1203,
+            "regularizedPulseNll": 289.10964790908577,
+            "gradient": [
+              -0.0000018028658268498532,
+              0.0000018349708242326734,
+              -0.0000059167841716112335,
+              -1.4779333559755692e-7,
+              -8.883035428342012e-7
+            ],
+            "gradientL2": 0.0000065143460226715175,
+            "gradientLInfinity": 0.0000059167841716112335,
+            "gradientArchiveMaxDiff": 4.884981308350689e-15,
+            "logRateRange": [
+              -0.07204429609738096,
+              0.8168639989068694
+            ],
+            "hessian": [
+              [
+                384.00943239761403,
+                5.0013421121713115,
+                162.9962358290034,
+                93.60755384959019,
+                43.15905534633009
+              ],
+              [
+                5.0013421121713115,
+                47.94505203852457,
+                0,
+                -1.9228470932487058,
+                -1.4316595722445924
+              ],
+              [
+                162.9962358290034,
+                0,
+                163.0062358290034,
+                43.538658545843255,
+                20.490289081756632
+              ],
+              [
+                93.60755384959019,
+                -1.9228470932487058,
+                43.538658545843255,
+                50.24067355493439,
+                12.550256716790454
+              ],
+              [
+                43.15905534633009,
+                -1.4316595722445924,
+                20.490289081756632,
+                12.550256716790456,
+                9.57316624584303
+              ]
+            ],
+            "strongConvexityLowerBound": 0.01,
+            "objectiveGapUpperBound": 2.121835205154811e-9,
+            "objectiveGapUpperBoundPerTrainingEpisode": 1.657683754027196e-11,
+            "parameterL2DistanceUpperBound": 0.0006514346022671517
+          }
+        ],
+        "scope": {
+          "trainOnly": true,
+          "refitted": false,
+          "heldoutUsed": false,
+          "freeGenerationUsed": false,
+          "modelOrProtocolChanged": false,
+          "calibrationPassed": null,
+          "utilitySuperiorityEstablished": false
+        }
+      },
+      "semanticSha256": "8d86e6da2697dcd76d336b5eecb050188a2c7579b00937d5d63493989dd627f9"
+    },
+    {
+      "file": "audit_diagnostic_utility.cjs",
+      "status": 0,
+      "signal": null,
+      "success": true,
+      "error": null,
+      "result": {
+        "schema": "rr-diagnostic-objective-audit-1",
+        "decisionCases": 108,
+        "cases": [
+          {
+            "maturity": [
+              1,
+              3
+            ],
+            "shock": 0,
+            "physicalPulses": 0,
+            "retained": 4,
+            "terminalTotalBudget": 10,
+            "score": 6.2,
+            "theoreticalUpper": 6.2
+          },
+          {
+            "maturity": [
+              1,
+              3
+            ],
+            "shock": 2,
+            "physicalPulses": 0,
+            "retained": 4,
+            "terminalTotalBudget": 6,
+            "score": 5.4,
+            "theoreticalUpper": 5.4
+          },
+          {
+            "maturity": [
+              2,
+              2
+            ],
+            "shock": 0,
+            "physicalPulses": 0,
+            "retained": 4,
+            "terminalTotalBudget": 10,
+            "score": 6.2,
+            "theoreticalUpper": 6.2
+          },
+          {
+            "maturity": [
+              2,
+              2
+            ],
+            "shock": 2,
+            "physicalPulses": 0,
+            "retained": 4,
+            "terminalTotalBudget": 6,
+            "score": 5.4,
+            "theoreticalUpper": 5.4
+          }
+        ],
+        "impliedScore": ".2 * final total budget + 1.2 * retained count + emitted reward - renewal loss",
+        "algebra": {
+          "renewalIncrement": 0.85,
+          "deadlineEmitIncrementUpper": 0,
+          "perUnitScore": ".2 * (6 + added - removed - ordinaryPulses - retained) + 1.05 * retained",
+          "perUnitUpper": "3.1 - .2 * shock",
+          "twoUnitUpper": "6.2 - .4 * shock",
+          "gapIdentityPerUnit": ".2 * ((1-added)+(removed+ordinaryPulses-shock)) + .85*(2-retained)",
+          "integerScaledGap": "20*(Uzero-U) = 4*((1-added)+(removed+ordinaryPulses-shock)) + 17*(2-retained)",
+          "bounds": [
+            "added<=1",
+            "retained<=2",
+            "removed+ordinaryPulses>=shock",
+            "if ordinaryPulses>=1 then removed+ordinaryPulses>=shock+1"
+          ],
+          "assumptions": [
+            "complete nonaborted trajectories of the fixed diagnostic",
+            "same two obligations per unit; costs and events fixed as diagnostic",
+            "shock is 0 or 2 at 1.5; refill is 1 at 2.5; budget starts at 6",
+            "deadline policy uses the unchanged .2 budget +1.2 retained continuation",
+            "ordinary physical pulses have no task reward in this implied additive score"
+          ],
+          "strictLossIfAnyOrdinaryPulseAtLeast": 0.2
+        },
+        "scope": {
+          "valueWeightedTask": false,
+          "matchedArchitectureBenchmark": false,
+          "registeredR4Utility": false,
+          "calibrationAcceptance": false,
+          "finiteDiagnosticDegeneracyEstablished": true,
+          "generalRRSNNImpossibility": false
+        }
+      },
+      "semanticSha256": "b81a6abbffbab70a1fc8954ef1f20a1ef43276a65e63d875901f9004df9fecae"
+    }
+  ],
+  "sources": [
+    {
+      "file": "audit_diagnostic_utility.cjs",
+      "sha256": "632a56948ad77b34da3805969337eb2afa692cd04a25eb7d3d63a7cc0608c5bd",
+      "gitBlobSha1": "254ae81c8856e07779ea7d4f33b6c11effe72b0e"
+    },
+    {
+      "file": "audit_network_optimization.cjs",
+      "sha256": "dd8c992f16d8ecaade5428e6e9d442e05aaafb5c6ddac31453e21276d51f9246",
+      "gitBlobSha1": "a147c172c7ed2deab13d4c66f3c9ebd8857d7cfc"
+    },
+    {
+      "file": "brownian_interval.cjs",
+      "sha256": "7ba2959664c42cc41c9c6825b975d729155b4917d1bac0833eb79a18464e1784",
+      "gitBlobSha1": "428c5d843642aee68cda3cbc0d8ad160507224c4"
+    },
+    {
+      "file": "continuation_operator.cjs",
+      "sha256": "3d489b9d8756762aae13e07b348232fa2ee8f206fbeb111460086bb45720dd3e",
+      "gitBlobSha1": "6569a8667019c4f7960d732195c358e0f0111ff8"
+    },
+    {
+      "file": "ctmc_gradients.cjs",
+      "sha256": "9adba73c3cddf6f541e8884e593ed1acbc95e437205d3f41d4a41bfa4e829a0e",
+      "gitBlobSha1": "8ca8a48769c9d18a2362c53d3b9d9ce89314affb"
+    },
+    {
+      "file": "delayed_network.cjs",
+      "sha256": "35f5b53d21985b9a5952dadb8670fff81ed2136111e32f256e7ca119145c68f4",
+      "gitBlobSha1": "dfe5b92359e59df3efb4e4753acf2437faf03bd8"
+    },
+    {
+      "file": "evaluate_network_calibration.cjs",
+      "sha256": "6fb06969c439b0aa1536dec6c080255edfbd12095f283bbe0d612b7e817caa72",
+      "gitBlobSha1": "8b7c839cabda47537c3fe59ebdbb6d2c7c4f6cca"
+    },
+    {
+      "file": "event_runtime.cjs",
+      "sha256": "9464aee9c7154cd59b0e851c0b9372f091cc2ca0555cf213883de9a22ab89a7e",
+      "gitBlobSha1": "408cd15757819378f6abb9b482a76e03294a9929"
+    },
+    {
+      "file": "gradient_protocol.json",
+      "sha256": "85ac28b8385d4d26bf5539bb276457a76d1277344819db3291fb574d3de7f81c",
+      "gitBlobSha1": "db797f6e6d417232fc3381ea782c55a41a1398c9"
+    },
+    {
+      "file": "joint_replay.cjs",
+      "sha256": "aef277291f41a49f4632909d0dc5554feeded17957c0b750957e78b97f4291e4",
+      "gitBlobSha1": "5d7f003969e473ffdc917034a410a698f3b3bd9e"
+    },
+    {
+      "file": "learn_network.cjs",
+      "sha256": "6e45e8a475628058a5ca54371af40b13f0d1ad0e429133e864a467761c031e1e",
+      "gitBlobSha1": "d21733216a163418d0e226a849f6d2d20744f2dc"
+    },
+    {
+      "file": "network_calibration_protocol.json",
+      "sha256": "9a1d6f867b61a474c58b01879a48429272afd638d6b37a1ff5e7bffd726333c6",
+      "gitBlobSha1": "6b8de54bc0288853209f8a1ff51ee6b9181f234d"
+    },
+    {
+      "file": "network_joint_replay.cjs",
+      "sha256": "6299afbbcc0e21ca9772f32f4c016d312693cded6a06d1fee7ecf80c928b488e",
+      "gitBlobSha1": "c17c1f4f00584d352f94f3a90340a72811b85120"
+    },
+    {
+      "file": "network_learning_protocol.json",
+      "sha256": "0aa8f3b5f9c51f620da2c2d6ddde9ad031b8fca5ed4aaf3b3657ac0a661c1f31",
+      "gitBlobSha1": "fe984a12fde95f95b2b9834ff2afbfcf114d8524"
+    },
+    {
+      "file": "network_learning_results.json",
+      "sha256": "823dbd2dfa7af63d9c784bc72756f3fd6deed8ff934de82a0fc8fc45398bb442",
+      "gitBlobSha1": "c29622df9aa4ffb0cde49b7d787125f95018f4c6"
+    },
+    {
+      "file": "protocol.json",
+      "sha256": "4a22dac71478b13f55d19fa7bdf0205d82c9aaef902b4f70db4ac50069e9415c",
+      "gitBlobSha1": "58136122f5d4b4fcf97b58074c2b43b0785a68aa"
+    },
+    {
+      "file": "validate.cjs",
+      "sha256": "0414ae38cf88b82470fddb0d72d86817daedcf1fff5ec279f2ba6214176491d2",
+      "gitBlobSha1": "d07a3c0dc24b01c2a4849ea395ab0c0e27741b8d"
+    },
+    {
+      "file": "validate_brownian.cjs",
+      "sha256": "edd82260f3adf120a89fd6f4b4d788c50216f1c571fd729044bf1b73d6d25eca",
+      "gitBlobSha1": "0984eaf3d72243959fa5b6ea4f974022431dbb2f"
+    },
+    {
+      "file": "validate_ctmc_gradients.cjs",
+      "sha256": "6dcbf64c36daea258b59d16a99dbe778b19c89c4520e8b671bb6685692bf8774",
+      "gitBlobSha1": "e59a69966c0130b477c980027dcd21acbb9bb1fd"
+    },
+    {
+      "file": "validate_events.cjs",
+      "sha256": "8c993d48cc8f0fea74d83054b05794d253b094a1e650b6fe12bb06ff9c993840",
+      "gitBlobSha1": "f9ec41d6b22f3d197c39676c520465c51c6688bb"
+    },
+    {
+      "file": "validate_network.cjs",
+      "sha256": "bab7b425c272bfcd6495134d9472a78065a82fc38757aa406329a77f75e3af16",
+      "gitBlobSha1": "868baef1a973d79a15d41ef3e8a9de7403dcd20d"
+    },
+    {
+      "file": "validate_network_replay.cjs",
+      "sha256": "08490d1f14b0611f07bc577fed8649378c263af891647112ebb8d99a927dfb4f",
+      "gitBlobSha1": "3e7f1d5fb2372c99df12b66ca3c6013ebe6aff91"
+    },
+    {
+      "file": "validate_network_replay_fs.cjs",
+      "sha256": "0f28d0f7c881368e121540037d7945fa3c1c332483fab234fe1156d3f8b8edc2",
+      "gitBlobSha1": "85fddf275d78931ee637361afb32b11489ecb985"
+    },
+    {
+      "file": "validate_replay.cjs",
+      "sha256": "b458169d8cd2e455b5d24a118738913a4b22a131fdc6a490a734323fb237e2ee",
+      "gitBlobSha1": "6f4b25fff959a8ed061a4ac7b355940c37b4de5a"
+    },
+    {
+      "file": "validate_replay_fs.cjs",
+      "sha256": "458d3d135943192587e4284827abd6a736ef3576ca2e0c1728303525a0f6143d",
+      "gitBlobSha1": "23a732f8786d5fcb1b8db0bb11335e86b1506934"
+    },
+    {
+      "file": "verify_audits.cjs",
+      "sha256": "3fe372dec86bbf56494e260c9082e78d73638cdf7aa81ae97929f66bb2d0556c",
+      "gitBlobSha1": "bc02d500dce368b93b45014ad3fd3ed160d88d6e"
+    },
+    {
+      "file": "verify_node.cjs",
+      "sha256": "4384630fa02de1c24236f9b597892a49877a49081f1d663136f2a022153828fd",
+      "gitBlobSha1": "51e1feb54a458a316c4cb024e9b8c4f10c9f4d6f"
+    }
+  ],
+  "scope": {
+    "newCandidateFitted": false,
+    "newHoldoutUsed": false,
+    "r4ArchitectureBenchmark": false,
+    "targetDotHost": false,
+    "realHeptaOwnerExecuted": false,
+    "activationAllowed": false
+  }
+}

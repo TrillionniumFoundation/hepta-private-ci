@@ -154,7 +154,19 @@
     "codespellAfterWitnessVariableRename": "success",
     "runId": 40870314993,
     "jobId": 123435647556,
-    "modelAndProtocolsUnchanged": true
+    "modelAndProtocolsUnchanged": true,
+    "auditCodespell": {
+      "runId": 40872373341,
+      "jobId": 123442436795,
+      "status": "success"
+    },
+    "auditBlobCheck": {
+      "runId": 40872373341,
+      "jobId": 123442436885,
+      "status": "blocked before checkout",
+      "cause": "Fence resident service unsupported_resolver_layout",
+      "retryStatus": "GitHub rejects single-job rerun while containing run is still active; no check disabled"
+    }
   },
   "diagnosticAddendum": {
     "optimizerConvergence": {
@@ -175,7 +187,19 @@
       "fullArchitectureComparison": false,
       "generalImpossibility": false
     },
-    "environmentDistinction": "R4 is unimplemented research work, not logically prevented by unavailable local execution. Real dot/owner/future/Cell receipts require actual access and observations."
+    "environmentDistinction": "R4 is unimplemented research work, not logically prevented by unavailable local execution. Real dot/owner/future/Cell receipts require actual access and observations.",
+    "verifiedNode": {
+      "runId": 40872331647,
+      "jobId": 123442290338,
+      "sourceCommit": "cdafba54311c42202bb0e9c957dc8c2145031778",
+      "allPassed": true,
+      "entrypoints": 2,
+      "unchangedBaseExecutableSources": true,
+      "gradientArchiveMaxDiff": [
+        9.992007221626409e-15,
+        4.884981308350689e-15
+      ]
+    }
   },
   "currentCandidateDecision": {
     "heptaPromotion": "no-go",

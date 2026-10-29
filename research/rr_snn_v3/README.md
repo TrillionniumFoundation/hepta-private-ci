@@ -91,3 +91,5 @@ All research PRs remain separate bounded review units; see the report for links.
 ## Frozen-candidate diagnostic addendum
 
 [The added audit](DIAGNOSTIC_AUDITS.zh-CN.md) bounds the original training objective gap without refitting. It also proves that an implied budget/retention score for the present diagnostic rewards zero ordinary pulses. Two new audit entrypoints make these findings executable. This is not a registered R4 value task or a matched architecture benchmark; the existing generation discrepancy and all unmet integration requirements remain.
+
+Both added audit entrypoints passed in [Node run 40872331647](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40872331647), with the [full execution receipt](evidence/node_audit_receipt_40872331647.json) retained. The original executable source identities remain unchanged. Small Float64 differences in the train-only gradient are recorded rather than claimed as cross-runtime bit identity.
