@@ -1,6 +1,8 @@
 //! Isolated qualification harness; production authorities are not substituted.
 pub mod owner;
 pub mod persist;
+pub mod representative;
+mod runtime_output;
 pub mod runtime_bridge;
 pub mod snapshot;
 pub mod tool_session;
@@ -17,3 +19,4 @@ pub fn tool_spec() -> Value {
 
 #[cfg(test)]
 mod owner_tests;
+

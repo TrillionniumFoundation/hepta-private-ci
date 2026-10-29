@@ -115,8 +115,24 @@ pub async fn run_tool<T: ToolPort>(
                 {
                     anyhow::bail!("tool output is not an exact terminal observation");
                 }
-                let output = json!({"exit_code":receipt.tool_outcome.exit_code,
-                    "stdout":String::from_utf8_lossy(&stdout),"stderr":String::from_utf8_lossy(&stderr)}).to_string();
+                let presentation = tokio::select! {
+                    biased;
+                    _ = cancel.cancelled(), if !pending.cancel_requested && !state.cancelled => {
+                        state.cancelled = true;
+                        Err(anyhow::anyhow!("tool output presentation cancelled"))
+                    }
+                    result = tokio::time::timeout_at(deadline,
+                        tools.present_output(&pending.intent, &receipt, &stdout, &stderr)) =>
+                        result.context("tool output presentation deadline").and_then(|value| value),
+                };
+                let output = match presentation {
+                    Ok(output) => output,
+                    Err(error) => {
+                        state.last_error = Some(format!("tool output presentation unavailable: {error}"));
+                        owner.checkpoint(state).await?;
+                        return Ok(json!({"status":"pending_tool","error":state.last_error}));
+                    }
+                };
                 state.context.push(json!({"type":"function_call_output","call_id":pending.call.call_id,"output":output}));
                 state.completed_call_ids.push(pending.call.call_id);
                 state.pending_tool = None;

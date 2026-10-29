@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.representative-local-validation.v1",
+  "recorded_at_utc": "2026-10-29T12:05:09.252699+00:00",
+  "python_version": "3.12.14",
+  "python_executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+  "runs": [
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qualification/native-agent-v1/production-qualification",
+        "-p",
+        "test_representative*.py",
+        "-v"
+      ],
+      "cwd_scope": "local staged candidate, not remote host main",
+      "exit_code": 0,
+      "test_count": 6,
+      "expected_count": 6,
+      "passed": true,
+      "wall_seconds": 3.3221895230017253,
+      "stdout": "",
+      "stderr": "test_actual_workspace_cases_and_immutable_test_boundary (test_representative.RepresentativeTests.test_actual_workspace_cases_and_immutable_test_boundary) ... ok\ntest_audit_binds_real_repair_feedback_to_original_proposals_and_admissions (test_representative.RepresentativeTests.test_audit_binds_real_repair_feedback_to_original_proposals_and_admissions) ... ok\ntest_replay_requires_original_failed_feedback_and_preserves_same_stream (test_representative.RepresentativeTests.test_replay_requires_original_failed_feedback_and_preserves_same_stream) ... ok\ntest_cancel_reconciliation_rejects_a_lost_cancel_checkpoint (test_representative_faults.RepresentativeFaultTests.test_cancel_reconciliation_rejects_a_lost_cancel_checkpoint) ... ok\ntest_frozen_processes_emit_started_and_preserve_actual_process_lifecycle (test_representative_faults.RepresentativeFaultTests.test_frozen_processes_emit_started_and_preserve_actual_process_lifecycle) ... ok\ntest_uninjected_eof_does_not_authorize_another_runner (test_representative_faults.RepresentativeFaultTests.test_uninjected_eof_does_not_authorize_another_runner) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 3.217s\n\nOK\n"
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qualification/native-agent-v1",
+        "-p",
+        "test_protocol_boundaries.py",
+        "-v"
+      ],
+      "cwd_scope": "local staged candidate, not remote host main",
+      "exit_code": 0,
+      "test_count": 14,
+      "expected_count": 14,
+      "passed": true,
+      "wall_seconds": 0.11469093800405972,
+      "stdout": "",
+      "stderr": "test_answer_usage_and_completion_must_belong_to_current_turn (test_protocol_boundaries.DriverBoundaryTests.test_answer_usage_and_completion_must_belong_to_current_turn) ... ok\ntest_completed_turn_preserves_call_and_reply_session (test_protocol_boundaries.DriverBoundaryTests.test_completed_turn_preserves_call_and_reply_session) ... ok\ntest_deadline_is_rechecked_after_queue_wakeup (test_protocol_boundaries.DriverBoundaryTests.test_deadline_is_rechecked_after_queue_wakeup) ... ok\ntest_duplicate_call_cannot_execute_twice (test_protocol_boundaries.DriverBoundaryTests.test_duplicate_call_cannot_execute_twice) ... ok\ntest_early_tool_request_waits_for_original_turn_identity (test_protocol_boundaries.DriverBoundaryTests.test_early_tool_request_waits_for_original_turn_identity) ... ok\ntest_expired_deadline_cannot_consume_already_queued_response (test_protocol_boundaries.DriverBoundaryTests.test_expired_deadline_cannot_consume_already_queued_response) ... ok\ntest_late_successful_turn_usage_cannot_pollute_next_measurement (test_protocol_boundaries.DriverBoundaryTests.test_late_successful_turn_usage_cannot_pollute_next_measurement) ... ok\ntest_mismatched_backend_session_does_not_answer_original_tool (test_protocol_boundaries.DriverBoundaryTests.test_mismatched_backend_session_does_not_answer_original_tool) ... ok\ntest_pending_tool_aborts_lane_instead_of_reusing_unread_events (test_protocol_boundaries.DriverBoundaryTests.test_pending_tool_aborts_lane_instead_of_reusing_unread_events) ... ok\ntest_wrong_tool_scope_never_reaches_backend (test_protocol_boundaries.DriverBoundaryTests.test_wrong_tool_scope_never_reaches_backend) ... ok\ntest_bad_tool_results_cannot_receive_correct_replay_answer (test_protocol_boundaries.ReplayBoundaryTests.test_bad_tool_results_cannot_receive_correct_replay_answer) ... ok\ntest_native_and_codex_exact_real_tool_feedback_are_accepted (test_protocol_boundaries.ReplayBoundaryTests.test_native_and_codex_exact_real_tool_feedback_are_accepted) ... ok\ntest_stream_item_added_does_not_duplicate_arguments_or_text (test_protocol_boundaries.ReplayBoundaryTests.test_stream_item_added_does_not_duplicate_arguments_or_text) ... ok\ntest_wrong_missing_and_duplicate_call_feedback_are_rejected (test_protocol_boundaries.ReplayBoundaryTests.test_wrong_missing_and_duplicate_call_feedback_are_rejected) ... ok\n\n----------------------------------------------------------------------\nRan 14 tests in 0.003s\n\nOK\n"
+    }
+  ],
+  "source_sha256": {
+    "qualification/native-agent-v1/production-qualification/mcp_fixture.py": "cb91a2266946b56ecc5a0e87419d10897e6ef51c14a2be7f1e03a4da8a880258",
+    "qualification/native-agent-v1/production-qualification/representative_audit.py": "a458460e8a1014eb5fe0a51a32c6a6f2afa219656e8a9408e4a2ea7ea250bab4",
+    "qualification/native-agent-v1/production-qualification/representative_compare.py": "fb51bcc087bf0edbe37488fa94dbf3940fe547353202dab30a421dfe116f18c8",
+    "qualification/native-agent-v1/production-qualification/representative_faults.py": "359179937f99d23cfb9bdab4de5cd43a2b798354e8ced05e0cb924fcf80d9b30",
+    "qualification/native-agent-v1/production-qualification/representative_runtime_evidence.py": "485e74caaf28198cc10e016f6d2b44b3414e4146be7cf192948741fadef2cc2d",
+    "qualification/native-agent-v1/production-qualification/script_gateway.py": "de92366cd871ccf9f3a346e815c803a585bcf542cbe2737ed39da0dac1fdd44f",
+    "qualification/native-agent-v1/production-qualification/test_representative.py": "cd9a17a6d033af6f5c97c7546b8673547e00036019f3281ab9618aa19ec9c725",
+    "qualification/native-agent-v1/production-qualification/test_representative_faults.py": "392bb4d8b316e24d105bd65f11e41cbf99cc9c0a70c1158de597b182a15a71c3",
+    "qualification/native-agent-v1/production-qualification/workspace_tool.py": "58b17f523e42f7dfa3a5920fb487b81ceaab1f4afb8aee1c576894c9c3ee4b86",
+    "qualification/native-agent-v1/model_gateway.py": "8e4776d87e85dbea4aae349582c513c139ca10731492c1357d6ec6788035e0b3",
+    "qualification/native-agent-v1/protocol_driver.py": "9a4a83f5c1a629062aea16a6dc5ec500a2d00eaa4325965d943a8acd04868272",
+    "qualification/native-agent-v1/test_benchmark_gate.py": "354e4cc210e984f09e2a7a2cf5da34de88e2870efe1efca1bc13df08ffed1aac",
+    "qualification/native-agent-v1/test_protocol_boundaries.py": "38c618e139c42cb77895cba31c85877a959df027d76a8729dc211937a0912639"
+  },
+  "scope": "Python fixture, capture-audit, process-wrapper and protocol tests only; no Rust compilation or real Hepta job owner run in this record",
+  "all_passed": true
+}

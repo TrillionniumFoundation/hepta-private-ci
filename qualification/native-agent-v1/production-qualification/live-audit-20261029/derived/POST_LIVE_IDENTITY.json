@@ -1,0 +1,242 @@
+{
+  "schema": "hepta.p1.identity-audit.v1",
+  "raw_receipts": [
+    {
+      "path": "post-live-ai395-final-read.json",
+      "sha256": "2fcd89142967b3738f90dbb953f071a9fe66bd57e19f2fb7f9127a24f7be3f02",
+      "capture_sha256": "132421c84e8b75d730933090e3b7e12afc369dfa6026ee565d93b34c71b387ef",
+      "capture_bytes": 3089,
+      "session_id": "dpty-076a034348f68070209d02cf2e7991e6d6f2504216d33827e4051e4afa99078f",
+      "host": "ai395",
+      "exit_code": 0,
+      "output_complete": true
+    },
+    {
+      "path": "post-live-main-read.json",
+      "sha256": "c6ef71e746f00c6097a87bdc2897691af6722a4e534a9f679653f1683af4d194",
+      "capture_sha256": "4d9541945452439e228e5c2ab940858449c6158f24a41230b662bb5cf6791974",
+      "capture_bytes": 2353,
+      "session_id": "dpty-7106cd4614ae83b123ddf4b5954c46e3c2e320ff421c62753e1220171b6cc866",
+      "host": "main",
+      "exit_code": 0,
+      "output_complete": true
+    }
+  ],
+  "before_evidence_sha256": "ffa58a7d9240f5760550b26cffb95cc7da101d820e021cba4e9257603b305627",
+  "model_identity": {
+    "schema": "hepta.model-identity.v1",
+    "model": "qwen38-flash-next-uc",
+    "response_model": "qwen38-flash-next-uc",
+    "model_sha256": "cedf1e08063f6df77926e1169f67b327dcc6301b5b329589615bdf09d4895f7e",
+    "evidence_sha256": "ffa58a7d9240f5760550b26cffb95cc7da101d820e021cba4e9257603b305627",
+    "provider_revision": "open-responses-unified-native/r12-reasoning-loop-20261028; llama.cpp/0.7.0-dev+620d222; routing/14cc9e9df85b3408dee556750fb680a13a5f6b4793400f87d97d0cad04c6f506",
+    "evidence_file": "MODEL_IDENTITY_EVIDENCE.json"
+  },
+  "post_live_ai395": {
+    "schema": "hepta.representative.post-live-model-identity.v1",
+    "at_unix_seconds": 1793289400.2057686,
+    "elapsed_seconds": 196.12484034098452,
+    "binding_before": {
+      "pid": 188315,
+      "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+      "start_ticks": "3487379",
+      "exe": "/home/qq/local-llm/releases/candidate-offon-causal-v-zero-20261020-r5b/bin/llama-server",
+      "exe_sha256": "32d8e90c6a728845204d9f8a6c82d36df5ff692418963769b33c83784a245d13",
+      "model": "/home/qq/local-llm/models/Qwen3.8-Flash-Next-Uncensored-IQ4XS-NGQ4.gguf",
+      "model_stat": {
+        "device": 66306,
+        "inode": 46279858,
+        "size": 98403356224,
+        "mtime_ns": 1791254091051789893
+      }
+    },
+    "binding_after": {
+      "pid": 188315,
+      "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+      "start_ticks": "3487379",
+      "exe": "/home/qq/local-llm/releases/candidate-offon-causal-v-zero-20261020-r5b/bin/llama-server",
+      "exe_sha256": "32d8e90c6a728845204d9f8a6c82d36df5ff692418963769b33c83784a245d13",
+      "model": "/home/qq/local-llm/models/Qwen3.8-Flash-Next-Uncensored-IQ4XS-NGQ4.gguf",
+      "model_stat": {
+        "device": 66306,
+        "inode": 46279858,
+        "size": 98403356224,
+        "mtime_ns": 1791254091051789893
+      }
+    },
+    "same_as_before_live": true,
+    "mapped_libraries": [
+      {
+        "path": "/home/qq/local-llm/releases/candidate-offon-causal-v-zero-20261020-r5b/bin/libggml-base.so.0.27.0",
+        "bytes": 942560,
+        "sha256": "5c67bfe9834b9c2cad480454f4519581199c79606b4baf44ca8db409e17779af"
+      },
+      {
+        "path": "/home/qq/local-llm/releases/candidate-offon-causal-v-zero-20261020-r5b/bin/libggml-cpu.so.0.27.0",
+        "bytes": 1625184,
+        "sha256": "9f18185fcf9fd92aeebaf2d8bd115737e58641e33ba7fddd3e5d39a884fc8044"
+      },
+      {
+        "path": "/home/qq/local-llm/releases/candidate-offon-causal-v-zero-20261020-r5b/bin/libggml-vulkan.so.0.27.0",
+        "bytes": 41234384,
+        "sha256": "a39608391b036bc266b4e6c3c0232e8151c3bde3b2048f03a81ed63adbdefd97"
+      },
+      {
+        "path": "/home/qq/local-llm/releases/candidate-offon-causal-v-zero-20261020-r5b/bin/libggml.so.0.27.0",
+        "bytes": 59552,
+        "sha256": "97774eb8888759bc2824ca32b9473f1e0cdb70083fc919fcae73c7f59aef0c7d"
+      },
+      {
+        "path": "/home/qq/local-llm/releases/candidate-offon-causal-v-zero-20261020-r5b/bin/libllama-common.so.0.7.0",
+        "bytes": 6432688,
+        "sha256": "21060752adabdb79580332be7bd25676b1ccbfe579e6e0a5f87decffe4bbc81a"
+      },
+      {
+        "path": "/home/qq/local-llm/releases/candidate-offon-causal-v-zero-20261020-r5b/bin/libllama-server-impl.so",
+        "bytes": 4295136,
+        "sha256": "6c64f634839961002391a08dbaab2cae397b4a6de8d8d6339871feafc591ea45"
+      },
+      {
+        "path": "/home/qq/local-llm/releases/candidate-offon-causal-v-zero-20261020-r5b/bin/libllama.so.0.7.0",
+        "bytes": 5190992,
+        "sha256": "039ea7d78a0fa3de7d0a14f36ac9daff413b6ff86501858b72f62fada3bd1bc7"
+      },
+      {
+        "path": "/home/qq/local-llm/releases/candidate-offon-causal-v-zero-20261020-r5b/bin/libmtmd.so.0.7.0",
+        "bytes": 2057584,
+        "sha256": "f2295e01ea1a7f345e10939c6da56cebbab430dd061f1d645ba7a68cb3c68cf8"
+      }
+    ],
+    "full_model_sha256": "cedf1e08063f6df77926e1169f67b327dcc6301b5b329589615bdf09d4895f7e",
+    "scope": "Full bytes rehashed after both live groups; same PID/boot/start/model inode and implementation libraries. Two endpoint observations, not a continuous inode lease."
+  },
+  "post_live_main": {
+    "schema": "hepta.representative.post-live-provider-identity.v1",
+    "at_unix_seconds": 1793289208.0998724,
+    "sources": {
+      "/home/qian-qi/.openclaw/runtime/open-responses-unified-20261028-r12-reasoning-loop/gateway.mjs": {
+        "sha256": "a77bf82d19029ddc6192edc22cd96151fa0d013bd835181337093c703acf7457",
+        "bytes": 34180
+      },
+      "/home/qian-qi/.local/lib/hepta-inference-transport/v5-openresponses-20261024-r1/client_transport.py": {
+        "sha256": "a49d2e05f34a7eb7556332004cacc08131ae39fd6e6bb8eb9460a179adfb608b",
+        "bytes": 12096
+      }
+    },
+    "18081/health": {
+      "status": "ok",
+      "adapter": "open-responses-unified-native",
+      "adapter_version": "r12-reasoning-loop-20261028",
+      "model": "qwen38-flash-next-uc",
+      "upstream": "http://127.0.0.1:18083/v1/responses",
+      "network": "loopback-only",
+      "cloud_fallback": false,
+      "active_requests": 1,
+      "queued_requests": 0,
+      "admission_wait_max_ms": 2700000,
+      "admission_wait": null
+    },
+    "18083/routing": {
+      "schema": "dual-llm-router-v1",
+      "active": "llamacpp",
+      "request_id": "a04a3fce0405434b83903e5cf5a57b37",
+      "config_sha256": "14cc9e9df85b3408dee556750fb680a13a5f6b4793400f87d97d0cad04c6f506",
+      "backends": {
+        "llamacpp": {
+          "routable": true,
+          "numeric_release": false
+        },
+        "halogen": {
+          "routable": false,
+          "numeric_release": false
+        }
+      },
+      "connect_only_failover": false,
+      "draining": false,
+      "active_requests": 1,
+      "queued_requests": 0,
+      "generated_at": "2026-10-29T15:53:28.264812+00:00",
+      "drain_owner": null,
+      "tool_contract": {
+        "schema": "gateway-tool-contract-v2",
+        "enabled": true,
+        "tool_sse_buffered": false,
+        "text_sse_streaming": true,
+        "tool_calls_buffered": true
+      }
+    },
+    "18083/v1/models": {
+      "models": [
+        {
+          "name": "qwen38-flash-next-uc",
+          "model": "qwen38-flash-next-uc",
+          "modified_at": "",
+          "size": "",
+          "digest": "",
+          "type": "model",
+          "description": "",
+          "tags": [
+            ""
+          ],
+          "capabilities": [
+            "completion"
+          ],
+          "parameters": "",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "",
+            "families": [
+              ""
+            ],
+            "parameter_size": "",
+            "quantization_level": ""
+          }
+        }
+      ],
+      "object": "list",
+      "data": [
+        {
+          "id": "qwen38-flash-next-uc",
+          "aliases": [
+            "qwen38-flash-next-uc"
+          ],
+          "tags": [],
+          "object": "model",
+          "architecture": {
+            "input_modalities": [
+              "text"
+            ],
+            "output_modalities": [
+              "text"
+            ]
+          },
+          "created": 1793289208,
+          "owned_by": "llamacpp",
+          "meta": {
+            "vocab_type": 2,
+            "n_vocab": 248320,
+            "n_ctx": 262144,
+            "n_ctx_train": 262144,
+            "n_embd": 2560,
+            "n_params": 176943899520,
+            "size": 98392332800,
+            "ftype": "IQ4_XS - 4.25 bpw"
+          }
+        }
+      ]
+    }
+  },
+  "verified": {
+    "full_weight_hash_equal": true,
+    "process_boot_start_inode_equal_at_observation_endpoints": true,
+    "eight_mapped_library_hashes_equal": true,
+    "two_provider_source_hashes_equal": true,
+    "all_107_live_response_models_match_alias": true
+  },
+  "limits": [
+    "Endpoint observations and a second full file hash are not a continuous inode lease.",
+    "The service was shared; the post-live health/routing snapshot had one active request.",
+    "Gateway adapter revision and mapped library hashes identify the observed implementation; no exclusive inference reservation was measured."
+  ]
+}

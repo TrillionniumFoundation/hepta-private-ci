@@ -54,6 +54,7 @@ impl Fixture {
             file.sync_all()?;
         }
         let config = FixtureConfig {
+            representative: false,
             host: "fixture".to_owned(),
             script: script.to_string_lossy().into_owned(),
             script_sha256: Digest32::of_bytes(script_bytes).to_string(),
@@ -450,3 +451,4 @@ async fn external_tool_recovery_honors_each_persisted_cancellation_marker() -> R
 
 #[path = "helper_cancel_tests.rs"]
 mod helper_cancel_tests;
+
