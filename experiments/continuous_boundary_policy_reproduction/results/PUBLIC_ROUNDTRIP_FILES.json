@@ -1,0 +1,57 @@
+{
+  "actual_executables_checked": true,
+  "additional_samples": 0,
+  "additional_training_runs": 0,
+  "complete_scientific_audit": {
+    "archive_path": "engineering/audits/CONFIRMATION_AUDIT.json",
+    "bytes": 529950,
+    "copied_again_to_results": false,
+    "identical_to_archived_bytes": true,
+    "independent_output_path": "/dev/shm/hepta-native-objective-20261029/public-policy-reproduction-001-reaudit/CONFIRMATION_AUDIT.json",
+    "reason": "Complete audit already retained in the public archive; this identical output exceeds the per-file publication budget.",
+    "restored_path": "/dev/shm/hepta-native-objective-20261029/public-policy-reproduction-001/engineering/audits/CONFIRMATION_AUDIT.json",
+    "sha256": "7cb7b95f62bfc32218830e1c10bed2997bde8f2ffa1ffc238648fe99a9fac42f"
+  },
+  "cost_scope": "Archive retrieval verification and complete semantic audit are delivery verification costs, separate from the original scientific run.",
+  "files": [
+    {
+      "bytes": 4377,
+      "original_path": "/dev/shm/hepta-native-objective-20261029/public-policy-reproduction-001-reaudit/ROUNDTRIP_RECONCILIATION.json",
+      "path": "PUBLIC_ROUNDTRIP_AUDIT.json",
+      "sha256": "195b1c01e24dd22130f5db636564ace674e581cd3e85f0b7f207a46b8e5c2c0c"
+    },
+    {
+      "bytes": 1303,
+      "original_path": "/dev/shm/hepta-native-objective-20261029/public-policy-reproduction-001-reaudit/outer-costs/policy-reproduction-public-roundtrip-audit.json",
+      "path": "PUBLIC_ROUNDTRIP_COST.json",
+      "sha256": "5d7c6ae419b4ccd86118ea46d5cd51214d65183f5a923eb0cdf89153ca56a6c6"
+    },
+    {
+      "bytes": 212,
+      "original_path": "/dev/shm/hepta-native-objective-20261029/public-policy-reproduction-001-reaudit/outer-costs/policy-reproduction-public-roundtrip-audit.log",
+      "path": "PUBLIC_ROUNDTRIP_AUDIT.log",
+      "sha256": "90df13a0e3e1b668439ebaa5c8bf0eca4b3a86696a723cbf0da84ef173a04e3b"
+    }
+  ],
+  "independent_new_samples": false,
+  "pool_with_original_results": false,
+  "public_bundle_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/tree/8dc7defc17974d67766f35f340eb7bf6e692aefb/experiments/continuous_boundary_policy_reproduction/evidence/bundle",
+  "public_commit": "8dc7defc17974d67766f35f340eb7bf6e692aefb",
+  "restored_binaries": [
+    {
+      "archive_path": "engineering/bin/continuous_host",
+      "bytes": 1306384,
+      "restored_path": "/dev/shm/hepta-native-objective-20261029/public-policy-reproduction-001/engineering/bin/continuous_host",
+      "sha256": "fa9dc78b129b0ec3b072e9fc8c8fdd49479515c79aeb2660f355e38f41e54dce"
+    },
+    {
+      "archive_path": "engineering/bin/boundary_policy_score_host",
+      "bytes": 834088,
+      "restored_path": "/dev/shm/hepta-native-objective-20261029/public-policy-reproduction-001/engineering/bin/boundary_policy_score_host",
+      "sha256": "655b919aca126a33ee2fd54501b024eb80f4b1842b0e3410791958d93a588c47"
+    }
+  ],
+  "restored_study_manifest_sha256": "6bed365c60eec46e588b9a0ffa21e4f3c05d4f43928350dcdd13a3fdbe64b790",
+  "schema": "hepta.boundary-policy-reproduction.public-roundtrip-files.v1",
+  "scientific_efficacy_gate_unchanged": "0/4"
+}

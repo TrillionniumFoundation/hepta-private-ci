@@ -1,0 +1,80 @@
+{
+  "additional_samples": 0,
+  "additional_training_runs": 0,
+  "archived_audit": "/dev/shm/hepta-native-objective-20261029/public-policy-reproduction-001/engineering/audits/CONFIRMATION_AUDIT.json",
+  "archived_audit_sha256": "7cb7b95f62bfc32218830e1c10bed2997bde8f2ffa1ffc238648fe99a9fac42f",
+  "audit_bytes": 529950,
+  "audit_bytes_identical": true,
+  "audit_passed": true,
+  "benefit_gates_passed": 0,
+  "benefit_gates_total": 4,
+  "checkpoints_verified": 104,
+  "continuous_forward_steps_verified": 195584,
+  "episodes_verified": 26624,
+  "manifest_sha256": "6bed365c60eec46e588b9a0ffa21e4f3c05d4f43928350dcdd13a3fdbe64b790",
+  "outer_cost": {
+    "child_system_cpu_seconds": 0.47276199999999996,
+    "child_user_cpu_seconds": 143.425018,
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-m",
+      "experiments.continuous_boundary_policy_reproduction.audit",
+      "confirmation",
+      "--study",
+      "/dev/shm/hepta-native-objective-20261029/public-policy-reproduction-001/study",
+      "--output",
+      "/dev/shm/hepta-native-objective-20261029/public-policy-reproduction-001-reaudit/CONFIRMATION_AUDIT.json",
+      "--native-binary",
+      "/dev/shm/hepta-native-objective-20261029/public-policy-reproduction-001/engineering/bin/continuous_host",
+      "--score-binary",
+      "/dev/shm/hepta-native-objective-20261029/public-policy-reproduction-001/engineering/bin/boundary_policy_score_host"
+    ],
+    "exit_code": 0,
+    "hardware_energy_measured": false,
+    "log_sha256": "90df13a0e3e1b668439ebaa5c8bf0eca4b3a86696a723cbf0da84ef173a04e3b",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "schema": "hepta.research.outer-command-cost.v1",
+    "scope": "whole command including imports, verification and output; inclusive child CPU covers waited native descendants; nested study clocks are subsets and must not be added",
+    "wall_seconds": 143.91790810300154,
+    "wrapper_cpu_seconds": 0.0003955280000000061
+  },
+  "outer_cost_path": "/dev/shm/hepta-native-objective-20261029/public-policy-reproduction-001-reaudit/outer-costs/policy-reproduction-public-roundtrip-audit.json",
+  "outer_cost_sha256": "5d7c6ae419b4ccd86118ea46d5cd51214d65183f5a923eb0cdf89153ca56a6c6",
+  "public_commit": "8dc7defc17974d67766f35f340eb7bf6e692aefb",
+  "public_retrieval_receipt_sha256": "c8508b3a5af86b1df61ec687c2d3e80e60292d626feeea8c5dc778efc8b13391",
+  "reaudit": "/dev/shm/hepta-native-objective-20261029/public-policy-reproduction-001-reaudit/CONFIRMATION_AUDIT.json",
+  "reaudit_sha256": "7cb7b95f62bfc32218830e1c10bed2997bde8f2ffa1ffc238648fe99a9fac42f",
+  "reproduction": {
+    "actual_executables_checked": true,
+    "independent_new_samples": false,
+    "mathematical_auditor": "unchanged original continuous_boundary_policy.audit.audit_run",
+    "original_benefit_gates": "0/4",
+    "original_result_replaced": false,
+    "original_source_seal_sha256": "6b3afbf2af8476730c1260f470bd8f0f68d69652950499388abc3b178f0fd858",
+    "pool_with_original_results": false,
+    "reproduction_plan_sha256": "750f7d38a6872e9cf093b3b8296c67c102712943a204a3e1bf28e8371c05b866",
+    "schema": "hepta.boundary-policy-reproduction.identity-audit.v1",
+    "selection_publication_commit": "4fb7482ed8506d6646b833124c2975957c3a681c",
+    "source_publication_commit": "7908860cb959cbe1599379d4ecbfcc22fbccbe61"
+  },
+  "restored_binaries": [
+    {
+      "archive_path": "engineering/bin/continuous_host",
+      "bytes": 1306384,
+      "restored_path": "/dev/shm/hepta-native-objective-20261029/public-policy-reproduction-001/engineering/bin/continuous_host",
+      "sha256": "fa9dc78b129b0ec3b072e9fc8c8fdd49479515c79aeb2660f355e38f41e54dce"
+    },
+    {
+      "archive_path": "engineering/bin/boundary_policy_score_host",
+      "bytes": 834088,
+      "restored_path": "/dev/shm/hepta-native-objective-20261029/public-policy-reproduction-001/engineering/bin/boundary_policy_score_host",
+      "sha256": "655b919aca126a33ee2fd54501b024eb80f4b1842b0e3410791958d93a588c47"
+    }
+  ],
+  "restored_evidence_writes_requested": false,
+  "restored_study": "/dev/shm/hepta-native-objective-20261029/public-policy-reproduction-001/study",
+  "schema": "hepta.boundary-policy-reproduction.public-roundtrip-reaudit.v1",
+  "scientific_efficacy_result_changed": false,
+  "shards_verified": 208,
+  "sparse_head_steps_verified": 23809
+}
