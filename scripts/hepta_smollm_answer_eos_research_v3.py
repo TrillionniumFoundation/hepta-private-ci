@@ -8,6 +8,7 @@ product credential. Public fixture scores cannot authorize a model upgrade.
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -15,8 +16,12 @@ from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import hepta_smollm_three_rounds_v2 as rounds
+import hepta_smollm_execution_source_v1 as execution_source
 
-CHAIN_COMMIT = "9035171271e9f437b7224b53532f41a2b2894be7"
+EXECUTION_SOURCE_PROFILE = os.environ.get("HEPTA_PAIRED_EXECUTION_PROFILE")
+CHAIN_COMMIT = execution_source.selected_commit(
+    "9035171271e9f437b7224b53532f41a2b2894be7", EXECUTION_SOURCE_PROFILE
+)
 PROFILE = "canonical-positive-zero-answer-eos-balanced-v3"
 OUTCOMES = (
     "REQUIRED_CLI_OUTCOME",

@@ -19,9 +19,15 @@ import sys
 import time
 from types import SimpleNamespace
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import hepta_smollm_execution_source_v1 as execution_source
+
 PROFILE = "hepta-original-model-control-live-release-v1"
 SCHEMA = "hepta-original-model-control-live-input-v1"
-CHAIN_COMMIT = "ad490ed4b1132a333159fd76702809fd248a4462"
+EXECUTION_SOURCE_PROFILE = os.environ.get("HEPTA_PAIRED_EXECUTION_PROFILE")
+CHAIN_COMMIT = execution_source.selected_commit(
+    "ad490ed4b1132a333159fd76702809fd248a4462", EXECUTION_SOURCE_PROFILE
+)
 RUNTIME_SHA = "65ccc6454befd96fa5ce1f5bdde2c56cb6cbb741cf495b8d24a758039f99f755"
 PLAN_SHA = "01ec1a644f37b9fc7a4c6616f589768df97f8eed7a289b5de86afadaa7ce6165"
 ROLES = (
@@ -71,6 +77,7 @@ def closed(value, fields):
 
 def manifest(chain, plan):
     chain, plan = Path(chain).resolve(), Path(plan).resolve()
+    execution_source.verify_selected(chain, EXECUTION_SOURCE_PROFILE)
     require(
         subprocess.check_output(
             ["git", "-C", str(chain), "rev-parse", "HEAD"], text=True

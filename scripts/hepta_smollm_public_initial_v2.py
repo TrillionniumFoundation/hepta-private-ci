@@ -56,22 +56,29 @@ def fetch_materials(runtime, materials):
     )
 
 
-def derive(chain, materials, output, download):
+def derive(chain, materials, output, download, execution_source_profile=None):
     require(sys.byteorder == "little", "the V2 source profile is little-endian")
     source_manifest = json.loads((PROFILES / f"{PREFIX}.sources.json").read_bytes())
     require(
         source_manifest["schema"] == "hepta-smollm-public-initial-sources-v2",
         "source schema",
     )
-    for relative, expected in source_manifest["files"].items():
-        path = chain / relative
-        require(path.resolve() == path and path.is_file(), "source path")
-        raw = path.read_bytes()
-        require(
-            len(raw) == expected["size"]
-            and hashlib.sha256(raw).hexdigest() == expected["sha256"],
-            f"source differs from the public V2 profile: {relative}",
-        )
+    execution_source = None
+    if execution_source_profile is None:
+        for relative, expected in source_manifest["files"].items():
+            path = chain / relative
+            require(path.resolve() == path and path.is_file(), "source path")
+            raw = path.read_bytes()
+            require(
+                len(raw) == expected["size"]
+                and hashlib.sha256(raw).hexdigest() == expected["sha256"],
+                f"source differs from the public V2 profile: {relative}",
+            )
+    else:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import hepta_smollm_execution_source_v1 as execution
+
+        execution_source = execution.verify(chain, execution_source_profile)
     # All project imports below follow verification of their complete static
     # source/config dependency set. The Python runtime is separately qualified.
     sys.path.insert(0, str(chain / "scripts"))
@@ -146,6 +153,8 @@ def derive(chain, materials, output, download):
         ("artifact.safetensors", artifact),
     ]:
         (output / name).write_bytes(value)
+    if execution_source is not None:
+        runtime.save(output / "execution-source.json", execution_source)
     runtime.save(output / "experiment-plan.json", plan)
     runtime.save(
         output / "parent-material.json",
@@ -185,6 +194,11 @@ def main():
     for name in ["chain", "materials", "output"]:
         parser.add_argument(f"--{name}", type=Path, required=True)
     parser.add_argument(
+        "--execution-source-profile",
+        choices=["hepta-integrated-chain-execution-v1"],
+        help="explicit audited execution source; preserves the historical V2 model profile",
+    )
+    parser.add_argument(
         "--fetch-materials",
         action="store_true",
         help="download and verify the seven fixed files into a new materials directory",
@@ -194,7 +208,13 @@ def main():
         all(p.is_absolute() for p in [args.chain, args.materials, args.output]),
         "absolute paths required",
     )
-    derive(args.chain, args.materials, args.output, args.fetch_materials)
+    derive(
+        args.chain,
+        args.materials,
+        args.output,
+        args.fetch_materials,
+        args.execution_source_profile,
+    )
 
 
 if __name__ == "__main__":
