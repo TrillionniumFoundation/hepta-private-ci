@@ -21,6 +21,7 @@ import time
 
 SCHEMA = "hepta-neural-candidate-transport-input-v1"
 BINARY_SCHEMA = "hepta-neural-candidate-transport-binary-input-v2"
+DIVERSE_SCHEMA = "hepta-neural-candidate-transport-diverse-input-v3"
 NAMES = ("artifact.safetensors", "target-contract.json", "wrapped-adapter.json")
 CHUNK = 1048576
 MAX_MEMBER = 2 * CHUNK
@@ -153,17 +154,35 @@ def manifest_id(context, raw):
 
 def preflight(value):
     binary_training = type(value) is dict and value.get("schema") == BINARY_SCHEMA
+    diverse_training = type(value) is dict and value.get("schema") == DIVERSE_SCHEMA
     context_key = (
-        "binary_observed_execution" if binary_training else "observation_execution"
+        "binary_diverse60_observed_execution"
+        if diverse_training
+        else "binary_observed_execution"
+        if binary_training
+        else "observation_execution"
     )
-    suffix = "binary-observed-v2" if binary_training else "observed-v1"
+    suffix = (
+        "binary-diverse60-observed-v3"
+        if diverse_training
+        else "binary-observed-v2"
+        if binary_training
+        else "observed-v1"
+    )
     closed(
         value,
         "schema binary training completion parent child runtime context members "
         + context_key,
     )
     require(
-        value["schema"] == (BINARY_SCHEMA if binary_training else SCHEMA),
+        value["schema"]
+        == (
+            DIVERSE_SCHEMA
+            if diverse_training
+            else BINARY_SCHEMA
+            if binary_training
+            else SCHEMA
+        ),
         "explicit neural candidate transport profile",
     )
     records = {
@@ -197,11 +216,15 @@ def preflight(value):
     fields = "plan_sha256 profile observer model_plan"
     if binary_training:
         fields += " recipe training_rows independent_source_rows row_exposures optimizer_steps"
+    if diverse_training:
+        fields += " recipe training_data training_rows training_schedule distinct_source_rows row_exposures optimizer_steps physical_microbatch expected_input_tokens"
     closed(observation, fields)
     require(
         observation["profile"]
         == (
-            "canonical-positive-zero-binary-batch-observed-v2"
+            "canonical-positive-zero-binary-diverse60-observed-v3"
+            if diverse_training
+            else "canonical-positive-zero-binary-batch-observed-v2"
             if binary_training
             else "canonical-parent-original-task-observed-execution-v1"
         ),
@@ -209,6 +232,11 @@ def preflight(value):
     )
     for key in ("plan_sha256", "observer", "model_plan"):
         digest(observation[key])
+    if diverse_training:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import hepta_neural_diverse_v3 as diverse
+
+        diverse.validate_context(observation, diverse.training_data())
     if binary_training:
         for key in ("recipe", "training_rows"):
             digest(observation[key])
@@ -273,11 +301,11 @@ def preflight(value):
     training = trained["training"]
     require(
         type(training["steps"]) is int
-        and training["steps"] == 10
+        and training["steps"] == (30 if diverse_training else 10)
         and type(training["tokens"]) is int
         and type(training["supervised_tokens"]) is int
         and 0 < training["supervised_tokens"] <= training["tokens"],
-        "original ten actual training steps",
+        "actual training steps for the explicitly selected profile",
     )
     require(
         type(trained["source"]) is dict
@@ -285,7 +313,9 @@ def preflight(value):
         and all(digest(v) for v in trained["source"].values()),
         "bound original training source identities",
     )
-    if binary_training:
+    if diverse_training:
+        diverse_work(value, trained, observation)
+    elif binary_training:
         binary_work(value, trained, observation)
     require(
         type(value["members"]) is dict and set(value["members"]) == set(NAMES),
@@ -333,6 +363,33 @@ def preflight(value):
         "actual consumer Cell context binds raw child, contract, backbone, tokenizer and worker",
     )
     return records, payloads
+
+
+def diverse_work(value, trained, context):
+    """Recount the complete fixed diverse trace before any Cell command."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import hepta_neural_diverse_v3 as diverse
+
+    trace = trained["training"]["objective"]["trace"]
+    closed(trace, "path sha256 bytes")
+    require(
+        Path(trace["path"]) == Path(value["training"]["path"]).parent / diverse.TRACE,
+        "trace belongs to this exact completed diverse trainer",
+    )
+    raw = pinned({key: trace[key] for key in ("path", "sha256")}, CHUNK)
+    require(
+        type(trace["bytes"]) is int
+        and len(raw) == trace["bytes"]
+        and raw.endswith(b"\n"),
+        "complete bounded diverse trace bytes",
+    )
+    return diverse.validate_trace(
+        [decode(line) for line in raw.splitlines()],
+        trained,
+        None,
+        diverse.training_data(),
+        context,
+    )
 
 
 def binary_work(value, trained, context):
@@ -423,7 +480,9 @@ def transport(value, output, input_sha256, deadline):
     output.mkdir(mode=0o700, parents=False, exist_ok=False)
     report = {
         "schema": (
-            "hepta-neural-candidate-transport-binary-result-v2"
+            "hepta-neural-candidate-transport-diverse-result-v3"
+            if value["schema"] == DIVERSE_SCHEMA
+            else "hepta-neural-candidate-transport-binary-result-v2"
             if value["schema"] == BINARY_SCHEMA
             else "hepta-neural-candidate-transport-result-v1"
         ),
@@ -602,11 +661,15 @@ def transport(value, output, input_sha256, deadline):
             training_receipt_sha256=value["training"]["sha256"],
             **{
                 (
-                    "binary_observed_execution"
+                    "binary_diverse60_observed_execution"
+                    if value["schema"] == DIVERSE_SCHEMA
+                    else "binary_observed_execution"
                     if value["schema"] == BINARY_SCHEMA
                     else "observation_execution"
                 ): value[
-                    "binary_observed_execution"
+                    "binary_diverse60_observed_execution"
+                    if value["schema"] == DIVERSE_SCHEMA
+                    else "binary_observed_execution"
                     if value["schema"] == BINARY_SCHEMA
                     else "observation_execution"
                 ]

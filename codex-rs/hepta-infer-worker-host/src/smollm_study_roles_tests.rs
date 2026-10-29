@@ -139,10 +139,11 @@ impl ControlledRoles {
 
     pub fn dataset(
         &mut self,
+        profile: super::StudyProfile,
         root: &Path,
         training_rows: &[Value],
     ) -> (ledger::DatasetSnapshotReceiptV3, ledger::LedgerSnapshot) {
-        assert_eq!(training_rows.len(), 10);
+        assert_eq!(training_rows.len(), profile.training_source_rows());
         std::fs::create_dir(root).unwrap_or_else(|error| panic!("{error:?}"));
         let root_key = SigningKey::from_bytes(&[61; 32]);
         let root_trust = ledger::LearningTrustRootV1 {
@@ -175,7 +176,7 @@ impl ControlledRoles {
             .to_bytes();
         let activated = ledger::activate_learning_trust(&root_trust, distribution, None, micros())
             .unwrap_or_else(|error| panic!("{error:?}"));
-        let binding = hash("controlled-neural-actual-training-ledger");
+        let binding = profile.training_ledger_binding();
         let durable = ledger::DurableLedger::create(create(&root.join("ledger")), binding, 512)
             .unwrap_or_else(|error| panic!("{error:?}"));
         let witness = ledger::LedgerWitnessStore::create(create(&root.join("witness")), binding)
@@ -187,7 +188,7 @@ impl ControlledRoles {
         let mut candidates = self.actions.to_vec();
         candidates.push(id("abstain"));
         // One ground-truth answer per exact supervised row consumed by the
-        // original ten-step trainer. These are labels, not claims that a neural
+        // selected trainer. These are labels, not claims that a neural
         // forward generated an answer. No counterfactual answer is admitted.
         // Each row's canonical
         // prompt, target, source group and original id are bound before training.
@@ -211,7 +212,14 @@ impl ControlledRoles {
                     episode_id: episode.clone(),
                     run_snapshot_digest: row_digest,
                     objective_digest: self.trust.objective_digest,
-                    policy_digest: hash("original-supervised-target-is-the-training-label"),
+                    policy_digest: hash(match profile {
+                        super::StudyProfile::OriginalV1 | super::StudyProfile::BinaryAnswerV2 => {
+                            "original-supervised-target-is-the-training-label"
+                        }
+                        super::StudyProfile::BinaryDiverse60V3 => {
+                            "diverse60-public-target-is-the-training-label-v3"
+                        }
+                    }),
                     candidate_ids: candidates.clone(),
                     selected_candidate_id: action.clone(),
                     selected_propensity: ProbabilityQ32::ONE,
@@ -219,7 +227,15 @@ impl ControlledRoles {
                         set_id: id("controlled-two-answer-vocabulary"),
                         state_digest: support,
                         generator_id: self.principals[0].principal_id.clone(),
-                        generator_code_digest: hash("exact-original-supervised-training-row-v1"),
+                        generator_code_digest: hash(match profile {
+                            super::StudyProfile::OriginalV1
+                            | super::StudyProfile::BinaryAnswerV2 => {
+                                "exact-original-supervised-training-row-v1"
+                            }
+                            super::StudyProfile::BinaryDiverse60V3 => {
+                                "exact-diverse60-supervised-training-row-v3"
+                            }
+                        }),
                         grammar_digest: hash("yes-or-no"),
                         hard_filter_digest: hash("complete-vocabulary"),
                         truncation_digest: hash("none"),
@@ -280,9 +296,14 @@ impl ControlledRoles {
         let plan = ledger::DatasetFreezePlanV2 {
             snapshot_id: id("controlled-neural-actual-training"),
             objective_digest: self.trust.objective_digest,
-            inclusion_policy_digest: hash(
-                "one-authenticated-original-target-for-each-of-ten-consumed-training-rows",
-            ),
+            inclusion_policy_digest: hash(match profile {
+                super::StudyProfile::OriginalV1 | super::StudyProfile::BinaryAnswerV2 => {
+                    "one-authenticated-original-target-for-each-of-ten-consumed-training-rows"
+                }
+                super::StudyProfile::BinaryDiverse60V3 => {
+                    "one-authenticated-public-target-for-each-of-sixty-distinct-training-rows-v3"
+                }
+            }),
         };
         let signed = self.sign(
             /*index*/ 1,

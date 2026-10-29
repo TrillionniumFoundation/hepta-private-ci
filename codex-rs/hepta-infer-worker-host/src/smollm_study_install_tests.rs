@@ -179,6 +179,15 @@ pub(super) fn install(
         transport_request["binary_observed_execution"] =
             trained["binary_observed_execution"].clone();
     }
+    if matches!(profile, StudyProfile::BinaryDiverse60V3) {
+        transport_request["schema"] = json!("hepta-neural-candidate-transport-diverse-input-v3");
+        transport_request
+            .as_object_mut()
+            .ok_or("transport object")?
+            .remove("observation_execution");
+        transport_request["binary_diverse60_observed_execution"] =
+            trained["binary_diverse60_observed_execution"].clone();
+    }
     let transport = save(&root.join("cell-input.json"), &transport_request)?;
     let output = root.join("cell");
     let script =
@@ -234,6 +243,35 @@ pub(super) fn install(
         execution_profile_digest: worker.execution_profile_digest()?,
     };
     let trained_receipt = read_pin(&trained["training"])?;
+    let training_code_digest = match profile {
+        StudyProfile::OriginalV1 | StudyProfile::BinaryAnswerV2 => {
+            trained_receipt["source"]["parent_step_v2"]
+                .as_str()
+                .ok_or("actual training source")?
+                .parse()?
+        }
+        StudyProfile::BinaryDiverse60V3 => {
+            let source = &trained_receipt["source"];
+            let _: Digest32 = source["binary_diverse60_observed"]
+                .as_str()
+                .ok_or("actual diverse training source")?
+                .parse()?;
+            if source["binary_diverse60_training_data"] != diverse::DATA_SHA
+                || trained_receipt["binary_diverse60_observed_execution"]
+                    != trained["binary_diverse60_observed_execution"]
+            {
+                return Err(
+                    "complete diverse training source and schedule binding required".into(),
+                );
+            }
+            let mut binding = json!({
+                "schema":"hepta-diverse60-training-code-binding-v3", "source":source,
+                "execution":trained["binary_diverse60_observed_execution"]
+            });
+            binding.sort_all_objects();
+            Digest32::of_bytes(&serde_json::to_vec(&binding)?)
+        }
+    };
     let seconds = initial_now_seconds()?;
     let source = LearningArtifactManifestV2 {
         artifact_id: request.candidate_id.clone(),
@@ -246,10 +284,7 @@ pub(super) fn install(
         rollback_predecessor: Some(request.predecessor_id.clone()),
         bytes_digest: payload_digest,
         encoded_size_bytes: fs::metadata(downloaded.join("artifact.safetensors"))?.len(),
-        training_code_digest: trained_receipt["source"]["parent_step_v2"]
-            .as_str()
-            .ok_or("actual training source")?
-            .parse()?,
+        training_code_digest,
         runtime_tuple_digest: model.execution_profile_digest,
         device_profile_digest: digest("actual observed CPU float32 SmolLM2 study"),
         objective_class_digest: model.objective_digest,
@@ -357,7 +392,7 @@ pub(super) fn install(
         "metric_roles":qualified.metric_roles.into_iter().map(MetricRoleContractV2Raw::from).collect::<Vec<_>>(),
         "evaluation_evidence":SignedEvaluationEvidenceV1Raw::from(qualified.evidence),"longitudinal_time":LongitudinalTimeEvidenceV1Raw::from(qualified.timing),
         "dataset_receipt":DatasetSnapshotReceiptV3Raw::from(dataset.clone()),"ledger":{"path":root.join("training-ledger/ledger"),
-            "binding":digest("controlled-neural-actual-training-ledger").to_string(),"max_records":512,"anchor_sequence":last.sequence.get(),"anchor_chain_digest":last.chain_digest.to_string()},
+            "binding":profile.training_ledger_binding().to_string(),"max_records":512,"anchor_sequence":last.sequence.get(),"anchor_chain_digest":last.chain_digest.to_string()},
         "holdout":qualified.holdout,"trust":LearningEvidenceTrustV1Raw::from(roles.trust.clone()),"selector_evidence":SignedLearningEvidenceV1Raw::from(selector)}),
     )?;
     save(

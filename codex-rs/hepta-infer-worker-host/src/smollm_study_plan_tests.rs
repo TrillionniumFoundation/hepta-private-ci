@@ -166,13 +166,14 @@ pub(super) struct Prepared {
 }
 
 pub(super) fn plans(
+    profile: StudyProfile,
     dataset: &ledger::DatasetSnapshotReceiptV3,
     snapshot: &ledger::LedgerSnapshot,
     material: Digest32,
     tasks: &Value,
     actions: &[StableId; 2],
 ) -> TestResult<Prepared> {
-    let training = training(dataset, snapshot)?;
+    let training = training(profile, dataset, snapshot)?;
     // These are real preassignment/prediction times, recorded now. They never
     // represent the future neural query clock, which the Provider records later.
     let prediction_start = now();
@@ -322,6 +323,7 @@ pub(super) fn plans(
 }
 
 pub(super) fn training(
+    profile: StudyProfile,
     dataset: &ledger::DatasetSnapshotReceiptV3,
     snapshot: &ledger::LedgerSnapshot,
 ) -> TestResult<Vec<eval::OutcomeTrainingSample>> {
@@ -374,15 +376,46 @@ pub(super) fn training(
             });
         }
     }
-    if result.len() != 10
-        || sources.len() != 20
+    if result.len() != profile.training_source_rows()
+        || sources.len() != 2 * profile.training_source_rows()
         || result
             .iter()
             .any(|r| r.observed_at > dataset.snapshot.outcome_watermark)
     {
-        return Err(
-            "ten actual consumed training rows and their authenticated targets required".into(),
-        );
+        return Err("exact profile training rows and their authenticated targets required".into());
     }
     Ok(result)
+}
+
+#[test]
+fn diverse_authenticated_training_rows_require_sixty_rows_and_reject_old_profile() -> TestResult<()>
+{
+    let root = tempfile::tempdir()?;
+    let yes = id("yes");
+    let actions = [yes.clone(), id("no")];
+    let mut roles = roles::ControlledRoles::new(digest(diverse::OBJECTIVE), actions, yes);
+    let rows = diverse::training_rows()?;
+    let (dataset, ledger) = roles.dataset(
+        StudyProfile::BinaryDiverse60V3,
+        &root.path().join("ledger"),
+        &rows,
+    );
+    assert_eq!(dataset.snapshot.source_record_digests.len(), 120);
+    assert_eq!(
+        training(StudyProfile::BinaryDiverse60V3, &dataset, &ledger)?.len(),
+        60
+    );
+    assert!(training(StudyProfile::BinaryAnswerV2, &dataset, &ledger).is_err());
+    assert!(training(StudyProfile::OriginalV1, &dataset, &ledger).is_err());
+    let (old, old_ledger) = roles.dataset(
+        StudyProfile::BinaryAnswerV2,
+        &root.path().join("old-ledger"),
+        &rows[..10],
+    );
+    assert_eq!(
+        training(StudyProfile::BinaryAnswerV2, &old, &old_ledger)?.len(),
+        10
+    );
+    assert!(training(StudyProfile::BinaryDiverse60V3, &old, &old_ledger).is_err());
+    Ok(())
 }

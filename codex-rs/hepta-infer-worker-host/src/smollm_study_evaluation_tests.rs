@@ -22,6 +22,7 @@ pub(super) struct Qualified {
 }
 
 struct Provider<'a> {
+    profile: StudyProfile,
     input: &'a NativeInput,
     script: &'a Path,
     training_chain: &'a Path,
@@ -59,7 +60,7 @@ impl Provider<'_> {
         }
         self.released = true;
         let mut inputs = eval::TemporalComparisonInputsV1 {
-            training: plan::training(self.dataset, self.ledger)?,
+            training: plan::training(self.profile, self.dataset, self.ledger)?,
             targets: self
                 .targets
                 .iter()
@@ -301,10 +302,11 @@ pub(super) fn evaluate(
     let tasks = match profile {
         StudyProfile::OriginalV1 => plan::tasks(&seed, yes, actions),
         StudyProfile::BinaryAnswerV2 => plan::binary_tasks(&seed, yes, actions)?,
+        StudyProfile::BinaryDiverse60V3 => diverse::tasks(&seed, yes, actions)?,
     };
     let observation_chain = match profile {
         StudyProfile::OriginalV1 => training_chain.to_path_buf(),
-        StudyProfile::BinaryAnswerV2 => PathBuf::from(
+        StudyProfile::BinaryAnswerV2 | StudyProfile::BinaryDiverse60V3 => PathBuf::from(
             std::env::var_os("HEPTA_PUBLIC_INITIAL_OBSERVATION_CHAIN")
                 .ok_or("original inference observer source required")?,
         )
@@ -313,7 +315,7 @@ pub(super) fn evaluate(
     let worker = read_pin(&pin(worker_plan)?)?;
     let material = save(
         &root.join("holdout-material.json"),
-        &json!({"schema":match profile { StudyProfile::OriginalV1 => "hepta-neural-study-future-material-v1", StudyProfile::BinaryAnswerV2 => "hepta-neural-study-future-material-binary-v2" },
+        &json!({"schema":match profile { StudyProfile::OriginalV1 => "hepta-neural-study-future-material-v1", StudyProfile::BinaryAnswerV2 => "hepta-neural-study-future-material-binary-v2", StudyProfile::BinaryDiverse60V3 => "hepta-neural-study-future-material-diverse-v3" },
         "tasks":tasks,"seed":seed,"child":trained["child"],"parent":trained["parent"],"study":study,
         "worker_plan":pin(worker_plan)?,"source":pin(script)?,"training":trained["training"],
         "fixed_execution_order":[["parent","child"],["child","parent"]],"minimum_window_micros":1_000_000}),
@@ -331,9 +333,9 @@ pub(super) fn evaluate(
         predictions,
         candidate_predictions,
         baseline_predictions,
-    } = plan::plans(dataset, ledger, material_digest, &tasks, actions)?;
+    } = plan::plans(profile, dataset, ledger, material_digest, &tasks, actions)?;
     let nuisance_inputs = eval::TemporalComparisonInputsV1 {
-        training: plan::training(dataset, ledger)?,
+        training: plan::training(profile, dataset, ledger)?,
         targets: targets.clone(),
         candidate_observations: Vec::new(),
         baseline_observations: Vec::new(),
@@ -375,6 +377,7 @@ pub(super) fn evaluate(
     let owner = eval::FencedFinalHoldoutOwnerV1::initialize(store, binding, fence.clone())?;
     let mut runner = eval::ProductEvaluationRunnerV1::new(owner);
     let mut provider = Provider {
+        profile,
         input,
         script,
         training_chain: &observation_chain,

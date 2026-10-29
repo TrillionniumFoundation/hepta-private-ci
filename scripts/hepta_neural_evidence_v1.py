@@ -260,6 +260,8 @@ class Evidence:
     loop_schema = "hepta-real-neural-ordinary-loop-v1"
     study_schema = "hepta-neural-study-v1-preregistered"
     consumed_step_records = 10
+    training_steps = 10
+    training_source_rows = 10
     positive_selector = "test(real_trained_child_prospective_qualification_cell_install_next_ordinary_read)"
 
     def __init__(self, root):
@@ -470,6 +472,32 @@ class Evidence:
             else None,
         }
 
+    def validate_training_data(self, data, consumed, raw, trained, study_root):
+        require(
+            len(data["offered_training_rows"]) == 12
+            and len(data["consumed_training_rows"]) == 10
+            and data["consumed_training_rows"] == data["offered_training_rows"][:10]
+            and data["consumed_step_indices"] == list(range(10))
+            and consumed["training_data"] == trained["training_data"]
+            and consumed["actual_receipt"] == trained["training"]
+            and len(consumed["steps"]) == self.consumed_step_records,
+            "the ten source rows and selected profile step records must match",
+        )
+        require(
+            data["source_dataset_digest"]
+            == trained["source_dataset_digest"]
+            == data["dataset_receipt"]["snapshot"]["dataset_digest"]
+            and len(data["dataset_receipt"]["snapshot"]["source_record_digests"]) == 20,
+            "the admitted dataset contains exactly ten decisions and ten observed labels",
+        )
+        require(
+            sum(len(row["input_ids"]) for row in consumed["steps"])
+            == raw["training"]["tokens"]
+            and sum(row["supervised_tokens"] for row in consumed["steps"])
+            == raw["training"]["supervised_tokens"],
+            "consumed tensor totals must match the original actual task",
+        )
+
     def loop(self):
         config = read(self.root / "native-input.json")
         study_root = self.path(config["output"]) / "n"
@@ -521,7 +549,7 @@ class Evidence:
             and complete["completion_verified"] is True
             and complete["actual_receipt_sha256"] == trained["training"]["sha256"]
             and raw["parent_readback"] == parent["adapter"]
-            and raw["training"]["steps"] == 10
+            and raw["training"]["steps"] == self.training_steps
             and raw["candidate"]["file_sha256"] == child["file_sha256"],
             "actual parent training binding required",
         )
@@ -530,30 +558,7 @@ class Evidence:
             self.pin(trained["training_data"]),
             self.pin(trained["training_consumption"]),
         )
-        require(
-            len(data["offered_training_rows"]) == 12
-            and len(data["consumed_training_rows"]) == 10
-            and data["consumed_training_rows"] == data["offered_training_rows"][:10]
-            and data["consumed_step_indices"] == list(range(10))
-            and consumed["training_data"] == trained["training_data"]
-            and consumed["actual_receipt"] == trained["training"]
-            and len(consumed["steps"]) == self.consumed_step_records,
-            "the ten source rows and selected profile step records must match",
-        )
-        require(
-            data["source_dataset_digest"]
-            == trained["source_dataset_digest"]
-            == data["dataset_receipt"]["snapshot"]["dataset_digest"]
-            and len(data["dataset_receipt"]["snapshot"]["source_record_digests"]) == 20,
-            "the admitted dataset contains exactly ten decisions and ten observed labels",
-        )
-        require(
-            sum(len(row["input_ids"]) for row in consumed["steps"])
-            == raw["training"]["tokens"]
-            and sum(row["supervised_tokens"] for row in consumed["steps"])
-            == raw["training"]["supervised_tokens"],
-            "consumed tensor totals must match the original actual task",
-        )
+        self.validate_training_data(data, consumed, raw, trained, study_root)
         for window in range(2):
             tasks = read(study_root / f"future-{window}-inputs.json")
             require(
@@ -777,7 +782,7 @@ class Evidence:
             "parent_sha256": parent["file_sha256"],
             "child_sha256": child["file_sha256"],
             "actual_forwards": 2048,
-            "training_consumed_rows": 10,
+            "training_consumed_rows": self.training_source_rows,
             "ordinary_child_reads": 1,
             "qualification": qualification,
             "controlled_role_keys": True,

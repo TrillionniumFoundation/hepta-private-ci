@@ -32,6 +32,8 @@ mod cognitive_process_materials;
 mod cognitive_process_product_wire;
 #[path = "../../hepta-agentd/src/cognitive_process_wire.rs"]
 mod cognitive_process_wire;
+#[path = "smollm_study_diverse_tests.rs"]
+mod diverse;
 #[path = "smollm_study_evaluation_tests.rs"]
 mod evaluation;
 #[path = "smollm_study_install_tests.rs"]
@@ -45,6 +47,23 @@ mod roles;
 enum StudyProfile {
     OriginalV1,
     BinaryAnswerV2,
+    BinaryDiverse60V3,
+}
+
+impl StudyProfile {
+    fn training_source_rows(self) -> usize {
+        match self {
+            Self::OriginalV1 | Self::BinaryAnswerV2 => 10,
+            Self::BinaryDiverse60V3 => 60,
+        }
+    }
+
+    fn training_ledger_binding(self) -> Digest32 {
+        digest(match self {
+            Self::OriginalV1 | Self::BinaryAnswerV2 => "controlled-neural-actual-training-ledger",
+            Self::BinaryDiverse60V3 => "controlled-neural-diverse60-training-ledger-v3",
+        })
+    }
 }
 
 fn now() -> u64 {
@@ -249,6 +268,13 @@ async fn real_binary_trained_child_prospective_qualification_cell_install_next_o
     run_study(StudyProfile::BinaryAnswerV2).await
 }
 
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[ignore = "requires exact real model, original observer and real two-node Cell binary"]
+async fn real_diverse_trained_child_prospective_qualification_cell_install_next_ordinary_read()
+-> TestResult<()> {
+    run_study(StudyProfile::BinaryDiverse60V3).await
+}
+
 async fn run_study(profile: StudyProfile) -> TestResult<()> {
     let (input, mut worker, parent_bytes) = input_and_worker("positive-parent")?;
     let root = input.output.join("n");
@@ -265,6 +291,7 @@ async fn run_study(profile: StudyProfile) -> TestResult<()> {
         StudyProfile::BinaryAnswerV2 => {
             "hepta-real-neural-study-binary-v2:original-parent:ten-updates-ten-row-binary-CE:100-exposures-10-independent:exclude-067-consumed-prompt-identities:future-two-windows:256-numeric-256-uppercase-each:final-holdout-512:ips-correctness:alpha-50000:superiority-0:observed-family-retention"
         }
+        StudyProfile::BinaryDiverse60V3 => diverse::OBJECTIVE,
     });
     let mut declaration = json!({"schema":"hepta-neural-study-v1-preregistered",
         "frozen_unix_micros":now(),"objective_digest":objective.to_string(),"parent_file_sha256":Digest32::of_bytes(&parent_bytes).to_string(),
@@ -294,6 +321,9 @@ async fn run_study(profile: StudyProfile) -> TestResult<()> {
         declaration["task_rule"] = json!(
             "same original 100..9998 numeric range and uppercase word families; fresh random seed and new generation domain; exclude all 1024 previously consumed exact prompt hashes without using prior outputs or labels; each family balanced yes/no; no outcome-based resampling"
         );
+    }
+    if matches!(profile, StudyProfile::BinaryDiverse60V3) {
+        diverse::declaration(&mut declaration)?;
     }
     let study = save(&root.join("study.json"), &declaration)?;
     let mut fixture = Fixture::with_study_objective(
@@ -354,7 +384,16 @@ async fn run_study(profile: StudyProfile) -> TestResult<()> {
     if offered.len() != 12 || model_plan["training_steps"] != 10 {
         return Err("unchanged original training population and schedule required".into());
     }
-    let consumed = offered[..10].to_vec();
+    let (offered, consumed) = match profile {
+        StudyProfile::OriginalV1 | StudyProfile::BinaryAnswerV2 => {
+            let consumed = offered[..10].to_vec();
+            (offered, consumed)
+        }
+        StudyProfile::BinaryDiverse60V3 => {
+            let rows = diverse::training_rows()?;
+            (rows.clone(), rows)
+        }
+    };
     for row in &consumed {
         if Digest32::of_bytes(row["prompt"].as_str().ok_or("training prompt")?.as_bytes())
             .to_string()
@@ -372,16 +411,16 @@ async fn run_study(profile: StudyProfile) -> TestResult<()> {
             return Err("actual training prompt and target bytes required".into());
         }
     }
-    let (dataset, ledger) = roles.dataset(&root.join("training-ledger"), &consumed);
+    let (dataset, ledger) = roles.dataset(profile, &root.join("training-ledger"), &consumed);
     let training_data = save(
         &root.join("actual-training-data.json"),
         &json!({
-        "schema":"hepta-neural-actual-training-data-v1","model_plan":model_plan_pin,
-        "offered_training_rows":offered,"consumed_training_rows":consumed,"consumed_step_indices":(0..10).collect::<Vec<_>>(),
+        "schema":match profile { StudyProfile::OriginalV1 | StudyProfile::BinaryAnswerV2 => "hepta-neural-actual-training-data-v1", StudyProfile::BinaryDiverse60V3 => "hepta-neural-actual-training-data-diverse-v3" },"model_plan":model_plan_pin,
+        "offered_training_rows":offered,"consumed_training_rows":consumed,"consumed_step_indices":(0..profile.training_source_rows()).collect::<Vec<_>>(),
         "source_dataset_digest":dataset.snapshot.dataset_digest.to_string(),
         "dataset_receipt":cognitive_process_evidence::DatasetSnapshotReceiptV3Raw::from(dataset.clone()),
         "ledger":pin(&root.join("training-ledger/ledger"))?,
-        "row_encoding":"canonical original plan row; run_snapshot_digest binds each row",
+        "row_encoding":match profile { StudyProfile::OriginalV1 | StudyProfile::BinaryAnswerV2 => "canonical original plan row; run_snapshot_digest binds each row", StudyProfile::BinaryDiverse60V3 => "canonical fixed diverse60 public row; run_snapshot_digest binds each row; original material plan unchanged" },
         "record_semantics":"one selected supervised target and authenticated correctness=1 per actual consumed row; no neural prediction claim",
         "frozen_unix_micros":now()}),
     )?;
@@ -389,7 +428,7 @@ async fn run_study(profile: StudyProfile) -> TestResult<()> {
     helper(
         &input,
         &script,
-        &json!({"schema":match profile { StudyProfile::OriginalV1 => "hepta-neural-study-v1", StudyProfile::BinaryAnswerV2 => "hepta-neural-study-binary-v2" },"operation":"train",
+        &json!({"schema":match profile { StudyProfile::OriginalV1 => "hepta-neural-study-v1", StudyProfile::BinaryAnswerV2 => "hepta-neural-study-binary-v2", StudyProfile::BinaryDiverse60V3 => "hepta-neural-study-diverse-v3" },"operation":"train",
         "training_chain":training_chain,"runtime_chain":input.chain,"materials":input.materials,
         "parent":pin(&input.parent)?,"ordinary":pin(&effects.join("ordinary-session-result.json"))?,
         "study":study,"training_data":training_data,"output":training_output}),
@@ -451,7 +490,7 @@ async fn run_study(profile: StudyProfile) -> TestResult<()> {
     )?;
     save(
         &root.join("positive-loop-result.json"),
-        &json!({"schema":match profile { StudyProfile::OriginalV1 => "hepta-real-neural-ordinary-loop-v1", StudyProfile::BinaryAnswerV2 => "hepta-real-neural-ordinary-loop-binary-v2" },
+        &json!({"schema":match profile { StudyProfile::OriginalV1 => "hepta-real-neural-ordinary-loop-v1", StudyProfile::BinaryAnswerV2 => "hepta-real-neural-ordinary-loop-binary-v2", StudyProfile::BinaryDiverse60V3 => "hepta-real-neural-ordinary-loop-diverse-v3" },
         "parent":initial,"study":study,"training":trained,"child":child,"next":next,
         "actual_test_executable":{"before":executable_before,"after":executable_after},
         "installed_children":1,"ordinary_child_reads":1,"same_artifact_owner":true,
