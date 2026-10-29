@@ -23,6 +23,9 @@ codex_rust_crate(
         "src/paired_process_fixture.rs",
         "//codex-rs/hepta-infer-worker-host:ordinary_cpu_owner.sql",
     ],
+    # Integration tests read tracked artifacts from CARGO_MANIFEST_DIR.
+    # Keep corpus verification unchanged and stage its input as Bazel runfiles.
+    test_data_extra = glob(["fixtures/robrix-control-v2/**"]),
 )
 
 # Caller evidence inspected by the Hepta contracts tests.
