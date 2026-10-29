@@ -1,0 +1,37 @@
+{
+  "schema": "hepta.fullstudy.actual-envelope-admission-check.1",
+  "recorded_utc": "2026-10-29T11:47:45.087426+00:00",
+  "source_registration_scope": "LOCAL_ONLY_NOT_PUBLISHED",
+  "controller_source_commit": "434d390b3d972efa940f1054a09bc2858632f0c8",
+  "controller_freeze_sha256": "91f1cf6dee69f7240a3c4cd9ba223facc7003cd96d0d95413f53a89a09a30e14",
+  "ops_sha256": "d0572d7c26f7d15f9a78f3a8d6e6b72f70ae709e075c89a04f4599d90146d372",
+  "exec_result": {
+    "chunk_id": "36f504",
+    "wall_time_seconds": 4.2182e-05,
+    "exit_code": 75,
+    "original_token_count": 117,
+    "output": "{\"status\": \"ADMISSION_BLOCKED\", \"scope\": \"historical_zero_work_recovery\", \"recovery_archived\": false, \"workers_started_in_this_invocation\": 0, \"historical_Popen_observation_available\": false, \"admission\": {\"current\": 8158932992, \"limit\": 8589934592, \"inactive_file\": 673386496, \"file_dirty\": 22953984, \"file_writeback\": 0, \"clean_inactive_file\": 650432512, \"effective_current\": 7508500480, \"oom\": 8, \"oom_kill\": 4, \"required_headroom\": 1879048192, \"allowed\": false}}\n"
+  },
+  "observed": {
+    "status": "ADMISSION_BLOCKED",
+    "scope": "historical_zero_work_recovery",
+    "recovery_archived": false,
+    "workers_started_in_this_invocation": 0,
+    "historical_Popen_observation_available": false,
+    "admission": {
+      "current": 8158932992,
+      "limit": 8589934592,
+      "inactive_file": 673386496,
+      "file_dirty": 22953984,
+      "file_writeback": 0,
+      "clean_inactive_file": 650432512,
+      "effective_current": 7508500480,
+      "oom": 8,
+      "oom_kill": 4,
+      "required_headroom": 1879048192,
+      "allowed": false
+    }
+  },
+  "scientific_workers_started": 0,
+  "scheduled_gradient_microsteps": 0
+}

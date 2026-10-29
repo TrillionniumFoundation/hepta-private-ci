@@ -1,0 +1,66 @@
+{
+  "utc": "2026-10-29T11:30:53.423362+00:00",
+  "purpose": "Release only task-owned invalid installation temporary files and advise dropping own clean file caches; preserve scientific sources/assets/results and all other task data.",
+  "before_memory": {
+    "current": 7643000832,
+    "limit": 8589934592,
+    "inactive_file": 398917632,
+    "file_dirty": 24629248,
+    "file_writeback": 0,
+    "effective_current": 7268712448,
+    "shortfall_first_worker": 557826048,
+    "events": {
+      "low": 0,
+      "high": 0,
+      "max": 2539484,
+      "oom": 8,
+      "oom_kill": 4,
+      "oom_group_kill": 0
+    }
+  },
+  "disk_free_before": 3401125888,
+  "failed_downloads_removed": [
+    {
+      "task_path": "runtime_wheels/.torch-2.8.0+cpu-cp312-cp312-manylinux_2_28_x86_64.whl.0fLzTh",
+      "bytes": 177733632,
+      "inode": 1359968,
+      "sha256": "ba8ffd8af28e566912ecde6bf4121b1750e651624a424636a9a630c64256bb67",
+      "invalid_zip": true,
+      "open_fds": 0
+    },
+    {
+      "task_path": "runtime_wheels/.torch-2.8.0+cpu-cp312-cp312-manylinux_2_28_x86_64.whl.PcU444",
+      "bytes": 174587904,
+      "inode": 1359875,
+      "sha256": "77dccc8ddd759289e290afa8906dbae54b398448d7892b19639579e795eb55bb",
+      "invalid_zip": true,
+      "open_fds": 0
+    }
+  ],
+  "cache_advice": {
+    "api": "posix_fadvise(POSIX_FADV_DONTNEED)",
+    "files": 18399,
+    "logical_bytes": 1161268004,
+    "errors": [],
+    "bytes_preserved": true,
+    "no_memory_limit_or_admission_change": true
+  },
+  "after_memory": {
+    "current": 7347531776,
+    "limit": 8589934592,
+    "inactive_file": 226123776,
+    "file_dirty": 24633344,
+    "file_writeback": 0,
+    "effective_current": 7146041344,
+    "shortfall_first_worker": 435154944,
+    "events": {
+      "low": 0,
+      "high": 0,
+      "max": 2539484,
+      "oom": 8,
+      "oom_kill": 4,
+      "oom_group_kill": 0
+    }
+  },
+  "disk_free_after": 3753451520
+}

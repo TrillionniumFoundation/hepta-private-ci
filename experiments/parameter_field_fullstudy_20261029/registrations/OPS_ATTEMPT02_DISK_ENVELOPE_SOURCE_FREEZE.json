@@ -1,0 +1,76 @@
+{
+  "schema": "hepta.fullstudy.source-freeze.1",
+  "registered_commit": "434d390b3d972efa940f1054a09bc2858632f0c8",
+  "allowed_phases": [
+    "OPS"
+  ],
+  "attempt_id": "attempt02",
+  "execution_kind": "controller",
+  "protocol_sha256": "2c02b5aff224f125826931f3ecf691b2a01391a719075db8a1bc9fb5f5dafd55",
+  "operational_amendment_sha256": "d0572d7c26f7d15f9a78f3a8d6e6b72f70ae709e075c89a04f4599d90146d372",
+  "created_at": "2026-10-29T11:46:11.161858+00:00",
+  "source_files": {
+    "experiments/parameter_field_fullstudy_20261029/OPS_ATTEMPT02.json": "583b3f8c7866b2d2a289e32cc9162472fd23ddc0b7897d0066863fd427173dd3",
+    "experiments/parameter_field_fullstudy_20261029/OPS_ATTEMPT02_DISK.json": "d0572d7c26f7d15f9a78f3a8d6e6b72f70ae709e075c89a04f4599d90146d372",
+    "experiments/parameter_field_fullstudy_20261029/PROTOCOL.json": "2c02b5aff224f125826931f3ecf691b2a01391a719075db8a1bc9fb5f5dafd55",
+    "experiments/parameter_field_fullstudy_20261029/controller_envelope_v2.py": "3bbc1e320bf9ab49d718ba8e876e4db8e04ab7d971d101e92fed2cdba1d53a43",
+    "experiments/parameter_field_fullstudy_20261029/launch_v2.py": "7423f368c7ec8fd39a666c575f91e36f69da78bd1ec6cdc39f3afbe8224332e3",
+    "experiments/parameter_field_fullstudy_20261029/resource_io_v2.py": "25322e8356bb48de1299338768ec0341f8c4fb89028af7c9fdcdd7a22b2b0931",
+    "experiments/parameter_field_fullstudy_20261029/resource_v2.py": "079b326b6d42cb9dccac2cbe8e872cb30e221169f6e0f650469e2a53774624bf",
+    "experiments/parameter_field_fullstudy_20261029/run_v2.py": "291218547484a01ac0213c06f1b6bbd16104955348b818014a66f4d3a0ce3561",
+    "experiments/parameter_field_fullstudy_20261029/test_controller_envelope_v2.py": "1b1174c848d007c277315bb946b860551d7254bcdf506f6ae1968d372cd3e3fd"
+  },
+  "artifacts": {
+    "/dev/shm/hepta-field-fullstudy-20261029/source/experiments/parameter_field_fullstudy_20261029/registrations/OPS_ATTEMPT02_DISK_SOURCE_FREEZE.json": "8ee1709c3cba5a4666b2310b11f23a86193fb908c4519bf109e8124fac2cda82",
+    "/dev/shm/hepta-field-fullstudy-20261029/source/experiments/parameter_field_fullstudy_20261029/evidence/CONTROLLER_FAILURE_20261029.json": "623b64d0c599cf5705e198bcbb387138a5b9901aef37d1106201c6218d62f57e"
+  },
+  "scope": "Separately frozen outer observation/recovery and truthful exit status for unchanged launch_v2. Resource constants, all scientific kernels, queue jobs and source ancestors unchanged. This single historical incident is classified by its source-and-artifact postmortem, not retroactive Popen observation. Full fixed memory gate must pass before archival/retry. Existing old controller evidence is retained byte-exact. Local source registration only; no public publication.",
+  "source_registration_scope": "LOCAL_ONLY_NOT_PUBLISHED",
+  "source_git_root": "/workspace/scratch/178ced6a501f/fullstudy_local_git",
+  "supersedes_unexecuted_freeze": {
+    "path": "/dev/shm/hepta-field-fullstudy-20261029/source/experiments/parameter_field_fullstudy_20261029/registrations/OPS_ATTEMPT02_SOURCE_FREEZE.json",
+    "sha256": "c7e3e66fab26d744e100f2bd667b2089e216b05a07d2caf4f012c1c574e7572b",
+    "scientific_workers_started": 0
+  },
+  "controller_envelope_schema": "hepta.fullstudy.controller-envelope.1",
+  "controller_parent": {
+    "path": "/dev/shm/hepta-field-fullstudy-20261029/source/experiments/parameter_field_fullstudy_20261029/registrations/OPS_ATTEMPT02_DISK_SOURCE_FREEZE.json",
+    "bytes": 2163,
+    "sha256": "8ee1709c3cba5a4666b2310b11f23a86193fb908c4519bf109e8124fac2cda82"
+  },
+  "zero_work_recovery": {
+    "incident": {
+      "path": "/dev/shm/hepta-field-fullstudy-20261029/source/experiments/parameter_field_fullstudy_20261029/evidence/CONTROLLER_FAILURE_20261029.json",
+      "bytes": 3930,
+      "sha256": "623b64d0c599cf5705e198bcbb387138a5b9901aef37d1106201c6218d62f57e"
+    },
+    "queue": {
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_queue_attempt02_disk.json",
+      "bytes": 5208,
+      "sha256": "ec4815a3d3614790d627082b2cf79fb0e09c1723e514fdb84d4c38604aba0efb"
+    },
+    "prior_raw_files": {
+      ".ops-controller.lock": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      ".ops-write.lock": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "ACTIVE_WORKERS.json": {
+        "bytes": 77,
+        "sha256": "b2a46e8ea3b5c52a72a2aab779a2719517367abfa2c8a87b0d8e043784123fd6"
+      },
+      "PROGRESS.json": {
+        "bytes": 579,
+        "sha256": "d1585184f01ae04b9b50d514605307b3069fe74ed82660998ee96c6a0c6a1fb6"
+      },
+      "controller/START.json": {
+        "bytes": 710,
+        "sha256": "28475528d49f19ac17fae535fea4747cd34fb2800dca8d48b751ebfd6775dbee"
+      }
+    },
+    "archive_relative": "controller_recoveries/incident20261029"
+  }
+}

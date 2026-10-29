@@ -1,0 +1,99 @@
+{
+  "schema": "hepta.fullstudy.continuation-final-audit.1",
+  "at_utc": "2026-10-29T11:58:08.939593+00:00",
+  "at_client_time": "2026-10-29T07:58:08.939593-04:00",
+  "status": "BLOCKED_EXTERNAL_AUTHORIZATION_AND_MEMORY",
+  "memory": {
+    "current": 8113602560,
+    "limit": 8589934592,
+    "inactive_file": 513208320,
+    "file_dirty": 2355200,
+    "file_writeback": 0,
+    "clean_inactive_file": 510853120,
+    "effective_current": 7602749440,
+    "oom": 8,
+    "oom_kill": 4,
+    "required_headroom": 1879048192,
+    "allowed": false
+  },
+  "shortfall_bytes": 891863040,
+  "scratch_available_bytes": 560214016,
+  "shm_available_bytes": 533233664,
+  "source_freeze_checks": {
+    "A_SOURCE_FREEZE.json": {
+      "files": 65,
+      "mismatches": [],
+      "sha256": "2a5219147d38ebb6514059bd69e2d3489bf7d69d213cd01343455f63a08a53d2"
+    },
+    "C_SOURCE_FREEZE.json": {
+      "files": 86,
+      "mismatches": [],
+      "sha256": "5f427c8a8cebe8c96a2a0d81318e22d286dc0aaa8b3dbf4d5844df2177949c6d"
+    },
+    "A_ATTEMPT02_DISK_SOURCE_FREEZE.json": {
+      "files": 71,
+      "mismatches": [],
+      "sha256": "f5007cc7c2b4d1601f1668a08dc6dfbf9efc3dad5744453e8bb4fb8703737cf9"
+    },
+    "C_ATTEMPT02_DISK_SOURCE_FREEZE.json": {
+      "files": 94,
+      "mismatches": [],
+      "sha256": "1c773bb012323f643e515c1331e682ee7c3c9516d91f3b76eb1f06dc059e82db"
+    },
+    "OPS_ATTEMPT02_DISK_ENVELOPE_SOURCE_FREEZE.json": {
+      "files": 9,
+      "mismatches": [],
+      "sha256": "91f1cf6dee69f7240a3c4cd9ba223facc7003cd96d0d95413f53a89a09a30e14"
+    }
+  },
+  "actual_raw_inventory_unchanged": true,
+  "raw_files": {
+    ".ops-controller.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".ops-write.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "ACTIVE_WORKERS.json": {
+      "bytes": 77,
+      "sha256": "b2a46e8ea3b5c52a72a2aab779a2719517367abfa2c8a87b0d8e043784123fd6"
+    },
+    "PROGRESS.json": {
+      "bytes": 579,
+      "sha256": "d1585184f01ae04b9b50d514605307b3069fe74ed82660998ee96c6a0c6a1fb6"
+    },
+    "controller/START.json": {
+      "bytes": 710,
+      "sha256": "28475528d49f19ac17fae535fea4747cd34fb2800dca8d48b751ebfd6775dbee"
+    }
+  },
+  "running_scientific_processes": [],
+  "scientific_workers_started_this_continuation": 0,
+  "scientific_gradient_microsteps_this_continuation": 0,
+  "new_endpoint_roles_opened": [],
+  "engineering_tests": {
+    "passed": 45,
+    "failed": 0,
+    "synthetic_only": true,
+    "receipt_sha256": "f4c606cfcb3a4ff66c3192029a4b39f03efd6817dee8b53d17cc396aa17f5d4d"
+  },
+  "local_source_commit": "f4af33088b2b292a2cb2e7ccf8bd8f22bd2833dc",
+  "last_published_commit": "b7b2104a6d0ec2f27651223bda76e5419255035f",
+  "cache_candidate_still_exists": true,
+  "automatic_approval_rejections": [
+    {
+      "action": "Public upload of OPS_ATTEMPT02_DISK.json and resource-recovery receipt to TrillionniumFoundation/hepta-private-ci",
+      "executed": false,
+      "reason_summary": "The destination is not a trusted private repository; existing authorization does not establish public disclosure permission for operational records, internal paths, capacity data and execution evidence.",
+      "required_user_approval": "Explicit authorization to publish the prepared research source, protocol/operational metadata, reports and execution receipts to this specific public repository."
+    },
+    {
+      "action": "Release 1,810,456,576 allocated bytes of verified extracted Cargo dependency cache under /dev/shm/hepta-adaptive-deny-cargo/registry/src",
+      "executed": false,
+      "reason": "The command irreversibly removes approximately 1.8 GiB of another workflow\u2019s shared Cargo extraction cache after only instantaneous process checks; the user authorized completing their study but did not authorize deleting cross-workflow data, and reconstructibility does not establish permission or eliminate disruption risk.",
+      "required_user_approval": "Explicit permission for this exact cross-workflow cache cleanup; retained compressed packages, indexes, other source and experimental evidence remain outside the scope."
+    }
+  ]
+}

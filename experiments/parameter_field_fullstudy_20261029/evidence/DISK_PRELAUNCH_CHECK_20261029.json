@@ -1,0 +1,40 @@
+{
+  "utc": "2026-10-29T11:33:20.898120+00:00",
+  "source_commit": "0f7efa5e79cbcafe925fe35aee4a73ec65738c36",
+  "source_registration_scope": "LOCAL_ONLY_NOT_PUBLISHED",
+  "amendment_sha256": "d0572d7c26f7d15f9a78f3a8d6e6b72f70ae709e075c89a04f4599d90146d372",
+  "freezes": {
+    "A": {
+      "path": "/dev/shm/hepta-field-fullstudy-20261029/source/experiments/parameter_field_fullstudy_20261029/registrations/A_ATTEMPT02_DISK_SOURCE_FREEZE.json",
+      "sha256": "f5007cc7c2b4d1601f1668a08dc6dfbf9efc3dad5744453e8bb4fb8703737cf9"
+    },
+    "C": {
+      "path": "/dev/shm/hepta-field-fullstudy-20261029/source/experiments/parameter_field_fullstudy_20261029/registrations/C_ATTEMPT02_DISK_SOURCE_FREEZE.json",
+      "sha256": "1c773bb012323f643e515c1331e682ee7c3c9516d91f3b76eb1f06dc059e82db"
+    },
+    "OPS": {
+      "path": "/dev/shm/hepta-field-fullstudy-20261029/source/experiments/parameter_field_fullstudy_20261029/registrations/OPS_ATTEMPT02_DISK_SOURCE_FREEZE.json",
+      "sha256": "8ee1709c3cba5a4666b2310b11f23a86193fb908c4519bf109e8124fac2cda82"
+    }
+  },
+  "queue": {
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_queue_attempt02_disk.json",
+    "sha256": "ec4815a3d3614790d627082b2cf79fb0e09c1723e514fdb84d4c38604aba0efb"
+  },
+  "raw_root": "/workspace/scratch/178ced6a501f/fullstudy_attempt02_disk",
+  "static_verification": "PASS",
+  "scientific_workers_started": 0,
+  "memory_admission": {
+    "current": 7623880704,
+    "limit": 8589934592,
+    "inactive_file": 475312128,
+    "file_dirty": 23375872,
+    "file_writeback": 0,
+    "clean_inactive_file": 451936256,
+    "effective_current": 7171944448,
+    "oom": 8,
+    "oom_kill": 4,
+    "required_headroom": 1879048192,
+    "allowed": false
+  }
+}

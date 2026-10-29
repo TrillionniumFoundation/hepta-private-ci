@@ -1,0 +1,94 @@
+{
+  "schema": "hepta.fullstudy.controller-infrastructure-failure.1",
+  "recorded_utc": "2026-10-29T11:37:25.368763+00:00",
+  "attempt_id": "attempt02",
+  "raw_root": "/workspace/scratch/178ced6a501f/fullstudy_attempt02_disk",
+  "exec_session": 44050,
+  "observed_exit_code": 1,
+  "error_type": "MemoryError",
+  "message": "Registered cgroup margin/pending-growth reserve exhausted",
+  "failed_operation": "launch_v2.py run line360 storage.write_json(root / PROGRESS.json, status, allow_replace=True)",
+  "scientific_workers_started": 0,
+  "scheduled_gradient_microsteps": 0,
+  "basis_for_zero_worker_count": "No controller job START, no science/operation directory, empty ACTIVE_WORKERS; observed traceback reached the progress write after the admission loop. Any successful earlier Popen would have had to pass its synchronous START write to reach this line. This is a source-and-artifact postmortem, not a retroactive Popen observer.",
+  "last_successful_progress_elapsed_seconds": 90.51164466000046,
+  "raw_evidence": {
+    "controller/START.json": {
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_attempt02_disk/controller/START.json",
+      "bytes": 710,
+      "sha256": "28475528d49f19ac17fae535fea4747cd34fb2800dca8d48b751ebfd6775dbee",
+      "content": {
+        "amendment_sha256": "d0572d7c26f7d15f9a78f3a8d6e6b72f70ae709e075c89a04f4599d90146d372",
+        "attempt_id": "attempt02",
+        "host_lifetime_durability_claim": false,
+        "max_workers": 2,
+        "memory_baseline": {
+          "clean_inactive_file": 451653632,
+          "current": 7621591040,
+          "effective_current": 7169937408,
+          "file_dirty": 23642112,
+          "file_writeback": 0,
+          "inactive_file": 475295744,
+          "limit": 8589934592,
+          "oom": 8,
+          "oom_kill": 4
+        },
+        "private_mount": false,
+        "raw_external_uploads": 0,
+        "registered_commit": "0f7efa5e79cbcafe925fe35aee4a73ec65738c36",
+        "source_freeze_sha256": "8ee1709c3cba5a4666b2310b11f23a86193fb908c4519bf109e8124fac2cda82",
+        "started_unix": 1793273612.763748
+      }
+    },
+    "ACTIVE_WORKERS.json": {
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_attempt02_disk/ACTIVE_WORKERS.json",
+      "bytes": 77,
+      "sha256": "b2a46e8ea3b5c52a72a2aab779a2719517367abfa2c8a87b0d8e043784123fd6",
+      "content": {
+        "oom_baseline": {
+          "oom": 8,
+          "oom_kill": 4
+        },
+        "workers": []
+      }
+    },
+    "PROGRESS.json": {
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_attempt02_disk/PROGRESS.json",
+      "bytes": 579,
+      "sha256": "d1585184f01ae04b9b50d514605307b3069fe74ed82660998ee96c6a0c6a1fb6",
+      "content": {
+        "attempt_id": "attempt02",
+        "elapsed_seconds": 90.51164466000046,
+        "memory": {
+          "clean_inactive_file": 401453056,
+          "current": 7662456832,
+          "effective_current": 7261003776,
+          "file_dirty": 11005952,
+          "file_writeback": 0,
+          "inactive_file": 412459008,
+          "limit": 8589934592,
+          "oom": 8,
+          "oom_kill": 4
+        },
+        "oom_admission_paused": false,
+        "pending": [
+          "A-17",
+          "A-29",
+          "A-43",
+          "C"
+        ],
+        "results": {},
+        "running": {},
+        "storage": {
+          "allocated_unique_inode_bytes": 12288,
+          "logical_bytes": 1366,
+          "unique_inodes": 5
+        }
+      }
+    }
+  },
+  "existing_source_unchanged": true,
+  "standard_admission_failure_receipt_written": false,
+  "resumption_policy": "Original --resume-admission cannot handle this infrastructure path. Preserve all bytes; no fabricated original receipt. A separately frozen controller recovery mechanism must validate this zero-work incident before any retry.",
+  "publication_status": "LOCAL_ONLY; automatic review rejected public metadata upload; no public mutation executed."
+}

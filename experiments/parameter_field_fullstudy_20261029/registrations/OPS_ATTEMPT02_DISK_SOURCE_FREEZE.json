@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.fullstudy.source-freeze.1",
+  "registered_commit": "0f7efa5e79cbcafe925fe35aee4a73ec65738c36",
+  "allowed_phases": [
+    "OPS"
+  ],
+  "attempt_id": "attempt02",
+  "execution_kind": "controller",
+  "protocol_sha256": "2c02b5aff224f125826931f3ecf691b2a01391a719075db8a1bc9fb5f5dafd55",
+  "operational_amendment_sha256": "d0572d7c26f7d15f9a78f3a8d6e6b72f70ae709e075c89a04f4599d90146d372",
+  "created_at": "2026-10-29T11:33:20.898120+00:00",
+  "source_files": {
+    "experiments/parameter_field_fullstudy_20261029/OPS_ATTEMPT02.json": "583b3f8c7866b2d2a289e32cc9162472fd23ddc0b7897d0066863fd427173dd3",
+    "experiments/parameter_field_fullstudy_20261029/OPS_ATTEMPT02_DISK.json": "d0572d7c26f7d15f9a78f3a8d6e6b72f70ae709e075c89a04f4599d90146d372",
+    "experiments/parameter_field_fullstudy_20261029/PROTOCOL.json": "2c02b5aff224f125826931f3ecf691b2a01391a719075db8a1bc9fb5f5dafd55",
+    "experiments/parameter_field_fullstudy_20261029/launch_v2.py": "7423f368c7ec8fd39a666c575f91e36f69da78bd1ec6cdc39f3afbe8224332e3",
+    "experiments/parameter_field_fullstudy_20261029/resource_io_v2.py": "25322e8356bb48de1299338768ec0341f8c4fb89028af7c9fdcdd7a22b2b0931",
+    "experiments/parameter_field_fullstudy_20261029/resource_v2.py": "079b326b6d42cb9dccac2cbe8e872cb30e221169f6e0f650469e2a53774624bf",
+    "experiments/parameter_field_fullstudy_20261029/run_v2.py": "291218547484a01ac0213c06f1b6bbd16104955348b818014a66f4d3a0ce3561"
+  },
+  "artifacts": {},
+  "scope": "Attempt02 disk relocation, zero scientific changes; locally committed source registration only. Public publication was rejected by automatic review; remote branch is unchanged. Actual execution requires unchanged resource gates.",
+  "source_registration_scope": "LOCAL_ONLY_NOT_PUBLISHED",
+  "source_git_root": "/workspace/scratch/178ced6a501f/fullstudy_local_git",
+  "supersedes_unexecuted_freeze": {
+    "path": "/dev/shm/hepta-field-fullstudy-20261029/source/experiments/parameter_field_fullstudy_20261029/registrations/OPS_ATTEMPT02_SOURCE_FREEZE.json",
+    "sha256": "c7e3e66fab26d744e100f2bd667b2089e216b05a07d2caf4f012c1c574e7572b",
+    "scientific_workers_started": 0
+  }
+}
