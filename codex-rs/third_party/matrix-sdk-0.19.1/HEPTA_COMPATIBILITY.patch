@@ -1,12 +1,13 @@
 --- a/Cargo.toml
 +++ b/Cargo.toml
-@@ -165,7 +165,8 @@
+@@ -165,7 +165,9 @@
  default-features = false
  
  [dependencies.anymap2]
 -version = "0.13.0"
 +version = "1.1.0"
 +package = "anymap3"
++features = ["std"]
  default-features = false
  
  [dependencies.as_variant]
@@ -17,9 +18,10 @@
  };
  
 -#[cfg(target_family = "wasm")]
- use anymap2::any::CloneAny;
+-use anymap2::any::CloneAny;
 -#[cfg(not(target_family = "wasm"))]
 -use anymap2::any::CloneAnySendSync;
++use anymap2::CloneAny;
  use eyeball::{SharedObservable, Subscriber};
  use futures_core::Stream;
  use futures_util::stream::{FuturesUnordered, StreamExt};

@@ -45,7 +45,7 @@ use std::{
     task::{Context, Poll},
 };
 
-use anymap2::any::CloneAny;
+use anymap2::CloneAny;
 use eyeball::{SharedObservable, Subscriber};
 use futures_core::Stream;
 use futures_util::stream::{FuturesUnordered, StreamExt};
