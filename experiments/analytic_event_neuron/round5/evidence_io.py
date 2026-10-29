@@ -11,11 +11,13 @@ import gzip
 import hashlib
 import io
 import json
+import lzma
 from pathlib import Path, PurePosixPath
 import tarfile
 
 
 SCHEMA = "hepta.analytic-event.evidence-envelope.v1"
+XZ_SCHEMA = "hepta.analytic-event.evidence-envelope.v2"
 CHUNK_BYTES = 196608
 
 
@@ -31,9 +33,11 @@ def relative_name(value):
     return name
 
 
-def pack(source, destination, source_label):
+def pack(source, destination, source_label, compression="gzip"):
     """Capture an immutable directory; reject links and refuse overwrites."""
     source, destination = Path(source), Path(destination)
+    if compression not in ("gzip", "xz"):
+        raise ValueError("Declared gzip or xz compression required")
     if not source.is_dir() or source.is_symlink():
         raise ValueError("Source must be a real directory")
     source, destination = source.resolve(), destination.resolve()
@@ -52,7 +56,9 @@ def pack(source, destination, source_label):
     if not files:
         raise ValueError("Empty evidence is not an archive")
     encoded = io.BytesIO()
-    with gzip.GzipFile(fileobj=encoded, mode="wb", mtime=0) as compressed:
+    compressor = (gzip.GzipFile(fileobj=encoded, mode="wb", mtime=0) if compression == "gzip"
+                  else lzma.LZMAFile(encoded, mode="wb", preset=6))
+    with compressor as compressed:
         with tarfile.open(fileobj=compressed, mode="w", format=tarfile.PAX_FORMAT) as archive:
             for name, payload in files:
                 info = tarfile.TarInfo(name)
@@ -64,13 +70,15 @@ def pack(source, destination, source_label):
     for offset in range(0, len(blob), CHUNK_BYTES):
         raw = blob[offset:offset + CHUNK_BYTES]
         content = base64.b64encode(raw)
-        name = f"archive.tar.gz.b64.part{len(chunks):04d}"
+        suffix = "gz" if compression == "gzip" else "xz"
+        name = f"archive.tar.{suffix}.b64.part{len(chunks):04d}"
         (destination / name).write_bytes(content)
         chunks.append({"path": name, "encoded_bytes": len(content), "encoded_sha256": digest(content),
                        "decoded_bytes": len(raw), "decoded_sha256": digest(raw)})
-    manifest = {"schema": SCHEMA, "created_utc": datetime.now(timezone.utc).isoformat(),
+    manifest = {"schema": SCHEMA if compression == "gzip" else XZ_SCHEMA,
+                "created_utc": datetime.now(timezone.utc).isoformat(),
                 "source_label": source_label, "encoding": "independent standard base64 chunks without whitespace",
-                "archive_format": "gzip+POSIX-tar; regular relative files only", "archive_bytes": len(blob),
+                "archive_format": compression + "+POSIX-tar; regular relative files only", "archive_bytes": len(blob),
                 "archive_sha256": digest(blob), "chunks": chunks,
                 "members": [{"path": name, "bytes": len(data), "sha256": digest(data)} for name, data in files],
                 "historical_missing_evidence_reconstructed": False}
@@ -82,8 +90,11 @@ def restore(envelope, destination):
     """Verify all encoded, archive and member bytes before writing new files."""
     envelope, destination = Path(envelope), Path(destination)
     manifest = json.loads((envelope / "MANIFEST.json").read_text())
-    if manifest["schema"] != SCHEMA:
+    if manifest["schema"] not in (SCHEMA, XZ_SCHEMA):
         raise ValueError("Unsupported evidence envelope version")
+    compression = "gzip" if manifest["schema"] == SCHEMA else "xz"
+    if manifest["archive_format"] != compression + "+POSIX-tar; regular relative files only":
+        raise ValueError("Envelope schema and compression declaration disagree")
     expected = {"MANIFEST.json"} | {item["path"] for item in manifest["chunks"]}
     if {p.name for p in envelope.iterdir()} != expected or len(expected) != len(manifest["chunks"]) + 1:
         raise ValueError("Envelope file inventory differs from the manifest")
@@ -106,7 +117,8 @@ def restore(envelope, destination):
     if len(expected_members) != len(manifest["members"]):
         raise ValueError("Duplicate member in manifest")
     payloads = {}
-    with tarfile.open(fileobj=io.BytesIO(blob), mode="r:gz") as archive:
+    mode = "r:gz" if compression == "gzip" else "r:xz"
+    with tarfile.open(fileobj=io.BytesIO(blob), mode=mode) as archive:
         for member in archive:
             relative_name(member.name)
             if not member.isfile() or member.name not in expected_members or member.name in payloads:
@@ -138,11 +150,12 @@ def main():
     parser.add_argument("source", type=Path)
     parser.add_argument("destination", type=Path)
     parser.add_argument("--source-label")
+    parser.add_argument("--compression", choices=("gzip", "xz"), default="gzip")
     args = parser.parse_args()
     if args.phase == "pack":
         if not args.source_label:
             parser.error("pack requires an explicit source label")
-        result = pack(args.source, args.destination, args.source_label)
+        result = pack(args.source, args.destination, args.source_label, args.compression)
         print(json.dumps({"archive_sha256": result["archive_sha256"], "archive_bytes": result["archive_bytes"],
                           "chunks": len(result["chunks"]), "members": len(result["members"])}))
     else:

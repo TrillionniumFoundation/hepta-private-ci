@@ -1,0 +1,572 @@
+{
+  "arms": {
+    "frozen": {
+      "final_new_nll_difference_descriptive95": {
+        "alpha": 0.05,
+        "interval": [
+          0.0,
+          0.0
+        ],
+        "mean_difference": 0.0,
+        "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+        "per_seed_mean": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "replicates": 4000
+      },
+      "old_nll_increase_by_window": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "passes_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_nll_efficacy_gate": false,
+      "passes_retention_gate": true,
+      "pooled_shifted_classwise_ece": 0.058488876779283216,
+      "pooled_shifted_coverage95": 0.8961805555555554,
+      "worst_cross_seed_mean_old_nll_increase": 0.0,
+      "worst_single_seed_window_old_nll_increase": 0.0
+    },
+    "gaussian_full_range": {
+      "final_new_nll_difference_descriptive95": {
+        "alpha": 0.05,
+        "interval": [
+          -0.07696310909570847,
+          -0.04438638423163417
+        ],
+        "mean_difference": -0.05999141897857561,
+        "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+        "per_seed_mean": [
+          -0.05493581364987387,
+          -0.06028392118822138,
+          -0.06017791220540634,
+          -0.09071102141786913,
+          -0.03384842643150727
+        ],
+        "replicates": 4000
+      },
+      "old_nll_increase_by_window": [
+        -0.0020892101724639634,
+        0.00913648578941305,
+        -0.0013090147302459224,
+        0.013124734025815748,
+        -0.0011057052247722687,
+        0.013673049725723996,
+        -0.00012210615021038257,
+        0.018868000294496305,
+        0.0005555553843441602,
+        0.011295013935365656,
+        -0.0010663376470377089,
+        0.007639530846076753
+      ],
+      "passes_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_nll_efficacy_gate": true,
+      "passes_retention_gate": true,
+      "pooled_shifted_classwise_ece": 0.04697553748124681,
+      "pooled_shifted_coverage95": 0.9105902777777778,
+      "worst_cross_seed_mean_old_nll_increase": 0.018868000294496305,
+      "worst_single_seed_window_old_nll_increase": 0.06679853817742146
+    },
+    "mixture_full_range": {
+      "final_new_nll_difference_descriptive95": {
+        "alpha": 0.05,
+        "interval": [
+          -0.09440396947298287,
+          -0.05879854697499549
+        ],
+        "mean_difference": -0.07638789450361143,
+        "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+        "per_seed_mean": [
+          -0.09347844617863613,
+          -0.08119040695753221,
+          -0.061952930537926665,
+          -0.09529188534180044,
+          -0.05002580350216169
+        ],
+        "replicates": 4000
+      },
+      "old_nll_increase_by_window": [
+        -0.0021652787857112956,
+        0.01091427603652437,
+        -0.0013126576481260234,
+        0.00921310951148438,
+        -0.0011017368764663596,
+        0.007602707497729047,
+        -0.00010984409729175508,
+        0.02022786191690131,
+        5.023153425820241e-05,
+        0.008179983366066864,
+        -0.0011487673491964421,
+        0.00397442448908195
+      ],
+      "passes_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_nll_efficacy_gate": false,
+      "passes_retention_gate": false,
+      "pooled_shifted_classwise_ece": 0.049467366253631816,
+      "pooled_shifted_coverage95": 0.9251736111111111,
+      "worst_cross_seed_mean_old_nll_increase": 0.02022786191690131,
+      "worst_single_seed_window_old_nll_increase": 0.0892301645381805
+    },
+    "mixture_legacy": {
+      "final_new_nll_difference_descriptive95": {
+        "alpha": 0.05,
+        "interval": [
+          -0.0980407124514655,
+          -0.06334644613622192
+        ],
+        "mean_difference": -0.08093516220628966,
+        "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+        "per_seed_mean": [
+          -0.09261093985229456,
+          -0.08912605289453998,
+          -0.07402314955481984,
+          -0.09689088422751102,
+          -0.052024784502282866
+        ],
+        "replicates": 4000
+      },
+      "old_nll_increase_by_window": [
+        -0.002011637739371728,
+        0.011681148252814775,
+        -0.0010280454721439786,
+        0.010462658455413665,
+        -0.0010069405534146795,
+        0.007599220778517007,
+        -0.00021910079900238673,
+        0.020320939738919647,
+        1.9365299232128057e-05,
+        0.00915081620671929,
+        -0.0010316362727491154,
+        0.0048819886665160805
+      ],
+      "passes_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_nll_efficacy_gate": false,
+      "passes_retention_gate": false,
+      "pooled_shifted_classwise_ece": 0.04880101321121216,
+      "pooled_shifted_coverage95": 0.9271267361111111,
+      "worst_cross_seed_mean_old_nll_increase": 0.020320939738919647,
+      "worst_single_seed_window_old_nll_increase": 0.08620444050212445
+    },
+    "moment_full_range": {
+      "final_new_nll_difference_descriptive95": {
+        "alpha": 0.05,
+        "interval": [
+          -0.09948552528767758,
+          -0.059838363300729995
+        ],
+        "mean_difference": -0.08003423028339507,
+        "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+        "per_seed_mean": [
+          -0.09331772707120384,
+          -0.09891101200834548,
+          -0.06229015257699985,
+          -0.09558829370664854,
+          -0.050063966053777664
+        ],
+        "replicates": 4000
+      },
+      "old_nll_increase_by_window": [
+        -0.0021209386125203267,
+        0.010636866794988814,
+        -0.001408837475421257,
+        0.007748479123227334,
+        -0.0010936144236125098,
+        0.007603340674914595,
+        -0.00011379555004260482,
+        0.019783505277723032,
+        4.652981557585487e-05,
+        0.008066891713225824,
+        -0.0011487673491964421,
+        0.005057279280264895
+      ],
+      "passes_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_nll_efficacy_gate": true,
+      "passes_retention_gate": true,
+      "pooled_shifted_classwise_ece": 0.04942168829706053,
+      "pooled_shifted_coverage95": 0.9246961805555556,
+      "worst_cross_seed_mean_old_nll_increase": 0.019783505277723032,
+      "worst_single_seed_window_old_nll_increase": 0.08868249719409205
+    },
+    "moment_legacy": {
+      "final_new_nll_difference_descriptive95": {
+        "alpha": 0.05,
+        "interval": [
+          -0.09958790603580187,
+          -0.06411270130087385
+        ],
+        "mean_difference": -0.08291843135187105,
+        "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+        "per_seed_mean": [
+          -0.0918803431081414,
+          -0.09853356749068791,
+          -0.07462159483605409,
+          -0.09729441945820114,
+          -0.052262231866270686
+        ],
+        "replicates": 4000
+      },
+      "old_nll_increase_by_window": [
+        -0.0019976173231384814,
+        0.011761835559976171,
+        -0.0011585980697496822,
+        0.009521820754611056,
+        -0.0010716416912793859,
+        0.007600970008426744,
+        -0.00021107811939261503,
+        0.019940341541099194,
+        1.670435152844648e-05,
+        0.007935473219554767,
+        -0.0010308801885406903,
+        0.005474696378318855
+      ],
+      "passes_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_nll_efficacy_gate": true,
+      "passes_retention_gate": true,
+      "pooled_shifted_classwise_ece": 0.048830752837217904,
+      "pooled_shifted_coverage95": 0.9263454861111111,
+      "worst_cross_seed_mean_old_nll_increase": 0.019940341541099194,
+      "worst_single_seed_window_old_nll_increase": 0.08660003148199832
+    },
+    "replay_legacy": {
+      "final_new_nll_difference_descriptive95": {
+        "alpha": 0.05,
+        "interval": [
+          -0.0906316918269503,
+          -0.05473207997427598
+        ],
+        "mean_difference": -0.07292971326727447,
+        "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+        "per_seed_mean": [
+          -0.08357673221034097,
+          -0.07894378819149868,
+          -0.06676778941696171,
+          -0.09591792439530075,
+          -0.03944233212227029
+        ],
+        "replicates": 4000
+      },
+      "old_nll_increase_by_window": [
+        -0.0009121983065329709,
+        0.010787168895098388,
+        -0.0011212186811569431,
+        0.013711453327807132,
+        -7.251997186707888e-05,
+        0.012309532721564992,
+        -0.0007920722409927199,
+        0.019442635600187073,
+        -0.0002741489267057947,
+        0.011226024579745766,
+        -0.0011621639322224296,
+        0.007194424699089821
+      ],
+      "passes_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_nll_efficacy_gate": true,
+      "passes_retention_gate": true,
+      "pooled_shifted_classwise_ece": 0.046384147212496264,
+      "pooled_shifted_coverage95": 0.9180555555555556,
+      "worst_cross_seed_mean_old_nll_increase": 0.019442635600187073,
+      "worst_single_seed_window_old_nll_increase": 0.07588465097067629
+    },
+    "same_weight_moment_full": {
+      "final_new_nll_difference_descriptive95": {
+        "alpha": 0.05,
+        "interval": [
+          -0.09408783348294887,
+          -0.0585159257977401
+        ],
+        "mean_difference": -0.07651083988397325,
+        "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+        "per_seed_mean": [
+          -0.09331772707120384,
+          -0.0812940600112363,
+          -0.06229015257699985,
+          -0.09558829370664854,
+          -0.050063966053777664
+        ],
+        "replicates": 4000
+      },
+      "old_nll_increase_by_window": [
+        -0.0021501681662222825,
+        0.010636866794988814,
+        -0.0013122227883053995,
+        0.009101819566557917,
+        -0.0010962540946975808,
+        0.007603340674914595,
+        -0.00011379555004260482,
+        0.019783505277723032,
+        4.652981557585487e-05,
+        0.008066891713225824,
+        -0.0011487673491964421,
+        0.0039553048871230215
+      ],
+      "passes_calibration_gate": false,
+      "passes_joint_empirical_gate": false,
+      "passes_nll_efficacy_gate": true,
+      "passes_retention_gate": true,
+      "pooled_shifted_classwise_ece": 0.04943081759507608,
+      "pooled_shifted_coverage95": 0.9246961805555555,
+      "worst_cross_seed_mean_old_nll_increase": 0.019783505277723032,
+      "worst_single_seed_window_old_nll_increase": 0.08868249719409205
+    }
+  },
+  "candidate_sets_need_not_be_nested": true,
+  "comparisons": {
+    "gaussian_full_range_minus_replay_legacy": {
+      "alpha": 0.05,
+      "expanded_joint_gate_passed": null,
+      "interval": [
+        0.009783380494637756,
+        0.020178592103955173
+      ],
+      "mean_difference": 0.015108005412247764,
+      "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+      "per_seed_mean": [
+        0.022989276153064064,
+        0.017337836021569752,
+        0.01807333501135997,
+        0.005963687553204912,
+        0.011175892322040124
+      ],
+      "range_benefit_detected": null,
+      "replicates": 4000,
+      "scope": "descriptive"
+    },
+    "mixture_full_range_minus_gaussian_full_range": {
+      "alpha": 0.05,
+      "expanded_joint_gate_passed": null,
+      "interval": [
+        -0.033378638860726055,
+        -0.009592749747200825
+      ],
+      "mean_difference": -0.023009052255828256,
+      "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+      "per_seed_mean": [
+        -0.037759134994368775,
+        -0.02511869323468457,
+        -0.030488754039493925,
+        0.0015385009855676402,
+        -0.023217179996161647
+      ],
+      "range_benefit_detected": null,
+      "replicates": 4000,
+      "scope": "descriptive"
+    },
+    "mixture_full_range_minus_mixture_legacy": {
+      "alpha": 0.025,
+      "expanded_joint_gate_passed": false,
+      "interval": [
+        0.0023289243241217776,
+        0.00799844132424569
+      ],
+      "mean_difference": 0.005128117475873021,
+      "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+      "per_seed_mean": [
+        0.009339010953444589,
+        0.0027591498779990114,
+        0.005068584645251077,
+        0.0070701111485084655,
+        0.0014037307541619592
+      ],
+      "range_benefit_detected": false,
+      "replicates": 4000,
+      "scope": "primary"
+    },
+    "mixture_full_range_minus_moment_full_range": {
+      "alpha": 0.05,
+      "expanded_joint_gate_passed": null,
+      "interval": [
+        -0.0003357748261430406,
+        0.00040606086117651505
+      ],
+      "mean_difference": 2.8047693730029813e-05,
+      "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+      "per_seed_mean": [
+        0.0003245989046636198,
+        3.662714472491262e-05,
+        -0.0003143350235849229,
+        4.335805165823888e-05,
+        4.9989391188301186e-05
+      ],
+      "range_benefit_detected": null,
+      "replicates": 4000,
+      "scope": "descriptive"
+    },
+    "mixture_full_range_minus_same_weight_moment_full": {
+      "alpha": 0.05,
+      "expanded_joint_gate_passed": null,
+      "interval": [
+        -0.00044063337472267873,
+        0.00026471166201169784
+      ],
+      "mean_difference": -8.376956693221263e-05,
+      "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+      "per_seed_mean": [
+        0.0003245989046636198,
+        -0.0005224591585863,
+        -0.0003143350235849229,
+        4.335805165823888e-05,
+        4.9989391188301186e-05
+      ],
+      "range_benefit_detected": null,
+      "replicates": 4000,
+      "scope": "descriptive"
+    },
+    "moment_full_range_minus_moment_legacy": {
+      "alpha": 0.025,
+      "expanded_joint_gate_passed": false,
+      "interval": [
+        0.0014845060410103746,
+        0.0074280374678150915
+      ],
+      "mean_difference": 0.0046707867809965215,
+      "method": "resample training seeds then independent whole context/query blocks within each fixed window",
+      "per_seed_mean": [
+        0.007604116197243172,
+        0.0023188361209362618,
+        0.007349660331591216,
+        0.006190446330368835,
+        -0.00010912507515687753
+      ],
+      "range_benefit_detected": false,
+      "replicates": 4000,
+      "scope": "primary"
+    }
+  },
+  "environment": {
+    "executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "implementation": "CPython",
+    "machine": "x86_64",
+    "numerical_builds": {
+      "numpy": "Build Dependencies:\n  blas:\n    detection method: pkgconfig\n    found: true\n    include directory: /opt/_internal/cpython-3.12.12/lib/python3.12/site-packages/scipy_openblas64/include\n    lib directory: /opt/_internal/cpython-3.12.12/lib/python3.12/site-packages/scipy_openblas64/lib\n    name: scipy-openblas\n    openblas configuration: OpenBLAS 0.3.30  USE64BITINT DYNAMIC_ARCH NO_AFFINITY\n      Haswell MAX_THREADS=64\n    pc file directory: /project/.openblas\n    version: 0.3.30\n  lapack:\n    detection method: pkgconfig\n    found: true\n    include directory: /opt/_internal/cpython-3.12.12/lib/python3.12/site-packages/scipy_openblas64/include\n    lib directory: /opt/_internal/cpython-3.12.12/lib/python3.12/site-packages/scipy_openblas64/lib\n    name: scipy-openblas\n    openblas configuration: OpenBLAS 0.3.30  USE64BITINT DYNAMIC_ARCH NO_AFFINITY\n      Haswell MAX_THREADS=64\n    pc file directory: /project/.openblas\n    version: 0.3.30\nCompilers:\n  c:\n    commands: cc\n    linker: ld.bfd\n    name: gcc\n    version: 14.2.1\n  c++:\n    commands: c++\n    linker: ld.bfd\n    name: gcc\n    version: 14.2.1\n  cython:\n    commands: cython\n    linker: cython\n    name: cython\n    version: 3.2.1\nMachine Information:\n  build:\n    cpu: x86_64\n    endian: little\n    family: x86_64\n    system: linux\n  host:\n    cpu: x86_64\n    endian: little\n    family: x86_64\n    system: linux\nPython Information:\n  path: /tmp/build-env-aw1mwcap/bin/python\n  version: '3.12'\nSIMD Extensions:\n  baseline:\n  - SSE\n  - SSE2\n  - SSE3\n  found:\n  - SSSE3\n  - SSE41\n  - POPCNT\n  - SSE42\n  - AVX\n  - F16C\n  - FMA3\n  - AVX2\n  - AVX512F\n  - AVX512CD\n  - AVX512_SKX\n  - AVX512_CLX\n  - AVX512_CNL\n  - AVX512_ICL\n  not found:\n  - AVX512_KNL\n  - AVX512_KNM\n  - AVX512_SPR\n\n",
+      "scipy": "Build Dependencies:\n  blas:\n    detection method: pkgconfig\n    found: true\n    has ilp64: false\n    include directory: /opt/_internal/cpython-3.12.11/lib/python3.12/site-packages/scipy_openblas32/include\n    lib directory: /opt/_internal/cpython-3.12.11/lib/python3.12/site-packages/scipy_openblas32/lib\n    name: scipy-openblas\n    openblas configuration: OpenBLAS 0.3.30 DYNAMIC_ARCH NO_AFFINITY Haswell MAX_THREADS=64\n    pc file directory: /project/\n    version: 0.3.30\n  lapack:\n    detection method: pkgconfig\n    found: true\n    has ilp64: false\n    include directory: /opt/_internal/cpython-3.12.11/lib/python3.12/site-packages/scipy_openblas32/include\n    lib directory: /opt/_internal/cpython-3.12.11/lib/python3.12/site-packages/scipy_openblas32/lib\n    name: scipy-openblas\n    openblas configuration: OpenBLAS 0.3.30 DYNAMIC_ARCH NO_AFFINITY Haswell MAX_THREADS=64\n    pc file directory: /project/\n    version: 0.3.30\n  pybind11:\n    detection method: config-tool\n    include directory: unknown\n    name: pybind11\n    version: 3.0.1\nCompilers:\n  c:\n    commands: cc\n    linker: ld.bfd\n    name: gcc\n    version: 14.2.1\n  c++:\n    commands: c++\n    linker: ld.bfd\n    name: gcc\n    version: 14.2.1\n  cython:\n    commands: cython\n    linker: cython\n    name: cython\n    version: 3.2.4\n  fortran:\n    commands: gfortran\n    linker: ld.bfd\n    name: gcc\n    version: 14.2.1\n  pythran:\n    include directory: ../../tmp/build-env-h6rtuvfe/lib/python3.12/site-packages/pythran\n    version: 0.18.1\nMachine Information:\n  build:\n    cpu: x86_64\n    endian: little\n    family: x86_64\n    system: linux\n  cross-compiled: false\n  host:\n    cpu: x86_64\n    endian: little\n    family: x86_64\n    system: linux\nPython Information:\n  path: /tmp/build-env-h6rtuvfe/bin/python\n  version: '3.12'\n\n"
+    },
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "scipy": "1.17.0",
+    "thread_environment": {
+      "BLIS_NUM_THREADS": null,
+      "MKL_DYNAMIC": null,
+      "MKL_NUM_THREADS": null,
+      "NUMEXPR_NUM_THREADS": null,
+      "OMP_DYNAMIC": null,
+      "OMP_NUM_THREADS": null,
+      "OPENBLAS_NUM_THREADS": null,
+      "PYTHONHASHSEED": null,
+      "VECLIB_MAXIMUM_THREADS": null
+    }
+  },
+  "freeze_sha256": "1e5676bd481ef5a3d13e63a5de8eb90223e9abf55bb918721b28ab32e1f5ba16",
+  "index_sha256": "7de85b15d658d34cef74a3b7ebeb7e9ac19d9fcef446c056f4566c15b0fe7636",
+  "original_round4_evidence_reconstructed": false,
+  "production_promotion": false,
+  "profile_gates_are_empirical_not_simultaneous_certificates": true,
+  "public_context_histories": 0,
+  "registration": {
+    "anchor_rows": 512,
+    "architectures_and_arithmetic_costs_not_identical": true,
+    "arms": [
+      "frozen",
+      "replay_legacy",
+      "gaussian_full_range",
+      "mixture_legacy",
+      "mixture_full_range",
+      "moment_legacy",
+      "moment_full_range",
+      "same_weight_moment_full"
+    ],
+    "bootstrap_replicates": 4000,
+    "bootstrap_seed": 28102855,
+    "calibration_ece_max": 0.04,
+    "candidate_sets_not_assumed_nested": true,
+    "candidates_per_selector": 21,
+    "confirmation_constructed_after_source_and_prepared_freeze_only": true,
+    "confirmation_rows_per_domain": 256,
+    "coverage95_range": [
+      0.92,
+      0.98
+    ],
+    "development_rows_per_domain": 256,
+    "diagnostic_interval_alpha": 0.05,
+    "final_new_nll_improvement_min": 0.005,
+    "full_range_prior_grid": "linspace(0,1,21)",
+    "independent_unit": "one query trajectory; three correlated future horizons stay together",
+    "interval_coverage": "nominal approximate bootstrap coverage; five independent training-seed clusters",
+    "legacy_prior_grid": "linspace(0,fit_prior,21)",
+    "namespace": "hepta.aen.r5.selection.confirmation-study.v1",
+    "native_runtime_or_utility_claim": false,
+    "old_confirmation_rows_reused_across_windows": true,
+    "old_nll_margin": 0.02,
+    "original_round4_evidence_reconstructed": false,
+    "primary_comparisons": [
+      [
+        "mixture_full_range",
+        "mixture_legacy"
+      ],
+      [
+        "moment_full_range",
+        "moment_legacy"
+      ]
+    ],
+    "primary_endpoint": "mean new-domain density NLL difference over the six fixed drift windows",
+    "primary_evidence": "upper endpoint below zero; sign evidence only, no prespecified practical range-effect margin",
+    "primary_family_size": 2,
+    "primary_interval_alpha": 0.025,
+    "profile": "registered",
+    "profile_gates_are_not_familywise_or_pointwise_certificates": true,
+    "profile_gates_use_descriptive_anchor_intervals": true,
+    "public_context_histories_per_query": 0,
+    "replay_rows": 256,
+    "schema": "hepta.analytic-event.selection-registration.v5",
+    "seed_rule": "first8 SHA256 bytes of namespace|phase|seed|window|role, masked to53bits; explicit schedule collision checked",
+    "seeds": [
+      2131,
+      2377,
+      2539,
+      2791,
+      3011
+    ],
+    "selector": "old-dev mean NLL increase +1.645 pairedSE<=.02; minimize new-dev NLL; index tie break",
+    "selectors_per_window": 6,
+    "training_rows": 256,
+    "windows": [
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift"
+    ]
+  },
+  "schema": "hepta.analytic-event.selection-results.v5",
+  "summary_parent_cpu_ns": 4431357489,
+  "summary_timing_scope": "source/environment/model/raw/score verification, metrics and all bootstrap intervals; excludes final JSON write",
+  "summary_wall_ns": 5382792271,
+  "unique_query_trajectories": 16640
+}

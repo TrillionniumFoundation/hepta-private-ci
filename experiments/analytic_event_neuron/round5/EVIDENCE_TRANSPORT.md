@@ -2,7 +2,9 @@
 
 Round5 stores new raw scientific artifacts in versioned UTF-8 envelopes when
 the available Git connector cannot carry binary bodies. These are standard
-base64 chunks of a deterministic gzip/tar archive. They are not Git LFS pointers,
+base64 chunks of a deterministic compressed tar archive. Version1 uses gzip;
+version2 uses xz to retain more repeated score bytes within its compression
+dictionary. Both retain exactly the original member bytes. They are not Git LFS pointers,
 replacement historical evidence, or an alternative scientific data format.
 
 Each `evidence/envelopes/<name>/MANIFEST.json` binds the decoded archive, each

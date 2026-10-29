@@ -1,0 +1,33 @@
+{
+  "children_system_seconds": 0.395212,
+  "children_user_seconds": 22.459165000000002,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.analytic_event_neuron.round5.evidence.reviews.review_confirmation",
+    "--run-dir",
+    "experiments/analytic_event_neuron/round5/evidence/selection_registered_001",
+    "--freeze",
+    "experiments/analytic_event_neuron/round5/evidence/selection_registered_001/FREEZE.json",
+    "--output",
+    "experiments/analytic_event_neuron/round5/evidence/review_confirmation_002/REVIEW.json",
+    "--expected-freeze-sha256",
+    "1e5676bd481ef5a3d13e63a5de8eb90223e9abf55bb918721b28ab32e1f5ba16",
+    "--expected-index-sha256",
+    "7de85b15d658d34cef74a3b7ebeb7e9ac19d9fcef446c056f4566c15b0fe7636",
+    "--expected-results-sha256",
+    "3a7d02813f2c0d7338c9e1d9d344f4406c13a0e4b01900c659911bbe371005bd"
+  ],
+  "cwd": "/workspace/scratch/d831a963ef2f/hepta-analytic",
+  "financial_cost": null,
+  "finished_utc": "2026-10-29T00:20:52.562855+00:00",
+  "full_invocation_scope": true,
+  "label": "independent_confirmation_review",
+  "log": "execution/independent_confirmation_review.log",
+  "native_energy": null,
+  "nested_component_times_must_not_be_added": true,
+  "returncode": 0,
+  "schema": "hepta.analytic-event.round4.execution.v1",
+  "started_utc": "2026-10-29T00:20:25.657234+00:00",
+  "wall_ns": 26903963518
+}
