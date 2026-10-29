@@ -8,6 +8,8 @@
 
 [最终 Node 执行](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40870313419)对应源码提交 13712a4a024a85f60dde6eb9a55877d34f186e03。环境为 GitHub 托管 Linux x64、Node v22.23.4。本报告中的实际进程结果来自该运行；它不能代表 dot 目标机的性能。
 
+两个后续确定性审计也已在 [独立 Node 运行](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40872331647)通过：原训练目标已近乎最优；把现有预算/保留代理直接当作效用会产生零普通脉冲占优的退化。见[完整补充证明与结果](DIAGNOSTIC_AUDITS.zh-CN.md)。这些发现解释了当前缺口，没有把 R4 重新标记为完成。
+
 ## 1. 从 He 与 Xiong 模型迁移了什么
 
 [He 与 Xiong 的原论文](https://www.princeton.edu/~wxiong/papers/rollover.pdf)把债务到期时的续借损失纳入继续经营价值，从而使停止边界内生变化。对神经模型有价值的结构是：当前状态之外，未来承诺、到期时间和续存成本一起决定继续保留信息是否值得。
