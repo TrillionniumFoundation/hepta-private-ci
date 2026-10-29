@@ -1,0 +1,125 @@
+{
+  "evidence_sha256": {
+    "run/CREDIT_RECOVERY.json": "1419310be661e4f332647603769c3d42506318bc1609d6560951594b8dd28a06",
+    "run/failed_attempt_feedback.json": "07ac4852687818820072d0360033c0f6bd36b7dcb3dba45551e2b61cea4dc6a4",
+    "run/feedback_disabled.json": "3e5ed9268ab3357bdb695b6b38723c4dffe982b6aca6d1641296786843e9bf41",
+    "run/feedback_enabled.json": "09c85b6491e196eb39a3c10a71ac4b7c35289bd54edb8242b1da712b5744e53b"
+  },
+  "fault_injections": [
+    {
+      "fault": "missing_settlement",
+      "reason": "missing, additional or noncontiguous settlement files",
+      "rejected": true,
+      "source_data_directory_present": false
+    },
+    {
+      "fault": "tampered_price",
+      "reason": "settlement hash mismatch",
+      "rejected": true,
+      "source_data_directory_present": false
+    },
+    {
+      "fault": "rehashed_wrong_price",
+      "reason": "settlement arithmetic, predecessor or content mismatch",
+      "rejected": true,
+      "source_data_directory_present": false
+    },
+    {
+      "fault": "reordered_settlements",
+      "reason": "step and credit settlement differ",
+      "rejected": true,
+      "source_data_directory_present": false
+    },
+    {
+      "fault": "missing_owner_result",
+      "reason": "missing or additional original owner request/result",
+      "rejected": true,
+      "source_data_directory_present": false
+    },
+    {
+      "fault": "attempt_budget_conflict",
+      "reason": "actual attempt charge and original owner budget disagree",
+      "rejected": true,
+      "source_data_directory_present": false
+    },
+    {
+      "fault": "corrupt_native_witness",
+      "reason": "Corrupt",
+      "rejected": true,
+      "source_data_directory_present": false
+    }
+  ],
+  "freeze_sha256": "bedb376934ff2947d2af146e4573976d803ab69305e44666e8d69c30a27bdf97",
+  "limits": [
+    "Readable completed records and a serial trusted writer are assumed. No power-loss atomicity, concurrent-writer guarantee or target-host durability qualification is established.",
+    "The three hypothetical continuations prove accounting behavior on isolated copies, not resumption or new execution of terminated task flows.",
+    "No new task utility, resource efficiency, dual-convergence or production Organ Credit claim is created by recovery.",
+    "Physical cancellation remains distinct from resource price; observed credit-v1 lambda is still zero.",
+    "Original credit-v1 physical returns remain -0.05 with feedback and 0.85 without; fewer reads still lose task success in that fixture."
+  ],
+  "method": "Read-only review of recovery source and all four retained run JSON records, with source/input identity, reference/cold state and native-inspection receipt checks. No task execution or new recovery run performed by the reviewer.",
+  "original_credit_inputs_unchanged": true,
+  "permitted_conclusion": "The complete retained research credit state, price, settlement map and predecessor chain can be reconstructed in a fresh process and agrees with the original accounting reference, while the original terminal native owner is only inspected.",
+  "relation_to_v1_review": "This is a separately frozen recovery extension. It adds cold reconstruction absent from the original credit_execution v1 audit; it does not alter v1 source, task outcomes or scientific confirmation.",
+  "retained_checks": {
+    "no_native_execute_called": true,
+    "retained_input_unchanged": true,
+    "seven_faults_rejected": true,
+    "seven_original_settlements_reconstructed": true,
+    "source_identity_unchanged": true,
+    "three_completed_replays_do_not_charge_twice": true,
+    "three_fresh_processes_reconstruct_exact_state": true,
+    "three_hypothetical_continuations_match_live": true
+  },
+  "reviewed_at": "2026-10-29T12:33:58.316045+00:00",
+  "schema": "hepta.first-passage.adaptive.credit-recovery-independent-review.v1",
+  "source_identity": {
+    "frozen_credit_dependencies": {
+      "runtime": {
+        "numpy": "2.3.5",
+        "python": "3.12.14",
+        "scipy": "1.17.0"
+      },
+      "sha256": {
+        "experiments/first_passage_adaptive/credit_execution.py": "122e6780535379e9ecbafeaf3c3770edb00f76bbe7dd800d77c6bcc74d735527",
+        "experiments/first_passage_adaptive/native/SOURCE_IDENTITY.json": "7d80b4b068856af308baf7de41e32a78af167a487f3f2bc3e1a06614eb8c86dd",
+        "experiments/first_passage_adaptive/native/execution_state.rs": "bbd411ced57a356f978bddd1c2f52f634b5f651144d8a0f346c85fdd1fc06dff",
+        "experiments/first_passage_adaptive/native/owner-Cargo.lock": "5826e8ffcd9946f949a0d54265de15f51f748e4bde3586533900e6a6819e438d",
+        "experiments/first_passage_adaptive/native/owner_bridge.rs": "99261129526b961999d5e524c168af57b2a0d3b3dfe1fb6aca964242e94bf0d3",
+        "experiments/first_passage_adaptive/native/owner_bridge_tests.rs": "a9b5d41e6fe8a256b481b3852fa74ef3722eb199fa8bac440b54c1706c990a8a",
+        "experiments/first_passage_adaptive/native/task_journal.rs": "109a253acff6db8f580838be334c201f2baea296f25975327313373b53be20bc",
+        "experiments/first_passage_adaptive/native_build.py": "c2fcb5509470bfa8afd1325e2e7bc15f5c56f3c243b50212768bef006fc3fdc4",
+        "experiments/first_passage_adaptive/native_execution.py": "47db9083b36b038d202461e750bc46725263bcc66c5a35ae6fc87b9e6969b2ee",
+        "experiments/first_passage_adaptive/tests/test_credit_execution.py": "4d4b2e781fac5d22716e54ff6bd35680c11a5928fad76e1cd059c3ae4fff2a16",
+        "experiments/first_passage_cell/NATIVE_BUILD.json": "8ab32954c8a9def93e41cb7703adec1b198b30b5f771b20e962b868957d02664",
+        "experiments/first_passage_cell/NATIVE_SOURCE_MANIFEST.json": "4c2df16a69c6579ae8b5bc2683acc1060bc31c7c5790e70e3161b9dd6fc89a0d",
+        "experiments/first_passage_cell/cell.py": "2c21d6ffaf4fea4e9a0be1858364054e37302c34619e2b331911fd3b0130346e",
+        "experiments/first_passage_cell/kernels.py": "f2b739eaa7f86f755e283ec8e7a63ed2e9d3029d56d928f7b651ea323c1f3308",
+        "experiments/first_passage_cell/native_bridge.rs": "29e1d4e295a6603bcdaaf0b01206b58b26bca7ca6d7e82eac52af6d993b0c915",
+        "experiments/first_passage_cell/ndu.py": "72da43b774f6a79d7fe723a98d9fd38fde26b47f6acc591860abfb64d3718fd5"
+      }
+    },
+    "recovery": {
+      "experiments/first_passage_adaptive/credit_recovery.py": "a45060e4d057d853e8067804ab49102e0987e68017fc5ef86f15bc7490b71c1e",
+      "experiments/first_passage_adaptive/tests/test_credit_recovery.py": "52a06f8996713f8fc61c1da528cf9ff9f49d07e456d3cdbb690de0ac790b09a5"
+    }
+  },
+  "source_review": [
+    "Restoration reconstructs accounting from original non-replayed native results and independently recomputes complete settlement contents, prices and hash predecessors; it does not call CreditAccount.settle to restore.",
+    "The reference separately feeds original responses to the original CreditAccount.settle and compares every receipt with the retained actual execution. This differs from the reconstruction path.",
+    "All credit/step/native sidecar filenames must match the exact expected contiguous set; missing terminal records are not accepted as an earlier checkpoint.",
+    "Checks include original request/result equality, sequence, native and FPT predecessors, raw FPT digest, request digest, NDU snapshot/evaluation binding, selected physical model, actual attempt budget, full price arithmetic and final expected task/credit/owner state.",
+    "InspectionOnlyOwner refuses execute requests before starting a process. Recovery uses the original binary only with --inspect, and its final anchor agrees with the retained terminal expectation.",
+    "Duplicate settlement replay leaves the recovered account unchanged. Hypothetical next messages are explicitly synthetic and are applied only to isolated account copies, never to the task owner."
+  ],
+  "status": "passed_for_reconstruction_of_completed_serial_research_ledger",
+  "verified_counts": {
+    "fresh_child_processes": 3,
+    "isolated_synthetic_next_settlements": 3,
+    "native_execute_requests": 0,
+    "native_inspections_including_fault_case": 7,
+    "original_settlements_reconstructed": 7,
+    "rejected_fault_types": 7,
+    "replay_idempotence_checks": 3
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "confirmation_reopened": false,
+  "fresh_root": "/workspace/scratch/65d421def718/fresh_evidence_restore_20261029",
+  "models_retrained": false,
+  "original_new_evidence_copied_directly": false,
+  "restore": {
+    "already_identical": 0,
+    "archive_sha256": "0e6d7b0219ab4b0900504a06a803c943c8862a6b0b890774762a63f10d2980f1",
+    "created": 111,
+    "file_count": 111,
+    "status": "restored"
+  },
+  "retained_manifest_sha256": "3b656b31192416ade7ca89fc3219fc50ee280a505a14fd02e768a17b7667e94a",
+  "schema": "hepta.first-passage.fresh-restoration-review.v1",
+  "verification": {
+    "confirmation_reopened": false,
+    "cross_stratum_gate": false,
+    "frozen_source_files_verified": 39,
+    "gate_policy": "Any scientific outcome is accepted when source, raw evidence and recomputed results agree.",
+    "models_retrained": false,
+    "native_raw_archives": {
+      "credit_execution_20261029_v1": {
+        "archive_sha256": "3a98cb7d89a005298b4242d9dbf9b48d8962bb34caff42e629f71f4fbd1abaed",
+        "raw_files_verified": 58
+      },
+      "credit_recovery_20261029_v1": {
+        "original_inputs_verified": 46,
+        "records_verified": 8
+      },
+      "native_v1": {
+        "archive_sha256": "3106ea87f9cecdcdc9b8f75902582ad49fcc624e723560163e6dc87d99d694da",
+        "raw_files_verified": 91
+      },
+      "native_v2": {
+        "archive_sha256": "7c42064a02bbd1142ccf13a2b8cd4bfcbf08a51ae0b16b8c471bfda28a9cc0da",
+        "raw_files_verified": 110
+      },
+      "native_v3": {
+        "archive_sha256": "386ac94cfc7b568b281f5d9856af0fdf34000ebf88cf7ba1c84f59587f5c27ec",
+        "raw_files_verified": 110
+      }
+    },
+    "planner_searches": 768,
+    "primary_gate": true,
+    "schema": "hepta.first-passage.adaptive.evidence-verification.v1",
+    "status": "verified",
+    "study_id": "fpt-adaptive-task-gradient-20261029-v1",
+    "threshold_contexts": 768,
+    "transport": {
+      "archive_sha256": "0e6d7b0219ab4b0900504a06a803c943c8862a6b0b890774762a63f10d2980f1",
+      "file_count": 111,
+      "packed_verified": true,
+      "restored_verified": true,
+      "status": "verified"
+    }
+  }
+}

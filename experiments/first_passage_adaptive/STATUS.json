@@ -1,0 +1,58 @@
+{
+  "schema": "hepta.first-passage.adaptive.acceptance.v1",
+  "study_id": "fpt-adaptive-task-gradient-20261029-v1",
+  "scientific_baseline": "71b4305c6619ed9faff98062f0ff7f932f4abfd0",
+  "pre_confirmation_freeze_commit": "99f4d90ce4bb773240840f10cf65e28c72a4092e",
+  "implemented_and_verified": [
+    {
+      "item": "Three competing-event probabilities and true full-objective mu/sigma/lambda derivatives",
+      "evidence": "review/INDEPENDENT_DERIVATIVE_REVIEW.json"
+    },
+    {
+      "item": "Joint physical-parameter training with all three coefficients affecting outcomes",
+      "evidence": "evidence/confirmation_20261029_v1/confirmation.json"
+    },
+    {
+      "item": "Complete 27-path stochastic meta-gradient including path-probability score",
+      "evidence": "review/INDEPENDENT_DERIVATIVE_REVIEW.json"
+    },
+    {
+      "item": "Same-information finite-deadline/budget threshold study with honest ordinary controller",
+      "evidence": "review/CONFIRMATION_REVIEW.json"
+    },
+    {
+      "item": "Original NDU and NeuronRuntime drive actual guarded reads and replay/recovery",
+      "evidence": "review/NATIVE_REVIEW.json"
+    },
+    {
+      "item": "Selected trained physical model affects native decision inputs; actual read attempts update a distinct resource dual price",
+      "evidence": "review/CREDIT_REVIEW.json"
+    },
+    {
+      "item": "Fresh-process credit restoration, uninterrupted reference comparison and corrupt-record rejection without task re-execution",
+      "evidence": "evidence/credit_recovery_20261029_v1/run/CREDIT_RECOVERY.json"
+    }
+  ],
+  "registered_scientific_outcomes": {
+    "threshold_pooled_primary_gate": "PASS",
+    "threshold_every_stratum_gate": "FAIL",
+    "meta_surrogate_vs_fixed": "lower finite-fixture expected loss",
+    "meta_surrogate_vs_exact_expected_gradient": "higher finite-fixture expected loss",
+    "credit_feedback": "fewer reads but lower physical task return in the observed fixture"
+  },
+  "claims_not_established": [
+    "General multilayer hard-SNN unbiased training or global optimizer convergence",
+    "Advantage across all registered strata or arbitrary tasks",
+    "Total compute or measured energy superiority",
+    "Optimal or convergent resource dual learning on the hybrid task",
+    "Whole-domain Holder regularity across resets or sampled deep-Q convergence"
+  ],
+  "production_work_not_activated": [
+    "Canonical full-FPT state ownership and calibrated readout profile",
+    "Product TaskFlow action ownership and production Organ Credit adoption",
+    "Concurrency, filesystem/owner transaction atomicity and target-host durability qualification"
+  ],
+  "production_activation": false,
+  "predecessor_frozen_files_modified": false,
+  "retention": "Keep all pre-confirmation v1 runs and negative confirmation/integration results; fresh scientific claims require a new study and untouched confirmation data."
+}

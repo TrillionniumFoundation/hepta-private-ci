@@ -267,6 +267,21 @@ def verify(package=PACKAGE, *, restore_missing=False):
     credit_freeze = read_json(credit_folder/"SOURCE_FREEZE.json")
     sources.update(verify_sources(package,credit_freeze["source_identity"]))
     verify_hash(credit_folder/"SOURCE_FREEZE.json",read_json(credit_folder/"ARCHIVE_MANIFEST.json")["source_freeze_sha256"])
+    recovery_folder = package/"evidence/credit_recovery_20261029_v1"
+    recovery_manifest = read_json(recovery_folder/"MANIFEST.json")
+    for row in recovery_manifest["files"]:
+        path = safe_path(recovery_folder,row["path"])
+        verify_hash(path,row["sha256"])
+        if path.stat().st_size != row["bytes"]:
+            raise ValueError("Credit recovery record size mismatch")
+    recovery_freeze = read_json(recovery_folder/"SOURCE_FREEZE.json")
+    verify_hash(credit_folder/"SOURCE_FREEZE.json",recovery_freeze["credit_source_freeze_sha256"])
+    for name,digest in recovery_freeze["input_sha256"].items():
+        verify_hash(safe_path(credit_folder/"run",name),digest)
+    sources.update(verify_sources(package,recovery_freeze["source_identity"]["frozen_credit_dependencies"]))
+    sources.update(verify_sources(package,{"sha256":recovery_freeze["source_identity"]["recovery"]}))
+    native["credit_recovery_20261029_v1"] = {"records_verified":len(recovery_manifest["files"]),
+                                             "original_inputs_verified":len(recovery_freeze["input_sha256"])}
     # No source modification is tolerated during this verification either.
     for path,digest in sources.items():
         verify_hash(Path(path),digest)
