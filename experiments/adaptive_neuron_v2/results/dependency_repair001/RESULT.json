@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.dependency-repair-evidence.v1",
+  "base_commit": "e91a7002bfd650e4a2b057b18b9d81f4242b9ed2",
+  "source_is_worktree": true,
+  "coordinated_native_test_manifests": [
+    "codex-rs/exec-server/Cargo.toml",
+    "codex-rs/windows-sandbox-rs/Cargo.toml"
+  ],
+  "source_sha256": {
+    "codex-rs/Cargo.toml": "652b11a3f070925577f7ce824dc34e3d14ab981825b7ff19c0788e5056d4c662",
+    "codex-rs/Cargo.lock": "586dde512c1d41396b0ff8292f0e9ddac400e163dae47d05fb486e268d9443ee",
+    "MODULE.bazel": "4c1a9c92bfc4f8b0280db54f7f276b0140e342a8626db053ef9d75b9bfca08e5",
+    "MODULE.bazel.lock": "0ecf2bc2232cc8c84a8dab56a8f64679524e4dab451ca800103cf037824c285d",
+    "codex-rs/exec-server/Cargo.toml": "c45429a966e8d087144085598cac8c63e6e9b285fad97a5700294b409665ee14",
+    "codex-rs/windows-sandbox-rs/Cargo.toml": "dce261976c1eb7b943da155c6663241b3631e21ff8221df268ff1d104cba33fe",
+    "codex-rs/keyring-store/Cargo.toml": "38c9281c50e4e5fd4950e3d51822589819cc8dfa2385ce962e006f39a9d09533",
+    "codex-rs/rmcp-client/Cargo.toml": "b68e960e73ac459bb3830a6ac40f15f61c8ea2b92a24cdbe62f07785dcb1224b"
+  },
+  "cargo_deny_final": {
+    "command": "cargo-deny --locked --format json --all-features check --show-stats",
+    "version": "0.19.0",
+    "observed_exit_code": 0,
+    "diagnostic_counts": {
+      "warning": 116
+    },
+    "policy_files_unchanged": true,
+    "raw_log": "cargo-deny003.jsonl"
+  },
+  "bazel_lock": {
+    "command": "just bazel-lock-update",
+    "version": "9.0.0",
+    "observed_exit_code": 0,
+    "log": "bazel-lock002.log"
+  },
+  "format": {
+    "command": "just fmt --all",
+    "observed_exit_code": 0,
+    "log": "format002.log"
+  },
+  "compatibility": {
+    "runner": "repository just test / nextest",
+    "profile": "default (standalone harness has no repository local profile)",
+    "observed_exit_code": 0,
+    "tests_run": 5,
+    "passed": 5,
+    "skipped": 0,
+    "scope": "Complete actual i18n library; exact actual ZIP extraction/functions and new regression; exact AWS DPoP functions with real JSON writer and cryptography, enclosing SDK error carrier shim only. Not a complete AWS or core build.",
+    "log": "compatibility004.log",
+    "source_binding": "compatibility/SOURCE_BINDING.json"
+  },
+  "earlier_failures_retained": [
+    "cargo-deny001: new default Rust bzip2 backend license rejected; retain original C backend without changing policy",
+    "cargo-update003: wrong invocation directory, no manifest found; corrected explicit manifest",
+    "format001: unstaged removed BUILD files still in index; stage deletions and rerun",
+    "compatibility001: standalone local profile absent; explicit built-in default profile",
+    "compatibility002: actual Zip9 fallible-name API compile error; fixed production source",
+    "compatibility003: regression expected unsafe bits from reader that already normalizes; retain malicious raw attributes and assert actual output mode"
+  ],
+  "runtime_and_cost_scope": "This is dependency/CI qualification, separate from frozen SNN efficacy experiments. Local engineering CPU and hosted CI billing were not measured by the research resource ledger; no Joule or all-cost-completeness claim is made."
+}

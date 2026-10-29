@@ -445,6 +445,17 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self,
     ) -> None:
         self.env["BAZEL_PROBE_FAIL"] = "1"
+        artifact_root = self.root / "complete failure evidence"
+        self.env["CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR"] = str(artifact_root)
+        original = self.testlogs / "fake" / "target" / "test.log"
+        original.write_text(
+            "first mismatch must survive\n"
+            + "unchanged trailing schema row\n" * 300
+            + "actual failing test diagnostic\n",
+            encoding="utf-8",
+        )
+        xml = original.with_name("test.xml")
+        xml.write_text('<testsuite failures="1"/>\n', encoding="utf-8")
         result, calls = self.run_wrapper(
             "--windows-cross-compile",
             "--print-failed-action-summary",
@@ -472,6 +483,10 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertIn("undefined symbol: __stack_chk_fail", summary)
         self.assertIn(">>> referenced by native-archive.o", summary)
         self.assertIn("actual failing test diagnostic", result.stdout)
+        self.assertNotIn("first mismatch must survive", result.stdout)
+        saved = artifact_root / "failed-tests" / "local" / "fake" / "target"
+        self.assertEqual((saved / "test.log").read_bytes(), original.read_bytes())
+        self.assertEqual((saved / "test.xml").read_bytes(), xml.read_bytes())
 
 
 if __name__ == "__main__":

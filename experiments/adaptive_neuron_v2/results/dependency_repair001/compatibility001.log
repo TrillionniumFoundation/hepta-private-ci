@@ -1,0 +1,4 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+     Locking 160 packages to latest Rust 1.96.0 compatible versions
+error: profile `local not found (known profiles: default, default-miri)`
+error: recipe `test` failed on line 89 with exit code 96

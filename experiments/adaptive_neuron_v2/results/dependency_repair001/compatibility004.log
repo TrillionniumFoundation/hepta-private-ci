@@ -1,0 +1,66 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> /workspace/scratch/07399998a2e3/hepta-deny-repair/codex-rs/third_party/i18n-config-0.4.8/src/lib.rs:144:9
+    |
+144 |         &self,
+    |         ^^^^^ the lifetime is elided here
+145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |  |
+    |                          |  the same lifetime is hidden here
+    |                          the same lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                  ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> /workspace/scratch/07399998a2e3/hepta-deny-repair/codex-rs/third_party/i18n-config-0.4.8/src/lib.rs:155:26
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |                         |  |
+    |                          |                         |  the same lifetime is hidden here
+    |                          |                         the same lifetime is elided here
+    |                          the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                                            ++++
+
+warning: `i18n-config` (lib) generated 2 warnings (run `cargo fix --lib -p i18n-config` to apply 2 suggestions)
+   Compiling hepta-dependency-compatibility v0.0.0 (/workspace/scratch/07399998a2e3/recovery/dependencies/compatibility)
+warning: type `LoginTokenError` is more private than the item `aws_actual::calculate`
+   --> src/aws_actual.rs:106:1
+    |
+106 | / pub(super) fn calculate(
+107 | |     private_key: &SecretKey,
+108 | |     endpoint: &str,
+109 | |     now: SystemTime,
+110 | | ) -> Result<String, LoginTokenError> {
+    | |____________________________________^ function `aws_actual::calculate` is reachable at visibility `pub(crate)`
+    |
+note: but type `LoginTokenError` is only usable at visibility `pub(self)`
+   --> src/aws_actual.rs:13:1
+    |
+ 13 | struct LoginTokenError;
+    | ^^^^^^^^^^^^^^^^^^^^^^
+    = note: `#[warn(private_interfaces)]` on by default
+
+warning: `hepta-dependency-compatibility` (lib test) generated 1 warning
+    Finished `test` profile [unoptimized] target(s) in 0.87s
+────────────
+ Nextest run ID 7fb4ab28-3d86-4a9b-9675-63be5561a18e with nextest profile: default
+    Starting 5 tests across 1 binary
+        PASS [   0.005s] hepta-dependency-compatibility i18n_tests::maintained_toml_parser_loads_actual_crate_and_locale_files
+        PASS [   0.004s] hepta-dependency-compatibility zip_actual::tests::extraction_strips_privilege_bits_and_preserves_bzip2_contents
+        PASS [   0.008s] hepta-dependency-compatibility i18n_tests::malformed_locale_retains_source_path_in_real_error_type
+        PASS [   0.012s] hepta-dependency-compatibility aws_actual::tests::reconstructed_jwk_rejects_a_changed_signed_message
+        PASS [   0.013s] hepta-dependency-compatibility aws_actual::tests::real_dpop_signature_verifies_against_its_reconstructed_jwk
+────────────
+     Summary [   0.014s] 5 tests run: 5 passed, 0 skipped
