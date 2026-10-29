@@ -1,0 +1,73 @@
+{
+  "schema": "hepta.native-readout-objective.ci-frozen-base-observation.v1",
+  "observed_at_utc": "2026-10-29 16:27:40 UTC",
+  "scope": "Read-only verification after the parent created a distinct frozen-baseline branch and retargeted existing draft PR 4157. No mutation or workflow dispatch by this investigation.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": {
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4157",
+    "api_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/4157",
+    "state": "open",
+    "draft": true,
+    "merged": false,
+    "head_sha": "4fb7482ed8506d6646b833124c2975957c3a681c",
+    "head_ref": "research/continuous-boundary-flow-20261028",
+    "base_sha": "5898cd8b0f724c3152b6cc52856721f72e5e08be",
+    "base_ref": "research/continuous-boundary-frozen-base-5898cd8-20261029",
+    "mergeable": true,
+    "mergeable_state": "clean",
+    "rebaseable": true,
+    "merge_commit_sha": "9a7e2e2d0ba831d6f5c19bbaaee9410c46336053",
+    "updated_at": "2026-10-29T16:26:29Z"
+  },
+  "verified_base_ref": {
+    "ref": "refs/heads/research/continuous-boundary-frozen-base-5898cd8-20261029",
+    "node_id": "REF_kwDOTrgxoNoARHJlZnMvaGVhZHMvcmVzZWFyY2gvY29udGludW91cy1ib3VuZGFyeS1mcm96ZW4tYmFzZS01ODk4Y2Q4LTIwMjYxMDI5",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/research/continuous-boundary-frozen-base-5898cd8-20261029",
+    "object": {
+      "sha": "5898cd8b0f724c3152b6cc52856721f72e5e08be",
+      "type": "commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/5898cd8b0f724c3152b6cc52856721f72e5e08be"
+    }
+  },
+  "verified_head_ref": {
+    "ref": "refs/heads/research/continuous-boundary-flow-20261028",
+    "node_id": "REF_kwDOTrgxoNoANXJlZnMvaGVhZHMvcmVzZWFyY2gvY29udGludW91cy1ib3VuZGFyeS1mbG93LTIwMjYxMDI4",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/research/continuous-boundary-flow-20261028",
+    "object": {
+      "sha": "4fb7482ed8506d6646b833124c2975957c3a681c",
+      "type": "commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/4fb7482ed8506d6646b833124c2975957c3a681c"
+    }
+  },
+  "exact_observed_head_checks": {
+    "commit": "4fb7482ed8506d6646b833124c2975957c3a681c",
+    "check_runs": {
+      "total_count": 0,
+      "check_runs": []
+    },
+    "check_runs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/4fb7482ed8506d6646b833124c2975957c3a681c/check-runs?per_page=100",
+    "workflow_runs": {
+      "total_count": 0,
+      "workflow_runs": []
+    },
+    "workflow_runs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?head_sha=4fb7482ed8506d6646b833124c2975957c3a681c&per_page=100"
+  },
+  "preceding_evidence": {
+    "original_observation": "experiments/native_readout_objective/results/CI_OBSERVATION.json",
+    "actual_moving_base_and_conflict": "experiments/native_readout_objective/results/CI_BASE_REFRESH.json",
+    "actual_moving_base": "2abafe82a99d6def2132e605e57af183e3080194",
+    "demonstrated_conflict": ".codespellrc skip line in exact three-way comparison"
+  },
+  "assessment": {
+    "frozen_baseline_exactly_matches_registered_source": true,
+    "github_mergeability_blocker_cleared": true,
+    "ci_trigger_observed_for_this_head": false,
+    "ci_pass_claimed": false,
+    "production_admission_or_main_merge_claimed": false,
+    "branch_protection_equivalence_claimed": false,
+    "remaining": "Observe CI on a subsequent normal synchronize or reopened activity; this snapshot reports zero workflow runs, not a completed or pending job.",
+    "trigger_note": "The observed blocking-ci declaration uses pull_request with default types and push on main. GitHub documents the default pull_request types as opened, synchronize and reopened; retargeting alone is not evidence that such an event was delivered.",
+    "documentation_url": "https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request"
+  },
+  "time_scope": "All conclusions are for the reported immutable head and observation window; later publications need their own checks."
+}
