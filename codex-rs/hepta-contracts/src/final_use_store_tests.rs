@@ -38,6 +38,7 @@ fn legacy_single_key_and_key_ring_snapshots_preserve_nonce_claims() {
             StoreTrust::IssuerKeyRing(digest) => serde_json::json!({
                 "schema": 2, "signer_id": "owner", "issuer_trust_sha256": digest, "state": state,
             }),
+            StoreTrust::MlDsa65IssuerKeyRingV2(_) => panic!("PQ trust has no legacy migration"),
         };
         std::fs::write(
             directory.path().join("authority.json"),
@@ -124,6 +125,7 @@ fn legacy_zero_nonce_rejects_before_original_stage_or_committed_bytes_change() {
             StoreTrust::IssuerKeyRing(digest) => serde_json::json!({
                 "schema": 2, "signer_id": "owner", "issuer_trust_sha256": digest, "state": state,
             }),
+            StoreTrust::MlDsa65IssuerKeyRingV2(_) => panic!("PQ trust has no legacy migration"),
         };
         std::fs::write(
             directory.path().join("authority.json"),

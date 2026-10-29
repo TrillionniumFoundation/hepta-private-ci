@@ -55,7 +55,7 @@ impl FinalUseAuthority {
             signer_id,
             issuer_keys: vec![PinnedIssuerKey {
                 key_id: "single-key".into(),
-                key,
+                key: super::IssuerVerifier::Ed25519V1(key),
                 not_before_authority_epoch: 1,
                 not_after_authority_epoch: u64::MAX,
             }],
