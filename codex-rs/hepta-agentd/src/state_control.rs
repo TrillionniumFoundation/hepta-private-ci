@@ -109,6 +109,16 @@ impl AgentdState {
                             .map_err(AgentdError::Protocol)?,
                     );
                 }
+                if self.inventory_cells.get().is_some() {
+                    capabilities.push(
+                        crate::AgentdCapability::new(
+                            codex_hepta_agent_protocol::INVENTORY_CELL_CONTROL_CAPABILITY_V1,
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
+                    );
+                }
                 if self.memory_cells.get().is_some() {
                     capabilities.push(
                         crate::AgentdCapability::new(
@@ -259,6 +269,61 @@ impl AgentdState {
                 AgentdPayload::KernelEvidenceResult(
                     crate::evidence_host::verify(self, request).await?,
                 )
+            }
+            crate::AgentdMethod::InventoryCellSnapshot {
+                after,
+                expected_owner_cut,
+                limit,
+            } => {
+                self.require_cognitive_control_ready_now()?;
+                let Some(store) = cognitive else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        cognitive_control_unavailable(),
+                    );
+                };
+                let default_access = CognitiveAccess::agent_private(self.identity.agent_id.clone());
+                let (access, scope) = self
+                    .inventory_cells
+                    .get()
+                    .map(|host| (host.access(), host.scope()))
+                    .unwrap_or((&default_access, &CognitiveScope::AgentPrivate));
+                let result = crate::inventory_cell_runtime::snapshot::export_page(
+                    &store,
+                    access,
+                    scope,
+                    after,
+                    expected_owner_cut,
+                    limit,
+                )
+                .await;
+                self.require_cognitive_control_ready_now()?;
+                result.unwrap_or_else(memory_cell_error_payload)
+            }
+            crate::AgentdMethod::InventoryCellRead { request } => {
+                self.require_cognitive_control_ready_now()?;
+                let Some(store) = cognitive else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        cognitive_control_unavailable(),
+                    );
+                };
+                let Some(host) = self.inventory_cells.get() else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        memory_cell_error_payload(AgentdError::Protocol(
+                            "this Agent has no selected memory cell host".to_string(),
+                        )),
+                    );
+                };
+                let result = host.read(&store, &request).await.and_then(|readout| {
+                    crate::inventory_cell_runtime::snapshot::readout_payload(&readout)
+                });
+                self.require_cognitive_control_ready_now()?;
+                result.unwrap_or_else(memory_cell_error_payload)
             }
             crate::AgentdMethod::MemoryCellSnapshot {
                 after,
@@ -1495,3 +1560,4 @@ fn now_seconds() -> Result<i64, AgentdError> {
     i64::try_from(seconds)
         .map_err(|_| AgentdError::Protocol("system clock exceeds i64 seconds".to_string()))
 }
+

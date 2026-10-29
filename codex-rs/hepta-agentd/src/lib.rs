@@ -48,6 +48,9 @@ mod memory_cell_network;
 mod memory_cell_population_tests;
 #[cfg(test)]
 mod memory_cell_prospective_tests;
+mod inventory_cell_bundle;
+mod inventory_cell_runtime;
+mod inventory_cell_router;
 mod memory_cell_release;
 mod memory_cell_runtime;
 #[cfg(test)]
@@ -248,6 +251,17 @@ pub use memory_cell_network::MemoryCellNetworkVersionV1;
 pub use memory_cell_network::MemoryCellNodeBindingV1;
 pub use memory_cell_network::MemoryCellNodeReadoutV1;
 pub use memory_cell_network::MemoryCellVersionPinV1;
+pub use codex_hepta_agent_protocol::InventoryCellSnapshotPageV1;
+pub use inventory_cell_bundle::InventoryCellBundleCandidateV1;
+pub use inventory_cell_bundle::InventoryCellFeatureBindingV1;
+pub use inventory_cell_bundle::LoadedInventoryCellBundleV1;
+pub use inventory_cell_router::INVENTORY_CELL_TEXT_PROFILE_V1;
+pub use inventory_cell_router::InventoryCellTextRouterV1;
+pub use inventory_cell_runtime::AgentdInventoryCellRuntimeV1;
+pub use inventory_cell_runtime::InventoryCellAddressResolverV1;
+pub use inventory_cell_runtime::InventoryCellReleaseHostV1;
+pub use inventory_cell_runtime::InventoryCellResolvedAddressV1;
+pub use memory_cell_release::MemoryCellReleaseBundleV1;
 pub use memory_cell_release::LoadedMemoryCellBundleV1;
 pub use memory_cell_release::MemoryCellBundleCandidateV1;
 pub use memory_cell_release::MemoryCellReleaseHostV1;
@@ -321,3 +335,29 @@ pub use topology_plasticity_host::rollover_agentd_topology_writer_v1;
 use control::AgentdControlServer;
 use event_buffer::EventBuffer;
 use state::AgentdState;
+
+
+#[cfg(test)]
+mod inventory_cell_test_support;
+#[cfg(test)]
+mod inventory_cell_runtime_tests;
+
+#[cfg(test)]
+mod inventory_cell_router_tests;
+
+#[cfg(test)]
+mod inventory_cell_learning_tests;
+mod inventory_cell_semantic_head;
+mod inventory_cell_semantic_router;
+mod inventory_cell_encoder_worker;
+pub use inventory_cell_semantic_head::InventoryCellSemanticHeadV1;
+pub use inventory_cell_semantic_head::INVENTORY_CELL_SEMANTIC_PROFILE_V1;
+pub use inventory_cell_semantic_head::INVENTORY_CELL_SEMANTIC_ENCODER_V1;
+pub use inventory_cell_semantic_router::InventoryCellSemanticRouterV1;
+pub use inventory_cell_encoder_worker::InventoryCellEncoderWorkerV1;
+pub use inventory_cell_encoder_worker::InventoryCellEncoderWorkerConfigV1;
+pub use inventory_cell_encoder_worker::InventoryCellEncoderWorkerMetricsV1;
+#[cfg(test)]
+mod inventory_cell_semantic_tests;
+#[cfg(test)]
+mod inventory_cell_semantic_runtime_tests;

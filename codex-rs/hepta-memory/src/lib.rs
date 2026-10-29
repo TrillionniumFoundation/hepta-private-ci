@@ -31,6 +31,8 @@ mod local_policy;
 mod local_turn_binding;
 mod logical_turn_registry;
 mod memory_admission;
+mod inventory_cell_owner;
+mod inventory_cell_write;
 mod memory_cell_owner;
 mod memory_cell_write;
 mod model_receipt;
@@ -55,6 +57,11 @@ pub use lane_c_snapshot::DurableCognitiveSnapshotPage;
 pub use lane_c_snapshot::MAX_LANE_C_PAGE_ANCESTRY_REVISIONS;
 pub use lane_c_snapshot::MAX_LANE_C_PAGE_CITATIONS;
 pub use lane_c_snapshot::MAX_LANE_C_SNAPSHOT_PAGE_HEADS;
+
+pub use inventory_cell_owner::InventoryCellAddressV1;
+pub use inventory_cell_owner::InventoryCellOwnerRecordV1;
+pub use inventory_cell_owner::InventoryCellOwnerSnapshotV1;
+pub use inventory_cell_owner::InventoryCellRecordV1;
 
 pub use memory_cell_owner::MAX_MEMORY_CELL_OWNER_HEADS;
 pub use memory_cell_owner::MemoryCellAddressV1;
@@ -527,3 +534,8 @@ mod cognitive_test_support;
 #[cfg(test)]
 #[path = "lane_c_snapshot_tests.rs"]
 mod lane_c_snapshot_tests;
+
+
+#[cfg(test)]
+#[path = "inventory_cell_owner_tests.rs"]
+mod inventory_cell_owner_tests;

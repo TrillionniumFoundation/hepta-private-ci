@@ -1,0 +1,318 @@
+{
+  "schema": "hepta.cell.p1.source-and-evidence-status.v1",
+  "snapshot_utc": "2026-10-29T12:20:16.497219+00:00",
+  "base_commit": "0f41c4968eea63727c69e2b979491e94a99a9dbb",
+  "source_state": "exact_replay_of_applied_packets_before_just_fix_and_just_fmt",
+  "source_replay_verified": true,
+  "remote_source_changes_outside_packets_reported_by_parent": false,
+  "remote_execution_observation": "parent_reported_results; full raw logs not independently archived in this packet",
+  "published_commit": null,
+  "production_deployment": false,
+  "source_packets": [
+    {
+      "file": "/workspace/scratch/e641735afd68/cell-p1-publish-v1/native-plus-ngram-files.json",
+      "files": 60,
+      "bytes": 2285024,
+      "sha256": "507dd01374674095d6ff354ce201a6eae13e0c2a44d1a5fb89cddcd6e160b731"
+    },
+    {
+      "file": "/workspace/scratch/e641735afd68/cell-p1-publish-v1/tested-final-files.json",
+      "files": 77,
+      "bytes": 2498231,
+      "sha256": "ba5af6925bc7019199672f686fe4642ed1b4375514d79f00c4efcc15043c4fd5"
+    },
+    {
+      "file": "/workspace/scratch/e641735afd68/cell-p1-publish-v1/unexecuted-additions.json",
+      "files": 4,
+      "bytes": 37474,
+      "sha256": "227954dcaa61e467b166ae15f8f99f3c25d0894e8f38227d368ee40bf84024dc"
+    },
+    {
+      "file": "/workspace/scratch/e641735afd68/cell-p1-publish-v1/all-source-files.json",
+      "files": 81,
+      "bytes": 2535380,
+      "sha256": "88b656834c8ddc2aacef504f6f8e475f64adbcbae672a43f9eda2b84cf3031e5"
+    }
+  ],
+  "groups": {
+    "native_agentd_publication_and_control": {
+      "count": 19,
+      "paths": [
+        "codex-rs/hepta-agent-protocol/src/inventory_cells.rs",
+        "codex-rs/hepta-agent-protocol/src/lib.rs",
+        "codex-rs/hepta-agentd/BUILD.bazel",
+        "codex-rs/hepta-agentd/src/client.rs",
+        "codex-rs/hepta-agentd/src/config.rs",
+        "codex-rs/hepta-agentd/src/inventory_cell_bundle.rs",
+        "codex-rs/hepta-agentd/src/inventory_cell_client.rs",
+        "codex-rs/hepta-agentd/src/inventory_cell_execution.rs",
+        "codex-rs/hepta-agentd/src/inventory_cell_runtime.rs",
+        "codex-rs/hepta-agentd/src/inventory_cell_runtime_tests.rs",
+        "codex-rs/hepta-agentd/src/inventory_cell_snapshot.rs",
+        "codex-rs/hepta-agentd/src/inventory_cell_test_support.rs",
+        "codex-rs/hepta-agentd/src/memory_cell_release.rs",
+        "codex-rs/hepta-agentd/src/memory_cell_release_bundle.rs",
+        "codex-rs/hepta-agentd/src/memory_cell_release_test_support.rs",
+        "codex-rs/hepta-agentd/src/runtime.rs",
+        "codex-rs/hepta-agentd/src/state.rs",
+        "codex-rs/hepta-agentd/src/state_control.rs",
+        "codex-rs/hepta-agentd/tests/fixtures/inventory/formal-731-owner.json"
+      ]
+    },
+    "ngram_negative_baseline": {
+      "count": 14,
+      "paths": [
+        "codex-rs/hepta-agentd/examples/inventory_route_eval.rs",
+        "codex-rs/hepta-agentd/src/inventory_cell_router.rs",
+        "codex-rs/hepta-agentd/src/inventory_cell_router_tests.rs",
+        "codex-rs/hepta-agentd/tests/fixtures/inventory/challenge-reference.json",
+        "codex-rs/hepta-agentd/tests/fixtures/inventory/formal-held-reference.json",
+        "codex-rs/hepta-agentd/tests/fixtures/inventory/router.json",
+        "qualification/memory-cell-adapters/freeze_native_router_data.py",
+        "qualification/memory-cell-adapters/native-routing/formal-01/PROTOCOL.json",
+        "qualification/memory-cell-adapters/native-routing/formal-01/aliases.json",
+        "qualification/memory-cell-adapters/native-routing/formal-01/calibration.json",
+        "qualification/memory-cell-adapters/native-routing/formal-01/challenge.json",
+        "qualification/memory-cell-adapters/native-routing/formal-01/router.fit.json",
+        "qualification/memory-cell-adapters/native-routing/formal-01/train.json",
+        "qualification/memory-cell-adapters/train_native_router.py"
+      ]
+    },
+    "semantic_candidate_not_language_qualified": {
+      "count": 17,
+      "paths": [
+        "codex-rs/hepta-agentd/examples/inventory_semantic_route_eval.rs",
+        "codex-rs/hepta-agentd/src/inventory_cell_encoder_config.rs",
+        "codex-rs/hepta-agentd/src/inventory_cell_encoder_tests.rs",
+        "codex-rs/hepta-agentd/src/inventory_cell_encoder_wire.rs",
+        "codex-rs/hepta-agentd/src/inventory_cell_encoder_worker.rs",
+        "codex-rs/hepta-agentd/src/inventory_cell_semantic_head.rs",
+        "codex-rs/hepta-agentd/src/inventory_cell_semantic_router.rs",
+        "codex-rs/hepta-agentd/src/inventory_cell_semantic_runtime_tests.rs",
+        "codex-rs/hepta-agentd/src/inventory_cell_semantic_tests.rs",
+        "qualification/memory-cell-adapters/evidence/native-semantic-routing-20261029/PROTOCOL.json",
+        "qualification/memory-cell-adapters/evidence/native-semantic-routing-20261029/new-tasks.json",
+        "qualification/memory-cell-adapters/freeze_semantic_tasks.py",
+        "qualification/memory-cell-adapters/prepare_semantic_worker_config.py",
+        "qualification/memory-cell-adapters/semantic_encoder_worker.py",
+        "qualification/memory-cell-adapters/semantic_protocol.py",
+        "qualification/memory-cell-adapters/test_semantic_worker.py",
+        "qualification/memory-cell-adapters/train_semantic_router.py"
+      ]
+    },
+    "native_owner_learning_cycle": {
+      "count": 2,
+      "paths": [
+        "codex-rs/hepta-agentd/src/inventory_cell_learning_tests.rs",
+        "qualification/memory-cell-adapters/train_native_inventory.py"
+      ]
+    },
+    "shared_agentd_wiring": {
+      "count": 1,
+      "paths": [
+        "codex-rs/hepta-agentd/src/lib.rs"
+      ]
+    },
+    "typed_contract_and_canonical_owner": {
+      "count": 10,
+      "paths": [
+        "codex-rs/hepta-cognitive-store/src/durable.rs",
+        "codex-rs/hepta-cognitive-store/src/lib.rs",
+        "codex-rs/hepta-cognitive-types/src/inventory_cell.rs",
+        "codex-rs/hepta-cognitive-types/src/inventory_cell_tests.rs",
+        "codex-rs/hepta-cognitive-types/src/lib.rs",
+        "codex-rs/hepta-memory/src/inventory_cell_acquire.rs",
+        "codex-rs/hepta-memory/src/inventory_cell_owner.rs",
+        "codex-rs/hepta-memory/src/inventory_cell_owner_tests.rs",
+        "codex-rs/hepta-memory/src/inventory_cell_write.rs",
+        "codex-rs/hepta-memory/src/lib.rs"
+      ]
+    },
+    "native_numeric_parameter_port": {
+      "count": 14,
+      "paths": [
+        "codex-rs/hepta-neuron/BUILD.bazel",
+        "codex-rs/hepta-neuron/src/lib.rs",
+        "codex-rs/hepta-neuron/src/memory_residual_cell.rs",
+        "codex-rs/hepta-neuron/src/memory_residual_cell_tests.rs",
+        "codex-rs/hepta-neuron/src/memory_residual_wire.rs",
+        "codex-rs/hepta-neuron/tests/fixtures/residual-memory/seed-731-semantic.json",
+        "codex-rs/hepta-neuron/tests/fixtures/residual-memory/seed-731-skill.json",
+        "codex-rs/hepta-neuron/tests/fixtures/residual-memory/seed-732-semantic.json",
+        "codex-rs/hepta-neuron/tests/fixtures/residual-memory/seed-732-skill.json",
+        "codex-rs/hepta-neuron/tests/fixtures/residual-memory/seed-733-semantic.json",
+        "codex-rs/hepta-neuron/tests/fixtures/residual-memory/seed-733-skill.json",
+        "qualification/memory-cell-adapters/build_native_fixtures.py",
+        "qualification/memory-cell-adapters/export_native.py",
+        "qualification/memory-cell-adapters/verify_original_torch.py"
+      ]
+    }
+  },
+  "verification": [
+    {
+      "id": "neuron_residual",
+      "status": "parent_reported_pass",
+      "actual_test_count": null,
+      "tests_in_final_source": 5,
+      "canonical_cases": 48,
+      "models": 6
+    },
+    {
+      "id": "inventory_contract",
+      "status": "parent_reported_pass",
+      "passed": 3,
+      "total": 3
+    },
+    {
+      "id": "original_sqlite_owner",
+      "status": "parent_reported_pass",
+      "passed": 3,
+      "total": 3
+    },
+    {
+      "id": "agentd_inventory_automatic",
+      "status": "parent_reported_pass",
+      "passed": 13,
+      "total": 13,
+      "native_owner_tests": 5,
+      "ngram_tests": 3,
+      "semantic_synthetic_boundary_tests": 5,
+      "ignored_actual_semantic_owner_test_executed": false
+    },
+    {
+      "id": "legacy_release_regressions",
+      "status": "parent_reported_exit_0",
+      "actual_test_count": null
+    },
+    {
+      "id": "original_torch_reference",
+      "status": "parent_reported_pass",
+      "typed_passed": 48,
+      "typed_total": 48,
+      "torch_vs_numpy_max_logit_error": 1.7166e-05,
+      "direct_torch_vs_rust_max_logit_error": null,
+      "rust_reference_tolerance": {
+        "absolute": 0.0001,
+        "relative": 1e-05
+      }
+    },
+    {
+      "id": "inventory_native_retraining_owner_cycle",
+      "status": "parent_reported_exit_0",
+      "actual_torch_training": true,
+      "source": "current_canonical_owner",
+      "generation": 2,
+      "corrected_and_retained_policy_count": 8,
+      "production_owner": false
+    },
+    {
+      "id": "python_encoder_worker_protocol",
+      "status": "local_pass",
+      "passed": 3,
+      "total": 3,
+      "uses_real_minilm": false
+    },
+    {
+      "id": "environment_prepare_offline_controls",
+      "status": "local_pass",
+      "passed": 4,
+      "total": 4,
+      "actual_download_install_completed": false
+    },
+    {
+      "id": "direct_torch_native_logits",
+      "status": "prepared_not_run",
+      "measured_max_error": null
+    },
+    {
+      "id": "actual_semantic_environment_bootstrap",
+      "status": "prepared_not_reported_complete"
+    },
+    {
+      "id": "actual_semantic_model_fit",
+      "status": "prepared_not_run",
+      "model_sha256": null
+    },
+    {
+      "id": "actual_semantic_frozen_quality",
+      "status": "prepared_not_run",
+      "results": null
+    },
+    {
+      "id": "actual_semantic_worker_performance",
+      "status": "prepared_not_run",
+      "latency_ms": null,
+      "rss_bytes": null,
+      "ipc_bytes": null
+    },
+    {
+      "id": "actual_semantic_owner_integration",
+      "status": "prepared_not_run"
+    }
+  ],
+  "ngram": {
+    "quality_gate": "failed",
+    "enabled_by_default": false,
+    "model_sha256": "56d649027191f7332a1783ec9b9a25acbaaff5aa04bf482e4c51ad7ae0c42d42",
+    "train_count": 400,
+    "dev_count": 144,
+    "learned_f32_parameters": 8196,
+    "serialized_model_bytes": 182226,
+    "selection_used_held": false,
+    "dev_known_correct": 24,
+    "dev_known_total": 64,
+    "threshold": 0.8,
+    "minimum_margin": 0.4,
+    "formal_held": {
+      "known_correct": 56,
+      "known_total": 256,
+      "unknown_rejected": 64,
+      "unknown_total": 64
+    },
+    "challenge": {
+      "known_correct": 48,
+      "known_total": 192,
+      "unknown_rejected": 192,
+      "unknown_total": 192
+    },
+    "native_reference_cases": 704,
+    "native_frozen_reference_parity": "parent_reported_pass"
+  },
+  "semantic_candidate": {
+    "quality_gate": "not_run",
+    "enabled_by_default": false,
+    "reuse_exact_existing_train_dev": true,
+    "holdout_used_for_fit": false,
+    "old_held_and_challenge_role": "regression_only",
+    "encoder_model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+    "encoder_revision": "e8f8c211226b894fcb81acc59f3b34ba3efd5f42",
+    "onnx_sha256": "98a01d88b7de996cdea58c32ca71208c09968d143798814b2ea09d3439dc334f",
+    "onnx_bytes": 118453870,
+    "all_six_asset_disk_bytes": 127536988,
+    "rss_measured": false,
+    "planned_learned_f32_parameters": 4620,
+    "raw_text_encoded": true,
+    "batched": false,
+    "embedding_cache": false,
+    "sharing_scope": "one encoder session shared through Arc within one node process",
+    "cross_process_shared_daemon": false,
+    "frozen_new_task_sha256": "2e5d2ba7d8cd4801d944bd5dc9ca7faa426bfa4bd7c69acf8d428ff4c6615a4f",
+    "new_task_counts": {
+      "all": 512,
+      "known": 256,
+      "unknown": 256,
+      "chinese": 88
+    },
+    "benchmark_scope": "authored_finite_registered_inventory_domain_not_independent_open_world"
+  },
+  "current_transport_note": "Parent found native PTY; further execution is continuing. Pending status does not imply a permanent block.",
+  "non_claims": [
+    "AGI emergence",
+    "positive split/merge benefit",
+    "open-world routing qualification",
+    "production deployment",
+    "direct Torch/Rust maximum floating-point error",
+    "measured semantic latency/RSS",
+    "whole repository test success"
+  ]
+}

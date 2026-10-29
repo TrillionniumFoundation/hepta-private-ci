@@ -27,6 +27,10 @@ pub use codex_hepta_memory::MAX_LANE_C_PAGE_ANCESTRY_REVISIONS;
 pub use codex_hepta_memory::MAX_LANE_C_PAGE_CITATIONS;
 pub use codex_hepta_memory::MAX_LANE_C_SNAPSHOT_PAGE_HEADS;
 pub use codex_hepta_memory::MAX_MEMORY_CELL_OWNER_HEADS;
+pub use codex_hepta_memory::InventoryCellAddressV1;
+pub use codex_hepta_memory::InventoryCellOwnerRecordV1;
+pub use codex_hepta_memory::InventoryCellOwnerSnapshotV1;
+pub use codex_hepta_memory::InventoryCellRecordV1;
 pub use codex_hepta_memory::MemoryCellAddressV1;
 pub use codex_hepta_memory::MemoryCellOwnerRecordV1;
 pub use codex_hepta_memory::MemoryCellOwnerSnapshotV1;
@@ -58,3 +62,4 @@ pub use codex_hepta_memory::RecoveredCognitiveReadOnly;
 pub use codex_hepta_memory::SourceDraft;
 pub use codex_hepta_memory::StableMemoryId;
 pub use codex_hepta_memory::memory_cell_scope_id;
+

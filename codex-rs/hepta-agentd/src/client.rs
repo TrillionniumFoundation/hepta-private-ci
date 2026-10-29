@@ -45,6 +45,9 @@ use crate::MemoryFederationScopeKind;
 use crate::ObjectiveStartOutcome;
 use crate::SessionIngress;
 
+#[path = "inventory_cell_client.rs"]
+mod inventory_cells;
+
 #[path = "memory_cell_client.rs"]
 mod memory_cells;
 #[path = "client_traffic.rs"]
@@ -821,3 +824,4 @@ fn unexpected<T>(payload: AgentdPayload) -> Result<T, AgentdError> {
 #[cfg(test)]
 #[path = "client_traffic_tests.rs"]
 mod traffic_tests;
+

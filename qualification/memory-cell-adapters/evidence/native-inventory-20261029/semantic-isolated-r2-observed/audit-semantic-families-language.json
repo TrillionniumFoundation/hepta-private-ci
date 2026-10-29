@@ -1,0 +1,216 @@
+{
+  "schema": "hepta.cell.independent-local-evidence-audit.v1",
+  "read_only_audit_of_source_and_raw_output": true,
+  "runtime_calls": 0,
+  "source_reply_path": "results/root-015-read.json",
+  "source_reply_sha256": "539fde59a735e29c27ce79790ce1381fa9e87d393b4251f8de2b47f7e593ff3f",
+  "source_packet_path": "cell-p1-publish-v1/tested-final-files.json",
+  "source_packet_sha256": "ba5af6925bc7019199672f686fe4642ed1b4375514d79f00c4efcc15043c4fd5",
+  "model_sha256": "c0b5c43fbaf7f1d2ea88355ba0a6a42eecbe45983050932419bc73b6ca7ca491",
+  "new_queries_sha256": "2e5d2ba7d8cd4801d944bd5dc9ca7faa426bfa4bd7c69acf8d428ff4c6615a4f",
+  "all_family_counts": {
+    "new_tasks": {
+      "aggregation": {
+        "abstained": 5,
+        "correct": 5,
+        "total": 16,
+        "unknown_false_accept": 11
+      },
+      "compose": {
+        "abstained": 24,
+        "correct": 104,
+        "total": 128,
+        "unknown_false_accept": 0
+      },
+      "counterfactual": {
+        "abstained": 16,
+        "correct": 16,
+        "total": 16,
+        "unknown_false_accept": 0
+      },
+      "explanation": {
+        "abstained": 16,
+        "correct": 16,
+        "total": 16,
+        "unknown_false_accept": 0
+      },
+      "external": {
+        "abstained": 26,
+        "correct": 26,
+        "total": 32,
+        "unknown_false_accept": 6
+      },
+      "external_zh": {
+        "abstained": 8,
+        "correct": 8,
+        "total": 8,
+        "unknown_false_accept": 0
+      },
+      "identity": {
+        "abstained": 16,
+        "correct": 16,
+        "total": 16,
+        "unknown_false_accept": 0
+      },
+      "multiple_outputs": {
+        "abstained": 8,
+        "correct": 8,
+        "total": 16,
+        "unknown_false_accept": 8
+      },
+      "mutation": {
+        "abstained": 24,
+        "correct": 24,
+        "total": 32,
+        "unknown_false_accept": 8
+      },
+      "mutation_zh": {
+        "abstained": 8,
+        "correct": 8,
+        "total": 8,
+        "unknown_false_accept": 0
+      },
+      "negation": {
+        "abstained": 32,
+        "correct": 32,
+        "total": 32,
+        "unknown_false_accept": 0
+      },
+      "negation_zh": {
+        "abstained": 8,
+        "correct": 8,
+        "total": 8,
+        "unknown_false_accept": 0
+      },
+      "prediction": {
+        "abstained": 32,
+        "correct": 32,
+        "total": 32,
+        "unknown_false_accept": 0
+      },
+      "semantic": {
+        "abstained": 1,
+        "correct": 63,
+        "total": 64,
+        "unknown_false_accept": 0
+      },
+      "skill": {
+        "abstained": 0,
+        "correct": 64,
+        "total": 64,
+        "unknown_false_accept": 0
+      },
+      "temporal": {
+        "abstained": 12,
+        "correct": 12,
+        "total": 16,
+        "unknown_false_accept": 4
+      },
+      "translation": {
+        "abstained": 8,
+        "correct": 8,
+        "total": 8,
+        "unknown_false_accept": 0
+      }
+    },
+    "formal_held": {
+      "compose": {
+        "abstained": 65,
+        "correct": 63,
+        "total": 128,
+        "unknown_false_accept": 0
+      },
+      "semantic": {
+        "abstained": 8,
+        "correct": 56,
+        "total": 64,
+        "unknown_false_accept": 0
+      },
+      "skill": {
+        "abstained": 6,
+        "correct": 58,
+        "total": 64,
+        "unknown_false_accept": 0
+      },
+      "unknown": {
+        "abstained": 64,
+        "correct": 64,
+        "total": 64,
+        "unknown_false_accept": 0
+      }
+    },
+    "old_challenge": {
+      "compose": {
+        "abstained": 23,
+        "correct": 41,
+        "total": 64,
+        "unknown_false_accept": 0
+      },
+      "semantic": {
+        "abstained": 16,
+        "correct": 48,
+        "total": 64,
+        "unknown_false_accept": 0
+      },
+      "skill": {
+        "abstained": 0,
+        "correct": 64,
+        "total": 64,
+        "unknown_false_accept": 0
+      },
+      "unknown": {
+        "abstained": 186,
+        "correct": 186,
+        "total": 192,
+        "unknown_false_accept": 6
+      }
+    }
+  },
+  "new_language_strata": {
+    "en": {
+      "known_total": 192,
+      "unknown_total": 232,
+      "known_correct": 186,
+      "known_abstained": 6,
+      "unknown_rejected": 195,
+      "unknown_false_accept": 37,
+      "known_accuracy": 0.96875,
+      "unknown_rejection_rate": 0.8405172413793104
+    },
+    "zh": {
+      "known_total": 64,
+      "unknown_total": 24,
+      "known_correct": 45,
+      "known_abstained": 19,
+      "unknown_rejected": 24,
+      "unknown_false_accept": 0,
+      "known_accuracy": 0.703125,
+      "unknown_rejection_rate": 1.0
+    }
+  },
+  "new_unknown_false_accept_families": {
+    "aggregation": 11,
+    "external": 6,
+    "multiple_outputs": 8,
+    "mutation": 8,
+    "temporal": 4
+  },
+  "semantics": {
+    "score_correct": "prediction == gold(row), including None == None for correctly declined unknown rows",
+    "unknown_false_accept": "row.role == unknown and predicted route is not None; this is routing acceptance, not evidence of mutation or external effects",
+    "router_operations": [
+      "semantic",
+      "procedure",
+      "apply"
+    ],
+    "apply": "bounded pure integer interpretation of existing seven-opcode program and stored event/predicted policy; produces a readout value; no write/delete/network/external-effect opcode",
+    "four_case_actual_owner_test_is_separate_from_1216_routing_parity_rows": true
+  },
+  "limits": [
+    "Authored finite eight-entity/eight-workflow registry; composition pairs and wording disjoint, no novel registered identities.",
+    "All fitting/dev texts are English; Chinese evaluation instructions retain English registered names and use ASCII exact name matching.",
+    "4620 learned f32 head parameters exclude fixed MiniLM encoder, Python/ONNX worker, tokenizer, process and IPC overhead.",
+    "48 direct numeric cases reused at Torch batch1 and batch8 are 48 unique cases, not 96 independent cases.",
+    "No direct runtime or GitHub calls were made; new Rust/owner stage not yet observed in local result files."
+  ]
+}
