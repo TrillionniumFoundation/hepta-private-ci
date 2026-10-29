@@ -77,7 +77,9 @@ Actual 的 `check_written_values` 对每个被支持的 semantic／procedure 地
 
 这些 readout 的 query ID 按类型复用，79 是实际读取次数，不是 79 个独立问题。三个阶段的 47 行也不是 47 份不同新知识；未变化的 procedure 在更正与删除阶段具有相同参数摘要。
 
-独立审计直接读取已保存 reference、Rust parity、owner snapshots 和 observations，不重载模型或训练。它分别检查 47 个阶段地址的真值、79 次 socket 读取、来源及参数身份，并对迁移后保存的 worker 读出事后核对完整 trace。[审计报告](native-audit/AUDIT_REPORT.md)；[机器结果](native-audit/AUDIT.json)；[审计程序](native-audit/audit.py)。
+独立审计直接读取已保存 reference、Rust parity、owner snapshots 和 observations，不重载模型或训练。结果为 reference 与 Rust 各 **47/47** 符合 owner 真值、socket **79/79** 正确、五份保存组合与迁移后一份事后核对的完整 value／trace 均一致。25 个输入的 SHA 和 1,064 项一致性检查保留，无未解释的不一致；这些不是独立统计样本。[审计报告](native-audit/AUDIT_REPORT.md)；[机器结果](native-audit/AUDIT.json)；[审计程序](native-audit/audit.py)。
+
+Rust receipt 重新嵌入的 reference JSON 副本有 137/948 个 logit、14/47 个 margin 相差 1 ULP，最大 logit 差约 7.1e-15；原 reference 文件摘要全部一致。原始数值容差没有放宽，整数答案仍要求完全相等。审计分别保留内部副本和外部原 JSON 的比较，不能把这些浮点副本描述为逐位完全相同。
 
 组合测试设计有七次直接 source-truth 断言，期望值由 owner 的 policy／program／event 经共享有界解释器算出。其中五份完整组合 readout 保存为 observations，另外两次返回值未保存。P4 混合 worker 的原测试只直接断言 Ok 与两个 model digests；其完整值／trace 正确性由上述事后 JSON 审计补充，不能冒充原测试就有该断言。
 
