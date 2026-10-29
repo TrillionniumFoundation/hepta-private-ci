@@ -1,0 +1,91 @@
+{
+  "schema": "rrsnn-v4-historical-source-publication-1",
+  "commit_sha": "8540ba0738a6f3243100958d442b9d0a49e31771",
+  "tree_sha": "9d9133d5805feb2cee97b09d343b603d50a7c12e",
+  "all_remote_git_blob_identities_verified": true,
+  "remote_tree_not_truncated": true,
+  "stages": [
+    {
+      "stage": "native-test-provenance",
+      "sha": "69f1c7c520f248321707a9c2d738e90dff930f5e",
+      "pr": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4302"
+    },
+    {
+      "stage": "upstream-test-recipes",
+      "sha": "2ccfd4940b1914357a3af0ad8e8a464993e56a5f",
+      "pr": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4303"
+    },
+    {
+      "stage": "historical-render-source",
+      "sha": "3fecc91750b71e5a1ebeff34c1e03c37832100ed",
+      "pr": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4304"
+    },
+    {
+      "stage": "upstream-root-recipe",
+      "sha": "8540ba0738a6f3243100958d442b9d0a49e31771",
+      "pr": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4305"
+    }
+  ],
+  "files": [
+    {
+      "path": "hepta/bootstrap_runtime_preformat.rs",
+      "sha256": "df98ccc5ca1d7c87f4e1ab5bf99aca9b3190b2bab4e00e758c0caeed6d2aa154",
+      "git_blob_sha": "9304d15bfe16f6e69af0b01b97a9eb110ff314a6",
+      "lines": 484
+    },
+    {
+      "path": "hepta/patched_upstream/codex-rs/Cargo.lock",
+      "sha256": "a229b4462b64a9567ec2fdaaa8d395cdc789f3341ade9178d9f9d6f3c1f082b0",
+      "git_blob_sha": "01d1941b619cf38fb61f3ef247ebfd7a65b3ef05",
+      "lines": 231
+    },
+    {
+      "path": "hepta/crate_validation_build/justfile",
+      "sha256": "e39a62fae163ea646fcce092dfdeb24910d2eb73a513e33f0ecd7bef7a08173a",
+      "git_blob_sha": "cd641ab452ab049be4e0f707866212032f97db80",
+      "lines": 2
+    },
+    {
+      "path": "hepta/crate_validation_build/.cargo/config.toml",
+      "sha256": "f6f6a07e7939496985c439dc8a9856659089ebb779b9311c383a9256b4dd20ed",
+      "git_blob_sha": "5eb796e7e710c53accb0328a28ca83c079192719",
+      "lines": 6
+    },
+    {
+      "path": "hepta/upstream_recipes/format.py",
+      "sha256": "3791cbd6b695c49ce2d4e84f250fe07761ec87e60ce1530880a0c7b1ba16e2dd",
+      "git_blob_sha": "617093ed602ebfbfde7cb7c31bc0d38272106de1",
+      "lines": 491
+    },
+    {
+      "path": "hepta/upstream_recipes/run-nextest.py",
+      "sha256": "b3080673ca1eef47d9bead823110f13e9c7ccd8310b2827719d5d1111041fa5c",
+      "git_blob_sha": "4243bf6fc8381c04f60af333404fbc5b6d722f12",
+      "lines": 277
+    },
+    {
+      "path": "results/figures_history/layout_01/make_figures_source.py",
+      "sha256": "82d37f870876c30744239d7cbac5a264a61e319d312e284da5d8e94541595e10",
+      "git_blob_sha": "89c80307000a04f069351843d3c419b354f8eea2",
+      "lines": 581
+    },
+    {
+      "path": "hepta/upstream_recipes/nextest.toml",
+      "sha256": "1ec25c048d59621ed75ba2db1c073b38091005d6da97b71d3b77774b3ecbc869",
+      "git_blob_sha": "82d17fb92831a326a8107e731a4ea7a096f2e4c6",
+      "lines": 114
+    },
+    {
+      "path": "hepta/upstream_recipes/just-shell.py",
+      "sha256": "8c4e5b73a4d5b62553bdfd0f3dfc5ec39919bf3089cd950426a43879b73cff84",
+      "git_blob_sha": "36cf263ba219fa047d8ff2d0e78f1042b3ca3b40",
+      "lines": 73
+    },
+    {
+      "path": "hepta/upstream-root-justfile.txt",
+      "sha256": "9fe8c410c12c3caacb6b6a531a8c124ae257c7041b2ce78388d49c1562843e1c",
+      "git_blob_sha": "75e69b04c1f700b15e7b91fd1fc5368fa9b924d9",
+      "lines": 215
+    }
+  ]
+}

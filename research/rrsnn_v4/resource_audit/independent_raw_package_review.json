@@ -1,0 +1,59 @@
+{
+  "schema": "rrsnn-v4-independent-raw-package-source-review-1",
+  "created_at_utc": "2026-10-29T16:41:29.475869+00:00",
+  "reviewer": "/root/r5_real_execution",
+  "status": "passes_for_core_preparation_and_complementary_resource_design",
+  "packager_source_sha256": "b4c95e1509eb52b6801e0df90dffe4ce4d095ad8334671b7d25d32bffb88d2d9",
+  "published_paths_sha256": "da7379c6f932c2147284b9728a20dfc0d2159b09fc68eca01daaf0e981d8764a",
+  "published_tree_commit": "8dc406ac222aea1609d7ee89979ad6d7b9fd1028",
+  "published_tree_entries": 146,
+  "remote_tree_provenance_scope": "Parent supplied a remote Git-tree map and reported all publication blob checks. Reviewer independently recomputed every excluded core candidate Git blob against this map; no second network fetch was performed.",
+  "core_candidate_files": 3097,
+  "core_raw_files_to_archive": 3086,
+  "core_excluded_git_backed_files": 11,
+  "all_excluded_core_git_blobs_match_local_bytes": true,
+  "coverage": {
+    "selected_training_checkpoints": 80,
+    "selected_training_receipts": 80,
+    "original_main_evaluation_files": 960,
+    "original_numerical_control_files": 60,
+    "isolated_precision_repair_files": 60,
+    "probability_calibration_gzip_files": 5,
+    "native_binaries": 4,
+    "all_fourteen_frozen_sources_are_in_the_git_tree": true
+  },
+  "checks": {
+    "two_archives_have_distinct_manifest_and_restore_member_names": true,
+    "every_raw_member_size_and_sha_recorded_and_reread_after_zip_write": true,
+    "metadata_exact_bytes_reread_and_sha_recorded_in_external_receipt": true,
+    "zip_member_set_and_count_reject_extra_missing_or_duplicate_members": true,
+    "each_raw_source_reread_before_zip_write_to_detect_change": true,
+    "resolved_candidate_containment_checked_before_git_exclusion": true,
+    "file_symlinks_and_nonregular_raw_files_rejected": true,
+    "published_exclusions_require_matching_git_object_hash_and_are_listed_with_size_sha256": true,
+    "published_map_itself_sha_bound": true,
+    "source_commit_declared_minimum_snapshot_final_head_may_be_later": true,
+    "archive_and_prepared_receipt_are_write_once": true,
+    "toolchain_vendor_cargo_cache_not_in_core_candidates": true,
+    "only_four_explicit_native_executables_from_build_directories": true,
+    "policy_resource_conditions_excluded_from_core_and_deferred_until80_complete": true,
+    "both_zip_rrsnn_v4_prefixes_restore_beneath_final_checkout_research_directory": true
+  },
+  "storage_context_source_sha256": "15eb9cb94304e623fe617574c76c9851b1f795187b6c0b002eca69e7a2026f35",
+  "storage_context_static_review": {
+    "per_row_completed_cpu_protocol_checkpoint_identity_guards_present": true,
+    "all80_unique_conditions_cover_four_variants_four_scales_five_seeds": true,
+    "original64_sha_unchanged_and_new16_exactly4096_non101_seeds": true,
+    "same_interpreter_path_field_does_not_claim_full_dependency_equivalence": true,
+    "was_executed_by_reviewer": false
+  },
+  "new_training_actor_benchmark_or_zip_creation_performed": false,
+  "large_raw_inputs_hashed_by_reviewer": false,
+  "remaining_source_blockers": [],
+  "deferred_actual_delivery_checks": [
+    "Run the reviewed packager and retain its all-member verification receipt and archive SHA.",
+    "Produce resources archive after all80 conditions and final operational evidence are complete.",
+    "Final immutable source head plus both manifests must cover every required restore path; verify any path also supplied by the later Git head against archive SHA before replacement.",
+    "Durable upload/download identity and final archive accessibility remain separate from this source review."
+  ]
+}

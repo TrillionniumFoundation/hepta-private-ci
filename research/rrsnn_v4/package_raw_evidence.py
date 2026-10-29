@@ -36,7 +36,9 @@ def candidates(kind):
         for pattern in ("policy_benchmark_results/**/*", "resource_audit/**/*"):
             files.update(p for p in ROOT.glob(pattern) if p.is_file())
         files.update((ROOT/"execution_logs").glob("*policy-benchmark*.log"))
-        for pattern in ("*cleanup*.json", "*preservation_receipt.json",
+        for name in ("hepta/source_publication_verified.json", "hepta/reclaimable_cache_inventory.json"):
+            files.add(ROOT/name)
+        for pattern in ("*.json", "results/*.json", "*cleanup*.json", "*preservation_receipt.json",
                         "*publication*.json", "CONTINUATION_STATE.json",
                         "git_publications.json", "workspace_migration*.json",
                         "raw_archive_receipts/*.json"):
