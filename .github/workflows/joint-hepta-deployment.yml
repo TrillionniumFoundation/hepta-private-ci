@@ -199,58 +199,6 @@ jobs:
                             "smoke": False, "seed": 17, "width": 32,
                             "source_research_effect_qualified": result.get("research_effect_qualified")}))
           PY
-      - name: Export only the nine registered checkpoint files in bounded recoverable log records
-        run: |
-          set -euo pipefail
-          python -B - <<'PY'
-          import base64
-          import hashlib
-          import json
-          import os
-          from pathlib import Path
-
-          study = Path(os.environ["DEPLOYMENT_STUDY"])
-          downloaded = Path(os.environ["STUDY_DOWNLOAD"])
-          provenance = Path(os.environ["DEPLOYMENT_RESULTS"]) / "provenance"
-          models = ("hepta_dynamic_risk/MODEL.pt", "distillation/STUDENT.pt", "ordinary_dynamic_mean/MODEL.pt")
-          names = [name for model in models for name in (model, model + ".manifest.json")]
-          names += ["PROFILE.json", "EXECUTED_PROTOCOL.json", "SUMMARY.json"]
-          original = {row["path"]: row for row in json.loads((provenance / "STUDY_INPUT_MANIFEST.json").read_text())}
-          payloads = []
-          for name in names:
-              path = study / name
-              if not path.is_file() or path.is_symlink() or not 0 < path.stat().st_size < 4 * (1 << 20):
-                  raise ValueError("Registered checkpoint export missing or exceeds its strict per-file limit: " + name)
-              raw = path.read_bytes()
-              sha = hashlib.sha256(raw).hexdigest()
-              registered = original[str(path.relative_to(downloaded))]
-              if len(raw) != registered["bytes"] or sha != registered["sha256"]:
-                  raise ValueError("Registered export differs from the frozen input manifest: " + name)
-              encoded = base64.b64encode(raw).decode("ascii")
-              header = {"path": name, "bytes": len(raw), "sha256": sha,
-                        "git_blob_sha1": hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw).hexdigest(),
-                        "chunks": (len(encoded) + 32767) // 32768}
-              payloads.append((header, encoded))
-          raw_total = sum(header["bytes"] for header, _ in payloads)
-          encoded_total = sum(len(encoded) for _, encoded in payloads)
-          if raw_total >= 16 * (1 << 20) or encoded_total >= 16 * (1 << 20):
-              raise ValueError("Fixed checkpoint export exceeds its strict total byte budget")
-          for header, encoded in payloads:
-              print("CHECKPOINT_EXPORT_JSON=" + json.dumps(header, sort_keys=True, separators=(",", ":")), flush=True)
-              for index in range(header["chunks"]):
-                  chunk = {"path": header["path"], "index": index, "data": encoded[index * 32768:(index + 1) * 32768]}
-                  line = "CHECKPOINT_CHUNK_JSON=" + json.dumps(chunk, sort_keys=True, separators=(",", ":"))
-                  if len(line.encode("ascii")) >= 65536:
-                      raise ValueError("Checkpoint record exceeds the registered line limit")
-                  print(line, flush=True)
-          receipt = {"schema": "hepta.joint-generation.fixed-checkpoint-log-export.v1",
-                     "files": [header for header, _ in payloads], "decoded_total_bytes": raw_total,
-                     "base64_total_characters": encoded_total, "chunk_characters": 32768,
-                     "source_artifact_modified": False, "only_the_nine_registered_files_exported": True}
-          (provenance / "CHECKPOINT_EXPORT_MANIFEST.json").write_text(json.dumps(receipt, sort_keys=True, indent=2) + "\n")
-          print("CHECKPOINT_EXPORT_RESULT_JSON=" + json.dumps({"files": len(payloads), "decoded_total_bytes": raw_total,
-                "base64_total_characters": encoded_total, "source_artifact_modified": False}, sort_keys=True), flush=True)
-          PY
       - name: Install pinned numerical runtime and Rust toolchain
         run: |
           set -euo pipefail

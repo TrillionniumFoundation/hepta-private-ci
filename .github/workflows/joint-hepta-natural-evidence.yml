@@ -1,0 +1,52 @@
+name: Joint Hepta natural evidence inspection
+
+on:
+  push:
+    branches: [research/joint-hepta-generation-20261029]
+    paths:
+      - experiments/multimodal_output_portfolio/joint_hepta_20261029/natural_inspect.py
+      - .github/workflows/joint-hepta-natural-evidence.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: joint-natural-inspect-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  inspect-existing-natural-artifacts:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[joint-inspect]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONNOUSERSITE: "1"
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: |
+            experiments/multimodal_output_portfolio/joint_hepta_20261029
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+      - name: Inspect pinned completed artifacts without training or fresh-media access
+        run: |
+          set -euo pipefail
+          gh --version
+          python -B experiments/multimodal_output_portfolio/joint_hepta_20261029/natural_inspect.py --output "$RUNNER_TEMP/joint-natural-evidence" 2>&1 | tee "$RUNNER_TEMP/joint-natural-evidence.log"
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: joint-natural-evidence-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/joint-natural-evidence/REPORT.json
+            ${{ runner.temp }}/joint-natural-evidence/metadata/
+            ${{ runner.temp }}/joint-natural-evidence.log
+          if-no-files-found: warn
+          retention-days: 30
