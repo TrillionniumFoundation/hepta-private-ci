@@ -47,6 +47,11 @@ use crate::decide_with_signed_longitudinal_evidence_v3;
 use crate::evaluate_temporal_holdout;
 use crate::freeze_cross_fold_plan_v2;
 
+#[path = "product_holdout.rs"]
+mod product_holdout;
+
+use product_holdout::FrozenProductHoldoutV1;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ProductMetricSourceV1 {
     Ips,
@@ -79,6 +84,7 @@ pub struct ProductFrozenEvaluationPlanV1 {
     pub base_estimand_digest: Digest32,
     pub candidate_temporal_plan_digest: Digest32,
     pub baseline_temporal_plan_digest: Digest32,
+    final_holdout: FrozenProductHoldoutV1,
     receipt_seal: Digest32,
 }
 
@@ -100,6 +106,9 @@ impl ProductFrozenEvaluationPlanV1 {
     }
 }
 
+/// Freeze the complete final-fold lineage consumed by this product runner.
+/// Released training and held-out principal/episode/window sets must match
+/// that fold exactly; a window name alone does not identify its cohort.
 pub fn freeze_product_evaluation_plan_v1(
     mut plan: CrossFoldPlanV1,
     mut metric_roles: Vec<MetricRoleContractV2>,
@@ -148,6 +157,7 @@ pub fn freeze_product_evaluation_plan_v1(
         baseline_temporal.plan_digest,
         &metric_sources,
     )?;
+    let final_holdout = FrozenProductHoldoutV1::from_plan(&plan)?;
     let frozen_plan = freeze_cross_fold_plan_v2(plan, metric_roles.clone())?;
     let mut receipt = ProductFrozenEvaluationPlanV1 {
         frozen_plan,
@@ -157,6 +167,7 @@ pub fn freeze_product_evaluation_plan_v1(
         base_estimand_digest,
         candidate_temporal_plan_digest: candidate_temporal.plan_digest,
         baseline_temporal_plan_digest: baseline_temporal.plan_digest,
+        final_holdout,
         receipt_seal: Digest32::ZERO,
     };
     receipt.receipt_seal = product_plan_seal(&receipt)?;
@@ -386,6 +397,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         let holdout = self.holdout.consume(&product_plan.frozen_plan)?;
         let mut inputs = provider.release_after_consumption(&holdout)?;
         validate_released_inputs(&product_plan.frozen_plan, &inputs)?;
+        product_plan.final_holdout.validate_inputs(&inputs)?;
         validate_comparable_observations(
             &inputs.candidate_observations,
             &inputs.baseline_observations,
@@ -806,6 +818,7 @@ fn product_plan_seal(
         plan.base_estimand_digest,
         plan.candidate_temporal_plan_digest,
         plan.baseline_temporal_plan_digest,
+        plan.final_holdout.digest(),
     ] {
         bytes.extend_from_slice(digest.as_array());
     }

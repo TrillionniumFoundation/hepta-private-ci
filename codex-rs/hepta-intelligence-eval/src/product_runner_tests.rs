@@ -1,7 +1,10 @@
 use super::*;
 
+use std::collections::BTreeSet;
 use std::sync::Arc;
 use std::sync::Mutex;
+
+use pretty_assertions::assert_eq;
 
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
@@ -162,7 +165,7 @@ fn fixture() -> Fixture {
     let manifest = digest("final-holdout");
     let candidate_plan = temporal_plan("candidate-evaluation", objective);
     let baseline_plan = temporal_plan("baseline-evaluation", objective);
-    let cross_fold = CrossFoldPlanV1 {
+    let mut cross_fold = CrossFoldPlanV1 {
         plan_id: id("product-plan"),
         claim_scope: EvaluationClaimScopeV1::Qualification,
         candidate_id: id("candidate"),
@@ -299,6 +302,37 @@ fn fixture() -> Fixture {
             cluster_id: id(&format!("cluster-{index}")),
         });
     }
+    let final_fold = &mut cross_fold.folds[0];
+    final_fold.training_principals = training
+        .iter()
+        .map(|row| row.principal_lineage.clone())
+        .collect::<BTreeSet<_>>()
+        .into_iter()
+        .collect();
+    final_fold.training_episodes = training
+        .iter()
+        .map(|row| row.episode_lineage.clone())
+        .collect::<BTreeSet<_>>()
+        .into_iter()
+        .collect();
+    final_fold.training_windows = training
+        .iter()
+        .map(|row| row.window_id.clone())
+        .collect::<BTreeSet<_>>()
+        .into_iter()
+        .collect();
+    final_fold.holdout_principals = targets
+        .iter()
+        .map(|row| row.principal_lineage.clone())
+        .collect::<BTreeSet<_>>()
+        .into_iter()
+        .collect();
+    final_fold.holdout_episodes = targets
+        .iter()
+        .map(|row| row.episode_lineage.clone())
+        .collect::<BTreeSet<_>>()
+        .into_iter()
+        .collect();
     Fixture {
         cross_fold,
         roles,
@@ -560,3 +594,6 @@ fn product_runner_never_releases_holdout_before_fenced_consumption() {
     );
     assert_eq!(fixture.provider.release_count, 0);
 }
+
+#[path = "product_holdout_tests.rs"]
+mod product_holdout_tests;
