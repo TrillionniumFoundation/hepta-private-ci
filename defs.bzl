@@ -310,15 +310,17 @@ def codex_rust_crate(
 
     maybe_deps = []
 
-    # A package-wide alias map may include dev-only workspace dependencies,
-    # creating production dependency cycles not present in Cargo's normal graph.
-    # Retain Cargo-renamed aliases only where their labels are already present
-    # in the production rule's direct normal/proc-macro dependency set.
+    # Generated package-wide aliases can introduce dev-only workspace edges
+    # into production libraries and form dependency cycles. First-party normal
+    # dependencies already come from all_crate_deps(); retain renamed external
+    # crates, but do not inject extra aliases to codex-rs workspace libraries.
+    # all_crate_deps() returns a select, so it cannot be iterated or tested for
+    # membership during Starlark package loading.
     normal_crate_deps = all_crate_deps()
     production_aliases = {
         alias_name: label
         for alias_name, label in aliases().items()
-        if label in normal_crate_deps
+        if "//codex-rs/" not in str(label)
     }
 
     if build_script_enabled and native.glob(["build.rs"], allow_empty = True):
