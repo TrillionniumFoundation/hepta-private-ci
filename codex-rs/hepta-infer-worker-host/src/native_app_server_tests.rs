@@ -11,6 +11,9 @@ use codex_app_server_protocol::TurnStartedNotification;
 mod cognitive_provenance;
 #[path = "native_output_tests.rs"]
 mod completed_output;
+#[cfg(unix)]
+#[path = "native_pq_final_use_tests.rs"]
+mod pq_final_use;
 
 fn binding() -> CodexTurnBinding {
     let payload_digest = Digest32::of_bytes(b"test-turn-payload");
