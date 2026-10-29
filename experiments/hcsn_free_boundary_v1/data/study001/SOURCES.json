@@ -1,0 +1,3066 @@
+{
+  "schema": "hcsn-data-sources.v1",
+  "files": [
+    {
+      "path": "mnist/t10k-images-idx3-ubyte.gz",
+      "bytes": 1648877,
+      "sha256": "8d422c7b0a1c1c79245a5bcf07fe86e33eeafee792b84584aec276f5a2dbc4e6"
+    },
+    {
+      "path": "mnist/t10k-labels-idx1-ubyte.gz",
+      "bytes": 4542,
+      "sha256": "f7ae60f92e00ec6debd23a6088c31dbd2371eca3ffa0defaefb259924204aec6"
+    },
+    {
+      "path": "mnist/train-images-idx3-ubyte.gz",
+      "bytes": 9912422,
+      "sha256": "440fcabf73cc546fa21475e81ea370265605f56be210a4024d2ca8f203523609"
+    },
+    {
+      "path": "mnist/train-labels-idx1-ubyte.gz",
+      "bytes": 28881,
+      "sha256": "3552534a0a558bbed6aed32b30c495cca23d567ec52cac8be1a0730e8010255c"
+    },
+    {
+      "path": "fsdd/recordings/0_george_0.wav",
+      "bytes": 4812,
+      "sha256": "228ab63fccdf262d2e05817b6ec918b15e7d9e4bfb6bb20183c46ae088405240"
+    },
+    {
+      "path": "fsdd/recordings/0_george_1.wav",
+      "bytes": 9498,
+      "sha256": "239d40931baf4e9b482361abb6e021439eca20f2e95f039b1bdddae04ef0b83c"
+    },
+    {
+      "path": "fsdd/recordings/0_george_2.wav",
+      "bytes": 10708,
+      "sha256": "d08d46275d0594096cb52449884ac9c5cd1dd0e4e48c4e28de1ade1703a2eab0"
+    },
+    {
+      "path": "fsdd/recordings/0_george_3.wav",
+      "bytes": 10058,
+      "sha256": "d5255e12fcc9ec9be0fa5d2dcca7c15ce7d1d39f0f581e6338d8930c09d6e52d"
+    },
+    {
+      "path": "fsdd/recordings/0_george_4.wav",
+      "bytes": 8690,
+      "sha256": "00a23e872eaee1352fa876ceab1191ab6a6f9f0fb4689fc5e0633b695001a3d6"
+    },
+    {
+      "path": "fsdd/recordings/0_george_5.wav",
+      "bytes": 10334,
+      "sha256": "6906c8b96e2e139e2408d524b22ac7b96fbc53b451cd4f7246e5f3ef410b3818"
+    },
+    {
+      "path": "fsdd/recordings/0_george_6.wav",
+      "bytes": 10340,
+      "sha256": "f286d5149bd3d24d31fee64cb767dae374ffd3404b12005e22bca27cb5346f04"
+    },
+    {
+      "path": "fsdd/recordings/0_george_7.wav",
+      "bytes": 10806,
+      "sha256": "c153080e78400cccd89658f983222ed738408b09b1da75e9f41a5a5080dea90e"
+    },
+    {
+      "path": "fsdd/recordings/0_george_8.wav",
+      "bytes": 8462,
+      "sha256": "913fb22a46ec9751f67d662018208b552365438c2c301ffd422db33b7d2fc4e7"
+    },
+    {
+      "path": "fsdd/recordings/0_george_9.wav",
+      "bytes": 9248,
+      "sha256": "4bc9a69d54e99d6a68e215beda0f5d53340ea3e95eb24e26d212c5ba1665c09b"
+    },
+    {
+      "path": "fsdd/recordings/0_jackson_0.wav",
+      "bytes": 10340,
+      "sha256": "eea86018ce1730baaf7f5dd6ec88c1f727dd90203521a9115b489310a248ea05"
+    },
+    {
+      "path": "fsdd/recordings/0_jackson_1.wav",
+      "bytes": 8566,
+      "sha256": "6df040b19b0a7a7433e6185c10d2df5e71a78fb272be472a98ce670378871b44"
+    },
+    {
+      "path": "fsdd/recordings/0_jackson_2.wav",
+      "bytes": 8558,
+      "sha256": "1f8420b07f8c1798817070ea550d3fa7b5964fb3f1ebabf19ed3c64fc62f0248"
+    },
+    {
+      "path": "fsdd/recordings/0_jackson_3.wav",
+      "bytes": 9620,
+      "sha256": "4a081dbe58c3716dde3fb8f7033dc8db404d9e6e070cab1f4be74e0b35820b25"
+    },
+    {
+      "path": "fsdd/recordings/0_jackson_4.wav",
+      "bytes": 8702,
+      "sha256": "967c3b14efad3501be65f167466f008b4e8abfc219b2bd009c443054bb2a6d3d"
+    },
+    {
+      "path": "fsdd/recordings/0_jackson_5.wav",
+      "bytes": 9226,
+      "sha256": "5b47a9df20e6fdd4ce8c0c93c8854e8911aff4448eac5bdb8d6d29e25d994915"
+    },
+    {
+      "path": "fsdd/recordings/0_jackson_6.wav",
+      "bytes": 10148,
+      "sha256": "b86b28b52e367ba92e132b5e24a83668cbe7ebda2ae15e90e2b60001e52e07e3"
+    },
+    {
+      "path": "fsdd/recordings/0_jackson_7.wav",
+      "bytes": 8906,
+      "sha256": "250dc3b913442d9c625bf2f9987de34133664545d213084c2b5a6b8d3bfd0f06"
+    },
+    {
+      "path": "fsdd/recordings/0_jackson_8.wav",
+      "bytes": 9302,
+      "sha256": "45bbcecd5eced03709cf2eee4d5e7bf13b361dc2789c442aa5cc452bfd00b9fb"
+    },
+    {
+      "path": "fsdd/recordings/0_jackson_9.wav",
+      "bytes": 10174,
+      "sha256": "f923306f18bd7e502f26d28b19c62ca5df3b0a80d61bfeee903d3ec1bea6c4f7"
+    },
+    {
+      "path": "fsdd/recordings/0_lucas_0.wav",
+      "bytes": 10210,
+      "sha256": "1d942e79c200ae1f84618314f2669d9c154718276b38ccf341630635073f7c06"
+    },
+    {
+      "path": "fsdd/recordings/0_lucas_1.wav",
+      "bytes": 10994,
+      "sha256": "9c2bb9ff24714b163c681d82c4ed99339c9408e9a126c04e6a1de63774704b05"
+    },
+    {
+      "path": "fsdd/recordings/0_lucas_2.wav",
+      "bytes": 11784,
+      "sha256": "98a9869e199ee41a7bd1435158d6844633f0e1e05565a456c1341fe94feab007"
+    },
+    {
+      "path": "fsdd/recordings/0_lucas_3.wav",
+      "bytes": 8954,
+      "sha256": "4fadd8fa097688679d1971a97ee649f40822e3262f2c4c8ddc1f4e09216cdb18"
+    },
+    {
+      "path": "fsdd/recordings/0_lucas_4.wav",
+      "bytes": 8188,
+      "sha256": "50b70103863389972001597d1136a8c7eea17fd7d98c7223af6e1880eca1ee90"
+    },
+    {
+      "path": "fsdd/recordings/0_lucas_5.wav",
+      "bytes": 9704,
+      "sha256": "c9579fd2ac366b20b215c170cad9ec121617bf40cc186ef54bdc0bca86247721"
+    },
+    {
+      "path": "fsdd/recordings/0_lucas_6.wav",
+      "bytes": 8620,
+      "sha256": "11d1a8a14c41a6bc731b9a3781171b146911f2470913b7d583fed5a1408b90d3"
+    },
+    {
+      "path": "fsdd/recordings/0_lucas_7.wav",
+      "bytes": 8278,
+      "sha256": "8e0ee57ea806aa733ed745c7cdb08f1b63c5be8b5548d5d0344ce30c958b8c3a"
+    },
+    {
+      "path": "fsdd/recordings/0_lucas_8.wav",
+      "bytes": 10480,
+      "sha256": "319a7259551a94c16312bf282c42426d078fb8068a1280cf52a515e01af37dda"
+    },
+    {
+      "path": "fsdd/recordings/0_lucas_9.wav",
+      "bytes": 18726,
+      "sha256": "7bd932f2067918fea0e92838ffa5cbd2bc310fea015d258744bbc8517b4a5538"
+    },
+    {
+      "path": "fsdd/recordings/0_nicolas_0.wav",
+      "bytes": 7044,
+      "sha256": "527b1d27c2b931204b24995f035580dd248b908978a27756b4698ce0aa7e1aa8"
+    },
+    {
+      "path": "fsdd/recordings/0_nicolas_1.wav",
+      "bytes": 7546,
+      "sha256": "3d567d30e25cc721277603d4eab78ab4a5b5fdc2d39f919ce8147b6cf8ae4490"
+    },
+    {
+      "path": "fsdd/recordings/0_nicolas_2.wav",
+      "bytes": 5758,
+      "sha256": "418816f823f2156a73343d121862fff82fe1a8f382fe84b8aa373a6b8b40e0e0"
+    },
+    {
+      "path": "fsdd/recordings/0_nicolas_3.wav",
+      "bytes": 8902,
+      "sha256": "6cfeda6d61b2d1f3e1d3da24cd8b7aef468cb7db34228aef983b20b095006ca0"
+    },
+    {
+      "path": "fsdd/recordings/0_nicolas_4.wav",
+      "bytes": 7830,
+      "sha256": "d7e8184f8f00736b46bdab0771db0b0ea4bb9661376cf4774d10b794631be23b"
+    },
+    {
+      "path": "fsdd/recordings/0_nicolas_5.wav",
+      "bytes": 6546,
+      "sha256": "ac49cdc0674e77f0aae908ebffebb92c5d5568a59f19ec6b4e0ac53e9a778436"
+    },
+    {
+      "path": "fsdd/recordings/0_nicolas_6.wav",
+      "bytes": 8758,
+      "sha256": "ac48de556cd18004e3cf94f0cefae2a1c17121c4c733101f9a5fc7348c222809"
+    },
+    {
+      "path": "fsdd/recordings/0_nicolas_7.wav",
+      "bytes": 6330,
+      "sha256": "efd658aee38f49d5ba75fab3e690a8a644ac7c62e49c8e71cf76379c2175447f"
+    },
+    {
+      "path": "fsdd/recordings/0_nicolas_8.wav",
+      "bytes": 7616,
+      "sha256": "7f81b5849f3eae0daa52381e776ad8dbe01b3c276978ebb4108f0f9f3e0633e0"
+    },
+    {
+      "path": "fsdd/recordings/0_nicolas_9.wav",
+      "bytes": 7760,
+      "sha256": "d70abed425038b3f09d2a0c3015aee725ade9ce5ca90e0c38d82dfe950ed0c1b"
+    },
+    {
+      "path": "fsdd/recordings/0_theo_0.wav",
+      "bytes": 6328,
+      "sha256": "d5833196a91e5da8703a8afe1f944cbf0d0bae55e5af6a4eb7e92e62070bf280"
+    },
+    {
+      "path": "fsdd/recordings/0_theo_1.wav",
+      "bytes": 5660,
+      "sha256": "3dafef6bfb96c18486594a339d9e65f579d1f98531dac9eafe39e8165f87aca9"
+    },
+    {
+      "path": "fsdd/recordings/0_theo_2.wav",
+      "bytes": 5508,
+      "sha256": "321f59be72d3df62ea5d1acd9884e56e642778acdae8b238347c7e9faaa3b64d"
+    },
+    {
+      "path": "fsdd/recordings/0_theo_3.wav",
+      "bytes": 5464,
+      "sha256": "f4aeffe68ef6108b377415baaaf087fa2fbfb9603ca4d2f91036faacda73c05c"
+    },
+    {
+      "path": "fsdd/recordings/0_theo_4.wav",
+      "bytes": 6534,
+      "sha256": "41374eca62f0d56467f56bd705e80c7b94eff30fb4cbc7ffad5772d6aefa76c5"
+    },
+    {
+      "path": "fsdd/recordings/0_theo_5.wav",
+      "bytes": 6666,
+      "sha256": "3638ff7ee910faebc5f8615f52ced44609bbfc5b650a1c0fa4579944094e3dd8"
+    },
+    {
+      "path": "fsdd/recordings/0_theo_6.wav",
+      "bytes": 7116,
+      "sha256": "08da38e51814022360bed0c7aa74cca031b0dddb78f57d5c8f8c48ee4494703b"
+    },
+    {
+      "path": "fsdd/recordings/0_theo_7.wav",
+      "bytes": 6450,
+      "sha256": "0553dbd4e4176f1107109bcc155838b3979d3414a48285581b8dc23ada502ddf"
+    },
+    {
+      "path": "fsdd/recordings/0_theo_8.wav",
+      "bytes": 5608,
+      "sha256": "197c5d2dfa3e1f4d76f5bb00073561e42cf3c7ba46b7b25bd3af8d8df33466fe"
+    },
+    {
+      "path": "fsdd/recordings/0_theo_9.wav",
+      "bytes": 6236,
+      "sha256": "3354a41528ed9dddfb00a041e486f2e5069f00e8549ccc1e7b10dc5d9c987bcd"
+    },
+    {
+      "path": "fsdd/recordings/0_yweweler_0.wav",
+      "bytes": 6250,
+      "sha256": "c2d53137898d6d32ae86e9703676bcaf595080a1f4e2e3efa5ede5a49f54b6a5"
+    },
+    {
+      "path": "fsdd/recordings/0_yweweler_1.wav",
+      "bytes": 5332,
+      "sha256": "af6a132fd59cad50dbd2c9a156edac88dac349c34f98827c136c5cd93129a9c5"
+    },
+    {
+      "path": "fsdd/recordings/0_yweweler_2.wav",
+      "bytes": 5694,
+      "sha256": "c067463424b177a2141328e17a1bc5fa965b50a72cc0322dbee4737cfaacd601"
+    },
+    {
+      "path": "fsdd/recordings/0_yweweler_3.wav",
+      "bytes": 5776,
+      "sha256": "1a747a1e962eef92f0f227d78c38e304e8ce31070e16e291e363e519c2570ea6"
+    },
+    {
+      "path": "fsdd/recordings/0_yweweler_4.wav",
+      "bytes": 5106,
+      "sha256": "62f96971e908c0fa0c2bc71740eea42a7eebd2fd559332911ccc8c8586b2451b"
+    },
+    {
+      "path": "fsdd/recordings/0_yweweler_5.wav",
+      "bytes": 6498,
+      "sha256": "23791f95b0ac61e5bd85ab989f6ef97450ad059aa8bc9541d6ae1477e8fdd46e"
+    },
+    {
+      "path": "fsdd/recordings/0_yweweler_6.wav",
+      "bytes": 6394,
+      "sha256": "e1af67800ab993c2f0d0831094a4740ff84fe69b06f5128bc482441746627fb6"
+    },
+    {
+      "path": "fsdd/recordings/0_yweweler_7.wav",
+      "bytes": 6314,
+      "sha256": "7bd7aca0102f45b3437cb1e23dbf0561b2333a5d08fb79616b6bcec5b27d37d3"
+    },
+    {
+      "path": "fsdd/recordings/0_yweweler_8.wav",
+      "bytes": 5416,
+      "sha256": "ad08f2f2e70b248ff31463d13e873943e87e3c707f7c8f558c1fb8e92bb7d299"
+    },
+    {
+      "path": "fsdd/recordings/0_yweweler_9.wav",
+      "bytes": 5752,
+      "sha256": "337237008c8eec9df99696be57af5dc8263198bff577c758577d5646352f2d58"
+    },
+    {
+      "path": "fsdd/recordings/1_george_0.wav",
+      "bytes": 9140,
+      "sha256": "c652e9243c5cc350063be17ebb3629ae971f2059234aa33cfec3a57ae7668efd"
+    },
+    {
+      "path": "fsdd/recordings/1_george_1.wav",
+      "bytes": 8006,
+      "sha256": "ff6e88d6ea38bbdfe4ece00e25afddeedc5cda45d2494de802b838ce4c90a542"
+    },
+    {
+      "path": "fsdd/recordings/1_george_2.wav",
+      "bytes": 9188,
+      "sha256": "fc3c8d077d98a1b5790f66649d5befcbd5c76e3ef677f857d014dfb527661e02"
+    },
+    {
+      "path": "fsdd/recordings/1_george_3.wav",
+      "bytes": 8552,
+      "sha256": "802c1b4c8de9a6cddd33bc5ae2780ae64413ead6d0ab726d1206bef44241829d"
+    },
+    {
+      "path": "fsdd/recordings/1_george_4.wav",
+      "bytes": 8488,
+      "sha256": "f608a7eaa6aed3998182d4a7f2a5443ebf324371e198ed2f10330d49e282d170"
+    },
+    {
+      "path": "fsdd/recordings/1_george_5.wav",
+      "bytes": 9932,
+      "sha256": "884b4b7fb1262cde07606534548e6f3367131358ee277827563faab45006378d"
+    },
+    {
+      "path": "fsdd/recordings/1_george_6.wav",
+      "bytes": 7244,
+      "sha256": "81865fb975e5d081b9ffc002f3fb64721552d4880b2dbe0a8402f95ab88a50b6"
+    },
+    {
+      "path": "fsdd/recordings/1_george_7.wav",
+      "bytes": 10708,
+      "sha256": "ba4f996fb86ad170dc420727354764b3312d40bcd188225fe3144691b822cebe"
+    },
+    {
+      "path": "fsdd/recordings/1_george_8.wav",
+      "bytes": 8632,
+      "sha256": "1f39769932124562fcd89de163aaabd002a289bf0ed06ec3f8f2a67bf880dc8f"
+    },
+    {
+      "path": "fsdd/recordings/1_george_9.wav",
+      "bytes": 7690,
+      "sha256": "024b99b99b3eab3d2dbe692907b8e4df284171f1ca7ac8f1ca462512c2a9bcf8"
+    },
+    {
+      "path": "fsdd/recordings/1_jackson_0.wav",
+      "bytes": 8320,
+      "sha256": "b3739400f793620875bb7849bfd8629dc6b2966ed6bda8276aa14178a612f13a"
+    },
+    {
+      "path": "fsdd/recordings/1_jackson_1.wav",
+      "bytes": 8528,
+      "sha256": "5a5b281a28fa451318629ea46eea07465543acfaa92d3ec8deac3c4a971a03d3"
+    },
+    {
+      "path": "fsdd/recordings/1_jackson_2.wav",
+      "bytes": 7722,
+      "sha256": "951b095b2b0b203a3a81581f1e908e2fb0968d94fccaab088dfa332ebc57d9c6"
+    },
+    {
+      "path": "fsdd/recordings/1_jackson_3.wav",
+      "bytes": 8008,
+      "sha256": "2e71fd74999a6f06432fe564f49294694113ca7205996b8417d9e1b83e6df4e8"
+    },
+    {
+      "path": "fsdd/recordings/1_jackson_4.wav",
+      "bytes": 8470,
+      "sha256": "64ffa841ea06bd87f94e41b2480c8afacf2577b9dde0b989080dfc01d6ac688c"
+    },
+    {
+      "path": "fsdd/recordings/1_jackson_5.wav",
+      "bytes": 9176,
+      "sha256": "4d07c2dc3cf4c601fe13e0d75f389543254fbbf1ac9ee0e66654c0c8088d9380"
+    },
+    {
+      "path": "fsdd/recordings/1_jackson_6.wav",
+      "bytes": 8158,
+      "sha256": "3e47e34ebc5ace3839aa7333b0885f3f6ab07a0658e044b629dcf4a80fb0814f"
+    },
+    {
+      "path": "fsdd/recordings/1_jackson_7.wav",
+      "bytes": 9002,
+      "sha256": "74e8f5e15f31b879fe2f7029686c4393a82ef123c8452c35a6c33f859f5a5db7"
+    },
+    {
+      "path": "fsdd/recordings/1_jackson_8.wav",
+      "bytes": 8148,
+      "sha256": "5e2e6ee4cf93b02f24c00194dba7bb0a180727cdc764a77cb3c7eb79bc0363dd"
+    },
+    {
+      "path": "fsdd/recordings/1_jackson_9.wav",
+      "bytes": 9322,
+      "sha256": "cfb379cd0e8e8b513abc3fc83871bb5cba1b6bc26b4af06a4fcf91e698a0fa8d"
+    },
+    {
+      "path": "fsdd/recordings/1_lucas_0.wav",
+      "bytes": 6088,
+      "sha256": "3be94e884747e17a3004d7c30c95cc5c9da2bf6fc3a280db5ae72822824a398b"
+    },
+    {
+      "path": "fsdd/recordings/1_lucas_1.wav",
+      "bytes": 6444,
+      "sha256": "ad1caca4abb84a074da3ab0521ea32dd904909d997acfe4e9f30022241f94db6"
+    },
+    {
+      "path": "fsdd/recordings/1_lucas_2.wav",
+      "bytes": 6568,
+      "sha256": "b0bba3c7a1bfa0ae577e19c809cc3e740d8733af144a1dc68180ce364206409e"
+    },
+    {
+      "path": "fsdd/recordings/1_lucas_3.wav",
+      "bytes": 12856,
+      "sha256": "7a7ca68118ecaa64d0eebfeb0abdb6b27e7490da81951b3cbcc2572712fd66e9"
+    },
+    {
+      "path": "fsdd/recordings/1_lucas_4.wav",
+      "bytes": 6202,
+      "sha256": "0efa20cf3834fb8587bf7d32330cd2a7ac945919d5abec7728f4e9954343741b"
+    },
+    {
+      "path": "fsdd/recordings/1_lucas_5.wav",
+      "bytes": 5436,
+      "sha256": "775c58c39000dedfb88112d7d38b7ad59edccefd1e448c23a681ca3865fc25d2"
+    },
+    {
+      "path": "fsdd/recordings/1_lucas_6.wav",
+      "bytes": 6974,
+      "sha256": "8746f52d6c1566a0361a59a036c05df1ae495e7ead2e4dc2337d1b3142af3fa5"
+    },
+    {
+      "path": "fsdd/recordings/1_lucas_7.wav",
+      "bytes": 7542,
+      "sha256": "6b888be48634e81c86d24b292100bb3b6a9e6e6d103a448396e80558313a3b31"
+    },
+    {
+      "path": "fsdd/recordings/1_lucas_8.wav",
+      "bytes": 7776,
+      "sha256": "967cc2ad2e731ee58a7b2f0b6370152bad876695b8532dedc8dfcf626b3e03eb"
+    },
+    {
+      "path": "fsdd/recordings/1_lucas_9.wav",
+      "bytes": 7578,
+      "sha256": "bf19a28cda92df391dab8d0fe42dc399a6797a916156e513bc69b6281c28254b"
+    },
+    {
+      "path": "fsdd/recordings/1_nicolas_0.wav",
+      "bytes": 5902,
+      "sha256": "d57a29689b0abf1ab609ab401dd4053dbc18c317a4ed9ebed6a9aa034e9bab0a"
+    },
+    {
+      "path": "fsdd/recordings/1_nicolas_1.wav",
+      "bytes": 4692,
+      "sha256": "ab699c577558d9b17afbf3714ae7484195ce93d855d9bfb43151ad573689e15a"
+    },
+    {
+      "path": "fsdd/recordings/1_nicolas_2.wav",
+      "bytes": 4218,
+      "sha256": "9d6d96e320efc3b931c246f1164963956f944fa74fb744cd5ca573af75229a2f"
+    },
+    {
+      "path": "fsdd/recordings/1_nicolas_3.wav",
+      "bytes": 4692,
+      "sha256": "ad140b5e38504e509d94b410e4b3c9c4bedcd0528cf6a085c3c8bf1035030318"
+    },
+    {
+      "path": "fsdd/recordings/1_nicolas_4.wav",
+      "bytes": 4758,
+      "sha256": "bc2d9aae9fe973c3df3d9e13d0a019fd30a996c7f6e4106321cc89bfd079eabf"
+    },
+    {
+      "path": "fsdd/recordings/1_nicolas_5.wav",
+      "bytes": 5296,
+      "sha256": "b40222f4de539a66f4e1c1e970214d9e0f5be2a27c4e0fa78868823d6ba29202"
+    },
+    {
+      "path": "fsdd/recordings/1_nicolas_6.wav",
+      "bytes": 4692,
+      "sha256": "9a904ff6c0ad5db655937244de6e4fe1cfaf8cf5b0f9e734b3ed780259b271ca"
+    },
+    {
+      "path": "fsdd/recordings/1_nicolas_7.wav",
+      "bytes": 4824,
+      "sha256": "c77a9b85af529b9c0592467faa702486cc96cb42eea008d1621e3fb398589dc7"
+    },
+    {
+      "path": "fsdd/recordings/1_nicolas_8.wav",
+      "bytes": 4018,
+      "sha256": "7fb0f7659690cc6b540f47a17e2cb420d9e53cee3643b7c7ac50b462fbca6055"
+    },
+    {
+      "path": "fsdd/recordings/1_nicolas_9.wav",
+      "bytes": 4960,
+      "sha256": "eec4c4c4f23fbe73b153e8370f488722dced48d7b9952d395d61f0cd9a65b607"
+    },
+    {
+      "path": "fsdd/recordings/1_theo_0.wav",
+      "bytes": 3816,
+      "sha256": "a856fff7bcb68328a76b269c0d8b1d4269c28ac7e3d6725fe9da5bdd05405b55"
+    },
+    {
+      "path": "fsdd/recordings/1_theo_1.wav",
+      "bytes": 3728,
+      "sha256": "067eb9f036e0d05e4967a0e7c910131d92d2493b52cb527bacc001229765ac1f"
+    },
+    {
+      "path": "fsdd/recordings/1_theo_2.wav",
+      "bytes": 3156,
+      "sha256": "f0c9e5e3749425ec404265accc84a19305bac7bdeea60100402f6a55f47ad289"
+    },
+    {
+      "path": "fsdd/recordings/1_theo_3.wav",
+      "bytes": 4038,
+      "sha256": "f79b5b1aca602fc1ba563e9e9e9f4be52bc0626b3106c706f844d145cb23d765"
+    },
+    {
+      "path": "fsdd/recordings/1_theo_4.wav",
+      "bytes": 3484,
+      "sha256": "45a3553a223d0a2f994b0b34c761824abd6e2db0aa9b7451f1eb53b818bebc87"
+    },
+    {
+      "path": "fsdd/recordings/1_theo_5.wav",
+      "bytes": 3518,
+      "sha256": "6894119e221e1b740d1661a44e7bd22d4c55139f3c473b49bd9cd0990bd0838c"
+    },
+    {
+      "path": "fsdd/recordings/1_theo_6.wav",
+      "bytes": 3564,
+      "sha256": "4e7bbc6bfd7175fbace5aaaec7e589bbbc3be2867c200751950a683358350786"
+    },
+    {
+      "path": "fsdd/recordings/1_theo_7.wav",
+      "bytes": 4960,
+      "sha256": "ef11eaf6a8b377e730d4eb152a33a49e3101c98dd6c791d9741f6d153627ac9d"
+    },
+    {
+      "path": "fsdd/recordings/1_theo_8.wav",
+      "bytes": 4158,
+      "sha256": "763ddb0890e49e7b8cf2155d8fed45c5cd7335cf1c987a62c53a745ed6bde0a1"
+    },
+    {
+      "path": "fsdd/recordings/1_theo_9.wav",
+      "bytes": 3824,
+      "sha256": "f78a74968884065a117a24db2eff55c7988382ce4d5e2335e92e39b347bfd6b5"
+    },
+    {
+      "path": "fsdd/recordings/1_yweweler_0.wav",
+      "bytes": 6754,
+      "sha256": "625069e417d9f504ab6f67a1be608f28ad35fa46ae0233adf438994d442e228b"
+    },
+    {
+      "path": "fsdd/recordings/1_yweweler_1.wav",
+      "bytes": 3614,
+      "sha256": "8779a19c2a5d439627998f5fc57db0fd95be2500cba5c637a7ecaf88fa9aac16"
+    },
+    {
+      "path": "fsdd/recordings/1_yweweler_2.wav",
+      "bytes": 5406,
+      "sha256": "546a5fac5003856d40d5f7d12700e52a64216bb23f2f8cd5a7607c5c3e271622"
+    },
+    {
+      "path": "fsdd/recordings/1_yweweler_3.wav",
+      "bytes": 5006,
+      "sha256": "3317b91b26a11f3b65ca003bd949dd9d4bc1afb26d6d87a29d671817b9375866"
+    },
+    {
+      "path": "fsdd/recordings/1_yweweler_4.wav",
+      "bytes": 4858,
+      "sha256": "62e0717efb4100339629268a502958de6d6488000f9f6528d916329ee54dad5c"
+    },
+    {
+      "path": "fsdd/recordings/1_yweweler_5.wav",
+      "bytes": 5290,
+      "sha256": "415208532df8ea8f9a6570becd1df6b8b55975f25377afc9c4f28dbd4eac1433"
+    },
+    {
+      "path": "fsdd/recordings/1_yweweler_6.wav",
+      "bytes": 4238,
+      "sha256": "2685d5f08638f9c21c64d9b6a65461e6da9f8e9f6499b6a1dde621d76c53569f"
+    },
+    {
+      "path": "fsdd/recordings/1_yweweler_7.wav",
+      "bytes": 4360,
+      "sha256": "dd6c1dc3c2702ec1617e9d84a6ed4d0d5df2e5f8d17b404285560345af024ff5"
+    },
+    {
+      "path": "fsdd/recordings/1_yweweler_8.wav",
+      "bytes": 4142,
+      "sha256": "afc9d424d6e37f57c4566c51c55c9fb271e71861927695dc73f9f728a38dcd50"
+    },
+    {
+      "path": "fsdd/recordings/1_yweweler_9.wav",
+      "bytes": 4374,
+      "sha256": "ea592ed8a0c6ad8b84b7fa35446b5694be159771f45e3c8156b493676547fc93"
+    },
+    {
+      "path": "fsdd/recordings/2_george_0.wav",
+      "bytes": 5330,
+      "sha256": "64e86e8aec57533dfa5b9054ca3f93f7b7da98fb41e2e1da7c9eabfb9c86792a"
+    },
+    {
+      "path": "fsdd/recordings/2_george_1.wav",
+      "bytes": 9130,
+      "sha256": "6ce4f75e7a3467a9aec1c0e142a0412e4ada61903dc5f626ea19c0d5bd501641"
+    },
+    {
+      "path": "fsdd/recordings/2_george_2.wav",
+      "bytes": 6378,
+      "sha256": "908cbb66d2d404721fa4e02f53c79697d3a037fa1039fb2203ab337331017cbb"
+    },
+    {
+      "path": "fsdd/recordings/2_george_3.wav",
+      "bytes": 6376,
+      "sha256": "d4f19537dd510f45d8a891ad43ff69d9eeeea32ed15ffc637d3ca7bf0bed5203"
+    },
+    {
+      "path": "fsdd/recordings/2_george_4.wav",
+      "bytes": 6200,
+      "sha256": "eab8a9d8a98c44d97c8a835bf6bc303d921bab42ce44162783900cdaa0293b56"
+    },
+    {
+      "path": "fsdd/recordings/2_george_5.wav",
+      "bytes": 6418,
+      "sha256": "cb3e726b6b4a9039f138c98a322c65ed73621cbe6e32cf84228088bca2c90f28"
+    },
+    {
+      "path": "fsdd/recordings/2_george_6.wav",
+      "bytes": 5522,
+      "sha256": "19fb7c4ec8a19dc128ab9e655698ae432d7f70c25494e363d801d8a59c76a784"
+    },
+    {
+      "path": "fsdd/recordings/2_george_7.wav",
+      "bytes": 5794,
+      "sha256": "61706e6b1690abd6a78d490f1b0f99524085ef3251305828d283b7b41de80c80"
+    },
+    {
+      "path": "fsdd/recordings/2_george_8.wav",
+      "bytes": 7134,
+      "sha256": "3412769d4769671a13cbb5de59934e16eb972a5fc9c4ef98f958c6cd411365b6"
+    },
+    {
+      "path": "fsdd/recordings/2_george_9.wav",
+      "bytes": 5742,
+      "sha256": "42233fc5dfe8fca6eb5e472170b6f32c019d3d4e7b97b152110a81ffed5a9eaf"
+    },
+    {
+      "path": "fsdd/recordings/2_jackson_0.wav",
+      "bytes": 8024,
+      "sha256": "214bac0c813b584410e3cb8cace2673d256b3fd735810bd516b2bfd0c2298620"
+    },
+    {
+      "path": "fsdd/recordings/2_jackson_1.wav",
+      "bytes": 8892,
+      "sha256": "d2422f0c91208802a0daab5ee36ef661fa166cfcfa380791a5e1d866481ee594"
+    },
+    {
+      "path": "fsdd/recordings/2_jackson_2.wav",
+      "bytes": 7080,
+      "sha256": "b79de6ce388277d60a8f88aaeea268a41f7a9132efee4691a067dcac44822ada"
+    },
+    {
+      "path": "fsdd/recordings/2_jackson_3.wav",
+      "bytes": 7978,
+      "sha256": "61434c1ebfda2fe1381edbdabd286ab77de9e84cb071e379a91a17aab087395a"
+    },
+    {
+      "path": "fsdd/recordings/2_jackson_4.wav",
+      "bytes": 7676,
+      "sha256": "e902bb0a2b3208aff47aab124c259f2bf061191af849fe60811804d4bb3dae57"
+    },
+    {
+      "path": "fsdd/recordings/2_jackson_5.wav",
+      "bytes": 7636,
+      "sha256": "49df3b86061fc8bfa2e47866b186443a1b429820e3bf38f90cd2794e12be5cd9"
+    },
+    {
+      "path": "fsdd/recordings/2_jackson_6.wav",
+      "bytes": 7492,
+      "sha256": "88be9fd5f1d1405eddf7f78234f16298fbfbe24777f19fec634c5d786ec42316"
+    },
+    {
+      "path": "fsdd/recordings/2_jackson_7.wav",
+      "bytes": 7788,
+      "sha256": "84db9052f52013399bf11c5a4d09597eb02ea65c1450d1b7a456fc33cba05a50"
+    },
+    {
+      "path": "fsdd/recordings/2_jackson_8.wav",
+      "bytes": 7688,
+      "sha256": "97128f075e906b86bfbd6c266bf14f4f510e9819ed98c48814426a05e5683f5a"
+    },
+    {
+      "path": "fsdd/recordings/2_jackson_9.wav",
+      "bytes": 8660,
+      "sha256": "2f31f2b5a4b06e2d7f04dc54ed89ef254458b1e0cd762df42ba4a5531e717f17"
+    },
+    {
+      "path": "fsdd/recordings/2_lucas_0.wav",
+      "bytes": 6038,
+      "sha256": "1cc45214f58b07f3188a0474060cf04c600123d1bc05c9889f81a24e77edab2f"
+    },
+    {
+      "path": "fsdd/recordings/2_lucas_1.wav",
+      "bytes": 6742,
+      "sha256": "2fc0b8646d1fc0f1931a40c8b34a726970798241d95ceb14eef4291902f47af6"
+    },
+    {
+      "path": "fsdd/recordings/2_lucas_2.wav",
+      "bytes": 7002,
+      "sha256": "b2e590e96a72a7b5815a3dab152024db570ddf127c84269c05a4d5caa1657911"
+    },
+    {
+      "path": "fsdd/recordings/2_lucas_3.wav",
+      "bytes": 6832,
+      "sha256": "687c470afbbee002046726a9121d58c769cd02c8498daa2e6ac41ad138b70e29"
+    },
+    {
+      "path": "fsdd/recordings/2_lucas_4.wav",
+      "bytes": 6772,
+      "sha256": "e50e731cb732f7b7ff4e293f5bc80cbea35834b532d914ac9b1b5c62386aa2b7"
+    },
+    {
+      "path": "fsdd/recordings/2_lucas_5.wav",
+      "bytes": 6532,
+      "sha256": "206683caef2151020be6cbabfdff923c018fbe685dbbc96dc4bdaa415306fb55"
+    },
+    {
+      "path": "fsdd/recordings/2_lucas_6.wav",
+      "bytes": 8370,
+      "sha256": "6de89ff3009f4ca00744813f47f5e32532da7393386cf1afeaa28292700540a8"
+    },
+    {
+      "path": "fsdd/recordings/2_lucas_7.wav",
+      "bytes": 7554,
+      "sha256": "dba390ff33cbc8ba167af35b37900da86b28bdb1b56dd0a2fe92128121d6fa70"
+    },
+    {
+      "path": "fsdd/recordings/2_lucas_8.wav",
+      "bytes": 6868,
+      "sha256": "9cabdad852efe6a31db210977b25bdc1d94f3a0242b77593d691e244421ce0a4"
+    },
+    {
+      "path": "fsdd/recordings/2_lucas_9.wav",
+      "bytes": 15734,
+      "sha256": "76f54a6ebe3d586e6430e7e72d53bf1740a5e2ce88055b895f87b546a017c100"
+    },
+    {
+      "path": "fsdd/recordings/2_nicolas_0.wav",
+      "bytes": 5756,
+      "sha256": "e55aea8bd4d83d0ae4de1b5a4b67a613f17aa00406cd726c352a061001308beb"
+    },
+    {
+      "path": "fsdd/recordings/2_nicolas_1.wav",
+      "bytes": 4814,
+      "sha256": "dc2ed3a0d4350a248e1ea2cdcf6ba32b8173eb583dbaccb0150353bb74bfd3d6"
+    },
+    {
+      "path": "fsdd/recordings/2_nicolas_2.wav",
+      "bytes": 5880,
+      "sha256": "cb10ee17e0258b92c5a8d992264ee313ece704f0a37fb2eb1222b78be55822f1"
+    },
+    {
+      "path": "fsdd/recordings/2_nicolas_3.wav",
+      "bytes": 3872,
+      "sha256": "dd4d206c2a0e6ca764fbd36dd0168a4d2eb010c3e8e93c176f83661bb98844c4"
+    },
+    {
+      "path": "fsdd/recordings/2_nicolas_4.wav",
+      "bytes": 5378,
+      "sha256": "9179a9c25e6b531040246aaab57e7534b4def7ececc7edcce25ddc2c4bce52fe"
+    },
+    {
+      "path": "fsdd/recordings/2_nicolas_5.wav",
+      "bytes": 2994,
+      "sha256": "cc455c96a7f239ac51bcb87b43e24911932234a76c39369f4c23c5a4ec85dffc"
+    },
+    {
+      "path": "fsdd/recordings/2_nicolas_6.wav",
+      "bytes": 3748,
+      "sha256": "ee6a7571be65ad00e0a23ef5caa498891b6ddc8f5b7b5eba55278de413f23f10"
+    },
+    {
+      "path": "fsdd/recordings/2_nicolas_7.wav",
+      "bytes": 4688,
+      "sha256": "3c993efa99fa650d2dd01f5c1eb6c4bf385b33683591af96be32082130508b2a"
+    },
+    {
+      "path": "fsdd/recordings/2_nicolas_8.wav",
+      "bytes": 3872,
+      "sha256": "640bfe3968250e1c5d473a670db9058e381ccb0c2cccf7b83f711b667393e34c"
+    },
+    {
+      "path": "fsdd/recordings/2_nicolas_9.wav",
+      "bytes": 5692,
+      "sha256": "f6a058baf8911f253a65294e5216db1f54f0cdb1a9c0563a1a4c0b6a6436b26a"
+    },
+    {
+      "path": "fsdd/recordings/2_theo_0.wav",
+      "bytes": 3950,
+      "sha256": "226a6abb912b3f1039a66f472748fb155cff0da00f3f2a7c091b74f937803a29"
+    },
+    {
+      "path": "fsdd/recordings/2_theo_1.wav",
+      "bytes": 3682,
+      "sha256": "62a0ab262652b3dad25a6553950f2d7490c5f7e89468bb7616d457ddffca5f1d"
+    },
+    {
+      "path": "fsdd/recordings/2_theo_2.wav",
+      "bytes": 8476,
+      "sha256": "3c332f5be27a34c9604e1d59b8ead49dcb49922a4c005545b16c7d41d0d96733"
+    },
+    {
+      "path": "fsdd/recordings/2_theo_3.wav",
+      "bytes": 3246,
+      "sha256": "99aeba325922fd85434573dfa3e121d202fbd87c823f634bcfad65e06bac5875"
+    },
+    {
+      "path": "fsdd/recordings/2_theo_4.wav",
+      "bytes": 4302,
+      "sha256": "5a95f465826c9d25a30a05b29e5f9e11708adda7bb6b18c5b631c4e09bda7fdc"
+    },
+    {
+      "path": "fsdd/recordings/2_theo_5.wav",
+      "bytes": 4428,
+      "sha256": "c808b74a405d7d802e30e8e7c2e2961f4a4de0f59e1bb78f4cb8e4d2d74823da"
+    },
+    {
+      "path": "fsdd/recordings/2_theo_6.wav",
+      "bytes": 3752,
+      "sha256": "2e2a91beb81c2b97289ca36b597212f3310974a64d867b0885633cb42407b0f9"
+    },
+    {
+      "path": "fsdd/recordings/2_theo_7.wav",
+      "bytes": 4118,
+      "sha256": "c16455d73c2bef4b87112644337b9eea86b7916fb288b99d1176cab3ea4842ac"
+    },
+    {
+      "path": "fsdd/recordings/2_theo_8.wav",
+      "bytes": 4336,
+      "sha256": "233d6f2f05728f89462af04370f9361f64664bfcbfcb00e9543e4e971b23b0d0"
+    },
+    {
+      "path": "fsdd/recordings/2_theo_9.wav",
+      "bytes": 3930,
+      "sha256": "135b47f82c3b89a104344c8a1deb785b2a8abed4043102dcaabe16a6ddd71361"
+    },
+    {
+      "path": "fsdd/recordings/2_yweweler_0.wav",
+      "bytes": 4442,
+      "sha256": "0d14dff97f0783d0dbbed08cd2b407dad98dda9d25e4ebf84a6bcbdb18c62d60"
+    },
+    {
+      "path": "fsdd/recordings/2_yweweler_1.wav",
+      "bytes": 4904,
+      "sha256": "3f62bc025335cb887215510406d3de03decba8014734654b044a1538457e1b8a"
+    },
+    {
+      "path": "fsdd/recordings/2_yweweler_2.wav",
+      "bytes": 3856,
+      "sha256": "464fc9f6602fbbda43687c01ccb3edc8b46fc35e4d42841b88314fb7c07bcefe"
+    },
+    {
+      "path": "fsdd/recordings/2_yweweler_3.wav",
+      "bytes": 4526,
+      "sha256": "b3ef9bfdb6cd7d2156aff19726be56769ceebecab811eee378a3a6b83c903c74"
+    },
+    {
+      "path": "fsdd/recordings/2_yweweler_4.wav",
+      "bytes": 4700,
+      "sha256": "9510b7d78c2ef1adbe8fcf39876233ba1d1f2bd4aa0e6f156953cf91de0ca157"
+    },
+    {
+      "path": "fsdd/recordings/2_yweweler_5.wav",
+      "bytes": 5232,
+      "sha256": "964f057dc340f45f58efd47d326491001dc3d77ba6160eb9734e91765b880cab"
+    },
+    {
+      "path": "fsdd/recordings/2_yweweler_6.wav",
+      "bytes": 5078,
+      "sha256": "0230134abc5cf9ff2021fe34725ba09163adf223d44e6c5c38562f4028814ed3"
+    },
+    {
+      "path": "fsdd/recordings/2_yweweler_7.wav",
+      "bytes": 5364,
+      "sha256": "e05a1f1bfbd112c6fe355c83d285aa0ab4050f54532b09e7f3497aa069cee34a"
+    },
+    {
+      "path": "fsdd/recordings/2_yweweler_8.wav",
+      "bytes": 4442,
+      "sha256": "7c0176cd7d99e232a70f72e313bea9c43c43546a510a3921a2dda0cc9ae74f02"
+    },
+    {
+      "path": "fsdd/recordings/2_yweweler_9.wav",
+      "bytes": 4438,
+      "sha256": "26075fdf644eb29e1fbb662ec6c2774eb3998ac96e4dcae43c46a2b02b022ca2"
+    },
+    {
+      "path": "fsdd/recordings/3_george_0.wav",
+      "bytes": 8002,
+      "sha256": "ab3ce6f5af0eb27f47f1d405c205fbb35776954b3e5beada8449e218fbf30b81"
+    },
+    {
+      "path": "fsdd/recordings/3_george_1.wav",
+      "bytes": 8034,
+      "sha256": "c406ea9e28a76b128a27542760a36c05f90f747aeee63225fbf927b0e0b8a537"
+    },
+    {
+      "path": "fsdd/recordings/3_george_2.wav",
+      "bytes": 7880,
+      "sha256": "14e9ece9c618efba3350c5647d86395919e924e99cf9ce6c2c70c0354590616a"
+    },
+    {
+      "path": "fsdd/recordings/3_george_3.wav",
+      "bytes": 8548,
+      "sha256": "715df900f8f9481613c5b8627351be7102ab4eb89c1ede23c836555f3e04f61b"
+    },
+    {
+      "path": "fsdd/recordings/3_george_4.wav",
+      "bytes": 7088,
+      "sha256": "ae8ce7634a2a3a20a2307ca208645a4716fd2040eee49aba35b2e078b5e21a6d"
+    },
+    {
+      "path": "fsdd/recordings/3_george_5.wav",
+      "bytes": 6112,
+      "sha256": "650bb00b7b9b9fe2bf5209369334589b087b86388d7d22a0e325f01c8f31fd2f"
+    },
+    {
+      "path": "fsdd/recordings/3_george_6.wav",
+      "bytes": 6640,
+      "sha256": "627418fafd788e9ea462eb29197b441f9fdbc36468e1f01bc3c72b2a34c225d5"
+    },
+    {
+      "path": "fsdd/recordings/3_george_7.wav",
+      "bytes": 8172,
+      "sha256": "3df6f8d85d424e5ad857d113eeeabc6a5453f4ba2be2216f24d7b8a9570e869f"
+    },
+    {
+      "path": "fsdd/recordings/3_george_8.wav",
+      "bytes": 6190,
+      "sha256": "402b1fc98da9be38660bdfad7677973105936420e11cf0fabe72ecd63f271097"
+    },
+    {
+      "path": "fsdd/recordings/3_george_9.wav",
+      "bytes": 6972,
+      "sha256": "4d6b3ad3050513d6d73de50eecdc7ce59fad74828194ab71b6384b66c0f747e8"
+    },
+    {
+      "path": "fsdd/recordings/3_jackson_0.wav",
+      "bytes": 7816,
+      "sha256": "5152a17feb7dba43cfabdb4284262004da3038d5c02a6a5282e851b7ad2bb2e2"
+    },
+    {
+      "path": "fsdd/recordings/3_jackson_1.wav",
+      "bytes": 7556,
+      "sha256": "963b2bb960f4844804c0f2d019f2b3ff294bd8f803ced8c7ca36f6074ba1ad8e"
+    },
+    {
+      "path": "fsdd/recordings/3_jackson_2.wav",
+      "bytes": 8198,
+      "sha256": "9a00ace7758bae9769d5424ac1f357cd2773ce188ce384690504b127547418ea"
+    },
+    {
+      "path": "fsdd/recordings/3_jackson_3.wav",
+      "bytes": 8246,
+      "sha256": "1dfd194038b7837c1feaafee606e9616ae75c9b582ede0b6eff04e5372edbab0"
+    },
+    {
+      "path": "fsdd/recordings/3_jackson_4.wav",
+      "bytes": 7186,
+      "sha256": "22709c0be88765a804e5acd97f03bd82b2904327b01f2ad0728dcf96a99d0aa9"
+    },
+    {
+      "path": "fsdd/recordings/3_jackson_5.wav",
+      "bytes": 7258,
+      "sha256": "d42d9a428d72082d102197f8166ee641b4d2c099f7da85df428aeaa07bed0f13"
+    },
+    {
+      "path": "fsdd/recordings/3_jackson_6.wav",
+      "bytes": 7530,
+      "sha256": "d5a3614a128ff3d9e0e00dc6b093dc801cb62f69d95d51a4b58ee5debc4e7b8b"
+    },
+    {
+      "path": "fsdd/recordings/3_jackson_7.wav",
+      "bytes": 7864,
+      "sha256": "b425d42cf43820352f5f09eb0cf761de4e11436c1b6a554c9b0d4737b12814e5"
+    },
+    {
+      "path": "fsdd/recordings/3_jackson_8.wav",
+      "bytes": 7296,
+      "sha256": "875aa2731ad1ef8e0e17d492ca55595f4d513cefaf7d366029ac346bde4a3e8b"
+    },
+    {
+      "path": "fsdd/recordings/3_jackson_9.wav",
+      "bytes": 7934,
+      "sha256": "7df6b2432ac678dea11d663262eb4685ebc0505aac697bc6f52b4090c81c376f"
+    },
+    {
+      "path": "fsdd/recordings/3_lucas_0.wav",
+      "bytes": 9908,
+      "sha256": "584600a1e1377935ca416db7e788c4f27888561c112c2a9a67f86919059e5417"
+    },
+    {
+      "path": "fsdd/recordings/3_lucas_1.wav",
+      "bytes": 9770,
+      "sha256": "b380b61e138887b3371b1f27aec7eaa462ac9bd931b7c6a5e01c0815776bbdad"
+    },
+    {
+      "path": "fsdd/recordings/3_lucas_2.wav",
+      "bytes": 9388,
+      "sha256": "c5c7db2e211073f3c50a932be6003507fbdf315e06759412bcf2f5ab517cc227"
+    },
+    {
+      "path": "fsdd/recordings/3_lucas_3.wav",
+      "bytes": 7254,
+      "sha256": "7ad7dbc2974dfab7dce92e81fbe77996f21e54f4b09e1380825209cf95ad7173"
+    },
+    {
+      "path": "fsdd/recordings/3_lucas_4.wav",
+      "bytes": 8618,
+      "sha256": "5ea6394f6c4c6b9caa336ef1f065abad4ad552389267d891c82bfd95ba59fc4a"
+    },
+    {
+      "path": "fsdd/recordings/3_lucas_5.wav",
+      "bytes": 8546,
+      "sha256": "16135d029829ba663e725e585ff2be0d2bf56662c879231df65b8ffb2f44015e"
+    },
+    {
+      "path": "fsdd/recordings/3_lucas_6.wav",
+      "bytes": 11434,
+      "sha256": "f6c03c4b2b6bb1953cb9f3a70bdb9d0da49ca124c901cc1e3e2a08bcbc77b91c"
+    },
+    {
+      "path": "fsdd/recordings/3_lucas_7.wav",
+      "bytes": 21052,
+      "sha256": "a381c7e0ea90fd655fc296cf5239b254b3ccdfa3ecacfb60651847ef554d6e69"
+    },
+    {
+      "path": "fsdd/recordings/3_lucas_8.wav",
+      "bytes": 9532,
+      "sha256": "c486bf1f4796526a88ed9c1b67d4a33a064b3996f161ef48c0ee30f3c0ced7dd"
+    },
+    {
+      "path": "fsdd/recordings/3_lucas_9.wav",
+      "bytes": 20234,
+      "sha256": "c577a3af877a7d4604926be1be5cb435117b63c76f285f30ed8c17962ab7f222"
+    },
+    {
+      "path": "fsdd/recordings/3_nicolas_0.wav",
+      "bytes": 5332,
+      "sha256": "5da068172b180b74cd8ed019d131679249387b0199cb972992adf18e21f1d82d"
+    },
+    {
+      "path": "fsdd/recordings/3_nicolas_1.wav",
+      "bytes": 5274,
+      "sha256": "e7cd3cd43f90f802b03308720b4be3d43d77395a6d47f6df850fe6c22b0fbccd"
+    },
+    {
+      "path": "fsdd/recordings/3_nicolas_2.wav",
+      "bytes": 4178,
+      "sha256": "244563fdabd216f1a83216f9d1660e943844cf9a585159507d66a4f698cdcc5b"
+    },
+    {
+      "path": "fsdd/recordings/3_nicolas_3.wav",
+      "bytes": 3812,
+      "sha256": "070121ea15cef11a8f267b949d21b12ed7816666854786402abaa01a578680e2"
+    },
+    {
+      "path": "fsdd/recordings/3_nicolas_4.wav",
+      "bytes": 5758,
+      "sha256": "f34509e50e889ea46ab2504cd58d58899c15caf23b6fde2f02b3a2f54007aa27"
+    },
+    {
+      "path": "fsdd/recordings/3_nicolas_5.wav",
+      "bytes": 6368,
+      "sha256": "604984e5e8fc950437eafbb3e092c2818f47a0010536cd8def452ab547c08521"
+    },
+    {
+      "path": "fsdd/recordings/3_nicolas_6.wav",
+      "bytes": 5392,
+      "sha256": "e31a6623ddb5bee30356430b423e22632bc4e534b4a462ff38952ad053226cd5"
+    },
+    {
+      "path": "fsdd/recordings/3_nicolas_7.wav",
+      "bytes": 6914,
+      "sha256": "cb15774ab5c20c776a7e0ae530a8bcf61540a8f4f6c66b39bb3291fc22e8e33a"
+    },
+    {
+      "path": "fsdd/recordings/3_nicolas_8.wav",
+      "bytes": 6550,
+      "sha256": "ca946a3ab42f15518dff30f2549acf39329addce4c1318f733a634f1a3c4d3e8"
+    },
+    {
+      "path": "fsdd/recordings/3_nicolas_9.wav",
+      "bytes": 3874,
+      "sha256": "e6c496f11c638ca45c34bd3b634657508cb1a7fc8ce1dab4bdc3d4f6a236eae7"
+    },
+    {
+      "path": "fsdd/recordings/3_theo_0.wav",
+      "bytes": 3906,
+      "sha256": "d58347dea5ba78c84cff98c0cdc8bc133bff7d4ac379ab53f47cdadff566a9b8"
+    },
+    {
+      "path": "fsdd/recordings/3_theo_1.wav",
+      "bytes": 4490,
+      "sha256": "0e5645df3753e57d909aa3f2b58c04c9f65416634823a6d43f9abb47b48eb980"
+    },
+    {
+      "path": "fsdd/recordings/3_theo_2.wav",
+      "bytes": 4380,
+      "sha256": "1c189c2b8b5a6b72735cbf2be2efc8933a74587cf7a3cf61733765f9cdfd624e"
+    },
+    {
+      "path": "fsdd/recordings/3_theo_3.wav",
+      "bytes": 3796,
+      "sha256": "24ea16b57065fb80dfabd1ec7b736562a4506a34a754f50ec478eb2e4f6c5283"
+    },
+    {
+      "path": "fsdd/recordings/3_theo_4.wav",
+      "bytes": 3634,
+      "sha256": "78ba9425e4a39ff248e8067cc6d7a5e7b24c62cc4e012f56bf97ba4366fb7ae1"
+    },
+    {
+      "path": "fsdd/recordings/3_theo_5.wav",
+      "bytes": 3650,
+      "sha256": "695d21f94c402cfd292093832ada533a8561e54e22bce0b378e5889dce7a7d63"
+    },
+    {
+      "path": "fsdd/recordings/3_theo_6.wav",
+      "bytes": 4376,
+      "sha256": "461267690a2f6aa316dc119523551350bebe6b65e06d541d747e582f393b1f21"
+    },
+    {
+      "path": "fsdd/recordings/3_theo_7.wav",
+      "bytes": 3934,
+      "sha256": "b1b060df6a3450636dd4a4087358d45d8da4b8d568117bf760d8a841c3bc41d3"
+    },
+    {
+      "path": "fsdd/recordings/3_theo_8.wav",
+      "bytes": 4398,
+      "sha256": "d3bd19e1843fc89fa01eec76adf8d01af94df20341ae5c1bc194d224b8020c68"
+    },
+    {
+      "path": "fsdd/recordings/3_theo_9.wav",
+      "bytes": 4046,
+      "sha256": "4d0c99092101eabe2c4694429852e1de5c8242211f40c793222eafd070be854a"
+    },
+    {
+      "path": "fsdd/recordings/3_yweweler_0.wav",
+      "bytes": 6314,
+      "sha256": "66455971b9f17337df4e48d10ca2a9fb483605ab42588d7ece2c13b5d652e107"
+    },
+    {
+      "path": "fsdd/recordings/3_yweweler_1.wav",
+      "bytes": 5066,
+      "sha256": "2a47fc283011862ed6df60b0ce155c713ebfa639fd857e7f6cfa7f5cfe683b3b"
+    },
+    {
+      "path": "fsdd/recordings/3_yweweler_2.wav",
+      "bytes": 4054,
+      "sha256": "9e9304d51e2fc07e84293483f251336d6f7ee80064fcef4f87f1a537ec776662"
+    },
+    {
+      "path": "fsdd/recordings/3_yweweler_3.wav",
+      "bytes": 6388,
+      "sha256": "1a96c144f6e01886953e2935e3559cef3c9a292bf1f318830b4502a8acfefba9"
+    },
+    {
+      "path": "fsdd/recordings/3_yweweler_4.wav",
+      "bytes": 6416,
+      "sha256": "b12b5e96c1c519aafc62c13948a0315d901b7cece4adea27e25d6675acac1c83"
+    },
+    {
+      "path": "fsdd/recordings/3_yweweler_5.wav",
+      "bytes": 5000,
+      "sha256": "6ab720bfcf48676794d37fbdf44890aed1860cd600cfe1092b4063eeb492f199"
+    },
+    {
+      "path": "fsdd/recordings/3_yweweler_6.wav",
+      "bytes": 5992,
+      "sha256": "0371710c51e96f5725140672d136aacc0e376e71b67d24adf34c0e6f3c8a1e1e"
+    },
+    {
+      "path": "fsdd/recordings/3_yweweler_7.wav",
+      "bytes": 3882,
+      "sha256": "ce297656d0e6b80af89bbc321f968f1eeaff950bb515a2f0d3177d7a46159224"
+    },
+    {
+      "path": "fsdd/recordings/3_yweweler_8.wav",
+      "bytes": 4202,
+      "sha256": "de6cd695bcba4f140e0f6b59ce8e3612abccaf0381018cb00ed0ba6d70705247"
+    },
+    {
+      "path": "fsdd/recordings/3_yweweler_9.wav",
+      "bytes": 4880,
+      "sha256": "ac455eefeda94800b163356ba2e1c289693e31198c274d71c29ba86f21a7eab8"
+    },
+    {
+      "path": "fsdd/recordings/4_george_0.wav",
+      "bytes": 7026,
+      "sha256": "caf634cb0b03955ce98239bb9ae9660445f9021049b3211ad6dc09a1765efca3"
+    },
+    {
+      "path": "fsdd/recordings/4_george_1.wav",
+      "bytes": 8666,
+      "sha256": "1be0fe488bc928edc0ed9496fbffac6386ed6831b9f3b5fa796e5ad48b27e02b"
+    },
+    {
+      "path": "fsdd/recordings/4_george_2.wav",
+      "bytes": 7828,
+      "sha256": "0d627bde38ae7b5aa81c5a9f0664fd96f9dff94ef9bab382337c1554a482232a"
+    },
+    {
+      "path": "fsdd/recordings/4_george_3.wav",
+      "bytes": 7566,
+      "sha256": "6f7134c1e2bea2f01720c4c255cc709f5e31cd8ec878f84d288b47d2fcf01819"
+    },
+    {
+      "path": "fsdd/recordings/4_george_4.wav",
+      "bytes": 7002,
+      "sha256": "900a454621a923e0d264a52b3146e92365410e3df313c68f14eafdd6f1db008a"
+    },
+    {
+      "path": "fsdd/recordings/4_george_5.wav",
+      "bytes": 7726,
+      "sha256": "608ef3875f390799736ac0891a97737798178f8e01a8a08bf188ef690204f37a"
+    },
+    {
+      "path": "fsdd/recordings/4_george_6.wav",
+      "bytes": 8958,
+      "sha256": "532f7246beb3a5d44e1c2ac4182151e5c4a5897239de30f31ba9cd8fd37d8844"
+    },
+    {
+      "path": "fsdd/recordings/4_george_7.wav",
+      "bytes": 8126,
+      "sha256": "7bb3252b0f029cfa12a68da8afe54f52fc84944eab5cd186f5e1d3a40a6a492a"
+    },
+    {
+      "path": "fsdd/recordings/4_george_8.wav",
+      "bytes": 9512,
+      "sha256": "e3a6389c4f3326115472b65fbb2226983439c8767b1e9f3dbfa41331b62dca25"
+    },
+    {
+      "path": "fsdd/recordings/4_george_9.wav",
+      "bytes": 8726,
+      "sha256": "74018e8ae4514021727ed51ed4387299dcf0f9690f5195eb1843155286445200"
+    },
+    {
+      "path": "fsdd/recordings/4_jackson_0.wav",
+      "bytes": 7460,
+      "sha256": "e0febd48e7cf7cfdca949d0d07769e0fc708fb2e8e7648691fa7e6ed7a5b1ded"
+    },
+    {
+      "path": "fsdd/recordings/4_jackson_1.wav",
+      "bytes": 6742,
+      "sha256": "e3432e1b1863239d3e310791f117c707ca995915f1e36f433cf0c1ec3a013e9a"
+    },
+    {
+      "path": "fsdd/recordings/4_jackson_2.wav",
+      "bytes": 6700,
+      "sha256": "fdc2c948f0cbd1461294e88a3c5ded737a57cfb4d72b0ba10620ba66545b797c"
+    },
+    {
+      "path": "fsdd/recordings/4_jackson_3.wav",
+      "bytes": 6542,
+      "sha256": "c9a0472f76f2f5bf53da7a4c7865f1f7bf3cb10968581303430b6c9dd09df704"
+    },
+    {
+      "path": "fsdd/recordings/4_jackson_4.wav",
+      "bytes": 6960,
+      "sha256": "88de2d6fa69ee009f13d30e39a3eb0e65cbc251730615e91fab5f866813fb080"
+    },
+    {
+      "path": "fsdd/recordings/4_jackson_5.wav",
+      "bytes": 7024,
+      "sha256": "7d0641a2bbbf2ab6436f822d88dcb3d87c69f101e62b1ab5f623a3d64b8acb04"
+    },
+    {
+      "path": "fsdd/recordings/4_jackson_6.wav",
+      "bytes": 7316,
+      "sha256": "f79c3108a05f9ef719130cac0c8b45093429e6c2e4bdad15691724032b7a96ad"
+    },
+    {
+      "path": "fsdd/recordings/4_jackson_7.wav",
+      "bytes": 6658,
+      "sha256": "86c78293a86e1c779a4f29a22dd38ab24000bb4c49d1c9f5e098edb79accfde5"
+    },
+    {
+      "path": "fsdd/recordings/4_jackson_8.wav",
+      "bytes": 6738,
+      "sha256": "f04830bb448f97f6c9c70440bc3d5ef1c3619cd8bf135c5f97e88488c5b3c974"
+    },
+    {
+      "path": "fsdd/recordings/4_jackson_9.wav",
+      "bytes": 6792,
+      "sha256": "6545d2cb3e65e73c410f375f88b146f790bbf452ae4c6c09f6bb1d8774e4811b"
+    },
+    {
+      "path": "fsdd/recordings/4_lucas_0.wav",
+      "bytes": 6810,
+      "sha256": "4adf59a713041d3c672d4cfed07953d53f8d15fa060f17e1a8385cae3a115382"
+    },
+    {
+      "path": "fsdd/recordings/4_lucas_1.wav",
+      "bytes": 6620,
+      "sha256": "02bf2849a8d6c632be881a7f08ae61972dc7713b475fe41a524b73f3a6211204"
+    },
+    {
+      "path": "fsdd/recordings/4_lucas_2.wav",
+      "bytes": 9934,
+      "sha256": "2adf8b03c13b47f0f8de98e5faf46871a7434a8ab5e349e9f9ff1ff024d385b9"
+    },
+    {
+      "path": "fsdd/recordings/4_lucas_3.wav",
+      "bytes": 7102,
+      "sha256": "ecb0242addb5c1970057f20a02d92fbde08726bfec15d7750056ab86b60e9309"
+    },
+    {
+      "path": "fsdd/recordings/4_lucas_4.wav",
+      "bytes": 8910,
+      "sha256": "c61aa499f6769f2e2b9fd4e6e55975366a90f727bd77eef1bbccbe83ebdfefa5"
+    },
+    {
+      "path": "fsdd/recordings/4_lucas_5.wav",
+      "bytes": 8234,
+      "sha256": "87896070374b8ac16f5f5f7f3eebd3c9b070a27a25adf397c380d7154c626b13"
+    },
+    {
+      "path": "fsdd/recordings/4_lucas_6.wav",
+      "bytes": 7252,
+      "sha256": "ac653c7083cf9ed7762f2068fbb70ee6ba84709edfccaa1a1f6cba079adadbe9"
+    },
+    {
+      "path": "fsdd/recordings/4_lucas_7.wav",
+      "bytes": 10306,
+      "sha256": "6f88e8f5013c9686736b36faa4571f3f426dc3a611880e9f0fc8b361ee78a0d4"
+    },
+    {
+      "path": "fsdd/recordings/4_lucas_8.wav",
+      "bytes": 8542,
+      "sha256": "d7bf7613c62b0312e388998cbedcc399b0f98478845ae5762426cd8f187ea9c3"
+    },
+    {
+      "path": "fsdd/recordings/4_lucas_9.wav",
+      "bytes": 8080,
+      "sha256": "c3f27e30e9d306f1134f700a4c162eccfce5b0e98ca31cb3c6f40915ca0b42f3"
+    },
+    {
+      "path": "fsdd/recordings/4_nicolas_0.wav",
+      "bytes": 5030,
+      "sha256": "dc6ae853b163bebf1774701a4f7e6e27bbace3472ba3628ec2d61b2e6ab1d0c7"
+    },
+    {
+      "path": "fsdd/recordings/4_nicolas_1.wav",
+      "bytes": 5644,
+      "sha256": "7bd06ab2ccf69d142dd9410ee3d2416cdd733593cdaa9fce39561a5d8cf15333"
+    },
+    {
+      "path": "fsdd/recordings/4_nicolas_2.wav",
+      "bytes": 5030,
+      "sha256": "4d92196625a855ef1d2ee07de1c2a0ab883efd8ca7a88149b225c970bad302f7"
+    },
+    {
+      "path": "fsdd/recordings/4_nicolas_3.wav",
+      "bytes": 5304,
+      "sha256": "f55631b61569f2bdf937aa4dcb955270a929380cc4c05ea9ff170089e19df386"
+    },
+    {
+      "path": "fsdd/recordings/4_nicolas_4.wav",
+      "bytes": 5166,
+      "sha256": "273c381b6eb49731a5435dc3bcf5894a34f8d0d1e10f4a1359c895c56507d02a"
+    },
+    {
+      "path": "fsdd/recordings/4_nicolas_5.wav",
+      "bytes": 5508,
+      "sha256": "5a64d6f62aacf21653cdcebf7f0ec1327b44c53b5441cc1eaf063e054476ff1a"
+    },
+    {
+      "path": "fsdd/recordings/4_nicolas_6.wav",
+      "bytes": 5576,
+      "sha256": "13a7b08c037ac892db3d1f23e5626e7fc003eed606e03c3bba8f7e3de3cfdb24"
+    },
+    {
+      "path": "fsdd/recordings/4_nicolas_7.wav",
+      "bytes": 4758,
+      "sha256": "3d8ef19824b78249d9116f7159bf485038f663599a83f78a7c34665f9858c2eb"
+    },
+    {
+      "path": "fsdd/recordings/4_nicolas_8.wav",
+      "bytes": 4620,
+      "sha256": "55f160388db6ced04455af53d5df851d571a7a7a1d51a41fa3c817b328cf31c0"
+    },
+    {
+      "path": "fsdd/recordings/4_nicolas_9.wav",
+      "bytes": 5302,
+      "sha256": "b6139976418c3495233c0fd1788153496e8b8a09eec3764e79e0b89db8bafa26"
+    },
+    {
+      "path": "fsdd/recordings/4_theo_0.wav",
+      "bytes": 4424,
+      "sha256": "4b96496d35d799b61b8341ac42161907b0a4dac68564310016396d9c6cffebe4"
+    },
+    {
+      "path": "fsdd/recordings/4_theo_1.wav",
+      "bytes": 4122,
+      "sha256": "3cca39a735cd2c06ead7607dce81efadc5c32163a4b5e6386143880951d6aaad"
+    },
+    {
+      "path": "fsdd/recordings/4_theo_2.wav",
+      "bytes": 3656,
+      "sha256": "5569aaa92cf08c0cc5c07ad837ce23aff291a77372f4936071bb2efee763a009"
+    },
+    {
+      "path": "fsdd/recordings/4_theo_3.wav",
+      "bytes": 4072,
+      "sha256": "c1f1d9e77651d7f31715f732aabdb0479c73278d6bc7020435445dcf6557390e"
+    },
+    {
+      "path": "fsdd/recordings/4_theo_4.wav",
+      "bytes": 4696,
+      "sha256": "13c7e0c19c82adeb688459a2e710b01ade1fd05b00a6d0c0d100dd52fa00f90d"
+    },
+    {
+      "path": "fsdd/recordings/4_theo_5.wav",
+      "bytes": 3624,
+      "sha256": "3e42608b1dc1ce5daa01732780f390642c1e8fae85fb5bfaaccb036013b896fc"
+    },
+    {
+      "path": "fsdd/recordings/4_theo_6.wav",
+      "bytes": 3454,
+      "sha256": "98a6954ade3ed8c841ef28eb18f2703f0576395ac93ede38fa907e7146f71919"
+    },
+    {
+      "path": "fsdd/recordings/4_theo_7.wav",
+      "bytes": 5324,
+      "sha256": "066bde0568e233da0e3967ff0031bdcf4f5fd6700a81683dd29ae2be5ae811b3"
+    },
+    {
+      "path": "fsdd/recordings/4_theo_8.wav",
+      "bytes": 4422,
+      "sha256": "f3d5136e30454ef654959ebd6f5bcae0c027f40b884059edb0a74e979e5832a0"
+    },
+    {
+      "path": "fsdd/recordings/4_theo_9.wav",
+      "bytes": 4262,
+      "sha256": "0480d217003242d0adaf25633e6432911c953c266ae591b12caeab1d041ced95"
+    },
+    {
+      "path": "fsdd/recordings/4_yweweler_0.wav",
+      "bytes": 6602,
+      "sha256": "bb9eaa256fdcf0e5e07b4c0367a021896655398d33fda6da91b44a97fcbb27c7"
+    },
+    {
+      "path": "fsdd/recordings/4_yweweler_1.wav",
+      "bytes": 6320,
+      "sha256": "4bf751e079153ca5108dfc68c1ab74ff475a7cd3a11929370e8aff16c2d45109"
+    },
+    {
+      "path": "fsdd/recordings/4_yweweler_2.wav",
+      "bytes": 5400,
+      "sha256": "4329bd281a8c75f2f7b3b48ab26d131de4b1137b39aa1a2a6a73436876ac2f34"
+    },
+    {
+      "path": "fsdd/recordings/4_yweweler_3.wav",
+      "bytes": 4384,
+      "sha256": "101ca1151fc99bd6815e66dca485444c7a90832434dff82256a13232c173af1f"
+    },
+    {
+      "path": "fsdd/recordings/4_yweweler_4.wav",
+      "bytes": 5638,
+      "sha256": "fcd326b50b4d26eb09d87491f1f5cc6d4500f5eb2407b4681263b4cc72ed013c"
+    },
+    {
+      "path": "fsdd/recordings/4_yweweler_5.wav",
+      "bytes": 5386,
+      "sha256": "147f2560d1af47edef0c3ef558e8e7f7d53282fef3a2e26c48dc5cb70d6a25ea"
+    },
+    {
+      "path": "fsdd/recordings/4_yweweler_6.wav",
+      "bytes": 5032,
+      "sha256": "268140227456dd66c8482610536ef4153c13c9e86a428cc3e44be30d093662a6"
+    },
+    {
+      "path": "fsdd/recordings/4_yweweler_7.wav",
+      "bytes": 4440,
+      "sha256": "e7f74a17359deb3dc7b7586d60be9cacff6771326197c830a261330981ca7e2b"
+    },
+    {
+      "path": "fsdd/recordings/4_yweweler_8.wav",
+      "bytes": 2762,
+      "sha256": "524cd388d4ed8121d756f08028b6970a97b3e9cb0cb3294687c2a187e44c82e9"
+    },
+    {
+      "path": "fsdd/recordings/4_yweweler_9.wav",
+      "bytes": 5496,
+      "sha256": "01206838009531137ba552af261f6709ee0430eca3162eaca254a5ff12ca988c"
+    },
+    {
+      "path": "fsdd/recordings/5_george_0.wav",
+      "bytes": 9004,
+      "sha256": "573faed14e5b9037ca124a040d87aea6bdb1852d47a106eba099cdd36701f34b"
+    },
+    {
+      "path": "fsdd/recordings/5_george_1.wav",
+      "bytes": 9266,
+      "sha256": "92c06a934a3905dba06b9085def638070916896397740ca26f326fc78addfbba"
+    },
+    {
+      "path": "fsdd/recordings/5_george_2.wav",
+      "bytes": 7752,
+      "sha256": "f188cb3eb678156cb263e69f60515c34025eeb3f4e72bc819fcca65448effef9"
+    },
+    {
+      "path": "fsdd/recordings/5_george_3.wav",
+      "bytes": 8050,
+      "sha256": "24ba337bbaf2879609de200a48d915100919460add20c9e1449ea7ffc81944dd"
+    },
+    {
+      "path": "fsdd/recordings/5_george_4.wav",
+      "bytes": 7650,
+      "sha256": "7ccf047094cd54c13b4254e6f8ee6bf0f8e2718cca5e98603f2d55915edbc560"
+    },
+    {
+      "path": "fsdd/recordings/5_george_5.wav",
+      "bytes": 6438,
+      "sha256": "fcf6a40759cf6983dd5198195f4cef5778c819e46e08bc0604af63f5a28f675f"
+    },
+    {
+      "path": "fsdd/recordings/5_george_6.wav",
+      "bytes": 8838,
+      "sha256": "c56eb0bba7925fbd7c8ca8558ee7c71e025bfedfd7240093ff49cc2a18c29b1e"
+    },
+    {
+      "path": "fsdd/recordings/5_george_7.wav",
+      "bytes": 8346,
+      "sha256": "58014bd60a5142c5bf9e3f99d81baa5d08fd9b1985dd0dafc031a38ef29a8c29"
+    },
+    {
+      "path": "fsdd/recordings/5_george_8.wav",
+      "bytes": 6524,
+      "sha256": "b27f195397cc60551699962959b56dbbe21c7001be61d3d9f563dada7c3c3289"
+    },
+    {
+      "path": "fsdd/recordings/5_george_9.wav",
+      "bytes": 7434,
+      "sha256": "b3517727a86c14a1ea95056db14c6f1e42edb5816300303d979b8a256c001f3f"
+    },
+    {
+      "path": "fsdd/recordings/5_jackson_0.wav",
+      "bytes": 6832,
+      "sha256": "070af5213084191c4de1156125bb792c28cea2728798043283e3def0dadd55b4"
+    },
+    {
+      "path": "fsdd/recordings/5_jackson_1.wav",
+      "bytes": 6682,
+      "sha256": "efd4a46bfcadc9f839f67a0c9d33e05c6d545851a690773ce651796edf74176d"
+    },
+    {
+      "path": "fsdd/recordings/5_jackson_2.wav",
+      "bytes": 7314,
+      "sha256": "9472c4879a6dcfa29569a8c7d4552b099f099fa23040ef025806b19d66b4e79c"
+    },
+    {
+      "path": "fsdd/recordings/5_jackson_3.wav",
+      "bytes": 6366,
+      "sha256": "b46788aed764f9b07bc6c21847e504f8ce9f63278138cc799737f44fad67dc70"
+    },
+    {
+      "path": "fsdd/recordings/5_jackson_4.wav",
+      "bytes": 8452,
+      "sha256": "e0ad1e77b639fafa2dccd07b90e8ab48043154a694e4a23563e40eea753f18c0"
+    },
+    {
+      "path": "fsdd/recordings/5_jackson_5.wav",
+      "bytes": 6240,
+      "sha256": "38927e6fbc6c173f6f5c9652a4d8770c6ada9a2173f3d920c487d881959ede37"
+    },
+    {
+      "path": "fsdd/recordings/5_jackson_6.wav",
+      "bytes": 6418,
+      "sha256": "e4742c83e5049afd91d9964eb9496264769365547ee9317bc7ed2066cf5e38f0"
+    },
+    {
+      "path": "fsdd/recordings/5_jackson_7.wav",
+      "bytes": 6184,
+      "sha256": "98ae327f26a79f2d95f1f50a5f49f6e0e583f77bcefff39fa29c31635e406691"
+    },
+    {
+      "path": "fsdd/recordings/5_jackson_8.wav",
+      "bytes": 5928,
+      "sha256": "570449e1c9b0516848d9b37fde097b3d4edc75ba1dd6cc6f86f4c812ddee494b"
+    },
+    {
+      "path": "fsdd/recordings/5_jackson_9.wav",
+      "bytes": 9260,
+      "sha256": "eb2d3d37062afb457f4a8dd6b76313a8c7d479b46ff224a24d5ecf1e72698891"
+    },
+    {
+      "path": "fsdd/recordings/5_lucas_0.wav",
+      "bytes": 9648,
+      "sha256": "266bab64975aebcb2f8e734cb8f4721ef362fb506190c35bd7a31c4bd9e418a2"
+    },
+    {
+      "path": "fsdd/recordings/5_lucas_1.wav",
+      "bytes": 18400,
+      "sha256": "dbf802c200643901bb891473fe356fdbf6473d12c6e8a98333b6a7e082068f1f"
+    },
+    {
+      "path": "fsdd/recordings/5_lucas_2.wav",
+      "bytes": 9318,
+      "sha256": "13ed345ae6fe5281f2735c84be364d1dc85c3e7541d7146faa38aee5225a425d"
+    },
+    {
+      "path": "fsdd/recordings/5_lucas_3.wav",
+      "bytes": 8502,
+      "sha256": "9c0df59536caa9db1e26439872568ebf1a98d82e52dc8e028d172ad17bd33fb3"
+    },
+    {
+      "path": "fsdd/recordings/5_lucas_4.wav",
+      "bytes": 8178,
+      "sha256": "973d6a1a7329d3d89d8b5c63b0a6c1a2d08366c6dfab96b7e85a11e466f22f30"
+    },
+    {
+      "path": "fsdd/recordings/5_lucas_5.wav",
+      "bytes": 9356,
+      "sha256": "397491e668f23c05a1684db74406c370f07380eee094e30dc23c7522cff04f89"
+    },
+    {
+      "path": "fsdd/recordings/5_lucas_6.wav",
+      "bytes": 9576,
+      "sha256": "7f136edc52a7ac20afe95c611698bd53d2dfbb2e49a1ef8c59a34e6cd7e8f1dc"
+    },
+    {
+      "path": "fsdd/recordings/5_lucas_7.wav",
+      "bytes": 9748,
+      "sha256": "672017cc96c3c501d7616963e1dc8abf23989cfc2bd2579808f0d977def96f1c"
+    },
+    {
+      "path": "fsdd/recordings/5_lucas_8.wav",
+      "bytes": 10634,
+      "sha256": "5ca3b800c9a8f9fd8b9e22b0509a51fb052de02189198ee9ce1cdff3f94809f1"
+    },
+    {
+      "path": "fsdd/recordings/5_lucas_9.wav",
+      "bytes": 9210,
+      "sha256": "619be724fe22bdb35d19103291de3a4ec13604d9b49a4d3cb6a6fa0c0e8bbea4"
+    },
+    {
+      "path": "fsdd/recordings/5_nicolas_0.wav",
+      "bytes": 5508,
+      "sha256": "808a05f646857095e97450f6824440c271c5a17029d24065a7ff27ea7813f61d"
+    },
+    {
+      "path": "fsdd/recordings/5_nicolas_1.wav",
+      "bytes": 6172,
+      "sha256": "fafeb62089db6d12dff9fdc61fc510095f098b02758318d1720c108015bdc16a"
+    },
+    {
+      "path": "fsdd/recordings/5_nicolas_2.wav",
+      "bytes": 5042,
+      "sha256": "fc21d9746cb5d77603455df22cf462485653464c2011a3a138e30c4c04ab5b5e"
+    },
+    {
+      "path": "fsdd/recordings/5_nicolas_3.wav",
+      "bytes": 5840,
+      "sha256": "a4515f9148fdfb3846547ed201172c0c8f12edb44a27619437d2e218c8fe393d"
+    },
+    {
+      "path": "fsdd/recordings/5_nicolas_4.wav",
+      "bytes": 5640,
+      "sha256": "741287fc6edfc9b39a8f188da83bd6b453e46d10a1b56311f05fbe4874eed80d"
+    },
+    {
+      "path": "fsdd/recordings/5_nicolas_5.wav",
+      "bytes": 6306,
+      "sha256": "2bf0cf1935e5c934706f3d91658e0e000586036fb9d95647ad2e90e5e153bcd4"
+    },
+    {
+      "path": "fsdd/recordings/5_nicolas_6.wav",
+      "bytes": 5774,
+      "sha256": "3ac4877bb6349e013f723eb1cc61f81451338ce4f350977a149c541d01ac0775"
+    },
+    {
+      "path": "fsdd/recordings/5_nicolas_7.wav",
+      "bytes": 5708,
+      "sha256": "ce7029e242f575003ba13b5b38fc152db865c0b9259021809a6ae4eece1574c8"
+    },
+    {
+      "path": "fsdd/recordings/5_nicolas_8.wav",
+      "bytes": 5906,
+      "sha256": "f006b4e2b7243dce09dee0533b05535433f73093f6372ee55a38d79714bb6bf6"
+    },
+    {
+      "path": "fsdd/recordings/5_nicolas_9.wav",
+      "bytes": 5442,
+      "sha256": "34cc148c710ff0381cea13b799b0cd133cd9c38132499cc3c8853ecbeba90836"
+    },
+    {
+      "path": "fsdd/recordings/5_theo_0.wav",
+      "bytes": 4898,
+      "sha256": "a5c0beb43ad7e0236d927481d98b6f6bb1b21fbbd7bc26e7f42fcdf6d5f307d5"
+    },
+    {
+      "path": "fsdd/recordings/5_theo_1.wav",
+      "bytes": 4754,
+      "sha256": "c70cf66fe7c9f50a440c856432e630f662df83e741acb65f49ebecd777e3eeaf"
+    },
+    {
+      "path": "fsdd/recordings/5_theo_2.wav",
+      "bytes": 4322,
+      "sha256": "e5c5db060a706a1ecf69a7d2c5b98d4d6fa656b17618f5f2253bfb80f2987b42"
+    },
+    {
+      "path": "fsdd/recordings/5_theo_3.wav",
+      "bytes": 4482,
+      "sha256": "6cd3402d3979ba7439627eb2fcbd0ecdc3c49a532b15837f7e02b44caf4f5752"
+    },
+    {
+      "path": "fsdd/recordings/5_theo_4.wav",
+      "bytes": 4578,
+      "sha256": "441953a106229c375dfaf465d5be820d652025823b4740bb92246c05875fd542"
+    },
+    {
+      "path": "fsdd/recordings/5_theo_5.wav",
+      "bytes": 5218,
+      "sha256": "6c4edcd73c0c61583b7495438f96cd4709bdb80ff959d680d16f8151b006edcc"
+    },
+    {
+      "path": "fsdd/recordings/5_theo_6.wav",
+      "bytes": 4458,
+      "sha256": "4c19462907227de1c9d293c471c3264852f4209c1c07c8ed2748fcb76bb685b9"
+    },
+    {
+      "path": "fsdd/recordings/5_theo_7.wav",
+      "bytes": 6106,
+      "sha256": "66947b9a4be23aa8eb000ee7e61d2d2a406d7e88ca9f5ea00ad5d61e974d52d8"
+    },
+    {
+      "path": "fsdd/recordings/5_theo_8.wav",
+      "bytes": 5484,
+      "sha256": "5a6e6f08b98ba24f1f35f3a248c0114ac09f94fb004a44b47f189ca2f1dc97d2"
+    },
+    {
+      "path": "fsdd/recordings/5_theo_9.wav",
+      "bytes": 5150,
+      "sha256": "bf2189763a4a987c7b7c3cb3a17bed9c2a4bd10ffe09572d3f6eea7ecfd3f64f"
+    },
+    {
+      "path": "fsdd/recordings/5_yweweler_0.wav",
+      "bytes": 4894,
+      "sha256": "8850c7830e4a4427c1c53c6f4dad91debc90ec08f9ac104621d66e684a7cae76"
+    },
+    {
+      "path": "fsdd/recordings/5_yweweler_1.wav",
+      "bytes": 6738,
+      "sha256": "5a18e46d445447169aa456a8577ad627be6dd12cd3d3788da7b8dde094cc9d94"
+    },
+    {
+      "path": "fsdd/recordings/5_yweweler_2.wav",
+      "bytes": 6272,
+      "sha256": "70999e729076a542e084b1f9b753ce88907e632029d373e122d11a17c48cc0ae"
+    },
+    {
+      "path": "fsdd/recordings/5_yweweler_3.wav",
+      "bytes": 6698,
+      "sha256": "0508ac7bea35a189194bd4edd45f727be1667116535efeeecebecebb92c1a7cb"
+    },
+    {
+      "path": "fsdd/recordings/5_yweweler_4.wav",
+      "bytes": 8060,
+      "sha256": "0ab511a804114a052e395aa92a15d4cd8b3e99e584a98403b095da54a98af91c"
+    },
+    {
+      "path": "fsdd/recordings/5_yweweler_5.wav",
+      "bytes": 6080,
+      "sha256": "bc229d56b86e0e1c09dbd83458807f2c887213396828b62402476d5a392c660a"
+    },
+    {
+      "path": "fsdd/recordings/5_yweweler_6.wav",
+      "bytes": 5358,
+      "sha256": "961d5cca26f0fc71fb95a98d10adcf9ef399ae7c5f1b767756bf8bc9b7e74b52"
+    },
+    {
+      "path": "fsdd/recordings/5_yweweler_7.wav",
+      "bytes": 7384,
+      "sha256": "38286792e989ae580d1917fd12c868d42fab2178a565afd3c3fb11e95194006e"
+    },
+    {
+      "path": "fsdd/recordings/5_yweweler_8.wav",
+      "bytes": 7082,
+      "sha256": "a2b950ca584ff034306330edeca6284037b730a5cd82a2ed593c81875a49a88b"
+    },
+    {
+      "path": "fsdd/recordings/5_yweweler_9.wav",
+      "bytes": 8470,
+      "sha256": "d79cdc0eac58bd0a3e52644e3ef0341872d692674b08773a4fc32c2ae6f5f598"
+    },
+    {
+      "path": "fsdd/recordings/6_george_0.wav",
+      "bytes": 8354,
+      "sha256": "a5afa6e3dad8290335c2883434d51f45d425fe33d545d784c21f1f677712abbb"
+    },
+    {
+      "path": "fsdd/recordings/6_george_1.wav",
+      "bytes": 7536,
+      "sha256": "7084ce484c7390bbf565b2f36ae0feea079a4cffec18ddbcc39f5a60fd4624aa"
+    },
+    {
+      "path": "fsdd/recordings/6_george_2.wav",
+      "bytes": 9054,
+      "sha256": "9f0515bd68c114e66bb1210fcdd5f78081076ee8d7f67995e763e46fac39b73a"
+    },
+    {
+      "path": "fsdd/recordings/6_george_3.wav",
+      "bytes": 9404,
+      "sha256": "433f888566dd21030da6eaa334b627b7923c8a686000650bab484b161486c61e"
+    },
+    {
+      "path": "fsdd/recordings/6_george_4.wav",
+      "bytes": 8882,
+      "sha256": "9c170bcb333127b0346d2be87775c047c4fbe4443e9f2e299f6444f58e0aead4"
+    },
+    {
+      "path": "fsdd/recordings/6_george_5.wav",
+      "bytes": 8834,
+      "sha256": "303339bda1b823f69de99c51af7fb9668bf63180f83b026df7f32238328e943a"
+    },
+    {
+      "path": "fsdd/recordings/6_george_6.wav",
+      "bytes": 9042,
+      "sha256": "8c4477922d1788bac5a7fd2cfc8054a2372da351cad30d8c23e8bdc140ca10a1"
+    },
+    {
+      "path": "fsdd/recordings/6_george_7.wav",
+      "bytes": 8944,
+      "sha256": "ec9a6039ee7eafb98e38d5b4f929a82b4e85049d04d28e131692127c873e8174"
+    },
+    {
+      "path": "fsdd/recordings/6_george_8.wav",
+      "bytes": 9048,
+      "sha256": "c877a6ba9c83305965480657ecaa121ab86fa069db3723eaa251d5ab8dc0a1e6"
+    },
+    {
+      "path": "fsdd/recordings/6_george_9.wav",
+      "bytes": 9484,
+      "sha256": "4a00c1d8f1d88c9a64dedfd9e4f3c94185f797260707627d178633c1a18b4ccb"
+    },
+    {
+      "path": "fsdd/recordings/6_jackson_0.wav",
+      "bytes": 13290,
+      "sha256": "fe7705fdfaddc378d72c479664ab8aacd53fa78a99c3d130ad74b1ff40212595"
+    },
+    {
+      "path": "fsdd/recordings/6_jackson_1.wav",
+      "bytes": 10334,
+      "sha256": "3e63d1e2c56aa8190a04a854e534dce2f6a02bed0166a3a53830d480d76661f2"
+    },
+    {
+      "path": "fsdd/recordings/6_jackson_2.wav",
+      "bytes": 10172,
+      "sha256": "dd156ce9bb3184f37a14c4b5a6ca523e1785fcbc6cda5d760cebc27cafed7659"
+    },
+    {
+      "path": "fsdd/recordings/6_jackson_3.wav",
+      "bytes": 13894,
+      "sha256": "6ee9f8f6ec64e4369489aad98fd2738d1c27018b14a7d4fe91bf7e161e888456"
+    },
+    {
+      "path": "fsdd/recordings/6_jackson_4.wav",
+      "bytes": 10114,
+      "sha256": "ab116bbde41fa87d82e3f5a12df560d235a2f54fb335a74703d5de1744bac144"
+    },
+    {
+      "path": "fsdd/recordings/6_jackson_5.wav",
+      "bytes": 10900,
+      "sha256": "f3eff4138b56c1fa374a83fe3ca337cf863ad96c9dd299f8952389b6de0c58fb"
+    },
+    {
+      "path": "fsdd/recordings/6_jackson_6.wav",
+      "bytes": 12192,
+      "sha256": "e58b2ae0b7e8928e9a14a60c341ebc5c54c33887747d8a6055e1c2350714a8ae"
+    },
+    {
+      "path": "fsdd/recordings/6_jackson_7.wav",
+      "bytes": 10218,
+      "sha256": "df22e0b95a3210a2ccf5c41a0d0884d705f25149fb4767a30875853dc5774fdb"
+    },
+    {
+      "path": "fsdd/recordings/6_jackson_8.wav",
+      "bytes": 13294,
+      "sha256": "9d8ef7e082226bc6894d71462b22820409c497490d0b9cdafc807bb4dbdca72f"
+    },
+    {
+      "path": "fsdd/recordings/6_jackson_9.wav",
+      "bytes": 13262,
+      "sha256": "c21423d9ed9e4152ffcdd948d66955d87fb3268ac0270812d3229ce92294ef47"
+    },
+    {
+      "path": "fsdd/recordings/6_lucas_0.wav",
+      "bytes": 7796,
+      "sha256": "199e9f44ea8c5ce3556bb8bda78e831dccc383ee1acb4c5bc22531f67d79e968"
+    },
+    {
+      "path": "fsdd/recordings/6_lucas_1.wav",
+      "bytes": 10000,
+      "sha256": "72cf6e1d443351eba90f5bd68b044ffbccc058f3cc8b5268020d2317a57b46c6"
+    },
+    {
+      "path": "fsdd/recordings/6_lucas_2.wav",
+      "bytes": 7740,
+      "sha256": "52d46dd2593c00827ccaa9c83fdf3e77eacfcd255a47e03da549cdd84ccc1abf"
+    },
+    {
+      "path": "fsdd/recordings/6_lucas_3.wav",
+      "bytes": 14006,
+      "sha256": "3cd796975aacf842e8d0f11d2af8e98f70080db1a6f484ab2b461be88d2c358c"
+    },
+    {
+      "path": "fsdd/recordings/6_lucas_4.wav",
+      "bytes": 7838,
+      "sha256": "ab1edfe249b1c455bb11f2ce7ea7e72f5cfcc820efbe51ddcfb71cb212383568"
+    },
+    {
+      "path": "fsdd/recordings/6_lucas_5.wav",
+      "bytes": 9566,
+      "sha256": "1e8bc096e3b9c39a34b0c710f28dfa66d86af4056fa6c29dfdb061e7d3443bde"
+    },
+    {
+      "path": "fsdd/recordings/6_lucas_6.wav",
+      "bytes": 8420,
+      "sha256": "a993452bf872b988655bf04936f805e87321b7deec441d9b8e8402f1efa4920d"
+    },
+    {
+      "path": "fsdd/recordings/6_lucas_7.wav",
+      "bytes": 8408,
+      "sha256": "79534835829864146fcc6cac9ff15e0f87e81856d461b4068485b14562bb5f5f"
+    },
+    {
+      "path": "fsdd/recordings/6_lucas_8.wav",
+      "bytes": 9070,
+      "sha256": "688f2247c7ca4afc290864be036103d94cb0ed5c31077d7bbc86db893daaf428"
+    },
+    {
+      "path": "fsdd/recordings/6_lucas_9.wav",
+      "bytes": 7778,
+      "sha256": "de1645773be49f509e1a24cc01655c047632fcb0ad700fb73e2e0acc18d0c4c5"
+    },
+    {
+      "path": "fsdd/recordings/6_nicolas_0.wav",
+      "bytes": 3488,
+      "sha256": "48d22b265d86c14e6b4462f51122834bc66e99e3966e95f2279a9d07ffcb9e95"
+    },
+    {
+      "path": "fsdd/recordings/6_nicolas_1.wav",
+      "bytes": 3744,
+      "sha256": "ea67d991a682569b25ed717475afd47a5e3917cdda231e7b5f072f7ad7b46976"
+    },
+    {
+      "path": "fsdd/recordings/6_nicolas_2.wav",
+      "bytes": 4254,
+      "sha256": "1a3ba0e79e289181cb1df5dd1811a56796e70a8ad244297533e47f4dbe16d85b"
+    },
+    {
+      "path": "fsdd/recordings/6_nicolas_3.wav",
+      "bytes": 6294,
+      "sha256": "d17ef808b1b7468dc46ec9c59f11503d983e941ba9bef570e09ca3797e736e2a"
+    },
+    {
+      "path": "fsdd/recordings/6_nicolas_4.wav",
+      "bytes": 7570,
+      "sha256": "dff908e672df45e49107a83c41ce8957957d76231d9fdaf4ae6c5a65aa838579"
+    },
+    {
+      "path": "fsdd/recordings/6_nicolas_5.wav",
+      "bytes": 7570,
+      "sha256": "17745cd180cb7728e90661c8fa56d85d6ea852c06995d7ab4bc79711a0ba6e7d"
+    },
+    {
+      "path": "fsdd/recordings/6_nicolas_6.wav",
+      "bytes": 3870,
+      "sha256": "3e123348c20b37b9a0804aebde5e2c0a8e67c104f48e617d665ec1e784532e44"
+    },
+    {
+      "path": "fsdd/recordings/6_nicolas_7.wav",
+      "bytes": 2342,
+      "sha256": "6babbf6bcd7904c78515bf40328bea1e1383c433874d91b08ab144023482662e"
+    },
+    {
+      "path": "fsdd/recordings/6_nicolas_8.wav",
+      "bytes": 3264,
+      "sha256": "2fcc860cb44d7081eecc7599e4f72c068c0d552f6d4e60d9c53897873e611440"
+    },
+    {
+      "path": "fsdd/recordings/6_nicolas_9.wav",
+      "bytes": 2562,
+      "sha256": "a0bf1ed5a81af14e12775d83acd0f99bbe0d5699652a678222cbb52dcf314017"
+    },
+    {
+      "path": "fsdd/recordings/6_theo_0.wav",
+      "bytes": 7900,
+      "sha256": "f65b8fe10ffcce1e1c407c1ae1adf33af6980f1f278e481ca13f8d4bfe58a30c"
+    },
+    {
+      "path": "fsdd/recordings/6_theo_1.wav",
+      "bytes": 7742,
+      "sha256": "9eb5e686a073a9c9a5ddd1ad2d093d26298e8e1a55254d12cd89488b0450fb08"
+    },
+    {
+      "path": "fsdd/recordings/6_theo_2.wav",
+      "bytes": 8002,
+      "sha256": "4e3401b79926e7ac78b2698c9c13ab23f946941b526fe8384d52ff6dc4d889ae"
+    },
+    {
+      "path": "fsdd/recordings/6_theo_3.wav",
+      "bytes": 7728,
+      "sha256": "8cf2dd33eabb04f921ac2e09121f14341d4ad732b0db5a3f7941c555dfb94cb4"
+    },
+    {
+      "path": "fsdd/recordings/6_theo_4.wav",
+      "bytes": 7648,
+      "sha256": "5369d8babdb221a26e7b5afbce1500812426815dda5b603813f16dd5a218675b"
+    },
+    {
+      "path": "fsdd/recordings/6_theo_5.wav",
+      "bytes": 7904,
+      "sha256": "01f5c357bed1fec702503e9fbcb36a88064d967737e89eab4e4fee06e878ff9d"
+    },
+    {
+      "path": "fsdd/recordings/6_theo_6.wav",
+      "bytes": 6390,
+      "sha256": "3710835af1046f45a7245e8953aad8324f7523a66875352677c1898e470fb9df"
+    },
+    {
+      "path": "fsdd/recordings/6_theo_7.wav",
+      "bytes": 7208,
+      "sha256": "7eba35e93afb201e8518ad4c350f8641f3484c7adedf7dd3b16cc1e914674d53"
+    },
+    {
+      "path": "fsdd/recordings/6_theo_8.wav",
+      "bytes": 7750,
+      "sha256": "cff02385eb06b4952e772e8caf3510e9966f64c6a5b2ea4e2d222dfdaf6f3ec0"
+    },
+    {
+      "path": "fsdd/recordings/6_theo_9.wav",
+      "bytes": 8078,
+      "sha256": "db922878d624cc1e9b2b86853b6094c5a540d2f31015cd800dd996fba03a5322"
+    },
+    {
+      "path": "fsdd/recordings/6_yweweler_0.wav",
+      "bytes": 5350,
+      "sha256": "69f807440b59477df6645a02f0758e9e4f141846aa161a71a7fa4da024e94950"
+    },
+    {
+      "path": "fsdd/recordings/6_yweweler_1.wav",
+      "bytes": 2546,
+      "sha256": "f12a98590c716270613d497957c3d92a490b9f84a638787b2badf1af1a339a4c"
+    },
+    {
+      "path": "fsdd/recordings/6_yweweler_2.wav",
+      "bytes": 3704,
+      "sha256": "6e069e174afa308f7fe594229ce58f1337bfe6ea3273b466ccdc5c2009cbb68e"
+    },
+    {
+      "path": "fsdd/recordings/6_yweweler_3.wav",
+      "bytes": 2340,
+      "sha256": "99d5e361bdcb1f5ebdc93b440269784730edee7911110f868cc540ac7a1952ae"
+    },
+    {
+      "path": "fsdd/recordings/6_yweweler_4.wav",
+      "bytes": 2944,
+      "sha256": "88c73680a7ed3746df3d87785599461d80ea7b13e472947ffd4cf34d531764c9"
+    },
+    {
+      "path": "fsdd/recordings/6_yweweler_5.wav",
+      "bytes": 3908,
+      "sha256": "3c3f3c038b0c3b918e849541f800e27a6c6c62c0ac5da151098fcdf22713cb27"
+    },
+    {
+      "path": "fsdd/recordings/6_yweweler_6.wav",
+      "bytes": 4388,
+      "sha256": "11c8ad5d3f27702c9c4bec3d38ccab4df7a14522a892a7da0c617c249a92cdde"
+    },
+    {
+      "path": "fsdd/recordings/6_yweweler_7.wav",
+      "bytes": 4374,
+      "sha256": "a17658449ca143648d55fd21149aaf8dafd0a11f66f7aa86f982856d0e213da2"
+    },
+    {
+      "path": "fsdd/recordings/6_yweweler_8.wav",
+      "bytes": 4632,
+      "sha256": "15d6fb0eb71f7b2f2726f2f73303f1481326f8882573dc0bc47c16836d265493"
+    },
+    {
+      "path": "fsdd/recordings/6_yweweler_9.wav",
+      "bytes": 6492,
+      "sha256": "9309ab78fddaa66f2267a2a8190e7ff86a2ac07c5a419419480b857c48cea916"
+    },
+    {
+      "path": "fsdd/recordings/7_george_0.wav",
+      "bytes": 10306,
+      "sha256": "645dc7b2bd40ca8bddb2b580de6877ddffaf041a94b72a87ab9274d5345581a0"
+    },
+    {
+      "path": "fsdd/recordings/7_george_1.wav",
+      "bytes": 9482,
+      "sha256": "6cc744db751d36e75cef346fb0d963dc1448417dbbd85b2e229daff89189b205"
+    },
+    {
+      "path": "fsdd/recordings/7_george_2.wav",
+      "bytes": 10600,
+      "sha256": "71a1f29b88a1dbd01649d87af6565f7efcd3568f538a58e71f59050937c2d94a"
+    },
+    {
+      "path": "fsdd/recordings/7_george_3.wav",
+      "bytes": 9198,
+      "sha256": "07a49b4c6332f36e6b3ba576aeea98208a26e8c2bde358c9e66a8c7c3a31507f"
+    },
+    {
+      "path": "fsdd/recordings/7_george_4.wav",
+      "bytes": 9906,
+      "sha256": "2f26de10bd002611aef5a8ea812c2d3d26ab1e95d425791c88d9baa52a858950"
+    },
+    {
+      "path": "fsdd/recordings/7_george_5.wav",
+      "bytes": 9964,
+      "sha256": "72db22c1e246c6f5dc85cca33956ccdd13203827df547439d8435731d6c65f2d"
+    },
+    {
+      "path": "fsdd/recordings/7_george_6.wav",
+      "bytes": 9518,
+      "sha256": "222a4e085c777f5922031813349c3002a61e8845c8de42611f8a457442cb18de"
+    },
+    {
+      "path": "fsdd/recordings/7_george_7.wav",
+      "bytes": 8690,
+      "sha256": "23bb0c4284340cd1adbbe2724198cc1748d2d1440fad868a6a5fd6f7953ad1ec"
+    },
+    {
+      "path": "fsdd/recordings/7_george_8.wav",
+      "bytes": 10362,
+      "sha256": "d7ad3162368152ddc532e8bed3d16c69ba478281f277b62b49c7d0d013fe1bea"
+    },
+    {
+      "path": "fsdd/recordings/7_george_9.wav",
+      "bytes": 9138,
+      "sha256": "94d9801e2f14e289c6afc656a4cadfa47550aeefdb24a18d1c81a542392cdfdf"
+    },
+    {
+      "path": "fsdd/recordings/7_jackson_0.wav",
+      "bytes": 6958,
+      "sha256": "bd4f5fa8db9a8a8d14a88236da314cd38fce2370cc406181b2485e03437d55d3"
+    },
+    {
+      "path": "fsdd/recordings/7_jackson_1.wav",
+      "bytes": 7622,
+      "sha256": "762dfcc851874c662ab1b12e68d875733ee32bde15f8516cd491e058511c5ac8"
+    },
+    {
+      "path": "fsdd/recordings/7_jackson_2.wav",
+      "bytes": 6198,
+      "sha256": "caa4216532464ddbd435e4f42a4617d937779c4a14d10d74bb00aeda4bda89a8"
+    },
+    {
+      "path": "fsdd/recordings/7_jackson_3.wav",
+      "bytes": 6988,
+      "sha256": "1135c7246f7081ebd397647f36948e4854ba9bdf4eb4eee2575b8ed63e760783"
+    },
+    {
+      "path": "fsdd/recordings/7_jackson_4.wav",
+      "bytes": 6720,
+      "sha256": "fe3f6a4d9a213b2a043b54b0ee2170ab019ea403edef27f94d22f614da9f83b1"
+    },
+    {
+      "path": "fsdd/recordings/7_jackson_5.wav",
+      "bytes": 7176,
+      "sha256": "1f67b679bcd596bb1c0aec3a00ea1f5466534fed27da8fd56b7a09b39a04ae40"
+    },
+    {
+      "path": "fsdd/recordings/7_jackson_6.wav",
+      "bytes": 7178,
+      "sha256": "c9ee7773335d7d41b7a84f0fa06007eeda28045d7557ea8f6f6b7a6703adfb45"
+    },
+    {
+      "path": "fsdd/recordings/7_jackson_7.wav",
+      "bytes": 6770,
+      "sha256": "bc9522633e7df630599cb9487319ea3c4ff1fef47d6c5d51c9fcc3f583c28b4e"
+    },
+    {
+      "path": "fsdd/recordings/7_jackson_8.wav",
+      "bytes": 6854,
+      "sha256": "b5cb7a5778907390bf7d6cccee12276b7ebd148a833f86e4cc408417168415b8"
+    },
+    {
+      "path": "fsdd/recordings/7_jackson_9.wav",
+      "bytes": 7106,
+      "sha256": "c5577a7ffacbfb565975f97b9627cf1b4081e2cb87a339afd194f489c625c109"
+    },
+    {
+      "path": "fsdd/recordings/7_lucas_0.wav",
+      "bytes": 10642,
+      "sha256": "d3dbe5d28532c1ba3a47b099477a9e0bc9697017b1d1d4458091fe54be014ee1"
+    },
+    {
+      "path": "fsdd/recordings/7_lucas_1.wav",
+      "bytes": 7260,
+      "sha256": "b0966b0c861a85c10f8db2e328e5e3388808a4790a6f0ee38d8e7d621645da05"
+    },
+    {
+      "path": "fsdd/recordings/7_lucas_2.wav",
+      "bytes": 7686,
+      "sha256": "c0bb4963a1cd01d68cefad5f6cd75e0b91656f9c8a58e8d37d84ac864d13f9af"
+    },
+    {
+      "path": "fsdd/recordings/7_lucas_3.wav",
+      "bytes": 8984,
+      "sha256": "84e2910c4071fbab3489609023d0b323b59e31ef46d5dd41bf9bcc73f594e5ae"
+    },
+    {
+      "path": "fsdd/recordings/7_lucas_4.wav",
+      "bytes": 9298,
+      "sha256": "9321dacbbc693049d4c98c9cf753cc4c3620792d6b7800a1871df2f514db2983"
+    },
+    {
+      "path": "fsdd/recordings/7_lucas_5.wav",
+      "bytes": 8672,
+      "sha256": "8b38116a18776e8d40471829c5a914c0e61b337a9947529e3d8e7c46000a2e1b"
+    },
+    {
+      "path": "fsdd/recordings/7_lucas_6.wav",
+      "bytes": 8758,
+      "sha256": "965f5adc53d2887745d5f0d09277efb794123bc8e72ac3ad3af25ed34ca71542"
+    },
+    {
+      "path": "fsdd/recordings/7_lucas_7.wav",
+      "bytes": 16662,
+      "sha256": "d83447e2c27626fbefbead22c4070c9b7000a26dca33d2c23bb45ee1f8ac7b69"
+    },
+    {
+      "path": "fsdd/recordings/7_lucas_8.wav",
+      "bytes": 12854,
+      "sha256": "4106032785b4d6cbc2d0c3ee7393ec8f9038cbd82f9d1e055bca310b860bf913"
+    },
+    {
+      "path": "fsdd/recordings/7_lucas_9.wav",
+      "bytes": 7430,
+      "sha256": "a097b9a1cd5a43b58320498d1a52c692a8ae676ae223c45957b52b307c2479d3"
+    },
+    {
+      "path": "fsdd/recordings/7_nicolas_0.wav",
+      "bytes": 6002,
+      "sha256": "615dc2a2ba6e915521151479bbec3724bd1f5e0c839bb57b693c45f897a174a3"
+    },
+    {
+      "path": "fsdd/recordings/7_nicolas_1.wav",
+      "bytes": 7462,
+      "sha256": "8df620ef0ecf9ffaf962154d9eed7097811d743a1f50d607a3a91ffac14740dd"
+    },
+    {
+      "path": "fsdd/recordings/7_nicolas_2.wav",
+      "bytes": 7182,
+      "sha256": "4b95334af5a5041553c45f9254e670094b4404371e34c60702a9c317f6b1130a"
+    },
+    {
+      "path": "fsdd/recordings/7_nicolas_3.wav",
+      "bytes": 5888,
+      "sha256": "43a9487a5c38b89f4bdf4ea98351925c9563bb9ad9823ace5a360b99a9d75d09"
+    },
+    {
+      "path": "fsdd/recordings/7_nicolas_4.wav",
+      "bytes": 7182,
+      "sha256": "5ff214a30aee4a90bfa7705399c4a784213906ed6d4ebab7cec95cf3f115d50d"
+    },
+    {
+      "path": "fsdd/recordings/7_nicolas_5.wav",
+      "bytes": 4932,
+      "sha256": "5aeb58629aa736d5f065df5a4b2ec1fe615e8f6ebb15002d8373318a4b45a6f5"
+    },
+    {
+      "path": "fsdd/recordings/7_nicolas_6.wav",
+      "bytes": 5946,
+      "sha256": "1cddb4b68ffbbfce093782773af3171f9b902fab50a73b76fa8dcbb3ee9895de"
+    },
+    {
+      "path": "fsdd/recordings/7_nicolas_7.wav",
+      "bytes": 6002,
+      "sha256": "39b58d1d7ad2ec5ad791cbf03a054c096208a31e5e3d605c3a89570d0d9af9d2"
+    },
+    {
+      "path": "fsdd/recordings/7_nicolas_8.wav",
+      "bytes": 7012,
+      "sha256": "5feb837cf9c6c38f8259b6fc8eec749e4bd7edef714c4629b339bb29a49fd0d8"
+    },
+    {
+      "path": "fsdd/recordings/7_nicolas_9.wav",
+      "bytes": 6002,
+      "sha256": "e2f7c77200bb8f8d492066892c8a861fb19b6a9046eb6c19e2968ccf54203572"
+    },
+    {
+      "path": "fsdd/recordings/7_theo_0.wav",
+      "bytes": 6900,
+      "sha256": "3074f5a5db8a3588bc8616c5888fa25bbac2c71728d14a6b413baf89d779ef70"
+    },
+    {
+      "path": "fsdd/recordings/7_theo_1.wav",
+      "bytes": 5828,
+      "sha256": "2dfca73538ec2a6b9f3c90bc3be1d5dd5ce19fb074f0a28768c91857dce2a58e"
+    },
+    {
+      "path": "fsdd/recordings/7_theo_2.wav",
+      "bytes": 4084,
+      "sha256": "4a9319c997a0d6a9f9d465c984432e1c858a0aa4f2a33bc14f68626ee12c1ad0"
+    },
+    {
+      "path": "fsdd/recordings/7_theo_3.wav",
+      "bytes": 4628,
+      "sha256": "4a1954c0fa6b42b0f925458487860cbb19168059d10a594a12dac0ee9d9fcb4b"
+    },
+    {
+      "path": "fsdd/recordings/7_theo_4.wav",
+      "bytes": 6892,
+      "sha256": "3baf71f47769277d7123bc78719fab659de4ab50676e46c77fff538bbb45d67e"
+    },
+    {
+      "path": "fsdd/recordings/7_theo_5.wav",
+      "bytes": 5888,
+      "sha256": "ccba509c1dbfc27df45ed6435de96c5ea8511472f0fbabc2b7cef76c0e3c07af"
+    },
+    {
+      "path": "fsdd/recordings/7_theo_6.wav",
+      "bytes": 4534,
+      "sha256": "e572e49aded16b923a5167227702787ec88fba3c4c32599e723d998d8c77ac6b"
+    },
+    {
+      "path": "fsdd/recordings/7_theo_7.wav",
+      "bytes": 9180,
+      "sha256": "6733283497bcb63a866aa6703d03ebbed1ea69028d20cb2d618cd5a27394aae9"
+    },
+    {
+      "path": "fsdd/recordings/7_theo_8.wav",
+      "bytes": 5214,
+      "sha256": "3c55f3d99906fbfb880938cc3cdfd6927004785f0b9f290edf5b616774e86c0a"
+    },
+    {
+      "path": "fsdd/recordings/7_theo_9.wav",
+      "bytes": 6428,
+      "sha256": "d131e95d2c0ce024974df86c3e3a01ee8aee20fea4458c0f6086210b11abde1f"
+    },
+    {
+      "path": "fsdd/recordings/7_yweweler_0.wav",
+      "bytes": 7026,
+      "sha256": "1ade92413c587002f728dd262068ace084088a62a216c0003d300c0d3913ade6"
+    },
+    {
+      "path": "fsdd/recordings/7_yweweler_1.wav",
+      "bytes": 6306,
+      "sha256": "b8cf02e1dc6b3b639fe8bbcf439f5d12d269d02222320af22fdd013e8bc527d6"
+    },
+    {
+      "path": "fsdd/recordings/7_yweweler_2.wav",
+      "bytes": 6790,
+      "sha256": "6a47def01ccb2ed8cdaa8d54544601da3109db89e780a40551750668fdc513eb"
+    },
+    {
+      "path": "fsdd/recordings/7_yweweler_3.wav",
+      "bytes": 6838,
+      "sha256": "c37bf8a3ed13454e3c33d5b9ba61e27c6205dac903409d117f230a834d3a5770"
+    },
+    {
+      "path": "fsdd/recordings/7_yweweler_4.wav",
+      "bytes": 5812,
+      "sha256": "a623bd85d0022262c51d6b3551e7f910309955915ac2e9c4d5802eb8910e21e5"
+    },
+    {
+      "path": "fsdd/recordings/7_yweweler_5.wav",
+      "bytes": 7600,
+      "sha256": "983225e728ea5647a32b41bc702c934bf2db70850c1d6148c127e66ebc00d1e7"
+    },
+    {
+      "path": "fsdd/recordings/7_yweweler_6.wav",
+      "bytes": 4132,
+      "sha256": "296195ed9f88ce8bc47201c367918b0caffab1787e47edee1654c4ee0ffbff73"
+    },
+    {
+      "path": "fsdd/recordings/7_yweweler_7.wav",
+      "bytes": 5634,
+      "sha256": "345d9378460118c422989bee7ac6e743ea35ed8479f4ab4454969b03bd6a9126"
+    },
+    {
+      "path": "fsdd/recordings/7_yweweler_8.wav",
+      "bytes": 5474,
+      "sha256": "f076acbd2d1eb80c8227715dcba03af07864643eea973aab74c7905b8cb4b1b3"
+    },
+    {
+      "path": "fsdd/recordings/7_yweweler_9.wav",
+      "bytes": 5938,
+      "sha256": "13274fd63ca46e48666473bb568edae4e84552097319ba106279e3f24a2bf500"
+    },
+    {
+      "path": "fsdd/recordings/8_george_0.wav",
+      "bytes": 8488,
+      "sha256": "ad8f7a9a1212a3a46e64a8e8a81d050043503f57305ba8b8d1f3b45e78a3a7c5"
+    },
+    {
+      "path": "fsdd/recordings/8_george_1.wav",
+      "bytes": 8266,
+      "sha256": "98cc01b792b18fe78473cdceb14a82bea1162f3c4740801cdaf33f26caf53fb1"
+    },
+    {
+      "path": "fsdd/recordings/8_george_2.wav",
+      "bytes": 8716,
+      "sha256": "5c27b405aec749533f4d89d582d2fd14f7b8b1a57b7f09597ee199c4cdbc3d0d"
+    },
+    {
+      "path": "fsdd/recordings/8_george_3.wav",
+      "bytes": 8196,
+      "sha256": "fb4ce882f90faa530a0681b94c704b69e108a56a61e211149704ca152ac36446"
+    },
+    {
+      "path": "fsdd/recordings/8_george_4.wav",
+      "bytes": 8146,
+      "sha256": "ea1e0a7efe7b3137c260a31e47b58ee7500b3051f8079accd2a10afeb0278c0e"
+    },
+    {
+      "path": "fsdd/recordings/8_george_5.wav",
+      "bytes": 7626,
+      "sha256": "9d9dc88be157d4f2b9596121ff182bd7a502ff3adaa694cab69d5f8e8bad5bee"
+    },
+    {
+      "path": "fsdd/recordings/8_george_6.wav",
+      "bytes": 7986,
+      "sha256": "ffd7fbb398b09345fe10efa3faf3c4a71de6b9638a2a588d28cfe40c5e235bc5"
+    },
+    {
+      "path": "fsdd/recordings/8_george_7.wav",
+      "bytes": 7920,
+      "sha256": "5f29791426dd3b83b1e4664771a3adf899f98ea1f9f68dfe81e24492c7e93d28"
+    },
+    {
+      "path": "fsdd/recordings/8_george_8.wav",
+      "bytes": 8234,
+      "sha256": "10de8a1d8f9591ac8bcf6cdd4ba0ba1253ed1c1f1ccb70cd2206a6462c8848be"
+    },
+    {
+      "path": "fsdd/recordings/8_george_9.wav",
+      "bytes": 7702,
+      "sha256": "6a8cb2acc0e934adde3f478dce5b635e061a7536e67540913aac78afecc9348d"
+    },
+    {
+      "path": "fsdd/recordings/8_jackson_0.wav",
+      "bytes": 5596,
+      "sha256": "25172d71c574ee504094d4b704efa478a253d29ee7da562ce6ec4800ffdb6eaf"
+    },
+    {
+      "path": "fsdd/recordings/8_jackson_1.wav",
+      "bytes": 6502,
+      "sha256": "556a54cd75086379d90aee189965e7232b1cec94e4b37a22f711de618f3627d4"
+    },
+    {
+      "path": "fsdd/recordings/8_jackson_2.wav",
+      "bytes": 6166,
+      "sha256": "b6eb97cd74abd28bfb270b73d824d09ea2a7502638694d04255a71eb864a1384"
+    },
+    {
+      "path": "fsdd/recordings/8_jackson_3.wav",
+      "bytes": 6278,
+      "sha256": "3a6bdc6396921840ab2b86f86e5d0d36f816f9af25d3db1051d9f7d1169f7950"
+    },
+    {
+      "path": "fsdd/recordings/8_jackson_4.wav",
+      "bytes": 6540,
+      "sha256": "e3da7f35776b815ace62651ee29d6025b6929ce8decd0239048980802c08753e"
+    },
+    {
+      "path": "fsdd/recordings/8_jackson_5.wav",
+      "bytes": 6928,
+      "sha256": "58cdf40d8d2cfb2bcf1e4053a31a3b52619a0555feecbddf39bffbc62f84cb50"
+    },
+    {
+      "path": "fsdd/recordings/8_jackson_6.wav",
+      "bytes": 6802,
+      "sha256": "c8c2a95f1a92412f491d4204ba7a60545425ae749b4b81e1ef3af4e7e30fa5f8"
+    },
+    {
+      "path": "fsdd/recordings/8_jackson_7.wav",
+      "bytes": 6972,
+      "sha256": "584f1398c7a47bf82c9175dc2d1fb53d733349abb59b11482273a202e17ecb72"
+    },
+    {
+      "path": "fsdd/recordings/8_jackson_8.wav",
+      "bytes": 5944,
+      "sha256": "1e316bf09314ad6a50903c0271562e8dfe6443d00f717303439e4be3ab00973f"
+    },
+    {
+      "path": "fsdd/recordings/8_jackson_9.wav",
+      "bytes": 6130,
+      "sha256": "4c832283eee86b13c34421e72d231bf50d3770e1b6066c18e3d559d0dc28945e"
+    },
+    {
+      "path": "fsdd/recordings/8_lucas_0.wav",
+      "bytes": 18330,
+      "sha256": "154cfd07257bb8488778969d694b770d6648bdc793761335115ecd2a0239de53"
+    },
+    {
+      "path": "fsdd/recordings/8_lucas_1.wav",
+      "bytes": 5470,
+      "sha256": "bbef48359b1fd61a945058618c6edc28d4067bae7797387b9df491994ddb4f12"
+    },
+    {
+      "path": "fsdd/recordings/8_lucas_2.wav",
+      "bytes": 13188,
+      "sha256": "86f5cd61b08f75409ae641707e6e4d9e6303f81ac2244b885b7207b9ae8d6cc7"
+    },
+    {
+      "path": "fsdd/recordings/8_lucas_3.wav",
+      "bytes": 11210,
+      "sha256": "cb70a529f68f4770cb759676d004de2dbcc3810fec0667a4795ee446bef4f4b1"
+    },
+    {
+      "path": "fsdd/recordings/8_lucas_4.wav",
+      "bytes": 10906,
+      "sha256": "164852fef331f7a528dffe82c2158323c97f037787b275ec7117b5d762519d38"
+    },
+    {
+      "path": "fsdd/recordings/8_lucas_5.wav",
+      "bytes": 14766,
+      "sha256": "a9d6f4ac7267cd3f496fa7a48cd61ab15b36b2aee69a51b95e6f616400c4331d"
+    },
+    {
+      "path": "fsdd/recordings/8_lucas_6.wav",
+      "bytes": 6876,
+      "sha256": "b7b0711fa62dbea05b6754dfae55b322fc6ca63daf46f630556ba722ab9bde3d"
+    },
+    {
+      "path": "fsdd/recordings/8_lucas_7.wav",
+      "bytes": 12450,
+      "sha256": "712c5b4cf7cec73b682132dac6e8acbf39eda7f88a01cc4b80644d25136464d9"
+    },
+    {
+      "path": "fsdd/recordings/8_lucas_8.wav",
+      "bytes": 7336,
+      "sha256": "5e2baf0607ba9bd3535481151d18e3e92a587dfe2eedf7fae9e576bbb031c0ed"
+    },
+    {
+      "path": "fsdd/recordings/8_lucas_9.wav",
+      "bytes": 8452,
+      "sha256": "7c5773b3b45b6c86823c89cdb508d8cd430c67b3ae7c9d487c843bf8d6e22fb3"
+    },
+    {
+      "path": "fsdd/recordings/8_nicolas_0.wav",
+      "bytes": 3760,
+      "sha256": "8e2af922d9417b55344ab3ff7d14148c77551c877d5a5543103a6dc07625bc12"
+    },
+    {
+      "path": "fsdd/recordings/8_nicolas_1.wav",
+      "bytes": 3654,
+      "sha256": "7b549bf7ddc327e75fd056b7af1bf62480a031cec1b6c89a6b0ca08d9c8e6382"
+    },
+    {
+      "path": "fsdd/recordings/8_nicolas_2.wav",
+      "bytes": 3916,
+      "sha256": "cbc6ea166625b66c5c62e5f1a7427f672d9a1d52b104d53a64e27496da3156ce"
+    },
+    {
+      "path": "fsdd/recordings/8_nicolas_3.wav",
+      "bytes": 4074,
+      "sha256": "5d2ac286f63a410ff4435e80a93ba0bbf2ca63e49b471cda71b468c46ad8ae68"
+    },
+    {
+      "path": "fsdd/recordings/8_nicolas_4.wav",
+      "bytes": 4178,
+      "sha256": "08176ccf9dc7085586390aeacb93a10af64294659e90789e8627c080eba4f836"
+    },
+    {
+      "path": "fsdd/recordings/8_nicolas_5.wav",
+      "bytes": 4858,
+      "sha256": "9f1b80d2d7790c290b84523d3ad9cc6c5dae90bbb9aa55bac848a8d033efc9a4"
+    },
+    {
+      "path": "fsdd/recordings/8_nicolas_6.wav",
+      "bytes": 6532,
+      "sha256": "c6f06f2da6293d6d8c0e400b646757ca5500626b09c7e6c844b9ee9c01d65cc5"
+    },
+    {
+      "path": "fsdd/recordings/8_nicolas_7.wav",
+      "bytes": 3654,
+      "sha256": "28a832b2b3b7d4e6d961470ff5ce335562c1e4611259a929bdfce38b86acad73"
+    },
+    {
+      "path": "fsdd/recordings/8_nicolas_8.wav",
+      "bytes": 3760,
+      "sha256": "b78b922f50faef4729364341b4c71e339877470b140ab2bab0a0ba0051646d61"
+    },
+    {
+      "path": "fsdd/recordings/8_nicolas_9.wav",
+      "bytes": 4336,
+      "sha256": "7665aaf52fc38784442db4850693146d5c35dbdd2b4ad03e640f936a49c4b8e2"
+    },
+    {
+      "path": "fsdd/recordings/8_theo_0.wav",
+      "bytes": 5840,
+      "sha256": "24b8f7da347f041d1c5ddfa2e19984f12844b2a05ac6270de5856452092ec21f"
+    },
+    {
+      "path": "fsdd/recordings/8_theo_1.wav",
+      "bytes": 5114,
+      "sha256": "08587f2d2bc5b9ca91af4067d6c2f267c5d2dea13ffd9f7b1eb601f7d3bb2bda"
+    },
+    {
+      "path": "fsdd/recordings/8_theo_2.wav",
+      "bytes": 5828,
+      "sha256": "543f8803728ebd2377e87be8de87fc69ab3bf2115d9e0be85197e0b0ff6501c0"
+    },
+    {
+      "path": "fsdd/recordings/8_theo_3.wav",
+      "bytes": 4684,
+      "sha256": "d30c1d582d2bdde0e04ac89f1b68b6d45dc0803aa545a80450adc16d5cedca10"
+    },
+    {
+      "path": "fsdd/recordings/8_theo_4.wav",
+      "bytes": 5680,
+      "sha256": "43134b97433b6275faa1ec9ec410d82984ba388118e585a0324556234d2e2405"
+    },
+    {
+      "path": "fsdd/recordings/8_theo_5.wav",
+      "bytes": 5058,
+      "sha256": "70b9f01fd002aa6dff7c6812cda7a59b8a0999f29f441255a7b56fe503dc43f2"
+    },
+    {
+      "path": "fsdd/recordings/8_theo_6.wav",
+      "bytes": 6328,
+      "sha256": "a99132022e419d0891a1632552576affb34881b26683b62eaf452b7f7e6dbe50"
+    },
+    {
+      "path": "fsdd/recordings/8_theo_7.wav",
+      "bytes": 5174,
+      "sha256": "14537f7f266af7732a7bde39ca05946fbbdefa9ad54abd2f96778905456e6827"
+    },
+    {
+      "path": "fsdd/recordings/8_theo_8.wav",
+      "bytes": 5084,
+      "sha256": "e71c9e2f9311a343564a77db896c573468c07dfd40a97c70c68d52023a239999"
+    },
+    {
+      "path": "fsdd/recordings/8_theo_9.wav",
+      "bytes": 5670,
+      "sha256": "a15a8432ecf9cf312eba0ca64851006b71ad60c5f4353a59b20a1f59297761c7"
+    },
+    {
+      "path": "fsdd/recordings/8_yweweler_0.wav",
+      "bytes": 5108,
+      "sha256": "ef1973bb1d3111d6b251aee38ea7afe93a987fff84b2861729648f90acfa47b3"
+    },
+    {
+      "path": "fsdd/recordings/8_yweweler_1.wav",
+      "bytes": 5712,
+      "sha256": "80e9f4e922055cf7d34a1ae4b83d7607b1e5d7370c39d6d57199fb1fff3e4f2d"
+    },
+    {
+      "path": "fsdd/recordings/8_yweweler_2.wav",
+      "bytes": 4382,
+      "sha256": "05e104c8ede1404986a1d6e0aca09b0dc40dab89ae4471aac9533a3d2e63a1b4"
+    },
+    {
+      "path": "fsdd/recordings/8_yweweler_3.wav",
+      "bytes": 5238,
+      "sha256": "4bc9b2728282f3979ee827b95b720122a3e794912d6d10713d195122c74ec806"
+    },
+    {
+      "path": "fsdd/recordings/8_yweweler_4.wav",
+      "bytes": 5260,
+      "sha256": "06a853d132358c41a3aba507ab569384d6f386a0fdb2a1e75cc6cec5cc8fec65"
+    },
+    {
+      "path": "fsdd/recordings/8_yweweler_5.wav",
+      "bytes": 4342,
+      "sha256": "f97766267bdc29b1124cf060932b35b373cf30bb285a103353c84bbfb48add9b"
+    },
+    {
+      "path": "fsdd/recordings/8_yweweler_6.wav",
+      "bytes": 4400,
+      "sha256": "abf10ab096ebfbb6dd89fcf21339a69f3d133f0519159431f72a3ebc2b608406"
+    },
+    {
+      "path": "fsdd/recordings/8_yweweler_7.wav",
+      "bytes": 4386,
+      "sha256": "b5ca784767210867a5ecf0d30bac1a56da2e1252abcc9b1284100eefc09a8778"
+    },
+    {
+      "path": "fsdd/recordings/8_yweweler_8.wav",
+      "bytes": 5010,
+      "sha256": "d2aac49c65832cbaa167c3bf3f4f770b3bbbf39f4b6f838be910215fd7c812a9"
+    },
+    {
+      "path": "fsdd/recordings/8_yweweler_9.wav",
+      "bytes": 5042,
+      "sha256": "7270508d5b6a78982b208b0505c3135b4f54c1bb8918825ee971b1fb711c715a"
+    },
+    {
+      "path": "fsdd/recordings/9_george_0.wav",
+      "bytes": 8422,
+      "sha256": "2a9e54630a64239890f4716445dfa949236841b76e2f880f38cd0c5e28a997e9"
+    },
+    {
+      "path": "fsdd/recordings/9_george_1.wav",
+      "bytes": 8044,
+      "sha256": "a66489d953f56adf6963a64f410c7a0d4ae76704684abb5165b8b03433b2b55c"
+    },
+    {
+      "path": "fsdd/recordings/9_george_2.wav",
+      "bytes": 8010,
+      "sha256": "ca35b3a937cc95d2682ad27688f23dec1dc6f6dc88d05fdd0d710fb87cacb46e"
+    },
+    {
+      "path": "fsdd/recordings/9_george_3.wav",
+      "bytes": 5410,
+      "sha256": "a02da7dbb5c35ef503528c465c14044d2b54d399aaaba6765183f11f3ddb8e8a"
+    },
+    {
+      "path": "fsdd/recordings/9_george_4.wav",
+      "bytes": 7948,
+      "sha256": "a85f20245d8770227dcc36fdd85d448e3e6f9e2bdaaf94c1375a1f7376c9d863"
+    },
+    {
+      "path": "fsdd/recordings/9_george_5.wav",
+      "bytes": 8614,
+      "sha256": "35ca3cb0f9528ce9b2af566b97dfdc344428005038571ff0dec505726e9dccec"
+    },
+    {
+      "path": "fsdd/recordings/9_george_6.wav",
+      "bytes": 9218,
+      "sha256": "3760cc356b389fbe92433a94082f751e8432a2c663904a86db13eade5c80653a"
+    },
+    {
+      "path": "fsdd/recordings/9_george_7.wav",
+      "bytes": 10130,
+      "sha256": "d47172a95e05344fc69d376135479e841b473ebdb4222c8e3afaabf3876f212e"
+    },
+    {
+      "path": "fsdd/recordings/9_george_8.wav",
+      "bytes": 8660,
+      "sha256": "5c17551885f8bada5e4283779bc99ad01609ba6c805f3d5ff825053716b46595"
+    },
+    {
+      "path": "fsdd/recordings/9_george_9.wav",
+      "bytes": 8294,
+      "sha256": "a2bf599219e9c0488715ce2960e4527d985510d312ebd3bd1539ad11865eddfc"
+    },
+    {
+      "path": "fsdd/recordings/9_jackson_0.wav",
+      "bytes": 9698,
+      "sha256": "6b25bbf21f65cf5a6c9713ecf05b5d34641bbcfaac56b9d4d694f65758e12ff0"
+    },
+    {
+      "path": "fsdd/recordings/9_jackson_1.wav",
+      "bytes": 9090,
+      "sha256": "86eb4753f8231b049d4209b2a5458a1c8c888ba0283af25fb529309b15b29882"
+    },
+    {
+      "path": "fsdd/recordings/9_jackson_2.wav",
+      "bytes": 9308,
+      "sha256": "a9688175aa71fdd002c683e3af48a06cc94c331282e6f300f116b702edaa1525"
+    },
+    {
+      "path": "fsdd/recordings/9_jackson_3.wav",
+      "bytes": 8644,
+      "sha256": "e31bd5b6bae99c8f706029461a89e3fdf71e0625d7d662f73782c20be0f625b5"
+    },
+    {
+      "path": "fsdd/recordings/9_jackson_4.wav",
+      "bytes": 9350,
+      "sha256": "484ea4682d507c1f80ebd34a8fd65b5ca5216b26ba99a060d74c6392f00c8a84"
+    },
+    {
+      "path": "fsdd/recordings/9_jackson_5.wav",
+      "bytes": 9254,
+      "sha256": "e95d78c078540eeb7f5aecc42673b80c069342137b5bf3ac67f00107d09e5056"
+    },
+    {
+      "path": "fsdd/recordings/9_jackson_6.wav",
+      "bytes": 8934,
+      "sha256": "3fa1ecac9a5fca4a9638156f9eef7b065daba20cd592988b90ce038665e48b55"
+    },
+    {
+      "path": "fsdd/recordings/9_jackson_7.wav",
+      "bytes": 8658,
+      "sha256": "96e5eb05b750dabb7acf279708c6faf29a630709a5ce309767649650d8fd672d"
+    },
+    {
+      "path": "fsdd/recordings/9_jackson_8.wav",
+      "bytes": 10224,
+      "sha256": "376eb3c8f4b8d64a15c185ecda63f20730061d77bb206888b73efb08b795ca8c"
+    },
+    {
+      "path": "fsdd/recordings/9_jackson_9.wav",
+      "bytes": 8670,
+      "sha256": "5efa4d54716a4d01cba0635c958031936a06f8364c4bf552ac0a351fe905be1e"
+    },
+    {
+      "path": "fsdd/recordings/9_lucas_0.wav",
+      "bytes": 8218,
+      "sha256": "6508d1d8403fdaceb221968cd0090a422645493bc24a049dda75a04b6387495c"
+    },
+    {
+      "path": "fsdd/recordings/9_lucas_1.wav",
+      "bytes": 9012,
+      "sha256": "041cc6ed99d4c7a0f305c06d38876a91f51df819351ab4caf0b4c1c757093b8b"
+    },
+    {
+      "path": "fsdd/recordings/9_lucas_2.wav",
+      "bytes": 7700,
+      "sha256": "c490aa86483c463fa522ea1bacbe23f33b577469d8798bc3e606ad53629ec169"
+    },
+    {
+      "path": "fsdd/recordings/9_lucas_3.wav",
+      "bytes": 7296,
+      "sha256": "a0f6796fbb1c840e70156b7b0ffad6840c953ddd20634ef026b772939899671c"
+    },
+    {
+      "path": "fsdd/recordings/9_lucas_4.wav",
+      "bytes": 7670,
+      "sha256": "495780535f3e40e13094dec1fb50fac9266f2e905153c97355adaee0de583c2d"
+    },
+    {
+      "path": "fsdd/recordings/9_lucas_5.wav",
+      "bytes": 8724,
+      "sha256": "1673ebfb2ef8bd9ec9e77bd9aeeea3b41c96b1a1a7a5fb4e15c16379a1a93856"
+    },
+    {
+      "path": "fsdd/recordings/9_lucas_6.wav",
+      "bytes": 7798,
+      "sha256": "b8eb8a5b355aeaf091491c472bc02412db228b28f6471320eb05d9cc77d7aea2"
+    },
+    {
+      "path": "fsdd/recordings/9_lucas_7.wav",
+      "bytes": 9166,
+      "sha256": "8e722ceccf61d02a804984d035b639de27118106f80bd79a5ad246d399b83e6a"
+    },
+    {
+      "path": "fsdd/recordings/9_lucas_8.wav",
+      "bytes": 8068,
+      "sha256": "f354040fe14eb48fae7b99a908c92f5c05e3c6f90ad9c34bf4ab3530317b0bae"
+    },
+    {
+      "path": "fsdd/recordings/9_lucas_9.wav",
+      "bytes": 10282,
+      "sha256": "b3227a0dad26ad60588939bc3674d96d3277cee6d6d022af89ebe468bb43d7ff"
+    },
+    {
+      "path": "fsdd/recordings/9_nicolas_0.wav",
+      "bytes": 6714,
+      "sha256": "44e8eb48a33839ac22c10c702963fbb53463858187a721f3addbacfe0e5cf14b"
+    },
+    {
+      "path": "fsdd/recordings/9_nicolas_1.wav",
+      "bytes": 7926,
+      "sha256": "27321fdd3105d4ec80a6b9a8e6730d8c0c8ed91149bc14ecdc9c5773a9a86bce"
+    },
+    {
+      "path": "fsdd/recordings/9_nicolas_2.wav",
+      "bytes": 7138,
+      "sha256": "e772f8b570fe6125877e4818257690117aca98622522f68165f70ac2d1c93985"
+    },
+    {
+      "path": "fsdd/recordings/9_nicolas_3.wav",
+      "bytes": 7016,
+      "sha256": "161a814d0276415db63bf71a8af026c48eebac5e72a02689fa7ab0b3f1666839"
+    },
+    {
+      "path": "fsdd/recordings/9_nicolas_4.wav",
+      "bytes": 5744,
+      "sha256": "11db5b72710f15b9b3fdd6f69911d88d8eb7061843885148c8e01ed38bfbf86a"
+    },
+    {
+      "path": "fsdd/recordings/9_nicolas_5.wav",
+      "bytes": 7562,
+      "sha256": "e196c574ea058a46f32ca3942c78de537e133d16f9025532840601aa4a4ce7d5"
+    },
+    {
+      "path": "fsdd/recordings/9_nicolas_6.wav",
+      "bytes": 8168,
+      "sha256": "fb8a72ef6346e37ea33f069ee810faf3ceabd81faeba0968f8fe81f3329d726b"
+    },
+    {
+      "path": "fsdd/recordings/9_nicolas_7.wav",
+      "bytes": 6652,
+      "sha256": "5409a854c107e40b15d037bea327ec1f55537bb4c739cfa9d970bb7efda9a755"
+    },
+    {
+      "path": "fsdd/recordings/9_nicolas_8.wav",
+      "bytes": 7380,
+      "sha256": "41bb6059b54a15c0a50df5ddabba744284cd5cc43395885d633fb3beeef05186"
+    },
+    {
+      "path": "fsdd/recordings/9_nicolas_9.wav",
+      "bytes": 7016,
+      "sha256": "e8fd4c86dff0193a6ae1bbec2e2e44dd3b65cf9a8082278fe2ee9f4b293df688"
+    },
+    {
+      "path": "fsdd/recordings/9_theo_0.wav",
+      "bytes": 6202,
+      "sha256": "2a30491b41495dd457c496dc80c7f4066b28a8eb8bc4c57c100f4a7fa2a2e8ef"
+    },
+    {
+      "path": "fsdd/recordings/9_theo_1.wav",
+      "bytes": 4696,
+      "sha256": "75cae59cea42e5845395e8395c329fa4643e0f2b6c84d2d24aacccd84a2a8a93"
+    },
+    {
+      "path": "fsdd/recordings/9_theo_2.wav",
+      "bytes": 4480,
+      "sha256": "9dfbecca927fc423ed7ac036d3e727d7f9456323e07c59c44151cf2b65089870"
+    },
+    {
+      "path": "fsdd/recordings/9_theo_3.wav",
+      "bytes": 7230,
+      "sha256": "cd895898bb87b29c34d75cbd637ec8fddeff1c09c5e3469f0853d5b7dfe61454"
+    },
+    {
+      "path": "fsdd/recordings/9_theo_4.wav",
+      "bytes": 7114,
+      "sha256": "103d5720cf8102c58a7a76f12fe5db5eeff13fb269924fb462af564f22f504cf"
+    },
+    {
+      "path": "fsdd/recordings/9_theo_5.wav",
+      "bytes": 7400,
+      "sha256": "83ed5d40635ab333b90dc625694d868b56a53fcbd51226423b4fd1daaa1280c4"
+    },
+    {
+      "path": "fsdd/recordings/9_theo_6.wav",
+      "bytes": 5150,
+      "sha256": "a5f17aacc0b1b6efbcee9be805674ee3278cf2040fde5ed33db9d628d7d61ec6"
+    },
+    {
+      "path": "fsdd/recordings/9_theo_7.wav",
+      "bytes": 7020,
+      "sha256": "d4e3ab0a421400357176bf3a20017e0daf0532a7443a0454cf43f71760cf9c99"
+    },
+    {
+      "path": "fsdd/recordings/9_theo_8.wav",
+      "bytes": 6742,
+      "sha256": "26dbd54437ba7393121df6c71b5dd063dc650401763cdca2c212b58365d895ee"
+    },
+    {
+      "path": "fsdd/recordings/9_theo_9.wav",
+      "bytes": 6740,
+      "sha256": "2077f5ebb5a937d02cc1832fd3a74876a2ae98a8600443a0781f36d2d128d2f7"
+    },
+    {
+      "path": "fsdd/recordings/9_yweweler_0.wav",
+      "bytes": 5798,
+      "sha256": "3a5c85a22f6646a4fd5f51b486bb647c86dbb17b13339fd8a22ed1b307749bca"
+    },
+    {
+      "path": "fsdd/recordings/9_yweweler_1.wav",
+      "bytes": 6246,
+      "sha256": "2cd64a770143d60ebb669f2634df7d272572f5b7a48b844130c4a114d669902e"
+    },
+    {
+      "path": "fsdd/recordings/9_yweweler_2.wav",
+      "bytes": 6408,
+      "sha256": "01f7482c3a8ee6451979bcb4fadcd45a0fd0ff95b12bdffef5a004185180baab"
+    },
+    {
+      "path": "fsdd/recordings/9_yweweler_3.wav",
+      "bytes": 8894,
+      "sha256": "63906367a58e50ecdf739d43c9b31176fb00d40bad6059348a389df648a3e860"
+    },
+    {
+      "path": "fsdd/recordings/9_yweweler_4.wav",
+      "bytes": 6764,
+      "sha256": "7cfb39af858b6c7cfe61109bf55d82ecb3948fc3c6220e782c152cf1d851987f"
+    },
+    {
+      "path": "fsdd/recordings/9_yweweler_5.wav",
+      "bytes": 5798,
+      "sha256": "e68b48b98c10114d932201b19842a66d1ad1834bd51882ea3cb4e88f0c2a2d02"
+    },
+    {
+      "path": "fsdd/recordings/9_yweweler_6.wav",
+      "bytes": 5600,
+      "sha256": "a536dd1ac501833ac6f3efe8ed53ea91d295262035df4ac41e7c6a69961c75bd"
+    },
+    {
+      "path": "fsdd/recordings/9_yweweler_7.wav",
+      "bytes": 5674,
+      "sha256": "819b153f19d3d97d0a917133f157852ea9ac85c25264ab2a447235ec4f663ab6"
+    },
+    {
+      "path": "fsdd/recordings/9_yweweler_8.wav",
+      "bytes": 6372,
+      "sha256": "111ce0c8c94eec888df38dfd813b4e475d5c1a901b2f05fd1f7e00f884f2f2db"
+    },
+    {
+      "path": "fsdd/recordings/9_yweweler_9.wav",
+      "bytes": 7058,
+      "sha256": "e46095a15eb3681d441397273c2f91fff3f3d29a409437ae2e2568e375c7aab7"
+    }
+  ],
+  "sha256": "64520dc1229e482fc18f7a2940e45094efa371855685e827b9a1291489e80b17",
+  "fsdd_commit": "26eb9aaf76e81b692f806f9140c2d2777410d7a1",
+  "fsdd_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "speaker_splits": {
+    "train": [
+      "george",
+      "jackson",
+      "nicolas"
+    ],
+    "val": [
+      "theo"
+    ],
+    "test": [
+      "lucas",
+      "yweweler"
+    ]
+  },
+  "fsdd_license": "CC-BY-SA-4.0",
+  "fsdd_attribution": "Jakobovski/free-spoken-digit-dataset and its contributors",
+  "fsdd_url": "https://github.com/Jakobovski/free-spoken-digit-dataset/tree/26eb9aaf76e81b692f806f9140c2d2777410d7a1",
+  "mnist_url": "https://yann.lecun.com/exdb/mnist/",
+  "mnist_origin": "Unmodified original MNIST IDX files recovered from prior user experiment; byte hashes retained",
+  "audio_feature_cache": {
+    "path": "fsdd_features_v1.npz",
+    "sha256": "19c5571131c96e3a2a06c4487eefe0bd6dd67e0aa8888b9bb407785b7a18e2c4",
+    "rows": 600,
+    "verification": "all rows recomputed from WAV; exact features/duration and filename label/speaker",
+    "feature_function": "experiments.continuous_spiking_network.data.audio_features",
+    "feature_source_sha256": "b8a84e49451001ee3448dd3e22bbdc0f9e153a6864056c77069052c7d048829b"
+  }
+}
