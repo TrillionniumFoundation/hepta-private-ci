@@ -8,17 +8,27 @@ explicitly authorized by the user.
 ## Current evidence
 
 - [Implementation and mathematical scope](experiments/call_put_stable_flow/README.md)
+- [Mathematical analysis and limits](experiments/call_put_stable_flow_analysis/ANALYSIS.md)
 - [Frozen 60-candidate study protocol](research_evidence/hepta_stable_flow_20261029/formal_run001/protocol.json)
+- [All 60 candidates and 300 weight checkpoints](research_evidence/hepta_stable_flow_20261029/formal_run001/candidates)
+- [Independent complete-training audit](research_evidence/hepta_stable_flow_20261029/independent_review/training_complete_integrity_audit.json)
 - [Numerical qualification and retained failures](research_evidence/hepta_stable_flow_20261029/numerical_qualification/README.md)
 - [Trained-checkpoint diagnostic contract](experiments/call_put_stable_flow_appendix/README.md)
 - [Inference-cost contract](experiments/call_put_stable_flow_appendix/RUNTIME.md)
 - [Preregistration evidence archive](research_evidence/hepta_stable_flow_20261029/releases/hepta_stable_flow_preregistration_20261029.tar.gz)
 - [Independent archive readback audit](research_evidence/hepta_stable_flow_20261029/independent_review/release_preregistration_audit.json)
 
-The formal training run is in progress. Validation selection and test scoring
-remain locked until all registered candidates finish. The preregistration
-archive contains 186 source/data/evidence files and excludes the growing
-training outputs. It is not a completed-experiment archive.
+All 60 registered training candidates have completed, with all 300 budget
+checkpoints independently audited and publicly preserved. The successful
+training orchestration took 4,977.18 wall seconds; its 60 children used
+18,077.66 total CPU seconds, of which 17,401.72 seconds belonged to the defined
+training-update clock. Validation selection began only after the complete
+training seal was written. Selection, numerical checks, primary test scoring,
+inference timing and the final scientific report are still being completed.
+No held-out performance or general architectural advantage is asserted here.
+
+The preregistration archive contains 186 source/data/evidence files and excludes
+training outputs. It is a prior snapshot, not a completed-experiment archive.
 
 The archive is 1,425,167 bytes, SHA-256:
 
