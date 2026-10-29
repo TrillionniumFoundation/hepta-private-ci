@@ -38,13 +38,13 @@ jobs:
           python-version: "3.12.14"
       - name: Install isolated pinned numerical runtime
         run: |
-          python -m pip install --disable-pip-version-check --only-binary=:all: --extra-index-url https://download.pytorch.org/whl/cpu torch==2.14.1+cpu numpy==2.3.5 scipy==1.16.3 Pillow==12.3.0
+          python -m pip install --disable-pip-version-check --only-binary=:all: --extra-index-url https://download.pytorch.org/whl/cpu torch==2.14.1+cpu numpy==2.3.5 scipy==1.16.3 Pillow==12.3.0 pytest==8.4.2
       - name: Verify source-bound operator, gradients and execution contracts
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/joint-hepta"
           test "$(git rev-parse HEAD)" = "${{ github.sha }}"
-          python -B -m unittest experiments.multimodal_output_portfolio.joint_hepta_20261029.test_contract experiments.multimodal_output_portfolio.joint_hepta_20261029.test_hepta_core -v 2>&1 | tee "$RUNNER_TEMP/joint-hepta/operator.log"
+          python -B -m pytest -c /dev/null experiments/multimodal_output_portfolio/joint_hepta_20261029 -v 2>&1 | tee "$RUNNER_TEMP/joint-hepta/operator.log"
           python -m pip freeze > "$RUNNER_TEMP/joint-hepta/runtime.txt"
           git diff --check
       - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
