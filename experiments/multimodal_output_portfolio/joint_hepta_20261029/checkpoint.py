@@ -12,6 +12,7 @@ import json
 import math
 from pathlib import Path
 import platform
+import tempfile
 
 import torch
 
@@ -21,6 +22,8 @@ from .model import ACTIONS, MODALITIES, JointGenerator, State, tensor_digest
 
 
 SCHEMA = "hepta.joint-generation.checkpoint.v1"
+NAMED_SCHEMA = "hepta.joint-generation.checkpoint.v2"
+NAMED_RNG_LAW = "separate_actor_and_emission_cpu_streams.v1"
 HERE = Path(__file__).parent
 MAX_BYTES = 256 * 1024 * 1024
 
@@ -51,7 +54,7 @@ def _profile(value):
 
 
 def _sources():
-    paths = [HERE / name for name in ("model.py", "hepta_core.py", "contract.py", "checkpoint.py", "runtime.py")]
+    paths = [HERE / name for name in ("model.py", "hepta_core.py", "contract.py", "checkpoint.py", "runtime.py", "media.py")]
     paths.append(HERE.parent / "unified_20261028/profile.py")
     return {str(path.relative_to(HERE.parent)): hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
 
@@ -64,6 +67,32 @@ def generation_metadata(model, public, profile, **extras):
     if set(extras) & set(anchor):
         raise ValueError("Generation metadata cannot override its initial episode identities")
     return _safe({**anchor, **extras})
+
+
+def _named_states(value):
+    if not isinstance(value, dict) or set(value) != {"actor", "emission"}:
+        raise ValueError("Named RNGs must contain exactly actor and emission")
+    states = _safe(value)
+    for state in states.values():
+        if not torch.is_tensor(state) or state.dtype != torch.uint8 or state.ndim != 1:
+            raise ValueError("Named RNG states must be one-dimensional CPU byte tensors")
+        try:
+            torch.Generator(device="cpu").set_state(state)
+        except RuntimeError as exc:
+            raise ValueError("Unsupported named CPU RNG state") from exc
+    return states
+
+
+def restore_named_rngs(metadata):
+    """Restore isolated generators; no physical clocks or execution ledger."""
+    if metadata.get("named_rng_law") != NAMED_RNG_LAW:
+        raise ValueError("Unsupported or missing named RNG law")
+    states = _named_states(metadata.get("named_rng_states"))
+    result = {}
+    for name, state in states.items():
+        result[name] = torch.Generator(device="cpu")
+        result[name].set_state(state)
+    return result
 
 
 def _validate_state(model, state):
@@ -85,11 +114,13 @@ def _validate_state(model, state):
         raise ValueError("Persistent tensors differ in shape/device/dtype or are nonfinite")
 
 
-def save_checkpoint(path, model, state, rng, profile, public, metadata=None):
+def save_checkpoint(path, model, state, rng, profile, public, metadata=None, *, named_rngs=None):
     """Write an immutable .pt plus .manifest.json; return externally hashable IDs.
 
     A noninitial state requires an anchor obtained by ``generation_metadata``
     before the episode started. The live model cannot change under that anchor.
+    With named_rngs, rng is the actor stream and schema v2 additionally binds
+    the independent emission stream. Omitting it preserves the v1 single-RNG API.
     """
     profile = _profile(profile)
     if metadata is None:
@@ -97,12 +128,23 @@ def save_checkpoint(path, model, state, rng, profile, public, metadata=None):
             raise ValueError("A mid-episode checkpoint requires the initial parameter anchor")
         metadata = generation_metadata(model, public, profile)
     metadata = _safe(metadata)
+    if set(metadata) & {"named_rng_states", "named_rng_law"}:
+        raise ValueError("Named RNG fields are supplied through named_rngs, not user metadata")
     expected = generation_metadata(model, public, profile)
     if any(metadata.get(key) != value for key, value in expected.items()):
         raise ValueError("Model/profile/input changed during the anchored episode")
     _validate_state(model, state)
     if str(rng.device) != "cpu":
         raise ValueError("The registered generation RNG is CPU-only")
+    named = None
+    if named_rngs is not None:
+        if (not isinstance(named_rngs, dict) or set(named_rngs) != {"actor", "emission"}
+                or any(not isinstance(g, torch.Generator) or str(g.device) != "cpu" for g in named_rngs.values())
+                or named_rngs["actor"] is named_rngs["emission"]):
+            raise ValueError("Supply separate CPU actor and emission generators")
+        named = _named_states({name: generator.get_state() for name, generator in named_rngs.items()})
+        if not torch.equal(rng.get_state(), named["actor"]):
+            raise ValueError("The legacy rng argument must identify the named actor state")
     config = _safe(model.config)
     dtype = str(next(model.parameters()).dtype)
     if dtype not in ("torch.float32", "torch.float64"):
@@ -115,17 +157,24 @@ def save_checkpoint(path, model, state, rng, profile, public, metadata=None):
                "matmul_precision": torch.get_float32_matmul_precision(),
                "mkldnn_enabled": bool(torch.backends.mkldnn.enabled),
                "mkldnn_deterministic": bool(torch.backends.mkldnn.deterministic)}
-    payload = _safe({"schema": SCHEMA, "config": config, "dtype": dtype,
+    if named is not None:
+        import numpy as np
+        from PIL import __version__ as pillow_version
+        runtime.update(numpy=np.__version__, pillow=pillow_version)
+    payload = _safe({"schema": NAMED_SCHEMA if named is not None else SCHEMA, "config": config, "dtype": dtype,
                      "model": dict(model.state_dict()), "state": state.tensors(),
                      "training": {name: module.training for name, module in model.named_modules()},
                      "rng": rng.get_state(), "global_rng": torch.get_rng_state(),
                      "profile": profile.to_dict(), "metadata": metadata,
-                     "runtime": runtime, "source_sha256": _sources()})
-    identities = {"schema": SCHEMA, "payload_sha256": tensor_digest(payload),
+                     "runtime": runtime, "source_sha256": _sources(),
+                     **({"named_rng_states": named, "named_rng_law": NAMED_RNG_LAW} if named is not None else {})})
+    identities = {"schema": payload["schema"], "payload_sha256": tensor_digest(payload),
                   "model_sha256": tensor_digest(payload["model"]), "state_sha256": tensor_digest(payload["state"]),
                   "profile_sha256": profile.digest, "input_sha256": tensor_digest(public),
                   "config_sha256": digest(config), "generation_sha256": tensor_digest(metadata),
                   "rng_sha256": tensor_digest({"episode": payload["rng"], "global": payload["global_rng"]})}
+    if named is not None:
+        identities["named_rng_sha256"] = tensor_digest(named)
     path = Path(path); path.parent.mkdir(parents=True, exist_ok=True)
     manifest = path.with_suffix(path.suffix + ".manifest.json")
     if path.exists() or manifest.exists():
@@ -141,20 +190,31 @@ def save_checkpoint(path, model, state, rng, profile, public, metadata=None):
 
 
 def load_checkpoint(path, *, profile=None, public=None):
-    """Validate before restoring CPU state; return model, State, RNG, metadata."""
+    """Return model, State, actor/legacy RNG, metadata with optional named states."""
     path = Path(path)
     identities = json.loads(path.with_suffix(path.suffix + ".manifest.json").read_text())
     if (path.stat().st_size > MAX_BYTES or path.stat().st_size != identities["file_bytes"]
             or hashlib.sha256(path.read_bytes()).hexdigest() != identities["file_sha256"]):
         raise ValueError("Checkpoint bytes differ from their frozen manifest")
     payload = _safe(torch.load(path, map_location="cpu", weights_only=True))
+    named = None
+    if payload["schema"] == NAMED_SCHEMA:
+        if payload.get("named_rng_law") != NAMED_RNG_LAW:
+            raise ValueError("Checkpoint named RNG law changed")
+        named = _named_states(payload.get("named_rng_states"))
+        if not torch.equal(payload["rng"], named["actor"]):
+            raise ValueError("Checkpoint actor RNG identities disagree")
+    elif payload["schema"] != SCHEMA or "named_rng_states" in payload or "named_rng_law" in payload:
+        raise ValueError("Unsupported checkpoint RNG schema")
     restored_profile = _profile(payload["profile"])
     checks = {"schema": payload["schema"], "payload_sha256": tensor_digest(payload),
               "model_sha256": tensor_digest(payload["model"]), "state_sha256": tensor_digest(payload["state"]),
               "profile_sha256": restored_profile.digest, "input_sha256": payload["metadata"]["input_sha256"],
               "config_sha256": digest(payload["config"]), "generation_sha256": tensor_digest(payload["metadata"]),
               "rng_sha256": tensor_digest({"episode": payload["rng"], "global": payload["global_rng"]})}
-    if payload["schema"] != SCHEMA or any(identities.get(key) != value for key, value in checks.items()):
+    if named is not None:
+        checks["named_rng_sha256"] = tensor_digest(named)
+    if any(identities.get(key) != value for key, value in checks.items()):
         raise ValueError("Checkpoint tensor/model/profile identities disagree")
     if (profile is not None and canonical(_profile(profile).to_dict()) != canonical(payload["profile"])):
         raise ValueError("Requested profile differs from the exact frozen profile")
@@ -163,6 +223,11 @@ def load_checkpoint(path, *, profile=None, public=None):
     if payload["source_sha256"] != _sources():
         raise ValueError("Generation implementation changed since the checkpoint")
     runtime, config = payload["runtime"], payload["config"]
+    if named is not None:
+        import numpy as np
+        from PIL import __version__ as pillow_version
+        if runtime.get("numpy") != np.__version__ or runtime.get("pillow") != pillow_version:
+            raise ValueError("Bitwise codec continuation requires the recorded NumPy/Pillow versions")
     if (runtime["torch"] != str(torch.__version__) or runtime["python"] != platform.python_version()
             or runtime["machine"] != platform.machine()):
         raise ValueError("Bitwise continuation requires the recorded CPU software/architecture")
@@ -195,7 +260,9 @@ def load_checkpoint(path, *, profile=None, public=None):
         raise ValueError("Loaded weights differ from the episode parameter anchor")
     rng = torch.Generator(device="cpu"); rng.set_state(payload["rng"])
     torch.set_rng_state(payload["global_rng"])
-    return model, state, rng, {**metadata, "profile": payload["profile"], "checkpoint_identities": identities}
+    named_info = {"named_rng_states": named, "named_rng_law": NAMED_RNG_LAW} if named is not None else {}
+    return model, state, rng, {**metadata, "profile": payload["profile"],
+                             "checkpoint_identities": identities, **named_info}
 
 
 def continuation_digest(model, state, rng, public, actions, metadata):
@@ -204,6 +271,7 @@ def continuation_digest(model, state, rng, public, actions, metadata):
     An action named ``sample`` samples the actor; other names force that action.
     The deterministic service-cost schedule is a checkpoint verification fixture,
     not a substitute for the physically measured deployment ledger.
+    Named v2 streams also run the real codecs and compare emitted file bytes.
     """
     from .runtime import HORIZON, INITIAL_BUDGET, TARIFF
     profile = _profile(metadata["profile"])
@@ -211,6 +279,10 @@ def continuation_digest(model, state, rng, public, actions, metadata):
             or metadata["input_sha256"] != tensor_digest(public) or metadata["profile_sha256"] != profile.digest):
         raise ValueError("Continuation violates its frozen model/input/profile anchor")
     budget = float(metadata.get("remaining_budget", INITIAL_BUDGET))
+    named = restore_named_rngs(metadata) if "named_rng_states" in metadata else None
+    actor_rng, emission_rng = (named["actor"], named["emission"]) if named is not None else (rng, rng)
+    if named is not None and not torch.equal(rng.get_state(), actor_rng.get_state()):
+        raise ValueError("Supplied actor RNG differs from the frozen named state")
     records = []
     with torch.no_grad():
         for requested in actions:
@@ -219,7 +291,13 @@ def continuation_digest(model, state, rng, public, actions, metadata):
             if requested not in (*ACTIONS, "sample"):
                 raise ValueError("Unknown continuation action")
             law, _ = model.policy(state, budget / INITIAL_BUDGET, HORIZON)
-            index = int(torch.multinomial(law.exp(), 1, generator=rng).item()) if requested == "sample" else ACTIONS.index(requested)
+            # Match execute(): forced horizon STOP does not consume an actor draw.
+            if requested == "sample" and state.steps >= HORIZON:
+                index = ACTIONS.index("stop")
+            elif requested == "sample":
+                index = int(torch.multinomial(law.exp(), 1, generator=actor_rng).item())
+            else:
+                index = ACTIONS.index(requested)
             if not bool(torch.isfinite(law[:, index]).all()):
                 raise ValueError("Continuation action violates the frozen horizon mask")
             action = ACTIONS[index]
@@ -228,16 +306,25 @@ def continuation_digest(model, state, rng, public, actions, metadata):
             state, _ = model.advance(state, action, public)
             budget -= TARIFF[action]
             record["after_sha256"] = tensor_digest(state.tensors()); records.append(record)
-        sampled, _, probability = model.sample(state, rng)
+        sampled, _, probability = model.sample(state, emission_rng)
     if tensor_digest(model.state_dict()) != metadata["parameter_snapshot_sha256"]:
         raise ValueError("Model parameters changed during continuation")
+    named_result = {}
+    if named is not None:
+        from .media import write_read
+        with tempfile.TemporaryDirectory(prefix="hepta-cold-codec-") as temporary:
+            readback, artifacts = write_read(sampled, Path(temporary) / "outputs",
+                audio_rate=metadata.get("audio_rate", 2048), frame_ms=metadata.get("frame_ms", 120))
+        named_result = {"named_rng_law": NAMED_RNG_LAW,
+                        "named_rng_sha256": {name: tensor_digest(generator.get_state()) for name, generator in named.items()},
+                        "artifact_sha256": artifacts, "readback_sha256": tensor_digest(readback)}
     return {"schema": "hepta.joint-generation.cold-continuation.v1", "actions": records,
             "model_sha256": metadata["parameter_snapshot_sha256"], "profile_sha256": profile.digest,
             "input_sha256": metadata["input_sha256"], "state_sha256": tensor_digest(state.tensors()),
             "emission_sha256": tensor_digest(sampled), "emission_log_probability_sha256": tensor_digest(probability),
-            "emission_log_probability": probability.tolist(), "rng_sha256": tensor_digest(rng.get_state()),
+            "emission_log_probability": probability.tolist(), "rng_sha256": tensor_digest(actor_rng.get_state()),
             "global_rng_sha256": tensor_digest(torch.get_rng_state()), "remaining_fixture_budget": budget,
-            "physical_runtime_ledger_included": False}
+            "physical_runtime_ledger_included": False, **named_result}
 
 
 if __name__ == "__main__":

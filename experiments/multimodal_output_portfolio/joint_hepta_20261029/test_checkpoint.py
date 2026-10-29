@@ -10,8 +10,8 @@ import sys
 import pytest
 import torch
 
-from .checkpoint import (continuation_digest, generation_metadata, load_checkpoint,
-                         save_checkpoint)
+from .checkpoint import (NAMED_RNG_LAW, NAMED_SCHEMA, continuation_digest, generation_metadata,
+                         load_checkpoint, restore_named_rngs, save_checkpoint)
 from .mechanism_data import batch
 from .model import JointGenerator, tensor_digest
 from .runtime import make_profile
@@ -125,3 +125,31 @@ def test_mid_episode_missing_anchor_and_arbitrary_metadata_are_rejected(tmp_path
     bad = deepcopy(metadata); bad["unsafe"] = Path("unserialized-object")
     with pytest.raises(ValueError, match="unsafe"):
         save_checkpoint(tmp_path / "unsafe.pt", model, state, rng, profile, public, bad)
+
+
+def test_named_actor_emission_streams_resume_in_cold_process_with_actual_codec_bytes(tmp_path):
+    model, state, emission_rng, profile, public, metadata = episode()
+    actor_rng = torch.Generator(device="cpu").manual_seed(7021)
+    torch.rand(11, generator=actor_rng)  # Both streams have noninitial positions.
+    streams = {"actor": actor_rng, "emission": emission_rng}
+    frozen = {name: generator.get_state().clone() for name, generator in streams.items()}
+    checkpoint, public_path, output = tmp_path / "named.pt", tmp_path / "public.pt", tmp_path / "named-cold.json"
+    identity = save_checkpoint(checkpoint, model, state, actor_rng, profile, public, metadata, named_rngs=streams)
+    assert identity["schema"] == NAMED_SCHEMA
+    torch.save(public, public_path)
+    expected = continuation_digest(model, state, actor_rng, public, ["sample"] * 5,
+        {**metadata, "profile": profile.to_dict(), "named_rng_law": NAMED_RNG_LAW, "named_rng_states": frozen})
+    result = subprocess.run([sys.executable, "-B", "-m", MODULE, "--resume", str(checkpoint),
+                             "--public", str(public_path), "--actions", ",".join(["sample"] * 5),
+                             "--output", str(output)], cwd=ROOT, capture_output=True, text=True, timeout=120)
+    assert result.returncode == 0, result.stderr
+    actual = json.loads(output.read_text())
+    assert actual == expected
+    assert set(actual["named_rng_sha256"]) == {"actor", "emission"}
+    assert set(actual["artifact_sha256"]) == {"text", "image", "audio", "video"}
+    assert actual["actions"][-1]["action"] == "stop"
+    _, _, restored_actor, info = load_checkpoint(checkpoint, profile=profile, public=public)
+    restored_streams = restore_named_rngs(info)
+    assert torch.equal(restored_actor.get_state(), frozen["actor"])
+    assert all(torch.equal(restored_streams[name].get_state(), snapshot) for name, snapshot in frozen.items())
+    assert actual["physical_runtime_ledger_included"] is False
