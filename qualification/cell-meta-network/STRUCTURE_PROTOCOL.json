@@ -1,0 +1,19 @@
+{
+  "schema": "hepta.structure-stream-protocol.v1",
+  "seeds": [731, 732, 733],
+  "arms": ["dynamic", "fixed_experts", "monolith", "fixed_graph"],
+  "regimes": ["matched_exposure", "cpu_budget"],
+  "matched_steps": 400,
+  "maximum_steps": 20000,
+  "cpu_budget_seconds_per_phase": 1.5,
+  "batch_size": 32,
+  "learning_rate": 0.01,
+  "phase_count": 3,
+  "initial_equivalence": "Identical typed outputs and float32 allclose rtol=1e-5, atol=1e-5; partitioning a minibatch may select a different BLAS reduction order. Record actual maximum absolute logit error. Checkpoint restore uses the same batch shape and requires exact equality.",
+  "resource_contract": "One pinned CPU per training process; arms run sequentially. Matched exposure uses identical sampled row schedules. CPU-budget runs charge gradient selection and optimizer initialization against each phase allowance. Final minibatch, persistence, reload, diagnostics and interpreter startup are measured separately and included in reported lifecycle cost; a phase allowance is not a claim of an exact total-lifecycle cap.",
+  "information_contract": "Identical parent checkpoints, frozen encoder and shared frozen head; identical prefix records, replay rows and explicit entity addresses. Dynamic receives no held outcomes. Fixed graph is a serial pair of rank-4 residual operators, not a planner alias. All four structures have 10764 total and 6144 trainable parameters.",
+  "retention_contract": "Three predeclared updates change two reserves, one pack value and one limit. Every stage evaluates changed and unchanged entities, earlier updates and untouched original facts. Replay costs are included.",
+  "scope": "Finite authored inventory memory with one possible split into two experts and training-only dynamic routing; no claim of recursive open-ended growth, new-entity understanding, full-agent capability, or AGI.",
+  "evaluation_contract": "Train all arms before the evaluator opens the existing held-expression artifact. This is an exploratory reuse of a published held set, not a new blind holdout. Canonical and held-expression results are reported separately; seeds and wording groups are the units, not individual repeated rows.",
+  "admission": "Dynamic structure is a candidate, not automatically accepted. Report actual quality, retention, full lifecycle CPU/wall/RSS integral, storage and selection cost against every comparator. A positive result requires better quality with no retention regression and no higher measured total cost, or an explicitly reported Pareto tradeoff; no threshold is retuned on evaluation outcomes."
+}
