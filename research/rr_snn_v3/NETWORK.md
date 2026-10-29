@@ -76,3 +76,23 @@ This is complete-observation conditional-intensity MLE. It is not terminal utili
 optimization, a free-running predictive-calibration study, a fair architecture
 benchmark or a real future-window evaluation. Neither the model, analytic
 interval formulas nor a successful fit prove architectural novelty or superiority.
+
+
+## Frozen-candidate executed result
+
+The final pre-data freeze is 16ecf52b7faaa43e9ab0612cc22b5dd35345f063.
+After that commit, the declared 128 training episodes and 128 heldout episodes
+were generated and the 300-update fit completed without hyperparameter changes.
+
+Across both neurons, heldout full path NLL per episode was 3.569094681165677
+at zero initialization, 3.0067730504750716 after fitting, and 2.974467289971812
+at the known generating weights. The paired fitted-minus-initial difference
+was -0.562321630690604; the declared 95% stratified bootstrap interval was
+[-0.7655246161267093,-0.35743050457506537]. All fitted gradients were finite.
+
+Several individual fitted coefficients differ from their generating values,
+particularly the first neuron's pressure coefficient. This experiment demonstrates
+improved heldout path likelihood for this fit; it does not establish accurate
+recovery of every coefficient or a causal utility benefit from maturity pressure.
+The complete weights, optimization history and all episode summaries are in
+network_learning_results.json.
