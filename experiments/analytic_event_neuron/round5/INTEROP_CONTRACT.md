@@ -22,7 +22,7 @@ filter, signed packet decoding and stochastic cell are the original code.
 
 | Interface | Required information | Meaning |
 | --- | --- | --- |
-| `forecast(TerminalForecast(...))` | Explicit Round4 conditional law, condition time, horizon, ordered thresholds | Three disjoint endpoint events: `X_T <= lower`, `lower < X_T <= upper`, `X_T > upper` |
+| `forecast(TerminalForecast(...))` | Explicit Round4 conditional law, condition time, horizon, finite strictly ordered thresholds | Three disjoint endpoint events: `X_T <= lower`, `lower < X_T <= upper`, `X_T > upper` |
 | `forecast(FirstPassageForecast(...))` | `BrownianPath` with actual initial level, drift, diffusion, barrier and `BoundarySide`; physical time, horizon, discount | First hit of one fixed barrier during one unreset Brownian cycle |
 | `observe_cycle(CycleObservation(...))` | Positive distance grid, live masses, prior absorbed mass, drift/diffusion, time, explicit `EventObservation` | Projected lower-barrier absorbing belief updated only by declared observations |
 | `new_regenerative_cell(...)` | Original `CellParameters`, actual initial level, RNG seed | Original stateful lower-barrier cell, including multiple events, reset, refractory time and RNG counter |
@@ -42,6 +42,13 @@ the process between now and the endpoint; it cannot supply `BrownianPath` or
 `CellParameters`. Untyped dictionaries and a terminal law passed as the path
 are rejected. The caller remains responsible for the provenance of physical
 parameters and the correctness of the conditioning information.
+
+The inherited runtime schema permits one or two Gaussian components with
+strictly positive weights and variances. It requires `lower < upper`; a
+same-threshold binary pair or deterministic terminal atom is outside this
+three-channel adapter's effective domain. The common-threshold call/put
+complement identity is a mathematical property, not an accepted request to this
+strictly ordered three-channel API.
 
 For a lower barrier, the pinned kernel receives
 `distance = initial_level - barrier` and the original drift. For an upper

@@ -1,0 +1,82 @@
+{
+  "anchor_rows": 512,
+  "architectures_and_arithmetic_costs_not_identical": true,
+  "arms": [
+    "frozen",
+    "replay_legacy",
+    "gaussian_full_range",
+    "mixture_legacy",
+    "mixture_full_range",
+    "moment_legacy",
+    "moment_full_range",
+    "same_weight_moment_full"
+  ],
+  "bootstrap_replicates": 4000,
+  "bootstrap_seed": 28102855,
+  "calibration_ece_max": 0.04,
+  "candidate_sets_not_assumed_nested": true,
+  "candidates_per_selector": 21,
+  "confirmation_constructed_after_source_and_prepared_freeze_only": true,
+  "confirmation_rows_per_domain": 256,
+  "coverage95_range": [
+    0.92,
+    0.98
+  ],
+  "development_rows_per_domain": 256,
+  "diagnostic_interval_alpha": 0.05,
+  "final_new_nll_improvement_min": 0.005,
+  "full_range_prior_grid": "linspace(0,1,21)",
+  "independent_unit": "one query trajectory; three correlated future horizons stay together",
+  "interval_coverage": "nominal approximate bootstrap coverage; five independent training-seed clusters",
+  "legacy_prior_grid": "linspace(0,fit_prior,21)",
+  "namespace": "hepta.aen.r5.selection.confirmation-study.v1",
+  "native_runtime_or_utility_claim": false,
+  "old_confirmation_rows_reused_across_windows": true,
+  "old_nll_margin": 0.02,
+  "original_round4_evidence_reconstructed": false,
+  "primary_comparisons": [
+    [
+      "mixture_full_range",
+      "mixture_legacy"
+    ],
+    [
+      "moment_full_range",
+      "moment_legacy"
+    ]
+  ],
+  "primary_endpoint": "mean new-domain density NLL difference over the six fixed drift windows",
+  "primary_evidence": "upper endpoint below zero; sign evidence only, no prespecified practical range-effect margin",
+  "primary_family_size": 2,
+  "primary_interval_alpha": 0.025,
+  "profile": "registered",
+  "profile_gates_are_not_familywise_or_pointwise_certificates": true,
+  "profile_gates_use_descriptive_anchor_intervals": true,
+  "public_context_histories_per_query": 0,
+  "replay_rows": 256,
+  "schema": "hepta.analytic-event.selection-registration.v5",
+  "seed_rule": "first8 SHA256 bytes of namespace|phase|seed|window|role, masked to53bits; explicit schedule collision checked",
+  "seeds": [
+    2131,
+    2377,
+    2539,
+    2791,
+    3011
+  ],
+  "selector": "old-dev mean NLL increase +1.645 pairedSE<=.02; minimize new-dev NLL; index tie break",
+  "selectors_per_window": 6,
+  "training_rows": 256,
+  "windows": [
+    "gaussian",
+    "drift_shift",
+    "gaussian",
+    "drift_shift",
+    "gaussian",
+    "drift_shift",
+    "gaussian",
+    "drift_shift",
+    "gaussian",
+    "drift_shift",
+    "gaussian",
+    "drift_shift"
+  ]
+}
