@@ -25,6 +25,16 @@ REQUIRED = (
 )
 
 
+def native_output_path(output):
+    actual = output / "native-actual"
+    # HeptaFleetLayout retains all 128 AgentId bits in a 26-character base32
+    # key. Bound the longest actual owner root before any fit, using bytes.
+    socket = actual / "migrated-owner/fleet/run" / ("a" + "x" * 26 + ".ctl")
+    require(len(os.fsencode(socket)) <= 103,
+            "native owner Unix socket path exceeds 103 bytes; use the short CI output root")
+    return actual
+
+
 def retain_junit(target, output, name):
     source = target / "nextest/local/junit.xml"
     require(source.is_file(), "nextest JUnit report is missing")
@@ -62,6 +72,7 @@ def numeric_receipts(actual):
 
 
 def run(runner, runtime, receipt):
+    actual = native_output_path(runner.output)
     sources = source_inventory()
     save(runner.output / "SOURCE_FILES.json", sources)
     receipt["source_inventory"] = identity(runner.output / "SOURCE_FILES.json")
@@ -82,7 +93,7 @@ def run(runner, runtime, receipt):
                    "HEPTA_MEMORY_V10_RESEARCH_ROOT": inputs["research"],
                    "HEPTA_MEMORY_V10_ENCODER": inputs["encoder"],
                    "HEPTA_MEMORY_V10_LEGACY_ROOT": inputs["legacy"],
-                   "HEPTA_MEMORY_V10_EVIDENCE": str(runner.output / "native-actual")}
+                   "HEPTA_MEMORY_V10_EVIDENCE": str(actual)}
     require(not any(name.startswith(("MEMORY_CELL_V7_", "MEMORY_CELL_V8_", "MEMORY_CELL_V9_"))
                     for name in os.environ), "old qualification environment must not be supplied")
     runner.execute("same-source-app-server", ["cargo", "build", "--locked", "--manifest-path", "codex-rs/Cargo.toml",
@@ -93,7 +104,6 @@ def run(runner, runtime, receipt):
     save(runner.output / "receipt.json", receipt)
     runner.execute("actual-trained-owner-lifecycle", actual_command(), env=environment)
     receipt["actual_junit"] = retain_junit(target, runner.output, "actual")
-    actual = runner.output / "native-actual"
     missing = [name for name in REQUIRED if not (actual / name).is_file()]
     receipt["missing_required_receipts"] = missing
     require(not missing, "native actual evidence incomplete: " + repr(missing))

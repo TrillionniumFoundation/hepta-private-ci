@@ -25,6 +25,7 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: '0'
       CARGO_BUILD_JOBS: '2'
       CARGO_TARGET_DIR: ${{ github.workspace }}/memory-v7-target
+      HEPTA_MEMORY_V10_CI_OUTPUT: /tmp/h10-${{ github.run_id }}-${{ github.run_attempt }}
       PYTHONDONTWRITEBYTECODE: '1'
       PYTHONUNBUFFERED: '1'
       OMP_NUM_THREADS: '1'
@@ -91,7 +92,7 @@ jobs:
         timeout-minutes: 180
         run: |
           python3 -I -B qualification/memory-cell-v10-ci/ci.py \
-            --output "$GITHUB_WORKSPACE/memory-v10-ci-output" \
+            --output "$HEPTA_MEMORY_V10_CI_OUTPUT" \
             --runtime "$RUNNER_TEMP/memory-v10-runtime" \
             --job-start-marker "$RUNNER_TEMP/memory-v10-job-start.json"
       - name: Authenticate successful verification, then final fix and format
@@ -101,7 +102,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           python3 -I -B qualification/memory-cell-v10-ci/ci.py \
-            --output "$GITHUB_WORKSPACE/memory-v10-ci-output" \
+            --output "$HEPTA_MEMORY_V10_CI_OUTPUT" \
             --runtime "$RUNNER_TEMP/memory-v10-runtime" \
             --job-start-marker "$RUNNER_TEMP/memory-v10-job-start.json"
       - name: Preserve successful or failed logs, model files, and Unix artifact names
@@ -109,7 +110,7 @@ jobs:
         timeout-minutes: 10
         run: |
           python3 -I -B qualification/memory-cell-v10-ci/pack.py \
-            --source "$GITHUB_WORKSPACE/memory-v10-ci-output" \
+            --source "$HEPTA_MEMORY_V10_CI_OUTPUT" \
             --output "$GITHUB_WORKSPACE/memory-v10-evidence-transport"
       - name: Upload immutable attempt evidence before optional cache work
         if: always()

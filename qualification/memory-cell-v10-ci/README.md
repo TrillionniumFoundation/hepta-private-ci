@@ -31,6 +31,13 @@ The workflow uses checkout depth one, Rust 1.95.0, nextest 0.9.131, and the
 existing `memory-v7-target` cache location with V9/V8 fallback keys. Commands are
 passed as argument lists. Rust tests run through `just test`.
 
+The evidence working root is a fresh `/tmp/h10-<run-id>-<attempt>` directory.
+This keeps both original and migrated owners' Unix socket paths within the
+103-byte cross-platform bound. The driver checks the longest owner path before
+any training. The portable archive still uses the stable
+`memory-v10-ci-output/` member prefix; absolute paths in original receipts
+remain unchanged.
+
 Verification performs these steps:
 
 1. Create a fresh Python 3.12 virtual environment; install the fixed minimal

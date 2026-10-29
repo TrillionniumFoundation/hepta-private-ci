@@ -12,6 +12,7 @@ import common
 import github_gate
 import pack
 import request
+import verify
 
 
 class EvidenceBoundaryTests(unittest.TestCase):
@@ -93,6 +94,14 @@ class RequestBoundaryTests(unittest.TestCase):
     def test_request_cannot_change_the_test_before_format_rule(self):
         with self.assertRaisesRegex(ValueError, "source/order"):
             self.read({**self.value, "tests_before_final_fix_and_format": False})
+
+    def test_actual_path_guard_rejects_overlong_and_unicode_byte_paths_before_training(self):
+        accepted = verify.native_output_path(Path("/tmp/h10-40900187124-1"))
+        self.assertEqual(accepted, Path("/tmp/h10-40900187124-1/native-actual"))
+        for root in ("/home/runner/work/hepta-private-ci/hepta-private-ci/memory-v10-ci-output",
+                     "/tmp/" + "存" * 20):
+            with self.subTest(root=root), self.assertRaisesRegex(ValueError, "Unix socket path"):
+                verify.native_output_path(Path(root))
 
 
 if __name__ == "__main__":
