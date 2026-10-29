@@ -318,9 +318,9 @@ def codex_rust_crate(
     # membership during Starlark package loading.
     normal_crate_deps = all_crate_deps()
     production_aliases = {
-        alias_name: label
-        for alias_name, label in aliases().items()
-        if "//codex-rs/" not in str(label)
+        crate_label: rust_alias
+        for crate_label, rust_alias in aliases().items()
+        if not str(crate_label).startswith("//codex-rs/")
     }
 
     if build_script_enabled and native.glob(["build.rs"], allow_empty = True):
