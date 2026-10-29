@@ -1,0 +1,27 @@
+{
+  "affinity": [
+    0
+  ],
+  "complete_wait": true,
+  "exit_code": 0,
+  "limits": {
+    "AS_bytes": 134217728,
+    "CPU_seconds": 5,
+    "wall_seconds": 20
+  },
+  "max_rss_kib": 13568,
+  "parent_instrument_tail": "UNKNOWN_NOT_ZERO",
+  "scope": "portable helper, eight finite literal and saved deidentified aggregate checks; no model/data/gradient probe rerun",
+  "shared_exclusive_lock": true,
+  "source_sha256": {
+    "README.md": "004a3b5b1e0a8593350490cfc2d4d4981395f1bef07ac6258ecfbacf30c41881",
+    "SUMMARY.json": "5b3c3692c56c70be6346b1c6a9a21ec651aeb871e08f46ae6920ffe10cd81e57",
+    "mechanism.py": "e182c77daa77b93a34be78825fb41e6924f5cb213561778a0dca62e869c34390",
+    "test_mechanism.py": "68529c8d9290e25fe190b5a11660b4bcd5cbc0d80c425e95797d8758ecd02b7d"
+  },
+  "status": "PASS",
+  "stderr": "test_both_seeds_and_strict_thresholds_required (test_mechanism.MechanismChecks.test_both_seeds_and_strict_thresholds_required) ... ok\ntest_coefficients_match_independent_centered_differences (test_mechanism.MechanismChecks.test_coefficients_match_independent_centered_differences) ... ok\ntest_exact_boundary_coefficients (test_mechanism.MechanismChecks.test_exact_boundary_coefficients) ... ok\ntest_image_coefficient_bound_on_fixed_literal_grid (test_mechanism.MechanismChecks.test_image_coefficient_bound_on_fixed_literal_grid) ... ok\ntest_invalid_coefficients_reject (test_mechanism.MechanismChecks.test_invalid_coefficients_reject) ... ok\ntest_missing_duplicate_malformed_inventory_rejects (test_mechanism.MechanismChecks.test_missing_duplicate_malformed_inventory_rejects) ... ok\ntest_saved_deidentified_summary_recomputes_both_negative_gates (test_mechanism.MechanismChecks.test_saved_deidentified_summary_recomputes_both_negative_gates) ... ok\ntest_zero_norm_null_is_not_success (test_mechanism.MechanismChecks.test_zero_norm_null_is_not_success) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 0.001s\n\nOK\n",
+  "stdout": "",
+  "wall_seconds": 0.08657549088820815,
+  "whole_child_CPU_seconds": 0.083882
+}
