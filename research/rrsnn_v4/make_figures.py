@@ -301,7 +301,7 @@ def counterfactual_figure(data):
     left.set_xlabel("Announced resource reduction (budget units)", labelpad=10)
     left.set_ylabel("Expected delivered-query utility", labelpad=10)
     left.grid(axis="y")
-    left.legend(frameon=False, fontsize=9.8, loc="best")
+    left.legend(frameon=False, fontsize=9.8, loc="upper left")
     forest_axis(right)
     right.tick_params(axis="y", labelsize=9.7)
     right.set_title("b  Shock interaction", loc="left", pad=12)
