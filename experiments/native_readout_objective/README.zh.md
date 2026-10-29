@@ -2,9 +2,27 @@
 
 ## 当前状态
 
-本目录已实现三种读出训练程序、实际原生执行、严格分阶段驱动器、独立数值与证据审计，以及完整任务状态的冷恢复验证。正式运行须先公开精确的源码、协议和重建二进制封存；训练和开发选择完成后，还须公开选择封存，才能打开确认数据。准备期收据与正式研究结果分别保留。
+**正式研究已完成：独立确认审计 PASS，唯一预注册收益门槛为 0/1。** `policy_regret − iterative_q_mse` 的平均净效用差为 **−0.005370044**，双侧 95% 配对 seed t 区间为 **[−0.114120162, 0.103380074]**，未满足下限严格大于 0.005 的门槛。稳定性失败为零；该区间不能证明两种目标等效，也不能证明策略目标更差。[完整中文报告](REPORT.zh.md)；[主比较精确数据](results/PRIMARY_COMPARISON.json)
+
+本轮使用 16 个独立配对 seed，完成 16,384 个确认 episode、143,262 个学习臂真实原生 kernel/NDU 决策步骤。六例固定 owner 工程检查完成 84 步、6 次不同 PID 冷恢复与 66 个恢复后继续步骤，全部通过；这六例没有 STOP，相关探针实际覆盖为零。[独立审计摘要](results/AUDIT_SUMMARY.json)；[owner 结果](results/OWNER_SUMMARY.json)
+
+源码与协议先发布于 [`7908860…`](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/7908860cb959cbe1599379d4ecbfcc22fbccbe61)，开发选择随后发布于 [`87b03617…`](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/87b03617077f9e5f275d291b7af06cd1418f87ce)，确认在选择发布后才启动。报告与派生结果均绑定完整审计 SHA-256。原始档案已从公开远端恢复并完成独立语义重审，实际收据入口见本文末节。准备期收据、正式科学结果、工程验证与 GitHub CI 状态分别保留。
 
 旧 `continuous_boundary_flow` 的 0/3 与 `continuous_boundary_policy` 的 0/4 结论分别保留。本次没有扩充它们的样本、重选模型或修改验收门槛。历史结果与本次恢复范围见 [RECOVERY_STATUS.json](RECOVERY_STATUS.json)。
+
+## 结果与证据入口
+
+| 文件 | 内容 |
+| --- | --- |
+| [REPORT.zh.md](REPORT.zh.md) | 研究结论、对照设计、效用与风险、量化诊断、工程范围、完整成本口径 |
+| [AUDIT_SUMMARY.json](results/AUDIT_SUMMARY.json) | 来源与确认审计覆盖、0/1 门槛、训练覆盖和 owner 概要 |
+| [PRIMARY_COMPARISON.json](results/PRIMARY_COMPARISON.json) | 16 个 seed 的配对差、精确 95% 区间与分组描述 |
+| [ARM_SUMMARIES.json](results/ARM_SUMMARIES.json) | 四臂 ID/OOD 净效用、风险校准 bins、动作及真实调用计数 |
+| [COST_SUMMARY.json](results/COST_SUMMARY.json) | 科学阶段、外层命令、独立审计、owner 与通信成本，注明包含关系 |
+| [COMMON_STATE_PANEL.json](results/COMMON_STATE_PANEL.json) | 同状态条件 regret、相同 native 激活与浮点/Q24 诊断 |
+| [PROTOCOL.json](PROTOCOL.json) | 公开冻结的研究合同，确认后未修改 |
+
+总体平均净效用分别为 A 3.022192、B 2.988547、C 2.983177、DP 3.596372。C−B 在 ID/OOD 的方向相反，但仅为描述性结果；唯一确认性比较仍是预注册总体差。共同 ID 状态面板每臂 6,144 行，teacher=STOP 只有 5 行；浮点与原生 Q24/NDU 动作差异均为零，不能用本面板把结果归因于读出量化。[完整报告与解释范围](REPORT.zh.md)
 
 ## 为什么先做这个对照
 
@@ -63,11 +81,11 @@ python -m experiments.native_readout_objective.preflight \
 
 主统计单位是 16 个配对的训练/环境 seed；C−B 的双侧 95% t 区间下限须大于 0.005，且稳定性失败为零。只有一项主比较，不能把描述性指标另算作通过的收益门槛。不得按确认结果继续加 seed。
 
-正式报告同时覆盖：ID/OOD 净效用；共同解析风险预测器在各策略访问分布上的 Brier/ECE；同一独立诊断状态面板上按 teacher keep/repair/stop 条件分组的物理 action regret；float 与真实 Q24/NDU 的动作差异；训练、DP/模型构造、完整运行、序列化和实际通信成本。风险校准变化不能单独解释为风险预测器变强。
+本次报告同时覆盖：ID/OOD 净效用；共同解析风险预测器在各策略访问分布上的 Brier/ECE；同一独立诊断状态面板上按 teacher keep/repair/stop 条件分组的物理 action regret；float 与真实 Q24/NDU 的动作差异；训练、DP/模型构造、完整运行、序列化和实际通信成本。风险校准变化不能单独解释为风险预测器变强。
 
 量化诊断保留有符号的 `regret(Q24/NDU action) − regret(float action)`；负值表示该状态上量化反而改善动作，不能把全部 action flip 解释为损失。
 
-三臂采用相同 native 输入接口，每步 20 个 i64，即 160 个计价数值字节，按原口径扣每 byte `1e-6`。完整 JSON 请求和响应另测；共享 setup 与子进程 CPU 不重复累计。`head.fit` 内部时钟不含最初输入验证和数组分配，正式 runner 需用包围窗口核算完整阶段。没有硬件能耗测量，不作节能结论。
+三臂采用相同 native 输入接口，每步 20 个 i64，即 160 个计价数值字节，按原口径扣每 byte `1e-6`。完整 JSON 请求和响应另测；共享 setup 与子进程 CPU 不重复累计。`head.fit` 内部时钟不含最初输入验证和数组分配，正式 runner 使用包围窗口核算完整阶段。科学窗口合计 130.174260 秒 wall、130.417129 秒 CPU；包含它们的外层完整命令以及独立审计和 owner 成本另列，不把内外层相加。没有硬件能耗测量，不作节能结论。[成本数据](results/COST_SUMMARY.json)
 
 ## 执行与证据门槛
 
@@ -75,6 +93,18 @@ python -m experiments.native_readout_objective.preflight \
 
 独立审计分别在开发选择后与确认结束后执行。工程验证固定使用 seed 3301、三个学习臂、ID/OOD 各 context 0/path 0，共六个已有 episode；重新建立 `FeatureMap`、物理状态、因果历史及 native owner，验证不同 PID 冷恢复后的完整后缀。它不增加收益样本，也不证明任意期限的稳定性。遇到 STOP 才运行后续独特 tick 的拒绝探针，并如实报告实际覆盖次数。
 
+确认审计核验了 1,048 个文件、64 个选定 checkpoint、144 个候选训练程序、9,216 条开发 episode 与全部 16,384 条确认 episode。独立复核包括 Bellman、因果物理轨迹、奖励、优化器和 Q24 算术；数值网格构造器为共享封存组件，原 sparse kernel 真实执行并核验收据，没有宣称另写了第二个独立 sparse 实现。[审计范围](results/AUDIT_SUMMARY.json)
+
 用户已于 2026-10-29 明确授权将本项目研究源码、报告、检查点和原始证据公开到 `TrillionniumFoundation/hepta-private-ci`。旧补充实验的缺失原始档案不能由结果表重建；`continuous_boundary_policy_reproduction` 使用原种子和原算法另建明确标识的新复现记录。它不增加独立样本，也不替换历史 0/4 结论。
 
 研究保持 `DENY_ALL`，不触发生产 admission 或主线合并。
+
+## 公开恢复与重新审计
+
+从公开提交 [b0907a0](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/b0907a0eab889b9e1f346a452b7239661a96f9e3)重新获取完整归档，**1,484 个文件、610 个目录、136,972,435 bytes** 恢复核验通过；全部 278 个下载对象均首次成功。对恢复数据重新执行的完整审计为 **547,772 bytes**，与归档原审计逐字节一致，科学结论仍为 **0/1**，新增训练和样本数为零。
+
+- [公开下载与恢复回执](results/PUBLIC_RETRIEVAL.json)及[逐文件校验名册](results/PUBLIC_FILE_VERIFY.jsonl.gz)。
+- [独立重新审计结果](results/PUBLIC_ROUNDTRIP_AUDIT.json)、[完整审计身份](results/PUBLIC_ROUNDTRIP_FILES.json)及[额外复审成本](results/PUBLIC_ROUNDTRIP_COST.json)。
+- [两套完整原始包的共同公开锚点](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/8dc7defc17974d67766f35f340eb7bf6e692aefb)、[复现指南](REPRODUCE.md)与[中文总交付报告](../RESEARCH_DELIVERY_2026-10-29.zh.md)。
+
+这些回执证明本包的公开恢复与科学复核，未把有限工程结果扩张为生产资格。研究继续保持 `DENY_ALL`、draft 和未合并状态；最终 head 的仓库 CI 见 [PR #4157](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4157)与 [Actions](https://github.com/TrillionniumFoundation/hepta-private-ci/actions)。
