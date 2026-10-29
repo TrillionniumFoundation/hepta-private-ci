@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import shutil
 import sys
+import tomllib
 import xml.etree.ElementTree as ET
 
 from common import HERE, ROOT, actual_command, git, git_text, identity, load, ordinary_command, require, save, source_inventory
@@ -35,9 +36,36 @@ def native_output_path(output):
     return actual
 
 
-def retain_junit(target, output, name):
-    source = target / "nextest/local/junit.xml"
-    require(source.is_file(), "nextest JUnit report is missing")
+def prepare_junit(workspace, output, name):
+    # Nextest 0.9.131 joins store.dir to the Cargo workspace, independently
+    # of CARGO_TARGET_DIR. just test selects the repository's local profile.
+    configuration = workspace / ".config/nextest.toml"
+    config = tomllib.loads(configuration.read_text())
+    profiles = config["profile"]
+    local = profiles["local"]
+    require(local.get("inherits", "default") == "default", "nextest local inheritance changed")
+    store = config.get("store", {}).get("dir", "target/nextest")
+    report = local.get("junit", {}).get("path", profiles["default"].get("junit", {}).get("path"))
+    for value in (store, report):
+        require(isinstance(value, str) and value and not Path(value).is_absolute()
+                and ".." not in Path(value).parts, "nextest report path must be workspace-relative")
+    source = workspace / store / "local" / report
+    require(not any(path.is_symlink() for path in (source, *source.parents)), "symlinked nextest report path")
+    previous = source.exists()
+    if previous:
+        require(source.is_file(), "nextest report path is not a regular file")
+        source.unlink()
+    save(output / (name + "-junit-location.json"), {
+        "schema": "hepta.memory.v10.junit-location.v1", "profile": "local",
+        "workspace": str(workspace), "source": str(source),
+        "cargo_target_dir": os.environ.get("CARGO_TARGET_DIR"),
+        "configuration": identity(configuration), "removed_previous_report": previous,
+    })
+    return source
+
+
+def retain_junit(source, output, name):
+    require(source.is_file(), "nextest JUnit report is missing: " + str(source))
     destination = output / (name + "-junit.xml")
     shutil.copyfile(source, destination)
     root = ET.parse(destination).getroot()
@@ -48,7 +76,8 @@ def retain_junit(target, output, name):
         from common import ACTUAL_TEST
         require(len(cases) == 1 and ACTUAL_TEST.rsplit("::", 1)[1] in cases[0].get("name", ""),
                 "actual JUnit must contain the exact selected parent test")
-    return {"path": destination.name, "cases": len(cases), **identity(destination)}
+    return {"path": destination.name, "source": str(source), "cases": len(cases),
+            "location_receipt": identity(output / (name + "-junit-location.json")), **identity(destination)}
 
 
 def numeric_receipts(actual):
@@ -98,12 +127,14 @@ def run(runner, runtime, receipt):
                     for name in os.environ), "old qualification environment must not be supplied")
     runner.execute("same-source-app-server", ["cargo", "build", "--locked", "--manifest-path", "codex-rs/Cargo.toml",
                    "-p", "codex-app-server", "--bin", "codex-app-server"], env=environment)
+    ordinary_junit = prepare_junit(ROOT / "codex-rs", runner.output, "ordinary")
     runner.execute("ordinary-scoped-rust", ordinary_command(), env=environment)
-    receipt["ordinary_junit"] = retain_junit(target, runner.output, "ordinary")
+    receipt["ordinary_junit"] = retain_junit(ordinary_junit, runner.output, "ordinary")
     receipt["ordinary_scoped_tests_passed"] = True
     save(runner.output / "receipt.json", receipt)
+    actual_junit = prepare_junit(ROOT / "codex-rs", runner.output, "actual")
     runner.execute("actual-trained-owner-lifecycle", actual_command(), env=environment)
-    receipt["actual_junit"] = retain_junit(target, runner.output, "actual")
+    receipt["actual_junit"] = retain_junit(actual_junit, runner.output, "actual")
     missing = [name for name in REQUIRED if not (actual / name).is_file()]
     receipt["missing_required_receipts"] = missing
     require(not missing, "native actual evidence incomplete: " + repr(missing))

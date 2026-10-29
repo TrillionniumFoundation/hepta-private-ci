@@ -104,5 +104,54 @@ class RequestBoundaryTests(unittest.TestCase):
                 verify.native_output_path(Path(root))
 
 
+class JunitEvidenceTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name)
+        self.workspace = self.root / "workspace"
+        self.output = self.root / "evidence"
+        self.output.mkdir()
+        config = self.workspace / ".config/nextest.toml"
+        config.parent.mkdir(parents=True)
+        config.write_text('[profile.default.junit]\npath="junit.xml"\n'
+                          '[profile.local]\ninherits="default"\n')
+
+    def test_workspace_report_is_fresh_and_independent_of_cargo_target(self):
+        expected = self.workspace / "target/nextest/local/junit.xml"
+        expected.parent.mkdir(parents=True)
+        expected.write_text("stale report")
+        cargo = self.root / "external-cargo-cache"
+        decoy = cargo / "nextest/local/junit.xml"
+        decoy.parent.mkdir(parents=True)
+        decoy.write_text("wrong root")
+        with patch.dict(verify.os.environ, {"CARGO_TARGET_DIR": str(cargo)}):
+            source = verify.prepare_junit(self.workspace, self.output, "ordinary")
+        self.assertEqual(source, expected)
+        self.assertFalse(source.exists())
+        self.assertEqual(decoy.read_text(), "wrong root")
+        with self.assertRaisesRegex(ValueError, "JUnit report is missing"):
+            verify.retain_junit(source, self.output, "ordinary")
+        source.write_text('<testsuites><testsuite><testcase name="case"/></testsuite></testsuites>')
+        receipt = verify.retain_junit(source, self.output, "ordinary")
+        self.assertEqual(receipt["cases"], 1)
+        self.assertEqual((self.output / receipt["path"]).read_bytes(), source.read_bytes())
+        location = common.load(self.output / "ordinary-junit-location.json")
+        self.assertEqual(location["source"], str(expected))
+        self.assertTrue(location["removed_previous_report"])
+        self.assertEqual(verify.prepare_junit(self.workspace, self.output, "actual"), source)
+        self.assertFalse(source.exists())
+        source.write_text(f'<testsuites><testsuite><testcase name="{common.ACTUAL_TEST}"/></testsuite></testsuites>')
+        self.assertEqual(verify.retain_junit(source, self.output, "actual")["cases"], 1)
+
+    def test_empty_failed_and_wrong_actual_reports_remain_rejected(self):
+        source = verify.prepare_junit(self.workspace, self.output, "actual")
+        source.parent.mkdir(parents=True)
+        for cases in ('', '<testcase name="case"><failure/></testcase>', '<testcase name="wrong-parent"/>'):
+            source.write_text(f'<testsuites><testsuite>{cases}</testsuite></testsuites>')
+            with self.subTest(cases=cases), self.assertRaises(ValueError):
+                verify.retain_junit(source, self.output, "actual")
+
+
 if __name__ == "__main__":
     unittest.main()

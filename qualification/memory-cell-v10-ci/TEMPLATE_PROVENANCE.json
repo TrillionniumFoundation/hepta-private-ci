@@ -18,6 +18,16 @@
     "scripts/run-nextest.py": "1ed63abe84267b320cbfb0123a70aac5507f4595"
   },
   "github_writes_by_this_agent": false,
+  "nextest_junit_provenance": {
+    "git_blobs": {
+      "nextest-runner/default-config.toml": "ed8e064306e07d2fb0971e9698183392d6e799af",
+      "nextest-runner/src/config/core/imp.rs": "83b1398f966b0c7df33d309c73a8f0d129972aa8",
+      "nextest-runner/src/config/elements/junit.rs": "10aaae87cc0fce5127ec6f8cfb2b7878080953f4"
+    },
+    "ref": "cargo-nextest-0.9.131",
+    "repository": "nextest-rs/nextest",
+    "resolution": "workspace_root / store.dir / selected_profile / junit.path; independent of CARGO_TARGET_DIR"
+  },
   "old_qualification_scripts_executed": false,
   "repository": "TrillionniumFoundation/hepta-private-ci",
   "schema": "hepta.memory.v10.ci-template-provenance.v1"

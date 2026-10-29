@@ -64,6 +64,15 @@ Verification performs these steps:
    addresses, both parameter kinds, and every row within the fixed absolute
    1e-4 / relative 1e-5 tolerance. Preserve both ordinary and actual JUnit files.
 
+Nextest 0.9.131 resolves `store.dir` against the Cargo workspace, independently
+of `CARGO_TARGET_DIR`. With the checked-in `local` profile inheriting the
+default JUnit path, the report is
+`codex-rs/target/nextest/local/junit.xml` under the checkout. Before each test
+command, the driver resolves this configured path and removes any previous
+report. It preserves a location receipt, then requires a fresh nonempty XML
+report with no failures; the actual report must name the one selected parent.
+Pinned upstream source identities are in `TEMPLATE_PROVENANCE.json`.
+
 The actual test uses real SQLite, Agentd control sockets, process stops, signed
 artifact ownership, and the existing same-host TCP migration path. Its App
 Server readiness seam and authority keys are explicit test fixtures. A passing
