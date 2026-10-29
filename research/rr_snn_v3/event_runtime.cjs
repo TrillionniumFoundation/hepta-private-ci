@@ -244,6 +244,7 @@ const RRMarkedEvents = (() => {
     check(Object.values(s.ledger).every(integer)&&s.budget===s.ledger.initial+s.ledger.added-s.ledger.removed-s.ledger.spentPulse-s.ledger.spentDeadline,"checkpoint budget ledger");
     exactKeys(s.utility,"emitted loss");check(Object.values(s.utility).every(finite)&&s.utility.loss>=0,"checkpoint utility");
     check(integer(s.spikeCount)&&Array.isArray(s.log)&&s.log.length<=c.maxRecords&&Array.isArray(s.pulses)&&s.pulses.length===s.spikeCount,"checkpoint logs");
+    s.pulses.forEach(p=>exactKeys(p,"time kind channel"));
     check(s.pulses.every((p,i)=>finite(p.time)&&p.time>=0&&p.time<=s.now&&(!i||p.time>=s.pulses[i-1].time)),"checkpoint pulse times");
     const seenCounts=s.regimes.map(()=>Array(n).fill(0)),expectedPulses=[];
     let eventState=null,traceValue=0,traceTime=0;
@@ -273,7 +274,9 @@ const RRMarkedEvents = (() => {
         traceValue=traceValue*Math.exp(-(r.time-traceTime)/c.traceTau)+1;traceTime=r.time;
       }
     }
-    check(JSON.stringify(expectedPulses)===JSON.stringify(s.pulses)&&s.ledger.spentPulse===s.spikeCount*c.pulseDebit,"checkpoint pulse accounting");
+    check(expectedPulses.length===s.pulses.length&&expectedPulses.every((p,i)=>
+      p.time===s.pulses[i].time&&p.kind===s.pulses[i].kind&&p.channel===s.pulses[i].channel)&&
+      s.ledger.spentPulse===s.spikeCount*c.pulseDebit,"checkpoint pulse accounting");
     check(s.trace.value===traceValue&&s.trace.time===traceTime&&(eventState===null||eventState===s.stateIndex),"checkpoint trace/state");
     check(s.regimes.every((r,i)=>JSON.stringify(r.counts)===JSON.stringify(seenCounts[i])),"checkpoint event counts");
     const last=s.regimes[s.regimes.length-1];

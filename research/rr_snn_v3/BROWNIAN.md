@@ -146,3 +146,22 @@ Exact CommonJS text was executed in the conversation JavaScript V8 runtime;
 raw numerical output is in brownian_results.json. Shell initialization
 failed, so Node CLI, just fmt, target-host measurements and production
 execution were not run.
+
+
+## Independent numerical-domain review
+
+An independent reviewer executed the supplied mathematical function bodies
+(comments and whitespace elided), rather than auditing complete-file byte identity.
+The review found loss of relative accuracy for survival at distances 1e-12 and
+1e-16 with mu=sigma=t=1. The implementation now requires a log-difference gap
+above 1e-6 in both survival and endpoint CDF calculations. This is a conservative
+conditioning guard, not a universal error certificate. Nonempty Gaussian intervals
+whose log mass cannot be resolved and positive endpoints whose reflection scale
+underflows are also rejected. Empty intervals and the absorbing endpoint still
+have valid zero mass.
+
+The complete validator now passes 20 grouped checks, including 16 rejected invalid
+or unresolved inputs and the original 4096 surviving-path switch sample.
+Independent direct-density quadrature, Richardson derivatives and inverse-CDF
+checks are recorded in brownian_independent_audit.json. Final complete source bytes
+are verified separately by the Node execution receipt.
