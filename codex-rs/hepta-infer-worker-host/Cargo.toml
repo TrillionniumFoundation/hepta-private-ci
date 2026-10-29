@@ -5,6 +5,11 @@ name = "codex-hepta-infer-worker-host"
 version.workspace = true
 publish = false
 
+[package.metadata.cargo-shear]
+# smollm_neural_study_tests includes hepta-agentd/cognitive_process_materials.rs
+# by #[path]; its TabularPayloadPinV1 conversions use this dev-dependency.
+ignored = ["codex-hepta-bellman-operator"]
+
 [lib]
 name = "codex_hepta_infer_worker_host"
 path = "src/lib.rs"
@@ -38,6 +43,9 @@ sha2 = { workspace = true }
 sqlx = { workspace = true }
 
 [dev-dependencies]
+codex-hepta-bellman-operator = { path = "../hepta-bellman-operator" }
+codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval" }
+codex-hepta-learning-ledger = { path = "../hepta-learning-ledger" }
 codex-hepta-fleet = { workspace = true }
 core_test_support = { workspace = true }
 

@@ -1,0 +1,515 @@
+name: Hepta explicit binary-answer parent study and ordinary child loop V2
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-neural-study-binary-v2.yml"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "scripts/hepta_neural_*.py"
+      - "scripts/test_hepta_neural_*.py"
+  workflow_dispatch:
+    inputs:
+      binary_training_sha:
+        description: Exact immutable commit with the separately frozen binary training tree
+        required: true
+        type: string
+  workflow_call:
+    inputs:
+      binary_training_sha:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-neural-study-binary-v2-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  resolve-binary-source:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 3
+    outputs:
+      sha: ${{ steps.freeze.outputs.sha }}
+    steps:
+      - name: Resolve and freeze the exact binary training commit
+        id: freeze
+        env:
+          REQUESTED_BINARY_SHA: ${{ inputs.binary_training_sha }}
+          SOURCE_EVENT: ${{ github.event_name }}
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I -B - <<'PY'
+          import http.client
+          import json
+          import os
+          from pathlib import Path
+          import re
+
+          REPOSITORY = "TrillionniumFoundation/Trillionnium-Chain"
+          BRANCH = "fix/chain-binary-answer-observed-v2-20261029"
+          EXPECTED_TREE = "daf04ba3a50584a452aa30bfacebe95fd333cf54"
+          MAX_RESPONSE = 1024 * 1024
+
+
+          def require(condition, message):
+              if not condition:
+                  raise SystemExit(message)
+
+
+          def exact_sha(value):
+              return type(value) is str and re.fullmatch(r"[0-9a-f]{40}", value) is not None
+
+
+          def unique(pairs):
+              result = {}
+              for key, value in pairs:
+                  require(key not in result, "duplicate GitHub response field")
+                  result[key] = value
+              return result
+
+
+          def read_api(path):
+              connection = http.client.HTTPSConnection("api.github.com", timeout=20)
+              try:
+                  connection.request("GET", "/repos/" + REPOSITORY + path, headers={
+                      "Authorization": "Bearer " + token,
+                      "Accept": "application/vnd.github+json",
+                      "X-GitHub-Api-Version": "2022-11-28",
+                      "User-Agent": "hepta-frozen-binary-source-v2",
+                  })
+                  response = connection.getresponse()
+                  require(response.status == 200, "GitHub source lookup did not return HTTP 200")
+                  raw = response.read(MAX_RESPONSE + 1)
+                  require(len(raw) <= MAX_RESPONSE, "GitHub source response exceeds bound")
+                  result = json.loads(raw, object_pairs_hook=unique)
+                  require(type(result) is dict, "GitHub source response is not an object")
+                  return result
+              except (OSError, http.client.HTTPException, ValueError):
+                  raise SystemExit("GitHub source lookup failed") from None
+              finally:
+                  connection.close()
+
+
+          token = os.environ.get("GITHUB_TOKEN", "")
+          require(bool(token), "GitHub read token is missing")
+          requested = os.environ.get("REQUESTED_BINARY_SHA", "")
+          if requested:
+              require(exact_sha(requested), "explicit binary source must be a full immutable SHA")
+              sha = requested
+              selection = "explicit-immutable-sha"
+          else:
+              require(os.environ.get("SOURCE_EVENT") == "pull_request", "an explicit binary source SHA is required")
+              ref = read_api("/git/ref/heads/" + BRANCH)
+              target = ref.get("object")
+              require(ref.get("ref") == "refs/heads/" + BRANCH and type(target) is dict
+                      and target.get("type") == "commit" and exact_sha(target.get("sha")),
+                      "fixed candidate branch did not resolve to an exact commit")
+              sha = target["sha"]
+              selection = "fixed-candidate-branch-resolved-before-execution"
+          commit = read_api("/git/commits/" + sha)
+          tree = commit.get("tree")
+          require(commit.get("sha") == sha and type(tree) is dict
+                  and tree.get("sha") == EXPECTED_TREE, "binary commit does not contain the frozen training tree")
+          with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as output:
+              output.write("sha=" + sha + "\ntree=" + EXPECTED_TREE + "\n")
+          print(json.dumps({"selection": selection, "sha": sha, "tree": EXPECTED_TREE,
+                            "qualification": False}, sort_keys=True))
+          PY
+
+  real-parent-trained-child:
+    needs: resolve-binary-source
+    runs-on: ubuntu-26.04
+    timeout-minutes: 240
+    defaults:
+      run:
+        working-directory: hepta
+        shell: bash
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.sha }}
+      HEPTA_CI_LANE: source-head
+      CHAIN_SHA: c96022b897c1235fdbdbfcfa32764403511c6aab
+      RESEARCH_CHAIN_SHA: 9035171271e9f437b7224b53532f41a2b2894be7
+      OBSERVATION_CHAIN_SHA: ad490ed4b1132a333159fd76702809fd248a4462
+      BINARY_TRAINING_CHAIN_SHA: ${{ needs.resolve-binary-source.outputs.sha }}
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_INCREMENTAL: "0"
+      RUSTUP_TOOLCHAIN: "1.96.0"
+      PYTHONNOUSERSITE: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+      PIP_NO_CACHE_DIR: "1"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      # Explicit allocator experiment; every original model/resource gate remains required.
+      MALLOC_ARENA_MAX: "2"
+      MALLOC_MMAP_THRESHOLD_: "131072"
+      MALLOC_TRIM_THRESHOLD_: "131072"
+      HEPTA_NEURAL_STUDY_RUNNER: ${{ github.workspace }}/hepta/scripts/hepta_neural_study_binary_v2.py
+      HEPTA_NEURAL_STUDY_TRAINING_CHAIN: ${{ github.workspace }}/chain-binary
+      HEPTA_PUBLIC_INITIAL_ROUND_RUNNER: ${{ github.workspace }}/hepta/scripts/hepta_smollm_observed_execution_v1.py
+      HEPTA_PUBLIC_INITIAL_EXECUTION_PROFILE: hepta-original-model-observed-execution-v1
+      HEPTA_PUBLIC_INITIAL_OBSERVATION_CHAIN: ${{ github.workspace }}/chain-observed
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          path: hepta
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: TrillionniumFoundation/Trillionnium-Chain
+          ref: ${{ env.CHAIN_SHA }}
+          path: chain
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: TrillionniumFoundation/Trillionnium-Chain
+          ref: ${{ env.RESEARCH_CHAIN_SHA }}
+          path: chain-answer-eos
+          persist-credentials: false
+      - name: Require an immutable explicitly selected binary source
+        run: |
+          set -euo pipefail
+          [[ "$BINARY_TRAINING_CHAIN_SHA" =~ ^[0-9a-f]{40}$ ]]
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: TrillionniumFoundation/Trillionnium-Chain
+          ref: ${{ env.BINARY_TRAINING_CHAIN_SHA }}
+          path: chain-binary
+          persist-credentials: false
+      - name: Verify the separately frozen binary training tree
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects -C ../chain-binary rev-parse HEAD)" = "$BINARY_TRAINING_CHAIN_SHA"
+          test "$(git --no-replace-objects -C ../chain-binary rev-parse 'HEAD^{tree}')" = "daf04ba3a50584a452aa30bfacebe95fd333cf54"
+          (cd ../chain-binary && bash scripts/project-preflight.sh --audit)
+      - name: Initialize evidence before runtime prerequisites
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/hepta-original-sandbox-host"
+          mkdir -m 700 "$out"
+          echo "OUT=$out" >> "$GITHUB_ENV"
+          git rev-parse HEAD HEAD^{tree} > "$out/source.txt"
+          python3 -VV > "$out/bootstrap-python.txt"
+      - name: Build the exact original Python on the new hosted image
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev libffi-dev liblzma-dev uuid-dev
+          export HEPTA_CPYTHON_BUILD="$RUNNER_TEMP/hepta-cpython-source"
+          export HEPTA_CPYTHON_PREFIX="$RUNNER_TEMP/hepta-cpython-3.12.3"
+          mkdir -m 700 "$HEPTA_CPYTHON_BUILD"
+          python3 -I -B - <<'PY'
+          import hashlib, json, os, pathlib, tarfile, urllib.request
+          root = pathlib.Path(os.environ["HEPTA_CPYTHON_BUILD"])
+          archive = root / "Python-3.12.3.tar.xz"
+          data = urllib.request.urlopen("https://www.python.org/ftp/python/3.12.3/Python-3.12.3.tar.xz", timeout=60).read(20625069)
+          assert len(data) == 20625068
+          digest = hashlib.sha256(data).hexdigest()
+          assert digest == "56bfef1fdfc1221ce6720e43a661e3eb41785dd914ce99698d8c7896af4bdaa1"
+          archive.write_bytes(data)
+          with tarfile.open(archive) as source:
+              source.extractall(root, filter="data")
+          pathlib.Path(os.environ["OUT"], "cpython-source.json").write_text(json.dumps({"version": "3.12.3", "bytes": len(data), "sha256": digest, "build_origin": "official source on ubuntu-26.04; not the ubuntu-24.04 setup-python binary"}, sort_keys=True) + "\n")
+          PY
+          python3 scripts/hepta_ci_exec.py --output "$OUT/cpython-build.json" --timeout-seconds 420 --minimum-tests 0 -- bash -c 'set -euo pipefail; cd "$HEPTA_CPYTHON_BUILD/Python-3.12.3"; ./configure --prefix="$HEPTA_CPYTHON_PREFIX" --with-ensurepip=install; make -j2; make -j2 install'
+          "$HEPTA_CPYTHON_PREFIX/bin/python3" -I -B -c 'import sys, _ssl, _bz2, _ctypes, _lzma, sqlite3, zlib; assert sys.version_info[:3] == (3, 12, 3); print(sys.version)' > "$OUT/built-python.txt"
+          sha256sum "$HEPTA_CPYTHON_PREFIX/bin/python3.12" > "$OUT/built-python.sha256"
+          printf '%s\n' "$HEPTA_CPYTHON_PREFIX/bin" >> "$GITHUB_PATH"
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: TrillionniumFoundation/Trillionnium-Chain
+          ref: ${{ env.OBSERVATION_CHAIN_SHA }}
+          path: chain-observed
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+        with:
+          toolchain: 1.96.0
+          components: rustfmt,clippy,rust-src
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.59.0,nextest@0.9.150
+      - name: Verify exact source and hosted resource window
+        run: |
+          set -euo pipefail
+          mkdir -m 700 "$RUNNER_TEMP/hepta-public-initial-v2"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git -C ../chain rev-parse HEAD)" = "$CHAIN_SHA"
+          test "$(git -C ../chain-answer-eos rev-parse HEAD)" = "$RESEARCH_CHAIN_SHA"
+          test "$(git -C ../chain-observed rev-parse HEAD)" = "$OBSERVATION_CHAIN_SHA"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-public-initial-v2/hepta-source.txt"
+          git -C ../chain rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-public-initial-v2/chain-source.txt"
+          git -C ../chain-answer-eos rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-public-initial-v2/research-chain-source.txt"
+          git -C ../chain-observed rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-public-initial-v2/observation-chain-source.txt"
+          rustc -vV > "$RUNNER_TEMP/hepta-public-initial-v2/rustc.txt"
+          python3 -I -B scripts/hepta_smollm_host_resources.py --output "$RUNNER_TEMP/hepta-public-initial-v2/host.json"
+          python3 -I -B - <<'PY'
+          import os
+          from pathlib import Path
+          temporary = Path(os.environ["RUNNER_TEMP"])
+          values = dict(CARGO_TARGET_DIR=temporary / "hepta-public-target",
+              HEPTA_PN3_NEURAL_NATIVE_CONFIG=temporary / "hepta-public-initial-v2/native-input.json",
+              HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT=temporary / "hepta-public-initial-v2/runtime-snapshot.json")
+          with Path(os.environ["GITHUB_ENV"]).open("a") as environment:
+              for key, value in values.items():
+                  environment.write(f"{key}={value}\n")
+          PY
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap pkg-config libcap-dev
+          bwrap --version > "$RUNNER_TEMP/hepta-public-initial-v2/bubblewrap-version.txt"
+      - name: Execute explicit observation source and original owner controls
+        id: observation_controls
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/observation-boundary-controls.json" --timeout-seconds 60 --minimum-tests 8 -- python3 scripts/test_hepta_smollm_observed_execution_v1.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/observation-owner-controls.json" --timeout-seconds 60 --minimum-tests 8 -- python3 ../chain-observed/scripts/test_llm_runtime_observed_execution_v1.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/live-control-boundary-controls.json" --timeout-seconds 60 --minimum-tests 9 -- python3 scripts/test_hepta_smollm_live_control_v1.py -v
+      - name: Preserve actual host and exact source metadata
+        run: |
+          set -euo pipefail
+          out="$OUT"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git status --porcelain=v1 > "$out/source-status.txt"
+          test ! -s "$out/source-status.txt"
+          uname -a > "$out/kernel.txt"
+          cat /etc/os-release > "$out/os-release.txt"
+          printf '%s\n' "$ImageOS" "$ImageVersion" > "$out/runner-image.txt"
+          id -u > "$out/uid.txt"
+          python3 -I -B - <<'PY_ALLOCATOR'
+          import json, os, platform
+          from pathlib import Path
+          policy = {key: os.environ[key] for key in (
+              "MALLOC_ARENA_MAX", "MALLOC_MMAP_THRESHOLD_", "MALLOC_TRIM_THRESHOLD_")}
+          record = dict(schema="hepta-host-allocator-observation-v1", values=policy,
+              libc=list(platform.libc_ver()), glibc_tunables=os.environ.get("GLIBC_TUNABLES"),
+              source_sha=os.environ["SOURCE_SHA"], original_model_source_unchanged=True,
+              original_exit_drain_ns=100000000, outcome="hypothesis-awaiting-original-gates",
+              product_qualification=False)
+          Path(os.environ["OUT"], "allocator-execution.txt").write_text(json.dumps(record, indent=2) + "\n")
+          if os.environ.get("GLIBC_TUNABLES"):
+              raise SystemExit("ambient GLIBC_TUNABLES prevents a controlled allocator comparison")
+          PY_ALLOCATOR
+          for name in apparmor_restrict_unprivileged_userns unprivileged_userns_clone; do
+            path="/proc/sys/kernel/$name"
+            if test -r "$path"; then cat "$path" > "$out/$name.txt"; fi
+          done
+          cat /sys/module/apparmor/parameters/enabled > "$out/apparmor-enabled.txt"
+          test "$(cat "$out/apparmor-enabled.txt")" = Y
+          test "$(cat "$out/apparmor_restrict_unprivileged_userns.txt")" = 1
+          if test -r /etc/apparmor.d/bwrap-userns-restrict; then
+            sha256sum /etc/apparmor.d/bwrap-userns-restrict > "$out/distribution-bwrap-profile.sha256"
+          fi
+          python3 -I -B scripts/hepta_smollm_host_resources.py --output "$out/host.json"
+          bwrap --version > "$out/bwrap-version.txt"
+          dpkg-query -W bubblewrap apparmor > "$out/package-versions.txt"
+          sha256sum /usr/bin/bwrap > "$out/bwrap.sha256"
+      - name: Require actual original user and network namespace capability
+        id: sandbox_host
+        run: |
+          set -euo pipefail
+          # Same argv and 500ms bound as sandboxing/src/bwrap.rs prerequisite probe.
+          # This is a host prerequisite, never a substitute for the full Rust gate.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/sandbox-host-capability.json" --timeout-seconds 0.5 --minimum-tests 0 -- bwrap --unshare-user --unshare-net --ro-bind / / /bin/true
+      - name: Resolve the existing checksum-verified V8 pair
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}/hepta
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Require command ownership under real console backpressure
+        run: python3 -B -m unittest discover -s scripts -p 'test_hepta_ci_exec*.py' -v
+      - name: Build the first-party binaries required by the existing native tests
+        id: required_cli
+        timeout-minutes: 65
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/required-cli-build.json" --timeout-seconds 3600 --minimum-tests 0 -- cargo build --manifest-path codex-rs/Cargo.toml --locked -p codex-cli -p codex-code-mode-host -p codex-rmcp-client --bin codex --bin codex-code-mode-host --bin test_stdio_server
+          sha256sum "$CARGO_TARGET_DIR/debug/codex" > "$RUNNER_TEMP/hepta-public-initial-v2/codex-binary.sha256"
+          sha256sum "$CARGO_TARGET_DIR/debug/codex-code-mode-host" > "$RUNNER_TEMP/hepta-public-initial-v2/code-mode-host-binary.sha256"
+          printf 'CARGO_BIN_EXE_codex=%s/debug/codex\n' "$CARGO_TARGET_DIR" >> "$GITHUB_ENV"
+          printf 'CARGO_BIN_EXE_codex-code-mode-host=%s/debug/codex-code-mode-host\n' "$CARGO_TARGET_DIR" >> "$GITHUB_ENV"
+          test -x "$CARGO_TARGET_DIR/debug/test_stdio_server"
+          printf 'CARGO_BIN_EXE_test_stdio_server=%s/debug/test_stdio_server\n' "$CARGO_TARGET_DIR" >> "$GITHUB_ENV"
+      - name: Execute all fourteen named original namespace and pidfd controls
+        id: namespace
+        run: |
+          set -euo pipefail
+          unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/namespace-and-pidfd.json" --timeout-seconds 600 --minimum-tests 14 -- just test --locked -p codex-linux-sandbox --lib -E 'test(inserts_unshare_net_when_network_isolation_requested) | test(inserts_unshare_net_when_proxy_only_network_mode_requested) | test(proxy_only_mode_takes_precedence_over_full_network_policy) | test(managed_proxy_preflight_argv_unshares_network) | test(bwrap_signal_forwarder_terminates_child_and_keeps_parent_alive) | test(managed_proxy_inner_command_includes_route_spec) | test(non_managed_inner_command_omits_route_spec) | test(managed_proxy_inner_command_requires_route_spec) | test(pidfd_reaper::tests::)' --no-capture
+      - name: Execute the complete five changed Rust packages
+        id: scoped_rust
+        timeout-minutes: 65
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/scoped-rust.json" --timeout-seconds 3600 --minimum-tests 1 -- just test --locked -p codex-hepta-agent-protocol -p codex-hepta-learning-artifacts -p codex-hepta-agentd -p codex-hepta-infer-worker-host -p codex-app-server --no-capture
+      - name: Record whether the actual model test target was built
+        id: model_target
+        run: |
+          python3 -I -B - <<'PY'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          targets = []
+          for path in sorted((Path(os.environ["CARGO_TARGET_DIR"]) / "debug/deps").glob("codex_hepta_infer_worker_host-*")):
+              if not path.is_file() or not os.access(path, os.X_OK):
+                  continue
+              with path.open("rb") as handle:
+                  if handle.read(4) != b"\x7fELF":
+                      continue
+                  handle.seek(0)
+                  digest = hashlib.file_digest(handle, "sha256").hexdigest()
+              result = subprocess.run([str(path), "--list"], capture_output=True, text=True, timeout=30)
+              available = result.returncode == 0 and all(name in result.stdout for name in (
+                  "real_selected_initial_serves_ordinary_context_then_refuses_revocation",
+                  "real_public_initial_reopens_same_ordinary_owners",
+                  "real_trained_child_prospective_qualification_cell_install_next_ordinary_read"))
+              targets.append(dict(path=str(path), sha256=digest, bytes=path.stat().st_size,
+                  list_exit=result.returncode, model_tests_present=available, stderr=result.stderr[-4096:]))
+          available = any(row["model_tests_present"] for row in targets)
+          record = dict(schema="hepta-built-model-test-target-v1", available=available, targets=targets,
+              state="executable-target-observed" if available else "unavailable-after-scoped-build",
+              actual_model_executed=False)
+          root = Path(os.environ["RUNNER_TEMP"]) / "hepta-public-initial-v2"
+          (root / "model-target.json").write_text(json.dumps(record, indent=2) + "\n")
+          with Path(os.environ["GITHUB_OUTPUT"]).open("a") as output:
+              output.write(f"available={str(available).lower()}\n")
+          PY
+      - name: Install the exact CPU wheel closure in a new environment
+        id: cold_runtime
+        if: ${{ success() && steps.model_target.outputs.available == 'true' && steps.scoped_rust.outcome == 'success' && steps.namespace.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/material-download-controls.json" --timeout-seconds 60 --minimum-tests 2 -- python3 scripts/test_hepta_smollm_public_initial_v2.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/descendant-boundary-controls.json" --timeout-seconds 60 --minimum-tests 4 -- python3 scripts/test_hepta_smollm_descendant_v2.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/research-boundary-controls.json" --timeout-seconds 60 --minimum-tests 8 -- python3 scripts/test_hepta_smollm_answer_eos_research_v3.py -v
+          python3 -I -B -m venv "$RUNNER_TEMP/hepta-public-env"
+          "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B -m pip install --require-hashes --only-binary=:all: --no-compile --index-url https://pypi.org/simple --report "$RUNNER_TEMP/hepta-public-initial-v2/pip-install.json" -r ../chain/scripts/ci/model-runtime-cpu-requirements.txt
+          "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B -m pip check
+          "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py record --lock ../chain/scripts/ci/model-runtime-cpu-requirements.txt --installation "$RUNNER_TEMP/hepta-public-initial-v2/pip-install.json" --output "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
+      - name: Rebuild public V2 from the seven exact upstream files
+        id: materials
+        if: ${{ !cancelled() && steps.cold_runtime.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
+          "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_public_initial_v2.py --chain "$GITHUB_WORKSPACE/chain" --materials "$RUNNER_TEMP/hepta-public-model" --output "$RUNNER_TEMP/hepta-public-initial-v2/genesis" --fetch-materials
+          python3 -I -B - <<'PY'
+          import base64, hashlib, json, os, uuid
+          from pathlib import Path
+          root = Path(os.environ["RUNNER_TEMP"])
+          parent = root / "hepta-public-initial-v2/genesis/parent-material.json"
+          config = dict(schema="hepta-smollm-neural-native-check-v1",
+              python=str(root / "hepta-public-env/bin/python"), chain=str(Path(os.environ["GITHUB_WORKSPACE"]) / "chain"),
+              materials=str(root / "hepta-public-model"), parent=str(parent),
+              parent_sha256=hashlib.sha256(parent.read_bytes()).hexdigest(),
+              output=str(root / "hepta-public-initial-v2/n"))
+          socket_key = "a" + base64.b32encode(uuid.UUID("00000000-0000-4000-8000-000000000219").bytes).decode().lower().rstrip("=")
+          sockets = [Path(config["output"]) / fixture / "fleet/run" / (socket_key + extension)
+              for fixture in ("o/b", "r/o/b", "p/o/b") for extension in (".ctl", ".mx", ".app")]
+          socket_lengths = [dict(path=str(path), bytes=len(os.fsencode(path))) for path in sockets]
+          (root / "hepta-public-initial-v2/native-socket-paths.json").write_text(json.dumps(socket_lengths, indent=2) + "\n")
+          assert all(row["bytes"] <= 107 for row in socket_lengths), "original AF_UNIX paths exceed Linux bound"
+          Path(os.environ["HEPTA_PN3_NEURAL_NATIVE_CONFIG"]).write_text(json.dumps(config, indent=2) + "\n")
+          PY
+      - name: Require real ordinary inference, independent revocation and same-owner reopen
+        id: ordinary
+        if: ${{ !cancelled() && steps.materials.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
+          "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/ordinary-native.json" --timeout-seconds 900 --minimum-tests 2 -- just test --locked -p codex-hepta-infer-worker-host --lib --profile hepta-public-initial-v2 -E 'test(real_selected_initial_serves_ordinary_context_then_refuses_revocation) | test(real_public_initial_reopens_same_ordinary_owners)' --run-ignored only --no-capture
+          "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
+      - name: Run Cell training-source and evidence-reader refusal controls before the study
+        id: study_controls
+        if: ${{ success() && steps.ordinary.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/cell-binding-controls.json" --timeout-seconds 60 --minimum-tests 13 -- python3 scripts/test_hepta_neural_candidate_transport_v1.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/training-binding-controls.json" --timeout-seconds 60 --minimum-tests 8 -- python3 scripts/test_hepta_neural_study_binding_v1.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/evidence-reader-controls.json" --timeout-seconds 60 --minimum-tests 14 -- python3 scripts/test_hepta_neural_evidence_v1.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/binary-reader-controls.json" --timeout-seconds 60 --minimum-tests 8 -- python3 scripts/test_hepta_neural_evidence_binary_v2.py -v
+          python3 scripts/hepta_workspace.py
+      - name: Build the actual pinned two-node Cell executable
+        id: cell
+        if: ${{ success() && steps.study_controls.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          (cd ../chain-observed && bash scripts/project-preflight.sh --audit)
+          CARGO_TARGET_DIR="$RUNNER_TEMP/hepta-positive-cell" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/cell-build.json" --timeout-seconds 900 --minimum-tests 0 -- cargo build --manifest-path ../chain-observed/trillionnium/Cargo.toml --locked -p trnm-data-availability --bin trnm-cell
+          printf 'HEPTA_NEURAL_STUDY_CELL=%s\n' "$RUNNER_TEMP/hepta-positive-cell/debug/trnm-cell" >> "$GITHUB_ENV"
+          sha256sum "$RUNNER_TEMP/hepta-positive-cell/debug/trnm-cell" > "$RUNNER_TEMP/hepta-public-initial-v2/cell-binary.sha256"
+      - name: Freeze complete actual source before the single study
+        id: source_before
+        if: ${{ success() && steps.cell.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_neural_evidence_binary_v2.py source --output "$RUNNER_TEMP/hepta-public-initial-v2/source-before.json"
+      - name: Train actual parent and require qualification Cell ordinary install and next read
+        id: positive
+        if: ${{ success() && steps.source_before.outcome == 'success' }}
+        timeout-minutes: 46
+        run: |
+          set -euo pipefail
+          unset PYTHONPATH PYTHONHOME PYTHONUSERBASE
+          "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-public-initial-v2/positive-native.json" --timeout-seconds 2700 --minimum-tests 1 -- just test --locked -p codex-hepta-infer-worker-host --lib --profile hepta-public-initial-v2 -E 'test(real_binary_trained_child_prospective_qualification_cell_install_next_ordinary_read)' --run-ignored only --no-capture
+          "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_smollm_runtime_snapshot.py verify --snapshot "$HEPTA_PUBLIC_INITIAL_RUNTIME_SNAPSHOT"
+      - name: Preserve the original scoped lint and formatting gate
+        id: lint
+        if: ${{ !cancelled() }}
+        run: |
+          set -euo pipefail
+          just fix --locked -p codex-hepta-agent-protocol -p codex-hepta-learning-artifacts -p codex-hepta-agentd -p codex-hepta-infer-worker-host -p codex-app-server -p codex-linux-sandbox
+          just fmt
+          git diff --exit-code
+      - name: Enforce real source and every declared required outcome
+        if: always()
+        env:
+          REQUIRED_CLI: ${{ steps.required_cli.outcome }}
+          NAMESPACE: ${{ steps.namespace.outcome }}
+          SCOPED_RUST: ${{ steps.scoped_rust.outcome }}
+          ORDINARY: ${{ steps.ordinary.outcome }}
+          STUDY_CONTROLS: ${{ steps.study_controls.outcome }}
+          CELL: ${{ steps.cell.outcome }}
+          POSITIVE: ${{ steps.positive.outcome }}
+          LINT: ${{ steps.lint.outcome }}
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_neural_evidence_binary_v2.py source --output "$RUNNER_TEMP/hepta-public-initial-v2/source-after.json"
+          git diff --binary > "$RUNNER_TEMP/hepta-public-initial-v2/final-source-diff.patch"
+          "$RUNNER_TEMP/hepta-public-env/bin/python" -I -B scripts/hepta_neural_evidence_binary_v2.py assess --root "$RUNNER_TEMP/hepta-public-initial-v2"
+      - name: Retain all original raw study observations and small candidate payloads
+        if: always()
+        run: |
+          python3 scripts/hepta_neural_evidence_binary_v2.py archive --root "$RUNNER_TEMP/hepta-public-initial-v2" --output "$RUNNER_TEMP/hepta-neural-study-artifact"
+      - name: Upload original study evidence even after a failed gate
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-real-neural-study-binary-v2-${{ env.SOURCE_SHA }}
+          retention-days: 14
+          include-hidden-files: true
+          if-no-files-found: error
+          path: ${{ runner.temp }}/hepta-neural-study-artifact/
+      - name: Retain original host prerequisite receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-neural-study-binary-host-v2-${{ env.SOURCE_SHA }}
+          retention-days: 14
+          include-hidden-files: false
+          if-no-files-found: error
+          path: ${{ runner.temp }}/hepta-original-sandbox-host/

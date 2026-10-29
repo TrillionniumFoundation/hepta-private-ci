@@ -42,7 +42,7 @@ jobs:
             bazel_platform: //:local_linux
           - os: ubuntu-24.04
             target: x86_64-unknown-linux-musl
-            bazel_platform: '@rules_rs//rs/platforms:x86_64-unknown-linux-musl'
+            bazel_platform: "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
           # 2026-02-27 Bazel tests have been flaky on arm in CI.
           # Disable until we can investigate and stabilize them.
           # - os: ubuntu-24.04-arm

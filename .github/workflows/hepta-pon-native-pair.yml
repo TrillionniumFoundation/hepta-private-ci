@@ -87,6 +87,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential pkg-config libcap-dev
           rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component rust-src
+          rustup toolchain install 1.96.0 --profile minimal --component clippy --component rustfmt --component rust-src
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
