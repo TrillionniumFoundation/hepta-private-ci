@@ -190,6 +190,10 @@ class StorageBudget:
                         self._local.depth = 0
 
     def inventory(self):
+        with self.writer_lock():
+            return self._inventory_unlocked()
+
+    def _inventory_unlocked(self):
         logical, allocated, seen = 0, 0, set()
         for base in (self.root, self.cas_root):
             for path in base.rglob("*"):
