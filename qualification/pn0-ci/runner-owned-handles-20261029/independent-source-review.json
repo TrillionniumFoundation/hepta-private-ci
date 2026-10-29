@@ -1,0 +1,594 @@
+{
+  "schema": "bf36-runner-pipe-owner-independent-source-review-v1",
+  "reviewed_utc": "2026-10-29T00:51:10.589318+00:00",
+  "reviewer": "/root/e153_windows_raw_review",
+  "result": "NO_STATIC_BLOCKER_FOR_THIS_NARROW_OWNERSHIP_CUT",
+  "blocking_findings": [],
+  "scope": "Single production runner_client.rs before/after mirror and exact bases, source-only read. No runtime/build/fmt/test/Windows/CI/network and no source/index/refs modification. No new native qualification inferred from current bf36 evidence.",
+  "candidate_manifest": {
+    "path": "work/coordination/bf36-managed-runner-pipe-owner-source-candidate-20261028-010/manifest.json",
+    "bytes": 2306,
+    "sha256": "3df42fe6aa3bc254b2b0fdf22c7eae08062d5ef0d939bc775709901f3c3dc85a"
+  },
+  "all13_manifest_members": [
+    {
+      "path": "work/coordination/bf36-managed-runner-pipe-owner-source-candidate-20261028-010/INDEX.json",
+      "bytes": 1731,
+      "sha256": "5e109f339996f96bb877859274453c2073900f067405ea3c1121bd4535b0b127"
+    },
+    {
+      "path": "work/coordination/bf36-managed-runner-pipe-owner-source-candidate-20261028-010/READ-ME.txt",
+      "bytes": 703,
+      "sha256": "c9de0997dacb435052f5a49a4672770ae98b7047bebe1d958dac77d78aa5117e"
+    },
+    {
+      "path": "work/coordination/bf36-managed-runner-pipe-owner-source-candidate-20261028-010/after/codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs",
+      "bytes": 26328,
+      "sha256": "1a48ca220fdec6c2f555fc0237ffa28216c2876ab6c3284145dc24556b0e5720"
+    },
+    {
+      "path": "work/coordination/bf36-managed-runner-pipe-owner-source-candidate-20261028-010/all-original-Windows-subtree-objects.json",
+      "bytes": 24467,
+      "sha256": "2eb908b75683c54cf694ce2e5a22a49d2ffd3dcb68dc5150f87d8b843ebefceb"
+    },
+    {
+      "path": "work/coordination/bf36-managed-runner-pipe-owner-source-candidate-20261028-010/before/codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs",
+      "bytes": 25826,
+      "sha256": "e0603e2923838288a563041043e5db74bb5185b7c1358a8f4009491aa0a4de29"
+    },
+    {
+      "path": "work/coordination/bf36-managed-runner-pipe-owner-source-candidate-20261028-010/ownership-and-open-boundaries.json",
+      "bytes": 6736,
+      "sha256": "4579e782a29f60d684dd0211c094be8a05c0c4fb5ef49769eccc71103866060b"
+    },
+    {
+      "path": "work/coordination/bf36-managed-runner-pipe-owner-source-candidate-20261028-010/protected-tests-and-safety-source-pins.json",
+      "bytes": 10409,
+      "sha256": "d39e2fd0f6a2bb4a360a696b0026cc52bdef4e85de3722704ecc9cfa0aef9594"
+    },
+    {
+      "path": "work/coordination/bf36-managed-runner-pipe-owner-source-candidate-20261028-010/raw-handle-owner-use-inventory.json",
+      "bytes": 4750,
+      "sha256": "4ad2819a82d57f05bc5ef8e666e57c053e0042f14217bf97bb81ffb30b978ec1"
+    },
+    {
+      "path": "work/coordination/bf36-managed-runner-pipe-owner-source-candidate-20261028-010/reference/AGENTS.md",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+    },
+    {
+      "path": "work/coordination/bf36-managed-runner-pipe-owner-source-candidate-20261028-010/reference/codex-rs/windows-sandbox-rs/src/elevated/runner_pipe.rs",
+      "bytes": 5321,
+      "sha256": "fa1fd3c5822c10303421a895cbe76ab3dd368c645c831ffc1c003bba626925db"
+    },
+    {
+      "path": "work/coordination/bf36-managed-runner-pipe-owner-source-candidate-20261028-010/runner-pipe-and-connect-owner.patch",
+      "bytes": 6113,
+      "sha256": "5859b84fbce099b99c1a1083ce1b9e594536415dd6b5b2b361719bb18e47f996"
+    },
+    {
+      "path": "work/coordination/bf36-managed-runner-pipe-owner-source-candidate-20261028-010/source-mechanical-verification.json",
+      "bytes": 3288,
+      "sha256": "ca8463f86c8922f1df0de39747a8b3c3527b2ee869d799d1edcef2101622d7da"
+    },
+    {
+      "path": "work/coordination/bf36-managed-runner-pipe-owner-source-candidate-20261028-010/source-pins.json",
+      "bytes": 645,
+      "sha256": "123020ba7766fd0951a72903ebb2d43a4d90cc6102416208c40cb09f265d7601"
+    }
+  ],
+  "source_base": {
+    "head": "bf36d10a54db1d9453409a432cb4641c9fbe38e8",
+    "tree": "803e1e9b12efa4dd236ecd99333a717b5d52b033",
+    "same_before_source_at": "d3284e385e2b6037dd86752ddd246b616144a87c"
+  },
+  "patch": {
+    "path": "work/coordination/bf36-managed-runner-pipe-owner-source-candidate-20261028-010/runner-pipe-and-connect-owner.patch",
+    "bytes": 6113,
+    "sha256": "5859b84fbce099b99c1a1083ce1b9e594536415dd6b5b2b361719bb18e47f996"
+  },
+  "before": {
+    "path": "work/coordination/bf36-managed-runner-pipe-owner-source-candidate-20261028-010/before/codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs",
+    "bytes": 25826,
+    "sha256": "e0603e2923838288a563041043e5db74bb5185b7c1358a8f4009491aa0a4de29"
+  },
+  "after": {
+    "path": "work/coordination/bf36-managed-runner-pipe-owner-source-candidate-20261028-010/after/codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs",
+    "bytes": 26328,
+    "sha256": "1a48ca220fdec6c2f555fc0237ffa28216c2876ab6c3284145dc24556b0e5720"
+  },
+  "after_git_blob": "575d35d362271a250d76d702ea88bee726a6a606",
+  "independent_hunk_replay": {
+    "hunks": [
+      {
+        "old_start": 26,
+        "new_start": 26,
+        "old_count": 6,
+        "new_count": 7
+      },
+      {
+        "old_start": 243,
+        "new_start": 244,
+        "old_count": 10,
+        "new_count": 15
+      },
+      {
+        "old_start": 295,
+        "new_start": 301,
+        "old_count": 8,
+        "new_count": 10
+      },
+      {
+        "old_start": 309,
+        "new_start": 317,
+        "old_count": 7,
+        "new_count": 7
+      },
+      {
+        "old_start": 320,
+        "new_start": 328,
+        "old_count": 12,
+        "new_count": 13
+      },
+      {
+        "old_start": 335,
+        "new_start": 344,
+        "old_count": 7,
+        "new_count": 7
+      },
+      {
+        "old_start": 364,
+        "new_start": 373,
+        "old_count": 13,
+        "new_count": 7
+      },
+      {
+        "old_start": 412,
+        "new_start": 415,
+        "old_count": 8,
+        "new_count": 10
+      },
+      {
+        "old_start": 463,
+        "new_start": 468,
+        "old_count": 10,
+        "new_count": 8
+      },
+      {
+        "old_start": 513,
+        "new_start": 516,
+        "old_count": 8,
+        "new_count": 16
+      },
+      {
+        "old_start": 535,
+        "new_start": 546,
+        "old_count": 18,
+        "new_count": 18
+      }
+    ],
+    "all_old_contexts_verified": true,
+    "replayed_after_bytes_exact": true,
+    "only_one_path": "codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs",
+    "method": "in-memory literal unified hunks, no apply/tempindex"
+  },
+  "source_state_before": {
+    "head": "d3284e385e2b6037dd86752ddd246b616144a87c",
+    "tree": "eed42a952ac5a713fc733b29707b4be3c20e00b2",
+    "branch": "fix/hepta-final-use-live-owner-20261028",
+    "index_sha256": "a880022fabef27c670c8de21da6801e2d1808b17a93ef856d6d611902c445ac9",
+    "status_sha256": "54003f40dfd9a5294723cb06583b5418bbf509ec52a60f5f57f08804b3ab6330",
+    "status_bytes": 3809
+  },
+  "source_state_after": {
+    "head": "d3284e385e2b6037dd86752ddd246b616144a87c",
+    "tree": "eed42a952ac5a713fc733b29707b4be3c20e00b2",
+    "branch": "fix/hepta-final-use-live-owner-20261028",
+    "index_sha256": "a880022fabef27c670c8de21da6801e2d1808b17a93ef856d6d611902c445ac9",
+    "status_sha256": "54003f40dfd9a5294723cb06583b5418bbf509ec52a60f5f57f08804b3ab6330",
+    "status_bytes": 3809
+  },
+  "live_changed_file_state": "candidate_applied_by_parent",
+  "reviewer_did_not_apply_or_change_live_source": true,
+  "ownership_review": [
+    {
+      "owner": "pipe-in",
+      "producer_and_adoption": "Actual original create_named_pipe success is checked by unchanged factory against0/INVALID_HANDLE_VALUE, then adopted once at after418 before second factory call.",
+      "success": "File::from at559 consumes same owner, no second from_raw_handle.",
+      "early_error": "Second factory? returns through scope, dropping first owner. All later? and unwind paths retain RAII. Explicit CreateProcess failure drops in thenout after capturing error.",
+      "double_close": "No manual CloseHandle on pipe-in remains.",
+      "limitation": "Raw alias is handed to existing connection worker; its possible detach does not borrow statically or prove worker death."
+    },
+    {
+      "owner": "pipe-out",
+      "producer_and_adoption": "Second actual checked factory return adopted once at421. No other raw owning wrapper.",
+      "success": "File::from at560 consumes same owner.",
+      "errors": "Existing process cleanup keeps original ordering, followed by explicit in/out drops on connect failure. Startup failure uses original transport drop.",
+      "double_close": "No pipe-out CloseHandle or second raw adoption remains."
+    },
+    {
+      "owner": "connection helper thread duplicate",
+      "producer_and_adoption": "Existing DuplicateHandle success with DUPLICATE_SAME_ACCESS at285-295, error branch returns before adoption; exact valid duplicate adopted once at304. Rights/noninheritance/native producer unchanged.",
+      "transfer": "sync_channel type infers Result<OwnedHandle>; send moves unique owner. A send error temporary owns and drops it, or queued success is dropped if receiver disappears. No Clone/new duplicate/reopen/PID lookup.",
+      "parent_lifetime": "Received owner remains in connect_pipe_with_timeout. Both try_take calls receive BorrowedHandle; WaitForSingleObject and CancelSynchronousIo use non-owning views of same held owner.",
+      "return_paths": "Normal result/join, disconnect, both? completion paths, cancel errors and timeout drop same acquired duplicate. Removed trailing manual close eliminates early-return bypass/double-close pattern.",
+      "send_failure": "Worker still follows original connect control flow after failed handle publication. Owner release is improved, but detached worker/pipe lifecycle is not newly solved."
+    }
+  ],
+  "path_review": [
+    {
+      "path": "first create Err",
+      "result": "no valid named pipe to adopt, unchanged Err"
+    },
+    {
+      "path": "second create Err",
+      "result": "first new owner drops, fixes original early raw first-pipe leak"
+    },
+    {
+      "path": "CreateProcessWithLogonW failure",
+      "result": "original GetLastError captured before in/out drop; error type unchanged"
+    },
+    {
+      "path": "managed readback/fresh-base/connect Err",
+      "result": "original PI thread close and conditional TerminateProcess/process CloseHandle unchanged; then in/out close in original order"
+    },
+    {
+      "path": "both connects success",
+      "result": "unique in/out moved to File fields; startup/transport return/drop logic unchanged"
+    },
+    {
+      "path": "DuplicateHandle failure",
+      "result": "publishes original error, no valid duplicate owner constructed"
+    },
+    {
+      "path": "handle publication send fails/receiver disappears",
+      "result": "same duplicate moved into message or SendError then dropped; no leaked raw duplicate"
+    },
+    {
+      "path": "try_take? fails after receive",
+      "result": "duplicate scope owner drops; old final manual CloseHandle could be bypassed"
+    },
+    {
+      "path": "timeout/cancel/disconnect",
+      "result": "original timeout values, checks, join/detach branches and errors retained. Scope drop closes duplicate but does not assert worker terminal or exact OS release."
+    }
+  ],
+  "protected_source": {
+    "Windows_tree_inventory": {
+      "path": "work/coordination/bf36-managed-runner-pipe-owner-source-candidate-20261028-010/all-original-Windows-subtree-objects.json",
+      "bytes": 24467,
+      "sha256": "2eb908b75683c54cf694ce2e5a22a49d2ffd3dcb68dc5150f87d8b843ebefceb"
+    },
+    "all113_path_mode_blob_entries_match_actual_bf36": true,
+    "all113_equal_actual_d328_tree": true,
+    "protected39": [
+      {
+        "path": "codex-rs/windows-sandbox-rs/BUILD.bazel",
+        "bytes": 2556,
+        "sha256": "187e93c5a9a244c752dee5ed15202b361d593d9d651f850a1bda5d69969a7702",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/Cargo.toml",
+        "bytes": 2582,
+        "sha256": "5a302aef6e20787114e13fc1c15389efda3c03221a523e5b781106454a0fabcc",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/sandbox_smoketests.py",
+        "bytes": 26757,
+        "sha256": "b7551e6f645f898e262be41c723fa68f1f4303464ca5fa3685a67de33cc9229a",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+        "bytes": 32479,
+        "sha256": "a09306176f8f055147f2fb08ab4dc48d2d2a0a738a830b90db75152e7f6d6462",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+        "bytes": 12723,
+        "sha256": "10f1bff88bd2d833c0abf815969e0a2ae136383a0bcec2d501ce18b5e4a0f7a1",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win/process_observation_tests.rs",
+        "bytes": 7760,
+        "sha256": "459d1a9f8b20a6c6b07b604d196469c21be13e3c29bd1ad4e57d6ef067bddf49",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win_boundary_tests.rs",
+        "bytes": 2196,
+        "sha256": "11f9f38c93ecd382d2f710181c83dc7e23e68b5b1a82f55b55c292048d60b8ff",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/no_reparse_dir_tests.rs",
+        "bytes": 1925,
+        "sha256": "14a743219120a78d0da762c6f4ab5c79eadfb0cc524b593091ec18b7e3aba2b6",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_cross_root_tests.rs",
+        "bytes": 7954,
+        "sha256": "875b9fa25168c70cb7132396f7bb8c427093ec23b753fe49420733a884ba343a",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_tests.rs",
+        "bytes": 4370,
+        "sha256": "51623b5b2f62f6cac9fce6288ce60c2bc430f18b2a7c58636865bc5269b47625",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/setup_runtime_bin_tests.rs",
+        "bytes": 834,
+        "sha256": "b96ad955e87808615587d8d94e4e0c707bbdae45f12439308e32605e3cde8c27",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win_acl_tests.rs",
+        "bytes": 928,
+        "sha256": "445eed000f1e4c9865d880354262ed547b49aafbc5db01812366d21a0d1d27cc",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/cap_registry_tests.rs",
+        "bytes": 8551,
+        "sha256": "54fb282e2304de00b3d04ba96335b74f24d0167db3057dac3592c90e9045da3e",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/capability_plan_tests.rs",
+        "bytes": 8943,
+        "sha256": "36231e1ae4a9d8550cc78743a94e71cfcc267ad2bde47c3d594ff5fb65dfdc0d",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/capability_registry_tests.rs",
+        "bytes": 2896,
+        "sha256": "922fa6234f5a6e4b717dc4a71cb950082940a651cb9daacebb211c543a645c9a",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/desktop_tests.rs",
+        "bytes": 6775,
+        "sha256": "9812fa9f300eb2cc1b3742aa38a32e0b898e4d9f40a6c0d93853d262ce0fc7b2",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/elevated/ipc_role_version_tests.rs",
+        "bytes": 888,
+        "sha256": "cc9cb1d3153627717a19a4b20bc5fedeebde18e90f55bf9c770ed9f3ac49bfbc",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/elevated/runner_pipe.rs",
+        "bytes": 5321,
+        "sha256": "fa1fd3c5822c10303421a895cbe76ab3dd368c645c831ffc1c003bba626925db",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/filesystem_read_acl_tests.rs",
+        "bytes": 7061,
+        "sha256": "56e440a00636edcad2edd3af2bc55d3217bfe1e07d1d05155702dbc58fca9839",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/identity_role_tests.rs",
+        "bytes": 2010,
+        "sha256": "e9cf4df35016942a5b86abb9332a5ba0d488a9cc4b1fad34d4d0c4a684822034",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/legacy_boundary.rs",
+        "bytes": 1750,
+        "sha256": "1b06f85c09af6283cd1591f4d371d6e109598f7ca9236a42400bf42b34e3b2bc",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/legacy_boundary_tests.rs",
+        "bytes": 11275,
+        "sha256": "70e2ad69a75ae06a9e2ddb3ff20efaac2e864b3dbe9f0552456d23b653bf4b26",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/managed_account_source_tests.rs",
+        "bytes": 4402,
+        "sha256": "f28c664d5eaa2d4321469d199695a4773342124d3da28eb9d0d04be20aedc1ab",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/managed_token_policy_tests.rs",
+        "bytes": 4983,
+        "sha256": "ed98b76b6477ac2d0200383b1d23898ba027540898d66064497bdfe92d29e82e",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/owned_child_stdio_tests.rs",
+        "bytes": 6927,
+        "sha256": "1106c8ad05f02e197ae5f23e132d115c50eb6b49be5bfb25df647ad637df9adb",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/prepared_filesystem_readback_tests.rs",
+        "bytes": 12977,
+        "sha256": "bce1a92fc33c37b6a020c50cfb51338d393ee89e274952531c5bbfcb848c48d9",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/private_state_native_probe_tests.rs",
+        "bytes": 13379,
+        "sha256": "08c9948142eece34a458725fd26abc22011a4ed4ebc4ba8b8906d5b507739ef6",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/read_role_descriptor_tests.rs",
+        "bytes": 4041,
+        "sha256": "bb5e0a948dd267508cd17f65c999542ff463a7cf7a598dc6e2f957f4a2827a8d",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/setup_role_tests.rs",
+        "bytes": 1981,
+        "sha256": "a6bb9a65499df97384752879c2baa7b05c840394c6227400ab43d812f4728dd7",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/stdio_bridge_tests.rs",
+        "bytes": 2043,
+        "sha256": "e00678b2172a1c765f491db8e36f7a34e71b829241fd9976cd2e78f8aa288055",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+        "bytes": 19583,
+        "sha256": "182b0f68ee7e9b5688a817e977b671fe7c6a08fbd903bb8c9cf7948f72747055",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/token_full_restriction_tests.rs",
+        "bytes": 17245,
+        "sha256": "c10f68779dee227f27d54dd516be945f6a3077f7e4b3155bd0e87d5dc4563336",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/token_prepared_filesystem_tests.rs",
+        "bytes": 7773,
+        "sha256": "5a9102d51e5237c94abb016a1aa109c367954414f5088c3a0fface58c587a4b2",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+        "bytes": 19991,
+        "sha256": "a597a32a4c01fa0c5b10c0cf21ff23293436062089becd77ae61fe8d19dab47a",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs",
+        "bytes": 16045,
+        "sha256": "3e18d56a783b2ab3804b879d92c66a47c858b4360083082fd6b956118d411a4c",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backend_selection_tests.rs",
+        "bytes": 6967,
+        "sha256": "0185b215f5be5b784d38aa48a61373f0733e1f8bb263dc5478dcc027c11b4580",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/elevated_tests.rs",
+        "bytes": 7997,
+        "sha256": "59cc7f28cb1accab885d7bb1a4dc75450e2684b254323e48b218ba163de2552a",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+        "bytes": 41867,
+        "sha256": "1c433d36d0099a33d1e96570b77a753ade76bdfa3f1dec1e91197895c3b3715e",
+        "live_equal_base": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/wrapper_tests.rs",
+        "bytes": 5122,
+        "sha256": "42d54561c2eab9cb1a7f510c39d20b134a0b2a718b90533e863880c910847146",
+        "live_equal_base": true
+      }
+    ],
+    "same_file_original_test_tail": {
+      "bytes": 2541,
+      "sha256": "7186657f2ec7e5576b4cb197b96a95f5f9637ef7a2cca431de93514f34582310",
+      "exact": true
+    },
+    "same_file_timeout_flags_constants": {
+      "bytes": 303,
+      "sha256": "d0b7a02f766d8bd42a246940f1530cce1bd384079507931078dc77e79aa86cd5",
+      "exact": true
+    },
+    "native_process_and_startup_regions": [
+      {
+        "name": "production_CreateProcess_and_error_mode",
+        "bytes": 855,
+        "sha256": "acc0c889a4214952dcaed68b1474b76f717faf3d2c4df7d9346226b941192914",
+        "preserved": true
+      },
+      {
+        "name": "PI_thread_cleanup",
+        "bytes": 96,
+        "sha256": "2c7b0935631fdd67afc680cc58d74d12913d3cb4f7c9f08ab34ab281b3fd1d84",
+        "preserved": true
+      },
+      {
+        "name": "startup_and_final_process_cleanup",
+        "bytes": 1075,
+        "sha256": "d2ee3eacf27a957cef8adc6bad53dd6ed8f4b5b2e2b6459fec72355c80c88ec7",
+        "preserved": true
+      },
+      {
+        "name": "worker_DuplicateHandle_call",
+        "bytes": 842,
+        "sha256": "18153daf17aad34cd9b15a87d07ff8a7c00071a2c8db28221380cd378f2e3e86",
+        "preserved": true
+      }
+    ],
+    "actual_gate_protected_caller": {
+      "path": "codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+      "bytes": 13368,
+      "sha256": "87ac2aa3eb0347825b8215614c3b73bbe84e605ec04f3fb55422e3f417129473",
+      "live_and_base_equal": true,
+      "relevant_lines": [
+        {
+          "line": 49,
+          "text": "    use crate::runner_client::spawn_runner_transport;"
+        },
+        {
+          "line": 228,
+          "text": "                    spawn_runner_transport("
+        }
+      ]
+    },
+    "runner_pipe_factory_and_security_attributes": {
+      "git_blob": "c8ae092c4a00fc3e029be48cb77cc78db4580d87",
+      "bytes": 5321,
+      "sha256": "fa1fd3c5822c10303421a895cbe76ab3dd368c645c831ffc1c003bba626925db"
+    },
+    "unchanged": "No PI/token/filesystem/Job/production observer/terminal helper/ACL/rights/namespace/SID/guard/timeout/test/assertion/BUILD/dependency/feature change in this candidate."
+  },
+  "open_risks_and_acceptance": [
+    {
+      "id": "OPEN-RAW-PIPE-DETACHED",
+      "status": "PREEXISTING_NOT_CLOSED",
+      "detail": "connect_pipe_with_timeout still captures numeric h_pipe in worker that may detach after timeout. Parent cleanup may close that pipe while worker has not demonstrably completed; stale/reused raw-handle risk is not eliminated. No Arc keepalive, typed worker-owned pipe or native terminal receipt added. This patch is not complete custody."
+    },
+    {
+      "id": "OPEN-DROP-RESULT",
+      "status": "NOT_QUALIFIED",
+      "detail": "OwnedHandle/File Drop does not surface CloseHandle failure or empirically prove reclamation. No new Windows execution here."
+    },
+    {
+      "id": "OPEN-PRODUCTION-ISOLATION",
+      "status": "NO_GO",
+      "detail": "Original broad outside deletes, correct legacy production refusal and current four-lane20/query/terminal failure contract remain open. Ambient-read-preserving genuine full restriction/caller/PE-DLL/desktop/stdio/Job/terminal chain remains required; no alternate token activation."
+    },
+    {
+      "id": "OPEN-SOURCE-QUALIFICATION",
+      "status": "NOT_RUN",
+      "detail": "New single-source conditional compilation/strict lint/fmt and original native acceptance must be qualified separately on integrated exact source; no old pass or exhausted budget is renewed."
+    }
+  ],
+  "qualification": {
+    "source_review": "NO_STATIC_BLOCKER_IN_NARROW_SCOPE",
+    "APPLIED_by_reviewer": false,
+    "COMMITTED_by_reviewer": false,
+    "PUBLISHED_by_reviewer": false,
+    "Rust_fmt_build_tests_Clippy": "NOT_RUN",
+    "Windows_native": "NOT_RUN",
+    "CI": "NOT_RUN",
+    "old_budgets_reset": false,
+    "task_complete": false,
+    "merge_ready": false,
+    "NO_GO": true
+  }
+}
