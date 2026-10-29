@@ -286,7 +286,7 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     // A fourth crash after yet another supervisord recovery is budget
     // exhaustion, not a fresh attempt 1.
     let (mut supervisor, recovered) =
-        Supervisor::recover(registry, control.driver(), config(), now)?;
+        Supervisor::recover(registry.clone(), control.driver(), config(), now)?;
     assert_eq!(recovered, TickReport::default());
     now += Duration::from_millis(1);
     control.crash(&agent_id);
@@ -304,6 +304,19 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
         &event.kind,
         SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts: 3 }
     )));
+    assert_eq!(control.spawn_count(&agent_id), 4);
+
+    // Reboot once more *after* the budget has been exhausted. The durable
+    // failed lifecycle must not silently resurrect the child or reset its budget.
+    drop(supervisor);
+    let (mut supervisor, recovered) =
+        Supervisor::recover(registry, control.driver(), config(), now)?;
+    assert_eq!(recovered, TickReport::default());
+    assert!(!supervisor.snapshot(&agent_id).expect("snapshot").active);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_secs(1)),
+        TickReport::default()
+    );
     assert_eq!(control.spawn_count(&agent_id), 4);
     Ok(())
 }
