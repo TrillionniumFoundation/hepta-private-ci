@@ -1,0 +1,26 @@
+{
+  "accounting": "This enclosing interval includes child subprocesses. Nested receipts explain its components and must not be added to it again.",
+  "complete": true,
+  "cpu": {
+    "child_system_seconds": 10.202304,
+    "child_user_seconds": 94.18303,
+    "self_system_seconds": 0.731128,
+    "self_user_seconds": 1.693203
+  },
+  "error": null,
+  "facts": {
+    "binary_bytes": 1162984,
+    "binary_sha256": "21e9c940793838148a1d96657159104a5a27379a23cec5f724b97052a9d8ef7c",
+    "build_receipt_sha256": "552c4cda401d9efbb1b3f7f8d914fc6ca4c46f912310a82888b793f691ee22cc",
+    "package_count": 59,
+    "production_source_inputs": 100
+  },
+  "finished_at_utc": "2026-10-28T11:14:36.658127+00:00",
+  "identity": {
+    "stage": "signed_credit_bridge_build"
+  },
+  "schema": "hepta.adaptive-neuron.cost-stage.v2",
+  "scope": "Protected v2 source verification, exact production-crate materialization, local offline resolution, checksum verification and extraction of cached dependency packages, isolated compilation and executable hashing.",
+  "started_at_utc": "2026-10-28T11:12:44.724670+00:00",
+  "wall_seconds": 111.93352279499959
+}

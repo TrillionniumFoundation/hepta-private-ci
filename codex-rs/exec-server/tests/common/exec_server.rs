@@ -4,6 +4,8 @@ use std::path::PathBuf;
 use std::process::Stdio;
 use std::time::Duration;
 
+#[cfg(windows)]
+use anyhow::Context;
 use anyhow::anyhow;
 use codex_exec_server_protocol::JSONRPCMessage;
 use codex_exec_server_protocol::JSONRPCNotification;
@@ -51,6 +53,8 @@ impl Drop for ExecServerHarness {
 pub(crate) struct TestCodexHelperPaths {
     pub(crate) codex_exe: PathBuf,
     pub(crate) codex_linux_sandbox_exe: Option<PathBuf>,
+    #[cfg(windows)]
+    _windows_bundle: TempDir,
 }
 
 pub(crate) struct DisconnectableWebSocketProxy {
@@ -69,9 +73,28 @@ impl Drop for DisconnectableWebSocketProxy {
 
 pub(crate) fn test_codex_helper_paths() -> anyhow::Result<TestCodexHelperPaths> {
     let (helper_binary, codex_linux_sandbox_exe) = super::current_test_binary_helper_paths()?;
+    #[cfg(windows)]
+    let (helper_binary, windows_bundle) = {
+        // The production Windows helper lookup uses the executable's package,
+        // while Bazel supplies separate runfiles and Cargo uses target/debug.
+        // Own a complete bundle for both local and remote filesystem helpers.
+        let bundle = TempDir::new().context("create Windows test helper bundle")?;
+        let executable = bundle.path().join("codex.exe");
+        std::fs::copy(&helper_binary, &executable).context("stage exec-server test executable")?;
+        for helper_name in ["codex-windows-sandbox-setup", "codex-command-runner"] {
+            let helper = codex_utils_cargo_bin::cargo_bin(helper_name)
+                .with_context(|| format!("locate Windows helper {helper_name}"))?;
+            let destination = bundle.path().join(format!("{helper_name}.exe"));
+            std::fs::copy(&helper, &destination)
+                .with_context(|| format!("stage Windows helper {helper_name}"))?;
+        }
+        (executable, bundle)
+    };
     Ok(TestCodexHelperPaths {
         codex_exe: helper_binary,
         codex_linux_sandbox_exe,
+        #[cfg(windows)]
+        _windows_bundle: windows_bundle,
     })
 }
 

@@ -8,6 +8,16 @@
 function Test-DevDrive {
     param([string]$Drive)
 
+    if ($Drive -notmatch '^[A-Za-z]:$') {
+        return $false
+    }
+    $Volume = Get-Volume -DriveLetter $Drive.Substring(0, 1) -ErrorAction Stop
+    # A successful fsutil query does not establish the queried file system.
+    # Dev Drive is specifically a local ReFS volume, so validate it explicitly.
+    if ($Volume.FileSystem -ne "ReFS" -or $Volume.DriveType -ne "Fixed") {
+        Write-Host "Volume $Drive is $($Volume.FileSystem)/$($Volume.DriveType), not a local ReFS Dev Drive."
+        return $false
+    }
     & fsutil devdrv query $Drive *> $null
     return $LASTEXITCODE -eq 0
 }
@@ -22,7 +32,10 @@ function Invoke-BestEffort {
     }
 }
 
-if ((Test-Path "D:\") -and (Test-DevDrive "D:")) {
+if ($env:CI_BUILD_ROOT -and (Test-DevDrive $env:CI_BUILD_ROOT)) {
+    Write-Output "Reusing verified Dev Drive at $env:CI_BUILD_ROOT"
+    $Drive = $env:CI_BUILD_ROOT
+} elseif ((Test-Path "D:\") -and (Test-DevDrive "D:")) {
     Write-Output "Using existing Dev Drive at D:"
     $Drive = "D:"
 } else {
@@ -31,12 +44,9 @@ if ((Test-Path "D:\") -and (Test-DevDrive "D:")) {
     }
 
     try {
-        $VhdPath = Join-Path $env:RUNNER_TEMP "codex-dev-drive.vhdx"
+        $VhdName = "codex-dev-drive-$([Guid]::NewGuid().ToString('N')).vhdx"
+        $VhdPath = Join-Path $env:RUNNER_TEMP $VhdName
         $SizeBytes = 64GB
-
-        if (Test-Path $VhdPath) {
-            Remove-Item -Path $VhdPath -Force
-        }
 
         New-VHD -Path $VhdPath -SizeBytes $SizeBytes -Dynamic -ErrorAction Stop | Out-Null
         $Mounted = Mount-VHD -Path $VhdPath -Passthru -ErrorAction Stop

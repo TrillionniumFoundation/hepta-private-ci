@@ -49,6 +49,13 @@ fn initialize_v8_with_mode(jit_mode: V8JitMode) -> Result<V8Initialization, Stri
     let platform = v8::new_default_platform(0, false).make_shared();
     v8::V8::initialize_platform(platform.clone());
     v8::V8::initialize();
+
+    // V8 15.0 lazily initializes its sandbox's shared PartitionAlloc backend
+    // without synchronizing concurrent default-allocator construction. Finish
+    // that initialization under V8_INITIALIZATION before runtime threads create
+    // isolates. The backend belongs to the isolate group and outlives this wrapper.
+    drop(v8::new_default_allocator());
+
     Ok(V8Initialization {
         _platform: platform,
         jit_mode,

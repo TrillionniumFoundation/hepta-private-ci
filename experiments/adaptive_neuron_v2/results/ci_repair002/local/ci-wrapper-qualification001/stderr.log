@@ -1,0 +1,17 @@
+test_authenticated_cross_keeps_linux_build_actions_and_windows_tests (test_run_bazel_ci.RunBazelCiIntegrationTest.test_authenticated_cross_keeps_linux_build_actions_and_windows_tests) ... ok
+test_failure_preserves_status_linker_diagnostics_and_test_log_configuration (test_run_bazel_ci.RunBazelCiIntegrationTest.test_failure_preserves_status_linker_diagnostics_and_test_log_configuration) ... ok
+test_keyless_cross_uses_msvc_exec_and_gnullvm_target (test_run_bazel_ci.RunBazelCiIntegrationTest.test_keyless_cross_uses_msvc_exec_and_gnullvm_target) ... ok
+test_large_windows_build_preserves_all_targets_without_a_large_native_command (test_run_bazel_ci.RunBazelCiIntegrationTest.test_large_windows_build_preserves_all_targets_without_a_large_native_command) ... ok
+test_linux_runner_does_not_receive_windows_volume_paths (test_run_bazel_ci.RunBazelCiIntegrationTest.test_linux_runner_does_not_receive_windows_volume_paths) ... ok
+test_native_windows_forwards_required_msvc_environment (test_run_bazel_ci.RunBazelCiIntegrationTest.test_native_windows_forwards_required_msvc_environment) ... ok
+test_native_windows_rejects_missing_required_msvc_environment (test_run_bazel_ci.RunBazelCiIntegrationTest.test_native_windows_rejects_missing_required_msvc_environment) ... ok
+test_windows_argument_lint_preserves_the_entire_large_crlf_query_roster (test_run_bazel_ci.RunBazelCiIntegrationTest.test_windows_argument_lint_preserves_the_entire_large_crlf_query_roster) ... ok
+test_windows_argument_lint_uses_the_shared_split_abi_wrapper (test_run_bazel_ci.RunBazelCiIntegrationTest.test_windows_argument_lint_uses_the_shared_split_abi_wrapper) ... ok
+test_windows_target_files_preserve_test_and_coverage_failures (test_run_bazel_ci.RunBazelCiIntegrationTest.test_windows_target_files_preserve_test_and_coverage_failures) ... ok
+test_windows_test_actions_receive_verified_volume_paths (test_run_bazel_ci.RunBazelCiIntegrationTest.test_windows_test_actions_receive_verified_volume_paths) ... ok
+test_windows_tests_reject_missing_verified_volume_environment (test_run_bazel_ci.RunBazelCiIntegrationTest.test_windows_tests_reject_missing_verified_volume_environment) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 1.586s
+
+OK

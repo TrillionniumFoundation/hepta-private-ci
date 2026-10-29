@@ -1,0 +1,19 @@
+{
+  "child_cpu_seconds": 2.561769,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.adaptive_neuron_v2.results.delivery001.figures"
+  ],
+  "complete": true,
+  "error": null,
+  "exit_code": 0,
+  "logs": {
+    "stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout.log": "48ea8d3f193959c3a71469c03272f8cda059163dde7dab7e5c5f5b1569557f78"
+  },
+  "parent_cpu_seconds": 0.0021753109999999992,
+  "schema": "hepta.adaptive-neuron.command-cost.v2",
+  "scope": "Before command directory creation through subprocess exit and output-file close; includes process startup/imports, all child work and failed attempts. Subordinate timers are nested, not additional.",
+  "wall_seconds": 2.2661952019989258
+}

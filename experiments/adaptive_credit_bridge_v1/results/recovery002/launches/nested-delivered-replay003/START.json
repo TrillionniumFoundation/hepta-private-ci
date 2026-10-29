@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "/workspace/scratch/07399998a2e3/recovery/credit-delivered-verification003/credit-portable002/REPLAY.py",
+    "--worker",
+    "replay",
+    "--bundle",
+    "/workspace/scratch/07399998a2e3/recovery/credit-delivered-verification003/credit-portable002",
+    "--destination",
+    "/workspace/scratch/07399998a2e3/recovery/credit-delivered-verification003/delivered-replay",
+    "--receipt",
+    "/workspace/scratch/07399998a2e3/recovery/credit-delivered-verification003/nested-replay-launch"
+  ],
+  "schema": "hepta.recovery.outer-launch.v1",
+  "scope": "Includes child interpreter startup, full stage and descendant processes; excludes this launcher's own interpreter startup. Nested receipts are explanatory and not additive.",
+  "stage": "replay",
+  "started_at_utc": "2026-10-29T07:03:58.157682+00:00"
+}

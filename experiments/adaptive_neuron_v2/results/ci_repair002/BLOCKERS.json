@@ -1,0 +1,967 @@
+{
+  "all_blockers_closed": false,
+  "candidate_head_not_yet_qualified": true,
+  "classification_limit": "Named failures include attempts before Bazel retries. Target/job outcomes and cancelled status are preserved separately. A source repair or Linux-only pass is not native matrix qualification.",
+  "groups": [
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "Tests observe public durable lifecycle events; subsequent repair exposes restart-budget transitions through supported behavior.",
+      "id": "supervisor_compile",
+      "named_failures": [],
+      "next_required_gate": "Architecture source-head plus native restart_budget_recovery on candidate.",
+      "observed_failure": "Six E0616 errors access private restart_pending/restart_attempt fields.",
+      "prior_job_ids": [
+        122779130799,
+        122780464767,
+        122780464801
+      ],
+      "prior_job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378085/job/122779130799",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464767",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464801"
+      ],
+      "repair_commits": [
+        "65cf0aafea1d61a21ad8c616a9f68729f9c80410",
+        "e5e52c9afe6879f950f45ac7b715f1f0fc6690ca"
+      ],
+      "representative_preserved_excerpts": [],
+      "status": "source_repair_committed_native_validation_pending",
+      "title": "Supervisor public lifecycle compile contract"
+    },
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "Expose automatic restart budget transitions without exposing private snapshot fields.",
+      "id": "supervisor_restart",
+      "named_failures": [
+        "unexpected_agent_crashes_back_off_and_stop_after_three_restarts"
+      ],
+      "next_required_gate": "Native Windows restart_budget; local six-package attempts ran zero tests.",
+      "observed_failure": "unexpected_agent_crashes_back_off_and_stop_after_three_restarts did not observe expected AutomaticRestartQueued attempt.",
+      "prior_job_ids": [
+        122780464839
+      ],
+      "prior_job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464839"
+      ],
+      "repair_commits": [
+        "e5e52c9afe6879f950f45ac7b715f1f0fc6690ca"
+      ],
+      "representative_preserved_excerpts": [
+        {
+          "excerpt": "---- unexpected_agent_crashes_back_off_and_stop_after_three_restarts stdout ----\n\nthread 'unexpected_agent_crashes_back_off_and_stop_after_three_restarts' (7156) panicked at hepta-supervisor/tests/restart_budget.rs:238:9:\nassertion failed: supervisor.snapshot(&agent_id).expect(\"snapshot\").events.iter().any(|event|\n        matches!(&event.kind, SupervisorEventKind::AutomaticRestartQueued\n            { attempt } if *attempt == expected_attempt))\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n",
+          "line": 4177,
+          "raw_log": "job-122780464839.log",
+          "test_heading": "---- unexpected_agent_crashes_back_off_and_stop_after_three_restarts stdout ----"
+        }
+      ],
+      "status": "source_repair_committed_native_validation_pending",
+      "title": "Durable automatic restart event sequence"
+    },
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "Preserve fixture visibility in both module and standalone integration-test compilation.",
+      "id": "queue_fixture_compile",
+      "named_failures": [],
+      "next_required_gate": "Native Windows queue_hook_fixtures and release build.",
+      "observed_failure": "E0433: too many leading super keywords in standalone queue_hook_fixtures test target.",
+      "prior_job_ids": [
+        122780464784,
+        122780464801
+      ],
+      "prior_job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464784",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464801"
+      ],
+      "repair_commits": [
+        "dcae3340e051614a1a1fe45071c6638d2564b11c"
+      ],
+      "representative_preserved_excerpts": [],
+      "status": "source_repair_committed_native_validation_pending",
+      "title": "Queue fixture integration-crate visibility"
+    },
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "Align fixtures with post-admission lease ownership and platform hook execution contracts.",
+      "id": "queue_lifecycle",
+      "named_failures": [
+        "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+        "core_error_after_started_never_releases_ambiguous_dispatch",
+        "explicitly_started_rejected_queue_messages_remain_durable",
+        "rejected_queue_messages_remain_durable_and_block_followups",
+        "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit"
+      ],
+      "next_required_gate": "Native Windows all queue_service cases; no reduced durability or ownership assertion.",
+      "observed_failure": "Hook marker waits and rejected queue deadlines failed; crash-window retry saw changed dispatch owner/revision.",
+      "prior_job_ids": [
+        122780464784
+      ],
+      "prior_job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464784"
+      ],
+      "repair_commits": [
+        "dcae3340e051614a1a1fe45071c6638d2564b11c"
+      ],
+      "representative_preserved_excerpts": [
+        {
+          "excerpt": "---- caller_abort_after_core_started_keeps_exact_authority_until_persistence stdout ----\nError: timed out waiting for `C:\\ct\\40677378223-1-test-windows-shard-2bcec7de1585\\.tmpicl59M\\queue_blocking_prompt_hook.entered`\n\nCaused by:\n    deadline has elapsed\n",
+          "line": 4485,
+          "raw_log": "job-122780464784.log",
+          "test_heading": "---- caller_abort_after_core_started_keeps_exact_authority_until_persistence stdout ----"
+        }
+      ],
+      "status": "source_repair_committed_native_validation_pending",
+      "title": "Queue hook, cancellation and crash-window fixtures"
+    },
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "Keep Windows V8 source and GN output on one volume.",
+      "id": "v8_windows_paths",
+      "named_failures": [],
+      "next_required_gate": "Both x86_64 and aarch64 Windows ptrcomp-sandbox builds on candidate.",
+      "observed_failure": "ValueError: path is on mount D:, start on mount E:.",
+      "prior_job_ids": [
+        122780803160,
+        122780803248
+      ],
+      "prior_job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378157/job/122780803160",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378157/job/122780803248"
+      ],
+      "repair_commits": [
+        "0540ba432a6206d179aa1bc0b97fd2250fd997ef"
+      ],
+      "representative_preserved_excerpts": [],
+      "status": "source_repair_committed_native_validation_pending",
+      "title": "V8 Windows cross-volume GN source build"
+    },
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "Initialize sandbox allocator before concurrent isolates using the pinned upstream contract.",
+      "id": "v8_allocator",
+      "named_failures": [],
+      "next_required_gate": "Native code-mode-host and code-mode-runtime tests, especially Windows concurrency.",
+      "observed_failure": "code-mode-host/runtime fatal partition_address_space.cc: !IsConfigurablePoolInitialized().",
+      "prior_job_ids": [
+        122780464784
+      ],
+      "prior_job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464784"
+      ],
+      "repair_commits": [
+        "b68715a56d6f1b707a39d4af6994ceff23ff81fc"
+      ],
+      "representative_preserved_excerpts": [],
+      "status": "source_repair_committed_native_validation_pending",
+      "title": "Concurrent V8 PartitionAlloc initialization"
+    },
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "Wait for pending admission transitions in the fixture; use a two-worker test runtime and inherit subscriber on the spawned snapshot. Production fences retained.",
+      "id": "core_readiness",
+      "named_failures": [
+        "agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context",
+        "environment_selection::tests::blocking_snapshot_waits_for_starting_environment"
+      ],
+      "next_required_gate": "Native core-unit-tests on candidate, including both named cases.",
+      "observed_failure": "Rollout-resume fixture raced terminal admission ownership; blocking snapshot test lost tracing context/execution progress.",
+      "prior_job_ids": [
+        122780464767
+      ],
+      "prior_job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464767"
+      ],
+      "repair_commits": [
+        "221c19ccd1084a755d07d11b82662692316b95e1"
+      ],
+      "representative_preserved_excerpts": [
+        {
+          "excerpt": "---- agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context stdout ----\n\nthread 'agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context' (6712) panicked at core/src\\agent\\control_tests.rs:393:10:\ninject thread resume context: InvalidRequest(\"turn is terminalizing or shutting down and cannot accept injected context\")\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n",
+          "line": 5250,
+          "raw_log": "job-122780464767.log",
+          "test_heading": "---- agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context stdout ----"
+        }
+      ],
+      "status": "source_repair_committed_native_validation_pending",
+      "title": "Core terminal ownership and snapshot readiness"
+    },
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "Use platform-appropriate writable directory handles and private fixture directory initialization while retaining durable flushes.",
+      "id": "windows_durable_handles",
+      "named_failures": [
+        "authority_schema::tests::missing_and_replaced_authority_triggers_fail_closed_on_reopen",
+        "child_tests::drains_and_bounds_stderr_while_hashing_the_full_stream",
+        "child_tests::persists_inbound_wire_before_rejecting_invalid_json",
+        "clean_agent_recall_replay_training_load_and_source_withdrawal",
+        "cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records",
+        "cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends",
+        "cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment",
+        "cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently",
+        "cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict",
+        "driver_tests::app_and_mcp_fsm_persist_before_every_sample_write",
+        "driver_tests::failed_pipe_write_keeps_durable_pre_send_and_poisoned_fsm",
+        "evaluated_shadow::tests::abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome",
+        "evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes",
+        "evaluated_shadow::tests::host_failure_or_substituted_intuition_never_reaches_the_durable_stage",
+        "evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port",
+        "evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded",
+        "evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch",
+        "evaluated_shadow::tests::segmented::bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal",
+        "evaluated_shadow::tests::segmented::existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery",
+        "evaluated_shadow::tests::tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports",
+        "importer_tests::imports_exactly_four_artifacts_and_writes_a_checkpoint",
+        "importer_tests::inventories_all_broken_samples_before_checkpointing_failure",
+        "loopback_tests::persists_exact_http_requests_and_responses",
+        "observer_tests::rejects_noncanonical_input_before_writing_an_artifact",
+        "observer_tests::rejects_out_of_order_or_incomplete_runs_without_minting_tokens",
+        "observer_tests::returns_tokens_only_after_four_private_durable_pairs",
+        "outcome_credit_v2::tests::credit_failure_preserves_outcome_for_exact_reconciliation",
+        "outcome_credit_v2::tests::product_path_records_outcome_correction_then_conserved_credit",
+        "outcome_credit_v2::tests::run_episode_mismatch_rejects_before_any_outcome_append",
+        "real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal",
+        "report_tests::inventories_import_semantic_duplicate_and_missing_failures",
+        "report_tests::writes_an_exact_report_with_no_authority",
+        "runtime_tests::creates_private_surface_layouts_and_strict_configs",
+        "sealer_tests::rejects_a_checkpoint_changed_before_sealing",
+        "sealer_tests::seals_a_complete_checkpoint_with_every_gate_disabled",
+        "sealer_tests::seals_a_failed_checkpoint_without_losing_failures",
+        "transport_tests::detects_transport_artifact_changes_after_capture"
+      ],
+      "next_required_gate": "Native Windows affected targets, real owner lifecycle and durable reopen behavior. Local six-package compilation did not reach any tests.",
+      "observed_failure": "PermissionDenied while opening/flushing directories across intelligence, authbus, agentd and shadow qualification; real terminal-owner cases failed before closure.",
+      "prior_job_ids": [
+        122780464727,
+        122780464784,
+        122780464839
+      ],
+      "prior_job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464727",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464784",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464839"
+      ],
+      "repair_commits": [
+        "9e4c682184fa34d03cccd3f0cabedbf99d7dd00d"
+      ],
+      "representative_preserved_excerpts": [
+        {
+          "excerpt": "---- evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes stdout ----\n\nthread 'evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes' (2704) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72:\ncalled `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+          "line": 3647,
+          "raw_log": "job-122780464727.log",
+          "test_heading": "---- evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes stdout ----"
+        },
+        {
+          "excerpt": "---- cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records stdout ----\n\nthread 'cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records' (9916) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:\nledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+          "line": 4849,
+          "raw_log": "job-122780464784.log",
+          "test_heading": "---- cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records stdout ----"
+        },
+        {
+          "excerpt": "---- child_tests::persists_inbound_wire_before_rejecting_invalid_json stdout ----\n\nthread 'child_tests::persists_inbound_wire_before_rejecting_invalid_json' (4348) panicked at codex-rs/hepta-shadow-qualification/src\\child_tests.rs:17:5:\nassertion failed: root.join(\"app_server-inbound-000001.receipt.json\").is_file()\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+          "line": 3745,
+          "raw_log": "job-122780464839.log",
+          "test_heading": "---- child_tests::persists_inbound_wire_before_rejecting_invalid_json stdout ----"
+        }
+      ],
+      "status": "source_repair_committed_native_validation_pending",
+      "title": "Windows durable directory handles and private fixture directories"
+    },
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "Reuse already checked canonical binding and preserve Windows recovery flushes; update the historical fixture for the current migration chain.",
+      "id": "windows_memory_recovery",
+      "named_failures": [
+        "cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation",
+        "cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate",
+        "cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers",
+        "cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission",
+        "cognitive_store::recovery::tests::writable_recovery_requires_exclusive_store_fence",
+        "cognitive_store_tests::v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_projection"
+      ],
+      "next_required_gate": "Native Windows writable recovery, predecessor/epoch rejection and memory migration tests.",
+      "observed_failure": "Recovery rejected a valid Windows canonical root as redirected; migration fixture assertion drifted.",
+      "prior_job_ids": [
+        122780464727
+      ],
+      "prior_job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464727"
+      ],
+      "repair_commits": [
+        "9e4c682184fa34d03cccd3f0cabedbf99d7dd00d"
+      ],
+      "representative_preserved_excerpts": [
+        {
+          "excerpt": "---- cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation stdout ----\n\nthread 'cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation' (896) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:163:6:\ndescriptor-bound writable recovery: Indeterminate(\"cognitive recovery root is redirected\")\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+          "line": 4548,
+          "raw_log": "job-122780464727.log",
+          "test_heading": "---- cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation stdout ----"
+        }
+      ],
+      "status": "source_repair_committed_native_validation_pending",
+      "title": "Memory recovery canonical paths, flushes and migration fixture"
+    },
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "Open/flush the durable lease directory with the required Windows access flags.",
+      "id": "windows_lease_store",
+      "named_failures": [
+        "lease_lifecycle::tests::expiry_is_durable_and_terminal_for_renewal",
+        "lease_lifecycle::tests::issue_rejects_non_active_provider_observations_without_durable_mutation",
+        "lease_lifecycle::tests::issue_unknown_reconciles_without_duplicate_issue",
+        "lease_lifecycle::tests::provider_not_applied_restores_active_lease_after_unknown",
+        "lease_lifecycle::tests::renew_unknown_blocks_fabricated_success_until_reconciled",
+        "lease_lifecycle::tests::reused_operation_id_with_changed_semantics_conflicts",
+        "lease_lifecycle::tests::revoke_unknown_stays_nonterminal_until_provider_observation"
+      ],
+      "next_required_gate": "Native Windows complete lease lifecycle/reconciliation tests.",
+      "observed_failure": "Seven lease_lifecycle tests returned Unavailable.",
+      "prior_job_ids": [
+        122780464727
+      ],
+      "prior_job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464727"
+      ],
+      "repair_commits": [
+        "9e4c682184fa34d03cccd3f0cabedbf99d7dd00d"
+      ],
+      "representative_preserved_excerpts": [
+        {
+          "excerpt": "---- lease_lifecycle::tests::provider_not_applied_restores_active_lease_after_unknown stdout ----\n\nthread 'lease_lifecycle::tests::provider_not_applied_restores_active_lease_after_unknown' (612) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:190:10:\ncalled `Result::unwrap()` on an `Err` value: Unavailable\n",
+          "line": 4210,
+          "raw_log": "job-122780464727.log",
+          "test_heading": "---- lease_lifecycle::tests::provider_not_applied_restores_active_lease_after_unknown stdout ----"
+        }
+      ],
+      "status": "source_repair_committed_native_validation_pending",
+      "title": "Lease lifecycle durable store availability"
+    },
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "Remove later dependent triggers/schema layers in dependency order when constructing v1 fixture.",
+      "id": "automation_fixture",
+      "named_failures": [
+        "v1_store_migrates_atomically_to_dispatch_outcome_schema"
+      ],
+      "next_required_gate": "Automation v1 forward migration test on candidate.",
+      "observed_failure": "Dropping old schema tables left automation_timer_lifecycle_drain referencing missing automation_dispatch_outcomes.",
+      "prior_job_ids": [
+        122780464727
+      ],
+      "prior_job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464727"
+      ],
+      "repair_commits": [
+        "9e4c682184fa34d03cccd3f0cabedbf99d7dd00d"
+      ],
+      "representative_preserved_excerpts": [
+        {
+          "excerpt": "---- v1_store_migrates_atomically_to_dispatch_outcome_schema stdout ----\n\nthread 'v1_store_migrates_atomically_to_dispatch_outcome_schema' (2408) panicked at hepta-automation/tests/automation.rs:1039:10:\nremove v14 run revision from v1 fixture: Database(SqliteError { code: 1, message: \"error in trigger automation_timer_lifecycle_drain: no such table: main.automation_dispatch_outcomes\" })\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n",
+          "line": 4428,
+          "raw_log": "job-122780464727.log",
+          "test_heading": "---- v1_store_migrates_atomically_to_dispatch_outcome_schema stdout ----"
+        }
+      ],
+      "status": "source_repair_committed_native_validation_pending",
+      "title": "Historical automation migration order"
+    },
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "Hash the already canonicalized workspace in revalidation, matching preparation and existing grant checks.",
+      "id": "federation_binding",
+      "named_failures": [
+        "cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send"
+      ],
+      "next_required_gate": "Native ext/hepta-memory revocation and actual-send tests.",
+      "observed_failure": "revoke_removes_prepared_federated_context_from_next_physical_send failed before the physical send.",
+      "prior_job_ids": [
+        122780464767
+      ],
+      "prior_job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464767"
+      ],
+      "repair_commits": [
+        "9e4c682184fa34d03cccd3f0cabedbf99d7dd00d"
+      ],
+      "representative_preserved_excerpts": [
+        {
+          "excerpt": "---- cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send stdout ----\n\nthread 'cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send' (5836) panicked at ext/hepta-memory/src\\cognitive\\federation.rs:1351:10:\nproposal before revoke\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n",
+          "line": 4242,
+          "raw_log": "job-122780464767.log",
+          "test_heading": "---- cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send stdout ----"
+        }
+      ],
+      "status": "source_repair_committed_native_validation_pending",
+      "title": "Canonical workspace binding during federated revalidation"
+    },
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "Use shorter verified Windows temp names and portable fixture roots. This is a contributing environment repair; the Cursor decoder result still needs native evidence.",
+      "id": "windows_test_paths",
+      "named_failures": [
+        "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation",
+        "control::tests::health_tracks_real_task_state_and_owner_uds_enforces_platform_gate",
+        "detect::sessions::cur::tests::detects_cur_sessions_in_batches_and_redetects_modified_imports",
+        "detect::sessions::cur::tests::detects_cur_transcript_with_project_cwd",
+        "detect::sessions::cur::tests::resolves_cur_project_names_with_common_separators",
+        "detect::sessions::cur::tests::skips_cur_subagent_transcripts"
+      ],
+      "next_required_gate": "Native Windows control/ranker and all four external-agent-migration cases.",
+      "observed_failure": "Agentd control path exceeded SUN_LEN; matrix control fixture used absent D:/tmp; four Cursor discovery tests found no encoded project path under a long hyphenated CI temp root.",
+      "prior_job_ids": [
+        122780464784,
+        122780464767
+      ],
+      "prior_job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464784",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464767"
+      ],
+      "repair_commits": [
+        "9e4c682184fa34d03cccd3f0cabedbf99d7dd00d"
+      ],
+      "representative_preserved_excerpts": [
+        {
+          "excerpt": "---- control::tests::health_tracks_real_task_state_and_owner_uds_enforces_platform_gate stdout ----\nError: Custom { kind: NotFound, error: PathError { path: \"D:/tmp\\\\hmx-control-D62Qdy\", err: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" } } }\n\n",
+          "line": 4725,
+          "raw_log": "job-122780464784.log",
+          "test_heading": "---- control::tests::health_tracks_real_task_state_and_owner_uds_enforces_platform_gate stdout ----"
+        },
+        {
+          "excerpt": "---- detect::sessions::cur::tests::detects_cur_transcript_with_project_cwd stdout ----\n\nthread 'detect::sessions::cur::tests::detects_cur_transcript_with_project_cwd' (7924) panicked at external-agent-migration/src\\detect\\sessions\\cur_tests.rs:27:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<[]\n>[\n>    ExternalAgentSessionMigration {\n>        path: \"C:\\\\ct\\\\40677378223-1-test-windows-shard-2fb92e597ee8\\\\.tmp5b7f24\\\\.external\\\\projects\\\\C--ct-40677378223-1-test-windows-shard-2fb92e597ee8-.tmp5b7f24-workspace with.dots_and-dashes\\\\agent-transcripts\\\\a-session\\\\a-session.jsonl\",\n>        cwd: \"C:\\\\ct\\\\40677378223-1-test-window",
+          "line": 4413,
+          "raw_log": "job-122780464767.log",
+          "test_heading": "---- detect::sessions::cur::tests::detects_cur_transcript_with_project_cwd stdout ----"
+        }
+      ],
+      "status": "source_repair_committed_native_validation_pending",
+      "title": "Short verified temporary roots and portable control fixture paths"
+    },
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "Use the platform-valid absolute fixture path.",
+      "id": "adapter_absolute_path",
+      "named_failures": [
+        "tests::thread_read_recovery_keeps_in_progress_indeterminate",
+        "tests::thread_read_recovery_rejects_session_drift_and_duplicate_turns",
+        "tests::thread_read_recovery_requires_exact_stable_message_and_input"
+      ],
+      "next_required_gate": "Native Windows thread-read recovery tests retain stable message/input and drift rejections.",
+      "observed_failure": "Three thread_read_recovery cases failed: AbsolutePathBuf deserialized without a base path.",
+      "prior_job_ids": [
+        122780464727
+      ],
+      "prior_job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464727"
+      ],
+      "repair_commits": [
+        "9e4c682184fa34d03cccd3f0cabedbf99d7dd00d"
+      ],
+      "representative_preserved_excerpts": [
+        {
+          "excerpt": "---- tests::thread_read_recovery_rejects_session_drift_and_duplicate_turns stdout ----\n\nthread 'tests::thread_read_recovery_rejects_session_drift_and_duplicate_turns' (6648) panicked at hepta-codex-adapter/src\\lib_tests.rs:133:6:\ncalled `Result::unwrap()` on an `Err` value: Error(\"AbsolutePathBuf deserialized without a base path\", line: 0, column: 0)\n",
+          "line": 5047,
+          "raw_log": "job-122780464727.log",
+          "test_heading": "---- tests::thread_read_recovery_rejects_session_drift_and_duplicate_turns stdout ----"
+        }
+      ],
+      "status": "source_repair_committed_native_validation_pending",
+      "title": "Portable absolute path fixture for codex adapter"
+    },
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "Construct deterministic test SSHSIG bytes; actual Unix pinned /usr/bin/ssh-keygen verification remains. Non-Unix valid signatures fail closed; Windows directory flush path corrected.",
+      "id": "operator_acceptance",
+      "named_failures": [
+        "g5_trust::tests::exact_head_and_predecessor_binding_is_required",
+        "g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance",
+        "g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority",
+        "g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted",
+        "g5_trust::tests::policy_and_revocation_files_must_be_canonical",
+        "g5_trust::tests::revocation_digest_change_invalidates_existing_challenge",
+        "g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance",
+        "tests::durable_time_watermark_rejects_clock_rollback",
+        "tests::exact_replay_returns_same_receipt_and_conflicting_claim_fails",
+        "tests::unknown_or_noncanonical_stored_json_is_rejected",
+        "trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy",
+        "trust::tests::trust_policy_digest_is_external_and_fail_closed",
+        "trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers"
+      ],
+      "next_required_gate": "24/24 current-source Linux tests passed at recorded source hashes. Native Windows unsupported-policy/durable branches still require candidate CI.",
+      "observed_failure": "Windows trust fixtures relied on unavailable signing/verifier behavior; operator durable tests also saw PermissionDenied.",
+      "prior_job_ids": [
+        122780464839
+      ],
+      "prior_job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464839"
+      ],
+      "repair_commits": [
+        "9e4c682184fa34d03cccd3f0cabedbf99d7dd00d",
+        "e56bdeb75d85c8aa4fa069ef0851999d01d504eb"
+      ],
+      "representative_preserved_excerpts": [
+        {
+          "excerpt": "---- g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance stdout ----\n\nthread 'g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance' (4072) panicked at codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:277:14:\nstart test key generation: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+          "line": 3485,
+          "raw_log": "job-122780464839.log",
+          "test_heading": "---- g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance stdout ----"
+        }
+      ],
+      "status": "linux24_passed_windows_candidate_validation_pending",
+      "title": "Portable SSHSIG fixtures and explicit unsupported-platform contract"
+    },
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "Reject legacy managed filesystem launches before setup; capability-only low-level tokens use full restriction with a fresh-base guard; deny masks exclude shared read rights. Broker process acceptance remains required.",
+      "id": "windows_delete_boundary",
+      "named_failures": [
+        "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+        "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+        "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots"
+      ],
+      "next_required_gate": "Run ordinary broker delete acceptance AND broker_cannot_delete_low_integrity_outside_paths_with_broad_everyone_grants, plus legacy no-mutation, token composition, ACL read/write/idempotence and lifecycle tests on exact candidate. Broad Everyone DELETE/DELETE_CHILD fixture is explicitly low-integrity; refusal due solely to low-to-medium MIC must not count as confinement. Broker still unqualified by source review.",
+      "observed_failure": "Capability token and real legacy cmd process deleted outside file/directory and protected .git despite denied ordinary writes; ACL repair was not idempotent.",
+      "prior_job_ids": [
+        122780464727
+      ],
+      "prior_job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464727"
+      ],
+      "repair_commits": [
+        "9da183aa9c97335c673003b9c5a9b8650df7e50a"
+      ],
+      "representative_preserved_excerpts": [
+        {
+          "excerpt": "---- token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes stdout ----\n\nthread 'token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes' (3988) panicked at windows-sandbox-rs/src\\token_tests.rs:213:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n>    false,\n     true,\n<    true,\n<    true,\n>    false,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+          "line": 4109,
+          "raw_log": "job-122780464727.log",
+          "test_heading": "---- token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes stdout ----"
+        }
+      ],
+      "status": "source_repair_committed_native_validation_pending",
+      "title": "Windows legacy deletion escape and broker qualification"
+    },
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "Package native Windows setup/runner helpers for Cargo/Bazel tests with explicit native manifest dependencies.",
+      "id": "windows_helper_runfiles",
+      "named_failures": [
+        "file_system_operations_can_reject_junctions_in_any_path_component::local",
+        "file_system_operations_can_reject_junctions_in_any_path_component::remote",
+        "setup_helper_embeds_as_invoker_manifest",
+        "shared::file_system_create_directory_creates_nested_directories::local_sandboxed_no_follow",
+        "shared::file_system_create_directory_creates_nested_directories::remote_sandboxed_no_follow",
+        "shared::file_system_remove_no_follow_removes_file_and_empty_directory::local_sandboxed",
+        "shared::file_system_remove_no_follow_removes_file_and_empty_directory::remote_sandboxed",
+        "shared::file_system_write_file_writes_bytes::local_sandboxed_no_follow",
+        "shared::file_system_write_file_writes_bytes::remote_sandboxed_no_follow"
+      ],
+      "next_required_gate": "Native Windows helper_manifest and exec-server local/remote sandbox filesystem targets.",
+      "observed_failure": "Setup helper manifest test could not find executable; eight exec-server filesystem cases reported setup helper program not found.",
+      "prior_job_ids": [
+        122780464727,
+        122780464839
+      ],
+      "prior_job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464727",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464839"
+      ],
+      "repair_commits": [
+        "2f6b3f6c68fa352aee308dc4b1e4833a61ebe565"
+      ],
+      "representative_preserved_excerpts": [
+        {
+          "excerpt": "---- setup_helper_embeds_as_invoker_manifest stdout ----\nError: find setup helper _main/codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup.exe\n\nCaused by:\n    The system cannot find the path specified. (os error 3)\n\n",
+          "line": 3932,
+          "raw_log": "job-122780464727.log",
+          "test_heading": "---- setup_helper_embeds_as_invoker_manifest stdout ----"
+        },
+        {
+          "excerpt": "---- file_system_operations_can_reject_junctions_in_any_path_component::local stdout ----\nError: fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n",
+          "line": 4306,
+          "raw_log": "job-122780464839.log",
+          "test_heading": "---- file_system_operations_can_reject_junctions_in_any_path_component::local stdout ----"
+        }
+      ],
+      "status": "source_repair_committed_native_validation_pending",
+      "title": "Native sandbox helper runfiles and executable packaging"
+    },
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "Publish the writable root atomically, then seal final root and sync it/parent; immutable files/bin are preserved.",
+      "id": "darwin_release_publish",
+      "named_failures": [
+        "release::copy_tests::readonly_source_is_copied_synced_and_preserved_on_duplicate_install",
+        "release::tests::catalog_resolves_only_digest_bound_per_agent_allowances",
+        "release::tests::program_mutation_is_detected_and_release_state_survives_reopen",
+        "release::tests::schema_v2_bundle_binds_both_exact_programs_and_closed_world"
+      ],
+      "next_required_gate": "Native macOS Intel/ARM release tests, incomplete publication rejection and duplicate preservation.",
+      "observed_failure": "Four hepta-fleet release tests failed PermissionDenied while publishing a read-only directory.",
+      "prior_job_ids": [
+        122780464755
+      ],
+      "prior_job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464755"
+      ],
+      "repair_commits": [
+        "169a01c30745a88befd74264aee742bd2f969c45"
+      ],
+      "representative_preserved_excerpts": [
+        {
+          "excerpt": "---- release::copy_tests::readonly_source_is_copied_synced_and_preserved_on_duplicate_install stdout ----\nError: Io(Os { code: 13, kind: PermissionDenied, message: \"Permission denied\" })\n",
+          "line": 7749,
+          "raw_log": "job-122780464755.log",
+          "test_heading": "---- release::copy_tests::readonly_source_is_copied_synced_and_preserved_on_duplicate_install stdout ----"
+        }
+      ],
+      "status": "source_repair_committed_native_validation_pending",
+      "title": "Darwin immutable release publication order"
+    },
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "RAII explicitly unlocks on drop including constructor failure, independent of inherited/duplicated file descriptions; retained prefix checks unchanged.",
+      "id": "cas_lock_lifetime",
+      "named_failures": [
+        "fenced_holdout_file::tests::longer_divergent_history_cannot_skip_the_retained_minimum_prefix"
+      ],
+      "next_required_gate": "Native macOS fenced-holdout tests plus duplicate-descriptor regression. Fork inheritance is a source-based explanation, not a traced runtime result.",
+      "observed_failure": "longer_divergent_history_cannot_skip_the_retained_minimum_prefix returned Busy.",
+      "prior_job_ids": [
+        122780464755
+      ],
+      "prior_job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464755"
+      ],
+      "repair_commits": [
+        "fb4cf4bf1a4f87e1ed388213e9549eba2d8a0fa6"
+      ],
+      "representative_preserved_excerpts": [
+        {
+          "excerpt": "---- fenced_holdout_file::tests::longer_divergent_history_cannot_skip_the_retained_minimum_prefix stdout ----\n\nthread 'fenced_holdout_file::tests::longer_divergent_history_cannot_skip_the_retained_minimum_prefix' (155600) panicked at hepta-intelligence-eval/src/fenced_holdout_file_tests.rs:261:33:\nrecover store: Busy\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n",
+          "line": 7931,
+          "raw_log": "job-122780464755.log",
+          "test_heading": "---- fenced_holdout_file::tests::longer_divergent_history_cannot_skip_the_retained_minimum_prefix stdout ----"
+        }
+      ],
+      "status": "source_repair_committed_native_validation_pending",
+      "title": "Fenced holdout CAS lock release with duplicate descriptors"
+    },
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "Explicitly set accepted fixture stream blocking on BSD platforms.",
+      "id": "darwin_http_fixture",
+      "named_failures": [
+        "outbound_proxy::redirect_integration_tests::route_aware_pool_re_resolves_redirects_and_logs_only_final_outcome"
+      ],
+      "next_required_gate": "Native macOS route-aware redirect test; no timeout relaxation.",
+      "observed_failure": "Accepted stream produced WouldBlock and redirected client observed IncompleteMessage.",
+      "prior_job_ids": [
+        122780464755
+      ],
+      "prior_job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464755"
+      ],
+      "repair_commits": [
+        "9e4c682184fa34d03cccd3f0cabedbf99d7dd00d"
+      ],
+      "representative_preserved_excerpts": [
+        {
+          "excerpt": "---- outbound_proxy::redirect_integration_tests::route_aware_pool_re_resolves_redirects_and_logs_only_final_outcome stdout ----\n\nthread '<unnamed>' (163764) panicked at http-client/src/route_aware_redirect_integration_tests.rs:117:50:\nHTTP headers should read: Os { code: 35, kind: WouldBlock, message: \"Resource temporarily unavailable\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\nthread 'outbound_proxy::redirect_integration_tests::route_aware_pool_re_resolves_redirects_and_logs_only_final_outcome' (163762) panicked at http-client/src/route_aware_redirect_integration_tests.rs:63:6:\nredirected request should ",
+          "line": 8575,
+          "raw_log": "job-122780464755.log",
+          "test_heading": "---- outbound_proxy::redirect_integration_tests::route_aware_pool_re_resolves_redirects_and_logs_only_final_outcome stdout ----"
+        }
+      ],
+      "status": "source_repair_committed_native_validation_pending",
+      "title": "Blocking accepted socket in HTTP redirect fixture"
+    },
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "Wait for app exit without demanding PTY EOF; stop isolated wineserver before tail drain; keep existing 30s/10s bounds and preserve diagnostic tail.",
+      "id": "wine_pty_shutdown",
+      "named_failures": [
+        "tests::pinned_powershell_runs_under_wine_with_a_pty"
+      ],
+      "next_required_gate": "Native musl/Wine full 13-test target including remaining lifecycle guards. This source fix does not prove every timeout cause.",
+      "observed_failure": "Wine support target timed out; pinned PowerShell PTY test marked FAILED without its final inner error footer. Two other guard tests had not finished at timeout.",
+      "prior_job_ids": [
+        122780464966
+      ],
+      "prior_job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464966"
+      ],
+      "repair_commits": [
+        "348d7ab7212c2aea84636a1d08915e09efeaf15e"
+      ],
+      "representative_preserved_excerpts": [],
+      "status": "source_repair_committed_native_validation_pending",
+      "title": "Wine PTY helper lifetime and complete output drain"
+    },
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "Current schema generation/qualification is tracked separately; no inferred test-level diagnosis is assigned from the omitted output.",
+      "id": "opaque_protocol",
+      "named_failures": [],
+      "next_required_gate": "Regenerate/check source schema and retrieve complete candidate test.log/test.xml; source or fixture edits alone cannot close this target.",
+      "observed_failure": "Test stdout 1,126,789 bytes was skipped by the old Bazel 1MiB UI limit; inner assertion unavailable.",
+      "prior_job_ids": [
+        122780464767
+      ],
+      "prior_job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464767"
+      ],
+      "repair_commits": [],
+      "representative_preserved_excerpts": [],
+      "status": "unresolved_detail_native_artifact_required",
+      "title": "Opaque app-server-protocol target failure"
+    },
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "Full artifact preservation now implemented; no guessed source repair is assigned.",
+      "id": "opaque_app_exec",
+      "named_failures": [],
+      "next_required_gate": "Exact-candidate native Windows app-server and exec tests with complete failure artifacts.",
+      "observed_failure": "app-server unit shard 3 and exec-all shard 1 emitted FAIL during retries before job cancellation; inner test footer was not present in retained console output.",
+      "prior_job_ids": [
+        122780464727
+      ],
+      "prior_job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464727"
+      ],
+      "repair_commits": [],
+      "representative_preserved_excerpts": [],
+      "status": "unresolved_detail_native_artifact_required",
+      "title": "Opaque app-server and exec test shard failures"
+    },
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "Update dependency closure with coherent Cargo/Bazel locks and compatibility changes; policy files unchanged. Local all-features cargo-deny exit0 and five focused compatibility tests passed, with retained source bindings.",
+      "id": "dependency_advisories",
+      "named_failures": [],
+      "next_required_gate": "Candidate cargo-deny and full consumers/native build after coherent publication; focused compatibility is not a full AWS/core build.",
+      "observed_failure": "Official cargo-deny artifact contains 22 error diagnostics at old head.",
+      "prior_job_ids": [
+        122780464180
+      ],
+      "prior_job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464180"
+      ],
+      "repair_commits": [
+        "836731b970fcaf6059e3ffc18e3948bfcbf8a75f"
+      ],
+      "representative_preserved_excerpts": [],
+      "status": "local_deny_and_focused_compatibility_passed_candidate_ci_pending",
+      "title": "Cargo-deny 22 error diagnostics and regenerated dependency closure"
+    },
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "spawn_blocking store I/O; manager/refresh ownership through cancellation, authoritative reads, rollback and real deletion retry; deterministic handshake tests added.",
+      "id": "oauth_blocking_store",
+      "named_failures": [],
+      "next_required_gate": "Run native rmcp-client OAuth tests and integration consumers on candidate; no runtime pass is asserted.",
+      "observed_failure": "Dependency repair uses synchronous keyring calls; cancellation and stale persistence require owned, blocking-safe credential transactions. This is a new qualification obligation, not an observed old-job failure.",
+      "prior_job_ids": [],
+      "prior_job_urls": [],
+      "repair_commits": [
+        "3f3f45416c740905761539032bdf785937513d27",
+        "836731b970fcaf6059e3ffc18e3948bfcbf8a75f"
+      ],
+      "representative_preserved_excerpts": [],
+      "status": "source_repair_committed_native_validation_pending",
+      "title": "New Linux synchronous-keyring transaction qualification"
+    },
+    {
+      "current_candidate_native_pass": false,
+      "current_change": "Preserve complete log/XML artifacts and first failure beyond console tail; allow cold native builds to finish without changing test assertions. Existing wrapper receipt has 12 passing tests but no exact source hash in START.",
+      "id": "incomplete_matrix",
+      "named_failures": [],
+      "next_required_gate": "All required candidate jobs must complete with acceptable conclusions; cancelled/unread V8 jobs may contain additional failures. Both required aggregate checks must reflect the candidate.",
+      "observed_failure": "24 cancelled plus four skipped jobs do not establish passing gates. Main jobs ended near 60 minutes and V8 near 30; timeout is an inference from durations/source settings.",
+      "prior_job_ids": [
+        122780464369,
+        122780464691,
+        122780464727,
+        122780464743,
+        122780464747,
+        122780464751,
+        122780464755,
+        122780464759,
+        122780464835,
+        122780464839,
+        122780464851,
+        122780464966,
+        122780465516,
+        122780465559,
+        122780467564,
+        122780565881,
+        122780803491,
+        122780803501,
+        122780803521,
+        122780803534,
+        122780803536,
+        122780803558,
+        122780803572,
+        122780803595,
+        122780803606,
+        122780803636,
+        122780803640,
+        122780803654
+      ],
+      "prior_job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464369",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464691",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464727",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464743",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464747",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464751",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464755",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464759",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464835",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464839",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464851",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464966",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780465516",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780465559",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780467564",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780565881",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378157/job/122780803491",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378157/job/122780803501",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378157/job/122780803521",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378157/job/122780803534",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378157/job/122780803536",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378157/job/122780803558",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378157/job/122780803572",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378157/job/122780803595",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378157/job/122780803606",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378157/job/122780803636",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378157/job/122780803640",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378157/job/122780803654"
+      ],
+      "repair_commits": [
+        "7ab62b50cab9db01e2c90af4949691f8cf116897",
+        "331796a0cbad5e953046b67f5b3ee65ad61859c1"
+      ],
+      "representative_preserved_excerpts": [],
+      "status": "incomplete_prior_matrix_requires_candidate_results",
+      "title": "Cancelled/skipped matrix and complete failure evidence"
+    }
+  ],
+  "named_failure_coverage": {
+    "mapped_once": 101,
+    "unique_tests": 101,
+    "unmapped": []
+  },
+  "old_cargo_deny_error_diagnostics": [
+    {
+      "id": "RUSTSEC-2026-0319",
+      "package": "anymap2",
+      "title": "anymap2 is unmaintained"
+    },
+    {
+      "id": "RUSTSEC-2026-0374",
+      "package": "basic-toml",
+      "title": "`basic-toml` is unmaintained"
+    },
+    {
+      "id": "RUSTSEC-2026-0387",
+      "package": "crypto-bigint",
+      "title": "Multiple timing variability issues in operations intended to be constant-time"
+    },
+    {
+      "id": "RUSTSEC-2026-0318",
+      "package": "matrix-sdk-crypto",
+      "title": "Sending custom to-device messages may panics"
+    },
+    {
+      "id": "RUSTSEC-2026-0346",
+      "package": "rustls",
+      "title": "`Debug` impls for client session values expose TLS secrets"
+    },
+    {
+      "id": "RUSTSEC-2026-0347",
+      "package": "rustls",
+      "title": "Buffered application data sent to outer server after ECH rejection"
+    },
+    {
+      "id": "RUSTSEC-2026-0348",
+      "package": "rustls",
+      "title": "Brotli certificate decompression can allocate up to 1 GiB before authentication"
+    },
+    {
+      "id": "RUSTSEC-2026-0349",
+      "package": "rustls",
+      "title": "Unauthenticated ServerHello can downgrade later connections to classical key exchange"
+    },
+    {
+      "id": "RUSTSEC-2026-0382",
+      "package": "rustls-webpki",
+      "title": "Certificate verification may accept distrusted intermediates"
+    },
+    {
+      "id": "RUSTSEC-2024-0449",
+      "package": "unsafe-libyaml",
+      "title": "unsafe-libyaml is unmaintained"
+    },
+    {
+      "id": "RUSTSEC-2026-0383",
+      "package": "webpki-root-certs",
+      "title": "Bundled root certificates allow trust in distrusted emSign intermediates"
+    },
+    {
+      "id": "RUSTSEC-2026-0381",
+      "package": "webpki-roots",
+      "title": "Bundled root certificates allow trust in distrusted emSign intermediates"
+    },
+    {
+      "id": "RUSTSEC-2026-0371",
+      "package": "zbus_names",
+      "title": "`zbus_names` is unmaintained"
+    },
+    {
+      "id": "RUSTSEC-2026-0367",
+      "package": "zip",
+      "title": " Insecure Preservation of SUID/SGID Bits during ZIP Extraction Leading to Potential Privilege Escalation"
+    },
+    {
+      "id": "RUSTSEC-2026-0368",
+      "package": "zip",
+      "title": "zip: `ZipArchive::extract` creates symbolic links whose attacker-controlled targets are outside the destination directory"
+    },
+    {
+      "id": "RUSTSEC-2026-0369",
+      "package": "zip",
+      "title": "ZipStreamReader::extract() and ZipArchive::extract() apply Unix permissions through symlinks without confining the target"
+    },
+    {
+      "id": "RUSTSEC-2026-0391",
+      "package": "zstd",
+      "title": "Data from an abandoned stream leaks into the next stream on a reused context"
+    },
+    {
+      "id": "RUSTSEC-2026-0398",
+      "package": "zstd-safe",
+      "title": "`Seekable::decompress` sets a `Vec` length beyond its capacity for offsets past the end"
+    },
+    {
+      "id": "RUSTSEC-2026-0403",
+      "package": "zstd-safe",
+      "title": "Uninitialized memory exposed when streaming decompression of a legacy frame fails"
+    },
+    {
+      "id": "RUSTSEC-2026-0410",
+      "package": "zstd-sys",
+      "title": "WebAssembly allocator shim corrupts memory on allocation failure"
+    },
+    {
+      "id": "RUSTSEC-2026-0370",
+      "package": "zvariant",
+      "title": "`zvariant` is unmaintained"
+    },
+    {
+      "id": "RUSTSEC-2026-0372",
+      "package": "zvariant_derive",
+      "title": "`zvariant_derive` is unmaintained"
+    }
+  ],
+  "prior_head": "0d113abe0ead3b23a682c052583f4dd1381b9656",
+  "repair_source_snapshot": "9da183aa9c97335c673003b9c5a9b8650df7e50a",
+  "schema": "hepta.ci-repair002.blockers.v1"
+}

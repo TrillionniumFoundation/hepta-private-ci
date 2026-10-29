@@ -1,0 +1,210 @@
+{
+  "all_blockers_closed": false,
+  "blocker_groups": 26,
+  "candidate_gate_rules": [
+    "Source repairs are not runtime passes. Local Linux validation does not qualify Windows/macOS branches.",
+    "Cancelled/skipped jobs and required aggregates cannot be promoted to success.",
+    "The uninspected11 V8 cancelled-job logs and omitted inner native output can contain additional failures.",
+    "Native Windows broker broad-low-integrity Everyone DELETE_CHILD regression must pass on the exact candidate; legacy rejection and ACL construction are insufficient.",
+    "The two local six-package native attempts ran zero tests; their full failure bytes and cost remain retained."
+  ],
+  "candidate_native_result": null,
+  "cargo_deny_artifact_preserved": true,
+  "complete_prior_job_metadata": "prior/jobs-head-0d113abe.json",
+  "conclusions": {
+    "cancelled": 24,
+    "failure": 10,
+    "skipped": 4,
+    "success": 18
+  },
+  "job_to_groups": {
+    "122779130195": [],
+    "122779130799": [
+      "supervisor_compile"
+    ],
+    "122779587867": [],
+    "122779588299": [],
+    "122779588425": [],
+    "122779863050": [],
+    "122780464029": [],
+    "122780464062": [],
+    "122780464121": [],
+    "122780464180": [
+      "dependency_advisories"
+    ],
+    "122780464255": [],
+    "122780464281": [],
+    "122780464363": [],
+    "122780464369": [
+      "incomplete_matrix"
+    ],
+    "122780464381": [],
+    "122780464529": [],
+    "122780464691": [
+      "incomplete_matrix"
+    ],
+    "122780464727": [
+      "windows_durable_handles",
+      "windows_memory_recovery",
+      "windows_lease_store",
+      "automation_fixture",
+      "adapter_absolute_path",
+      "windows_delete_boundary",
+      "windows_helper_runfiles",
+      "opaque_app_exec",
+      "incomplete_matrix"
+    ],
+    "122780464743": [
+      "incomplete_matrix"
+    ],
+    "122780464747": [
+      "incomplete_matrix"
+    ],
+    "122780464751": [
+      "incomplete_matrix"
+    ],
+    "122780464755": [
+      "darwin_release_publish",
+      "cas_lock_lifetime",
+      "darwin_http_fixture",
+      "incomplete_matrix"
+    ],
+    "122780464759": [
+      "incomplete_matrix"
+    ],
+    "122780464767": [
+      "supervisor_compile",
+      "core_readiness",
+      "federation_binding",
+      "windows_test_paths",
+      "opaque_protocol"
+    ],
+    "122780464784": [
+      "queue_fixture_compile",
+      "queue_lifecycle",
+      "v8_allocator",
+      "windows_durable_handles",
+      "windows_test_paths"
+    ],
+    "122780464801": [
+      "supervisor_compile",
+      "queue_fixture_compile"
+    ],
+    "122780464835": [
+      "incomplete_matrix"
+    ],
+    "122780464839": [
+      "supervisor_restart",
+      "windows_durable_handles",
+      "operator_acceptance",
+      "windows_helper_runfiles",
+      "incomplete_matrix"
+    ],
+    "122780464851": [
+      "incomplete_matrix"
+    ],
+    "122780464966": [
+      "wine_pty_shutdown",
+      "incomplete_matrix"
+    ],
+    "122780465516": [
+      "incomplete_matrix"
+    ],
+    "122780465559": [
+      "incomplete_matrix"
+    ],
+    "122780467564": [
+      "incomplete_matrix"
+    ],
+    "122780562915": [],
+    "122780562936": [],
+    "122780563096": [],
+    "122780565881": [
+      "incomplete_matrix"
+    ],
+    "122780803160": [
+      "v8_windows_paths"
+    ],
+    "122780803248": [
+      "v8_windows_paths"
+    ],
+    "122780803491": [
+      "incomplete_matrix"
+    ],
+    "122780803501": [
+      "incomplete_matrix"
+    ],
+    "122780803521": [
+      "incomplete_matrix"
+    ],
+    "122780803534": [
+      "incomplete_matrix"
+    ],
+    "122780803536": [
+      "incomplete_matrix"
+    ],
+    "122780803558": [
+      "incomplete_matrix"
+    ],
+    "122780803572": [
+      "incomplete_matrix"
+    ],
+    "122780803595": [
+      "incomplete_matrix"
+    ],
+    "122780803606": [
+      "incomplete_matrix"
+    ],
+    "122780803636": [
+      "incomplete_matrix"
+    ],
+    "122780803640": [
+      "incomplete_matrix"
+    ],
+    "122780803654": [
+      "incomplete_matrix"
+    ],
+    "122781318428": [],
+    "122782478808": [],
+    "122783672553": [],
+    "122807980307": [],
+    "122809416612": []
+  },
+  "named_failed_tests": 101,
+  "named_failed_tests_all_mapped_once": true,
+  "preserved_hosted_log_identity": "RAW_LOGS.json",
+  "preserved_hosted_logs": 19,
+  "prior_workflow_head": "0d113abe0ead3b23a682c052583f4dd1381b9656",
+  "repair_source_snapshot": "9da183aa9c97335c673003b9c5a9b8650df7e50a",
+  "runs": {
+    "40677378085": {
+      "conclusions": {
+        "failure": 2,
+        "success": 1
+      },
+      "jobs": 3,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378085"
+    },
+    "40677378157": {
+      "conclusions": {
+        "cancelled": 12,
+        "failure": 2,
+        "success": 1
+      },
+      "jobs": 15,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378157"
+    },
+    "40677378223": {
+      "conclusions": {
+        "cancelled": 12,
+        "failure": 6,
+        "skipped": 4,
+        "success": 16
+      },
+      "jobs": 38,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223"
+    }
+  },
+  "schema": "hepta.ci-repair002.inventory.v1",
+  "total_jobs": 56
+}

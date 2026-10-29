@@ -477,6 +477,8 @@ mod windows_impl {
         pub timed_out: bool,
     }
 
+    /// Direct legacy capture rejects managed filesystem profiles before setup.
+    /// Use the elevated capture API to request a brokered process launch.
     #[allow(clippy::too_many_arguments)]
     pub fn run_windows_sandbox_capture(
         permission_profile: &PermissionProfile,
@@ -504,6 +506,8 @@ mod windows_impl {
         )
     }
 
+    /// Direct legacy capture rejects managed filesystem profiles before setup,
+    /// including profiles with explicit filesystem overrides.
     #[allow(clippy::too_many_arguments)]
     pub fn run_windows_sandbox_capture_with_filesystem_overrides(
         permission_profile: &PermissionProfile,

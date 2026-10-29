@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.local-research.signed-credit-integration-protocol.v1",
+  "purpose": "Integration qualification of an authenticated local research feedback loop; no new efficacy or performance hypothesis test.",
+  "production_scope": "Unchanged production LedgerWriter, trust activation and append_outcome_credit_v2 code with isolated ephemeral research keys. No production credentials, external execution authority or organizational-independence claim.",
+  "seed": 601,
+  "training_arm": "meta_theta",
+  "split": "id_test",
+  "readout": "snn",
+  "resource_policy": "live",
+  "episodes": 16,
+  "expected_signed_facts": 48,
+  "protected_v2_seal_sha256": "594b1180532dc32b7d659f6d1031fa4047c9c6446b393a17590d27eab484019f",
+  "owner_binary_sha256": "261c63bc5f3a8ca1940dac27424ef8740e03ddc918b12f29af7d44b4b4ad25e4",
+  "checkpoint_sha256": "5c82147c3165bba99ad285d8abdbfb3cffd3e434a7856d1d5a8da4574f870b73",
+  "admission_candidates": ["abstain", "execute-trained-readout"],
+  "fault_schedule": {
+    "0": "observer_signature",
+    "1": "stale_head",
+    "2": "credit_signature",
+    "3": "expired",
+    "4": "closure_acknowledgement_loss",
+    "5": "settlement_acknowledgement_loss"
+  },
+  "adapter_fault_schedule": {
+    "6": "cross_episode_valid_closure",
+    "7": "changed_terminal_binding",
+    "8": "resource_record_digest",
+    "9": "settlement_outcome_binding",
+    "10": "cross_episode_valid_admission"
+  },
+  "acceptance": [
+    "Signed Decision accepted before first observed SNN tick for each episode.",
+    "Complete signed Outcome and CreditBatch accepted before any Native Settle call.",
+    "Rejected signatures/head/expiry preserve the terminal owner and cannot start a subsequent episode.",
+    "Partial Outcome commit, signed acknowledgement loss and native acknowledgement loss recover without duplicate facts or resource credits.",
+    "Valid receipts from another episode and changed terminal or resource bindings fail closed.",
+    "All 48 authenticated facts retain independently verified Ed25519 evidence and conserved Q32 organ credit.",
+    "All observed SNN prefixes and cross-episode balances/prices match independent Python reconstruction.",
+    "Fresh original-owner replay of all 16 episodes and signed historical retries leave raw evidence byte-identical.",
+    "Protected v2 sources and exact trained checkpoint/binary remain unchanged; all new build failures, preparation, runtime and audit costs are retained."
+  ],
+  "failure_model": "Deterministic signature/head faults and real fresh-process recovery with acknowledgement-loss injection. This does not simulate kernel power loss or prove service deployment authority."
+}

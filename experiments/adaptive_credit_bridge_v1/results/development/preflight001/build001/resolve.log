@@ -1,0 +1,11 @@
+error: failed to select a version for `serde`.
+    ... required by package `ed25519-dalek v2.2.0`
+    ... which satisfies dependency `ed25519-dalek = "=2.2.0"` of package `hepta-research-signed-credit-bridge v0.0.0 (/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_credit_bridge_v1/runs/build001/bridge)`
+versions that meet the requirements `^1.0` are: 1.0.229
+
+all possible versions conflict with previously selected packages.
+
+  previously selected package `serde v1.0.228`
+    ... which satisfies dependency `serde = "=1.0.228"` of package `hepta-research-signed-credit-bridge v0.0.0 (/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_credit_bridge_v1/runs/build001/bridge)`
+
+failed to select a version for `serde` which could resolve this conflict

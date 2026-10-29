@@ -293,8 +293,13 @@ impl FleetRegistry {
             set_mode(&bin_root, /*mode*/ 0o555)?;
             sync_directory(&bin_root)?;
             sync_directory(&staging)?;
-            set_mode(&staging, /*mode*/ 0o555)?;
+            // Darwin rejects renaming a write-disabled directory, including
+            // within one parent. Seal the root only after the rename; catalog
+            // resolution rejects this writable intermediate state. Its files
+            // and bin directory are already immutable before publication.
             std::fs::rename(&staging, &final_root)?;
+            set_mode(&final_root, /*mode*/ 0o555)?;
+            sync_directory(&final_root)?;
             sync_directory(self.layout().releases_root())?;
             Ok(())
         })();

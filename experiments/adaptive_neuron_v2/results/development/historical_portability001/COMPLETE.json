@@ -1,0 +1,42 @@
+{
+  "accounting": "This enclosing interval includes child subprocesses. Nested receipts explain its components and must not be added to it again.",
+  "complete": true,
+  "cpu": {
+    "child_system_seconds": 1.963494,
+    "child_user_seconds": 22.102065,
+    "self_system_seconds": 0.37627499999999997,
+    "self_user_seconds": 2.289728
+  },
+  "error": null,
+  "facts": {
+    "audit_sha256": "dc4c003ea74dbaa1d7161851126a031430fc7b57d43e3517b99817fcf1e404f5",
+    "binary_bytes": 2649608,
+    "binary_sha256": "ff36b5458253f2a85acad7ace8bf9a05b430d53e2553f4659d8ebed6ffb6d8ff",
+    "bundle_bytes": 8675015,
+    "bundle_file_count": 2350,
+    "bundle_path": "/workspace/scratch/07399998a2e3/deliverables/hepta_v1_exact_runtime_portability.tar.gz",
+    "bundle_sha256": "104c3f8649cf42dcf6a8952eab627da6eeefb943cdfb94c89da84255b56755b4",
+    "exact_dp_path_matches": 56,
+    "full_native_replay_episodes": 168,
+    "manifest_sha256": "84baa5d53d306bcf5072fa5f54671ed29a5a42ba40076f10c1fdc98f6306ce22",
+    "original_raw_file_count": 1032,
+    "original_raw_files_unchanged": true,
+    "passed": true,
+    "replay_cost_receipt_sha256": "90d43c4f3a00a5e6e855834998df3c327b3e45e388b25e757b838717ab36a779",
+    "runtime_rebuilt": false,
+    "schema": "hepta.historical-v1.delivery.v1",
+    "scope": "Historical exact-runtime relocation and deliverability only; no new learning, efficacy, production or cross-OS claims.",
+    "sealed_source_commit": "95b0d6668892868a4a19268a2fb707f2dca586ba",
+    "sealed_source_inputs": 105,
+    "source_auditor_unmodified": true,
+    "source_recovery_commit": "c32392367b7587d09806ca5cbc74678a168b4e16"
+  },
+  "finished_at_utc": "2026-10-28T10:45:05.404603+00:00",
+  "identity": {
+    "stage": "historical_v1_exact_runtime_portability"
+  },
+  "schema": "hepta.adaptive-neuron.cost-stage.v2",
+  "scope": "All functional preparation: historical Git/seal/source recovery, binary/profile/build/raw verification and copying, complete unmodified 168-episode historical auditor, preservation of original evidence, documentation and manifest generation, tar.gz creation, delivery copy and archive byte verification. No historical build cost is reconstructed.",
+  "started_at_utc": "2026-10-28T10:44:39.056575+00:00",
+  "wall_seconds": 26.348060883996368
+}

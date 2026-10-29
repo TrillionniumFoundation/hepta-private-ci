@@ -1,3 +1,8 @@
+#[path = "support/queue_hook_fixtures.rs"]
+mod queue_hook_fixtures;
+
+use queue_hook_fixtures::write_blocking_prompt_hook;
+use queue_hook_fixtures::write_rejecting_prompt_hook;
 use std::collections::HashSet;
 use std::fs;
 use std::num::NonZeroUsize;
@@ -26,6 +31,7 @@ use codex_extension_api::ExtensionRegistryBuilder;
 use codex_extension_api::ExtensionWarning;
 use codex_extension_api::NoopExtensionEventSink;
 use codex_extension_api::ThreadIdleCause;
+use codex_extension_api::ThreadIdleContinuations;
 use codex_extension_api::ThreadIdleInput;
 use codex_extension_api::ThreadLifecycleContributor;
 use codex_extension_api::ThreadResumeInput;
@@ -151,78 +157,6 @@ fn install_registered_queue(
     ));
     assert!(installed.service.set(Arc::clone(&service)).is_ok());
     Ok(service)
-}
-
-fn write_rejecting_prompt_hook(home: &Path) {
-    let script_path = home.join("queue_prompt_hook.py");
-    let log_path = home.join("queue_prompt_hook.log");
-    let script = format!(
-        r#"import json
-from pathlib import Path
-import sys
-
-payload = json.load(sys.stdin)
-with Path(r"{log_path}").open("a", encoding="utf-8") as log:
-    log.write(payload["prompt"] + "\n")
-if payload["prompt"] == "blocked":
-    print(json.dumps({{"decision": "block", "reason": "blocked by queue hook"}}))
-"#,
-        log_path = log_path.display(),
-    );
-    std::fs::write(&script_path, script)
-        .unwrap_or_else(|error| panic!("write queue hook script: {error}"));
-    let hooks = serde_json::json!({
-        "hooks": {
-            "UserPromptSubmit": [{
-                "hooks": [{
-                    "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
-                }]
-            }]
-        }
-    });
-    std::fs::write(home.join("hooks.json"), hooks.to_string())
-        .unwrap_or_else(|error| panic!("write queue hooks: {error}"));
-}
-
-fn write_blocking_prompt_hook(home: &Path) {
-    let script_path = home.join("queue_blocking_prompt_hook.py");
-    let entered_path = home.join("queue_blocking_prompt_hook.entered");
-    let release_path = home.join("queue_blocking_prompt_hook.release");
-    let script = format!(
-        r#"import json
-from pathlib import Path
-import sys
-import time
-
-payload = json.load(sys.stdin)
-if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
-    Path(r"{entered_path}").write_text("entered", encoding="utf-8")
-    deadline = time.monotonic() + 20
-    while not Path(r"{release_path}").exists():
-        if time.monotonic() >= deadline:
-            raise RuntimeError("timed out waiting to release queue persistence hook")
-        time.sleep(0.01)
-    if payload["prompt"] == "delay exact rejection":
-        print(json.dumps({{"decision": "block", "reason": "delayed queue rejection"}}))
-"#,
-        entered_path = entered_path.display(),
-        release_path = release_path.display(),
-    );
-    std::fs::write(&script_path, script)
-        .unwrap_or_else(|error| panic!("write blocking queue hook script: {error}"));
-    let hooks = serde_json::json!({
-        "hooks": {
-            "UserPromptSubmit": [{
-                "hooks": [{
-                    "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
-                }]
-            }]
-        }
-    });
-    std::fs::write(home.join("hooks.json"), hooks.to_string())
-        .unwrap_or_else(|error| panic!("write blocking queue hooks: {error}"));
 }
 
 async fn wait_for_path(path: &Path) -> anyhow::Result<()> {
@@ -427,11 +361,9 @@ impl QueueStore for FailDeleteOnceQueueStore {
         now_ms: i64,
         lease_expires_at_ms: i64,
     ) -> ThreadStoreFuture<'a, QueuedClientDispatchClaimOutcome> {
-        let lease_expires_at_ms = if self.short_dispatch_lease {
-            now_ms + 250
-        } else {
-            lease_expires_at_ms
-        };
+        // Keep the normal claim window while dispatch inspects the rollout.
+        // Only final authorization below shortens the lease: these tests
+        // exercise expiry after Core admission, not expiry during disk I/O.
         self.inner.claim_client_binding_dispatch(
             process_lock,
             queued_item_id,
@@ -645,15 +577,22 @@ async fn emit_idle_with_cause(
 ) {
     let session_store = ExtensionData::new("session");
     let thread_store = ExtensionData::new(thread_id.to_string());
+    let continuations = ThreadIdleContinuations::default();
     <QueuedItemService as ThreadLifecycleContributor<()>>::on_thread_idle(
         service,
         ThreadIdleInput {
             cause,
+            continuations: &continuations,
             session_store: &session_store,
             thread_store: &thread_store,
         },
     )
     .await;
+    // Manual test hosts execute the same ordered deferred admissions as Core.
+    // Each action observes pending owner completion before normal admission.
+    for continuation in continuations.take() {
+        continuation.await;
+    }
 }
 
 #[tokio::test]
@@ -838,6 +777,7 @@ async fn caller_abort_after_core_started_keeps_exact_authority_until_persistence
         responses::mount_sse_once(&server, responses::sse_completed("one-cancel-safe-owner")).await;
     let test = test_codex()
         .with_pre_build_hook(write_blocking_prompt_hook)
+        .with_windows_cmd_shell()
         .with_config(trust_discovered_hooks)
         .with_config(|config| config.include_environment_context = false)
         .build_with_auto_env(&server)
@@ -949,6 +889,7 @@ async fn core_error_after_started_never_releases_ambiguous_dispatch() -> anyhow:
         responses::mount_sse_once(&server, responses::sse_completed("must-not-run")).await;
     let test = test_codex()
         .with_pre_build_hook(write_blocking_prompt_hook)
+        .with_windows_cmd_shell()
         .with_config(trust_discovered_hooks)
         .with_config(|config| config.include_environment_context = false)
         .build_with_auto_env(&server)
@@ -2346,6 +2287,7 @@ async fn rejected_queue_messages_remain_durable_and_block_followups() -> anyhow:
     let test = test_codex()
         .with_extensions(extensions)
         .with_pre_build_hook(write_rejecting_prompt_hook)
+        .with_windows_cmd_shell()
         .with_config(trust_discovered_hooks)
         .with_config(|config| config.include_environment_context = false)
         .build_with_auto_env(&server)
@@ -2400,6 +2342,7 @@ async fn explicitly_started_rejected_queue_messages_remain_durable() -> anyhow::
         responses::mount_sse_once(&server, responses::sse_completed("unexpected-turn")).await;
     let test = test_codex()
         .with_pre_build_hook(write_rejecting_prompt_hook)
+        .with_windows_cmd_shell()
         .with_config(trust_discovered_hooks)
         .with_config(|config| config.include_environment_context = false)
         .build_with_auto_env(&server)

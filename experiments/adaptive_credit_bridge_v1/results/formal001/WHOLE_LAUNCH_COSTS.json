@@ -1,0 +1,32 @@
+{
+  "adjusted_cpu_seconds": 477.684895,
+  "adjusted_stage_wall_sum_seconds": 489.37414399099913,
+  "baseline_cost_index_sha256": "b50f41dd1e9e239b07b11ed6f8d610293d12139d54a41d633dc6a5cc04f89380",
+  "combined_rounding_cpu_half_width_seconds": 0.03,
+  "combined_rounding_wall_half_width_seconds": 0.015,
+  "scope": "Whole-launch replacement also captures the enclosing Python startup for formal001 and delivered_replay001. Publishing and packaging stages are separate receipts.",
+  "whole_launch_replacements_not_additions": [
+    {
+      "cpu_delta": 0.09393100000001198,
+      "prior_stage_cpu_seconds": 121.43606899999999,
+      "prior_stage_wall_seconds": 119.60790024499875,
+      "raw_time_path": "experiments/adaptive_credit_bridge_v1/runs/formal001/WHOLE_LAUNCH.time",
+      "raw_time_sha256": "ab7204b41945997c943f1f605402efa47e3568383960d8d8299743f8e60b1e76",
+      "stage": "formal001",
+      "wall_delta": 0.10209975500124813,
+      "whole_launch_cpu_seconds": 121.53,
+      "whole_launch_wall_seconds": 119.71
+    },
+    {
+      "cpu_delta": 0.064168,
+      "prior_stage_cpu_seconds": 3.025832,
+      "prior_stage_wall_seconds": 1.6519962530001067,
+      "raw_time_path": "experiments/adaptive_credit_bridge_v1/runs/delivered_replay001/WHOLE_LAUNCH.time",
+      "raw_time_sha256": "92517fefa41bacf7a0b5f01b0766393cf9c08b7e19a474d7ed9fa9545e2354ed",
+      "stage": "delivered_replay001",
+      "wall_delta": 0.06800374699989331,
+      "whole_launch_cpu_seconds": 3.09,
+      "whole_launch_wall_seconds": 1.72
+    }
+  ]
+}

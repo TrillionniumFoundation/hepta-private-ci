@@ -1,0 +1,29 @@
+{
+  "absent_at_operation_end": true,
+  "archive_sha256_before_and_after": "655a25e9c06569213750e0c228eaac565edfbe7f07ee32c11f66e51d57efdc81",
+  "cleanup_self_cpu_seconds": 0.29935399999999995,
+  "cleanup_wall_seconds": 0.29986270499648526,
+  "logical_file_bytes_removed_this_attempt": 109132838,
+  "post_command_absence_confirmed_in_separate_live_call": true,
+  "reason": "Post-command revalidation found copies present again after the earlier sandbox-view cleanup. This live-filesystem follow-up removes only the same reproducible copies; the earlier attempt and its cost remain recorded.",
+  "removed_copies": [
+    {
+      "logical_file_bytes": 45810073,
+      "path": "/workspace/scratch/07399998a2e3/recovery/credit-portable002",
+      "regular_files": 3361
+    },
+    {
+      "logical_file_bytes": 62798477,
+      "path": "/workspace/scratch/07399998a2e3/recovery/credit-delivered-verification003/credit-portable002",
+      "regular_files": 5031
+    },
+    {
+      "logical_file_bytes": 524288,
+      "path": "/workspace/scratch/07399998a2e3/recovery/credit-delivered-verification002",
+      "regular_files": 1
+    }
+  ],
+  "schema": "hepta.recovery.copy-cleanup-followup.v1",
+  "scope": "Storage maintenance only; not a further experiment or efficacy run.",
+  "supersedes_persistent_reclamation_claim_in": "CLEANUP.json"
+}

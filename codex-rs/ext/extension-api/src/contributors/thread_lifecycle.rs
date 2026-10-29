@@ -1,6 +1,8 @@
 use std::sync::Arc;
+use std::sync::Mutex;
 
 use crate::ExtensionData;
+use crate::ExtensionFuture;
 use crate::ExtensionMetrics;
 use codex_mcp::McpResourceClient;
 use codex_protocol::protocol::SessionSource;
@@ -71,10 +73,47 @@ pub enum ThreadIdleCause {
     Failed,
 }
 
+/// Ordered requests for new work after the current idle cleanup completes.
+///
+/// Contributors register futures while the host still owns its completion
+/// fence. The host first completes every cleanup callback, then waits for the
+/// fence and polls these futures in registration order. Once one starts a new
+/// turn, the remaining callbacks belong to a stale idle observation and are
+/// discarded. These are notifications, not admission capabilities: each
+/// continuation must use the normal atomic
+/// input API, including its shutdown and permission checks.
+#[derive(Default)]
+pub struct ThreadIdleContinuations {
+    pending: Mutex<Vec<ExtensionFuture<'static, ()>>>,
+}
+
+impl ThreadIdleContinuations {
+    /// Record new work without polling it inside an owner-fenced callback.
+    pub fn push(&self, continuation: ExtensionFuture<'static, ()>) {
+        self.pending
+            .lock()
+            .unwrap_or_else(|error| panic!("idle continuation mutex poisoned: {error:?}"))
+            .push(continuation);
+    }
+
+    /// Transfer the ordered futures to the host after all callbacks return.
+    pub fn take(&self) -> Vec<ExtensionFuture<'static, ()>> {
+        std::mem::take(
+            &mut *self
+                .pending
+                .lock()
+                .unwrap_or_else(|error| panic!("idle continuation mutex poisoned: {error:?}")),
+        )
+    }
+}
+
 /// Input supplied when the host has no immediately pending thread work.
 pub struct ThreadIdleInput<'a> {
     /// Why the thread became idle.
     pub cause: ThreadIdleCause,
+    /// New admission attempts must be registered here instead of awaited from
+    /// this callback, which may still be owned by the previous terminalizer.
+    pub continuations: &'a ThreadIdleContinuations,
     /// Store scoped to the host session runtime.
     pub session_store: &'a ExtensionData,
     /// Store scoped to this thread runtime.

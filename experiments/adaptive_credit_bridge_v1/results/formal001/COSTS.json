@@ -1,0 +1,289 @@
+{
+  "nested_receipts_not_added": [
+    "formal001/build/COMPLETE.json",
+    "formal001/loop/COMPLETE.json",
+    "formal001/audit/COMPLETE.json",
+    "formal001/portable/replay/COMPLETE.json",
+    "repro001/COMPLETE.json",
+    "delivered_replay001/audit/COMPLETE.json"
+  ],
+  "records": [
+    {
+      "additive": true,
+      "complete": false,
+      "cpu_components": {
+        "child_system_seconds": 0.030687,
+        "child_user_seconds": 0.030803999999999998,
+        "self_system_seconds": 0.061807999999999995,
+        "self_user_seconds": 0.297525
+      },
+      "cpu_seconds": 0.420824,
+      "raw_cost_receipt": "experiments/adaptive_credit_bridge_v1/runs/build001/FAILED.json",
+      "scope": "Protected v2 source verification, exact production-crate materialization, local offline resolution, checksum verification and extraction of cached dependency packages, isolated compilation and executable hashing.",
+      "sha256": "85faaaa458e7ef098d224baadbb1f6ada447b52c6563047a5a367e5c719318ef",
+      "stage": "build001",
+      "wall_seconds": 0.47309532199869864
+    },
+    {
+      "additive": true,
+      "complete": true,
+      "cpu_components": {
+        "child_system_seconds": 4.973419,
+        "child_user_seconds": 64.07219,
+        "self_system_seconds": 0.566868,
+        "self_user_seconds": 1.576312
+      },
+      "cpu_seconds": 71.188789,
+      "raw_cost_receipt": "experiments/adaptive_credit_bridge_v1/runs/build002/COMPLETE.json",
+      "scope": "Protected v2 source verification, exact production-crate materialization, local offline resolution, checksum verification and extraction of cached dependency packages, isolated compilation and executable hashing.",
+      "sha256": "b1ec578ed39b0bb992e124b2c26c77240204f6cdff9aa1516c617ec92c4af6cb",
+      "stage": "build002",
+      "wall_seconds": 73.13961714800098
+    },
+    {
+      "additive": true,
+      "complete": true,
+      "cpu_components": {
+        "child_system_seconds": 10.202304,
+        "child_user_seconds": 94.18303,
+        "self_system_seconds": 0.731128,
+        "self_user_seconds": 1.693203
+      },
+      "cpu_seconds": 106.809665,
+      "raw_cost_receipt": "experiments/adaptive_credit_bridge_v1/runs/build003/COMPLETE.json",
+      "scope": "Protected v2 source verification, exact production-crate materialization, local offline resolution, checksum verification and extraction of cached dependency packages, isolated compilation and executable hashing.",
+      "sha256": "379329b6110476153deb93aa676aa1059218a17e90092f0544a36bfa832a0f53",
+      "stage": "build003",
+      "wall_seconds": 111.93352279499959
+    },
+    {
+      "additive": true,
+      "complete": true,
+      "cpu_components": {
+        "child_system_seconds": 7.046641,
+        "child_user_seconds": 81.782729,
+        "self_system_seconds": 0.474081,
+        "self_user_seconds": 1.410174
+      },
+      "cpu_seconds": 90.71362500000001,
+      "raw_cost_receipt": "experiments/adaptive_credit_bridge_v1/runs/build004/COMPLETE.json",
+      "scope": "Protected v2 source verification, exact production-crate materialization, local offline resolution, checksum verification and extraction of cached dependency packages, isolated compilation and executable hashing.",
+      "sha256": "324bc9e0b35167cdcdea5d6c14476c5b5cab03f3cdbe7d808f1e5b957bb0d978",
+      "stage": "build004",
+      "wall_seconds": 94.94789556299656
+    },
+    {
+      "additive": true,
+      "complete": false,
+      "cpu_components": {
+        "child_system_seconds": 0.013916000000000012,
+        "child_user_seconds": 0.003476,
+        "self_system_seconds": 0.07600499999999999,
+        "self_user_seconds": 0.660992
+      },
+      "cpu_seconds": 0.754389,
+      "raw_cost_receipt": "experiments/adaptive_credit_bridge_v1/runs/qualification001/FAILED.json",
+      "scope": "Input and build verification, local fixture trust setup, every real native tick, signed append, refusal, cold recovery, complete RPC persistence and Python references.",
+      "sha256": "3e491d0c013e056fcfd661c8cc7a4f8f0caa6748d8178595aad437bb8ca7ca3a",
+      "stage": "qualification001",
+      "wall_seconds": 1.0592175769997993
+    },
+    {
+      "additive": true,
+      "complete": true,
+      "cpu_components": {
+        "child_system_seconds": 0.150551,
+        "child_user_seconds": 0.17457999999999999,
+        "self_system_seconds": 0.342681,
+        "self_user_seconds": 1.6409479999999999
+      },
+      "cpu_seconds": 2.30876,
+      "raw_cost_receipt": "experiments/adaptive_credit_bridge_v1/runs/qualification002/COMPLETE.json",
+      "scope": "Input and build verification, local fixture trust setup, every real native tick, signed append, refusal, cold recovery, complete RPC persistence and Python references.",
+      "sha256": "86143f199e27d62de94a30c420aebd077d1e17732a6d6b1604179ebd778afe6d",
+      "stage": "qualification002",
+      "wall_seconds": 3.1435585010040086
+    },
+    {
+      "additive": true,
+      "complete": true,
+      "cpu_components": {
+        "child_system_seconds": 0.171566,
+        "child_user_seconds": 0.22886099999999998,
+        "self_system_seconds": 0.316963,
+        "self_user_seconds": 0.9643499999999998
+      },
+      "cpu_seconds": 1.6817399999999998,
+      "raw_cost_receipt": "experiments/adaptive_credit_bridge_v1/runs/qualification003/COMPLETE.json",
+      "scope": "Input and build verification, local fixture trust setup, every real native tick, signed append, refusal, cold recovery, complete RPC persistence and Python references.",
+      "sha256": "082a6f93e5d593b2c07cb66ad8515a14f68989ebbd20809ed4dd73a8a6ad8092",
+      "stage": "qualification003",
+      "wall_seconds": 2.4714911109986133
+    },
+    {
+      "additive": true,
+      "complete": true,
+      "cpu_components": {
+        "child_system_seconds": 0.055966999999999996,
+        "child_user_seconds": 0.102397,
+        "self_system_seconds": 0.10227499999999999,
+        "self_user_seconds": 0.604846
+      },
+      "cpu_seconds": 0.865485,
+      "raw_cost_receipt": "experiments/adaptive_credit_bridge_v1/runs/audit002/COMPLETE.json",
+      "scope": "Every original raw receipt, independent Ed25519 verification, Python SNN and account reconstruction, 16 fresh owner processes, 16 historical closure retries and durable-gate corruption checks.",
+      "sha256": "d5229ace19de84c8c6b93c5ad977381f3c4b6fbb206469c0f693f0d233a55c37",
+      "stage": "audit002",
+      "wall_seconds": 1.0335849260009127
+    },
+    {
+      "additive": true,
+      "complete": true,
+      "cpu_components": {
+        "child_system_seconds": 0.065084,
+        "child_user_seconds": 0.103252,
+        "self_system_seconds": 0.11508499999999998,
+        "self_user_seconds": 0.6675749999999998
+      },
+      "cpu_seconds": 0.9509959999999997,
+      "raw_cost_receipt": "experiments/adaptive_credit_bridge_v1/runs/audit003/COMPLETE.json",
+      "scope": "Every original raw receipt, independent Ed25519 verification, Python SNN and account reconstruction, 16 fresh owner processes, 16 historical closure retries and durable-gate corruption checks.",
+      "sha256": "9eedf2e579b34a7f72fcc1bc7ae29782ffc897d4350c7e5ec0cb9faa86938278",
+      "stage": "audit003",
+      "wall_seconds": 1.116053470002953
+    },
+    {
+      "additive": true,
+      "complete": true,
+      "cpu_components": {
+        "child_system_seconds": 11.221302,
+        "child_user_seconds": 107.460022,
+        "self_system_seconds": 0.626236,
+        "self_user_seconds": 2.1285089999999998
+      },
+      "cpu_seconds": 121.43606899999999,
+      "raw_cost_receipt": "experiments/adaptive_credit_bridge_v1/runs/formal001/COMPLETE.json",
+      "scope": "Source freeze and Git object verification, full child Python/build startup and dependency materialization, exact build preservation, formal 16-episode closed loop, independent audit, portable source/Git/raw materialization and all 16 fresh portable owner/ledger replays; nested stage CPU is explanatory and must not be added again.",
+      "sha256": "da92c702a2cdd7515346234d56c57c49ecc8ad9bb801a054858a40be0f0d79c3",
+      "stage": "formal001",
+      "wall_seconds": 119.60790024499875
+    },
+    {
+      "additive": true,
+      "complete": true,
+      "cpu_components": {
+        "child_system_seconds": 0.363266,
+        "child_user_seconds": 2.488966,
+        "self_system_seconds": 0.098475,
+        "self_user_seconds": 0.075125
+      },
+      "cpu_seconds": 3.025832,
+      "raw_cost_receipt": "experiments/adaptive_credit_bridge_v1/runs/delivered_replay001/COMPLETE.json",
+      "scope": "Full working-copy materialization, explicitly limited host-path/permit relocation, original source/Git/runtime verification and all 16 cold signed-ledger and exact-owner replays, including child Python startup.",
+      "sha256": "9ffe29d47e58d98c6bba4dc31f4b6505a490c09a9c7db7663a0c158b35f0dffa",
+      "stage": "delivered_replay001",
+      "wall_seconds": 1.6519962530001067
+    },
+    {
+      "additive": true,
+      "complete": true,
+      "cpu_components": {
+        "child_system_seconds": 0.0,
+        "child_user_seconds": 0.0,
+        "self_system_seconds": 0.011633999999999995,
+        "self_user_seconds": 0.009044999999999997
+      },
+      "cpu_seconds": 0.020678999999999993,
+      "raw_cost_receipt": "experiments/adaptive_credit_bridge_v1/results/development/preflight001/COMPLETE.json",
+      "scope": "Read, hash and preserve minimal immutable development build/run/audit receipts; complete original raw remains under runs for artifact archival.",
+      "sha256": "1fa9e8ecba5f802a1d9ddf8b6605b0900fe01c3d72797ea497533e2890a602bd",
+      "stage": "preflight001",
+      "wall_seconds": 0.02772003399877576
+    },
+    {
+      "additive": true,
+      "complete": true,
+      "cpu_components": {
+        "child_system_seconds": 0.0,
+        "child_user_seconds": 0.0,
+        "self_system_seconds": 0.040259,
+        "self_user_seconds": 0.014802000000000003
+      },
+      "cpu_seconds": 0.055061000000000006,
+      "raw_cost_receipt": "experiments/adaptive_credit_bridge_v1/results/development/cache_cleanup001/COMPLETE.json",
+      "scope": "Identify and remove only bridge build002/build003 dependency intermediates after preserving exact final executable identities and all original source/log/receipt bytes.",
+      "sha256": "de152b6396a78927916c673b56c8fb8f74377d26966afe21470e09c3d52d50c8",
+      "stage": "cache_cleanup001",
+      "wall_seconds": 0.06530383200151846
+    },
+    {
+      "additive": true,
+      "complete": true,
+      "cpu_components": {
+        "child_system_seconds": 0.0,
+        "child_user_seconds": 0.0,
+        "self_system_seconds": 0.203783,
+        "self_user_seconds": 0.12680399999999997
+      },
+      "cpu_seconds": 0.33058699999999996,
+      "raw_cost_receipt": "experiments/adaptive_credit_bridge_v1/results/development/cache_cleanup002/COMPLETE.json",
+      "scope": "Remove only reproducible bridge build004 objects and verified duplicate private vendor copies. Exact native binaries, original production source snapshots, frozen dependency hashes, downloaded .crate packages, build logs, and all runtime evidence remain.",
+      "sha256": "6316b12bca34ec3540c953ccbece829bd3a5b9bf076f7b80ebbe5ea99f35182e",
+      "stage": "cache_cleanup002",
+      "wall_seconds": 0.36010613899998134
+    },
+    {
+      "additive": true,
+      "complete": true,
+      "cpu_components": {
+        "child_system_seconds": 0.134676,
+        "child_user_seconds": 0.18010099999999998,
+        "self_system_seconds": 0.016970000000000002,
+        "self_user_seconds": 0.13306800000000002
+      },
+      "cpu_seconds": 0.464815,
+      "raw_cost_receipt": "experiments/adaptive_credit_bridge_v1/results/development/provenance001/COMPLETE.json",
+      "scope": "Formatting and static checks of new integration source; real missing-package/version/symlink/escape checks; isolated Git commit/tree/blob export, correct reconstruction and rejection of altered or missing committed inputs.",
+      "sha256": "fde6cc546e047d82015ad947efe73df0588a57c03b4de834b96aa4cc653b4505",
+      "stage": "provenance001",
+      "wall_seconds": 0.510864584997762
+    },
+    {
+      "additive": true,
+      "complete": true,
+      "cpu_components": {
+        "child_system_seconds": 0.0,
+        "child_user_seconds": 0.0,
+        "self_system_seconds": 0.003703999999999999,
+        "self_user_seconds": 0.005775999999999996
+      },
+      "cpu_seconds": 0.009479999999999995,
+      "raw_cost_receipt": "experiments/adaptive_credit_bridge_v1/results/root_review001/COMPLETE.json",
+      "scope": "Read all 16 original episode receipts and both audit reports; independently check account continuity, resource equations, Q32 credit conservation, signed identity, stopping and raw aggregates. This is a receipt review, not another cryptographic verifier or owner execution. Interpreter startup and the final cost-receipt write lie outside this interval.",
+      "sha256": "7f0a0bdf98286410d748b8fd0f164753016bc0df63885067bde129945ce56591",
+      "stage": "root_independent_review",
+      "wall_seconds": 0.01211298799898941
+    },
+    {
+      "additive": true,
+      "complete": false,
+      "computation_succeeded": true,
+      "cpu_half_width_seconds": 0.01,
+      "cpu_seconds": 76.49,
+      "raw_cost_receipt": "experiments/adaptive_credit_bridge_v1/runs/repro001/OUTER_LAUNCH.json",
+      "scope": "Whole rebuilding parent process and all children; original child COMPLETE.json is a non-additive nested receipt. The footer publication failure is preserved.",
+      "sha256": "45966442b05a04a5fa0b0aed8108b4013cbb99cb131cecd2ec794089d39aaca7",
+      "stage": "formal_rebuild_whole_launch",
+      "wall_half_width_seconds": 0.005,
+      "wall_seconds": 77.65
+    }
+  ],
+  "schema": "hepta.signed-credit-bridge.cost-index.v1",
+  "scope_note": "Development stage intervals start before input validation/materialization; formal/rebuild/delivery replay outer intervals additionally include child Python startup. Wall totals sum declared processing intervals, not elapsed calendar development time. Source editing, conversation/tool infrastructure, and the unavailable external-timer shell startup are outside this computational ledger. The failed timer prefix started no scientific child. Energy in joules was not measured. This publication and archive stages have separate later receipts.",
+  "totals_before_this_publication_and_archive": {
+    "reported_stage_cpu_sum_seconds": 477.526796,
+    "reported_stage_wall_sum_seconds": 489.204040488998,
+    "rounded_timer_cpu_half_width_seconds": 0.01,
+    "rounded_timer_wall_half_width_seconds": 0.005
+  }
+}

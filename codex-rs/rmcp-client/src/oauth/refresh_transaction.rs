@@ -107,23 +107,25 @@ impl OAuthPersistor {
                 .await?;
         debug!("acquired the MCP OAuth credential transaction lock");
 
+        // Serialize the authoritative reread with the legacy persistence hook.
+        // Loading before this guard would allow that hook to commit a different
+        // manager snapshot while the blocking read is in flight.
+        let manager = self.inner.authorization_manager.clone();
+        let mut guard = manager.lock().await;
+
         // Stay on the lifecycle-pinned store. A failure is surfaced rather than falling back and
         // possibly replaying an older rotating refresh token from the other store.
         debug!("rereading authoritative MCP OAuth credentials");
-        let latest = self.inner.credential_store.load(
-            keyring_store,
-            &self.inner.server_name,
-            &self.inner.url,
-        )?;
+        let latest = self
+            .inner
+            .credential_store
+            .load_async(keyring_store, &self.inner.server_name, &self.inner.url)
+            .await?;
 
         // The pre-lock snapshot is only a hint. This locked reread is authoritative, so adopt a
         // winner from another process rather than refreshing its predecessor.
         let Some(latest) = latest else {
-            let manager = self.inner.authorization_manager.clone();
-            manager
-                .lock()
-                .await
-                .set_credential_store(InMemoryCredentialStore::new());
+            guard.set_credential_store(InMemoryCredentialStore::new());
             *self.inner.last_credentials.lock().await = None;
             return Err(AuthError::AuthorizationRequired).with_context(|| {
                 format!(
@@ -135,8 +137,6 @@ impl OAuthPersistor {
 
         if !token_needs_refresh(latest.expires_at) {
             debug!("adopting newer MCP OAuth credentials without contacting the provider");
-            let manager = self.inner.authorization_manager.clone();
-            let mut guard = manager.lock().await;
             if latest.has_refresh_token() {
                 let previous = self.inner.last_credentials.lock().await;
                 let expected_issuer = previous.as_ref().and_then(StoredOAuthTokens::bound_issuer);
@@ -166,10 +166,8 @@ impl OAuthPersistor {
             });
         }
 
-        let manager = self.inner.authorization_manager.clone();
         // The provider uses a separate HTTP client and cannot re-enter `AuthClient`. Retain this
         // async guard so requests cannot observe credentials while they are staged and committed.
-        let mut guard = manager.lock().await;
         let metadata = guard
             .resolve_metadata()
             .await
@@ -237,10 +235,11 @@ impl OAuthPersistor {
         // TODO: Add a bounded persistence retry only if telemetry shows this is common; never
         // silently switch stores or continue with an unpersisted credential.
         debug!("persisting refreshed MCP OAuth credentials to the resolved store");
-        if let Err(error) =
-            self.inner
-                .credential_store
-                .save(keyring_store, &self.inner.server_name, &refreshed)
+        if let Err(error) = self
+            .inner
+            .credential_store
+            .save_async(keyring_store, &self.inner.server_name, &refreshed)
+            .await
         {
             warn!(
                 error = %error,

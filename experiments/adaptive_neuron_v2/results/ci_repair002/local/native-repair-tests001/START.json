@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/tmp/pq-test-tools/bin/just",
+    "test",
+    "-p",
+    "codex-hepta-memory",
+    "-p",
+    "codex-hepta-supervisor",
+    "-p",
+    "codex-hepta-bao-adapter",
+    "-p",
+    "codex-hepta-shadow-qualification",
+    "-p",
+    "codex-hepta-automation",
+    "-p",
+    "codex-http-client",
+    "--offline",
+    "--locked"
+  ],
+  "source": {
+    "head": "331796a0cbad5e953046b67f5b3ee65ad61859c1",
+    "Cargo.lock_sha256": "586dde512c1d41396b0ff8292f0e9ddac400e163dae47d05fb486e268d9443ee"
+  },
+  "scope": "Current-source Linux native regression compilation and execution for six repaired packages. Excludes Windows/macOS branch claims and excludes science/credit accounting. Whole child wall and CPU measured."
+}

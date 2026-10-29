@@ -1,0 +1,33 @@
+{
+  "candidate": {
+    "distribution_signature": "4cc48408ed0329a0447fc40bceb2b69146a26deae8ad93ffff42436db28ed4c5e70f79777307b2fdabd45ba0c3dd97ed989ac0c025f9cddfb539f21774bea300",
+    "distribution_signing_bytes": "68657074612e6c6561726e696e672d6c65646765722e74727573742d646973747269627574696f6e2d7369676e61747572652e763100000000000000136c6f63616c2d72657365617263682d726f6f7400000000000000216c6f63616c2d72657365617263682d74727573742d646973747269627574696f6e00000000000000010000000000000014000000000000000f000000000000005aaceab8d21b3dfc5165227380fd53a07ec958fa28644ebbe26fb898252a79722289b2cae2c3d9118315cbc8fbabfe89c7740db3b137a9598c5fbfbbd83a82a781f9b7d3fedadc32af19006cd2bea78a65b58785314a70bc2653ea1764eaae010c0000000000000001",
+    "objective_digest": "f9b7d3fedadc32af19006cd2bea78a65b58785314a70bc2653ea1764eaae010c",
+    "organizational_independence_claimed": false,
+    "research_only": true,
+    "root_verifying_key": "b72c6325999d5da52ba5de86c15715efdee2fa50dec035c12a0c6ff8e3194247",
+    "scope_digest": "89b2cae2c3d9118315cbc8fbabfe89c7740db3b137a9598c5fbfbbd83a82a781",
+    "signers": [
+      {
+        "controller": "local-research-generator-controller",
+        "principal": "research-generator",
+        "roles": "[Generator]",
+        "verifying_key": "1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      {
+        "controller": "local-research-observer-controller",
+        "principal": "research-observer",
+        "roles": "[Observer]",
+        "verifying_key": "a10dbfd9ea2e621c8a5a09ab750dd7a02f495f7160fffa0a7caab4962b53ad99"
+      },
+      {
+        "controller": "local-research-allocator-controller",
+        "principal": "research-allocator",
+        "roles": "[CreditAllocator]",
+        "verifying_key": "f052149beac2f03cfb87e937d41e0b0e98261987e6d09e2af0068f3e7301ecd1"
+      }
+    ]
+  },
+  "reason": "Presented trust differs from the independently encoded fixture distribution",
+  "rejected": true
+}

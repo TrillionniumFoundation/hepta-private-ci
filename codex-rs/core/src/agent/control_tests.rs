@@ -387,6 +387,13 @@ async fn persist_thread_for_tree_resume(thread: &Arc<CodexThread>, message: &str
         .session
         .abort_all_tasks(TurnAbortReason::Interrupted)
         .await;
+    // A concurrent finish or start owner can retain its completion fence after
+    // abort_all_tasks returns. Observe that owner before asking the normal
+    // injection API to admit this durable fixture marker.
+    thread
+        .wait_for_pending_admission_transitions()
+        .await
+        .expect("thread admission transition should finish before fixture injection");
     thread
         .inject_response_items(vec![user_message(message)])
         .await

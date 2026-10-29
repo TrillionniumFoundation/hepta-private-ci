@@ -22,13 +22,39 @@ jobs:
       - uses: ./.github/actions/setup-ci-build
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
 
       - name: Run cargo-deny
+        id: policy
         uses: EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246 # v2
         with:
-          rust-version: 1.95.0
+          rust-version: 1.96.0
           manifest-path: ./codex-rs/Cargo.toml
+
+      - name: Install the diagnostic CLI after policy failure
+        if: failure() && steps.policy.outcome == 'failure'
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: cargo-deny@0.19.0
+
+      - name: Preserve complete policy diagnostics
+        if: failure() && steps.policy.outcome == 'failure'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/cargo-deny-diagnostics"
+          git rev-parse HEAD 'HEAD^{tree}' > "$RUNNER_TEMP/cargo-deny-diagnostics/source.txt"
+          cargo deny --version > "$RUNNER_TEMP/cargo-deny-diagnostics/version.txt"
+          cargo deny --locked --format json --all-features check --show-stats 2>&1 | tee "$RUNNER_TEMP/cargo-deny-diagnostics/diagnostics.jsonl"
+
+      - name: Retain policy failure evidence
+        if: always() && steps.policy.outcome == 'failure'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: cargo-deny-diagnostics-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cargo-deny-diagnostics
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Check for a clean worktree
         if: always() && !cancelled()

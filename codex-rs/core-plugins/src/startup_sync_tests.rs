@@ -21,6 +21,52 @@ use zip::write::SimpleFileOptions;
 
 const TEST_CURATED_PLUGIN_SHA: &str = "0123456789abcdef0123456789abcdef01234567";
 
+#[cfg(unix)]
+#[test]
+fn extraction_strips_privilege_bits_and_preserves_bzip2_contents() {
+    use std::os::unix::fs::PermissionsExt;
+
+    for compression in [
+        zip::CompressionMethod::Stored,
+        zip::CompressionMethod::Bzip2,
+    ] {
+        let mut writer = ZipWriter::new(std::io::Cursor::new(Vec::new()));
+        writer
+            .start_file(
+                "root/bin/plugin",
+                SimpleFileOptions::default()
+                    .compression_method(compression)
+                    .unix_permissions(0o755),
+            )
+            .expect("start entry");
+        writer.write_all(b"plugin payload").expect("write entry");
+        let mut bytes = writer.finish().expect("finish archive").into_inner();
+        // The safe writer masks these bits. Modify the on-disk central-directory
+        // attributes to exercise an untrusted archive that sets both set-ID bits.
+        let signature = b"PK\x01\x02";
+        let central = bytes
+            .windows(signature.len())
+            .position(|window| window == signature)
+            .expect("central directory");
+        bytes[central + 38..central + 42].copy_from_slice(&(0o106755_u32 << 16).to_le_bytes());
+        let destination = tempdir().expect("destination");
+        extract_zipball_to_dir(&bytes, destination.path()).expect("extract archive");
+        let output = destination.path().join("bin/plugin");
+        assert_eq!(
+            std::fs::read(&output).expect("read output"),
+            b"plugin payload"
+        );
+        assert_eq!(
+            std::fs::metadata(&output)
+                .expect("output metadata")
+                .permissions()
+                .mode()
+                & 0o7777,
+            0o755
+        );
+    }
+}
+
 #[tokio::test]
 async fn github_http_routes_repository_ref_and_zipball_urls() {
     let server = MockServer::start().await;

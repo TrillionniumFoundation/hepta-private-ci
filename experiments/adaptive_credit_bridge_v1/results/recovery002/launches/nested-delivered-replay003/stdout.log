@@ -1,0 +1,186 @@
+{
+  "development_only": false,
+  "integration_source": {
+    "seal_sha256": "2388d2131cea782a3e75190c5791cfa13a9d065bfa2b28879235f9a0d54495b6",
+    "source_commit": "e91a7002bfd650e4a2b057b18b9d81f4242b9ed2",
+    "source_tree": "58172975f4523cd00f259a0b07f19e5a5045ac94",
+    "verified_inputs": 228
+  },
+  "passed": true,
+  "episodes": 16,
+  "independent_snn_prefixes": 48,
+  "signed_facts": 48,
+  "original_evidence_unchanged": true,
+  "all_actual_decisions_precede_neural_work": true,
+  "all_actual_signed_closures_precede_resource_settlement": true,
+  "cold_signed_and_native_replay_idempotent": true,
+  "torn_and_tampered_gate_rejected": true,
+  "receipt_binding_rejections": [
+    "cross_episode_valid_closure",
+    "changed_terminal_binding",
+    "resource_record_digest",
+    "settlement_outcome_binding",
+    "cross_episode_valid_admission"
+  ],
+  "cryptography": {
+    "verified_evidence_signatures": 88,
+    "rejected_corrupted_signatures": 2,
+    "verified_root_signatures": 55,
+    "trust_and_evidence_canonical_bindings_reconstructed": true
+  },
+  "all_signed_fact_payloads_independently_reconstructed": true,
+  "signer_list_and_payload_substitution_rejected": true,
+  "replay_cryptography": {
+    "verified_evidence_signatures": 32,
+    "rejected_corrupted_signatures": 0,
+    "verified_root_signatures": 17,
+    "trust_and_evidence_canonical_bindings_reconstructed": true
+  },
+  "replay_owner_work": {
+    "original_journal_replay_steps": 48,
+    "event_validation_kernel_steps": 48,
+    "event_validation_readout_calls": 48,
+    "event_validation_snn_cell_updates": 384,
+    "event_validation_spikes": 288,
+    "event_validation_bellman_terms": 96,
+    "boundary_build_terms": 352352,
+    "account_validation_native_credit_calls": 256,
+    "profile_weight_scalars_validated": 1040,
+    "native_credit_finalizations": 16,
+    "new_credit_records": 0,
+    "rpc_count": 48,
+    "failed_requests": 0,
+    "owner_ticks": 0,
+    "model_calls": 0,
+    "actual_snn_cell_updates": 0,
+    "actual_spikes": 0,
+    "actual_input_multiply_accumulates": 0,
+    "actual_readout_multiply_accumulates": 0,
+    "actual_resource_work": 0.0,
+    "bellman_query_terms": 0,
+    "physical_rpc_micros": 53337,
+    "native_tick_micros": 0,
+    "model_latency_micros": 0,
+    "journal_bytes_written": 0,
+    "peak_transient_allocation_bytes": 0,
+    "all_original_kernel_executions": 96,
+    "all_neural_cell_updates": 384,
+    "all_native_credit_finalizations": 272
+  },
+  "episode_audits": [
+    {
+      "case": "research.case.0000",
+      "prefixes": 2,
+      "signed_sequence": 3,
+      "cold_replay": true
+    },
+    {
+      "case": "research.case.0001",
+      "prefixes": 2,
+      "signed_sequence": 6,
+      "cold_replay": true
+    },
+    {
+      "case": "research.case.0002",
+      "prefixes": 1,
+      "signed_sequence": 9,
+      "cold_replay": true
+    },
+    {
+      "case": "research.case.0003",
+      "prefixes": 1,
+      "signed_sequence": 12,
+      "cold_replay": true
+    },
+    {
+      "case": "research.case.0004",
+      "prefixes": 4,
+      "signed_sequence": 15,
+      "cold_replay": true
+    },
+    {
+      "case": "research.case.0005",
+      "prefixes": 3,
+      "signed_sequence": 18,
+      "cold_replay": true
+    },
+    {
+      "case": "research.case.0006",
+      "prefixes": 5,
+      "signed_sequence": 21,
+      "cold_replay": true
+    },
+    {
+      "case": "research.case.0007",
+      "prefixes": 2,
+      "signed_sequence": 24,
+      "cold_replay": true
+    },
+    {
+      "case": "research.case.0008",
+      "prefixes": 1,
+      "signed_sequence": 27,
+      "cold_replay": true
+    },
+    {
+      "case": "research.case.0009",
+      "prefixes": 1,
+      "signed_sequence": 30,
+      "cold_replay": true
+    },
+    {
+      "case": "research.case.0010",
+      "prefixes": 2,
+      "signed_sequence": 33,
+      "cold_replay": true
+    },
+    {
+      "case": "research.case.0011",
+      "prefixes": 6,
+      "signed_sequence": 36,
+      "cold_replay": true
+    },
+    {
+      "case": "research.case.0012",
+      "prefixes": 7,
+      "signed_sequence": 39,
+      "cold_replay": true
+    },
+    {
+      "case": "research.case.0013",
+      "prefixes": 3,
+      "signed_sequence": 42,
+      "cold_replay": true
+    },
+    {
+      "case": "research.case.0014",
+      "prefixes": 3,
+      "signed_sequence": 45,
+      "cold_replay": true
+    },
+    {
+      "case": "research.case.0015",
+      "prefixes": 5,
+      "signed_sequence": 48,
+      "cold_replay": true
+    }
+  ],
+  "run_inputs_sha256": "da785f41ae4c9353d25ec35aa2b1b26b93bcf0d689ca9c5bc50002b636906d37",
+  "run_summary_sha256": "a3abb9fb2e4c212788236a75adfa16e1e96baa2467b740717860c65d7f0913ab",
+  "protected_v2": {
+    "seal_sha256": "594b1180532dc32b7d659f6d1031fa4047c9c6446b393a17590d27eab484019f",
+    "source_commit": "58c1f6caabd28ad99f2d425cfaa5c4e050f7a19a",
+    "source_tree": "142ae37061052500fcb445a713d8fd141dc5e46b",
+    "verified_inputs": 141
+  }
+}
+{
+  "all_changes_declared": true,
+  "audit_sha256": "06e6cb92e6c899a1073dd1aee4840b1e0137f8ff79ad21682041898ab48d7704",
+  "episodes": 16,
+  "independent_snn_prefixes": 48,
+  "original_evidence_unchanged": true,
+  "passed": true,
+  "relocation_sha256": "9e975a7f09e7e904d437774bffee97119bd5c979188eb1e2d7a2c0e1f9fac47d",
+  "signed_facts": 48
+}

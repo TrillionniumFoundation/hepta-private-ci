@@ -1,0 +1,30 @@
+{
+  "accounting": "This enclosing interval includes child subprocesses. Nested receipts explain its components and must not be added to it again.",
+  "complete": true,
+  "cpu": {
+    "child_system_seconds": 0.0,
+    "child_user_seconds": 0.0,
+    "self_system_seconds": 0.003703999999999999,
+    "self_user_seconds": 0.005775999999999996
+  },
+  "error": null,
+  "facts": {
+    "passed": true,
+    "signed_facts": 48,
+    "totals": {
+      "avoided": 144,
+      "cells": 384,
+      "observations": 48,
+      "spikes": 288,
+      "work": 84.0
+    }
+  },
+  "finished_at_utc": "2026-10-28T11:43:10.684412+00:00",
+  "identity": {
+    "stage": "independent-post-run-credit-equation-review"
+  },
+  "schema": "hepta.adaptive-neuron.cost-stage.v2",
+  "scope": "Read all 16 original episode receipts and both audit reports; independently check account continuity, resource equations, Q32 credit conservation, signed identity, stopping and raw aggregates. This is a receipt review, not another cryptographic verifier or owner execution. Interpreter startup and the final cost-receipt write lie outside this interval.",
+  "started_at_utc": "2026-10-28T11:43:10.672361+00:00",
+  "wall_seconds": 0.01211298799898941
+}

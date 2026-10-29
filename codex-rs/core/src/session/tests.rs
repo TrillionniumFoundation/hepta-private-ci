@@ -12344,6 +12344,7 @@ async fn thread_idle_lifecycle_waits_for_trigger_turn_mailbox_work() {
         calls: Arc::clone(&calls),
     }));
     session.services.extensions = Arc::new(builder.build());
+    let session = Arc::new(session);
     session
         .input_queue
         .enqueue_mailbox_communication(

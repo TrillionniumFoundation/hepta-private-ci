@@ -1,0 +1,138 @@
+{
+  "cost_scope": "These are CI/engineering qualification costs, entirely separate from frozen SNN training, owner resource records and Organ Credit ledger. No energy or complete-project-cost claim.",
+  "dependency_evidence": "../dependency_repair001/RESULT.json",
+  "dependency_repair_engineering_time_included": false,
+  "dependency_scope": "Source-bound all-features cargo-deny exit 0 and 5 focused compatibility tests, not a full consumer workspace build. Prior failed iterations retained there.",
+  "hosted_ci_billing_measured": false,
+  "native_failed_attempts_tests_ran": 0,
+  "outer_launcher_self_cpu_measured": false,
+  "runs": [
+    {
+      "child_cpu_seconds": 29.883395999999998,
+      "completion_receipt": "local/operator-test001/COMPLETE.json",
+      "detail": "Fresh isolated-target Rust 1.96 build. Exact package, lock and test-wrapper hashes retained; source unchanged during run. Unix SSHSIG verifier executed. Non-Unix branches require native Windows CI.",
+      "exit_code": 0,
+      "files": {
+        "COMPLETE.json": {
+          "bytes": 215,
+          "sha256": "d463419d90abc3717ca7491f1c9852737a9aada523c10c8c5dd3fe304072e0d2"
+        },
+        "START.json": {
+          "bytes": 3600,
+          "sha256": "707565902a60963294b19e87ce995ce11b29047cd75bca0bcecfd5ed3e6f8d70"
+        },
+        "test.log": {
+          "bytes": 7293,
+          "sha256": "88be51b1dfd0334fc425bc2b0624067d03643aad67312989757fb91482f81ebc"
+        }
+      },
+      "id": "operator-test001",
+      "source_commit": "836731b970fcaf6059e3ffc18e3948bfcbf8a75f",
+      "start_receipt": "local/operator-test001/START.json",
+      "status": "passed_linux_only",
+      "tests_passed": 24,
+      "tests_ran": 24,
+      "wall_seconds": 17.092393343002186
+    },
+    {
+      "child_cpu_seconds": 1.565669,
+      "completion_receipt": "local/ci-wrapper-qualification001/COMPLETE.json",
+      "detail": "Actual unittest log reports 12 passed. START records command/scope but no source commit or hashes; no retrospective exact-head binding is asserted. Tests cover full failure-log preservation, not a hosted native matrix.",
+      "exit_code": 0,
+      "files": {
+        "COMPLETE.json": {
+          "bytes": 92,
+          "sha256": "64e24809fbe7ba6e2063f3670be78aaf7d60c0a89479d37bb41cabe1a573632c"
+        },
+        "START.json": {
+          "bytes": 309,
+          "sha256": "6186f30eb5081ff39f153cb56f02cbac7ee0cb8c718af9f9edfbb5c89b3ce420"
+        },
+        "stderr.log": {
+          "bytes": 2259,
+          "sha256": "ae457e3a891747a307de81562967da7e81ae99c3bc506a2cd98cdf851bb84d80"
+        },
+        "stdout.log": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "id": "ci-wrapper-qualification001",
+      "source_commit": null,
+      "start_receipt": "local/ci-wrapper-qualification001/START.json",
+      "status": "passed_wrapper_only",
+      "tests_passed": 12,
+      "tests_ran": 12,
+      "wall_seconds": 1.6639185050007654
+    },
+    {
+      "child_cpu_seconds": 159.095969,
+      "completion_receipt": "local/native-repair-tests001/FAILED.json",
+      "detail": "OpenSSL discovery failed because pkg-config executable was absent. nextest execution did not start; zero tests ran.",
+      "exit_code": 101,
+      "files": {
+        "FAILED.json": {
+          "bytes": 306,
+          "sha256": "1a77e7c8acab69fa9d202eeabd669e3f16b096b30b2b1e5c4dc6ab796e393e82"
+        },
+        "START.json": {
+          "bytes": 729,
+          "sha256": "a34cd88045d285b0bffca370082b8399a8f7afc5921e6a64aed19d507e4c6c62"
+        },
+        "stderr.log": {
+          "bytes": 15424,
+          "sha256": "03a229b236e1ce0a04f229bef4e1a30a8f69ab8c78ab4a5eabcfe8d5753037a2"
+        },
+        "stdout.log": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "id": "native-repair-tests001",
+      "source_commit": "331796a0cbad5e953046b67f5b3ee65ad61859c1",
+      "start_receipt": "local/native-repair-tests001/START.json",
+      "status": "build_failed_environment",
+      "tests_passed": 0,
+      "tests_ran": 0,
+      "wall_seconds": 74.10438870699727
+    },
+    {
+      "child_cpu_seconds": 456.918356,
+      "completion_receipt": "local/native-repair-tests002/FAILED.json",
+      "detail": "Retry supplied installed OpenSSL include/lib paths. Linking failed with ld SIGBUS and LLVM No space left on device. nextest execution did not start; zero tests ran. Bound source hashes unchanged.",
+      "exit_code": 101,
+      "files": {
+        "BUILD_OUTPUT_CLEANUP.json": {
+          "bytes": 2255,
+          "sha256": "11b48672f59b73a693dd54750e3ef24de1dcdef59b519c3e94f5dfeaf430523b"
+        },
+        "FAILED.json": {
+          "bytes": 341,
+          "sha256": "b627dd7b31f36ecec97795e40bdfa46688b27eb36906ca166d2b50d81b91b746"
+        },
+        "START.json": {
+          "bytes": 38496,
+          "sha256": "17eb1f58764209c00b5339f59d1e2a102431cf0b6bcdc75177ff24c823bca279"
+        },
+        "stderr.log": {
+          "bytes": 41018,
+          "sha256": "585f83fb49163d32eeddae5b7b992e34f2a3fd6e5c3320d22f5169eb6d34aaa7"
+        },
+        "stdout.log": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "id": "native-repair-tests002",
+      "source_commit": "331796a0cbad5e953046b67f5b3ee65ad61859c1",
+      "start_receipt": "local/native-repair-tests002/START.json",
+      "status": "build_failed_storage",
+      "tests_passed": 0,
+      "tests_ran": 0,
+      "wall_seconds": 172.3313202749996
+    }
+  ],
+  "schema": "hepta.ci-repair002.local-evidence.v1",
+  "sum_measured_local_child_cpu_seconds": 647.46339,
+  "sum_measured_local_wall_seconds": 265.1920208299998
+}

@@ -324,6 +324,29 @@ impl CodexThread {
         self.session.emit_thread_idle_lifecycle_if_idle(cause).await;
     }
 
+    /// Wait for already materialized admission transitions to finish.
+    ///
+    /// A terminal event can arrive before its owner has completed recovery and
+    /// idle callbacks. This read-only barrier never grants admission: callers
+    /// must still use the normal atomic input API afterwards. It does not wait
+    /// for a running turn or follow future transitions. Timeout/cancellation
+    /// leaves all owner fences intact.
+    ///
+    /// Lifecycle contributors must defer this wait until their callback returns.
+    pub async fn wait_for_pending_admission_transitions(&self) -> CodexResult<()> {
+        tokio::time::timeout(
+            crate::tasks::TERMINALIZER_WATCHDOG_TIMEOUT,
+            self.session.wait_for_pending_admission_transitions(),
+        )
+        .await
+        .map_err(|_| {
+            CodexErr::InvalidRequest(
+                "previous admission transition has not completed; its owner fence remains active"
+                    .to_string(),
+            )
+        })
+    }
+
     #[doc(hidden)]
     pub async fn ensure_rollout_materialized(&self) {
         self.session

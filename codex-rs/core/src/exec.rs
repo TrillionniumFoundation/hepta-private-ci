@@ -575,7 +575,16 @@ async fn exec_windows_sandbox(
 ) -> Result<RawExecToolCallOutput> {
     use crate::config::find_codex_home;
     use codex_windows_sandbox::run_windows_sandbox_capture_for_permission_profile_elevated;
-    use codex_windows_sandbox::run_windows_sandbox_capture_with_filesystem_overrides;
+
+    // A direct WRITE_RESTRICTED token does not confine deletion through ambient
+    // parent FILE_DELETE_CHILD grants. Honor an explicit unelevated setting by
+    // rejecting it before network setup, filesystem setup, or process creation.
+    // Never turn a broker failure into a legacy or unsandboxed retry.
+    if !windows_sandbox_uses_elevated_backend(params.windows_sandbox_level) {
+        return Err(CodexErr::Io(io::Error::other(
+            "the legacy restricted-token Windows sandbox cannot enforce filesystem deletion boundaries; use the elevated Windows sandbox backend",
+        )));
+    }
 
     let ExecParams {
         command,
@@ -635,7 +644,6 @@ async fn exec_windows_sandbox(
     let command_path = command.first().cloned();
     let sandbox_level = windows_sandbox_level;
     let proxy_enforced = network.is_some();
-    let use_elevated = windows_sandbox_uses_elevated_backend(sandbox_level);
     let additional_deny_write_paths = windows_sandbox_filesystem_overrides
         .map(|overrides| overrides.additional_deny_write_paths.clone())
         .unwrap_or_default();
@@ -649,43 +657,26 @@ async fn exec_windows_sandbox(
     let elevated_write_roots_override = windows_sandbox_filesystem_overrides
         .and_then(|overrides| overrides.write_roots_override.clone());
     let spawn_res = tokio::task::spawn_blocking(move || {
-        if use_elevated {
-            run_windows_sandbox_capture_for_permission_profile_elevated(
-                codex_windows_sandbox::ElevatedSandboxProfileCaptureRequest {
-                    permission_profile: &permission_profile,
-                    workspace_roots: workspace_roots.as_slice(),
-                    codex_home: codex_home.as_ref(),
-                    command,
-                    cwd: &cwd,
-                    env_map: env,
-                    timeout_ms,
-                    cancellation,
-                    use_private_desktop: windows_sandbox_private_desktop,
-                    proxy_enforced,
-                    network_proxy_restricting_sid,
-                    read_roots_override: elevated_read_roots_override.as_deref(),
-                    read_roots_include_platform_defaults:
-                        elevated_read_roots_include_platform_defaults,
-                    write_roots_override: elevated_write_roots_override.as_deref(),
-                    deny_read_paths_override: &additional_deny_read_paths,
-                    deny_write_paths_override: &additional_deny_write_paths,
-                },
-            )
-        } else {
-            run_windows_sandbox_capture_with_filesystem_overrides(
-                &permission_profile,
-                workspace_roots.as_slice(),
-                codex_home.as_ref(),
+        run_windows_sandbox_capture_for_permission_profile_elevated(
+            codex_windows_sandbox::ElevatedSandboxProfileCaptureRequest {
+                permission_profile: &permission_profile,
+                workspace_roots: workspace_roots.as_slice(),
+                codex_home: codex_home.as_ref(),
                 command,
-                &cwd,
-                env,
+                cwd: &cwd,
+                env_map: env,
                 timeout_ms,
                 cancellation,
-                &additional_deny_read_paths,
-                &additional_deny_write_paths,
-                windows_sandbox_private_desktop,
-            )
-        }
+                use_private_desktop: windows_sandbox_private_desktop,
+                proxy_enforced,
+                network_proxy_restricting_sid,
+                read_roots_override: elevated_read_roots_override.as_deref(),
+                read_roots_include_platform_defaults: elevated_read_roots_include_platform_defaults,
+                write_roots_override: elevated_write_roots_override.as_deref(),
+                deny_read_paths_override: &additional_deny_read_paths,
+                deny_write_paths_override: &additional_deny_write_paths,
+            },
+        )
     })
     .await;
 
@@ -1160,3 +1151,7 @@ fn synthetic_exit_status_for_code(code: i32) -> ExitStatus {
 #[cfg(test)]
 #[path = "exec_tests.rs"]
 mod tests;
+
+#[cfg(all(test, windows))]
+#[path = "exec_windows_legacy_rejection_tests.rs"]
+mod windows_legacy_rejection_tests;

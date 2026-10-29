@@ -1,7 +1,8 @@
 use super::collect_stdout_and_exit;
 use super::current_thread_runtime;
-use super::legacy_process_test_guard;
-use super::sandbox_cwd;
+use super::legacy_rejection_tests::NativeDacl;
+use super::legacy_rejection_tests::native_dacl;
+use super::sandbox_process_test_guard;
 use super::spawn_windows_sandbox_session_legacy;
 use super::workspace_roots_for;
 use crate::run_windows_sandbox_capture_with_filesystem_overrides;
@@ -196,11 +197,12 @@ struct AclSetupFailureFixture {
     codex_home: PathBuf,
     protected_file: AbsolutePathBuf,
     marker: PathBuf,
+    before: Vec<(PathBuf, NativeDacl)>,
 }
 
 impl AclSetupFailureFixture {
     fn new() -> Self {
-        let test_root = TempDir::new_in(sandbox_cwd()).expect("create ACL failure test root");
+        let test_root = TempDir::new().expect("create ACL failure test root");
         let workspace = test_root.path().join("workspace");
         fs::create_dir(&workspace).expect("create workspace");
         let codex_home = test_root.path().join("codex-home");
@@ -311,7 +313,12 @@ impl AclSetupFailureFixture {
             "fixture must deny a fresh WRITE_DAC handle",
         );
 
+        let before = [test_root.path(), &workspace, &protected_path]
+            .into_iter()
+            .map(|path| (path.to_path_buf(), native_dacl(path)))
+            .collect();
         Self {
+            before,
             _acl_restore: acl_restore,
             marker: workspace.join("process-started.txt"),
             _test_root: test_root,
@@ -344,29 +351,31 @@ impl AclSetupFailureFixture {
 
     fn assert_rejected(&self, error: anyhow::Error) {
         assert_eq!(
-            (
-                error.to_string(),
-                error.root_cause().to_string(),
-                self.marker.try_exists().expect("inspect process marker"),
-            ),
-            (
-                format!(
-                    "apply legacy deny-write ACL to {}",
-                    self.protected_file.display()
-                ),
-                format!(
-                    "SetNamedSecurityInfoW failed for {}: {ERROR_ACCESS_DENIED}",
-                    self.protected_file.display(),
-                ),
-                false,
-            ),
+            error.to_string(),
+            "the legacy restricted-token Windows sandbox cannot enforce filesystem deletion boundaries; use the elevated Windows sandbox backend"
         );
+        assert_eq!(
+            (
+                self.marker.try_exists().expect("inspect process marker"),
+                self.codex_home.try_exists().expect("inspect code home"),
+                fs::read_to_string(&self.protected_file).expect("read protected fixture"),
+            ),
+            (false, false, "protected".to_string()),
+        );
+        for (path, before) in &self.before {
+            assert_eq!(
+                &native_dacl(path),
+                before,
+                "DACL changed at {}",
+                path.display()
+            );
+        }
     }
 }
 
 #[test]
-fn legacy_session_rejects_deny_acl_setup_failure_before_spawn() {
-    let _guard = legacy_process_test_guard();
+fn legacy_session_rejects_before_attempting_forbidden_acl_setup() {
+    let _guard = sandbox_process_test_guard();
     // Keep privilege removal local to this thread, including the native setup
     // calls in the current-thread runtime. The process token remains unchanged.
     let _caller = PrivilegeRestrictedCaller::enter();
@@ -395,13 +404,15 @@ fn legacy_session_rejects_deny_acl_setup_failure_before_spawn() {
             }
             Err(error) => Err(error),
         };
-        fixture.assert_rejected(result.expect_err("ACL setup failure must prevent session spawn"));
+        fixture.assert_rejected(
+            result.expect_err("unsupported legacy profile must prevent session setup"),
+        );
     });
 }
 
 #[test]
-fn legacy_capture_rejects_deny_acl_setup_failure_before_spawn() {
-    let _guard = legacy_process_test_guard();
+fn legacy_capture_rejects_before_attempting_forbidden_acl_setup() {
+    let _guard = sandbox_process_test_guard();
     let _caller = PrivilegeRestrictedCaller::enter();
     let fixture = AclSetupFailureFixture::new();
     let result = run_windows_sandbox_capture_with_filesystem_overrides(
@@ -420,6 +431,6 @@ fn legacy_capture_rejects_deny_acl_setup_failure_before_spawn() {
     fixture.assert_rejected(
         result
             .map(|_| ())
-            .expect_err("ACL setup failure must prevent capture spawn"),
+            .expect_err("unsupported legacy profile must prevent capture setup"),
     );
 }

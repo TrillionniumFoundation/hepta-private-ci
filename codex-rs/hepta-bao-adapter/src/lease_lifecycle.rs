@@ -509,8 +509,21 @@ fn persist(path: &Path, state: &StoredRegistryV1) -> Result<(), LeaseRegistryErr
         .and_then(|()| file.sync_all())
         .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
     std::fs::rename(&next, path).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    File::open(parent)
-        .and_then(|directory| directory.sync_all())
+    #[cfg(windows)]
+    let directory = {
+        use std::fs::OpenOptions;
+        use std::os::windows::fs::OpenOptionsExt;
+
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(0x0200_0000) // FILE_FLAG_BACKUP_SEMANTICS
+            .open(parent)
+    };
+    #[cfg(not(windows))]
+    let directory = File::open(parent);
+    directory
+        .and_then(|handle| handle.sync_all())
         .map_err(|_| LeaseRegistryErrorV1::Unavailable)
 }
 

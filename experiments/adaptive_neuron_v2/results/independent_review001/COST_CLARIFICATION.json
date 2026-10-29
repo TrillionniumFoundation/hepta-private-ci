@@ -1,0 +1,27 @@
+{
+  "complete": true,
+  "correction": {
+    "correct_interpretation": "This independent post-run review was outside the original science batch interval. Its own process cost is an additional disjoint cost, as are the independent statistics review and complete-batch preservation.",
+    "incorrect_text": "not additive to original science costs",
+    "receipt": "training/COMPLETE.json",
+    "receipt_sha256": "9bcfbb26dc7a40a5584b5c131ab5450b1aa9214d235be71e1bf3e4fbd6d56bfe"
+  },
+  "disjoint_cpu_seconds": 23.607499537,
+  "disjoint_wall_seconds": 27.894278862004285,
+  "excluded": "Prior interactive inspection, code authoring, interpreter startup and final receipt writes were not measured by these script scopes. No additional native execution or scientific training was performed.",
+  "parts": {
+    "preservation": {
+      "cpu_seconds": 13.335917408,
+      "wall_seconds": 19.316712888001348
+    },
+    "statistics": {
+      "cpu_seconds": 6.28653647,
+      "wall_seconds": 5.190947230999882
+    },
+    "training": {
+      "cpu_seconds": 3.9850456589999994,
+      "wall_seconds": 3.386618743003055
+    }
+  },
+  "schema": "hepta.adaptive-neuron.independent-review-costs.v1"
+}

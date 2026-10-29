@@ -1,0 +1,29 @@
+{
+  "accounting": "This enclosing interval includes child subprocesses. Nested receipts explain its components and must not be added to it again.",
+  "complete": true,
+  "cpu": {
+    "child_system_seconds": 0.0,
+    "child_user_seconds": 0.0,
+    "self_system_seconds": 3.8095220000000003,
+    "self_user_seconds": 14.268545000000001
+  },
+  "error": null,
+  "facts": {
+    "archive": "/workspace/scratch/07399998a2e3/deliverables/hepta_adaptive_neuron_v2_complete.tar.gz",
+    "archive_bytes": 38036011,
+    "archive_sha256": "df17f8e8b7983862a08ae5b6f65434ecd7a540d686b8bcfb31bf6d4c43f2720a",
+    "content_bytes": 230696191,
+    "immutable_bundle_manifest_sha256": "9531a6f7a1c83a9f23761197abb8939927020ee119e03bc3c405c01cee87c042",
+    "manifest_sha256": "56d9ddcaf2eef3a0fc7b6e559454e858744c5d561572d16ba4ab5c7e3fb6d175",
+    "members_verified": 21772,
+    "portable_replay_complete_sha256": "17fae31f9871212e74037dbf10e0bfb8542ccb63e47609b1b61de5c8b2276b7d"
+  },
+  "finished_at_utc": "2026-10-28T11:17:48.521713+00:00",
+  "identity": {
+    "stage": "complete_evidence_archive"
+  },
+  "schema": "hepta.adaptive-neuron.cost-stage.v2",
+  "scope": "Complete file inventory, SHA-256 manifest, archive compression, archive SHA and independent per-member archive byte verification. Includes all delivery attempts and replay receipts available before archiving; this stage's final cost and upload are external receipts to avoid self-referential hashes.",
+  "started_at_utc": "2026-10-28T11:17:20.003478+00:00",
+  "wall_seconds": 28.51827056500042
+}

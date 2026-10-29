@@ -1,0 +1,30 @@
+{
+  "command": [
+    "just",
+    "write-app-server-schema"
+  ],
+  "cwd": "/workspace/scratch/07399998a2e3/hepta/codex-rs",
+  "started_utc": "2026-10-29T07:07:28.341504+00:00",
+  "source_commit": "65c27dbcb27bdc872ad5a24d4084e42fe72c428e",
+  "environment": {
+    "CARGO_HOME": "/dev/shm/hepta-adaptive-deny-cargo",
+    "CARGO_TARGET_DIR": "/tmp/hepta-native-repair-ci-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_NET_OFFLINE": "true",
+    "OPENSSL_LIB_DIR": "/usr/lib/x86_64-linux-gnu",
+    "OPENSSL_INCLUDE_DIR": "/usr/include"
+  },
+  "cargo_version": "cargo 1.96.0 (30a34c682 2026-05-25)",
+  "rustc_version": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "input_sha256": {
+    "codex-rs/Cargo.toml": "652b11a3f070925577f7ce824dc34e3d14ab981825b7ff19c0788e5056d4c662",
+    "codex-rs/Cargo.lock": "586dde512c1d41396b0ff8292f0e9ddac400e163dae47d05fb486e268d9443ee",
+    "codex-rs/app-server-protocol/src/schema_fixtures.rs": "f3b449aac70fbb77158b74f09cf79924046b400c9d4299e909748b01a1e739bd",
+    "codex-rs/app-server-protocol/scripts/write_schema_fixtures.py": "d46cb0e036a81dd96ddd0a1bd7942679a6723b0627a21758a71abb89e7c9b269"
+  },
+  "previous_attempt": "stable002",
+  "cache_handoff": "Reused parent completed native target after its ENOSPC exit; no concurrent Cargo build; Cargo fingerprints revalidated every requested crate."
+}

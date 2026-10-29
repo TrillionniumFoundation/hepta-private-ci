@@ -16,6 +16,7 @@ use windows_sys::Win32::Security::RevertToSelf;
 use windows_sys::Win32::Security::TokenRestrictedSids;
 use windows_sys::Win32::Storage::FileSystem::DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_ALL_ACCESS;
+use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
 
 struct OwnedToken(HANDLE);
 
@@ -113,6 +114,30 @@ fn elevated_token_includes_network_proxy_restricting_sid() -> Result<()> {
     }
 
     assert!(has_network_proxy_sid?);
+    Ok(())
+}
+
+#[test]
+fn capability_only_constructor_rejects_an_existing_write_restricted_token() -> Result<()> {
+    let capability = LocalSid::from_string("S-1-5-21-181-282-383-484")?;
+    // SAFETY: each successful native constructor transfers a new token handle
+    // to its owner; the base token and capability remain live for both calls.
+    let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
+    let (restricted, _) =
+        unsafe { create_readonly_token_with_cap_from(base.0, capability.as_ptr())? };
+    let restricted = OwnedToken(restricted);
+    let result = unsafe {
+        create_workspace_write_token_with_caps_from(restricted.0, &[capability.as_ptr()])
+    };
+    // Also own an unexpectedly accepted token so a regression never leaks it.
+    let error = result
+        .map(OwnedToken)
+        .err()
+        .expect("an existing write-restricted token must not be accepted as a fresh base");
+    assert_eq!(
+        error.to_string(),
+        "capability-only tokens require a fresh, unfiltered base token"
+    );
     Ok(())
 }
 
@@ -226,6 +251,7 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
     let cap_a = LocalSid::from_string("S-1-5-21-101-202-303-404")?;
     let cap_b = LocalSid::from_string("S-1-5-21-111-222-333-444")?;
     let other_cap = LocalSid::from_string("S-1-5-21-121-232-343-454")?;
+    let read_cap = LocalSid::from_string("S-1-5-21-131-242-353-464")?;
     let mut logon = unsafe { get_logon_sid_bytes(base.0)? };
     let mut everyone = unsafe { world_sid()? };
     // Deliberately grant broad inherited DELETE and parent DELETE_CHILD inside
@@ -254,11 +280,17 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
     // A stale capability for another root must not authorize this token either.
     unsafe {
         ensure_allow_write_aces(&outside, &[other_cap.as_ptr()])?;
+        // A fully restricted token needs a separate read grant. Broad ambient
+        // identities and another root's stale capability cannot grant deletion.
+        ensure_allow_mask_aces(&outside, &[read_cap.as_ptr()], FILE_GENERIC_READ)?;
     }
     std::fs::write(outside.join("keep.txt"), "outside")?;
     std::fs::create_dir(outside.join("keep-dir"))?;
     let token = OwnedToken(unsafe {
-        create_workspace_write_token_with_caps_from(base.0, &[cap_a.as_ptr(), cap_b.as_ptr()])?
+        create_workspace_write_token_with_caps_from(
+            base.0,
+            &[cap_a.as_ptr(), cap_b.as_ptr(), read_cap.as_ptr()],
+        )?
     });
     let (outside_read, refused) = {
         let _impersonation = unsafe { Impersonation::enter(token.0)? };

@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_credit_bridge_v1/results/recovery_verify_archive.py", line 120, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_credit_bridge_v1/results/recovery_verify_archive.py", line 91, in main
+    verify(args)
+  File "/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_credit_bridge_v1/results/recovery_verify_archive.py", line 60, in verify
+    output.write(data)
+OSError: [Errno 28] No space left on device

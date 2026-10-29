@@ -195,6 +195,18 @@ impl Fixture {
     }
 
     pub(super) fn directory(&self) -> File {
+        #[cfg(windows)]
+        {
+            use std::os::windows::fs::OpenOptionsExt;
+
+            return OpenOptions::new()
+                .read(true)
+                .write(true)
+                .custom_flags(0x0200_0000) // FILE_FLAG_BACKUP_SEMANTICS
+                .open(&self.root)
+                .unwrap();
+        }
+        #[cfg(not(windows))]
         File::open(&self.root).unwrap()
     }
 

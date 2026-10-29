@@ -1,0 +1,19 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "experiments.adaptive_credit_bridge_v1.run",
+    "--destination",
+    "/workspace/scratch/07399998a2e3/recovery/credit-formal002",
+    "--preserved",
+    "/workspace/scratch/07399998a2e3/recovery/preserved-v2-for-credit",
+    "--bridge-build",
+    "/workspace/scratch/07399998a2e3/recovery/credit-build001",
+    "--source-seal",
+    "/workspace/scratch/07399998a2e3/recovery/frozen-credit-source/experiments/adaptive_neuron_v2/results/registration001/SOURCE_SEAL.json",
+    "--bridge-seal",
+    "/workspace/scratch/07399998a2e3/recovery/frozen-credit-source/experiments/adaptive_credit_bridge_v1/results/formal001/SOURCE_SEAL.json"
+  ],
+  "scope": "Fresh isolated rerun of the sealed 16-episode integration qualification after archival source recovery; separate from prior formal001 and frozen v2 efficacy study.",
+  "utc": "2026-10-29T06:38:58.044017+00:00"
+}

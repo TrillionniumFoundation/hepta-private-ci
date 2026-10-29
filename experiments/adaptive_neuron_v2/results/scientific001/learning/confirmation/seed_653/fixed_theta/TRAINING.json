@@ -1,0 +1,47 @@
+{
+  "actual_neural_cell_updates": 1564672,
+  "arm": "fixed_theta",
+  "checkpoint_sha256": "c894dc1a1ee5c338eb75c4916ebffc2b894f48aa5c9e864f6b6b394104fe4b30",
+  "final_theta": {
+    "lambda": 0.1,
+    "mu": 0.24999999999999997,
+    "sigma": 1.0
+  },
+  "initial_theta": {
+    "lambda": 0.1,
+    "mu": 0.24999999999999997,
+    "sigma": 1.0
+  },
+  "neural_parameter_count": 57,
+  "neural_sha256": "a7369003fb1590716420c578f0aa3e0b02d298e685dab8fd3dc778282e15cafa",
+  "outer_objective": "Independent-query fixed logistic-soft BCE after one hard-SNN SG support step; no direct theta term.",
+  "outer_optimizer": {
+    "beta1": 0.9,
+    "beta2": 0.999,
+    "epsilon": 1e-08,
+    "kind": "adam",
+    "learning_rate": 0.02
+  },
+  "outer_steps": 128,
+  "parameter_count": 57,
+  "parameter_sha256": "695173b3f93e0f707725b164d01a7d21abdadbc52274ff9101fd7864e798bee8",
+  "phase": "confirmation",
+  "physical_theta_change": {
+    "lambda": 0.0,
+    "mu": 0.0,
+    "sigma": 0.0
+  },
+  "protocol_sha256": "1771097fb66caeeaf1f4ab236d7692384d34010adf036be41b6b1e0ae04f784e",
+  "query_weight_learning_rate": 0.01,
+  "query_weight_updates": 128,
+  "schema": "hepta.adaptive-neuron.training-summary.v2",
+  "seed": 653,
+  "source_seal_sha256": "594b1180532dc32b7d659f6d1031fa4047c9c6446b393a17590d27eab484019f",
+  "support_updates": 128,
+  "surrogate_scalar_evaluations": 3129344,
+  "total_trainable_scalars": 57,
+  "trainable_surrogate_parameters": 0,
+  "training_cpu_seconds": 3.4206451379999976,
+  "training_wall_seconds": 3.4402013569997507,
+  "weight_change_l2": 0.15870995384790168
+}

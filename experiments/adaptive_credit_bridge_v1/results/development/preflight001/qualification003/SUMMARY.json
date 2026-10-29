@@ -1,0 +1,1031 @@
+{
+  "development_only": true,
+  "episode_index": [
+    {
+      "case": "research.case.0000",
+      "sha256": "e870d995586e8abd77f0bc9aaeec08eaa88734838240f6c3676af4013e290748"
+    },
+    {
+      "case": "research.case.0001",
+      "sha256": "2193cc940bfffb43afebf057cfa10eb06c1033a15689b6cdb4d50b855e836637"
+    },
+    {
+      "case": "research.case.0002",
+      "sha256": "cdf942d418edd760f5f788afd7b0da0d1a383e31d80cefd86ab0363880e6d16a"
+    },
+    {
+      "case": "research.case.0003",
+      "sha256": "c72ca30dedac067ca794df60e4cd6f88bec5770d17105311c6afc9c5ed48e22a"
+    },
+    {
+      "case": "research.case.0004",
+      "sha256": "c00a922aa9cf8a76b5281a71a8d11625b018d8cccaf1afdf9c351465a110509c"
+    },
+    {
+      "case": "research.case.0005",
+      "sha256": "13d6c790369a2a4a176334c557d6e4b2558551871a40c747d1b53f6b698f4941"
+    },
+    {
+      "case": "research.case.0006",
+      "sha256": "233980ff84cb37e9fd178398d3c701ea834256e34968b772deed72f969e808e8"
+    },
+    {
+      "case": "research.case.0007",
+      "sha256": "12021c6cf9c7a497bba2b8132bda935809d7c627295f550b37d20c1f2995f47b"
+    },
+    {
+      "case": "research.case.0008",
+      "sha256": "7096a5adbb841f48bc1704ed01b8b6aac19f70d0635fa027cc4d4ac25aaa7517"
+    },
+    {
+      "case": "research.case.0009",
+      "sha256": "085b736198723113b56a75aab21105b7fa257a089576845b25f0e383acbce42c"
+    },
+    {
+      "case": "research.case.0010",
+      "sha256": "9db8fc264fc06870f7353de29c03d962a7e7fca3ebaf13cbe978821ed4a2f79f"
+    },
+    {
+      "case": "research.case.0011",
+      "sha256": "4f8db357795338e713418a5be07bbd928dd685d4a205f830acc92d72f65c4c0e"
+    },
+    {
+      "case": "research.case.0012",
+      "sha256": "10a2dc4ec18446070675337b9a4efb502e2bc9a61c091fbc967bd5f6cc218df7"
+    },
+    {
+      "case": "research.case.0013",
+      "sha256": "e51f052465760c39d2af8915f8e8bdd737089d52383f178d463dff8cdbfbaca3"
+    },
+    {
+      "case": "research.case.0014",
+      "sha256": "5334a2950127efb335bdf06aaaebb2a1a054fb959fc658b4b9a651dcc3d15b3c"
+    },
+    {
+      "case": "research.case.0015",
+      "sha256": "409263ba46d6a457c0b37957fb0a90982179b1d47eac7342620f80af06211b0f"
+    }
+  ],
+  "episodes": 16,
+  "evidence_signatures_generated": 90,
+  "faults_qualified": [
+    "observer_signature",
+    "stale_head",
+    "credit_signature",
+    "expired",
+    "closure_acknowledgement_loss",
+    "settlement_acknowledgement_loss",
+    "cross_episode_valid_closure",
+    "changed_terminal_binding",
+    "resource_record_digest",
+    "settlement_outcome_binding",
+    "cross_episode_valid_admission"
+  ],
+  "final_signed_status": {
+    "head": "b2f3535844e467b8e3f7e20eb97ba7a6fd768d1377ca19e64811204b84339258",
+    "records": [
+      {
+        "chain_digest": "8e7e69275c52d86174c1f945589e6735ab86face6e8f4c5037a6f943fe9f9aa7",
+        "event_digest": "c49b6d73cd895727f9153cf5726ed02fa40d8ccadfeb22373eed3ee64fc9b3e9",
+        "fact": {
+          "authentication_digest": "f3455835e9eab7074d8e858c059f785c7568da94241514a959c59afc674e2fb7",
+          "episode": "research.case.0000",
+          "generator": "research-generator",
+          "kind": "AuthenticatedDecisionV2",
+          "policy_digest": "4ac09353f7051ea63968de174edf79c97b96ce89c85004ad47654d9a13325b26",
+          "run_snapshot_digest": "6298f2713732b5128904556faec490219508b4891e1787b27da2b9dd6a48c0e2",
+          "selected_candidate": "execute-trained-readout",
+          "support_digest": "6298f2713732b5128904556faec490219508b4891e1787b27da2b9dd6a48c0e2"
+        },
+        "predecessor": "0000000000000000000000000000000000000000000000000000000000000000",
+        "record_id": "research.case.0000.decision",
+        "sequence": 1
+      },
+      {
+        "chain_digest": "08f4c558091ab148a6403599b16db9285ff33a348340d1a6307be2ab443af97e",
+        "event_digest": "674e6354315ab993a902dea2b52ec320ca5240e3c101a9de88747635aafe8593",
+        "fact": {
+          "authentication_digest": "69ea51139a1fc3feb93d8b833354d909188882d911ed0deb4dede4572d67e811",
+          "episode": "research.case.0000",
+          "kind": "AuthenticatedOutcomeV2",
+          "observer": "research-observer",
+          "outcome": "research.case.0000.outcome",
+          "support_digest": "7855ed2f6aeaae7e3f406ea9055a0cdf5c3ee0e9ed66356277496fd92ba8af5f",
+          "value_q32": 4294967296
+        },
+        "predecessor": "8e7e69275c52d86174c1f945589e6735ab86face6e8f4c5037a6f943fe9f9aa7",
+        "record_id": "research.case.0000.outcome-record",
+        "sequence": 2
+      },
+      {
+        "chain_digest": "9c334356862567cedeb6775d4f8cb43764e71c6e9aea68322be2078c91348372",
+        "event_digest": "579166562ec1d828eddbb3283b5b364fa3bb2fa693efe6b75ec9a63bdf11fe65",
+        "fact": {
+          "allocations": [
+            {
+              "credit_q32": 4294967296,
+              "organ": "research.signed-credit.seed601"
+            }
+          ],
+          "allocator": "research-allocator",
+          "authentication_digest": "87a8f065e8862d3bc92bcc9a80d7447c92a271ccd59d0f54f967cb3d1202b598",
+          "episode": "research.case.0000",
+          "kind": "CreditBatchV2",
+          "outcome": "research.case.0000.outcome",
+          "residual_q32": 0,
+          "support_digest": "7855ed2f6aeaae7e3f406ea9055a0cdf5c3ee0e9ed66356277496fd92ba8af5f",
+          "value_q32": 4294967296
+        },
+        "predecessor": "08f4c558091ab148a6403599b16db9285ff33a348340d1a6307be2ab443af97e",
+        "record_id": "research.case.0000.signed-credit",
+        "sequence": 3
+      },
+      {
+        "chain_digest": "b24b914b0015a9ab68bb31cb61f4170c0a4c95b91aacf4f94323aa94576fce60",
+        "event_digest": "a8d6e785aafb8e43b7173f2340bcec559dc33479815a4f515dcde5493d0a5902",
+        "fact": {
+          "authentication_digest": "65613e431f052a808c59df58a66363044fdc225bc9bb914d12a7aac20d616113",
+          "episode": "research.case.0001",
+          "generator": "research-generator",
+          "kind": "AuthenticatedDecisionV2",
+          "policy_digest": "4ac09353f7051ea63968de174edf79c97b96ce89c85004ad47654d9a13325b26",
+          "run_snapshot_digest": "a8e979c682d52195d38ae21db26a281222f97724275f1da6c10abe2a84ebcc1b",
+          "selected_candidate": "execute-trained-readout",
+          "support_digest": "a8e979c682d52195d38ae21db26a281222f97724275f1da6c10abe2a84ebcc1b"
+        },
+        "predecessor": "9c334356862567cedeb6775d4f8cb43764e71c6e9aea68322be2078c91348372",
+        "record_id": "research.case.0001.decision",
+        "sequence": 4
+      },
+      {
+        "chain_digest": "1fe8289c1e86ef30f8d7be1eded285d6f9ba4b2135ff0d2afe17c128aa3ab1fb",
+        "event_digest": "68d64a87b8fab353b7372276d7dbbb7e5de631b9836f0bb6f5de3b4879aa0268",
+        "fact": {
+          "authentication_digest": "a77d7728dd0262d05daccff127b8990b9ca80b2061269d04e493131a84c139a4",
+          "episode": "research.case.0001",
+          "kind": "AuthenticatedOutcomeV2",
+          "observer": "research-observer",
+          "outcome": "research.case.0001.outcome",
+          "support_digest": "afe1ae75811b621f4c3403e8df9bfee5673c9f0d09357cdbabde11bb40ec7201",
+          "value_q32": 4294967296
+        },
+        "predecessor": "b24b914b0015a9ab68bb31cb61f4170c0a4c95b91aacf4f94323aa94576fce60",
+        "record_id": "research.case.0001.outcome-record",
+        "sequence": 5
+      },
+      {
+        "chain_digest": "c93a5d2c819fa7d03cb45347901dfcf8227c8a36da912ad29e65f6c95594ec31",
+        "event_digest": "12d5972320cbdc2874cf9e744dcf6accda4fb8c3e56bef4c92587776a9ab45e7",
+        "fact": {
+          "allocations": [
+            {
+              "credit_q32": 4294967296,
+              "organ": "research.signed-credit.seed601"
+            }
+          ],
+          "allocator": "research-allocator",
+          "authentication_digest": "273ce8d17870713e5798779d75430488c1ed653d4acd56e2f8585cefe4929275",
+          "episode": "research.case.0001",
+          "kind": "CreditBatchV2",
+          "outcome": "research.case.0001.outcome",
+          "residual_q32": 0,
+          "support_digest": "afe1ae75811b621f4c3403e8df9bfee5673c9f0d09357cdbabde11bb40ec7201",
+          "value_q32": 4294967296
+        },
+        "predecessor": "1fe8289c1e86ef30f8d7be1eded285d6f9ba4b2135ff0d2afe17c128aa3ab1fb",
+        "record_id": "research.case.0001.signed-credit",
+        "sequence": 6
+      },
+      {
+        "chain_digest": "0f5a9144e5d5cd4bf898aef697fe86f267ebfff555fad0e385721e7f0c19077b",
+        "event_digest": "6edbdc36d051f91adeba37df9ad503ff2c518be9d14886a9b65f594c6b358e73",
+        "fact": {
+          "authentication_digest": "cb1dcda094f639a9011d027daec5a18453cda8616949a7e5ced6d5fa34d51b5e",
+          "episode": "research.case.0002",
+          "generator": "research-generator",
+          "kind": "AuthenticatedDecisionV2",
+          "policy_digest": "4ac09353f7051ea63968de174edf79c97b96ce89c85004ad47654d9a13325b26",
+          "run_snapshot_digest": "d1dcc59dc72371738383b0ccbd67ba341924b2c6f6cb08babb972dbac29c267e",
+          "selected_candidate": "execute-trained-readout",
+          "support_digest": "d1dcc59dc72371738383b0ccbd67ba341924b2c6f6cb08babb972dbac29c267e"
+        },
+        "predecessor": "c93a5d2c819fa7d03cb45347901dfcf8227c8a36da912ad29e65f6c95594ec31",
+        "record_id": "research.case.0002.decision",
+        "sequence": 7
+      },
+      {
+        "chain_digest": "901476d7969f0669896169e2571d67c3cc0a3cf942ad7c72f1eb602a3ee6c3f3",
+        "event_digest": "968ce8e1c0a0e9455ea8fb3c33599ad77c41569797d9f9f2f5aac0198fcbf87e",
+        "fact": {
+          "authentication_digest": "f4263518668e76c22ae597ac5da17308dc29d687422cd32ee0097794ce5834ab",
+          "episode": "research.case.0002",
+          "kind": "AuthenticatedOutcomeV2",
+          "observer": "research-observer",
+          "outcome": "research.case.0002.outcome",
+          "support_digest": "a6e34881d54b674a31eddf66e4e8e9a44786d5deb327e13b42f058d5ed75e9bb",
+          "value_q32": -4294967296
+        },
+        "predecessor": "0f5a9144e5d5cd4bf898aef697fe86f267ebfff555fad0e385721e7f0c19077b",
+        "record_id": "research.case.0002.outcome-record",
+        "sequence": 8
+      },
+      {
+        "chain_digest": "aef2a597c1be354da91467e51f97c3e5fe244c2a3e5be15cae17839b49058b9c",
+        "event_digest": "6708c778fb087b9c92db23611f81e9a2642b903e319be3f8bac32741f022ac31",
+        "fact": {
+          "allocations": [
+            {
+              "credit_q32": -4294967296,
+              "organ": "research.signed-credit.seed601"
+            }
+          ],
+          "allocator": "research-allocator",
+          "authentication_digest": "4321e2c577cd5a00be4e6baa115cb374f1190d82b5a464dd2904cb966b72e5e9",
+          "episode": "research.case.0002",
+          "kind": "CreditBatchV2",
+          "outcome": "research.case.0002.outcome",
+          "residual_q32": 0,
+          "support_digest": "a6e34881d54b674a31eddf66e4e8e9a44786d5deb327e13b42f058d5ed75e9bb",
+          "value_q32": -4294967296
+        },
+        "predecessor": "901476d7969f0669896169e2571d67c3cc0a3cf942ad7c72f1eb602a3ee6c3f3",
+        "record_id": "research.case.0002.signed-credit",
+        "sequence": 9
+      },
+      {
+        "chain_digest": "fed9d5cefae900a22cc64ac7be6ff30450763fe98472d541ccee52a97fce02ec",
+        "event_digest": "5deff0eeb9a34481b69c33093613d17df6feaccc798de8acd5edc3a09eb02186",
+        "fact": {
+          "authentication_digest": "d672af58ec99d5bff4ab7cdb082a8fddfcf4c6b48846c07dc21bde06cbf567b1",
+          "episode": "research.case.0003",
+          "generator": "research-generator",
+          "kind": "AuthenticatedDecisionV2",
+          "policy_digest": "4ac09353f7051ea63968de174edf79c97b96ce89c85004ad47654d9a13325b26",
+          "run_snapshot_digest": "a18e13fe532b23a2e8cb087db735620af149ea71c3cbdd17310ef5eb58a21695",
+          "selected_candidate": "execute-trained-readout",
+          "support_digest": "a18e13fe532b23a2e8cb087db735620af149ea71c3cbdd17310ef5eb58a21695"
+        },
+        "predecessor": "aef2a597c1be354da91467e51f97c3e5fe244c2a3e5be15cae17839b49058b9c",
+        "record_id": "research.case.0003.decision",
+        "sequence": 10
+      },
+      {
+        "chain_digest": "4499cdc29892ab9b7a8ee49a77a0f5f2c7a9875936eb66219fd6f9040924c521",
+        "event_digest": "961f265aad97f5dfe312deb21fd1b6ddfae73d6b47e46d32451c9a6950e9aed6",
+        "fact": {
+          "authentication_digest": "5e52739616ecbfb46c638a2ac28c8e70b8e9a19ac76f3bdfd7785516c57131ec",
+          "episode": "research.case.0003",
+          "kind": "AuthenticatedOutcomeV2",
+          "observer": "research-observer",
+          "outcome": "research.case.0003.outcome",
+          "support_digest": "3e1a9f92a7edd837cabdb9a7d8c4f4dae3d3942479e254cd98fb382ff1605bc8",
+          "value_q32": -4294967296
+        },
+        "predecessor": "fed9d5cefae900a22cc64ac7be6ff30450763fe98472d541ccee52a97fce02ec",
+        "record_id": "research.case.0003.outcome-record",
+        "sequence": 11
+      },
+      {
+        "chain_digest": "b0257083ef66de7d992035965394d4ceced14073b0f7f547f56ce7b094412c3d",
+        "event_digest": "6d5d65dc73a15b43be2b4c8724ae200279e826b17fa2701833026d4bed3bf3c6",
+        "fact": {
+          "allocations": [
+            {
+              "credit_q32": -4294967296,
+              "organ": "research.signed-credit.seed601"
+            }
+          ],
+          "allocator": "research-allocator",
+          "authentication_digest": "2414a0240b6d01350d34eabd829352c8c61d430190cba857a459350243634c9d",
+          "episode": "research.case.0003",
+          "kind": "CreditBatchV2",
+          "outcome": "research.case.0003.outcome",
+          "residual_q32": 0,
+          "support_digest": "3e1a9f92a7edd837cabdb9a7d8c4f4dae3d3942479e254cd98fb382ff1605bc8",
+          "value_q32": -4294967296
+        },
+        "predecessor": "4499cdc29892ab9b7a8ee49a77a0f5f2c7a9875936eb66219fd6f9040924c521",
+        "record_id": "research.case.0003.signed-credit",
+        "sequence": 12
+      },
+      {
+        "chain_digest": "4986e2a1fa5c10e08a7406d1e79924ce969b15dccf6aaf78d182e52c1c7d36e3",
+        "event_digest": "0ca821f1783d458529b2626c17fc704f7af054fcb8531a855f53e3e1d7c3501a",
+        "fact": {
+          "authentication_digest": "f585db6a2e35c89adc1fb89ade620faf0d4975efce79869a8f8f962fdd009117",
+          "episode": "research.case.0004",
+          "generator": "research-generator",
+          "kind": "AuthenticatedDecisionV2",
+          "policy_digest": "4ac09353f7051ea63968de174edf79c97b96ce89c85004ad47654d9a13325b26",
+          "run_snapshot_digest": "017516debce914c1e945cd7228a2600e1370e61530590f8e01cc79716e3c1b91",
+          "selected_candidate": "execute-trained-readout",
+          "support_digest": "017516debce914c1e945cd7228a2600e1370e61530590f8e01cc79716e3c1b91"
+        },
+        "predecessor": "b0257083ef66de7d992035965394d4ceced14073b0f7f547f56ce7b094412c3d",
+        "record_id": "research.case.0004.decision",
+        "sequence": 13
+      },
+      {
+        "chain_digest": "4cb434017d217d6efc63ff29a62a0e544d525892b319b5a12a78b77acc1e3ceb",
+        "event_digest": "e9215618c4f49e73ff17472db0476f2195f60c47f61af23cdf6988e520c594b3",
+        "fact": {
+          "authentication_digest": "b8469a71caf52b729425020f4bc1e1d9e8c21fa9e68e09ffb36be4afc8f9b05d",
+          "episode": "research.case.0004",
+          "kind": "AuthenticatedOutcomeV2",
+          "observer": "research-observer",
+          "outcome": "research.case.0004.outcome",
+          "support_digest": "5ed1d621bdb64c52ef41348bf8bafd1c585c00e31da0eed9a0bf3c8b925eb229",
+          "value_q32": 4294967296
+        },
+        "predecessor": "4986e2a1fa5c10e08a7406d1e79924ce969b15dccf6aaf78d182e52c1c7d36e3",
+        "record_id": "research.case.0004.outcome-record",
+        "sequence": 14
+      },
+      {
+        "chain_digest": "e2e9d52b84a713e8dcd19c2303388bb8c4a6d102cd38db07f53be8b2e154fcf7",
+        "event_digest": "1ac5d3b642e4d5dc7d8ad5448750684a3d4c626b874776364392dbcceccf3d8c",
+        "fact": {
+          "allocations": [
+            {
+              "credit_q32": 4294967296,
+              "organ": "research.signed-credit.seed601"
+            }
+          ],
+          "allocator": "research-allocator",
+          "authentication_digest": "a5d8f6c3da6cea6b9103d2cac9c3bb2a2bc7e47f3d0bc360bf1c157894648c19",
+          "episode": "research.case.0004",
+          "kind": "CreditBatchV2",
+          "outcome": "research.case.0004.outcome",
+          "residual_q32": 0,
+          "support_digest": "5ed1d621bdb64c52ef41348bf8bafd1c585c00e31da0eed9a0bf3c8b925eb229",
+          "value_q32": 4294967296
+        },
+        "predecessor": "4cb434017d217d6efc63ff29a62a0e544d525892b319b5a12a78b77acc1e3ceb",
+        "record_id": "research.case.0004.signed-credit",
+        "sequence": 15
+      },
+      {
+        "chain_digest": "8ebd52aef9dcf33bb6dd1c21204aaf79e6a5e7375a443dee793193d248fa780e",
+        "event_digest": "2b78383a67943a72a48125e006d6572267db910ed9483e42cd1c1c1a8a0d3759",
+        "fact": {
+          "authentication_digest": "723f0a1a1ded9d19975b5937096e255f02ecb6edcea2d83263b592d4ae4ff0d6",
+          "episode": "research.case.0005",
+          "generator": "research-generator",
+          "kind": "AuthenticatedDecisionV2",
+          "policy_digest": "4ac09353f7051ea63968de174edf79c97b96ce89c85004ad47654d9a13325b26",
+          "run_snapshot_digest": "e456561f05c1eeb4b25b7b041b799457d162e190fd69d76e8f0bf5849d44080e",
+          "selected_candidate": "execute-trained-readout",
+          "support_digest": "e456561f05c1eeb4b25b7b041b799457d162e190fd69d76e8f0bf5849d44080e"
+        },
+        "predecessor": "e2e9d52b84a713e8dcd19c2303388bb8c4a6d102cd38db07f53be8b2e154fcf7",
+        "record_id": "research.case.0005.decision",
+        "sequence": 16
+      },
+      {
+        "chain_digest": "2eb8f15ed4c3dafb23f63294de602f77086a486136eb16dc815db45e876c64b1",
+        "event_digest": "2a5fde1f830bf7f28b54d441d5b677afb780650db1c28640a07fc65281602034",
+        "fact": {
+          "authentication_digest": "99b5c86c03a07d8fba09eaac8d2f0334dc002d355db1e236c6f695c3142a391d",
+          "episode": "research.case.0005",
+          "kind": "AuthenticatedOutcomeV2",
+          "observer": "research-observer",
+          "outcome": "research.case.0005.outcome",
+          "support_digest": "af6f5d778668b8b09a3e2fffad0ef5001c888f9810d1c6f685a755f5b9bdc74e",
+          "value_q32": 4294967296
+        },
+        "predecessor": "8ebd52aef9dcf33bb6dd1c21204aaf79e6a5e7375a443dee793193d248fa780e",
+        "record_id": "research.case.0005.outcome-record",
+        "sequence": 17
+      },
+      {
+        "chain_digest": "112a35863600e8a29426e9605504805e24445b614feb8befe0c88728a9dd4df8",
+        "event_digest": "62764a1f56e5064189dc67aca0238e4d647e60e3d20edf0181d6b6ac5aab00f7",
+        "fact": {
+          "allocations": [
+            {
+              "credit_q32": 4294967296,
+              "organ": "research.signed-credit.seed601"
+            }
+          ],
+          "allocator": "research-allocator",
+          "authentication_digest": "c85eb5a207a977d7dbc1f98d7e884a078a9c222e30d17e2c02a7282ec9de890a",
+          "episode": "research.case.0005",
+          "kind": "CreditBatchV2",
+          "outcome": "research.case.0005.outcome",
+          "residual_q32": 0,
+          "support_digest": "af6f5d778668b8b09a3e2fffad0ef5001c888f9810d1c6f685a755f5b9bdc74e",
+          "value_q32": 4294967296
+        },
+        "predecessor": "2eb8f15ed4c3dafb23f63294de602f77086a486136eb16dc815db45e876c64b1",
+        "record_id": "research.case.0005.signed-credit",
+        "sequence": 18
+      },
+      {
+        "chain_digest": "06cfab24f1e6c6399cb87e0ee1483111aced4ba2f9bd08f62411f3aff08809de",
+        "event_digest": "03f6dfb8e1665f40429f79f090ffcb3d277b3b25d3e6ef1dcb13798dc024ed5f",
+        "fact": {
+          "authentication_digest": "595b46cead24c2743fa075c952776c350bdcb835b0f9b97ee0197f1bdaf3af8f",
+          "episode": "research.case.0006",
+          "generator": "research-generator",
+          "kind": "AuthenticatedDecisionV2",
+          "policy_digest": "4ac09353f7051ea63968de174edf79c97b96ce89c85004ad47654d9a13325b26",
+          "run_snapshot_digest": "3be29b585876487401dabefdd9dadbd0403a41b4480e377806e5b65748c758de",
+          "selected_candidate": "execute-trained-readout",
+          "support_digest": "3be29b585876487401dabefdd9dadbd0403a41b4480e377806e5b65748c758de"
+        },
+        "predecessor": "112a35863600e8a29426e9605504805e24445b614feb8befe0c88728a9dd4df8",
+        "record_id": "research.case.0006.decision",
+        "sequence": 19
+      },
+      {
+        "chain_digest": "b7ff07ff38fce7c6b32db749c6cb401f915f672752dbec0394741ea0b8efc7eb",
+        "event_digest": "f084617b9c3e633bae0417cd5246464baae10e43201422fe1917042b0311e987",
+        "fact": {
+          "authentication_digest": "060d7a6235c3e501545949ebdf7b21274b4e38bd4130573ce32790b054429486",
+          "episode": "research.case.0006",
+          "kind": "AuthenticatedOutcomeV2",
+          "observer": "research-observer",
+          "outcome": "research.case.0006.outcome",
+          "support_digest": "50a1d8f8ec625684497b245088dd9d4af059ff484859b4021eca054231bc0c16",
+          "value_q32": 214748365
+        },
+        "predecessor": "06cfab24f1e6c6399cb87e0ee1483111aced4ba2f9bd08f62411f3aff08809de",
+        "record_id": "research.case.0006.outcome-record",
+        "sequence": 20
+      },
+      {
+        "chain_digest": "b1d216b01a52f25dc1507906918f3ce916415f0dce89cda96a1d71cae4553f46",
+        "event_digest": "2090218d34c2dc7f227636eb91f5f2377bc0aa2a3a28160b041490ade77b88af",
+        "fact": {
+          "allocations": [
+            {
+              "credit_q32": 214748365,
+              "organ": "research.signed-credit.seed601"
+            }
+          ],
+          "allocator": "research-allocator",
+          "authentication_digest": "2fff99c25d507df27acb254dd39a4ccc5ee37f3b88da8efa0fc9cd287bffbfc8",
+          "episode": "research.case.0006",
+          "kind": "CreditBatchV2",
+          "outcome": "research.case.0006.outcome",
+          "residual_q32": 0,
+          "support_digest": "50a1d8f8ec625684497b245088dd9d4af059ff484859b4021eca054231bc0c16",
+          "value_q32": 214748365
+        },
+        "predecessor": "b7ff07ff38fce7c6b32db749c6cb401f915f672752dbec0394741ea0b8efc7eb",
+        "record_id": "research.case.0006.signed-credit",
+        "sequence": 21
+      },
+      {
+        "chain_digest": "41177751332867453fef582e42b50f136bf014ee99b38ce77e570355c4552426",
+        "event_digest": "c06f70e079f7b0212973ac29a63cc4e5b2a05f7fb64b423137062c0f89b83dac",
+        "fact": {
+          "authentication_digest": "4efbf6ba4c6d34eb085d9aa1373e6ee66eea51f64c4a49be41dc53171396da65",
+          "episode": "research.case.0007",
+          "generator": "research-generator",
+          "kind": "AuthenticatedDecisionV2",
+          "policy_digest": "4ac09353f7051ea63968de174edf79c97b96ce89c85004ad47654d9a13325b26",
+          "run_snapshot_digest": "904b3644f432c4c59224dfb5374cc175d25fe0a609ef44befab77de64b6ff338",
+          "selected_candidate": "execute-trained-readout",
+          "support_digest": "904b3644f432c4c59224dfb5374cc175d25fe0a609ef44befab77de64b6ff338"
+        },
+        "predecessor": "b1d216b01a52f25dc1507906918f3ce916415f0dce89cda96a1d71cae4553f46",
+        "record_id": "research.case.0007.decision",
+        "sequence": 22
+      },
+      {
+        "chain_digest": "7ab4ca2af0de7f2561541e43f9f2959df3ad7cc6e87b8fa3a0d44de3b2c663e2",
+        "event_digest": "f22e9dd8f99109e9f2bffc919569e2686f0ce64f02727012f4824daeed6d377f",
+        "fact": {
+          "authentication_digest": "cdec3bd35300a8390f24f00c126b1f8a56377c4506d48fa11222b69b124e4624",
+          "episode": "research.case.0007",
+          "kind": "AuthenticatedOutcomeV2",
+          "observer": "research-observer",
+          "outcome": "research.case.0007.outcome",
+          "support_digest": "3f817f8f1d58afeecaff140fb74fce3c26cc78e9cbab901565b8e354fa15ad49",
+          "value_q32": 214748365
+        },
+        "predecessor": "41177751332867453fef582e42b50f136bf014ee99b38ce77e570355c4552426",
+        "record_id": "research.case.0007.outcome-record",
+        "sequence": 23
+      },
+      {
+        "chain_digest": "4321644cbc74a153ddc66580021173f6d3d8abd2bfae5abc3de2ff973d077091",
+        "event_digest": "fe10d0003410ba255b86ed5ef67fff5e472df33f5cb220c36a8cde10c3a445c5",
+        "fact": {
+          "allocations": [
+            {
+              "credit_q32": 214748365,
+              "organ": "research.signed-credit.seed601"
+            }
+          ],
+          "allocator": "research-allocator",
+          "authentication_digest": "1905641a0eb078c0b659f7e16d4945dc1e53eed168fcc5ec7782ee4cb82aaf2f",
+          "episode": "research.case.0007",
+          "kind": "CreditBatchV2",
+          "outcome": "research.case.0007.outcome",
+          "residual_q32": 0,
+          "support_digest": "3f817f8f1d58afeecaff140fb74fce3c26cc78e9cbab901565b8e354fa15ad49",
+          "value_q32": 214748365
+        },
+        "predecessor": "7ab4ca2af0de7f2561541e43f9f2959df3ad7cc6e87b8fa3a0d44de3b2c663e2",
+        "record_id": "research.case.0007.signed-credit",
+        "sequence": 24
+      },
+      {
+        "chain_digest": "b9acffc9f0b58679763c7dec9fb73fcbeb35aaa7b1df84dba13853d2a07953c0",
+        "event_digest": "e8225efb1af94c445aafb7555eb7196daf933f2c7abd3e9b19a9debaca969d1b",
+        "fact": {
+          "authentication_digest": "e4af70b8ab51dcd9935e3c1ab01ecd3e2af48a2a0d2a70c474749b77543cdfb7",
+          "episode": "research.case.0008",
+          "generator": "research-generator",
+          "kind": "AuthenticatedDecisionV2",
+          "policy_digest": "4ac09353f7051ea63968de174edf79c97b96ce89c85004ad47654d9a13325b26",
+          "run_snapshot_digest": "05d0191ef8d398cf12b7744e14f73957d80151f8169b948c0f935a4a8ff40ba0",
+          "selected_candidate": "execute-trained-readout",
+          "support_digest": "05d0191ef8d398cf12b7744e14f73957d80151f8169b948c0f935a4a8ff40ba0"
+        },
+        "predecessor": "4321644cbc74a153ddc66580021173f6d3d8abd2bfae5abc3de2ff973d077091",
+        "record_id": "research.case.0008.decision",
+        "sequence": 25
+      },
+      {
+        "chain_digest": "ed13bca36fbb759cc2dd990cfa080cffddb0c70a25936e58ec3269287191da78",
+        "event_digest": "d33ff7eac289833132757aa67e13c31803561fa3c37b2e847a06fe5111d5121d",
+        "fact": {
+          "authentication_digest": "4d0cc2dd54776251741a695cc04bb027b626372481c627d3709bb07ec5ed4667",
+          "episode": "research.case.0008",
+          "kind": "AuthenticatedOutcomeV2",
+          "observer": "research-observer",
+          "outcome": "research.case.0008.outcome",
+          "support_digest": "a24f559573b95b6f235f5ee28945d3f9a050e4e7d75c7520eb6ac6b3509470f0",
+          "value_q32": 4294967296
+        },
+        "predecessor": "b9acffc9f0b58679763c7dec9fb73fcbeb35aaa7b1df84dba13853d2a07953c0",
+        "record_id": "research.case.0008.outcome-record",
+        "sequence": 26
+      },
+      {
+        "chain_digest": "de5157104568a16dcad4703a9b6716b9055dd2b5799201221f9a65322a711285",
+        "event_digest": "d9f5ff8c6a9bbd071f732058f41421cd1507796415f88858cb27b262f57c5711",
+        "fact": {
+          "allocations": [
+            {
+              "credit_q32": 4294967296,
+              "organ": "research.signed-credit.seed601"
+            }
+          ],
+          "allocator": "research-allocator",
+          "authentication_digest": "bed19f7f61de2b83027ce4a4f7b0a220012395d8607e22f6d4b539a4067112c1",
+          "episode": "research.case.0008",
+          "kind": "CreditBatchV2",
+          "outcome": "research.case.0008.outcome",
+          "residual_q32": 0,
+          "support_digest": "a24f559573b95b6f235f5ee28945d3f9a050e4e7d75c7520eb6ac6b3509470f0",
+          "value_q32": 4294967296
+        },
+        "predecessor": "ed13bca36fbb759cc2dd990cfa080cffddb0c70a25936e58ec3269287191da78",
+        "record_id": "research.case.0008.signed-credit",
+        "sequence": 27
+      },
+      {
+        "chain_digest": "49c788d287098363b8505e3726aefbbc09151aa8dd61386de5731dd90821dd83",
+        "event_digest": "fd17ff02212afdca7c182da6c3ff9fec3d9ab578b63bf5cd703c97b74ca5cbbf",
+        "fact": {
+          "authentication_digest": "c7555f144b4a1fd5d47dd8133fd2fce3efdd54bd5ea9434b709960fee935b28c",
+          "episode": "research.case.0009",
+          "generator": "research-generator",
+          "kind": "AuthenticatedDecisionV2",
+          "policy_digest": "4ac09353f7051ea63968de174edf79c97b96ce89c85004ad47654d9a13325b26",
+          "run_snapshot_digest": "7d488a14221edd8032a1fa5ebbd2b474977ada427f2e1f5630f9b620763b2bb4",
+          "selected_candidate": "execute-trained-readout",
+          "support_digest": "7d488a14221edd8032a1fa5ebbd2b474977ada427f2e1f5630f9b620763b2bb4"
+        },
+        "predecessor": "de5157104568a16dcad4703a9b6716b9055dd2b5799201221f9a65322a711285",
+        "record_id": "research.case.0009.decision",
+        "sequence": 28
+      },
+      {
+        "chain_digest": "b318953b33d831ba7e36740545338b4aa32cfc482bd4357dc216377718aca866",
+        "event_digest": "b17ffa81d868b92b013334953237fd4daf770818b1cab675967fdd0e9c34a142",
+        "fact": {
+          "authentication_digest": "72f69b0642d957b97711520af980741059d8f20bb10504f3768462ab33f2fc55",
+          "episode": "research.case.0009",
+          "kind": "AuthenticatedOutcomeV2",
+          "observer": "research-observer",
+          "outcome": "research.case.0009.outcome",
+          "support_digest": "66e2ab1b707ea2aa0e9a5335b1eccd682aa1eb2addf06f26acdad6e6bdbce97a",
+          "value_q32": 4294967296
+        },
+        "predecessor": "49c788d287098363b8505e3726aefbbc09151aa8dd61386de5731dd90821dd83",
+        "record_id": "research.case.0009.outcome-record",
+        "sequence": 29
+      },
+      {
+        "chain_digest": "b6c458cfc3d7b80b2c195af120d5546515bee02852ad6dda136c25b875caa98c",
+        "event_digest": "e90401eca6418b088f76be401730e6f3aeebf95f43f7d6eb09f8545f6344cd3a",
+        "fact": {
+          "allocations": [
+            {
+              "credit_q32": 4294967296,
+              "organ": "research.signed-credit.seed601"
+            }
+          ],
+          "allocator": "research-allocator",
+          "authentication_digest": "4f3f210e66b06d4d3852fe4d4421c15d69ea4bcdc3441c280db6f2a898e4be46",
+          "episode": "research.case.0009",
+          "kind": "CreditBatchV2",
+          "outcome": "research.case.0009.outcome",
+          "residual_q32": 0,
+          "support_digest": "66e2ab1b707ea2aa0e9a5335b1eccd682aa1eb2addf06f26acdad6e6bdbce97a",
+          "value_q32": 4294967296
+        },
+        "predecessor": "b318953b33d831ba7e36740545338b4aa32cfc482bd4357dc216377718aca866",
+        "record_id": "research.case.0009.signed-credit",
+        "sequence": 30
+      },
+      {
+        "chain_digest": "a238a88f6cc499949ac5951e69974e754c29be3983de9102506a1db405beabef",
+        "event_digest": "ac87589589dff6e87bdfe354023d70eef3b5ba02c3368abe44e19585e8e4c42d",
+        "fact": {
+          "authentication_digest": "c832533ee0dc6c0106561b3b4fe702df7f7efabd2b332f2c60ce79a6cf3c2031",
+          "episode": "research.case.0010",
+          "generator": "research-generator",
+          "kind": "AuthenticatedDecisionV2",
+          "policy_digest": "4ac09353f7051ea63968de174edf79c97b96ce89c85004ad47654d9a13325b26",
+          "run_snapshot_digest": "7595daed6bb806e94f67586285205f2266ad2fe70d31292d172db90ef545ff8d",
+          "selected_candidate": "execute-trained-readout",
+          "support_digest": "7595daed6bb806e94f67586285205f2266ad2fe70d31292d172db90ef545ff8d"
+        },
+        "predecessor": "b6c458cfc3d7b80b2c195af120d5546515bee02852ad6dda136c25b875caa98c",
+        "record_id": "research.case.0010.decision",
+        "sequence": 31
+      },
+      {
+        "chain_digest": "4465a8da16160ffcdf19fd502d060edd6c10f16ce7634dffbd9387bead36ea5a",
+        "event_digest": "0094b27243a32c1effbbb20bc18e2d44cd5ce5472eedc50bd25776f90186164a",
+        "fact": {
+          "authentication_digest": "bffd21b08d8f39a20c4d3752f17dc91c106cc3255ff1b10ebb0768c6195d868e",
+          "episode": "research.case.0010",
+          "kind": "AuthenticatedOutcomeV2",
+          "observer": "research-observer",
+          "outcome": "research.case.0010.outcome",
+          "support_digest": "b291d8445047e145e8831fc2c902028a47271a5b2de5a0c578362a3f191ed604",
+          "value_q32": 4294967296
+        },
+        "predecessor": "a238a88f6cc499949ac5951e69974e754c29be3983de9102506a1db405beabef",
+        "record_id": "research.case.0010.outcome-record",
+        "sequence": 32
+      },
+      {
+        "chain_digest": "6c87a894d45ef2e3cc89b74c356d335e11c95b67926a86e116651bd7d9bd8cdb",
+        "event_digest": "db6e66fc2574ab810d2139dd435d8f014d3b089d9bc6ff5ab3fed0d9913f90a6",
+        "fact": {
+          "allocations": [
+            {
+              "credit_q32": 4294967296,
+              "organ": "research.signed-credit.seed601"
+            }
+          ],
+          "allocator": "research-allocator",
+          "authentication_digest": "a849d61ad4c215cd13c15c041cf299eea9df69980c3d8aad3ebc8f345fb1f0c5",
+          "episode": "research.case.0010",
+          "kind": "CreditBatchV2",
+          "outcome": "research.case.0010.outcome",
+          "residual_q32": 0,
+          "support_digest": "b291d8445047e145e8831fc2c902028a47271a5b2de5a0c578362a3f191ed604",
+          "value_q32": 4294967296
+        },
+        "predecessor": "4465a8da16160ffcdf19fd502d060edd6c10f16ce7634dffbd9387bead36ea5a",
+        "record_id": "research.case.0010.signed-credit",
+        "sequence": 33
+      },
+      {
+        "chain_digest": "c6b2f766b6fded0a2fb750472bbcc9c7f9a10fc64e1b0c591943ae0bab3751e2",
+        "event_digest": "4acf85023c1167be7dabcfe029b9f82898a65f481fac3ce984ed00a166814054",
+        "fact": {
+          "authentication_digest": "a893a6721f9554dc46955a2dca9d08fd823dd7a53f3d047742dd417cc9b3f018",
+          "episode": "research.case.0011",
+          "generator": "research-generator",
+          "kind": "AuthenticatedDecisionV2",
+          "policy_digest": "4ac09353f7051ea63968de174edf79c97b96ce89c85004ad47654d9a13325b26",
+          "run_snapshot_digest": "1af8fa5d72ba05abb69f111f9f4212c8076cefd5a9a0697e0cfa92a9d018864f",
+          "selected_candidate": "execute-trained-readout",
+          "support_digest": "1af8fa5d72ba05abb69f111f9f4212c8076cefd5a9a0697e0cfa92a9d018864f"
+        },
+        "predecessor": "6c87a894d45ef2e3cc89b74c356d335e11c95b67926a86e116651bd7d9bd8cdb",
+        "record_id": "research.case.0011.decision",
+        "sequence": 34
+      },
+      {
+        "chain_digest": "07329ddfe08dad525dd43193f52802ea118a59736b06c04b8c1d6204b4facb02",
+        "event_digest": "9c3a38f224a0a28e5b12100a89666d3fd7bcb68f3838984a25865b323496af60",
+        "fact": {
+          "authentication_digest": "e4bfc77a72330fa6d19c9b0bd4200ff311b0209e8b4d8562ca73970d6bbb9068",
+          "episode": "research.case.0011",
+          "kind": "AuthenticatedOutcomeV2",
+          "observer": "research-observer",
+          "outcome": "research.case.0011.outcome",
+          "support_digest": "09fbdd14145af35d40f58d5b20909acf067bc830199a36ea7529c124b1e8d920",
+          "value_q32": -4294967296
+        },
+        "predecessor": "c6b2f766b6fded0a2fb750472bbcc9c7f9a10fc64e1b0c591943ae0bab3751e2",
+        "record_id": "research.case.0011.outcome-record",
+        "sequence": 35
+      },
+      {
+        "chain_digest": "7e40b7bb6892602d0a082da7d59a9726c03dba4e3de1b3b5310829ed65de2ac7",
+        "event_digest": "a2a3c9bfb64c2d4a1abdb2b7a92ebda34e6035dd9394f624c754b98466ceb767",
+        "fact": {
+          "allocations": [
+            {
+              "credit_q32": -4294967296,
+              "organ": "research.signed-credit.seed601"
+            }
+          ],
+          "allocator": "research-allocator",
+          "authentication_digest": "33a41cea03431ddeabd4938ab4732527a74ddbbc8b42dc18435ccc0cdb218519",
+          "episode": "research.case.0011",
+          "kind": "CreditBatchV2",
+          "outcome": "research.case.0011.outcome",
+          "residual_q32": 0,
+          "support_digest": "09fbdd14145af35d40f58d5b20909acf067bc830199a36ea7529c124b1e8d920",
+          "value_q32": -4294967296
+        },
+        "predecessor": "07329ddfe08dad525dd43193f52802ea118a59736b06c04b8c1d6204b4facb02",
+        "record_id": "research.case.0011.signed-credit",
+        "sequence": 36
+      },
+      {
+        "chain_digest": "ec3dec2fb75615b9f216d8cdfe4e1feaaab44fed10c6ba4ae9705f8e5ef548e8",
+        "event_digest": "c27688d81b47fdd88ecdeb320cc0aa6b1c73143e79520c760a0ea1ba4a82bc4b",
+        "fact": {
+          "authentication_digest": "47cccdf87bbc1ea4374cbe3237ff364d52081f93fcbbcd1f90c62e9637d63b40",
+          "episode": "research.case.0012",
+          "generator": "research-generator",
+          "kind": "AuthenticatedDecisionV2",
+          "policy_digest": "4ac09353f7051ea63968de174edf79c97b96ce89c85004ad47654d9a13325b26",
+          "run_snapshot_digest": "e6e841d98dcbbe6a649ac326374375ff65f43e066718a9cd20d966b43e54544c",
+          "selected_candidate": "execute-trained-readout",
+          "support_digest": "e6e841d98dcbbe6a649ac326374375ff65f43e066718a9cd20d966b43e54544c"
+        },
+        "predecessor": "7e40b7bb6892602d0a082da7d59a9726c03dba4e3de1b3b5310829ed65de2ac7",
+        "record_id": "research.case.0012.decision",
+        "sequence": 37
+      },
+      {
+        "chain_digest": "3c56bea010a259f154756fa898483976c763295ffbd8dc8abc542a15a07eb6d5",
+        "event_digest": "c8abf976003f7cf0d75f98cc3adf80ee8db3a98c4c55c4bfab1adcb2fded3d92",
+        "fact": {
+          "authentication_digest": "03c3ccf402975dc9c66b6f40df6ff9027fc0e6b60bfb2bac815b6cf12c3a5a13",
+          "episode": "research.case.0012",
+          "kind": "AuthenticatedOutcomeV2",
+          "observer": "research-observer",
+          "outcome": "research.case.0012.outcome",
+          "support_digest": "2b9ba15801ea7d43f59ea82ef98c42da9140a9b9f13e068965f3eb4a54cefff2",
+          "value_q32": 4294967296
+        },
+        "predecessor": "ec3dec2fb75615b9f216d8cdfe4e1feaaab44fed10c6ba4ae9705f8e5ef548e8",
+        "record_id": "research.case.0012.outcome-record",
+        "sequence": 38
+      },
+      {
+        "chain_digest": "a6cd2388f43082e0da187b2d6af76440a7d1a4c78c89b21c65c93f36df9c02df",
+        "event_digest": "c0764b0084ccb1232aa36855f5f0e89086a7642fdf578ee37c90a32c9995cecd",
+        "fact": {
+          "allocations": [
+            {
+              "credit_q32": 4294967296,
+              "organ": "research.signed-credit.seed601"
+            }
+          ],
+          "allocator": "research-allocator",
+          "authentication_digest": "96be4d4a9ee5f14deb851453475a968ae97c55896e1cfa08dd12f988af867c4d",
+          "episode": "research.case.0012",
+          "kind": "CreditBatchV2",
+          "outcome": "research.case.0012.outcome",
+          "residual_q32": 0,
+          "support_digest": "2b9ba15801ea7d43f59ea82ef98c42da9140a9b9f13e068965f3eb4a54cefff2",
+          "value_q32": 4294967296
+        },
+        "predecessor": "3c56bea010a259f154756fa898483976c763295ffbd8dc8abc542a15a07eb6d5",
+        "record_id": "research.case.0012.signed-credit",
+        "sequence": 39
+      },
+      {
+        "chain_digest": "c6a36c7d2dc94965c175d1b05d658c9aef1044eba59d61caf8e0dcb3422a5b9f",
+        "event_digest": "6d2dd232997656838832cd0d7586f5ea478ac10de9ff692f33d2ab9ef4ec9e1c",
+        "fact": {
+          "authentication_digest": "0d237945d4fc23aaba8d0e68cdb344126c7ffbbb3b7989c409e0c178f3430d6c",
+          "episode": "research.case.0013",
+          "generator": "research-generator",
+          "kind": "AuthenticatedDecisionV2",
+          "policy_digest": "4ac09353f7051ea63968de174edf79c97b96ce89c85004ad47654d9a13325b26",
+          "run_snapshot_digest": "5dc043c701814b843510cb14e21c9c1581c7ec8fabd9083900c96f96b091de9c",
+          "selected_candidate": "execute-trained-readout",
+          "support_digest": "5dc043c701814b843510cb14e21c9c1581c7ec8fabd9083900c96f96b091de9c"
+        },
+        "predecessor": "a6cd2388f43082e0da187b2d6af76440a7d1a4c78c89b21c65c93f36df9c02df",
+        "record_id": "research.case.0013.decision",
+        "sequence": 40
+      },
+      {
+        "chain_digest": "3b51f3194670a7efbbe40cf9e9923c6bf7558a2aead4f8cb57154caf818fda64",
+        "event_digest": "be8f7ef2b5d57115d6919e9c4ab7f65a272e6f79ba689dc534405b5b051573f5",
+        "fact": {
+          "authentication_digest": "6cb217b72e272755fcd3cfbce27a1b6232c43ac7b3b35d72d9a541132469a302",
+          "episode": "research.case.0013",
+          "kind": "AuthenticatedOutcomeV2",
+          "observer": "research-observer",
+          "outcome": "research.case.0013.outcome",
+          "support_digest": "820cfed9ae2c798f27571bc13bb423c277a121c80280a4ccaf987f046322ebc8",
+          "value_q32": 4294967296
+        },
+        "predecessor": "c6a36c7d2dc94965c175d1b05d658c9aef1044eba59d61caf8e0dcb3422a5b9f",
+        "record_id": "research.case.0013.outcome-record",
+        "sequence": 41
+      },
+      {
+        "chain_digest": "89a1bc1564167a379be2080869f34a0cdaff333059f0c663b9b4ce0e40fffe5f",
+        "event_digest": "a86d359c696bd6dee60e64a674d0878bce6b31568e8e26bb61db0a9265b63c80",
+        "fact": {
+          "allocations": [
+            {
+              "credit_q32": 4294967296,
+              "organ": "research.signed-credit.seed601"
+            }
+          ],
+          "allocator": "research-allocator",
+          "authentication_digest": "8c5cc2c7caf56a72535871e612a283d6df13453256310caf4a9144ee3be3ab41",
+          "episode": "research.case.0013",
+          "kind": "CreditBatchV2",
+          "outcome": "research.case.0013.outcome",
+          "residual_q32": 0,
+          "support_digest": "820cfed9ae2c798f27571bc13bb423c277a121c80280a4ccaf987f046322ebc8",
+          "value_q32": 4294967296
+        },
+        "predecessor": "3b51f3194670a7efbbe40cf9e9923c6bf7558a2aead4f8cb57154caf818fda64",
+        "record_id": "research.case.0013.signed-credit",
+        "sequence": 42
+      },
+      {
+        "chain_digest": "0347d4af9d7572b57edd829f99fbc6045675fef25ab0ba5cf0fe56c63dcdd7ac",
+        "event_digest": "66693eb6e495b49a2f264a572cb92c3516a4cd9af434ecd97f36ebb0ce23f1e2",
+        "fact": {
+          "authentication_digest": "e49286597d66928269412bc5ebdecee6718ec0b529af7832a242c4601751e25b",
+          "episode": "research.case.0014",
+          "generator": "research-generator",
+          "kind": "AuthenticatedDecisionV2",
+          "policy_digest": "4ac09353f7051ea63968de174edf79c97b96ce89c85004ad47654d9a13325b26",
+          "run_snapshot_digest": "3f3188600000ffa65d6422424a366b5c36438d9b8fa48be569b0db9388687192",
+          "selected_candidate": "execute-trained-readout",
+          "support_digest": "3f3188600000ffa65d6422424a366b5c36438d9b8fa48be569b0db9388687192"
+        },
+        "predecessor": "89a1bc1564167a379be2080869f34a0cdaff333059f0c663b9b4ce0e40fffe5f",
+        "record_id": "research.case.0014.decision",
+        "sequence": 43
+      },
+      {
+        "chain_digest": "ac15ecdef73544ff3ffffbb25f15e9f9e45298ba81ecdfd8c05dd2fe547d8767",
+        "event_digest": "5c23d98107359a0581bfeaf145e3def7b6380d8410d983c814c13df82220c00d",
+        "fact": {
+          "authentication_digest": "c82e4491d2e80af4b4ceada137e65c1e3386ecb452262c0f146e19fa31f70dc1",
+          "episode": "research.case.0014",
+          "kind": "AuthenticatedOutcomeV2",
+          "observer": "research-observer",
+          "outcome": "research.case.0014.outcome",
+          "support_digest": "275b5a5d602115e4cecf5fec087b0072e475365117bb2d19e4ad522f02c8cecc",
+          "value_q32": 4294967296
+        },
+        "predecessor": "0347d4af9d7572b57edd829f99fbc6045675fef25ab0ba5cf0fe56c63dcdd7ac",
+        "record_id": "research.case.0014.outcome-record",
+        "sequence": 44
+      },
+      {
+        "chain_digest": "e8cd217e5772cae2c10e44b7d9868c6f2749a14a780f2d9778387a0b91700cb2",
+        "event_digest": "0b4d389915df61e8f36d4ec590085cc28938a7997eb9d53bea8aca78fba00fe1",
+        "fact": {
+          "allocations": [
+            {
+              "credit_q32": 4294967296,
+              "organ": "research.signed-credit.seed601"
+            }
+          ],
+          "allocator": "research-allocator",
+          "authentication_digest": "104acac829b58a03d3ca77a92aa56538db74dd28758fa7911e04179c0dcc89ce",
+          "episode": "research.case.0014",
+          "kind": "CreditBatchV2",
+          "outcome": "research.case.0014.outcome",
+          "residual_q32": 0,
+          "support_digest": "275b5a5d602115e4cecf5fec087b0072e475365117bb2d19e4ad522f02c8cecc",
+          "value_q32": 4294967296
+        },
+        "predecessor": "ac15ecdef73544ff3ffffbb25f15e9f9e45298ba81ecdfd8c05dd2fe547d8767",
+        "record_id": "research.case.0014.signed-credit",
+        "sequence": 45
+      },
+      {
+        "chain_digest": "4b343feda4fff752fbf11411499383f73c4ddb12e99df5876189c80d19c89400",
+        "event_digest": "f19df80578268ab4089b2da24a9d5efe7b6d5d084f7a47b2a0afe424113c22f0",
+        "fact": {
+          "authentication_digest": "04000f7b0122d3362b646b49fa10c6984318ad66a5249cf7501a3fcecdd24c09",
+          "episode": "research.case.0015",
+          "generator": "research-generator",
+          "kind": "AuthenticatedDecisionV2",
+          "policy_digest": "4ac09353f7051ea63968de174edf79c97b96ce89c85004ad47654d9a13325b26",
+          "run_snapshot_digest": "42a62385b557c041b086e02f981f886b418f3f9cc4cc8f50aa7239538504c48a",
+          "selected_candidate": "execute-trained-readout",
+          "support_digest": "42a62385b557c041b086e02f981f886b418f3f9cc4cc8f50aa7239538504c48a"
+        },
+        "predecessor": "e8cd217e5772cae2c10e44b7d9868c6f2749a14a780f2d9778387a0b91700cb2",
+        "record_id": "research.case.0015.decision",
+        "sequence": 46
+      },
+      {
+        "chain_digest": "863d8a77d6f8657df097fd60d5caa063759f3737fab32300137c35e277485fc0",
+        "event_digest": "6fbf1adef4f4e70ea710553402f198b0b0d0db12262b822468fceb42e7f10c3e",
+        "fact": {
+          "authentication_digest": "f4867735c5c987eecddf3e77f19889fbf1008b656459c18beced3e2dcd8967ac",
+          "episode": "research.case.0015",
+          "kind": "AuthenticatedOutcomeV2",
+          "observer": "research-observer",
+          "outcome": "research.case.0015.outcome",
+          "support_digest": "077b81ede1a0e1ffccf979167eaa33d0c43763db04f4622c8e82c8c28892691a",
+          "value_q32": 4294967296
+        },
+        "predecessor": "4b343feda4fff752fbf11411499383f73c4ddb12e99df5876189c80d19c89400",
+        "record_id": "research.case.0015.outcome-record",
+        "sequence": 47
+      },
+      {
+        "chain_digest": "b2f3535844e467b8e3f7e20eb97ba7a6fd768d1377ca19e64811204b84339258",
+        "event_digest": "01da2ac1c9913e61e1272f16b20a548df9625fa6298f0c1ecfd98c497b3818e1",
+        "fact": {
+          "allocations": [
+            {
+              "credit_q32": 4294967296,
+              "organ": "research.signed-credit.seed601"
+            }
+          ],
+          "allocator": "research-allocator",
+          "authentication_digest": "6eb74dcd7a40411f00a4e993591aea27892bdc14e8f2b3aeb8298bd7bf258a53",
+          "episode": "research.case.0015",
+          "kind": "CreditBatchV2",
+          "outcome": "research.case.0015.outcome",
+          "residual_q32": 0,
+          "support_digest": "077b81ede1a0e1ffccf979167eaa33d0c43763db04f4622c8e82c8c28892691a",
+          "value_q32": 4294967296
+        },
+        "predecessor": "863d8a77d6f8657df097fd60d5caa063759f3737fab32300137c35e277485fc0",
+        "record_id": "research.case.0015.signed-credit",
+        "sequence": 48
+      }
+    ],
+    "sequence": 48,
+    "trust_distribution_digest": "28059377f2bad2bc704832a3aa358d85a7bec11cd82ff9209442fc4738a60516",
+    "trust_generation": 1
+  },
+  "integration_source": {
+    "development_only": true
+  },
+  "ledger_recovery_records": 1230,
+  "native": {
+    "account_validation_native_credit_calls": 136,
+    "actual_input_multiply_accumulates": 2304,
+    "actual_readout_multiply_accumulates": 384,
+    "actual_resource_work": 84.0,
+    "actual_snn_cell_updates": 384,
+    "actual_spikes": 288,
+    "all_native_credit_finalizations": 171,
+    "all_neural_cell_updates": 488,
+    "all_original_kernel_executions": 74,
+    "bellman_query_terms": 96,
+    "boundary_build_terms": 484484,
+    "event_validation_bellman_terms": 26,
+    "event_validation_kernel_steps": 13,
+    "event_validation_readout_calls": 13,
+    "event_validation_snn_cell_updates": 104,
+    "event_validation_spikes": 98,
+    "failed_requests": 20,
+    "journal_bytes_written": 22272,
+    "model_calls": 48,
+    "model_latency_micros": 555,
+    "native_credit_finalizations": 35,
+    "native_tick_micros": 38583,
+    "new_credit_records": 16,
+    "original_journal_replay_steps": 13,
+    "owner_ticks": 48,
+    "peak_transient_allocation_bytes": 370,
+    "physical_rpc_micros": 361472,
+    "profile_weight_scalars_validated": 1430,
+    "rpc_count": 167
+  },
+  "passed": true,
+  "root_signature_activations": 55,
+  "rpc_count": 222,
+  "signed_facts": 48,
+  "signed_facts_appended": 48,
+  "signed_physical_rpc_micros": 218065,
+  "signed_rpc_count": 55,
+  "typed_signed_append_attempts": 87
+}

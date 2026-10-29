@@ -98,6 +98,9 @@ fn spawn_response(
                 Err(error) => panic!("HTTP listener should accept: {error}"),
             }
         };
+        // BSD sockets inherit O_NONBLOCK from the listening socket. The
+        // bounded read below is intentionally blocking on every platform.
+        stream.set_nonblocking(false).expect("blocking HTTP stream");
         stream
             .set_read_timeout(Some(Duration::from_secs(2)))
             .expect("read timeout");

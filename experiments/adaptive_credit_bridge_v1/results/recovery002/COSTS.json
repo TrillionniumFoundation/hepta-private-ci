@@ -1,0 +1,94 @@
+{
+  "energy_joules_measured": false,
+  "measurement_limits": [
+    "The earliest build/formal/audit wrappers recorded descendant CPU, not their own Python CPU. Their own launcher interpreter startup is excluded.",
+    "New portable-stage wrappers include worker Python startup and all descendants, but exclude the outer launcher interpreter startup.",
+    "Nested native RPC, audit, retry and delivered-replay measurements explain the outer stages and must not be added to them.",
+    "Wall-stage sum is a sum of these nonoverlapping experiment stages, not total elapsed user session time; CI builds and tool/agent orchestration are outside this experiment-cost scope."
+  ],
+  "retained_failed_stage": "credit-delivered-launch002 (ENOSPC, before audit invocation)",
+  "schema": "hepta.recovery.nonoverlapping-costs.v1",
+  "scope": "New bridge rebuild, formal002, audit002, portable export, relocated audit, package, failed ENOSPC extraction, and successful final archive extraction/replay. Original v2 training/build costs are referenced evidence and are not charged again.",
+  "stages": [
+    {
+      "child_cpu_seconds": 49.664425,
+      "exit_code": 0,
+      "nested_receipts_are_not_additive": true,
+      "receipt": "launches/credit-build-launch001/COMPLETE.json",
+      "receipt_sha256": "dcf5ce9291729478e3753f2c4ce32919a047f65a223872bb5e4831bd9f675a35",
+      "stage": "credit-build-launch001",
+      "wall_seconds": 50.743648571995436
+    },
+    {
+      "child_cpu_seconds": 2.701311,
+      "exit_code": 0,
+      "nested_receipts_are_not_additive": true,
+      "receipt": "launches/credit-formal-launch002/COMPLETE.json",
+      "receipt_sha256": "945cbac6e42c35c39eb67e4ce25c0984149585a90a6708d9d82f43610e01593b",
+      "stage": "credit-formal-launch002",
+      "wall_seconds": 1.8635799119947478
+    },
+    {
+      "child_cpu_seconds": 2.2042759999999997,
+      "exit_code": 0,
+      "nested_receipts_are_not_additive": true,
+      "receipt": "launches/credit-audit-launch002/COMPLETE.json",
+      "receipt_sha256": "01ead9b8a43f932f380aeec3341aa3f6a04cc9a051461673922f051a401e3a0d",
+      "stage": "credit-audit-launch002",
+      "wall_seconds": 1.034661656995013
+    },
+    {
+      "child_cpu_seconds": 11.005128000000001,
+      "exit_code": 0,
+      "launcher_self_cpu_seconds": 0.001120999999999997,
+      "nested_receipts_are_not_additive": true,
+      "receipt": "launches/credit-export-launch002/COMPLETE.json",
+      "receipt_sha256": "2ccfe0a2ec148e0279e5a51a9d893d73ee5fae9c04e7f09ec64e52b4772cea76",
+      "stage": "credit-export-launch002",
+      "wall_seconds": 26.373855826997897
+    },
+    {
+      "child_cpu_seconds": 3.1115459999999997,
+      "exit_code": 0,
+      "launcher_self_cpu_seconds": 0.0014220000000000031,
+      "nested_receipts_are_not_additive": true,
+      "receipt": "launches/credit-replay-launch002/COMPLETE.json",
+      "receipt_sha256": "b01129d74143aee2938df905a40b9a493d088542e0ae166736e7c2313ac259cc",
+      "stage": "credit-replay-launch002",
+      "wall_seconds": 3.037497627999983
+    },
+    {
+      "child_cpu_seconds": 8.219034,
+      "exit_code": 0,
+      "launcher_self_cpu_seconds": 0.0009550000000000062,
+      "nested_receipts_are_not_additive": true,
+      "receipt": "launches/credit-archive-launch002/COMPLETE.json",
+      "receipt_sha256": "5f398bf019889ff57aa3e0a5d4642fe10d7f7b305efd62c46d1c69d84f499baf",
+      "stage": "credit-archive-launch002",
+      "wall_seconds": 9.484632248997514
+    },
+    {
+      "child_cpu_seconds": 0.485525,
+      "exit_code": 1,
+      "launcher_self_cpu_seconds": 0.0010870000000000046,
+      "nested_receipts_are_not_additive": true,
+      "receipt": "launches/credit-delivered-launch002/FAILED.json",
+      "receipt_sha256": "867572dfdb40a82a2551a001b7dedefc3d9a563c2bfccddf7fe2a06da69705d8",
+      "stage": "credit-delivered-launch002",
+      "wall_seconds": 0.4895915979941492
+    },
+    {
+      "child_cpu_seconds": 4.872164000000001,
+      "exit_code": 0,
+      "launcher_self_cpu_seconds": 0.0010059999999999965,
+      "nested_receipts_are_not_additive": true,
+      "receipt": "launches/credit-delivered-launch003/COMPLETE.json",
+      "receipt_sha256": "f5c192308333eb1a4c854e4ca53c3bd47280e7cbd5854a91923deb36688a1006",
+      "stage": "credit-delivered-launch003",
+      "wall_seconds": 3.759727709002618
+    }
+  ],
+  "sum_child_cpu_seconds": 82.263409,
+  "sum_measured_launcher_self_cpu_seconds": 0.005591000000000007,
+  "sum_stage_wall_seconds": 96.78719515197736
+}

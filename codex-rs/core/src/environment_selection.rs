@@ -1219,7 +1219,7 @@ url = "ws://127.0.0.1:8765"
         assert_eq!(resolved.snapshot().await.to_selections(), vec![local]);
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
     async fn blocking_snapshot_waits_for_starting_environment() {
         let buffer: &'static std::sync::Mutex<Vec<u8>> =
             Box::leak(Box::new(std::sync::Mutex::new(Vec::new())));
@@ -1262,7 +1262,7 @@ url = "ws://127.0.0.1:8765"
             .update_selections(std::slice::from_ref(&selection), &test_environment_config());
         let snapshot_task = tokio::spawn({
             let environments = Arc::clone(&environments);
-            async move { environments.snapshot().await }
+            async move { environments.snapshot().await }.with_current_subscriber()
         });
         tokio::task::yield_now().await;
         assert!(!snapshot_task.is_finished());

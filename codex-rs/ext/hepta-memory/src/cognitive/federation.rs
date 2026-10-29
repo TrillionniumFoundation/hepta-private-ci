@@ -236,9 +236,13 @@ impl FederatedCognitiveExtension {
             return None;
         }
         let prepared = input.turn_store.get::<PreparedFederatedAttachment>()?;
+        // Grants bind the canonical registered workspace. A file URI may
+        // render the same Windows directory without its verbatim prefix.
+        let workspace = input.cwd.canonicalize().ok()?;
         if prepared.thread_id != input.thread_id
             || prepared.turn_id != input.turn_id
-            || path_identity_bytes(prepared.workspace.as_path()) != path_identity_bytes(input.cwd)
+            || path_identity_bytes(prepared.workspace.as_path())
+                != path_identity_bytes(workspace.as_path())
         {
             return None;
         }
@@ -252,8 +256,10 @@ impl FederatedCognitiveExtension {
             return None;
         }
         let now = now_unix_seconds()?;
-        let access =
-            FederationConsumerAccess::new(self.consumer_agent_id()?, workspace_digest(input.cwd));
+        let access = FederationConsumerAccess::new(
+            self.consumer_agent_id()?,
+            workspace_digest(workspace.as_path()),
+        );
         let Ok(statuses) = self.revalidate_many(&access, &prepared.bindings, now).await else {
             return None;
         };
@@ -283,7 +289,7 @@ impl FederatedCognitiveExtension {
         let source_binding_sha256 = federation_source_binding(
             input.thread_id,
             input.turn_id,
-            input.cwd,
+            workspace.as_path(),
             &prepared.query_sha256,
             &prepared.coverage,
             &prepared.bindings,
@@ -394,6 +400,9 @@ impl TurnInputContributor for FederatedCognitiveExtension {
             if !workspace.is_absolute() {
                 return Vec::new();
             }
+            let Ok(workspace) = workspace.canonicalize() else {
+                return Vec::new();
+            };
             let capture = capture_directive(&input.user_input);
             let Some(query) = capture.query else {
                 return Vec::new();
@@ -1261,6 +1270,8 @@ mod tests {
         let workspace = temp.path().join("consumer-workspace");
         std::fs::create_dir_all(&workspace).expect("consumer workspace");
         let workspace = workspace.canonicalize().expect("canonical workspace");
+        let workspace_uri = PathUri::from_host_native_path(&workspace).expect("workspace uri");
+        let rendered_workspace = workspace_uri.to_path_buf();
         let capability = owner
             .grant_federated_recall(
                 &owner_access,
@@ -1294,7 +1305,7 @@ mod tests {
                 }],
                 environments: vec![TurnInputEnvironment {
                     environment_id: "primary".to_string(),
-                    cwd: PathUri::from_host_native_path(&workspace).expect("workspace uri"),
+                    cwd: workspace_uri,
                     is_primary: true,
                 }],
             },
@@ -1321,7 +1332,7 @@ mod tests {
             base_logical_request_sha256: &base,
             thread_id: THREAD_ID,
             turn_id: turn_store.level_id(),
-            cwd: &workspace,
+            cwd: &rendered_workspace,
             request_kind: ModelProviderRequestKind::Turn,
             provider_id: "provider-federation",
             model: "model-federation",

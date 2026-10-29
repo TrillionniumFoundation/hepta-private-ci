@@ -1150,11 +1150,50 @@ fn replace_state(directory: &File) -> Result<(), AuthorityLeaseError> {
     .map_err(|_| AuthorityLeaseError::Unavailable)
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn prepare_directory(root: &Path) -> Result<File, AuthorityLeaseError> {
+    codex_utils_path::private_state::prepare_directory(root).map_err(map_windows_state_error)
+}
+
+#[cfg(windows)]
+fn open_private(directory: &File, name: &str, access: Access) -> Result<File, AuthorityLeaseError> {
+    use codex_utils_path::private_state;
+    let access = match access {
+        Access::Read => private_state::Access::Read,
+        Access::Create => private_state::Access::Create,
+    };
+    private_state::open_private(directory, name, access).map_err(map_windows_state_error)
+}
+
+#[cfg(windows)]
+fn entry_exists(directory: &File, name: &str) -> Result<bool, AuthorityLeaseError> {
+    codex_utils_path::private_state::entry_exists(directory, name).map_err(map_windows_state_error)
+}
+
+#[cfg(windows)]
+fn replace_state(directory: &File) -> Result<(), AuthorityLeaseError> {
+    codex_utils_path::private_state::replace(
+        directory,
+        "authority-leases.next",
+        "authority-leases.json",
+    )
+    .map_err(map_windows_state_error)
+}
+
+#[cfg(windows)]
+fn map_windows_state_error(error: std::io::Error) -> AuthorityLeaseError {
+    if error.kind() == std::io::ErrorKind::PermissionDenied {
+        AuthorityLeaseError::UnsafeStateDirectory
+    } else {
+        AuthorityLeaseError::Unavailable
+    }
+}
+
+#[cfg(not(any(unix, windows)))]
 fn prepare_directory(_root: &Path) -> Result<File, AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn open_private(
     _directory: &File,
     _name: &str,
@@ -1162,11 +1201,11 @@ fn open_private(
 ) -> Result<File, AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn entry_exists(_directory: &File, _name: &str) -> Result<bool, AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn replace_state(_directory: &File) -> Result<(), AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
@@ -1198,6 +1237,10 @@ impl fmt::Display for AuthorityLeaseError {
     }
 }
 impl std::error::Error for AuthorityLeaseError {}
+
+#[cfg(all(test, windows))]
+#[path = "authority_lease_windows_tests.rs"]
+mod windows_tests;
 
 #[cfg(all(test, unix))]
 mod tests {

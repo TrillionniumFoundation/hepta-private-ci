@@ -1,0 +1,69 @@
+{
+  "changed_runtime_source_since_development003": [
+    "experiments/adaptive_credit_bridge_v1/provenance.py",
+    "experiments/adaptive_credit_bridge_v1/run.py"
+  ],
+  "commands": [
+    {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "format",
+        "experiments/adaptive_credit_bridge_v1/provenance.py",
+        "experiments/adaptive_credit_bridge_v1/run.py",
+        "experiments/adaptive_credit_bridge_v1/test_provenance.py"
+      ],
+      "log": "command.00.log",
+      "returncode": 0,
+      "sha256": "292ab567521d30841d69b41a9cc01ed3f5b34d1b4bdb12e6083b8943098c57a4"
+    },
+    {
+      "command": [
+        "uv",
+        "run",
+        "--offline",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "check",
+        "experiments/adaptive_credit_bridge_v1"
+      ],
+      "log": "command.01.log",
+      "returncode": 0,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "experiments.adaptive_credit_bridge_v1.test_provenance",
+        "-v"
+      ],
+      "log": "command.02.log",
+      "returncode": 0,
+      "sha256": "34c225e33eaafed679dae04014503ffdc038a6b58864ee40ac5b79489dde6ca9"
+    }
+  ],
+  "core_signed_gate_and_audit_unchanged": true,
+  "environment": {
+    "packages": {
+      "cryptography": "50.0.2",
+      "numpy": "2.3.5",
+      "scipy": "1.17.0"
+    },
+    "python_executable_sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7",
+    "python_implementation": "CPython",
+    "python_version": "3.12.14",
+    "requirements_sha256": "0220774246b38413ba0b36c44e13d19528c7b08fa48690abfb2a73cb021aff0c"
+  },
+  "no_additional_development_task_run": true,
+  "passed": true,
+  "sealed_inventory_candidate_count": 228
+}

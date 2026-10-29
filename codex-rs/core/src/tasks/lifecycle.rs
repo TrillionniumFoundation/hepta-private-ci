@@ -1,11 +1,14 @@
 use codex_extension_api::ExtensionData;
 use codex_extension_api::ThreadIdleCause;
+use codex_extension_api::ThreadIdleContinuations;
 use codex_protocol::protocol::CodexErrorInfo;
 use codex_protocol::protocol::TokenUsage;
 use codex_protocol::protocol::TurnAbortReason;
 
 use crate::session::session::Session;
 use crate::session::turn_context::TurnContext;
+use std::sync::Arc;
+use std::sync::atomic::Ordering;
 
 impl Session {
     pub(super) async fn emit_turn_start_lifecycle(
@@ -42,7 +45,10 @@ impl Session {
         }
     }
 
-    pub(crate) async fn emit_thread_idle_lifecycle_if_idle(&self, cause: ThreadIdleCause) {
+    pub(crate) async fn emit_thread_idle_lifecycle_if_idle(
+        self: &Arc<Self>,
+        cause: ThreadIdleCause,
+    ) {
         self.emit_thread_idle_lifecycle_if_idle_inner(
             cause, /*terminalization_owner*/ None, /*start_transition_owner*/ None,
             /*allow_shutdown*/ false,
@@ -55,7 +61,7 @@ impl Session {
     /// part of the accepted terminal ordering, so shutdown itself is not a
     /// reason to suppress this exact cleanup-owned emission.
     pub(crate) async fn emit_thread_idle_lifecycle_if_idle_after_start_transition(
-        &self,
+        self: &Arc<Self>,
         cause: ThreadIdleCause,
         start_transition_owner: &std::sync::Arc<()>,
     ) {
@@ -72,7 +78,7 @@ impl Session {
     /// completion fence.  External admissions remain fenced; only the exact
     /// owner may progress to the idle callback and subsequent mailbox wake.
     pub(crate) async fn emit_thread_idle_lifecycle_if_idle_for_terminalization(
-        &self,
+        self: &Arc<Self>,
         cause: ThreadIdleCause,
         terminalization_owner: Option<&std::sync::Arc<()>>,
     ) {
@@ -86,7 +92,7 @@ impl Session {
     }
 
     async fn emit_thread_idle_lifecycle_if_idle_inner(
-        &self,
+        self: &Arc<Self>,
         cause: ThreadIdleCause,
         terminalization_owner: Option<&std::sync::Arc<()>>,
         start_transition_owner: Option<&std::sync::Arc<()>>,
@@ -98,7 +104,7 @@ impl Session {
         {
             return;
         }
-        let cause = {
+        let (cause, idle_epoch) = {
             let active_turn = self.active_turn.lock().await;
             if (!allow_shutdown && self.shutdown_started())
                 || self.has_pending_task_terminalization_except(terminalization_owner)
@@ -107,11 +113,12 @@ impl Session {
             {
                 return;
             }
-            if self.is_interrupted() {
+            let cause = if self.is_interrupted() {
                 ThreadIdleCause::Interrupted
             } else {
                 cause
-            }
+            };
+            (cause, self.turn_epoch.load(Ordering::Acquire))
         };
         if self.input_queue.has_trigger_turn_mailbox_items().await {
             return;
@@ -124,15 +131,20 @@ impl Session {
             return;
         }
 
+        let continuations = ThreadIdleContinuations::default();
         for contributor in self.services.extensions.thread_lifecycle_contributors() {
             contributor
                 .on_thread_idle(codex_extension_api::ThreadIdleInput {
                     cause,
+                    continuations: &continuations,
                     session_store: &self.services.session_extension_data,
                     thread_store: &self.services.thread_extension_data,
                 })
                 .await;
         }
+        // Dropping the handle detaches this future-work notification. It owns no
+        // admission capability and cannot outlive the shutdown/epoch checks.
+        let _ = self.run_idle_continuations(continuations, idle_epoch);
     }
 
     pub(super) async fn emit_turn_abort_lifecycle(

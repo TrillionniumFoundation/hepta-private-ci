@@ -1,0 +1,579 @@
+{
+  "created_at_utc": "2026-10-28T10:51:02.061850+00:00",
+  "environment": {
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "scipy": "1.17.0"
+  },
+  "inputs": {
+    "codex-rs/Cargo.lock": {
+      "bytes": 418125,
+      "sha256": "7fdce528c15a2970abe54f7880451448dc2f8febaceca3c208376cc388ef8b23"
+    },
+    "codex-rs/Cargo.toml": {
+      "bytes": 21574,
+      "sha256": "0e3fc0b7dc3ec907e02059a1bc79579077c8e5d1a0ac936b4f1bd984e94afdb4"
+    },
+    "codex-rs/hepta-agentd/src/neuron_runtime.rs": {
+      "bytes": 1769,
+      "sha256": "4d56cc99d0edb1018734aebf70dc715de8df7846a2a9c4f2edb4230a0fc87faf"
+    },
+    "codex-rs/hepta-infer-core/Cargo.toml": {
+      "bytes": 384,
+      "sha256": "7ca860f039344b7629db786ccb069d150ee87838ff8f1211e9a89935da00c16e"
+    },
+    "codex-rs/hepta-infer-core/src/bin/hepta-infer-control.rs": {
+      "bytes": 269,
+      "sha256": "98d054d982f2c07ff0a686f31b635166f71ae2d5472dfa767b23b7c347e67d17"
+    },
+    "codex-rs/hepta-infer-core/src/durable_control.rs": {
+      "bytes": 29683,
+      "sha256": "2cb7407a89d8ad4839e81abee4814b4a41af98435486308b705f365db264d99e"
+    },
+    "codex-rs/hepta-infer-core/src/durable_control_tests.rs": {
+      "bytes": 5586,
+      "sha256": "f67623dae2e833d2fa4e27183ebb63be2ff838a6d3b87a0d833b296b4e345f0d"
+    },
+    "codex-rs/hepta-infer-core/src/durable_history_tests.rs": {
+      "bytes": 6729,
+      "sha256": "2ed6f5f02e069824e72c2975661c92d9d850e7d9bab4ab24dd525abb315bd11c"
+    },
+    "codex-rs/hepta-infer-core/src/generation_step.rs": {
+      "bytes": 9849,
+      "sha256": "b3a25071f22fa6dc141e51a96cb7dfe5a95807b3d1fb5833d3e892ff427ff0aa"
+    },
+    "codex-rs/hepta-infer-core/src/generation_step_tests.rs": {
+      "bytes": 3657,
+      "sha256": "e72cbc304d5f31df77afb5e51567f39996a776d3071beee6cfc51ff41bd35199"
+    },
+    "codex-rs/hepta-infer-core/src/lib.rs": {
+      "bytes": 8514,
+      "sha256": "a628649e99b23076bfdb95b3f7a89d24803abb6e3ed99c13030b9fc2770339d3"
+    },
+    "codex-rs/hepta-infer-core/src/lib_tests.rs": {
+      "bytes": 2098,
+      "sha256": "706c64c84039d9a043b4d3735403787400525575e16bc840c5f65e04a2b70dc8"
+    },
+    "codex-rs/hepta-infer-core/src/native_control.rs": {
+      "bytes": 32502,
+      "sha256": "bdee48d7589675b597bb734850c08bb18fa94483029657612bee4e71650bd849"
+    },
+    "codex-rs/hepta-infer-core/src/native_control_tests.rs": {
+      "bytes": 23275,
+      "sha256": "8a703e5b4c87e50a60c941a54dfb95365c550dccbc8394d039365406dd8f59ca"
+    },
+    "codex-rs/hepta-infer-core/src/neuron_feature.rs": {
+      "bytes": 12836,
+      "sha256": "32fc64ae461621b4f6a8f20d3ff4e17ded53c6a00d9338fd8594c1539423e72b"
+    },
+    "codex-rs/hepta-infer-core/src/neuron_feature_tests.rs": {
+      "bytes": 3709,
+      "sha256": "4119b9ca64eef5b6c283ffacc418b6e64d016a99e3ca63fc22cd0d0c164e0561"
+    },
+    "codex-rs/hepta-learning-ledger/src/causal_v2.rs": {
+      "bytes": 19100,
+      "sha256": "5ce584b61e976a8d3bb5f96a612531f367d1d14fb8f704233c87bb5451297f36"
+    },
+    "codex-rs/hepta-neuron/Cargo.toml": {
+      "bytes": 495,
+      "sha256": "1ebe7dcf2b82b8143aa298059afff3ea17ee76f7c6140aae41d099bed5031c48"
+    },
+    "codex-rs/hepta-neuron/src/deletion.rs": {
+      "bytes": 4726,
+      "sha256": "3df225977b194e17909a73127f298d84a983e074f3a8aef950dfdabf8c88d417"
+    },
+    "codex-rs/hepta-neuron/src/deletion_tests.rs": {
+      "bytes": 1832,
+      "sha256": "71a50fc119072b8fe2a36e8431bc4bcbbda9dd5debf6ee24999caba188049745"
+    },
+    "codex-rs/hepta-neuron/src/inference_control.rs": {
+      "bytes": 4441,
+      "sha256": "f7e89f69319e86d97d506bc3a656b6b061639470fb6475feb62d6f1694e8f4cd"
+    },
+    "codex-rs/hepta-neuron/src/inference_control_tests.rs": {
+      "bytes": 4428,
+      "sha256": "121b4974d95688843b4962a74a7759c4d275ab504909d8d26dca7308246f8128"
+    },
+    "codex-rs/hepta-neuron/src/journal.rs": {
+      "bytes": 22951,
+      "sha256": "d8bf3aa2183cec3773be8134117166df440a8e0220de33d318e4800a21d5ea1f"
+    },
+    "codex-rs/hepta-neuron/src/journal_anchor_tests.rs": {
+      "bytes": 8559,
+      "sha256": "6630ce721c6cb875cdb95805a804f62338971afd3df7c4a22762186839dc7928"
+    },
+    "codex-rs/hepta-neuron/src/journal_lock.rs": {
+      "bytes": 1270,
+      "sha256": "1162918fde01466d9d7b7abb33fd502dca289b970e84b37168ad4e2ca0692252"
+    },
+    "codex-rs/hepta-neuron/src/journal_segment_tests.rs": {
+      "bytes": 8934,
+      "sha256": "d889a32c0a56dc36842acb1889abfe0e2fa03c8839ab4500ab7d2487a1ea0540"
+    },
+    "codex-rs/hepta-neuron/src/journal_tests.rs": {
+      "bytes": 15094,
+      "sha256": "6fe8271500c11fd6e5e445d238e636a9de4edd17e08318ee38bf9b5189f7bab8"
+    },
+    "codex-rs/hepta-neuron/src/lib.rs": {
+      "bytes": 9491,
+      "sha256": "dc441b025b4ddbc8fa1b5622c7f3092406c5a5067c9c1fd886d02578c9d01c37"
+    },
+    "codex-rs/hepta-neuron/src/lib_tests.rs": {
+      "bytes": 1975,
+      "sha256": "add9642dfff13e663d4127d9d119ad6ff7dd19f0e3c8935b9de19f2b0c9a962e"
+    },
+    "codex-rs/hepta-neuron/src/plasticity.rs": {
+      "bytes": 14553,
+      "sha256": "114cfb3367d01612e684021a8961cb7f4d742f8855f90dd792db108081eaa471"
+    },
+    "codex-rs/hepta-neuron/src/plasticity_tests.rs": {
+      "bytes": 3939,
+      "sha256": "3d2175a990711873320ba65166aaa77cb45b328214b9356c35cff30ddd2a638b"
+    },
+    "codex-rs/hepta-neuron/src/population_v2.rs": {
+      "bytes": 21626,
+      "sha256": "c397c867dac6877f6f9b24569798057e988b1c5aed0befbb6d8f2b1f59446b60"
+    },
+    "codex-rs/hepta-neuron/src/population_v2_tests.rs": {
+      "bytes": 4551,
+      "sha256": "a7de122f8fd2d24118f3d894ceeca56c940113992ab972bf8e4f914cfa3f805e"
+    },
+    "codex-rs/hepta-neuron/src/protocol.rs": {
+      "bytes": 38284,
+      "sha256": "240a3ae18713aea814dad483c9470c34212a1d4d50a9aae84007e8f3dbc6bf35"
+    },
+    "codex-rs/hepta-neuron/src/protocol_tests.rs": {
+      "bytes": 11489,
+      "sha256": "5787899890bcd16aaea9042b5924583fa71a3d9f755debf6bc1b05bfa626ee69"
+    },
+    "codex-rs/hepta-neuron/src/qualification.rs": {
+      "bytes": 8503,
+      "sha256": "b425d7a58aec3c4b29b18875141bcc2d1a6ec1c743ac941ff3cff48694fa4520"
+    },
+    "codex-rs/hepta-neuron/src/qualification_tests.rs": {
+      "bytes": 4844,
+      "sha256": "c732fb1b35fad52b5108ebc4aa7dd2a4f007ae6ba4d48ac1352e02f91f3876cb"
+    },
+    "codex-rs/hepta-neuron/src/runtime.rs": {
+      "bytes": 16402,
+      "sha256": "bace4a3c36a2a4199a975aeac73041011ed487b2d308c75c4e062b25e6451fad"
+    },
+    "codex-rs/hepta-neuron/src/runtime_tests.rs": {
+      "bytes": 17193,
+      "sha256": "320be5a7bdb7b997844da3ca168536f9458b046151e5dbe3d675fe19ed564f9a"
+    },
+    "codex-rs/hepta-neuron/src/runtime_types.rs": {
+      "bytes": 21134,
+      "sha256": "754e5b324af9762bab507ff9543484a91f2e67c8fbc88f9505a1d2bf194cba3b"
+    },
+    "codex-rs/hepta-neuron/src/sparse.rs": {
+      "bytes": 15728,
+      "sha256": "bc5a1f64ddfda4e603e590d62b0ed01fa5b0b3cd54f1d1d4407477af5bed2810"
+    },
+    "codex-rs/hepta-neuron/src/sparse_body_scope_tests.rs": {
+      "bytes": 3808,
+      "sha256": "055790ef7be81f8db53fb270d82fd845c3d530f2bb62d4fe220526dc8eb97bce"
+    },
+    "codex-rs/hepta-neuron/src/sparse_tests.rs": {
+      "bytes": 10294,
+      "sha256": "40069dacc61797df327402da7a9f74e7838db5757a124587eaf3f158e6998a8b"
+    },
+    "codex-rs/hepta-neuron/src/witness.rs": {
+      "bytes": 8398,
+      "sha256": "69bca85b5d839db1fb0552bd521515645045b04a2e696828c30efbce77f57213"
+    },
+    "codex-rs/hepta-neuron/src/witness_tests.rs": {
+      "bytes": 4769,
+      "sha256": "fcd257565eb0017aebbfbbabb6b0d2c59367e044ba0330b018bb52ce976074ac"
+    },
+    "codex-rs/hepta-types/Cargo.toml": {
+      "bytes": 268,
+      "sha256": "0df592ec8d8b63b9c8e7f9ca9f74feca802ffbd3b71dd0959c4127b4ad3109b0"
+    },
+    "codex-rs/hepta-types/src/bounded.rs": {
+      "bytes": 3413,
+      "sha256": "5907602ef8128b3237991e737e2fc687eb5ac9c716505cc7d884eed9523ea2a9"
+    },
+    "codex-rs/hepta-types/src/bounded_tests.rs": {
+      "bytes": 1642,
+      "sha256": "3145c56c2882e91420bc994dd93f3375e1b532b03331826868d0ecfc019077bc"
+    },
+    "codex-rs/hepta-types/src/canonical_digest.rs": {
+      "bytes": 15228,
+      "sha256": "d7df2b3581046fec4d7350747b1a8053a549c6feb33e462802107a4eb4acd391"
+    },
+    "codex-rs/hepta-types/src/canonical_digest_tests.rs": {
+      "bytes": 14679,
+      "sha256": "9985f3ac27b0f357653206f4788cb366b623548c53502d277cd81f1a0f3d8fbe"
+    },
+    "codex-rs/hepta-types/src/digest.rs": {
+      "bytes": 4474,
+      "sha256": "8bfa9aa8424a4a60d4f2f7044099a080a07e9bf3cff958690c3a4e9046a4b4e2"
+    },
+    "codex-rs/hepta-types/src/digest_stream_tests.rs": {
+      "bytes": 1484,
+      "sha256": "9ff87ab6ffb17f27c2a23762893f641bb55edaff33f8bfb307729d9be8295a6c"
+    },
+    "codex-rs/hepta-types/src/digest_tests.rs": {
+      "bytes": 1719,
+      "sha256": "838dc12e305735321c1028dabb7c5dd4e363f1bced8126d2c50eb7527febe37c"
+    },
+    "codex-rs/hepta-types/src/fixed.rs": {
+      "bytes": 3717,
+      "sha256": "38de891c6a9dd6a2889c0d6a83fd0bcecf6ed17e2b7090739df8d2effe0b2cff"
+    },
+    "codex-rs/hepta-types/src/fixed_tests.rs": {
+      "bytes": 2115,
+      "sha256": "cfa86da0bc63fa273c3124bbd0988fd6bd22383a0338b15ac2a944c80aa5544b"
+    },
+    "codex-rs/hepta-types/src/identity.rs": {
+      "bytes": 13344,
+      "sha256": "5e73c7848a46cd72f22fed856890ff4978204a6a0d2a0088dfe4a974796515f3"
+    },
+    "codex-rs/hepta-types/src/identity_tests.rs": {
+      "bytes": 5482,
+      "sha256": "c3bba7041a11ead1ccb655fb6491c5835a3020c3f26d4deb22edc94a4f8e34be"
+    },
+    "codex-rs/hepta-types/src/lib.rs": {
+      "bytes": 3046,
+      "sha256": "6793a05230b404884f1e2aed89a4369c52ad9a7f7adbb52a39a3ff1bf0ef5283"
+    },
+    "codex-rs/hepta-types/src/numeric_conversion.rs": {
+      "bytes": 9505,
+      "sha256": "d183cfb5f6981cb9d767a0d8a90cb895153f932ebc3c635ceb4f0b86e090cbfd"
+    },
+    "codex-rs/hepta-types/src/numeric_conversion_tests.rs": {
+      "bytes": 11101,
+      "sha256": "554d51398fdef4cd69ccc43b3f0d4a002a2a8eed20552a8228770bfde364883a"
+    },
+    "codex-rs/hepta-types/src/numeric_profile.rs": {
+      "bytes": 9363,
+      "sha256": "d656fa38fea5a18105da911107caae4d326a653854df0c5baed10d4ab3c6bbe9"
+    },
+    "codex-rs/hepta-types/src/numeric_profile_tests.rs": {
+      "bytes": 1969,
+      "sha256": "fab0d6bd469412e77191e43cb17dde7f9638b07292ea5e2df5ad242cf616ea1a"
+    },
+    "codex-rs/hepta-types/src/prompt_delivery.rs": {
+      "bytes": 4948,
+      "sha256": "f01b741add536a597bf9c87664f83909fd77989d19ff4e2fc2c752d98cfbf593"
+    },
+    "codex-rs/hepta-types/src/prompt_delivery_tests.rs": {
+      "bytes": 2578,
+      "sha256": "1ad1075b9433c1a31629ba3df0509ce16ae7c70060797d2ea08f21b5a2c63f1a"
+    },
+    "codex-rs/hepta-types/src/registry.rs": {
+      "bytes": 9460,
+      "sha256": "ad15fac503e3988c3fc5d8892136f91c45bb41a12266de5e037a31a6a690b005"
+    },
+    "codex-rs/hepta-types/src/registry_tests.rs": {
+      "bytes": 5008,
+      "sha256": "d964bd53b636362da367fc9edf053c72272d62416ef231b632ee3dda6a5ec59a"
+    },
+    "codex-rs/hepta-types/src/topology.rs": {
+      "bytes": 14135,
+      "sha256": "e1888c64c8682491837c907a91a960327530251450ecb38e70a60df792adba22"
+    },
+    "codex-rs/rust-toolchain.toml": {
+      "bytes": 78,
+      "sha256": "570656042681cfd8795403a455baf9a33035331a07db0645e866bbcea89a3d64"
+    },
+    "experiments/adaptive_neuron_v2/PROTOCOL.json": {
+      "bytes": 7423,
+      "sha256": "1771097fb66caeeaf1f4ab236d7692384d34010adf036be41b6b1e0ae04f784e"
+    },
+    "experiments/adaptive_neuron_v2/__init__.py": {
+      "bytes": 77,
+      "sha256": "f8b34115fa088092bcd8cf5bd12fb8d80d75e25da89ba49404ac5fc6cad65670"
+    },
+    "experiments/adaptive_neuron_v2/batch.py": {
+      "bytes": 9439,
+      "sha256": "a117e291f152ba95e4d0343d91f6e7613607af27624412053d272c1352721253"
+    },
+    "experiments/adaptive_neuron_v2/deployment.py": {
+      "bytes": 11471,
+      "sha256": "0dc75229db115a2072a6edf0592d01e9a89d64828bcf0fe5377f81cf407803a5"
+    },
+    "experiments/adaptive_neuron_v2/learning/__init__.py": {
+      "bytes": 82,
+      "sha256": "507cc2ca63aeb8c8efccc85ab0c6064fbca5e4839772af99f3dff0c266bcb1e2"
+    },
+    "experiments/adaptive_neuron_v2/learning/audit.py": {
+      "bytes": 19976,
+      "sha256": "824e04df6f5f3e5639dd52e68dc3dc790ddcfb172203cb02366963175ec7b65d"
+    },
+    "experiments/adaptive_neuron_v2/learning/kernel.py": {
+      "bytes": 5325,
+      "sha256": "73cdfa097375fd4b0c866f97039560ea99e6598eaf91c2b5c5989091c4ae7945"
+    },
+    "experiments/adaptive_neuron_v2/learning/meta.py": {
+      "bytes": 11098,
+      "sha256": "1810c19691c54d03ffdc46311dc35d83091f21089615bacaa4159b7fc09f0412"
+    },
+    "experiments/adaptive_neuron_v2/learning/network.py": {
+      "bytes": 7359,
+      "sha256": "ebef4579c4db7e7e56b05b37b709bf934a8e4a980b4f775c6813dd10054233d5"
+    },
+    "experiments/adaptive_neuron_v2/learning/runner.py": {
+      "bytes": 10209,
+      "sha256": "702cba314d02cce28da6c10c4e307362e1eda3ffbf88a2a1cda227a4d5c3eac6"
+    },
+    "experiments/adaptive_neuron_v2/learning/task.py": {
+      "bytes": 2640,
+      "sha256": "dde25d0a318e8ae75b4728c23bccf4f82b4627785f54eb2665ced43d82487f98"
+    },
+    "experiments/adaptive_neuron_v2/learning/test_learning.py": {
+      "bytes": 11098,
+      "sha256": "9660f1c009d01edd2de8c32a4da57870bbf33707e7c747a6f8572ed8d5c1e4f4"
+    },
+    "experiments/adaptive_neuron_v2/learning/test_runner.py": {
+      "bytes": 7903,
+      "sha256": "0fccf17344d4d7f87e4b5f2448b2380f9dd62004bdef46bbcff479cd3277273e"
+    },
+    "experiments/adaptive_neuron_v2/ledger.py": {
+      "bytes": 3443,
+      "sha256": "18e9586cf638cc52ceb2864fce82f7294b72faccb869383a8f1fda0725020e9f"
+    },
+    "experiments/adaptive_neuron_v2/owner/__init__.py": {
+      "bytes": 83,
+      "sha256": "d138f99783b4a9bb935696824194c0cc1162f25e038739997b8f56937b274fd5"
+    },
+    "experiments/adaptive_neuron_v2/owner/adaptive_neuron_host.rs": {
+      "bytes": 3959,
+      "sha256": "3f4efb9d3c947320883cd0519b889fc2ca0d35caa36c7882b43ab1519ef28984"
+    },
+    "experiments/adaptive_neuron_v2/owner/audit.py": {
+      "bytes": 19473,
+      "sha256": "e2871e77b34be6f96b57c97675a91f2c8321ec68b3c4f8d4c5c401bb7b415695"
+    },
+    "experiments/adaptive_neuron_v2/owner/build.py": {
+      "bytes": 14570,
+      "sha256": "2cdd09d679c4e9a39de6fdf70918c7fe5a07644c4dd694ff72db34fe613a5fa1"
+    },
+    "experiments/adaptive_neuron_v2/owner/common.py": {
+      "bytes": 5719,
+      "sha256": "964e128ae0c781a48ebee48101450561a59463aa07cf8bc6bb8b7d418c2eea8d"
+    },
+    "experiments/adaptive_neuron_v2/owner/credit.rs": {
+      "bytes": 14536,
+      "sha256": "b2eda0af819b679952ee85bc05614701a35cc696700600e199068c2bca4655b3"
+    },
+    "experiments/adaptive_neuron_v2/owner/decision.rs": {
+      "bytes": 3867,
+      "sha256": "cbdf31a567c01b339100453c257fbfc6227566ba3ca0191eb107a640546ca3df"
+    },
+    "experiments/adaptive_neuron_v2/owner/events.rs": {
+      "bytes": 11101,
+      "sha256": "1e07d9c91fb87c115c575f9d70d81d7bbcda6851ef56ceb4b2f58ef38f8a6949"
+    },
+    "experiments/adaptive_neuron_v2/owner/neural.rs": {
+      "bytes": 3728,
+      "sha256": "8537db34adee5d95fc73ff2cfb7e569654fd1cb5218647086222f65b88294242"
+    },
+    "experiments/adaptive_neuron_v2/owner/port.rs": {
+      "bytes": 8929,
+      "sha256": "b6053f1258504f3ed394f0d24248c3c9b741421ad3cb58b777d55f031090c580"
+    },
+    "experiments/adaptive_neuron_v2/owner/profile.rs": {
+      "bytes": 3215,
+      "sha256": "befc65f7f9977a2ebcdfe1e74b68f9c6f7abaeaf6d3705c78e6b9a9b81fe051f"
+    },
+    "experiments/adaptive_neuron_v2/owner/qualify.py": {
+      "bytes": 11487,
+      "sha256": "ee857000313519d995a638909bceff73a2db83e63258954a999f087eb8a808f8"
+    },
+    "experiments/adaptive_neuron_v2/owner/reference.py": {
+      "bytes": 5760,
+      "sha256": "d26992bdf2f769b7d488e5fe5bde77e25c6afb00444350ca8519d7db9f2c804e"
+    },
+    "experiments/adaptive_neuron_v2/owner/run.py": {
+      "bytes": 14449,
+      "sha256": "b00fde2d8f9b872919a91326f60a5208da6a3159b9dca950f8f9ee2015757917"
+    },
+    "experiments/adaptive_neuron_v2/owner/session.rs": {
+      "bytes": 16023,
+      "sha256": "ec0bb86919215f9430b111fbdf44159dfbbd1b0a305c4431182ade990be27781"
+    },
+    "experiments/adaptive_neuron_v2/owner/test_owner.py": {
+      "bytes": 5793,
+      "sha256": "3620ba802184e59ed6f12322fe523f6a06f7f2ed7c7816deb82676c0ef044749"
+    },
+    "experiments/adaptive_neuron_v2/provenance.py": {
+      "bytes": 3668,
+      "sha256": "3007dcb1bc0cd79c256c218bf8cc1759878dd1debb60a38dbc483bbe40e6dfc4"
+    },
+    "experiments/adaptive_neuron_v2/requirements.txt": {
+      "bytes": 27,
+      "sha256": "1668a3152e33680d94637b13421c15e68bd97cd8701f7f555c691f5bc5c0b9f3"
+    },
+    "experiments/adaptive_neuron_v2/roster.py": {
+      "bytes": 4179,
+      "sha256": "ac32a0064cc0a41bd5a8768caaee3c6a42a5101d42380b086569960c1532df30"
+    },
+    "experiments/adaptive_neuron_v2/statistics.py": {
+      "bytes": 10861,
+      "sha256": "bf3cbd630b0f656cbf89420bb7dd332f415587b494f4aa35b996e182ecd3a4d6"
+    },
+    "experiments/adaptive_neuron_v2/test_roster.py": {
+      "bytes": 3338,
+      "sha256": "4dbafdf0bf09a505f162e3f89a0292cf8b829f21654a7fc66621f763740da8ff"
+    },
+    "experiments/free_boundary_neuron/PROTOCOL.json": {
+      "bytes": 4203,
+      "sha256": "fe20fa940845640383516f0df65ad99b4de08e77be2658b7b3b8a98910597d02"
+    },
+    "experiments/free_boundary_neuron/__init__.py": {
+      "bytes": 77,
+      "sha256": "d8c6d0c2308cdf9fa9b6fd6f756c9716eceba680738817a684a8cfc40c6c53bc"
+    },
+    "experiments/free_boundary_neuron/analysis.py": {
+      "bytes": 6739,
+      "sha256": "18c39e61c45345b020de59e2f42ef936fb34328a304212423004360f93f7b8b8"
+    },
+    "experiments/free_boundary_neuron/learning/PROTOCOL.json": {
+      "bytes": 6857,
+      "sha256": "30915cbb7ac27e153b058044d3ec47258fb3574193358aa136cd4dd2b5fc0d97"
+    },
+    "experiments/free_boundary_neuron/learning/__init__.py": {
+      "bytes": 84,
+      "sha256": "f89e8da6a53802479ad588a3ad8c070ea71fb6ac73864784c691fe2c890476b0"
+    },
+    "experiments/free_boundary_neuron/learning/network.py": {
+      "bytes": 10137,
+      "sha256": "60991ccd5c42b471c9bd9ab553f79d19e4fd78fd289efe17b3fcde93996af3ae"
+    },
+    "experiments/free_boundary_neuron/learning/runner.py": {
+      "bytes": 23838,
+      "sha256": "31fcc54ab23bcbc487007637e9bf3e87a9d9859d8b9477a133790013e2a250e9"
+    },
+    "experiments/free_boundary_neuron/learning/task.py": {
+      "bytes": 11661,
+      "sha256": "22a219504082da07b7118194e7c7a4efbc4752a793b59cca4e8d5b8c4110ad66"
+    },
+    "experiments/free_boundary_neuron/learning/test_learning.py": {
+      "bytes": 11604,
+      "sha256": "c99994be9c0704967ac9cddd5afee9fb7e4a4912ca6f25555fa5a874940cd2f6"
+    },
+    "experiments/free_boundary_neuron/math/PROFILE.json": {
+      "bytes": 918,
+      "sha256": "c2b7598dda538e2db27a6c76c7142e8a2eb13901d8307222e562be0f8a987849"
+    },
+    "experiments/free_boundary_neuron/math/PROTOCOL.json": {
+      "bytes": 2796,
+      "sha256": "8faabd48151672ea781b2d9496ff15d8c10e53053e34178b4170b017853da9c7"
+    },
+    "experiments/free_boundary_neuron/math/__init__.py": {
+      "bytes": 471,
+      "sha256": "79b3a6e5b5880f4944b3bf1613f43b1ef92000b02f05e98acb7a33315eb144d2"
+    },
+    "experiments/free_boundary_neuron/math/audit.py": {
+      "bytes": 12799,
+      "sha256": "7f20ec714ccf5ab40f70ba21c4f71e2898931961a6b1f137ff55a5f0bb98cb31"
+    },
+    "experiments/free_boundary_neuron/math/belief_reference_check.py": {
+      "bytes": 8036,
+      "sha256": "735f6ad27b3483a709b108aec7becccec99ef1f09dda1778ca485dd01483a3fd"
+    },
+    "experiments/free_boundary_neuron/math/finite_horizon.py": {
+      "bytes": 4457,
+      "sha256": "8982336f98a2420b7773b03ac3713e250ff07a8eef1e5840c2dbb43c7060afd0"
+    },
+    "experiments/free_boundary_neuron/math/hitting.py": {
+      "bytes": 6569,
+      "sha256": "07ddc2f69d4ff47c5ab0ecc06bb82a62e14ea32930fdc1bbc674e419b16d4df3"
+    },
+    "experiments/free_boundary_neuron/math/moving.py": {
+      "bytes": 3504,
+      "sha256": "50b393d241773baf651bcd34e04cf36d54148dd7288f1757204c6a1bc462cd61"
+    },
+    "experiments/free_boundary_neuron/math/one_shot.py": {
+      "bytes": 4042,
+      "sha256": "474f4f514ac026d50fcf298e145b16be6abe221cd0e476ebb276672ca7edfb87"
+    },
+    "experiments/free_boundary_neuron/math/renewal.py": {
+      "bytes": 9459,
+      "sha256": "e1bf10c3b196cfc268395bc1732b3060a98eb0a9324123d62b11975d4d964141"
+    },
+    "experiments/free_boundary_neuron/math/roots.py": {
+      "bytes": 2842,
+      "sha256": "e82a9d0abf79fe6978694ccc9710d600d1811e1be8fe9ecad0532d2570472e8f"
+    },
+    "experiments/free_boundary_neuron/math/tests/test_diffusion.py": {
+      "bytes": 6809,
+      "sha256": "037b9eecdf9a0ce49fe5f8b4ee28b681150a97778070dd117cc2b98416cd8808"
+    },
+    "experiments/free_boundary_neuron/math/tests/test_stopping.py": {
+      "bytes": 10478,
+      "sha256": "1cfe61fae5c0c0e49a069d96219a99207c66aefbd2fecc65e892d90a4c670a89"
+    },
+    "experiments/free_boundary_neuron/owner/PROTOCOL.json": {
+      "bytes": 5079,
+      "sha256": "644f55f8fc977df71c064cd5d96770689ee73e21409a9deac8910835351a4a0c"
+    },
+    "experiments/free_boundary_neuron/owner/audit.py": {
+      "bytes": 17795,
+      "sha256": "fa3a04a3eec984b7b02427797778fcf2fdd8aa8c83dee7bcf817e3f2cd9f3f39"
+    },
+    "experiments/free_boundary_neuron/owner/build.py": {
+      "bytes": 10277,
+      "sha256": "96457647eb855e4b73bf515837a43d4880a979647bb696966dfb0bdc14461dee"
+    },
+    "experiments/free_boundary_neuron/owner/common.py": {
+      "bytes": 8656,
+      "sha256": "2178854adbd868bac64edcb463611baf1f48c025b16ff91cc67f5d54e156c83a"
+    },
+    "experiments/free_boundary_neuron/owner/events.rs": {
+      "bytes": 10821,
+      "sha256": "b059ace576cda62546a4a6c84937c18df8e58a140ac443225586117b2f87f806"
+    },
+    "experiments/free_boundary_neuron/owner/free_boundary_host.rs": {
+      "bytes": 3802,
+      "sha256": "4f0f7eb0b9b6599f85a2155336c8c5b3e119506f67ac1429562742c48db45c1c"
+    },
+    "experiments/free_boundary_neuron/owner/port.rs": {
+      "bytes": 10508,
+      "sha256": "3ece6366386758ba0b3e907d8acdb8dd9c741816637f4c693571218bfaafb759"
+    },
+    "experiments/free_boundary_neuron/owner/profile.rs": {
+      "bytes": 3209,
+      "sha256": "1cb8242f2cb1628e1a3ba142102094d06c2d466974b7f39f6a780fa745738704"
+    },
+    "experiments/free_boundary_neuron/owner/run.py": {
+      "bytes": 11177,
+      "sha256": "67395a5d8730224781774dec3b3b9a812f478a07854cd99b2b2a808f43382e40"
+    },
+    "experiments/free_boundary_neuron/owner/session.rs": {
+      "bytes": 14190,
+      "sha256": "f6d0bd0185b1c69d25b3271843db3a14bd4bd5f5265d6d19e7e920b7e30804f1"
+    },
+    "experiments/free_boundary_neuron/owner/test_audit.py": {
+      "bytes": 3278,
+      "sha256": "cfd5eb48beb82c4b3ce650651849e6a2f7ff5184b3ddccbae4b62045201650ae"
+    },
+    "experiments/free_boundary_neuron/owner/test_native.py": {
+      "bytes": 10000,
+      "sha256": "94c10bfd3cad88bdfc8b459dcca991494e715d6c858de45f2bcde93ec6e6b8fb"
+    },
+    "experiments/free_boundary_neuron/provenance.py": {
+      "bytes": 5115,
+      "sha256": "390fea35b6b2cd799af8ab51b6188a7054a56718dc1d4c86fe5c6d808521f8de"
+    },
+    "experiments/free_boundary_neuron/requirements.txt": {
+      "bytes": 27,
+      "sha256": "1668a3152e33680d94637b13421c15e68bd97cd8701f7f555c691f5bc5c0b9f3"
+    },
+    "experiments/free_boundary_neuron/test_provenance.py": {
+      "bytes": 3510,
+      "sha256": "bba2839d13f00c4307524c97195c8b8850818bfb105cc7b7238f7592c75723c9"
+    },
+    "experiments/multimodal_output_portfolio/abc_next/native/measure.rs": {
+      "bytes": 1270,
+      "sha256": "27a8309398ef63818423ef7f06e8445a68954a6edb9160aa9d7bece9a8ab00b0"
+    }
+  },
+  "registration": "New adaptive study, sealed before scientific seeds; historical v1 results retain their original seals.",
+  "schema": "hepta.adaptive-neuron.source-seal.v2",
+  "source_commit": "58c1f6caabd28ad99f2d425cfaa5c4e050f7a19a",
+  "source_tree": "142ae37061052500fcb445a713d8fd141dc5e46b"
+}

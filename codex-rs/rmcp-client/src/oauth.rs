@@ -6,13 +6,11 @@
 //! Linux: DBus-based Secret Service, the kernel keyutils, and a combo of the two
 //! FreeBSD, OpenBSD: DBus-based Secret Service
 //!
-//! For Linux, we use linux-native-async-persistent which uses both keyutils and async-secret-service (see below) for storage.
-//! See the docs for the keyutils_persistent module for a full explanation of why both are used. Because this store uses the
-//! async-secret-service, you must specify the additional features required by that store
-//!
-//! async-secret-service provides access to the DBus-based Secret Service storage on Linux, FreeBSD, and OpenBSD. This is an asynchronous
-//! keystore that always encrypts secrets when they are transferred across the bus. If DBus isn't installed the keystore will fall back to the json
-//! file because we don't use the "vendored" feature.
+//! Linux enables synchronous Secret Service support with a vendored D-Bus client library.
+//! The selected default credential builder determines the actual storage backend; enabling
+//! linux-native-sync-persistent does not itself select the combined keyutils cache builder.
+//! Async refresh and persistence transactions run blocking credential I/O on Tokio's blocking pool.
+//! A vendored client library does not supply a running D-Bus service or an unlocked Secret Service.
 //!
 //! If the keyring is not available or fails, we fall back to CODEX_HOME/.credentials.json which is consistent with other coding CLI agents.
 
@@ -702,16 +700,48 @@ impl OAuthPersistor {
     }
 
     /// Persists RMCP-managed credential changes back to this client's resolved authority.
+    pub(crate) async fn persist_if_needed(&self) -> Result<()> {
+        self.persist_if_needed_in(&DefaultKeyringStore).await
+    }
+
+    pub(super) async fn persist_if_needed_in<K: KeyringStore + Clone + 'static>(
+        &self,
+        keyring_store: &K,
+    ) -> Result<()> {
+        let persistor = self.clone();
+        let keyring_store = keyring_store.clone();
+        // A blocking store mutation keeps running if its waiter is dropped. The
+        // owned transaction must retain both manager and cache guards until that
+        // mutation commits, even when the request that triggered it is cancelled.
+        tokio::spawn(async move {
+            let result = persistor.persist_transaction(&keyring_store).await;
+            if let Err(error) = &result {
+                warn!(
+                    server_name = %persistor.inner.server_name,
+                    error = %error,
+                    "MCP OAuth persistence transaction failed"
+                );
+            }
+            result
+        })
+        .await
+        .context("OAuth persistence task failed")?
+    }
+
     #[expect(
         clippy::await_holding_invalid_type,
-        reason = "AuthorizationManager async access must be serialized through its mutex"
+        reason = "AuthorizationManager snapshot and durable credential commit must stay serialized"
     )]
-    pub(crate) async fn persist_if_needed(&self) -> Result<()> {
-        let (client_id, maybe_credentials) = {
-            let manager = self.inner.authorization_manager.clone();
-            let guard = manager.lock().await;
-            guard.get_credentials().await
-        }?;
+    async fn persist_transaction<K: KeyringStore + Clone + 'static>(
+        &self,
+        keyring_store: &K,
+    ) -> Result<()> {
+        // Retain this guard across snapshot -> store mutation -> cache commit.
+        // Releasing it after get_credentials would let an older legacy snapshot
+        // overwrite a refresh that committed during the blocking worker await.
+        let manager = self.inner.authorization_manager.clone();
+        let guard = manager.lock().await;
+        let (client_id, maybe_credentials) = guard.get_credentials().await?;
 
         match maybe_credentials {
             Some(credentials) => {
@@ -739,32 +769,26 @@ impl OAuthPersistor {
                     expires_at,
                 };
                 if last_credentials.as_ref() != Some(&stored) {
-                    self.inner.credential_store.save(
-                        &DefaultKeyringStore,
-                        &self.inner.server_name,
-                        &stored,
-                    )?;
+                    self.inner
+                        .credential_store
+                        .save_async(keyring_store, &self.inner.server_name, &stored)
+                        .await?;
                     *last_credentials = Some(stored);
                 }
             }
             None => {
                 let mut last_credentials = self.inner.last_credentials.lock().await;
-                if last_credentials.take().is_some()
-                    && let Err(error) = self.inner.credential_store.delete(
-                        &DefaultKeyringStore,
-                        &self.inner.server_name,
-                        &self.inner.url,
-                    )
-                {
-                    warn!(
-                        server_name = %self.inner.server_name,
-                        error = %error,
-                        "failed to remove MCP OAuth credentials from the resolved store"
-                    );
+                if last_credentials.is_some() {
+                    self.inner
+                        .credential_store
+                        .delete_async(keyring_store, &self.inner.server_name, &self.inner.url)
+                        .await?;
+                    *last_credentials = None;
                 }
             }
         }
 
+        drop(guard);
         Ok(())
     }
 }

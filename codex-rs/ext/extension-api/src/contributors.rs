@@ -59,6 +59,7 @@ pub use prompt::PromptSlot;
 pub use skill_invocation::SkillInvocationInput;
 pub use skill_invocation::SkillInvocationKind;
 pub use thread_lifecycle::ThreadIdleCause;
+pub use thread_lifecycle::ThreadIdleContinuations;
 pub use thread_lifecycle::ThreadIdleInput;
 pub use thread_lifecycle::ThreadOriginator;
 pub use thread_lifecycle::ThreadReadyInput;

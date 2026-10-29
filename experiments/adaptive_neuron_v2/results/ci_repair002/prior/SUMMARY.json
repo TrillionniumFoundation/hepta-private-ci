@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.pr4169.ci-recovery.v1",
+  "head_sha": "0d113abe0ead3b23a682c052583f4dd1381b9656",
+  "jobs_observed": 56,
+  "runs": {
+    "40677378223": {
+      "count": 38,
+      "conclusions": {
+        "success": 16,
+        "failure": 6,
+        "cancelled": 12,
+        "skipped": 4
+      }
+    },
+    "40677378085": {
+      "count": 3,
+      "conclusions": {
+        "success": 1,
+        "failure": 2
+      }
+    },
+    "40677378157": {
+      "count": 15,
+      "conclusions": {
+        "success": 1,
+        "failure": 2,
+        "cancelled": 12
+      }
+    }
+  },
+  "full_logs_preserved": 19,
+  "logs_manifest": "LOG_MANIFEST.json",
+  "failures_index": "FAILURE_INDEX.json",
+  "cargo_deny_artifact_id": 12810991302,
+  "cargo_deny_artifact_sha256": "35f27b75af85c27a174500dd9116489acd4e498a98c583dcc6aa56bfc50ec732",
+  "no_remote_mutations": true,
+  "all_blockers_closed": false,
+  "interpretation": [
+    "Failed test names include attempts before Bazel retries; failed_target_summaries retain final target conclusions when the job reached its summary.",
+    "Cancelled jobs can contain real test failures before cancellation and never establish a passing gate.",
+    "Main Bazel/SDK jobs ended after approximately 60 minutes, matching source timeout-minutes:60; V8 jobs ended after approximately 30 minutes, matching timeout-minutes:30. This is a timeout inference, not a retrieved cancellation-reason field. Both matrices have fail-fast:false.",
+    "GitHub check-run annotation endpoint was rejected by the connector as outside its allowlisted GET routes. No administrative or branch-protection inference is made.",
+    "Whole-job cargo-deny logs repeatedly returned Transport closed. Its official artifact was downloaded and hash verified instead."
+  ]
+}

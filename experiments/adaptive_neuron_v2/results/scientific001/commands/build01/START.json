@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "experiments.adaptive_neuron_v2.owner.build",
+    "--destination",
+    "/dev/shm/hepta-adaptive-v2-batch001/sealed-builds/build01",
+    "--compiler",
+    "/tmp/hepta-ci-rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin",
+    "--vendor-root",
+    "/workspace/scratch/07399998a2e3/hepta/experiments/free_boundary_neuron/owner/runs/build01/vendor",
+    "--reproducible",
+    "--source-seal",
+    "/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_neuron_v2/results/registration001/SOURCE_SEAL.json"
+  ]
+}

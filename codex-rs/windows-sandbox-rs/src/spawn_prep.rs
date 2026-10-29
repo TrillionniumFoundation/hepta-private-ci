@@ -129,6 +129,20 @@ pub(crate) fn prepare_legacy_spawn_context(
     command: &[String],
     options: SpawnPrepOptions,
 ) -> Result<SpawnContext> {
+    let permissions =
+        ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
+            permission_profile,
+            workspace_roots,
+        )?;
+    if permissions.is_enforceable_by_windows_sandbox() {
+        // WRITE_RESTRICTED alone does not confine deletion authorized through
+        // ambient parent FILE_DELETE_CHILD grants. Reject before preparing
+        // directories, ACLs, tokens, or a child; read-only profiles also require
+        // a deletion boundary. The broker is selected by callers.
+        anyhow::bail!(
+            "the legacy restricted-token Windows sandbox cannot enforce filesystem deletion boundaries; use the elevated Windows sandbox backend"
+        );
+    }
     let common = prepare_spawn_context_common(
         permission_profile,
         workspace_roots,
@@ -525,16 +539,21 @@ mod tests {
     }
 
     #[test]
-    fn legacy_spawn_env_applies_offline_network_rewrite() {
-        let codex_home = TempDir::new().expect("tempdir");
+    fn legacy_rejection_preserves_environment_and_leaves_home_absent() {
+        let fixture = TempDir::new().expect("tempdir");
+        let codex_home = fixture.path().join("uncreated-codex-home");
         let cwd = TempDir::new().expect("tempdir");
-        let mut env_map = HashMap::new();
+        let mut env_map = HashMap::from([(
+            "HTTP_PROXY".to_string(),
+            "http://user.proxy:8080".to_string(),
+        )]);
+        let before = env_map.clone();
         let workspace_roots = workspace_roots_for(cwd.path());
 
-        let _context = prepare_legacy_spawn_context(
+        let error = prepare_legacy_spawn_context(
             &PermissionProfile::workspace_write(),
             workspace_roots.as_slice(),
-            codex_home.path(),
+            &codex_home,
             cwd.path(),
             &mut env_map,
             &["cmd.exe".to_string()],
@@ -543,13 +562,15 @@ mod tests {
                 add_git_safe_directory: false,
             },
         )
-        .expect("legacy env prep");
+        .err()
+        .expect("unsafe legacy profile must be rejected");
 
-        assert_eq!(env_map.get("SBX_NONET_ACTIVE"), Some(&"1".to_string()));
         assert_eq!(
-            env_map.get("HTTP_PROXY"),
-            Some(&"http://127.0.0.1:9".to_string())
+            error.to_string(),
+            "the legacy restricted-token Windows sandbox cannot enforce filesystem deletion boundaries; use the elevated Windows sandbox backend"
         );
+        assert_eq!(env_map, before);
+        assert!(!codex_home.try_exists().expect("inspect code home"));
     }
 
     #[test]

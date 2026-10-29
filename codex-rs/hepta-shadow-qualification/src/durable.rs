@@ -1,3 +1,4 @@
+#[cfg(not(windows))]
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Read;
@@ -118,7 +119,22 @@ pub(crate) fn verify_private_tree(root: &Path) -> Result<(), QualificationError>
 }
 
 pub(crate) fn sync_directory(path: &Path) -> Result<(), QualificationError> {
-    File::open(path)?.sync_all()?;
+    #[cfg(windows)]
+    let directory = {
+        use std::os::windows::fs::OpenOptionsExt;
+
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(0x0200_0000) // FILE_FLAG_BACKUP_SEMANTICS
+            .open(path)?
+    };
+    #[cfg(not(windows))]
+    let directory = File::open(path)?;
+    if !directory.metadata()?.is_dir() {
+        return Err(invalid("directory synchronization requires a directory"));
+    }
+    directory.sync_all()?;
     Ok(())
 }
 

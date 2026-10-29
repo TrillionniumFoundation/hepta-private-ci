@@ -1,0 +1,26 @@
+{
+  "arm": "meta_theta",
+  "complete": true,
+  "cost_scope": "From before fit-directory creation through training, progress, final model, summary writes and their hashes; excludes this completion receipt write.",
+  "files": {
+    "START.json": "334cf3ef49c17b27ad08cf812e3e44179fcbd64dab59631be65143493bedeac4",
+    "TRAINING.json": "db53d8b533c98cee36111d82c0c9c8da3cbc7af70a531c0d880d0fe7af13d8b9",
+    "checkpoint.json": "f415f0ab6c9cce3ee347cd69d5cfc6a0eb80f4ef18e3981bbb4924e46bed46ab",
+    "history/steps_0001_0032.json": "669661a48ae5e0103cea1fab2902243e9c9e5a7547b1810e0e824b7225a9f1c5",
+    "history/steps_0033_0064.json": "69a48cac8503e45ae4281c410ff8c1b33f96028db06febaf61deab9d0e0b6776",
+    "history/steps_0065_0096.json": "04f7e08f21106bf66573e4792219a65bc72c989eee4a9ba16090ba16ece6bda6",
+    "history/steps_0097_0128.json": "f914d501f16d7ec6ff25aa5b9a5cf5e8a10343bd47a4eee9086d62285d62b496",
+    "neural.json": "5cecfa89bcdea8bd38f68a511d46ca7fbf33d320a65a72efedf86320c0104374",
+    "progress/step_0032.json": "0cb97e32d4a5fc9a76f7f279bf35f7bb9cfd29f3572dc86b005d1010f7f06262",
+    "progress/step_0064.json": "83af91650b409d395f62904803950f4ad72c8879f2699e83ef66805320772547",
+    "progress/step_0096.json": "8e54038c0f5675d87e2ed1d500c14d92260194faf4515471457e5386251fea3e",
+    "progress/step_0128.json": "f415f0ab6c9cce3ee347cd69d5cfc6a0eb80f4ef18e3981bbb4924e46bed46ab"
+  },
+  "fit_cpu_seconds": 3.2966023359999994,
+  "fit_wall_seconds": 3.2973257089979597,
+  "phase": "screening",
+  "protocol_sha256": "1771097fb66caeeaf1f4ab236d7692384d34010adf036be41b6b1e0ae04f784e",
+  "schema": "hepta.adaptive-neuron.fit-complete.v2",
+  "seed": 401,
+  "source_seal_sha256": "594b1180532dc32b7d659f6d1031fa4047c9c6446b393a17590d27eab484019f"
+}

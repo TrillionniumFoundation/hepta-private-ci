@@ -1,0 +1,25 @@
+{
+  "accounting": "This enclosing interval includes child subprocesses. Nested receipts explain its components and must not be added to it again.",
+  "complete": true,
+  "cpu": {
+    "child_system_seconds": 0.055966999999999996,
+    "child_user_seconds": 0.102397,
+    "self_system_seconds": 0.10227499999999999,
+    "self_user_seconds": 0.604846
+  },
+  "error": null,
+  "facts": {
+    "audit_sha256": "35fece5dd2395214c0e6bc5eab26cc5acd66b019f20ee2678c3f9e14de6f1381",
+    "episodes": 16,
+    "independent_snn_prefixes": 48,
+    "signed_facts": 48
+  },
+  "finished_at_utc": "2026-10-28T11:20:35.908037+00:00",
+  "identity": {
+    "stage": "signed-credit-independent-audit"
+  },
+  "schema": "hepta.adaptive-neuron.cost-stage.v2",
+  "scope": "Every original raw receipt, independent Ed25519 verification, Python SNN and account reconstruction, 16 fresh owner processes, 16 historical closure retries and durable-gate corruption checks.",
+  "started_at_utc": "2026-10-28T11:20:34.874496+00:00",
+  "wall_seconds": 1.0335849260009127
+}

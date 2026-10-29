@@ -1,0 +1,207 @@
+{
+  "arms": {
+    "fixed_theta": {
+      "actual_neural_cell_updates": 1654784,
+      "all_losses_finite": true,
+      "checkpoint_sha256": "fb6527ed7ce2ff4fc0f65f6cebf9afccd1770d17b561d417a863ef9d35e6d8f8",
+      "final_theta": {
+        "lambda": 0.1,
+        "mu": 0.24999999999999997,
+        "sigma": 1.0
+      },
+      "initial_theta": {
+        "lambda": 0.1,
+        "mu": 0.24999999999999997,
+        "sigma": 1.0
+      },
+      "inner_projection_count": 0,
+      "outer_objective": "Independent-query fixed logistic-soft BCE after one hard-SNN SG support step; no direct theta term.",
+      "outer_optimizer": {
+        "beta1": 0.9,
+        "beta2": 0.999,
+        "epsilon": 1e-08,
+        "kind": "adam",
+        "learning_rate": 0.02
+      },
+      "outer_steps": 128,
+      "parameter_count": 57,
+      "parameter_sha256": "783361ee957724635c5ff1f7e9e389133d67a62e4c1fc387859ff4fefb702754",
+      "physical_theta_change": {
+        "lambda": 0.0,
+        "mu": 0.0,
+        "sigma": 0.0
+      },
+      "query_projection_count": 0,
+      "query_weight_learning_rate": 0.01,
+      "query_weight_updates": 128,
+      "raw_projection_count": 0,
+      "support_updates": 128,
+      "surrogate_scalar_evaluations": 3309568,
+      "training_cpu_seconds": 2.8792282399999998,
+      "training_wall_seconds": 2.8867642209952464,
+      "weight_change_l2": 0.18310305924018933
+    },
+    "meta_theta": {
+      "actual_neural_cell_updates": 1654784,
+      "all_losses_finite": true,
+      "checkpoint_sha256": "6c1b838ac706fd668173743c650f657581869800eb171351c335a4f0aefe14ca",
+      "final_hypergradient_checks": [
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            2.1195015079233668e-05,
+            3.178623233940789e-05,
+            -1.298727144050956e-06
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.001,
+          "full_update_difference": [
+            2.1195012966934712e-05,
+            3.178622970390066e-05,
+            -1.2987272923759008e-06
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 2.635423459758341e-12
+        },
+        {
+          "actual_neural_cell_updates": 8960,
+          "analytic": [
+            2.1195015079233668e-05,
+            3.178623233940789e-05,
+            -1.298727144050956e-06
+          ],
+          "analytic_chain_evaluations": 1,
+          "epsilon": 0.0001,
+          "full_update_difference": [
+            2.119501463226925e-05,
+            3.178623253496937e-05,
+            -1.2987266817532372e-06
+          ],
+          "full_update_evaluations": 6,
+          "max_scaled_error": 4.622971183244247e-13
+        }
+      ],
+      "final_theta": {
+        "lambda": 0.05315161257645631,
+        "mu": 1.005184202680002,
+        "sigma": 1.3031091429169397
+      },
+      "initial_theta": {
+        "lambda": 0.1,
+        "mu": 0.24999999999999997,
+        "sigma": 1.0
+      },
+      "inner_projection_count": 0,
+      "outer_objective": "Independent-query fixed logistic-soft BCE after one hard-SNN SG support step; no direct theta term.",
+      "outer_optimizer": {
+        "beta1": 0.9,
+        "beta2": 0.999,
+        "epsilon": 1e-08,
+        "kind": "adam",
+        "learning_rate": 0.02
+      },
+      "outer_steps": 128,
+      "parameter_count": 57,
+      "parameter_sha256": "746dab3086c39aec6c7e0c3e4254fb542012e27bed065196d02c50f80da26564",
+      "physical_theta_change": {
+        "lambda": -0.0468483874235437,
+        "mu": 0.755184202680002,
+        "sigma": 0.3031091429169397
+      },
+      "query_projection_count": 0,
+      "query_weight_learning_rate": 0.01,
+      "query_weight_updates": 128,
+      "raw_projection_count": 0,
+      "support_updates": 128,
+      "surrogate_scalar_evaluations": 3309568,
+      "training_cpu_seconds": 5.627242811,
+      "training_wall_seconds": 5.634005653002532,
+      "weight_change_l2": 0.18300897436061467
+    },
+    "standard": {
+      "actual_neural_cell_updates": 1654784,
+      "all_losses_finite": true,
+      "checkpoint_sha256": "148cb5ff4de9562f2d120f6ad723863ba1ff6deac7e3e381768c936e11a9ec3d",
+      "final_theta": {
+        "lambda": 0.1,
+        "mu": 0.24999999999999997,
+        "sigma": 1.0
+      },
+      "initial_theta": {
+        "lambda": 0.1,
+        "mu": 0.24999999999999997,
+        "sigma": 1.0
+      },
+      "inner_projection_count": 0,
+      "outer_objective": "Independent-query fixed logistic-soft BCE after one hard-SNN SG support step; no direct theta term.",
+      "outer_optimizer": {
+        "beta1": 0.9,
+        "beta2": 0.999,
+        "epsilon": 1e-08,
+        "kind": "adam",
+        "learning_rate": 0.02
+      },
+      "outer_steps": 128,
+      "parameter_count": 57,
+      "parameter_sha256": "a5e1e66c195415e49c2aebfd47c2cfdbb57868f4bba6e4b57aeb46f798d1a45c",
+      "physical_theta_change": {
+        "lambda": 0.0,
+        "mu": 0.0,
+        "sigma": 0.0
+      },
+      "query_projection_count": 0,
+      "query_weight_learning_rate": 0.01,
+      "query_weight_updates": 128,
+      "raw_projection_count": 0,
+      "support_updates": 128,
+      "surrogate_scalar_evaluations": 3309568,
+      "training_cpu_seconds": 1.719266485,
+      "training_wall_seconds": 1.7253856739989715,
+      "weight_change_l2": 0.18290078698034976
+    }
+  },
+  "development_only": true,
+  "finished_at_utc": "2026-10-28T10:11:14.974919+00:00",
+  "protocol": {
+    "datasets": {
+      "train_cost": [
+        0.01,
+        0.04,
+        0.08,
+        0.12
+      ],
+      "train_deadline": [
+        8,
+        16
+      ],
+      "train_reliability": [
+        0.6,
+        0.75
+      ]
+    },
+    "training": {
+      "gradient_norm_clip": 5.0,
+      "hypergradient_norm_clip": 1.0,
+      "inner_learning_rate": 0.03,
+      "outer_learning_rate": 0.02,
+      "outer_steps": 128,
+      "query_episodes": 64,
+      "query_weight_learning_rate": 0.01,
+      "support_episodes": 64
+    }
+  },
+  "schema": "hepta.adaptive-neuron.learning-development.v1",
+  "seed": 910010,
+  "source_sha256": {
+    "experiments/adaptive_neuron_v2/learning/__init__.py": "507cc2ca63aeb8c8efccc85ab0c6064fbca5e4839772af99f3dff0c266bcb1e2",
+    "experiments/adaptive_neuron_v2/learning/kernel.py": "73cdfa097375fd4b0c866f97039560ea99e6598eaf91c2b5c5989091c4ae7945",
+    "experiments/adaptive_neuron_v2/learning/meta.py": "2ceb0b4dcfb836477f1be8a466f83da74c303cf6a402bd2406df3a33131815b5",
+    "experiments/adaptive_neuron_v2/learning/network.py": "ebef4579c4db7e7e56b05b37b709bf934a8e4a980b4f775c6813dd10054233d5",
+    "experiments/adaptive_neuron_v2/learning/task.py": "dde25d0a318e8ae75b4728c23bccf4f82b4627785f54eb2665ced43d82487f98",
+    "experiments/adaptive_neuron_v2/learning/test_learning.py": "9660f1c009d01edd2de8c32a4da57870bbf33707e7c747a6f8572ed8d5c1e4f4"
+  },
+  "started_at_utc": "2026-10-28T10:11:04.552504+00:00",
+  "whole_attempt_cost_scope": "Process interval begins before learning imports and directory creation; includes all three development fits, checkpoint and model writes, and final mixed-gradient checks. Excludes shell/process startup and writing this final summary.",
+  "whole_attempt_cpu_seconds": 11.714849000000001,
+  "whole_attempt_wall_seconds": 10.941723137999361
+}

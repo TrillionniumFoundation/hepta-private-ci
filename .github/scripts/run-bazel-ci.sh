@@ -157,6 +157,18 @@ print_bazel_test_log_tails() {
 
     echo "::group::Bazel test log tail for ${target}"
     if [[ -f "$test_log" ]]; then
+      # Keep the complete first mismatch, even when Bazel caps console output
+      # or the final 200 lines contain only the tail of a large schema diff.
+      if [[ -n "${CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR:-}" ]]; then
+        local artifact_dir="${CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR}/failed-tests/${GITHUB_JOB:-local}/${rel_path}"
+        if mkdir -p "$artifact_dir" && cp "$test_log" "${artifact_dir}/test.log"; then
+          if [[ -f "${test_log%/*}/test.xml" ]]; then
+            cp "${test_log%/*}/test.xml" "${artifact_dir}/test.xml" || true
+          fi
+        else
+          echo "::warning::Could not preserve the complete failed test log for ${target}"
+        fi
+      fi
       tail -n 200 "$test_log"
     else
       echo "Missing test log: $test_log"
@@ -407,6 +419,27 @@ if [[ "${RUNNER_OS:-}" == "Windows" ]]; then
     )
   fi
   post_config_bazel_args+=("--test_env=PATH=${CODEX_BAZEL_WINDOWS_PATH}")
+
+  # Only test actions execute on this Windows runner. Remote Linux build
+  # actions keep their own paths; native tests need the verified NTFS root
+  # from configure-windows-test-temp.ps1, including Bazel's TEST_TMPDIR.
+  for env_var in TEMP TMP CODEX_TEST_REFS_VOLUME; do
+    if [[ -z "${!env_var:-}" ]]; then
+      echo "Missing verified Windows test volume environment: ${env_var}" >&2
+      exit 1
+    fi
+    windows_test_path="${!env_var}"
+    if command -v cygpath >/dev/null 2>&1; then
+      # Git Bash imports TEMP/TMP as POSIX paths. Our native-command wrapper
+      # deliberately disables automatic argv conversion, so restore the drive
+      # path explicitly before handing it to Windows Bazel or its test process.
+      windows_test_path="$(cygpath --mixed "${windows_test_path}")"
+    fi
+    post_config_bazel_args+=("--test_env=${env_var}=${windows_test_path}")
+    if [[ "${env_var}" == TEMP ]]; then
+      post_config_bazel_args+=("--test_tmpdir=${windows_test_path}")
+    fi
+  done
 fi
 
 bazel_console_log="$(mktemp)"

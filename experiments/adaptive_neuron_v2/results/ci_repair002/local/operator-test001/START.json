@@ -1,0 +1,42 @@
+{
+  "command": [
+    "/tmp/pq-test-tools/bin/just",
+    "test",
+    "-p",
+    "codex-hepta-operator-acceptance",
+    "--offline",
+    "--locked"
+  ],
+  "head": "836731b970fcaf6059e3ffc18e3948bfcbf8a75f",
+  "utc": "2026-10-29T06:54:27.611169+00:00",
+  "source_sha256": {
+    "codex-rs/hepta-operator-acceptance/src/durable_windows_tests.rs": "112a0c0e2fc92ab3143a1ae6e7c84f09b27c0d836dac2572efb1c89d68c6e94a",
+    "codex-rs/hepta-operator-acceptance/src/trust.rs": "a3053dc29018e8799612570ed22f665228c848422ad91da9083ef3683300ab8f",
+    "codex-rs/hepta-operator-acceptance/src/qualification_evidence.rs": "e5ed590959b157b7749ec5baabd657b198b0232c956e997c1de09bc1419e7caf",
+    "codex-rs/hepta-operator-acceptance/src/evidence.rs": "6aed7f7fa1306158595db6f43431490a5ddd6ae69936ea8cc2f0374c1b6a29c0",
+    "codex-rs/hepta-operator-acceptance/src/manifest_inventory.rs": "62951d647be00dd50b53f4eb0192185bb5215d7032643d5d8be326ae194b52cb",
+    "codex-rs/hepta-operator-acceptance/src/g5_trust.rs": "6b470ff5af68bbef709376b30e82ff2732b2f1ff59b73c48e971aa82a5f3854b",
+    "codex-rs/hepta-operator-acceptance/src/qualification_runs.rs": "048d923d2773dbb69af5c734df84f9475601f5b26501c78ec4c5d211be21079a",
+    "codex-rs/hepta-operator-acceptance/src/preflight.rs": "ffb1c2220de0b8d64d7386d9a5ede4a15384f0e0a6041dbb0a843281a3ca7a69",
+    "codex-rs/hepta-operator-acceptance/src/manifest_inventory_tests.rs": "497c9eb39a040888514b32927843f3b6362a578e464c09dfe4e654e7b954aabe",
+    "codex-rs/hepta-operator-acceptance/src/durable.rs": "73032482620a480f6554e94179606f4ba5a68e0d43cc71431e870dc62f4f9c26",
+    "codex-rs/hepta-operator-acceptance/src/ceremony.rs": "8b2181e16a1292c07b310db7ab304a5686c13fabb368b50eca8e2ea85d99d075",
+    "codex-rs/hepta-operator-acceptance/src/g5_main.rs": "af7785765d33608999b5a60b828efb91960b227a6158051dcccf8e118c0fa6e4",
+    "codex-rs/hepta-operator-acceptance/src/g5_trust_tests.rs": "1f032a6985bde1e7a5aa4ea1c75746708cafe4f61e26a7957c640722e644efe6",
+    "codex-rs/hepta-operator-acceptance/src/lib.rs": "6da321eac1af84397958fa833229e274406e01591be9d0d33efc588ed79809c0",
+    "codex-rs/hepta-operator-acceptance/src/main.rs": "153d550a5e6761909f147c05ecd00f728cd40a8d45ad8d34f4d8b9c08c12c3e9",
+    "codex-rs/hepta-operator-acceptance/src/model.rs": "7dd0c78b2c72fff4b2154a8e13502b3376513c917d99663f12a404a461589e99",
+    "codex-rs/hepta-operator-acceptance/src/trust_tests.rs": "639178153637e5e97fc787ede1e1026b5f44c4f0978939232e6e81bcad6edf10",
+    "codex-rs/hepta-operator-acceptance/src/test_support.rs": "6647f0486ab8c9cee211f8c324d1a098f87c4f3ca5ff550eca9061853b8a60ff",
+    "codex-rs/hepta-operator-acceptance/src/durable_windows.rs": "274d130950d045c9539eca4e14a7076a19d8fd28cdb6ce802a22842beb1ea3c6",
+    "codex-rs/hepta-operator-acceptance/src/receipt_store.rs": "74b3f633277be40c3f1066a4ae0649c4b93fd7fa7eefa6b15a61719532f7c6d7",
+    "codex-rs/hepta-operator-acceptance/src/lib_tests.rs": "725339019c4350a4cada1e325081f0ad8dfff858b05e84f03189d7ff48b77aed",
+    "codex-rs/hepta-operator-acceptance/Cargo.toml": "a40d8f6712a9f82f912e634ee8a8059e4baf017e838dc2009ae1cb5de8009837",
+    "codex-rs/Cargo.toml": "652b11a3f070925577f7ce824dc34e3d14ab981825b7ff19c0788e5056d4c662",
+    "codex-rs/Cargo.lock": "586dde512c1d41396b0ff8292f0e9ddac400e163dae47d05fb486e268d9443ee",
+    "justfile": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+    "scripts/run-nextest.py": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+  },
+  "target_dir": "/tmp/hepta-operator-acceptance-ci-target",
+  "compiler": "rustc 1.96.0 (ac68faa20 2026-05-25)"
+}

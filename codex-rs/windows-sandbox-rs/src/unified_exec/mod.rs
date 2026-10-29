@@ -48,7 +48,6 @@ pub struct WindowsSandboxSessionRequest<'a> {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum WindowsSandboxBackend {
-    RestrictedToken,
     Elevated,
 }
 
@@ -61,11 +60,10 @@ enum WindowsSandboxBackend {
 /// declared writable roots. Explicit filesystem overrides have the same
 /// problem because their effective parent ACLs are not part of the token.
 ///
-/// Therefore the direct token backend is intentionally limited to an
-/// unrestricted-read, no-write, no-override profile. Every write-capable or
-/// path-restricted request is delegated to the elevated broker, which owns the
-/// authoritative filesystem mediation boundary. If that broker is unavailable,
-/// launch fails closed rather than falling back to the weaker backend.
+/// Read-only profiles also need a deletion boundary. Every managed filesystem
+/// request is delegated to the elevated broker; its native confinement tests
+/// remain the acceptance gate. If that broker is unavailable, launch fails
+/// closed rather than falling back to the direct token backend.
 fn select_windows_sandbox_backend(
     request: &WindowsSandboxSessionRequest<'_>,
 ) -> Result<WindowsSandboxBackend> {
@@ -79,23 +77,11 @@ fn select_windows_sandbox_backend(
         bail!("network proxy restricting SID requires the elevated Windows sandbox backend");
     }
 
-    let permissions =
-        ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
-            request.permission_profile,
-            request.workspace_roots,
-        )?;
-    let requires_elevated_filesystem = !permissions.has_full_disk_read_access()
-        || permissions.uses_write_capabilities_for_cwd(request.cwd, &request.env_map)
-        || request.read_roots_override.is_some()
-        || request.write_roots_override.is_some()
-        || !request.deny_read_paths_override.is_empty()
-        || !request.deny_write_paths_override.is_empty();
-
-    Ok(if requires_elevated_filesystem {
-        WindowsSandboxBackend::Elevated
-    } else {
-        WindowsSandboxBackend::RestrictedToken
-    })
+    ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
+        request.permission_profile,
+        request.workspace_roots,
+    )?;
+    Ok(WindowsSandboxBackend::Elevated)
 }
 
 pub async fn spawn_windows_sandbox_session_for_level(
@@ -125,26 +111,11 @@ pub async fn spawn_windows_sandbox_session_for_level(
             )
             .await
         }
-        WindowsSandboxBackend::RestrictedToken => {
-            spawn_windows_sandbox_session_legacy(
-                request.permission_profile,
-                request.workspace_roots,
-                request.codex_home,
-                request.command,
-                request.cwd,
-                request.env_map,
-                request.timeout_ms,
-                request.deny_read_paths_override,
-                request.deny_write_paths_override,
-                request.tty,
-                request.stdin_open,
-                request.use_private_desktop,
-            )
-            .await
-        }
     }
 }
 
+/// Rejects managed filesystem profiles that the direct legacy token cannot confine.
+/// Use `spawn_windows_sandbox_session_for_level` to select a supported backend.
 #[allow(clippy::too_many_arguments)]
 pub async fn spawn_windows_sandbox_session_legacy(
     permission_profile: &PermissionProfile,

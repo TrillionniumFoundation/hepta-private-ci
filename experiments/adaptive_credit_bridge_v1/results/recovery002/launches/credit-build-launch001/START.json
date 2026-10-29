@@ -1,0 +1,20 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "experiments.adaptive_credit_bridge_v1.build",
+    "--destination",
+    "/workspace/scratch/07399998a2e3/recovery/credit-build001",
+    "--compiler",
+    "/tmp/pq-rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin",
+    "--cache",
+    "/tmp/pq-cargo",
+    "--source-seal",
+    "/workspace/scratch/07399998a2e3/recovery/frozen-credit-source/experiments/adaptive_neuron_v2/results/registration001/SOURCE_SEAL.json",
+    "--bridge-seal",
+    "/workspace/scratch/07399998a2e3/recovery/frozen-credit-source/experiments/adaptive_credit_bridge_v1/results/formal001/SOURCE_SEAL.json"
+  ],
+  "source_commit": "e91a7002bfd650e4a2b057b18b9d81f4242b9ed2",
+  "scope": "New reconstruction build after workspace loss; previous formal build/results remain separate.",
+  "utc": "2026-10-29T06:36:24.696612+00:00"
+}

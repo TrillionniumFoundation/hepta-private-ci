@@ -432,9 +432,18 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), MatrixdControlError> {
             )));
         }
         Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
-        Err(error) if error.kind() == ErrorKind::ConnectionRefused => {}
-        Err(_) if !socket_path.exists() => return Ok(()),
-        Err(error) => return Err(error.into()),
+        Err(error) => {
+            // Windows can report ConnectionRefused for a rendezvous path
+            // that does not exist yet. It needs no stale-file cleanup.
+            match tokio::fs::symlink_metadata(socket_path).await {
+                Err(missing) if missing.kind() == ErrorKind::NotFound => return Ok(()),
+                Err(metadata_error) => return Err(metadata_error.into()),
+                Ok(_) => {}
+            }
+            if error.kind() != ErrorKind::ConnectionRefused {
+                return Err(error.into());
+            }
+        }
     }
     if codex_uds::is_stale_socket_path(socket_path).await? {
         tokio::fs::remove_file(socket_path).await?;
@@ -853,13 +862,16 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn health_tracks_real_task_state_and_owner_uds_serves_exact_identity() -> TestResult {
+    async fn health_tracks_real_task_state_and_owner_uds_enforces_platform_gate() -> TestResult {
         // The product fleet root deliberately leaves Darwin `sun_path`
         // headroom. The SSD test harness uses a much deeper TMPDIR, so put
         // this socket-binding fixture under the canonical short temp root.
-        let temp = tempfile::Builder::new()
-            .prefix("hmx-control-")
-            .tempdir_in("/tmp")?;
+        let mut builder = tempfile::Builder::new();
+        builder.prefix("hmx-");
+        #[cfg(unix)]
+        let temp = builder.tempdir_in("/tmp")?;
+        #[cfg(not(unix))]
+        let temp = builder.tempdir()?;
         let fake = Arc::new(FakeTransport::default());
         let (state, connections) = state(&temp, fake).await?;
         let socket = layout(&temp, &agent_id()?)?
@@ -871,30 +883,43 @@ mod tests {
         let task = tokio::spawn(server.run());
 
         let mut stream = UnixStream::connect(&socket).await?;
-        let request = MatrixdRequest {
-            schema_version: MATRIXD_CONTROL_SCHEMA_VERSION,
-            request_id: 41,
-            agent_id: agent_id()?,
-            fence: None,
-            method: MatrixdMethod::Health,
-        };
-        let mut bytes = serde_json::to_vec(&request)?;
-        bytes.push(b'\n');
-        stream.write_all(&bytes).await?;
-        let mut reader = BufReader::new(stream);
-        let mut response = Vec::new();
-        reader.read_until(b'\n', &mut response).await?;
-        let response: MatrixdResponse = serde_json::from_slice(&response)?;
-        assert_eq!(response.release_id, "release-1");
-        assert!(matches!(
-            response.payload,
-            MatrixdPayload::Health(MatrixdHealth {
-                lifecycle: MatrixdLifecycle::Degraded,
-                agentd_connected: false,
-                matrix_sync_connected: false,
-                ..
-            })
-        ));
+        #[cfg(windows)]
+        {
+            // Windows currently lacks a verified peer-identity backend. The
+            // owner endpoint must close the stream before sending any data.
+            let error = stream
+                .ensure_current_user_peer()
+                .expect_err("Windows peer identity is unsupported");
+            assert_eq!(error.kind(), ErrorKind::Unsupported);
+            assert!(timeout(IO_TIMEOUT, stream.read_u8()).await?.is_err());
+        }
+        #[cfg(unix)]
+        {
+            let request = MatrixdRequest {
+                schema_version: MATRIXD_CONTROL_SCHEMA_VERSION,
+                request_id: 41,
+                agent_id: agent_id()?,
+                fence: None,
+                method: MatrixdMethod::Health,
+            };
+            let mut bytes = serde_json::to_vec(&request)?;
+            bytes.push(b'\n');
+            stream.write_all(&bytes).await?;
+            let mut reader = BufReader::new(stream);
+            let mut response = Vec::new();
+            reader.read_until(b'\n', &mut response).await?;
+            let response: MatrixdResponse = serde_json::from_slice(&response)?;
+            assert_eq!(response.release_id, "release-1");
+            assert!(matches!(
+                response.payload,
+                MatrixdPayload::Health(MatrixdHealth {
+                    lifecycle: MatrixdLifecycle::Degraded,
+                    agentd_connected: false,
+                    matrix_sync_connected: false,
+                    ..
+                })
+            ));
+        }
 
         connections.set_agentd_connected(true);
         connections.set_matrix_sync_connected(true);

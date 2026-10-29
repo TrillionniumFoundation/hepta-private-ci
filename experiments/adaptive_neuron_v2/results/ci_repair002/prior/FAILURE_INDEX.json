@@ -1,0 +1,1248 @@
+{
+  "job-122779130799.log": {
+    "failed_tests": [],
+    "failure_blocks": [],
+    "errors": [
+      {
+        "line": 3274,
+        "text": "error[E0616]: field `restart_pending` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 3280,
+        "text": "error[E0616]: field `restart_attempt` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 3286,
+        "text": "error[E0616]: field `restart_pending` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 3292,
+        "text": "error[E0616]: field `restart_attempt` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 3298,
+        "text": "error[E0616]: field `restart_pending` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 3304,
+        "text": "error[E0616]: field `restart_attempt` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 3314,
+        "text": "##[error]Process completed with exit code 101."
+      }
+    ],
+    "failed_target_summaries": [],
+    "raw_incomplete_failures": []
+  },
+  "job-122780464727.log": {
+    "failed_tests": [
+      "authority_schema::tests::missing_and_replaced_authority_triggers_fail_closed_on_reopen",
+      "cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation",
+      "cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate",
+      "cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers",
+      "cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission",
+      "cognitive_store::recovery::tests::writable_recovery_requires_exclusive_store_fence",
+      "cognitive_store_tests::v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_projection",
+      "evaluated_shadow::tests::abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome",
+      "evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes",
+      "evaluated_shadow::tests::host_failure_or_substituted_intuition_never_reaches_the_durable_stage",
+      "evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port",
+      "evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded",
+      "evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch",
+      "evaluated_shadow::tests::segmented::bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal",
+      "evaluated_shadow::tests::segmented::existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery",
+      "evaluated_shadow::tests::tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports",
+      "lease_lifecycle::tests::expiry_is_durable_and_terminal_for_renewal",
+      "lease_lifecycle::tests::issue_rejects_non_active_provider_observations_without_durable_mutation",
+      "lease_lifecycle::tests::issue_unknown_reconciles_without_duplicate_issue",
+      "lease_lifecycle::tests::provider_not_applied_restores_active_lease_after_unknown",
+      "lease_lifecycle::tests::renew_unknown_blocks_fabricated_success_until_reconciled",
+      "lease_lifecycle::tests::reused_operation_id_with_changed_semantics_conflicts",
+      "lease_lifecycle::tests::revoke_unknown_stays_nonterminal_until_provider_observation",
+      "outcome_credit_v2::tests::credit_failure_preserves_outcome_for_exact_reconciliation",
+      "outcome_credit_v2::tests::product_path_records_outcome_correction_then_conserved_credit",
+      "outcome_credit_v2::tests::run_episode_mismatch_rejects_before_any_outcome_append",
+      "setup_helper_embeds_as_invoker_manifest",
+      "tests::thread_read_recovery_keeps_in_progress_indeterminate",
+      "tests::thread_read_recovery_rejects_session_drift_and_duplicate_turns",
+      "tests::thread_read_recovery_requires_exact_stable_message_and_input",
+      "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+      "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+      "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+      "v1_store_migrates_atomically_to_dispatch_outcome_schema"
+    ],
+    "failure_blocks": [
+      {
+        "line": 3647,
+        "name": "---- evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes stdout ----",
+        "excerpt": "---- evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes stdout ----\n\nthread 'evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes' (2704) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72:\ncalled `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      {
+        "line": 3653,
+        "name": "---- evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port stdout ----",
+        "excerpt": "---- evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port stdout ----\n\nthread 'evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port' (1640) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72:\ncalled `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\n"
+      },
+      {
+        "line": 3658,
+        "name": "---- evaluated_shadow::tests::abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome stdout ----",
+        "excerpt": "---- evaluated_shadow::tests::abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome stdout ----\n\nthread 'evaluated_shadow::tests::abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome' (6660) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72:\ncalled `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\n"
+      },
+      {
+        "line": 3663,
+        "name": "---- evaluated_shadow::tests::host_failure_or_substituted_intuition_never_reaches_the_durable_stage stdout ----",
+        "excerpt": "---- evaluated_shadow::tests::host_failure_or_substituted_intuition_never_reaches_the_durable_stage stdout ----\n\nthread 'evaluated_shadow::tests::host_failure_or_substituted_intuition_never_reaches_the_durable_stage' (7176) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72:\ncalled `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\n"
+      },
+      {
+        "line": 3668,
+        "name": "---- evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded stdout ----",
+        "excerpt": "---- evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded stdout ----\n\nthread 'evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded' (9252) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72:\ncalled `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\n"
+      },
+      {
+        "line": 3673,
+        "name": "---- evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch stdout ----",
+        "excerpt": "---- evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch stdout ----\n\nthread 'evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch' (8708) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72:\ncalled `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\n"
+      },
+      {
+        "line": 3678,
+        "name": "---- evaluated_shadow::tests::segmented::bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal stdout ----",
+        "excerpt": "---- evaluated_shadow::tests::segmented::bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal stdout ----\n\nthread 'evaluated_shadow::tests::segmented::bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal' (8028) panicked at hepta-intelligence/src\\evaluated_shadow_segment_tests.rs:21:31:\ncalled `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\n"
+      },
+      {
+        "line": 3683,
+        "name": "---- outcome_credit_v2::tests::credit_failure_preserves_outcome_for_exact_reconciliation stdout ----",
+        "excerpt": "---- outcome_credit_v2::tests::credit_failure_preserves_outcome_for_exact_reconciliation stdout ----\n\nthread 'outcome_credit_v2::tests::credit_failure_preserves_outcome_for_exact_reconciliation' (6448) panicked at hepta-intelligence/src\\outcome_credit_v2.rs:378:43:\ndirectory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\n"
+      },
+      {
+        "line": 3688,
+        "name": "---- outcome_credit_v2::tests::product_path_records_outcome_correction_then_conserved_credit stdout ----",
+        "excerpt": "---- outcome_credit_v2::tests::product_path_records_outcome_correction_then_conserved_credit stdout ----\n\nthread 'outcome_credit_v2::tests::product_path_records_outcome_correction_then_conserved_credit' (3548) panicked at hepta-intelligence/src\\outcome_credit_v2.rs:378:43:\ndirectory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\n"
+      },
+      {
+        "line": 3693,
+        "name": "---- evaluated_shadow::tests::tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports stdout ----",
+        "excerpt": "---- evaluated_shadow::tests::tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports stdout ----\n\nthread 'evaluated_shadow::tests::tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports' (7900) panicked at hepta-intelligence/src\\evaluated_shadow_tests.rs:129:72:\ncalled `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\n"
+      },
+      {
+        "line": 3698,
+        "name": "---- outcome_credit_v2::tests::run_episode_mismatch_rejects_before_any_outcome_append stdout ----",
+        "excerpt": "---- outcome_credit_v2::tests::run_episode_mismatch_rejects_before_any_outcome_append stdout ----\n\nthread 'outcome_credit_v2::tests::run_episode_mismatch_rejects_before_any_outcome_append' (7040) panicked at hepta-intelligence/src\\outcome_credit_v2.rs:378:43:\ndirectory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\n"
+      },
+      {
+        "line": 3703,
+        "name": "---- evaluated_shadow::tests::segmented::existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery stdout ----",
+        "excerpt": "---- evaluated_shadow::tests::segmented::existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery stdout ----\n\nthread 'evaluated_shadow::tests::segmented::existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery' (9160) panicked at hepta-intelligence/src\\evaluated_shadow_segment_tests.rs:21:31:\ncalled `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\n\n"
+      },
+      {
+        "line": 3900,
+        "name": "---- authority_schema::tests::missing_and_replaced_authority_triggers_fail_closed_on_reopen stdout ----",
+        "excerpt": "---- authority_schema::tests::missing_and_replaced_authority_triggers_fail_closed_on_reopen stdout ----\n\nthread 'authority_schema::tests::missing_and_replaced_authority_triggers_fail_closed_on_reopen' (7644) panicked at hepta-authbus/src\\authority_schema_tests.rs:29:60:\ncalled `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n"
+      },
+      {
+        "line": 3932,
+        "name": "---- setup_helper_embeds_as_invoker_manifest stdout ----",
+        "excerpt": "---- setup_helper_embeds_as_invoker_manifest stdout ----\nError: find setup helper _main/codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup.exe\n\nCaused by:\n    The system cannot find the path specified. (os error 3)\n\n"
+      },
+      {
+        "line": 4109,
+        "name": "---- token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes stdout ----",
+        "excerpt": "---- token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes stdout ----\n\nthread 'token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes' (3988) panicked at windows-sandbox-rs/src\\token_tests.rs:213:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n>    false,\n     true,\n<    true,\n<    true,\n>    false,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      {
+        "line": 4126,
+        "name": "---- token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces stdout ----",
+        "excerpt": "---- token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces stdout ----\n\nthread 'token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces' (5900) panicked at windows-sandbox-rs/src\\token_tests.rs:280:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n [\n     Some(\n         PermissionDenied,\n     ),\n     Some(\n         PermissionDenied,\n     ),\n<    None,\n<    None,\n>    Some(\n>        PermissionDenied,\n>    ),\n>    Some(\n>        PermissionDenied,"
+      },
+      {
+        "line": 4151,
+        "name": "---- unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots stdout ----",
+        "excerpt": "---- unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots stdout ----\n\nthread 'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots' (5152) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:775:9:\nassertion failed: `(left == right)`: stdout=\"\"\n[2026-10-28 11:42:49.474 windows-sandbox-rs-unit-tests-bin.exe] START: C:\\Windows\\System32\\cmd.exe /d /c D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\.tmpj8U6N7\\workspace\\delete-fixtures.cmd\n[2026-10-28 11:42:49.668 windows-sandbox-rs-unit-tests-bin.exe] SUCCESS: C:\\Windows\\System32\\cmd.exe /d /c D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\.tmpj8U6N7\\workspace\\delete-fixtures.cmd\n\n\nDiff < left / right > :\n (\n     0,\n     false,\n     false,\n     false,\n<    None,\n<    false,\n>    Some(\n>        \"outside\",\n>    ),\n>    true,"
+      },
+      {
+        "line": 4210,
+        "name": "---- lease_lifecycle::tests::provider_not_applied_restores_active_lease_after_unknown stdout ----",
+        "excerpt": "---- lease_lifecycle::tests::provider_not_applied_restores_active_lease_after_unknown stdout ----\n\nthread 'lease_lifecycle::tests::provider_not_applied_restores_active_lease_after_unknown' (612) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:190:10:\ncalled `Result::unwrap()` on an `Err` value: Unavailable\n"
+      },
+      {
+        "line": 4215,
+        "name": "---- lease_lifecycle::tests::issue_unknown_reconciles_without_duplicate_issue stdout ----",
+        "excerpt": "---- lease_lifecycle::tests::issue_unknown_reconciles_without_duplicate_issue stdout ----\n\nthread 'lease_lifecycle::tests::issue_unknown_reconciles_without_duplicate_issue' (10140) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:31:10:\ncalled `Result::unwrap()` on an `Err` value: Unavailable\n"
+      },
+      {
+        "line": 4220,
+        "name": "---- lease_lifecycle::tests::expiry_is_durable_and_terminal_for_renewal stdout ----",
+        "excerpt": "---- lease_lifecycle::tests::expiry_is_durable_and_terminal_for_renewal stdout ----\n\nthread 'lease_lifecycle::tests::expiry_is_durable_and_terminal_for_renewal' (8080) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:217:10:\ncalled `Result::unwrap()` on an `Err` value: Unavailable\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      {
+        "line": 4226,
+        "name": "---- lease_lifecycle::tests::issue_rejects_non_active_provider_observations_without_durable_mutation stdout ----",
+        "excerpt": "---- lease_lifecycle::tests::issue_rejects_non_active_provider_observations_without_durable_mutation stdout ----\n\nthread 'lease_lifecycle::tests::issue_rejects_non_active_provider_observations_without_durable_mutation' (7588) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:84:14:\ncalled `Result::unwrap()` on an `Err` value: Unavailable\n"
+      },
+      {
+        "line": 4231,
+        "name": "---- lease_lifecycle::tests::reused_operation_id_with_changed_semantics_conflicts stdout ----",
+        "excerpt": "---- lease_lifecycle::tests::reused_operation_id_with_changed_semantics_conflicts stdout ----\n\nthread 'lease_lifecycle::tests::reused_operation_id_with_changed_semantics_conflicts' (6020) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:66:10:\ncalled `Result::unwrap()` on an `Err` value: Unavailable\n"
+      },
+      {
+        "line": 4236,
+        "name": "---- lease_lifecycle::tests::renew_unknown_blocks_fabricated_success_until_reconciled stdout ----",
+        "excerpt": "---- lease_lifecycle::tests::renew_unknown_blocks_fabricated_success_until_reconciled stdout ----\n\nthread 'lease_lifecycle::tests::renew_unknown_blocks_fabricated_success_until_reconciled' (4892) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:108:10:\ncalled `Result::unwrap()` on an `Err` value: Unavailable\n"
+      },
+      {
+        "line": 4241,
+        "name": "---- lease_lifecycle::tests::revoke_unknown_stays_nonterminal_until_provider_observation stdout ----",
+        "excerpt": "---- lease_lifecycle::tests::revoke_unknown_stays_nonterminal_until_provider_observation stdout ----\n\nthread 'lease_lifecycle::tests::revoke_unknown_stays_nonterminal_until_provider_observation' (4032) panicked at hepta-bao-adapter/src\\lease_lifecycle_tests.rs:150:10:\ncalled `Result::unwrap()` on an `Err` value: Unavailable\n\n"
+      },
+      {
+        "line": 4428,
+        "name": "---- v1_store_migrates_atomically_to_dispatch_outcome_schema stdout ----",
+        "excerpt": "---- v1_store_migrates_atomically_to_dispatch_outcome_schema stdout ----\n\nthread 'v1_store_migrates_atomically_to_dispatch_outcome_schema' (2408) panicked at hepta-automation/tests/automation.rs:1039:10:\nremove v14 run revision from v1 fixture: Database(SqliteError { code: 1, message: \"error in trigger automation_timer_lifecycle_drain: no such table: main.automation_dispatch_outcomes\" })\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n"
+      },
+      {
+        "line": 4548,
+        "name": "---- cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation stdout ----",
+        "excerpt": "---- cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation stdout ----\n\nthread 'cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation' (896) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:163:6:\ndescriptor-bound writable recovery: Indeterminate(\"cognitive recovery root is redirected\")\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      {
+        "line": 4554,
+        "name": "---- cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate stdout ----",
+        "excerpt": "---- cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate stdout ----\n\nthread 'cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate' (7712) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:214:48:\npointer rename: Unavailable(\"Access is denied. (os error 5)\")\n"
+      },
+      {
+        "line": 4559,
+        "name": "---- cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers stdout ----",
+        "excerpt": "---- cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers stdout ----\n\nthread 'cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers' (2344) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:291:5:\nassertion failed: matches!(CognitiveStore::open_with_recovery(&layout(&temp, &owner),\n    CognitiveRecoveryRequirement::ExactCurrentCut(&predecessor), &authority,\n    &RecoveryVerifier,).await, Err(CognitiveRecoveryError::AccessDenied(_)))\n"
+      },
+      {
+        "line": 4566,
+        "name": "---- cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission stdout ----",
+        "excerpt": "---- cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission stdout ----\n\nthread 'cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission' (4900) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:365:5:\nassertion failed: matches!(CognitiveStore::open_with_recovery(&layout(&temp, &owner),\n    CognitiveRecoveryRequirement::ExactCurrentCut(&tampered), &authority,\n    &RecoveryVerifier,).await, Err(CognitiveRecoveryError::AccessDenied(_)))\n"
+      },
+      {
+        "line": 4573,
+        "name": "---- cognitive_store::recovery::tests::writable_recovery_requires_exclusive_store_fence stdout ----",
+        "excerpt": "---- cognitive_store::recovery::tests::writable_recovery_requires_exclusive_store_fence stdout ----\n\nthread 'cognitive_store::recovery::tests::writable_recovery_requires_exclusive_store_fence' (6724) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:248:5:\nassertion failed: matches!(CognitiveStore::open_with_recovery(&layout(&temp, &owner),\n    CognitiveRecoveryRequirement::ExactCurrentCut(&anchor), &authority,\n    &RecoveryVerifier,).await, Err(CognitiveRecoveryError::Unavailable(_)))\n\n"
+      },
+      {
+        "line": 4677,
+        "name": "---- cognitive_store_tests::v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_projection stdout ----",
+        "excerpt": "---- cognitive_store_tests::v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_projection stdout ----\n\nthread 'cognitive_store_tests::v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_projection' (10040) panicked at hepta-memory/src\\cognitive_store_tests.rs:1094:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<1,2,3,4,5,6,7,8,9,10,11,12,13,14,15\n>1,2,3,4,5,6,7,8,9,10,11,12,13,14\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n"
+      },
+      {
+        "line": 5047,
+        "name": "---- tests::thread_read_recovery_rejects_session_drift_and_duplicate_turns stdout ----",
+        "excerpt": "---- tests::thread_read_recovery_rejects_session_drift_and_duplicate_turns stdout ----\n\nthread 'tests::thread_read_recovery_rejects_session_drift_and_duplicate_turns' (6648) panicked at hepta-codex-adapter/src\\lib_tests.rs:133:6:\ncalled `Result::unwrap()` on an `Err` value: Error(\"AbsolutePathBuf deserialized without a base path\", line: 0, column: 0)\n"
+      },
+      {
+        "line": 5052,
+        "name": "---- tests::thread_read_recovery_requires_exact_stable_message_and_input stdout ----",
+        "excerpt": "---- tests::thread_read_recovery_requires_exact_stable_message_and_input stdout ----\n\nthread 'tests::thread_read_recovery_requires_exact_stable_message_and_input' (5484) panicked at hepta-codex-adapter/src\\lib_tests.rs:133:6:\ncalled `Result::unwrap()` on an `Err` value: Error(\"AbsolutePathBuf deserialized without a base path\", line: 0, column: 0)\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      {
+        "line": 5058,
+        "name": "---- tests::thread_read_recovery_keeps_in_progress_indeterminate stdout ----",
+        "excerpt": "---- tests::thread_read_recovery_keeps_in_progress_indeterminate stdout ----\n\nthread 'tests::thread_read_recovery_keeps_in_progress_indeterminate' (7984) panicked at hepta-codex-adapter/src\\lib_tests.rs:133:6:\ncalled `Result::unwrap()` on an `Err` value: Error(\"AbsolutePathBuf deserialized without a base path\", line: 0, column: 0)\n\n"
+      }
+    ],
+    "errors": [
+      {
+        "line": 3561,
+        "text": "FAIL: //codex-rs/hepta-intelligence:hepta-intelligence-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-intelligence/hepta-intelligence-unit-tests/test.log)"
+      },
+      {
+        "line": 3864,
+        "text": "FAIL: //codex-rs/hepta-authbus:hepta-authbus-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-authbus/hepta-authbus-unit-tests/test.log)"
+      },
+      {
+        "line": 3923,
+        "text": "FAIL: //codex-rs/windows-sandbox-rs:windows-sandbox-rs-helper_manifest-test (Exit 101) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/windows-sandbox-rs/windows-sandbox-rs-helper_manifest-test/test.log)"
+      },
+      {
+        "line": 3947,
+        "text": "FAIL: //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests/test.log)"
+      },
+      {
+        "line": 4184,
+        "text": "FAIL: //codex-rs/hepta-bao-adapter:hepta-bao-adapter-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-bao-adapter/hepta-bao-adapter-unit-tests/test.log)"
+      },
+      {
+        "line": 4402,
+        "text": "FAIL: //codex-rs/hepta-automation:hepta-automation-automation-test (Exit 101) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-automation/hepta-automation-automation-test/test.log)"
+      },
+      {
+        "line": 4468,
+        "text": "FAIL: //codex-rs/hepta-memory:hepta-memory-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-memory/hepta-memory-unit-tests/test.log)"
+      },
+      {
+        "line": 5016,
+        "text": "FAIL: //codex-rs/app-server:app-server-unit-tests (shard 3 of 8) (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test_attempts/attempt_1.log)"
+      },
+      {
+        "line": 5017,
+        "text": "FAIL: //codex-rs/hepta-codex-adapter:hepta-codex-adapter-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-codex-adapter/hepta-codex-adapter-unit-tests/test.log)"
+      },
+      {
+        "line": 5331,
+        "text": "FAIL: //codex-rs/exec:exec-all-test (shard 1 of 8) (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec/exec-all-test/shard_1_of_8/test_attempts/attempt_1.log)"
+      },
+      {
+        "line": 5335,
+        "text": "FAIL: //codex-rs/app-server:app-server-unit-tests (shard 3 of 8) (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test_attempts/attempt_2.log)"
+      },
+      {
+        "line": 5351,
+        "text": "##[error]The operation was canceled."
+      }
+    ],
+    "failed_target_summaries": [],
+    "raw_incomplete_failures": [
+      "FAIL: //codex-rs/hepta-intelligence:hepta-intelligence-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-intelligence/hepta-intelligence-unit-tests/test.log)",
+      "FAIL: //codex-rs/hepta-authbus:hepta-authbus-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-authbus/hepta-authbus-unit-tests/test.log)",
+      "FAIL: //codex-rs/windows-sandbox-rs:windows-sandbox-rs-helper_manifest-test (Exit 101) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/windows-sandbox-rs/windows-sandbox-rs-helper_manifest-test/test.log)",
+      "FAIL: //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests/test.log)",
+      "FAIL: //codex-rs/hepta-bao-adapter:hepta-bao-adapter-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-bao-adapter/hepta-bao-adapter-unit-tests/test.log)",
+      "FAIL: //codex-rs/hepta-automation:hepta-automation-automation-test (Exit 101) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-automation/hepta-automation-automation-test/test.log)",
+      "FAIL: //codex-rs/hepta-memory:hepta-memory-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-memory/hepta-memory-unit-tests/test.log)",
+      "FAIL: //codex-rs/app-server:app-server-unit-tests (shard 3 of 8) (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test_attempts/attempt_1.log)",
+      "FAIL: //codex-rs/hepta-codex-adapter:hepta-codex-adapter-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-codex-adapter/hepta-codex-adapter-unit-tests/test.log)",
+      "FAIL: //codex-rs/exec:exec-all-test (shard 1 of 8) (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec/exec-all-test/shard_1_of_8/test_attempts/attempt_1.log)",
+      "FAIL: //codex-rs/app-server:app-server-unit-tests (shard 3 of 8) (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test_attempts/attempt_2.log)"
+    ]
+  },
+  "job-122780464755.log": {
+    "failed_tests": [
+      "fenced_holdout_file::tests::longer_divergent_history_cannot_skip_the_retained_minimum_prefix",
+      "outbound_proxy::redirect_integration_tests::route_aware_pool_re_resolves_redirects_and_logs_only_final_outcome",
+      "release::copy_tests::readonly_source_is_copied_synced_and_preserved_on_duplicate_install",
+      "release::tests::catalog_resolves_only_digest_bound_per_agent_allowances",
+      "release::tests::program_mutation_is_detected_and_release_state_survives_reopen",
+      "release::tests::schema_v2_bundle_binds_both_exact_programs_and_closed_world"
+    ],
+    "failure_blocks": [
+      {
+        "line": 7749,
+        "name": "---- release::copy_tests::readonly_source_is_copied_synced_and_preserved_on_duplicate_install stdout ----",
+        "excerpt": "---- release::copy_tests::readonly_source_is_copied_synced_and_preserved_on_duplicate_install stdout ----\nError: Io(Os { code: 13, kind: PermissionDenied, message: \"Permission denied\" })\n"
+      },
+      {
+        "line": 7752,
+        "name": "---- release::tests::program_mutation_is_detected_and_release_state_survives_reopen stdout ----",
+        "excerpt": "---- release::tests::program_mutation_is_detected_and_release_state_survives_reopen stdout ----\nError: Io(Os { code: 13, kind: PermissionDenied, message: \"Permission denied\" })\n"
+      },
+      {
+        "line": 7755,
+        "name": "---- release::tests::catalog_resolves_only_digest_bound_per_agent_allowances stdout ----",
+        "excerpt": "---- release::tests::catalog_resolves_only_digest_bound_per_agent_allowances stdout ----\nError: Io(Os { code: 13, kind: PermissionDenied, message: \"Permission denied\" })\n"
+      },
+      {
+        "line": 7758,
+        "name": "---- release::tests::schema_v2_bundle_binds_both_exact_programs_and_closed_world stdout ----",
+        "excerpt": "---- release::tests::schema_v2_bundle_binds_both_exact_programs_and_closed_world stdout ----\nError: Io(Os { code: 13, kind: PermissionDenied, message: \"Permission denied\" })\n\n"
+      },
+      {
+        "line": 7931,
+        "name": "---- fenced_holdout_file::tests::longer_divergent_history_cannot_skip_the_retained_minimum_prefix stdout ----",
+        "excerpt": "---- fenced_holdout_file::tests::longer_divergent_history_cannot_skip_the_retained_minimum_prefix stdout ----\n\nthread 'fenced_holdout_file::tests::longer_divergent_history_cannot_skip_the_retained_minimum_prefix' (155600) panicked at hepta-intelligence-eval/src/fenced_holdout_file_tests.rs:261:33:\nrecover store: Busy\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n"
+      },
+      {
+        "line": 8575,
+        "name": "---- outbound_proxy::redirect_integration_tests::route_aware_pool_re_resolves_redirects_and_logs_only_final_outcome stdout ----",
+        "excerpt": "---- outbound_proxy::redirect_integration_tests::route_aware_pool_re_resolves_redirects_and_logs_only_final_outcome stdout ----\n\nthread '<unnamed>' (163764) panicked at http-client/src/route_aware_redirect_integration_tests.rs:117:50:\nHTTP headers should read: Os { code: 35, kind: WouldBlock, message: \"Resource temporarily unavailable\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\nthread 'outbound_proxy::redirect_integration_tests::route_aware_pool_re_resolves_redirects_and_logs_only_final_outcome' (163762) panicked at http-client/src/route_aware_redirect_integration_tests.rs:63:6:\nredirected request should use both selected routes: Request(reqwest::Error { kind: Request, url: \"http://127.0.0.1:49350/start\", source: hyper_util::client::legacy::Error(SendRequest, hyper::Error(IncompleteMessage)) })\n\n"
+      }
+    ],
+    "errors": [
+      {
+        "line": 7700,
+        "text": "FAIL: //codex-rs/hepta-fleet:hepta-fleet-unit-tests (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_arm64-fastbuild/testlogs/codex-rs/hepta-fleet/hepta-fleet-unit-tests/test.log)"
+      },
+      {
+        "line": 7784,
+        "text": "FAIL: //codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-unit-tests (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_arm64-fastbuild/testlogs/codex-rs/hepta-intelligence-eval/hepta-intelligence-eval-unit-tests/test.log)"
+      },
+      {
+        "line": 8482,
+        "text": "FAIL: //codex-rs/http-client:http-client-unit-tests (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_arm64-fastbuild/testlogs/codex-rs/http-client/http-client-unit-tests/test.log)"
+      },
+      {
+        "line": 9364,
+        "text": "##[error]The operation was canceled."
+      }
+    ],
+    "failed_target_summaries": [],
+    "raw_incomplete_failures": [
+      "FAIL: //codex-rs/hepta-fleet:hepta-fleet-unit-tests (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_arm64-fastbuild/testlogs/codex-rs/hepta-fleet/hepta-fleet-unit-tests/test.log)",
+      "FAIL: //codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-unit-tests (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_arm64-fastbuild/testlogs/codex-rs/hepta-intelligence-eval/hepta-intelligence-eval-unit-tests/test.log)",
+      "FAIL: //codex-rs/http-client:http-client-unit-tests (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_arm64-fastbuild/testlogs/codex-rs/http-client/http-client-unit-tests/test.log)"
+    ]
+  },
+  "job-122780464767.log": {
+    "failed_tests": [
+      "agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context",
+      "cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send",
+      "detect::sessions::cur::tests::detects_cur_sessions_in_batches_and_redetects_modified_imports",
+      "detect::sessions::cur::tests::detects_cur_transcript_with_project_cwd",
+      "detect::sessions::cur::tests::resolves_cur_project_names_with_common_separators",
+      "detect::sessions::cur::tests::skips_cur_subagent_transcripts",
+      "environment_selection::tests::blocking_snapshot_waits_for_starting_environment"
+    ],
+    "failure_blocks": [
+      {
+        "line": 4242,
+        "name": "---- cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send stdout ----",
+        "excerpt": "---- cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send stdout ----\n\nthread 'cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send' (5836) panicked at ext/hepta-memory/src\\cognitive\\federation.rs:1351:10:\nproposal before revoke\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n"
+      },
+      {
+        "line": 4413,
+        "name": "---- detect::sessions::cur::tests::detects_cur_transcript_with_project_cwd stdout ----",
+        "excerpt": "---- detect::sessions::cur::tests::detects_cur_transcript_with_project_cwd stdout ----\n\nthread 'detect::sessions::cur::tests::detects_cur_transcript_with_project_cwd' (7924) panicked at external-agent-migration/src\\detect\\sessions\\cur_tests.rs:27:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<[]\n>[\n>    ExternalAgentSessionMigration {\n>        path: \"C:\\\\ct\\\\40677378223-1-test-windows-shard-2fb92e597ee8\\\\.tmp5b7f24\\\\.external\\\\projects\\\\C--ct-40677378223-1-test-windows-shard-2fb92e597ee8-.tmp5b7f24-workspace with.dots_and-dashes\\\\agent-transcripts\\\\a-session\\\\a-session.jsonl\",\n>        cwd: \"C:\\\\ct\\\\40677378223-1-test-windows-shard-2fb92e597ee8\\\\.tmp5b7f24\\\\workspace with.dots_and-dashes\",\n>        title: Some(\n>            \"first request\",\n>        ),\n>    },\n>]\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      {
+        "line": 4433,
+        "name": "---- detect::sessions::cur::tests::detects_cur_sessions_in_batches_and_redetects_modified_imports stdout ----",
+        "excerpt": "---- detect::sessions::cur::tests::detects_cur_sessions_in_batches_and_redetects_modified_imports stdout ----\n\nthread 'detect::sessions::cur::tests::detects_cur_sessions_in_batches_and_redetects_modified_imports' (1284) panicked at external-agent-migration/src\\detect\\sessions\\cur_tests.rs:319:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<[]\n>[\n>    ExternalAgentSessionMigration {\n>        path: \"C:\\\\ct\\\\40677378223-1-test-windows-shard-2fb92e597ee8\\\\.tmptU1g3e\\\\.external\\\\projects\\\\C--ct-40677378223-1-test-windows-shard-2fb92e597ee8-.tmptU1g3e-workspace\\\\agent-transcripts\\\\session-00\\\\session-00.jsonl\",\n>        cwd: \"C:\\\\ct\\\\40677378223-1-test-windows-shard-2fb92e597ee8\\\\.tmptU1g3e\\\\workspace\",\n>        title: Some(\n>            \"request 0\",\n>        ),\n>    },\n>    ExternalAgentSessionMigration {\n>        path: \"C:\\\\ct\\\\40677378223-1-test-windows-shard-2fb92e597ee8\\\\.tmptU1g3e\\\\.external\\\\projects\\\\C--ct-40677378223-1-test-windows-shard-2fb92e597ee8-.tmptU1g3e-workspace\\\\agent-transcripts\\\\session-01\\\\session-01.jsonl\",\n>        cwd: \"C:\\\\ct\\\\40677378223-1-test-windows-shard-2fb92e597ee8\\\\.tmptU1g3e\\\\workspace\",\n>        title: Some(\n>            \"request 1\","
+      },
+      {
+        "line": 4795,
+        "name": "---- detect::sessions::cur::tests::resolves_cur_project_names_with_common_separators stdout ----",
+        "excerpt": "---- detect::sessions::cur::tests::resolves_cur_project_names_with_common_separators stdout ----\n\nthread 'detect::sessions::cur::tests::resolves_cur_project_names_with_common_separators' (2520) panicked at external-agent-migration/src\\detect\\sessions\\cur_tests.rs:199:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<None\n>Some(\n>    \"C:\\\\ct\\\\40677378223-1-test-windows-shard-2fb92e597ee8\\\\.tmpSysZ3h\\\\project\",\n>)\n\n\n"
+      },
+      {
+        "line": 4808,
+        "name": "---- detect::sessions::cur::tests::skips_cur_subagent_transcripts stdout ----",
+        "excerpt": "---- detect::sessions::cur::tests::skips_cur_subagent_transcripts stdout ----\n\nthread 'detect::sessions::cur::tests::skips_cur_subagent_transcripts' (9104) panicked at external-agent-migration/src\\detect\\sessions\\cur_tests.rs:154:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<[]\n>[\n>    ExternalAgentSessionMigration {\n>        path: \"C:\\\\ct\\\\40677378223-1-test-windows-shard-2fb92e597ee8\\\\.tmpddwa9T\\\\.external\\\\projects\\\\C--ct-40677378223-1-test-windows-shard-2fb92e597ee8-.tmpddwa9T-workspace\\\\agent-transcripts\\\\main-session\\\\main-session.jsonl\",\n>        cwd: \"C:\\\\ct\\\\40677378223-1-test-windows-shard-2fb92e597ee8\\\\.tmpddwa9T\\\\workspace\",\n>        title: Some(\n>            \"first request\",\n>        ),\n>    },\n>]\n\n\n\n"
+      },
+      {
+        "line": 5250,
+        "name": "---- agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context stdout ----",
+        "excerpt": "---- agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context stdout ----\n\nthread 'agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context' (6712) panicked at core/src\\agent\\control_tests.rs:393:10:\ninject thread resume context: InvalidRequest(\"turn is terminalizing or shutting down and cannot accept injected context\")\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n"
+      },
+      {
+        "line": 5347,
+        "name": "---- environment_selection::tests::blocking_snapshot_waits_for_starting_environment stdout ----",
+        "excerpt": "---- environment_selection::tests::blocking_snapshot_waits_for_starting_environment stdout ----\n\nthread 'environment_selection::tests::blocking_snapshot_waits_for_starting_environment' (3604) panicked at core/src\\environment_selection.rs:1282:9:\nblocking snapshot should contain its environment wait span: \n\n"
+      },
+      {
+        "line": 5684,
+        "name": "---- environment_selection::tests::blocking_snapshot_waits_for_starting_environment stdout ----",
+        "excerpt": "---- environment_selection::tests::blocking_snapshot_waits_for_starting_environment stdout ----\n2026-10-28T12:01:59.008662Z  INFO codex.exec_server.remote.connect: codex_exec_server::client: new\n2026-10-28T12:01:59.010160Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}: codex_core::environment_selection: new\n2026-10-28T12:01:59.010206Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.wait_until_ready{remote=true}: codex_exec_server::environment: new\n2026-10-28T12:01:59.010299Z  INFO environments.wait_until_ready{environment_id=remote}: codex_core::environment_selection: new\n2026-10-28T12:01:59.011909Z  INFO codex.exec_server.remote.connect:codex.exec_server.request{otel.kind=\"client\" otel.name=\"initialize\"}: codex_exec_server::rpc: new\n2026-10-28T12:01:59.013108Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.info{remote=true}: codex_exec_server::environment: new\n\nthread 'environment_selection::tests::blocking_snapshot_waits_for_starting_environment' (8920) panicked at core/src\\environment_selection.rs:1282:9:\nblocking snapshot should contain its environment wait span: 2026-10-28T12:01:59.008662Z  INFO codex.exec_server.remote.connect: codex_exec_server::client: new\n2026-10-28T12:01:59.010160Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}: codex_core::environment_selection: new\n2026-10-28T12:01:59.010206Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.wait_until_ready{remote=true}: codex_exec_server::environment: new\n2026-10-28T12:01:59.010299Z  INFO environments.wait_until_ready{environment_id=remote}: codex_core::environment_selection: new\n2026-10-28T12:01:59.011909Z  INFO codex.exec_server.remote.connect:codex.exec_server.request{otel.kind=\"client\" otel.name=\"initialize\"}: codex_exec_server::rpc: new\n2026-10-28T12:01:59.013108Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.info{remote=true}: codex_exec_server::environment: new\n\n\n"
+      },
+      {
+        "line": 6033,
+        "name": "---- environment_selection::tests::blocking_snapshot_waits_for_starting_environment stdout ----",
+        "excerpt": "---- environment_selection::tests::blocking_snapshot_waits_for_starting_environment stdout ----\n2026-10-28T12:03:08.180737Z  INFO codex.exec_server.remote.connect: codex_exec_server::client: new\n2026-10-28T12:03:08.182223Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}: codex_core::environment_selection: new\n2026-10-28T12:03:08.182262Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.wait_until_ready{remote=true}: codex_exec_server::environment: new\n2026-10-28T12:03:08.182350Z  INFO environments.wait_until_ready{environment_id=remote}: codex_core::environment_selection: new\n2026-10-28T12:03:08.183933Z  INFO codex.exec_server.remote.connect:codex.exec_server.request{otel.kind=\"client\" otel.name=\"initialize\"}: codex_exec_server::rpc: new\n2026-10-28T12:03:08.185315Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.info{remote=true}: codex_exec_server::environment: new\n\nthread 'environment_selection::tests::blocking_snapshot_waits_for_starting_environment' (2628) panicked at core/src\\environment_selection.rs:1282:9:\nblocking snapshot should contain its environment wait span: 2026-10-28T12:03:08.180737Z  INFO codex.exec_server.remote.connect: codex_exec_server::client: new\n2026-10-28T12:03:08.182223Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}: codex_core::environment_selection: new\n2026-10-28T12:03:08.182262Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.wait_until_ready{remote=true}: codex_exec_server::environment: new\n2026-10-28T12:03:08.182350Z  INFO environments.wait_until_ready{environment_id=remote}: codex_core::environment_selection: new\n2026-10-28T12:03:08.183933Z  INFO codex.exec_server.remote.connect:codex.exec_server.request{otel.kind=\"client\" otel.name=\"initialize\"}: codex_exec_server::rpc: new\n2026-10-28T12:03:08.185315Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.info{remote=true}: codex_exec_server::environment: new\n\n\n"
+      },
+      {
+        "line": 6737,
+        "name": "---- environment_selection::tests::blocking_snapshot_waits_for_starting_environment stdout ----",
+        "excerpt": "---- environment_selection::tests::blocking_snapshot_waits_for_starting_environment stdout ----\n2026-10-28T12:03:08.180737Z  INFO codex.exec_server.remote.connect: codex_exec_server::client: new\n2026-10-28T12:03:08.182223Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}: codex_core::environment_selection: new\n2026-10-28T12:03:08.182262Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.wait_until_ready{remote=true}: codex_exec_server::environment: new\n2026-10-28T12:03:08.182350Z  INFO environments.wait_until_ready{environment_id=remote}: codex_core::environment_selection: new\n2026-10-28T12:03:08.183933Z  INFO codex.exec_server.remote.connect:codex.exec_server.request{otel.kind=\"client\" otel.name=\"initialize\"}: codex_exec_server::rpc: new\n2026-10-28T12:03:08.185315Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.info{remote=true}: codex_exec_server::environment: new\n\nthread 'environment_selection::tests::blocking_snapshot_waits_for_starting_environment' (2628) panicked at core/src\\environment_selection.rs:1282:9:\nblocking snapshot should contain its environment wait span: 2026-10-28T12:03:08.180737Z  INFO codex.exec_server.remote.connect: codex_exec_server::client: new\n2026-10-28T12:03:08.182223Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}: codex_core::environment_selection: new\n2026-10-28T12:03:08.182262Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.wait_until_ready{remote=true}: codex_exec_server::environment: new\n2026-10-28T12:03:08.182350Z  INFO environments.wait_until_ready{environment_id=remote}: codex_core::environment_selection: new\n2026-10-28T12:03:08.183933Z  INFO codex.exec_server.remote.connect:codex.exec_server.request{otel.kind=\"client\" otel.name=\"initialize\"}: codex_exec_server::rpc: new\n2026-10-28T12:03:08.185315Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.info{remote=true}: codex_exec_server::environment: new\n\n\n"
+      },
+      {
+        "line": 6995,
+        "name": "---- cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send stdout ----",
+        "excerpt": "---- cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send stdout ----\n\nthread 'cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send' (5836) panicked at ext/hepta-memory/src\\cognitive\\federation.rs:1351:10:\nproposal before revoke\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n"
+      },
+      {
+        "line": 7105,
+        "name": "---- detect::sessions::cur::tests::resolves_cur_project_names_with_common_separators stdout ----",
+        "excerpt": "---- detect::sessions::cur::tests::resolves_cur_project_names_with_common_separators stdout ----\n\nthread 'detect::sessions::cur::tests::resolves_cur_project_names_with_common_separators' (2520) panicked at external-agent-migration/src\\detect\\sessions\\cur_tests.rs:199:9:\nassertion failed: `(left == right)`\n\n\u001b[1mDiff\u001b[0m \u001b[31m< left\u001b[0m / \u001b[32mright >\u001b[0m :\n\u001b[31m<None\u001b[0m\n\u001b[32m>Some(\u001b[0m\n\u001b[32m>    \"C:\\\\ct\\\\40677378223-1-test-windows-shard-2fb92e597ee8\\\\.tmpSysZ3h\\\\project\",\u001b[0m\n\u001b[32m>)\u001b[0m\n\n\n"
+      },
+      {
+        "line": 7118,
+        "name": "---- detect::sessions::cur::tests::skips_cur_subagent_transcripts stdout ----",
+        "excerpt": "---- detect::sessions::cur::tests::skips_cur_subagent_transcripts stdout ----\n\nthread 'detect::sessions::cur::tests::skips_cur_subagent_transcripts' (9104) panicked at external-agent-migration/src\\detect\\sessions\\cur_tests.rs:154:5:\nassertion failed: `(left == right)`\n\n\u001b[1mDiff\u001b[0m \u001b[31m< left\u001b[0m / \u001b[32mright >\u001b[0m :\n\u001b[31m<[]\u001b[0m\n\u001b[32m>[\u001b[0m\n\u001b[32m>    ExternalAgentSessionMigration {\u001b[0m\n\u001b[32m>        path: \"C:\\\\ct\\\\40677378223-1-test-windows-shard-2fb92e597ee8\\\\.tmpddwa9T\\\\.external\\\\projects\\\\C--ct-40677378223-1-test-windows-shard-2fb92e597ee8-.tmpddwa9T-workspace\\\\agent-transcripts\\\\main-session\\\\main-session.jsonl\",\u001b[0m\n\u001b[32m>        cwd: \"C:\\\\ct\\\\40677378223-1-test-windows-shard-2fb92e597ee8\\\\.tmpddwa9T\\\\workspace\",\u001b[0m\n\u001b[32m>        title: Some(\u001b[0m\n\u001b[32m>            \"first request\",\u001b[0m\n\u001b[32m>        ),\u001b[0m\n\u001b[32m>    },\u001b[0m\n\u001b[32m>]\u001b[0m\n\n\n\n"
+      }
+    ],
+    "errors": [
+      {
+        "line": 3979,
+        "text": "ERROR: D:/a/hepta-private-ci/hepta-private-ci/codex-rs/hepta-supervisor/BUILD.bazel:3:17: Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisor-restart_budget_recovery-test (1 file) failed: (Exit 1): process_wrapper.exe failed: error executing Rustc command (from rust_test rule target //codex-rs/hepta-supervisor:hepta-supervisor-restart_budget_recovery-test) "
+      },
+      {
+        "line": 4010,
+        "text": "error[E0616]: field `restart_pending` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 4016,
+        "text": "error[E0616]: field `restart_attempt` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 4022,
+        "text": "error[E0616]: field `restart_pending` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 4028,
+        "text": "error[E0616]: field `restart_attempt` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 4034,
+        "text": "error[E0616]: field `restart_pending` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 4040,
+        "text": "error[E0616]: field `restart_attempt` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 4154,
+        "text": "FAIL: //codex-rs/ext/hepta-memory:hepta-memory-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/ext/hepta-memory/hepta-memory-unit-tests/test.log)"
+      },
+      {
+        "line": 4282,
+        "text": "FAIL: //codex-rs/app-server-protocol:app-server-protocol-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server-protocol/app-server-protocol-unit-tests/test.log)"
+      },
+      {
+        "line": 4326,
+        "text": "FAIL: //codex-rs/external-agent-migration:external-agent-migration-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/external-agent-migration/external-agent-migration-unit-tests/test.log)"
+      },
+      {
+        "line": 5139,
+        "text": "FAIL: //codex-rs/core:core-unit-tests (shard 1 of 8) (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-unit-tests/shard_1_of_8/test_attempts/attempt_1.log)"
+      },
+      {
+        "line": 5144,
+        "text": "FAIL: //codex-rs/core:core-unit-tests (shard 1 of 8) (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-unit-tests/shard_1_of_8/test_attempts/attempt_2.log)"
+      },
+      {
+        "line": 5148,
+        "text": "FAIL: //codex-rs/core:core-unit-tests (shard 1 of 8) (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-unit-tests/shard_1_of_8/test.log)"
+      },
+      {
+        "line": 6208,
+        "text": "ERROR: Build did NOT complete successfully"
+      },
+      {
+        "line": 6419,
+        "text": "##[error]ERROR: D:/a/hepta-private-ci/hepta-private-ci/codex-rs/hepta-supervisor/BUILD.bazel:3:17: Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisor-restart_budget_recovery-test (1 file) failed: (Exit 1): process_wrapper.exe failed: error executing Rustc command (from rust_test rule target //codex-rs/hepta-supervisor:hepta-supervisor-restart_budget_recovery-test) "
+      },
+      {
+        "line": 6420,
+        "text": "error[E0616]: field `restart_pending` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 6426,
+        "text": "error[E0616]: field `restart_attempt` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 6432,
+        "text": "error[E0616]: field `restart_pending` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 6438,
+        "text": "error[E0616]: field `restart_attempt` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 6444,
+        "text": "error[E0616]: field `restart_pending` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 6450,
+        "text": "error[E0616]: field `restart_attempt` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 6462,
+        "text": "ERROR: D:/a/hepta-private-ci/hepta-private-ci/codex-rs/hepta-supervisor/BUILD.bazel:3:17: Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisor-restart_budget_recovery-test (1 file) failed: (Exit 1): process_wrapper.exe failed: error executing Rustc command (from rust_test rule target //codex-rs/hepta-supervisor:hepta-supervisor-restart_budget_recovery-test) "
+      },
+      {
+        "line": 6463,
+        "text": "error[E0616]: field `restart_pending` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 6469,
+        "text": "error[E0616]: field `restart_attempt` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 6475,
+        "text": "error[E0616]: field `restart_pending` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 6481,
+        "text": "error[E0616]: field `restart_attempt` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 6487,
+        "text": "error[E0616]: field `restart_pending` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 6493,
+        "text": "error[E0616]: field `restart_attempt` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 7235,
+        "text": "##[error]Process completed with exit code 1."
+      }
+    ],
+    "failed_target_summaries": [
+      "//codex-rs/hepta-supervisor:hepta-supervisor-restart_budget_recovery-test FAILED TO BUILD",
+      "//codex-rs/app-server-protocol:app-server-protocol-unit-tests            FAILED in 124.0s",
+      "//codex-rs/ext/hepta-memory:hepta-memory-unit-tests                      FAILED in 20.0s",
+      "//codex-rs/external-agent-migration:external-agent-migration-unit-tests  FAILED in 6.8s",
+      "//codex-rs/core:core-unit-tests                                          FAILED in 3 out of 10 in 153.0s"
+    ],
+    "raw_incomplete_failures": [
+      "FAIL: //codex-rs/ext/hepta-memory:hepta-memory-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/ext/hepta-memory/hepta-memory-unit-tests/test.log)",
+      "FAIL: //codex-rs/app-server-protocol:app-server-protocol-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server-protocol/app-server-protocol-unit-tests/test.log)",
+      "FAIL: //codex-rs/external-agent-migration:external-agent-migration-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/external-agent-migration/external-agent-migration-unit-tests/test.log)",
+      "FAIL: //codex-rs/core:core-unit-tests (shard 1 of 8) (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-unit-tests/shard_1_of_8/test_attempts/attempt_1.log)",
+      "FAIL: //codex-rs/core:core-unit-tests (shard 1 of 8) (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-unit-tests/shard_1_of_8/test_attempts/attempt_2.log)",
+      "FAIL: //codex-rs/core:core-unit-tests (shard 1 of 8) (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-unit-tests/shard_1_of_8/test.log)"
+    ]
+  },
+  "job-122780464784.log": {
+    "failed_tests": [
+      "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+      "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation",
+      "cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records",
+      "cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends",
+      "cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment",
+      "cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently",
+      "cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict",
+      "control::tests::health_tracks_real_task_state_and_owner_uds_enforces_platform_gate",
+      "core_error_after_started_never_releases_ambiguous_dispatch",
+      "explicitly_started_rejected_queue_messages_remain_durable",
+      "rejected_queue_messages_remain_durable_and_block_followups",
+      "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit"
+    ],
+    "failure_blocks": [
+      {
+        "line": 4485,
+        "name": "---- caller_abort_after_core_started_keeps_exact_authority_until_persistence stdout ----",
+        "excerpt": "---- caller_abort_after_core_started_keeps_exact_authority_until_persistence stdout ----\nError: timed out waiting for `C:\\ct\\40677378223-1-test-windows-shard-2bcec7de1585\\.tmpicl59M\\queue_blocking_prompt_hook.entered`\n\nCaused by:\n    deadline has elapsed\n"
+      },
+      {
+        "line": 4491,
+        "name": "---- core_error_after_started_never_releases_ambiguous_dispatch stdout ----",
+        "excerpt": "---- core_error_after_started_never_releases_ambiguous_dispatch stdout ----\nError: timed out waiting for `C:\\ct\\40677378223-1-test-windows-shard-2bcec7de1585\\.tmpbA7OyP\\queue_blocking_prompt_hook.entered`\n\nCaused by:\n    deadline has elapsed\n"
+      },
+      {
+        "line": 4497,
+        "name": "---- explicitly_started_rejected_queue_messages_remain_durable stdout ----",
+        "excerpt": "---- explicitly_started_rejected_queue_messages_remain_durable stdout ----\nError: deadline has elapsed\n"
+      },
+      {
+        "line": 4500,
+        "name": "---- rollout_flush_before_dispatch_db_completion_recovers_without_resubmit stdout ----",
+        "excerpt": "---- rollout_flush_before_dispatch_db_completion_recovers_without_resubmit stdout ----\n\nthread 'rollout_flush_before_dispatch_db_completion_recovers_without_resubmit' (8044) panicked at ext/queue/tests/queue_service.rs:1205:5:\nunexpected crash-window error: Storage(Conflict { message: \"client message id `stable-client-message` dispatch owner or revision changed before submit\" })\n"
+      },
+      {
+        "line": 4505,
+        "name": "---- rejected_queue_messages_remain_durable_and_block_followups stdout ----",
+        "excerpt": "---- rejected_queue_messages_remain_durable_and_block_followups stdout ----\nError: deadline has elapsed\n\n"
+      },
+      {
+        "line": 4725,
+        "name": "---- control::tests::health_tracks_real_task_state_and_owner_uds_enforces_platform_gate stdout ----",
+        "excerpt": "---- control::tests::health_tracks_real_task_state_and_owner_uds_enforces_platform_gate stdout ----\nError: Custom { kind: NotFound, error: PathError { path: \"D:/tmp\\\\hmx-control-D62Qdy\", err: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" } } }\n\n"
+      },
+      {
+        "line": 4849,
+        "name": "---- cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records stdout ----",
+        "excerpt": "---- cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records stdout ----\n\nthread 'cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records' (9916) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:\nledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      {
+        "line": 4855,
+        "name": "---- cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends stdout ----",
+        "excerpt": "---- cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends stdout ----\n\nthread 'cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends' (3444) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:\nledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\n"
+      },
+      {
+        "line": 4860,
+        "name": "---- cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment stdout ----",
+        "excerpt": "---- cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment stdout ----\n\nthread 'cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment' (4852) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:\nledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\n"
+      },
+      {
+        "line": 4865,
+        "name": "---- cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently stdout ----",
+        "excerpt": "---- cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently stdout ----\n\nthread 'cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently' (1916) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:\nledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\n"
+      },
+      {
+        "line": 4870,
+        "name": "---- cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict stdout ----",
+        "excerpt": "---- cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict stdout ----\n\nthread 'cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict' (9764) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:\nledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\n"
+      },
+      {
+        "line": 4875,
+        "name": "---- cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation stdout ----",
+        "excerpt": "---- cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation stdout ----\n\nthread 'cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation' (8068) panicked at hepta-agentd/src\\cognitive_ranker_tests.rs:520:14:\ncalled `Result::unwrap()` on an `Err` value: Io(Custom { kind: InvalidInput, error: AgentdIoContext { operation: \"bind agentd control socket\", path: \"\\\\\\\\?\\\\C:\\\\ct\\\\40677378223-1-test-windows-shard-2bcec7de1585\\\\.tmpPybyON\\\\fleet\\\\run\\\\aaaaaaaaaabaabaaaaaaaaaabde.ctl\", source: Custom { kind: InvalidInput, error: \"path must be shorter than SUN_LEN\" } } })\n\n"
+      },
+      {
+        "line": 5502,
+        "name": "---- caller_abort_after_core_started_keeps_exact_authority_until_persistence stdout ----",
+        "excerpt": "---- caller_abort_after_core_started_keeps_exact_authority_until_persistence stdout ----\nError: timed out waiting for `C:\\ct\\40677378223-1-test-windows-shard-2bcec7de1585\\.tmpicl59M\\queue_blocking_prompt_hook.entered`\n\nCaused by:\n    deadline has elapsed\n"
+      },
+      {
+        "line": 5508,
+        "name": "---- core_error_after_started_never_releases_ambiguous_dispatch stdout ----",
+        "excerpt": "---- core_error_after_started_never_releases_ambiguous_dispatch stdout ----\nError: timed out waiting for `C:\\ct\\40677378223-1-test-windows-shard-2bcec7de1585\\.tmpbA7OyP\\queue_blocking_prompt_hook.entered`\n\nCaused by:\n    deadline has elapsed\n"
+      },
+      {
+        "line": 5514,
+        "name": "---- explicitly_started_rejected_queue_messages_remain_durable stdout ----",
+        "excerpt": "---- explicitly_started_rejected_queue_messages_remain_durable stdout ----\nError: deadline has elapsed\n"
+      },
+      {
+        "line": 5517,
+        "name": "---- rollout_flush_before_dispatch_db_completion_recovers_without_resubmit stdout ----",
+        "excerpt": "---- rollout_flush_before_dispatch_db_completion_recovers_without_resubmit stdout ----\n\nthread 'rollout_flush_before_dispatch_db_completion_recovers_without_resubmit' (8044) panicked at ext/queue/tests/queue_service.rs:1205:5:\nunexpected crash-window error: Storage(Conflict { message: \"client message id `stable-client-message` dispatch owner or revision changed before submit\" })\n"
+      },
+      {
+        "line": 5522,
+        "name": "---- rejected_queue_messages_remain_durable_and_block_followups stdout ----",
+        "excerpt": "---- rejected_queue_messages_remain_durable_and_block_followups stdout ----\nError: deadline has elapsed\n\n"
+      },
+      {
+        "line": 5588,
+        "name": "---- cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records stdout ----",
+        "excerpt": "---- cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records stdout ----\n\nthread 'cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records' (9916) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:\nledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      {
+        "line": 5594,
+        "name": "---- cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends stdout ----",
+        "excerpt": "---- cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends stdout ----\n\nthread 'cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends' (3444) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:\nledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\n"
+      },
+      {
+        "line": 5599,
+        "name": "---- cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment stdout ----",
+        "excerpt": "---- cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment stdout ----\n\nthread 'cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment' (4852) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:\nledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\n"
+      },
+      {
+        "line": 5604,
+        "name": "---- cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently stdout ----",
+        "excerpt": "---- cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently stdout ----\n\nthread 'cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently' (1916) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:\nledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\n"
+      },
+      {
+        "line": 5609,
+        "name": "---- cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict stdout ----",
+        "excerpt": "---- cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict stdout ----\n\nthread 'cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict' (9764) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:\nledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\n"
+      },
+      {
+        "line": 5614,
+        "name": "---- cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation stdout ----",
+        "excerpt": "---- cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation stdout ----\n\nthread 'cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation' (8068) panicked at hepta-agentd/src\\cognitive_ranker_tests.rs:520:14:\ncalled `Result::unwrap()` on an `Err` value: Io(Custom { kind: InvalidInput, error: AgentdIoContext { operation: \"bind agentd control socket\", path: \"\\\\\\\\?\\\\C:\\\\ct\\\\40677378223-1-test-windows-shard-2bcec7de1585\\\\.tmpPybyON\\\\fleet\\\\run\\\\aaaaaaaaaabaabaaaaaaaaaabde.ctl\", source: Custom { kind: InvalidInput, error: \"path must be shorter than SUN_LEN\" } } })\n\n"
+      },
+      {
+        "line": 5777,
+        "name": "---- control::tests::health_tracks_real_task_state_and_owner_uds_enforces_platform_gate stdout ----",
+        "excerpt": "---- control::tests::health_tracks_real_task_state_and_owner_uds_enforces_platform_gate stdout ----\nError: Custom { kind: NotFound, error: PathError { path: \"D:/tmp\\\\hmx-control-D62Qdy\", err: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" } } }\n\n"
+      }
+    ],
+    "errors": [
+      {
+        "line": 3826,
+        "text": "FAIL: //codex-rs/code-mode-runtime:code-mode-runtime-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/code-mode-runtime/code-mode-runtime-unit-tests/test.log)"
+      },
+      {
+        "line": 3930,
+        "text": "FAIL: //codex-rs/code-mode-host:code-mode-host-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/code-mode-host/code-mode-host-unit-tests/test.log)"
+      },
+      {
+        "line": 4298,
+        "text": "ERROR: D:/a/hepta-private-ci/hepta-private-ci/codex-rs/ext/queue/BUILD.bazel:3:17: Compiling Rust bin //codex-rs/ext/queue:queue-queue_hook_fixtures-test (1 file) failed: (Exit 1): process_wrapper.exe failed: error executing Rustc command (from rust_test rule target //codex-rs/ext/queue:queue-queue_hook_fixtures-test) "
+      },
+      {
+        "line": 4323,
+        "text": "error[E0433]: too many leading `super` keywords"
+      },
+      {
+        "line": 4329,
+        "text": "error[E0433]: too many leading `super` keywords"
+      },
+      {
+        "line": 4442,
+        "text": "FAIL: //codex-rs/ext/queue:queue-queue_service-test (Exit 101) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/ext/queue/queue-queue_service-test/test.log)"
+      },
+      {
+        "line": 4655,
+        "text": "FAIL: //codex-rs/hepta-matrixd:hepta-matrixd-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-matrixd/hepta-matrixd-unit-tests/test.log)"
+      },
+      {
+        "line": 4765,
+        "text": "FAIL: //codex-rs/hepta-agentd:hepta-agentd-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-agentd/hepta-agentd-unit-tests/test.log)"
+      },
+      {
+        "line": 5017,
+        "text": "ERROR: Build did NOT complete successfully"
+      },
+      {
+        "line": 5244,
+        "text": "##[error]ERROR: D:/a/hepta-private-ci/hepta-private-ci/codex-rs/ext/queue/BUILD.bazel:3:17: Compiling Rust bin //codex-rs/ext/queue:queue-queue_hook_fixtures-test (1 file) failed: (Exit 1): process_wrapper.exe failed: error executing Rustc command (from rust_test rule target //codex-rs/ext/queue:queue-queue_hook_fixtures-test) "
+      },
+      {
+        "line": 5245,
+        "text": "error[E0433]: too many leading `super` keywords"
+      },
+      {
+        "line": 5251,
+        "text": "error[E0433]: too many leading `super` keywords"
+      },
+      {
+        "line": 5263,
+        "text": "ERROR: D:/a/hepta-private-ci/hepta-private-ci/codex-rs/ext/queue/BUILD.bazel:3:17: Compiling Rust bin //codex-rs/ext/queue:queue-queue_hook_fixtures-test (1 file) failed: (Exit 1): process_wrapper.exe failed: error executing Rustc command (from rust_test rule target //codex-rs/ext/queue:queue-queue_hook_fixtures-test) "
+      },
+      {
+        "line": 5264,
+        "text": "error[E0433]: too many leading `super` keywords"
+      },
+      {
+        "line": 5270,
+        "text": "error[E0433]: too many leading `super` keywords"
+      },
+      {
+        "line": 5787,
+        "text": "##[error]Process completed with exit code 1."
+      }
+    ],
+    "failed_target_summaries": [
+      "//codex-rs/ext/queue:queue-queue_hook_fixtures-test             FAILED TO BUILD",
+      "//codex-rs/code-mode-host:code-mode-host-unit-tests                      FAILED in 3.5s",
+      "//codex-rs/code-mode-runtime:code-mode-runtime-unit-tests                FAILED in 85.1s",
+      "//codex-rs/ext/queue:queue-queue_service-test                            FAILED in 85.2s",
+      "//codex-rs/hepta-agentd:hepta-agentd-unit-tests                          FAILED in 43.3s",
+      "//codex-rs/hepta-matrixd:hepta-matrixd-unit-tests                        FAILED in 9.8s"
+    ],
+    "raw_incomplete_failures": [
+      "FAIL: //codex-rs/code-mode-runtime:code-mode-runtime-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/code-mode-runtime/code-mode-runtime-unit-tests/test.log)",
+      "FAIL: //codex-rs/code-mode-host:code-mode-host-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/code-mode-host/code-mode-host-unit-tests/test.log)",
+      "FAIL: //codex-rs/ext/queue:queue-queue_service-test (Exit 101) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/ext/queue/queue-queue_service-test/test.log)",
+      "FAIL: //codex-rs/hepta-matrixd:hepta-matrixd-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-matrixd/hepta-matrixd-unit-tests/test.log)",
+      "FAIL: //codex-rs/hepta-agentd:hepta-agentd-unit-tests (Exit 1) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-agentd/hepta-agentd-unit-tests/test.log)"
+    ]
+  },
+  "job-122780464801.log": {
+    "failed_tests": [],
+    "failure_blocks": [],
+    "errors": [
+      {
+        "line": 4224,
+        "text": "ERROR: D:/a/hepta-private-ci/hepta-private-ci/codex-rs/hepta-supervisor/BUILD.bazel:3:17: Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisor-restart_budget_recovery-test (1 file) failed: (Exit 1): process_wrapper.exe failed: error executing Rustc command (from rust_test rule target //codex-rs/hepta-supervisor:hepta-supervisor-restart_budget_recovery-test) "
+      },
+      {
+        "line": 4255,
+        "text": "error[E0616]: field `restart_pending` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 4261,
+        "text": "error[E0616]: field `restart_attempt` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 4267,
+        "text": "error[E0616]: field `restart_pending` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 4273,
+        "text": "error[E0616]: field `restart_attempt` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 4279,
+        "text": "error[E0616]: field `restart_pending` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 4285,
+        "text": "error[E0616]: field `restart_attempt` of struct `AgentSupervisorSnapshot` is private"
+      },
+      {
+        "line": 4543,
+        "text": "ERROR: D:/a/hepta-private-ci/hepta-private-ci/codex-rs/ext/queue/BUILD.bazel:3:17: Compiling Rust bin //codex-rs/ext/queue:queue-queue_hook_fixtures-test (1 file) failed: (Exit 1): process_wrapper.exe failed: error executing Rustc command (from rust_test rule target //codex-rs/ext/queue:queue-queue_hook_fixtures-test) "
+      },
+      {
+        "line": 4568,
+        "text": "error[E0433]: too many leading `super` keywords"
+      },
+      {
+        "line": 4574,
+        "text": "error[E0433]: too many leading `super` keywords"
+      },
+      {
+        "line": 5405,
+        "text": "ERROR: Build did NOT complete successfully"
+      },
+      {
+        "line": 5406,
+        "text": "##[error]Process completed with exit code 1."
+      }
+    ],
+    "failed_target_summaries": [],
+    "raw_incomplete_failures": []
+  },
+  "job-122780464839.log": {
+    "failed_tests": [
+      "child_tests::drains_and_bounds_stderr_while_hashing_the_full_stream",
+      "child_tests::persists_inbound_wire_before_rejecting_invalid_json",
+      "clean_agent_recall_replay_training_load_and_source_withdrawal",
+      "driver_tests::app_and_mcp_fsm_persist_before_every_sample_write",
+      "driver_tests::failed_pipe_write_keeps_durable_pre_send_and_poisoned_fsm",
+      "file_system_operations_can_reject_junctions_in_any_path_component::local",
+      "file_system_operations_can_reject_junctions_in_any_path_component::remote",
+      "g5_trust::tests::exact_head_and_predecessor_binding_is_required",
+      "g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance",
+      "g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority",
+      "g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted",
+      "g5_trust::tests::policy_and_revocation_files_must_be_canonical",
+      "g5_trust::tests::revocation_digest_change_invalidates_existing_challenge",
+      "g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance",
+      "importer_tests::imports_exactly_four_artifacts_and_writes_a_checkpoint",
+      "importer_tests::inventories_all_broken_samples_before_checkpointing_failure",
+      "loopback_tests::persists_exact_http_requests_and_responses",
+      "observer_tests::rejects_noncanonical_input_before_writing_an_artifact",
+      "observer_tests::rejects_out_of_order_or_incomplete_runs_without_minting_tokens",
+      "observer_tests::returns_tokens_only_after_four_private_durable_pairs",
+      "real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal",
+      "report_tests::inventories_import_semantic_duplicate_and_missing_failures",
+      "report_tests::writes_an_exact_report_with_no_authority",
+      "runtime_tests::creates_private_surface_layouts_and_strict_configs",
+      "sealer_tests::rejects_a_checkpoint_changed_before_sealing",
+      "sealer_tests::seals_a_complete_checkpoint_with_every_gate_disabled",
+      "sealer_tests::seals_a_failed_checkpoint_without_losing_failures",
+      "shared::file_system_create_directory_creates_nested_directories::local_sandboxed_no_follow",
+      "shared::file_system_create_directory_creates_nested_directories::remote_sandboxed_no_follow",
+      "shared::file_system_remove_no_follow_removes_file_and_empty_directory::local_sandboxed",
+      "shared::file_system_remove_no_follow_removes_file_and_empty_directory::remote_sandboxed",
+      "shared::file_system_write_file_writes_bytes::local_sandboxed_no_follow",
+      "shared::file_system_write_file_writes_bytes::remote_sandboxed_no_follow",
+      "tests::durable_time_watermark_rejects_clock_rollback",
+      "tests::exact_replay_returns_same_receipt_and_conflicting_claim_fails",
+      "tests::unknown_or_noncanonical_stored_json_is_rejected",
+      "transport_tests::detects_transport_artifact_changes_after_capture",
+      "trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy",
+      "trust::tests::trust_policy_digest_is_external_and_fail_closed",
+      "trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers",
+      "unexpected_agent_crashes_back_off_and_stop_after_three_restarts"
+    ],
+    "failure_blocks": [
+      {
+        "line": 3485,
+        "name": "---- g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance stdout ----",
+        "excerpt": "---- g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance stdout ----\n\nthread 'g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance' (4072) panicked at codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:277:14:\nstart test key generation: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      {
+        "line": 3491,
+        "name": "---- g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority stdout ----",
+        "excerpt": "---- g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority stdout ----\n\nthread 'g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority' (7904) panicked at codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:277:14:\nstart test key generation: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" }\n"
+      },
+      {
+        "line": 3496,
+        "name": "---- g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted stdout ----",
+        "excerpt": "---- g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted stdout ----\n\nthread 'g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted' (6632) panicked at codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:277:14:\nstart test key generation: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" }\n"
+      },
+      {
+        "line": 3501,
+        "name": "---- g5_trust::tests::exact_head_and_predecessor_binding_is_required stdout ----",
+        "excerpt": "---- g5_trust::tests::exact_head_and_predecessor_binding_is_required stdout ----\n\nthread 'g5_trust::tests::exact_head_and_predecessor_binding_is_required' (7868) panicked at codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:277:14:\nstart test key generation: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" }\n"
+      },
+      {
+        "line": 3506,
+        "name": "---- g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance stdout ----",
+        "excerpt": "---- g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance stdout ----\n\nthread 'g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance' (8952) panicked at codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:277:14:\nstart test key generation: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" }\n"
+      },
+      {
+        "line": 3511,
+        "name": "---- g5_trust::tests::revocation_digest_change_invalidates_existing_challenge stdout ----",
+        "excerpt": "---- g5_trust::tests::revocation_digest_change_invalidates_existing_challenge stdout ----\n\nthread 'g5_trust::tests::revocation_digest_change_invalidates_existing_challenge' (3604) panicked at codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:277:14:\nstart test key generation: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" }\n"
+      },
+      {
+        "line": 3516,
+        "name": "---- g5_trust::tests::policy_and_revocation_files_must_be_canonical stdout ----",
+        "excerpt": "---- g5_trust::tests::policy_and_revocation_files_must_be_canonical stdout ----\n\nthread 'g5_trust::tests::policy_and_revocation_files_must_be_canonical' (7280) panicked at codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:277:14:\nstart test key generation: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" }\n"
+      },
+      {
+        "line": 3521,
+        "name": "---- tests::exact_replay_returns_same_receipt_and_conflicting_claim_fails stdout ----",
+        "excerpt": "---- tests::exact_replay_returns_same_receipt_and_conflicting_claim_fails stdout ----\n\nthread 'tests::exact_replay_returns_same_receipt_and_conflicting_claim_fails' (7252) panicked at codex-rs/hepta-operator-acceptance/src\\lib_tests.rs:258:74:\ncalled `Result::unwrap()` on an `Err` value: Io(Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" })\n"
+      },
+      {
+        "line": 3526,
+        "name": "---- tests::durable_time_watermark_rejects_clock_rollback stdout ----",
+        "excerpt": "---- tests::durable_time_watermark_rejects_clock_rollback stdout ----\n\nthread 'tests::durable_time_watermark_rejects_clock_rollback' (8268) panicked at codex-rs/hepta-operator-acceptance/src\\lib_tests.rs:199:59:\ninitial watermark: Io(Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" })\n"
+      },
+      {
+        "line": 3531,
+        "name": "---- trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy stdout ----",
+        "excerpt": "---- trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy stdout ----\n\nthread 'trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy' (6788) panicked at codex-rs/hepta-operator-acceptance/src\\trust_tests.rs:134:14:\nstart ssh-keygen: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" }\n"
+      },
+      {
+        "line": 3536,
+        "name": "---- trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers stdout ----",
+        "excerpt": "---- trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers stdout ----\n\nthread 'trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers' (6420) panicked at codex-rs/hepta-operator-acceptance/src\\trust_tests.rs:134:14:\nstart ssh-keygen: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" }\n"
+      },
+      {
+        "line": 3541,
+        "name": "---- trust::tests::trust_policy_digest_is_external_and_fail_closed stdout ----",
+        "excerpt": "---- trust::tests::trust_policy_digest_is_external_and_fail_closed stdout ----\n\nthread 'trust::tests::trust_policy_digest_is_external_and_fail_closed' (9120) panicked at codex-rs/hepta-operator-acceptance/src\\trust_tests.rs:134:14:\nstart ssh-keygen: Os { code: 3, kind: NotFound, message: \"The system cannot find the path specified.\" }\n"
+      },
+      {
+        "line": 3546,
+        "name": "---- tests::unknown_or_noncanonical_stored_json_is_rejected stdout ----",
+        "excerpt": "---- tests::unknown_or_noncanonical_stored_json_is_rejected stdout ----\n\nthread 'tests::unknown_or_noncanonical_stored_json_is_rejected' (2544) panicked at codex-rs/hepta-operator-acceptance/src\\lib_tests.rs:182:6:\ncalled `Result::unwrap()` on an `Err` value: Io(Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" })\n\n"
+      },
+      {
+        "line": 3745,
+        "name": "---- child_tests::persists_inbound_wire_before_rejecting_invalid_json stdout ----",
+        "excerpt": "---- child_tests::persists_inbound_wire_before_rejecting_invalid_json stdout ----\n\nthread 'child_tests::persists_inbound_wire_before_rejecting_invalid_json' (4348) panicked at codex-rs/hepta-shadow-qualification/src\\child_tests.rs:17:5:\nassertion failed: root.join(\"app_server-inbound-000001.receipt.json\").is_file()\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      {
+        "line": 3751,
+        "name": "---- driver_tests::failed_pipe_write_keeps_durable_pre_send_and_poisoned_fsm stdout ----",
+        "excerpt": "---- driver_tests::failed_pipe_write_keeps_durable_pre_send_and_poisoned_fsm stdout ----\nError: Io(Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" })\n"
+      },
+      {
+        "line": 3754,
+        "name": "---- driver_tests::app_and_mcp_fsm_persist_before_every_sample_write stdout ----",
+        "excerpt": "---- driver_tests::app_and_mcp_fsm_persist_before_every_sample_write stdout ----\nError: Io(Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" })\n"
+      },
+      {
+        "line": 3757,
+        "name": "---- importer_tests::inventories_all_broken_samples_before_checkpointing_failure stdout ----",
+        "excerpt": "---- importer_tests::inventories_all_broken_samples_before_checkpointing_failure stdout ----\nError: Io(Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" })\n"
+      },
+      {
+        "line": 3760,
+        "name": "---- importer_tests::imports_exactly_four_artifacts_and_writes_a_checkpoint stdout ----",
+        "excerpt": "---- importer_tests::imports_exactly_four_artifacts_and_writes_a_checkpoint stdout ----\nError: Io(Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" })\n"
+      },
+      {
+        "line": 3763,
+        "name": "---- child_tests::drains_and_bounds_stderr_while_hashing_the_full_stream stdout ----",
+        "excerpt": "---- child_tests::drains_and_bounds_stderr_while_hashing_the_full_stream stdout ----\nError: Io(Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" })\n"
+      },
+      {
+        "line": 3766,
+        "name": "---- observer_tests::rejects_out_of_order_or_incomplete_runs_without_minting_tokens stdout ----",
+        "excerpt": "---- observer_tests::rejects_out_of_order_or_incomplete_runs_without_minting_tokens stdout ----\nError: Io(Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" })\n"
+      },
+      {
+        "line": 3769,
+        "name": "---- observer_tests::rejects_noncanonical_input_before_writing_an_artifact stdout ----",
+        "excerpt": "---- observer_tests::rejects_noncanonical_input_before_writing_an_artifact stdout ----\nError: Io(Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" })\n"
+      },
+      {
+        "line": 3772,
+        "name": "---- loopback_tests::persists_exact_http_requests_and_responses stdout ----",
+        "excerpt": "---- loopback_tests::persists_exact_http_requests_and_responses stdout ----\nError: Io(Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" })\n"
+      },
+      {
+        "line": 3775,
+        "name": "---- observer_tests::returns_tokens_only_after_four_private_durable_pairs stdout ----",
+        "excerpt": "---- observer_tests::returns_tokens_only_after_four_private_durable_pairs stdout ----\nError: Io(Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" })\n"
+      },
+      {
+        "line": 3778,
+        "name": "---- report_tests::inventories_import_semantic_duplicate_and_missing_failures stdout ----",
+        "excerpt": "---- report_tests::inventories_import_semantic_duplicate_and_missing_failures stdout ----\nError: Io(Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" })\n"
+      },
+      {
+        "line": 3781,
+        "name": "---- report_tests::writes_an_exact_report_with_no_authority stdout ----",
+        "excerpt": "---- report_tests::writes_an_exact_report_with_no_authority stdout ----\nError: Io(Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" })\n"
+      },
+      {
+        "line": 3784,
+        "name": "---- sealer_tests::rejects_a_checkpoint_changed_before_sealing stdout ----",
+        "excerpt": "---- sealer_tests::rejects_a_checkpoint_changed_before_sealing stdout ----\nError: Io(Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" })\n"
+      },
+      {
+        "line": 3787,
+        "name": "---- runtime_tests::creates_private_surface_layouts_and_strict_configs stdout ----",
+        "excerpt": "---- runtime_tests::creates_private_surface_layouts_and_strict_configs stdout ----\nError: Io(Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" })\n"
+      },
+      {
+        "line": 3790,
+        "name": "---- sealer_tests::seals_a_complete_checkpoint_with_every_gate_disabled stdout ----",
+        "excerpt": "---- sealer_tests::seals_a_complete_checkpoint_with_every_gate_disabled stdout ----\nError: Io(Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" })\n"
+      },
+      {
+        "line": 3793,
+        "name": "---- sealer_tests::seals_a_failed_checkpoint_without_losing_failures stdout ----",
+        "excerpt": "---- sealer_tests::seals_a_failed_checkpoint_without_losing_failures stdout ----\nError: Io(Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" })\n"
+      },
+      {
+        "line": 3796,
+        "name": "---- transport_tests::detects_transport_artifact_changes_after_capture stdout ----",
+        "excerpt": "---- transport_tests::detects_transport_artifact_changes_after_capture stdout ----\nError: Io(Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" })\n\n"
+      },
+      {
+        "line": 4177,
+        "name": "---- unexpected_agent_crashes_back_off_and_stop_after_three_restarts stdout ----",
+        "excerpt": "---- unexpected_agent_crashes_back_off_and_stop_after_three_restarts stdout ----\n\nthread 'unexpected_agent_crashes_back_off_and_stop_after_three_restarts' (7156) panicked at hepta-supervisor/tests/restart_budget.rs:238:9:\nassertion failed: supervisor.snapshot(&agent_id).expect(\"snapshot\").events.iter().any(|event|\n        matches!(&event.kind, SupervisorEventKind::AutomaticRestartQueued\n            { attempt } if *attempt == expected_attempt))\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n"
+      },
+      {
+        "line": 4306,
+        "name": "---- file_system_operations_can_reject_junctions_in_any_path_component::local stdout ----",
+        "excerpt": "---- file_system_operations_can_reject_junctions_in_any_path_component::local stdout ----\nError: fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n"
+      },
+      {
+        "line": 4309,
+        "name": "---- file_system_operations_can_reject_junctions_in_any_path_component::remote stdout ----",
+        "excerpt": "---- file_system_operations_can_reject_junctions_in_any_path_component::remote stdout ----\nError: fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n"
+      },
+      {
+        "line": 4312,
+        "name": "---- shared::file_system_create_directory_creates_nested_directories::local_sandboxed_no_follow stdout ----",
+        "excerpt": "---- shared::file_system_create_directory_creates_nested_directories::local_sandboxed_no_follow stdout ----\nError: mode=local, sandboxed=true\n\nCaused by:\n    fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n"
+      },
+      {
+        "line": 4318,
+        "name": "---- shared::file_system_create_directory_creates_nested_directories::remote_sandboxed_no_follow stdout ----",
+        "excerpt": "---- shared::file_system_create_directory_creates_nested_directories::remote_sandboxed_no_follow stdout ----\nError: mode=remote, sandboxed=true\n\nCaused by:\n    fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n"
+      },
+      {
+        "line": 4324,
+        "name": "---- shared::file_system_remove_no_follow_removes_file_and_empty_directory::local_sandboxed stdout ----",
+        "excerpt": "---- shared::file_system_remove_no_follow_removes_file_and_empty_directory::local_sandboxed stdout ----\nError: mode=local, sandboxed=true\n\nCaused by:\n    fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n"
+      },
+      {
+        "line": 4330,
+        "name": "---- shared::file_system_remove_no_follow_removes_file_and_empty_directory::remote_sandboxed stdout ----",
+        "excerpt": "---- shared::file_system_remove_no_follow_removes_file_and_empty_directory::remote_sandboxed stdout ----\nError: mode=remote, sandboxed=true\n\nCaused by:\n    fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n"
+      },
+      {
+        "line": 4336,
+        "name": "---- shared::file_system_write_file_writes_bytes::local_sandboxed_no_follow stdout ----",
+        "excerpt": "---- shared::file_system_write_file_writes_bytes::local_sandboxed_no_follow stdout ----\nError: mode=local, sandboxed=true\n\nCaused by:\n    fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n"
+      },
+      {
+        "line": 4342,
+        "name": "---- shared::file_system_write_file_writes_bytes::remote_sandboxed_no_follow stdout ----",
+        "excerpt": "---- shared::file_system_write_file_writes_bytes::remote_sandboxed_no_follow stdout ----\nError: mode=remote, sandboxed=true\n\nCaused by:\n    fs sandbox helper failed with status exit code: 1: windows sandbox failed: orchestrator_helper_launch_failed: failed to launch setup helper (non-elevated): program not found\n\n"
+      },
+      {
+        "line": 4613,
+        "name": "---- real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal stdout ----",
+        "excerpt": "---- real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal stdout ----\n\nthread 'real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal' (7436) panicked at hepta-agentd/tests\\support\\terminal_cell_owner.rs:198:32:\ncalled `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      {
+        "line": 4619,
+        "name": "---- clean_agent_recall_replay_training_load_and_source_withdrawal stdout ----",
+        "excerpt": "---- clean_agent_recall_replay_training_load_and_source_withdrawal stdout ----\n\nthread 'clean_agent_recall_replay_training_load_and_source_withdrawal' (8520) panicked at hepta-agentd/tests\\support\\terminal_cell_owner.rs:198:32:\ncalled `Result::unwrap()` on an `Err` value: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }\n\n"
+      }
+    ],
+    "errors": [
+      {
+        "line": 3451,
+        "text": "FAIL: //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests (Exit 101) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-operator-acceptance/hepta-operator-acceptance-tests/test.log)"
+      },
+      {
+        "line": 3706,
+        "text": "FAIL: //codex-rs/hepta-shadow-qualification:hepta-shadow-qualification-tests (Exit 101) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-shadow-qualification/hepta-shadow-qualification-tests/test.log)"
+      },
+      {
+        "line": 4168,
+        "text": "FAIL: //codex-rs/hepta-supervisor:hepta-supervisor-restart_budget-test (Exit 101) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-supervisor/hepta-supervisor-restart_budget-test/test.log)"
+      },
+      {
+        "line": 4239,
+        "text": "FAIL: //codex-rs/exec-server:exec-server-file_system_windows-test (Exit 101) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_windows-test/test.log)"
+      },
+      {
+        "line": 4602,
+        "text": "FAIL: //codex-rs/hepta-agentd:hepta-agentd-terminal_cell_owner-test (Exit 101) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-agentd/hepta-agentd-terminal_cell_owner-test/test.log)"
+      },
+      {
+        "line": 4690,
+        "text": "##[error]The operation was canceled."
+      }
+    ],
+    "failed_target_summaries": [],
+    "raw_incomplete_failures": [
+      "FAIL: //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests (Exit 101) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-operator-acceptance/hepta-operator-acceptance-tests/test.log)",
+      "FAIL: //codex-rs/hepta-shadow-qualification:hepta-shadow-qualification-tests (Exit 101) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-shadow-qualification/hepta-shadow-qualification-tests/test.log)",
+      "FAIL: //codex-rs/hepta-supervisor:hepta-supervisor-restart_budget-test (Exit 101) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-supervisor/hepta-supervisor-restart_budget-test/test.log)",
+      "FAIL: //codex-rs/exec-server:exec-server-file_system_windows-test (Exit 101) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-file_system_windows-test/test.log)",
+      "FAIL: //codex-rs/hepta-agentd:hepta-agentd-terminal_cell_owner-test (Exit 101) (see E:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-agentd/hepta-agentd-terminal_cell_owner-test/test.log)"
+    ]
+  },
+  "job-122780464851.log": {
+    "failed_tests": [],
+    "failure_blocks": [],
+    "errors": [
+      {
+        "line": 9218,
+        "text": "##[error]The operation was canceled."
+      }
+    ],
+    "failed_target_summaries": [],
+    "raw_incomplete_failures": []
+  },
+  "job-122780464966.log": {
+    "failed_tests": [
+      "tests::pinned_powershell_runs_under_wine_with_a_pty"
+    ],
+    "failure_blocks": [],
+    "errors": [
+      {
+        "line": 9621,
+        "text": "##[error]The operation was canceled."
+      }
+    ],
+    "failed_target_summaries": [],
+    "raw_incomplete_failures": []
+  },
+  "job-122780803160.log": {
+    "failed_tests": [],
+    "failure_blocks": [],
+    "errors": [
+      {
+        "line": 6170,
+        "text": "  ValueError: path is on mount 'D:', start on mount 'E:'"
+      },
+      {
+        "line": 6183,
+        "text": "##[error]Process completed with exit code 101."
+      }
+    ],
+    "failed_target_summaries": [],
+    "raw_incomplete_failures": []
+  },
+  "job-122780803248.log": {
+    "failed_tests": [],
+    "failure_blocks": [],
+    "errors": [
+      {
+        "line": 6193,
+        "text": "  ValueError: path is on mount 'D:', start on mount 'E:'"
+      },
+      {
+        "line": 6206,
+        "text": "##[error]Process completed with exit code 101."
+      }
+    ],
+    "failed_target_summaries": [],
+    "raw_incomplete_failures": []
+  },
+  "job-122780803534.log": {
+    "failed_tests": [],
+    "failure_blocks": [],
+    "errors": [
+      {
+        "line": 5849,
+        "text": "##[error]The operation was canceled."
+      }
+    ],
+    "failed_target_summaries": [],
+    "raw_incomplete_failures": []
+  },
+  "job-122780464369.log": {
+    "failed_target_summaries": [],
+    "raw_incomplete_failures": []
+  },
+  "job-122780464691.log": {
+    "failed_target_summaries": [],
+    "raw_incomplete_failures": []
+  },
+  "job-122780464743.log": {
+    "failed_target_summaries": [],
+    "raw_incomplete_failures": []
+  },
+  "job-122780464747.log": {
+    "failed_target_summaries": [],
+    "raw_incomplete_failures": []
+  },
+  "job-122780464751.log": {
+    "failed_target_summaries": [],
+    "raw_incomplete_failures": []
+  },
+  "job-122780464759.log": {
+    "failed_target_summaries": [],
+    "raw_incomplete_failures": []
+  },
+  "job-122780464835.log": {
+    "failed_target_summaries": [],
+    "raw_incomplete_failures": []
+  }
+}

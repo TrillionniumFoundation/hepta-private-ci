@@ -1,0 +1,24 @@
+{
+  "accounting": "This enclosing interval includes child subprocesses. Nested receipts explain its components and must not be added to it again.",
+  "complete": true,
+  "cpu": {
+    "child_system_seconds": 0.0,
+    "child_user_seconds": 0.0,
+    "self_system_seconds": 0.651344,
+    "self_user_seconds": 5.529689
+  },
+  "error": null,
+  "facts": {
+    "archive_bytes": 11881111,
+    "archive_sha256": "b860b10029ca9db3c053846933d117cac158ff971a04949cdd353862a7ca513b",
+    "verified_archive_members": 3968
+  },
+  "finished_at_utc": "2026-10-28T11:54:03.995353+00:00",
+  "identity": {
+    "stage": "complete-authenticated-credit-artifact-archive"
+  },
+  "schema": "hepta.adaptive-neuron.cost-stage.v2",
+  "scope": "Hash all retained source/build/runtime/failure/replay/Git-proof/root-review evidence, gzip archive without regenerable compiler/vendor caches, verify every archived member against its independent SHA-256, and hash the complete downloadable file.",
+  "started_at_utc": "2026-10-28T11:53:57.306358+00:00",
+  "wall_seconds": 6.689023996004835
+}

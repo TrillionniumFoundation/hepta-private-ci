@@ -3,7 +3,7 @@
 This directory wires the `v8` crate to exact-version Bazel inputs.
 Bazel consumer builds use:
 
-- upstream `denoland/rusty_v8` release archives on Windows MSVC
+- Codex-published sandbox-enabled release archives on Windows MSVC
 - source-built V8 archives on Darwin, GNU Linux, musl Linux, and Windows GNU
 
 Local Cargo builds still use upstream prebuilt `rusty_v8` archives by default.
@@ -13,13 +13,44 @@ sets those variables independently in `MODULE.bazel` to select source-built
 local archives and bindings for its consumer builds.
 
 The Bazel `v8` crate feature selection enables V8's in-process sandbox for
-Darwin, Linux, and Windows GNU. Windows MSVC remains on upstream non-sandboxed
-prebuilts.
+Darwin, Linux, Windows GNU, and Windows MSVC. The Rust feature and native archive
+must agree on every platform.
 
 Current pinned versions:
 
 - Rust crate: `v8 = =150.4.0`
 - Embedded upstream V8 source for Bazel-produced release builds: `15.0.245.2`
+
+## Process initialization and concurrent isolates
+
+The pinned V8 release has a second initialization boundary after
+`V8::initialize()`: its sandboxed ArrayBuffer backend is created when the first
+default allocator is constructed. The relevant pinned sources are:
+
+- [`CreateParams::finalize`](https://github.com/denoland/rusty_v8/blob/v150.4.0/src/isolate_create_params.rs)
+  creates a default allocator when none was supplied by the caller.
+- [`ArrayBufferAllocator` and `NewDefaultAllocator`](https://github.com/v8/v8/blob/15.0.245.2/src/api/api.cc)
+  obtain the backend owned by the default isolate group. Destroying the API
+  allocator wrapper does not destroy that backend.
+- [`PABackedSandboxedArrayBufferAllocator::LazyInitialize`](https://github.com/v8/v8/blob/15.0.245.2/src/init/isolate-group.cc)
+  checks and assigns `impl_` without a lock. Its constructor initializes the
+  process-wide PartitionAlloc configurable pool. Concurrent first callers can
+  reach that initialization twice and fail the
+  `!IsConfigurablePoolInitialized()` check.
+
+Code mode therefore constructs and drops one default allocator inside its
+existing process-wide initialization `OnceLock`, immediately after initializing
+V8. The independent `v8-poc` test initializer does the same inside its `Once`.
+The initialized backend remains owned by the isolate group, and subsequent
+isolates keep their normal individual allocator wrappers. The sandbox stays
+enabled and isolate construction can still proceed concurrently.
+
+`code-mode-runtime/tests/concurrent_startup.rs` is a separate integration-test
+binary with one test. It initializes V8, releases eight real session workers at
+a barrier, and verifies typed-array allocation, writes, reads, and results from
+their first cells. Keeping this test separate prevents other tests from warming
+the backend before the concurrent first use. The existing runtime and host unit
+suites also remain necessary, together with the native Windows V8 canary.
 
 ## Updating to a new `v8` release
 

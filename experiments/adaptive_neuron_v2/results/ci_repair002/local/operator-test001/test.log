@@ -1,0 +1,101 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+   Compiling proc-macro2 v1.0.106
+   Compiling unicode-ident v1.0.22
+   Compiling quote v1.0.45
+   Compiling version_check v0.9.5
+   Compiling cfg-if v1.0.4
+   Compiling generic-array v0.14.7
+   Compiling libc v0.2.186
+   Compiling typenum v1.20.0
+   Compiling zeroize v1.9.1
+   Compiling zerocopy v0.8.37
+   Compiling getrandom v0.3.4
+   Compiling const-oid v0.9.6
+   Compiling semver v1.0.27
+   Compiling der v0.7.10
+   Compiling rustc_version v0.4.1
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling syn v3.0.3
+   Compiling serde_core v1.0.229
+   Compiling spki v0.7.3
+   Compiling digest v0.10.7
+   Compiling curve25519-dalek v4.1.3
+   Compiling syn v2.0.117
+   Compiling rustix v1.1.4
+   Compiling cpufeatures v0.2.17
+   Compiling getrandom v0.4.3
+   Compiling zmij v1.0.19
+   Compiling ppv-lite86 v0.2.21
+   Compiling rand_core v0.9.5
+   Compiling pkcs8 v0.10.2
+   Compiling curve25519-dalek-derive v0.1.1
+   Compiling signature v2.2.0
+   Compiling serde_json v1.0.154
+   Compiling thiserror v2.0.21
+   Compiling linux-raw-sys v0.12.1
+   Compiling serde v1.0.229
+   Compiling bitflags v2.13.2
+   Compiling subtle v2.6.1
+   Compiling ed25519 v2.2.3
+   Compiling rand_chacha v0.9.0
+   Compiling sha2 v0.10.9
+   Compiling thiserror-impl v2.0.21
+   Compiling serde_derive v1.0.229
+   Compiling fastrand v2.3.0
+   Compiling itoa v1.0.17
+   Compiling once_cell v1.21.4
+   Compiling diff v0.1.13
+   Compiling memchr v2.8.1
+   Compiling yansi v1.0.1
+   Compiling pretty_assertions v1.4.1
+   Compiling tempfile v3.27.0
+   Compiling ed25519-dalek v2.2.0
+   Compiling rand v0.9.3
+   Compiling base64 v0.22.1
+   Compiling codex-hepta-operator-acceptance v0.0.0 (/workspace/scratch/07399998a2e3/hepta/codex-rs/hepta-operator-acceptance)
+    Finished `test` profile [unoptimized] target(s) in 16.48s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zerocopy@0.8.37` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID 9d21a4a3-cbe2-4ca5-8e54-34821c9491b9 with nextest profile: local
+    Starting 24 tests across 1 binary
+        PASS [   0.005s] codex-hepta-operator-acceptance ceremony::tests::v1_paths_are_exact_and_sidecar_is_a_strict_child
+        PASS [   0.003s] codex-hepta-operator-acceptance manifest_inventory::tests::manifest_parser_requires_sorted_safe_unique_paths
+        PASS [   0.011s] codex-hepta-operator-acceptance g5_trust::tests::exact_head_and_predecessor_binding_is_required
+        PASS [   0.011s] codex-hepta-operator-acceptance g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance
+        PASS [   0.005s] codex-hepta-operator-acceptance manifest_inventory::tests::verified_manifest_rejects_extra_files_and_hardlinks
+        PASS [   0.014s] codex-hepta-operator-acceptance g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance
+        PASS [   0.016s] codex-hepta-operator-acceptance g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority
+        PASS [   0.017s] codex-hepta-operator-acceptance g5_trust::tests::revocation_digest_change_invalidates_existing_challenge
+        PASS [   0.006s] codex-hepta-operator-acceptance manifest_inventory::tests::verified_manifest_rejects_symlinks
+        PASS [   0.005s] codex-hepta-operator-acceptance preflight::tests::every_missing_or_wrong_formal_environment_pin_is_rejected
+        PASS [   0.018s] codex-hepta-operator-acceptance g5_trust::tests::policy_and_revocation_files_must_be_canonical
+        PASS [   0.008s] codex-hepta-operator-acceptance tests::exact_challenge_boundary_accepts_only_operator_acceptance
+        PASS [   0.010s] codex-hepta-operator-acceptance tests::durable_time_watermark_rejects_clock_rollback
+        PASS [   0.006s] codex-hepta-operator-acceptance tests::read_only_lock_never_creates_missing_state
+        PASS [   0.006s] codex-hepta-operator-acceptance tests::final_consumption_at_expiry_creates_no_claim_or_receipt
+        PASS [   0.006s] codex-hepta-operator-acceptance tests::receipt_repeated_authority_must_match_exact_boundary
+        PASS [   0.023s] codex-hepta-operator-acceptance g5_trust::tests::signed_challenge_obeys_platform_verifier_and_never_grants_authority
+        PASS [   0.008s] codex-hepta-operator-acceptance tests::exact_replay_returns_same_receipt_and_conflicting_claim_fails
+        PASS [   0.004s] codex-hepta-operator-acceptance tests::validity_window_is_half_open_and_policy_bounded
+        PASS [   0.004s] codex-hepta-operator-acceptance trust::tests::trust_policy_digest_is_external_and_fail_closed
+        PASS [   0.010s] codex-hepta-operator-acceptance tests::unknown_or_noncanonical_stored_json_is_rejected
+        PASS [   0.005s] codex-hepta-operator-acceptance trust::tests::weak_ed25519_public_key_is_rejected_before_openssh
+        PASS [   0.009s] codex-hepta-operator-acceptance trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers
+        PASS [   0.023s] codex-hepta-operator-acceptance trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy
+────────────
+     Summary [   0.047s] 24 tests run: 24 passed, 0 skipped

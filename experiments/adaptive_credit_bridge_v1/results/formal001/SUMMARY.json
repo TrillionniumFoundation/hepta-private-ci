@@ -1,0 +1,109 @@
+{
+  "actual_snn_prefixes": 48,
+  "build_identity": {
+    "development_native_sha256": "7f50617924fbb962bf93d188c1c3fbd48e78d97db8edc30f6a14f1e0506b195e",
+    "formal_build_receipt_sha256": "e74d8494e90411d8b3ca5c9bb1dc5791b598962f9f13507d863f57711c84c40e",
+    "formal_sha256": "839b75613e98d182b6f2f9e5b1276ab81c41e18e976cf0faea732e17e866a026",
+    "formal_source_commit": "e91a7002bfd650e4a2b057b18b9d81f4242b9ed2",
+    "independent_root_native_binary_identical": false
+  },
+  "commands": [
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.adaptive_credit_bridge_v1.build",
+        "--destination",
+        "/dev/shm/hepta-credit-bridge-formal001",
+        "--compiler",
+        "/tmp/hepta-ci-rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin",
+        "--source-seal",
+        "/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_neuron_v2/results/registration001/SOURCE_SEAL.json",
+        "--bridge-seal",
+        "/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_credit_bridge_v1/runs/formal001/SOURCE_SEAL.json",
+        "--cache",
+        "/tmp/hepta-ci-cargo"
+      ],
+      "cwd": "/workspace/scratch/07399998a2e3/hepta",
+      "exit_code": 0,
+      "log": "build.log",
+      "log_sha256": "f072394e30ec96348c8e798ba3251733a7c4c073c68b32ce7962394f7b7dbff1"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.adaptive_credit_bridge_v1.run",
+        "--destination",
+        "/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_credit_bridge_v1/runs/formal001/loop",
+        "--preserved",
+        "/workspace/scratch/07399998a2e3/deliverables/hepta-adaptive-v2-batch001-preserved",
+        "--bridge-build",
+        "/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_credit_bridge_v1/runs/formal001/build",
+        "--source-seal",
+        "/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_neuron_v2/results/registration001/SOURCE_SEAL.json",
+        "--bridge-seal",
+        "/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_credit_bridge_v1/runs/formal001/SOURCE_SEAL.json"
+      ],
+      "cwd": "/workspace/scratch/07399998a2e3/hepta",
+      "exit_code": 0,
+      "log": "run.log",
+      "log_sha256": "2e2167b93a7f532385705ea3770d62dd16a05f48cb7e0acb6ed13aa2c9124a2d"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.adaptive_credit_bridge_v1.audit",
+        "--run",
+        "/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_credit_bridge_v1/runs/formal001/loop",
+        "--destination",
+        "/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_credit_bridge_v1/runs/formal001/audit",
+        "--source-seal",
+        "/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_neuron_v2/results/registration001/SOURCE_SEAL.json",
+        "--bridge-seal",
+        "/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_credit_bridge_v1/runs/formal001/SOURCE_SEAL.json"
+      ],
+      "cwd": "/workspace/scratch/07399998a2e3/hepta",
+      "exit_code": 0,
+      "log": "audit.log",
+      "log_sha256": "e8c7f4c283fd20bb0ca0bd012f9a79c0dfb9cbb41c24cf79ef2150210c4c1b37"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "experiments.adaptive_credit_bridge_v1.audit",
+        "--run",
+        "/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_credit_bridge_v1/runs/formal001/portable/working",
+        "--destination",
+        "/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_credit_bridge_v1/runs/formal001/portable/replay",
+        "--source-seal",
+        "/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_credit_bridge_v1/runs/formal001/portable/experiments/adaptive_neuron_v2/results/registration001/SOURCE_SEAL.json",
+        "--bridge-seal",
+        "/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_credit_bridge_v1/runs/formal001/portable/SOURCE_SEAL.json"
+      ],
+      "cwd": "/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_credit_bridge_v1/runs/formal001/portable",
+      "exit_code": 0,
+      "log": "portable_audit.log",
+      "log_sha256": "aca53227d95672616606203501672f20efba67a7e0599f463d701833f0110288"
+    }
+  ],
+  "cost_policy": "Use this enclosing COMPLETE.json or whole-launch timer as the total, not a sum of nested receipts.",
+  "episodes": 16,
+  "formal_audit_sha256": "c0da330eedebd152765333c632acf666c0170e03b0017828ab6ca16c9de85bc2",
+  "formal_development_only": false,
+  "passed": true,
+  "portable_audit_sha256": "2e964ed5e28c85747c004c976668e76bec747db51a41715ad9eb84cb295ec362",
+  "portable_episodes": 16,
+  "portable_git_input_blobs_verified": 228,
+  "portable_git_objects": 266,
+  "signed_facts": 48,
+  "source": {
+    "seal_sha256": "2388d2131cea782a3e75190c5791cfa13a9d065bfa2b28879235f9a0d54495b6",
+    "source_commit": "e91a7002bfd650e4a2b057b18b9d81f4242b9ed2",
+    "source_tree": "58172975f4523cd00f259a0b07f19e5a5045ac94",
+    "verified_inputs": 228
+  },
+  "source_seal_sha256": "2388d2131cea782a3e75190c5791cfa13a9d065bfa2b28879235f9a0d54495b6"
+}

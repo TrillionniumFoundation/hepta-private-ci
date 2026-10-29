@@ -1,0 +1,43 @@
+{
+  "arms": {},
+  "development_only": true,
+  "protocol": {
+    "datasets": {
+      "train_cost": [
+        0.01,
+        0.04,
+        0.08,
+        0.12
+      ],
+      "train_deadline": [
+        8,
+        16
+      ],
+      "train_reliability": [
+        0.6,
+        0.75
+      ]
+    },
+    "training": {
+      "gradient_norm_clip": 5.0,
+      "hypergradient_norm_clip": 1.0,
+      "inner_learning_rate": 0.03,
+      "outer_learning_rate": 0.02,
+      "outer_steps": 128,
+      "query_episodes": 64,
+      "query_weight_learning_rate": 0.01,
+      "support_episodes": 64
+    }
+  },
+  "schema": "hepta.adaptive-neuron.learning-development.v1",
+  "seed": 910010,
+  "source_sha256": {
+    "experiments/adaptive_neuron_v2/learning/__init__.py": "507cc2ca63aeb8c8efccc85ab0c6064fbca5e4839772af99f3dff0c266bcb1e2",
+    "experiments/adaptive_neuron_v2/learning/kernel.py": "73cdfa097375fd4b0c866f97039560ea99e6598eaf91c2b5c5989091c4ae7945",
+    "experiments/adaptive_neuron_v2/learning/meta.py": "2ceb0b4dcfb836477f1be8a466f83da74c303cf6a402bd2406df3a33131815b5",
+    "experiments/adaptive_neuron_v2/learning/network.py": "ebef4579c4db7e7e56b05b37b709bf934a8e4a980b4f775c6813dd10054233d5",
+    "experiments/adaptive_neuron_v2/learning/task.py": "dde25d0a318e8ae75b4728c23bccf4f82b4627785f54eb2665ced43d82487f98",
+    "experiments/adaptive_neuron_v2/learning/test_learning.py": "9660f1c009d01edd2de8c32a4da57870bbf33707e7c747a6f8572ed8d5c1e4f4"
+  },
+  "started_at_utc": "2026-10-28T10:11:04.552504+00:00"
+}

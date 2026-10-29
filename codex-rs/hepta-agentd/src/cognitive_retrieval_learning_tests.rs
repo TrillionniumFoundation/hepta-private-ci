@@ -1,5 +1,6 @@
 use super::*;
 
+#[cfg(not(windows))]
 use std::fs::File;
 use std::fs::OpenOptions;
 
@@ -170,8 +171,22 @@ fn sink() -> (tempfile::TempDir, CognitiveRetrievalLearningSink) {
         .expect("witness file");
     let ledger = DurableLedger::create(ledger_file, binding, 128).expect("ledger");
     let witness = LedgerWitnessStore::create(witness_file, binding).expect("witness");
+    #[cfg(windows)]
+    let ledger_directory = {
+        use std::os::windows::fs::OpenOptionsExt;
+
+        // The production writer flushes this real directory handle. Windows
+        // requires both directory semantics and write access for that flush.
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(0x0200_0000) // FILE_FLAG_BACKUP_SEMANTICS
+            .open(temp.path())
+            .expect("ledger directory")
+    };
+    #[cfg(not(windows))]
     let ledger_directory = File::open(temp.path()).expect("ledger directory");
-    let witness_directory = File::open(temp.path()).expect("witness directory");
+    let witness_directory = ledger_directory.try_clone().expect("witness directory");
     let writer = LedgerWriter::from_durable(
         ledger,
         witness,

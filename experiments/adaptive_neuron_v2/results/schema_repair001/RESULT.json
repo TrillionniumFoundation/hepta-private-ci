@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "completed_utc": "2026-10-29T07:20:09.514478+00:00",
+  "status": "passed",
+  "scope": "Genuine app-server stable and experimental schema regeneration with complete Linux package verification.",
+  "source_commit": "9da183aa9c97335c673003b9c5a9b8650df7e50a",
+  "source_binding": "SOURCE_BINDING.json",
+  "before": "BEFORE.json",
+  "after": "AFTER.json",
+  "private_output_transfer": "TRANSFER.json",
+  "source_edits": [],
+  "generated_artifacts": [
+    "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-stable.json.zst",
+    "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-experimental.json.zst",
+    "codex-rs/app-server-protocol/schema/json/v2/TurnRecoverResponse.json"
+  ],
+  "fixture_change": "The generated TurnRecoverResponse execution-state enum now includes the existing Rust-source variant completed.",
+  "generators": {
+    "stable": {
+      "successful_attempts": [
+        "stable003",
+        "stable004"
+      ],
+      "private_repeat_compressed_bytes_identical": true
+    },
+    "experimental": {
+      "successful_attempts": [
+        "experimental001"
+      ]
+    }
+  },
+  "package_test": {
+    "command": [
+      "just",
+      "test",
+      "-p",
+      "codex-app-server-protocol",
+      "--locked",
+      "--offline"
+    ],
+    "run": 303,
+    "passed": 303,
+    "failed": 0,
+    "skipped": 1,
+    "skipped_test": "schema_fixtures_tests::write_schema_fixtures_from_env",
+    "skipped_test_executed_explicitly_in_generator_steps": true,
+    "consistency_tests_passed": [
+      "typescript_schema_fixtures_match_generated",
+      "json_schema_fixtures_match_generated",
+      "stable_precomputed_exports_match_schema_fixtures",
+      "experimental_precomputed_exports_match_generated"
+    ]
+  },
+  "format": {
+    "command": [
+      "just",
+      "fmt",
+      "--all"
+    ],
+    "exit_code": 0
+  },
+  "retained_failed_attempts": {
+    "stable001": "Missing pkg-config prevented system OpenSSL discovery; retried with verified explicit installed include/library paths.",
+    "stable002": "Host disk exhausted during image/starlark compilation; no source error or test result. Retry followed serialization and parent-owned cache handoff."
+  },
+  "workspace_artifact_recovery": {
+    "unexpected_experimental_json_paths_in_live_tree": 120,
+    "cause": "Not established. These paths were absent from the successful stable compressed map.",
+    "remedy": "Official generator repeated in a private schema root; completed trees verified byte-for-byte against genuine generated stable map before atomic transfer. Prior trees backed up; all removed-live-tree paths and hashes retained in TRANSFER.json."
+  },
+  "command_receipts": {
+    "experimental001": {
+      "start": "experimental001-start.json",
+      "complete": "experimental001-complete.json",
+      "log": "experimental001.log",
+      "exit_code": 0
+    },
+    "format001": {
+      "start": "format001-start.json",
+      "complete": "format001-complete.json",
+      "log": "format001.log",
+      "exit_code": 0
+    },
+    "stable001": {
+      "start": "stable001-start.json",
+      "complete": "stable001-complete.json",
+      "log": "stable001.log",
+      "exit_code": 1
+    },
+    "stable002": {
+      "start": "stable002-start.json",
+      "complete": "stable002-complete.json",
+      "log": "stable002.log",
+      "exit_code": 1
+    },
+    "stable003": {
+      "start": "stable003-start.json",
+      "complete": "stable003-complete.json",
+      "log": "stable003.log",
+      "exit_code": 0
+    },
+    "stable004": {
+      "start": "stable004-start.json",
+      "complete": "stable004-complete.json",
+      "log": "stable004.log",
+      "exit_code": 0
+    },
+    "test001": {
+      "start": "test001-start.json",
+      "complete": "test001-complete.json",
+      "log": "test001.log",
+      "exit_code": 0
+    }
+  },
+  "measured_command_totals": {
+    "wall_seconds_sum": 657.7415292020087,
+    "children_cpu_seconds_sum": 1006.673532,
+    "peak_children_max_rss_kib": 3173248,
+    "scope": "Subprocess command groups only. Includes both failed build attempts and the private generation repeat. Does not include parent native-build effort, tool acquisition, idle time, host-wide energy or GPU costs; do not add nested parent measurements to these counters."
+  },
+  "platform": "x86_64-unknown-linux-gnu",
+  "remaining_validation": "Full hosted cross-platform CI is owned by the parent task; this receipt claims only the executed Linux package gate."
+}

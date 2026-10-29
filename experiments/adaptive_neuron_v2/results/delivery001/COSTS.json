@@ -1,0 +1,105 @@
+{
+  "accounting": "Process CPU intervals enclose distinct child trees; nested stage timers are not counted again. Some independent stages overlap in clock time: the sum of stage wall durations is workload accounting, not elapsed session time. This ledger covers v2 science and its delivery; historical v1 portability preparation remains separately recorded, while the bulk upload here includes both artifacts. Earlier development/engineering/test setup, unmetered code authoring, CI runner billing and preinstalled caches are not retroactively measured. Signed credit bridge and dependency remediation have independent receipts.",
+  "independent_review_scope_note": "The review script itself reports interpreter startup and final receipt writes outside its own measured scopes; those are not estimated here.",
+  "parts": [
+    {
+      "complete": true,
+      "cpu_seconds": 496.2095937170001,
+      "receipt": "experiments/adaptive_neuron_v2/results/delivery001/SCIENTIFIC_LAUNCH.json",
+      "sha256": "3fc9aa405ee926bdce14de78fd9fff263bfdc73e009fa81b4a3572d60f61bb7c",
+      "stage": "registered_science_including_all_original_audits",
+      "stage_wall_seconds": 509.41320226499374
+    },
+    {
+      "complete": true,
+      "cpu_seconds": 23.607499537,
+      "receipt": "experiments/adaptive_neuron_v2/results/independent_review001/COST_CLARIFICATION.json",
+      "sha256": "e7a83afe6c1be9f67dea30266bc4c4794576ebbe3407da7587f062db0711be3b",
+      "stage": "additional_independent_review_and_preservation",
+      "stage_wall_seconds": 27.894278862004285
+    },
+    {
+      "complete": false,
+      "cpu_seconds": 0.09366287200000001,
+      "receipt": "experiments/adaptive_neuron_v2/results/delivery001/commands/FAILED.json",
+      "sha256": "adeb31c7a755c3fe188e9968a11076ecdf6ed36973495a98e7cce61fa6be3586",
+      "stage": "failed_packaging_launcher",
+      "stage_wall_seconds": 0.10741268700076034
+    },
+    {
+      "complete": true,
+      "cpu_seconds": 7.943353551,
+      "receipt": "experiments/adaptive_neuron_v2/results/delivery001/materialize002/COMPLETE.json",
+      "sha256": "fa9e1bea0ff11839a80c86215fc4251a5f019e6c572af211095271bac583835f",
+      "stage": "exact_bundle_materialization",
+      "stage_wall_seconds": 15.459322851005709
+    },
+    {
+      "complete": true,
+      "cpu_seconds": 54.025489,
+      "receipt": "experiments/adaptive_neuron_v2/results/delivery001/portable_launch001/COMPLETE.json",
+      "sha256": "5251ba4780d71a34d775620cd622564297d3cb83874a93b6a59a8a864fa8ddda",
+      "stage": "complete_portable_replay",
+      "stage_wall_seconds": 61.45887775799929
+    },
+    {
+      "complete": true,
+      "cpu_seconds": 4.053915994,
+      "receipt": "experiments/adaptive_neuron_v2/results/delivery001/figures_launch001/COMPLETE.json",
+      "sha256": "a16b9b401a1fcc35a20c8a4690c423c2f912c7f0401b648ef7826c4e745cf7ed",
+      "stage": "figure_render_1",
+      "stage_wall_seconds": 3.9797632780027925
+    },
+    {
+      "complete": true,
+      "cpu_seconds": 2.5639443109999998,
+      "receipt": "experiments/adaptive_neuron_v2/results/delivery001/figures_launch002/COMPLETE.json",
+      "sha256": "7b69d351ff01d056681d3541fb7f112f1c260d8dbab44f06907cd0e6096f3bf7",
+      "stage": "figure_render_2",
+      "stage_wall_seconds": 2.2661952019989258
+    },
+    {
+      "complete": true,
+      "cpu_seconds": 18.211560972,
+      "receipt": "experiments/adaptive_neuron_v2/results/delivery001/archive_launch001/COMPLETE.json",
+      "sha256": "16f44f45037be47644c8a7360b4c90055b506d2288598f5b3ecae43117211d41",
+      "stage": "archive_and_verification",
+      "stage_wall_seconds": 28.663740285999666
+    },
+    {
+      "complete": true,
+      "cpu_seconds": 0.2968,
+      "receipt": "experiments/adaptive_neuron_v2/results/delivery001/upload001/COMPLETE.json",
+      "sha256": "74a76f95ccbb2de17bcf4c3005ff3b6e8851e3911e2a2c69d2e71afa104984bd",
+      "stage": "bulk_delivery_v1_v2_and_figures",
+      "stage_wall_seconds": 7.395740719002788
+    },
+    {
+      "complete": true,
+      "cpu_seconds": 1.142734,
+      "receipt": "experiments/adaptive_neuron_v2/results/delivery001/cleanup001/COMPLETE.json",
+      "sha256": "e78b6e6940878a51629a383363dde42e9248de9f308a2d34c4a1b1e5dcafa86a",
+      "stage": "discard_reproducible_portable_copy",
+      "stage_wall_seconds": 2.0719899289979367
+    },
+    {
+      "complete": true,
+      "cpu_seconds": 0.082841,
+      "receipt": "experiments/adaptive_neuron_v2/results/delivery001/cache_cleanup002/COMPLETE.json",
+      "sha256": "11ea7e5700cf2a0dda71441b7ab00f6fb56dc7554fd885a8c933061a3c23f0f9",
+      "stage": "discard_reproducible_compiler_objects",
+      "stage_wall_seconds": 0.09635750499728601
+    },
+    {
+      "complete": true,
+      "cpu_seconds": 5.7146360000000005,
+      "receipt": "experiments/adaptive_neuron_v2/results/delivery001/ram_cleanup003/COMPLETE.json",
+      "sha256": "8df3aedcc65a53c78af045c8688ec40ae055d626140ebc504e2f577c6b88e6e7",
+      "stage": "retire_verified_original_ram_copy",
+      "stage_wall_seconds": 9.564465356997971
+    }
+  ],
+  "schema": "hepta.adaptive-neuron.delivery-cost-ledger.v1",
+  "sum_disjoint_process_cpu_seconds": 613.9460309540001,
+  "sum_stage_wall_seconds": 668.3713466990012
+}
