@@ -1,0 +1,94 @@
+{
+  "additional_root_authorization": "codex-rs/.config/nextest.toml exact new-test timeout only",
+  "checks": {
+    "driver_boundary_tests": 8,
+    "nextest_toml": "passed",
+    "old_holdout_members_extracted": false,
+    "python_ast": "passed",
+    "selected_legacy_restore_members": 14,
+    "workflow_yaml": "passed"
+  },
+  "files": {
+    ".github/workflows/memory-cell-v10.yml": {
+      "bytes": 5721,
+      "lines": 134,
+      "sha256": "99b1d5e4b3de52e524ee8a7f686b630124918222b0bcdbfe187593824fc232af"
+    },
+    "codex-rs/.config/nextest.toml": {
+      "bytes": 6987,
+      "lines": 154,
+      "sha256": "f1169d7f81685188769af4ee2c810aa02edfecd8fab8d5f798e3dd5fb38febd0"
+    },
+    "qualification/memory-cell-v10-ci/INPUT_PINS.json": {
+      "bytes": 3876,
+      "lines": 102,
+      "sha256": "99b96403d4727a0c75b7abb22d20a55fa1239cc2adb08ef7dcec21d145b86617"
+    },
+    "qualification/memory-cell-v10-ci/README.md": {
+      "bytes": 6452,
+      "lines": 128,
+      "sha256": "6746ffa52ab9c65c5ec59c407c1d136b9c3c77fa9849e1538e21d26741d3553c"
+    },
+    "qualification/memory-cell-v10-ci/TEMPLATE_PROVENANCE.json": {
+      "bytes": 1594,
+      "lines": 23,
+      "sha256": "17d25e2ae4a5dc91d48354cda94d35526b9562e47fa5b169127074999722d23c"
+    },
+    "qualification/memory-cell-v10-ci/ci.py": {
+      "bytes": 4622,
+      "lines": 79,
+      "sha256": "65d7becfe17554ac7f0c2fee9428877dcd959484750e31d1c25fe560c00ae7e4"
+    },
+    "qualification/memory-cell-v10-ci/ci_tests.py": {
+      "bytes": 4692,
+      "lines": 99,
+      "sha256": "d3f7309dcba04968f3a41119701638a15d616037f5ec6e4d3001266a6f1dc30b"
+    },
+    "qualification/memory-cell-v10-ci/common.py": {
+      "bytes": 7424,
+      "lines": 169,
+      "sha256": "84cd267685a7dc6b4441ab28fb552b064fe982eea8fff03de0f9b695ccc52dc0"
+    },
+    "qualification/memory-cell-v10-ci/finalize.py": {
+      "bytes": 7437,
+      "lines": 119,
+      "sha256": "fea77e192ffe1da43db3de2a8e4800e5391a84f602fc7e6c25974ae720c3b77a"
+    },
+    "qualification/memory-cell-v10-ci/github_gate.py": {
+      "bytes": 11508,
+      "lines": 193,
+      "sha256": "84694b5e20ccbf134dee4c025dabc058f0e4aa7f9cc92b67d94451dceacf9534"
+    },
+    "qualification/memory-cell-v10-ci/inputs.py": {
+      "bytes": 8739,
+      "lines": 147,
+      "sha256": "b32b42f36a06812d71a4e5863529ad8b7375503cb05f29359389245cfa6ceb2a"
+    },
+    "qualification/memory-cell-v10-ci/pack.py": {
+      "bytes": 2911,
+      "lines": 59,
+      "sha256": "e3c409b1d67ca5bd80b716cdaab6646c75d569f2defbfe25a5aaf7f38fd5f20a"
+    },
+    "qualification/memory-cell-v10-ci/request.py": {
+      "bytes": 2772,
+      "lines": 51,
+      "sha256": "c389cc870349fd36a852014b987226c4f78fa5aa12c1ff3bbd3737dd214bceae"
+    },
+    "qualification/memory-cell-v10-ci/runtime-requirements.txt": {
+      "bytes": 599,
+      "lines": 28,
+      "sha256": "3c54ab8c0ee3281b9ff1fcc99501c000b9fe1861dc6b1a6ef8f5f9dbc878affb"
+    },
+    "qualification/memory-cell-v10-ci/verify.py": {
+      "bytes": 7099,
+      "lines": 114,
+      "sha256": "3b27715159910d4d130ed3e865c134d4383e8e678ada7ea9d7ef4705cda88db5"
+    }
+  },
+  "final_source_manifest_sha256": "38559a7e81e22b6742febb4fdca9b52e567495cb0233eabd28aae9979c6c24b7",
+  "fix_or_formatter_executed": false,
+  "frozen_research_modified": false,
+  "rust_tests_executed": false,
+  "rust_tools_available_locally": false,
+  "schema": "hepta.memory.v10.ci-handoff.v1"
+}
