@@ -66,6 +66,7 @@ pub async fn run(
         .map(std::path::Path::to_path_buf);
     let ranker = config.cognitive_ranker();
     let memory_cells = config.memory_cells();
+    let memory_inventory = config.memory_inventory();
     let mut production_writer_host = config.production_writer_host();
     if production_operations.is_some() && production_writer_host.is_none() {
         return Err(AgentdError::Invalid(
@@ -205,6 +206,9 @@ pub async fn run(
     }
     if let Some(cells) = memory_cells {
         state.attach_memory_cells(cells)?;
+    }
+    if let Some(inventory) = memory_inventory {
+        state.attach_memory_inventory(inventory)?;
     }
     let production_operations = match production_operations {
         Some(operations) => {

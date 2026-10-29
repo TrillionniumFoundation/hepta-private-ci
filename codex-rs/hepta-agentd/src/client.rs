@@ -47,6 +47,8 @@ use crate::SessionIngress;
 
 #[path = "memory_cell_client.rs"]
 mod memory_cells;
+#[path = "memory_inventory_client.rs"]
+mod memory_inventory;
 #[path = "client_traffic.rs"]
 mod traffic;
 pub use traffic::AgentdTrafficSnapshotV1;

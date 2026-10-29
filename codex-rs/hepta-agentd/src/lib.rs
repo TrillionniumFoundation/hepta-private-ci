@@ -50,6 +50,19 @@ mod memory_cell_population_tests;
 mod memory_cell_prospective_tests;
 mod memory_cell_release;
 mod memory_cell_runtime;
+mod memory_inventory_bundle;
+mod memory_inventory_release;
+mod memory_inventory_runtime;
+#[cfg(test)]
+mod memory_inventory_release_test_support;
+#[cfg(test)]
+mod memory_inventory_withdrawal_test_support;
+#[cfg(test)]
+mod memory_inventory_test_support;
+#[cfg(test)]
+mod memory_inventory_control_tests;
+#[cfg(all(test, unix))]
+mod memory_inventory_actual_tests;
 #[cfg(test)]
 mod memory_cell_runtime_tests;
 #[cfg(test)]
@@ -147,6 +160,7 @@ pub use codex_hepta_agent_protocol::MAX_CONTROL_FRAME_BYTES;
 pub use codex_hepta_agent_protocol::MAX_EVENT_BATCH;
 pub use codex_hepta_agent_protocol::MAX_FEDERATION_CONTROL_LIST;
 pub use codex_hepta_agent_protocol::MemoryCellSnapshotPageV1;
+pub use codex_hepta_agent_protocol::MemoryInventorySnapshotPageV1;
 pub use codex_hepta_agent_protocol::MemoryFederationCapabilityId;
 pub use codex_hepta_agent_protocol::MemoryFederationCapabilitySnapshot;
 pub use codex_hepta_agent_protocol::MemoryFederationCapabilityState;
@@ -220,6 +234,7 @@ pub use memory_cell_address_worker::MEMORY_CELL_TIME_VIEW_PROFILE_V1;
 pub use memory_cell_address_worker::MemoryCellAddressWorkerConfigV1;
 pub use memory_cell_address_worker::MemoryCellAddressWorkerMetricsV1;
 pub use memory_cell_address_worker::MemoryCellAddressWorkerV1;
+pub use memory_cell_address_worker::MemoryInventoryAddressWorkerV1;
 pub use memory_cell_learning::MemoryCellLearningDecisionV1;
 pub use memory_cell_learning::MemoryCellLearningSinkV1;
 pub use memory_cell_learning::MemoryCellTrainingDecisionContextV1;
@@ -257,6 +272,12 @@ pub use memory_cell_release::stage_memory_structure_v9;
 pub use memory_cell_runtime::AgentdMemoryCellRuntimeV1;
 pub use memory_cell_runtime::MemoryCellAddressResolverV1;
 pub use memory_cell_runtime::MemoryCellResolvedAddressV1;
+pub use memory_inventory_bundle::LoadedMemoryInventoryBundleV1;
+pub use memory_inventory_bundle::MemoryInventoryBundleCandidateV1;
+pub use memory_inventory_release::MemoryInventoryReleaseHostV1;
+pub use memory_inventory_runtime::AgentdMemoryInventoryRuntimeV1;
+pub use memory_inventory_runtime::MemoryInventoryAddressResolverV1;
+pub use memory_inventory_runtime::MemoryInventoryResolvedAddressV1;
 pub use memory_cell_training::MemoryCellFitBudgetV1;
 pub use memory_cell_training::MemoryCellReplayParentV1;
 pub use memory_cell_training::MemoryCellTrainerConfigV1;
