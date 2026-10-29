@@ -9,6 +9,7 @@ checkpoint-file and whole-archive SHA-256 identities are independently checked.
 import argparse
 import base64
 from collections import Counter
+import gzip
 import hashlib
 import json
 import math
@@ -27,6 +28,9 @@ PINS = {
                  "sha256": "3198e1668ea5792a73b9215adb7688067d5a004519dbfe3c2442691cdab3a4cf"},
 }
 SOURCE_CACHE = {}
+PRESERVED_OBSERVER_JSON = (
+    "observer/OBSERVER_FREEZE.json", "observer/RESULT.json", "observer/ALLOCATION.json",
+)
 
 
 def check(condition, message):
@@ -106,6 +110,34 @@ def source_identities(identities):
             SOURCE_CACHE[name] = hashlib.sha256(base64.b64decode(value["content"], validate=False)).hexdigest()
         check(SOURCE_CACHE[name] == expected, "Implementation differs from frozen source commit: " + name)
     return {"source_commit": HEAD, "sha256": identities, "verified_from_commit": True}
+
+
+def preserve_observer_json(archive, output):
+    """Preserve only already-validated original JSON bytes, never model/media files."""
+    files = []
+    for name in PRESERVED_OBSERVER_JSON:
+        check(archive.member(name) == name, "Unexpected exact observer archive member: " + name)
+        check(archive.archive.getinfo(name).file_size <= 16 * 1024 * 1024, "Oversized preserved JSON")
+        original = archive.archive.read(name)
+        original_sha = hashlib.sha256(original).hexdigest()
+        check(archive.json_sha256.get(name) == original_sha, "Preservation requires prior successful JSON validation")
+        compressed = gzip.compress(original, compresslevel=9, mtime=0)
+        check(gzip.decompress(compressed) == original, "Preservation changed original JSON bytes")
+        relative = Path("preserved") / (name + ".gz")
+        path = Path(output) / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("xb") as stream:
+            stream.write(compressed)
+        files.append({"archive_member": name, "path": relative.as_posix(),
+                      "original_bytes": len(original), "original_sha256": original_sha,
+                      "stored_bytes": len(compressed), "stored_sha256": hashlib.sha256(compressed).hexdigest()})
+    manifest = {"schema": "hepta.joint-natural.preserved-observer-json.v1", "source_run": RUN,
+                "source_head": HEAD, "source_artifact_id": PINS["observer"]["artifact"],
+                "source_artifact_sha256": PINS["observer"]["sha256"],
+                "encoding": "gzip", "gzip_mtime": 0, "gzip_compression_level": 9,
+                "original_bytes_preserved": True, "media_or_weights_exported": False, "files": files}
+    write(Path(output) / "preserved/MANIFEST.json", manifest)
+    return manifest
 
 
 def allocation(archive, role):
@@ -341,6 +373,8 @@ def run(output):
                     with zipfile.ZipFile(path, "r") as stream:
                         archive = Archive(stream)
                         record["evidence"] = generator(archive) if role == "generator" else observer(archive)
+                        if role == "observer":
+                            record["preserved_original_json"] = preserve_observer_json(archive, output)
                         record.update(json_file_sha256=archive.json_sha256, physical_trajectories_checked=len(archive.trace_hashes),
                                       ordered_trajectory_hashes_sha256=digest(archive.trace_hashes))
                 finally:

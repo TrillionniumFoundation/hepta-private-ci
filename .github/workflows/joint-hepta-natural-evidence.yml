@@ -47,6 +47,7 @@ jobs:
           path: |
             ${{ runner.temp }}/joint-natural-evidence/REPORT.json
             ${{ runner.temp }}/joint-natural-evidence/metadata/
+            ${{ runner.temp }}/joint-natural-evidence/preserved/
             ${{ runner.temp }}/joint-natural-evidence.log
           if-no-files-found: warn
           retention-days: 30
