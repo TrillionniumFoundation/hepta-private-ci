@@ -157,6 +157,18 @@ print_bazel_test_log_tails() {
 
     echo "::group::Bazel test log tail for ${target}"
     if [[ -f "$test_log" ]]; then
+      # Keep the complete first mismatch, even when Bazel caps console output
+      # or the final 200 lines contain only the tail of a large schema diff.
+      if [[ -n "${CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR:-}" ]]; then
+        local artifact_dir="${CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR}/failed-tests/${GITHUB_JOB:-local}/${rel_path}"
+        if mkdir -p "$artifact_dir" && cp "$test_log" "${artifact_dir}/test.log"; then
+          if [[ -f "${test_log%/*}/test.xml" ]]; then
+            cp "${test_log%/*}/test.xml" "${artifact_dir}/test.xml" || true
+          fi
+        else
+          echo "::warning::Could not preserve the complete failed test log for ${target}"
+        fi
+      fi
       tail -n 200 "$test_log"
     else
       echo "Missing test log: $test_log"

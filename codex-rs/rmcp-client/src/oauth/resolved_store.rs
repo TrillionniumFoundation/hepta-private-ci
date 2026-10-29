@@ -36,6 +36,51 @@ pub(crate) enum ResolvedOAuthCredentialStore {
 }
 
 impl ResolvedOAuthCredentialStore {
+    /// Rereads this authority without blocking an async executor worker.
+    pub(crate) async fn load_async<K: KeyringStore + Clone + 'static>(
+        self,
+        keyring_store: &K,
+        server_name: &str,
+        url: &str,
+    ) -> Result<Option<StoredOAuthTokens>> {
+        let keyring_store = keyring_store.clone();
+        let server_name = server_name.to_owned();
+        let url = url.to_owned();
+        tokio::task::spawn_blocking(move || self.load(&keyring_store, &server_name, &url))
+            .await
+            .context("OAuth credential read worker failed")?
+    }
+
+    /// Writes this authority without blocking an async executor worker.
+    pub(crate) async fn save_async<K: KeyringStore + Clone + 'static>(
+        self,
+        keyring_store: &K,
+        server_name: &str,
+        tokens: &StoredOAuthTokens,
+    ) -> Result<()> {
+        let keyring_store = keyring_store.clone();
+        let server_name = server_name.to_owned();
+        let tokens = tokens.clone();
+        tokio::task::spawn_blocking(move || self.save(&keyring_store, &server_name, &tokens))
+            .await
+            .context("OAuth credential write worker failed")?
+    }
+
+    /// Removes this authority without blocking an async executor worker.
+    pub(crate) async fn delete_async<K: KeyringStore + Clone + 'static>(
+        self,
+        keyring_store: &K,
+        server_name: &str,
+        url: &str,
+    ) -> Result<bool> {
+        let keyring_store = keyring_store.clone();
+        let server_name = server_name.to_owned();
+        let url = url.to_owned();
+        tokio::task::spawn_blocking(move || self.delete(&keyring_store, &server_name, &url))
+            .await
+            .context("OAuth credential delete worker failed")?
+    }
+
     /// Loads credentials only from this already-resolved authority.
     ///
     /// Unlike `resolve_oauth_tokens_from_store_policy`, this never evaluates configured

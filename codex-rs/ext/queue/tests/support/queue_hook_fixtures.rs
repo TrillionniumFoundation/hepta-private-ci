@@ -1,5 +1,6 @@
 use std::path::Path;
 
+// Windows callers select cmd.exe so stdin reaches Python unchanged.
 fn python_hook_command(script_path: &Path) -> String {
     if cfg!(windows) {
         format!("python \"{}\"", script_path.display())

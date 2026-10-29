@@ -398,5 +398,8 @@ fn materialize_runtime_directory(source: &Path, destination: &Path) -> Result<()
 }
 
 #[cfg(test)]
+mod pty_output;
+
+#[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;

@@ -145,6 +145,62 @@ fn owner(
 }
 
 #[test]
+fn store_drop_releases_ownership_while_a_duplicate_descriptor_remains_open() {
+    let temp = TempFile::new();
+    let file = temp.create();
+    let inherited = file.try_clone().expect("duplicate descriptor");
+    let store = LockedFileFinalHoldoutCasStoreV1::create(file, digest("binding"))
+        .unwrap_or_else(|error| panic!("create store: {error}"));
+    let first = owner(store, None);
+    let anchor = first.anchor();
+    assert_eq!(
+        LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), None).err(),
+        Some(LockedFileCasErrorV1::Busy)
+    );
+    drop(first);
+
+    let recovered =
+        LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), Some(anchor))
+            .unwrap_or_else(|error| panic!("recover after owner drop: {error}"));
+    assert_eq!(recovered.anchor(), Some(anchor));
+    assert_eq!(
+        LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), None).err(),
+        Some(LockedFileCasErrorV1::Busy)
+    );
+    drop(recovered);
+    drop(inherited);
+}
+
+#[test]
+fn rejected_constructor_releases_ownership_with_a_duplicate_descriptor_open() {
+    for create in [true, false] {
+        let temp = TempFile::new();
+        let mut file = temp.create();
+        file.write_all(b"invalid").expect("incomplete header");
+        let inherited = file.try_clone().expect("duplicate descriptor");
+        let error = if create {
+            LockedFileFinalHoldoutCasStoreV1::create(file, digest("binding")).err()
+        } else {
+            LockedFileFinalHoldoutCasStoreV1::recover(file, digest("binding"), None).err()
+        };
+        assert_eq!(
+            error,
+            Some(if create {
+                LockedFileCasErrorV1::AlreadyInitialized
+            } else {
+                LockedFileCasErrorV1::MissingHeader
+            })
+        );
+        let replacement = temp.open();
+        replacement
+            .try_lock()
+            .expect("rejected constructor released its lock");
+        replacement.unlock().expect("release replacement");
+        drop(inherited);
+    }
+}
+
+#[test]
 fn locked_file_store_replays_takeover_and_rejects_backup_rollback() {
     let temp = TempFile::new();
     let store = match LockedFileFinalHoldoutCasStoreV1::create(temp.create(), digest("binding")) {

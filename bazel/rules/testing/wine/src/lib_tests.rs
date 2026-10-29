@@ -1,7 +1,8 @@
 use std::any::Any;
 use std::collections::HashMap;
-use std::future::Future;
 use std::fs;
+use std::future::Future;
+use std::io::Write;
 use std::panic::AssertUnwindSafe;
 use std::path::Path;
 use std::path::PathBuf;
@@ -20,10 +21,12 @@ use tokio::io::BufReader;
 use tokio::process::Command as TokioCommand;
 use tokio::time::timeout;
 
+use super::WineRuntimePaths;
 use super::WineTestCommand;
 use super::WineTestProcess;
-use super::WineRuntimePaths;
 use super::install_powershell_runtime;
+use super::pty_output::collect_until_exit;
+use super::pty_output::drain_output;
 
 async fn waiting_smoke_process() -> Result<WineTestProcess> {
     let executable = codex_utils_cargo_bin::cargo_bin("wine-smoke")?;
@@ -314,7 +317,10 @@ async fn pinned_powershell_runs_under_wine_with_a_pty() -> Result<()> {
     let mut env = std::env::vars().collect::<HashMap<_, _>>();
     env.remove("DISPLAY");
     env.extend([
-        ("HOME".to_string(), prefix.path().to_string_lossy().into_owned()),
+        (
+            "HOME".to_string(),
+            prefix.path().to_string_lossy().into_owned(),
+        ),
         (
             "XDG_RUNTIME_DIR".to_string(),
             prefix.path().to_string_lossy().into_owned(),
@@ -367,28 +373,25 @@ async fn pinned_powershell_runs_under_wine_with_a_pty() -> Result<()> {
         /*inherited_fds*/ &[],
     )
     .await?;
-    let command_result = timeout(Duration::from_secs(30), async {
-        let stdout = async {
-            let mut output = Vec::new();
-            while let Some(chunk) = stdout_rx.recv().await {
-                output.extend(chunk);
-            }
-            output
-        };
-        let stderr = async {
-            let mut output = Vec::new();
-            while let Some(chunk) = stderr_rx.recv().await {
-                output.extend(chunk);
-            }
-            output
-        };
-        let (stdout, stderr, exit_code) = tokio::join!(stdout, stderr, exit_rx);
-        Ok::<_, anyhow::Error>((stdout, stderr, exit_code.context("wait for PowerShell")?))
-    })
+    let mut stdout = Vec::new();
+    let mut stderr = Vec::new();
+    let command_result = timeout(
+        Duration::from_secs(30),
+        collect_until_exit(
+            &mut stdout_rx,
+            &mut stderr_rx,
+            exit_rx,
+            &mut stdout,
+            &mut stderr,
+        ),
+    )
     .await
     .context("PowerShell smoke test timed out")
     .and_then(std::convert::identity);
-    drop(session);
+    if command_result.is_err() {
+        // Keep readers alive for teardown diagnostics while stopping the child.
+        session.request_terminate();
+    }
     let shutdown_result = timeout(Duration::from_secs(10), async {
         let mut command = TokioCommand::new(&runtime.wineserver);
         command
@@ -402,19 +405,34 @@ async fn pinned_powershell_runs_under_wine_with_a_pty() -> Result<()> {
             status.success() || status.code() == Some(1),
             "wineserver exited with {status}"
         );
+        // Wine helpers may retain the PTY slave after PowerShell exits. Stop
+        // that prefix's server before requiring EOF, then retain all tail data.
+        drain_output(&mut stdout_rx, &mut stderr_rx, &mut stdout, &mut stderr).await;
         Ok::<_, anyhow::Error>(())
     })
     .await
-    .context("stop isolated wineserver timed out")
+    .context("Wine shutdown or output drain timed out")
     .and_then(std::convert::identity);
-    let (stdout, stderr, exit_code) = match (command_result, shutdown_result) {
-        (Ok(output), Ok(())) => output,
-        (Err(error), Ok(())) => return Err(error),
-        (Ok(_), Err(error)) => return Err(error),
+    drop(session);
+    let result = match (command_result, shutdown_result) {
+        (Ok(exit_code), Ok(())) => Ok(exit_code),
+        (Err(error), Ok(())) | (Ok(_), Err(error)) => Err(error),
         (Err(error), Err(shutdown_error)) => {
-            return Err(error.context(format!("Wine teardown also failed: {shutdown_error:#}")));
+            Err(error.context(format!("Wine teardown also failed: {shutdown_error:#}")))
         }
     };
+    // The outer Bazel timeout can prevent libtest's final failure report. Emit
+    // bounded smoke diagnostics immediately rather than losing the failing step.
+    if let Err(error) = &result {
+        const MAX_DIAGNOSTIC_BYTES: usize = 4_096;
+        let _ = writeln!(
+            std::io::stderr().lock(),
+            "PowerShell PTY failed: {error:#}; stdout: {:?}; stderr: {:?}",
+            String::from_utf8_lossy(&stdout[stdout.len().saturating_sub(MAX_DIAGNOSTIC_BYTES)..]),
+            String::from_utf8_lossy(&stderr[stderr.len().saturating_sub(MAX_DIAGNOSTIC_BYTES)..]),
+        );
+    }
+    let exit_code = result?;
     anyhow::ensure!(
         exit_code == 0,
         "PowerShell exited with {}; stderr: {}",
@@ -431,7 +449,11 @@ async fn pinned_powershell_runs_under_wine_with_a_pty() -> Result<()> {
         .context("PowerShell smoke marker line was incomplete")?
         .trim_end_matches('\r');
     let fields = smoke.split('|').collect::<Vec<_>>();
-    assert_eq!(fields.len(), 5, "unexpected PowerShell smoke output: {smoke}");
+    assert_eq!(
+        fields.len(),
+        5,
+        "unexpected PowerShell smoke output: {smoke}"
+    );
     assert_eq!(fields[0], POWERSHELL_SMOKE_MARKER);
     assert_eq!(
         fields[1].split('.').next(),

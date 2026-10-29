@@ -126,8 +126,8 @@ fn ledger_at(path: &std::path::Path, fixture: &Fixture) -> LedgerWriter {
         .open(witness_path(path))
         .unwrap();
     let witness = LedgerWitnessStore::create(witness, digest("host-authorized-ledger")).unwrap();
-    let ledger_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
-    let witness_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
+    let ledger_directory = crate::test_support::directory(path.parent().unwrap());
+    let witness_directory = crate::test_support::directory(path.parent().unwrap());
     LedgerWriter::from_durable(
         ledger,
         witness,

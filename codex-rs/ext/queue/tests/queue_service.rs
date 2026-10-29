@@ -1,4 +1,4 @@
-#[path = "queue_hook_fixtures.rs"]
+#[path = "support/queue_hook_fixtures.rs"]
 mod queue_hook_fixtures;
 
 use queue_hook_fixtures::write_blocking_prompt_hook;
@@ -361,11 +361,9 @@ impl QueueStore for FailDeleteOnceQueueStore {
         now_ms: i64,
         lease_expires_at_ms: i64,
     ) -> ThreadStoreFuture<'a, QueuedClientDispatchClaimOutcome> {
-        let lease_expires_at_ms = if self.short_dispatch_lease {
-            now_ms + 250
-        } else {
-            lease_expires_at_ms
-        };
+        // Keep the normal claim window while dispatch inspects the rollout.
+        // Only final authorization below shortens the lease: these tests
+        // exercise expiry after Core admission, not expiry during disk I/O.
         self.inner.claim_client_binding_dispatch(
             process_lock,
             queued_item_id,
@@ -779,6 +777,7 @@ async fn caller_abort_after_core_started_keeps_exact_authority_until_persistence
         responses::mount_sse_once(&server, responses::sse_completed("one-cancel-safe-owner")).await;
     let test = test_codex()
         .with_pre_build_hook(write_blocking_prompt_hook)
+        .with_windows_cmd_shell()
         .with_config(trust_discovered_hooks)
         .with_config(|config| config.include_environment_context = false)
         .build_with_auto_env(&server)
@@ -890,6 +889,7 @@ async fn core_error_after_started_never_releases_ambiguous_dispatch() -> anyhow:
         responses::mount_sse_once(&server, responses::sse_completed("must-not-run")).await;
     let test = test_codex()
         .with_pre_build_hook(write_blocking_prompt_hook)
+        .with_windows_cmd_shell()
         .with_config(trust_discovered_hooks)
         .with_config(|config| config.include_environment_context = false)
         .build_with_auto_env(&server)
@@ -2287,6 +2287,7 @@ async fn rejected_queue_messages_remain_durable_and_block_followups() -> anyhow:
     let test = test_codex()
         .with_extensions(extensions)
         .with_pre_build_hook(write_rejecting_prompt_hook)
+        .with_windows_cmd_shell()
         .with_config(trust_discovered_hooks)
         .with_config(|config| config.include_environment_context = false)
         .build_with_auto_env(&server)
@@ -2341,6 +2342,7 @@ async fn explicitly_started_rejected_queue_messages_remain_durable() -> anyhow::
         responses::mount_sse_once(&server, responses::sse_completed("unexpected-turn")).await;
     let test = test_codex()
         .with_pre_build_hook(write_rejecting_prompt_hook)
+        .with_windows_cmd_shell()
         .with_config(trust_discovered_hooks)
         .with_config(|config| config.include_environment_context = false)
         .build_with_auto_env(&server)

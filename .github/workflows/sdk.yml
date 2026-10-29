@@ -45,7 +45,8 @@ jobs:
 
   sdks:
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    # Includes a cold native release build; preserve the existing test bounds.
+    timeout-minutes: 120
     environment:
       name: bazel
       deployment: false

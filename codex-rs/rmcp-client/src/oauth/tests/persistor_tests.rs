@@ -48,6 +48,9 @@ use crate::oauth::stored_oauth_credentials;
 use crate::oauth_http_client::OAuthHttpClientAdapter;
 use crate::startup_error::is_authentication_required_error;
 
+#[path = "blocking_persistence_tests.rs"]
+mod blocking_persistence_tests;
+
 const REFRESH_LOCK_CONTENTION_EVENT_TARGET: &str =
     "codex_rmcp_client::oauth::refresh_lock::contention";
 

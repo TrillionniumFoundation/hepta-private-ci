@@ -74,7 +74,9 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build:
-    timeout-minutes: 30
+    # Full V8 builds hit the previous job envelope while still compiling;
+    # retain every variant and let the source/build checks finish.
+    timeout-minutes: 120
     name: Build ${{ matrix.variant }} ${{ matrix.target }}
     needs: metadata
     # Metadata always runs; only relevant changes pay for the large matrix.
@@ -336,7 +338,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build-windows-source:
-    timeout-minutes: 30
+    timeout-minutes: 120
     name: Build ptrcomp-sandbox ${{ matrix.target }} from source
     needs: metadata
     if: ${{ needs.metadata.outputs.windows_source_required == 'true' }}
@@ -399,15 +401,34 @@ jobs:
         working-directory: upstream-rusty-v8
         run: git submodule status --recursive > git_submodule_status.txt
 
+      - name: Configure same-volume upstream build
+        id: upstream_paths
+        shell: python
+        run: |
+          import os
+          from pathlib import Path
+
+          # Chromium resolves its Rust sysroot through source-tree junctions
+          # before computing paths relative to GN output. Both must be on the
+          # same Windows volume even when the general build cache uses a Dev Drive.
+          source = Path("upstream-rusty-v8").resolve(strict=True)
+          target = source / "target"
+          target.mkdir(exist_ok=True)
+          target = target.resolve(strict=True)
+          os.path.relpath(source, target)  # Reject cross-volume junctions.
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"target-dir={target.as_posix()}\n")
+          print(f"Upstream source: {source}; source-build output: {target}")
+
       - name: Restore upstream source-build cache
         uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
         with:
           path: |
             ${{ steps.setup_ci.outputs.cargo-target-dir }}/sccache
-            ${{ steps.setup_ci.outputs.cargo-target-dir }}/${{ matrix.target }}/release/gn_out
-          key: rusty-v8-source-${{ matrix.target }}-${{ matrix.runner }}-sandbox-${{ hashFiles('upstream-rusty-v8/Cargo.lock', 'upstream-rusty-v8/build.rs', 'upstream-rusty-v8/git_submodule_status.txt') }}
+            ${{ steps.upstream_paths.outputs.target-dir }}/${{ matrix.target }}/release/gn_out
+          key: rusty-v8-source-same-volume-v1-${{ matrix.target }}-${{ matrix.runner }}-sandbox-${{ hashFiles('upstream-rusty-v8/Cargo.lock', 'upstream-rusty-v8/build.rs', 'upstream-rusty-v8/git_submodule_status.txt') }}
           restore-keys: |
-            rusty-v8-source-${{ matrix.target }}-${{ matrix.runner }}-sandbox-
+            rusty-v8-source-same-volume-v1-${{ matrix.target }}-${{ matrix.runner }}-sandbox-
 
       - name: Install and start sccache
         shell: pwsh
@@ -434,6 +455,7 @@ jobs:
 
       - name: Build upstream rusty_v8 sandbox release pair
         env:
+          CARGO_TARGET_DIR: ${{ steps.upstream_paths.outputs.target-dir }}
           SCCACHE_IDLE_TIMEOUT: 0
           TARGET: ${{ matrix.target }}
           V8_FROM_SOURCE: "1"
@@ -443,6 +465,7 @@ jobs:
 
       - name: Stage upstream sandbox release pair
         env:
+          CARGO_TARGET_DIR: ${{ steps.upstream_paths.outputs.target-dir }}
           TARGET: ${{ matrix.target }}
         shell: bash
         run: |

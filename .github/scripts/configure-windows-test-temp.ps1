@@ -14,12 +14,10 @@ if ($SystemVolume.FileSystem -ne "NTFS" -or $SystemVolume.DriveType -ne "Fixed")
     throw "Durable-state tests require a local fixed NTFS volume; SystemRoot uses $($SystemVolume.FileSystem)/$($SystemVolume.DriveType)."
 }
 
-$JobName = ($env:GITHUB_JOB -replace '[^A-Za-z0-9_-]', '_')
-if ($JobName.Length -gt 32) {
-    $JobName = $JobName.Substring(0, 32)
-}
-$Nonce = [Guid]::NewGuid().ToString("N").Substring(0, 12)
-$TestDirectoryName = "$($env:GITHUB_RUN_ID)-$($env:GITHUB_RUN_ATTEMPT)-$JobName-$Nonce"
+# AF_UNIX sockets append the fleet and agent identity below this directory.
+# Keep the random component compact; run/job identity belongs in the log, not
+# in every test path. Exclusive creation still rejects a nonce collision.
+$TestDirectoryName = [Guid]::NewGuid().ToString("N").Substring(0, 24)
 $TestParent = Join-Path $SystemDriveRoot "ct"
 New-Item -ItemType Directory -Path $TestParent -Force -ErrorAction Stop | Out-Null
 $TestTemp = Join-Path $TestParent $TestDirectoryName
@@ -31,7 +29,7 @@ if ($TestVolume.FileSystem -ne "NTFS" -or $TestVolume.DriveType -ne "Fixed") {
 
 "TEMP=$TestTemp" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 "TMP=$TestTemp" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-Write-Output "Test temporary files: $TestTemp (local $($SystemVolume.FileSystem)); build outputs remain at $env:CI_BUILD_ROOT."
+Write-Output "Test temporary files: $TestTemp (local $($SystemVolume.FileSystem)); run $env:GITHUB_RUN_ID attempt $env:GITHUB_RUN_ATTEMPT job $env:GITHUB_JOB; build outputs remain at $env:CI_BUILD_ROOT."
 
 # Exercise refusal on the real ReFS Dev Drive in addition to NTFS success cases.
 $BuildDriveRoot = [System.IO.Path]::GetPathRoot("$env:CI_BUILD_ROOT\")

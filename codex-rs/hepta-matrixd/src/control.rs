@@ -866,9 +866,12 @@ mod tests {
         // The product fleet root deliberately leaves Darwin `sun_path`
         // headroom. The SSD test harness uses a much deeper TMPDIR, so put
         // this socket-binding fixture under the canonical short temp root.
-        let temp = tempfile::Builder::new()
-            .prefix("hmx-control-")
-            .tempdir_in("/tmp")?;
+        let mut builder = tempfile::Builder::new();
+        builder.prefix("hmx-");
+        #[cfg(unix)]
+        let temp = builder.tempdir_in("/tmp")?;
+        #[cfg(not(unix))]
+        let temp = builder.tempdir()?;
         let fake = Arc::new(FakeTransport::default());
         let (state, connections) = state(&temp, fake).await?;
         let socket = layout(&temp, &agent_id()?)?
