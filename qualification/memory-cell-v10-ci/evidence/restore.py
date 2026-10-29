@@ -71,6 +71,11 @@ def verify(attempt, output):
             require(not member.is_dir() and not member.flag_bits & 1
                     and 0 < member.file_size <= 512 * 1024**2, "unsafe ZIP entry")
             contents[member.filename] = archive.read(member)
+    for name, data in contents.items():
+        retained = attempt / name
+        if retained.exists():
+            require(retained.is_file() and retained.read_bytes() == data,
+                    "outer retained file differs from the original ZIP: " + name)
     index = json.loads(contents["INDEX.json"])
     require(index["schema"] == "hepta.memory.v10.ci-transport.v1", "unexpected CI index schema")
     require(identity(contents["memory-v10-evidence.tar.xz"]) == {
