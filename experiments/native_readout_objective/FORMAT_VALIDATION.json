@@ -1,0 +1,35 @@
+{
+  "files": [
+    {
+      "ast_identical": true,
+      "formatted_sha256": "11e5aef5eedd73fa6570528a0f6d24696a19e0ecf16650d5b9b84710951ce14e",
+      "path": "__init__.py",
+      "tested_sha256": "11e5aef5eedd73fa6570528a0f6d24696a19e0ecf16650d5b9b84710951ce14e"
+    },
+    {
+      "ast_identical": true,
+      "formatted_sha256": "2061f928a7eef563cd4a90adabe2ac2044e7a60ea0b743dd5331ebc9e72414e9",
+      "path": "head.py",
+      "tested_sha256": "92a98cc544298fe05d3366cd764fdc9df99e29263fe5ace57fe0a5c3ec4b308b"
+    },
+    {
+      "ast_identical": true,
+      "formatted_sha256": "e7f5895835054c86d04ceee9faf669482896aaf8565a1d62246551baffb58986",
+      "path": "preflight.py",
+      "tested_sha256": "f1b7d684ace51d92f4e8b8ed1a48099bc1f1f6e7a2654d13fd3abb5ec31aed24"
+    },
+    {
+      "ast_identical": true,
+      "formatted_sha256": "0502afc3c9c26ef46cc1c15664108bebbd26f45649da015bb8c75f21d31aee16",
+      "path": "test_head.py",
+      "tested_sha256": "bb86c894b221e9b2b4650d4503f5c8d4cadb2b5d105da0f7da1f322e46f28a75"
+    }
+  ],
+  "just_fmt_result": "No changed files need formatting; experiments are outside formatter default owner scopes, explicitly formatted by locked Ruff",
+  "just_version": "1.51.0",
+  "ruff_result": "3 files reformatted, 1 file left unchanged",
+  "ruff_version": "0.15.13 from scripts/uv.lock",
+  "schema": "hepta.native-readout-objective.format-validation.v1",
+  "scope": "AST and file identity verification after final formatting, no scientific rerun",
+  "test_suites_rerun_after_format": false
+}
