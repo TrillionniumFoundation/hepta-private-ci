@@ -28,6 +28,14 @@ function validateRRContinuation(api) {
   ok("semigroup_composition",semigroupError<2e-12,{cases:64,maxAbsoluteError:semigroupError});
   ok("probability_mass",massError<2e-12,{maxAbsoluteError:massError,maxReportedPoissonTail:poissonBound});
   ok("discounted_continuation_mass",discountError<2e-12,{maxAbsoluteError:discountError});
+  const scaleBase=[[-.3,.3],[.7,-.7]];
+  const baseTransition=api.transition(scaleBase,2).matrix;
+  let scaleError=0;
+  for(const scale of [1e-15,1e-12,1e-6,1,1e6,1e12,1e15])
+    scaleError=Math.max(scaleError,maxdiff(baseTransition,
+      api.transition(scaleBase.map(row=>row.map(x=>x*scale)),2/scale).matrix));
+  ok("rate_time_scale_invariance",scaleError<2e-12,
+    {scales:7,maxAbsoluteError:scaleError});
   const vector=api.continueValue([[-0.3,0.3],[0.7,-0.7]],2,[1,4],0.1);
   ok("independent_discounted_vector",close(vector[0],1.455865588322065)&&
     close(vector[1],1.7882750634090665),{actual:vector});
@@ -93,9 +101,9 @@ function validateRRContinuation(api) {
       const values=actionValues(x),p=x.highFeeProbability;
       return close(values.R,3.25-1.5*p)&&close(values.E,2.5)&&close(values.D,2.5-1.5*p);
     })&&raw.lateObservedFee[0].best.actions==="R"&&raw.lateObservedFee[1].best.actions==="E");
-  function forwardPlan(first,secondLow,secondHigh,p) {
+  function forwardPlan(first,secondLow,secondHigh,p,highFee=2) {
     let total=0;
-    for(const [fee,probability,second] of [[.5,1-p,secondLow],[2,p,secondHigh]]) {
+    for(const [fee,probability,second] of [[.5,1-p,secondLow],[highFee,p,secondHigh]]) {
       let budget=2,evidence=1,reward=0,loss=0,firstRetained=0,secondRetained=0;
       if(first!=="D") budget--;
       if(first==="R"){firstRetained=1;loss+=.25;}
@@ -120,6 +128,22 @@ function validateRRContinuation(api) {
   ok("independent_forward_policy_enumeration",raw.forwardEnumeration.every((x,i)=>
     close(x.best.value,raw.lateObservedFee[i].best.value)&&
     x.best.first===raw.lateObservedFee[i].best.actions),{actual:raw.forwardEnumeration});
+  const observed=api.twoDeadlineDecision([{fee:.5,probability:.75},{fee:4,probability:.25}]);
+  let adaptive=-Infinity,precommitted=-Infinity,lowOnly=-Infinity,highOnly=-Infinity;
+  for(const first of ["D","R","E"]) for(const low of ["D","R","E"])
+    for(const high of ["D","R","E"]) {
+      adaptive=Math.max(adaptive,forwardPlan(first,low,high,.25,4));
+      if(low===high) precommitted=Math.max(precommitted,forwardPlan(first,low,high,.25,4));
+      lowOnly=Math.max(lowOnly,forwardPlan(first,low,high,0,4));
+      highOnly=Math.max(highOnly,forwardPlan(first,low,high,1,4));
+    }
+  const clairvoyant=.75*lowOnly+.25*highOnly;
+  raw.informationTiming={distribution:[{fee:.5,probability:.75},{fee:4,probability:.25}],
+    actual:observed.best,properForward:adaptive,forcedFuturePrecommitment:precommitted,
+    impermissibleCurrentClairvoyance:clairvoyant};
+  ok("observation_order_max_expectation",observed.best.actions==="R"&&
+    close(observed.best.value,2.625)&&close(adaptive,2.625)&&
+    close(precommitted,2.5)&&close(clairvoyant,3.0625),raw.informationTiming);
   const swapped=budget=>api.deadlineChoices({budget,evidence:1,resetEvidence:0,
     legs:[{renewDebit:1,emitDebit:2,renewLoss:.5,emitReward:1},
       {renewDebit:1,emitDebit:2,renewLoss:.5,emitReward:3}],
@@ -136,6 +160,7 @@ function validateRRContinuation(api) {
   const invalid=[
     ()=>api.transition([[1,-1],[0,0]],1),
     ()=>api.transition([[0,1e-13],[0,0]],1),
+    ()=>api.transition([[-1e-13,2e-13],[0,0]],1e13),
     ()=>api.transition([[-1,2],[0,0]],1),
     ()=>api.transition([[-1,1],[0,0]],-1),
     ()=>api.transition([[-1,1],[0,0]],Infinity),

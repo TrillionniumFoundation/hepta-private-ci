@@ -26,6 +26,7 @@ For one joint action a:
            - sum(current renewal utility losses)
            + V_after(post-action budget, post-action evidence, renewed mask).
 
+`emit` here is a task action, not evidence of an internal biological spike.
 The action first updates the complete joint state. If any output occurs, the
 common evidence resets once; all simultaneous outputs read the same pre-reset
 evidence. Only then is the continuation evaluated. The sum of all action budget
@@ -153,6 +154,13 @@ It renews for p=0.25 and emits for p=0.75. The realized future draw is not an
 input to the current decision. This is a model-based mechanism check, not a
 learned-policy generalization result.
 
+A stronger information-timing fixture uses L2=0.5 with probability 0.75 and
+L2=4 with probability 0.25. Correct current-max / future-expectation /
+observed-future-max ordering gives R=2.625. Forcing the future action to be
+chosen before observing its fee yields only 2.5; letting the current action
+see the future fee produces an impermissible 3.0625. Independent forward
+policy enumeration checks all three quantities.
+
 ## Validation and reproduction
 
 Run from the repository root with Node.js:
@@ -175,7 +183,14 @@ The evidence covers:
 - Brownian quadrature against simplified Gaussian expectations;
 - independent enumeration of 27 two-stage contingent policies for each public prior;
 - item-permutation invariance and local loss sensitivities away from policy ties;
-- rejection of 16 invalid generator, resource, loss, probability and work-budget inputs.
+- rate/time scale invariance across seven reciprocal scales;
+- rejection of 17 invalid generator, resource, loss, probability and work-budget inputs.
+
+Independent review of the initial implementation found that an absolute floor
+in row-mass tolerance accepted an invalid tiny-rate generator; with a long
+interval it produced row mass 1.6321. Validation now uses the actual exit-rate
+scale and includes both that rejection and seven valid reciprocal rate/time
+scales. The original commit remains in history. See independent_review.json.
 
 See validation_results.json for actual numerical errors and all raw fixtures.
 These deterministic checks are development/verification fixtures, not holdout

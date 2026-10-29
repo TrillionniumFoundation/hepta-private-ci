@@ -1,0 +1,53 @@
+{
+  "schema": "rrsnn.v3.independent-review.v1",
+  "reviewed_initial_code_sha": "b4a1e5f5c7c2dfa3c56eed1b16b7d3d3ef41cfdf",
+  "reviewer": "independent runtime subtask",
+  "initial_fixture_reproduction": "24 checks passed, but adversarial validation found a defect",
+  "defect": {
+    "generator": [
+      [
+        -1e-13,
+        2e-13
+      ],
+      [
+        0,
+        0
+      ]
+    ],
+    "dt": 10000000000000,
+    "initial_row_mass": 1.6321205588285204,
+    "cause": "An absolute floor of 1 in the generator-row tolerance admitted a 100% relative rate mismatch at tiny rates.",
+    "repair": "Relative row validation uses actual diagonal/off-diagonal exit-rate scale; zero rows are handled explicitly.",
+    "regression": "Illegal tiny-rate generator rejected; seven valid rate/time reciprocal scales agree."
+  },
+  "final_source_review": "pending",
+  "external_administrative_independence": false,
+  "additional_information_timing_case": {
+    "distribution": [
+      {
+        "fee": 0.5,
+        "probability": 0.75
+      },
+      {
+        "fee": 4,
+        "probability": 0.25
+      }
+    ],
+    "actual": {
+      "actions": "R",
+      "charge": 1,
+      "loss": 0.25,
+      "emittedReward": 0,
+      "next": {
+        "budget": 1,
+        "evidence": 1,
+        "renewedMask": 1,
+        "emitCount": 0
+      },
+      "value": 2.625
+    },
+    "properForward": 2.625,
+    "forcedFuturePrecommitment": 2.5,
+    "impermissibleCurrentClairvoyance": 3.0625
+  }
+}

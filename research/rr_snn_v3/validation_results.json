@@ -35,6 +35,14 @@
       }
     },
     {
+      "name": "rate_time_scale_invariance",
+      "passed": true,
+      "details": {
+        "scales": 7,
+        "maxAbsoluteError": 1.1102230246251565e-16
+      }
+    },
+    {
       "name": "independent_discounted_vector",
       "passed": true,
       "details": {
@@ -210,6 +218,38 @@
       }
     },
     {
+      "name": "observation_order_max_expectation",
+      "passed": true,
+      "details": {
+        "distribution": [
+          {
+            "fee": 0.5,
+            "probability": 0.75
+          },
+          {
+            "fee": 4,
+            "probability": 0.25
+          }
+        ],
+        "actual": {
+          "actions": "R",
+          "charge": 1,
+          "loss": 0.25,
+          "emittedReward": 0,
+          "next": {
+            "budget": 1,
+            "evidence": 1,
+            "renewedMask": 1,
+            "emitCount": 0
+          },
+          "value": 2.625
+        },
+        "properForward": 2.625,
+        "forcedFuturePrecommitment": 2.5,
+        "impermissibleCurrentClairvoyance": 3.0625
+      }
+    },
+    {
       "name": "joint_leg_permutation_invariance",
       "passed": true
     },
@@ -228,8 +268,8 @@
       "name": "invalid_inputs_fail_closed",
       "passed": true,
       "details": {
-        "rejected": 16,
-        "total": 16
+        "rejected": 17,
+        "total": 17
       }
     }
   ],
@@ -1124,6 +1164,34 @@
           "high": "D"
         }
       }
-    ]
+    ],
+    "informationTiming": {
+      "distribution": [
+        {
+          "fee": 0.5,
+          "probability": 0.75
+        },
+        {
+          "fee": 4,
+          "probability": 0.25
+        }
+      ],
+      "actual": {
+        "actions": "R",
+        "charge": 1,
+        "loss": 0.25,
+        "emittedReward": 0,
+        "next": {
+          "budget": 1,
+          "evidence": 1,
+          "renewedMask": 1,
+          "emitCount": 0
+        },
+        "value": 2.625
+      },
+      "properForward": 2.625,
+      "forcedFuturePrecommitment": 2.5,
+      "impermissibleCurrentClairvoyance": 3.0625
+    }
   }
 }

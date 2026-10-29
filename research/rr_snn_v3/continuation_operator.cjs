@@ -26,8 +26,11 @@ const RRContinuation = (() => {
       requireThat(Q[i][i]<=0,"positive generator diagonal");
       requireThat(Q[i][i]!==0||Q[i].every(x=>x===0),"inconsistent zero exit rate");
       requireThat(Q[i].every((x,j)=>j===i || x>=0),"negative transition rate");
-      const scale=Math.max(1,...Q[i].map(Math.abs));
-      requireThat(Math.abs(Q[i].reduce((a,b)=>a+b,0))<=1e-12*scale,"generator row mass");
+      const offSum=Q[i].reduce((sum,x,j)=>sum+(j===i?0:x),0);
+      requireThat(Number.isFinite(offSum),"generator exit rate overflow");
+      const scale=Math.max(-Q[i][i],offSum);
+      requireThat(scale===0 || Math.abs(Q[i][i]+offSum)<=1e-12*scale,
+        "generator row mass relative to actual exit rate");
     }
   }
   function transition(Q,dt,tolerance=1e-13) {
