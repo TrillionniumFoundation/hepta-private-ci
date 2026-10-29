@@ -379,24 +379,59 @@ class Evidence:
                 "original complete ordinary/model test selector required",
             )
         if name == "namespace-and-pidfd":
+            selectors = [f"test({test})" for test in NAMESPACE_TESTS]
+            selectors.append("test(pidfd_reaper::tests::)")
+            require(
+                record["command"]
+                == [
+                    "just",
+                    "test",
+                    "--locked",
+                    "-p",
+                    "codex-linux-sandbox",
+                    "--lib",
+                    "-E",
+                    " | ".join(selectors),
+                    "--no-capture",
+                ],
+                "original complete namespace/pidfd command required",
+            )
+            # Use the existing one-pass SGR matching view, never normalize it
+            # again: removal can assemble a new escape from non-SGR pieces.
+            # Raw bytes and their checked digest remain unchanged.
+            visible = text
+            terminal_tests = []
+            for line in visible.split("\n"):
+                match = re.fullmatch(
+                    r"[ \t]*PASS[ \t]+\[[ \t]*[0-9]+(?:\.[0-9]+)?s[ \t]*\]"
+                    r"(?:[ \t]+\([ \t]*[0-9]+/[ \t]*[0-9]+\))?"
+                    r"[ \t]+codex-linux-sandbox[ \t]+"
+                    r"([A-Za-z0-9_]+(?:::[A-Za-z0-9_]+)+)[ \t]*\r?",
+                    line,
+                )
+                if match:
+                    terminal_tests.append(match[1])
             require(
                 all(
-                    re.search(r"PASS[^\n]*" + re.escape(test), text)
+                    terminal_tests.count("linux_run_main::tests::" + test) == 1
                     for test in NAMESPACE_TESTS
                 ),
-                "original namespace controls must actually pass",
+                "all eight exact namespace controls must pass once",
             )
             require(
                 all(
-                    re.search(
-                        r"PASS[^\n]*pidfd_reaper::tests::"
-                        + re.escape(test)
-                        + r"(?:\s|$)",
-                        text,
-                    )
+                    terminal_tests.count("pidfd_reaper::tests::" + test) == 1
                     for test in PIDFD_TESTS
                 ),
-                "all six pidfd controls must actually pass",
+                "all six pidfd controls must pass once with exact names",
+            )
+            require(
+                len(terminal_tests) == len(NAMESPACE_TESTS) + len(PIDFD_TESTS),
+                "unexpected namespace/pidfd terminal PASS record",
+            )
+            require(
+                passed == len(terminal_tests),
+                "namespace/pidfd summary must equal exact terminal PASS records",
             )
         return {"record": name + ".json", "passed": passed, "raw": regular(log)}
 
