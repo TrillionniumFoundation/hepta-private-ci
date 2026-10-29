@@ -21,6 +21,7 @@ LABELS = {
     "ctrnn_analog_cpu": "CT-RNN，连续读出及 CPU 对照",
 }
 PATHS = {
+    "selection": "selection.json",
     "training": "results/training_summary.json",
     "evaluation": "results/evaluation_matrix_status.json",
     "aggregate": "results/aggregate.json",
@@ -32,6 +33,7 @@ PATHS = {
     "behavior": "results/delivery_behavior_diagnostic.json",
     "policy": "policy_benchmark_results/matrix.json",
     "policy_summary": "policy_benchmark_results/summary.json",
+    "inference_scope": "policy_benchmark_results/inference_scope.json",
     "native": "hepta/r5_local_status.json",
     "bridge": "hepta/rr_bridge_results/trained_latest.json",
     "bootstrap": "hepta/bootstrap_repair_results/proof_latest.json",
@@ -63,6 +65,13 @@ def load_complete():
         if sha(name) != expected:
             raise ValueError("Frozen source changed: "+name)
     e = {key: read(name) for key, name in PATHS.items()}
+    selection = e["selection"]
+    for key in ("checkpoints", "training_receipts_sha256"):
+        if len(selection[key]) != 80:
+            raise ValueError("Selected training identity coverage differs")
+        for name, expected in selection[key].items():
+            if sha(name) != expected:
+                raise ValueError("Selected checkpoint or training receipt changed: "+name)
     status = e["evaluation"]
     outputs = [o for run in status["completed"] for o in run["outputs"]]
     if e["training"]["total_completed"] != 80 or not status["all_completed"] or len(status["completed"]) != 80 or len(outputs) != 960:
@@ -81,6 +90,16 @@ def load_complete():
         raise ValueError("Numerical coverage incomplete")
     if e["repair"]["repair_matrix_status_sha256"] != sha(PATHS["repair_status"]):
         raise ValueError("Repair report source differs")
+    if e["repair"]["original_matrix_status_sha256"] != sha(PATHS["original_status"]):
+        raise ValueError("Original numerical status differs from the repair comparison")
+    original_raw = [o for run in e["original_status"]["completed"] for o in run["outputs"]]
+    for rows, expected_count in ((original_raw, 60), (e["repair_status"]["outputs"], 60),
+                                  (e["calibration"]["per_seed"], 5)):
+        if len(rows) != expected_count or len({r["path"] for r in rows}) != expected_count:
+            raise ValueError("Numerical or calibration raw coverage differs")
+        for item in rows:
+            if sha(item["path"]) != item["sha256"]:
+                raise ValueError("Numerical or calibration raw changed: "+item["path"])
     p = e["policy"]
     if not p["all_completed"] or p["conditions"] != 80 or len(p["receipts"]) != 80:
         raise ValueError("Resource matrix incomplete")
@@ -198,6 +217,8 @@ def build():
         "template_sha256":sha("REPORT_TEMPLATE.zh-CN.md"),
         "source_evidence":{k:{"path":n,"sha256":sha(n)} for k,n in PATHS.items()},
         "frozen_source_files_verified":len(read("pre_data_freeze.json")["source_sha256"]),
+        "selected_checkpoint_sha_verified":80,"training_receipt_sha_verified":80,
+        "numerical_raw_sha_verified":120,"probability_raw_sha_verified":5,
         "execution":{"training_checkpoints":80,"evaluation_files":960,"original_numerical_comparisons":60,
             "repair_comparisons":60,"resource_conditions":80,"all_declared_matrices_completed":True},
         "primary_comparator":primary,"secondary_comparator":a["secondary_comparator"],
