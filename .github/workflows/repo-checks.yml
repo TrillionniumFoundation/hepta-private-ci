@@ -20,6 +20,12 @@ jobs:
 
       - uses: ./.github/actions/setup-ci
 
+      - name: Verify patched dependency source identities
+        run: |
+          python3 scripts/verify_security_vendors.py
+          python3 -m unittest discover -s scripts -p 'test_security_vendors.py'
+          python3 -m unittest discover -s scripts -p 'test_hepta_format_scope.py'
+
       - name: Verify codex-rs Cargo manifests inherit workspace settings
         run: python3 .github/scripts/verify_cargo_workspace_manifests.py
 

@@ -1,0 +1,34 @@
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -165,7 +165,8 @@
+ default-features = false
+ 
+ [dependencies.anymap2]
+-version = "0.13.0"
++version = "1.1.0"
++package = "anymap3"
+ default-features = false
+ 
+ [dependencies.as_variant]
+--- a/src/event_handler/mod.rs
++++ b/src/event_handler/mod.rs
+@@ -45,10 +45,7 @@
+     task::{Context, Poll},
+ };
+ 
+-#[cfg(target_family = "wasm")]
+ use anymap2::any::CloneAny;
+-#[cfg(not(target_family = "wasm"))]
+-use anymap2::any::CloneAnySendSync;
+ use eyeball::{SharedObservable, Subscriber};
+ use futures_core::Stream;
+ use futures_util::stream::{FuturesUnordered, StreamExt};
+@@ -84,7 +81,7 @@
+ type EventHandlerFn = dyn Fn(EventHandlerData<'_>) -> EventHandlerFut;
+ 
+ #[cfg(not(target_family = "wasm"))]
+-type AnyMap = anymap2::Map<dyn CloneAnySendSync + Send + Sync>;
++type AnyMap = anymap2::Map<dyn CloneAny + Send + Sync>;
+ #[cfg(target_family = "wasm")]
+ type AnyMap = anymap2::Map<dyn CloneAny>;
+ 
