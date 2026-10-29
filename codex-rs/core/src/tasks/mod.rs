@@ -731,11 +731,20 @@ struct TerminalEventCompletionEntry {
 
 /// Private runtime observation data; this queue never owns admission authority.
 /// It is allocated with the thread runtime and discarded with that runtime.
-#[derive(Default)]
 struct TerminalEventCompletionQueue {
     entries: std::sync::Mutex<std::collections::VecDeque<TerminalEventCompletionEntry>>,
     publisher: Arc<tokio::sync::Mutex<()>>,
-    receiver: tokio::sync::Mutex<()>,
+    receiver: tokio::sync::Semaphore,
+}
+
+impl Default for TerminalEventCompletionQueue {
+    fn default() -> Self {
+        Self {
+            entries: Default::default(),
+            publisher: Default::default(),
+            receiver: tokio::sync::Semaphore::new(/*permits*/ 1),
+        }
+    }
 }
 
 /// Keeps sidecar insertion and event enqueue in the same publication order.
@@ -1087,8 +1096,11 @@ impl Session {
     }
 
     /// Serialize receive-and-pair across replacement listeners. Without this
-    /// lock, two receivers could dequeue same-id events in order but claim their
-    /// FIFO sidecars in the opposite order on different executor threads.
+    /// permit, two receivers could dequeue same-id events in order but claim their
+    /// FIFO sidecars in the opposite order on different executor threads. The
+    /// single receive permit is held across channel receive and synchronous
+    /// sidecar pairing; no data mutex is held while waiting for an event. A
+    /// cancelled receive or channel error returns the permit to the next waiter.
     pub(crate) async fn receive_event_with_completion(
         &self,
         io: &crate::session::SessionIo,
@@ -1100,7 +1112,11 @@ impl Session {
             .services
             .thread_extension_data
             .get_or_init::<TerminalEventCompletionQueue>(Default::default);
-        let _receiver = queue.receiver.lock().await;
+        let _receiver = queue
+            .receiver
+            .acquire()
+            .await
+            .map_err(|_| CodexErr::InternalAgentDied)?;
         let event = io.next_event().await?;
         let completion = self.take_terminal_event_completion(&event);
         Ok((event, completion))

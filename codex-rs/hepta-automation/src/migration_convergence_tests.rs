@@ -1,35 +1,32 @@
 use sqlx::migrate::Migrate;
-use sqlx::sqlite::SqlitePoolOptions;
 
 use super::*;
 
-async fn historical_pool(displaced: bool) -> SqlitePool {
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect("sqlite::memory:")
-        .await
-        .expect("SQLite owner");
-    let mut connection = pool.acquire().await.expect("owner connection");
+type TestResult<T> = Result<T, Box<dyn std::error::Error + Send + Sync>>;
+
+async fn historical_pool(displaced: bool) -> TestResult<(tempfile::TempDir, SqlitePool)> {
+    let temp = tempfile::tempdir()?;
+    let root = temp.path().canonicalize()?;
+    let sqlite_home = AbsolutePathBuf::try_from(root.clone())?;
+    let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+        .open_durable_evidence_pool(&root.join("historical.sqlite"))
+        .await?;
+    let mut connection = pool.acquire().await?;
     connection
         .ensure_migrations_table("_sqlx_migrations")
-        .await
-        .expect("migration journal");
+        .await?;
     for version in 1..=3 {
         let migration = MIGRATOR
             .iter()
             .find(|migration| migration.version == version)
-            .expect("base migration");
-        connection
-            .apply("_sqlx_migrations", migration)
-            .await
-            .expect("base schema");
+            .ok_or("base migration")?;
+        connection.apply("_sqlx_migrations", migration).await?;
     }
     sqlx::query(
         "INSERT INTO automation_meta VALUES (1, 3, '018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12')",
     )
     .execute(&mut *connection)
-    .await
-    .expect("historical owner");
+    .await?;
     for (version, source) in [
         (4, if displaced { 17 } else { 4 }),
         (5, if displaced { 18 } else { 5 }),
@@ -37,22 +34,19 @@ async fn historical_pool(displaced: bool) -> SqlitePool {
         let mut migration = MIGRATOR
             .iter()
             .find(|migration| migration.version == source)
-            .expect("original SQL")
+            .ok_or("original SQL")?
             .clone();
         migration.version = version;
-        connection
-            .apply("_sqlx_migrations", &migration)
-            .await
-            .expect("historical branch migration");
+        connection.apply("_sqlx_migrations", &migration).await?;
     }
     drop(connection);
-    pool
+    Ok((temp, pool))
 }
 
 #[tokio::test]
 async fn both_historical_branches_converge_without_rewriting_checksums() {
     for displaced in [false, true] {
-        let pool = historical_pool(displaced).await;
+        let (_temp, pool) = historical_pool(displaced).await.expect("historical pool");
         let before: Vec<Vec<u8>> =
             sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations ORDER BY version")
                 .fetch_all(&pool)
@@ -106,7 +100,7 @@ async fn unknown_or_dirty_history_is_not_relabelled() {
         "UPDATE _sqlx_migrations SET checksum = x'00' WHERE version=4",
         "UPDATE _sqlx_migrations SET success=0 WHERE version=5",
     ] {
-        let pool = historical_pool(true).await;
+        let (_temp, pool) = historical_pool(true).await.expect("historical pool");
         sqlx::query(mutation)
             .execute(&pool)
             .await
@@ -125,74 +119,76 @@ async fn unknown_or_dirty_history_is_not_relabelled() {
     }
 }
 
-async fn reopen_persisted_history(displaced: bool, after_rebind: bool) {
-    let temp = tempfile::tempdir().expect("private owner root");
+async fn reopen_persisted_history(displaced: bool, after_rebind: bool) -> TestResult<()> {
+    let temp = tempfile::tempdir()?;
     let root = temp.path().join("owner");
-    std::fs::create_dir(&root).expect("owner directory");
-    let root = root.canonicalize().expect("canonical owner directory");
-    let pool = historical_pool(displaced).await;
+    std::fs::create_dir(&root)?;
+    let root = root.canonicalize()?;
+    let (_historical_temp, pool) = historical_pool(displaced).await?;
     let before: Vec<Vec<u8>> =
         sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations ORDER BY version")
             .fetch_all(&pool)
-            .await
-            .expect("original history");
+            .await?;
     if after_rebind {
-        reconcile_legacy_migration_ids(&pool)
-            .await
-            .expect("bounded repair");
+        reconcile_legacy_migration_ids(&pool).await?;
     }
     // Reopen exactly the persisted cut before or after the repair transaction,
     // before later migrations: no live connection supplies hidden state.
     sqlx::query("VACUUM INTO ?")
-        .bind(root.join(AUTOMATION_DB_FILENAME).to_str().expect("path"))
+        .bind(root.join(AUTOMATION_DB_FILENAME).to_str().ok_or("path")?)
         .execute(&pool)
-        .await
-        .expect("persist historical cut");
+        .await?;
     pool.close().await;
-    let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("owner ID");
-    let store = AutomationStore::open_root(root.clone(), owner.clone())
-        .await
-        .expect("real open");
+    let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
+    let store = AutomationStore::open_root(root.clone(), owner.clone()).await?;
     let after: Vec<Vec<u8>> =
         sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations ORDER BY version")
             .fetch_all(&store.pool)
-            .await
-            .expect("retained history");
+            .await?;
     assert!(before.iter().all(|checksum| after.contains(checksum)));
     assert_eq!(after.len(), MIGRATOR.iter().count());
     store.close().await;
-    let reopened = AutomationStore::open_root(root, owner)
-        .await
-        .expect("idempotent restart");
+    let reopened = AutomationStore::open_root(root, owner).await?;
     assert!(reopened.timer_epoch() > 0);
     reopened.close().await;
+    Ok(())
 }
 
 // Independent on-disk histories retain the default per-test watchdog and all
 // checksum/restart assertions; one case cannot consume another case's budget.
 #[tokio::test]
 async fn canonical_cut_before_rebind_reopens() {
-    reopen_persisted_history(false, false).await;
+    reopen_persisted_history(false, false)
+        .await
+        .expect("persisted history");
 }
 
 #[tokio::test]
 async fn canonical_cut_after_rebind_reopens() {
-    reopen_persisted_history(false, true).await;
+    reopen_persisted_history(false, true)
+        .await
+        .expect("persisted history");
 }
 
 #[tokio::test]
 async fn displaced_cut_before_rebind_reopens() {
-    reopen_persisted_history(true, false).await;
+    reopen_persisted_history(true, false)
+        .await
+        .expect("persisted history");
 }
 
 #[tokio::test]
 async fn displaced_cut_after_rebind_reopens() {
-    reopen_persisted_history(true, true).await;
+    reopen_persisted_history(true, true)
+        .await
+        .expect("persisted history");
 }
 
 #[tokio::test]
 async fn occupied_relocation_rolls_back_all_history_rebinding() {
-    let pool = historical_pool(/*displaced*/ true).await;
+    let (_temp, pool) = historical_pool(/*displaced*/ true)
+        .await
+        .expect("historical pool");
     sqlx::query("INSERT INTO _sqlx_migrations(version,description,installed_on,success,checksum,execution_time) SELECT 17,description,installed_on,success,checksum,execution_time FROM _sqlx_migrations WHERE version=4")
         .execute(&pool).await.expect("inject conflicting target identity");
     let before: Vec<(i64, Vec<u8>)> =

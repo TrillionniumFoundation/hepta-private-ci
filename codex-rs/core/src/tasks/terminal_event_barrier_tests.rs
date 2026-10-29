@@ -6,6 +6,16 @@ use codex_extension_api::ThreadLifecycleContributor;
 use futures::poll;
 use std::time::Duration;
 
+fn receiver_io(events: async_channel::Receiver<Event>) -> crate::session::SessionIo {
+    let (tx_sub, _rx_sub) = async_channel::unbounded();
+    crate::session::SessionIo {
+        tx_sub,
+        rx_event: events,
+        agent_status: tokio::sync::watch::channel(crate::agent::AgentStatus::PendingInit).1,
+        session_loop_termination: futures::future::ready(()).boxed().shared(),
+    }
+}
+
 struct BlockingIdle {
     entered: Arc<Notify>,
     release: Arc<Notify>,
@@ -336,4 +346,113 @@ async fn concurrent_terminal_publishers_keep_sidecars_in_event_order() {
     assert!(!recovered.is_complete());
     session.finish_task_terminalization(&recovered_id, &recovered);
     assert!(poll!(second_observer.as_mut()).is_ready());
+}
+
+#[tokio::test]
+async fn concurrent_receivers_pair_reused_turn_sidecars_in_receive_order() -> anyhow::Result<()> {
+    let (session, _context, events) = make_session_and_context_with_rx().await;
+    let io = receiver_io(events);
+    let mut first = Box::pin(session.receive_event_with_completion(&io));
+    let mut second = Box::pin(session.receive_event_with_completion(&io));
+    assert!(poll!(first.as_mut()).is_pending());
+    assert!(poll!(second.as_mut()).is_pending());
+
+    let old_id = Arc::new(());
+    let old = StartTransitionCompletion::new("reused-receive-turn".to_string());
+    session.register_task_terminalization(
+        Arc::clone(&old_id),
+        Arc::clone(&old),
+        TaskTerminalizationKind::Finish,
+        /*suspension_handoff*/ None,
+        /*abort_handoff*/ None,
+        /*finish_handoff*/ None,
+    );
+    let mut first_event = terminal_event("reused-receive-turn");
+    first_event.id = "first-receive".to_string();
+    session.deliver_event_raw(first_event.clone()).await;
+    session.finish_task_terminalization(&old_id, &old);
+
+    let later_id = Arc::new(());
+    let later = StartTransitionCompletion::new("reused-receive-turn".to_string());
+    session.register_task_terminalization(
+        Arc::clone(&later_id),
+        Arc::clone(&later),
+        TaskTerminalizationKind::Finish,
+        /*suspension_handoff*/ None,
+        /*abort_handoff*/ None,
+        /*finish_handoff*/ None,
+    );
+    let mut second_event = terminal_event("reused-receive-turn");
+    second_event.id = "second-receive".to_string();
+    session.deliver_event_raw(second_event.clone()).await;
+
+    // Even with both events ready, polling the later waiter first cannot let it
+    // consume the earlier event or claim the earlier generation's sidecar.
+    assert!(poll!(second.as_mut()).is_pending());
+    let (received_first, first_completion) = first.await?;
+    assert_eq!(
+        serde_json::to_value(received_first)?,
+        serde_json::to_value(first_event)?
+    );
+    let (received_second, second_completion) = second.await?;
+    assert_eq!(
+        serde_json::to_value(received_second)?,
+        serde_json::to_value(second_event)?
+    );
+    tokio::pin!(first_completion, second_completion);
+    assert!(poll!(first_completion.as_mut()).is_ready());
+    assert!(poll!(second_completion.as_mut()).is_pending());
+    session.finish_task_terminalization(&later_id, &later);
+    assert!(poll!(second_completion.as_mut()).is_ready());
+    Ok(())
+}
+
+#[tokio::test]
+async fn cancelled_receivers_preserve_the_next_event_and_release_admission() -> anyhow::Result<()> {
+    let (session, _context, events) = make_session_and_context_with_rx().await;
+    let io = receiver_io(events);
+    let mut active = Box::pin(session.receive_event_with_completion(&io));
+    let mut queued = Box::pin(session.receive_event_with_completion(&io));
+    assert!(poll!(active.as_mut()).is_pending());
+    assert!(poll!(queued.as_mut()).is_pending());
+    drop(queued);
+    let mut replacement = Box::pin(session.receive_event_with_completion(&io));
+    assert!(poll!(replacement.as_mut()).is_pending());
+    drop(active);
+    assert!(poll!(replacement.as_mut()).is_pending());
+
+    let identity = Arc::new(());
+    let completion = StartTransitionCompletion::new("after-receive-cancellation".to_string());
+    session.register_task_terminalization(
+        Arc::clone(&identity),
+        Arc::clone(&completion),
+        TaskTerminalizationKind::Finish,
+        /*suspension_handoff*/ None,
+        /*abort_handoff*/ None,
+        /*finish_handoff*/ None,
+    );
+    let event = terminal_event("after-receive-cancellation");
+    session.deliver_event_raw(event.clone()).await;
+    let (received, observer) = replacement.await?;
+    assert_eq!(
+        serde_json::to_value(received)?,
+        serde_json::to_value(event)?
+    );
+    tokio::pin!(observer);
+    assert!(poll!(observer.as_mut()).is_pending());
+
+    // Completion observation no longer holds the receive permit. Both the
+    // first closed-channel error and its successor must finish immediately.
+    io.rx_event.close();
+    for _ in 0..2 {
+        let mut closed = Box::pin(session.receive_event_with_completion(&io));
+        assert!(matches!(
+            poll!(closed.as_mut()),
+            std::task::Poll::Ready(Err(_))
+        ));
+    }
+    assert!(!completion.is_complete());
+    session.finish_task_terminalization(&identity, &completion);
+    assert!(poll!(observer.as_mut()).is_ready());
+    Ok(())
 }
