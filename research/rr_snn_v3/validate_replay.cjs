@@ -101,8 +101,8 @@ function validateReplay(J, E, C, sources) {
   const edge=J.bind({...options,config:{...config,maxRecords:1},initial:{...initial,obligations:[],
     events:[{time:0,type:"control",rates:[0,0,0]}]}});
   assert(edge.next(edge.genesis,0.1).payload.snapshot.state.regimes.length===2,"valid maxRecords+1 regimes");
-  const one=new J.MemoryJournal(genesis,1), wit=new J.MemoryWitness(genesis.digest,J.anchor(genesis));
-  const own=J.open(A,one,wit,{owner:"capacity",generation:one.claim("capacity",0)},J.anchor(genesis));
+  const one=new J.MemoryJournal(genesis,1), capacityWitness=new J.MemoryWitness(genesis.digest,J.anchor(genesis));
+  const own=J.open(A,one,capacityWitness,{owner:"capacity",generation:one.claim("capacity",0)},J.anchor(genesis));
   const onecp=own.commit(J.anchor(genesis),{sequence:1,time:0.73}), oneimage=J.canonical(one.image());
   reject("capacity_atomicity",()=>own.commit(J.anchor(onecp),{sequence:2,time:1}));
   assert(oneimage===J.canonical(one.image()),"capacity failure mutated state");
