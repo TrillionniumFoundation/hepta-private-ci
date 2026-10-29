@@ -1,0 +1,786 @@
+{
+  "schema": "hepta.first-passage.phase2.ci-inventory.v1",
+  "head": "2abafe82a99d6def2132e605e57af183e3080194",
+  "main": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "run": 40682527698,
+  "cargo_deny": {
+    "original_job": 122799038892,
+    "retry_job": 123305576244,
+    "status": "failure",
+    "failing_step": "Run cargo-deny",
+    "connector_log_error": "Transport closed",
+    "public_read_http": 403,
+    "cause": "unverified"
+  },
+  "jobs": [
+    {
+      "job_id": 122799039496,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40682527698/job/122799039496",
+      "full_log_chars": 957530,
+      "failed_targets": [],
+      "failures": [
+        {
+          "line": 8343,
+          "context": [
+            "error: used `unwrap()` on a `Result` value",
+            "   --> hepta-fleet/src/authority_port.rs:197:9",
+            "    |",
+            "197 | /         ledger",
+            "198 | |             .admit_host(HostObservation {",
+            "199 | |                 host_id: \"host-one\".into(),"
+          ]
+        }
+      ]
+    },
+    {
+      "job_id": 122799039680,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40682527698/job/122799039680",
+      "full_log_chars": 1040667,
+      "failed_targets": [
+        "//codex-rs/app-server-protocol:app-server-protocol-unit-tests            FAILED in 106.0s",
+        "//codex-rs/ext/hepta-memory:hepta-memory-unit-tests                      FAILED in 10.9s",
+        "//codex-rs/git-utils:git-utils-unit-tests                                FAILED in 98.2s",
+        "//codex-rs/hepta-automation:hepta-automation-unit-tests                  FAILED in 1.6s",
+        "//codex-rs/hepta-fleet:hepta-fleet-unit-tests                            FAILED in 80.2s",
+        "//codex-rs/hepta-supervisor:hepta-supervisor-restart_budget_recovery-test FAILED in 0.1s",
+        "//codex-rs/core:core-unit-tests                                          FAILED in 3 out of 10 in 73.9s"
+      ],
+      "failures": [
+        {
+          "line": 3606,
+          "context": [
+            "Error: Invalid(\"workspace root must be canonical and must not traverse a symlink: D:\\\\tmp\\\\.tmpfHno9C\\\\sweep\\\\a\")",
+            "",
+            "",
+            "failures:",
+            "    registry::tests::workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths",
+            ""
+          ]
+        },
+        {
+          "line": 3783,
+          "context": [
+            "thread 'git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running' (7060) panicked at git-utils/src\\git_process_tests.rs:75:6:",
+            "wait for Git wrapper child readiness: Elapsed(())",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "",
+            "---- git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running stdout ----",
+            ""
+          ]
+        },
+        {
+          "line": 3789,
+          "context": [
+            "thread 'git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running' (3852) panicked at git-utils/src\\git_process_tests.rs:75:6:",
+            "wait for Git wrapper child readiness: Elapsed(())",
+            "",
+            "",
+            "failures:",
+            "    git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running"
+          ]
+        },
+        {
+          "line": 3969,
+          "context": [
+            "thread 'store::migration_convergence_tests::displaced_cut_after_rebind_reopens' (3216) panicked at hepta-automation/src\\migration_convergence_tests.rs:154:10:",
+            "real open: Invalid",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "",
+            "---- store::migration_convergence_tests::canonical_cut_before_rebind_reopens stdout ----",
+            ""
+          ]
+        },
+        {
+          "line": 3975,
+          "context": [
+            "thread 'store::migration_convergence_tests::canonical_cut_before_rebind_reopens' (6988) panicked at hepta-automation/src\\migration_convergence_tests.rs:154:10:",
+            "real open: Invalid",
+            "",
+            "---- store::migration_convergence_tests::canonical_cut_after_rebind_reopens stdout ----",
+            "",
+            "thread 'store::migration_convergence_tests::canonical_cut_after_rebind_reopens' (3392) panicked at hepta-automation/src\\migration_convergence_tests.rs:154:10:"
+          ]
+        },
+        {
+          "line": 3980,
+          "context": [
+            "thread 'store::migration_convergence_tests::canonical_cut_after_rebind_reopens' (3392) panicked at hepta-automation/src\\migration_convergence_tests.rs:154:10:",
+            "real open: Invalid",
+            "",
+            "---- store::migration_convergence_tests::displaced_cut_before_rebind_reopens stdout ----",
+            "",
+            "thread 'store::migration_convergence_tests::displaced_cut_before_rebind_reopens' (8336) panicked at hepta-automation/src\\migration_convergence_tests.rs:154:10:"
+          ]
+        },
+        {
+          "line": 3985,
+          "context": [
+            "thread 'store::migration_convergence_tests::displaced_cut_before_rebind_reopens' (8336) panicked at hepta-automation/src\\migration_convergence_tests.rs:154:10:",
+            "real open: Invalid",
+            "",
+            "",
+            "failures:",
+            "    store::migration_convergence_tests::canonical_cut_after_rebind_reopens"
+          ]
+        },
+        {
+          "line": 4099,
+          "context": [
+            "thread 'restart_budget_survives_repeated_supervisord_recovery' (6148) panicked at hepta-supervisor/tests/restart_budget_recovery.rs:251:5:",
+            "assertion failed: supervisor.snapshot(&agent_id).expect(\"snapshot\").events.iter().any(|event|",
+            "        matches!(&event.kind, SupervisorEventKind::AutomaticRestartQueued",
+            "            { attempt: 2 }))",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            ""
+          ]
+        },
+        {
+          "line": 4264,
+          "context": [
+            "thread 'cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send' (6624) panicked at ext/hepta-memory/src\\cognitive\\federation.rs:1309:9:",
+            "assertion failed: EphemeralModelInputContributor::is_active(&extension, &thread_store,",
+            "    &turn_store)",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "",
+            ""
+          ]
+        },
+        {
+          "line": 4761,
+          "context": [
+            "thread 'environment_selection::tests::blocking_snapshot_waits_for_starting_environment' (1300) panicked at core/src\\environment_selection.rs:1282:9:",
+            "blocking snapshot should contain its environment wait span: 2026-10-28T12:34:52.807490Z  INFO codex.exec_server.remote.connect: codex_exec_server::client: new",
+            "2026-10-28T12:34:52.808283Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}: codex_core::environment_selection: new",
+            "2026-10-28T12:34:52.808350Z  INFO environments.wait_until_ready{environment_id=remote}: codex_core::environment_selection: new",
+            "2026-10-28T12:34:52.809362Z  INFO codex.exec_server.remote.connect:codex.exec_server.request{otel.kind=\"client\" otel.name=\"initialize\"}: codex_exec_server::rpc: new",
+            "2026-10-28T12:34:52.810212Z  INFO environments.resolve{environment_id=remote remote=true configuration_pending=false}:exec_server.environment.info{remote=true}: codex_exec_server::environment: new"
+          ]
+        }
+      ]
+    },
+    {
+      "job_id": 122799039771,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40682527698/job/122799039771",
+      "full_log_chars": 2342804,
+      "failed_targets": [
+        "//codex-rs/code-mode-host:code-mode-host-unit-tests                      FAILED in 1.8s",
+        "//codex-rs/exec-server:exec-server-authorized_read_rpc-test              FAILED in 0.1s",
+        "//codex-rs/ext/queue:queue-queue_service-test                            FAILED in 68.3s",
+        "//codex-rs/hepta-agentd:hepta-agentd-unit-tests                          FAILED in 45.5s",
+        "//codex-rs/hepta-evidence:hepta-evidence-unit-tests                      FAILED in 164.2s",
+        "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-unit-tests    FAILED in 89.0s",
+        "//codex-rs/hepta-matrixd:hepta-matrixd-unit-tests                        FAILED in 20.4s",
+        "//codex-rs/hepta-supervisor:hepta-supervisor-signed_intent_recovery-test FAILED in 0.2s",
+        "//codex-rs/v8-poc:v8-poc-unit-tests                                      FAILED in 116.5s",
+        "//codex-rs/tui:tui-unit-tests                                            FAILED in 21 out of 22 in 56.7s"
+      ],
+      "failures": [
+        {
+          "line": 3028,
+          "context": [
+            "thread 'paired_owner_tests::actual_locked_file_replays_mixed_profiles_and_retains_rollback_anchor' (1500) panicked at hepta-intelligence-eval/src\\paired_owner_tests.rs:300:34:",
+            "backup: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "",
+            "",
+            "failures:"
+          ]
+        },
+        {
+          "line": 3911,
+          "context": [
+            "[FATAL:partition_address_space.cc(301)] Check failed: !IsConfigurablePoolInitialized(). ",
+            "#0 0x7ff630cc8f32 (D:\\o\\execroot\\_main\\bazel-out\\windows_x86_64_msvc-fastbuild\\bin\\codex-rs\\v8-poc\\v8-poc-unit-tests-bin.exe+0xe88f32)",
+            "#1 0x7ff6308aecc7 (D:\\o\\execroot\\_main\\bazel-out\\windows_x86_64_msvc-fastbuild\\bin\\codex-rs\\v8-poc\\v8-poc-unit-tests-bin.exe+0xa6ecc7)",
+            "#2 0x7ff63086864d (D:\\o\\execroot\\_main\\bazel-out\\windows_x86_64_msvc-fastbuild\\bin\\codex-rs\\v8-poc\\v8-poc-unit-tests-bin.exe+0xa2864d)",
+            "#3 0x7ff630454514 (D:\\o\\execroot\\_main\\bazel-out\\windows_x86_64_msvc-fastbuild\\bin\\codex-rs\\v8-poc\\v8-poc-unit-tests-bin.exe+0x614514)",
+            "#4 0x7ff6304543c8 (D:\\o\\execroot\\_main\\bazel-out\\windows_x86_64_msvc-fastbuild\\bin\\codex-rs\\v8-poc\\v8-poc-unit-tests-bin.exe+0x6143c8)"
+          ]
+        },
+        {
+          "line": 4366,
+          "context": [
+            "thread 'exact_digest_abort_terminalizes_unresolved_intent' (8640) panicked at hepta-supervisor/tests/signed_intent_recovery.rs:162:5:",
+            "assertion failed: matches!(first, Err(SupervisorError::SignedIntentRecoveryRequired(agent_id))",
+            "    if agent_id == fleet.agent_id)",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "",
+            ""
+          ]
+        },
+        {
+          "line": 4475,
+          "context": [
+            "thread 'authbus_outbox_tests::bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed' (1988) panicked at hepta-evidence/src\\authbus_outbox_tests.rs:57:10:",
+            "called `Result::unwrap()` on an `Err` value: Capacity",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "",
+            "",
+            "failures:"
+          ]
+        },
+        {
+          "line": 4547,
+          "context": [
+            "thread 'authorized_read_rpc_is_capability_gated_and_denies_outside_root' (8384) panicked at exec-server/tests/authorized_read_rpc.rs:84:13:",
+            "assertion `left == right` failed",
+            "  left: -32600",
+            " right: -32603",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            ""
+          ]
+        },
+        {
+          "line": 4746,
+          "context": [
+            "Error: timed out waiting for `D:\\tmp\\.tmp0jyvAK\\queue_blocking_prompt_hook.entered`",
+            "",
+            "Caused by:",
+            "    deadline has elapsed",
+            "",
+            "---- core_error_after_started_never_releases_ambiguous_dispatch stdout ----"
+          ]
+        },
+        {
+          "line": 4759,
+          "context": [
+            "thread 'explicitly_started_rejected_queue_messages_remain_durable' (7376) panicked at ext/queue/tests/queue_service.rs:2424:6:",
+            "hook rejection must not consume an unpersisted queue item: Started { turn_id: \"01a18287-0fae-7663-95b0-9f43932bd12d\" }",
+            "",
+            "---- registered_queue_lifecycle_starts_messages_in_fifo_order stdout ----",
+            "",
+            "thread 'registered_queue_lifecycle_starts_messages_in_fifo_order' (1380) panicked at external/rules_rs++crate+crates__wiremock-0.6.5/src\\mock_server\\exposed_server.rs:367:17:"
+          ]
+        },
+        {
+          "line": 4764,
+          "context": [
+            "thread 'registered_queue_lifecycle_starts_messages_in_fifo_order' (1380) panicked at external/rules_rs++crate+crates__wiremock-0.6.5/src\\mock_server\\exposed_server.rs:367:17:",
+            "Verifications failed:",
+            "- Mock #1.",
+            "\tExpected range of matching incoming requests: == 3",
+            "\tNumber of matched incoming requests: 1",
+            ""
+          ]
+        },
+        {
+          "line": 4791,
+          "context": [
+            "Error: deadline has elapsed",
+            "",
+            "",
+            "failures:",
+            "    caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+            "    core_error_after_started_never_releases_ambiguous_dispatch"
+          ]
+        },
+        {
+          "line": 5078,
+          "context": [
+            "Error: Io(Custom { kind: AlreadyExists, error: \"matrixd control socket path is not stale: \\\\\\\\?\\\\D:\\\\tmp\\\\hmx-control-AzygMJ\\\\fleet\\\\run\\\\aaghu64s7r56mdd2v36p3hkrmci.mx\" })",
+            "",
+            "",
+            "failures:",
+            "    control::tests::health_tracks_real_task_state_and_owner_uds_serves_exact_identity",
+            ""
+          ]
+        },
+        {
+          "line": 5191,
+          "context": [
+            "thread 'automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit' (3332) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:",
+            "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "",
+            "---- automation::service_tests::production_constructor_never_resumes_a_draining_owner stdout ----",
+            ""
+          ]
+        },
+        {
+          "line": 5197,
+          "context": [
+            "thread 'automation::service_tests::production_constructor_never_resumes_a_draining_owner' (4444) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:",
+            "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "",
+            "---- automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement stdout ----",
+            "",
+            "thread 'automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement' (1832) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:"
+          ]
+        },
+        {
+          "line": 5202,
+          "context": [
+            "thread 'automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement' (1832) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:",
+            "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "",
+            "---- automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen stdout ----",
+            "",
+            "thread 'automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen' (7592) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:"
+          ]
+        },
+        {
+          "line": 5207,
+          "context": [
+            "thread 'automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen' (7592) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:",
+            "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "",
+            "---- automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn stdout ----",
+            "",
+            "thread 'automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn' (4156) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:"
+          ]
+        },
+        {
+          "line": 5212,
+          "context": [
+            "thread 'automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn' (4156) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:",
+            "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "",
+            "---- browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding stdout ----",
+            "",
+            "thread 'browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding' (8004) panicked at hepta-agentd/src\\browser_servo.rs:906:10:"
+          ]
+        },
+        {
+          "line": 5217,
+          "context": [
+            "thread 'browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding' (8004) panicked at hepta-agentd/src\\browser_servo.rs:906:10:",
+            "authority: UnsafeStateDirectory",
+            "",
+            "---- browser_servo::tests::non_effect_calls_never_enter_final_use_authority stdout ----",
+            "",
+            "thread 'browser_servo::tests::non_effect_calls_never_enter_final_use_authority' (3652) panicked at hepta-agentd/src\\browser_servo.rs:906:10:"
+          ]
+        },
+        {
+          "line": 5222,
+          "context": [
+            "thread 'browser_servo::tests::non_effect_calls_never_enter_final_use_authority' (3652) panicked at hepta-agentd/src\\browser_servo.rs:906:10:",
+            "authority: UnsafeStateDirectory",
+            "",
+            "---- browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary stdout ----",
+            "",
+            "thread 'browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary' (3188) panicked at hepta-agentd/src\\browser_servo.rs:906:10:"
+          ]
+        },
+        {
+          "line": 5227,
+          "context": [
+            "thread 'browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary' (3188) panicked at hepta-agentd/src\\browser_servo.rs:906:10:",
+            "authority: UnsafeStateDirectory",
+            "",
+            "---- automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation stdout ----",
+            "",
+            "thread 'automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation' (8556) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:"
+          ]
+        },
+        {
+          "line": 5232,
+          "context": [
+            "thread 'automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation' (8556) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:",
+            "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "",
+            "---- automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen stdout ----",
+            "",
+            "thread 'automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen' (7072) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:"
+          ]
+        },
+        {
+          "line": 5237,
+          "context": [
+            "thread 'automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen' (7072) panicked at hepta-agentd/src\\automation_service_tests.rs:81:76:",
+            "Agentd state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "",
+            "---- cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records stdout ----",
+            "",
+            "thread 'cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records' (4368) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:"
+          ]
+        },
+        {
+          "line": 5242,
+          "context": [
+            "thread 'cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records' (4368) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:",
+            "ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "",
+            "---- cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends stdout ----",
+            "",
+            "thread 'cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends' (8304) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:"
+          ]
+        },
+        {
+          "line": 5247,
+          "context": [
+            "thread 'cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends' (8304) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:",
+            "ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "",
+            "---- cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment stdout ----",
+            "",
+            "thread 'cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment' (8656) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:"
+          ]
+        },
+        {
+          "line": 5252,
+          "context": [
+            "thread 'cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment' (8656) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:",
+            "ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "",
+            "---- cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently stdout ----",
+            "",
+            "thread 'cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently' (2056) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:"
+          ]
+        },
+        {
+          "line": 5257,
+          "context": [
+            "thread 'cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently' (2056) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:",
+            "ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "",
+            "---- cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict stdout ----",
+            "",
+            "thread 'cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict' (8080) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:"
+          ]
+        },
+        {
+          "line": 5262,
+          "context": [
+            "thread 'cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict' (8080) panicked at hepta-agentd/src\\cognitive_retrieval_learning_tests.rs:173:52:",
+            "ledger directory: Os { code: 5, kind: PermissionDenied, message: \"Access is denied.\" }",
+            "",
+            "---- cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation stdout ----",
+            "",
+            "thread 'cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation' (7588) panicked at hepta-agentd/src\\cognitive_ranker_tests.rs:506:74:"
+          ]
+        },
+        {
+          "line": 5267,
+          "context": [
+            "thread 'cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation' (7588) panicked at hepta-agentd/src\\cognitive_ranker_tests.rs:506:74:",
+            "called `Result::unwrap()` on an `Err` value: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "",
+            "",
+            "failures:",
+            "    automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit"
+          ]
+        },
+        {
+          "line": 5385,
+          "context": [
+            "thread 'prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host' (5780) panicked at hepta-agentd/src\\prompt_runtime_tests.rs:511:33:",
+            "pipeline owner: RegistryOpen(\"UnsafeStateDirectory\")",
+            "",
+            "---- plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently stdout ----",
+            "",
+            "thread 'plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently' (2552) panicked at hepta-agentd/src\\plasticity_runtime_lifetime_tests.rs:249:80:"
+          ]
+        },
+        {
+          "line": 5390,
+          "context": [
+            "thread 'plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently' (2552) panicked at hepta-agentd/src\\plasticity_runtime_lifetime_tests.rs:249:80:",
+            "state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "",
+            "---- runtime::tests::automation_generation_change_during_open_remains_fail_closed stdout ----",
+            "",
+            "thread 'runtime::tests::automation_generation_change_during_open_remains_fail_closed' (3384) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+          ]
+        },
+        {
+          "line": 5395,
+          "context": [
+            "thread 'runtime::tests::automation_generation_change_during_open_remains_fail_closed' (3384) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "",
+            "---- runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor stdout ----",
+            "",
+            "thread 'runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor' (3668) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+          ]
+        },
+        {
+          "line": 5400,
+          "context": [
+            "thread 'runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor' (3668) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "",
+            "---- runtime::tests::automation_owner_mismatch_remains_fail_closed stdout ----",
+            "",
+            "thread 'runtime::tests::automation_owner_mismatch_remains_fail_closed' (3400) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+          ]
+        },
+        {
+          "line": 5405,
+          "context": [
+            "thread 'runtime::tests::automation_owner_mismatch_remains_fail_closed' (3400) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "",
+            "---- runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation stdout ----",
+            "",
+            "thread 'runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation' (7656) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+          ]
+        },
+        {
+          "line": 5410,
+          "context": [
+            "thread 'runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation' (7656) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "",
+            "---- runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation stdout ----",
+            "",
+            "thread 'runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation' (9084) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+          ]
+        },
+        {
+          "line": 5415,
+          "context": [
+            "thread 'runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation' (9084) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "",
+            "---- runtime::tests::generation_change_during_open_is_fenced_before_serving stdout ----",
+            "",
+            "thread 'runtime::tests::generation_change_during_open_is_fenced_before_serving' (8452) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+          ]
+        },
+        {
+          "line": 5420,
+          "context": [
+            "thread 'runtime::tests::generation_change_during_open_is_fenced_before_serving' (8452) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "",
+            "---- runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store stdout ----",
+            "",
+            "thread 'runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store' (1764) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+          ]
+        },
+        {
+          "line": 5425,
+          "context": [
+            "thread 'runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store' (1764) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "",
+            "---- runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe stdout ----",
+            "",
+            "thread 'runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe' (4828) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+          ]
+        },
+        {
+          "line": 5430,
+          "context": [
+            "thread 'runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe' (4828) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "",
+            "---- runtime::tests::stale_generation_is_fenced_before_cognitive_store_open stdout ----",
+            "",
+            "thread 'runtime::tests::stale_generation_is_fenced_before_cognitive_store_open' (7848) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+          ]
+        },
+        {
+          "line": 5435,
+          "context": [
+            "thread 'runtime::tests::stale_generation_is_fenced_before_cognitive_store_open' (7848) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "",
+            "---- runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane stdout ----",
+            "",
+            "thread 'runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane' (6244) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+          ]
+        },
+        {
+          "line": 5440,
+          "context": [
+            "thread 'runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane' (6244) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "",
+            "---- runtime::tests::unavailable_automation_store_degrades_without_startup_failure stdout ----",
+            "",
+            "thread 'runtime::tests::unavailable_automation_store_degrades_without_startup_failure' (3248) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+          ]
+        },
+        {
+          "line": 5445,
+          "context": [
+            "thread 'runtime::tests::unavailable_automation_store_degrades_without_startup_failure' (3248) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "",
+            "---- runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error stdout ----",
+            "",
+            "thread 'runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error' (1240) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:"
+          ]
+        },
+        {
+          "line": 5450,
+          "context": [
+            "thread 'runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error' (1240) panicked at hepta-agentd/src\\runtime_tests.rs:113:78:",
+            "agent state: Protocol(\"prompt pipeline durable owners failed to open: RegistryOpen(\\\"UnsafeStateDirectory\\\")\")",
+            "",
+            "",
+            "failures:",
+            "    plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently"
+          ]
+        },
+        {
+          "line": 5489,
+          "context": [
+            "thread 'state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress' (8008) panicked at hepta-agentd/src\\state_isolation_tests.rs:123:46:",
+            "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "",
+            "---- state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent stdout ----",
+            ""
+          ]
+        },
+        {
+          "line": 5495,
+          "context": [
+            "thread 'state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent' (2712) panicked at hepta-agentd/src\\state_isolation_tests.rs:163:47:",
+            "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+            "",
+            "---- state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access stdout ----",
+            "",
+            "thread 'state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access' (1728) panicked at hepta-agentd/src\\state_isolation_tests.rs:639:47:"
+          ]
+        },
+        {
+          "line": 5500,
+          "context": [
+            "thread 'state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access' (1728) panicked at hepta-agentd/src\\state_isolation_tests.rs:639:47:",
+            "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+            "",
+            "---- state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it stdout ----",
+            "",
+            "thread 'state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it' (4644) panicked at hepta-agentd/src\\state_isolation_tests.rs:220:47:"
+          ]
+        },
+        {
+          "line": 5505,
+          "context": [
+            "thread 'state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it' (4644) panicked at hepta-agentd/src\\state_isolation_tests.rs:220:47:",
+            "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+            "",
+            "---- state::isolation_tests::serving_agent_survives_unrelated_registry_corruption stdout ----",
+            "",
+            "thread 'state::isolation_tests::serving_agent_survives_unrelated_registry_corruption' (6292) panicked at hepta-agentd/src\\state_isolation_tests.rs:92:46:"
+          ]
+        },
+        {
+          "line": 5510,
+          "context": [
+            "thread 'state::isolation_tests::serving_agent_survives_unrelated_registry_corruption' (6292) panicked at hepta-agentd/src\\state_isolation_tests.rs:92:46:",
+            "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+            "",
+            "---- state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences stdout ----",
+            "",
+            "thread 'state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences' (1520) panicked at hepta-agentd/src\\state_isolation_tests.rs:174:46:"
+          ]
+        },
+        {
+          "line": 5515,
+          "context": [
+            "thread 'state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences' (1520) panicked at hepta-agentd/src\\state_isolation_tests.rs:174:46:",
+            "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+            "",
+            "---- state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership stdout ----",
+            "",
+            "thread 'state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership' (4396) panicked at hepta-agentd/src\\state_isolation_tests.rs:659:47:"
+          ]
+        },
+        {
+          "line": 5520,
+          "context": [
+            "thread 'state::isolation_tests::private_owner_trust_refuses_unsupported_platform_ownership' (4396) panicked at hepta-agentd/src\\state_isolation_tests.rs:659:47:",
+            "runtime fixture: agentd protocol error: prompt pipeline durable owners failed to open: RegistryOpen(\"UnsafeStateDirectory\")",
+            "",
+            "",
+            "failures:",
+            "    state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress"
+          ]
+        },
+        {
+          "line": 5664,
+          "context": [
+            "thread 'app::tests::background_exit_tests::exit_interrupts_before_requesting_shutdown' (3116) panicked at tui/src\\app\\tests\\background_exit_tests.rs:229:5:",
+            "assertion failed: `Ok(InsertHistoryCell(PlainHistoryCell { lines: [Line::from(Span::from(\"■ Failed to interrupt task: turn/interrupt failed: no active turn to interrupt (code -32600)\").red())] }))` does not match `Ok(AppEvent::Exit(ExitMode::ShutdownFirst))`",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "",
+            "---- app::tests::safety_buffering::safety_retry_forks_first_turn_and_continues_without_duplicating_prompt stdout ----",
+            ""
+          ]
+        },
+        {
+          "line": 5670,
+          "context": [
+            "thread 'app::tests::safety_buffering::safety_retry_forks_first_turn_and_continues_without_duplicating_prompt' (5748) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:",
+            "expected 3 Responses API requests",
+            "",
+            "",
+            "failures:",
+            "    app::tests::background_exit_tests::exit_interrupts_before_requesting_shutdown"
+          ]
+        },
+        {
+          "line": 7191,
+          "context": [
+            "thread 'app::tests::safety_buffering::safety_retry_forks_after_the_previous_turn_and_uses_faster_settings' (7100) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:",
+            "expected 4 Responses API requests",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "",
+            "",
+            "failures:"
+          ]
+        },
+        {
+          "line": 8838,
+          "context": [
+            "thread 'app::tests::safety_buffering::safety_retry_replays_older_interruption_notices' (8696) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:",
+            "expected 4 Responses API requests",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "",
+            "",
+            "failures:"
+          ]
+        },
+        {
+          "line": 10415,
+          "context": [
+            "thread 'app::tests::safety_buffering::safety_retry_can_retry_a_first_turn_a_second_time' (1600) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:",
+            "expected 4 Responses API requests",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "",
+            "",
+            "failures:"
+          ]
+        },
+        {
+          "line": 12413,
+          "context": [
+            "thread 'resume_picker::transcript_preview::tests::paginated_transcript_preview_pages_past_old_item_budget' (8128) panicked at tui/src\\resume_picker_transcript_preview_tests.rs:366:14:",
+            "start turn: Server { method: \"turn/start\", source: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" } }",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "",
+            "",
+            "failures:"
+          ]
+        },
+        {
+          "line": 13624,
+          "context": [
+            "thread 'app::tests::safety_buffering::safety_retry_preserves_a_committed_steer_from_the_interrupted_turn' (3496) panicked at tui/src\\app\\tests\\safety_buffering.rs:295:17:",
+            "expected 5 Responses API requests",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "",
+            "",
+            "failures:"
+          ]
+        },
+        {
+          "line": 15730,
+          "context": [
+            "thread 'resume_picker::transcript_preview::tests::transcript_preview_preserves_legacy_and_paginated_output' (6944) panicked at tui/src\\resume_picker_transcript_preview_tests.rs:366:14:",
+            "start turn: Server { method: \"turn/start\", source: JSONRPCErrorError { code: -32603, data: None, message: \"failed to submit turn input: NotIdle\" } }",
+            "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+            "",
+            "",
+            "failures:"
+          ]
+        }
+      ]
+    }
+  ]
+}

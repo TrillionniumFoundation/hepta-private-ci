@@ -1,0 +1,188 @@
+{
+  "schema": "hepta.ci.compiler-pin-upgrade.v1",
+  "old_version": "1.95.0",
+  "new_version": "1.96.0",
+  "old_action_sha": "e081816240890017053eacbb1bdf337761dc5582",
+  "new_action_sha": "d86e0fa8f147d6539442c26a61ebba8becc19489",
+  "official_source_receipt": "RUST_196_SOURCE.json",
+  "reason": "Matrix SDK security fix requires Rust1.96; keep Cargo, Bazel and native CI aligned",
+  "historical_research_and_QA_receipts_modified": false,
+  "workspace_rust_version_metadata_added": false,
+  "changes": [
+    {
+      "path": ".github/workflows/hepta-operator-diagnostics.yml",
+      "before_sha256": "614fb1bd7ee35149cffce3447b3cc87b5bb067f4de5c241fd783ae8ad79fffed",
+      "after_sha256": "cb767420d25f198949c0d529a08b54e3a9b626366dd96db2fcdd8b6c29480cda",
+      "old_version_references": 1,
+      "action_pin_references": 1
+    },
+    {
+      "path": ".github/workflows/v8-canary.yml",
+      "before_sha256": "2516afbaa5538004406c0d92179665aba1b541e68944df53ad71d674ecd89cd4",
+      "after_sha256": "9f8eb1759867587f26f55251b86b78ddc1d4bb6b5914a62520e84b8b291083d0",
+      "old_version_references": 7,
+      "action_pin_references": 2
+    },
+    {
+      "path": ".github/workflows/single-main-maintenance.yml",
+      "before_sha256": "1adcdca9c6900edd969fb30cedc5e75ff92ca4a611bdf63a28e5fb249bc5bb98",
+      "after_sha256": "554ad61adb4daddb2d579a2bff746130adbad64be62a2e087ff88fabbc83b1bc",
+      "old_version_references": 6,
+      "action_pin_references": 2
+    },
+    {
+      "path": ".github/workflows/single-main-foundation.yml",
+      "before_sha256": "9a0dba6ba5120188c778254fa016ca74e5b195a23210e3aefd09e3d8b0502977",
+      "after_sha256": "125d061707f08cadb068d2100591f8795d13f4b52fc4787f9c23a35ec758a251",
+      "old_version_references": 2,
+      "action_pin_references": 2
+    },
+    {
+      "path": ".github/workflows/single-main-consolidation.yml",
+      "before_sha256": "dc7be5bbd1366233786f10939aa749cb0d5c12e029ac54c4c73c5f519d362a1e",
+      "after_sha256": "8aeab9cc89535bb29a1c72800e5edf6dca0b7e6d97a4240c4a614d866c04e2a2",
+      "old_version_references": 1,
+      "action_pin_references": 1
+    },
+    {
+      "path": ".github/workflows/rusty-v8-release.yml",
+      "before_sha256": "41417489a73fddce4aa396a8e8d6acc280331b430906fbdea9373eb2fdf9dfcf",
+      "after_sha256": "3bbc2a10c5e6f9d39d5cd54077a398d19316b1eb2f8eea16e198c982eb1dfe50",
+      "old_version_references": 5,
+      "action_pin_references": 2
+    },
+    {
+      "path": ".github/workflows/rust-release.yml",
+      "before_sha256": "513e3225388b7a2ba694e184e277854403eccb3e1ca01248cbbbb8364a38f9d0",
+      "after_sha256": "0365bd374dbf21c12d98aadd3ceaed43ac4aa37865e1aa6c628d055bb65033c2",
+      "old_version_references": 2,
+      "action_pin_references": 2
+    },
+    {
+      "path": ".github/workflows/rust-release-windows.yml",
+      "before_sha256": "00153ad5e174cb4979b7801bf77988fc51e58c1ce86b5b2f4d551ba4bae0f9cd",
+      "after_sha256": "ce7636c2cda13b616cb834111d3e4104bcff83b4b5c5e68df7323e624f220818",
+      "old_version_references": 1,
+      "action_pin_references": 1
+    },
+    {
+      "path": ".github/workflows/rust-release-argument-comment-lint.yml",
+      "before_sha256": "429254911e199f41a2ec8b2ed3d1a0469c65e6cdd025dfbdda1263f9173477cb",
+      "after_sha256": "31831cff49789cd4395cc3988bbaf8fe1b8d186d646bd282c1f0d9dda493aaec",
+      "old_version_references": 1,
+      "action_pin_references": 1
+    },
+    {
+      "path": ".github/workflows/rust-ci.yml",
+      "before_sha256": "76ce84512f019867e9513c74e01877d47ba5e2b1ec554fa35175e9f0e9c6e373",
+      "after_sha256": "e6fb26daaed0be7c5b03b5662c03f342acc05efefcf2819474000db55bc2e7db",
+      "old_version_references": 5,
+      "action_pin_references": 5
+    },
+    {
+      "path": ".github/workflows/rust-ci-full.yml",
+      "before_sha256": "9e3b84356b7dad20c9b4847a27f3d588c24e243b9fb243374777cb49bd66b431",
+      "after_sha256": "103c8a27d8410c9e20204afcad4c9b7773843bb9e2b0983e6169c6eccf077a7d",
+      "old_version_references": 4,
+      "action_pin_references": 4
+    },
+    {
+      "path": ".github/workflows/rust-ci-full-nextest-platform.yml",
+      "before_sha256": "d648480316e0106f5037aea6f39091093952b78618b230b0ccf94b7a221c7ec2",
+      "after_sha256": "b8e38de81a7a701e61b853e8e2b2cd26fb1d77dbabe0e8ecee7310111605ce0e",
+      "old_version_references": 2,
+      "action_pin_references": 2
+    },
+    {
+      "path": ".github/workflows/repo-checks.yml",
+      "before_sha256": "ee6a2c1204698740ca8420fbf9859f4b4248e44f08d5e05050b8d846036dd081",
+      "after_sha256": "be712fbe289f42c91b6b0480cf035b95a8dab4119950b164d0cfc3752401888b",
+      "old_version_references": 1,
+      "action_pin_references": 1
+    },
+    {
+      "path": ".github/workflows/hepta-vnext-qualification.yml",
+      "before_sha256": "7f496c8bc41af3ec5799f0c62aa0daae8b7d2986948a92f4ad563177e1a5866b",
+      "after_sha256": "e3c67fc35d1d377dd0cd29b1e64aeda2403e4f4815676b37a599c9218ff71654",
+      "old_version_references": 3,
+      "action_pin_references": 3
+    },
+    {
+      "path": ".github/workflows/hepta-offline-build-inputs.yml",
+      "before_sha256": "3fde10f81d5fb9a1aca8af4c3790e203a5fbe07406b69585d50e370c441bf374",
+      "after_sha256": "f7135d311e96728da029fba302e374e5b7b7258b80cf06e2372ec56ff6e49c8c",
+      "old_version_references": 5,
+      "action_pin_references": 0
+    },
+    {
+      "path": ".github/workflows/hepta-lane-e-gap-closure.yml",
+      "before_sha256": "0e8bf4c50b84e10388aab12698a5bbbf7dd91655e313f53417cecdd1db8b2f09",
+      "after_sha256": "daf35eb7128789e6619e5fb50c9ce6eae1b233ddd489e5332358ede1c40fd0cc",
+      "old_version_references": 4,
+      "action_pin_references": 3
+    },
+    {
+      "path": ".github/workflows/hepta-kernel-evidence-qualification.yml",
+      "before_sha256": "53f34825b703305167cc222713f848a4f6236bf02381aa3c8170b75888c1247e",
+      "after_sha256": "3a67f67982ceca43c968b27928c61580fe4fb60e5b7187370b272c52e306beee",
+      "old_version_references": 2,
+      "action_pin_references": 2
+    },
+    {
+      "path": ".github/workflows/hepta-intuition-qualification.yml",
+      "before_sha256": "78da2191ccf83a01da37e51f0f4cea245b10d7483b5f65ae29590dc0a7723c5b",
+      "after_sha256": "20c4932d6bcc28c4351ba2af7cf9bf857432d4774464df8a9ec95c0f9f975de9",
+      "old_version_references": 0,
+      "action_pin_references": 2
+    },
+    {
+      "path": ".github/workflows/hepta-integration-diagnostics.yml",
+      "before_sha256": "1852411bc5a11df5927a248e2ee7e93e672be7746c2d4ef86ba2ba2659797b2b",
+      "after_sha256": "3466fd9cd81ce0bf3708f32810d3e5cadc23e78f4c483a4544db7c98653280ef",
+      "old_version_references": 0,
+      "action_pin_references": 1
+    },
+    {
+      "path": ".github/workflows/hepta-diagnostic-source-export.yml",
+      "before_sha256": "5b1ef27c5fb40e5acc04f75ec8ad4cbcf660273147983e23e46d0acf8e940b4e",
+      "after_sha256": "741a4b762cf98f77a1792416109683b1f1fbb7c91ba1a4504b5e1584c4e2f82b",
+      "old_version_references": 0,
+      "action_pin_references": 1
+    },
+    {
+      "path": ".github/workflows/cargo-deny.yml",
+      "before_sha256": "e01faafdaa914009b834ad07ad3a46137eac70b2874d88182a46cd24f100e843",
+      "after_sha256": "a351ac3acff3c00067e8196fbe5fed42ccee1c2a1ce87bd34ebae0f734d5edcc",
+      "old_version_references": 2,
+      "action_pin_references": 1
+    },
+    {
+      "path": "MODULE.bazel",
+      "before_sha256": "3db1f24fe88d5a910c005b58cf48ea57c4e2d835363b4344ac309b4283c7f25e",
+      "after_sha256": "595a1ddad96510295e70bf2e04427da8b2a5536559d08e0ddd6c98b779a6ddf0",
+      "old_version_references": 1,
+      "action_pin_references": 0
+    },
+    {
+      "path": "codex-rs/rust-toolchain.toml",
+      "before_sha256": "570656042681cfd8795403a455baf9a33035331a07db0645e866bbcea89a3d64",
+      "after_sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+      "old_version_references": 1,
+      "action_pin_references": 0
+    },
+    {
+      "path": "flake.nix",
+      "before_sha256": "564e7c1482f8c018788f590a195ec9cd180fc08b0d3a98c585c89cb9f79396ae",
+      "after_sha256": "5eda88841f0bb326ebe72b4f0d93f1609cba6360a7089faee4ea853ce2f017a7",
+      "old_version_references": 3,
+      "action_pin_references": 0
+    },
+    {
+      "path": "codex-rs/scripts/setup-windows.ps1",
+      "before_sha256": "9e4d142a1c4d20b01fa72e8131d19bbdd00416aef0f4feb1a44a3eb8c3a5b471",
+      "after_sha256": "b670cc0894ba5da17e004d25b76ea595445ee4a155bfaa7d6286b17e6e09e8c7",
+      "old_version_references": 1,
+      "action_pin_references": 0
+    }
+  ]
+}

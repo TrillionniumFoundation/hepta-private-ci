@@ -1,0 +1,122 @@
+{
+  "schema": "hepta.ci.windows-repair-validation.v1",
+  "base_head": "2abafe82a99d6def2132e605e57af183e3080194",
+  "status": "cross_compile_passed_native_runtime_pending",
+  "validation": [
+    {
+      "kind": "compile_only",
+      "target": "x86_64-pc-windows-gnu",
+      "toolchain": "Rust 1.95.0",
+      "scope": "exact path-utils private Windows backend and 6 Windows tests",
+      "exit_code": 0,
+      "harness": "ci/windows_backend_check"
+    },
+    {
+      "kind": "compile_only",
+      "target": "x86_64-pc-windows-gnu",
+      "toolchain": "Rust 1.95.0",
+      "scope": "exact prompt-registry lib source including 4 native Windows integration tests; isolated harness immediate dependency versions pinned to repository Cargo.lock",
+      "exit_code": 0,
+      "harness": "ci/registry_windows_check",
+      "log": "ci/registry_windows_check/check.log",
+      "limit": "Isolated harness does not reproduce every workspace feature-unification edge or Bazel metadata."
+    }
+  ],
+  "remaining_gates": [
+    "original just fmt",
+    "original just bazel-lock-update with MODULE.bazel.lock",
+    "native Windows backend, registry and Agentd test execution",
+    "native macOS Clippy",
+    "cargo-deny exact failure diagnosis",
+    "complete required CI on newly published head"
+  ],
+  "durability_limit": "Directory sync_all delegates to File::sync_all/FlushFileBuffers. Unsupported or failed flushes remain errors; no claim of Windows durable operation until runtime tests pass.",
+  "unsafe_boundary": "All unsafe FFI is in codex-utils-path; prompt-registry retains forbid(unsafe_code).",
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "bytes": 10280,
+      "sha256": "989697a6f04713133b3fce1efcc764c8a888305226e69a926646f1394338081e"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/registry_tests.rs",
+      "bytes": 11781,
+      "sha256": "6db82231295c15948fdba723b58776e312741f171a5e146f5618bc5ee3e7610c"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+      "bytes": 7769,
+      "sha256": "27385a89421193c215e5d6f5f530755f316c0029ac3e5023c4aa65ca519e3351"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/paired_owner_tests.rs",
+      "bytes": 12594,
+      "sha256": "6c0e14a8cd0673082ae4b3588b03bc5c667d719c218a9c4107c832ecf7f3b6ef"
+    },
+    {
+      "path": "codex-rs/uds/src/lib.rs",
+      "bytes": 14810,
+      "sha256": "36e110f5b9ab767cf3ae2ecfd79a43a73fdb682ed4dfff58f7972160d2ead4ee"
+    },
+    {
+      "path": "codex-rs/uds/src/lib_tests.rs",
+      "bytes": 6063,
+      "sha256": "bbeffe820cb19a3f7ffa57ca9485cbdc07bb84da73dfb6c4fee555231bffd57a"
+    },
+    {
+      "path": "codex-rs/utils/path-utils/Cargo.toml",
+      "bytes": 662,
+      "sha256": "562bba346c4cd1a1581c6336913132b38e67b51f8a1e16dfea3814f50d48e087"
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/lib.rs",
+      "bytes": 6780,
+      "sha256": "be409867714a18ae56ce96d557ec503d6a02be700a02d4fdfe83c31c21a19123"
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+      "bytes": 5226,
+      "sha256": "519ccce92489f07cd4a43aa101c7c9dbfb06b6c68fe3ee87e866820b1166661a"
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_nt.rs",
+      "bytes": 8701,
+      "sha256": "809f37b831ef0011a5c823e8e8d53b2fbd5ac4f07583f18f136a5c00fa16a072"
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_security.rs",
+      "bytes": 8883,
+      "sha256": "1adc523370013a7ffe82b0d6d95a70f4cc289022c87a24c761c1e72fd308ea80"
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_tests.rs",
+      "bytes": 5976,
+      "sha256": "cc0495886b3fdba61b41f702833a335296c6abc49aea5937d74f2d2e85b1d8ad"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/Cargo.toml",
+      "bytes": 677,
+      "sha256": "ef0f67376bcd0f2d14cd48473472929d31c4ba51457a57ccfc1ca206663fc8e0"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "bytes": 109194,
+      "sha256": "8619cdd6b538fb8cad63994bd3100712e9d8ae88714ecbd82437175072ed6a14"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/durable_payloads.rs",
+      "bytes": 9941,
+      "sha256": "e3b51367a9ce5b2da6417ab15383e9cd401e6036d138b8e95ad97875ac55a415"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/durable_windows_tests.rs",
+      "bytes": 4028,
+      "sha256": "71a934631a2b2992001fdf59c56b9a48507a28895ef9d347d6e8b1825aa8a150"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "bytes": 418082,
+      "sha256": "a8ef2b1728aa697b6f806a30ccc042e8843e5c837864ebd080969b1b936a36bf"
+    }
+  ]
+}
