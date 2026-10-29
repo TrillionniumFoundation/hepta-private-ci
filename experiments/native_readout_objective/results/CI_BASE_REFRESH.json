@@ -1,0 +1,138 @@
+{
+  "actual_base_ref": {
+    "node_id": "REF_kwDOTrgxoNoAL3JlZnMvaGVhZHMvcmVzZWFyY2gvZmlyc3QtcGFzc2FnZS1jZWxsLTIwMjYxMDI4",
+    "object": {
+      "sha": "2abafe82a99d6def2132e605e57af183e3080194",
+      "type": "commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/2abafe82a99d6def2132e605e57af183e3080194"
+    },
+    "ref": "refs/heads/research/first-passage-cell-20261028",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/research/first-passage-cell-20261028"
+  },
+  "actual_base_to_head": {
+    "ahead_by": 78,
+    "base": "2abafe82a99d6def2132e605e57af183e3080194",
+    "base_commit": {
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/2abafe82a99d6def2132e605e57af183e3080194",
+      "sha": "2abafe82a99d6def2132e605e57af183e3080194",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/2abafe82a99d6def2132e605e57af183e3080194"
+    },
+    "behind_by": 15,
+    "head": "87b03617077f9e5f275d291b7af06cd1418f87ce",
+    "merge_base_commit": {
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/5898cd8b0f724c3152b6cc52856721f72e5e08be",
+      "sha": "5898cd8b0f724c3152b6cc52856721f72e5e08be",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/5898cd8b0f724c3152b6cc52856721f72e5e08be"
+    },
+    "repository_full_name": "TrillionniumFoundation/hepta-private-ci",
+    "status": "diverged",
+    "too_large": null,
+    "total_commits": 78
+  },
+  "actual_head_ref": {
+    "node_id": "REF_kwDOTrgxoNoANXJlZnMvaGVhZHMvcmVzZWFyY2gvY29udGludW91cy1ib3VuZGFyeS1mbG93LTIwMjYxMDI4",
+    "object": {
+      "sha": "87b03617077f9e5f275d291b7af06cd1418f87ce",
+      "type": "commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/87b03617077f9e5f275d291b7af06cd1418f87ce"
+    },
+    "ref": "refs/heads/research/continuous-boundary-flow-20261028",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/research/continuous-boundary-flow-20261028"
+  },
+  "conclusion": {
+    "actual_baseline_is_diverged": true,
+    "ahead_actual_baseline_commits": 78,
+    "behind_actual_baseline_commits": 15,
+    "cache_caveat": "The old PR response differs from the now-observed branch ref. Exact ref-update timing and GitHub cache internals are not visible; commit time is not branch-ref update time.",
+    "common_ancestor": "5898cd8b0f724c3152b6cc52856721f72e5e08be",
+    "dirty_explanation": "The actual moved baseline produces a real textual conflict, resolving the earlier apparent contradiction based on the previously reported 5898 base SHA.",
+    "text_conflict_demonstrated": ".codespellrc skip line modified differently on both sides; stdout-only three-way comparison returns 1."
+  },
+  "new_base_commit": {
+    "author_date": "2026-10-28T11:46:11Z",
+    "committer_date": "2026-10-28T11:46:11Z",
+    "message": "research(fp): attest complete CI-compliant evidence publication\n\nRecord remote verification of all 326 archive objects, complete cold restoration of 53 originals, preserved scientific and native identities, and the precise scope of CI repairs.",
+    "parents": [
+      "558ce6aeb1368de2871a3c3981170fb854c64766"
+    ],
+    "sha": "2abafe82a99d6def2132e605e57af183e3080194",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/2abafe82a99d6def2132e605e57af183e3080194"
+  },
+  "observed_at_utc": "2026-10-29 16:26:31 UTC",
+  "old_baseline_to_actual_base": {
+    "ahead_by": 15,
+    "base": "5898cd8b0f724c3152b6cc52856721f72e5e08be",
+    "base_commit": {
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/5898cd8b0f724c3152b6cc52856721f72e5e08be",
+      "sha": "5898cd8b0f724c3152b6cc52856721f72e5e08be",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/5898cd8b0f724c3152b6cc52856721f72e5e08be"
+    },
+    "behind_by": 0,
+    "head": "2abafe82a99d6def2132e605e57af183e3080194",
+    "merge_base_commit": {
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/5898cd8b0f724c3152b6cc52856721f72e5e08be",
+      "sha": "5898cd8b0f724c3152b6cc52856721f72e5e08be",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/5898cd8b0f724c3152b6cc52856721f72e5e08be"
+    },
+    "repository_full_name": "TrillionniumFoundation/hepta-private-ci",
+    "status": "ahead",
+    "too_large": null,
+    "total_commits": 15
+  },
+  "pr": {
+    "base": "research/first-passage-cell-20261028",
+    "base_sha": "2abafe82a99d6def2132e605e57af183e3080194",
+    "draft": true,
+    "head": "research/continuous-boundary-flow-20261028",
+    "head_sha": "87b03617077f9e5f275d291b7af06cd1418f87ce",
+    "mergeable": false,
+    "merged": false,
+    "state": "open",
+    "updated_at": "2026-10-29T16:24:00Z",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4157"
+  },
+  "previous_observation": {
+    "path": "experiments/native_readout_objective/results/CI_OBSERVATION.json",
+    "reported_pr_base_sha": "5898cd8b0f724c3152b6cc52856721f72e5e08be",
+    "sha256": "73552f9b936b054aa14f182f3ee14341d13af8c7536879de4a6c9fbc9a8d47a1"
+  },
+  "recommendation": {
+    "branch_protection_limit": "Classic branch-protection reads were denied to the available integration; identical protection on a new name cannot be asserted from observed evidence.",
+    "create_distinct_frozen_ref": "research/frozen-first-passage-baseline-5898cd8-20261028",
+    "gates": "Do not modify workflow rules, mark missing checks passed, merge the new baseline, or promote to main.",
+    "rationale": "Present the independently registered research against its original source baseline without importing later unrelated baseline changes.",
+    "retarget_only": "Keep PR 4157 draft; change its base to the distinct frozen-baseline branch; preserve current head and all sealed scientific sources.",
+    "target_commit": "5898cd8b0f724c3152b6cc52856721f72e5e08be",
+    "verification": "Read back exact frozen ref, unchanged head, new base SHA, and mergeability; inspect newly triggered CI normally."
+  },
+  "schema": "hepta.native-readout-objective.ci-base-refresh.v1",
+  "scope": "Read-only follow-up after parent refreshed the existing draft PR; no refs, files, workflows or PR metadata were changed by this investigation.",
+  "three_way_conflict_evidence": {
+    "command": "git merge-file --stdout --diff3 (temporary copies only)",
+    "exit_code": 1,
+    "merge_output": "[codespell]\n# Ref: https://github.com/codespell-project/codespell#using-a-config-file\n<<<<<<< research_head_87b03617\nskip = .git*,vendor,third_party,*-lock.yaml,*.lock,.codespellrc,*test.ts,*.jsonl,frame*.txt,*.snap,*.snap.new,experiments/continuous_boundary_flow/evidence/bundle/*.part,experiments/continuous_boundary_policy/evidence/bundle/*.part\n||||||| registered_baseline_5898cd8\nskip = .git*,vendor,third_party,*-lock.yaml,*.lock,.codespellrc,*test.ts,*.jsonl,frame*.txt,*.snap,*.snap.new\n=======\nskip = .git*,vendor,third_party,*-lock.yaml,*.lock,.codespellrc,*test.ts,*.jsonl,frame*.txt,*.snap,*.snap.new,.codespell-frozen-lines,./experiments/first_passage_cell/evidence/data_parts/*/*.bin,./experiments/analytic_event_neuron/round3/evidence/confirmation/*.tar.gz.part*\n>>>>>>> current_base_2abafe82\ncheck-hidden = true\nignore-regex = ^\\s*\"image/\\S+\": \".*|\\b(afterAll)\\b\nignore-words-list = ratatui,ser,iTerm,iterm2,iterm,te,TE,PASE,SEH,disjointness\n# Keep immutable historical evidence lines intact; all other text remains checked.\nexclude-file = .codespell-frozen-lines\n",
+    "path": ".codespellrc",
+    "source_versions": {
+      "actual_base": {
+        "content": "[codespell]\n# Ref: https://github.com/codespell-project/codespell#using-a-config-file\nskip = .git*,vendor,third_party,*-lock.yaml,*.lock,.codespellrc,*test.ts,*.jsonl,frame*.txt,*.snap,*.snap.new,.codespell-frozen-lines,./experiments/first_passage_cell/evidence/data_parts/*/*.bin,./experiments/analytic_event_neuron/round3/evidence/confirmation/*.tar.gz.part*\ncheck-hidden = true\nignore-regex = ^\\s*\"image/\\S+\": \".*|\\b(afterAll)\\b\nignore-words-list = ratatui,ser,iTerm,iterm2,iterm,te,TE,PASE,SEH,disjointness\n# Keep immutable historical evidence lines intact; all other text remains checked.\nexclude-file = .codespell-frozen-lines\n",
+        "response_date": "Thu, 29 Oct 2026 16:25:33 GMT",
+        "sha256": "77aff1a1e40932afb197e702382d1c157a42cc67cca387ea0ba5b442efa6ce0d",
+        "url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/2abafe82a99d6def2132e605e57af183e3080194/.codespellrc"
+      },
+      "ancestor": {
+        "content": "[codespell]\n# Ref: https://github.com/codespell-project/codespell#using-a-config-file\nskip = .git*,vendor,third_party,*-lock.yaml,*.lock,.codespellrc,*test.ts,*.jsonl,frame*.txt,*.snap,*.snap.new\ncheck-hidden = true\nignore-regex = ^\\s*\"image/\\S+\": \".*|\\b(afterAll)\\b\nignore-words-list = ratatui,ser,iTerm,iterm2,iterm,te,TE,PASE,SEH,disjointness\n",
+        "response_date": "Thu, 29 Oct 2026 16:25:33 GMT",
+        "sha256": "26a2389b135dc72267c53fd8d94df04d5fe0f66a0dc5ab06b6e4d435eee542bc",
+        "url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/5898cd8b0f724c3152b6cc52856721f72e5e08be/.codespellrc"
+      },
+      "current_pr_head": {
+        "content": "[codespell]\n# Ref: https://github.com/codespell-project/codespell#using-a-config-file\nskip = .git*,vendor,third_party,*-lock.yaml,*.lock,.codespellrc,*test.ts,*.jsonl,frame*.txt,*.snap,*.snap.new,experiments/continuous_boundary_flow/evidence/bundle/*.part,experiments/continuous_boundary_policy/evidence/bundle/*.part\ncheck-hidden = true\nignore-regex = ^\\s*\"image/\\S+\": \".*|\\b(afterAll)\\b\nignore-words-list = ratatui,ser,iTerm,iterm2,iterm,te,TE,PASE,SEH,disjointness\n",
+        "response_date": "Thu, 29 Oct 2026 16:25:33 GMT",
+        "sha256": "76a20afd3fe534363398b4ca95cb7a291fd0e6df2f4664226736f02bc92ce6d2",
+        "url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/87b03617077f9e5f275d291b7af06cd1418f87ce/.codespellrc"
+      }
+    },
+    "stderr": "",
+    "worktree_changed": false
+  }
+}

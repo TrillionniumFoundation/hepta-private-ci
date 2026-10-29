@@ -1,0 +1,21 @@
+{
+  "child_system_cpu_seconds": 0.636779,
+  "child_user_cpu_seconds": 73.60091399999999,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.native_readout_objective.audit",
+    "/dev/shm/hepta-native-objective-20261029/readout-run-001",
+    "--selection-only",
+    "--output",
+    "/dev/shm/hepta-native-objective-20261029/readout-engineering-001/audits/SELECTION_AUDIT.json"
+  ],
+  "exit_code": 0,
+  "hardware_energy_measured": false,
+  "log_sha256": "8320549c45358cd70aef71f7cde2f2bfb3c6cc553199b6557d6dfdb636c67dc6",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+  "schema": "hepta.research.outer-command-cost.v1",
+  "scope": "whole command including imports, verification and output; inclusive child CPU covers waited native descendants; nested study clocks are subsets and must not be added",
+  "wall_seconds": 74.24002646899316,
+  "wrapper_cpu_seconds": 0.0007337489999999988
+}

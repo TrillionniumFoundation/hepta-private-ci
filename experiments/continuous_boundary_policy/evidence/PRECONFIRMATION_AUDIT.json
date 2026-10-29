@@ -1,0 +1,141 @@
+{
+  "audit_cost_excluded_from_scientific_training_totals": {
+    "python_cpu_seconds": 7.460695352,
+    "wall_seconds": 8.839172873995267
+  },
+  "auditor_script_sha256": "b9e09de7d0b3d4508ae5979d08a70c00ec00ff3b06c2eab9c21cc5aba8d6c532",
+  "candidates_verified": 216,
+  "contexts_verified": 160,
+  "continuous_bptt_candidates_verified": 192,
+  "cost_records_verified": 80,
+  "limitations": [
+    "Uses frozen independent audit functions and shared source-bound numerical grid constructor.",
+    "Checks all candidate/checkpoint hashes and selection arithmetic; does not replay every development native action.",
+    "Native executable identities are checked through source/environment/selection bindings; executable file bytes are enforced by the registered initialize/confirm stages."
+  ],
+  "native_cpu_seconds_subset": 15.22227200000001,
+  "native_process_counters": {
+    "actual_kernel_calls": 45992,
+    "actual_ndu_calls": 165800,
+    "request_bytes": 72444708,
+    "response_bytes": 181945462
+  },
+  "native_ridge_candidates_verified": 24,
+  "no_confirmation_artifacts": true,
+  "parent_minus_per_pid_cpu_seconds": 6.900000000058248e-05,
+  "passed": true,
+  "protocol_sha256": "c55747dd06640b92aca2198dcbfa21a0a5bf53f5890daf6bc51aa257f887865a",
+  "schema": "hepta.continuous-boundary-policy.preconfirmation-audit.v1",
+  "scope": "Training and development only. Does not read/generate confirmation contexts, fit candidates, select alternatives, or inspect confirmation returns.",
+  "selected_checkpoints_verified": 104,
+  "selected_indices": {
+    "2203": {
+      "dual_event": 0,
+      "dual_flow": 0,
+      "elman_mlp": 2,
+      "fixed_margin": 1,
+      "generic_gru": 1,
+      "learned_margin": 1,
+      "native_sparse": 1,
+      "value_call": 0,
+      "value_margin": 0
+    },
+    "2207": {
+      "dual_event": 2,
+      "dual_flow": 2,
+      "elman_mlp": 2,
+      "fixed_margin": 1,
+      "generic_gru": 2,
+      "learned_margin": 2,
+      "native_sparse": 2,
+      "value_call": 2,
+      "value_margin": 2
+    },
+    "2213": {
+      "dual_event": 2,
+      "dual_flow": 2,
+      "elman_mlp": 1,
+      "fixed_margin": 2,
+      "generic_gru": 2,
+      "learned_margin": 0,
+      "native_sparse": 0,
+      "value_call": 0,
+      "value_margin": 0
+    },
+    "2221": {
+      "dual_event": 0,
+      "dual_flow": 0,
+      "elman_mlp": 2,
+      "fixed_margin": 2,
+      "generic_gru": 0,
+      "learned_margin": 0,
+      "native_sparse": 2,
+      "value_call": 0,
+      "value_margin": 0
+    },
+    "2237": {
+      "dual_event": 0,
+      "dual_flow": 0,
+      "elman_mlp": 0,
+      "fixed_margin": 0,
+      "generic_gru": 0,
+      "learned_margin": 1,
+      "native_sparse": 1,
+      "value_call": 0,
+      "value_margin": 0
+    },
+    "2239": {
+      "dual_event": 2,
+      "dual_flow": 1,
+      "elman_mlp": 1,
+      "fixed_margin": 2,
+      "generic_gru": 2,
+      "learned_margin": 1,
+      "native_sparse": 2,
+      "value_call": 1,
+      "value_margin": 1
+    },
+    "2243": {
+      "dual_event": 1,
+      "dual_flow": 0,
+      "elman_mlp": 2,
+      "fixed_margin": 1,
+      "generic_gru": 0,
+      "learned_margin": 1,
+      "native_sparse": 1,
+      "value_call": 1,
+      "value_margin": 1
+    },
+    "2251": {
+      "dual_event": 1,
+      "dual_flow": 1,
+      "elman_mlp": 0,
+      "fixed_margin": 0,
+      "generic_gru": 0,
+      "learned_margin": 0,
+      "native_sparse": 0,
+      "value_call": 2,
+      "value_margin": 2
+    }
+  },
+  "selection_seal_sha256": "1e06fb919d5dd06f61de1c03940f0478a989e9c0fcbabd0e6f39f305837485b4",
+  "source_files_verified": 67,
+  "source_publication_commit": "57ca7eda3ea4bbf556ed2e1f071e00ac702a3366",
+  "source_seal_sha256": "6b3afbf2af8476730c1260f470bd8f0f68d69652950499388abc3b178f0fd858",
+  "training_costs_prefix_bytes": 63831,
+  "training_costs_prefix_sha256": "61190b2b5c86012499fbe52be0d05daf9d886231294a087bdd42a8b2e667e45a",
+  "training_files_verified": 483,
+  "training_phase_costs": {
+    "training_development": {
+      "completed_child_cpu_seconds": 15.222340999999997,
+      "python_cpu_seconds": 160.804308959,
+      "wall_seconds": 194.38313018306508
+    },
+    "training_setup": {
+      "completed_child_cpu_seconds": 0.0,
+      "python_cpu_seconds": 10.079265381999978,
+      "wall_seconds": 10.693500889028655
+    }
+  },
+  "training_receipts_verified": 72
+}

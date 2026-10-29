@@ -1,0 +1,23 @@
+{
+  "archive_scope": "all files in study and engineering; byte-preserving, including operational host files, every training candidate and checkpoint, complete raw trajectories, full independent audits, native binaries, cold recovery records and enclosing process costs",
+  "artifact_sha256": {
+    "readout-engineering-001/audits/CONFIRMATION_AUDIT.json": "4db0de9b32926b4415c2179715f520ad8b852362b112b103218d447de415a8fb",
+    "readout-run-001/MANIFEST.json": "861468d3cd2f1841291dfcd32c93f3efe1db58f494c02e549979376fb26e60b7",
+    "readout-run-001/PROTOCOL.json": "3d19c2f0aef69da5d368da01e34308f1344ec98b10fd0aaefa1ba4877aa9baff",
+    "readout-run-001/SELECTION_SEAL.json": "28477204d0ef4a94fc990295196d5c51f792a95e2546750217a2a5592f682d66",
+    "readout-run-001/SOURCE_SEAL.json": "83f5243f7b7c7aead3742baccd01caaf619759658f320e824589ff016269d2e9"
+  },
+  "authority": "DENY_ALL",
+  "binaries": {
+    "continuous_host": "fa9dc78b129b0ec3b072e9fc8c8fdd49479515c79aeb2660f355e38f41e54dce"
+  },
+  "cost_caveat": "science phase and full command clocks are nested; independent studies/audits can run concurrently, so wall windows cannot be summed as total elapsed time",
+  "hardware_energy_measured": false,
+  "original_policy_raw_recovered": false,
+  "outer_cost_wrapper_sha256": "5dee863808418acd31207e88f3a2715e45aefb2207e13fa8e2473043c3d73e94",
+  "package": "native_readout_objective",
+  "registered_native_base": "5898cd8b0f724c3152b6cc52856721f72e5e08be",
+  "schema": "hepta.continuous-research.delivery-provenance.v1",
+  "selection_publication_commit": "87b03617077f9e5f275d291b7af06cd1418f87ce",
+  "source_publication_commit": "7908860cb959cbe1599379d4ecbfcc22fbccbe61"
+}

@@ -1,0 +1,50 @@
+{
+  "schema": "hepta.boundary-policy-reproduction.plan.v1",
+  "reproduction_kind": "same_seed_rebuilt_binary_reproduction",
+  "original_source_seal_sha256": "6b3afbf2af8476730c1260f470bd8f0f68d69652950499388abc3b178f0fd858",
+  "original_protocol_sha256": "c55747dd06640b92aca2198dcbfa21a0a5bf53f5890daf6bc51aa257f887865a",
+  "seeds": [
+    2203,
+    2207,
+    2213,
+    2221,
+    2237,
+    2239,
+    2243,
+    2251
+  ],
+  "arms": [
+    "fixed_margin",
+    "learned_margin",
+    "value_margin",
+    "value_call",
+    "dual_flow",
+    "generic_gru",
+    "dual_event",
+    "elman_mlp",
+    "native_sparse",
+    "dp",
+    "always_keep",
+    "always_repair",
+    "always_stop"
+  ],
+  "independent_new_samples": false,
+  "pool_with_original_results": false,
+  "original_benefit_gates_passed": 0,
+  "original_benefit_gates_total": 4,
+  "original_result_replaced": false,
+  "original_policy_raw_evidence_recovered": false,
+  "original_binaries_recovered": false,
+  "new_binary_sha256": {
+    "native": "fa9dc78b129b0ec3b072e9fc8c8fdd49479515c79aeb2660f355e38f41e54dce",
+    "score": "655b919aca126a33ee2fd54501b024eb80f4b1842b0e3410791958d93a588c47"
+  },
+  "new_runtime_costs_required": true,
+  "authority": "DENY_ALL",
+  "reason": "Original policy raw confirmation evidence and the two original executable artifacts were not recovered. This separate run reconstructs the same registered experiment with explicitly new executables and preserved original scientific source.",
+  "algorithm": "Unchanged original context streams, training algorithm, 120 epochs, 3 candidates, development selection and confirmation schedule; new driver enforces fresh-run, source and remote-publication identities.",
+  "evidence": "New build and behavior-test receipts are source sealed. Each run records its actual CPU/platform/Python/NumPy/SciPy identity and measures its own setup, training, native subprocess, confirmation, serialization and engineering costs.",
+  "inference": "This reproduction does not add independent seeds, replace the original 0/4 report, recover missing original trajectories or support pooled significance. Report all reproduction gates separately, including failures.",
+  "publication_order": "Source seal, identical protocol and this plan must be published on the named remote ancestor before initialization; the complete selection seal must be published before confirmation.",
+  "energy_claim": "No hardware energy evidence is collected. Events, observations, closed-form evaluation and timing are not treated as energy measurements."
+}

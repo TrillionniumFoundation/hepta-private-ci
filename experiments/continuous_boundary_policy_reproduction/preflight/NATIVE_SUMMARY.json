@@ -1,0 +1,23 @@
+{
+  "schema": "hepta.native-rebuild.summary.v1",
+  "scope": "new artifact built from pinned native sources; not original binary recovery",
+  "binary": "/dev/shm/hepta-native-objective-20261029/build/target/release/examples/continuous_host",
+  "binary_sha256": "fa9dc78b129b0ec3b072e9fc8c8fdd49479515c79aeb2660f355e38f41e54dce",
+  "old_binary_sha256": "1dc702aea6a448ad84407aeb71dc8f23066205fab79fe7c6859fc02c55e6f7a5",
+  "identity_matches_original_binary": false,
+  "original_native_sources_unmodified": true,
+  "source_manifest_sha256": "6addea031fa9ba2ca403137d8d10da6088c255474c681b106d9a2706c645dd09",
+  "build_receipt_sha256": "911f5b3488540dee5022875c04d9dc22994b636ea24f1a53efbc4b8b3a1dacd9",
+  "test_receipt_sha256": "343a20bc85add1499aee9efacc3a914cccf45bef918acc0562340030ddc3a91b",
+  "source_files": 174,
+  "compiler": "rustc 1.95.0 (59807616e 2026-04-14)",
+  "compiler_sha256": "bff349e72704ff70bc08a234a3847338e797065bbedde5e556808bc87b7bf7c6",
+  "python": "3.12.14",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+  "tests": 6,
+  "tests_passed": true,
+  "build_wall_seconds": 37.97498488800193,
+  "build_child_cpu_seconds": 74.126982,
+  "test_wall_seconds": 0.08653212299395818,
+  "authority": "research DENY_ALL; no production promotion"
+}

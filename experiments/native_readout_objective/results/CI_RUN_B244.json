@@ -1,0 +1,976 @@
+{
+  "additional_failure_evidence": [
+    {
+      "excerpt_sha256": "ce780455809b4ccf18f92b17d9b6850237c6667062b2c2a80053e4ac1b5626c1",
+      "excerpts": [
+        "2026-10-29T16:33:06.7631929Z # Execution platform: @@+rbe_platform_repository+rbe_platform//:rbe_platform\n2026-10-29T16:33:06.7632648Z error: used `unwrap()` on a `Result` value\n2026-10-29T16:33:06.7633167Z    --> hepta-fleet/src/authority_port.rs:197:9\n2026-10-29T16:33:06.7633616Z     |\n2026-10-29T16:33:06.7633898Z 197 | /         ledger\n2026-10-29T16:33:06.7634295Z 198 | |             .admit_host(HostObservation {",
+        "2026-10-29T16:35:02.0823804Z # Execution platform: @@+rbe_platform_repository+rbe_platform//:rbe_platform\n2026-10-29T16:35:02.0825054Z error[E0599]: no method named `append_qualification` found for struct `codex_hepta_learning_ledger::DurableLedger` in the current scope\n2026-10-29T16:35:02.0826159Z    --> hepta-agentd/tests/plasticity_process_e2e.rs:115:12\n2026-10-29T16:35:02.0826692Z     |\n2026-10-29T16:35:02.0827025Z 115 |     ledger.append_qualification(\n2026-10-29T16:35:02.0827715Z     |     -------^^^^^^^^^^^^^^^^^^^^ method not found in `codex_hepta_learning_ledger::DurableLedger`",
+        "2026-10-29T16:35:02.4517253Z # Execution platform: @@+rbe_platform_repository+rbe_platform//:rbe_platform\n2026-10-29T16:35:02.4517864Z error[E0599]: no method named `append_qualification` found for struct `DurableLedger` in the current scope\n2026-10-29T16:35:02.4518581Z    --> hepta-agentd/tests/plasticity_process_e2e.rs:115:12\n2026-10-29T16:35:02.4518901Z     |\n2026-10-29T16:35:02.4519109Z 115 |     ledger.append_qualification(\n2026-10-29T16:35:02.4519434Z     |     -------^^^^^^^^^^^^^^^^^^^^ method not found in `DurableLedger`",
+        "2026-10-29T16:35:22.2300327Z ##[error]ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-fleet/BUILD.bazel:3:17: Clippy //codex-rs/hepta-fleet:hepta-fleet-unit-tests-bin failed: (Exit 1): process_wrapper failed: error executing Clippy command (from aspects [@@rules_rs++rules_rust+rules_rust//rust/private:clippy.bzl%rust_clippy_aspect] on rust_test rule target //codex-rs/hepta-fleet:hepta-fleet-unit-tests-bin) \nerror: used `unwrap()` on a `Result` value\n   --> hepta-fleet/src/authority_port.rs:197:9\n    |\n197 | /         ledger\n198 | |             .admit_host(HostObservation {",
+        "2026-10-29T16:35:22.2316907Z ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-fleet/BUILD.bazel:3:17: Clippy //codex-rs/hepta-fleet:hepta-fleet-unit-tests-bin failed: (Exit 1): process_wrapper failed: error executing Clippy command (from aspects [@@rules_rs++rules_rust+rules_rust//rust/private:clippy.bzl%rust_clippy_aspect] on rust_test rule target //codex-rs/hepta-fleet:hepta-fleet-unit-tests-bin) \n2026-10-29T16:35:22.2318611Z error: used `unwrap()` on a `Result` value\n2026-10-29T16:35:22.2318949Z    --> hepta-fleet/src/authority_port.rs:197:9\n2026-10-29T16:35:22.2319245Z     |\n2026-10-29T16:35:22.2319441Z 197 | /         ledger\n2026-10-29T16:35:22.2319691Z 198 | |             .admit_host(HostObservation {",
+        "2026-10-29T16:35:22.2346468Z ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/BUILD.bazel:14:17: Clippy //codex-rs/hepta-agentd:hepta-agentd-plasticity_process_e2e-test failed: (Exit 1): process_wrapper failed: error executing Clippy command (from aspects [@@rules_rs++rules_rust+rules_rust//rust/private:clippy.bzl%rust_clippy_aspect] on rust_test rule target //codex-rs/hepta-agentd:hepta-agentd-plasticity_process_e2e-test) \n2026-10-29T16:35:22.2348386Z error[E0599]: no method named `append_qualification` found for struct `codex_hepta_learning_ledger::DurableLedger` in the current scope\n2026-10-29T16:35:22.2349199Z    --> hepta-agentd/tests/plasticity_process_e2e.rs:115:12\n2026-10-29T16:35:22.2349521Z     |\n2026-10-29T16:35:22.2349736Z 115 |     ledger.append_qualification(\n2026-10-29T16:35:22.2350147Z     |     -------^^^^^^^^^^^^^^^^^^^^ method not found in `codex_hepta_learning_ledger::DurableLedger`",
+        "2026-10-29T16:35:22.2352698Z ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/BUILD.bazel:14:17: Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-plasticity_process_e2e-test (1 file) failed: (Exit 1): process_wrapper failed: error executing Rustc command (from rust_test rule target //codex-rs/hepta-agentd:hepta-agentd-plasticity_process_e2e-test) \n2026-10-29T16:35:22.2354310Z error[E0599]: no method named `append_qualification` found for struct `DurableLedger` in the current scope\n2026-10-29T16:35:22.2354862Z    --> hepta-agentd/tests/plasticity_process_e2e.rs:115:12\n2026-10-29T16:35:22.2355178Z     |\n2026-10-29T16:35:22.2355385Z 115 |     ledger.append_qualification(\n2026-10-29T16:35:22.2355726Z     |     -------^^^^^^^^^^^^^^^^^^^^ method not found in `DurableLedger`"
+      ],
+      "github_job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40912073870/job/123583047853",
+      "job_id": 123583047853
+    },
+    {
+      "excerpt_sha256": "410a3927ba2f3485394852e102bd1ad67873e2b7c0678771c372cb91ddcb2194",
+      "excerpts": [
+        "2026-10-29T16:33:52.6613839Z # Execution platform: @@+rbe_platform_repository+rbe_platform//:rbe_platform\n2026-10-29T16:33:52.6614406Z error[E0599]: no method named `append_qualification` found for struct `DurableLedger` in the current scope\n2026-10-29T16:33:52.6614927Z    --> hepta-agentd/tests/plasticity_process_e2e.rs:115:12\n2026-10-29T16:33:52.6615219Z     |\n2026-10-29T16:33:52.6615414Z 115 |     ledger.append_qualification(\n2026-10-29T16:33:52.6615727Z     |     -------^^^^^^^^^^^^^^^^^^^^ method not found in `DurableLedger`"
+      ],
+      "github_job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40912073870/job/123583048094",
+      "job_id": 123583048094
+    },
+    {
+      "excerpt_sha256": "4d4a3fbbf2368e0eb20df637895ca90d4cf828606b282b67b669b652aecea3f7",
+      "excerpts": [
+        "2026-10-29T16:34:42.3046120Z [2,929 / 2,962] 39 / 222 tests; Testing //codex-rs/hepta-infer-core:hepta-infer-core-unit-tests; 0s remote-cache, darwin-sandbox ... (10 actions, 4 running)\n2026-10-29T16:34:43.6998020Z FATAL: bazel ran out of memory and crashed. Printing stack trace:\n2026-10-29T16:34:43.7015440Z java.lang.OutOfMemoryError: unable to create native thread: possibly out of memory or process/resource limits reached\n2026-10-29T16:34:43.7024290Z \tat java.base/java.lang.Thread.start0(Native Method)\n2026-10-29T16:34:43.7024870Z \tat java.base/java.lang.Thread.start(Unknown Source)\n2026-10-29T16:34:43.7025380Z \tat java.base/java.lang.System$1.start(Unknown Source)",
+        "2026-10-29T16:34:43.6998020Z FATAL: bazel ran out of memory and crashed. Printing stack trace:\n2026-10-29T16:34:43.7015440Z java.lang.OutOfMemoryError: unable to create native thread: possibly out of memory or process/resource limits reached\n2026-10-29T16:34:43.7024290Z \tat java.base/java.lang.Thread.start0(Native Method)\n2026-10-29T16:34:43.7024870Z \tat java.base/java.lang.Thread.start(Unknown Source)\n2026-10-29T16:34:43.7025380Z \tat java.base/java.lang.System$1.start(Unknown Source)\n2026-10-29T16:34:43.7027470Z \tat java.base/jdk.internal.vm.SharedThreadContainer.start(Unknown Source)"
+      ],
+      "github_job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40912073870/job/123583047927",
+      "job_id": 123583047927
+    },
+    {
+      "excerpt_sha256": "c8df4487c82fc73c6120ec2e8f9badbfcd27f96e4cb692f9191f22222381cbbb",
+      "excerpts": [
+        "2026-10-29T16:35:27.8718387Z           rust-lld: warning: libcrypto-988607673.lib(file.pic.o): locally defined symbol imported: _setmode (defined in libucrt.lib(setmode.obj)) [LNK4217]\r\n2026-10-29T16:35:27.8720700Z           rust-lld: error: undefined symbol: __stack_chk_fail\r\n2026-10-29T16:35:27.8890020Z           >>> referenced by libring-1490277151.rlib(79abf3e07b579fd2-poly1305.o):(poly1305_update)\r\n2026-10-29T16:35:27.8900216Z           >>> referenced by libring-1490277151.rlib(73090ba2100ad232-curve25519.o):(fe_frombytes)\r\n2026-10-29T16:35:27.9040316Z           >>> referenced by libring-1490277151.rlib(73090ba2100ad232-curve25519.o):(fe_isnonzero)\r\n2026-10-29T16:35:27.9067207Z           >>> referenced 221 more times\r",
+        "2026-10-29T16:35:27.9710132Z           \r\n2026-10-29T16:35:27.9710538Z           rust-lld: error: undefined symbol: ___chkstk_ms\r\n2026-10-29T16:35:27.9890847Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aws_lc_bazel_x25519_ge_scalarmult)\r\n2026-10-29T16:35:27.9900021Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aws_lc_bazel_ec_nistp_scalar_mul)\r\n2026-10-29T16:35:28.0031556Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aws_lc_bazel_ec_nistp_scalar_mul_public)\r\n2026-10-29T16:35:28.0039794Z           >>> referenced 39 more times\r",
+        "2026-10-29T16:35:29.1119209Z           rust-lld: warning: libzstd_sys-1864497262.rlib(a6c81c75fc82913a-cover.o): locally defined symbol imported: __acrt_iob_func (defined in libucrt.lib(_file.obj)) [LNK4217]\r\n2026-10-29T16:35:29.1119843Z           rust-lld: error: undefined symbol: __stack_chk_fail\r\n2026-10-29T16:35:29.1120226Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aes_nohw_setup_key_192)\r\n2026-10-29T16:35:29.1120714Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aws_lc_bazel_aes_nohw_ctr32_encrypt_blocks)\r\n2026-10-29T16:35:29.1121235Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aws_lc_bazel_aes_nohw_cbc_encrypt)\r\n2026-10-29T16:35:29.1121619Z           >>> referenced 244 more times\r",
+        "2026-10-29T16:35:29.1121820Z           \r\n2026-10-29T16:35:29.1122018Z           rust-lld: error: undefined symbol: ___chkstk_ms\r\n2026-10-29T16:35:29.1122444Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aws_lc_bazel_x25519_ge_scalarmult)\r\n2026-10-29T16:35:29.1122951Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aws_lc_bazel_ec_nistp_scalar_mul)\r\n2026-10-29T16:35:29.1123492Z           >>> referenced by libcrypto-988607673.lib(bcm.pic.o):(aws_lc_bazel_ec_nistp_scalar_mul_public)\r\n2026-10-29T16:35:29.1123902Z           >>> referenced 79 more times\r",
+        "2026-10-29T16:35:32.8476676Z           rust-lld: warning: libcrypto-988607673.lib(file.pic.o): locally defined symbol imported: _setmode (defined in libucrt.lib(setmode.obj)) [LNK4217]\r\n2026-10-29T16:35:32.8631489Z           rust-lld: error: undefined symbol: ___chkstk_ms\r\n2026-10-29T16:35:32.8652131Z           >>> referenced by libzstd_sys-1864497262.rlib(fb80479a5fb81f6a-zstd_compress.o):(ZSTD_compress)\r\n2026-10-29T16:35:32.8783379Z           >>> referenced by libzstd_sys-1864497262.rlib(a6c81c75fc82913a-zdict.o):(ZDICT_analyzeEntropy)\r\n2026-10-29T16:35:32.8800593Z           >>> referenced by libzstd_sys-1864497262.rlib(fb80479a5fb81f6a-hist.o):(HIST_countFast)\r\n2026-10-29T16:35:32.8803560Z           >>> referenced 79 more times\r",
+        "2026-10-29T16:35:32.8832129Z           \r\n2026-10-29T16:35:32.9023407Z           rust-lld: error: undefined symbol: __stack_chk_fail\r\n2026-10-29T16:35:32.9026039Z           >>> referenced by libzstd_sys-1864497262.rlib(fb80479a5fb81f6a-zstd_compress.o):(ZSTD_compress)\r\n2026-10-29T16:35:32.9027533Z           >>> referenced by libzstd_sys-1864497262.rlib(a6c81c75fc82913a-zdict.o):(ZDICT_finalizeDictionary)\r\n2026-10-29T16:35:32.9029820Z           >>> referenced by libring-1490277151.rlib(3c60697ff6d5dd9e-aes_nohw.o):(ring_core_0_17_14__aes_nohw_ctr32_encrypt_blocks)\r\n2026-10-29T16:35:32.9030575Z           >>> referenced 244 more times\r",
+        "2026-10-29T16:35:33.0412966Z           rust-lld: warning: libcrypto-988607673.lib(file.pic.o): locally defined symbol imported: _setmode (defined in libucrt.lib(setmode.obj)) [LNK4217]\r\n2026-10-29T16:35:33.0413572Z           rust-lld: error: undefined symbol: ___chkstk_ms\r\n2026-10-29T16:35:33.0414039Z           >>> referenced by libzstd_sys-1864497262.rlib(fb80479a5fb81f6a-zstd_compress.o):(ZSTD_compress)\r\n2026-10-29T16:35:33.0414605Z           >>> referenced by libzstd_sys-1864497262.rlib(a6c81c75fc82913a-zdict.o):(ZDICT_analyzeEntropy)\r\n2026-10-29T16:35:33.0415145Z           >>> referenced by libzstd_sys-1864497262.rlib(fb80479a5fb81f6a-hist.o):(HIST_countFast)\r\n2026-10-29T16:35:33.0415521Z           >>> referenced 79 more times\r"
+      ],
+      "github_job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40912073870/job/123583048590",
+      "job_id": 123583048590
+    }
+  ],
+  "additional_findings": {
+    "linux_bazel_compilation": {
+      "classification": "Observed failures in a codex-rs tree identical to frozen base 5898cd8; no historical baseline CI result or unchanged execution environment is implied.",
+      "conclusion": "failure",
+      "errors": [
+        "hepta-agentd/tests/plasticity_process_e2e.rs:115:12: E0599 DurableLedger has no method append_qualification",
+        "Linux clippy also reports denied unwrap/expect usage in hepta-fleet/src/authority_port.rs and hepta-agentd/tests/kernel_evidence_product.rs"
+      ],
+      "jobs": [
+        123583047853,
+        123583048094
+      ]
+    },
+    "mac_arm_bazel_test": {
+      "cause": "Bazel crashed with java.lang.OutOfMemoryError: unable to create native thread; possibly out of memory or process/resource limits reached",
+      "classification": "Runner/resource failure on this execution; no scientific failure inference.",
+      "conclusion": "failure",
+      "exit_code": 33,
+      "job_id": 123583047927
+    },
+    "windows_bazel_shard4": {
+      "classification": "Observed build/test failures in unchanged codex-rs tree; source identity alone does not establish baseline historical CI outcome.",
+      "conclusion": "failure",
+      "errors": [
+        "rust-lld undefined symbols __stack_chk_fail and ___chkstk_ms",
+        "Existing hepta-operator-acceptance and hepta-prompt-optimizer tests panic"
+      ],
+      "job_id": 123583048590
+    }
+  },
+  "additional_source_identity_comparison": [
+    {
+      "base_git_object": "346caa752c4443bb1e2837e195aba2736c354d4b",
+      "head_git_object": "346caa752c4443bb1e2837e195aba2736c354d4b",
+      "identical": true,
+      "object_type": "tree",
+      "path": "codex-rs"
+    },
+    {
+      "base_git_object": "a49ef6c1cf4cf6b12f76296cd488c93f0753905b",
+      "head_git_object": "a49ef6c1cf4cf6b12f76296cd488c93f0753905b",
+      "identical": true,
+      "object_type": "blob",
+      "path": "MODULE.bazel"
+    }
+  ],
+  "all_repository_qualification_claimed": false,
+  "baseline_file_identity_comparison": [
+    {
+      "base_git_blob": "d90b3e0f6775b516a01acbd4ec7bc5f47501271d",
+      "head_git_blob": "d90b3e0f6775b516a01acbd4ec7bc5f47501271d",
+      "identical": true,
+      "path": "experiments/analytic_event_neuron/RUNTIME.md"
+    },
+    {
+      "base_git_blob": "8b4444b61f033854edddcb2de59ab08ef16d7af0",
+      "head_git_blob": "8b4444b61f033854edddcb2de59ab08ef16d7af0",
+      "identical": true,
+      "path": "experiments/analytic_event_neuron/round2/evidence/runtime_independent_review.py"
+    },
+    {
+      "base_git_blob": "079dad408e2bbbc2b9feddfb2a11eb6c7fca20c7",
+      "head_git_blob": "079dad408e2bbbc2b9feddfb2a11eb6c7fca20c7",
+      "identical": true,
+      "path": "experiments/first_passage_cell/evidence/KERNEL_VALIDATION.json"
+    },
+    {
+      "base_git_blob": "fd94bb1af63f184dba2a979138f140d860ab7e28",
+      "head_git_blob": "fd94bb1af63f184dba2a979138f140d860ab7e28",
+      "identical": true,
+      "path": "experiments/first_passage_cell/filtering.py"
+    },
+    {
+      "base_git_blob": "35a4010795a2e1f0d212f9b00c54a8acc53a3303",
+      "head_git_blob": "35a4010795a2e1f0d212f9b00c54a8acc53a3303",
+      "identical": true,
+      "path": "experiments/first_passage_cell/validate_kernels.py"
+    },
+    {
+      "base_git_blob": "987a319f35b9e99c8f6517c4829b4884f784d28b",
+      "head_git_blob": "987a319f35b9e99c8f6517c4829b4884f784d28b",
+      "identical": true,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v2_20261027/DIRECTIONAL_PROTOCOL.json"
+    },
+    {
+      "base_git_blob": "42aa0f545b01a8a53015fe50fb845b54fd39b177",
+      "head_git_blob": "42aa0f545b01a8a53015fe50fb845b54fd39b177",
+      "identical": true,
+      "path": "experiments/multimodal_output_portfolio/field_bridge_v2_20261027/primary_runtime_tests.py"
+    },
+    {
+      "base_git_blob": "228c085c04adf11ccee3f721ac3fcf3e6ade8085",
+      "head_git_blob": "228c085c04adf11ccee3f721ac3fcf3e6ade8085",
+      "identical": true,
+      "path": "experiments/multimodal_output_portfolio/next_20261025/media/evidence/public-source-retention-after-cache-eviction.json"
+    },
+    {
+      "base_git_blob": "eadb42ca3831006b429ec87b5df2e3cb3f0504df",
+      "head_git_blob": "eadb42ca3831006b429ec87b5df2e3cb3f0504df",
+      "identical": true,
+      "path": "experiments/multimodal_output_portfolio/repair_20261026/natural/document/evidence/SOURCE_MANIFEST.json"
+    },
+    {
+      "base_git_blob": "c7aa797c1cbeb8dcba0af3815c583dc33f984703",
+      "head_git_blob": "c7aa797c1cbeb8dcba0af3815c583dc33f984703",
+      "identical": true,
+      "path": "scripts/format.py"
+    },
+    {
+      "base_git_blob": "c24a8e2148711e4e3d93e44be28b5c9ebc97e3cd",
+      "head_git_blob": "c24a8e2148711e4e3d93e44be28b5c9ebc97e3cd",
+      "identical": true,
+      "path": "scripts/test_hepta_format_scope.py"
+    }
+  ],
+  "cargo_deny_log_limitation": {
+    "cause_established": false,
+    "decoded_log_attempts_returned_transport_closed": 3,
+    "public_annotations": {
+      "content_summary": "Only a runner operating-system migration notice; no failure cause.",
+      "count": 1,
+      "http_status": 200,
+      "sha256": "f89d335636ffae7737bfae0e14efb7db651b813c8fe7c64bdfeba5cf00de83dc"
+    },
+    "public_log_after_rate_reset": {
+      "http_status": 403,
+      "message": "Must have admin rights to Repository."
+    }
+  },
+  "complete_blocking_job_roster": {
+    "all_exact_head": true,
+    "api": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40912073870/jobs?per_page=100",
+    "returned_count": 37,
+    "total_count": 37
+  },
+  "examined_failure_logs": [
+    {
+      "decoded_log_bytes": 127121,
+      "decoded_log_sha256": "0e07c42c46e974a883fbbc3e00cc13199198f1cecb405552273fef9612183307",
+      "github_job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40912073870/job/123582421792",
+      "job_id": 123582421792
+    },
+    {
+      "decoded_log_bytes": 121981,
+      "decoded_log_sha256": "6644485ed5fdb076b52a82b77e41e091f08aa1ef653efdd3e57ac6de080922fc",
+      "github_job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40912073870/job/123583046805",
+      "job_id": 123583046805
+    }
+  ],
+  "findings": {
+    "cargo_deny": {
+      "cause": "Not established. The authenticated decoded-log tool failed three times. Public log access requires repository administration, and public annotations contain no failure details.",
+      "classification": "unresolved; not labeled inherited or newly introduced without the failure log",
+      "conclusion": "failure",
+      "failed_step": "Run cargo-deny",
+      "job_id": 123583046660,
+      "run_id": 40912073870
+    },
+    "codespell": {
+      "archived_evidence_paths": [
+        "experiments/continuous_boundary_flow/evidence/bundle/archive-00008.part",
+        "experiments/continuous_boundary_flow/evidence/bundle/archive-00010.part",
+        "experiments/continuous_boundary_flow/evidence/bundle/archive-00012.part",
+        "experiments/continuous_boundary_flow/evidence/bundle/archive-00018.part",
+        "experiments/continuous_boundary_flow/evidence/bundle/archive-00024.part",
+        "experiments/continuous_boundary_flow/evidence/bundle/archive-00026.part",
+        "experiments/continuous_boundary_flow/evidence/bundle/archive-00044.part",
+        "experiments/continuous_boundary_flow/evidence/bundle/archive-00058.part",
+        "experiments/continuous_boundary_flow/evidence/bundle/archive-00071.part",
+        "experiments/continuous_boundary_flow/evidence/bundle/archive-00077.part",
+        "experiments/continuous_boundary_flow/evidence/bundle/archive-00081.part",
+        "experiments/continuous_boundary_flow/evidence/bundle/archive-00122.part",
+        "experiments/continuous_boundary_flow/evidence/bundle/archive-00123.part",
+        "experiments/continuous_boundary_flow/evidence/bundle/archive-00124.part",
+        "experiments/continuous_boundary_flow/evidence/bundle/archive-00141.part"
+      ],
+      "classification": "651 findings are random compressed evidence bytes added under continuous_boundary_flow/evidence/bundle; 15 findings in 9 other files are byte-identical to the frozen base.",
+      "compressed_archive_file_count": 15,
+      "compressed_archive_findings": 651,
+      "conclusion": "failure",
+      "diagnostic_text_storage": "Each original diagnostic string is retained as reversible base64 of its exact UTF-8 bytes, with byte count and SHA-256. Source paths, line numbers, counts, job URLs and failure status remain readable; original full decoded-log hashes are unchanged.",
+      "exact_cli": "--ignore-words .codespellignore --skip ./.git",
+      "external_configuration_cause": "The Codespell 2.4.3 reproduction shows that CLI --skip appends to configured skips. The archive scan was reproduced by the mismatch between default './' traversal paths and the previous bare archive patterns; adding matching './' archive-only patterns addresses that mismatch. The workflow's empty skip input is not the cause of this path-prefix fix. Evidence: experiments/continuous_boundary_policy_reproduction/results/CODESPELL_CONFIG_VALIDATION.json, SHA-256 b061468c71e37e0380814eecdbb76999c0bd09a80fe36ff9c5692729df3f9cba. The action's Codespell dependency is not version-pinned; the historical exact_cli and failed log hashes remain unchanged.",
+      "inherited_text_findings": [
+        {
+          "finding_base64": "RlBUID09PiBGVFA=",
+          "finding_encoding": "base64",
+          "finding_utf8_bytes": 11,
+          "finding_utf8_sha256": "0b97702682c055afb2c573f454bdd4a00d1a20d74d81bf8fc3e255a19401da87",
+          "line_number": 65,
+          "path": "experiments/first_passage_cell/filtering.py"
+        },
+        {
+          "finding_base64": "ZnB0ID09PiBmdHA=",
+          "finding_encoding": "base64",
+          "finding_utf8_bytes": 11,
+          "finding_utf8_sha256": "441e2a590f72053b969433fc8f8a4b3b77b6eb617eb6b2e358105e5f7fb62049",
+          "line_number": 224,
+          "path": "experiments/first_passage_cell/validate_kernels.py"
+        },
+        {
+          "finding_base64": "ZnB0ID09PiBmdHA=",
+          "finding_encoding": "base64",
+          "finding_utf8_bytes": 11,
+          "finding_utf8_sha256": "441e2a590f72053b969433fc8f8a4b3b77b6eb617eb6b2e358105e5f7fb62049",
+          "line_number": 3834,
+          "path": "experiments/first_passage_cell/evidence/KERNEL_VALIDATION.json"
+        },
+        {
+          "finding_base64": "cmV0dW5lZCA9PT4gcmV0dXJuZWQ=",
+          "finding_encoding": "base64",
+          "finding_utf8_bytes": 20,
+          "finding_utf8_sha256": "6ccd85796ba44a989d3e75b95d2b23f381d8a3cda8c2e346526d518f74a9fc55",
+          "line_number": 367,
+          "path": "experiments/analytic_event_neuron/RUNTIME.md"
+        },
+        {
+          "finding_base64": "ZGF0YXMgPT0+IGRhdGE=",
+          "finding_encoding": "base64",
+          "finding_utf8_bytes": 14,
+          "finding_utf8_sha256": "fb36a7dd0f0e566c5abd8238e214807a45f15d546ccef15236697082ff948163",
+          "line_number": 238,
+          "path": "experiments/analytic_event_neuron/round2/evidence/runtime_independent_review.py"
+        },
+        {
+          "finding_base64": "ZGF0YXMgPT0+IGRhdGE=",
+          "finding_encoding": "base64",
+          "finding_utf8_bytes": 14,
+          "finding_utf8_sha256": "fb36a7dd0f0e566c5abd8238e214807a45f15d546ccef15236697082ff948163",
+          "line_number": 247,
+          "path": "experiments/analytic_event_neuron/round2/evidence/runtime_independent_review.py"
+        },
+        {
+          "finding_base64": "ZG9lc25vdCA9PT4gZG9lc24ndCwgZG9lcyBub3Q=",
+          "finding_encoding": "base64",
+          "finding_utf8_bytes": 29,
+          "finding_utf8_sha256": "dcae0c2ad97256b2a543d40e7a8d862b174b8b39143290bdc4e33542aa2d8fb1",
+          "line_number": 78,
+          "path": "experiments/multimodal_output_portfolio/field_bridge_v2_20261027/DIRECTIONAL_PROTOCOL.json"
+        },
+        {
+          "finding_base64": "cGVyc2VlZCA9PT4gcHJlY2VkZQ==",
+          "finding_encoding": "base64",
+          "finding_utf8_bytes": 19,
+          "finding_utf8_sha256": "6c7b2d59f8a46da81f5693f25886007dd40a07b00dc2f9b983db87ad171735da",
+          "line_number": 102,
+          "path": "experiments/multimodal_output_portfolio/field_bridge_v2_20261027/DIRECTIONAL_PROTOCOL.json"
+        },
+        {
+          "finding_base64": "bmQgPT0+IGFuZCwgMm5k",
+          "finding_encoding": "base64",
+          "finding_utf8_bytes": 15,
+          "finding_utf8_sha256": "328d2b3f5c6a2bc2d69b33f1729e3968b7c9088c2cd53dcf1d890b1d005413d6",
+          "line_number": 60,
+          "path": "experiments/multimodal_output_portfolio/field_bridge_v2_20261027/primary_runtime_tests.py"
+        },
+        {
+          "finding_base64": "bmQgPT0+IGFuZCwgMm5k",
+          "finding_encoding": "base64",
+          "finding_utf8_bytes": 15,
+          "finding_utf8_sha256": "328d2b3f5c6a2bc2d69b33f1729e3968b7c9088c2cd53dcf1d890b1d005413d6",
+          "line_number": 63,
+          "path": "experiments/multimodal_output_portfolio/field_bridge_v2_20261027/primary_runtime_tests.py"
+        },
+        {
+          "finding_base64": "TEFNQSA9PT4gTExBTUE=",
+          "finding_encoding": "base64",
+          "finding_utf8_bytes": 14,
+          "finding_utf8_sha256": "8a824a571482bcb478da91fae005b6a6c83cd48b8390e68a6523c4024566baa2",
+          "line_number": 3903,
+          "path": "experiments/multimodal_output_portfolio/repair_20261026/natural/document/evidence/SOURCE_MANIFEST.json"
+        },
+        {
+          "finding_base64": "QU1PTlVUID09PiBBTU9VTlQ=",
+          "finding_encoding": "base64",
+          "finding_utf8_bytes": 17,
+          "finding_utf8_sha256": "c4dfa8ee7eac9a92882a01062d1ee38e636c70550f88651fa9ad729c8f74dc40",
+          "line_number": 4279,
+          "path": "experiments/multimodal_output_portfolio/repair_20261026/natural/document/evidence/SOURCE_MANIFEST.json"
+        },
+        {
+          "finding_base64": "RVhDSEFOR0FCTEUgPT0+IEVYQ0hBTkdFQUJMRQ==",
+          "finding_encoding": "base64",
+          "finding_utf8_bytes": 28,
+          "finding_utf8_sha256": "0c6c6c3ec11dfe4b70fb1a8c817527845262dc0eaf25ae9dcabf01601f306327",
+          "line_number": 4900,
+          "path": "experiments/multimodal_output_portfolio/repair_20261026/natural/document/evidence/SOURCE_MANIFEST.json"
+        },
+        {
+          "finding_base64": "VEVIID09PiBUSEU=",
+          "finding_encoding": "base64",
+          "finding_utf8_bytes": 11,
+          "finding_utf8_sha256": "9874618dc513e3ccb21ae5f2910b303e4acd7b98eb9881ad5b48757bc1ce3af8",
+          "line_number": 6515,
+          "path": "experiments/multimodal_output_portfolio/repair_20261026/natural/document/evidence/SOURCE_MANIFEST.json"
+        },
+        {
+          "finding_base64": "cmVzdG9yZWFibGUgPT0+IHJlc3RvcmFibGU=",
+          "finding_encoding": "base64",
+          "finding_utf8_bytes": 26,
+          "finding_utf8_sha256": "f27e0e9a456d92a937196accafd72066d5cc06a5f0808f341f434a894d1e8d7e",
+          "line_number": 22,
+          "path": "experiments/multimodal_output_portfolio/next_20261025/media/evidence/public-source-retention-after-cache-eviction.json"
+        }
+      ],
+      "job_id": 123582421792,
+      "monitor_fixed_source_or_evidence": false,
+      "new_readout_or_reproduction_source_findings": 0,
+      "reported_findings": 666,
+      "run_id": 40912073870
+    },
+    "formatting": {
+      "command": "just fmt-check",
+      "conclusion": "failure",
+      "failed_subcommand": "uv run --frozen --project scripts ruff format --check scripts .github",
+      "files": [
+        "scripts/format.py",
+        "scripts/test_hepta_format_scope.py"
+      ],
+      "job_id": 123583046805,
+      "other_files_already_formatted": 171,
+      "run_id": 40912073870,
+      "source_classification": "Both files have identical Git blob identities at frozen base and observed source head; no new scientific module was named by this formatting failure."
+    }
+  },
+  "focus_outcomes": {
+    "blob_size": {
+      "cancel_message_at_utc": "2026-10-29T16:59:34.3409589Z",
+      "cancelled_step": "Run actions/checkout",
+      "cause_limit": "Cancellation is observed during full-history fetch. The log does not identify who or what triggered cancellation; no successful size check is claimed.",
+      "checkout_fetch_depth": 0,
+      "conclusion": "cancelled",
+      "fetch_started_at_utc": "2026-10-29T16:29:43.4384177Z",
+      "job_id": 123582421194,
+      "last_operation": "git fetch all heads and tags with the prospective merge ref",
+      "log_message": "The operation was canceled.",
+      "size_check_executed": false,
+      "status": "completed"
+    },
+    "source_head_architecture": {
+      "all_records_exact_head_and_clean": true,
+      "all_records_passed": true,
+      "artifacts": [
+        {
+          "bytes": 93560,
+          "digest": "sha256:22fa8cacfe0f150518eef77d7f9d0bb8aaf36dc8f26c8da6b6de969209e417f1",
+          "expires_at": "2026-11-28T16:57:41Z",
+          "id": 12916741222,
+          "name": "hepta-architecture-40912073842-1-source-head",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12916741222"
+        },
+        {
+          "bytes": 10920,
+          "digest": "sha256:dfeeceb50e369d090cb1c4eff07e9e724c93913280515737bc87a077e1721bde",
+          "expires_at": "2026-11-28T16:30:15Z",
+          "id": 12915095535,
+          "name": "hepta-architecture-40912073842-1-base-merge",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/12915095535"
+        }
+      ],
+      "base_merge_native_steps": "skipped; base-merge success must not be reported as a second native execution",
+      "conclusion": "success",
+      "count_scope": "Command records, not independent scientific samples or a claim that overlapping tests are distinct.",
+      "executed_native_steps": [
+        {
+          "conclusion": "success",
+          "name": "Inference owner regressions and streaming digest"
+        },
+        {
+          "conclusion": "success",
+          "name": "Durable operation and external-effect recovery"
+        },
+        {
+          "conclusion": "success",
+          "name": "Module lifecycle generations and migration rollback"
+        },
+        {
+          "conclusion": "success",
+          "name": "Objective and prompt policy convergence"
+        },
+        {
+          "conclusion": "success",
+          "name": "Converged authority and browser semantics"
+        },
+        {
+          "conclusion": "success",
+          "name": "Selected-artifact adoption and explicit rollback"
+        },
+        {
+          "conclusion": "success",
+          "name": "Compiled service lifecycle and actual process restart"
+        }
+      ],
+      "execution_command_records": 31,
+      "job_id": 123582419438,
+      "observed_failed_tests": 0,
+      "run_id": 40912073842,
+      "source_head": "b2445c86eedd250c0d8e95ef17d68880159a747f",
+      "status": "completed",
+      "test_command_records": 29,
+      "tested_tree": "303abb576c00cf3f0cbcfa592bc75d26e72cbd22"
+    }
+  },
+  "frozen_base": "5898cd8b0f724c3152b6cc52856721f72e5e08be",
+  "limits": [
+    "v8-canary metadata succeeded, while the variant build jobs were scoped out.",
+    "No overall CI pass, branch-protection equivalence, production admission or main-branch merge is claimed.",
+    "Later publication commits require their own head-specific CI observation.",
+    "Architecture completed successfully for exact head b2445c86eedd250c0d8e95ef17d68880159a747f. The source-head native steps executed; base-merge native steps were skipped.",
+    "Blocking workflow remains in progress with three Bazel test jobs at this observation: Linux GNU, Linux MUSL, and Intel macOS. Other failures and the canceled blob-size checkout prevent an overall pass claim."
+  ],
+  "observed_at_utc": "2026-10-29 17:01:30 UTC",
+  "overall_pass_claimed": false,
+  "pr_number": 4157,
+  "prospective_merge_observed": "a04fe572a20bd75b692cb5fb370f70d07abb974b",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "roster_limitation_resolved": "First-page tool limit resolved through approved workflow-runs GET with per_page=100; all currently generated jobs listed.",
+  "schema": "hepta.native-readout-objective.ci-run-observation.v1",
+  "scope": "Read-only observation of these exact workflow runs; no workflow change, rerun, dispatch, source or seal mutation by this monitor.",
+  "selected_scope": {
+    "derived": true,
+    "effects": true,
+    "full_repo": true,
+    "inference": true,
+    "learning": true,
+    "lifecycle": true,
+    "native": true,
+    "objective": true
+  },
+  "selected_scope_changed_path_count": 388,
+  "selected_scope_nonexperiment_paths": [
+    ".codespellrc",
+    ".gitattributes"
+  ],
+  "source_head": "b2445c86eedd250c0d8e95ef17d68880159a747f",
+  "workflows": [
+    {
+      "conclusion": "success",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40912073842",
+      "id": 40912073842,
+      "jobs": [
+        {
+          "active_steps": [],
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 123582418805,
+          "name": "Architecture convergence (base-merge)",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 123582419438,
+          "name": "Architecture convergence (source-head)",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 123598637269,
+          "name": "Architecture required",
+          "status": "completed"
+        }
+      ],
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40912073842/jobs",
+      "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40912073842/logs",
+      "name": "Hepta architecture convergence",
+      "run_number": 19204,
+      "status": "completed",
+      "workflow_id": 344551465
+    },
+    {
+      "conclusion": "success",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40912073837",
+      "id": 40912073837,
+      "jobs": [
+        {
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 123582417975,
+          "name": "metadata",
+          "status": "completed"
+        },
+        {
+          "conclusion": "skipped",
+          "failed_steps": [],
+          "id": 123583128148,
+          "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+          "status": "completed"
+        },
+        {
+          "conclusion": "skipped",
+          "failed_steps": [],
+          "id": 123583129259,
+          "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+          "status": "completed"
+        }
+      ],
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40912073837/jobs",
+      "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40912073837/logs",
+      "name": "v8-canary",
+      "run_number": 32214,
+      "status": "completed",
+      "workflow_id": 336746138
+    },
+    {
+      "conclusion": null,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40912073870",
+      "id": 40912073870,
+      "jobs": [
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:30:30Z",
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 123582420689,
+          "name": "Select blocking CI scope",
+          "started_at": "2026-10-29T16:29:30Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:59:37Z",
+          "conclusion": "cancelled",
+          "failed_steps": [],
+          "id": 123582421194,
+          "name": "Blob size policy / Blob size policy",
+          "started_at": "2026-10-29T16:29:30Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:30:34Z",
+          "conclusion": "failure",
+          "failed_steps": [
+            "Codespell"
+          ],
+          "id": 123582421792,
+          "name": "Codespell / Check for spelling errors",
+          "started_at": "2026-10-29T16:29:30Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:32:14Z",
+          "conclusion": "failure",
+          "failed_steps": [
+            "Run cargo-deny"
+          ],
+          "id": 123583046660,
+          "name": "cargo-deny / cargo-deny",
+          "started_at": "2026-10-29T16:30:33Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:32:31Z",
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 123583046709,
+          "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+          "started_at": "2026-10-29T16:30:34Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:33:00Z",
+          "conclusion": "failure",
+          "failed_steps": [
+            "Check formatting (run `just fmt` to fix)"
+          ],
+          "id": 123583046805,
+          "name": "repo-checks / build-test",
+          "started_at": "2026-10-29T16:30:33Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:33:15Z",
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 123583046967,
+          "name": "repo-checks / Native Hepta paths on windows-latest",
+          "started_at": "2026-10-29T16:30:33Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:32:31Z",
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 123583047013,
+          "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+          "started_at": "2026-10-29T16:30:34Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:31:50Z",
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 123583047088,
+          "name": "repo-checks / Native Hepta paths on macos-15",
+          "started_at": "2026-10-29T16:30:40Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:38:52Z",
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 123583047120,
+          "name": "sdk / sdks",
+          "started_at": "2026-10-29T16:30:34Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:31:27Z",
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 123583047153,
+          "name": "rust-ci / Detect changed areas",
+          "started_at": "2026-10-29T16:30:34Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:32:18Z",
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 123583047338,
+          "name": "sdk / python-sdk",
+          "started_at": "2026-10-29T16:30:34Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:35:37Z",
+          "conclusion": "failure",
+          "failed_steps": [
+            "bazel build --config=clippy lint targets"
+          ],
+          "id": 123583047853,
+          "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "started_at": "2026-10-29T16:30:35Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:44:58Z",
+          "conclusion": "failure",
+          "failed_steps": [
+            "bazel build --config=clippy lint targets"
+          ],
+          "id": 123583047868,
+          "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+          "started_at": "2026-10-29T16:30:35Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:38:58Z",
+          "conclusion": "failure",
+          "failed_steps": [
+            "bazel build --config=clippy lint targets"
+          ],
+          "id": 123583047918,
+          "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+          "started_at": "2026-10-29T16:30:36Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:35:18Z",
+          "conclusion": "failure",
+          "failed_steps": [
+            "bazel test //..."
+          ],
+          "id": 123583047927,
+          "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+          "started_at": "2026-10-29T16:30:43Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:37:40Z",
+          "conclusion": "failure",
+          "failed_steps": [
+            "bazel build verify-release-build targets"
+          ],
+          "id": 123583047941,
+          "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+          "started_at": "2026-10-29T16:30:38Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [
+            "bazel test //..."
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "id": 123583048053,
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "started_at": "2026-10-29T16:30:34Z",
+          "status": "in_progress"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:34:21Z",
+          "conclusion": "failure",
+          "failed_steps": [
+            "bazel build verify-release-build targets"
+          ],
+          "id": 123583048094,
+          "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "started_at": "2026-10-29T16:30:34Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [
+            "bazel test //..."
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "id": 123583048097,
+          "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+          "started_at": "2026-10-29T16:30:36Z",
+          "status": "in_progress"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:41:15Z",
+          "conclusion": "failure",
+          "failed_steps": [
+            "bazel test shard"
+          ],
+          "id": 123583048194,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+          "started_at": "2026-10-29T16:30:35Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [
+            "bazel test //..."
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "id": 123583048233,
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+          "started_at": "2026-10-29T16:30:34Z",
+          "status": "in_progress"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:43:22Z",
+          "conclusion": "failure",
+          "failed_steps": [
+            "bazel build verify-release-build targets"
+          ],
+          "id": 123583048313,
+          "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+          "started_at": "2026-10-29T16:30:34Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:42:13Z",
+          "conclusion": "failure",
+          "failed_steps": [
+            "bazel test shard"
+          ],
+          "id": 123583048378,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+          "started_at": "2026-10-29T16:30:34Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:37:11Z",
+          "conclusion": "failure",
+          "failed_steps": [
+            "bazel test shard"
+          ],
+          "id": 123583048590,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+          "started_at": "2026-10-29T16:30:35Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:39:02Z",
+          "conclusion": "failure",
+          "failed_steps": [
+            "bazel test shard"
+          ],
+          "id": 123583048667,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+          "started_at": "2026-10-29T16:30:34Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:30:30Z",
+          "conclusion": "skipped",
+          "failed_steps": [],
+          "id": 123583049020,
+          "name": "NDU v6 neural rollout smoke",
+          "started_at": "2026-10-29T16:30:30Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:30:30Z",
+          "conclusion": "skipped",
+          "failed_steps": [],
+          "id": 123583049672,
+          "name": "Lightweight prose and derived checks",
+          "started_at": "2026-10-29T16:30:30Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:30:30Z",
+          "conclusion": "skipped",
+          "failed_steps": [],
+          "id": 123583050129,
+          "name": "Hepta scoped native checks",
+          "started_at": "2026-10-29T16:30:30Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:30:30Z",
+          "conclusion": "skipped",
+          "failed_steps": [],
+          "id": 123583051148,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+          "started_at": "2026-10-29T16:30:31Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:31:27Z",
+          "conclusion": "skipped",
+          "failed_steps": [],
+          "id": 123583621757,
+          "name": "rust-ci / Cargo manifest preflight",
+          "started_at": "2026-10-29T16:31:28Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:31:27Z",
+          "conclusion": "skipped",
+          "failed_steps": [],
+          "id": 123583621977,
+          "name": "rust-ci / Rust format",
+          "started_at": "2026-10-29T16:31:28Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:31:27Z",
+          "conclusion": "skipped",
+          "failed_steps": [],
+          "id": 123583622077,
+          "name": "rust-ci / Argument comment lint package",
+          "started_at": "2026-10-29T16:31:28Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:31:27Z",
+          "conclusion": "skipped",
+          "failed_steps": [],
+          "id": 123583622138,
+          "name": "rust-ci / cargo shear",
+          "started_at": "2026-10-29T16:31:28Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:31:33Z",
+          "conclusion": "success",
+          "failed_steps": [],
+          "id": 123583622646,
+          "name": "rust-ci / CI results (required)",
+          "started_at": "2026-10-29T16:31:30Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:31:27Z",
+          "conclusion": "skipped",
+          "failed_steps": [],
+          "id": 123583625047,
+          "name": "rust-ci / Rust benchmark smoke",
+          "started_at": "2026-10-29T16:31:28Z",
+          "status": "completed"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T16:42:19Z",
+          "conclusion": "failure",
+          "failed_steps": [
+            "Confirm Windows Bazel test shards passed"
+          ],
+          "id": 123589835979,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+          "started_at": "2026-10-29T16:42:16Z",
+          "status": "completed"
+        }
+      ],
+      "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40912073870/jobs",
+      "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40912073870/logs",
+      "name": "blocking-ci",
+      "run_number": 32395,
+      "status": "in_progress",
+      "workflow_id": 336746106
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "archive_identity_policy": "No future archive hash is invented; final bundle INDEX and delivery roundtrip receipts supply those identities.",
+  "files": {
+    "README.md": {
+      "bytes": 3816,
+      "sha256": "4ba849bed27fb6bfa4a53525ba1e47f5fea07147ca8f0e4e7cf0108dd12134c7"
+    },
+    "REPORT.zh.md": {
+      "bytes": 22875,
+      "sha256": "3e939e049947be7835c390f90cf7b08a7465fc3ab7f80ef37a05036f89d6d78b"
+    },
+    "REPRODUCE.md": {
+      "bytes": 14333,
+      "sha256": "8bf8567ef1747e3e7131fea7ced70d1205afb782fc6bfb2f25a17a44f826e19b"
+    },
+    "results/ARM_SUMMARIES.json": {
+      "bytes": 111746,
+      "sha256": "18b199096af9c326acc42bb245c6395f66c21be10283d84905be3e3f8b0b70c9"
+    },
+    "results/AUDIT_SUMMARY.json": {
+      "bytes": 336824,
+      "sha256": "c64ad89feb4b0bd785bed9117ce964b77d4127af23927d6c5558aa1cd99ae023"
+    },
+    "results/COST_SUMMARY.json": {
+      "bytes": 30505,
+      "sha256": "0e54e468dab25f30fd113ad538fd6225bb830b655bf91a1242ded6aea93e6d72"
+    },
+    "results/ENGINEERING_SUMMARY.json": {
+      "bytes": 56813,
+      "sha256": "ccdaebdcd81619a90069fcaf1c7dd5a0d4874979afaabb3f7a1152b16c924179"
+    },
+    "results/PRIMARY_COMPARISONS.json": {
+      "bytes": 4299,
+      "sha256": "8c078bc61a4c7b040665dd3c3d4ce25af89405f62ad831c4ee42ca9b4a81bf2e"
+    },
+    "results/REPRODUCTION_COMPARISON.json": {
+      "bytes": 48704,
+      "sha256": "cbd7276aa684eb9163042f3e6f510e8e51181f628e5a0f0a7782b20421226090"
+    }
+  },
+  "method": "JSONs copy or aggregate completed independent-audit/engineering/outer-cost receipts. Historical comparison walks only fields present in the preserved original summary, retains all observed response-wire differences, and records its documented omissions. Markdown interprets those immutable observations; no model fit, trajectory, statistical test or raw receipt is changed.",
+  "schema": "hepta.boundary-policy-reproduction.derived-manifest.v1",
+  "selection_seal_sha256": "c996086ace2ab38f25b24a8b8f29e1eeba447100b2dcb212a4438e595bb7fa56",
+  "source_audit_archive_path": "engineering/audits/CONFIRMATION_AUDIT.json",
+  "source_audit_sha256": "7cb7b95f62bfc32218830e1c10bed2997bde8f2ffa1ffc238648fe99a9fac42f",
+  "source_engineering_summary_sha256": "c2cc57d23df0aac12134bbec81eb712895d1332ce82d1a36a75bb0e99e964001",
+  "source_manifest_sha256": "6bed365c60eec46e588b9a0ffa21e4f3c05d4f43928350dcdd13a3fdbe64b790",
+  "source_seal_sha256": "6608ee0c6ddd33862096a3c7d5085ab670b05a7c4c45d728f9f59efaa064b717"
+}

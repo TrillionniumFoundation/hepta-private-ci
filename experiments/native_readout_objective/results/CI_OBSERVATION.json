@@ -1,0 +1,310 @@
+{
+  "ancestry": {
+    "ahead_by": 77,
+    "api_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/compare/5898cd8b0f724c3152b6cc52856721f72e5e08be...7908860cb959cbe1599379d4ecbfcc22fbccbe61",
+    "behind_by": 0,
+    "interpretation": "Both ancestry queries show the PR base is an ancestor of the head. This contradicts treating the dirty flag as demonstrated content conflicts; no actual conflict was established.",
+    "local_left_right_count": {
+      "base_only": 0,
+      "head_only": 77
+    },
+    "local_merge_base_is_ancestor_exit_code": 0,
+    "merge_base": "5898cd8b0f724c3152b6cc52856721f72e5e08be",
+    "status": "ahead",
+    "total_commits": 77
+  },
+  "assessment": {
+    "ci_pass_claimed": false,
+    "confirmed": "The published source head has no CI results; blocking-ci is registered active and has an unrestricted pull_request trigger, while push is restricted to main.",
+    "disabled_or_permission_cause_proven": false,
+    "draft_is_not_asserted_as_trigger_block": true,
+    "possible_mechanism": "GitHub reports dirty. Official GitHub documentation says pull_request workflows do not run for merge conflicts. Suppression consistent with that server flag is an inference, not a proven diagnosis.",
+    "unresolved": "Why GitHub reports dirty despite identical local/API ancestry showing a fast-forwardable base is unresolved by these read-only observations."
+  },
+  "commit": "7908860cb959cbe1599379d4ecbfcc22fbccbe61",
+  "documentation": {
+    "claim": "pull_request workflows do not run when the pull request has a merge conflict",
+    "url": "https://docs.github.com/en/actions/how-tos/troubleshoot-workflows"
+  },
+  "exact_head_checks": {
+    "check_runs": {
+      "check_runs": [],
+      "total_count": 0
+    },
+    "check_runs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/7908860cb959cbe1599379d4ecbfcc22fbccbe61/check-runs?per_page=100",
+    "check_suites": {
+      "check_suites": [],
+      "total_count": 0
+    },
+    "check_suites_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/7908860cb959cbe1599379d4ecbfcc22fbccbe61/check-suites?per_page=100",
+    "combined_status": {
+      "state": "pending",
+      "statuses": [],
+      "total_count": 0
+    },
+    "combined_status_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/7908860cb959cbe1599379d4ecbfcc22fbccbe61/status",
+    "interpretation": "No check/run/status evidence exists for this head. Empty pending is not evidence of running jobs or a CI pass.",
+    "workflow_runs": {
+      "total_count": 0,
+      "workflow_runs": []
+    },
+    "workflow_runs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?head_sha=7908860cb959cbe1599379d4ecbfcc22fbccbe61&per_page=100"
+  },
+  "limits": [
+    "Connector rejects actions/workflows endpoint through generic fetch, so public read-only REST was used for workflow state.",
+    "Branch protection through the authenticated connector returned 403 Resource not accessible by integration; cannot infer presence or absence of classic branch protection.",
+    "Public Actions permissions endpoints returned 401 Requires authentication; repository/org Actions policy is not established.",
+    "Only declared relevant workflows and the latest five branch runs were inspected; this is not an audit of every repository workflow.",
+    "Current source-head observations do not establish CI status for any later publication commit."
+  ],
+  "observed_at_utc": "2026-10-29 16:22:51 UTC",
+  "pr": {
+    "api_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/4157",
+    "base_ref": "research/first-passage-cell-20261028",
+    "base_sha": "5898cd8b0f724c3152b6cc52856721f72e5e08be",
+    "draft": true,
+    "head_ref": "research/continuous-boundary-flow-20261028",
+    "head_sha": "7908860cb959cbe1599379d4ecbfcc22fbccbe61",
+    "merge_commit_sha": null,
+    "mergeable": false,
+    "mergeable_state": "dirty",
+    "merged": false,
+    "rebaseable": false,
+    "state": "open",
+    "updated_at": "2026-10-29T16:16:48Z",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4157"
+  },
+  "public_read_only_endpoint_responses": [
+    {
+      "http_status": 200,
+      "response": {
+        "badge_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/workflows/blocking-ci/badge.svg",
+        "created_at": "2026-08-18T06:37:56.000Z",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/main/.github/workflows/blocking-ci.yml",
+        "id": 336746106,
+        "name": "blocking-ci",
+        "node_id": "W_kwDOTrgxoM4UElZ6",
+        "path": ".github/workflows/blocking-ci.yml",
+        "state": "active",
+        "updated_at": "2026-08-18T06:37:56.000Z",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/workflows/336746106"
+      },
+      "response_date": "Thu, 29 Oct 2026 16:22:03 GMT",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/workflows/336746106"
+    },
+    {
+      "http_status": 200,
+      "response": {
+        "total_count": 12,
+        "workflow_runs": [
+          {
+            "conclusion": "success",
+            "created_at": "2026-10-28T07:52:04Z",
+            "event": "pull_request",
+            "head_sha": "7bec42aa4f79432f4a724d5295c67f9d69ee5a8d",
+            "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40652841351",
+            "id": 40652841351,
+            "name": "Hepta architecture convergence",
+            "status": "completed"
+          },
+          {
+            "conclusion": "failure",
+            "created_at": "2026-10-28T07:52:04Z",
+            "event": "pull_request",
+            "head_sha": "7bec42aa4f79432f4a724d5295c67f9d69ee5a8d",
+            "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40652841461",
+            "id": 40652841461,
+            "name": "blocking-ci",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "created_at": "2026-10-28T07:52:03Z",
+            "event": "pull_request",
+            "head_sha": "7bec42aa4f79432f4a724d5295c67f9d69ee5a8d",
+            "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40652841313",
+            "id": 40652841313,
+            "name": "v8-canary",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "created_at": "2026-10-28T07:40:46Z",
+            "event": "pull_request",
+            "head_sha": "e25ae90a48a1e7b13cc65f00f2cecc5bfdf4fc64",
+            "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40651634631",
+            "id": 40651634631,
+            "name": "v8-canary",
+            "status": "completed"
+          },
+          {
+            "conclusion": "cancelled",
+            "created_at": "2026-10-28T07:40:46Z",
+            "event": "pull_request",
+            "head_sha": "e25ae90a48a1e7b13cc65f00f2cecc5bfdf4fc64",
+            "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40651634594",
+            "id": 40651634594,
+            "name": "Hepta architecture convergence",
+            "status": "completed"
+          }
+        ]
+      },
+      "response_date": "Thu, 29 Oct 2026 16:22:03 GMT",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?branch=research%2Fcontinuous-boundary-flow-20261028&per_page=5"
+    },
+    {
+      "error": {
+        "documentation_url": "https://docs.github.com/rest",
+        "message": "Requires authentication",
+        "status": "401"
+      },
+      "http_status": 401,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/permissions"
+    },
+    {
+      "error": {
+        "documentation_url": "https://docs.github.com/rest",
+        "message": "Requires authentication",
+        "status": "401"
+      },
+      "http_status": 401,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/permissions/workflow"
+    }
+  ],
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "rulesets": {
+    "response": [],
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/rulesets?includes_parents=true&per_page=100"
+  },
+  "schema": "hepta.native-readout-objective.ci-observation.v1",
+  "scope": "Read-only observation of published source commit; no workflow dispatch, rerun, branch/PR change or merge.",
+  "workflow_declarations_at_exact_commit": [
+    {
+      "file_sha256": "a7fc0efc1dcc8c729a715974be8685eae9f6a66ff2a6f77c35c23e58c58b38c1",
+      "job_if": {
+        "bazel": "needs.scope.outputs.full_repo == 'true'",
+        "cargo-deny": "needs.scope.outputs.full_repo == 'true'",
+        "hepta-contract-gate": "needs.scope.outputs.native == 'true' || needs.scope.outputs.full_repo == 'true'",
+        "hepta-scoped": "needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'",
+        "lightweight": "needs.scope.outputs.native != 'true' && needs.scope.outputs.full_repo != 'true'",
+        "ndu-v6": "needs.scope.outputs.ndu_v6 == 'true'",
+        "repo-checks": "needs.scope.outputs.full_repo == 'true'",
+        "required": "${{ always() }}",
+        "rust-ci": "needs.scope.outputs.full_repo == 'true'",
+        "sdk": "needs.scope.outputs.full_repo == 'true'"
+      },
+      "name": "blocking-ci",
+      "on": {
+        "pull_request": {},
+        "push": {
+          "branches": [
+            "main"
+          ]
+        }
+      },
+      "path": "blocking-ci.yml",
+      "permissions": {
+        "contents": "read"
+      },
+      "response_date": "Thu, 29 Oct 2026 16:21:38 GMT",
+      "url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/7908860cb959cbe1599379d4ecbfcc22fbccbe61/.github/workflows/blocking-ci.yml"
+    },
+    {
+      "file_sha256": "ee6a2c1204698740ca8420fbf9859f4b4248e44f08d5e05050b8d846036dd081",
+      "job_if": {},
+      "name": "repo-checks",
+      "on": {
+        "workflow_call": ""
+      },
+      "path": "repo-checks.yml",
+      "permissions": {
+        "contents": "read"
+      },
+      "response_date": "Thu, 29 Oct 2026 16:21:38 GMT",
+      "url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/7908860cb959cbe1599379d4ecbfcc22fbccbe61/.github/workflows/repo-checks.yml"
+    },
+    {
+      "file_sha256": "f0860d9723edf6d6a0a701bac787582c7998fd920eb91b23de4288b30ac5a53a",
+      "job_if": {},
+      "name": "blob-size-policy",
+      "on": {
+        "workflow_call": ""
+      },
+      "path": "blob-size-policy.yml",
+      "permissions": {
+        "contents": "read"
+      },
+      "response_date": "Thu, 29 Oct 2026 16:21:38 GMT",
+      "url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/7908860cb959cbe1599379d4ecbfcc22fbccbe61/.github/workflows/blob-size-policy.yml"
+    },
+    {
+      "file_sha256": "4bc889fafcd9d8437d16be7e79a3f15b928039a775df26338c759a41a00809c2",
+      "job_if": {},
+      "name": "Codespell",
+      "on": {
+        "workflow_call": ""
+      },
+      "path": "codespell.yml",
+      "permissions": {
+        "contents": "read"
+      },
+      "response_date": "Thu, 29 Oct 2026 16:21:38 GMT",
+      "url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/7908860cb959cbe1599379d4ecbfcc22fbccbe61/.github/workflows/codespell.yml"
+    },
+    {
+      "file_sha256": "76ce84512f019867e9513c74e01877d47ba5e2b1ec554fa35175e9f0e9c6e373",
+      "job_if": {
+        "argument_comment_lint_package": "${{ needs.changed.outputs.argument_comment_lint_package == 'true' }}",
+        "benchmark_smoke": "${{ needs.changed.outputs.codex == 'true' || needs.changed.outputs.workflows == 'true' }}",
+        "cargo_shear": "${{ needs.changed.outputs.codex == 'true' || needs.changed.outputs.workflows == 'true' }}",
+        "general": "${{ needs.changed.outputs.codex == 'true' || needs.changed.outputs.workflows == 'true' }}",
+        "results": "always()",
+        "workspace_manifest": "${{ needs.changed.outputs.codex == 'true' || needs.changed.outputs.workflows == 'true' }}"
+      },
+      "name": "rust-ci",
+      "on": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "path": "rust-ci.yml",
+      "permissions": {
+        "contents": "read"
+      },
+      "response_date": "Thu, 29 Oct 2026 16:21:38 GMT",
+      "url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/7908860cb959cbe1599379d4ecbfcc22fbccbe61/.github/workflows/rust-ci.yml"
+    },
+    {
+      "file_sha256": "7056008137ed9abbe8f29eae95ac4f1a3d771e7a6dba8fd012c11964ddb4221e",
+      "job_if": {
+        "test-windows": "always()",
+        "test-windows-native-main": "github.event_name == 'push' && github.ref == 'refs/heads/main'"
+      },
+      "name": "Bazel",
+      "on": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "path": "bazel.yml",
+      "permissions": {
+        "contents": "read"
+      },
+      "response_date": "Thu, 29 Oct 2026 16:21:38 GMT",
+      "url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/7908860cb959cbe1599379d4ecbfcc22fbccbe61/.github/workflows/bazel.yml"
+    },
+    {
+      "file_sha256": "7f496c8bc41af3ec5799f0c62aa0daae8b7d2986948a92f4ad563177e1a5866b",
+      "job_if": {},
+      "name": "hepta-vnext qualification",
+      "on": {
+        "workflow_call": "",
+        "workflow_dispatch": ""
+      },
+      "path": "hepta-vnext-qualification.yml",
+      "permissions": {
+        "contents": "read"
+      },
+      "response_date": "Thu, 29 Oct 2026 16:21:38 GMT",
+      "url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/7908860cb959cbe1599379d4ecbfcc22fbccbe61/.github/workflows/hepta-vnext-qualification.yml"
+    }
+  ]
+}

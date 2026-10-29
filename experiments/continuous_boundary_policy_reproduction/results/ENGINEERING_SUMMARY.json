@@ -1,0 +1,1384 @@
+{
+  "engineering": {
+    "cold_python_processes": 21,
+    "cold_replay_model_state_updates": 336,
+    "energy_measurement": null,
+    "interpretation": "bounded finite engineering workload, not infinite-horizon convergence or a new comparative utility experiment",
+    "models": [
+      {
+        "arm": "dual_flow",
+        "checkpoint_sha256": "f78241b6afd5c7f551cc23fd8efbbbeb0ca5692bf500c042522ff850d3daac0b",
+        "cold_replays": [
+          {
+            "checkpoint_sha256": "b3377b22983b5dd0e19a43815087b0bf0cd06673a12bfd5b72688a757c0ddf91",
+            "cost_scope": "launch window includes fresh Python startup and reaped descendants; worker/native internal clocks are subsets",
+            "exact_match": true,
+            "launched_process_cost": {
+              "child_cpu_scope": "only children reaped inside this window",
+              "completed_child_cpu_seconds": 0.9031779999999999,
+              "python_cpu_seconds": 0.001032655000000382,
+              "wall_seconds": 0.9056763330008835
+            },
+            "receipt_path": "dual_flow/cold_replay/t1024/SUMMARY.json",
+            "receipt_sha256": "0ad9a21c65be814cc9a2de0efb373270a717e6edc977187873dd7276b2c9f742",
+            "starting_tick": 1024,
+            "ticks": 16
+          },
+          {
+            "checkpoint_sha256": "ccaf62a5d5aaaaa3b95e21a42782779dd52ca06b851bce01b8e9b965368ff268",
+            "cost_scope": "launch window includes fresh Python startup and reaped descendants; worker/native internal clocks are subsets",
+            "exact_match": true,
+            "launched_process_cost": {
+              "child_cpu_scope": "only children reaped inside this window",
+              "completed_child_cpu_seconds": 0.8625510000000003,
+              "python_cpu_seconds": 0.0011575500000002847,
+              "wall_seconds": 0.8651064600126119
+            },
+            "receipt_path": "dual_flow/cold_replay/t2048/SUMMARY.json",
+            "receipt_sha256": "52e0258f1b9cdd904c61c1a7139a0a4d3f189dfdbfbe15692201b334a87bf126",
+            "starting_tick": 2048,
+            "ticks": 16
+          },
+          {
+            "checkpoint_sha256": "ba8b0715e6ec057e1981eaaa5b91e40d353dae5365bb915de003ebd181089c73",
+            "cost_scope": "launch window includes fresh Python startup and reaped descendants; worker/native internal clocks are subsets",
+            "exact_match": true,
+            "launched_process_cost": {
+              "child_cpu_scope": "only children reaped inside this window",
+              "completed_child_cpu_seconds": 0.7005149999999996,
+              "python_cpu_seconds": 0.0009376030000005642,
+              "wall_seconds": 0.7020974179904442
+            },
+            "receipt_path": "dual_flow/cold_replay/t3072/SUMMARY.json",
+            "receipt_sha256": "ee203fe75741dad2009c1902de3b3826716fb4aad7f15c49855318674f241952",
+            "starting_tick": 3072,
+            "ticks": 16
+          },
+          {
+            "checkpoint_sha256": "68444dc87860678d6cd02c16f6dcee2b45dc5fc10ae0f0dd3ea5a24d38fcbb1e",
+            "cost_scope": "launch window includes fresh Python startup and reaped descendants; worker/native internal clocks are subsets",
+            "exact_match": true,
+            "launched_process_cost": {
+              "child_cpu_scope": "only children reaped inside this window",
+              "completed_child_cpu_seconds": 0.753711,
+              "python_cpu_seconds": 0.0006943699999997222,
+              "wall_seconds": 0.7548358919884777
+            },
+            "receipt_path": "dual_flow/cold_replay/t4096/SUMMARY.json",
+            "receipt_sha256": "384f47cf24323a284195b7522829adf926248bba33ab6e18cd9dd5c4214b731f",
+            "starting_tick": 4096,
+            "ticks": 16
+          },
+          {
+            "checkpoint_sha256": "2850d697320344e61e4007d2a563ebb032c50331d875abdb0bea93517595ddbe",
+            "cost_scope": "launch window includes fresh Python startup and reaped descendants; worker/native internal clocks are subsets",
+            "exact_match": true,
+            "launched_process_cost": {
+              "child_cpu_scope": "only children reaped inside this window",
+              "completed_child_cpu_seconds": 0.8359869999999998,
+              "python_cpu_seconds": 0.0007299239999998264,
+              "wall_seconds": 0.8370833490043879
+            },
+            "receipt_path": "dual_flow/cold_replay/t5120/SUMMARY.json",
+            "receipt_sha256": "8cc1154d89a7419a48c907a33e66f5f5d4003cf94fb8d5363a29ff7f5fda620a",
+            "starting_tick": 5120,
+            "ticks": 16
+          },
+          {
+            "checkpoint_sha256": "e783c51d4c1ad24b527da9404f7e186110b39b736e96b10215280a088292a035",
+            "cost_scope": "launch window includes fresh Python startup and reaped descendants; worker/native internal clocks are subsets",
+            "exact_match": true,
+            "launched_process_cost": {
+              "child_cpu_scope": "only children reaped inside this window",
+              "completed_child_cpu_seconds": 0.7476550000000004,
+              "python_cpu_seconds": 0.0007180160000004321,
+              "wall_seconds": 0.7489007610129192
+            },
+            "receipt_path": "dual_flow/cold_replay/t6144/SUMMARY.json",
+            "receipt_sha256": "54b39907f8fdb690f051a7d8c15ebb367080c406da0460d501c8762761d53640",
+            "starting_tick": 6144,
+            "ticks": 16
+          },
+          {
+            "checkpoint_sha256": "b8dda75028568cf3e6c85b51c3da80b43ce168f6faba9d90bbcbf730f1e25316",
+            "cost_scope": "launch window includes fresh Python startup and reaped descendants; worker/native internal clocks are subsets",
+            "exact_match": true,
+            "launched_process_cost": {
+              "child_cpu_scope": "only children reaped inside this window",
+              "completed_child_cpu_seconds": 0.7498410000000004,
+              "python_cpu_seconds": 0.0007966420000000696,
+              "wall_seconds": 0.7507204509893199
+            },
+            "receipt_path": "dual_flow/cold_replay/t7168/SUMMARY.json",
+            "receipt_sha256": "d001a48f867c374ed35ce11f29677cb6359dff1377ba31858d280085de3af9d5",
+            "starting_tick": 7168,
+            "ticks": 16
+          }
+        ],
+        "maintenance_final": {
+          "context_position": 5,
+          "deadline_jobs": 682,
+          "elapsed": 8,
+          "failure_windows": 103,
+          "hidden": [
+            0.9445898111113399,
+            0.9774951794865454,
+            0.97218933453026,
+            -0.9751592064196628,
+            -0.9279213611535214,
+            -0.9647726637022513
+          ],
+          "jobs_completed": 682,
+          "jobs_started": 683,
+          "max_abs_hidden": 0.9974075177847123,
+          "max_abs_score": 3.8438493193561394,
+          "previous_failed": 0.0,
+          "previous_repair": 0.0,
+          "previous_risk": 1.0564749035215454e-06,
+          "repair_windows": 984,
+          "state_idx": 19,
+          "stop_jobs": 0,
+          "sum_job_discounted_utility": 2848.370943805235,
+          "tick": 8192
+        },
+        "native_cost_subset": {
+          "actual_kernel_calls": 0,
+          "actual_ndu_calls": 8192,
+          "binary_sha256": "655b919aca126a33ee2fd54501b024eb80f4b1842b0e3410791958d93a588c47",
+          "child_cpu_scope": "exact wait4 of this score host process",
+          "child_system_cpu_seconds": 0.09639299999999999,
+          "child_user_cpu_seconds": 0.47672699999999996,
+          "completed_child_cpu_seconds": 0.57312,
+          "exit_code": 0,
+          "native_errors": 0,
+          "native_physical_rpc_micros": 349502,
+          "process_wall_seconds": 6.310146975,
+          "python_roundtrip_ns": 975936921,
+          "request_bytes": 3679947,
+          "response_bytes": 10254545,
+          "rpc_calls": 8194,
+          "shutdown_error": null
+        },
+        "primary_actual_kernel_calls": 0,
+        "primary_actual_ndu_calls": 8192,
+        "primary_cost": {
+          "child_cpu_scope": "only children reaped inside this window",
+          "completed_child_cpu_seconds": 0.57312,
+          "python_cpu_seconds": 5.58275424,
+          "wall_seconds": 6.3113757469982374
+        },
+        "primary_model_state_updates": 8192,
+        "record_serialization_cost": {
+          "child_cpu_scope": "only children reaped inside this window",
+          "completed_child_cpu_seconds": 0.0,
+          "python_cpu_seconds": 0.9436720539999994,
+          "wall_seconds": 0.9437842429906595
+        },
+        "records": {
+          "count": 8192,
+          "path": "dual_flow/records.jsonl.gz",
+          "sha256": "875d7df6282cab5fb48d3896f6d000736d04bd1be2df965c771ec0ffd8c8d2e7",
+          "uncompressed_bytes": 22629457,
+          "uncompressed_sha256": "a61c5c9a1bd1849d91576baa56d5cc4ab3fccd0229d4801714922425859c9bda"
+        },
+        "saved_checkpoints": [
+          {
+            "path": "dual_flow/checkpoints/t1024.json",
+            "resume_verified": true,
+            "sha256": "b3377b22983b5dd0e19a43815087b0bf0cd06673a12bfd5b72688a757c0ddf91",
+            "tick": 1024
+          },
+          {
+            "path": "dual_flow/checkpoints/t2048.json",
+            "resume_verified": true,
+            "sha256": "ccaf62a5d5aaaaa3b95e21a42782779dd52ca06b851bce01b8e9b965368ff268",
+            "tick": 2048
+          },
+          {
+            "path": "dual_flow/checkpoints/t3072.json",
+            "resume_verified": true,
+            "sha256": "ba8b0715e6ec057e1981eaaa5b91e40d353dae5365bb915de003ebd181089c73",
+            "tick": 3072
+          },
+          {
+            "path": "dual_flow/checkpoints/t4096.json",
+            "resume_verified": true,
+            "sha256": "68444dc87860678d6cd02c16f6dcee2b45dc5fc10ae0f0dd3ea5a24d38fcbb1e",
+            "tick": 4096
+          },
+          {
+            "path": "dual_flow/checkpoints/t5120.json",
+            "resume_verified": true,
+            "sha256": "2850d697320344e61e4007d2a563ebb032c50331d875abdb0bea93517595ddbe",
+            "tick": 5120
+          },
+          {
+            "path": "dual_flow/checkpoints/t6144.json",
+            "resume_verified": true,
+            "sha256": "e783c51d4c1ad24b527da9404f7e186110b39b736e96b10215280a088292a035",
+            "tick": 6144
+          },
+          {
+            "path": "dual_flow/checkpoints/t7168.json",
+            "resume_verified": true,
+            "sha256": "b8dda75028568cf3e6c85b51c3da80b43ce168f6faba9d90bbcbf730f1e25316",
+            "tick": 7168
+          },
+          {
+            "path": "dual_flow/checkpoints/t8192.json",
+            "resume_verified": false,
+            "sha256": "7d22fc2495e3911bb0542401c065115491d89deeb1460308cd95c37c18d56a1b",
+            "tick": 8192
+          }
+        ],
+        "semantic_decision_input_bytes": 196608,
+        "setup_cost": {
+          "child_cpu_scope": "only children reaped inside this window",
+          "completed_child_cpu_seconds": 0.0,
+          "python_cpu_seconds": 0.178305402,
+          "wall_seconds": 0.17837728999438696
+        },
+        "state_blocks": [
+          {
+            "hidden_mean": [
+              0.6375921095390794,
+              0.8494723397145384,
+              0.7639150947847496,
+              -0.49590049698338906,
+              -0.39658229219159324,
+              -0.7808078233039979
+            ],
+            "hidden_std": [
+              0.39923007274374894,
+              0.22108358674614836,
+              0.3061982106591535,
+              0.5723314371461427,
+              0.5792860187897699,
+              0.29030779422985653
+            ],
+            "max_abs_hidden": 0.9973156702141865,
+            "start_tick": 0,
+            "ticks": 1024
+          },
+          {
+            "hidden_mean": [
+              0.6653613196253355,
+              0.8675566756168076,
+              0.7886302253776488,
+              -0.5380880867672556,
+              -0.44007281570846735,
+              -0.8021990786517176
+            ],
+            "hidden_std": [
+              0.3833443186596016,
+              0.19847614483567494,
+              0.28417285112278556,
+              0.5598874438603355,
+              0.5756447455471626,
+              0.2696639242302152
+            ],
+            "max_abs_hidden": 0.9973125396784794,
+            "start_tick": 1024,
+            "ticks": 1024
+          },
+          {
+            "hidden_mean": [
+              0.6405002686893534,
+              0.8450600251491979,
+              0.7644940514895656,
+              -0.5113948940113664,
+              -0.4194747489825237,
+              -0.7782587118931668
+            ],
+            "hidden_std": [
+              0.41723996130431124,
+              0.2369088788102104,
+              0.31973822347701064,
+              0.5896516796706981,
+              0.597989511711588,
+              0.3072528198550282
+            ],
+            "max_abs_hidden": 0.9972424155243489,
+            "start_tick": 2048,
+            "ticks": 1024
+          },
+          {
+            "hidden_mean": [
+              0.6214302859035548,
+              0.8444195723767229,
+              0.7519437401112397,
+              -0.4678822899103736,
+              -0.3681636812114834,
+              -0.7712123650981976
+            ],
+            "hidden_std": [
+              0.39882552510120256,
+              0.2184468359614041,
+              0.3052107950221222,
+              0.58498960557726,
+              0.5930709234730577,
+              0.2888960197898314
+            ],
+            "max_abs_hidden": 0.9973833410799119,
+            "start_tick": 3072,
+            "ticks": 1024
+          },
+          {
+            "hidden_mean": [
+              0.590377746007793,
+              0.8269669307103883,
+              0.7273688198336106,
+              -0.43127055434808187,
+              -0.3312176100387364,
+              -0.7494606502139032
+            ],
+            "hidden_std": [
+              0.4168441831775107,
+              0.24012788767725282,
+              0.3274007560269233,
+              0.5930675022523866,
+              0.5958496890037212,
+              0.3091415598119499
+            ],
+            "max_abs_hidden": 0.9972043096925203,
+            "start_tick": 4096,
+            "ticks": 1024
+          },
+          {
+            "hidden_mean": [
+              0.5995948095802835,
+              0.826515565704224,
+              0.7335987367615121,
+              -0.4524502140328054,
+              -0.3495896230343816,
+              -0.7518439069206346
+            ],
+            "hidden_std": [
+              0.42406627540411984,
+              0.25353946941298305,
+              0.3340278919726531,
+              0.5892617775407061,
+              0.5937077143010471,
+              0.3215041135845877
+            ],
+            "max_abs_hidden": 0.9972930934547498,
+            "start_tick": 5120,
+            "ticks": 1024
+          },
+          {
+            "hidden_mean": [
+              0.6255423278121971,
+              0.8496327529267846,
+              0.759576212507313,
+              -0.46708849064488656,
+              -0.3667994443045604,
+              -0.7777166476840536
+            ],
+            "hidden_std": [
+              0.3841140092459061,
+              0.20051844685798317,
+              0.289935735487463,
+              0.5682147976950077,
+              0.5762696223438107,
+              0.27291728894341777
+            ],
+            "max_abs_hidden": 0.9974075177847123,
+            "start_tick": 6144,
+            "ticks": 1024
+          },
+          {
+            "hidden_mean": [
+              0.616155706723288,
+              0.8418884745150953,
+              0.749045465690843,
+              -0.4685359744860042,
+              -0.36811101856043904,
+              -0.7659925291197135
+            ],
+            "hidden_std": [
+              0.4069279139411529,
+              0.22114887866061625,
+              0.30926298486770626,
+              0.5843713683943187,
+              0.5891722992148651,
+              0.29664156402832326
+            ],
+            "max_abs_hidden": 0.997326925711907,
+            "start_tick": 7168,
+            "ticks": 1024
+          }
+        ],
+        "state_reset_at_job_boundary_count": 0,
+        "terminal_checkpoint_scope": "saved at the final tick; no continuation claim for this terminal snapshot"
+      },
+      {
+        "arm": "generic_gru",
+        "checkpoint_sha256": "0bd8bdc7f2896042f1ba011bdfa47832357a2d1eef95914e324ec0e85d14aaf3",
+        "cold_replays": [
+          {
+            "checkpoint_sha256": "230462c045e1f02029eb31f3b40fc688cbeaa917cd1a902da8e97b2cc88dee27",
+            "cost_scope": "launch window includes fresh Python startup and reaped descendants; worker/native internal clocks are subsets",
+            "exact_match": true,
+            "launched_process_cost": {
+              "child_cpu_scope": "only children reaped inside this window",
+              "completed_child_cpu_seconds": 0.6450079999999995,
+              "python_cpu_seconds": 0.000766047999999131,
+              "wall_seconds": 0.6463653109967709
+            },
+            "receipt_path": "generic_gru/cold_replay/t1024/SUMMARY.json",
+            "receipt_sha256": "02a9afbe28567bdc2bf86fbdb240f9f3d941d0ce2b346c7871440d8fe57c41ef",
+            "starting_tick": 1024,
+            "ticks": 16
+          },
+          {
+            "checkpoint_sha256": "a22ae47a293029d89cdc2b87694dfc80fad8464d25fc029045a5e0deb8fda403",
+            "cost_scope": "launch window includes fresh Python startup and reaped descendants; worker/native internal clocks are subsets",
+            "exact_match": true,
+            "launched_process_cost": {
+              "child_cpu_scope": "only children reaped inside this window",
+              "completed_child_cpu_seconds": 0.7083330000000002,
+              "python_cpu_seconds": 0.0008456760000008501,
+              "wall_seconds": 0.709483637008816
+            },
+            "receipt_path": "generic_gru/cold_replay/t2048/SUMMARY.json",
+            "receipt_sha256": "a832f6c71d50ca7b5bdab0ed3b940b7c0d971ee4d07d21f4c4c75c8169ae082d",
+            "starting_tick": 2048,
+            "ticks": 16
+          },
+          {
+            "checkpoint_sha256": "f0d547b63ddbea2088456a1f76a667c28c39d810bdf12e74fc8746d20eddfc23",
+            "cost_scope": "launch window includes fresh Python startup and reaped descendants; worker/native internal clocks are subsets",
+            "exact_match": true,
+            "launched_process_cost": {
+              "child_cpu_scope": "only children reaped inside this window",
+              "completed_child_cpu_seconds": 0.6520940000000004,
+              "python_cpu_seconds": 0.0006420030000011678,
+              "wall_seconds": 0.6531802329991478
+            },
+            "receipt_path": "generic_gru/cold_replay/t3072/SUMMARY.json",
+            "receipt_sha256": "57fb5435e2bfca0a0f2ad51516ae262c103039b12cd98bc9cb72e0264148a966",
+            "starting_tick": 3072,
+            "ticks": 16
+          },
+          {
+            "checkpoint_sha256": "a7c09748df0c453db9a316ee37fb6d28cc4549b03331c66e1f3af95c5bba6da7",
+            "cost_scope": "launch window includes fresh Python startup and reaped descendants; worker/native internal clocks are subsets",
+            "exact_match": true,
+            "launched_process_cost": {
+              "child_cpu_scope": "only children reaped inside this window",
+              "completed_child_cpu_seconds": 0.6148280000000004,
+              "python_cpu_seconds": 0.0006520789999999721,
+              "wall_seconds": 0.6155529029929312
+            },
+            "receipt_path": "generic_gru/cold_replay/t4096/SUMMARY.json",
+            "receipt_sha256": "5a0e9b3ea62c8ae0e4ea8f8001929132e24578eb983febff01e6ae8b13e05fdc",
+            "starting_tick": 4096,
+            "ticks": 16
+          },
+          {
+            "checkpoint_sha256": "6a3ae3035d81136bf01e73f12ae5f6c8f57e76f131cdabd96bde654e52ccd447",
+            "cost_scope": "launch window includes fresh Python startup and reaped descendants; worker/native internal clocks are subsets",
+            "exact_match": true,
+            "launched_process_cost": {
+              "child_cpu_scope": "only children reaped inside this window",
+              "completed_child_cpu_seconds": 0.6601629999999987,
+              "python_cpu_seconds": 0.0008819199999994254,
+              "wall_seconds": 0.6612875340069877
+            },
+            "receipt_path": "generic_gru/cold_replay/t5120/SUMMARY.json",
+            "receipt_sha256": "80a0c5b03c8e777c542ff53be0d13aac4918c37e4e242a2c3d4cd5c93f0a8ee2",
+            "starting_tick": 5120,
+            "ticks": 16
+          },
+          {
+            "checkpoint_sha256": "bfd605cc3eda921ec4da63a535ae544d548b61072dbb8e7ad6b6de2ddc79d758",
+            "cost_scope": "launch window includes fresh Python startup and reaped descendants; worker/native internal clocks are subsets",
+            "exact_match": true,
+            "launched_process_cost": {
+              "child_cpu_scope": "only children reaped inside this window",
+              "completed_child_cpu_seconds": 0.6369610000000008,
+              "python_cpu_seconds": 0.000755443000000966,
+              "wall_seconds": 0.6377971749898279
+            },
+            "receipt_path": "generic_gru/cold_replay/t6144/SUMMARY.json",
+            "receipt_sha256": "ee1e04bb0dde76b0149934b68b1a558e3bfc9324354fc10c435bd56f160f31d2",
+            "starting_tick": 6144,
+            "ticks": 16
+          },
+          {
+            "checkpoint_sha256": "a74e184d7175cf291a27ef53e30d64c0becac95059509133b70749c7e5d51e1b",
+            "cost_scope": "launch window includes fresh Python startup and reaped descendants; worker/native internal clocks are subsets",
+            "exact_match": true,
+            "launched_process_cost": {
+              "child_cpu_scope": "only children reaped inside this window",
+              "completed_child_cpu_seconds": 0.6167999999999991,
+              "python_cpu_seconds": 0.0012050199999986688,
+              "wall_seconds": 0.6183518979960354
+            },
+            "receipt_path": "generic_gru/cold_replay/t7168/SUMMARY.json",
+            "receipt_sha256": "388329fb69b825758ffe1112852db0642ef59982464b8883093764a384363cf8",
+            "starting_tick": 7168,
+            "ticks": 16
+          }
+        ],
+        "maintenance_final": {
+          "context_position": 5,
+          "deadline_jobs": 682,
+          "elapsed": 8,
+          "failure_windows": 57,
+          "hidden": [
+            0.9982233771654625,
+            0.9986381842804818,
+            0.9983922939728361,
+            -0.9999145969207821,
+            -0.9995959735039512,
+            -0.9990609154747083
+          ],
+          "jobs_completed": 682,
+          "jobs_started": 683,
+          "max_abs_hidden": 0.9999995696795462,
+          "max_abs_score": 5.827460472700667,
+          "previous_failed": 0.0,
+          "previous_repair": 0.0,
+          "previous_risk": 1.0564749035215454e-06,
+          "repair_windows": 1171,
+          "state_idx": 19,
+          "stop_jobs": 0,
+          "sum_job_discounted_utility": 2886.6928863563467,
+          "tick": 8192
+        },
+        "native_cost_subset": {
+          "actual_kernel_calls": 0,
+          "actual_ndu_calls": 8192,
+          "binary_sha256": "655b919aca126a33ee2fd54501b024eb80f4b1842b0e3410791958d93a588c47",
+          "child_cpu_scope": "exact wait4 of this score host process",
+          "child_system_cpu_seconds": 0.072978,
+          "child_user_cpu_seconds": 0.47299199999999997,
+          "completed_child_cpu_seconds": 0.54597,
+          "exit_code": 0,
+          "native_errors": 0,
+          "native_physical_rpc_micros": 340612,
+          "process_wall_seconds": 5.832486096,
+          "python_roundtrip_ns": 844258710,
+          "request_bytes": 3699878,
+          "response_bytes": 10275227,
+          "rpc_calls": 8194,
+          "shutdown_error": null
+        },
+        "primary_actual_kernel_calls": 0,
+        "primary_actual_ndu_calls": 8192,
+        "primary_cost": {
+          "child_cpu_scope": "only children reaped inside this window",
+          "completed_child_cpu_seconds": 0.5459709999999998,
+          "python_cpu_seconds": 5.199555806,
+          "wall_seconds": 5.834020344991586
+        },
+        "primary_model_state_updates": 8192,
+        "record_serialization_cost": {
+          "child_cpu_scope": "only children reaped inside this window",
+          "completed_child_cpu_seconds": 0.0,
+          "python_cpu_seconds": 0.809730007999999,
+          "wall_seconds": 0.8098277050012257
+        },
+        "records": {
+          "count": 8192,
+          "path": "generic_gru/records.jsonl.gz",
+          "sha256": "3e6f06d2c0dd5f57dc966fa14d34cbfc2a94420b70b5c7605f00b4bb06665ca7",
+          "uncompressed_bytes": 22630105,
+          "uncompressed_sha256": "1411143e0764bb46fc1a1bc3b350573fb784c57a518225166c4fbdcbadfa22c3"
+        },
+        "saved_checkpoints": [
+          {
+            "path": "generic_gru/checkpoints/t1024.json",
+            "resume_verified": true,
+            "sha256": "230462c045e1f02029eb31f3b40fc688cbeaa917cd1a902da8e97b2cc88dee27",
+            "tick": 1024
+          },
+          {
+            "path": "generic_gru/checkpoints/t2048.json",
+            "resume_verified": true,
+            "sha256": "a22ae47a293029d89cdc2b87694dfc80fad8464d25fc029045a5e0deb8fda403",
+            "tick": 2048
+          },
+          {
+            "path": "generic_gru/checkpoints/t3072.json",
+            "resume_verified": true,
+            "sha256": "f0d547b63ddbea2088456a1f76a667c28c39d810bdf12e74fc8746d20eddfc23",
+            "tick": 3072
+          },
+          {
+            "path": "generic_gru/checkpoints/t4096.json",
+            "resume_verified": true,
+            "sha256": "a7c09748df0c453db9a316ee37fb6d28cc4549b03331c66e1f3af95c5bba6da7",
+            "tick": 4096
+          },
+          {
+            "path": "generic_gru/checkpoints/t5120.json",
+            "resume_verified": true,
+            "sha256": "6a3ae3035d81136bf01e73f12ae5f6c8f57e76f131cdabd96bde654e52ccd447",
+            "tick": 5120
+          },
+          {
+            "path": "generic_gru/checkpoints/t6144.json",
+            "resume_verified": true,
+            "sha256": "bfd605cc3eda921ec4da63a535ae544d548b61072dbb8e7ad6b6de2ddc79d758",
+            "tick": 6144
+          },
+          {
+            "path": "generic_gru/checkpoints/t7168.json",
+            "resume_verified": true,
+            "sha256": "a74e184d7175cf291a27ef53e30d64c0becac95059509133b70749c7e5d51e1b",
+            "tick": 7168
+          },
+          {
+            "path": "generic_gru/checkpoints/t8192.json",
+            "resume_verified": false,
+            "sha256": "33bf07c3efbb2f62840b35f66bf4e5fad49c209f04d252e9ac41813c65a3f912",
+            "tick": 8192
+          }
+        ],
+        "semantic_decision_input_bytes": 196608,
+        "setup_cost": {
+          "child_cpu_scope": "only children reaped inside this window",
+          "completed_child_cpu_seconds": 0.0,
+          "python_cpu_seconds": 0.1879090260000007,
+          "wall_seconds": 0.18802022200543433
+        },
+        "state_blocks": [
+          {
+            "hidden_mean": [
+              0.6627912609529617,
+              0.9912870209161816,
+              0.9621916018483238,
+              -0.6781982451830555,
+              -0.6613557743945333,
+              -0.6822715991979155
+            ],
+            "hidden_std": [
+              0.5744011775295399,
+              0.01555818235128298,
+              0.11077743210948165,
+              0.6097383189246325,
+              0.6040246980413072,
+              0.5767114583264662
+            ],
+            "max_abs_hidden": 0.9999992692845671,
+            "start_tick": 0,
+            "ticks": 1024
+          },
+          {
+            "hidden_mean": [
+              0.6889381457122515,
+              0.9926408002116872,
+              0.9670659888220879,
+              -0.7045946925263312,
+              -0.6883161978296463,
+              -0.705354219880661
+            ],
+            "hidden_std": [
+              0.5740933258287186,
+              0.013531246112501972,
+              0.10375348392872695,
+              0.601211205779282,
+              0.5995618417984453,
+              0.5743140063354473
+            ],
+            "max_abs_hidden": 0.9999995696795462,
+            "start_tick": 1024,
+            "ticks": 1024
+          },
+          {
+            "hidden_mean": [
+              0.6821366401308253,
+              0.9916530144742477,
+              0.9645893533356101,
+              -0.694587454275594,
+              -0.6794074701624477,
+              -0.6982653618122686
+            ],
+            "hidden_std": [
+              0.5723360461514783,
+              0.014870542604701092,
+              0.10697090058908572,
+              0.6054769243406942,
+              0.6019206349287441,
+              0.5740659095678374
+            ],
+            "max_abs_hidden": 0.9999994631575936,
+            "start_tick": 2048,
+            "ticks": 1024
+          },
+          {
+            "hidden_mean": [
+              0.6468362272707673,
+              0.9914352678227063,
+              0.9632463332593528,
+              -0.6574209033454321,
+              -0.6409058176231126,
+              -0.6646533094347666
+            ],
+            "hidden_std": [
+              0.5823895539588816,
+              0.0151604083135661,
+              0.1115042652026626,
+              0.6239910172765243,
+              0.6172772031135269,
+              0.584811197123993
+            ],
+            "max_abs_hidden": 0.9999991987278662,
+            "start_tick": 3072,
+            "ticks": 1024
+          },
+          {
+            "hidden_mean": [
+              0.621330854195141,
+              0.9909189383135729,
+              0.9608289520504364,
+              -0.6321677354161235,
+              -0.6176709901987574,
+              -0.6393087040436166
+            ],
+            "hidden_std": [
+              0.6065340824287836,
+              0.015923536976557014,
+              0.11037977675876975,
+              0.6482755605240853,
+              0.6398159380492169,
+              0.6096312169060468
+            ],
+            "max_abs_hidden": 0.9999993037723006,
+            "start_tick": 4096,
+            "ticks": 1024
+          },
+          {
+            "hidden_mean": [
+              0.6312043334905977,
+              0.9905765767861723,
+              0.9590040452647135,
+              -0.6451580088317718,
+              -0.6277654611940647,
+              -0.6497853148883754
+            ],
+            "hidden_std": [
+              0.6073864720984925,
+              0.016688819713515265,
+              0.11431628669002075,
+              0.6430428154685306,
+              0.6371782534129397,
+              0.6101266548332063
+            ],
+            "max_abs_hidden": 0.9999990761281057,
+            "start_tick": 5120,
+            "ticks": 1024
+          },
+          {
+            "hidden_mean": [
+              0.6388670152877882,
+              0.9917063407641381,
+              0.9645760556993188,
+              -0.6511019382615045,
+              -0.6356945264445203,
+              -0.658279037979518
+            ],
+            "hidden_std": [
+              0.5829283340016599,
+              0.012196714405150688,
+              0.09568370619237605,
+              0.62104005341047,
+              0.6148259893838153,
+              0.5853529070177763
+            ],
+            "max_abs_hidden": 0.9999992070663668,
+            "start_tick": 6144,
+            "ticks": 1024
+          },
+          {
+            "hidden_mean": [
+              0.647386067971886,
+              0.9916450900615684,
+              0.9630310980822782,
+              -0.6620469808858146,
+              -0.6464359990441291,
+              -0.665108298864242
+            ],
+            "hidden_std": [
+              0.5939383738425716,
+              0.013040490510312279,
+              0.10311065466836376,
+              0.6292544982030845,
+              0.6214598370644107,
+              0.5958317246366761
+            ],
+            "max_abs_hidden": 0.9999992330353457,
+            "start_tick": 7168,
+            "ticks": 1024
+          }
+        ],
+        "state_reset_at_job_boundary_count": 0,
+        "terminal_checkpoint_scope": "saved at the final tick; no continuation claim for this terminal snapshot"
+      },
+      {
+        "arm": "elman_mlp",
+        "checkpoint_sha256": "b17c22dfebb14ca7a0cd9d3bf980471ec36879444aae55fdcea617a7254fe294",
+        "cold_replays": [
+          {
+            "checkpoint_sha256": "24b1c93afca54023c44a8afab1834928da13a42c7b51736e670996b782b49eb8",
+            "cost_scope": "launch window includes fresh Python startup and reaped descendants; worker/native internal clocks are subsets",
+            "exact_match": true,
+            "launched_process_cost": {
+              "child_cpu_scope": "only children reaped inside this window",
+              "completed_child_cpu_seconds": 0.6236319999999995,
+              "python_cpu_seconds": 0.0008598869999971726,
+              "wall_seconds": 0.6252106129977619
+            },
+            "receipt_path": "elman_mlp/cold_replay/t1024/SUMMARY.json",
+            "receipt_sha256": "8c83ae7ff0d6121974d0975d679c6ba801e0618ee9627920644478119327b07f",
+            "starting_tick": 1024,
+            "ticks": 16
+          },
+          {
+            "checkpoint_sha256": "87b7702197ae5944973b6ccb035ff5f5dd1902eaa802d5606be6e8381b816773",
+            "cost_scope": "launch window includes fresh Python startup and reaped descendants; worker/native internal clocks are subsets",
+            "exact_match": true,
+            "launched_process_cost": {
+              "child_cpu_scope": "only children reaped inside this window",
+              "completed_child_cpu_seconds": 0.7132890000000001,
+              "python_cpu_seconds": 0.0008201979999995501,
+              "wall_seconds": 0.7169509759987704
+            },
+            "receipt_path": "elman_mlp/cold_replay/t2048/SUMMARY.json",
+            "receipt_sha256": "81fb2752ada7a5a045a58978b5fe277865f779965157e451a89c129e8b3f852c",
+            "starting_tick": 2048,
+            "ticks": 16
+          },
+          {
+            "checkpoint_sha256": "b3856fa775eee8fca29372e311a46acf9fa261de56b491c06e3d0af20d951514",
+            "cost_scope": "launch window includes fresh Python startup and reaped descendants; worker/native internal clocks are subsets",
+            "exact_match": true,
+            "launched_process_cost": {
+              "child_cpu_scope": "only children reaped inside this window",
+              "completed_child_cpu_seconds": 0.6091750000000007,
+              "python_cpu_seconds": 0.0006501239999998631,
+              "wall_seconds": 0.6097500009927899
+            },
+            "receipt_path": "elman_mlp/cold_replay/t3072/SUMMARY.json",
+            "receipt_sha256": "a1d95a98acec9a575c66cfc9ecb042261d11eeadbd71741bea5622e60869153c",
+            "starting_tick": 3072,
+            "ticks": 16
+          },
+          {
+            "checkpoint_sha256": "e64fefd50e14c7ee66096ed4e6c75830d33b76ff6f2b784d3d28dfab6701622a",
+            "cost_scope": "launch window includes fresh Python startup and reaped descendants; worker/native internal clocks are subsets",
+            "exact_match": true,
+            "launched_process_cost": {
+              "child_cpu_scope": "only children reaped inside this window",
+              "completed_child_cpu_seconds": 0.715503,
+              "python_cpu_seconds": 0.0006257890000007649,
+              "wall_seconds": 0.7162471290066605
+            },
+            "receipt_path": "elman_mlp/cold_replay/t4096/SUMMARY.json",
+            "receipt_sha256": "df380e5531eb8ec8a95d541adcc93b2790372f5a45858ecf48d5fc8576c6d034",
+            "starting_tick": 4096,
+            "ticks": 16
+          },
+          {
+            "checkpoint_sha256": "8d47809567dd1a41052ccba1d2cced0ae89e0a03d693e5bec504adb3b73d1742",
+            "cost_scope": "launch window includes fresh Python startup and reaped descendants; worker/native internal clocks are subsets",
+            "exact_match": true,
+            "launched_process_cost": {
+              "child_cpu_scope": "only children reaped inside this window",
+              "completed_child_cpu_seconds": 0.7238060000000002,
+              "python_cpu_seconds": 0.0008004100000000847,
+              "wall_seconds": 0.7248163019976346
+            },
+            "receipt_path": "elman_mlp/cold_replay/t5120/SUMMARY.json",
+            "receipt_sha256": "460d032668b88ecee1771538c4aaf48a5fc5231c7ba453fef51fae33525c51cb",
+            "starting_tick": 5120,
+            "ticks": 16
+          },
+          {
+            "checkpoint_sha256": "caa3e2554b96000cba99bdbec4472520185fc2ad5879a3a59ae1eef1a3932a38",
+            "cost_scope": "launch window includes fresh Python startup and reaped descendants; worker/native internal clocks are subsets",
+            "exact_match": true,
+            "launched_process_cost": {
+              "child_cpu_scope": "only children reaped inside this window",
+              "completed_child_cpu_seconds": 0.5707589999999998,
+              "python_cpu_seconds": 0.000760809000002638,
+              "wall_seconds": 0.5719632389955223
+            },
+            "receipt_path": "elman_mlp/cold_replay/t6144/SUMMARY.json",
+            "receipt_sha256": "a0a6ab08049f738e09e9e0effd2b7b6c572f813689dc4fe42ffe15db12e52911",
+            "starting_tick": 6144,
+            "ticks": 16
+          },
+          {
+            "checkpoint_sha256": "05876c2bfe2f8210941bf4d9e26641aa1a7bdbe1ac855e128bc128f34de46866",
+            "cost_scope": "launch window includes fresh Python startup and reaped descendants; worker/native internal clocks are subsets",
+            "exact_match": true,
+            "launched_process_cost": {
+              "child_cpu_scope": "only children reaped inside this window",
+              "completed_child_cpu_seconds": 0.7829809999999995,
+              "python_cpu_seconds": 0.0006219449999989024,
+              "wall_seconds": 0.7874191769951722
+            },
+            "receipt_path": "elman_mlp/cold_replay/t7168/SUMMARY.json",
+            "receipt_sha256": "fa9a55c09bf22ca723e46113ac4bdda653dad33402784e7e35e9a1b065802652",
+            "starting_tick": 7168,
+            "ticks": 16
+          }
+        ],
+        "maintenance_final": {
+          "context_position": 5,
+          "deadline_jobs": 682,
+          "elapsed": 8,
+          "failure_windows": 56,
+          "hidden": [
+            -0.2425706962991718,
+            -0.9983752619217949,
+            0.9998746429092602,
+            -0.9689628707566644,
+            -0.9646373037886686,
+            -0.9992741098571618
+          ],
+          "jobs_completed": 682,
+          "jobs_started": 683,
+          "max_abs_hidden": 0.9999993019976713,
+          "max_abs_score": 7.0409276985227836,
+          "previous_failed": 0.0,
+          "previous_repair": 0.0,
+          "previous_risk": 1.0564749035215454e-06,
+          "repair_windows": 1185,
+          "state_idx": 19,
+          "stop_jobs": 0,
+          "sum_job_discounted_utility": 2885.510949741337,
+          "tick": 8192
+        },
+        "native_cost_subset": {
+          "actual_kernel_calls": 0,
+          "actual_ndu_calls": 8192,
+          "binary_sha256": "655b919aca126a33ee2fd54501b024eb80f4b1842b0e3410791958d93a588c47",
+          "child_cpu_scope": "exact wait4 of this score host process",
+          "child_system_cpu_seconds": 0.08123,
+          "child_user_cpu_seconds": 0.467234,
+          "completed_child_cpu_seconds": 0.548464,
+          "exit_code": 0,
+          "native_errors": 0,
+          "native_physical_rpc_micros": 335599,
+          "process_wall_seconds": 5.183800807,
+          "python_roundtrip_ns": 894200448,
+          "request_bytes": 3692553,
+          "response_bytes": 10267884,
+          "rpc_calls": 8194,
+          "shutdown_error": null
+        },
+        "primary_actual_kernel_calls": 0,
+        "primary_actual_ndu_calls": 8192,
+        "primary_cost": {
+          "child_cpu_scope": "only children reaped inside this window",
+          "completed_child_cpu_seconds": 0.5484660000000003,
+          "python_cpu_seconds": 4.525173057000002,
+          "wall_seconds": 5.185125315008918
+        },
+        "primary_model_state_updates": 8192,
+        "record_serialization_cost": {
+          "child_cpu_scope": "only children reaped inside this window",
+          "completed_child_cpu_seconds": 0.0,
+          "python_cpu_seconds": 0.733262369000002,
+          "wall_seconds": 0.7332869700039737
+        },
+        "records": {
+          "count": 8192,
+          "path": "elman_mlp/records.jsonl.gz",
+          "sha256": "e3bf12aceef09f9b2c910ba3ebe0a846afe70abae8a62fb5d69d8e2b9eaf0e84",
+          "uncompressed_bytes": 22543557,
+          "uncompressed_sha256": "725eba65f9b7539363da8864c4d2c3f7bc6f5ab1810cb5dd9c41af0b87d9ccc6"
+        },
+        "saved_checkpoints": [
+          {
+            "path": "elman_mlp/checkpoints/t1024.json",
+            "resume_verified": true,
+            "sha256": "24b1c93afca54023c44a8afab1834928da13a42c7b51736e670996b782b49eb8",
+            "tick": 1024
+          },
+          {
+            "path": "elman_mlp/checkpoints/t2048.json",
+            "resume_verified": true,
+            "sha256": "87b7702197ae5944973b6ccb035ff5f5dd1902eaa802d5606be6e8381b816773",
+            "tick": 2048
+          },
+          {
+            "path": "elman_mlp/checkpoints/t3072.json",
+            "resume_verified": true,
+            "sha256": "b3856fa775eee8fca29372e311a46acf9fa261de56b491c06e3d0af20d951514",
+            "tick": 3072
+          },
+          {
+            "path": "elman_mlp/checkpoints/t4096.json",
+            "resume_verified": true,
+            "sha256": "e64fefd50e14c7ee66096ed4e6c75830d33b76ff6f2b784d3d28dfab6701622a",
+            "tick": 4096
+          },
+          {
+            "path": "elman_mlp/checkpoints/t5120.json",
+            "resume_verified": true,
+            "sha256": "8d47809567dd1a41052ccba1d2cced0ae89e0a03d693e5bec504adb3b73d1742",
+            "tick": 5120
+          },
+          {
+            "path": "elman_mlp/checkpoints/t6144.json",
+            "resume_verified": true,
+            "sha256": "caa3e2554b96000cba99bdbec4472520185fc2ad5879a3a59ae1eef1a3932a38",
+            "tick": 6144
+          },
+          {
+            "path": "elman_mlp/checkpoints/t7168.json",
+            "resume_verified": true,
+            "sha256": "05876c2bfe2f8210941bf4d9e26641aa1a7bdbe1ac855e128bc128f34de46866",
+            "tick": 7168
+          },
+          {
+            "path": "elman_mlp/checkpoints/t8192.json",
+            "resume_verified": false,
+            "sha256": "1916110703862a5a0317cb20d02f1e6778f32c15af5956987957d85341927f57",
+            "tick": 8192
+          }
+        ],
+        "semantic_decision_input_bytes": 196608,
+        "setup_cost": {
+          "child_cpu_scope": "only children reaped inside this window",
+          "completed_child_cpu_seconds": 0.0,
+          "python_cpu_seconds": 0.19547037699999947,
+          "wall_seconds": 0.19605926499934867
+        },
+        "state_blocks": [
+          {
+            "hidden_mean": [
+              -0.058029487525474294,
+              -0.6659583539455893,
+              0.6526843848341728,
+              -0.6595888526754359,
+              -0.9752656300899453,
+              -0.6483563897035615
+            ],
+            "hidden_std": [
+              0.5966402983605148,
+              0.5351852784539273,
+              0.605895173572388,
+              0.488459827483736,
+              0.03962807419114104,
+              0.5814376261097086
+            ],
+            "max_abs_hidden": 0.9999991445446504,
+            "start_tick": 0,
+            "ticks": 1024
+          },
+          {
+            "hidden_mean": [
+              -0.12538656294273384,
+              -0.6927133397772783,
+              0.677790999563791,
+              -0.6815853843238615,
+              -0.9654337819484818,
+              -0.6799783418317807
+            ],
+            "hidden_std": [
+              0.6211733385418535,
+              0.5401179187077669,
+              0.6074001887128512,
+              0.49183123943731233,
+              0.05181866749542951,
+              0.5792008661414136
+            ],
+            "max_abs_hidden": 0.999999226376863,
+            "start_tick": 1024,
+            "ticks": 1024
+          },
+          {
+            "hidden_mean": [
+              -0.1052701612266524,
+              -0.6915275313564396,
+              0.6787039654764305,
+              -0.6736791865986563,
+              -0.9694771337640713,
+              -0.6802285430264757
+            ],
+            "hidden_std": [
+              0.6099844504870845,
+              0.5355754287892627,
+              0.6010037059311754,
+              0.49452016942221183,
+              0.04677097811422279,
+              0.5803596323793586
+            ],
+            "max_abs_hidden": 0.9999993019976713,
+            "start_tick": 2048,
+            "ticks": 1024
+          },
+          {
+            "hidden_mean": [
+              -0.049641084755310295,
+              -0.6492631275143204,
+              0.6315659120992292,
+              -0.6558206634616872,
+              -0.9714689401607779,
+              -0.63457565875908
+            ],
+            "hidden_std": [
+              0.5890099876200275,
+              0.5509694301054764,
+              0.627351140201956,
+              0.49156826193768993,
+              0.04772507608904956,
+              0.5922588891431765
+            ],
+            "max_abs_hidden": 0.9999991268300542,
+            "start_tick": 3072,
+            "ticks": 1024
+          },
+          {
+            "hidden_mean": [
+              -0.0356606747881672,
+              -0.6252154609286636,
+              0.6059712204636624,
+              -0.6343643210902264,
+              -0.9755673503035991,
+              -0.6101485107839533
+            ],
+            "hidden_std": [
+              0.6037618543343738,
+              0.57156385669571,
+              0.6491649171507191,
+              0.5127454523759503,
+              0.04141531079914104,
+              0.6207258969781503
+            ],
+            "max_abs_hidden": 0.9999991455696947,
+            "start_tick": 4096,
+            "ticks": 1024
+          },
+          {
+            "hidden_mean": [
+              -0.03927064060217137,
+              -0.6351617773434313,
+              0.6187218306743133,
+              -0.6368135473534356,
+              -0.9745356463723975,
+              -0.6213306724464596
+            ],
+            "hidden_std": [
+              0.6138024916540744,
+              0.5722845587855343,
+              0.6405515130720963,
+              0.5148758982064398,
+              0.04271345049822973,
+              0.6161721386952395
+            ],
+            "max_abs_hidden": 0.999999016117731,
+            "start_tick": 5120,
+            "ticks": 1024
+          },
+          {
+            "hidden_mean": [
+              -0.05301986292223497,
+              -0.6439744802599215,
+              0.6279480841669334,
+              -0.6544585904888485,
+              -0.9704859453742316,
+              -0.6279934164246977
+            ],
+            "hidden_std": [
+              0.6130436604034409,
+              0.5501074900354443,
+              0.6196978092202976,
+              0.4836690204089539,
+              0.048451748370303006,
+              0.5914155926372832
+            ],
+            "max_abs_hidden": 0.9999990486540604,
+            "start_tick": 6144,
+            "ticks": 1024
+          },
+          {
+            "hidden_mean": [
+              -0.051430320589589594,
+              -0.6495011266336951,
+              0.6351098330085854,
+              -0.6411921701986345,
+              -0.9700368504777694,
+              -0.6320343407134856
+            ],
+            "hidden_std": [
+              0.6132437710902634,
+              0.5582129203602428,
+              0.6262888590041504,
+              0.5080211212368284,
+              0.05040225548697155,
+              0.6033724558568545
+            ],
+            "max_abs_hidden": 0.9999991836322336,
+            "start_tick": 7168,
+            "ticks": 1024
+          }
+        ],
+        "state_reset_at_job_boundary_count": 0,
+        "terminal_checkpoint_scope": "saved at the final tick; no continuation claim for this terminal snapshot"
+      }
+    ],
+    "new_confirmation_samples": 0,
+    "overall_cost_scope": "inclusive engineering window; component windows and native process clocks must not be added to it",
+    "overall_window_cost": {
+      "child_cpu_scope": "only children reaped inside this window",
+      "completed_child_cpu_seconds": 16.494327,
+      "python_cpu_seconds": 20.199765825,
+      "wall_seconds": 37.066260723993764
+    },
+    "passed": true,
+    "primary_model_state_updates": 24576,
+    "request": {
+      "arms": [
+        "dual_flow",
+        "generic_gru",
+        "elman_mlp"
+      ],
+      "checkpoint_interval": 1024,
+      "cold_replay_ticks": 16,
+      "diagnostic_rng_seed": 9443998416281263169,
+      "new_confirmation_samples": 0,
+      "primary_ticks_per_model": 8192,
+      "schema": "hepta.boundary-policy.engineering-request.v1",
+      "scope_mode": "full_engineering",
+      "score_binary_sha256": "655b919aca126a33ee2fd54501b024eb80f4b1842b0e3410791958d93a588c47",
+      "seed": 2203,
+      "selection_sha256": "c996086ace2ab38f25b24a8b8f29e1eeba447100b2dcb212a4438e595bb7fa56",
+      "sources": {
+        "experiments/continuous_boundary_flow/common.py": "1de7012f2cdb4aaa376ae395196426219055e1970e8434ff0546d932e7881004",
+        "experiments/continuous_boundary_flow/math_model.py": "fd6a1435c022f80b0ee3ddbf1f63a90767c8130cd15cf173f31e9044b40dc430",
+        "experiments/continuous_boundary_policy/cells.py": "9d966e977ea247d82ecbfedd09b2b4d177c5ef9704a45022456224ba4c2d20c9",
+        "experiments/continuous_boundary_policy/common.py": "367542c215a5c3b2ada6e5480652eba50eb8dd5b73819e5581d8d322c3ac2ccf",
+        "experiments/continuous_boundary_policy/engineering.py": "1a76af55d9939a7e62ff4038e054502548b7d853cb5db3622e037e0bf20688a3",
+        "experiments/continuous_boundary_policy/engineering_replay.py": "94d7980ec192fd073afce86b15b042b7781b10da08fd746950e6ebb3d014ba06",
+        "experiments/continuous_boundary_policy/features.py": "d45ac5e0bd5405025eacb726c03a2a4a778eef13aa1f64fd1d0e296c0c582825",
+        "experiments/continuous_boundary_policy/native/bridge.py": "cae1d87934a16caacb6264da1265c05175d2163acec4fa2da32c42640b27d257",
+        "experiments/first_passage_cell/kernels.py": "f2b739eaa7f86f755e283ec8e7a63ed2e9d3029d56d928f7b651ea323c1f3308"
+      },
+      "training_contexts_sha256": "5af5423a4cd9247d7141954d5e0f704d6ed4c9db306339718eb4c0bdd6eb7ae5",
+      "warm_ticks_per_model": 4096
+    },
+    "schema": "hepta.boundary-policy.engineering-summary.v1",
+    "scope": "persistent Python recurrent policy plus actual original NDU; no sparse kernel, production authority, or durable native owner",
+    "warm_inference": [
+      {
+        "actual_kernel_calls": 0,
+        "actual_ndu_calls": 0,
+        "arm": "dual_flow",
+        "byte_scope": "logical local float64 input/state sizes, not measured memory traffic or energy",
+        "cpu_seconds_per_tick": 0.00016114349243164135,
+        "energy_measurement": null,
+        "final_scores_sha256": "caeee9c025bb9a93f4371e16e8a564fb110da8ebea547d87f92238d5dc32108a",
+        "final_state_sha256": "4b887ca5a958e60f7bb677bb593eae547f477f9889084cc53b0e85910cc4e241",
+        "forced_reset_fraction": 0.0,
+        "input_sha256": "f495aca4026c71e380893084416102e1cce4863a82dd7416fca9551e0afc174c",
+        "kind": "dual",
+        "local_numeric_input_bytes": 589824,
+        "persistent_state_bytes": 48,
+        "python_cpu_seconds": 0.660043745000003,
+        "scope": "single Python cell inference stream including input/parameter validation; no feature extraction, environment, serialization, NDU or IPC",
+        "timed_model_state_updates": 4096,
+        "timed_state_scalar_updates": 24576,
+        "trainable_scalars": 464,
+        "wall_seconds": 0.6601337999891257,
+        "warmup_cost": {
+          "child_cpu_scope": "only children reaped inside this window",
+          "completed_child_cpu_seconds": 0.0,
+          "python_cpu_seconds": 0.01283271699999844,
+          "wall_seconds": 0.012833653992856853
+        },
+        "warmup_ticks": 128,
+        "wire_request_bytes": 0,
+        "wire_response_bytes": 0
+      },
+      {
+        "actual_kernel_calls": 0,
+        "actual_ndu_calls": 0,
+        "arm": "generic_gru",
+        "byte_scope": "logical local float64 input/state sizes, not measured memory traffic or energy",
+        "cpu_seconds_per_tick": 0.00013052912499999982,
+        "energy_measurement": null,
+        "final_scores_sha256": "275e5dad116e38ddab2a9162722bef992b1c162e6ada3d9c548afd360b096657",
+        "final_state_sha256": "202492de6523b603f1063b7b72b7b27d2d92c4e1ea71f61b21f118333f598c89",
+        "forced_reset_fraction": 0.0,
+        "input_sha256": "f495aca4026c71e380893084416102e1cce4863a82dd7416fca9551e0afc174c",
+        "kind": "gru",
+        "local_numeric_input_bytes": 589824,
+        "persistent_state_bytes": 48,
+        "python_cpu_seconds": 0.5346472959999993,
+        "scope": "single Python cell inference stream including input/parameter validation; no feature extraction, environment, serialization, NDU or IPC",
+        "timed_model_state_updates": 4096,
+        "timed_state_scalar_updates": 24576,
+        "trainable_scalars": 464,
+        "wall_seconds": 0.5348902569967322,
+        "warmup_cost": {
+          "child_cpu_scope": "only children reaped inside this window",
+          "completed_child_cpu_seconds": 0.0,
+          "python_cpu_seconds": 0.019163628000001154,
+          "wall_seconds": 0.01916296800482087
+        },
+        "warmup_ticks": 128,
+        "wire_request_bytes": 0,
+        "wire_response_bytes": 0
+      },
+      {
+        "actual_kernel_calls": 0,
+        "actual_ndu_calls": 0,
+        "arm": "elman_mlp",
+        "byte_scope": "logical local float64 input/state sizes, not measured memory traffic or energy",
+        "cpu_seconds_per_tick": 6.709404003906252e-05,
+        "energy_measurement": null,
+        "final_scores_sha256": "188ae7d5568cc1164ad44fe1c5dc6e137ea93077cda84cbcdc7cf9e4b17044c6",
+        "final_state_sha256": "6611ba5d960c6864f280529e6955b069268a2fa44a4ec2c92cdb3477e3cbf338",
+        "forced_reset_fraction": 0.0,
+        "input_sha256": "f495aca4026c71e380893084416102e1cce4863a82dd7416fca9551e0afc174c",
+        "kind": "elman",
+        "local_numeric_input_bytes": 589824,
+        "persistent_state_bytes": 48,
+        "python_cpu_seconds": 0.2748171880000001,
+        "scope": "single Python cell inference stream including input/parameter validation; no feature extraction, environment, serialization, NDU or IPC",
+        "timed_model_state_updates": 4096,
+        "timed_state_scalar_updates": 24576,
+        "trainable_scalars": 464,
+        "wall_seconds": 0.27482514099392574,
+        "warmup_cost": {
+          "child_cpu_scope": "only children reaped inside this window",
+          "completed_child_cpu_seconds": 0.0,
+          "python_cpu_seconds": 0.015390264999997072,
+          "wall_seconds": 0.015390439992188476
+        },
+        "warmup_ticks": 128,
+        "wire_request_bytes": 0,
+        "wire_response_bytes": 0
+      }
+    ],
+    "warm_input_save_load_cost": {
+      "child_cpu_scope": "only children reaped inside this window",
+      "completed_child_cpu_seconds": 0.0,
+      "python_cpu_seconds": 0.13595235000000017,
+      "wall_seconds": 0.1361727379990043
+    },
+    "warm_inputs": {
+      "count": 4096,
+      "path": "warm_inputs.jsonl.gz",
+      "sha256": "e533ca070361db0b31e0b8ee56a069d8888400f7922eafdbdf68817ce6388e4e",
+      "uncompressed_bytes": 1299285,
+      "uncompressed_sha256": "b8761065a3178721cf8254454200b8b13aa87c04e4338c666bb18f7b21295fa6"
+    }
+  },
+  "schema": "hepta.boundary-policy-reproduction.engineering-summary-copy.v1",
+  "scope": "mechanical projection of the completed same-seed reproduction; no retraining, new observations or new statistical tests",
+  "selection_seal_sha256": "c996086ace2ab38f25b24a8b8f29e1eeba447100b2dcb212a4438e595bb7fa56",
+  "source_audit_archive_path": "engineering/audits/CONFIRMATION_AUDIT.json",
+  "source_audit_sha256": "7cb7b95f62bfc32218830e1c10bed2997bde8f2ffa1ffc238648fe99a9fac42f",
+  "source_engineering_archive_path": "engineering/continuous_state/SUMMARY.json",
+  "source_engineering_summary_sha256": "c2cc57d23df0aac12134bbec81eb712895d1332ce82d1a36a75bb0e99e964001",
+  "source_manifest_sha256": "6bed365c60eec46e588b9a0ffa21e4f3c05d4f43928350dcdd13a3fdbe64b790",
+  "source_seal_sha256": "6608ee0c6ddd33862096a3c7d5085ab670b05a7c4c45d728f9f59efaa064b717"
+}

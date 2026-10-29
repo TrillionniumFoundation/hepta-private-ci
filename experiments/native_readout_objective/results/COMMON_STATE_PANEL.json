@@ -1,0 +1,1328 @@
+{
+  "data": {
+    "all_arms_native_activation_identical": true,
+    "arms": {
+      "iterative_q_mse": {
+        "action_disagreements": 0,
+        "maximum_abs_score_error": 5.07370362778925e-07,
+        "mean_float_regret": 0.029453768278996383,
+        "mean_native_regret": 0.029453768278996383,
+        "mean_signed_quantization_regret": 0.0,
+        "quantization_harmed_rows": 0,
+        "quantization_helped_rows": 0,
+        "rows": 6144,
+        "teacher_conditioned_regret": {
+          "keep": {
+            "count": 5045,
+            "mean_native_regret": 0.01771522730070829
+          },
+          "repair": {
+            "count": 1094,
+            "mean_native_regret": 0.08125471156629772
+          },
+          "stop": {
+            "count": 5,
+            "mean_native_regret": 0.5395952241101456
+          }
+        }
+      },
+      "policy_regret": {
+        "action_disagreements": 0,
+        "maximum_abs_score_error": 3.794734855233628e-07,
+        "mean_float_regret": 0.033845603364328146,
+        "mean_native_regret": 0.033845603364328146,
+        "mean_signed_quantization_regret": 0.0,
+        "quantization_harmed_rows": 0,
+        "quantization_helped_rows": 0,
+        "rows": 6144,
+        "teacher_conditioned_regret": {
+          "keep": {
+            "count": 5045,
+            "mean_native_regret": 0.0060833606835571895
+          },
+          "repair": {
+            "count": 1094,
+            "mean_native_regret": 0.1574122080329234
+          },
+          "stop": {
+            "count": 5,
+            "mean_native_regret": 1.0095753667735872
+          }
+        }
+      },
+      "ridge_reference": {
+        "action_disagreements": 0,
+        "maximum_abs_score_error": 4.534020174307152e-07,
+        "mean_float_regret": 0.02827235911171241,
+        "mean_native_regret": 0.02827235911171241,
+        "mean_signed_quantization_regret": 0.0,
+        "quantization_harmed_rows": 0,
+        "quantization_helped_rows": 0,
+        "rows": 6144,
+        "teacher_conditioned_regret": {
+          "keep": {
+            "count": 5045,
+            "mean_native_regret": 0.017403768779839422
+          },
+          "repair": {
+            "count": 1094,
+            "mean_native_regret": 0.07605611039078651
+          },
+          "stop": {
+            "count": 5,
+            "mean_native_regret": 0.5395952241101456
+          }
+        }
+      }
+    },
+    "scope": "descriptive common ID-state panel; neither selection nor confirmation episodes",
+    "seeds": [
+      {
+        "arms": {
+          "iterative_q_mse": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 2.1944384309691145e-07,
+            "mean_float_regret": 0.025491114407818427,
+            "mean_native_regret": 0.025491114407818427,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 309,
+                "mean_native_regret": 0.021506651842270463
+              },
+              "repair": {
+                "count": 75,
+                "mean_native_regret": 0.04190710017787605
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          },
+          "policy_regret": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 3.0109536419686833e-07,
+            "mean_float_regret": 0.0207647856762762,
+            "mean_native_regret": 0.0207647856762762,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 309,
+                "mean_native_regret": 0.012636282372077376
+              },
+              "repair": {
+                "count": 75,
+                "mean_native_regret": 0.05425421928957538
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          },
+          "ridge_reference": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 2.7353806897334465e-07,
+            "mean_float_regret": 0.02276605373772342,
+            "mean_native_regret": 0.02276605373772342,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 309,
+                "mean_native_regret": 0.020584567125309115
+              },
+              "repair": {
+                "count": 75,
+                "mean_native_regret": 0.03175377858087034
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          }
+        },
+        "seed": 3301
+      },
+      {
+        "arms": {
+          "iterative_q_mse": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 2.1035272657066173e-07,
+            "mean_float_regret": 0.03352228389337124,
+            "mean_native_regret": 0.03352228389337124,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 303,
+                "mean_native_regret": 0.027610689056981972
+              },
+              "repair": {
+                "count": 81,
+                "mean_native_regret": 0.05563602754060518
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          },
+          "policy_regret": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 3.551724017114566e-07,
+            "mean_float_regret": 0.03366976011118112,
+            "mean_native_regret": 0.03366976011118112,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 303,
+                "mean_native_regret": 0.009134399281160088
+              },
+              "repair": {
+                "count": 81,
+                "mean_native_regret": 0.12545018395681537
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          },
+          "ridge_reference": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 1.8812700175452335e-07,
+            "mean_float_regret": 0.03242668141835881,
+            "mean_native_regret": 0.03242668141835881,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 303,
+                "mean_native_regret": 0.023191413479570863
+              },
+              "repair": {
+                "count": 81,
+                "mean_native_regret": 0.06697342444863963
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          }
+        },
+        "seed": 3307
+      },
+      {
+        "arms": {
+          "iterative_q_mse": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 3.6815482518104403e-07,
+            "mean_float_regret": 0.024651086295750663,
+            "mean_native_regret": 0.024651086295750663,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 332,
+                "mean_native_regret": 0.020044328982545496
+              },
+              "repair": {
+                "count": 52,
+                "mean_native_regret": 0.05406345991082981
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          },
+          "policy_regret": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 2.590762928633694e-07,
+            "mean_float_regret": 0.02703204966493129,
+            "mean_native_regret": 0.02703204966493129,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 332,
+                "mean_native_regret": 0.011390754367821644
+              },
+              "repair": {
+                "count": 52,
+                "mean_native_regret": 0.1268957042541698
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          },
+          "ridge_reference": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 2.7731243812390005e-07,
+            "mean_float_regret": 0.02487762878930569,
+            "mean_native_regret": 0.02487762878930569,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 332,
+                "mean_native_regret": 0.02030635403533203
+              },
+              "repair": {
+                "count": 52,
+                "mean_native_regret": 0.05406345991082981
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          }
+        },
+        "seed": 3313
+      },
+      {
+        "arms": {
+          "iterative_q_mse": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 2.6494745353211613e-07,
+            "mean_float_regret": 0.02423535987359805,
+            "mean_native_regret": 0.02423535987359805,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 340,
+                "mean_native_regret": 0.011335024144587463
+              },
+              "repair": {
+                "count": 44,
+                "mean_native_regret": 0.12391977232504349
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          },
+          "policy_regret": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 3.794734855233628e-07,
+            "mean_float_regret": 0.022766412251000085,
+            "mean_native_regret": 0.022766412251000085,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 340,
+                "mean_native_regret": 0.00199367793956709
+              },
+              "repair": {
+                "count": 44,
+                "mean_native_regret": 0.18328299556661867
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          },
+          "ridge_reference": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 3.6644060436019643e-07,
+            "mean_float_regret": 0.023481000048254864,
+            "mean_native_regret": 0.023481000048254864,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 340,
+                "mean_native_regret": 0.009589451489229291
+              },
+              "repair": {
+                "count": 44,
+                "mean_native_regret": 0.1308247843679979
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          }
+        },
+        "seed": 3319
+      },
+      {
+        "arms": {
+          "iterative_q_mse": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 3.5889325267213223e-07,
+            "mean_float_regret": 0.038352596456723786,
+            "mean_native_regret": 0.038352596456723786,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 324,
+                "mean_native_regret": 0.0041819552641595235
+              },
+              "repair": {
+                "count": 60,
+                "mean_native_regret": 0.22287405889657083
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          },
+          "policy_regret": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 2.409742165809803e-07,
+            "mean_float_regret": 0.038352596456723786,
+            "mean_native_regret": 0.038352596456723786,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 324,
+                "mean_native_regret": 0.0041819552641595235
+              },
+              "repair": {
+                "count": 60,
+                "mean_native_regret": 0.22287405889657083
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          },
+          "ridge_reference": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 2.520962087970702e-07,
+            "mean_float_regret": 0.038352596456723786,
+            "mean_native_regret": 0.038352596456723786,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 324,
+                "mean_native_regret": 0.0041819552641595235
+              },
+              "repair": {
+                "count": 60,
+                "mean_native_regret": 0.22287405889657083
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          }
+        },
+        "seed": 3323
+      },
+      {
+        "arms": {
+          "iterative_q_mse": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 2.2516583964016235e-07,
+            "mean_float_regret": 0.02026985125885646,
+            "mean_native_regret": 0.02026985125885646,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 329,
+                "mean_native_regret": 0.012777869067432708
+              },
+              "repair": {
+                "count": 55,
+                "mean_native_regret": 0.06508552654937307
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          },
+          "policy_regret": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 3.1563720526150973e-07,
+            "mean_float_regret": 0.022958974231637314,
+            "mean_native_regret": 0.022958974231637314,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 329,
+                "mean_native_regret": 0.002293070475350382
+              },
+              "repair": {
+                "count": 55,
+                "mean_native_regret": 0.1465786530646991
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          },
+          "ridge_reference": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 3.0169676146218904e-07,
+            "mean_float_regret": 0.02068372712056975,
+            "mean_native_regret": 0.02068372712056975,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 329,
+                "mean_native_regret": 0.013260933902988653
+              },
+              "repair": {
+                "count": 55,
+                "mean_native_regret": 0.06508552654937307
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          }
+        },
+        "seed": 3329
+      },
+      {
+        "arms": {
+          "iterative_q_mse": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 2.9829486875021516e-07,
+            "mean_float_regret": 0.017095345645516458,
+            "mean_native_regret": 0.017095345645516458,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 326,
+                "mean_native_regret": 0.011414166264420704
+              },
+              "repair": {
+                "count": 57,
+                "mean_native_regret": 0.04142270939322381
+              },
+              "stop": {
+                "count": 1,
+                "mean_native_regret": 0.48250009026341323
+              }
+            }
+          },
+          "policy_regret": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 3.4382313085501437e-07,
+            "mean_float_regret": 0.02424937585473237,
+            "mean_native_regret": 0.02424937585473237,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 326,
+                "mean_native_regret": 0.005205194904500424
+              },
+              "repair": {
+                "count": 57,
+                "mean_native_regret": 0.12512924033485398
+              },
+              "stop": {
+                "count": 1,
+                "mean_native_regret": 0.48250009026341323
+              }
+            }
+          },
+          "ridge_reference": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 2.617353596079397e-07,
+            "mean_float_regret": 0.017095345645516458,
+            "mean_native_regret": 0.017095345645516458,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 326,
+                "mean_native_regret": 0.011414166264420704
+              },
+              "repair": {
+                "count": 57,
+                "mean_native_regret": 0.04142270939322381
+              },
+              "stop": {
+                "count": 1,
+                "mean_native_regret": 0.48250009026341323
+              }
+            }
+          }
+        },
+        "seed": 3331
+      },
+      {
+        "arms": {
+          "iterative_q_mse": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 2.49018863196504e-07,
+            "mean_float_regret": 0.03292800139043303,
+            "mean_native_regret": 0.03292800139043303,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 280,
+                "mean_native_regret": 0.026218161781571794
+              },
+              "repair": {
+                "count": 104,
+                "mean_native_regret": 0.050992954183520976
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          },
+          "policy_regret": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 2.133519489966318e-07,
+            "mean_float_regret": 0.031448231229984684,
+            "mean_native_regret": 0.031448231229984684,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 280,
+                "mean_native_regret": 0.007708567208006552
+              },
+              "repair": {
+                "count": 104,
+                "mean_native_regret": 0.09536271128915656
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          },
+          "ridge_reference": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 1.4348581045542375e-07,
+            "mean_float_regret": 0.03520616568240386,
+            "mean_native_regret": 0.03520616568240386,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 280,
+                "mean_native_regret": 0.03361602673587927
+              },
+              "repair": {
+                "count": 104,
+                "mean_native_regret": 0.03948730899997007
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          }
+        },
+        "seed": 3343
+      },
+      {
+        "arms": {
+          "iterative_q_mse": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 5.07370362778925e-07,
+            "mean_float_regret": 0.05341367838288764,
+            "mean_native_regret": 0.05341367838288764,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 298,
+                "mean_native_regret": 0.027369461261447216
+              },
+              "repair": {
+                "count": 84,
+                "mean_native_regret": 0.1283409354789001
+              },
+              "stop": {
+                "count": 2,
+                "mean_native_regret": 0.7870572314449855
+              }
+            }
+          },
+          "policy_regret": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 3.075668342233939e-07,
+            "mean_float_regret": 0.06656318337560839,
+            "mean_native_regret": 0.06656318337560839,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 298,
+                "mean_native_regret": 0.008291958828859837
+              },
+              "repair": {
+                "count": 84,
+                "mean_native_regret": 0.2281576608217406
+              },
+              "stop": {
+                "count": 2,
+                "mean_native_regret": 1.9620075881035892
+              }
+            }
+          },
+          "ridge_reference": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 4.534020174307152e-07,
+            "mean_float_regret": 0.04882281173115626,
+            "mean_native_regret": 0.04882281173115626,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 298,
+                "mean_native_regret": 0.021453713629685976
+              },
+              "repair": {
+                "count": 84,
+                "mean_native_regret": 0.1283409354789001
+              },
+              "stop": {
+                "count": 2,
+                "mean_native_regret": 0.7870572314449855
+              }
+            }
+          }
+        },
+        "seed": 3347
+      },
+      {
+        "arms": {
+          "iterative_q_mse": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 2.016331704379759e-07,
+            "mean_float_regret": 0.022824177145872846,
+            "mean_native_regret": 0.022824177145872846,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 325,
+                "mean_native_regret": 0.008724830330380073
+              },
+              "repair": {
+                "count": 59,
+                "mean_native_regret": 0.10049007062104492
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          },
+          "policy_regret": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 1.5092941119121406e-07,
+            "mean_float_regret": 0.035871343309206494,
+            "mean_native_regret": 0.035871343309206494,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 325,
+                "mean_native_regret": 0.004571543460738507
+              },
+              "repair": {
+                "count": 59,
+                "mean_native_regret": 0.20828549501686913
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          },
+          "ridge_reference": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 2.503863222869107e-07,
+            "mean_float_regret": 0.02232551652284881,
+            "mean_native_regret": 0.02232551652284881,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 325,
+                "mean_native_regret": 0.008135643625022438
+              },
+              "repair": {
+                "count": 59,
+                "mean_native_regret": 0.10049007062104492
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          }
+        },
+        "seed": 3359
+      },
+      {
+        "arms": {
+          "iterative_q_mse": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 2.155076322396532e-07,
+            "mean_float_regret": 0.017775497236555554,
+            "mean_native_regret": 0.017775497236555554,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 334,
+                "mean_native_regret": 0.010450466564025119
+              },
+              "repair": {
+                "count": 49,
+                "mean_native_regret": 0.06093730229031182
+              },
+              "stop": {
+                "count": 1,
+                "mean_native_regret": 0.34940729422766376
+              }
+            }
+          },
+          "policy_regret": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 3.596836126718017e-07,
+            "mean_float_regret": 0.026501913051033752,
+            "mean_native_regret": 0.026501913051033752,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 334,
+                "mean_native_regret": 0.0035460518660259703
+              },
+              "repair": {
+                "count": 49,
+                "mean_native_regret": 0.17638665294115558
+              },
+              "stop": {
+                "count": 1,
+                "mean_native_regret": 0.34940729422766376
+              }
+            }
+          },
+          "ridge_reference": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 4.3494014467793107e-07,
+            "mean_float_regret": 0.02047075506679592,
+            "mean_native_regret": 0.02047075506679592,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 334,
+                "mean_native_regret": 0.010450466564025119
+              },
+              "repair": {
+                "count": 49,
+                "mean_native_regret": 0.08205932283750161
+              },
+              "stop": {
+                "count": 1,
+                "mean_native_regret": 0.34940729422766376
+              }
+            }
+          }
+        },
+        "seed": 3361
+      },
+      {
+        "arms": {
+          "iterative_q_mse": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 2.6853795931369717e-07,
+            "mean_float_regret": 0.03822791728209105,
+            "mean_native_regret": 0.03822791728209105,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 313,
+                "mean_native_regret": 0.021165459457677706
+              },
+              "repair": {
+                "count": 71,
+                "mean_native_regret": 0.11344692149394142
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          },
+          "policy_regret": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 2.3212548150297607e-07,
+            "mean_float_regret": 0.039493241479513407,
+            "mean_native_regret": 0.039493241479513407,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 313,
+                "mean_native_regret": 0.005126815233336349
+              },
+              "repair": {
+                "count": 71,
+                "mean_native_regret": 0.1909959374661812
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          },
+          "ridge_reference": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 3.93192611691795e-07,
+            "mean_float_regret": 0.03285304345908918,
+            "mean_native_regret": 0.03285304345908918,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 313,
+                "mean_native_regret": 0.019601484181184882
+              },
+              "repair": {
+                "count": 71,
+                "mean_native_regret": 0.0912718892898504
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          }
+        },
+        "seed": 3371
+      },
+      {
+        "arms": {
+          "iterative_q_mse": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 3.838660196375798e-07,
+            "mean_float_regret": 0.0509699919965572,
+            "mean_native_regret": 0.0509699919965572,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 277,
+                "mean_native_regret": 0.045348490166214915
+              },
+              "repair": {
+                "count": 107,
+                "mean_native_regret": 0.06552285187510687
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          },
+          "policy_regret": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 2.1395670657398114e-07,
+            "mean_float_regret": 0.06945869054607728,
+            "mean_native_regret": 0.06945869054607728,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 277,
+                "mean_native_regret": 0.004641860637979798
+              },
+              "repair": {
+                "count": 107,
+                "mean_native_regret": 0.2372555305885353
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          },
+          "ridge_reference": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 1.9721616595358427e-07,
+            "mean_float_regret": 0.05063125397117485,
+            "mean_native_regret": 0.05063125397117485,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 277,
+                "mean_native_regret": 0.04411184448998297
+              },
+              "repair": {
+                "count": 107,
+                "mean_native_regret": 0.06750860374958748
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          }
+        },
+        "seed": 3373
+      },
+      {
+        "arms": {
+          "iterative_q_mse": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 1.3379528579493538e-07,
+            "mean_float_regret": 0.01797115983111331,
+            "mean_native_regret": 0.01797115983111331,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 336,
+                "mean_native_regret": 0.014384023234347464
+              },
+              "repair": {
+                "count": 48,
+                "mean_native_regret": 0.04308111600847423
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          },
+          "policy_regret": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 2.471179796348366e-07,
+            "mean_float_regret": 0.021190243913382385,
+            "mean_native_regret": 0.021190243913382385,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 336,
+                "mean_native_regret": 0.003309714963845192
+              },
+              "repair": {
+                "count": 48,
+                "mean_native_regret": 0.1463539465601427
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          },
+          "ridge_reference": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 1.8477118218784838e-07,
+            "mean_float_regret": 0.017564310713831386,
+            "mean_native_regret": 0.017564310713831386,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 336,
+                "mean_native_regret": 0.01554689450776391
+              },
+              "repair": {
+                "count": 48,
+                "mean_native_regret": 0.031686224156303705
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          }
+        },
+        "seed": 3389
+      },
+      {
+        "arms": {
+          "iterative_q_mse": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 1.15397560951358e-07,
+            "mean_float_regret": 0.03166791245973313,
+            "mean_native_regret": 0.03166791245973313,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 293,
+                "mean_native_regret": 0.020759259833873573
+              },
+              "repair": {
+                "count": 90,
+                "mean_native_regret": 0.06428956644492098
+              },
+              "stop": {
+                "count": 1,
+                "mean_native_regret": 0.29195427316968037
+              }
+            }
+          },
+          "policy_regret": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 1.8503381760126558e-07,
+            "mean_float_regret": 0.04103273359335937,
+            "mean_native_regret": 0.04103273359335937,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 293,
+                "mean_native_regret": 0.010811350044845175
+              },
+              "repair": {
+                "count": 90,
+                "mean_native_regret": 0.13663210959489647
+              },
+              "stop": {
+                "count": 1,
+                "mean_native_regret": 0.29195427316968037
+              }
+            }
+          },
+          "ridge_reference": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 2.3365171814004881e-07,
+            "mean_float_regret": 0.03089984296077905,
+            "mean_native_regret": 0.03089984296077905,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 293,
+                "mean_native_regret": 0.02565655011459575
+              },
+              "repair": {
+                "count": 90,
+                "mean_native_regret": 0.0450690693354769
+              },
+              "stop": {
+                "count": 1,
+                "mean_native_regret": 0.29195427316968037
+              }
+            }
+          }
+        },
+        "seed": 3391
+      },
+      {
+        "arms": {
+          "iterative_q_mse": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 4.0365425144073264e-07,
+            "mean_float_regret": 0.02186431890706329,
+            "mean_native_regret": 0.02186431890706329,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 326,
+                "mean_native_regret": 0.008123268396740931
+              },
+              "repair": {
+                "count": 58,
+                "mean_native_regret": 0.09909849936163376
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          },
+          "policy_regret": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 3.2650330084038615e-07,
+            "mean_float_regret": 0.020176119084602467,
+            "mean_native_regret": 0.020176119084602467,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 326,
+                "mean_native_regret": 0.003934228159468867
+              },
+              "repair": {
+                "count": 58,
+                "mean_native_regret": 0.11146674738793959
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          },
+          "ridge_reference": {
+            "action_disagreements": 0,
+            "maximum_abs_score_error": 2.0795071653534336e-07,
+            "mean_float_regret": 0.01390101246286648,
+            "mean_native_regret": 0.01390101246286648,
+            "mean_signed_quantization_regret": 0.0,
+            "quantization_harmed_rows": 0,
+            "quantization_helped_rows": 0,
+            "rows": 384,
+            "teacher_conditioned_regret": {
+              "keep": {
+                "count": 326,
+                "mean_native_regret": 0.005944284022970607
+              },
+              "repair": {
+                "count": 58,
+                "mean_native_regret": 0.058623313694005356
+              },
+              "stop": {
+                "count": 0,
+                "mean_native_regret": null
+              }
+            }
+          }
+        },
+        "seed": 3407
+      }
+    ]
+  },
+  "provenance": {
+    "derivation": "exact extraction and arithmetic aggregation from the named independent audit; extra cost aggregates additionally bind audited costs.jsonl",
+    "full_audit_engineering_relative_path": "audits/CONFIRMATION_AUDIT.json",
+    "full_audit_sha256": "4db0de9b32926b4415c2179715f520ad8b852362b112b103218d447de415a8fb",
+    "native_binary_sha256": "fa9dc78b129b0ec3b072e9fc8c8fdd49479515c79aeb2660f355e38f41e54dce",
+    "protocol_sha256": "3d19c2f0aef69da5d368da01e34308f1344ec98b10fd0aaefa1ba4877aa9baff",
+    "public_archive_directory": "evidence/bundle/",
+    "scientific_manifest_sha256": "861468d3cd2f1841291dfcd32c93f3efe1db58f494c02e549979376fb26e60b7",
+    "selection_publication_commit": "87b03617077f9e5f275d291b7af06cd1418f87ce",
+    "selection_seal_sha256": "28477204d0ef4a94fc990295196d5c51f792a95e2546750217a2a5592f682d66",
+    "source_publication_commit": "7908860cb959cbe1599379d4ecbfcc22fbccbe61",
+    "source_seal_sha256": "83f5243f7b7c7aead3742baccd01caaf619759658f320e824589ff016269d2e9"
+  },
+  "schema": "hepta.native-readout-objective.common-state-panel.derived.v1"
+}

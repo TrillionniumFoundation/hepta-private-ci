@@ -1,6 +1,6 @@
 [codespell]
 # Ref: https://github.com/codespell-project/codespell#using-a-config-file
-skip = .git*,vendor,third_party,*-lock.yaml,*.lock,.codespellrc,*test.ts,*.jsonl,frame*.txt,*.snap,*.snap.new
+skip = .git*,vendor,third_party,*-lock.yaml,*.lock,.codespellrc,*test.ts,*.jsonl,frame*.txt,*.snap,*.snap.new,experiments/continuous_boundary_flow/evidence/bundle/*.part,experiments/continuous_boundary_policy/evidence/bundle/*.part,experiments/native_readout_objective/evidence/bundle/*.part,experiments/continuous_boundary_policy_reproduction/evidence/bundle/*.part,experiments/continuous_boundary_policy_reproduction/preflight/runtime_evidence/*.part,experiments/native_readout_objective/preflight/*.tar.gz,./experiments/continuous_boundary_flow/evidence/bundle/*.part,./experiments/continuous_boundary_policy/evidence/bundle/*.part,./experiments/native_readout_objective/evidence/bundle/*.part,./experiments/continuous_boundary_policy_reproduction/evidence/bundle/*.part,./experiments/continuous_boundary_policy_reproduction/preflight/runtime_evidence/*.part,./experiments/native_readout_objective/preflight/*.tar.gz
 check-hidden = true
 ignore-regex = ^\s*"image/\S+": ".*|\b(afterAll)\b
 ignore-words-list = ratatui,ser,iTerm,iterm2,iterm,te,TE,PASE,SEH,disjointness

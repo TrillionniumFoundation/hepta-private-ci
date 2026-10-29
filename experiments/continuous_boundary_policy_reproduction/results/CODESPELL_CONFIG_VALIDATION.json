@@ -1,0 +1,577 @@
+{
+  "action_codespell_version_pinned": false,
+  "action_commit": "8f01853be192eb0f849a5c7d721450e7a467c579",
+  "action_requirement": "codespell[toml]>=2.2.4",
+  "behavior_checks": [
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "codespell_lib",
+        "--count",
+        "--config",
+        ".codespellrc",
+        "--ignore-words",
+        ".codespellignore"
+      ],
+      "cwd": "/dev/shm/hepta-native-objective-20261029/codespell-config-validation-003/fixture",
+      "exit_code": 0,
+      "expected_exit": "zero",
+      "label": "new-config-archive-probes",
+      "stderr_base64": "MAo=",
+      "stderr_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "stdout_base64": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.0951545720017748
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "codespell_lib",
+        "--count",
+        "--config",
+        ".codespellrc",
+        "--ignore-words",
+        ".codespellignore",
+        "experiments/continuous_boundary_flow/evidence/bundle/archive-00000.part",
+        "experiments/continuous_boundary_policy/evidence/bundle/archive-00000.part",
+        "experiments/native_readout_objective/evidence/bundle/archive-00000.part",
+        "experiments/continuous_boundary_policy_reproduction/evidence/bundle/archive-00000.part",
+        "experiments/continuous_boundary_policy_reproduction/preflight/runtime_evidence/archive-00000.part",
+        "experiments/native_readout_objective/preflight/probe.tar.gz"
+      ],
+      "cwd": "/dev/shm/hepta-native-objective-20261029/codespell-config-validation-003/fixture",
+      "exit_code": 0,
+      "expected_exit": "zero",
+      "label": "explicit-relative-archive-paths",
+      "stderr_base64": "MAo=",
+      "stderr_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "stdout_base64": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.09405047800100874
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "codespell_lib",
+        "--count",
+        "--config",
+        ".codespellrc",
+        "--ignore-words",
+        ".codespellignore",
+        "--skip",
+        "./.git"
+      ],
+      "cwd": "/dev/shm/hepta-native-objective-20261029/codespell-config-validation-003/fixture",
+      "exit_code": 0,
+      "expected_exit": "zero",
+      "interpretation": "Codespell 2.4.3 --skip uses argparse append, so its CLI value adds to configured skips. The workflow empty input avoids the extra default but is not the cause of the observed path-prefix fix.",
+      "label": "current-version-cli-skip-appends-to-config",
+      "stderr_base64": "MAo=",
+      "stderr_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "stdout_base64": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.13487488000828307
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "codespell_lib",
+        "--count",
+        "--config",
+        ".codespellrc",
+        "--ignore-words",
+        ".codespellignore"
+      ],
+      "cwd": "/dev/shm/hepta-native-objective-20261029/codespell-config-validation-003/fixture",
+      "exit_code": 65,
+      "expected_diagnostics": 6,
+      "expected_exit": "nonzero",
+      "label": "prior-config-archive-probes",
+      "stderr_base64": "Ngo=",
+      "stderr_sha256": "06e9d52c1720fca412803e3b07c4b228ff113e303f4c7ab94665319d832bbfb7",
+      "stdout_base64": "Li9leHBlcmltZW50cy9jb250aW51b3VzX2JvdW5kYXJ5X3BvbGljeV9yZXByb2R1Y3Rpb24vcHJlZmxpZ2h0L3J1bnRpbWVfZXZpZGVuY2UvYXJjaGl2ZS0wMDAwMC5wYXJ0OjE6IHRlaCA9PT4gdGhlCi4vZXhwZXJpbWVudHMvY29udGludW91c19ib3VuZGFyeV9wb2xpY3lfcmVwcm9kdWN0aW9uL2V2aWRlbmNlL2J1bmRsZS9hcmNoaXZlLTAwMDAwLnBhcnQ6MTogdGVoID09PiB0aGUKLi9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcHJlZmxpZ2h0L3Byb2JlLnRhci5nejoxOiB0ZWggPT0+IHRoZQouL2V4cGVyaW1lbnRzL25hdGl2ZV9yZWFkb3V0X29iamVjdGl2ZS9ldmlkZW5jZS9idW5kbGUvYXJjaGl2ZS0wMDAwMC5wYXJ0OjE6IHRlaCA9PT4gdGhlCi4vZXhwZXJpbWVudHMvY29udGludW91c19ib3VuZGFyeV9wb2xpY3kvZXZpZGVuY2UvYnVuZGxlL2FyY2hpdmUtMDAwMDAucGFydDoxOiB0ZWggPT0+IHRoZQouL2V4cGVyaW1lbnRzL2NvbnRpbnVvdXNfYm91bmRhcnlfZmxvdy9ldmlkZW5jZS9idW5kbGUvYXJjaGl2ZS0wMDAwMC5wYXJ0OjE6IHRlaCA9PT4gdGhlCg==",
+      "stdout_sha256": "c0f9008ec2415a116e3e8e170d52fa479c7b8a1f52d5a6fd0ea324df07492f23",
+      "wall_seconds": 0.11665751300461125
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "codespell_lib",
+        "--count",
+        "--config",
+        ".codespellrc",
+        "--ignore-words",
+        ".codespellignore"
+      ],
+      "cwd": "/dev/shm/hepta-native-objective-20261029/codespell-config-validation-003/fixture",
+      "exit_code": 65,
+      "expected_diagnostics": 1,
+      "expected_exit": "nonzero",
+      "label": "ordinary-text-still-rejected",
+      "stderr_base64": "MQo=",
+      "stderr_sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "stdout_base64": "Li9vcmRpbmFyeS5tZDoxOiB0ZWggPT0+IHRoZQo=",
+      "stdout_sha256": "789904546d13f9de2a7b984e37b8eb5efa46d69ec499af66405d17da3c0a8484",
+      "wall_seconds": 0.10899144299037289
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "codespell_lib",
+        "--count",
+        "--config",
+        ".codespellrc",
+        "--ignore-words",
+        ".codespellignore"
+      ],
+      "cwd": "/dev/shm/hepta-native-objective-20261029/codespell-config-validation-003/fixture",
+      "exit_code": 65,
+      "expected_diagnostics": 1,
+      "expected_exit": "nonzero",
+      "label": "adjacent-index-json-still-rejected",
+      "stderr_base64": "MQo=",
+      "stderr_sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "stdout_base64": "Li9leHBlcmltZW50cy9jb250aW51b3VzX2JvdW5kYXJ5X3BvbGljeV9yZXByb2R1Y3Rpb24vZXZpZGVuY2UvYnVuZGxlL0lOREVYLmpzb246MTogdGVoID09PiB0aGUK",
+      "stdout_sha256": "a44834ec119690d34ba4b6a19277428bdc4d497ea267006fba82d743c881b851",
+      "wall_seconds": 0.1064978389913449
+    }
+  ],
+  "completed_utc": "2026-10-29T16:52:24.269725+00:00",
+  "config_after_sha256": "8ce8b12d566bdb7e104b14d99de5aa2ecde66ceea74de9fb872b52fa01deca1b",
+  "config_before_sha256": "76a20afd3fe534363398b4ca95cb7a291fd0e6df2f4664226736f02bc92ce6d2",
+  "config_diff": {
+    "added_archive_only_skip_patterns": [
+      "./experiments/continuous_boundary_flow/evidence/bundle/*.part",
+      "./experiments/continuous_boundary_policy/evidence/bundle/*.part",
+      "./experiments/continuous_boundary_policy_reproduction/evidence/bundle/*.part",
+      "./experiments/continuous_boundary_policy_reproduction/preflight/runtime_evidence/*.part",
+      "./experiments/native_readout_objective/evidence/bundle/*.part",
+      "./experiments/native_readout_objective/preflight/*.tar.gz",
+      "experiments/continuous_boundary_policy_reproduction/evidence/bundle/*.part",
+      "experiments/continuous_boundary_policy_reproduction/preflight/runtime_evidence/*.part",
+      "experiments/native_readout_objective/evidence/bundle/*.part",
+      "experiments/native_readout_objective/preflight/*.tar.gz"
+    ],
+    "other_codespell_options_unchanged": true,
+    "removed_patterns": []
+  },
+  "configuration_behavior_passed": true,
+  "corrected_harness_assumption": {
+    "assumption": "CLI --skip necessarily replaces all config skips",
+    "finding": "Official Codespell 2.4.3 uses action=append and reparses CLI into config namespace; default CLI skip does not replace configured patterns in this version. Workflow comment was corrected; explicit config and empty action skip retained.",
+    "observed_exit_code": 0,
+    "prior_attempt_directory": "/dev/shm/hepta-native-objective-20261029/codespell-config-validation-002",
+    "scientific_tests_involved": false
+  },
+  "download": {
+    "action_commit": "8f01853be192eb0f849a5c7d721450e7a467c579",
+    "official_action_files": [
+      {
+        "file": "action.yml",
+        "sha256": "9ae204095c3c009144d8c899ab062c7caa92b25a7938cb973bfcfcf98182e652",
+        "url": "https://raw.githubusercontent.com/codespell-project/actions-codespell/8f01853be192eb0f849a5c7d721450e7a467c579/action.yml"
+      },
+      {
+        "file": "requirements.txt",
+        "sha256": "df47e747c93b35fae21f2a730852fce3b4f01a4ac6c3e1327cbcc67685e952cb",
+        "url": "https://raw.githubusercontent.com/codespell-project/actions-codespell/8f01853be192eb0f849a5c7d721450e7a467c579/requirements.txt"
+      }
+    ],
+    "pypi_metadata_url": "https://pypi.org/pypi/codespell/json",
+    "version": "2.4.3",
+    "wheel": {
+      "bytes": 340736,
+      "filename": "codespell-2.4.3-py3-none-any.whl",
+      "sha256": "af2505b335e8573dbd2d384d1c4ef498f4006f4ba2d6fceca01e55b91f52628a",
+      "url": "https://files.pythonhosted.org/packages/8b/bf/bdb951d34eb169140b546f44be9ec4525d1acefb9eb5572071f5492b19fc/codespell-2.4.3-py3-none-any.whl"
+    }
+  },
+  "encoded_ci_receipt_validation": {
+    "changed_fields": "findings.codespell.inherited_text_findings[0:15].finding replaced by reversible UTF-8 base64, byte count, and SHA256; historical status and sources retained.",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "-m",
+      "codespell_lib",
+      "--count",
+      "--config",
+      ".codespellrc",
+      "--ignore-words",
+      ".codespellignore",
+      "experiments/native_readout_objective/results/CI_RUN_B244.json"
+    ],
+    "current_diagnostics": 0,
+    "cwd": "/workspace/scratch/0b931bb7b314/hepta-continuous-recovered",
+    "exit_code": 0,
+    "file": "experiments/native_readout_objective/results/CI_RUN_B244.json",
+    "file_bytes": 47185,
+    "file_sha256": "1b072e8708b6146cffd8500e70c2d5aa176f3091c2ade11b8fc20ec34c131b43",
+    "label": "encoded-ci-receipt-only",
+    "prior_diagnostics": 15,
+    "prior_file_sha256": "a8eafba0b4ce03886d60d2855661f11563bda5c93446492c382c0cc8b9f3f84c",
+    "scope": "Only the corrected new CI receipt, using real Codespell 2.4.3. No additional ignore rule or scientific change.",
+    "stderr_base64": "MAo=",
+    "stderr_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "stdout_base64": "",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "wall_seconds": 0.12691378399904352
+  },
+  "formatting": {
+    "all_repository_format_success_claimed": false,
+    "behavior_tests_rerun_after_formatting": false,
+    "commands": [
+      {
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+          "/dev/shm/hepta-native-objective-20261029/codespell-config-validation-003/prettier/package/bin/prettier.cjs",
+          "--version"
+        ],
+        "cwd": "/workspace/scratch/0b931bb7b314/hepta-continuous-recovered",
+        "exit_code": 0,
+        "label": "prettier-version",
+        "stderr_base64": "",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_base64": "My41LjMK",
+        "stdout_sha256": "50060b8e79abd0beaf59e6309e519a73cba73a94b97defd0f8b68e1c8f6447b2",
+        "wall_seconds": 0.11956514899793547
+      },
+      {
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+          "/dev/shm/hepta-native-objective-20261029/codespell-config-validation-003/prettier/package/bin/prettier.cjs",
+          "--check",
+          ".github/workflows/codespell.yml"
+        ],
+        "cwd": "/workspace/scratch/0b931bb7b314/hepta-continuous-recovered",
+        "exit_code": 0,
+        "label": "prettier-workflow-check",
+        "stderr_base64": "",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_base64": "Q2hlY2tpbmcgZm9ybWF0dGluZy4uLgpBbGwgbWF0Y2hlZCBmaWxlcyB1c2UgUHJldHRpZXIgY29kZSBzdHlsZSEK",
+        "stdout_sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20",
+        "wall_seconds": 0.14038895200064871
+      },
+      {
+        "command": [
+          "/tmp/hepta-next-tools/just",
+          "--version"
+        ],
+        "cwd": "/workspace/scratch/0b931bb7b314/hepta-continuous-recovered",
+        "exit_code": 0,
+        "label": "just-version",
+        "stderr_base64": "",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_base64": "anVzdCAxLjUxLjAK",
+        "stdout_sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87",
+        "wall_seconds": 0.049915659008547664
+      },
+      {
+        "command": [
+          "/tmp/hepta-next-tools/just",
+          "fmt"
+        ],
+        "cwd": "/workspace/scratch/0b931bb7b314/hepta-continuous-recovered/codex-rs",
+        "exit_code": 0,
+        "label": "repository-just-fmt",
+        "stderr_base64": "",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_base64": "Tm8gY2hhbmdlZCBmaWxlcyBuZWVkIGZvcm1hdHRpbmcuIFVzZSAtLWFsbCBmb3IgYSBmdWxsIHJlcG9zaXRvcnkgY2hlY2suCg==",
+        "stdout_sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+        "wall_seconds": 0.11801526299677789
+      }
+    ],
+    "completed_after_behavior_checks": true,
+    "ini_scope": "Codespell INI options were parsed by the real CLI in the behavior checks; no repository INI formatter applies.",
+    "just_fmt_scope": "Required repository changed-file formatter, run from codex-rs. No changed files were owned by its Rust, Bazel, justfile, or Python groups; no full-tree formatting was requested.",
+    "prettier_download": {
+      "bytes": 2030462,
+      "integrity": "sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==",
+      "matches_repository_lock_integrity": true,
+      "metadata_url": "https://registry.npmjs.org/prettier/3.5.3",
+      "sha256": "14841de7b71a93123d22997db22d088debb13976778d869e3622199108e85b4b",
+      "tarball_url": "https://registry.npmjs.org/prettier/-/prettier-3.5.3.tgz",
+      "version": "3.5.3"
+    },
+    "prettier_scope": "Only .github/workflows/codespell.yml, with repository Prettier configuration and the exact lockfile version 3.5.3.",
+    "scientific_seals_after": [
+      {
+        "all_source_hashes_match": true,
+        "path": "experiments/continuous_boundary_policy/SOURCE_SEAL.json",
+        "sha256": "6b3afbf2af8476730c1260f470bd8f0f68d69652950499388abc3b178f0fd858",
+        "source_files_checked": 67
+      },
+      {
+        "all_source_hashes_match": true,
+        "path": "experiments/continuous_boundary_policy_reproduction/SOURCE_SEAL.json",
+        "sha256": "6608ee0c6ddd33862096a3c7d5085ab670b05a7c4c45d728f9f59efaa064b717",
+        "source_files_checked": 104
+      },
+      {
+        "all_source_hashes_match": true,
+        "path": "experiments/native_readout_objective/SOURCE_SEAL.json",
+        "sha256": "83f5243f7b7c7aead3742baccd01caaf619759658f320e824589ff016269d2e9",
+        "source_files_checked": 92
+      }
+    ],
+    "scientific_seals_before": [
+      {
+        "all_source_hashes_match": true,
+        "path": "experiments/continuous_boundary_policy/SOURCE_SEAL.json",
+        "sha256": "6b3afbf2af8476730c1260f470bd8f0f68d69652950499388abc3b178f0fd858",
+        "source_files_checked": 67
+      },
+      {
+        "all_source_hashes_match": true,
+        "path": "experiments/continuous_boundary_policy_reproduction/SOURCE_SEAL.json",
+        "sha256": "6608ee0c6ddd33862096a3c7d5085ab670b05a7c4c45d728f9f59efaa064b717",
+        "source_files_checked": 104
+      },
+      {
+        "all_source_hashes_match": true,
+        "path": "experiments/native_readout_objective/SOURCE_SEAL.json",
+        "sha256": "83f5243f7b7c7aead3742baccd01caaf619759658f320e824589ff016269d2e9",
+        "source_files_checked": 92
+      }
+    ],
+    "scientific_source_hashes_unchanged": true,
+    "workflow_sha256_after": "798d6468bc332caa064a6408caf2da3188b18c45c6648d84560276815e899179",
+    "workflow_sha256_before": "798d6468bc332caa064a6408caf2da3188b18c45c6648d84560276815e899179"
+  },
+  "initial_configuration_failure": {
+    "config_sha256": "7d7f16442df66e74fefb5ccabc0354aebb3d70c3f42fdbafa8e1ac0f411365ca",
+    "diagnostics": 4,
+    "exit_code": 65,
+    "reason": "Default recursive paths start with ./; bare repository-relative patterns do not match them.",
+    "stderr_base64": "NAo=",
+    "stdout_base64": "Li9leHBlcmltZW50cy9jb250aW51b3VzX2JvdW5kYXJ5X3BvbGljeV9yZXByb2R1Y3Rpb24vcHJlZmxpZ2h0L3J1bnRpbWVfZXZpZGVuY2UvYXJjaGl2ZS0wMDAwMC5wYXJ0OjE6IHRlaCA9PT4gdGhlCi4vZXhwZXJpbWVudHMvY29udGludW91c19ib3VuZGFyeV9wb2xpY3lfcmVwcm9kdWN0aW9uL2V2aWRlbmNlL2J1bmRsZS9hcmNoaXZlLTAwMDAwLnBhcnQ6MTogdGVoID09PiB0aGUKLi9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcHJlZmxpZ2h0L3Byb2JlLnRhci5nejoxOiB0ZWggPT0+IHRoZQouL2V4cGVyaW1lbnRzL25hdGl2ZV9yZWFkb3V0X29iamVjdGl2ZS9ldmlkZW5jZS9idW5kbGUvYXJjaGl2ZS0wMDAwMC5wYXJ0OjE6IHRlaCA9PT4gdGhlCg=="
+  },
+  "installed_codespell_version": "2.4.3",
+  "local_python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "official_action_files": {
+    "Dockerfile": "b34b3985d885a09b5ac996284eb0a4f2123f977cee3bad7067d27094db5e95c3",
+    "action.yml": "9ae204095c3c009144d8c899ab062c7caa92b25a7938cb973bfcfcf98182e652",
+    "entrypoint.sh": "1fe2a8eff0e8155d74c0abfc258a692402c08326f1cb71a674e2c9c7a57cbc6d",
+    "requirements.txt": "df47e747c93b35fae21f2a730852fce3b4f01a4ac6c3e1327cbcc67685e952cb"
+  },
+  "probe_payload_utf8_base64": "dGVoCg==",
+  "raw_evidence_directory": "/dev/shm/hepta-native-objective-20261029/codespell-config-validation-003",
+  "receipt_scope": "Engineering configuration validation only. The historical failed CI run and inherited source findings remain evidence; this record does not change scientific outcomes or claim that every CI job passes.",
+  "repository_scan": {
+    "classification": {
+      "compressed_archive_diagnostics": 0,
+      "copied_historical_diagnostics_in_new_ci_receipt": 15,
+      "entire_sparse_tree_rescanned_after_encoding": false,
+      "full_clean_checkout_checked": false,
+      "inherited_text_bytes_changed": false,
+      "local_tool_environment_is_publication_content": false,
+      "local_unpublished_tool_environment_metadata_diagnostics": 3,
+      "materialized_inherited_text_diagnostics": 3,
+      "new_ci_receipt_rechecked_separately_after_encoding": true,
+      "original_snapshot_diagnostics": 21
+    },
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "-m",
+      "codespell_lib",
+      "--count",
+      "--config",
+      ".codespellrc",
+      "--ignore-words",
+      ".codespellignore"
+    ],
+    "compressed_archive_diagnostics": 0,
+    "cwd": "/workspace/scratch/0b931bb7b314/hepta-continuous-recovered",
+    "exit_code": 65,
+    "finding_count": 21,
+    "findings": [
+      {
+        "diagnostic_utf8_base64": "Li9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjIyNDogRlBUID09PiBGVFA=",
+        "file_sha256": "a8eafba0b4ce03886d60d2855661f11563bda5c93446492c382c0cc8b9f3f84c",
+        "line": 224,
+        "path": "experiments/native_readout_objective/results/CI_RUN_B244.json",
+        "same_bytes_as_current_head": false
+      },
+      {
+        "diagnostic_utf8_base64": "Li9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjIyOTogZnB0ID09PiBmdHA=",
+        "file_sha256": "a8eafba0b4ce03886d60d2855661f11563bda5c93446492c382c0cc8b9f3f84c",
+        "line": 229,
+        "path": "experiments/native_readout_objective/results/CI_RUN_B244.json",
+        "same_bytes_as_current_head": false
+      },
+      {
+        "diagnostic_utf8_base64": "Li9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjIzNDogZnB0ID09PiBmdHA=",
+        "file_sha256": "a8eafba0b4ce03886d60d2855661f11563bda5c93446492c382c0cc8b9f3f84c",
+        "line": 234,
+        "path": "experiments/native_readout_objective/results/CI_RUN_B244.json",
+        "same_bytes_as_current_head": false
+      },
+      {
+        "diagnostic_utf8_base64": "Li9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjIzOTogcmV0dW5lZCA9PT4gcmV0dXJuZWQ=",
+        "file_sha256": "a8eafba0b4ce03886d60d2855661f11563bda5c93446492c382c0cc8b9f3f84c",
+        "line": 239,
+        "path": "experiments/native_readout_objective/results/CI_RUN_B244.json",
+        "same_bytes_as_current_head": false
+      },
+      {
+        "diagnostic_utf8_base64": "Li9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjI0NDogZGF0YXMgPT0+IGRhdGE=",
+        "file_sha256": "a8eafba0b4ce03886d60d2855661f11563bda5c93446492c382c0cc8b9f3f84c",
+        "line": 244,
+        "path": "experiments/native_readout_objective/results/CI_RUN_B244.json",
+        "same_bytes_as_current_head": false
+      },
+      {
+        "diagnostic_utf8_base64": "Li9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjI0OTogZGF0YXMgPT0+IGRhdGE=",
+        "file_sha256": "a8eafba0b4ce03886d60d2855661f11563bda5c93446492c382c0cc8b9f3f84c",
+        "line": 249,
+        "path": "experiments/native_readout_objective/results/CI_RUN_B244.json",
+        "same_bytes_as_current_head": false
+      },
+      {
+        "diagnostic_utf8_base64": "Li9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjI1NDogZG9lc25vdCA9PT4gZG9lc24ndCwgZG9lcyBub3Q=",
+        "file_sha256": "a8eafba0b4ce03886d60d2855661f11563bda5c93446492c382c0cc8b9f3f84c",
+        "line": 254,
+        "path": "experiments/native_readout_objective/results/CI_RUN_B244.json",
+        "same_bytes_as_current_head": false
+      },
+      {
+        "diagnostic_utf8_base64": "Li9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjI1OTogcGVyc2VlZCA9PT4gcHJlY2VkZQ==",
+        "file_sha256": "a8eafba0b4ce03886d60d2855661f11563bda5c93446492c382c0cc8b9f3f84c",
+        "line": 259,
+        "path": "experiments/native_readout_objective/results/CI_RUN_B244.json",
+        "same_bytes_as_current_head": false
+      },
+      {
+        "diagnostic_utf8_base64": "Li9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjI2NDogbmQgPT0+IGFuZCwgMm5k",
+        "file_sha256": "a8eafba0b4ce03886d60d2855661f11563bda5c93446492c382c0cc8b9f3f84c",
+        "line": 264,
+        "path": "experiments/native_readout_objective/results/CI_RUN_B244.json",
+        "same_bytes_as_current_head": false
+      },
+      {
+        "diagnostic_utf8_base64": "Li9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjI2OTogbmQgPT0+IGFuZCwgMm5k",
+        "file_sha256": "a8eafba0b4ce03886d60d2855661f11563bda5c93446492c382c0cc8b9f3f84c",
+        "line": 269,
+        "path": "experiments/native_readout_objective/results/CI_RUN_B244.json",
+        "same_bytes_as_current_head": false
+      },
+      {
+        "diagnostic_utf8_base64": "Li9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjI3NDogTEFNQSA9PT4gTExBTUE=",
+        "file_sha256": "a8eafba0b4ce03886d60d2855661f11563bda5c93446492c382c0cc8b9f3f84c",
+        "line": 274,
+        "path": "experiments/native_readout_objective/results/CI_RUN_B244.json",
+        "same_bytes_as_current_head": false
+      },
+      {
+        "diagnostic_utf8_base64": "Li9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjI3OTogQU1PTlVUID09PiBBTU9VTlQ=",
+        "file_sha256": "a8eafba0b4ce03886d60d2855661f11563bda5c93446492c382c0cc8b9f3f84c",
+        "line": 279,
+        "path": "experiments/native_readout_objective/results/CI_RUN_B244.json",
+        "same_bytes_as_current_head": false
+      },
+      {
+        "diagnostic_utf8_base64": "Li9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjI4NDogRVhDSEFOR0FCTEUgPT0+IEVYQ0hBTkdFQUJMRQ==",
+        "file_sha256": "a8eafba0b4ce03886d60d2855661f11563bda5c93446492c382c0cc8b9f3f84c",
+        "line": 284,
+        "path": "experiments/native_readout_objective/results/CI_RUN_B244.json",
+        "same_bytes_as_current_head": false
+      },
+      {
+        "diagnostic_utf8_base64": "Li9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjI4OTogVEVIID09PiBUSEU=",
+        "file_sha256": "a8eafba0b4ce03886d60d2855661f11563bda5c93446492c382c0cc8b9f3f84c",
+        "line": 289,
+        "path": "experiments/native_readout_objective/results/CI_RUN_B244.json",
+        "same_bytes_as_current_head": false
+      },
+      {
+        "diagnostic_utf8_base64": "Li9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjI5NDogcmVzdG9yZWFibGUgPT0+IHJlc3RvcmFibGU=",
+        "file_sha256": "a8eafba0b4ce03886d60d2855661f11563bda5c93446492c382c0cc8b9f3f84c",
+        "line": 294,
+        "path": "experiments/native_readout_objective/results/CI_RUN_B244.json",
+        "same_bytes_as_current_head": false
+      },
+      {
+        "diagnostic_utf8_base64": "Li9leHBlcmltZW50cy9maXJzdF9wYXNzYWdlX2NlbGwvZmlsdGVyaW5nLnB5OjY1OiBGUFQgPT0+IEZUUA==",
+        "file_sha256": "775218483169a5b4d945c72e53d944d475683c9d3924e78e6748f2d6c4f17244",
+        "line": 65,
+        "path": "experiments/first_passage_cell/filtering.py",
+        "same_bytes_as_current_head": true
+      },
+      {
+        "diagnostic_utf8_base64": "Li9leHBlcmltZW50cy9maXJzdF9wYXNzYWdlX2NlbGwvdmFsaWRhdGVfa2VybmVscy5weToyMjQ6IGZwdCA9PT4gZnRw",
+        "file_sha256": "3c2af07a26988329369e10e2d22ea7bb37695739ade71a1a1760cfc9d3b953a6",
+        "line": 224,
+        "path": "experiments/first_passage_cell/validate_kernels.py",
+        "same_bytes_as_current_head": true
+      },
+      {
+        "diagnostic_utf8_base64": "Li9leHBlcmltZW50cy9maXJzdF9wYXNzYWdlX2NlbGwvZXZpZGVuY2UvS0VSTkVMX1ZBTElEQVRJT04uanNvbjozODM0OiBmcHQgPT0+IGZ0cA==",
+        "file_sha256": "29900c0e7fcaf02282562224ad02671c9a008571c76354385451d0858f6f975d",
+        "line": 3834,
+        "path": "experiments/first_passage_cell/evidence/KERNEL_VALIDATION.json",
+        "same_bytes_as_current_head": true
+      },
+      {
+        "diagnostic_utf8_base64": "Li9zY3JpcHRzLy52ZW52L2xpYi9weXRob24zLjEyL3NpdGUtcGFja2FnZXMvcnVmZi0wLjE1LjEzLmRpc3QtaW5mby9zYm9tcy9ydWZmLmN5Y2xvbmVkeC5qc29uOjIyMjE6IGFpcnBvc3QgPT0+IGFpcnBvcnQ=",
+        "file_sha256": "3687583c8b194ae80daf5f52e33f344cd5d96306071236de17714fa993eb3130",
+        "line": 2221,
+        "path": "scripts/.venv/lib/python3.12/site-packages/ruff-0.15.13.dist-info/sboms/ruff.cyclonedx.json",
+        "same_bytes_as_current_head": false
+      },
+      {
+        "diagnostic_utf8_base64": "Li9zY3JpcHRzLy52ZW52L2xpYi9weXRob24zLjEyL3NpdGUtcGFja2FnZXMvcnVmZi0wLjE1LjEzLmRpc3QtaW5mby9zYm9tcy9ydWZmLmN5Y2xvbmVkeC5qc29uOjQ0MzM6IHN0YXRpY3MgPT0+IHN0YXRpc3RpY3M=",
+        "file_sha256": "3687583c8b194ae80daf5f52e33f344cd5d96306071236de17714fa993eb3130",
+        "line": 4433,
+        "path": "scripts/.venv/lib/python3.12/site-packages/ruff-0.15.13.dist-info/sboms/ruff.cyclonedx.json",
+        "same_bytes_as_current_head": false
+      },
+      {
+        "diagnostic_utf8_base64": "Li9zY3JpcHRzLy52ZW52L2xpYi9weXRob24zLjEyL3NpdGUtcGFja2FnZXMvcnVmZi0wLjE1LjEzLmRpc3QtaW5mby9zYm9tcy9ydWZmLmN5Y2xvbmVkeC5qc29uOjc4NjM6IGFjaGluID09PiBhY2hpbmcsIGEgY2hpbiwgYWN0aW4=",
+        "file_sha256": "3687583c8b194ae80daf5f52e33f344cd5d96306071236de17714fa993eb3130",
+        "line": 7863,
+        "path": "scripts/.venv/lib/python3.12/site-packages/ruff-0.15.13.dist-info/sboms/ruff.cyclonedx.json",
+        "same_bytes_as_current_head": false
+      }
+    ],
+    "label": "current-sparse-working-tree",
+    "scope": "Current sparse working tree, not a full GitHub Actions checkout. Existing text findings remain unmodified; the narrow configuration checks do not claim repository-wide spelling success.",
+    "stderr_base64": "MjEK",
+    "stderr_sha256": "6e2ae11dad0616f66bbb2b6e6556f580bb987fd911d7132aa6bee2bfc7cc7b52",
+    "stdout_base64": "Li9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjIyNDogRlBUID09PiBGVFAKLi9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjIyOTogZnB0ID09PiBmdHAKLi9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjIzNDogZnB0ID09PiBmdHAKLi9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjIzOTogcmV0dW5lZCA9PT4gcmV0dXJuZWQKLi9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjI0NDogZGF0YXMgPT0+IGRhdGEKLi9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjI0OTogZGF0YXMgPT0+IGRhdGEKLi9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjI1NDogZG9lc25vdCA9PT4gZG9lc24ndCwgZG9lcyBub3QKLi9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjI1OTogcGVyc2VlZCA9PT4gcHJlY2VkZQouL2V4cGVyaW1lbnRzL25hdGl2ZV9yZWFkb3V0X29iamVjdGl2ZS9yZXN1bHRzL0NJX1JVTl9CMjQ0Lmpzb246MjY0OiBuZCA9PT4gYW5kLCAybmQKLi9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjI2OTogbmQgPT0+IGFuZCwgMm5kCi4vZXhwZXJpbWVudHMvbmF0aXZlX3JlYWRvdXRfb2JqZWN0aXZlL3Jlc3VsdHMvQ0lfUlVOX0IyNDQuanNvbjoyNzQ6IExBTUEgPT0+IExMQU1BCi4vZXhwZXJpbWVudHMvbmF0aXZlX3JlYWRvdXRfb2JqZWN0aXZlL3Jlc3VsdHMvQ0lfUlVOX0IyNDQuanNvbjoyNzk6IEFNT05VVCA9PT4gQU1PVU5UCi4vZXhwZXJpbWVudHMvbmF0aXZlX3JlYWRvdXRfb2JqZWN0aXZlL3Jlc3VsdHMvQ0lfUlVOX0IyNDQuanNvbjoyODQ6IEVYQ0hBTkdBQkxFID09PiBFWENIQU5HRUFCTEUKLi9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjI4OTogVEVIID09PiBUSEUKLi9leHBlcmltZW50cy9uYXRpdmVfcmVhZG91dF9vYmplY3RpdmUvcmVzdWx0cy9DSV9SVU5fQjI0NC5qc29uOjI5NDogcmVzdG9yZWFibGUgPT0+IHJlc3RvcmFibGUKLi9leHBlcmltZW50cy9maXJzdF9wYXNzYWdlX2NlbGwvZmlsdGVyaW5nLnB5OjY1OiBGUFQgPT0+IEZUUAouL2V4cGVyaW1lbnRzL2ZpcnN0X3Bhc3NhZ2VfY2VsbC92YWxpZGF0ZV9rZXJuZWxzLnB5OjIyNDogZnB0ID09PiBmdHAKLi9leHBlcmltZW50cy9maXJzdF9wYXNzYWdlX2NlbGwvZXZpZGVuY2UvS0VSTkVMX1ZBTElEQVRJT04uanNvbjozODM0OiBmcHQgPT0+IGZ0cAouL3NjcmlwdHMvLnZlbnYvbGliL3B5dGhvbjMuMTIvc2l0ZS1wYWNrYWdlcy9ydWZmLTAuMTUuMTMuZGlzdC1pbmZvL3Nib21zL3J1ZmYuY3ljbG9uZWR4Lmpzb246MjIyMTogYWlycG9zdCA9PT4gYWlycG9ydAouL3NjcmlwdHMvLnZlbnYvbGliL3B5dGhvbjMuMTIvc2l0ZS1wYWNrYWdlcy9ydWZmLTAuMTUuMTMuZGlzdC1pbmZvL3Nib21zL3J1ZmYuY3ljbG9uZWR4Lmpzb246NDQzMzogc3RhdGljcyA9PT4gc3RhdGlzdGljcwouL3NjcmlwdHMvLnZlbnYvbGliL3B5dGhvbjMuMTIvc2l0ZS1wYWNrYWdlcy9ydWZmLTAuMTUuMTMuZGlzdC1pbmZvL3Nib21zL3J1ZmYuY3ljbG9uZWR4Lmpzb246Nzg2MzogYWNoaW4gPT0+IGFjaGluZywgYSBjaGluLCBhY3Rpbgo=",
+    "stdout_sha256": "52bd24ce71a9a61fca6a9ac6e376606b22a3c8321f696ce630e139218cb23217",
+    "wall_seconds": 0.9669770489999792
+  },
+  "result": {
+    "configuration_behavior": "PASS",
+    "historical_ci_failure_status_changed": false,
+    "new_ci_receipt_diagnostics_after_reversible_encoding": 0,
+    "ordinary_text_and_adjacent_index_json_still_rejected": true,
+    "repository_wide_spelling_success_claimed": false,
+    "six_archive_classes_excluded_for_default_recursive_and_explicit_relative_paths": true
+  },
+  "schema": "hepta.codespell-config-validation.v1",
+  "scientific_source_or_raw_modified": false,
+  "scientific_tests_executed": false,
+  "synthetic_archive_paths": [
+    "experiments/continuous_boundary_flow/evidence/bundle/archive-00000.part",
+    "experiments/continuous_boundary_policy/evidence/bundle/archive-00000.part",
+    "experiments/native_readout_objective/evidence/bundle/archive-00000.part",
+    "experiments/continuous_boundary_policy_reproduction/evidence/bundle/archive-00000.part",
+    "experiments/continuous_boundary_policy_reproduction/preflight/runtime_evidence/archive-00000.part",
+    "experiments/native_readout_objective/preflight/probe.tar.gz"
+  ],
+  "synthetic_payload_note": "Intentional plain UTF-8 misspelling bytes at archive-suffixed paths prove path exclusion, rather than relying on binary detection. Diagnostic bodies are base64 encoded in this receipt to avoid adding intentional spelling mistakes to repository prose.",
+  "upstream_action_container": "python:3.13-alpine",
+  "upstream_action_container_executed": false,
+  "validation_scope": "Execute the real officially downloaded Codespell CLI with the same effective arguments produced by the pinned action. Pinned entrypoint emits no --skip when INPUT_SKIP is empty. Local fixture checks are not Docker/GitHub-runner integration tests.",
+  "workflow_inputs": {
+    "config": ".codespellrc",
+    "ignore_words_file": ".codespellignore",
+    "skip": ""
+  },
+  "workflow_sha256": "798d6468bc332caa064a6408caf2da3188b18c45c6648d84560276815e899179"
+}

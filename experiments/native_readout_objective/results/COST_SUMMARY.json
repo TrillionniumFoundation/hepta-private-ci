@@ -1,0 +1,349 @@
+{
+  "data": {
+    "audited_cost_rows_sha256": "e1eab72f5cb4b7db100e603892a11b145fdecccd5612497c701a266a6be17a00",
+    "cpu_clock_rounding_tolerance_seconds_per_phase": 5e-06,
+    "hardware_energy_measured": false,
+    "model_build_cpu_seconds_subset": 11.046505580999955,
+    "native_counters_by_phase": {
+      "confirmation_rollout": {
+        "actual_kernel_calls": 143262,
+        "actual_ndu_calls": 143262,
+        "request_bytes": 37954826,
+        "response_bytes": 125666686
+      },
+      "diagnostic_panel": {
+        "actual_kernel_calls": 18432,
+        "actual_ndu_calls": 18432,
+        "request_bytes": 4843911,
+        "response_bytes": 16074413
+      },
+      "native_feature_export": {
+        "actual_kernel_calls": 18432,
+        "actual_ndu_calls": 0,
+        "request_bytes": 3870519,
+        "response_bytes": 8330127
+      },
+      "training_development": {
+        "actual_kernel_calls": 110522,
+        "actual_ndu_calls": 110522,
+        "request_bytes": 30561148,
+        "response_bytes": 99022106
+      }
+    },
+    "native_process_counters": {
+      "actual_kernel_calls": 290648,
+      "actual_ndu_calls": 272216,
+      "request_bytes": 77230404,
+      "response_bytes": 249093332
+    },
+    "native_process_cpu_seconds_subset": 16.63949999999999,
+    "outer_command_cost_scope": "Whole training, confirmation, selection-audit, confirmation-audit and owner commands. Scientific phase windows and owner overall window are included subsets of the corresponding commands; never add them to these outer receipts. Compilation, preflight, artifact packing and publication are separate.",
+    "outer_command_costs": [
+      {
+        "cpu_including_wrapper_seconds": 137.128945974,
+        "engineering_relative_path": "outer_costs/readout-confirmation-audit.json",
+        "receipt": {
+          "child_system_cpu_seconds": 1.150259,
+          "child_user_cpu_seconds": 135.97832,
+          "command": [
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+            "-m",
+            "experiments.native_readout_objective.audit",
+            "/dev/shm/hepta-native-objective-20261029/readout-run-001",
+            "--output",
+            "/dev/shm/hepta-native-objective-20261029/readout-engineering-001/audits/CONFIRMATION_AUDIT.json"
+          ],
+          "exit_code": 0,
+          "hardware_energy_measured": false,
+          "log_sha256": "db0e4da12ef5e6395c3ae1964f43c5b4192276751abf0613c6a0bbd15dc20838",
+          "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+          "schema": "hepta.research.outer-command-cost.v1",
+          "scope": "whole command including imports, verification and output; inclusive child CPU covers waited native descendants; nested study clocks are subsets and must not be added",
+          "wall_seconds": 137.14820826500363,
+          "wrapper_cpu_seconds": 0.0003669739999999991
+        },
+        "sha256": "7ba09b6df56da60cc85c7cde42b713fdad4ed6f7ed5f566e55ccfdba61a9a292"
+      },
+      {
+        "cpu_including_wrapper_seconds": 68.90894626299999,
+        "engineering_relative_path": "outer_costs/readout-confirmation.json",
+        "receipt": {
+          "child_system_cpu_seconds": 1.4021759999999999,
+          "child_user_cpu_seconds": 67.50095499999999,
+          "command": [
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+            "-m",
+            "experiments.native_readout_objective.study",
+            "confirm",
+            "--output",
+            "/dev/shm/hepta-native-objective-20261029/readout-run-001",
+            "--native-binary",
+            "/dev/shm/hepta-native-objective-20261029/build/target/release/examples/continuous_host",
+            "--publication-commit",
+            "87b03617077f9e5f275d291b7af06cd1418f87ce"
+          ],
+          "exit_code": 0,
+          "hardware_energy_measured": false,
+          "log_sha256": "c09942ac84d85343c1af524789208dd480172d6244fc13eaf76288267cd2b9d3",
+          "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+          "schema": "hepta.research.outer-command-cost.v1",
+          "scope": "whole command including imports, verification and output; inclusive child CPU covers waited native descendants; nested study clocks are subsets and must not be added",
+          "wall_seconds": 68.67878618200484,
+          "wrapper_cpu_seconds": 0.005815263000000001
+        },
+        "sha256": "233d610b9ec149bbb09d5558616f7b2506d3d706aefeb7afc9d8d8745e0684bb"
+      },
+      {
+        "cpu_including_wrapper_seconds": 1.434079236,
+        "engineering_relative_path": "outer_costs/readout-owner-engineering.json",
+        "receipt": {
+          "child_system_cpu_seconds": 0.193168,
+          "child_user_cpu_seconds": 1.2405570000000001,
+          "command": [
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+            "-m",
+            "experiments.native_readout_objective.engineering",
+            "--run",
+            "/dev/shm/hepta-native-objective-20261029/readout-run-001",
+            "--native-binary",
+            "/dev/shm/hepta-native-objective-20261029/build/target/release/examples/continuous_host",
+            "--output",
+            "/dev/shm/hepta-native-objective-20261029/readout-engineering-001/owner"
+          ],
+          "exit_code": 0,
+          "hardware_energy_measured": false,
+          "log_sha256": "401daa185a608569a13d40c3afaabfb69bd593fa3ced7a36c3951627386e98d1",
+          "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+          "schema": "hepta.research.outer-command-cost.v1",
+          "scope": "whole command including imports, verification and output; inclusive child CPU covers waited native descendants; nested study clocks are subsets and must not be added",
+          "wall_seconds": 1.4469679949979763,
+          "wrapper_cpu_seconds": 0.00035423600000000083
+        },
+        "sha256": "61cad97473071bae4c8b7cf577f7c4752f97631634fd4f79147b9cc505a91725"
+      },
+      {
+        "cpu_including_wrapper_seconds": 74.238426749,
+        "engineering_relative_path": "outer_costs/readout-selection-audit.json",
+        "receipt": {
+          "child_system_cpu_seconds": 0.636779,
+          "child_user_cpu_seconds": 73.60091399999999,
+          "command": [
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+            "-m",
+            "experiments.native_readout_objective.audit",
+            "/dev/shm/hepta-native-objective-20261029/readout-run-001",
+            "--selection-only",
+            "--output",
+            "/dev/shm/hepta-native-objective-20261029/readout-engineering-001/audits/SELECTION_AUDIT.json"
+          ],
+          "exit_code": 0,
+          "hardware_energy_measured": false,
+          "log_sha256": "8320549c45358cd70aef71f7cde2f2bfb3c6cc553199b6557d6dfdb636c67dc6",
+          "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+          "schema": "hepta.research.outer-command-cost.v1",
+          "scope": "whole command including imports, verification and output; inclusive child CPU covers waited native descendants; nested study clocks are subsets and must not be added",
+          "wall_seconds": 74.24002646899316,
+          "wrapper_cpu_seconds": 0.0007337489999999988
+        },
+        "sha256": "afb7de6e6ceb3c81a5df3c0ff5402132accacbbeed17cef4d4039e5250781e3d"
+      },
+      {
+        "cpu_including_wrapper_seconds": 63.32113181,
+        "engineering_relative_path": "outer_costs/readout-training.json",
+        "receipt": {
+          "child_system_cpu_seconds": 1.31353,
+          "child_user_cpu_seconds": 62.00367,
+          "command": [
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+            "-m",
+            "experiments.native_readout_objective.study",
+            "train",
+            "--output",
+            "/dev/shm/hepta-native-objective-20261029/readout-run-001",
+            "--native-binary",
+            "/dev/shm/hepta-native-objective-20261029/build/target/release/examples/continuous_host"
+          ],
+          "exit_code": 0,
+          "hardware_energy_measured": false,
+          "log_sha256": "539dc39b78625be66c3f47d1b839a21101fc05a518f13f033b6c307c6b5aa8b2",
+          "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+          "schema": "hepta.research.outer-command-cost.v1",
+          "scope": "whole command including imports, verification and output; inclusive child CPU covers waited native descendants; nested study clocks are subsets and must not be added",
+          "wall_seconds": 63.30156315800559,
+          "wrapper_cpu_seconds": 0.003931810000000001
+        },
+        "sha256": "d8a3b57893e871d2c819e3ee083da18f21b8d7a4ff6b3cea2d35ac9d83500b17"
+      }
+    ],
+    "owner_engineering_separate": {
+      "overall_cost": {
+        "child_cpu_scope": "only children reaped inside this window",
+        "completed_child_cpu_seconds": 0.072908,
+        "python_cpu_seconds": 0.9442004770000001,
+        "wall_seconds": 1.0299904519924894
+      },
+      "scope": "overall window includes setup, all cases and evidence writes before summary; phase and per-PID costs are included subsets, not additive to overall",
+      "summary_sha256": "a53cae415c2b7fd9a7a88d72162ad78dd197255bf40ad5b934e41ce8485f45ae"
+    },
+    "parent_minus_per_pid_cpu_seconds": 0.00015400000000008116,
+    "per_arm_phase_totals": {
+      "finite_grid_dp": {
+        "confirmation_rollout": {
+          "completed_child_cpu_seconds": 0.0,
+          "python_cpu_seconds": 3.9057335579999974,
+          "total_cpu_seconds": 3.9057335579999974,
+          "wall_seconds": 3.9064613389928127
+        },
+        "serialization": {
+          "completed_child_cpu_seconds": 0.0,
+          "python_cpu_seconds": 1.3144996019999855,
+          "total_cpu_seconds": 1.3144996019999855,
+          "wall_seconds": 1.3145710590179078
+        }
+      },
+      "iterative_q_mse": {
+        "confirmation_rollout": {
+          "completed_child_cpu_seconds": 2.666751999999997,
+          "python_cpu_seconds": 9.003853552999988,
+          "total_cpu_seconds": 11.670605552999985,
+          "wall_seconds": 11.570275856021908
+        },
+        "diagnostic_panel": {
+          "completed_child_cpu_seconds": 0.371654,
+          "python_cpu_seconds": 0.8773713870000206,
+          "total_cpu_seconds": 1.2490253870000205,
+          "wall_seconds": 1.2420891010115156
+        },
+        "serialization": {
+          "completed_child_cpu_seconds": 0.0,
+          "python_cpu_seconds": 4.305535152000001,
+          "total_cpu_seconds": 4.305535152000001,
+          "wall_seconds": 4.306170432028011
+        },
+        "training_development": {
+          "completed_child_cpu_seconds": 2.2592319999999995,
+          "python_cpu_seconds": 13.032848687999994,
+          "total_cpu_seconds": 15.292080687999993,
+          "wall_seconds": 15.293643038006849
+        }
+      },
+      "policy_regret": {
+        "confirmation_rollout": {
+          "completed_child_cpu_seconds": 2.8428160000000027,
+          "python_cpu_seconds": 12.173208027000005,
+          "total_cpu_seconds": 15.016024027000007,
+          "wall_seconds": 14.989434895003797
+        },
+        "diagnostic_panel": {
+          "completed_child_cpu_seconds": 0.38853500000000063,
+          "python_cpu_seconds": 0.8211196989999987,
+          "total_cpu_seconds": 1.2096546989999992,
+          "wall_seconds": 1.2041687279415783
+        },
+        "serialization": {
+          "completed_child_cpu_seconds": 0.0,
+          "python_cpu_seconds": 4.390211043000006,
+          "total_cpu_seconds": 4.390211043000006,
+          "wall_seconds": 4.390973913978087
+        },
+        "training_development": {
+          "completed_child_cpu_seconds": 2.2638690000000024,
+          "python_cpu_seconds": 17.479618865999996,
+          "total_cpu_seconds": 19.743487866,
+          "wall_seconds": 19.75691856908088
+        }
+      },
+      "ridge_reference": {
+        "confirmation_rollout": {
+          "completed_child_cpu_seconds": 2.642391,
+          "python_cpu_seconds": 9.085882927000009,
+          "total_cpu_seconds": 11.728273927000009,
+          "wall_seconds": 11.63880417002656
+        },
+        "diagnostic_panel": {
+          "completed_child_cpu_seconds": 0.3876909999999992,
+          "python_cpu_seconds": 0.8290470950000044,
+          "total_cpu_seconds": 1.2167380950000035,
+          "wall_seconds": 1.2138565580244176
+        },
+        "serialization": {
+          "completed_child_cpu_seconds": 0.0,
+          "python_cpu_seconds": 4.442912804999997,
+          "total_cpu_seconds": 4.442912804999997,
+          "wall_seconds": 4.443337889984832
+        },
+        "training_development": {
+          "completed_child_cpu_seconds": 2.201301000000001,
+          "python_cpu_seconds": 11.209053257999999,
+          "total_cpu_seconds": 13.410354258,
+          "wall_seconds": 13.413897469989024
+        }
+      }
+    },
+    "phase_totals": {
+      "confirmation_rollout": {
+        "completed_child_cpu_seconds": 8.151959,
+        "python_cpu_seconds": 34.168678065,
+        "wall_seconds": 42.10497626004508
+      },
+      "confirmation_setup": {
+        "completed_child_cpu_seconds": 0.0,
+        "python_cpu_seconds": 4.611590083000008,
+        "wall_seconds": 4.613910300991847
+      },
+      "diagnostic_panel": {
+        "completed_child_cpu_seconds": 1.14788,
+        "python_cpu_seconds": 2.5275381810000237,
+        "wall_seconds": 3.6601143869775115
+      },
+      "diagnostic_setup": {
+        "completed_child_cpu_seconds": 0.0,
+        "python_cpu_seconds": 2.9089911440000082,
+        "wall_seconds": 2.91010860503593
+      },
+      "native_feature_export": {
+        "completed_child_cpu_seconds": 0.6154129999999972,
+        "python_cpu_seconds": 2.0251074560000073,
+        "wall_seconds": 2.6031759730249178
+      },
+      "serialization": {
+        "completed_child_cpu_seconds": 0.0,
+        "python_cpu_seconds": 14.453158601999988,
+        "wall_seconds": 14.455053295008838
+      },
+      "training_development": {
+        "completed_child_cpu_seconds": 6.724402000000001,
+        "python_cpu_seconds": 41.721520811999994,
+        "wall_seconds": 48.464459077076754
+      },
+      "training_setup": {
+        "completed_child_cpu_seconds": 0.0,
+        "python_cpu_seconds": 11.360891142999991,
+        "wall_seconds": 11.36246241198387
+      }
+    },
+    "planning_cpu_seconds_subset": 0.5019857030000399,
+    "record_count": 288,
+    "scope": "nonoverlapping scientific windows; exact child CPU and fitting/model/DP clocks are subsets, never added twice; compilation and independent audit excluded",
+    "total": {
+      "completed_child_cpu_seconds": 16.639653999999997,
+      "python_cpu_seconds": 113.77747548600003,
+      "total_cpu_seconds": 130.41712948600002,
+      "wall_seconds": 130.17426031014475
+    }
+  },
+  "provenance": {
+    "derivation": "exact extraction and arithmetic aggregation from the named independent audit; extra cost aggregates additionally bind audited costs.jsonl",
+    "full_audit_engineering_relative_path": "audits/CONFIRMATION_AUDIT.json",
+    "full_audit_sha256": "4db0de9b32926b4415c2179715f520ad8b852362b112b103218d447de415a8fb",
+    "native_binary_sha256": "fa9dc78b129b0ec3b072e9fc8c8fdd49479515c79aeb2660f355e38f41e54dce",
+    "protocol_sha256": "3d19c2f0aef69da5d368da01e34308f1344ec98b10fd0aaefa1ba4877aa9baff",
+    "public_archive_directory": "evidence/bundle/",
+    "scientific_manifest_sha256": "861468d3cd2f1841291dfcd32c93f3efe1db58f494c02e549979376fb26e60b7",
+    "selection_publication_commit": "87b03617077f9e5f275d291b7af06cd1418f87ce",
+    "selection_seal_sha256": "28477204d0ef4a94fc990295196d5c51f792a95e2546750217a2a5592f682d66",
+    "source_publication_commit": "7908860cb959cbe1599379d4ecbfcc22fbccbe61",
+    "source_seal_sha256": "83f5243f7b7c7aead3742baccd01caaf619759658f320e824589ff016269d2e9"
+  },
+  "schema": "hepta.native-readout-objective.cost-summary.derived.v1"
+}

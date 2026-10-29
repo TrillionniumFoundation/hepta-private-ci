@@ -1,0 +1,1263 @@
+{
+  "candidate_optimizers_independently_reconstructed": 144,
+  "checkpoints_verified": 64,
+  "confirmation_episodes_verified": 0,
+  "costs": {
+    "cpu_clock_rounding_tolerance_seconds_per_phase": 5e-06,
+    "hardware_energy_measured": false,
+    "model_build_cpu_seconds_subset": 5.594348963999977,
+    "native_process_counters": {
+      "actual_kernel_calls": 128954,
+      "actual_ndu_calls": 110522,
+      "request_bytes": 34431667,
+      "response_bytes": 107352233
+    },
+    "native_process_cpu_seconds_subset": 7.339752999999999,
+    "parent_minus_per_pid_cpu_seconds": 6.200000000024936e-05,
+    "phase_totals": {
+      "native_feature_export": {
+        "completed_child_cpu_seconds": 0.6154129999999972,
+        "python_cpu_seconds": 2.0251074560000073,
+        "wall_seconds": 2.6031759730249178
+      },
+      "training_development": {
+        "completed_child_cpu_seconds": 6.724402000000001,
+        "python_cpu_seconds": 41.721520811999994,
+        "wall_seconds": 48.464459077076754
+      },
+      "training_setup": {
+        "completed_child_cpu_seconds": 0.0,
+        "python_cpu_seconds": 11.360891142999991,
+        "wall_seconds": 11.36246241198387
+      }
+    },
+    "planning_cpu_seconds_subset": 0.2540821720000787,
+    "record_count": 80,
+    "scope": "nonoverlapping scientific windows; exact child CPU and fitting/model/DP clocks are subsets, never added twice; compilation and independent audit excluded",
+    "total": {
+      "completed_child_cpu_seconds": 7.339814999999999,
+      "python_cpu_seconds": 55.10751941099999,
+      "total_cpu_seconds": 62.44733441099999,
+      "wall_seconds": 62.43009746208554
+    }
+  },
+  "development_episodes_verified": 9216,
+  "files_verified": 678,
+  "manifest_sha256": null,
+  "native_binary_sha256": "fa9dc78b129b0ec3b072e9fc8c8fdd49479515c79aeb2660f355e38f41e54dce",
+  "passed": true,
+  "phase": "selection_only",
+  "protocol_sha256": "3d19c2f0aef69da5d368da01e34308f1344ec98b10fd0aaefa1ba4877aa9baff",
+  "schema": "hepta.native-readout-objective.independent-audit.v1",
+  "scope": {
+    "calibration": "common analytic after-action first-passage predictor evaluated on each policy's own exposure; differing visitation prevents an isolated risk-learning comparison",
+    "diagnostics": "descriptive only; unique confirmatory family is policy_regret minus iterative_q_mse",
+    "independence": "independent Bellman, causal trajectories, physical reward, optimizer and Q24 arithmetic; shared sealed numerical grid constructor; native sparse kernel is executed and receipt-checked, not separately reimplemented",
+    "stability": "complete finite task horizons and saved native state/receipt chains only; no unmeasured long-horizon or energy claim"
+  },
+  "selection_seal_sha256": "28477204d0ef4a94fc990295196d5c51f792a95e2546750217a2a5592f682d66",
+  "source_seal_sha256": "83f5243f7b7c7aead3742baccd01caaf619759658f320e824589ff016269d2e9",
+  "training_native_activation_rows_verified": 18432,
+  "training_selection": [
+    {
+      "arm": "ridge_reference",
+      "candidates": [
+        {
+          "gradient_coordinates": null,
+          "index": 0,
+          "mean_development_net_utility": 4.376353041622416,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 1,
+          "mean_development_net_utility": 4.45148578915849,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 2,
+          "mean_development_net_utility": 4.490174087900531,
+          "observed_active_columns": 11
+        }
+      ],
+      "seed": 3301,
+      "selected_index": 2
+    },
+    {
+      "arm": "iterative_q_mse",
+      "candidates": [
+        {
+          "gradient_coordinates": 24,
+          "index": 0,
+          "mean_development_net_utility": 4.455683632573966,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 1,
+          "mean_development_net_utility": 4.514245780434982,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 2,
+          "mean_development_net_utility": 4.418526173184988,
+          "observed_active_columns": 11
+        }
+      ],
+      "seed": 3301,
+      "selected_index": 1
+    },
+    {
+      "arm": "policy_regret",
+      "candidates": [
+        {
+          "gradient_coordinates": 24,
+          "index": 0,
+          "mean_development_net_utility": 4.276112315251034,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 1,
+          "mean_development_net_utility": 4.39391212001262,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 2,
+          "mean_development_net_utility": 4.436033041288666,
+          "observed_active_columns": 11
+        }
+      ],
+      "seed": 3301,
+      "selected_index": 2
+    },
+    {
+      "arm": "ridge_reference",
+      "candidates": [
+        {
+          "gradient_coordinates": null,
+          "index": 0,
+          "mean_development_net_utility": 4.338505969239227,
+          "observed_active_columns": 10
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 1,
+          "mean_development_net_utility": 4.338703326236327,
+          "observed_active_columns": 10
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 2,
+          "mean_development_net_utility": 4.338795990520925,
+          "observed_active_columns": 10
+        }
+      ],
+      "seed": 3307,
+      "selected_index": 2
+    },
+    {
+      "arm": "iterative_q_mse",
+      "candidates": [
+        {
+          "gradient_coordinates": 22,
+          "index": 0,
+          "mean_development_net_utility": 4.379882589594793,
+          "observed_active_columns": 10
+        },
+        {
+          "gradient_coordinates": 22,
+          "index": 1,
+          "mean_development_net_utility": 4.398171971219291,
+          "observed_active_columns": 10
+        },
+        {
+          "gradient_coordinates": 22,
+          "index": 2,
+          "mean_development_net_utility": 4.338505969239227,
+          "observed_active_columns": 10
+        }
+      ],
+      "seed": 3307,
+      "selected_index": 1
+    },
+    {
+      "arm": "policy_regret",
+      "candidates": [
+        {
+          "gradient_coordinates": 22,
+          "index": 0,
+          "mean_development_net_utility": 3.66943199900005,
+          "observed_active_columns": 10
+        },
+        {
+          "gradient_coordinates": 22,
+          "index": 1,
+          "mean_development_net_utility": 4.174549644557116,
+          "observed_active_columns": 10
+        },
+        {
+          "gradient_coordinates": 22,
+          "index": 2,
+          "mean_development_net_utility": 4.193295720723503,
+          "observed_active_columns": 10
+        }
+      ],
+      "seed": 3307,
+      "selected_index": 2
+    },
+    {
+      "arm": "ridge_reference",
+      "candidates": [
+        {
+          "gradient_coordinates": null,
+          "index": 0,
+          "mean_development_net_utility": 4.263679647524251,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 1,
+          "mean_development_net_utility": 4.284690235586879,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 2,
+          "mean_development_net_utility": 4.2519265780829105,
+          "observed_active_columns": 11
+        }
+      ],
+      "seed": 3313,
+      "selected_index": 1
+    },
+    {
+      "arm": "iterative_q_mse",
+      "candidates": [
+        {
+          "gradient_coordinates": 24,
+          "index": 0,
+          "mean_development_net_utility": 4.224988777919302,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 1,
+          "mean_development_net_utility": 4.247657159088793,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 2,
+          "mean_development_net_utility": 4.288976547461813,
+          "observed_active_columns": 11
+        }
+      ],
+      "seed": 3313,
+      "selected_index": 2
+    },
+    {
+      "arm": "policy_regret",
+      "candidates": [
+        {
+          "gradient_coordinates": 24,
+          "index": 0,
+          "mean_development_net_utility": 4.231410878715853,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 1,
+          "mean_development_net_utility": 4.303610856675013,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 2,
+          "mean_development_net_utility": 4.306711663776984,
+          "observed_active_columns": 11
+        }
+      ],
+      "seed": 3313,
+      "selected_index": 2
+    },
+    {
+      "arm": "ridge_reference",
+      "candidates": [
+        {
+          "gradient_coordinates": null,
+          "index": 0,
+          "mean_development_net_utility": 4.3042424707383145,
+          "observed_active_columns": 10
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 1,
+          "mean_development_net_utility": 4.287052015722265,
+          "observed_active_columns": 10
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 2,
+          "mean_development_net_utility": 4.336805930193317,
+          "observed_active_columns": 10
+        }
+      ],
+      "seed": 3319,
+      "selected_index": 2
+    },
+    {
+      "arm": "iterative_q_mse",
+      "candidates": [
+        {
+          "gradient_coordinates": 22,
+          "index": 0,
+          "mean_development_net_utility": 4.329993860012688,
+          "observed_active_columns": 10
+        },
+        {
+          "gradient_coordinates": 22,
+          "index": 1,
+          "mean_development_net_utility": 4.309119298961997,
+          "observed_active_columns": 10
+        },
+        {
+          "gradient_coordinates": 22,
+          "index": 2,
+          "mean_development_net_utility": 4.262659395112456,
+          "observed_active_columns": 10
+        }
+      ],
+      "seed": 3319,
+      "selected_index": 0
+    },
+    {
+      "arm": "policy_regret",
+      "candidates": [
+        {
+          "gradient_coordinates": 22,
+          "index": 0,
+          "mean_development_net_utility": 4.261193593978206,
+          "observed_active_columns": 10
+        },
+        {
+          "gradient_coordinates": 22,
+          "index": 1,
+          "mean_development_net_utility": 4.2502299402148855,
+          "observed_active_columns": 10
+        },
+        {
+          "gradient_coordinates": 22,
+          "index": 2,
+          "mean_development_net_utility": 4.2385546221572925,
+          "observed_active_columns": 10
+        }
+      ],
+      "seed": 3319,
+      "selected_index": 0
+    },
+    {
+      "arm": "ridge_reference",
+      "candidates": [
+        {
+          "gradient_coordinates": null,
+          "index": 0,
+          "mean_development_net_utility": 3.2586610392119004,
+          "observed_active_columns": 9
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 1,
+          "mean_development_net_utility": 3.1744051256402335,
+          "observed_active_columns": 9
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 2,
+          "mean_development_net_utility": 3.278246865268244,
+          "observed_active_columns": 9
+        }
+      ],
+      "seed": 3323,
+      "selected_index": 2
+    },
+    {
+      "arm": "iterative_q_mse",
+      "candidates": [
+        {
+          "gradient_coordinates": 20,
+          "index": 0,
+          "mean_development_net_utility": 3.287663346498979,
+          "observed_active_columns": 9
+        },
+        {
+          "gradient_coordinates": 20,
+          "index": 1,
+          "mean_development_net_utility": 3.327383336228987,
+          "observed_active_columns": 9
+        },
+        {
+          "gradient_coordinates": 20,
+          "index": 2,
+          "mean_development_net_utility": 3.2222145761814662,
+          "observed_active_columns": 9
+        }
+      ],
+      "seed": 3323,
+      "selected_index": 1
+    },
+    {
+      "arm": "policy_regret",
+      "candidates": [
+        {
+          "gradient_coordinates": 20,
+          "index": 0,
+          "mean_development_net_utility": 3.288249081268699,
+          "observed_active_columns": 9
+        },
+        {
+          "gradient_coordinates": 20,
+          "index": 1,
+          "mean_development_net_utility": 3.2956679028071902,
+          "observed_active_columns": 9
+        },
+        {
+          "gradient_coordinates": 20,
+          "index": 2,
+          "mean_development_net_utility": 3.1694949999169073,
+          "observed_active_columns": 9
+        }
+      ],
+      "seed": 3323,
+      "selected_index": 1
+    },
+    {
+      "arm": "ridge_reference",
+      "candidates": [
+        {
+          "gradient_coordinates": null,
+          "index": 0,
+          "mean_development_net_utility": 4.0497486619258805,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 1,
+          "mean_development_net_utility": 4.0764258735436245,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 2,
+          "mean_development_net_utility": 3.9355159099546215,
+          "observed_active_columns": 11
+        }
+      ],
+      "seed": 3329,
+      "selected_index": 1
+    },
+    {
+      "arm": "iterative_q_mse",
+      "candidates": [
+        {
+          "gradient_coordinates": 24,
+          "index": 0,
+          "mean_development_net_utility": 3.8136276052285893,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 1,
+          "mean_development_net_utility": 3.9392671931094574,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 2,
+          "mean_development_net_utility": 4.04557344991033,
+          "observed_active_columns": 11
+        }
+      ],
+      "seed": 3329,
+      "selected_index": 2
+    },
+    {
+      "arm": "policy_regret",
+      "candidates": [
+        {
+          "gradient_coordinates": 24,
+          "index": 0,
+          "mean_development_net_utility": 3.5666093908765752,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 1,
+          "mean_development_net_utility": 3.506844936577272,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 2,
+          "mean_development_net_utility": 3.568458281199394,
+          "observed_active_columns": 11
+        }
+      ],
+      "seed": 3329,
+      "selected_index": 2
+    },
+    {
+      "arm": "ridge_reference",
+      "candidates": [
+        {
+          "gradient_coordinates": null,
+          "index": 0,
+          "mean_development_net_utility": 4.344533760937216,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 1,
+          "mean_development_net_utility": 4.344533760937216,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 2,
+          "mean_development_net_utility": 4.344533760937216,
+          "observed_active_columns": 11
+        }
+      ],
+      "seed": 3331,
+      "selected_index": 0
+    },
+    {
+      "arm": "iterative_q_mse",
+      "candidates": [
+        {
+          "gradient_coordinates": 24,
+          "index": 0,
+          "mean_development_net_utility": 4.344533760937216,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 1,
+          "mean_development_net_utility": 4.344533760937216,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 2,
+          "mean_development_net_utility": 4.344533760937216,
+          "observed_active_columns": 11
+        }
+      ],
+      "seed": 3331,
+      "selected_index": 0
+    },
+    {
+      "arm": "policy_regret",
+      "candidates": [
+        {
+          "gradient_coordinates": 24,
+          "index": 0,
+          "mean_development_net_utility": 4.165647243320735,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 1,
+          "mean_development_net_utility": 4.277157639373287,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 2,
+          "mean_development_net_utility": 4.283031942509181,
+          "observed_active_columns": 11
+        }
+      ],
+      "seed": 3331,
+      "selected_index": 2
+    },
+    {
+      "arm": "ridge_reference",
+      "candidates": [
+        {
+          "gradient_coordinates": null,
+          "index": 0,
+          "mean_development_net_utility": 4.252486140209404,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 1,
+          "mean_development_net_utility": 4.2581318623780176,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 2,
+          "mean_development_net_utility": 4.2538754489555455,
+          "observed_active_columns": 11
+        }
+      ],
+      "seed": 3343,
+      "selected_index": 1
+    },
+    {
+      "arm": "iterative_q_mse",
+      "candidates": [
+        {
+          "gradient_coordinates": 24,
+          "index": 0,
+          "mean_development_net_utility": 4.2168754507632435,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 1,
+          "mean_development_net_utility": 4.209778332203947,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 2,
+          "mean_development_net_utility": 4.209426037868749,
+          "observed_active_columns": 11
+        }
+      ],
+      "seed": 3343,
+      "selected_index": 0
+    },
+    {
+      "arm": "policy_regret",
+      "candidates": [
+        {
+          "gradient_coordinates": 24,
+          "index": 0,
+          "mean_development_net_utility": 4.144947169445924,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 1,
+          "mean_development_net_utility": 4.144947169445924,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 2,
+          "mean_development_net_utility": 4.139173606009978,
+          "observed_active_columns": 11
+        }
+      ],
+      "seed": 3343,
+      "selected_index": 0
+    },
+    {
+      "arm": "ridge_reference",
+      "candidates": [
+        {
+          "gradient_coordinates": null,
+          "index": 0,
+          "mean_development_net_utility": 3.793513675286513,
+          "observed_active_columns": 13
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 1,
+          "mean_development_net_utility": 3.793513675286513,
+          "observed_active_columns": 13
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 2,
+          "mean_development_net_utility": 3.8035356583276587,
+          "observed_active_columns": 13
+        }
+      ],
+      "seed": 3347,
+      "selected_index": 2
+    },
+    {
+      "arm": "iterative_q_mse",
+      "candidates": [
+        {
+          "gradient_coordinates": 28,
+          "index": 0,
+          "mean_development_net_utility": 3.85423336208341,
+          "observed_active_columns": 13
+        },
+        {
+          "gradient_coordinates": 28,
+          "index": 1,
+          "mean_development_net_utility": 3.7985222331539408,
+          "observed_active_columns": 13
+        },
+        {
+          "gradient_coordinates": 28,
+          "index": 2,
+          "mean_development_net_utility": 3.7936359607147203,
+          "observed_active_columns": 13
+        }
+      ],
+      "seed": 3347,
+      "selected_index": 0
+    },
+    {
+      "arm": "policy_regret",
+      "candidates": [
+        {
+          "gradient_coordinates": 28,
+          "index": 0,
+          "mean_development_net_utility": 3.653531665322496,
+          "observed_active_columns": 13
+        },
+        {
+          "gradient_coordinates": 28,
+          "index": 1,
+          "mean_development_net_utility": 3.613449039284692,
+          "observed_active_columns": 13
+        },
+        {
+          "gradient_coordinates": 28,
+          "index": 2,
+          "mean_development_net_utility": 3.6091336304123636,
+          "observed_active_columns": 13
+        }
+      ],
+      "seed": 3347,
+      "selected_index": 0
+    },
+    {
+      "arm": "ridge_reference",
+      "candidates": [
+        {
+          "gradient_coordinates": null,
+          "index": 0,
+          "mean_development_net_utility": 3.9116116423824474,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 1,
+          "mean_development_net_utility": 3.97058344284168,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 2,
+          "mean_development_net_utility": 3.993976688725409,
+          "observed_active_columns": 11
+        }
+      ],
+      "seed": 3359,
+      "selected_index": 2
+    },
+    {
+      "arm": "iterative_q_mse",
+      "candidates": [
+        {
+          "gradient_coordinates": 24,
+          "index": 0,
+          "mean_development_net_utility": 3.892406464240028,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 1,
+          "mean_development_net_utility": 3.9033385559596794,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 2,
+          "mean_development_net_utility": 3.8790061778138742,
+          "observed_active_columns": 11
+        }
+      ],
+      "seed": 3359,
+      "selected_index": 1
+    },
+    {
+      "arm": "policy_regret",
+      "candidates": [
+        {
+          "gradient_coordinates": 24,
+          "index": 0,
+          "mean_development_net_utility": 3.5715534225526193,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 1,
+          "mean_development_net_utility": 3.6898695455829587,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 2,
+          "mean_development_net_utility": 3.8630197773373434,
+          "observed_active_columns": 11
+        }
+      ],
+      "seed": 3359,
+      "selected_index": 2
+    },
+    {
+      "arm": "ridge_reference",
+      "candidates": [
+        {
+          "gradient_coordinates": null,
+          "index": 0,
+          "mean_development_net_utility": 4.303950287458879,
+          "observed_active_columns": 12
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 1,
+          "mean_development_net_utility": 4.300990465899102,
+          "observed_active_columns": 12
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 2,
+          "mean_development_net_utility": 4.299240330883698,
+          "observed_active_columns": 12
+        }
+      ],
+      "seed": 3361,
+      "selected_index": 0
+    },
+    {
+      "arm": "iterative_q_mse",
+      "candidates": [
+        {
+          "gradient_coordinates": 26,
+          "index": 0,
+          "mean_development_net_utility": 4.193518374937719,
+          "observed_active_columns": 12
+        },
+        {
+          "gradient_coordinates": 26,
+          "index": 1,
+          "mean_development_net_utility": 4.352144798461499,
+          "observed_active_columns": 12
+        },
+        {
+          "gradient_coordinates": 26,
+          "index": 2,
+          "mean_development_net_utility": 4.301087603758539,
+          "observed_active_columns": 12
+        }
+      ],
+      "seed": 3361,
+      "selected_index": 1
+    },
+    {
+      "arm": "policy_regret",
+      "candidates": [
+        {
+          "gradient_coordinates": 26,
+          "index": 0,
+          "mean_development_net_utility": 3.858554841905825,
+          "observed_active_columns": 12
+        },
+        {
+          "gradient_coordinates": 26,
+          "index": 1,
+          "mean_development_net_utility": 4.017868136807883,
+          "observed_active_columns": 12
+        },
+        {
+          "gradient_coordinates": 26,
+          "index": 2,
+          "mean_development_net_utility": 4.1583509505031255,
+          "observed_active_columns": 12
+        }
+      ],
+      "seed": 3361,
+      "selected_index": 2
+    },
+    {
+      "arm": "ridge_reference",
+      "candidates": [
+        {
+          "gradient_coordinates": null,
+          "index": 0,
+          "mean_development_net_utility": 4.312114600809369,
+          "observed_active_columns": 12
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 1,
+          "mean_development_net_utility": 4.2523196167285375,
+          "observed_active_columns": 12
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 2,
+          "mean_development_net_utility": 4.145701208038456,
+          "observed_active_columns": 12
+        }
+      ],
+      "seed": 3371,
+      "selected_index": 0
+    },
+    {
+      "arm": "iterative_q_mse",
+      "candidates": [
+        {
+          "gradient_coordinates": 26,
+          "index": 0,
+          "mean_development_net_utility": 3.851248207916959,
+          "observed_active_columns": 12
+        },
+        {
+          "gradient_coordinates": 26,
+          "index": 1,
+          "mean_development_net_utility": 4.137817149757476,
+          "observed_active_columns": 12
+        },
+        {
+          "gradient_coordinates": 26,
+          "index": 2,
+          "mean_development_net_utility": 4.264843140857652,
+          "observed_active_columns": 12
+        }
+      ],
+      "seed": 3371,
+      "selected_index": 2
+    },
+    {
+      "arm": "policy_regret",
+      "candidates": [
+        {
+          "gradient_coordinates": 26,
+          "index": 0,
+          "mean_development_net_utility": 3.9851039643640336,
+          "observed_active_columns": 12
+        },
+        {
+          "gradient_coordinates": 26,
+          "index": 1,
+          "mean_development_net_utility": 4.130414550040937,
+          "observed_active_columns": 12
+        },
+        {
+          "gradient_coordinates": 26,
+          "index": 2,
+          "mean_development_net_utility": 4.277314660053985,
+          "observed_active_columns": 12
+        }
+      ],
+      "seed": 3371,
+      "selected_index": 2
+    },
+    {
+      "arm": "ridge_reference",
+      "candidates": [
+        {
+          "gradient_coordinates": null,
+          "index": 0,
+          "mean_development_net_utility": 4.29446584147021,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 1,
+          "mean_development_net_utility": 4.29905874394971,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 2,
+          "mean_development_net_utility": 4.3025936535341565,
+          "observed_active_columns": 11
+        }
+      ],
+      "seed": 3373,
+      "selected_index": 2
+    },
+    {
+      "arm": "iterative_q_mse",
+      "candidates": [
+        {
+          "gradient_coordinates": 24,
+          "index": 0,
+          "mean_development_net_utility": 4.0911587203213315,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 1,
+          "mean_development_net_utility": 4.210740606791792,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 2,
+          "mean_development_net_utility": 4.268195163323828,
+          "observed_active_columns": 11
+        }
+      ],
+      "seed": 3373,
+      "selected_index": 2
+    },
+    {
+      "arm": "policy_regret",
+      "candidates": [
+        {
+          "gradient_coordinates": 24,
+          "index": 0,
+          "mean_development_net_utility": 4.129886579645564,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 1,
+          "mean_development_net_utility": 4.135358004181473,
+          "observed_active_columns": 11
+        },
+        {
+          "gradient_coordinates": 24,
+          "index": 2,
+          "mean_development_net_utility": 4.0435055942713225,
+          "observed_active_columns": 11
+        }
+      ],
+      "seed": 3373,
+      "selected_index": 1
+    },
+    {
+      "arm": "ridge_reference",
+      "candidates": [
+        {
+          "gradient_coordinates": null,
+          "index": 0,
+          "mean_development_net_utility": 4.087371700102237,
+          "observed_active_columns": 10
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 1,
+          "mean_development_net_utility": 4.085400919320025,
+          "observed_active_columns": 10
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 2,
+          "mean_development_net_utility": 4.066274876682957,
+          "observed_active_columns": 10
+        }
+      ],
+      "seed": 3389,
+      "selected_index": 0
+    },
+    {
+      "arm": "iterative_q_mse",
+      "candidates": [
+        {
+          "gradient_coordinates": 22,
+          "index": 0,
+          "mean_development_net_utility": 4.004432705578459,
+          "observed_active_columns": 10
+        },
+        {
+          "gradient_coordinates": 22,
+          "index": 1,
+          "mean_development_net_utility": 4.090489573594381,
+          "observed_active_columns": 10
+        },
+        {
+          "gradient_coordinates": 22,
+          "index": 2,
+          "mean_development_net_utility": 4.077032738646012,
+          "observed_active_columns": 10
+        }
+      ],
+      "seed": 3389,
+      "selected_index": 1
+    },
+    {
+      "arm": "policy_regret",
+      "candidates": [
+        {
+          "gradient_coordinates": 22,
+          "index": 0,
+          "mean_development_net_utility": 4.056976143691974,
+          "observed_active_columns": 10
+        },
+        {
+          "gradient_coordinates": 22,
+          "index": 1,
+          "mean_development_net_utility": 4.239694132749413,
+          "observed_active_columns": 10
+        },
+        {
+          "gradient_coordinates": 22,
+          "index": 2,
+          "mean_development_net_utility": 4.217475329397143,
+          "observed_active_columns": 10
+        }
+      ],
+      "seed": 3389,
+      "selected_index": 1
+    },
+    {
+      "arm": "ridge_reference",
+      "candidates": [
+        {
+          "gradient_coordinates": null,
+          "index": 0,
+          "mean_development_net_utility": 4.2077162242545665,
+          "observed_active_columns": 12
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 1,
+          "mean_development_net_utility": 4.19850151675517,
+          "observed_active_columns": 12
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 2,
+          "mean_development_net_utility": 4.09811064748352,
+          "observed_active_columns": 12
+        }
+      ],
+      "seed": 3391,
+      "selected_index": 0
+    },
+    {
+      "arm": "iterative_q_mse",
+      "candidates": [
+        {
+          "gradient_coordinates": 26,
+          "index": 0,
+          "mean_development_net_utility": 4.120922602311475,
+          "observed_active_columns": 12
+        },
+        {
+          "gradient_coordinates": 26,
+          "index": 1,
+          "mean_development_net_utility": 4.1767380730449695,
+          "observed_active_columns": 12
+        },
+        {
+          "gradient_coordinates": 26,
+          "index": 2,
+          "mean_development_net_utility": 4.179872521051817,
+          "observed_active_columns": 12
+        }
+      ],
+      "seed": 3391,
+      "selected_index": 2
+    },
+    {
+      "arm": "policy_regret",
+      "candidates": [
+        {
+          "gradient_coordinates": 26,
+          "index": 0,
+          "mean_development_net_utility": 4.029745362858781,
+          "observed_active_columns": 12
+        },
+        {
+          "gradient_coordinates": 26,
+          "index": 1,
+          "mean_development_net_utility": 4.1385787083807015,
+          "observed_active_columns": 12
+        },
+        {
+          "gradient_coordinates": 26,
+          "index": 2,
+          "mean_development_net_utility": 4.104709749088981,
+          "observed_active_columns": 12
+        }
+      ],
+      "seed": 3391,
+      "selected_index": 1
+    },
+    {
+      "arm": "ridge_reference",
+      "candidates": [
+        {
+          "gradient_coordinates": null,
+          "index": 0,
+          "mean_development_net_utility": 3.8153160004808275,
+          "observed_active_columns": 10
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 1,
+          "mean_development_net_utility": 3.705570500758517,
+          "observed_active_columns": 10
+        },
+        {
+          "gradient_coordinates": null,
+          "index": 2,
+          "mean_development_net_utility": 3.73732546305039,
+          "observed_active_columns": 10
+        }
+      ],
+      "seed": 3407,
+      "selected_index": 0
+    },
+    {
+      "arm": "iterative_q_mse",
+      "candidates": [
+        {
+          "gradient_coordinates": 22,
+          "index": 0,
+          "mean_development_net_utility": 3.730245655349124,
+          "observed_active_columns": 10
+        },
+        {
+          "gradient_coordinates": 22,
+          "index": 1,
+          "mean_development_net_utility": 3.730245655349124,
+          "observed_active_columns": 10
+        },
+        {
+          "gradient_coordinates": 22,
+          "index": 2,
+          "mean_development_net_utility": 3.6981781071124953,
+          "observed_active_columns": 10
+        }
+      ],
+      "seed": 3407,
+      "selected_index": 0
+    },
+    {
+      "arm": "policy_regret",
+      "candidates": [
+        {
+          "gradient_coordinates": 22,
+          "index": 0,
+          "mean_development_net_utility": 3.7691659879760806,
+          "observed_active_columns": 10
+        },
+        {
+          "gradient_coordinates": 22,
+          "index": 1,
+          "mean_development_net_utility": 3.838475969429021,
+          "observed_active_columns": 10
+        },
+        {
+          "gradient_coordinates": 22,
+          "index": 2,
+          "mean_development_net_utility": 3.7977481610585424,
+          "observed_active_columns": 10
+        }
+      ],
+      "seed": 3407,
+      "selected_index": 1
+    }
+  ]
+}

@@ -1,0 +1,416 @@
+{
+  "comparisons": [
+    {
+      "benefit_gate_passed": false,
+      "mean_delta": -0.019353711865020384,
+      "name": "boundary",
+      "simultaneous_interval": [
+        -0.20315097643442342,
+        0.16444355270438266
+      ]
+    },
+    {
+      "benefit_gate_passed": false,
+      "mean_delta": 0.06567374821269367,
+      "name": "dual_channels",
+      "simultaneous_interval": [
+        -0.023117095512976,
+        0.15446459193836334
+      ]
+    },
+    {
+      "benefit_gate_passed": false,
+      "mean_delta": 0.0013179675461844065,
+      "name": "signed_structure",
+      "simultaneous_interval": [
+        -0.010378040198327465,
+        0.013013975290696278
+      ]
+    },
+    {
+      "benefit_gate_passed": false,
+      "mean_delta": -0.00042726652670993515,
+      "name": "flow",
+      "simultaneous_interval": [
+        -0.004916285997030344,
+        0.004061752943610474
+      ]
+    }
+  ],
+  "derived_result_files_verified": 7,
+  "new_work": "native readout objective numerical preparation only; new efficacy samples zero; no production admission",
+  "observed_at": "2026-10-29T07:04:20.327947-04:00",
+  "old_study_archive": {
+    "archive_sha256": "4da8b1fbaccc77bfc79c64e3fe585ebeb610561dbe77b6a5b7aceda56bb34655",
+    "files": 4586,
+    "original_bytes": 100007504,
+    "receipt": {
+      "archive_sha256": "4da8b1fbaccc77bfc79c64e3fe585ebeb610561dbe77b6a5b7aceda56bb34655",
+      "checked_at_utc": "2026-10-29T10:59:54.086171+00:00",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python -m experiments.continuous_boundary_flow.evidence_bundle unpack --bundle-dir experiments/continuous_boundary_flow/evidence/bundle --output-dir /workspace/scratch/0b931bb7b314/hepta-old-evidence-restored",
+      "command_exit_code": 0,
+      "elf_files": [],
+      "engineering_top_level": [
+        "SUMMARY.json",
+        "cases"
+      ],
+      "executable_files": [],
+      "file_manifest_sha256": "612d3398f7737e0c349c3ae5086662bbb37597a924bbc7f8a18fcbf4856bc661",
+      "index_sha256": "909f011feb98d40d5384f6853a39846dad1fa4ff87a29895290652eebc0cc9f8",
+      "limitation": "This restores old continuous_boundary_flow evidence, not missing continuous_boundary_policy raw data. Native activation rows are old confirmation data; diagnostics using them are post hoc and are not new independent training or confirmation results.",
+      "native_confirmation_shards": [
+        {
+          "activation_rows": 1534,
+          "activation_widths": [
+            20
+          ],
+          "episodes": 128,
+          "path": "study/episodes/1709/native_sparse/test_id.jsonl.gz",
+          "sha256": "c77faf5b4dc996c1ec5e798d81ce221bfeb224cc9837c6454ca8555ba6e925d0",
+          "steps": 1534
+        },
+        {
+          "activation_rows": 1385,
+          "activation_widths": [
+            20
+          ],
+          "episodes": 128,
+          "path": "study/episodes/1709/native_sparse/test_ood.jsonl.gz",
+          "sha256": "9af3627e76dff0400f09d85018dd1690a10ebfe1a8f827f8b63089adb1724967",
+          "steps": 1385
+        },
+        {
+          "activation_rows": 1536,
+          "activation_widths": [
+            20
+          ],
+          "episodes": 128,
+          "path": "study/episodes/1721/native_sparse/test_id.jsonl.gz",
+          "sha256": "07046f2e1407f86f5660e734b1026c98bdfbc224fcc277b06833e901226c8998",
+          "steps": 1536
+        },
+        {
+          "activation_rows": 1273,
+          "activation_widths": [
+            20
+          ],
+          "episodes": 128,
+          "path": "study/episodes/1721/native_sparse/test_ood.jsonl.gz",
+          "sha256": "7efa75c7dd41014593387f415eb80a8006144a611bdb07170b1609be0830dcac",
+          "steps": 1273
+        },
+        {
+          "activation_rows": 1536,
+          "activation_widths": [
+            20
+          ],
+          "episodes": 128,
+          "path": "study/episodes/1741/native_sparse/test_id.jsonl.gz",
+          "sha256": "40f74c70a8bd9e29f554a65fa0a961eb1734fcaff14a8a1232867ed46026a046",
+          "steps": 1536
+        },
+        {
+          "activation_rows": 1541,
+          "activation_widths": [
+            20
+          ],
+          "episodes": 128,
+          "path": "study/episodes/1741/native_sparse/test_ood.jsonl.gz",
+          "sha256": "edbd4eee2d39525648519597133a92d3c4923586383270d9ee85312db37093b0",
+          "steps": 1541
+        },
+        {
+          "activation_rows": 1536,
+          "activation_widths": [
+            20
+          ],
+          "episodes": 128,
+          "path": "study/episodes/1753/native_sparse/test_id.jsonl.gz",
+          "sha256": "6d374b80ea761176bc45f3bfb8da9d078d74b8c14242b036f5e9678e1c15c9f0",
+          "steps": 1536
+        },
+        {
+          "activation_rows": 1571,
+          "activation_widths": [
+            20
+          ],
+          "episodes": 128,
+          "path": "study/episodes/1753/native_sparse/test_ood.jsonl.gz",
+          "sha256": "0c619fe2bc1c6181d61e719f36877beed6d71ba129afaef7d1a3b072fb397746",
+          "steps": 1571
+        },
+        {
+          "activation_rows": 1536,
+          "activation_widths": [
+            20
+          ],
+          "episodes": 128,
+          "path": "study/episodes/1777/native_sparse/test_id.jsonl.gz",
+          "sha256": "6b0bc58afbe135ede81f3f4910b90b12b43bae24d4649565d3aff6f2fe3db8ab",
+          "steps": 1536
+        },
+        {
+          "activation_rows": 1278,
+          "activation_widths": [
+            20
+          ],
+          "episodes": 128,
+          "path": "study/episodes/1777/native_sparse/test_ood.jsonl.gz",
+          "sha256": "9703a904b8962066c7d4b315f2e84c21e5fb6fecbd47f7c65ae16b789fcfafb2",
+          "steps": 1278
+        },
+        {
+          "activation_rows": 1536,
+          "activation_widths": [
+            20
+          ],
+          "episodes": 128,
+          "path": "study/episodes/1789/native_sparse/test_id.jsonl.gz",
+          "sha256": "fda52f17862179fe01752d132a01bd8ede553510bcc9d45e4e41765d0be0c696",
+          "steps": 1536
+        },
+        {
+          "activation_rows": 1203,
+          "activation_widths": [
+            20
+          ],
+          "episodes": 128,
+          "path": "study/episodes/1789/native_sparse/test_ood.jsonl.gz",
+          "sha256": "eddb17492d7437fad06e702d50aebe7968b4f3740213488b1ec56bbec18646a3",
+          "steps": 1203
+        },
+        {
+          "activation_rows": 1536,
+          "activation_widths": [
+            20
+          ],
+          "episodes": 128,
+          "path": "study/episodes/1801/native_sparse/test_id.jsonl.gz",
+          "sha256": "767e0f33f0d69be8a29afc406d902d759e4c97aa8b020b5229b2fc94c0a0e2d7",
+          "steps": 1536
+        },
+        {
+          "activation_rows": 1282,
+          "activation_widths": [
+            20
+          ],
+          "episodes": 128,
+          "path": "study/episodes/1801/native_sparse/test_ood.jsonl.gz",
+          "sha256": "b531683cd0e55f3bbaa929ddecedf811a6c289cd2f05865d47945d404d9a2850",
+          "steps": 1282
+        },
+        {
+          "activation_rows": 1532,
+          "activation_widths": [
+            20
+          ],
+          "episodes": 128,
+          "path": "study/episodes/1811/native_sparse/test_id.jsonl.gz",
+          "sha256": "122bd6cb404a2dbee7a5d22b75e49c48e43bbee6bada8357507080c550075723",
+          "steps": 1532
+        },
+        {
+          "activation_rows": 1068,
+          "activation_widths": [
+            20
+          ],
+          "episodes": 128,
+          "path": "study/episodes/1811/native_sparse/test_ood.jsonl.gz",
+          "sha256": "a42d7dd3f8d506f0c497e12c12b37127a71bfd8cb9f8b81b6f1585c59f2c69c5",
+          "steps": 1068
+        }
+      ],
+      "native_confirmation_totals": {
+        "activation_rows": 22883,
+        "episodes": 2048,
+        "steps": 22883
+      },
+      "output_dir": "/workspace/scratch/0b931bb7b314/hepta-old-evidence-restored",
+      "restored_file_bytes": 100007504,
+      "restored_regular_file_count": 4586,
+      "schema": "hepta.old-flow.local-recovery.v1",
+      "scope": "mechanical restoration and inventory only; no science or tests rerun",
+      "source_bundle": "/workspace/scratch/0b931bb7b314/hepta-continuous-recovered/experiments/continuous_boundary_flow/evidence/bundle",
+      "source_repository_commit": "63bda3028b114eb4db49857977cc842cebc9f9fb",
+      "study_top_level": [
+        "AUDIT_ORIGINAL.stderr.log",
+        "AUDIT_ORIGINAL.stdout.log",
+        "CONFIRM.stderr.log",
+        "CONFIRM.stdout.jsonl",
+        "ENVIRONMENT.json",
+        "PUBLICATION.json",
+        "SCENARIOS.json",
+        "SELECTION_PUBLICATION.json",
+        "SELECTION_SEAL.json",
+        "SOURCE_SEAL.json",
+        "TRAIN.stderr.log",
+        "TRAIN.stdout.jsonl",
+        "analysis",
+        "checkpoints",
+        "costs.jsonl",
+        "datasets",
+        "episodes",
+        "evaluation_hosts",
+        "history",
+        "manifest.json",
+        "protocol.json",
+        "training"
+      ],
+      "training_npz": [
+        {
+          "array_count": 120,
+          "contains_activation_arrays": false,
+          "path": "study/datasets/1709/training.npz",
+          "sha256": "4927e9dd487bc51e973729c6d0fa11f1bf712f68322f268b924adfe3162e16b4",
+          "state_shape": [
+            12,
+            8
+          ],
+          "target_q_shape": [
+            12,
+            8,
+            2
+          ]
+        },
+        {
+          "array_count": 120,
+          "contains_activation_arrays": false,
+          "path": "study/datasets/1721/training.npz",
+          "sha256": "11f8a6487e07a25a15067f1652ab367ccca17de4f187045c889fa9ca7f6fac90",
+          "state_shape": [
+            12,
+            8
+          ],
+          "target_q_shape": [
+            12,
+            8,
+            2
+          ]
+        },
+        {
+          "array_count": 120,
+          "contains_activation_arrays": false,
+          "path": "study/datasets/1741/training.npz",
+          "sha256": "e1624ac94bc4b762f9a2814cba602103ab1ab673d1af17d7d2647602272a6080",
+          "state_shape": [
+            12,
+            8
+          ],
+          "target_q_shape": [
+            12,
+            8,
+            2
+          ]
+        },
+        {
+          "array_count": 120,
+          "contains_activation_arrays": false,
+          "path": "study/datasets/1753/training.npz",
+          "sha256": "0b871152222b20a13996b09223a9f40742891d6d6bbe0108bdadcea2f7ac67d7",
+          "state_shape": [
+            12,
+            8
+          ],
+          "target_q_shape": [
+            12,
+            8,
+            2
+          ]
+        },
+        {
+          "array_count": 120,
+          "contains_activation_arrays": false,
+          "path": "study/datasets/1777/training.npz",
+          "sha256": "de0c74b775596025f4183825e9767584868522e594d630fa4b0df376916a5c5a",
+          "state_shape": [
+            12,
+            8
+          ],
+          "target_q_shape": [
+            12,
+            8,
+            2
+          ]
+        },
+        {
+          "array_count": 120,
+          "contains_activation_arrays": false,
+          "path": "study/datasets/1789/training.npz",
+          "sha256": "bf2c4a5bd003c71c604706be3cb5b636e7616017178161bac5cc416328a9c1fc",
+          "state_shape": [
+            12,
+            8
+          ],
+          "target_q_shape": [
+            12,
+            8,
+            2
+          ]
+        },
+        {
+          "array_count": 120,
+          "contains_activation_arrays": false,
+          "path": "study/datasets/1801/training.npz",
+          "sha256": "3635fa28c4a1fb0fa00585ba7478ccda95cf1d5a0647d0a2ab785d9941b15d50",
+          "state_shape": [
+            12,
+            8
+          ],
+          "target_q_shape": [
+            12,
+            8,
+            2
+          ]
+        },
+        {
+          "array_count": 120,
+          "contains_activation_arrays": false,
+          "path": "study/datasets/1811/training.npz",
+          "sha256": "641746aff6cdeb38941c97a8d002bee4fa89295a00d802ee1f841e37daf97f8f",
+          "state_shape": [
+            12,
+            8
+          ],
+          "target_q_shape": [
+            12,
+            8,
+            2
+          ]
+        }
+      ],
+      "unpack_output": {
+        "files": 4586,
+        "original_bytes": 100007504,
+        "verified": true
+      }
+    },
+    "receipt_sha256": "e0d1132316438cb452a6b1dbbf786163ff30e617eac376166fb97b80cf7beadf",
+    "recovered": true
+  },
+  "original_native_binaries_available": false,
+  "publication": {
+    "current_head_visible_check_runs": 0,
+    "merged": false,
+    "pr": 4157,
+    "public_upload_approval": "previous automatic approval explicitly rejected publishing full raw archive; no upload retried in this continuation",
+    "state": "open draft"
+  },
+  "recovered_commit": "63bda3028b114eb4db49857977cc842cebc9f9fb",
+  "recovered_tree": "614d1c94bd2af2ba83dfca04d33334fd53163743",
+  "remote_branch_head": "8efa84ecb0ae5e5a1f38b15974da6e1db1f80df0",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "hepta.continuous-research.recovery.v1",
+  "source_files_verified": 67,
+  "statistical_recalculation_scope": "means and Bonferroni paired t intervals from preserved seed deltas; not a replay of missing raw supplement trajectories",
+  "supplement_raw_archive": {
+    "available": false,
+    "expected_archive_sha256": "c9b809f9393ddbc81569f740e402b8c2fe4fbb78c04d44ba7960fb227138d58f",
+    "historic_partial_upload": {
+      "planned_parts": 266,
+      "sha_roster_available_now": false,
+      "verified_before_reset": 147
+    },
+    "reason": "prior runtime no longer exists; verified remote docs tree lacks bundle, ROUNDTRIP and DELIVERY_VALIDATION; final evidence tree and local final commit are not remotely available",
+    "recoverability": "cannot reconstruct missing compressed bytes from hashes or result tables; rerun would be a distinct reproduction with new timings/receipts"
+  }
+}

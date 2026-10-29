@@ -1,0 +1,26 @@
+{
+  "child_system_cpu_seconds": 0.47276199999999996,
+  "child_user_cpu_seconds": 143.425018,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.continuous_boundary_policy_reproduction.audit",
+    "confirmation",
+    "--study",
+    "/dev/shm/hepta-native-objective-20261029/public-policy-reproduction-001/study",
+    "--output",
+    "/dev/shm/hepta-native-objective-20261029/public-policy-reproduction-001-reaudit/CONFIRMATION_AUDIT.json",
+    "--native-binary",
+    "/dev/shm/hepta-native-objective-20261029/public-policy-reproduction-001/engineering/bin/continuous_host",
+    "--score-binary",
+    "/dev/shm/hepta-native-objective-20261029/public-policy-reproduction-001/engineering/bin/boundary_policy_score_host"
+  ],
+  "exit_code": 0,
+  "hardware_energy_measured": false,
+  "log_sha256": "90df13a0e3e1b668439ebaa5c8bf0eca4b3a86696a723cbf0da84ef173a04e3b",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+  "schema": "hepta.research.outer-command-cost.v1",
+  "scope": "whole command including imports, verification and output; inclusive child CPU covers waited native descendants; nested study clocks are subsets and must not be added",
+  "wall_seconds": 143.91790810300154,
+  "wrapper_cpu_seconds": 0.0003955280000000061
+}

@@ -1,0 +1,482 @@
+{
+  "arm_summaries": {
+    "finite_grid_dp": {
+      "calibration": {
+        "bins": [
+          {
+            "count": 48,
+            "event_rate": 0.020833333333333332,
+            "lower": 0.0,
+            "mean_prediction": 0.0030777484769429543,
+            "upper": 0.1
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.1,
+            "mean_prediction": null,
+            "upper": 0.2
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.2,
+            "mean_prediction": null,
+            "upper": 0.3
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.3,
+            "mean_prediction": null,
+            "upper": 0.4
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.4,
+            "mean_prediction": null,
+            "upper": 0.5
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.5,
+            "mean_prediction": null,
+            "upper": 0.6
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.6,
+            "mean_prediction": null,
+            "upper": 0.7
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.7,
+            "mean_prediction": null,
+            "upper": 0.8
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.8,
+            "mean_prediction": null,
+            "upper": 0.9
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.9,
+            "mean_prediction": null,
+            "upper": 1.0
+          }
+        ],
+        "brier": 0.01905728492265611,
+        "ece": 0.017755584856390377,
+        "observations": 48
+      },
+      "counters": {
+        "native_ndu_calls": 0,
+        "semantic_message_bytes": 0,
+        "source_kernel_calls": 0,
+        "wire_request_bytes": 0,
+        "wire_response_bytes": 0
+      },
+      "episode_equal_brier": 0.01905728492265611,
+      "episodes": 4,
+      "episodes_with_risk_exposure": 4,
+      "mean_action_regret": 0.0,
+      "mean_discounted_action_regret": 0.0,
+      "mean_failures": 0.25,
+      "mean_gross_utility": 4.650608253621084,
+      "mean_net_utility": 4.650608253621084,
+      "mean_repairs": 1.0,
+      "mean_steps": 12.0,
+      "mean_stops": 0.0,
+      "stability_failures": 0
+    },
+    "iterative_q_mse": {
+      "calibration": {
+        "bins": [
+          {
+            "count": 42,
+            "event_rate": 0.0,
+            "lower": 0.0,
+            "mean_prediction": 0.007950836252902892,
+            "upper": 0.1
+          },
+          {
+            "count": 1,
+            "event_rate": 0.0,
+            "lower": 0.1,
+            "mean_prediction": 0.13374713444019756,
+            "upper": 0.2
+          },
+          {
+            "count": 1,
+            "event_rate": 1.0,
+            "lower": 0.2,
+            "mean_prediction": 0.21214464827410126,
+            "upper": 0.3
+          },
+          {
+            "count": 1,
+            "event_rate": 1.0,
+            "lower": 0.3,
+            "mean_prediction": 0.3173555194158568,
+            "upper": 0.4
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.4,
+            "mean_prediction": null,
+            "upper": 0.5
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.5,
+            "mean_prediction": null,
+            "upper": 0.6
+          },
+          {
+            "count": 3,
+            "event_rate": 0.3333333333333333,
+            "lower": 0.6,
+            "mean_prediction": 0.600475243829414,
+            "upper": 0.7
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.7,
+            "mean_prediction": null,
+            "upper": 0.8
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.8,
+            "mean_prediction": null,
+            "upper": 0.9
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.9,
+            "mean_prediction": null,
+            "upper": 1.0
+          }
+        ],
+        "brier": 0.041706986033546355,
+        "ece": 0.05707516293459172,
+        "observations": 48
+      },
+      "counters": {
+        "native_ndu_calls": 48,
+        "semantic_message_bytes": 7680,
+        "source_kernel_calls": 48,
+        "wire_request_bytes": 13838,
+        "wire_response_bytes": 44265
+      },
+      "episode_equal_brier": 0.041706986033546355,
+      "episodes": 4,
+      "episodes_with_risk_exposure": 4,
+      "mean_action_regret": 1.1680508908072462,
+      "mean_discounted_action_regret": 0.9779022102640619,
+      "mean_failures": 0.75,
+      "mean_gross_utility": 4.0280269412728815,
+      "mean_net_utility": 4.026106941272882,
+      "mean_repairs": 0.0,
+      "mean_steps": 12.0,
+      "mean_stops": 0.0,
+      "stability_failures": 0
+    },
+    "policy_regret": {
+      "calibration": {
+        "bins": [
+          {
+            "count": 42,
+            "event_rate": 0.0,
+            "lower": 0.0,
+            "mean_prediction": 0.007950836252902892,
+            "upper": 0.1
+          },
+          {
+            "count": 1,
+            "event_rate": 0.0,
+            "lower": 0.1,
+            "mean_prediction": 0.13374713444019756,
+            "upper": 0.2
+          },
+          {
+            "count": 1,
+            "event_rate": 1.0,
+            "lower": 0.2,
+            "mean_prediction": 0.21214464827410126,
+            "upper": 0.3
+          },
+          {
+            "count": 1,
+            "event_rate": 1.0,
+            "lower": 0.3,
+            "mean_prediction": 0.3173555194158568,
+            "upper": 0.4
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.4,
+            "mean_prediction": null,
+            "upper": 0.5
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.5,
+            "mean_prediction": null,
+            "upper": 0.6
+          },
+          {
+            "count": 3,
+            "event_rate": 0.3333333333333333,
+            "lower": 0.6,
+            "mean_prediction": 0.600475243829414,
+            "upper": 0.7
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.7,
+            "mean_prediction": null,
+            "upper": 0.8
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.8,
+            "mean_prediction": null,
+            "upper": 0.9
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.9,
+            "mean_prediction": null,
+            "upper": 1.0
+          }
+        ],
+        "brier": 0.041706986033546355,
+        "ece": 0.05707516293459172,
+        "observations": 48
+      },
+      "counters": {
+        "native_ndu_calls": 48,
+        "semantic_message_bytes": 7680,
+        "source_kernel_calls": 48,
+        "wire_request_bytes": 13838,
+        "wire_response_bytes": 44360
+      },
+      "episode_equal_brier": 0.041706986033546355,
+      "episodes": 4,
+      "episodes_with_risk_exposure": 4,
+      "mean_action_regret": 1.1680508908072462,
+      "mean_discounted_action_regret": 0.9779022102640619,
+      "mean_failures": 0.75,
+      "mean_gross_utility": 4.0280269412728815,
+      "mean_net_utility": 4.026106941272882,
+      "mean_repairs": 0.0,
+      "mean_steps": 12.0,
+      "mean_stops": 0.0,
+      "stability_failures": 0
+    },
+    "ridge_reference": {
+      "calibration": {
+        "bins": [
+          {
+            "count": 46,
+            "event_rate": 0.0,
+            "lower": 0.0,
+            "mean_prediction": 0.004762332915844528,
+            "upper": 0.1
+          },
+          {
+            "count": 2,
+            "event_rate": 0.5,
+            "lower": 0.1,
+            "mean_prediction": 0.13374713444019756,
+            "upper": 0.2
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.2,
+            "mean_prediction": null,
+            "upper": 0.3
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.3,
+            "mean_prediction": null,
+            "upper": 0.4
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.4,
+            "mean_prediction": null,
+            "upper": 0.5
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.5,
+            "mean_prediction": null,
+            "upper": 0.6
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.6,
+            "mean_prediction": null,
+            "upper": 0.7
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.7,
+            "mean_prediction": null,
+            "upper": 0.8
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.8,
+            "mean_prediction": null,
+            "upper": 0.9
+          },
+          {
+            "count": 0,
+            "event_rate": null,
+            "lower": 0.9,
+            "mean_prediction": null,
+            "upper": 1.0
+          }
+        ],
+        "brier": 0.01618133534671082,
+        "ece": 0.019824438442676107,
+        "observations": 48
+      },
+      "counters": {
+        "native_ndu_calls": 48,
+        "semantic_message_bytes": 7680,
+        "source_kernel_calls": 48,
+        "wire_request_bytes": 13773,
+        "wire_response_bytes": 44294
+      },
+      "episode_equal_brier": 0.016181335346710825,
+      "episodes": 4,
+      "episodes_with_risk_exposure": 4,
+      "mean_action_regret": 0.14712738424587407,
+      "mean_discounted_action_regret": 0.12448857030386912,
+      "mean_failures": 0.25,
+      "mean_gross_utility": 4.698364551837217,
+      "mean_net_utility": 4.696444551837217,
+      "mean_repairs": 0.75,
+      "mean_steps": 12.0,
+      "mean_stops": 0.0,
+      "stability_failures": 0
+    }
+  },
+  "candidate_optimizers_verified": 3,
+  "development_episodes_verified": 6,
+  "diagnostic_panel": {
+    "arms": {
+      "iterative_q_mse": {
+        "action_disagreements": 0,
+        "maximum_abs_score_error": 1.394876064653161e-07,
+        "mean_float_regret": 0.1605072324078768,
+        "mean_native_regret": 0.1605072324078768,
+        "mean_signed_quantization_regret": 0.0,
+        "quantization_harmed_rows": 0,
+        "quantization_helped_rows": 0,
+        "rows": 24,
+        "teacher_conditioned_regret": {
+          "keep": {
+            "count": 18,
+            "mean_native_regret": 0.0
+          },
+          "repair": {
+            "count": 6,
+            "mean_native_regret": 0.6420289296315072
+          },
+          "stop": {
+            "count": 0,
+            "mean_native_regret": null
+          }
+        }
+      },
+      "policy_regret": {
+        "action_disagreements": 0,
+        "maximum_abs_score_error": 2.0013348711600543e-07,
+        "mean_float_regret": 0.1605072324078768,
+        "mean_native_regret": 0.1605072324078768,
+        "mean_signed_quantization_regret": 0.0,
+        "quantization_harmed_rows": 0,
+        "quantization_helped_rows": 0,
+        "rows": 24,
+        "teacher_conditioned_regret": {
+          "keep": {
+            "count": 18,
+            "mean_native_regret": 0.0
+          },
+          "repair": {
+            "count": 6,
+            "mean_native_regret": 0.6420289296315072
+          },
+          "stop": {
+            "count": 0,
+            "mean_native_regret": null
+          }
+        }
+      },
+      "ridge_reference": {
+        "action_disagreements": 0,
+        "maximum_abs_score_error": 3.171691704828561e-07,
+        "mean_float_regret": 0.08942623083664743,
+        "mean_native_regret": 0.08942623083664743,
+        "mean_signed_quantization_regret": 0.0,
+        "quantization_harmed_rows": 0,
+        "quantization_helped_rows": 0,
+        "rows": 24,
+        "teacher_conditioned_regret": {
+          "keep": {
+            "count": 18,
+            "mean_native_regret": 0.10905632372222855
+          },
+          "repair": {
+            "count": 6,
+            "mean_native_regret": 0.030535952179904086
+          },
+          "stop": {
+            "count": 0,
+            "mean_native_regret": null
+          }
+        }
+      }
+    },
+    "seed": 991
+  },
+  "episodes_verified": 16,
+  "native_binary_sha256": "fa9dc78b129b0ec3b072e9fc8c8fdd49479515c79aeb2660f355e38f41e54dce",
+  "passed": true,
+  "registered_confirmation_accessed": false,
+  "schema": "hepta.native-readout-objective.smoke-audit.v1",
+  "scope": "diagnostic-only actual native integration; no formal source/selection publication, full study cost or efficacy claim",
+  "training_export_rows_verified": 48
+}

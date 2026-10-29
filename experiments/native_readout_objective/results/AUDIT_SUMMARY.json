@@ -1,0 +1,101 @@
+{
+  "data": {
+    "candidate_optimizers_independently_reconstructed": 144,
+    "checkpoints_verified": 64,
+    "confirmation_episodes_verified": 16384,
+    "development_episodes_verified": 9216,
+    "files_verified": 1048,
+    "native_confirmation_steps_verified": 143262,
+    "owner_engineering": {
+      "cases": 6,
+      "cold_resumes": 6,
+      "continued_after_resume_steps": 66,
+      "independent_efficacy_samples": 0,
+      "overall_cost": {
+        "child_cpu_scope": "only children reaped inside this window",
+        "completed_child_cpu_seconds": 0.072908,
+        "python_cpu_seconds": 0.9442004770000001,
+        "wall_seconds": 1.0299904519924894
+      },
+      "passed": true,
+      "steps": 84,
+      "stop_guards": 0,
+      "summary_sha256": "a53cae415c2b7fd9a7a88d72162ad78dd197255bf40ad5b934e41ce8485f45ae"
+    },
+    "passed": true,
+    "phase": "confirmation",
+    "primary_benefit_gates": {
+      "passed": 0,
+      "registered": 1,
+      "zero_stability_failures": true
+    },
+    "scope": {
+      "calibration": "common analytic after-action first-passage predictor evaluated on each policy's own exposure; differing visitation prevents an isolated risk-learning comparison",
+      "diagnostics": "descriptive only; unique confirmatory family is policy_regret minus iterative_q_mse",
+      "independence": "independent Bellman, causal trajectories, physical reward, optimizer and Q24 arithmetic; shared sealed numerical grid constructor; native sparse kernel is executed and receipt-checked, not separately reimplemented",
+      "stability": "complete finite task horizons and saved native state/receipt chains only; no unmeasured long-horizon or energy claim"
+    },
+    "selection_and_coverage_descriptive": [
+      {
+        "arm": "ridge_reference",
+        "observed_active_columns_range": [
+          9,
+          13
+        ],
+        "observed_gradient_coordinates_range": null,
+        "selected_candidate_counts": {
+          "0": 6,
+          "1": 3,
+          "2": 7
+        }
+      },
+      {
+        "arm": "iterative_q_mse",
+        "observed_active_columns_range": [
+          9,
+          13
+        ],
+        "observed_gradient_coordinates_range": [
+          20,
+          28
+        ],
+        "selected_candidate_counts": {
+          "0": 5,
+          "1": 6,
+          "2": 5
+        }
+      },
+      {
+        "arm": "policy_regret",
+        "observed_active_columns_range": [
+          9,
+          13
+        ],
+        "observed_gradient_coordinates_range": [
+          20,
+          28
+        ],
+        "selected_candidate_counts": {
+          "0": 3,
+          "1": 5,
+          "2": 8
+        }
+      }
+    ],
+    "training_native_activation_rows_verified": 18432
+  },
+  "provenance": {
+    "derivation": "exact extraction and arithmetic aggregation from the named independent audit; extra cost aggregates additionally bind audited costs.jsonl",
+    "full_audit_engineering_relative_path": "audits/CONFIRMATION_AUDIT.json",
+    "full_audit_sha256": "4db0de9b32926b4415c2179715f520ad8b852362b112b103218d447de415a8fb",
+    "native_binary_sha256": "fa9dc78b129b0ec3b072e9fc8c8fdd49479515c79aeb2660f355e38f41e54dce",
+    "protocol_sha256": "3d19c2f0aef69da5d368da01e34308f1344ec98b10fd0aaefa1ba4877aa9baff",
+    "public_archive_directory": "evidence/bundle/",
+    "scientific_manifest_sha256": "861468d3cd2f1841291dfcd32c93f3efe1db58f494c02e549979376fb26e60b7",
+    "selection_publication_commit": "87b03617077f9e5f275d291b7af06cd1418f87ce",
+    "selection_seal_sha256": "28477204d0ef4a94fc990295196d5c51f792a95e2546750217a2a5592f682d66",
+    "source_publication_commit": "7908860cb959cbe1599379d4ecbfcc22fbccbe61",
+    "source_seal_sha256": "83f5243f7b7c7aead3742baccd01caaf619759658f320e824589ff016269d2e9"
+  },
+  "schema": "hepta.native-readout-objective.audit-summary.derived.v1"
+}
