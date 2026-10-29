@@ -1,0 +1,76 @@
+{
+  "schema": "rrsnn-v4-independent-closeout-incremental-preflight-review-1",
+  "created_at_utc": "2026-10-29T16:50:33.025994+00:00",
+  "reviewer": "/root/r5_real_execution",
+  "status": "passes_for_examined_report_only_increments_final_execution_audit_pending",
+  "reviewed_sha256": {
+    "build_closeout.py": "56690e29b01db894f403d6e0dc0591cd3c44a06926c9db3e7534877e538c79ff",
+    "REPORT_TEMPLATE.zh-CN.md": "883962c7c9a7254c991b0ba207df5799a38f398fe69e0124e71fd7b5303db406",
+    "MATHEMATICAL_SCOPE.zh-CN.md": "181130078ba4edec6932c25ee234d6b5fac6cb8f8656c28ed0fb6cd180eacb29",
+    "report_audit/closeout_raw_verification_extension.json": "9efeb927633c8077cd542f872676a98db3bc8a93696027362ac404cd6f5e1152",
+    "report_audit/scientific_scope_closeout_addendum.json": "f9857ac4ce135245886e76500032218118df68101925b54971f2b7f6ac80bcb6",
+    "report_audit/inference_scope_reporting_addendum.json": "b6c96fd080fafe09383ab1a02bd64ad6586fee958d147dc93991d24533cfd2f7",
+    "policy_benchmark_results/inference_scope.json": "9b7059d9732124488506251a199f53d7ecf1a2d9c3b230fff19e030f37cc1ad9",
+    "raw_archive_receipts/core_uploaded.json": "fb710dcca9ed44d2a93ca5526ec58ddc836ddab7f43b093514426717ba7cee04"
+  },
+  "checks": {
+    "reporter_adds_exact_80_checkpoint_and80_training_receipt_hash_coverage": true,
+    "reporter_adds_unique60_original_numeric60_repair_and5_calibration_raw_paths": true,
+    "original_numeric_status_hash_link_to_comparison_report_checked": true,
+    "calibration_raw_path_sha_schema_matches_actual_summary": true,
+    "inference_scope_PATHS_addition_is_only_change_after_raw_verification_extension": true,
+    "three_scientific_wording_replacements_exactly_reverse_to_prior_document_hashes": true,
+    "secondary_selection_mean_best_validation_nll_wording_matches_frozen_rule": true,
+    "finite_generator_uniformization_identity_distinguished_from_truncated_floating_numerics": true,
+    "emission_time_and_delivery_cutoff_wording_match_existing_task_contract": true,
+    "inference_scope_discloses_training_statistics_in_no_grad_inference_without_unmeasured_attribution": true,
+    "all_14_original_frozen_sources_unchanged": true,
+    "builder_syntax_valid_without_execution": true
+  },
+  "remaining_static_blockers": [],
+  "performed": "Small source/JSON reads, source hashes, exact text-reversal checks and syntax parsing only. No model import, actor, reporting execution, profiling, archive scan or large raw scan.",
+  "final_audit_checklist": [
+    {
+      "area": "Immutable identities and coverage",
+      "checks": [
+        "Confirm final Git head and blob identities, including post-minimum-snapshot report-only updates.",
+        "Verify selected80 weights and80 receipts,960 main evaluation files,60 original numeric,60 repair,5 calibration and80 resource raw SHA; distinguish coverage from passing gates.",
+        "Check unique variant/seed/split/replay/scale identity sets, not counts alone."
+      ]
+    },
+    {
+      "area": "Resource result and storage context",
+      "checks": [
+        "Verify original64 byte identities remain unchanged and remaining16 are the declared4096/non101 conditions.",
+        "Check five seeds in every group, CPU3/thread settings, two warmups/five measured rounds, resource quality/event deltas and sidecar source/matrix links.",
+        "Recompute reporting medians/units/pressure counts from already measured records; preserve all windows and disclose mixed storage namespaces."
+      ]
+    },
+    {
+      "area": "Final document and machine closeout",
+      "checks": [
+        "Bind final builder/template/rendered-report/closeout SHA and ensure no unfilled tokens.",
+        "Independently check main gains, ablations, behavior denominators, original453 failures versus repaired0, calibration and native owner scope.",
+        "Retain no full-state/RNG equivalence claim, no repaired-operator resource claim, no full Cell/dot/real future-window/production/novelty qualification."
+      ]
+    },
+    {
+      "area": "Two raw archives and final source complement",
+      "checks": [
+        "Verify both archive hashes, kind-specific metadata bytes, exact member sets and each raw member size/SHA once after measurements stop.",
+        "Match the core archive against its durable upload identity and the final resource archive against its own receipt; do not equate an upload receipt alone with independently re-downloaded bytes.",
+        "Build a combined required-path map from final Git plus both archives; reject missing paths and conflicting duplicate content, and check excluded Git entries against the actual final source tree.",
+        "Verify documented restoration root and required read-only entrypoint inputs; explicitly distinguish logical manifest restoration from an actual fresh-machine or clean-directory rerun."
+      ]
+    },
+    {
+      "area": "Final disposition",
+      "checks": [
+        "Keep negative original numerical/utility findings and all preserved failed attempts.",
+        "Do not turn complete execution or local repair into all production/theory blockers closed."
+      ]
+    }
+  ],
+  "core_delivery_current_evidence": "core_uploaded.json reports success for library_file_id libfile_ee2829448e808191baadc855491e0f81,3086 raw files and77386526 ZIP bytes; this incremental review did not reread the77MB ZIP or independently download it.",
+  "deferred_execution": "Wait for parent complete80 signal before full checks or archive processing."
+}
