@@ -1,0 +1,213 @@
+{
+  "schema": "hepta.representative-status-evidence-index.v1",
+  "snapshot_date": "2026-10-29",
+  "production_verdict": "held",
+  "publication": {
+    "candidate_branch": "codex/native-representative-full-20261029",
+    "base_commit": "709e67c8ce3077e5a3d53abc28c47d0fad64e377",
+    "published_commit": null,
+    "pull_request_url": null,
+    "publication_verified_in_this_snapshot": false
+  },
+  "local_records": {
+    "python_validation": {
+      "path": "LOCAL_VALIDATION.json",
+      "sha256": "d84eb57a8d962d76a9ef022e63666d0552f85216a8b70cb940d7230db2f36149",
+      "representative_and_fault_tests": 6,
+      "protocol_tests": 14,
+      "scope": "local Python tests only; no Rust or remote runtime owner acceptance"
+    },
+    "codex_build_provenance": {
+      "path": "OFFICIAL_BUILD.json",
+      "sha256": "30df8de393e58f958d1ccd0890c1b3aa2bc5db0c485c73b4a5d048161e616e85",
+      "copy_kind": "exact bytes of the supplied immutable build manifest",
+      "original_remote_manifest_path": null
+    }
+  },
+  "remote_baseline": {
+    "host": "main",
+    "output_root": "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/representative-replay-02",
+    "mode": "replay",
+    "group": "behavior_matched",
+    "status": "operator_reported_pass",
+    "passed_cases": 12,
+    "lanes": [
+      "app-server",
+      "facade",
+      "native"
+    ],
+    "cases": [
+      "edit",
+      "repair",
+      "multi_tool",
+      "mcp_readonly"
+    ],
+    "validation_reported": [
+      "raw model captures",
+      "independent workspace oracle",
+      "original owner admissions",
+      "tool feedback identity"
+    ],
+    "raw_artifact_index_included": false,
+    "top_level_report_sha256": null,
+    "top_level_frozen_sha256": null,
+    "runner_sha256": "363febe62404b70b6dd6531d40e16a99ee82c32934876767b0acca221884e044",
+    "required_relative_patterns": [
+      "FROZEN.json",
+      "REPORT.json",
+      "*/00-*/FROZEN.json",
+      "*/00-*/RESULT.json",
+      "*/00-*/runtime.json",
+      "*/00-*/runner.json",
+      "*/00-*/workspace.json",
+      "*/00-*/backend.jsonl",
+      "*/00-*/backend.stderr.log",
+      "*/00-*/executor.jsonl",
+      "*/00-*/executor.stderr.log",
+      "*/00-*/model/*.request.json",
+      "*/00-*/model/*.response.sse",
+      "*/00-*/model/model_requests.jsonl",
+      "*/00-*/sessions/*/manifest.json",
+      "*/00-*/sessions/*/tool-*.json",
+      "*/00-*/sessions/*/model-*.json",
+      "*/00-*/sessions/*/snapshot-*.json",
+      "*/00-*/controller/jobs/*.json",
+      "*/00-*/remote/jobs/*/request.json",
+      "*/00-*/remote/jobs/*/owner-intent.json",
+      "*/00-*/remote/jobs/*/launch.json",
+      "*/00-*/remote/jobs/*/started.json",
+      "*/00-*/remote/jobs/*/child.json",
+      "*/00-*/remote/jobs/*/exit.json",
+      "*/00-*/remote/jobs/*/exit.witness.json",
+      "*/00-*/remote/jobs/*/stdout.log",
+      "*/00-*/remote/jobs/*/stderr.log"
+    ],
+    "pattern_semantics": "collection templates, not assertions that every optional file exists; native has no separate executor log",
+    "prior_failed_attempt": {
+      "output_root": "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/representative-replay-01",
+      "observed_error": "operator host `qualification` requires explicit allow_job_network=true",
+      "status": "failed attempt retained",
+      "corrective_scope": "generated private qualification host configuration only"
+    }
+  },
+  "unresolved_remote_operation": {
+    "original_key": "p1-representative-v3-v4-build-tests-20261029",
+    "host": "main",
+    "status": "unknown_pending_original_owner_reconciliation",
+    "original_job_id": null,
+    "authoritative_terminal_result": null,
+    "runtime_log_paths": null,
+    "collect_from_original_owner": [
+      "original exact request/payload binding",
+      "admission or job identity",
+      "original terminal publication",
+      "complete stdout/stderr",
+      "build output binary identity",
+      "actual test command and result"
+    ],
+    "interpretation": "No inference of still-running, succeeded, failed-before-entry or not-applied; do not substitute a fresh operation key"
+  },
+  "unverified_experiments": {
+    "long_output": {
+      "remote_case_status": "no_original_case_evidence_available",
+      "result_counted_as_pass": false,
+      "local_fixture_stdout_bytes": 1179648,
+      "candidate_full_retention_bytes": 4194304,
+      "candidate_model_item_limit_bytes": 4096,
+      "required": [
+        "new frozen run root and binary hash",
+        "original admission and unique job binding",
+        "complete stdout.log/stderr.log and terminal publication",
+        "exact retained-output reference",
+        "independent full-byte oracle",
+        "actual serialized model-item sizes",
+        "REPORT.json and RESULT.json"
+      ]
+    },
+    "cancel_and_recover_process": {
+      "remote_case_status": "no_original_case_evidence_available",
+      "result_counted_as_pass": false,
+      "required": [
+        "new frozen run root",
+        "BEFORE.json",
+        "original command/config hashes",
+        "original manifest/admission/request/job/child bindings",
+        "verified injection point",
+        "same-operation reconciliation",
+        "original terminal and full output",
+        "no-live-original-child observation",
+        "original Codex interrupted notification for cancel lanes",
+        "actual request count",
+        "REPORT.json"
+      ]
+    },
+    "live": {
+      "status": "model_identity_not_fixed",
+      "result_counted_as_pass": false,
+      "observed_service_advertisement": {
+        "model_alias": "qwen38-flash-next-uc",
+        "owned_by": "ai-max-local",
+        "url": "http://127.0.0.1:18081/v1/models",
+        "classification": "previously observed advertisement; not a weight/service revision pin"
+      },
+      "required_model_evidence_fields": [
+        "schema",
+        "model",
+        "response_model",
+        "provider_revision",
+        "model_sha256",
+        "evidence_sha256"
+      ],
+      "required_run_evidence": [
+        "independent deployment/weight identity source",
+        "fresh FROZEN.json",
+        "actually applied profiles",
+        "raw requests and Responses",
+        "reported response_model",
+        "actual usage",
+        "original tool/results",
+        "REPORT.json"
+      ]
+    },
+    "individually_optimized": {
+      "status": "no_run_result_available",
+      "result_counted_as_pass": false,
+      "implemented_scope": "lane-specific applied budget ceilings; not exhaustive engine tuning"
+    },
+    "pty_and_live_connector": {
+      "status": "outside_this_executed_slice",
+      "result_counted_as_pass": false
+    }
+  },
+  "publication_groups": [
+    {
+      "group": "A",
+      "contents": "four-case replay baseline and original evidence",
+      "status": "result reported; full raw index not included"
+    },
+    {
+      "group": "B",
+      "contents": "long-output and controlled-fault candidate",
+      "status": "implementation/local tests; remote acceptance unverified"
+    },
+    {
+      "group": "C",
+      "contents": "live forwarding and applied-profile interface",
+      "status": "interface implemented; comparison unqualified"
+    }
+  ],
+  "claim_scope": {
+    "supported": "bounded task execution and feedback compatibility under fixed Responses replay",
+    "unestablished": [
+      "model reasoning quality",
+      "production replacement",
+      "general capability",
+      "resource-efficiency ratio",
+      "p95 latency"
+    ]
+  },
+  "candidate_fixture_files": {
+    "corpus.json": "52ff01de3d8a2a2700826a2a1a423e6b663f5e8b8d6171fa4018d21174514a8a",
+    "long_output_profiles.json": "eb905b5372ab8a60ab2702a52be356bef8bdab3340c6d120e5d98be5e8ec7429"
+  }
+}
