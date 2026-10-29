@@ -310,6 +310,17 @@ def codex_rust_crate(
 
     maybe_deps = []
 
+    # rules_rs's generated aliases(package_name=None) does not take dependency
+    # kinds. These production libraries have no Cargo-renamed direct crates,
+    # but their package-wide alias map can add dev-only workspace edges:
+    # network-proxy -> windows-sandbox -> protocol -> network-proxy and
+    # exec-server -> test-binary-support -> arg0 -> exec-server.
+    # Preserve all actual deps and all aliases in test-only targets.
+    production_aliases = {} if native.package_name() in [
+        "codex-rs/network-proxy",
+        "codex-rs/exec-server",
+    ] else aliases()
+
     if build_script_enabled and native.glob(["build.rs"], allow_empty = True):
         cargo_build_script(
             name = name + "-build-script",
@@ -326,7 +337,7 @@ def codex_rust_crate(
         lib_rule = rust_proc_macro if proc_macro else rust_library
         lib_rule(
             name = name,
-            aliases = aliases(normal = True),
+            aliases = production_aliases,
             crate_name = crate_name,
             crate_features = crate_features,
             deps = all_crate_deps() + maybe_deps + deps_extra,
@@ -349,7 +360,7 @@ def codex_rust_crate(
             unit_test_library = name + "-test-lib"
             lib_rule(
                 name = unit_test_library,
-                aliases = aliases(normal = True, normal_dev = True),
+                aliases = aliases(),
                 testonly = True,
                 crate_name = crate_name,
                 crate_features = crate_features + unit_test_features,
@@ -369,7 +380,7 @@ def codex_rust_crate(
         # deliberately changes cwd so Insta sees Cargo-like snapshot paths.
         rust_test(
             name = unit_test_binary,
-            aliases = aliases(normal_dev = True),
+            aliases = aliases(),
             crate = unit_test_library,
             crate_features = crate_features + unit_test_features,
             deps = rust_test_dependencies(unit_test_dependency_replacements, normal_dev = True) + maybe_deps + deps_extra,
@@ -419,7 +430,7 @@ def codex_rust_crate(
         cargo_env["CARGO_BIN_EXE_" + binary] = "$(rlocationpath :%s)" % binary
         rust_binary(
             name = binary,
-            aliases = aliases(normal = True),
+            aliases = aliases(),
             crate_name = binary.replace("-", "_"),
             crate_root = main,
             deps = all_crate_deps() + maybe_deps + deps_extra,
@@ -447,7 +458,7 @@ def codex_rust_crate(
         # sharding while Clippy can still discover the underlying test crate.
         rust_test(
             name = binary_unit_test_binary,
-            aliases = aliases(normal_dev = True),
+            aliases = aliases(),
             crate = ":" + binary,
             crate_features = crate_features,
             deps = all_crate_deps(normal_dev = True),
@@ -572,7 +583,7 @@ def codex_rust_crate(
             # materialization, sharding, and flaky retry behavior.
             rust_test(
                 name = integration_test_binary,
-                aliases = aliases(normal = True, normal_dev = True),
+                aliases = aliases(),
                 crate_name = test_crate_name,
                 crate_root = test,
                 srcs = [test],
@@ -613,7 +624,7 @@ def codex_rust_crate(
             # Bazel's normal test environment.
             rust_test(
                 name = test_name,
-                aliases = aliases(normal = True, normal_dev = True),
+                aliases = aliases(),
                 crate_name = test_crate_name,
                 crate_root = test,
                 srcs = [test],
@@ -689,7 +700,7 @@ def codex_rust_crate(
 
         rust_test(
             name = windows_cross_test_binary,
-            aliases = aliases(normal = True, normal_dev = True),
+            aliases = aliases(),
             crate_name = test_crate_name,
             crate_root = test,
             srcs = [test],
