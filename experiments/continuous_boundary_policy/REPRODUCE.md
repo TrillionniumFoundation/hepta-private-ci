@@ -1,5 +1,7 @@
 # 复现匹配循环策略补充实验
 
+> 2026-10-29 可用性说明：下文记录原研究的身份和完整归档存在时的复现步骤。原 `evidence/bundle/` 当前未恢复、未完整发布，因此此版本不能直接执行第 2 节的原归档解包。源码、协议、选择封存和结果表已恢复；完整原始数据与旧二进制仍缺失。新身份复现将另立目录并保留这一缺口，详见 [恢复收据](../native_readout_objective/RECOVERY_STATUS.json)。
+
 本目录是 `continuous_boundary_flow/study-002` 的独立补充；旧研究的样本、模型、证据和三个主验收结论保持原样，两轮结果不合并。模型、信息预算和四项主比较见 [README.md](README.md)，最终解释见 [REPORT.zh.md](REPORT.zh.md)，完整表格见 [results/RESULTS.zh.md](results/RESULTS.zh.md)。
 
 ## 1. 已发布身份与实际结果
