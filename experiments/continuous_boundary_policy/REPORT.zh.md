@@ -2,6 +2,8 @@
 
 > 2026-10-29 恢复说明：本文保留原 `policy-study-001` 的历史结果，正式结论仍为 0/4。该轮完整原始归档在运行环境重置后未能恢复，当前远端也没有完整归档；这次已核验封存源码和派生统计，但未重新重放缺失的原始轨迹。详细现状见 [恢复收据](../native_readout_objective/RECOVERY_STATUS.json)。后续重建将使用独立的复现身份，不冒称找回原文件。
 
+> 同日交付补记：新身份的[同种子复现](../continuous_boundary_policy_reproduction/REPORT.zh.md)已完成，四项主比较与历史摘要逐字段相同，结论仍为 0/4。新完整档案已公开于 [8dc7defc](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/8dc7defc17974d67766f35f340eb7bf6e692aefb)，并从公开地址恢复验证了 1,163 个文件；实际状态见[公开恢复回执](../continuous_boundary_policy_reproduction/results/PUBLIC_RETRIEVAL.json)和[新复现指南](../continuous_boundary_policy_reproduction/REPRODUCE.md)。它保留自己的源码、二进制、轨迹、成本与选择身份，不替代本目录原始档案，也不增加独立统计样本。
+
 ## 结论与当前决策
 
 **完整训练、真实原生动作闭环和证据复核均已完成；四项预注册最小收益为 0/4。** 本轮支持继续使用价值、风险和 margin 接口作为研究输入，尚不足以将 signed dual-bank 结构或连续预期 flow 升为默认 neuron 机制。建议保留当前原生 sparse 主线，下一步优先隔离训练方法的影响。

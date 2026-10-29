@@ -1,6 +1,8 @@
 # 复现匹配循环策略补充实验
 
-> 2026-10-29 可用性说明：下文记录原研究的身份和完整归档存在时的复现步骤。原 `evidence/bundle/` 当前未恢复、未完整发布，因此此版本不能直接执行第 2 节的原归档解包。源码、协议、选择封存和结果表已恢复；完整原始数据与旧二进制仍缺失。新身份复现将另立目录并保留这一缺口，详见 [恢复收据](../native_readout_objective/RECOVERY_STATUS.json)。
+> 2026-10-29 可用性说明：下文记录原研究的身份和完整归档存在时的复现步骤。原 `evidence/bundle/` 当前未恢复、未完整发布，因此此版本不能直接执行第 2 节的原归档解包。源码、协议、选择封存和结果表已恢复；完整原始数据与旧二进制仍缺失。新身份复现将另立目录并保留这一缺口，详见 [恢复收据](../native_readout_objective/RECOVERY_STATUS.json)。 原 `evidence/ROUNDTRIP.json` 也未恢复；下文对它的历史链接当前不可用，不能当作现有下载入口。
+
+> 同日交付补记：新身份的[同种子复现](../continuous_boundary_policy_reproduction/REPORT.zh.md)已完成，四项主比较与历史摘要逐字段相同，结论仍为 0/4。新完整档案已公开于 [8dc7defc](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/8dc7defc17974d67766f35f340eb7bf6e692aefb)，并从公开地址恢复验证了 1,163 个文件；实际状态见[公开恢复回执](../continuous_boundary_policy_reproduction/results/PUBLIC_RETRIEVAL.json)和[新复现指南](../continuous_boundary_policy_reproduction/REPRODUCE.md)。它保留自己的源码、二进制、轨迹、成本与选择身份，不替代本目录原始档案，也不增加独立统计样本。
 
 本目录是 `continuous_boundary_flow/study-002` 的独立补充；旧研究的样本、模型、证据和三个主验收结论保持原样，两轮结果不合并。模型、信息预算和四项主比较见 [README.md](README.md)，最终解释见 [REPORT.zh.md](REPORT.zh.md)，完整表格见 [results/RESULTS.zh.md](results/RESULTS.zh.md)。
 
