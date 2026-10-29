@@ -1,0 +1,73 @@
+{
+  "checkpoints_sha256": {
+    "results/alif/seed_101/model.pt": "d3809c8ee06608bf3b9af8e901b22696a0b5d5e7b50407a9d4a584c9e5c15d57",
+    "results/alif/seed_211/model.pt": "c68df388a7e8bb39db4a467cf6acc655c5747781baf13fa5ff7e585b442c03e1",
+    "results/alif/seed_307/model.pt": "411357cb28e8664c165c3ee6dd87b1b6de88d9b180da1cff1c6b3a9c7ddc1916",
+    "results/alif/seed_401/model.pt": "e788cbdb49539a39957bfc951cc95be162c40be7ae3006d4e4ab36772828a568",
+    "results/alif/seed_503/model.pt": "1e71e14031b4adfd566d179c2b3421ed41b068fb597caa3fcee51a71be69ed96",
+    "results/ctrnn_state_cpu/seed_101/model.pt": "137dffff0a7367d244077a655c4a72a7fe383bfb73f72f83ba5c5f34f2daea7f",
+    "results/ctrnn_state_cpu/seed_211/model.pt": "123cfb086b6add51f9198ab4ff3ec3a0c8b52e15eb9df128ba02db1dd10ad9cb",
+    "results/ctrnn_state_cpu/seed_307/model.pt": "c344f1a97f5e3be91b4c0f20bdfd900196c8c5ef200397daa1bc4dba90c0383f",
+    "results/ctrnn_state_cpu/seed_401/model.pt": "2daa55958e63327a28e4b72f1de53bc158182fb049a2a07ee685f6e9f9f9964b",
+    "results/ctrnn_state_cpu/seed_503/model.pt": "6d5821f0a17e7c5c4e294e6e3bfa290c718e27833dc2d4e8ab76cda407fd1917",
+    "results/resource_lif/seed_101/model.pt": "3e2cd96b41c67f707674b3cdff9b7aff73841402b7a4f06f1eb12cd699fd9cce",
+    "results/resource_lif/seed_211/model.pt": "8bbdbdba37446beb6e8b939bb8a32a4ca5a4826020895deb399b46a906fa5d6c",
+    "results/resource_lif/seed_307/model.pt": "251c35c26104f4d119d4c25f744c0482aae1979a770872254bf00183d826eadd",
+    "results/resource_lif/seed_401/model.pt": "f92466eb120936c63db0cd4510a0095bee4409f7f084d930a3855ac082fdf4db",
+    "results/resource_lif/seed_503/model.pt": "2de3cc0f293641816c302d6411e977dc5e78cea1b604c8db4ccf72bf05fd6c71",
+    "results/rr_full/seed_101/model.pt": "32d23ba4e030beb5850b25faff1fd119c08da4af2035ca70ba40aa4c0d5af651",
+    "results/rr_full/seed_211/model.pt": "13918a915678e5d1b5ab86955e5d8e460c862bfe6d8fed8e7c2c2132d34aed53",
+    "results/rr_full/seed_307/model.pt": "4f0330dc45c14ccd39758f0908000f10f9fd5cea40bc4e9c0effdc65d785fcb6",
+    "results/rr_full/seed_401/model.pt": "91c79fbb9356fa47f57905fc74bb4b6184c385aa27f44370db9b61646956b47e",
+    "results/rr_full/seed_503/model.pt": "bedb214119c96e7003550764474eb2b0f2a42b2025204b8d18e079ce9f354249"
+  },
+  "latent_seed_base": 86242001,
+  "measured_episodes": 5,
+  "measurement_design_added_after_model_freeze": true,
+  "order": "Counts ascending, then training seeds ascending; rotate the four variants by (count_index+seed_index) modulo four. Across the twenty count/seed groups each variant appears in each position five times.",
+  "parallel_measurement_workers": 1,
+  "performance_scope": "Python/PyTorch reference implementation, exact-event baseline kernels, real sampled RR events, full task loop and model-only timing separately.",
+  "policy_instance_counts": [
+    64,
+    256,
+    1024,
+    4096
+  ],
+  "pre_checkpoint_design_sha256": "1e82b5b6f2183cb8b467ce25c658c0baf377bfef9fd1b0b9af2f847e9c7ad50f",
+  "pre_data_freeze_relative_path": "pre_data_freeze.json",
+  "pre_data_freeze_sha256": "2c4e0e135940cf8fce04aa672963f47041be4065d8836d56671c335d7369e6bc",
+  "query_seed_base": 86243001,
+  "real_future_window": false,
+  "scenario_seed": 86241001,
+  "schema": "rrsnn-v4-policy-benchmark-protocol-1",
+  "selection_relative_path": "selection.json",
+  "selection_sha256": "dbad2690403992f75c46105722670026e7e13acb523f4973f4726a91d6e5d6bd",
+  "sources_sha256": {
+    "baselines.py": "14d06b7189982bdef8b737c912e2704a8d2647385789c60f5a9760f279037325",
+    "evaluate.py": "04509ce268f11b02e8c601e605adafe7e1dd114582e4c236f56a91dea048162c",
+    "models.py": "a0bc0100ae7e937322d5210d19d0def4ae3eae0e8b62a5a0ea280dcd7e186154",
+    "operators.py": "2d2b85a8695d79f8e81eab21ea67a3796aae2d8f5b346a83ca990068b3c61398",
+    "policy_benchmark.py": "538db3796a1548d6920c2282367efeaf78f77489c84b083c7548f06a77a2235e",
+    "prepare_data.py": "592abdc964eb515db6abee381ff99a9867bd4e644943e1ce48e897672c508e7c",
+    "task.py": "fb25701b47bd12df3006732a544d9a454de7495c395ccb98daada944baae87d4"
+  },
+  "task_superiority_test": false,
+  "torch_threads": 1,
+  "training_protocol_sha256": "e550dfca79fdb1b6bca551c5f1e6c3f8e4bd796fda310b6db2c48eaeabbaa09d",
+  "training_seeds": [
+    101,
+    211,
+    307,
+    401,
+    503
+  ],
+  "units": "Independent policy states and task ledgers in one CPU batch with shared checkpoint weights; not Hepta Cells.",
+  "variants": [
+    "rr_full",
+    "ctrnn_state_cpu",
+    "alif",
+    "resource_lif"
+  ],
+  "warmup_episodes": 2,
+  "weights_or_architectures_retuned": false
+}
