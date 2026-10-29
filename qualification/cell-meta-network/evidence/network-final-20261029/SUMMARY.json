@@ -1,0 +1,148 @@
+{
+  "schema": "hepta.cell-network.verified-summary.v1",
+  "trials": 32,
+  "correct_rows": 16384,
+  "groups": [
+    {
+      "arm": "local_only",
+      "batch_size": 1,
+      "trials": 4,
+      "task_seconds_median": 0.5930261644825805,
+      "measured_trial_seconds_median": 0.59838961600326,
+      "task_rows_by_node": {
+        "main": 2048
+      },
+      "coordinator_cpu_seconds_total": 2.6008608819999983,
+      "ssh_client_cpu_seconds_total": -2.220446049250313e-16,
+      "ssh_wire_counters_complete": true,
+      "application_bytes_total": 17532457
+    },
+    {
+      "arm": "local_only",
+      "batch_size": 32,
+      "trials": 4,
+      "task_seconds_median": 0.36294174200156704,
+      "measured_trial_seconds_median": 0.3928219389927108,
+      "task_rows_by_node": {
+        "main": 2048
+      },
+      "coordinator_cpu_seconds_total": 1.5254203209999995,
+      "ssh_client_cpu_seconds_total": -3.469446951953614e-16,
+      "ssh_wire_counters_complete": true,
+      "application_bytes_total": 17680586
+    },
+    {
+      "arm": "pooled_centralized",
+      "batch_size": 1,
+      "trials": 4,
+      "task_seconds_median": 0.6205901310313493,
+      "measured_trial_seconds_median": 1.0380813069932628,
+      "task_rows_by_node": {
+        "main": 2048
+      },
+      "coordinator_cpu_seconds_total": 2.8021862309999976,
+      "ssh_client_cpu_seconds_total": 0.6742499999999993,
+      "ssh_wire_counters_complete": true,
+      "application_bytes_total": 17605293
+    },
+    {
+      "arm": "pooled_centralized",
+      "batch_size": 32,
+      "trials": 4,
+      "task_seconds_median": 0.32963397502317093,
+      "measured_trial_seconds_median": 0.800679662002949,
+      "task_rows_by_node": {
+        "main": 2048
+      },
+      "coordinator_cpu_seconds_total": 1.5401640010000008,
+      "ssh_client_cpu_seconds_total": 0.6756840000000007,
+      "ssh_wire_counters_complete": true,
+      "application_bytes_total": 18755598
+    },
+    {
+      "arm": "fixed_round_robin",
+      "batch_size": 1,
+      "trials": 4,
+      "task_seconds_median": 1.7376050460152328,
+      "measured_trial_seconds_median": 2.1466185500321444,
+      "task_rows_by_node": {
+        "main": 1024,
+        "x230": 1024
+      },
+      "coordinator_cpu_seconds_total": 2.8315205459999992,
+      "ssh_client_cpu_seconds_total": 0.9479760000000004,
+      "ssh_wire_counters_complete": true,
+      "application_bytes_total": 17605307
+    },
+    {
+      "arm": "fixed_round_robin",
+      "batch_size": 32,
+      "trials": 4,
+      "task_seconds_median": 0.4045924714882858,
+      "measured_trial_seconds_median": 0.8673705534893088,
+      "task_rows_by_node": {
+        "main": 1024,
+        "x230": 1024
+      },
+      "coordinator_cpu_seconds_total": 1.617909644,
+      "ssh_client_cpu_seconds_total": 0.7407129999999998,
+      "ssh_wire_counters_complete": true,
+      "application_bytes_total": 18755595
+    },
+    {
+      "arm": "adaptive",
+      "batch_size": 1,
+      "trials": 4,
+      "task_seconds_median": 0.6010950175113976,
+      "measured_trial_seconds_median": 1.0266716695041396,
+      "task_rows_by_node": {
+        "main": 2048
+      },
+      "coordinator_cpu_seconds_total": 2.725402318999999,
+      "ssh_client_cpu_seconds_total": 0.6824019999999997,
+      "ssh_wire_counters_complete": true,
+      "application_bytes_total": 17796905
+    },
+    {
+      "arm": "adaptive",
+      "batch_size": 32,
+      "trials": 4,
+      "task_seconds_median": 0.36804204000509344,
+      "measured_trial_seconds_median": 0.9858130305074155,
+      "task_rows_by_node": {
+        "main": 2048
+      },
+      "coordinator_cpu_seconds_total": 2.1341861140000002,
+      "ssh_client_cpu_seconds_total": 0.719752999999999,
+      "ssh_wire_counters_complete": true,
+      "application_bytes_total": 24972130
+    }
+  ],
+  "lifecycle": {
+    "before": {
+      "status": "passed",
+      "wall_seconds": 0.40322103002108634
+    },
+    "watch-stop": {
+      "status": "passed",
+      "wall_seconds": 20.145229695015587
+    },
+    "stopped": {
+      "status": "passed",
+      "wall_seconds": 0.40295071800937876
+    },
+    "after": {
+      "status": "passed",
+      "wall_seconds": 0.5144838209962472
+    }
+  },
+  "all_original_trial_records_agree": true,
+  "summary_recomputed_from_raw_trials": true,
+  "p3_net_benefit": false,
+  "scope": "A replicated native numeric Cell and placement policies; no inter-Cell computation graph or distributed learning",
+  "unknown_costs": [
+    "remote SSH service CPU",
+    "complete resident-byte time integral",
+    "hardware energy"
+  ]
+}
