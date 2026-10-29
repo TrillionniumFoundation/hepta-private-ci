@@ -1,0 +1,22 @@
+{
+  "schema": "rrsnn-v4-aggregation-development-1",
+  "all_passed": true,
+  "bootstrap_draws": 10000,
+  "checks": [
+    "constant-effect exact intervals",
+    "zero-effect exact intervals",
+    "crossed-resampling independently enumerated",
+    "four conditions kept in each group",
+    "raw negative transfer before averaging",
+    "queries nested within latent paths",
+    "expected and realized utility separate",
+    "counterfactual interaction identity",
+    "incomplete group rejected",
+    "different observer queries rejected",
+    "eligible validation minimum with lexical tie and locked primary",
+    "write-once selection is idempotent",
+    "first selection after a heldout evaluation is rejected"
+  ],
+  "production_data_opened": false,
+  "source_sha256": "eb4157f0f149089a35e66a51f1fd4a808aeab53e8edc5acef8f0eee43dffe671"
+}

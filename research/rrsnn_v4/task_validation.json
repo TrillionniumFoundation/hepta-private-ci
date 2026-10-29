@@ -1,0 +1,276 @@
+{
+  "schema": "rrsnn-v4-task-validation-1",
+  "all_passed": true,
+  "checks": [
+    {
+      "name": "initial cue-only observation",
+      "passed": true
+    },
+    {
+      "name": "zero initial elapsed time",
+      "passed": true
+    },
+    {
+      "name": "full expected-value cue",
+      "passed": true
+    },
+    {
+      "name": "later value cue is absent",
+      "passed": true
+    },
+    {
+      "name": "padding and event cap",
+      "passed": true
+    },
+    {
+      "name": "silent policy has zero expected and realized reward",
+      "passed": true
+    },
+    {
+      "name": "retained unsent items have no free query reward",
+      "passed": true
+    },
+    {
+      "name": "feasible physical outputs have positive query utility",
+      "passed": true
+    },
+    {
+      "name": "actual identified deliveries occur after emission",
+      "passed": true
+    },
+    {
+      "name": "budget conservation",
+      "passed": true
+    },
+    {
+      "name": "output IDs settle once",
+      "passed": true
+    },
+    {
+      "name": "checkpoint contains a genuinely pending output",
+      "passed": true
+    },
+    {
+      "name": "pending delivery replay is identical",
+      "passed": true
+    },
+    {
+      "name": "identical delivery replay does not double reward",
+      "passed": true
+    },
+    {
+      "name": "future query bits do not affect policy observations or actions",
+      "passed": true
+    },
+    {
+      "name": "expected score is independent of realized query bits",
+      "passed": true
+    },
+    {
+      "name": "observer seed makes query outcomes replayable",
+      "passed": true
+    },
+    {
+      "name": "independent explicit-deadline DP and forward oracle agree",
+      "passed": true,
+      "cases": 20,
+      "maximum_error": 0.0
+    },
+    {
+      "name": "strict A/B differs only in full maturity observations",
+      "passed": true
+    }
+  ],
+  "rejections": [
+    {
+      "name": "non-due renewal",
+      "error": "Invalid output, renewal, or budget overdraft"
+    },
+    {
+      "name": "resource overdraft",
+      "error": "Invalid output, renewal, or budget overdraft"
+    },
+    {
+      "name": "output absent item",
+      "error": "Invalid output, renewal, or budget overdraft"
+    },
+    {
+      "name": "late output",
+      "error": "Invalid output, renewal, or budget overdraft"
+    },
+    {
+      "name": "fractional action index",
+      "error": "Policy action must be an integer index"
+    },
+    {
+      "name": "re-emitting settled output",
+      "error": "Repeated output or output from a different task time"
+    },
+    {
+      "name": "conflicting duplicate delivery",
+      "error": "Conflicting duplicate output identity"
+    },
+    {
+      "name": "tampered delivery quality",
+      "error": "Invalid output timing or quality"
+    },
+    {
+      "name": "nonbinary terminal query",
+      "error": "Four binary query outcomes are required"
+    },
+    {
+      "name": "restored delivery partition drift",
+      "error": "Queue delivery partition or ordering is invalid"
+    },
+    {
+      "name": "changed scenario on restore",
+      "error": "Queue identity or schema mismatch"
+    }
+  ],
+  "oracle_rows": [
+    {
+      "case": 0,
+      "expected": 1.3485025152421481,
+      "actual": 1.3485025152421481,
+      "forward": 1.3485025152421481,
+      "states": 153
+    },
+    {
+      "case": 1,
+      "expected": 1.147730672919192,
+      "actual": 1.147730672919192,
+      "forward": 1.147730672919192,
+      "states": 96
+    },
+    {
+      "case": 2,
+      "expected": 0.0,
+      "actual": 0.0,
+      "forward": 0,
+      "states": 11
+    },
+    {
+      "case": 3,
+      "expected": 1.2342787441327623,
+      "actual": 1.2342787441327623,
+      "forward": 1.2342787441327623,
+      "states": 108
+    },
+    {
+      "case": 4,
+      "expected": 1.1641967823066728,
+      "actual": 1.1641967823066728,
+      "forward": 1.1641967823066728,
+      "states": 89
+    },
+    {
+      "case": 5,
+      "expected": 1.8152986544003655,
+      "actual": 1.8152986544003655,
+      "forward": 1.8152986544003655,
+      "states": 96
+    },
+    {
+      "case": 6,
+      "expected": 1.231506393366703,
+      "actual": 1.231506393366703,
+      "forward": 1.2315063933667028,
+      "states": 243
+    },
+    {
+      "case": 7,
+      "expected": 1.0588102390347776,
+      "actual": 1.0588102390347776,
+      "forward": 1.0588102390347776,
+      "states": 51
+    },
+    {
+      "case": 8,
+      "expected": 2.051638841289228,
+      "actual": 2.051638841289228,
+      "forward": 2.051638841289228,
+      "states": 157
+    },
+    {
+      "case": 9,
+      "expected": 2.516062369748078,
+      "actual": 2.516062369748078,
+      "forward": 2.516062369748078,
+      "states": 343
+    },
+    {
+      "case": 10,
+      "expected": 1.4192282764826816,
+      "actual": 1.4192282764826816,
+      "forward": 1.4192282764826816,
+      "states": 153
+    },
+    {
+      "case": 11,
+      "expected": 1.6079199813217342,
+      "actual": 1.6079199813217342,
+      "forward": 1.6079199813217342,
+      "states": 147
+    },
+    {
+      "case": 12,
+      "expected": 3.215279965719306,
+      "actual": 3.215279965719306,
+      "forward": 3.215279965719306,
+      "states": 122
+    },
+    {
+      "case": 13,
+      "expected": 1.690315193424587,
+      "actual": 1.690315193424587,
+      "forward": 1.690315193424587,
+      "states": 121
+    },
+    {
+      "case": 14,
+      "expected": 1.3560954660010194,
+      "actual": 1.3560954660010194,
+      "forward": 1.3560954660010194,
+      "states": 151
+    },
+    {
+      "case": 15,
+      "expected": 2.286347886074292,
+      "actual": 2.286347886074292,
+      "forward": 2.286347886074292,
+      "states": 182
+    },
+    {
+      "case": 16,
+      "expected": 2.917680772855066,
+      "actual": 2.917680772855066,
+      "forward": 2.917680772855066,
+      "states": 394
+    },
+    {
+      "case": 17,
+      "expected": 2.3089921340298742,
+      "actual": 2.3089921340298742,
+      "forward": 2.3089921340298742,
+      "states": 321
+    },
+    {
+      "case": 18,
+      "expected": 2.1190131909435177,
+      "actual": 2.1190131909435177,
+      "forward": 2.1190131909435177,
+      "states": 235
+    },
+    {
+      "case": 19,
+      "expected": 1.806532505277116,
+      "actual": 1.806532505277116,
+      "forward": 1.806532505277116,
+      "states": 272
+    }
+  ],
+  "development_seeds_only": true,
+  "training_or_holdout_generated": false,
+  "real_future_window": false,
+  "runtime_seconds": 1.3987763729965081
+}
