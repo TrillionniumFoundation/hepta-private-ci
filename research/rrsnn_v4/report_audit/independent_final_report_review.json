@@ -1,0 +1,276 @@
+{
+  "schema": "rrsnn-v4-independent-final-report-review-1",
+  "created_at_utc": "2026-10-29T17:29:09.806236+00:00",
+  "reviewer": "/root/r5_real_execution",
+  "status": "passes_for_final_report_numeric_rendering_and_explicit_research_scope",
+  "reviewed_sha256": {
+    "REPORT.zh-CN.md": "c028fdf05d387af79598c6474a677f02e0062a7e152b3723fde9ce18072a48e6",
+    "results/closeout.json": "aa288ad328299c720856af891d5d2b6df8dde5f7d20cef069fd84a653f104fa9",
+    "build_closeout.py": "56690e29b01db894f403d6e0dc0591cd3c44a06926c9db3e7534877e538c79ff",
+    "REPORT_TEMPLATE.zh-CN.md": "883962c7c9a7254c991b0ba207df5799a38f398fe69e0124e71fd7b5303db406",
+    "policy_benchmark_results/independent_resource_result_review.json": "cce1bcdb8ff1b7b8b75586d2155776ab44cca1c13198be4a02d85190779b016c"
+  },
+  "source_evidence_sha256": {
+    "selection": "dbad2690403992f75c46105722670026e7e13acb523f4973f4726a91d6e5d6bd",
+    "training": "99b28561ac6bbe95a2967b435311a07981efed5fb7236e716a4b5dc2981c2144",
+    "evaluation": "4a528628e5701ca1ae1818392fbf5e18e93063fa232bcb9834043139a618a184",
+    "aggregate": "1ac919f5a07aebac96b3b7a49be9905a4f026ce5927d61464ba5aba3d12b8773",
+    "mechanisms": "6468c31ed77072794ed0a9997f49a11a88886c37b2fc240b560500e9582dba09",
+    "original_status": "7299d8b6c851aec33b0a9ef59a390e0eaa10a5375f992a0d14119fb07c08699c",
+    "repair_status": "16da144dd1df9245fabb0078bf630bbfaf17d170f82ee99de5f875a3f4215a79",
+    "repair": "b35da0c6f7e1ed333b191dca66862ecea87f532d39c60332136942113f8cbbe1",
+    "calibration": "304687fbc05db989e74491b1f3b8b2b0be8517b649e167af8e8d64c411513e8c",
+    "behavior": "25d5c7fd79cd72fdbdc761afa1b23f330f6d807a8fd324c482a631eaa912171b",
+    "policy": "88840d7daedb03e5f48bba0627ad5bc259f2c9e7b8891dfe6a8def3476da5034",
+    "policy_summary": "a3cdb0ca638ec6edc1dbe238b2c9ca2931f55a6dbc4e144816002fc45cd309bb",
+    "inference_scope": "9b7059d9732124488506251a199f53d7ecf1a2d9c3b230fff19e030f37cc1ad9",
+    "native": "9b476b15498e9380e77822ef7c45d2f032a9bafd5f04d05a116923dc5f457df3",
+    "bridge": "ea46a817da890d049e2a88870df91f54a475b51e4b7a9c4bfe94f258a056fd6c",
+    "bootstrap": "2a684268e7dbfe7f43cc570d7400f8b01224b415ea7cd14360a18eee0913f825",
+    "ci": "c19d6f11a55e791cd67ce7ca02ff8e1f64d715f44e9219d22d9ed3be69e261b2",
+    "migration": "12afb780469d15ae370594829d37804ec2367247aea36ae0a712ffabd874d811",
+    "migration_review": "7033be0f4822da16a6856c882d919a3618335c5b7cc23fea810a11f4764ad27e",
+    "migration_runtime": "d15de2d61203ba89e50202ffdb168e2a9fc7308cae58092d695eb27b52e5c92b",
+    "storage_context": "3c46f0454446b0708df997201c36b8383cdc53e2dfce005c0f26a446eac3343d"
+  },
+  "method": "Independent stdlib-only reads and numeric formatting comparisons. No model/report-builder import, actor, training, benchmark, Monte Carlo, large raw reread, tensor load, remote publication or archive scan. All21 top-level source-evidence identities and six resource-review bindings rehashed. The first audit execution independently reconstructed all14 dynamic tables and the complete reviewed template; every assertion passed before an audit-only metadata key error. The final phase checks unchanged hashes and all remaining metadata/gates. Prior full raw/weights verification is reused, not newly claimed.",
+  "audit_execution_notes": [
+    "First metadata lookup used training_receipts; actual selection key is training_receipts_sha256.",
+    "Second metadata check treated policy.conditions as a list; actual field is integer80. This was corrected after inspecting its type.",
+    "Neither interrupted audit created a receipt or changed any original source/evidence. Corrections affect only reviewer metadata navigation, not experiment or acceptance."
+  ],
+  "prior_resource_review_scope_reused": "Pinned independent resource review recomputed all80 raw hashes, fixed condition identities/order, per-condition statistics, every one of16 groups of five seeds, medians/min/max, eight pressure windows, old64 hashes and exact new16 cohort. No actor rerun or repeated raw resource scan in this report check.",
+  "table_checks": [
+    {
+      "table_index": 0,
+      "name": "primary normalized gain and pathwise negative transfer",
+      "rows": 3,
+      "columns": 3,
+      "all_rendered_cells_match": true
+    },
+    {
+      "table_index": 1,
+      "name": "all 16 training rows",
+      "rows": 16,
+      "columns": 5,
+      "all_rendered_cells_match": true
+    },
+    {
+      "table_index": 2,
+      "name": "all 16 normalized utility rows",
+      "rows": 16,
+      "columns": 4,
+      "all_rendered_cells_match": true
+    },
+    {
+      "table_index": 3,
+      "name": "raw expected and realized gains",
+      "rows": 3,
+      "columns": 4,
+      "all_rendered_cells_match": true
+    },
+    {
+      "table_index": 4,
+      "name": "behavior rates with all 5120 paths as denominator",
+      "rows": 3,
+      "columns": 7,
+      "all_rendered_cells_match": true
+    },
+    {
+      "table_index": 5,
+      "name": "paired four conditions and signed interaction",
+      "rows": 3,
+      "columns": 6,
+      "all_rendered_cells_match": true
+    },
+    {
+      "table_index": 6,
+      "name": "pre-shock emissions",
+      "rows": 2,
+      "columns": 5,
+      "all_rendered_cells_match": true
+    },
+    {
+      "table_index": 7,
+      "name": "all five full-minus-ablation gains",
+      "rows": 5,
+      "columns": 4,
+      "all_rendered_cells_match": true
+    },
+    {
+      "table_index": 8,
+      "name": "full-minus-ablation interactions",
+      "rows": 5,
+      "columns": 2,
+      "all_rendered_cells_match": true
+    },
+    {
+      "table_index": 9,
+      "name": "original failures and isolated repair counts",
+      "rows": 7,
+      "columns": 3,
+      "all_rendered_cells_match": true
+    },
+    {
+      "table_index": 10,
+      "name": "numerical failures by split",
+      "rows": 3,
+      "columns": 4,
+      "all_rendered_cells_match": true
+    },
+    {
+      "table_index": 11,
+      "name": "internal probability and censoring diagnostics",
+      "rows": 7,
+      "columns": 2,
+      "all_rendered_cells_match": true
+    },
+    {
+      "table_index": 12,
+      "name": "16 resource groups, all-five-seed medians, ranges and units",
+      "rows": 16,
+      "columns": 8,
+      "all_rendered_cells_match": true
+    },
+    {
+      "table_index": 13,
+      "name": "native owner components with tick, queue, batch and process RSS conversions",
+      "rows": 4,
+      "columns": 8,
+      "all_rendered_cells_match": true
+    }
+  ],
+  "numeric_table_rows_verified": 93,
+  "numeric_table_cells_verified": 451,
+  "all16_resource_rows_correct": true,
+  "resource_unit_scope": {
+    "p95_p99": "Milliseconds; median of seed-specific empirical batched model.step quantiles, not pooled tails, end-to-end latency or SLA.",
+    "throughputs": "Median of five seed-level model observations/s and full policy episodes/s, distinctly labeled.",
+    "peak_RSS": "Process MiB, median with min/max across all five seeds, not pure state or per-Cell memory.",
+    "native": "Separate owner-component measurements; us to ms, bytes to MiB, queue us to seconds and batch ms to seconds verified.",
+    "pressure": "All eight flagged conditions retained with exact identity/quality; no causal attribution or exclusive-host claim.",
+    "precision": "Original frozen RR measured; isolated repaired kernel performance and native bridge qualification unmeasured."
+  },
+  "matrices": {
+    "training_checkpoints": 80,
+    "evaluation_files": 960,
+    "original_numerical_comparisons": 60,
+    "repair_comparisons": 60,
+    "resource_conditions": 80,
+    "all_declared_matrices_completed": true
+  },
+  "resource_storage": {
+    "original_overlay": 64,
+    "tmpfs": 16,
+    "original64_unchanged": true,
+    "tmpfs16_exact_cohort_verified_via_pinned_prior_review": true,
+    "same_resource_environment_claim": false,
+    "namespace_and_shared_memory_change_disclosed": true
+  },
+  "primary_gain_percentage_points": {
+    "test": {
+      "ci95": [
+        -56.275504709626595,
+        -40.261291490499424
+      ],
+      "mean": -47.84416506916263,
+      "training_seed_means": [
+        -37.99635076307125,
+        -61.72013310872517,
+        -44.81388027133072,
+        -43.00445892344153,
+        -51.68600227924445
+      ]
+    },
+    "shift": {
+      "ci95": [
+        -63.832672902400866,
+        -50.40915782688043
+      ],
+      "mean": -57.32195849552549,
+      "training_seed_means": [
+        -48.79757972176269,
+        -63.57497356992667,
+        -60.60035557076118,
+        -50.03028052089715,
+        -63.60660309427979
+      ]
+    },
+    "paired": {
+      "ci95": [
+        -59.4881279549922,
+        -51.08044657641383
+      ],
+      "mean": -55.350782766186306,
+      "training_seed_means": [
+        -48.90141313249015,
+        -53.449652673385934,
+        -60.73237801308689,
+        -53.121135910147935,
+        -60.54933410182062
+      ]
+    }
+  },
+  "gates_verified": {
+    "primary_utility_acceptance_passed": false,
+    "primary_acceptance_rule_changed": false,
+    "original_numerical_gate_passed": false,
+    "original_predeclared_engineering_acceptance_passed": false,
+    "repair_replaces_original_evidence": false,
+    "repair_full_state_rng_equivalence_established": false,
+    "external_predictive_calibration_established": false,
+    "production_owner_lifecycle_qualified": false,
+    "independent_production_future_window": false,
+    "full_cell_scale_qualified": false,
+    "dot_identity_verified": false,
+    "precision_repair_resource_measurements_performed": false,
+    "resource_environment_identical_across_migration": false,
+    "full_repository_ci_green": false,
+    "global_resource_maturity_qvi_solved": false,
+    "scientific_novelty_established": false,
+    "all_blockers_closed": false,
+    "production_activation_allowed": false,
+    "isolated_precision_repair_stored_path_comparisons_passed": true,
+    "internal_probability_sanity_passed": true,
+    "conditional_bootstrap_repair_passed": true,
+    "conditional_trained_feature_bridge_passed": true
+  },
+  "original_numeric_failures_preserved": {
+    "combined_contract_failures": 453,
+    "type_unaligned": 202,
+    "aligned_over_tolerance": 251,
+    "count_differences": 156,
+    "per_neuron_count_differences": 192,
+    "scope": "Discrete closed-loop branching disclosed; repaired logs match stored Brent but full60 state/RNG equality is unverified."
+  },
+  "narrative_checks": {
+    "reviewed_template_exact_reconstruction": true,
+    "unreplaced_tokens": 0,
+    "all_tables_rectangular": true,
+    "local_links_exist": [
+      "MATHEMATICAL_SCOPE.zh-CN.md",
+      "results/figures/01_normalized_utility.png",
+      "results/figures/02_gain_over_primary.png",
+      "results/figures/03_maturity_shock_counterfactual.png",
+      "results/figures/04_native_owner_costs.png"
+    ],
+    "behavior_all_three_rate_denominators": 5120,
+    "all_five_test_and_shift_ablation_intervals_include_zero": true,
+    "initial_joint_bridge_checkpoint_prerequisite_disclosed": true,
+    "independent_current_trusted_frontier_required": true,
+    "native_bootstrap_and_bridge_scopes_separate": true,
+    "full_repository_CI_not_green_disclosed": true,
+    "scalar_vs_finite_chain_optimality_and_novelty_limits_disclosed": true,
+    "prior_negative_results_preserved": true
+  },
+  "remaining_blockers_within_this_report_review": [],
+  "not_covered_in_this_review": [
+    "Final remote Git publication and retrieval.",
+    "Complementary resources archive and complete archive coverage.",
+    "Clean-directory restore and final verification entry execution.",
+    "Independent rendered figure visual inspection; relative file existence checked.",
+    "New broad scientific, all-domain numerical, production or full-Cell qualification."
+  ],
+  "production_activation_allowed": false,
+  "all_project_blockers_closed": false
+}
