@@ -21,7 +21,6 @@ use codex_hepta_learning_artifacts::VerifiedArtifactSelectionV1;
 use codex_hepta_learning_artifacts::WithdrawalBoundArtifactAdmissionV3;
 use codex_hepta_learning_artifacts::load_selected_candidate;
 use codex_hepta_learning_artifacts::validate_artifact_publication_v3;
-use codex_hepta_memory::MemoryCellOwnerSnapshotV1;
 use codex_hepta_types::Digest32;
 
 #[path = "memory_cell_bundle.rs"]
@@ -29,15 +28,21 @@ mod bundle;
 pub use bundle::LoadedMemoryCellBundleV1;
 pub use bundle::MemoryCellBundleCandidateV1;
 
+#[path = "memory_cell_release_bundle.rs"]
+mod release_bundle;
+pub use release_bundle::MemoryCellReleaseBundleV1;
+pub(crate) use release_bundle::Sealed;
+pub(crate) use release_bundle::MemoryCellDecodeTokenV1;
+
 #[path = "memory_structure_runtime_v9.rs"]
 mod structure_v9;
 pub use structure_v9::MemoryStructurePublicationV9;
 pub use structure_v9::sleep_selected_memory_v9;
 pub use structure_v9::stage_memory_structure_v9;
 
-struct InstalledBundle {
+struct InstalledBundle<B: MemoryCellReleaseBundleV1> {
     candidate: RevalidatingCandidate,
-    bundle: Arc<LoadedMemoryCellBundleV1>,
+    bundle: Arc<B>,
     admission: WithdrawalBoundArtifactAdmissionV3,
     selected_current: RegistrySnapshotReceipt,
     installed_at: u64,
@@ -50,13 +55,16 @@ struct InstalledBundle {
 /// A configured product consumer of the real artifact service. Its in-memory
 /// cache is never an independent active-version authority: restart requires a
 /// freshly verified selection against that service's durable signed CURRENT.
-pub struct MemoryCellReleaseHostV1 {
+pub type MemoryCellReleaseHostV1 = TypedMemoryCellReleaseHostV1<LoadedMemoryCellBundleV1>;
+
+/// Registered payload profiles share this same authoritative release host.
+pub struct TypedMemoryCellReleaseHostV1<B: MemoryCellReleaseBundleV1> {
     service: Arc<Mutex<LearningArtifactOwnerService>>,
     selection_verifier: ArtifactSelectionVerifierV1,
-    selected: Mutex<Option<InstalledBundle>>,
+    selected: Mutex<Option<InstalledBundle<B>>>,
 }
 
-impl MemoryCellReleaseHostV1 {
+impl<B: MemoryCellReleaseBundleV1> TypedMemoryCellReleaseHostV1<B> {
     pub fn new(
         service: Arc<Mutex<LearningArtifactOwnerService>>,
         selection_verifier: ArtifactSelectionVerifierV1,
@@ -74,11 +82,11 @@ impl MemoryCellReleaseHostV1 {
     pub fn publish(
         &self,
         mut request: LearningArtifactPublishRequestV1,
-        snapshot: &MemoryCellOwnerSnapshotV1,
+        snapshot: &B::OwnerSnapshot,
     ) -> Result<ArtifactPublicationReceiptV1, String> {
         let now = now()?;
         let manifest = &request.admission.validated_manifest.manifest;
-        let bundle = LoadedMemoryCellBundleV1::decode(&request.payload, manifest.bytes_digest)?;
+        let bundle = B::decode(&request.payload, manifest.bytes_digest, MemoryCellDecodeTokenV1::new())?;
         bundle.validate_owner_snapshot(snapshot)?;
         bundle.validate_manifest(manifest)?;
         let mut service = self
@@ -129,7 +137,7 @@ impl MemoryCellReleaseHostV1 {
         let manifest = &admission.validated_manifest.manifest;
         let bundle = candidate
             .with_current(current, |bytes| {
-                let decoded = LoadedMemoryCellBundleV1::decode(bytes, manifest.bytes_digest)?;
+                let decoded = B::decode(bytes, manifest.bytes_digest, MemoryCellDecodeTokenV1::new())?;
                 decoded.validate_manifest(manifest)?;
                 Ok::<_, String>(decoded)
             })
@@ -164,7 +172,7 @@ impl MemoryCellReleaseHostV1 {
         Ok(())
     }
 
-    pub fn load_current(&self) -> Result<Arc<LoadedMemoryCellBundleV1>, String> {
+    pub fn load_current(&self) -> Result<Arc<B>, String> {
         let service = self
             .service
             .lock()
@@ -180,7 +188,7 @@ impl MemoryCellReleaseHostV1 {
         Ok(Arc::clone(&state.bundle))
     }
 
-    pub fn revalidate(&self, bundle: &LoadedMemoryCellBundleV1) -> Result<(), String> {
+    pub fn revalidate(&self, bundle: &B) -> Result<(), String> {
         let service = self
             .service
             .lock()
@@ -199,10 +207,10 @@ impl MemoryCellReleaseHostV1 {
     }
 }
 
-fn revalidate_state(
+fn revalidate_state<B: MemoryCellReleaseBundleV1>(
     service: &LearningArtifactOwnerService,
     verifier: &ArtifactSelectionVerifierV1,
-    state: &mut InstalledBundle,
+    state: &mut InstalledBundle<B>,
     now: u64,
 ) -> Result<(), String> {
     if !state.available {
@@ -301,3 +309,4 @@ mod tests;
 #[cfg(test)]
 #[path = "memory_cell_release_trust_tests.rs"]
 mod trust_tests;
+

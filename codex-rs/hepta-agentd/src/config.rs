@@ -83,6 +83,7 @@ pub struct AgentdConfig {
     objective_profile_file: Option<PathBuf>,
     authbus_checkpoint_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    inventory_cells: Option<std::sync::Arc<crate::AgentdInventoryCellRuntimeV1>>,
     memory_cells: Option<std::sync::Arc<crate::AgentdMemoryCellRuntimeV1>>,
     production_operations: Option<crate::AgentdProductionOperationRuntimeConfig>,
     production_writer_host: Option<std::sync::Arc<crate::AgentdProductionWriterHost>>,
@@ -207,6 +208,7 @@ impl AgentdConfig {
             objective_profile_file: None,
             authbus_checkpoint_file: None,
             cognitive_ranker: None,
+            inventory_cells: None,
             memory_cells: None,
             production_operations: None,
             production_writer_host: None,
@@ -318,6 +320,30 @@ impl AgentdConfig {
 
     pub(crate) fn cognitive_ranker(&self) -> Option<std::sync::Arc<crate::PinnedCognitiveRanker>> {
         self.cognitive_ranker.clone()
+    }
+
+    /// Attach one owner-selected cell release and pinned addressing resolver.
+    /// This explicit startup host, never a request, chooses the learned models.
+    pub fn with_inventory_cells(
+        mut self,
+        cells: std::sync::Arc<crate::AgentdInventoryCellRuntimeV1>,
+    ) -> Result<Self, AgentdError> {
+        cells.require_identity(
+            &self.identity.agent_id,
+            self.identity.spawn_generation,
+            &self.identity.workspace,
+        )?;
+        if self.inventory_cells.is_some() {
+            return Err(AgentdError::Invalid(
+                "memory cells already configured".to_string(),
+            ));
+        }
+        self.inventory_cells = Some(cells);
+        Ok(self)
+    }
+
+    pub(crate) fn inventory_cells(&self) -> Option<std::sync::Arc<crate::AgentdInventoryCellRuntimeV1>> {
+        self.inventory_cells.clone()
     }
 
     /// Attach one owner-selected cell release and pinned addressing resolver.
@@ -611,3 +637,4 @@ fn require_exact_path(actual: &Path, expected: &Path, label: &str) -> Result<(),
 #[cfg(test)]
 #[path = "config_tests.rs"]
 mod tests;
+

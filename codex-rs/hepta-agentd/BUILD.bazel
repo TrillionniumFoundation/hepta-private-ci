@@ -14,6 +14,7 @@ _UNIT_TEST_DEPENDENCIES = {
 codex_rust_crate(
     name = "hepta-agentd",
     crate_name = "codex_hepta_agentd",
+    compile_data = glob(["tests/fixtures/inventory/*.json"]),
     integration_test_timeout = "long",
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
 )
@@ -27,6 +28,7 @@ rust_library(
     srcs = glob(["src/**/*.rs"]),
     crate_features = ["qualification-cognitive-write"],
     crate_name = "codex_hepta_agentd",
+    compile_data = glob(["tests/fixtures/inventory/*.json"]),
     crate_root = "src/lib.rs",
     edition = "2024",
     visibility = ["//visibility:private"],
@@ -70,6 +72,7 @@ rust_binary(
     srcs = glob(["src/**/*.rs"]),
     crate_features = ["qualification-cognitive-write"],
     crate_name = "codex_hepta_agentd",
+    compile_data = glob(["tests/fixtures/inventory/*.json"]),
     crate_root = "src/main.rs",
     edition = "2024",
     rustc_env = {
@@ -132,3 +135,4 @@ exports_files(
     ],
     visibility = ["//codex-rs/hepta-contracts:__pkg__"],
 )
+

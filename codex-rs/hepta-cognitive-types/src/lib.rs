@@ -8,9 +8,21 @@
 pub mod hnmf;
 pub mod hnmf_learning;
 pub mod lane_c;
+mod inventory_cell;
 mod memory_cell;
 mod memory_cell_values;
 pub mod wire;
+
+pub use inventory_cell::INVENTORY_CELL_PROFILE_V1;
+pub use inventory_cell::InventoryCellKindV1;
+pub use inventory_cell::InventoryPolicyV1;
+pub use inventory_cell::InventoryProgramV1;
+pub use inventory_cell::InventoryHoldV1;
+pub use inventory_cell::InventoryCellRequestV1;
+pub use inventory_cell::InventoryCellRouteV1;
+pub use inventory_cell::InventoryCellReadoutV1;
+pub use inventory_cell::validate_inventory_cell_value_v1;
+pub use inventory_cell::execute_inventory_program_v1;
 
 pub use memory_cell::MemoryOperationV1;
 pub use memory_cell::MemoryPredictionKindV1;
@@ -262,3 +274,4 @@ mod tests;
 #[cfg(test)]
 #[path = "contract_tests.rs"]
 mod contract_tests;
+

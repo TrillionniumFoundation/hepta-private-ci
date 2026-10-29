@@ -40,6 +40,10 @@ pub use durable::MAX_LANE_C_PAGE_ANCESTRY_REVISIONS;
 pub use durable::MAX_LANE_C_PAGE_CITATIONS;
 pub use durable::MAX_LANE_C_SNAPSHOT_PAGE_HEADS;
 pub use durable::MAX_MEMORY_CELL_OWNER_HEADS;
+pub use durable::InventoryCellAddressV1;
+pub use durable::InventoryCellOwnerRecordV1;
+pub use durable::InventoryCellOwnerSnapshotV1;
+pub use durable::InventoryCellRecordV1;
 pub use durable::MemoryCellAddressV1;
 pub use durable::MemoryCellOwnerRecordV1;
 pub use durable::MemoryCellOwnerSnapshotV1;
@@ -256,3 +260,4 @@ impl CognitiveStore {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+

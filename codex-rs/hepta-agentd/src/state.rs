@@ -36,6 +36,7 @@ pub(crate) struct AgentdState {
     pub(crate) intelligence_invocation:
         std::sync::OnceLock<Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>>,
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
+    pub(crate) inventory_cells: std::sync::OnceLock<Arc<crate::AgentdInventoryCellRuntimeV1>>,
     pub(crate) memory_cells: std::sync::OnceLock<Arc<crate::AgentdMemoryCellRuntimeV1>>,
     pub(crate) cognitive_retrieval_context:
         std::sync::OnceLock<Arc<dyn crate::CurrentMemoryRetrievalContext>>,
@@ -135,6 +136,7 @@ impl AgentdState {
             automation_effect: std::sync::OnceLock::new(),
             objective_runtime: std::sync::OnceLock::new(),
             cognitive_ranker: std::sync::OnceLock::new(),
+            inventory_cells: std::sync::OnceLock::new(),
             memory_cells: std::sync::OnceLock::new(),
             production_operations: std::sync::OnceLock::new(),
             cognitive_retrieval_context: std::sync::OnceLock::new(),
@@ -226,6 +228,20 @@ impl AgentdState {
         }
         *cognitive = Some(store);
         Ok(())
+    }
+
+    pub(crate) fn attach_inventory_cells(
+        &self,
+        cells: Arc<crate::AgentdInventoryCellRuntimeV1>,
+    ) -> Result<(), AgentdError> {
+        cells.require_identity(
+            &self.identity.agent_id,
+            self.identity.spawn_generation,
+            &self.identity.workspace,
+        )?;
+        self.inventory_cells
+            .set(cells)
+            .map_err(|_| AgentdError::Protocol("memory cells already attached".to_string()))
     }
 
     pub(crate) fn attach_memory_cells(
@@ -837,3 +853,4 @@ fn poisoned_state<T>(_error: std::sync::PoisonError<T>) -> AgentdError {
 #[cfg(test)]
 #[path = "state_isolation_tests.rs"]
 mod isolation_tests;
+

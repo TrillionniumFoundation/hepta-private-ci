@@ -65,6 +65,7 @@ pub async fn run(
         .authbus_checkpoint_file()
         .map(std::path::Path::to_path_buf);
     let ranker = config.cognitive_ranker();
+    let inventory_cells = config.inventory_cells();
     let memory_cells = config.memory_cells();
     let mut production_writer_host = config.production_writer_host();
     if production_operations.is_some() && production_writer_host.is_none() {
@@ -202,6 +203,9 @@ pub async fn run(
     let cognitive_runtime = require_cognitive_runtime_for_profile(cognitive_runtime)?;
     if let Some(store) = cognitive_runtime.available_store() {
         state.attach_cognitive_store(Arc::clone(store))?;
+    }
+    if let Some(cells) = inventory_cells {
+        state.attach_inventory_cells(cells)?;
     }
     if let Some(cells) = memory_cells {
         state.attach_memory_cells(cells)?;
@@ -557,3 +561,4 @@ async fn shutdown_signal() -> Result<(), AgentdError> {
 #[cfg(test)]
 #[path = "runtime_tests.rs"]
 mod tests;
+

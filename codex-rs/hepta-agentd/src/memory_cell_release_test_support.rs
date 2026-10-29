@@ -317,8 +317,18 @@ fn prepare_request(
     generation: u64,
     training_code_digest: Digest32,
 ) -> LearningArtifactPublishRequestV1 {
-    let now = super::now().expect("publication clock");
     let manifest = fixture_manifest(config, candidate, generation, training_code_digest);
+    prepare_bound_request(service, config, manifest, candidate.bytes().to_vec(), generation)
+}
+
+pub(crate) fn prepare_bound_request(
+    service: &Mutex<LearningArtifactOwnerService>,
+    config: &LearningArtifactOwnerServiceConfigV1,
+    manifest: LearningArtifactManifestV2,
+    payload: Vec<u8>,
+    generation: u64,
+) -> LearningArtifactPublishRequestV1 {
+    let now = super::now().expect("publication clock");
     let service = service.lock().expect("service");
     let withdrawals = service.withdrawal_registry();
     let admission =
@@ -350,7 +360,7 @@ fn prepare_request(
     LearningArtifactPublishRequestV1 {
         operation_id,
         admission,
-        payload: candidate.bytes().to_vec(),
+        payload,
         signed_current_head: signed,
         expected_registry_predecessor_head: predecessor,
         now,
@@ -405,10 +415,18 @@ pub(crate) fn fixture_config(
     root: PathBuf,
     now: u64,
 ) -> LearningArtifactOwnerServiceConfigV1 {
+    fixture_config_for_scope(snapshot.scope(), root, now)
+}
+
+pub(crate) fn fixture_config_for_scope(
+    scope: &codex_hepta_cognitive_types::hnmf::ContractIdV1,
+    root: PathBuf,
+    now: u64,
+) -> LearningArtifactOwnerServiceConfigV1 {
     let withdrawals = DatasetWithdrawalRegistry::new_scoped(DatasetWithdrawalScopeV1 {
         authority_domain_id: id("memory-dataset-owner"),
         registry_id: id("memory-withdrawals"),
-        scope_id: snapshot.scope().as_stable_id().clone(),
+        scope_id: scope.as_stable_id().clone(),
     });
     let scope_digest = withdrawals.scope_digest().expect("withdrawal scope");
     let key = owner_key();
@@ -461,8 +479,15 @@ pub(crate) fn fixture_manifest(
     generation: u64,
     training_code_digest: Digest32,
 ) -> LearningArtifactManifestV2 {
-    candidate
-        .bind_manifest(LearningArtifactManifestV2 {
+    candidate.bind_manifest(fixture_manifest_template(config, generation, training_code_digest)).expect("manifest binding")
+}
+
+pub(crate) fn fixture_manifest_template(
+    config: &LearningArtifactOwnerServiceConfigV1,
+    generation: u64,
+    training_code_digest: Digest32,
+) -> LearningArtifactManifestV2 {
+    LearningArtifactManifestV2 {
             artifact_id: id(&format!("memory-bundle:{generation}")),
             kind: ArtifactKind::Parameters,
             generation: Generation::new(generation).expect("generation"),
@@ -487,8 +512,7 @@ pub(crate) fn fixture_manifest(
             producer_id: id("memory-trainer"),
             created_at: config.now,
             expires_at: config.now + 3_600,
-        })
-        .expect("manifest binding")
+        }
 }
 
 pub(crate) fn fixture_selection(
@@ -529,3 +553,4 @@ pub(crate) fn fixture_selection(
     signed.signature = selector_key().sign(&signed.signing_bytes()).to_bytes();
     signed
 }
+

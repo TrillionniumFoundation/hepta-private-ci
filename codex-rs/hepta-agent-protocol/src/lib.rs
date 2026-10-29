@@ -5,6 +5,7 @@
 mod authbus;
 mod capabilities;
 mod evidence;
+mod inventory_cells;
 mod memory_cells;
 pub use authbus::AuthBusObjectiveBody;
 pub use authbus::AuthBusObjectiveIngress;
@@ -29,6 +30,10 @@ pub use evidence::KernelEvidenceResult;
 pub use evidence::KernelEvidenceVerifyV1;
 pub use evidence::MAX_KERNEL_EVIDENCE_ENVELOPE_BYTES;
 pub use evidence::MAX_KERNEL_EVIDENCE_REQUIRED_ROLES;
+pub use inventory_cells::INVENTORY_CELL_CONTROL_CAPABILITY_V1;
+pub use inventory_cells::InventoryCellSnapshotPageV1;
+pub use inventory_cells::InventoryCellSnapshotSourceV1;
+pub use inventory_cells::InventoryCellSnapshotValueV1;
 pub use memory_cells::MAX_MEMORY_CELL_PAGE_ROWS;
 pub use memory_cells::MAX_MEMORY_CELL_PAYLOAD_BYTES;
 pub use memory_cells::MEMORY_CELL_CONTROL_CAPABILITY_V1;
@@ -606,6 +611,14 @@ pub enum AgentdMethod {
         query: String,
         limit: u16,
     },
+    InventoryCellSnapshot {
+        after: Option<codex_hepta_cognitive_types::hnmf::ContractDigestV1>,
+        expected_owner_cut: Option<codex_hepta_cognitive_types::hnmf::ContractDigestV1>,
+        limit: u16,
+    },
+    InventoryCellRead {
+        request: codex_hepta_cognitive_types::InventoryCellRequestV1,
+    },
     MemoryCellSnapshot {
         after: Option<codex_hepta_cognitive_types::hnmf::ContractDigestV1>,
         expected_owner_cut: Option<codex_hepta_cognitive_types::hnmf::ContractDigestV1>,
@@ -761,6 +774,10 @@ pub enum AgentdPayload {
         conflict_digest: String,
     },
     CognitiveContext(CognitiveContextSnapshot),
+    InventoryCellSnapshot(InventoryCellSnapshotPageV1),
+    InventoryCellRead {
+        readout_json: String,
+    },
     MemoryCellSnapshot(MemoryCellSnapshotPageV1),
     MemoryCellRead {
         readout_json: String,
@@ -1404,3 +1421,4 @@ mod tests {
 #[cfg(test)]
 #[path = "objective_tests.rs"]
 mod objective_tests;
+
