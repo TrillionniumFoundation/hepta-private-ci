@@ -1,6 +1,7 @@
 """Deterministic, hash-verified multipart evidence archives; no pickle required."""
 
 import argparse
+from contextlib import nullcontext
 import hashlib
 import json
 import lzma
@@ -24,6 +25,100 @@ def safe_name(name):
     return value
 
 
+class _PartWriter:
+    """A write-only compressed sink with at most one unfinished part in RAM."""
+
+    def __init__(self, destination, name, part_bytes):
+        self.destination = destination
+        self.name = name
+        self.part_bytes = part_bytes
+        self.buffer = bytearray()
+        self.parts = []
+        self.whole = hashlib.sha256()
+
+    def _emit(self):
+        block = bytes(self.buffer)
+        path = self.destination / f"{self.name}.tar.xz.part{len(self.parts):04d}"
+        with path.open("xb") as output:
+            output.write(block)
+        self.whole.update(block)
+        self.parts.append({"path": path.name, "bytes": len(block),
+                           "sha256": hashlib.sha256(block).hexdigest(),
+                           "git_blob_sha1": hashlib.sha1(
+                               b"blob " + str(len(block)).encode() + b"\0" + block).hexdigest()})
+        self.buffer.clear()
+
+    def write(self, data):
+        view = memoryview(data)
+        count = len(view)
+        while view:
+            take = min(len(view), self.part_bytes - len(self.buffer))
+            self.buffer.extend(view[:take])
+            view = view[take:]
+            if len(self.buffer) == self.part_bytes:
+                self._emit()
+        return count
+
+    def finish(self):
+        # Closing LZMA, not a part boundary, ends the one continuous XZ stream.
+        if self.buffer:
+            self._emit()
+
+
+class _PartReader:
+    """Sequential bounded reads across parts, with a second content check."""
+
+    def __init__(self, directory, parts, expected_whole):
+        self.directory = directory
+        self.parts = iter(parts)
+        self.expected_whole = expected_whole
+        self.source = None
+        self.record = None
+        self.part_hash = None
+        self.part_read = 0
+        self.whole = hashlib.sha256()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *unused):
+        if self.source is not None:
+            self.source.close()
+
+    def read(self, size):
+        if size < 0:
+            raise ValueError("The internal archive reader requires bounded reads")
+        result = bytearray()
+        while len(result) < size:
+            if self.source is None:
+                self.record = next(self.parts, None)
+                if self.record is None:
+                    break
+                self.source = (self.directory / self.record["path"]).open("rb")
+                self.part_hash = hashlib.sha256()
+                self.part_read = 0
+            block = self.source.read(size - len(result))
+            if block:
+                self.part_hash.update(block)
+                self.whole.update(block)
+                self.part_read += len(block)
+                result.extend(block)
+            else:
+                self.source.close()
+                self.source = None
+                if self.part_read != self.record["bytes"] or self.part_hash.hexdigest() != self.record["sha256"]:
+                    raise ValueError(f"Archive part changed while reading: {self.record['path']}")
+        return bytes(result)
+
+    def verify_end(self):
+        # Tar can stop at its zero blocks before the compressed stream ends.
+        # Drain the remaining compressed bytes to recheck every complete part.
+        while self.read(1 << 20):
+            pass
+        if self.whole.hexdigest() != self.expected_whole:
+            raise ValueError("Whole archive changed while reading")
+
+
 def pack(root, destination, name, part_bytes=1048576):
     root, destination = Path(root).resolve(), Path(destination)
     if part_bytes < 4096 or not root.is_dir() or not name.replace("_", "").isalnum():
@@ -38,26 +133,16 @@ def pack(root, destination, name, part_bytes=1048576):
         raise ValueError("Symlinks are not accepted as evidence members")
     members = [{"path": path.relative_to(root).as_posix(), "bytes": path.stat().st_size,
                 "sha256": sha256(path)} for path in files]
-    parts, whole = [], hashlib.sha256()
-    with tempfile.TemporaryFile() as temporary:
-        with lzma.LZMAFile(temporary, "w", preset=6) as compressed:
-            with tarfile.open(fileobj=compressed, mode="w|") as archive:
-                for path, record in zip(files, members, strict=True):
-                    info = tarfile.TarInfo(record["path"])
-                    info.size, info.mode, info.mtime = record["bytes"], 0o644, 0
-                    with path.open("rb") as source:
-                        archive.addfile(info, source)
-        temporary.seek(0)
-        index = 0
-        while block := temporary.read(part_bytes):
-            part_path = destination / f"{name}.tar.xz.part{index:04d}"
-            part_path.write_bytes(block)
-            whole.update(block)
-            parts.append({"path": part_path.name, "bytes": len(block),
-                          "sha256": hashlib.sha256(block).hexdigest(),
-                          "git_blob_sha1": hashlib.sha1(
-                              b"blob " + str(len(block)).encode() + b"\0" + block).hexdigest()})
-            index += 1
+    sink = _PartWriter(destination, name, part_bytes)
+    with lzma.LZMAFile(sink, "w", preset=6) as compressed:
+        with tarfile.open(fileobj=compressed, mode="w|") as archive:
+            for path, record in zip(files, members, strict=True):
+                info = tarfile.TarInfo(record["path"])
+                info.size, info.mode, info.mtime = record["bytes"], 0o644, 0
+                with path.open("rb") as source:
+                    archive.addfile(info, source)
+    sink.finish()
+    parts, whole = sink.parts, sink.whole
     if any(sha256(path) != record["sha256"] for path, record in zip(files, members, strict=True)):
         raise ValueError("An input changed while packing; do not publish this incomplete bundle")
     manifest = {"schema": "hcsn-evidence-bundle.v1", "name": name,
@@ -65,7 +150,8 @@ def pack(root, destination, name, part_bytes=1048576):
                 "archive_sha256": whole.hexdigest(), "parts": parts, "members": members,
                 "uncompressed_file_bytes": sum(row["bytes"] for row in members),
                 "compressed_bytes": sum(row["bytes"] for row in parts)}
-    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
+    with manifest_path.open("x") as output:
+        output.write(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
     return manifest
 
 
@@ -79,24 +165,26 @@ def restore(manifest_path, destination):
         raise ValueError("Duplicate declared members")
     for name in expected:
         safe_name(name)
-    with tempfile.TemporaryFile() as temporary:
-        whole = hashlib.sha256()
-        for part in manifest["parts"]:
-            name = safe_name(part["path"])
-            if len(name.parts) != 1:
-                raise ValueError("Archive parts must be adjacent to their manifest")
-            path = manifest_path.parent / part["path"]
-            if path.stat().st_size != part["bytes"] or sha256(path) != part["sha256"]:
-                raise ValueError(f"Corrupt archive part: {path.name}")
-            with path.open("rb") as source:
-                for block in iter(lambda: source.read(1 << 20), b""):
-                    whole.update(block)
-                    temporary.write(block)
-        if whole.hexdigest() != manifest["archive_sha256"]:
-            raise ValueError("Whole archive hash mismatch")
-        temporary.seek(0)
+    whole = hashlib.sha256()
+    for part in manifest["parts"]:
+        name = safe_name(part["path"])
+        if len(name.parts) != 1:
+            raise ValueError("Archive parts must be adjacent to their manifest")
+        path = manifest_path.parent / part["path"]
+        if path.stat().st_size != part["bytes"]:
+            raise ValueError(f"Corrupt archive part: {path.name}")
+        part_hash = hashlib.sha256()
+        with path.open("rb") as source:
+            for block in iter(lambda: source.read(1 << 20), b""):
+                part_hash.update(block)
+                whole.update(block)
+        if part_hash.hexdigest() != part["sha256"]:
+            raise ValueError(f"Corrupt archive part: {path.name}")
+    if whole.hexdigest() != manifest["archive_sha256"]:
+        raise ValueError("Whole archive hash mismatch")
+    with _PartReader(manifest_path.parent, manifest["parts"], manifest["archive_sha256"]) as stream:
         seen = set()
-        with tarfile.open(fileobj=temporary, mode="r:xz") as archive:
+        with tarfile.open(fileobj=stream, mode="r|xz") as archive:
             for member in archive:
                 name = safe_name(member.name)
                 if not member.isfile() or member.name not in expected or member.name in seen:
@@ -107,17 +195,21 @@ def restore(manifest_path, destination):
                 target = destination.joinpath(*name.parts)
                 if not target.resolve().is_relative_to(destination):
                     raise ValueError("Destination path escapes through an existing symlink")
-                if target.exists() and (not target.is_file() or sha256(target) != record["sha256"]):
+                existing = target.exists()
+                if existing and (not target.is_file() or sha256(target) != record["sha256"]):
                     raise FileExistsError(f"Refuse to overwrite different content: {target}")
                 source = archive.extractfile(member)
                 value = hashlib.sha256()
-                with tempfile.TemporaryFile() as checked:
+                # Existing identical files need no disk copy. New members still
+                # finish checksum validation before any final-path write.
+                with nullcontext(None) if existing else tempfile.TemporaryFile() as checked:
                     for block in iter(lambda: source.read(1 << 20), b""):
                         value.update(block)
-                        checked.write(block)
+                        if checked is not None:
+                            checked.write(block)
                     if value.hexdigest() != record["sha256"]:
                         raise ValueError(f"Member checksum mismatch: {member.name}")
-                    if not target.exists():
+                    if not existing:
                         target.parent.mkdir(parents=True, exist_ok=True)
                         checked.seek(0)
                         with target.open("xb") as output:
@@ -126,6 +218,7 @@ def restore(manifest_path, destination):
                 seen.add(member.name)
         if seen != set(expected):
             raise ValueError("Archive is missing declared members")
+        stream.verify_end()
     return {"restored_or_already_identical": len(seen), "archive_sha256": manifest["archive_sha256"]}
 
 

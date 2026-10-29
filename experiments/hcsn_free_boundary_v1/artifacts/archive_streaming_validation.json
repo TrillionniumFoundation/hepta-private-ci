@@ -1,0 +1,44 @@
+{
+  "byte_compatibility": "New pack compared to retained old pack for a deterministic 1.1MB synthetic corpus with empty/long/Unicode paths at 4096-byte and default 1048576-byte part sizes; whole manifest bytes and every part byte matched",
+  "existing_auxiliary_archive_modified": false,
+  "existing_member_temporary_copy_used": false,
+  "existing_members_verified_and_inode_mtime_size_sha256_unchanged": 605,
+  "existing_parts_verified_unchanged": 15,
+  "full_compressed_archive_temporary_copy_used": false,
+  "legacy_archive_tool_sha256": "4bc5071fc84589808cc3aec40de4bc51fa2a87feb122945f008ce07f555a7278",
+  "new_member_behavior": "Retains per-member temporary staging and completes hash verification before exclusive creation of the final path",
+  "original_data_manifest_sha256_unchanged": "5d27742563e7fbf44f49642e21231b24416770489c3f22bbd30a8111ed64e3b0",
+  "original_frozen_files_verified_unchanged": 38,
+  "real_original_data_restore": {
+    "TemporaryFile_forbidden_during_real_restore": true,
+    "api": "archive.restore",
+    "destination": "/workspace/scratch/58af017d4789/hcsn-data",
+    "manifest": "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/artifacts/original_data.json",
+    "parent_cpu_seconds": 0.335585043,
+    "result": {
+      "archive_sha256": "f4bcd860f74a82210c9ed4489af30a5cc5d5cb52864d0e9b311a5cb183bc8dfd",
+      "restored_or_already_identical": 605
+    },
+    "wall_seconds": 0.33575286799896276
+  },
+  "schema": "hcsn-streaming-archive-validation.v1",
+  "scientific_runs_repeated": false,
+  "source_sha256": {
+    "archive.py": "7aefcc785977bb391116750d04e9abd8bfa1db28381ee06227bac501c61eceab",
+    "archive_tests.py": "f7cb0d0f9ac6528fc0c45c5b023a56e42b852dc6831874c1198058e018fa3700"
+  },
+  "status": "passed",
+  "unit_tests": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-m",
+      "experiments.hcsn_free_boundary_v1.archive_tests"
+    ],
+    "complete_child_cpu_seconds": 1.648977,
+    "log_sha256": "2fb51d08091a9689f86f27ddac5bd961e0d88a9e1fc1711e95e8b0b903d203d8",
+    "peak_rss_kib": 56960,
+    "returncode": 0,
+    "test_count": 14,
+    "wall_seconds": 1.651324989994464
+  }
+}
