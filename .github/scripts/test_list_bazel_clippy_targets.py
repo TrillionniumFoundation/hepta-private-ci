@@ -26,19 +26,31 @@ from pathlib import Path
 import sys
 
 args = sys.argv[1:]
+if os.environ.get('BAZEL_PROBE_ARGV_LIMIT') and sum(len(arg.encode('utf-16-le')) // 2 + 3 for arg in args) > int(os.environ['BAZEL_PROBE_ARGV_LIMIT']):
+    sys.exit(126)
+if os.environ.get('BAZEL_PROBE_TRANSPORT_LOG'):
+    with Path(os.environ['BAZEL_PROBE_TRANSPORT_LOG']).open('a', encoding='utf-8') as output:
+        output.write(json.dumps(args) + '\\n')
+query_file = next((arg for arg in args if arg.startswith('--query_file=')), None)
+if query_file:
+    expression = Path(query_file.split('=', 1)[1]).read_text(encoding='utf-8').rstrip('\\n')
+    args = [arg for arg in args if arg != query_file] + ['--', expression]
 with Path(os.environ['BAZEL_PROBE_LOG']).open('a', encoding='utf-8') as output:
     output.write(json.dumps(args) + '\\n')
 command = next(arg for arg in args if not arg.startswith('-'))
 records = Path(os.environ['CLIPPY_DISCOVERY_RECORDS']).read_bytes()
 if command == 'query':
-    for line in records.decode('utf-8').splitlines():
-        print(line.split('\\t')[-1])
+    if os.environ.get('CLIPPY_LOADING_RECORDS'):
+        sys.stdout.buffer.write(Path(os.environ['CLIPPY_LOADING_RECORDS']).read_bytes())
+    else:
+        for line in records.decode('utf-8').splitlines():
+            print(line.split('\\t')[-1])
 elif command == 'cquery':
     sys.stdout.buffer.write(records)
 else:
     print('unexpected recording-process command', file=sys.stderr)
     sys.exit(2)
-if os.environ.get('CLIPPY_DISCOVERY_FAIL') == '1':
+if os.environ.get('CLIPPY_DISCOVERY_FAIL') in {'1', command}:
     print('recorded query diagnostic before failure', file=sys.stderr)
     sys.exit(37)
 """
@@ -52,6 +64,7 @@ class ClippyTargetDiscoveryTests(unittest.TestCase):
         original.RunBazelCiIntegrationTest.setUp(self)
         self.records = self.root / "configured target records.txt"
         self.env.pop("CLIPPY_DISCOVERY_FAIL", None)
+        self.env.pop("CLIPPY_LOADING_RECORDS", None)
         self.env["CLIPPY_DISCOVERY_RECORDS"] = str(self.records)
         (self.root / "probe.py").write_text(PROBE, encoding="utf-8")
 
@@ -110,7 +123,7 @@ class ClippyTargetDiscoveryTests(unittest.TestCase):
                 *sorted(NATIVE_MANUAL | {UNIT}),
             ],
         )
-        self.assertEqual(len(calls), 1)
+        self.assertEqual(len(calls), 2)
         # These supplied records contain all retained GNU helpers and the
         # distinct Unix qualification helper; no name-based filter is valid.
         self.assertEqual(result.stderr.count("platform-incompatible:"), len(CROSS) + 1)
@@ -163,12 +176,22 @@ class ClippyTargetDiscoveryTests(unittest.TestCase):
                         suffix = "-rbe" if runner != "Windows" else ""
                         self.assertIn(f"--config=buildbuddy-generic{suffix}", call)
                     expression = call[-1]
-                    self.assertTrue(
-                        expression.startswith(
-                            'config(kind("rust_test rule", attr(tags, "manual", '
+                    self.assertTrue(expression.startswith("config(set("))
+                    self.assertTrue(expression.endswith(", target)"))
+                    self.assertNotIn("...", expression)
+                    loading = calls[-2]
+                    self.assertIn("query", loading)
+                    self.assertIn("--repo_contents_cache=job scoped cache", loading)
+                    self.assertFalse(
+                        any(
+                            arg.startswith(
+                                ("--platforms=", "--host_platform=", "--config=ci-")
+                            )
+                            for arg in loading
                         )
                     )
-                    self.assertTrue(expression.endswith(", target)"))
+                    for label in NATIVE_MANUAL | CROSS | {UNIX, UNIT}:
+                        self.assertIn(json.dumps(label), expression)
                     self.assertFalse(any("skip_incompatible" in arg for arg in call))
 
     def test_local_default_keeps_the_local_build_platform(self) -> None:
@@ -184,11 +207,62 @@ class ClippyTargetDiscoveryTests(unittest.TestCase):
 
     def test_query_failure_preserves_exit_and_emits_no_partial_roster(self) -> None:
         self.write_records({UNIT})
-        self.env["CLIPPY_DISCOVERY_FAIL"] = "1"
-        result, _ = self.run_selector()
-        self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
-        self.assertEqual(result.stdout, "")
-        self.assertIn("recorded query diagnostic before failure", result.stderr)
+        for command in ("query", "cquery"):
+            with self.subTest(command=command):
+                self.env["CLIPPY_DISCOVERY_FAIL"] = command
+                result, _ = self.run_selector()
+                self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+                self.assertEqual(result.stdout, "")
+                self.assertIn("recorded query diagnostic before failure", result.stderr)
+
+    def test_configured_roster_must_equal_the_complete_loading_roster(self) -> None:
+        loading = self.root / "loading labels.txt"
+        loading.write_text(
+            UNIT + "\n//codex-rs/discovery-probe:other\n", encoding="utf-8"
+        )
+        self.env["CLIPPY_LOADING_RECORDS"] = str(loading)
+        for records in (
+            f"compatible\t{UNIT}\n",
+            f"compatible\t{UNIT}\ncompatible\t//codex-rs/discovery-probe:extra\n",
+        ):
+            with self.subTest(records=records):
+                self.records.write_text(records, encoding="utf-8")
+                result, _ = self.run_selector()
+                self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertEqual(result.stdout, "")
+                self.assertIn("differs from the loading roster", result.stderr)
+
+    def test_large_windows_query_preserves_every_label_and_releases_transport_file(
+        self,
+    ) -> None:
+        labels = {
+            f"//codex-rs/discovery-probe/long_component_{index:04d}:unit-tests-bin"
+            for index in range(900)
+        }
+        self.records.write_text(
+            "".join(f"compatible\t{label}\n" for label in sorted(labels)),
+            encoding="utf-8",
+        )
+        physical = self.root / "physical-arguments.jsonl"
+        self.env.update(
+            BAZEL_PROBE_ARGV_LIMIT="32767", BAZEL_PROBE_TRANSPORT_LOG=str(physical)
+        )
+        result, calls = self.run_selector()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(set(result.stdout.splitlines()[2:]), labels)
+        for label in labels:
+            self.assertIn(json.dumps(label), calls[-1][-1])
+        native = [
+            json.loads(line)
+            for line in physical.read_text(encoding="utf-8").splitlines()
+        ]
+        for call in native:
+            self.assertLess(
+                sum(len(arg.encode("utf-16-le")) // 2 + 3 for arg in call), 32767
+            )
+            for arg in call:
+                if arg.startswith("--query_file="):
+                    self.assertFalse(Path(arg.split("=", 1)[1]).exists())
 
     def test_invalid_records_fail_without_partial_stdout(self) -> None:
         records = [
@@ -200,6 +274,8 @@ class ClippyTargetDiscoveryTests(unittest.TestCase):
             "incompatible\t//codex-rs/x:a\n",
             "compatible\t//other/x:a\n",
             "compatible\t//codex-rs/x:space here\n",
+            'compatible\t//codex-rs/x:quote"injection\n',
+            "compatible\t//codex-rs/x:back\\slash\n",
         ]
         for record in records:
             with self.subTest(record=record):
