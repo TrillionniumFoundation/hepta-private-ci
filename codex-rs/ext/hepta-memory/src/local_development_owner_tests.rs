@@ -225,11 +225,13 @@ async fn explicit_owner_expires_bound_lease_and_fences_old_witness() {
         .expect("store");
     let current_fence = CompactFence::new(7, 8, 1, "e21-owner-fence").expect("fence");
     let checkpoint = checkpoint(current_fence.clone());
+    // Allow Windows native setup to finish before this real-time lease expires.
+    // Still wait for actual expiry below and verify stale-fence rejection.
     let expires_at = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .expect("clock")
         .as_secs()
-        + 1;
+        + 10;
     let lease = match store
         .acquire_local_lease_bound(
             "lease:e21-owner",
@@ -269,7 +271,7 @@ async fn explicit_owner_expires_bound_lease_and_fences_old_witness() {
         Err(HeptaLocalDevelopmentLifecycleOwnerError::StoreBindingMismatch)
     ));
 
-    for _ in 0..120 {
+    for _ in 0..600 {
         if SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .expect("clock")
