@@ -1,0 +1,26 @@
+{
+  "after_sha256": "80739815e2f1aa2ab084ff2bf8fa1a0e7abc3d537611ea209d91d1d2d59ac3e0",
+  "before_sha256": "9489266017796336638c8e9a80d426ebb66fd419f272ba9969111f0f2ee03876",
+  "confirmation_started": false,
+  "context": [
+    -0.3302758802149789,
+    0.2583716234743599,
+    1.1234724761073176,
+    0.10774084988507227,
+    0,
+    0.03967095989683911,
+    0.4309764713000755,
+    0
+  ],
+  "failure_context_index": 89,
+  "failure_split": "train_seed2026102901",
+  "failure_tail": {
+    "conditional_mean": 1.3077910362520967e-05,
+    "distance": 4.53356086432611,
+    "horizon": 1.3071759786431603e-05,
+    "log_F": -11776729.859977793
+  },
+  "optimization_started": false,
+  "repair": "J(T)<=T F(T) bounds an unrepresentable contribution by less than half the smallest subnormal. Return zero for such terms before evaluating conditional derivatives; use logarithmic multiplication for representable terms. No finite-mass clipping, normalization or protocol change.",
+  "schema": "hepta.regenerative-operator.occupation-tail-repair.v1"
+}

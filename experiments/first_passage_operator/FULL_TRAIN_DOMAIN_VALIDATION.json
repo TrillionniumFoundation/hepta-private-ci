@@ -1,0 +1,21 @@
+{
+  "context_function_sha256": "09a7b8c243ea70788149046a6ac932e1ec31f4fdae7b099a0675bcbd0899dfdb",
+  "failures": [],
+  "passed": true,
+  "schema": "hepta.regenerative-operator.full-training-domain.v1",
+  "scope": "No confirmation contexts evaluated; finite output/domain and analytic mass checks on exact train/development context streams.",
+  "source_sha256": "80739815e2f1aa2ab084ff2bf8fa1a0e7abc3d537611ea209d91d1d2d59ac3e0",
+  "stats": {
+    "development": {
+      "count": 512,
+      "maximum_mass_defect": 2.220446049250313e-16,
+      "successful": 512
+    },
+    "train": {
+      "count": 4096,
+      "maximum_mass_defect": 2.220446049250313e-16,
+      "successful": 4096
+    }
+  },
+  "wall_seconds": 14.383680013997946
+}

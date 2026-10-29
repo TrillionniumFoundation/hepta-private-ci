@@ -1,0 +1,8 @@
+{
+  "after_sha256": "9489266017796336638c8e9a80d426ebb66fd419f272ba9969111f0f2ee03876",
+  "before_sha256": "91b7a28f620852847b975ad7da100913c5d706e1df4d2c623e52a1d4f116b968",
+  "evidence": "NUMERICAL_DOMAIN_VALIDATION_V1.json and numerical_failures/refractory_interval/operators.py preserve failure/source. All protocol contexts, random seeds and pass gates remain unchanged. Root learner has not started optimization or confirmation.",
+  "failure": "High-decay refractory payoff h=3/a used a difference of saturated truncated H totals; subsequent exp(h*(t-na)) amplified lost interval precision. Worst independent feature error 0.010759727118867529. Active terminal features, event counts, occupation and mass identities agreed with independent references.",
+  "repair": "Exact discounted-density exponential tilt to drift -sqrt(mu^2+2h sigma^2), followed by stable F or S interval differences before exponent rescaling. No quadrature and no mass normalization.",
+  "schema": "hepta.regenerative-operator.refractory-interval-repair.v1"
+}

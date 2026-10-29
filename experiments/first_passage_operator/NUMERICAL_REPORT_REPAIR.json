@@ -1,0 +1,7 @@
+{
+  "after_source_sha256": "8e435116020a2cc1080f50fbe566f1dceba7f8d839616690df16365f7414d8b8",
+  "before_source_sha256": "520a7856405951aea2d2f8500c99ec15641cfddf5101c12716d4d58258ebb4cd",
+  "failure": "First complete numerical evaluation reached JSON serialization and failed: TypeError: Object of type bool is not JSON serializable (NumPy scalar). No result JSON was written; no numeric results were inspected.",
+  "repair": "Convert scalar semigroup absolute_error to Python float and gate results to Python bool. Protocol, domains, seed, cases, equations and numerical tolerances unchanged. Repeat deterministic grid to produce the missing report.",
+  "schema": "hepta.regenerative-operator.validation-report-repair.v1"
+}
