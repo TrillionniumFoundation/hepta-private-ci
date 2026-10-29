@@ -24,7 +24,8 @@ def materialize(repository, output, manifest=MANIFEST):
     expected = {row["path"]: row["git_blob_sha"] for row in identity["files"]}
     if len(expected) != len(identity["files"]):
         raise ValueError("Duplicate pinned owner source")
-    paths = sorted(set(expected)|{"scripts/run-nextest.py"})
+    # The historical justfile invokes both scripts; preserve their exact Git blobs.
+    paths = sorted(set(expected)|{"scripts/run-nextest.py", "scripts/just-shell.py"})
     payloads, receipt = {}, {}
     for name in paths:
         path = PurePosixPath(name)
