@@ -1,0 +1,102 @@
+{
+  "schema": "hepta.p1.long-output-timeline.v1",
+  "mode": "replay",
+  "lanes": [
+    {
+      "lane": "app-server",
+      "case_result": "failed",
+      "job_id": "1a1883e2109-94be3-1",
+      "stdout_bytes": 1179648,
+      "stdout_sha256": "f70ff820f5588c15fd6bad61636b765bcdd8fa1e36c9e05e48dce455010babfd",
+      "terminal_exit_code": 0,
+      "terminal_cancelled": false,
+      "terminal_timed_out": false,
+      "output_complete": true,
+      "output_durable": true,
+      "started_ms": 1793287138527,
+      "terminal_ms": 1793287140101,
+      "reply_ns": 1793287197385197221,
+      "physical_started_to_exit_seconds": 1.574,
+      "exit_to_backend_reply_seconds": 57.28419733047485,
+      "backend_elapsed_ms": 64083.558165,
+      "backend_status": "pending_tool",
+      "backend_error": null,
+      "backend_last_error": null,
+      "backend_cancel_requested": true
+    },
+    {
+      "lane": "facade",
+      "case_result": "passed",
+      "job_id": "1a1883f46d0-973fb-1",
+      "stdout_bytes": 1179648,
+      "stdout_sha256": "f70ff820f5588c15fd6bad61636b765bcdd8fa1e36c9e05e48dce455010babfd",
+      "terminal_exit_code": 0,
+      "terminal_cancelled": false,
+      "terminal_timed_out": false,
+      "output_complete": true,
+      "output_durable": true,
+      "started_ms": 1793287214054,
+      "terminal_ms": 1793287215764,
+      "reply_ns": 1793287271270799941,
+      "physical_started_to_exit_seconds": 1.71,
+      "exit_to_backend_reply_seconds": 55.506799936294556,
+      "backend_elapsed_ms": 62250.206107,
+      "backend_status": "completed",
+      "backend_error": null,
+      "backend_last_error": null,
+      "backend_cancel_requested": null
+    },
+    {
+      "lane": "native",
+      "case_result": "failed",
+      "job_id": "1a188403b58-9bebd-1",
+      "stdout_bytes": 1179648,
+      "stdout_sha256": "f70ff820f5588c15fd6bad61636b765bcdd8fa1e36c9e05e48dce455010babfd",
+      "terminal_exit_code": 0,
+      "terminal_cancelled": false,
+      "terminal_timed_out": false,
+      "output_complete": true,
+      "output_durable": true,
+      "started_ms": 1793287277323,
+      "terminal_ms": 1793287279509,
+      "reply_ns": 1793287335347044414,
+      "physical_started_to_exit_seconds": 2.186,
+      "exit_to_backend_reply_seconds": 55.83804440498352,
+      "backend_elapsed_ms": 63389.928061,
+      "backend_status": "pending_tool",
+      "backend_error": null,
+      "backend_last_error": "tool timed out or cancelled; terminal observation required",
+      "backend_cancel_requested": null
+    }
+  ],
+  "model_gateway_windows": [
+    {
+      "group": "representative-live-individual-v1",
+      "model_gateway_start": "2026-10-29T15:28:13.488567+00:00",
+      "model_gateway_end": "2026-10-29T15:34:12.753211+00:00",
+      "start_unix_seconds": 1793287693.4885669,
+      "end_unix_seconds": 1793288052.7532108
+    },
+    {
+      "group": "representative-live-matched-v1",
+      "model_gateway_start": "2026-10-29T15:18:24.557652+00:00",
+      "model_gateway_end": "2026-10-29T15:27:51.207082+00:00",
+      "start_unix_seconds": 1793287104.5576518,
+      "end_unix_seconds": 1793287671.207082
+    },
+    {
+      "group": "representative-long-output-v4",
+      "model_gateway_start": "2026-10-29T15:18:53.286228+00:00",
+      "model_gateway_end": "2026-10-29T15:21:12.796933+00:00",
+      "start_unix_seconds": 1793287133.2862284,
+      "end_unix_seconds": 1793287272.7969332
+    }
+  ],
+  "minimum_sequential_16_kib_page_reads": 72,
+  "limits": [
+    "Per-page duration was not captured, so page-read latency is a mechanism hypothesis, not a measured isolated cause.",
+    "Backend elapsed time includes owner opening and admission before the internal tool deadline starts.",
+    "Cancellation cleanup budgets differ between native engine and external tool helper.",
+    "Long-output observation overlapped the matched live group on the main host; no exclusive host-load control was measured."
+  ]
+}

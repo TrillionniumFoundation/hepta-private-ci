@@ -1,0 +1,128 @@
+{
+  "schema": "hepta.p1.independent-live-audit-index.v1",
+  "date": "2026-10-29",
+  "production_verdict": "held",
+  "raw_archive": {
+    "remote_path": "/home/qian-qi/work/hepta-cell-meta-evidence-20261029/representative-live-audit-archive-v1/evidence.tar.gz",
+    "bytes": 3179371,
+    "sha256": "d2fe31ff5c35d62d862d5afe3047973224ba5419cb61c8adf64cf8b809a438b1",
+    "original_files": 2996,
+    "original_bytes": 18290796,
+    "manifest_sha256": "beae8d49f57f6a48a0da6a4db34b8d86e315af4677ed412c958274556b040157"
+  },
+  "live": {
+    "cases": 24,
+    "matched_passed": 9,
+    "candidate_passed": 5,
+    "model_requests": 107,
+    "proposals": 109,
+    "admissions": 99,
+    "failure_count": 10,
+    "failure_cause": "sixth registered tool proposal with new call ID rejected after five admissions",
+    "unknown_tool_names": 0,
+    "duplicate_call_ids": 0,
+    "actual_initial_requests_equal_across_lanes": false,
+    "provider_terminal_events": [
+      "response.completed"
+    ]
+  },
+  "long_output_replay": {
+    "physical_jobs_with_complete_durable_output": 3,
+    "harness_passed": 1,
+    "cases": 3,
+    "stdout_bytes_each": 1179648
+  },
+  "identity_scope": "Same process/boot/start/model inode and full weight hash at before/after observations; 8 mapped library hashes equal; not a continuous inode lease or dedicated service.",
+  "artifacts": [
+    {
+      "path": "LIVE_AUDIT_20261029.md",
+      "bytes": 20620,
+      "sha256": "decafd4bdc579f20c594d27bb99a41f7dac6f6469283f9c33fc420dee35a82a2"
+    },
+    {
+      "path": "CONTROLLED_INPUT_PLAN_20261029.md",
+      "bytes": 7454,
+      "sha256": "d66ad74b207fbcb82d68f6a47894c539973b26fd0099d854e7a9b3c5987c1b8c"
+    },
+    {
+      "path": "FAILED_CALLS.md",
+      "bytes": 18545,
+      "sha256": "4d19dce8e04433bfefc6ca15e7ab9bc14cb73de15fdf8b72714e5b51d4d00972"
+    },
+    {
+      "path": "audit_live.py",
+      "bytes": 22649,
+      "sha256": "7826d7931ea5466f4bda3b57875e6120c80a9d36a4f4cf0a58109d10e5ed3ec7"
+    },
+    {
+      "path": "audit_supplement.py",
+      "bytes": 12037,
+      "sha256": "3ddf76b621ae9ae0b55b3ca26d8b9ea7e562f5c826b98a4c4ccce3f10ebf90e7"
+    },
+    {
+      "path": "post-live-ai395-final-read.json",
+      "bytes": 10764,
+      "sha256": "2fcd89142967b3738f90dbb953f071a9fe66bd57e19f2fb7f9127a24f7be3f02"
+    },
+    {
+      "path": "post-live-main-read.json",
+      "bytes": 8790,
+      "sha256": "c6ef71e746f00c6097a87bdc2897691af6722a4e534a9f679653f1683af4d194"
+    },
+    {
+      "path": "derived/AGGREGATES.json",
+      "bytes": 4683,
+      "sha256": "8de1c5f3993bf2a1273a6bf81a1ab554352a50dac9ab9afff8e3087203e4c25d"
+    },
+    {
+      "path": "derived/AUDIT.json",
+      "bytes": 1316769,
+      "sha256": "bb1ae6bc73a54a24e23b19379cbcc316952bf39d2e275fec9746a1b2744a90de"
+    },
+    {
+      "path": "derived/CALL_LEDGER.json",
+      "bytes": 253635,
+      "sha256": "72cafc51bb5cd3ab01929fd45472e98027ca8cb22f2b128e7e359cd1d2942acb"
+    },
+    {
+      "path": "derived/COSTS.csv",
+      "bytes": 4909,
+      "sha256": "1bd211eaa2efad8259a4bf726f3614507cb615059ec3084d0d38eb9c392b2182"
+    },
+    {
+      "path": "derived/COSTS.json",
+      "bytes": 19024,
+      "sha256": "eb5a76bc2cc2718cfa8624d325605c407e6d5d69e79e786d956ebcf470be9894"
+    },
+    {
+      "path": "derived/INITIAL_INPUTS.json",
+      "bytes": 110361,
+      "sha256": "0af234904359dd469c5c6045b21c320a088c2ddbe35ff7f6807a91964287fb9d"
+    },
+    {
+      "path": "derived/INPUT_ALIGNMENT.json",
+      "bytes": 114906,
+      "sha256": "275e9f8417f52f317ba99ce7547764f19d6b60190bdbf4aefb260dce380760bd"
+    },
+    {
+      "path": "derived/LONG_OUTPUT_TIMELINE.json",
+      "bytes": 3916,
+      "sha256": "f6570338938313dac7d7eaf51f0d2808b7e700b7eeaa43843714cc53cf6210fe"
+    },
+    {
+      "path": "derived/MANIFEST_VERIFICATION.json",
+      "bytes": 306,
+      "sha256": "e29c2cde304196168e64b4f950e6c197b68160004239c13a255bf3252a186c89"
+    },
+    {
+      "path": "derived/POST_LIVE_IDENTITY.json",
+      "bytes": 9219,
+      "sha256": "6893e531258b9469c6a265843cd0f1df59fe5085ae08a03dd7787d5ecb967aa5"
+    },
+    {
+      "path": "derived/SOURCE_VERIFICATION.json",
+      "bytes": 15546,
+      "sha256": "3d02f22287be1de23337ac22163b01ecd1303fc16a4f8cff8408d4672f3b8f40"
+    }
+  ]
+}
