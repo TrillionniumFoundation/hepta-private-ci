@@ -1,4 +1,4 @@
-name: Hepta native PoN pair
+name: Hepta native PoN integrated source pair
 on:
   pull_request:
     paths:
@@ -37,9 +37,10 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: c96022b897c1235fdbdbfcfa32764403511c6aab
+      CHAIN_SOURCE_SHA: ${{ github.head_ref == 'fix/hepta-final-use-mldsa65-v2-20261029' && '540d72356a921da31dde1113537382e5c0f0c4fd' || '147bae52e9abbc6f91f89f85e42c5dff4ae53d23' }}
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && 'c96022b897c1235fdbdbfcfa32764403511c6aab' || 'b5cee4e071c633e77c7317d2c6259d5dd7e0be14' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ github.head_ref == 'fix/hepta-final-use-mldsa65-v2-20261029' && (matrix.lane == 'source-head' && '540d72356a921da31dde1113537382e5c0f0c4fd' || 'cff37ba978684ad1750d66b120ec2913d7c13f8f') || (matrix.lane == 'source-head' && '147bae52e9abbc6f91f89f85e42c5dff4ae53d23' || 'f52fadb096d98589a5ac6c573659764815cae04d') }}
+      TRNM_FROM_ZERO_HOST_OWNER: ${{ github.run_id }}.${{ github.run_attempt }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -222,14 +223,27 @@ jobs:
       - name: Execute the native growth readback regression module
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-readback.json" --minimum-tests 4 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib growth_reservation_io::tests -- --nocapture
+      - name: Provision original fixed Host for the exact native confirmation case
+        id: native_host
+        run: |
+          set -euo pipefail
+          cd ../chain
+          sudo -n /usr/bin/python3 -I -B scripts/ci/history_fixed_parent_v2.py provision --owner "$TRNM_FROM_ZERO_HOST_OWNER" --source "$GITHUB_WORKSPACE/chain/config/systemd/trnmponpublic.slice" > "$RUNNER_TEMP/pon-pair/from-zero-host-provision.json"
       - name: Require paired native pressure and complete state convergence
         env:
           RUSTUP_TOOLCHAIN: "1.95.0"
         run: |
           set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/from-zero-host-controls.json" --timeout-seconds 60 --minimum-tests 10 -- python3 ../chain/scripts/ci/test_from_zero_native_host.py -v
           cd ../chain
           python3 scripts/ci/test_run_from_zero_native.py 2>&1 | tee "$RUNNER_TEMP/pon-pair/from-zero-reader.log"
-          python3 scripts/ci/run_from_zero_native.py --out "$RUNNER_TEMP/pon-pair/chain-from-zero-native"
+          python3 scripts/ci/run_from_zero_native.py --out "$RUNNER_TEMP/pon-pair/chain-from-zero-native" --host-owner "$TRNM_FROM_ZERO_HOST_OWNER"
+      - name: Close only this run's native confirmation Host after the driver exits
+        if: ${{ always() && (steps.native_host.outcome == 'success' || steps.native_host.outcome == 'failure') }}
+        run: |
+          set -euo pipefail
+          cd ../chain
+          sudo -n /usr/bin/python3 -I -B scripts/ci/history_fixed_parent_v2.py cleanup --owner "$TRNM_FROM_ZERO_HOST_OWNER" > "$RUNNER_TEMP/pon-pair/from-zero-host-cleanup.json"
       - name: Require paired actual CPU depletion and public recovery
         env:
           TRNM_PUBLIC_V3_DEPLETION_DIR: ${{ runner.temp }}/pon-pair/chain-depletion
@@ -516,9 +530,8 @@ jobs:
         if: always()
         with:
           name: hepta-pon-pair-${{ matrix.runner }}-${{ matrix.lane }}-${{ github.run_attempt }}
-          # Keep the original execution unchanged. Root command records, their
-          # bounded logs and source hashes are metadata; source archives and the
-          # nested learning-study payload directory remain on the runner only.
+          # Retain exact source/binary binding, the executed from-zero ELF,
+          # bounded process logs and JSON receipts for this integrated pair.
           path: |
             ${{ runner.temp }}/pon-pair/*.json
             ${{ runner.temp }}/pon-pair/*.json.*.log
@@ -530,6 +543,16 @@ jobs:
             ${{ runner.temp }}/pon-pair/prior-windows-*.log
             ${{ runner.temp }}/pon-pair/prior-windows-*.fetch-exit
             ${{ runner.temp }}/pon-pair/prior-windows-SCOPE.txt
+            ${{ runner.temp }}/pon-pair/from-zero-reader.log
+            ${{ runner.temp }}/pon-pair/chain-from-zero-native/manifest.json
+            ${{ runner.temp }}/pon-pair/chain-from-zero-native/public_v3_from_zero
+            ${{ runner.temp }}/pon-pair/chain-from-zero-native/**/process.json
+            ${{ runner.temp }}/pon-pair/chain-from-zero-native/**/report.json
+            ${{ runner.temp }}/pon-pair/chain-from-zero-native/**/stdout
+            ${{ runner.temp }}/pon-pair/chain-from-zero-native/**/stderr
+            ${{ runner.temp }}/pon-pair/chain-from-zero-native/**/host-*.json
+            ${{ runner.temp }}/pon-pair/chain-from-zero-native/**/host-*.stdout
+            ${{ runner.temp }}/pon-pair/chain-from-zero-native/**/host-*.stderr
           include-hidden-files: false
           if-no-files-found: error
           retention-days: 14
