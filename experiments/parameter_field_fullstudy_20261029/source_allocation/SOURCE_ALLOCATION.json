@@ -1,0 +1,92 @@
+{
+  "allocation_model_calls": 0,
+  "allocation_observer_calls": 0,
+  "allocation_task_constructions": 0,
+  "base_commit": "d8d81eab0e9b6082406193f7ff5a69bb1f7b806a",
+  "cross_role_pixel_overlap": 0,
+  "dataset_files": [
+    {
+      "bytes": 9912422,
+      "name": "train-images-idx3-ubyte.gz",
+      "sha256": "440fcabf73cc546fa21475e81ea370265605f56be210a4024d2ca8f203523609"
+    },
+    {
+      "bytes": 28881,
+      "name": "train-labels-idx1-ubyte.gz",
+      "sha256": "3552534a0a558bbed6aed32b30c495cca23d567ec52cac8be1a0730e8010255c"
+    },
+    {
+      "bytes": 1648877,
+      "name": "t10k-images-idx3-ubyte.gz",
+      "sha256": "8d422c7b0a1c1c79245a5bcf07fe86e33eeafee792b84584aec276f5a2dbc4e6"
+    },
+    {
+      "bytes": 4542,
+      "name": "t10k-labels-idx1-ubyte.gz",
+      "sha256": "f7ae60f92e00ec6debd23a6088c31dbd2371eca3ffa0defaefb259924204aec6"
+    }
+  ],
+  "excluded_counts": {
+    "union": 63400,
+    "v2": 29000,
+    "v3": 28048,
+    "v4": 6352
+  },
+  "manifest_sha256": "a72ceb4adda52123ddf122bdfc898394bdbfb32aff4af296f8ccacc6a9c19075",
+  "parents": {
+    "v2_corpus_manifest": "82b1f8923e5973c04da1ed065ec9a9e747b37b5acb804b872f6f817cf74c6909",
+    "v3_manifest": "9bfcb279d5efdc7bd6c14af41c64c04a78fc97f7827f7464280d8997d8fead41",
+    "v3_registry": "8cb6a2dbdcf468d15ea75602c05916c5b71a535f2b8a60a91104946253f7a636",
+    "v4_manifest": "12fd285712a2c2d241c016a495b1eefd3995e02e6a1bcbff1fa3fce85141ae1f",
+    "v4_registry": "f40a9ccec7a738cd374137d6242fd3506c2f13ff8d0b0b15d191018e5632a982"
+  },
+  "prior_pixel_overlap": 0,
+  "registry_gzip_sha256": "8108104ecf91b9a2d8c528b5c49be98cd8fb82797a7f03305604889d96f376be",
+  "registry_sha256": "d6616f5f48cd31be971f1c5ba6411db888302690531d7263b13e176923683e2e",
+  "remaining_after_allocation": {
+    "test": 0,
+    "train": 0
+  },
+  "remaining_before_allocation": {
+    "test": 3952,
+    "train": 2648
+  },
+  "role_assignment_order": [
+    "qualification_task",
+    "qualification_clean",
+    "final_task",
+    "final_clean"
+  ],
+  "roles": {
+    "final_clean": {
+      "identity_sha256": "85cb69fb1e49d0888f81a720841ef4907b34f83fa3e3a8f662ea321b985eedd8",
+      "images": 1976,
+      "official_partition": "test",
+      "pairs": 988,
+      "pixel_set_sha256": "66d1011733f341c79349faf08759c4e670632f9fbf3703bb3a23b76fda57f5d6"
+    },
+    "final_task": {
+      "identity_sha256": "a7c51f7b94806905b9c97abc11793a63def9efeacb30657a45efe084f35e3567",
+      "images": 1976,
+      "official_partition": "test",
+      "pairs": 988,
+      "pixel_set_sha256": "235e64f1589899741a124db995da197b08134a8a81cedd285d888159819e398e"
+    },
+    "qualification_clean": {
+      "identity_sha256": "0e6f653eb325f6e6d47aa3fc188ee88e9dd6a451e8750a29e83de33448c967eb",
+      "images": 1624,
+      "official_partition": "train",
+      "pairs": 812,
+      "pixel_set_sha256": "8f533b09cc1b75cdac99e46843b75e001531ae4f9dbb7f64f4c3d32c7dbdcad2"
+    },
+    "qualification_task": {
+      "identity_sha256": "7749c44add23f98831c57b5b8cf4ac27c9ec45124c0701d68cd81963ae2fb4b2",
+      "images": 1024,
+      "official_partition": "train",
+      "pairs": 512,
+      "pixel_set_sha256": "df4445458d71cf4fb055be891c868f71d47c42c14825cf04416bce261e503246"
+    }
+  },
+  "salt": "hepta-parameter-field-fullstudy-20261029-v1",
+  "schema": "hepta.parameter-field-fullstudy.source-allocation.1"
+}
