@@ -1,0 +1,63 @@
+{
+  "schema": "hepta.fullstudy.engineering-validation-summary.1",
+  "scope": "Recovery, endpoint wrapper, reporting and evidence-container synthetic tests; not the complete repository test suite and not science efficacy.",
+  "new_scientific_endpoint_accesses": 0,
+  "new_scientific_gradient_steps": 0,
+  "cases": [
+    {
+      "suite": "run_v2_and_controller_review",
+      "passed_test_count": 16,
+      "files": {
+        "test_run_v2.py": "384f32ca8fcc9105c13e555e076f2a3e89b98eeca4c2e2c01b7f9f870c385a0e",
+        "test_launch_v2_review.py": "a84e97a78738b1109838e97d0a4105ac5065e6b23d9157e9970348e5337d8b91"
+      },
+      "reported_by_implementer_and_reviewed": true
+    },
+    {
+      "suite": "resource_and_io",
+      "passed_test_count": 5,
+      "files": {
+        "test_resource_v2.py": "8231eae721293705acb631f4ef4905d71ccebd1cdda36a95791ae2a99171e62f"
+      },
+      "reported_by_implementer_and_reviewed": true
+    },
+    {
+      "suite": "architecture_and_endpoint_wrappers",
+      "passed_test_count": 5,
+      "files": {
+        "test_architecture_run_v2.py": "95956a5036f14acaf448bf72fe99f85f981692eec7d7be90eaaf77b8c8520c0d",
+        "test_endpoint_v2.py": "dfe4a4e2cb94c5b896413fb82975b7fb21bfbf09e131ff4a2ee5c6c2718dfcfb"
+      },
+      "reported_by_implementer_and_reviewed": true
+    },
+    {
+      "suite": "reporting",
+      "passed_test_count": 4,
+      "files": {
+        "test_report_results.py": "a4c3fb793a49258c412a7517df61fa5bf937807e3cbe9db470068796096626e2"
+      },
+      "reported_by_implementer_and_reviewed": true
+    },
+    {
+      "suite": "finalizer",
+      "passed_test_count": 7,
+      "files": {
+        "test_finalize_v2.py": "0fbc754450a3a4f785c520abe09995da9196d4768e0574ac753e5aa02abb15cd"
+      },
+      "reported_by_implementer_and_reviewed": true
+    }
+  ],
+  "passed_test_count_total": 37,
+  "source_freeze_checks": {
+    "original_A_files": 65,
+    "original_C_files": 86,
+    "all_current_bytes_match": true,
+    "late_test_only_addition_preserved_separately_and_original_restored": true
+  },
+  "formatting": {
+    "repository_just_fmt": "UNAVAILABLE",
+    "reason": "Restored source subset has no codex-rs directory or justfile; no Rust files changed."
+  },
+  "repository_wide_ci_claim": false,
+  "real_kernel_engineering_preflights": "See evidence/ENGINEERING_SUMMARY.json; two separate 432-step executions, not independent task-effect samples."
+}

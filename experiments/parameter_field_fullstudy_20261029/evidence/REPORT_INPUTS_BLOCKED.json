@@ -1,0 +1,80 @@
+{
+  "schema": "hepta.fullstudy.report-inputs.1",
+  "attempt_id": "attempt02",
+  "stages": {
+    "A": {
+      "status": "BLOCKED"
+    },
+    "B": {
+      "status": "PENDING"
+    },
+    "C": {
+      "status": "BLOCKED"
+    },
+    "W": {
+      "status": "PENDING"
+    },
+    "R": {
+      "status": "PENDING"
+    }
+  },
+  "resource_status": {
+    "schema": "hepta.fullstudy.final-prelaunch-check.1",
+    "at_utc": "2026-10-29T08:21:25.297460+00:00",
+    "status": "ADMISSION_BLOCKED",
+    "memory": {
+      "current": 8584249344,
+      "limit": 8589934592,
+      "inactive_file": 471592960,
+      "file_dirty": 18485248,
+      "file_writeback": 0,
+      "clean_inactive_file": 453107712,
+      "effective_current": 8131141632,
+      "oom": 8,
+      "oom_kill": 4,
+      "required_headroom": 1879048192,
+      "allowed": false
+    },
+    "additional_effective_bytes_required": 1420255232,
+    "source_freezes_verified": true,
+    "verified_jobs": [
+      "A-17",
+      "A-29",
+      "A-43",
+      "C"
+    ],
+    "queue_sha256": "a983f2113261999a2e8c9c972a9fc88346987831b456392e27e66ffd07dd6d67",
+    "amendment_sha256": "583b3f8c7866b2d2a289e32cc9162472fd23ddc0b7897d0066863fd427173dd3",
+    "scientific_workers_started": 0,
+    "gradient_microsteps": 0,
+    "torch_imported": false,
+    "new_endpoint_roles_opened": []
+  },
+  "engineering_preflights": [
+    {
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_runs/preflight_01/RESULT.json",
+      "bytes": 124698,
+      "sha256": "996243b3a03cc3aca9fc9b57593029c6702e30c8762b6085e22d47d90e43fa59"
+    },
+    {
+      "path": "/dev/shm/hepta-field-fullstudy-20261029/exports/preflight/RESULT.json",
+      "bytes": 125227,
+      "sha256": "5dee785a445179b6bc20bc733c617438690c915668104d1a74cab4314175fb3c"
+    }
+  ],
+  "failed_attempts": [
+    {
+      "receipt": {
+        "path": "/dev/shm/hepta-field-fullstudy-20261029/source/experiments/parameter_field_fullstudy_20261029/evidence/INFRASTRUCTURE_FAILURE_01.json",
+        "bytes": 2776,
+        "sha256": "e7df77f013f26afe36c5b22a57864f978839edf8ce2f510a4837690ea5a2f906"
+      },
+      "training_microsteps_lower_bound": 102320,
+      "engineering_microsteps_included": 0,
+      "unknown_additional_work": true
+    }
+  ],
+  "integrity": {
+    "historical_exact_regression_gate": "FAIL \u2014 prior V5 exact-regression status is preserved; this study has not rerun or cleared it."
+  }
+}

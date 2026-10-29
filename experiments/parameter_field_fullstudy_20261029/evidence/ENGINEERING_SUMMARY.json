@@ -1,0 +1,112 @@
+{
+  "schema": "hepta.fullstudy.engineering-summary.1",
+  "scope": "Single fixed model/parent engineering validation, not independent task efficacy or the complete branch population.",
+  "preflights": [
+    {
+      "source": {
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_runs/preflight_01/RESULT.json",
+        "bytes": 124698,
+        "sha256": "996243b3a03cc3aca9fc9b57593029c6702e30c8762b6085e22d47d90e43fa59"
+      },
+      "complete": true,
+      "gradient_microsteps": 432,
+      "wall_seconds": 19.603226630999416,
+      "literal_roundtrip": true,
+      "feature_complete_state_invariant": true,
+      "branch_order_equal": true,
+      "actions": {
+        "0": {
+          "multiplier": 0.0,
+          "accepted": true,
+          "guard_delta": 0.0,
+          "parameter_l2_from_baseline": 0.0,
+          "different_components": [
+            "gradients"
+          ]
+        },
+        "1": {
+          "multiplier": 0.25,
+          "accepted": true,
+          "guard_delta": 0.0015874917429755486,
+          "parameter_l2_from_baseline": 0.4033535945960719,
+          "different_components": [
+            "parameters",
+            "optimizer",
+            "gradients"
+          ]
+        },
+        "2": {
+          "multiplier": 1.0,
+          "accepted": false,
+          "guard_delta": -0.011240191855176818,
+          "parameter_l2_from_baseline": 0.0,
+          "different_components": []
+        },
+        "3": {
+          "multiplier": 2.0,
+          "accepted": true,
+          "guard_delta": 0.004740404957556165,
+          "parameter_l2_from_baseline": 1.6292710648708928,
+          "different_components": [
+            "parameters",
+            "optimizer",
+            "gradients"
+          ]
+        }
+      }
+    },
+    {
+      "source": {
+        "path": "/dev/shm/hepta-field-fullstudy-20261029/exports/preflight/RESULT.json",
+        "bytes": 125227,
+        "sha256": "5dee785a445179b6bc20bc733c617438690c915668104d1a74cab4314175fb3c"
+      },
+      "complete": true,
+      "gradient_microsteps": 432,
+      "wall_seconds": 19.00305874300102,
+      "literal_roundtrip": true,
+      "feature_complete_state_invariant": true,
+      "branch_order_equal": true,
+      "actions": {
+        "0": {
+          "multiplier": 0.0,
+          "accepted": true,
+          "guard_delta": 0.0,
+          "parameter_l2_from_baseline": 0.0,
+          "different_components": [
+            "gradients"
+          ]
+        },
+        "1": {
+          "multiplier": 0.25,
+          "accepted": true,
+          "guard_delta": 0.0015874917429755486,
+          "parameter_l2_from_baseline": 0.4033535945960719,
+          "different_components": [
+            "parameters",
+            "optimizer",
+            "gradients"
+          ]
+        },
+        "2": {
+          "multiplier": 1.0,
+          "accepted": false,
+          "guard_delta": -0.011240191855176818,
+          "parameter_l2_from_baseline": 0.0,
+          "different_components": []
+        },
+        "3": {
+          "multiplier": 2.0,
+          "accepted": true,
+          "guard_delta": 0.004740404957556165,
+          "parameter_l2_from_baseline": 1.6292710648708928,
+          "different_components": [
+            "parameters",
+            "optimizer",
+            "gradients"
+          ]
+        }
+      }
+    }
+  ]
+}
