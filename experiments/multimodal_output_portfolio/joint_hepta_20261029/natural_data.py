@@ -131,7 +131,7 @@ def select_training(source, protocol):
     return selected
 
 
-def eligible_fresh_events(action, sound):
+def eligible_fresh_events(action, sound, rejected=None):
     """Original visible-overlap eligibility and corrected two-second target alignment."""
     duration = min(action["metadata"]["num_frames"] / action["metadata"]["frame_rate"],
                    sound["metadata"]["audio_samples"] / sound["metadata"]["audio_sample_rate"])
@@ -147,7 +147,16 @@ def eligible_fresh_events(action, sound):
             target = int(max(0, min((begin + end) / 2 - 1, duration - 2.125)) * 8) / 8
             overlap = max(0, min(end, target + 2) - max(begin, target))
             if overlap < .15 - 1e-9:
-                raise ValueError("Selected annotation is outside its real target")
+                # Annotation overlap alone does not establish that the fixed
+                # real-media window can contain it (notably at a source tail).
+                # This is metadata eligibility, before allocation or scoring.
+                if rejected is not None:
+                    rejected.append({"source_id": action["metadata"]["video_id"],
+                                     "action_annotation_id": a["id"], "sound_annotation_id": s["id"],
+                                     "target_start_seconds": target, "target_end_seconds": target + 2,
+                                     "target_label_overlap_seconds": overlap,
+                                     "reason": "Registered real target has less than 0.15 seconds of label overlap"})
+                continue
             rows.append({"action_id": a["label_id"], "sound_id": s["label_id"],
                          "action": a["label"], "sound": s["label"],
                          "action_annotation_id": a["id"], "sound_annotation_id": s["id"],
@@ -179,7 +188,7 @@ def freeze_allocation(assets, output, registry_path=None):
     pin = source["archive"]["valid"]
     if any(getattr(remote, k) != pin[k] for k in ("length", "generation", "etag")):
         raise ValueError("Original valid archive identity changed")
-    candidates = []
+    candidates, rejected = [], []
     with zipfile.ZipFile(remote) as archive:
         for member in archive.infolist():
             sid = PurePosixPath(member.filename).stem
@@ -187,7 +196,7 @@ def freeze_allocation(assets, output, registry_path=None):
                     or member.file_size > protocol["budget"]["maximum_source_bytes"]
                     or sid not in ann["action"] or sid not in ann["sound"]):
                 continue
-            events = eligible_fresh_events(ann["action"][sid], ann["sound"][sid])
+            events = eligible_fresh_events(ann["action"][sid], ann["sound"][sid], rejected)
             if events:
                 candidates.append({"source_id": sid, "member": member.filename,
                                    "source_bytes": member.file_size, "zip_crc32": f"{member.CRC:08x}",
@@ -205,6 +214,13 @@ def freeze_allocation(assets, output, registry_path=None):
                   "known_hashes": {r["source_id"]: r["original_video_sha256"] for r in registry["source_rows"]
                                    if "original_video_sha256" in r}, "annotation_receipts": annotation_receipts,
                   "metadata_range_receipts": remote.receipts, "media_predictions_before_freeze": 0,
+                  "fresh_candidate_window_rejections": rejected,
+                  "metadata_processing_amendment": {
+                      "prior_failed_commit": "6e26ad613563727f5d35a2ee6c09d5bc2378f2b1",
+                      "prior_failed_run": 40834641798,
+                      "phase": "Before initial allocation freeze and before any fresh media or predictions",
+                      "change": "Reject individually unrepresentable annotation windows instead of aborting all metadata enumeration",
+                      "window_threshold_ontology_or_order_changed": False},
                   "source_unit": "original_video_id; participant independence unknown"}
     allocation["allocation_sha256"] = digest(allocation)
     write_new(Path(output) / "ALLOCATION.json", allocation)

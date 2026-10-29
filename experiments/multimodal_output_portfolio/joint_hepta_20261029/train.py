@@ -161,7 +161,7 @@ def evaluate(model, directory, profile, seed, *, sources=64, draws=2, strategy="
                     directory/f"source-{source:03d}-draw-{draw}", seed=seed + source*7919 + draw*997,
                     context_id=f"{split}.{source}", source_id=f"synthetic.{split}.{source}", profile=profile,
                     strategy=strategy, native_factory=native_factory,
-                    native_reopen_at=1 if native_factory and source == 0 and draw == 0 else None)
+                    native_reopen_at=0 if native_factory and source == 0 and draw == 0 else None)
                 rows.append(compact_episode(result, source, draw))
     returns = [r["return"] for r in rows]
     return {"rows": rows, "population_ce": certainty_equivalent(returns, profile.ndu.gamma),

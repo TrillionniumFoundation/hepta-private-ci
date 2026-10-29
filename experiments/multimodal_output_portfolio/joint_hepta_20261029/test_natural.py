@@ -102,6 +102,19 @@ class NaturalContracts(unittest.TestCase):
         sound["sound_localisation"][0]["is_visible"] = False
         self.assertEqual(eligible_fresh_events(action, sound), [])
 
+    def test_unusable_tail_annotation_does_not_abort_other_eligible_events(self):
+        action = {"metadata": {"video_id": "v", "num_frames": 80, "frame_rate": 8},
+                  "action_localisation": [{"id": 1, "label_id": 0, "label": "a", "timestamps": [0, 10000000]}]}
+        sound = {"metadata": {"audio_samples": 160000, "audio_sample_rate": 16000},
+                 "sound_localisation": [{"id": 2, "label_id": 0, "label": "s", "timestamps": [5000000, 6000000], "is_visible": True},
+                                        {"id": 3, "label_id": 0, "label": "s", "timestamps": [9850000, 10000000], "is_visible": True}]}
+        rejected = []
+        rows = eligible_fresh_events(action, sound, rejected)
+        self.assertEqual([row["sound_annotation_id"] for row in rows], [2])
+        self.assertEqual([row["sound_annotation_id"] for row in rejected], [3])
+        self.assertAlmostEqual(rows[0]["target_label_overlap_seconds"], 1.)
+        self.assertLess(rejected[0]["target_label_overlap_seconds"], .15)
+
     def test_role_relabel_and_old_source_freshness_rejected_after_digest_refresh(self):
         value = {"protocol": {}, "protocol_sha256": digest({}), "excluded_source_ids": ["old"],
                  "selected": [{"source_id": "old", "role": "observer_train", "study_role": "generator_train"}]}
