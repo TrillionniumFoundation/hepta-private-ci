@@ -1,0 +1,51 @@
+{
+  "admission_expression": "effective_current + worker_reservation_bytes + memory_margin_bytes <= memory.max",
+  "attempt_id": "attempt02",
+  "deficit_bytes": 604811264,
+  "executed_work": {
+    "bank_or_endpoint_files_opened": false,
+    "gradient_microsteps": 0,
+    "model_assets_opened": false,
+    "models_instantiated": 0,
+    "scientific_worker_processes_started": 0,
+    "torch_imported": false
+  },
+  "interpretation": "Ambient cgroup pressure blocked prelaunch admission. This is neither a model-performance failure nor completed experimental evidence. The exact frozen pipeline can be retried when the same admission gate allows it.",
+  "latest_read_only_memory_profile": {
+    "clean_inactive_file": 544976896,
+    "current": 8050704384,
+    "effective_current": 7505727488,
+    "file_dirty": 15568896,
+    "file_writeback": 0,
+    "inactive_file": 560545792,
+    "limit": 8589934592,
+    "oom": 8,
+    "oom_kill": 4
+  },
+  "memory_margin_bytes": 1073741824,
+  "observation": {
+    "allowed": false,
+    "clean_inactive_file": 545406976,
+    "current": 7861104640,
+    "effective_current": 7315697664,
+    "file_dirty": 20418560,
+    "file_writeback": 0,
+    "inactive_file": 565825536,
+    "limit": 8589934592,
+    "oom": 8,
+    "oom_kill": 4,
+    "required_headroom": 1879048192
+  },
+  "operational_actions": {
+    "other_files_deleted": 0,
+    "other_processes_killed": 0,
+    "resource_margin_lowered": false,
+    "scientific_thresholds_changed": false
+  },
+  "qualification_action": "Import legacy A Python modules to verify the executable source closure; the gate rejected the action before those imports.",
+  "receipt_written_at_utc": "2026-10-29T08:09:55.637617+00:00",
+  "schema": "hepta.fullstudy.resource-admission-receipt.1",
+  "scope": "Prelaunch source-import qualification only; not a scientific outcome or a summary of attempt01 work.",
+  "status": "NOT_ADMITTED",
+  "worker_reservation_bytes": 805306368
+}

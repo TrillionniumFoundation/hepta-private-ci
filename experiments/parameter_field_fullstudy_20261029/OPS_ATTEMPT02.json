@@ -1,0 +1,191 @@
+{
+  "schema": "hepta.parameter-field.fullstudy.operational-storage-amendment.2",
+  "amendment_id": "OPS_ATTEMPT02_20261029",
+  "attempt_id": "attempt02",
+  "status": "REGISTERED_PRE_ENDPOINT",
+  "execution_ready": true,
+  "registered_utc": "2026-10-29T08:10:09.385681+00:00",
+  "repository_branch": "research/parameter-field-fullstudy-20261029",
+  "raw_root": "/dev/shm/hepta-field-fullstudy-20261029/attempt02",
+  "content_addressed_store": "/dev/shm/hepta-field-fullstudy-20261029/attempt02_cas",
+  "original_protocol": {
+    "path": "/dev/shm/hepta-field-fullstudy-20261029/source/experiments/parameter_field_fullstudy_20261029/PROTOCOL.json",
+    "sha256": "2c02b5aff224f125826931f3ecf691b2a01391a719075db8a1bc9fb5f5dafd55",
+    "preserve_bytes": true
+  },
+  "original_source_freezes": {
+    "A": {
+      "path": "/dev/shm/hepta-field-fullstudy-20261029/source/experiments/parameter_field_fullstudy_20261029/registrations/A_SOURCE_FREEZE.json",
+      "sha256": "2a5219147d38ebb6514059bd69e2d3489bf7d69d213cd01343455f63a08a53d2",
+      "registered_commit": "68b4ecc44cea5f5bc7478ea1008adb1ab81098c6",
+      "protocol_sha256": "2c02b5aff224f125826931f3ecf691b2a01391a719075db8a1bc9fb5f5dafd55",
+      "source_root": "/dev/shm/hepta-field-fullstudy-20261029/source"
+    },
+    "C": {
+      "path": "/dev/shm/hepta-field-fullstudy-20261029/source/experiments/parameter_field_fullstudy_20261029/registrations/C_SOURCE_FREEZE.json",
+      "sha256": "5f427c8a8cebe8c96a2a0d81318e22d286dc0aaa8b3dbf4d5844df2177949c6d",
+      "registered_commit": "4fc9ce3744525a5b916dd31a13ebcbe05d07cea1",
+      "protocol_sha256": "2c02b5aff224f125826931f3ecf691b2a01391a719075db8a1bc9fb5f5dafd55",
+      "source_root": "/dev/shm/hepta-field-fullstudy-20261029/source"
+    }
+  },
+  "scope": "Operational persistence, storage and RAM scheduling. All scientific choices are retained; no new qualification/final endpoint was used to choose this amendment.",
+  "attempt01_disposition": {
+    "status": "execution_incomplete_infrastructure_loss",
+    "incident_time_utc_approx": "2026-10-29T07:47:00Z",
+    "observed": "Executor transport reset; all study processes and their private mount disappeared. Host source/freezes/exports survived. No A/C completion seal survived and no new endpoint had been opened.",
+    "raw_loss": "Approximately 410 MB of private-mount raw artifacts were lost according to the incident report. Missing bytes are not represented as preserved or as literal-restore evidence.",
+    "causation": "An 8 GiB cgroup and cumulative oom=8/oom_kill=4 were observed; this is consistent with memory pressure but is not PID-level proof of the cause of the executor reset.",
+    "retained": "Preserve all surviving source/freezes, exports, logs/receipts and incident records; do not overwrite the original attempt.",
+    "budget_claim": "The original whole-study 1 GiB raw / 2 GiB allocatable-reserve / private-mount durability contract was not completed."
+  },
+  "restart": {
+    "kind": "Fresh attempt from original pinned assets and prescribed initial seeds; not a checkpoint resume from missing bytes.",
+    "same_scientific_configuration": true,
+    "unchanged": [
+      "architectures and all trainable parameters",
+      "initial seeds and tensors",
+      "source roles and exact identities",
+      "minibatch/noise tapes and schedules",
+      "actions and baselines",
+      "teacher/rehearsal objective",
+      "guards and complete rollback",
+      "warmup/continuation budgets",
+      "field coordinates and head fits",
+      "fit/calibration partitions",
+      "thresholds and fallback",
+      "all sample sizes and paired seeds",
+      "observers, estimands, margins, bootstrap and multiplicity rules"
+    ],
+    "outcome_selection": "No efficacy values were used to select this operational restart. Byte hashes, file shapes, allocation, process memory and completion/integrity metadata may be used for storage and scheduling only.",
+    "source_ancestry": "Actual attempt02 training freezes bind this amendment and explicitly identify their scientific_parent v1 freeze. All original scientific source files retain their bytes. Completed-checkpoint claims must refer to new actual attempt02 training freezes, never the failed attempt01 parents."
+  },
+  "proposed_resource_contract": {
+    "raw_storage_kind": "Task-owned host tmpfs directory outside the study-process private mount namespace",
+    "persistence_scope": "Observed to survive executor-process reset; remains transient and is not a promise of host restart survival or permanent external storage.",
+    "global_raw_logical_bytes": 2147483648,
+    "minimum_private_allocatable_bytes": 268435456,
+    "minimum_allocatable_bytes": 268435456,
+    "legacy_field_name_note": "minimum_private_allocatable_bytes is retained for API compatibility; it now applies to the actual raw-root host filesystem. No private 4 GiB mount or former 2 GiB reserve is claimed.",
+    "minimum_available_inodes": 2000,
+    "C_training_evidence_bytes": 367001600,
+    "private_mount_used": false,
+    "archive_reservation_bytes": 0,
+    "archive_reservation_note": "The previous EMPTY RAM archive reservation was released by the root operator; its receipts remain. Neither 1472 MiB nor any other new preallocated tar capacity is promised.",
+    "external_raw_uploads": 0,
+    "original_2GiB_reserve_satisfied": false,
+    "original_whole_study_1GiB_contract_satisfied": false,
+    "failure_receipt_memory_exemption": {
+      "maximum_bytes": 65536,
+      "filenames_must_contain": "FAIL",
+      "purpose": "Bounded failure receipts only; filesystem reserve and logical cap remain enforced."
+    }
+  },
+  "concurrency": {
+    "max_workers": 2,
+    "worker_reservation_bytes": 805306368,
+    "memory_margin_bytes": 1073741824,
+    "controller_registration_wait_seconds": 5.0,
+    "controller_registration_poll_seconds": 0.05,
+    "memory_measurement": "cgroup v2 memory.current/memory.max/memory.stat; do not count all slab_reclaimable as available.",
+    "clean_reclaimable_formula": "max(0, inactive_file - file_dirty - file_writeback)",
+    "effective_current_formula": "max(0, memory.current - clean_reclaimable)",
+    "pending_growth_formula": "sum(max(0, registered_worker_reservation - live_process_VmRSS)) over ACTIVE_WORKERS.json; nonexistent PIDs contribute zero.",
+    "admission_rule": "effective_current + pending_growth + new_worker_reservation + 1 GiB margin <= cgroup memory.max; workers wait for their PID to appear in ACTIVE_WORKERS before importing scientific runtime.",
+    "payload_rule": "effective_current + pending_growth + rounded_new_file_allocation + 1 GiB margin <= memory.max, as well as filesystem and logical-byte checks, inside the shared write lock.",
+    "resource_qualification": {
+      "enabled_families": {
+        "legacy": [
+          "A",
+          "B",
+          "R"
+        ]
+      },
+      "initial_reservation_bytes": 805306368,
+      "after_successful_family_completion": "max(512 MiB, ceil((1.25 * maximum_completed_family_VmHWM) / 64 MiB) * 64 MiB)",
+      "eligibility": "Completed jobs only, positive recorded process high-water mark, same declared legacy family. Pure memory/completion metadata only; no score or effect qualification.",
+      "unqualified_families": [
+        "C",
+        "W",
+        "A_endpoint",
+        "B_endpoint",
+        "C_endpoint"
+      ],
+      "unqualified_reservation_bytes": 805306368,
+      "max_workers_and_margin_unchanged": true
+    },
+    "groups": "Controller enforces declared phase dependencies and group compatibility. W/finalization are exclusive. R may use two registered slots but is not mixed with other scientific writer groups.",
+    "oom_events": "Record baseline counters before admission. On increment, stop new admission, preserve/record the event and let existing workers reach guarded persistence boundaries; do not silently retry affected work."
+  },
+  "persistence": {
+    "shared_write_lock": ".ops-write.lock in raw_root; check, write, flush and fsync occur while this lock is held.",
+    "registered_hooks": "resource_io_v2 wraps builtins.open/io.open only for write paths inside raw_root, plus raw-root os.rename/os.replace. Hooks are explicit, scoped and restored; original scientific files are not edited.",
+    "known_serializers": [
+      "Path.write_bytes/write_text",
+      "json.dump/json.dumps",
+      "numpy.savez_compressed",
+      "gzip streams",
+      "the fixed checkpoint codecs"
+    ],
+    "text_buffer_max_bytes": 65536,
+    "text_buffer_semantics": "Flush before tell, seek, truncate and close. Quota checks cover the actual buffered payload before it reaches the filesystem; exact UTF-8 bytes are retained.",
+    "protected_locks": "All *.lock and coordination .ops-* files are excluded from CAS replacement; lock inode identity is preserved.",
+    "immutable_artifacts": "Refuse to overwrite existing scientific artifacts. Allow declared ops-pending atomic metadata replacement and byte-verified CAS link replacement only.",
+    "uniform_CAS": "Every closed immutable artifact may be shared with a same-filesystem SHA256 canonical blob only after equal length and full byte equality verification. The original logical path, length and exact bytes remain accessible. Mutable append logs are deduplicated only after final sealing.",
+    "logical_accounting": "Each original raw artifact path counts at its full st_size, even when hardlinked. Include failures, partial evidence, receipts and logs. CAS canonical links are storage representation, not independent scientific samples.",
+    "physical_accounting": "Count allocated blocks once per device/inode across raw_root and its CAS sibling; include metadata and transient verification/storage overhead. Report cumulative logical bytes and physical sharing separately.",
+    "no_lossy_changes": [
+      "no quantization",
+      "no source or condition reduction",
+      "no dropped fields",
+      "no score-only replacement",
+      "no favorable-branch filtering",
+      "no hidden reduction in sample, seed, path or archive coverage"
+    ]
+  },
+  "final_evidence_container": {
+    "primary": "Process-independent host CAS directory plus complete logical-path/length/SHA256 manifest and its own hash; preserve all original logical paths.",
+    "literal_verification": "After all writers are quiescent, reconstruct every logical artifact to a real temporary file one at a time from its canonical blob, compare exact length and SHA256, record full path coverage, and remove only the verified temporary duplicate. Same-content paths may share canonical blobs but each logical path identity is checked.",
+    "no_full_tree_duplication": true,
+    "temporary_memory_and_filesystem_gates": "Apply the registered host-memory, physical-reserve and global storage checks to temporary allocations; do not assume room for a second entire tree.",
+    "optional_tar": "Only if later local capacity actually permits, a bounded streaming secondary archive may be produced under an explicit additional storage receipt. No tar backup is required or promised by this activation.",
+    "external_uploads": 0
+  },
+  "R_reconstruction": {
+    "preserved_parents": 144,
+    "terminal_checkpoints": 576,
+    "additional_scheduled_gradient_microsteps": 96768,
+    "role": "Separately registered independent evidence reconstruction and integrity comparison; all work is charged.",
+    "provenance": "New R files are reconstructed terminal checkpoints, not original terminal bytes saved during the first execution. R cannot repair or hide attempt01 raw loss."
+  },
+  "budgets_unchanged": {
+    "A_per_seed_primary_gradient_microsteps": 39168,
+    "B_per_seed_primary_gradient_microsteps": 23040,
+    "C_primary_gradient_microsteps": 57152,
+    "C_independent_replay_microsteps": 384,
+    "C_total_gradient_microsteps": 57536,
+    "W_total_gradient_microsteps": 2880,
+    "R_extra_gradient_microsteps": 96768,
+    "A_B_per_seed_CPU_seconds": 7200,
+    "A_B_per_seed_wall_seconds": 10800,
+    "C_CPU_seconds": 43200,
+    "C_wall_seconds": 21600
+  },
+  "source_and_endpoint_barriers": {
+    "new_freeze_markers": [
+      "attempt_id=attempt02",
+      "execution_kind=training or endpoint_scoring",
+      "operational_amendment_sha256",
+      "scientific_parent descriptor"
+    ],
+    "actual_training_parent": "Scorer training_parents descriptors identify completed attempt02 training freezes, with exact path, SHA256, commit, protocol hash and source_root. Old A/C pins are scientific ancestors, not completed checkpoints.",
+    "old_closure_preserved": "The original scientific-parent source_files map must be contained in the actual training freeze with identical hashes. Newly added resource/wrapper source is separately frozen.",
+    "new_endpoint_access": "All original role/checkpoint/access barriers remain. The operational restart and memory qualification never select an endpoint subset or open new data early."
+  },
+  "failure_and_reporting": {
+    "resource_failure": "Stop and preserve exact on-disk progress; do not delete unfavorable data or weaken sample/statistical rules to fit. Any unavailable persistence is explicit execution-incomplete evidence.",
+    "infrastructure_failure": "Raw files persist outside the worker namespace; still record reset/OOM and validate exact artifacts before any separately reviewed continuation. Do not claim a state-identical resume without actual checkpoint equality.",
+    "mandatory_disclosure": "Attempt01 was execution-incomplete with raw evidence lost. Attempt02 changes physical persistence, logical cap, allocatable reserve, concurrency and memory accounting under this explicit operational amendment. The former whole-study 1 GiB / 2 GiB-reserve contract is not reported as completed.",
+    "scientific_outcome": "Completion does not imply a positive effect; all registered outcomes and failures remain reportable."
+  }
+}

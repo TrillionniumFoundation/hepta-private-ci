@@ -1,0 +1,63 @@
+{
+  "checked_modules": [
+    "experiments/multimodal_output_portfolio/field_bridge_20261027/adaptation.py",
+    "experiments/multimodal_output_portfolio/field_bridge_20261027/adapters.py",
+    "experiments/multimodal_output_portfolio/field_bridge_20261027/protocol.py",
+    "experiments/multimodal_output_portfolio/field_bridge_20261027/task.py",
+    "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/__init__.py",
+    "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/assets.py",
+    "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/learning.py",
+    "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/source_roles.py",
+    "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/training_common.py",
+    "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/training_features.py",
+    "experiments/multimodal_output_portfolio/field_bridge_v4_20261027/__init__.py",
+    "experiments/multimodal_output_portfolio/field_bridge_v4_20261027/source_roles.py",
+    "experiments/multimodal_output_portfolio/field_bridge_v6_gru_adapter_preparation_20261028/adapter.py",
+    "experiments/multimodal_output_portfolio/field_bridge_v6_gru_adapter_preparation_20261028/contract.py",
+    "experiments/multimodal_output_portfolio/field_bridge_v6_gru_adapter_preparation_20261028/equivalence.py",
+    "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/branch_state.py",
+    "experiments/multimodal_output_portfolio/field_bridge_v6_preparation_20261028/codec.py",
+    "experiments/multimodal_output_portfolio/field_bridge_v6_torch_adapter_preparation_20261028/adapter.py",
+    "experiments/multimodal_output_portfolio/v6/conditioned.py",
+    "experiments/multimodal_output_portfolio/v6/data.py",
+    "experiments/multimodal_output_portfolio/v6/neural.py",
+    "experiments/multimodal_output_portfolio/v6/observer.py",
+    "experiments/multimodal_output_portfolio/v6/plan_training.py",
+    "experiments/parameter_field_fullstudy_20261029/bank.py",
+    "experiments/parameter_field_fullstudy_20261029/branching.py",
+    "experiments/parameter_field_fullstudy_20261029/heads.py",
+    "experiments/parameter_field_fullstudy_20261029/resource_io_v2.py",
+    "experiments/parameter_field_fullstudy_20261029/resource_v2.py",
+    "experiments/parameter_field_fullstudy_20261029/run.py",
+    "experiments/parameter_field_fullstudy_20261029/run_v2.py",
+    "experiments/parameter_field_fullstudy_20261029/sources.py"
+  ],
+  "checked_python_module_count": 31,
+  "created_utc": "2026-10-29T08:10:42.517047+00:00",
+  "dynamic_import_calls_requiring_runtime_gate": [
+    {
+      "call": "import_module",
+      "line": 149,
+      "path": "experiments/parameter_field_fullstudy_20261029/run_v2.py"
+    },
+    {
+      "call": "import_module",
+      "line": 144,
+      "path": "experiments/parameter_field_fullstudy_20261029/run_v2.py"
+    },
+    {
+      "call": "import_module",
+      "line": 147,
+      "path": "experiments/parameter_field_fullstudy_20261029/run_v2.py"
+    }
+  ],
+  "limitations": "AST-only repository-local declared import check; no runtime imports, model construction, assets or outcomes. Dynamic import resolution and external runtime identity remain runtime gates. Non-A lazy branches in run_v2 are registered separately.",
+  "missing_from_original_A_plus_three_operational_modules": [],
+  "original_A_all_source_hashes_equal": true,
+  "original_A_source_file_count": 65,
+  "phase": "A",
+  "schema": "hepta.fullstudy.static-source-closure-review.1",
+  "scientific_gradient_microsteps": 0,
+  "status": "DECLARED_IMPORTS_COVERED",
+  "torch_imported": false
+}
