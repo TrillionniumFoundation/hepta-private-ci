@@ -137,7 +137,8 @@ pub trait ToolPort: Send + Sync {
                 "exit_code": receipt.tool_outcome.exit_code,
                 "stdout": String::from_utf8_lossy(stdout),
                 "stderr": String::from_utf8_lossy(stderr),
-            }).to_string())
+            })
+            .to_string())
         }
     }
 }
