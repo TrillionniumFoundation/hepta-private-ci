@@ -1,0 +1,1353 @@
+{
+  "architecture_scope": {
+    "base_merge_conclusion": "success",
+    "base_merge_native_steps_skipped": true,
+    "earlier_head_success_reused": false,
+    "source_head_active_step": "Durable operation and external-effect recovery",
+    "source_head_status": "in_progress",
+    "source_head_success_claimed": false
+  },
+  "baseline_blob_identity_verified_at_utc": "2026-10-29T17:21:41Z",
+  "blob_size": {
+    "byte_limit": 512000,
+    "checked_changed_files": 972,
+    "conclusion": "success",
+    "file_classification_counts": {
+      "binary, ok": 713,
+      "non-binary, ok": 259
+    },
+    "job_id": 123610023955,
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123610023955",
+    "maximum_checked_bytes": 480000,
+    "parsed_file_entries": 972,
+    "summary_log_line": "2026-10-29T17:19:39.1835652Z Checked 972 changed file(s) against the 512000-byte limit."
+  },
+  "branch": "research/continuous-boundary-flow-20261028",
+  "codespell": {
+    "affected_files": 9,
+    "all_affected_files_identical_to_frozen_base": true,
+    "baseline_file_identities": [
+      {
+        "base_git_blob": "d90b3e0f6775b516a01acbd4ec7bc5f47501271d",
+        "head_git_blob": "d90b3e0f6775b516a01acbd4ec7bc5f47501271d",
+        "identical": true,
+        "path": "experiments/analytic_event_neuron/RUNTIME.md"
+      },
+      {
+        "base_git_blob": "8b4444b61f033854edddcb2de59ab08ef16d7af0",
+        "head_git_blob": "8b4444b61f033854edddcb2de59ab08ef16d7af0",
+        "identical": true,
+        "path": "experiments/analytic_event_neuron/round2/evidence/runtime_independent_review.py"
+      },
+      {
+        "base_git_blob": "079dad408e2bbbc2b9feddfb2a11eb6c7fca20c7",
+        "head_git_blob": "079dad408e2bbbc2b9feddfb2a11eb6c7fca20c7",
+        "identical": true,
+        "path": "experiments/first_passage_cell/evidence/KERNEL_VALIDATION.json"
+      },
+      {
+        "base_git_blob": "fd94bb1af63f184dba2a979138f140d860ab7e28",
+        "head_git_blob": "fd94bb1af63f184dba2a979138f140d860ab7e28",
+        "identical": true,
+        "path": "experiments/first_passage_cell/filtering.py"
+      },
+      {
+        "base_git_blob": "35a4010795a2e1f0d212f9b00c54a8acc53a3303",
+        "head_git_blob": "35a4010795a2e1f0d212f9b00c54a8acc53a3303",
+        "identical": true,
+        "path": "experiments/first_passage_cell/validate_kernels.py"
+      },
+      {
+        "base_git_blob": "987a319f35b9e99c8f6517c4829b4884f784d28b",
+        "head_git_blob": "987a319f35b9e99c8f6517c4829b4884f784d28b",
+        "identical": true,
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v2_20261027/DIRECTIONAL_PROTOCOL.json"
+      },
+      {
+        "base_git_blob": "42aa0f545b01a8a53015fe50fb845b54fd39b177",
+        "head_git_blob": "42aa0f545b01a8a53015fe50fb845b54fd39b177",
+        "identical": true,
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v2_20261027/primary_runtime_tests.py"
+      },
+      {
+        "base_git_blob": "228c085c04adf11ccee3f721ac3fcf3e6ade8085",
+        "head_git_blob": "228c085c04adf11ccee3f721ac3fcf3e6ade8085",
+        "identical": true,
+        "path": "experiments/multimodal_output_portfolio/next_20261025/media/evidence/public-source-retention-after-cache-eviction.json"
+      },
+      {
+        "base_git_blob": "eadb42ca3831006b429ec87b5df2e3cb3f0504df",
+        "head_git_blob": "eadb42ca3831006b429ec87b5df2e3cb3f0504df",
+        "identical": true,
+        "path": "experiments/multimodal_output_portfolio/repair_20261026/natural/document/evidence/SOURCE_MANIFEST.json"
+      }
+    ],
+    "compressed_archive_findings": 0,
+    "conclusion": "failure",
+    "decoded_job_log_bytes": 31300,
+    "decoded_job_log_sha256": "bcf03232b284952a3f4a76b1815ddd6e00699b5a03a0f16578edd134ade5eb04",
+    "diagnostic_storage": "Original diagnostic UTF-8 bytes and log lines are reversibly encoded, with hashes, so quoted historical diagnostics do not create fresh text findings.",
+    "execution_observed": true,
+    "findings": [
+      {
+        "diagnostic_base64": "RlBUID09PiBGVFA=",
+        "diagnostic_encoding": "base64",
+        "diagnostic_utf8_bytes": 11,
+        "diagnostic_utf8_sha256": "0b97702682c055afb2c573f454bdd4a00d1a20d74d81bf8fc3e255a19401da87",
+        "line_number": 65,
+        "path": "experiments/first_passage_cell/filtering.py",
+        "raw_log_line_base64": "MjAyNi0xMC0yOVQxNzoxOTowMi44MjI4MzAwWiAjI1tlcnJvcl0uL2V4cGVyaW1lbnRzL2ZpcnN0X3Bhc3NhZ2VfY2VsbC9maWx0ZXJpbmcucHk6NjU6IEZQVCA9PT4gRlRQ",
+        "raw_log_line_utf8_sha256": "c7533951b8a1c5f31221fc6fd3d80afb72c1ff46e5974caba38b567476db59db"
+      },
+      {
+        "diagnostic_base64": "ZnB0ID09PiBmdHA=",
+        "diagnostic_encoding": "base64",
+        "diagnostic_utf8_bytes": 11,
+        "diagnostic_utf8_sha256": "441e2a590f72053b969433fc8f8a4b3b77b6eb617eb6b2e358105e5f7fb62049",
+        "line_number": 224,
+        "path": "experiments/first_passage_cell/validate_kernels.py",
+        "raw_log_line_base64": "MjAyNi0xMC0yOVQxNzoxOTowMi44MjMyOTE5WiAjI1tlcnJvcl0uL2V4cGVyaW1lbnRzL2ZpcnN0X3Bhc3NhZ2VfY2VsbC92YWxpZGF0ZV9rZXJuZWxzLnB5OjIyNDogZnB0ID09PiBmdHA=",
+        "raw_log_line_utf8_sha256": "187d790e53c3924edb60d5c877fe9fb165bf4770624b26aa4a4bbd7eb73eafb9"
+      },
+      {
+        "diagnostic_base64": "ZnB0ID09PiBmdHA=",
+        "diagnostic_encoding": "base64",
+        "diagnostic_utf8_bytes": 11,
+        "diagnostic_utf8_sha256": "441e2a590f72053b969433fc8f8a4b3b77b6eb617eb6b2e358105e5f7fb62049",
+        "line_number": 3834,
+        "path": "experiments/first_passage_cell/evidence/KERNEL_VALIDATION.json",
+        "raw_log_line_base64": "MjAyNi0xMC0yOVQxNzoxOTowMi44MjMzNjY5WiAjI1tlcnJvcl0uL2V4cGVyaW1lbnRzL2ZpcnN0X3Bhc3NhZ2VfY2VsbC9ldmlkZW5jZS9LRVJORUxfVkFMSURBVElPTi5qc29uOjM4MzQ6IGZwdCA9PT4gZnRw",
+        "raw_log_line_utf8_sha256": "d8267b7f4329310c4fae4223006043840bce5e6ff4f58bd9793b94ccd81fa7fe"
+      },
+      {
+        "diagnostic_base64": "cmV0dW5lZCA9PT4gcmV0dXJuZWQ=",
+        "diagnostic_encoding": "base64",
+        "diagnostic_utf8_bytes": 20,
+        "diagnostic_utf8_sha256": "6ccd85796ba44a989d3e75b95d2b23f381d8a3cda8c2e346526d518f74a9fc55",
+        "line_number": 367,
+        "path": "experiments/analytic_event_neuron/RUNTIME.md",
+        "raw_log_line_base64": "MjAyNi0xMC0yOVQxNzoxOTowMi44MjM0MzMzWiAjI1tlcnJvcl0uL2V4cGVyaW1lbnRzL2FuYWx5dGljX2V2ZW50X25ldXJvbi9SVU5USU1FLm1kOjM2NzogcmV0dW5lZCA9PT4gcmV0dXJuZWQ=",
+        "raw_log_line_utf8_sha256": "d8b8fd4664584ed5b70b7770a05eba0e142079825ed7d89a570e1b1c4f14f37b"
+      },
+      {
+        "diagnostic_base64": "ZGF0YXMgPT0+IGRhdGE=",
+        "diagnostic_encoding": "base64",
+        "diagnostic_utf8_bytes": 14,
+        "diagnostic_utf8_sha256": "fb36a7dd0f0e566c5abd8238e214807a45f15d546ccef15236697082ff948163",
+        "line_number": 238,
+        "path": "experiments/analytic_event_neuron/round2/evidence/runtime_independent_review.py",
+        "raw_log_line_base64": "MjAyNi0xMC0yOVQxNzoxOTowMi44MjM1MDc2WiAjI1tlcnJvcl0uL2V4cGVyaW1lbnRzL2FuYWx5dGljX2V2ZW50X25ldXJvbi9yb3VuZDIvZXZpZGVuY2UvcnVudGltZV9pbmRlcGVuZGVudF9yZXZpZXcucHk6MjM4OiBkYXRhcyA9PT4gZGF0YQ==",
+        "raw_log_line_utf8_sha256": "b79d18a1488c56d04348286aff476bd543c69d21bb9d9875be39a95d4666adcc"
+      },
+      {
+        "diagnostic_base64": "ZGF0YXMgPT0+IGRhdGE=",
+        "diagnostic_encoding": "base64",
+        "diagnostic_utf8_bytes": 14,
+        "diagnostic_utf8_sha256": "fb36a7dd0f0e566c5abd8238e214807a45f15d546ccef15236697082ff948163",
+        "line_number": 247,
+        "path": "experiments/analytic_event_neuron/round2/evidence/runtime_independent_review.py",
+        "raw_log_line_base64": "MjAyNi0xMC0yOVQxNzoxOTowMi44MjM1NzM3WiAjI1tlcnJvcl0uL2V4cGVyaW1lbnRzL2FuYWx5dGljX2V2ZW50X25ldXJvbi9yb3VuZDIvZXZpZGVuY2UvcnVudGltZV9pbmRlcGVuZGVudF9yZXZpZXcucHk6MjQ3OiBkYXRhcyA9PT4gZGF0YQ==",
+        "raw_log_line_utf8_sha256": "5dc28351de8c9e6140f6bc99f4f513deede882c39e735f6825cb0f5f7d14b6c5"
+      },
+      {
+        "diagnostic_base64": "ZG9lc25vdCA9PT4gZG9lc24ndCwgZG9lcyBub3Q=",
+        "diagnostic_encoding": "base64",
+        "diagnostic_utf8_bytes": 29,
+        "diagnostic_utf8_sha256": "dcae0c2ad97256b2a543d40e7a8d862b174b8b39143290bdc4e33542aa2d8fb1",
+        "line_number": 78,
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v2_20261027/DIRECTIONAL_PROTOCOL.json",
+        "raw_log_line_base64": "MjAyNi0xMC0yOVQxNzoxOTowMi44MjM2NTQ0WiAjI1tlcnJvcl0uL2V4cGVyaW1lbnRzL211bHRpbW9kYWxfb3V0cHV0X3BvcnRmb2xpby9maWVsZF9icmlkZ2VfdjJfMjAyNjEwMjcvRElSRUNUSU9OQUxfUFJPVE9DT0wuanNvbjo3ODogZG9lc25vdCA9PT4gZG9lc24ndCwgZG9lcyBub3Q=",
+        "raw_log_line_utf8_sha256": "4566027d4e29b7b4a3a2438f8b116d01bd31b586f0df1b7165edc6939e0963cc"
+      },
+      {
+        "diagnostic_base64": "cGVyc2VlZCA9PT4gcHJlY2VkZQ==",
+        "diagnostic_encoding": "base64",
+        "diagnostic_utf8_bytes": 19,
+        "diagnostic_utf8_sha256": "6c7b2d59f8a46da81f5693f25886007dd40a07b00dc2f9b983db87ad171735da",
+        "line_number": 102,
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v2_20261027/DIRECTIONAL_PROTOCOL.json",
+        "raw_log_line_base64": "MjAyNi0xMC0yOVQxNzoxOTowMi44MjM3MjkzWiAjI1tlcnJvcl0uL2V4cGVyaW1lbnRzL211bHRpbW9kYWxfb3V0cHV0X3BvcnRmb2xpby9maWVsZF9icmlkZ2VfdjJfMjAyNjEwMjcvRElSRUNUSU9OQUxfUFJPVE9DT0wuanNvbjoxMDI6IHBlcnNlZWQgPT0+IHByZWNlZGU=",
+        "raw_log_line_utf8_sha256": "d64851358f456f58900fe434489576bbbe9bee1a6520cf171330d15d5d1a1454"
+      },
+      {
+        "diagnostic_base64": "bmQgPT0+IGFuZCwgMm5k",
+        "diagnostic_encoding": "base64",
+        "diagnostic_utf8_bytes": 15,
+        "diagnostic_utf8_sha256": "328d2b3f5c6a2bc2d69b33f1729e3968b7c9088c2cd53dcf1d890b1d005413d6",
+        "line_number": 60,
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v2_20261027/primary_runtime_tests.py",
+        "raw_log_line_base64": "MjAyNi0xMC0yOVQxNzoxOTowMi44MjM4MzA3WiAjI1tlcnJvcl0uL2V4cGVyaW1lbnRzL211bHRpbW9kYWxfb3V0cHV0X3BvcnRmb2xpby9maWVsZF9icmlkZ2VfdjJfMjAyNjEwMjcvcHJpbWFyeV9ydW50aW1lX3Rlc3RzLnB5OjYwOiBuZCA9PT4gYW5kLCAybmQ=",
+        "raw_log_line_utf8_sha256": "28da56adb0fec135fba564fcaa5bd572d7bad6cb2da6d253ddefcc88312ddbd6"
+      },
+      {
+        "diagnostic_base64": "bmQgPT0+IGFuZCwgMm5k",
+        "diagnostic_encoding": "base64",
+        "diagnostic_utf8_bytes": 15,
+        "diagnostic_utf8_sha256": "328d2b3f5c6a2bc2d69b33f1729e3968b7c9088c2cd53dcf1d890b1d005413d6",
+        "line_number": 63,
+        "path": "experiments/multimodal_output_portfolio/field_bridge_v2_20261027/primary_runtime_tests.py",
+        "raw_log_line_base64": "MjAyNi0xMC0yOVQxNzoxOTowMi44MjM4OTg2WiAjI1tlcnJvcl0uL2V4cGVyaW1lbnRzL211bHRpbW9kYWxfb3V0cHV0X3BvcnRmb2xpby9maWVsZF9icmlkZ2VfdjJfMjAyNjEwMjcvcHJpbWFyeV9ydW50aW1lX3Rlc3RzLnB5OjYzOiBuZCA9PT4gYW5kLCAybmQ=",
+        "raw_log_line_utf8_sha256": "b4604a5a2b15bac4adf1df0931019505525a3c734f8d210e14eab91e6a7cdd71"
+      },
+      {
+        "diagnostic_base64": "TEFNQSA9PT4gTExBTUE=",
+        "diagnostic_encoding": "base64",
+        "diagnostic_utf8_bytes": 14,
+        "diagnostic_utf8_sha256": "8a824a571482bcb478da91fae005b6a6c83cd48b8390e68a6523c4024566baa2",
+        "line_number": 3903,
+        "path": "experiments/multimodal_output_portfolio/repair_20261026/natural/document/evidence/SOURCE_MANIFEST.json",
+        "raw_log_line_base64": "MjAyNi0xMC0yOVQxNzoxOTowMi44MjM5OTU0WiAjI1tlcnJvcl0uL2V4cGVyaW1lbnRzL211bHRpbW9kYWxfb3V0cHV0X3BvcnRmb2xpby9yZXBhaXJfMjAyNjEwMjYvbmF0dXJhbC9kb2N1bWVudC9ldmlkZW5jZS9TT1VSQ0VfTUFOSUZFU1QuanNvbjozOTAzOiBMQU1BID09PiBMTEFNQQ==",
+        "raw_log_line_utf8_sha256": "abd443ef8d9b34b320a875c6a7a5d3d264f5e7faacf7000abc794e45ad5e51d5"
+      },
+      {
+        "diagnostic_base64": "QU1PTlVUID09PiBBTU9VTlQ=",
+        "diagnostic_encoding": "base64",
+        "diagnostic_utf8_bytes": 17,
+        "diagnostic_utf8_sha256": "c4dfa8ee7eac9a92882a01062d1ee38e636c70550f88651fa9ad729c8f74dc40",
+        "line_number": 4279,
+        "path": "experiments/multimodal_output_portfolio/repair_20261026/natural/document/evidence/SOURCE_MANIFEST.json",
+        "raw_log_line_base64": "MjAyNi0xMC0yOVQxNzoxOTowMi44MjQwNzExWiAjI1tlcnJvcl0uL2V4cGVyaW1lbnRzL211bHRpbW9kYWxfb3V0cHV0X3BvcnRmb2xpby9yZXBhaXJfMjAyNjEwMjYvbmF0dXJhbC9kb2N1bWVudC9ldmlkZW5jZS9TT1VSQ0VfTUFOSUZFU1QuanNvbjo0Mjc5OiBBTU9OVVQgPT0+IEFNT1VOVA==",
+        "raw_log_line_utf8_sha256": "7ec0dbeb0b3663a451480c5a952b766b620e903ca78a0d503934a34c8f2ca4cf"
+      },
+      {
+        "diagnostic_base64": "RVhDSEFOR0FCTEUgPT0+IEVYQ0hBTkdFQUJMRQ==",
+        "diagnostic_encoding": "base64",
+        "diagnostic_utf8_bytes": 28,
+        "diagnostic_utf8_sha256": "0c6c6c3ec11dfe4b70fb1a8c817527845262dc0eaf25ae9dcabf01601f306327",
+        "line_number": 4900,
+        "path": "experiments/multimodal_output_portfolio/repair_20261026/natural/document/evidence/SOURCE_MANIFEST.json",
+        "raw_log_line_base64": "MjAyNi0xMC0yOVQxNzoxOTowMi44MjQxNDgzWiAjI1tlcnJvcl0uL2V4cGVyaW1lbnRzL211bHRpbW9kYWxfb3V0cHV0X3BvcnRmb2xpby9yZXBhaXJfMjAyNjEwMjYvbmF0dXJhbC9kb2N1bWVudC9ldmlkZW5jZS9TT1VSQ0VfTUFOSUZFU1QuanNvbjo0OTAwOiBFWENIQU5HQUJMRSA9PT4gRVhDSEFOR0VBQkxF",
+        "raw_log_line_utf8_sha256": "1fe357f64d60e54ec99af66106c56c1e8337bb1d363b15891b50b89a2284d8e0"
+      },
+      {
+        "diagnostic_base64": "VEVIID09PiBUSEU=",
+        "diagnostic_encoding": "base64",
+        "diagnostic_utf8_bytes": 11,
+        "diagnostic_utf8_sha256": "9874618dc513e3ccb21ae5f2910b303e4acd7b98eb9881ad5b48757bc1ce3af8",
+        "line_number": 6515,
+        "path": "experiments/multimodal_output_portfolio/repair_20261026/natural/document/evidence/SOURCE_MANIFEST.json",
+        "raw_log_line_base64": "MjAyNi0xMC0yOVQxNzoxOTowMi44MjQyMjM1WiAjI1tlcnJvcl0uL2V4cGVyaW1lbnRzL211bHRpbW9kYWxfb3V0cHV0X3BvcnRmb2xpby9yZXBhaXJfMjAyNjEwMjYvbmF0dXJhbC9kb2N1bWVudC9ldmlkZW5jZS9TT1VSQ0VfTUFOSUZFU1QuanNvbjo2NTE1OiBURUggPT0+IFRIRQ==",
+        "raw_log_line_utf8_sha256": "c77e8edab1ea98f23869473eaa2df3aa8fe3361aec3f1dfafcd226e37b108a17"
+      },
+      {
+        "diagnostic_base64": "cmVzdG9yZWFibGUgPT0+IHJlc3RvcmFibGU=",
+        "diagnostic_encoding": "base64",
+        "diagnostic_utf8_bytes": 26,
+        "diagnostic_utf8_sha256": "f27e0e9a456d92a937196accafd72066d5cc06a5f0808f341f434a894d1e8d7e",
+        "line_number": 22,
+        "path": "experiments/multimodal_output_portfolio/next_20261025/media/evidence/public-source-retention-after-cache-eviction.json",
+        "raw_log_line_base64": "MjAyNi0xMC0yOVQxNzoxOTowMi44MjQzNDIwWiAjI1tlcnJvcl0uL2V4cGVyaW1lbnRzL211bHRpbW9kYWxfb3V0cHV0X3BvcnRmb2xpby9uZXh0XzIwMjYxMDI1L21lZGlhL2V2aWRlbmNlL3B1YmxpYy1zb3VyY2UtcmV0ZW50aW9uLWFmdGVyLWNhY2hlLWV2aWN0aW9uLmpzb246MjI6IHJlc3RvcmVhYmxlID09PiByZXN0b3JhYmxl",
+        "raw_log_line_utf8_sha256": "1bb36f93bff7715ab33469ea8355aa9b4f03c931b597cc61d7075d78fd4e1ffb"
+      }
+    ],
+    "frozen_base": "5898cd8b0f724c3152b6cc52856721f72e5e08be",
+    "job_id": 123610023833,
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123610023833",
+    "observed_cli": "--config .codespellrc --ignore-words .codespellignore",
+    "observed_version": "2.4.3",
+    "remaining_baseline_text_findings": 15,
+    "remaining_new_text_findings": 0,
+    "reported_findings": 15
+  },
+  "completed_job_logs_observed_at_utc": "2026-10-29T17:20:50Z",
+  "interpretation": {
+    "all_repository_qualification_claimed": false,
+    "exact_head_verified": true,
+    "overall_pass_claimed": false,
+    "previous_head_results_reused": false,
+    "scope": "Read-only snapshot of the exact final-head runs at the recorded observation times. Baseline text identity is verified against the frozen base; no historical CI outcome is assumed."
+  },
+  "limits": [
+    "Workflow and job states can change after this snapshot.",
+    "The complete 30-job blocking roster at observation can grow as later jobs are generated.",
+    "V8 metadata success with two skipped builds does not establish a variant build.",
+    "PR mergeable=true describes Git mergeability and does not establish CI success.",
+    "The receipt is stored outside the research repository to preserve the final research head."
+  ],
+  "monitor_actions": {
+    "cargo_log_requests": 0,
+    "output_inside_research_repository": false,
+    "repository_source_edits": 0,
+    "workflow_cancellations": 0,
+    "workflow_configuration_edits": 0,
+    "workflow_dispatches": 0,
+    "workflow_reruns": 0
+  },
+  "prior_snapshot": {
+    "bytes": 18486,
+    "path": "/workspace/scratch/0b931bb7b314/hepta-final-head-ci-20261029.json",
+    "preserved_unchanged": true,
+    "sha256": "2049585668aef7ecbf53917933621ad20d790ad431021f9feb9bf86072214afb"
+  },
+  "pull_request": {
+    "base_ref": "research/continuous-boundary-frozen-base-5898cd8-20261029",
+    "base_sha": "5898cd8b0f724c3152b6cc52856721f72e5e08be",
+    "draft": true,
+    "head_ref": "research/continuous-boundary-flow-20261028",
+    "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+    "mergeable": true,
+    "mergeable_state": "unstable",
+    "number": 4157,
+    "state": "open",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4157"
+  },
+  "receipt_created_at_utc": "2026-10-29T17:23:00.264419+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "hepta.research.final-head-ci-observation.v1",
+  "source_head": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+  "source_identity_verified_via": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/9b03618be452d264cd7a3778677144ebc9b45fc2",
+  "source_tree": "4807ef7e29ed3c0ce091b1233b213b17313746f1",
+  "v8_scope": {
+    "actual_variant_build_success_claimed": false,
+    "build_job_count": 2,
+    "build_jobs_skipped": 2,
+    "metadata_conclusion": "success",
+    "workflow_conclusion": "success"
+  },
+  "workflow_status_observed_at_utc": "2026-10-29T17:20:17Z",
+  "workflows": [
+    {
+      "conclusion": null,
+      "created_at": "2026-10-29T17:15:39Z",
+      "event": "pull_request",
+      "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+      "id": 40919607052,
+      "jobs": [
+        {
+          "active_steps": [
+            "Durable operation and external-effect recovery"
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123608936441,
+          "name": "Architecture convergence (source-head)",
+          "started_at": "2026-10-29T17:15:44Z",
+          "status": "in_progress",
+          "steps": [
+            {
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Check out exact candidate",
+              "number": 2,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Fetch exact qualification history",
+              "number": 3,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Verify GitHub prospective merge ref matches this exact candidate",
+              "number": 4,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Construct the canonical prospective merge",
+              "number": 5,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Bind tested identity",
+              "number": 6,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Select exact-tree native execution",
+              "number": 7,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Select affected architecture boundaries",
+              "number": 8,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Test execution-record rejection and retained diagnostics",
+              "number": 9,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Repository-control rejection regressions",
+              "number": 10,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Prepare native prerequisites",
+              "number": 11,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+              "number": 12,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Expose DotSlash for existing integration tests",
+              "number": 13,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+              "number": 14,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Resolve verified V8 artifacts",
+              "number": 15,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Verify Cargo lock resolution and print exact resolver drift",
+              "number": 16,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Inference owner regressions and streaming digest",
+              "number": 17,
+              "status": "completed"
+            },
+            {
+              "conclusion": null,
+              "name": "Durable operation and external-effect recovery",
+              "number": 18,
+              "status": "in_progress"
+            },
+            {
+              "conclusion": null,
+              "name": "Module lifecycle generations and migration rollback",
+              "number": 19,
+              "status": "pending"
+            },
+            {
+              "conclusion": null,
+              "name": "Objective and prompt policy convergence",
+              "number": 20,
+              "status": "pending"
+            },
+            {
+              "conclusion": null,
+              "name": "Converged authority and browser semantics",
+              "number": 21,
+              "status": "pending"
+            },
+            {
+              "conclusion": null,
+              "name": "Selected-artifact adoption and explicit rollback",
+              "number": 22,
+              "status": "pending"
+            },
+            {
+              "conclusion": null,
+              "name": "Compiled service lifecycle and actual process restart",
+              "number": 23,
+              "status": "pending"
+            },
+            {
+              "conclusion": null,
+              "name": "Derived-view drift",
+              "number": 24,
+              "status": "pending"
+            },
+            {
+              "conclusion": null,
+              "name": "Retain advisory candidate Git transport observation",
+              "number": 25,
+              "status": "pending"
+            },
+            {
+              "conclusion": null,
+              "name": "Verify unchanged reviewed source",
+              "number": 26,
+              "status": "pending"
+            },
+            {
+              "conclusion": null,
+              "name": "Retain exact source input on failure for reproducible diagnosis",
+              "number": 27,
+              "status": "pending"
+            },
+            {
+              "conclusion": null,
+              "name": "Retain command records and bounded stdout stderr",
+              "number": 28,
+              "status": "pending"
+            },
+            {
+              "conclusion": null,
+              "name": "Post Check out exact candidate",
+              "number": 56,
+              "status": "pending"
+            }
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607052/job/123608936441"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T17:17:25Z",
+          "conclusion": "success",
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123608937090,
+          "name": "Architecture convergence (base-merge)",
+          "started_at": "2026-10-29T17:15:45Z",
+          "status": "completed",
+          "steps": [
+            {
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Check out exact candidate",
+              "number": 2,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Fetch exact qualification history",
+              "number": 3,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Verify GitHub prospective merge ref matches this exact candidate",
+              "number": 4,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Construct the canonical prospective merge",
+              "number": 5,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Bind tested identity",
+              "number": 6,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Select exact-tree native execution",
+              "number": 7,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Select affected architecture boundaries",
+              "number": 8,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Test execution-record rejection and retained diagnostics",
+              "number": 9,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Repository-control rejection regressions",
+              "number": 10,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Prepare native prerequisites",
+              "number": 11,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+              "number": 12,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Expose DotSlash for existing integration tests",
+              "number": 13,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+              "number": 14,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Resolve verified V8 artifacts",
+              "number": 15,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Verify Cargo lock resolution and print exact resolver drift",
+              "number": 16,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Inference owner regressions and streaming digest",
+              "number": 17,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Durable operation and external-effect recovery",
+              "number": 18,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Module lifecycle generations and migration rollback",
+              "number": 19,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Objective and prompt policy convergence",
+              "number": 20,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Converged authority and browser semantics",
+              "number": 21,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Selected-artifact adoption and explicit rollback",
+              "number": 22,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Compiled service lifecycle and actual process restart",
+              "number": 23,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Derived-view drift",
+              "number": 24,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Retain advisory candidate Git transport observation",
+              "number": 25,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Verify unchanged reviewed source",
+              "number": 26,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Retain exact source input on failure for reproducible diagnosis",
+              "number": 27,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Retain command records and bounded stdout stderr",
+              "number": 28,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Check out exact candidate",
+              "number": 56,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 57,
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607052/job/123608937090"
+        }
+      ],
+      "name": "Hepta architecture convergence",
+      "returned_jobs": 2,
+      "roster_complete_at_observation": true,
+      "run_attempt": 1,
+      "status": "in_progress",
+      "total_jobs_at_observation": 2,
+      "updated_at": "2026-10-29T17:15:45Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607052"
+    },
+    {
+      "conclusion": "success",
+      "created_at": "2026-10-29T17:15:39Z",
+      "event": "pull_request",
+      "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+      "id": 40919607077,
+      "jobs": [
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T17:17:15Z",
+          "conclusion": "success",
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123608936643,
+          "name": "metadata",
+          "started_at": "2026-10-29T17:15:42Z",
+          "status": "completed",
+          "steps": [
+            {
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 2,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Set up Python",
+              "number": 3,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Resolve exact v8 crate version",
+              "number": 4,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Detect V8 canary changes",
+              "number": 5,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Check for a clean worktree",
+              "number": 6,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Set up Python",
+              "number": 11,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 12,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 13,
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607077/job/123608936643"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T17:17:15Z",
+          "conclusion": "skipped",
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123609848839,
+          "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+          "started_at": "2026-10-29T17:17:16Z",
+          "status": "completed",
+          "steps": [],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607077/job/123609848839"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T17:17:15Z",
+          "conclusion": "skipped",
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123609848995,
+          "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+          "started_at": "2026-10-29T17:17:16Z",
+          "status": "completed",
+          "steps": [],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607077/job/123609848995"
+        }
+      ],
+      "name": "v8-canary",
+      "returned_jobs": 3,
+      "roster_complete_at_observation": true,
+      "run_attempt": 1,
+      "status": "completed",
+      "total_jobs_at_observation": 3,
+      "updated_at": "2026-10-29T17:17:16Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607077"
+    },
+    {
+      "conclusion": null,
+      "created_at": "2026-10-29T17:15:39Z",
+      "event": "pull_request",
+      "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+      "id": 40919607158,
+      "jobs": [
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T17:19:21Z",
+          "conclusion": "success",
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123610023386,
+          "name": "Select blocking CI scope",
+          "started_at": "2026-10-29T17:17:37Z",
+          "status": "completed",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123610023386"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T17:19:06Z",
+          "conclusion": "failure",
+          "failed_steps": [
+            "Codespell"
+          ],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123610023833,
+          "name": "Codespell / Check for spelling errors",
+          "started_at": "2026-10-29T17:17:37Z",
+          "status": "completed",
+          "steps": [
+            {
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Build codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579",
+              "number": 2,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Checkout",
+              "number": 3,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Annotate locations with typos",
+              "number": 4,
+              "status": "completed"
+            },
+            {
+              "conclusion": "failure",
+              "name": "Codespell",
+              "number": 5,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Check for a clean worktree",
+              "number": 6,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Checkout",
+              "number": 12,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 13,
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123610023833"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T17:19:42Z",
+          "conclusion": "success",
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123610023955,
+          "name": "Blob size policy / Blob size policy",
+          "started_at": "2026-10-29T17:17:37Z",
+          "status": "completed",
+          "steps": [
+            {
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Run openai/fence@e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+              "number": 2,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 3,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Determine comparison range",
+              "number": 4,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Check changed blob sizes",
+              "number": 5,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Check for a clean worktree",
+              "number": 6,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "number": 11,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Run openai/fence@e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+              "number": 12,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 13,
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123610023955"
+        },
+        {
+          "active_steps": [
+            "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611034323,
+          "name": "rust-ci / Detect changed areas",
+          "started_at": "2026-10-29T17:19:25Z",
+          "status": "in_progress",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611034323"
+        },
+        {
+          "active_steps": [
+            "Checkout repository"
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611034453,
+          "name": "repo-checks / build-test",
+          "started_at": "2026-10-29T17:19:25Z",
+          "status": "in_progress",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611034453"
+        },
+        {
+          "active_steps": [
+            "Checkout"
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611034547,
+          "name": "cargo-deny / cargo-deny",
+          "started_at": "2026-10-29T17:19:25Z",
+          "status": "in_progress",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611034547"
+        },
+        {
+          "active_steps": [
+            "Check out repository"
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611034558,
+          "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+          "started_at": "2026-10-29T17:19:25Z",
+          "status": "in_progress",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611034558"
+        },
+        {
+          "active_steps": [
+            "Checkout repository"
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611034564,
+          "name": "repo-checks / Native Hepta paths on windows-latest",
+          "started_at": "2026-10-29T17:19:25Z",
+          "status": "in_progress",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611034564"
+        },
+        {
+          "active_steps": [
+            "Checkout repository"
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611034578,
+          "name": "sdk / sdks",
+          "started_at": "2026-10-29T17:19:26Z",
+          "status": "in_progress",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611034578"
+        },
+        {
+          "active_steps": [
+            "Checkout repository"
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611034607,
+          "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+          "started_at": "2026-10-29T17:19:24Z",
+          "status": "in_progress",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611034607"
+        },
+        {
+          "active_steps": [
+            "Checkout repository"
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611034666,
+          "name": "sdk / python-sdk",
+          "started_at": "2026-10-29T17:19:25Z",
+          "status": "in_progress",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611034666"
+        },
+        {
+          "active_steps": [
+            "Checkout repository"
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611034774,
+          "name": "repo-checks / Native Hepta paths on macos-15",
+          "started_at": "2026-10-29T17:19:26Z",
+          "status": "in_progress",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611034774"
+        },
+        {
+          "active_steps": [
+            "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611035537,
+          "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+          "started_at": "2026-10-29T17:19:28Z",
+          "status": "in_progress",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611035537"
+        },
+        {
+          "active_steps": [
+            "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611035605,
+          "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+          "started_at": "2026-10-29T17:19:27Z",
+          "status": "in_progress",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611035605"
+        },
+        {
+          "active_steps": [
+            "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611035636,
+          "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "started_at": "2026-10-29T17:19:26Z",
+          "status": "in_progress",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611035636"
+        },
+        {
+          "active_steps": [
+            "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611035665,
+          "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+          "started_at": "2026-10-29T17:19:28Z",
+          "status": "in_progress",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611035665"
+        },
+        {
+          "active_steps": [
+            "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611035703,
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+          "started_at": "2026-10-29T17:19:26Z",
+          "status": "in_progress",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611035703"
+        },
+        {
+          "active_steps": [
+            "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611035721,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+          "started_at": "2026-10-29T17:19:27Z",
+          "status": "in_progress",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611035721"
+        },
+        {
+          "active_steps": [
+            "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611035729,
+          "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "started_at": "2026-10-29T17:19:26Z",
+          "status": "in_progress",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611035729"
+        },
+        {
+          "active_steps": [
+            "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611035760,
+          "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+          "started_at": "2026-10-29T17:19:26Z",
+          "status": "in_progress",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611035760"
+        },
+        {
+          "active_steps": [
+            "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611035797,
+          "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+          "started_at": "2026-10-29T17:19:25Z",
+          "status": "in_progress",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611035797"
+        },
+        {
+          "active_steps": [
+            "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611035798,
+          "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+          "started_at": "2026-10-29T17:19:27Z",
+          "status": "in_progress",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611035798"
+        },
+        {
+          "active_steps": [
+            "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611035879,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+          "started_at": "2026-10-29T17:19:26Z",
+          "status": "in_progress",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611035879"
+        },
+        {
+          "active_steps": [
+            "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611035986,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+          "started_at": "2026-10-29T17:19:26Z",
+          "status": "in_progress",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611035986"
+        },
+        {
+          "active_steps": [
+            "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611036011,
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "started_at": "2026-10-29T17:19:26Z",
+          "status": "in_progress",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611036011"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T17:19:21Z",
+          "conclusion": "skipped",
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611036069,
+          "name": "NDU v6 neural rollout smoke",
+          "started_at": "2026-10-29T17:19:22Z",
+          "status": "completed",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611036069"
+        },
+        {
+          "active_steps": [
+            "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+          ],
+          "completed_at": null,
+          "conclusion": null,
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611036080,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+          "started_at": "2026-10-29T17:19:26Z",
+          "status": "in_progress",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611036080"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T17:19:21Z",
+          "conclusion": "skipped",
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611036829,
+          "name": "Hepta scoped native checks",
+          "started_at": "2026-10-29T17:19:22Z",
+          "status": "completed",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611036829"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T17:19:21Z",
+          "conclusion": "skipped",
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611036863,
+          "name": "Lightweight prose and derived checks",
+          "started_at": "2026-10-29T17:19:22Z",
+          "status": "completed",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611036863"
+        },
+        {
+          "active_steps": [],
+          "completed_at": "2026-10-29T17:19:22Z",
+          "conclusion": "skipped",
+          "failed_steps": [],
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "id": 123611039219,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+          "started_at": "2026-10-29T17:19:22Z",
+          "status": "completed",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/job/123611039219"
+        }
+      ],
+      "name": "blocking-ci",
+      "returned_jobs": 30,
+      "roster_complete_at_observation": true,
+      "run_attempt": 1,
+      "status": "in_progress",
+      "total_jobs_at_observation": 30,
+      "updated_at": "2026-10-29T17:19:29Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158"
+    }
+  ]
+}

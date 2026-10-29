@@ -1,0 +1,534 @@
+{
+  "schema": "hepta.research.final-head-ci-observation.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "workflow_status_observed_at_utc": "2026-10-29T17:16:30Z",
+  "identity_and_pull_request_observed_at_utc": "2026-10-29T17:16:55Z",
+  "source_head": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+  "source_tree": "4807ef7e29ed3c0ce091b1233b213b17313746f1",
+  "source_identity_verified_via": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/9b03618be452d264cd7a3778677144ebc9b45fc2",
+  "branch": "research/continuous-boundary-flow-20261028",
+  "pull_request": {
+    "number": 4157,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4157",
+    "state": "open",
+    "draft": true,
+    "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+    "head_ref": "research/continuous-boundary-flow-20261028",
+    "base_sha": "5898cd8b0f724c3152b6cc52856721f72e5e08be",
+    "base_ref": "research/continuous-boundary-frozen-base-5898cd8-20261029",
+    "mergeable": true,
+    "mergeable_state": "unstable"
+  },
+  "workflows": [
+    {
+      "id": 40919607052,
+      "name": "Hepta architecture convergence",
+      "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+      "event": "pull_request",
+      "run_attempt": 1,
+      "status": "in_progress",
+      "conclusion": null,
+      "created_at": "2026-10-29T17:15:39Z",
+      "updated_at": "2026-10-29T17:15:45Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607052",
+      "job_api": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607052/jobs?per_page=100",
+      "total_jobs_at_observation": 2,
+      "returned_jobs": 2,
+      "roster_complete_at_observation": true,
+      "jobs": [
+        {
+          "id": 123608936441,
+          "name": "Architecture convergence (source-head)",
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-10-29T17:15:44Z",
+          "completed_at": null,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607052/job/123608936441",
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 2,
+              "name": "Check out exact candidate",
+              "status": "in_progress",
+              "conclusion": null
+            },
+            {
+              "number": 3,
+              "name": "Fetch exact qualification history",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 4,
+              "name": "Verify GitHub prospective merge ref matches this exact candidate",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 5,
+              "name": "Construct the canonical prospective merge",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 6,
+              "name": "Bind tested identity",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 7,
+              "name": "Select exact-tree native execution",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 8,
+              "name": "Select affected architecture boundaries",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 9,
+              "name": "Test execution-record rejection and retained diagnostics",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 10,
+              "name": "Repository-control rejection regressions",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 11,
+              "name": "Prepare native prerequisites",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 12,
+              "name": "Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 13,
+              "name": "Expose DotSlash for existing integration tests",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 14,
+              "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 15,
+              "name": "Resolve verified V8 artifacts",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 16,
+              "name": "Verify Cargo lock resolution and print exact resolver drift",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 17,
+              "name": "Inference owner regressions and streaming digest",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 18,
+              "name": "Durable operation and external-effect recovery",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 19,
+              "name": "Module lifecycle generations and migration rollback",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 20,
+              "name": "Objective and prompt policy convergence",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 21,
+              "name": "Converged authority and browser semantics",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 22,
+              "name": "Selected-artifact adoption and explicit rollback",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 23,
+              "name": "Compiled service lifecycle and actual process restart",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 24,
+              "name": "Derived-view drift",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 25,
+              "name": "Retain advisory candidate Git transport observation",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 26,
+              "name": "Verify unchanged reviewed source",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 27,
+              "name": "Retain exact source input on failure for reproducible diagnosis",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 28,
+              "name": "Retain command records and bounded stdout stderr",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 56,
+              "name": "Post Check out exact candidate",
+              "status": "pending",
+              "conclusion": null
+            }
+          ]
+        },
+        {
+          "id": 123608937090,
+          "name": "Architecture convergence (base-merge)",
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-10-29T17:15:45Z",
+          "completed_at": null,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607052/job/123608937090",
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 2,
+              "name": "Check out exact candidate",
+              "status": "in_progress",
+              "conclusion": null
+            },
+            {
+              "number": 3,
+              "name": "Fetch exact qualification history",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 4,
+              "name": "Verify GitHub prospective merge ref matches this exact candidate",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 5,
+              "name": "Construct the canonical prospective merge",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 6,
+              "name": "Bind tested identity",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 7,
+              "name": "Select exact-tree native execution",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 8,
+              "name": "Select affected architecture boundaries",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 9,
+              "name": "Test execution-record rejection and retained diagnostics",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 10,
+              "name": "Repository-control rejection regressions",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 11,
+              "name": "Prepare native prerequisites",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 12,
+              "name": "Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 13,
+              "name": "Expose DotSlash for existing integration tests",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 14,
+              "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 15,
+              "name": "Resolve verified V8 artifacts",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 16,
+              "name": "Verify Cargo lock resolution and print exact resolver drift",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 17,
+              "name": "Inference owner regressions and streaming digest",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 18,
+              "name": "Durable operation and external-effect recovery",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 19,
+              "name": "Module lifecycle generations and migration rollback",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 20,
+              "name": "Objective and prompt policy convergence",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 21,
+              "name": "Converged authority and browser semantics",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 22,
+              "name": "Selected-artifact adoption and explicit rollback",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 23,
+              "name": "Compiled service lifecycle and actual process restart",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 24,
+              "name": "Derived-view drift",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 25,
+              "name": "Retain advisory candidate Git transport observation",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 26,
+              "name": "Verify unchanged reviewed source",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 27,
+              "name": "Retain exact source input on failure for reproducible diagnosis",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 28,
+              "name": "Retain command records and bounded stdout stderr",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 56,
+              "name": "Post Check out exact candidate",
+              "status": "pending",
+              "conclusion": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 40919607077,
+      "name": "v8-canary",
+      "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+      "event": "pull_request",
+      "run_attempt": 1,
+      "status": "in_progress",
+      "conclusion": null,
+      "created_at": "2026-10-29T17:15:39Z",
+      "updated_at": "2026-10-29T17:15:43Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607077",
+      "job_api": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607077/jobs?per_page=100",
+      "total_jobs_at_observation": 1,
+      "returned_jobs": 1,
+      "roster_complete_at_observation": true,
+      "jobs": [
+        {
+          "id": 123608936643,
+          "name": "metadata",
+          "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+          "status": "in_progress",
+          "conclusion": null,
+          "started_at": "2026-10-29T17:15:42Z",
+          "completed_at": null,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607077/job/123608936643",
+          "steps": [
+            {
+              "number": 1,
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "number": 2,
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "status": "in_progress",
+              "conclusion": null
+            },
+            {
+              "number": 3,
+              "name": "Set up Python",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 4,
+              "name": "Resolve exact v8 crate version",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 5,
+              "name": "Detect V8 canary changes",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 6,
+              "name": "Check for a clean worktree",
+              "status": "pending",
+              "conclusion": null
+            },
+            {
+              "number": 12,
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "status": "pending",
+              "conclusion": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 40919607158,
+      "name": "blocking-ci",
+      "head_sha": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+      "event": "pull_request",
+      "run_attempt": 1,
+      "status": "pending",
+      "conclusion": null,
+      "created_at": "2026-10-29T17:15:39Z",
+      "updated_at": "2026-10-29T17:15:40Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158",
+      "job_api": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/40919607158/jobs?per_page=100",
+      "total_jobs_at_observation": 0,
+      "returned_jobs": 0,
+      "roster_complete_at_observation": true,
+      "jobs": []
+    }
+  ],
+  "codespell": {
+    "job_present_at_observation": false,
+    "execution_observed": false,
+    "conclusion": null,
+    "remaining_baseline_text_findings": null,
+    "remaining_new_text_findings": null,
+    "reason": "The exact-head blocking workflow was pending and had no generated jobs. No Codespell execution or finding count was available."
+  },
+  "interpretation": {
+    "exact_head_verified": true,
+    "architecture_completed_successfully": false,
+    "blocking_ci_completed_successfully": false,
+    "overall_pass_claimed": false,
+    "all_repository_qualification_claimed": false,
+    "previous_head_results_reused": false,
+    "scope": "Read-only snapshot of these exact runs at the recorded observation times. Success on an earlier head is not used as evidence of success for this head."
+  },
+  "monitor_actions": {
+    "workflow_dispatches": 0,
+    "workflow_reruns": 0,
+    "workflow_cancellations": 0,
+    "repository_source_edits": 0,
+    "workflow_configuration_edits": 0,
+    "output_inside_research_repository": false
+  },
+  "limits": [
+    "Workflow and job states can change after this snapshot.",
+    "A pending workflow with zero generated jobs is not a completed check.",
+    "PR mergeable=true describes Git mergeability and does not establish CI success.",
+    "The receipt is stored outside the research repository to avoid changing the validated research head."
+  ]
+}

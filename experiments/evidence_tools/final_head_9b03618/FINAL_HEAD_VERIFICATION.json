@@ -1,0 +1,3411 @@
+{
+  "base": "5898cd8b0f724c3152b6cc52856721f72e5e08be",
+  "blob_size": {
+    "all_changed_blob_names_and_sizes_in_log": true,
+    "allowlisted_files": [],
+    "changed_files_checked": 972,
+    "checker_and_policy_files": [
+      {
+        "bytes": 1682,
+        "path": ".github/workflows/blob-size-policy.yml",
+        "sha256": "f0860d9723edf6d6a0a701bac787582c7998fd920eb91b23de4288b30ac5a53a"
+      },
+      {
+        "bytes": 5340,
+        "path": "scripts/check_blob_size.py",
+        "sha256": "a6a66ffc6c1fe7f52092c96e746725de38a7ea8a2bb4d7fd7f4c825b778c14c9"
+      },
+      {
+        "bytes": 471,
+        "path": ".github/blob-size-allowlist.txt",
+        "sha256": "bb867bc531c86f5341a031698e16b4e5a4a0d31f7d8f4cc5ff26e101d84f9d75"
+      }
+    ],
+    "command": [
+      "python3",
+      "scripts/check_blob_size.py",
+      "--base",
+      "5898cd8b0f724c3152b6cc52856721f72e5e08be",
+      "--head",
+      "9b03618be452d264cd7a3778677144ebc9b45fc2",
+      "--max-bytes",
+      "512000",
+      "--allowlist",
+      ".github/blob-size-allowlist.txt"
+    ],
+    "github_step_summary_disabled_only_to_keep_output_outside_repository": true,
+    "inclusive_child_cpu": {
+      "system_seconds": 3.263756,
+      "total_seconds": 6.827439999999999,
+      "user_seconds": 3.563684
+    },
+    "largest_ordinary_blob_bytes": 480000,
+    "max_bytes": 512000,
+    "return_code": 0,
+    "violations": [],
+    "wall_seconds": 7.29967133399623
+  },
+  "cost": {
+    "child_peak_rss_kib": 15520,
+    "hardware_energy_measured": false,
+    "inclusive_completed_child_cpu": {
+      "system_seconds": 3.309902,
+      "total_seconds": 6.9295670000000005,
+      "user_seconds": 3.619665
+    },
+    "scope": "Verification body after imports through finalized log hash, before final JSON serialization. Child CPU includes actual checker and its Git children plus separate read-only Git calls. Listed phase clocks and checker child CPU are included subsets; do not add them again.",
+    "wall_seconds": 7.558698177002952,
+    "wrapper_peak_rss_kib": 15520,
+    "wrapper_python_cpu_seconds": 0.158643016
+  },
+  "derived_manifests": [
+    {
+      "historical_missing_raw_inputs_not_reaudited": true,
+      "manifest": {
+        "bytes": 8470,
+        "path": "experiments/continuous_boundary_policy/results/DERIVED_MANIFEST.json",
+        "sha256": "e86070b42de4867e7103a3a835240bacfafd6f468ab33e05f40679e8ab51f01b"
+      },
+      "schema": "hepta.continuous-boundary-policy.mechanical-analysis.v1",
+      "verified_outputs": [
+        {
+          "bytes": 17309,
+          "expected": {
+            "bytes": 17309,
+            "sha256": "7df57ac2161b151bc2b8312c4d3824b6141d270f0fa237be256487617e87b4c4"
+          },
+          "path": "experiments/continuous_boundary_policy/results/ARM_COSTS.json",
+          "sha256": "7df57ac2161b151bc2b8312c4d3824b6141d270f0fa237be256487617e87b4c4",
+          "verified": true
+        },
+        {
+          "bytes": 25772,
+          "expected": {
+            "bytes": 25772,
+            "sha256": "a90d7d22bd75d15dff376d078922bfdba7909019033548d665f970ba12a26a6d"
+          },
+          "path": "experiments/continuous_boundary_policy/results/ARM_METRICS.json",
+          "sha256": "a90d7d22bd75d15dff376d078922bfdba7909019033548d665f970ba12a26a6d",
+          "verified": true
+        },
+        {
+          "bytes": 198475,
+          "expected": {
+            "bytes": 198475,
+            "sha256": "6b97428559757a82dce9e15dad4ee2cd3a628aae37b903e38900ca96a9706c17"
+          },
+          "path": "experiments/continuous_boundary_policy/results/AUDIT_SUMMARY.json",
+          "sha256": "6b97428559757a82dce9e15dad4ee2cd3a628aae37b903e38900ca96a9706c17",
+          "verified": true
+        },
+        {
+          "bytes": 25605,
+          "expected": {
+            "bytes": 25605,
+            "sha256": "6cd3859eaa2bec54559edb65f01955650399e0a65ae3df3b474fae58fb09349e"
+          },
+          "path": "experiments/continuous_boundary_policy/results/ENGINEERING_SUMMARY.json",
+          "sha256": "6cd3859eaa2bec54559edb65f01955650399e0a65ae3df3b474fae58fb09349e",
+          "verified": true
+        },
+        {
+          "bytes": 2642,
+          "expected": {
+            "bytes": 2642,
+            "sha256": "74c9c2f8ffa19719809b8c2e7a958bd00f98b56d14dc5af4e414ac4faeae9a28"
+          },
+          "path": "experiments/continuous_boundary_policy/results/PRIMARY_COMPARISONS.json",
+          "sha256": "74c9c2f8ffa19719809b8c2e7a958bd00f98b56d14dc5af4e414ac4faeae9a28",
+          "verified": true
+        },
+        {
+          "bytes": 20638,
+          "expected": {
+            "bytes": 20638,
+            "sha256": "0fd3eee8dabb7b686760b14282f4abdee1b803cc374eacdcc7837a765bc82abe"
+          },
+          "path": "experiments/continuous_boundary_policy/results/RESULTS.zh.md",
+          "sha256": "0fd3eee8dabb7b686760b14282f4abdee1b803cc374eacdcc7837a765bc82abe",
+          "verified": true
+        },
+        {
+          "bytes": 1421,
+          "expected": {
+            "bytes": 1421,
+            "sha256": "d84407ebfb6773ed9b72d59fc55dd892d369fdc00804753ecb9874e1614b03aa"
+          },
+          "path": "experiments/continuous_boundary_policy/results/SHARED_SOLVER_COSTS.json",
+          "sha256": "d84407ebfb6773ed9b72d59fc55dd892d369fdc00804753ecb9874e1614b03aa",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "historical_missing_raw_inputs_not_reaudited": false,
+      "manifest": {
+        "bytes": 2491,
+        "path": "experiments/continuous_boundary_policy_reproduction/results/DERIVED_MANIFEST.json",
+        "sha256": "03cfdaa50970a3059eaa7036e7b1a6542f357527e53ef4c2a8f3be9ece0a099e"
+      },
+      "schema": "hepta.boundary-policy-reproduction.derived-manifest.v1",
+      "verified_outputs": [
+        {
+          "bytes": 3816,
+          "expected": {
+            "bytes": 3816,
+            "sha256": "4ba849bed27fb6bfa4a53525ba1e47f5fea07147ca8f0e4e7cf0108dd12134c7"
+          },
+          "path": "experiments/continuous_boundary_policy_reproduction/README.md",
+          "sha256": "4ba849bed27fb6bfa4a53525ba1e47f5fea07147ca8f0e4e7cf0108dd12134c7",
+          "verified": true
+        },
+        {
+          "bytes": 22875,
+          "expected": {
+            "bytes": 22875,
+            "sha256": "3e939e049947be7835c390f90cf7b08a7465fc3ab7f80ef37a05036f89d6d78b"
+          },
+          "path": "experiments/continuous_boundary_policy_reproduction/REPORT.zh.md",
+          "sha256": "3e939e049947be7835c390f90cf7b08a7465fc3ab7f80ef37a05036f89d6d78b",
+          "verified": true
+        },
+        {
+          "bytes": 14333,
+          "expected": {
+            "bytes": 14333,
+            "sha256": "8bf8567ef1747e3e7131fea7ced70d1205afb782fc6bfb2f25a17a44f826e19b"
+          },
+          "path": "experiments/continuous_boundary_policy_reproduction/REPRODUCE.md",
+          "sha256": "8bf8567ef1747e3e7131fea7ced70d1205afb782fc6bfb2f25a17a44f826e19b",
+          "verified": true
+        },
+        {
+          "bytes": 111746,
+          "expected": {
+            "bytes": 111746,
+            "sha256": "18b199096af9c326acc42bb245c6395f66c21be10283d84905be3e3f8b0b70c9"
+          },
+          "path": "experiments/continuous_boundary_policy_reproduction/results/ARM_SUMMARIES.json",
+          "sha256": "18b199096af9c326acc42bb245c6395f66c21be10283d84905be3e3f8b0b70c9",
+          "verified": true
+        },
+        {
+          "bytes": 336824,
+          "expected": {
+            "bytes": 336824,
+            "sha256": "c64ad89feb4b0bd785bed9117ce964b77d4127af23927d6c5558aa1cd99ae023"
+          },
+          "path": "experiments/continuous_boundary_policy_reproduction/results/AUDIT_SUMMARY.json",
+          "sha256": "c64ad89feb4b0bd785bed9117ce964b77d4127af23927d6c5558aa1cd99ae023",
+          "verified": true
+        },
+        {
+          "bytes": 30505,
+          "expected": {
+            "bytes": 30505,
+            "sha256": "0e54e468dab25f30fd113ad538fd6225bb830b655bf91a1242ded6aea93e6d72"
+          },
+          "path": "experiments/continuous_boundary_policy_reproduction/results/COST_SUMMARY.json",
+          "sha256": "0e54e468dab25f30fd113ad538fd6225bb830b655bf91a1242ded6aea93e6d72",
+          "verified": true
+        },
+        {
+          "bytes": 56813,
+          "expected": {
+            "bytes": 56813,
+            "sha256": "ccdaebdcd81619a90069fcaf1c7dd5a0d4874979afaabb3f7a1152b16c924179"
+          },
+          "path": "experiments/continuous_boundary_policy_reproduction/results/ENGINEERING_SUMMARY.json",
+          "sha256": "ccdaebdcd81619a90069fcaf1c7dd5a0d4874979afaabb3f7a1152b16c924179",
+          "verified": true
+        },
+        {
+          "bytes": 4299,
+          "expected": {
+            "bytes": 4299,
+            "sha256": "8c078bc61a4c7b040665dd3c3d4ce25af89405f62ad831c4ee42ca9b4a81bf2e"
+          },
+          "path": "experiments/continuous_boundary_policy_reproduction/results/PRIMARY_COMPARISONS.json",
+          "sha256": "8c078bc61a4c7b040665dd3c3d4ce25af89405f62ad831c4ee42ca9b4a81bf2e",
+          "verified": true
+        },
+        {
+          "bytes": 48704,
+          "expected": {
+            "bytes": 48704,
+            "sha256": "cbd7276aa684eb9163042f3e6f510e8e51181f628e5a0f0a7782b20421226090"
+          },
+          "path": "experiments/continuous_boundary_policy_reproduction/results/REPRODUCTION_COMPARISON.json",
+          "sha256": "cbd7276aa684eb9163042f3e6f510e8e51181f628e5a0f0a7782b20421226090",
+          "verified": true
+        }
+      ]
+    }
+  ],
+  "documented_python_commands": {
+    "commands": [
+      {
+        "command": "python experiments/evidence_tools/public_archive_retrieve.py    --commit \"$HEPTA_READOUT_PUBLIC_COMMIT\"    --package native_readout_objective    --index-sha256 1806fefb03898682c9ce4599a9b74da899552c92ddd2d658bc85e9875e57cf52    --output \"$HEPTA_PUBLIC_ROOT/readout\"",
+        "document": "experiments/evidence_tools/README.md",
+        "unknown_options": []
+      },
+      {
+        "command": "python experiments/evidence_tools/public_archive_retrieve.py    --commit \"$HEPTA_REPRO_PUBLIC_COMMIT\"    --package continuous_boundary_policy_reproduction    --index-sha256 adfda2870eaf807df3d47fceb9cc64207b1c854cd6a904536b22d26fad963b73    --output \"$HEPTA_PUBLIC_ROOT/policy-reproduction\"",
+        "document": "experiments/evidence_tools/README.md",
+        "unknown_options": []
+      },
+      {
+        "command": "python -m experiments.native_readout_objective.audit    \"$HEPTA_PUBLIC_ROOT/readout/study\"    --repository \"$PWD\"    --output \"$HEPTA_PUBLIC_ROOT/readout-recomputed-audit.json\"",
+        "document": "experiments/evidence_tools/README.md",
+        "unknown_options": []
+      },
+      {
+        "command": "python -m experiments.continuous_boundary_policy_reproduction.audit confirmation    --study \"$HEPTA_PUBLIC_ROOT/policy-reproduction/study\"    --native-binary \"$HEPTA_PUBLIC_ROOT/policy-reproduction/engineering/bin/continuous_host\"    --score-binary \"$HEPTA_PUBLIC_ROOT/policy-reproduction/engineering/bin/boundary_policy_score_host\"    --output \"$HEPTA_PUBLIC_ROOT/policy-reproduction-recomputed-audit.json\"",
+        "document": "experiments/evidence_tools/README.md",
+        "unknown_options": []
+      },
+      {
+        "command": "python -m experiments.continuous_boundary_flow.evidence_bundle unpack    --bundle-dir experiments/continuous_boundary_policy_reproduction/preflight/runtime_evidence    --output-dir \"$HEPTA_READOUT_RUNTIME\"",
+        "document": "experiments/native_readout_objective/REPRODUCE.md",
+        "unknown_options": []
+      },
+      {
+        "command": "python -m experiments.continuous_boundary_flow.evidence_bundle unpack    --bundle-dir experiments/native_readout_objective/evidence/bundle    --output-dir \"$HEPTA_READOUT_RESTORED\"",
+        "document": "experiments/native_readout_objective/REPRODUCE.md",
+        "unknown_options": []
+      },
+      {
+        "command": "python -m experiments.native_readout_objective.audit    \"$HEPTA_READOUT_RESTORED/study\"    --repository \"$PWD\"    --output /tmp/hepta-readout-recomputed-audit.json",
+        "document": "experiments/native_readout_objective/REPRODUCE.md",
+        "unknown_options": []
+      },
+      {
+        "command": "python -m experiments.native_readout_objective.engineering    --run \"$HEPTA_READOUT_RESTORED/study\"    --native-binary \"$HEPTA_READOUT_RESTORED/engineering/bin/continuous_host\"    --output /tmp/hepta-readout-owner-replayed",
+        "document": "experiments/native_readout_objective/REPRODUCE.md",
+        "unknown_options": []
+      },
+      {
+        "command": "python -m experiments.native_readout_objective.study initialize    --output \"$HEPTA_READOUT_RUN\"    --native-binary \"$HEPTA_READOUT_NATIVE\"    --publication-commit \"$HEPTA_READOUT_SOURCE_COMMIT\"",
+        "document": "experiments/native_readout_objective/REPRODUCE.md",
+        "unknown_options": []
+      },
+      {
+        "command": "python -m experiments.native_readout_objective.study train    --output \"$HEPTA_READOUT_RUN\"    --native-binary \"$HEPTA_READOUT_NATIVE\"",
+        "document": "experiments/native_readout_objective/REPRODUCE.md",
+        "unknown_options": []
+      },
+      {
+        "command": "python -m experiments.native_readout_objective.audit    \"$HEPTA_READOUT_RUN\" --repository \"$PWD\" --selection-only    --output /tmp/hepta-readout-new-preconfirmation-audit.json",
+        "document": "experiments/native_readout_objective/REPRODUCE.md",
+        "unknown_options": []
+      },
+      {
+        "command": "python -m experiments.native_readout_objective.study confirm    --output \"$HEPTA_READOUT_RUN\"    --native-binary \"$HEPTA_READOUT_NATIVE\"    --publication-commit \"$HEPTA_READOUT_SELECTION_COMMIT\"",
+        "document": "experiments/native_readout_objective/REPRODUCE.md",
+        "unknown_options": []
+      },
+      {
+        "command": "python -m experiments.native_readout_objective.audit    \"$HEPTA_READOUT_RUN\" --repository \"$PWD\"    --output /tmp/hepta-readout-new-confirmation-audit.json",
+        "document": "experiments/native_readout_objective/REPRODUCE.md",
+        "unknown_options": []
+      },
+      {
+        "command": "python -m experiments.native_readout_objective.engineering    --run \"$HEPTA_READOUT_RUN\" --native-binary \"$HEPTA_READOUT_NATIVE\"    --output /tmp/hepta-readout-new-owner",
+        "document": "experiments/native_readout_objective/REPRODUCE.md",
+        "unknown_options": []
+      },
+      {
+        "command": "python -m experiments.continuous_boundary_flow.evidence_bundle unpack    --bundle-dir experiments/continuous_boundary_policy_reproduction/preflight/runtime_evidence    --output-dir \"$HEPTA_POLICY_REPRO_RUNTIME\"",
+        "document": "experiments/continuous_boundary_policy_reproduction/REPRODUCE.md",
+        "unknown_options": []
+      },
+      {
+        "command": "python -m experiments.continuous_boundary_policy_reproduction.build_score    --repository /absolute/repository    --native-build /absolute/verified-native-build    --output-dir /absolute/new-score-build-receipt    --compiler /absolute/pinned-rust-toolchain/bin",
+        "document": "experiments/continuous_boundary_policy_reproduction/REPRODUCE.md",
+        "unknown_options": []
+      },
+      {
+        "command": "python -m experiments.continuous_boundary_flow.evidence_bundle unpack    --bundle-dir experiments/continuous_boundary_policy_reproduction/evidence/bundle    --output-dir \"$HEPTA_POLICY_REPRO_RESTORED\"",
+        "document": "experiments/continuous_boundary_policy_reproduction/REPRODUCE.md",
+        "unknown_options": []
+      },
+      {
+        "command": "python -m experiments.continuous_boundary_policy_reproduction.audit confirmation    --study \"$HEPTA_POLICY_REPRO_RESTORED/study\"    --native-binary \"$HEPTA_POLICY_REPRO_RESTORED/engineering/bin/continuous_host\"    --score-binary \"$HEPTA_POLICY_REPRO_RESTORED/engineering/bin/boundary_policy_score_host\"    --output /tmp/hepta-policy-reproduction-recomputed-audit.json",
+        "document": "experiments/continuous_boundary_policy_reproduction/REPRODUCE.md",
+        "unknown_options": []
+      },
+      {
+        "command": "python -m experiments.continuous_boundary_policy.engineering    --study \"$HEPTA_POLICY_REPRO_RESTORED/study\"    --score-binary \"$HEPTA_POLICY_REPRO_RESTORED/engineering/bin/boundary_policy_score_host\"    --output /tmp/hepta-policy-reproduction-engineering-replayed    --ticks 8192 --checkpoint-interval 1024 --replay-ticks 16 --warm-ticks 4096",
+        "document": "experiments/continuous_boundary_policy_reproduction/REPRODUCE.md",
+        "unknown_options": []
+      },
+      {
+        "command": "python -m experiments.continuous_boundary_policy_reproduction.study initialize    --output \"$HEPTA_POLICY_REPRO_RUN\"    --native-binary \"$HEPTA_POLICY_REPRO_NATIVE\"    --score-binary \"$HEPTA_POLICY_REPRO_SCORE\"    --publication-commit \"$HEPTA_POLICY_REPRO_SOURCE_COMMIT\"",
+        "document": "experiments/continuous_boundary_policy_reproduction/REPRODUCE.md",
+        "unknown_options": []
+      },
+      {
+        "command": "python -m experiments.continuous_boundary_policy_reproduction.study train    --output \"$HEPTA_POLICY_REPRO_RUN\"    --native-binary \"$HEPTA_POLICY_REPRO_NATIVE\"    --score-binary \"$HEPTA_POLICY_REPRO_SCORE\"",
+        "document": "experiments/continuous_boundary_policy_reproduction/REPRODUCE.md",
+        "unknown_options": []
+      },
+      {
+        "command": "python -m experiments.continuous_boundary_policy_reproduction.audit preconfirmation    --study \"$HEPTA_POLICY_REPRO_RUN\"    --native-binary \"$HEPTA_POLICY_REPRO_NATIVE\"    --score-binary \"$HEPTA_POLICY_REPRO_SCORE\"    --output /tmp/hepta-policy-reproduction-new-preconfirmation-audit.json",
+        "document": "experiments/continuous_boundary_policy_reproduction/REPRODUCE.md",
+        "unknown_options": []
+      },
+      {
+        "command": "python -m experiments.continuous_boundary_policy_reproduction.study confirm    --output \"$HEPTA_POLICY_REPRO_RUN\"    --native-binary \"$HEPTA_POLICY_REPRO_NATIVE\"    --score-binary \"$HEPTA_POLICY_REPRO_SCORE\"    --publication-commit \"$HEPTA_POLICY_REPRO_SELECTION_COMMIT\"",
+        "document": "experiments/continuous_boundary_policy_reproduction/REPRODUCE.md",
+        "unknown_options": []
+      },
+      {
+        "command": "python -m experiments.continuous_boundary_policy_reproduction.audit confirmation    --study \"$HEPTA_POLICY_REPRO_RUN\"    --native-binary \"$HEPTA_POLICY_REPRO_NATIVE\"    --score-binary \"$HEPTA_POLICY_REPRO_SCORE\"    --output /tmp/hepta-policy-reproduction-new-confirmation-audit.json",
+        "document": "experiments/continuous_boundary_policy_reproduction/REPRODUCE.md",
+        "unknown_options": []
+      },
+      {
+        "command": "python -m experiments.continuous_boundary_policy.engineering    --study \"$HEPTA_POLICY_REPRO_RUN\"    --score-binary \"$HEPTA_POLICY_REPRO_SCORE\"    --output /tmp/hepta-policy-reproduction-new-engineering    --ticks 8192 --checkpoint-interval 1024 --replay-ticks 16 --warm-ticks 4096",
+        "document": "experiments/continuous_boundary_policy_reproduction/REPRODUCE.md",
+        "unknown_options": []
+      }
+    ],
+    "count": 25,
+    "scope": "Static argparse option compatibility only; no scientific or engineering command was executed."
+  },
+  "expected_head": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+  "expected_tree": "4807ef7e29ed3c0ce091b1233b213b17313746f1",
+  "failures": [],
+  "final_repository": {
+    "clean": true,
+    "head": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+    "status": "",
+    "tree": "4807ef7e29ed3c0ce091b1233b213b17313746f1"
+  },
+  "finished_at_utc": "2026-10-29T17:18:51.015625+00:00",
+  "frozen_base_is_ancestor": true,
+  "initial_repository": {
+    "clean": true,
+    "head": "9b03618be452d264cd7a3778677144ebc9b45fc2",
+    "status": "",
+    "tree": "4807ef7e29ed3c0ce091b1233b213b17313746f1"
+  },
+  "log": {
+    "bytes": 112298,
+    "path": "/workspace/scratch/0b931bb7b314/hepta-final-head-verification-20261029.log",
+    "sha256": "eb24a025e3a84a4e8f66e9ec76e9523f116cc36b0e684b4c2f7faf7b0968ef70"
+  },
+  "markdown_links": {
+    "document_count": 10,
+    "documented_historical_gaps": [
+      {
+        "document": "experiments/continuous_boundary_policy/REPRODUCE.md",
+        "documented_historical_gap": true,
+        "exists": false,
+        "target": "evidence/ROUNDTRIP.json"
+      }
+    ],
+    "documents": [
+      {
+        "file": {
+          "bytes": 33222,
+          "path": "experiments/RESEARCH_DELIVERY_2026-10-29.zh.md",
+          "sha256": "60737cd4b1e1db2d9e5b28159b368a917fb3ac1e3ae9b9b8b77696db47e2f13d"
+        },
+        "relative_file_links": [
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/REPORT.zh.md"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/REPORT.zh.md"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/REPRODUCTION_COMPARISON.json"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/results/PRIMARY_COMPARISON.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/PROTOCOL.json"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/PROTOCOL.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy/features.py"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/REPORT.zh.md"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/REPORT.zh.md"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/REPORT.zh.md"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/PROTOCOL.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/ARM_SUMMARIES.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/PRIMARY_COMPARISONS.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/PRIMARY_COMPARISONS.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy/features.py"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/PRIMARY_COMPARISONS.json"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/PROTOCOL.json"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/results/PRIMARY_COMPARISON.json"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/results/ARM_SUMMARIES.json"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/results/COMMON_STATE_PANEL.json"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/results/AUDIT_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/ARM_SUMMARIES.json"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/results/ARM_SUMMARIES.json"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/results/OWNER_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/ENGINEERING_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/results/COST_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/COST_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/results/COST_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/COST_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/results/DELIVERY_PROVENANCE.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/DELIVERY_PROVENANCE.json"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/results/AUDIT_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/AUDIT_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/evidence/bundle/INDEX.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/evidence/bundle/INDEX.json"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/results/PUBLIC_RETRIEVAL.json"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/results/PUBLIC_FILE_VERIFY.jsonl.gz"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/results/PUBLIC_ROUNDTRIP_AUDIT.json"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/results/PUBLIC_ROUNDTRIP_FILES.json"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/results/PUBLIC_ROUNDTRIP_COST.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/PUBLIC_RETRIEVAL.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/PUBLIC_FILE_VERIFY.jsonl.gz"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/PUBLIC_ROUNDTRIP_AUDIT.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/PUBLIC_ROUNDTRIP_FILES.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/PUBLIC_ROUNDTRIP_COST.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/preflight/runtime_evidence/INDEX.json"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/RECOVERY_STATUS.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/REPRODUCTION_COMPARISON.json"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/REPRODUCE.md"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/REPRODUCE.md"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/results/CI_RUN_B244.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/CODESPELL_CONFIG_VALIDATION.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/CODESPELL_NEW_TEXT_LINT.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/DELIVERY_FINAL_LINT.json"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/results/PUBLIC_RETRIEVAL.json"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/results/PUBLIC_FILE_VERIFY.jsonl.gz"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/results/PUBLIC_ROUNDTRIP_AUDIT.json"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/results/PUBLIC_ROUNDTRIP_FILES.json"
+          },
+          {
+            "exists": true,
+            "target": "native_readout_objective/results/PUBLIC_ROUNDTRIP_COST.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/PUBLIC_RETRIEVAL.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/PUBLIC_FILE_VERIFY.jsonl.gz"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/PUBLIC_ROUNDTRIP_AUDIT.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/PUBLIC_ROUNDTRIP_FILES.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/PUBLIC_ROUNDTRIP_COST.json"
+          },
+          {
+            "exists": true,
+            "target": "evidence_tools/ARCHIVE_PUBLICATION.json"
+          },
+          {
+            "exists": true,
+            "target": "evidence_tools/FORMAT_EQUIVALENCE.json"
+          },
+          {
+            "exists": true,
+            "target": "continuous_boundary_policy_reproduction/results/DELIVERY_FINAL_LINT.json"
+          }
+        ]
+      },
+      {
+        "file": {
+          "bytes": 20749,
+          "path": "experiments/continuous_boundary_policy/REPORT.zh.md",
+          "sha256": "775e4e11aeb500157cb57296e9c48d2ba378ce7ff7d892b8c3af8c74888fbfcb"
+        },
+        "relative_file_links": [
+          {
+            "exists": true,
+            "target": "../native_readout_objective/RECOVERY_STATUS.json"
+          },
+          {
+            "exists": true,
+            "target": "../continuous_boundary_policy_reproduction/REPORT.zh.md"
+          },
+          {
+            "exists": true,
+            "target": "../continuous_boundary_policy_reproduction/results/PUBLIC_RETRIEVAL.json"
+          },
+          {
+            "exists": true,
+            "target": "../continuous_boundary_policy_reproduction/REPRODUCE.md"
+          },
+          {
+            "exists": true,
+            "target": "REPRODUCE.md"
+          }
+        ]
+      },
+      {
+        "file": {
+          "bytes": 11922,
+          "path": "experiments/continuous_boundary_policy/REPRODUCE.md",
+          "sha256": "7d1fa714a6f1f875dc1f9d698aa29b6dcf04190c1943bb6f30e17188b8e16024"
+        },
+        "relative_file_links": [
+          {
+            "exists": true,
+            "target": "../native_readout_objective/RECOVERY_STATUS.json"
+          },
+          {
+            "exists": true,
+            "target": "../continuous_boundary_policy_reproduction/REPORT.zh.md"
+          },
+          {
+            "exists": true,
+            "target": "../continuous_boundary_policy_reproduction/results/PUBLIC_RETRIEVAL.json"
+          },
+          {
+            "exists": true,
+            "target": "../continuous_boundary_policy_reproduction/REPRODUCE.md"
+          },
+          {
+            "exists": true,
+            "target": "README.md"
+          },
+          {
+            "exists": true,
+            "target": "REPORT.zh.md"
+          },
+          {
+            "exists": true,
+            "target": "results/RESULTS.zh.md"
+          },
+          {
+            "documented_historical_gap": true,
+            "exists": false,
+            "target": "evidence/ROUNDTRIP.json"
+          },
+          {
+            "exists": true,
+            "target": "../continuous_boundary_flow/native/README.md"
+          }
+        ]
+      },
+      {
+        "file": {
+          "bytes": 3816,
+          "path": "experiments/continuous_boundary_policy_reproduction/README.md",
+          "sha256": "4ba849bed27fb6bfa4a53525ba1e47f5fea07147ca8f0e4e7cf0108dd12134c7"
+        },
+        "relative_file_links": [
+          {
+            "exists": true,
+            "target": "REPORT.zh.md"
+          },
+          {
+            "exists": true,
+            "target": "REPRODUCE.md"
+          },
+          {
+            "exists": true,
+            "target": "REPRODUCTION_PLAN.json"
+          },
+          {
+            "exists": true,
+            "target": "PROTOCOL.json"
+          },
+          {
+            "exists": true,
+            "target": "results/AUDIT_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/PRIMARY_COMPARISONS.json"
+          },
+          {
+            "exists": true,
+            "target": "results/ARM_SUMMARIES.json"
+          },
+          {
+            "exists": true,
+            "target": "results/COST_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/ENGINEERING_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/REPRODUCTION_COMPARISON.json"
+          },
+          {
+            "exists": true,
+            "target": "results/PUBLIC_RETRIEVAL.json"
+          },
+          {
+            "exists": true,
+            "target": "results/PUBLIC_FILE_VERIFY.jsonl.gz"
+          },
+          {
+            "exists": true,
+            "target": "results/PUBLIC_ROUNDTRIP_AUDIT.json"
+          },
+          {
+            "exists": true,
+            "target": "results/PUBLIC_ROUNDTRIP_FILES.json"
+          },
+          {
+            "exists": true,
+            "target": "results/PUBLIC_ROUNDTRIP_COST.json"
+          },
+          {
+            "exists": true,
+            "target": "REPRODUCE.md"
+          },
+          {
+            "exists": true,
+            "target": "../RESEARCH_DELIVERY_2026-10-29.zh.md"
+          }
+        ]
+      },
+      {
+        "file": {
+          "bytes": 22875,
+          "path": "experiments/continuous_boundary_policy_reproduction/REPORT.zh.md",
+          "sha256": "3e939e049947be7835c390f90cf7b08a7465fc3ab7f80ef37a05036f89d6d78b"
+        },
+        "relative_file_links": [
+          {
+            "exists": true,
+            "target": "REPRODUCTION_PLAN.json"
+          },
+          {
+            "exists": true,
+            "target": "results/REPRODUCTION_COMPARISON.json"
+          },
+          {
+            "exists": true,
+            "target": "../native_readout_objective/README.zh.md"
+          },
+          {
+            "exists": true,
+            "target": "results/AUDIT_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/PRIMARY_COMPARISONS.json"
+          },
+          {
+            "exists": true,
+            "target": "../continuous_boundary_policy/features.py"
+          },
+          {
+            "exists": true,
+            "target": "results/ARM_SUMMARIES.json"
+          },
+          {
+            "exists": true,
+            "target": "PROTOCOL.json"
+          },
+          {
+            "exists": true,
+            "target": "../continuous_boundary_policy/features.py"
+          },
+          {
+            "exists": true,
+            "target": "results/COST_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/ENGINEERING_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "../continuous_boundary_policy/results/AUDIT_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "REPRODUCE.md"
+          },
+          {
+            "exists": true,
+            "target": "results/PUBLIC_RETRIEVAL.json"
+          },
+          {
+            "exists": true,
+            "target": "results/PUBLIC_FILE_VERIFY.jsonl.gz"
+          },
+          {
+            "exists": true,
+            "target": "results/PUBLIC_ROUNDTRIP_AUDIT.json"
+          },
+          {
+            "exists": true,
+            "target": "results/PUBLIC_ROUNDTRIP_FILES.json"
+          },
+          {
+            "exists": true,
+            "target": "results/PUBLIC_ROUNDTRIP_COST.json"
+          },
+          {
+            "exists": true,
+            "target": "REPRODUCE.md"
+          },
+          {
+            "exists": true,
+            "target": "../RESEARCH_DELIVERY_2026-10-29.zh.md"
+          }
+        ]
+      },
+      {
+        "file": {
+          "bytes": 14333,
+          "path": "experiments/continuous_boundary_policy_reproduction/REPRODUCE.md",
+          "sha256": "8bf8567ef1747e3e7131fea7ced70d1205afb782fc6bfb2f25a17a44f826e19b"
+        },
+        "relative_file_links": [
+          {
+            "exists": true,
+            "target": "REPRODUCTION_PLAN.json"
+          },
+          {
+            "exists": true,
+            "target": "../continuous_boundary_policy/REPORT.zh.md"
+          },
+          {
+            "exists": true,
+            "target": "../native_readout_objective/RECOVERY_STATUS.json"
+          },
+          {
+            "exists": true,
+            "target": "preflight/"
+          },
+          {
+            "exists": true,
+            "target": "preflight/RUNTIME_ROUNDTRIP.json"
+          },
+          {
+            "exists": true,
+            "target": "../continuous_boundary_flow/native/README.md"
+          }
+        ]
+      },
+      {
+        "file": {
+          "bytes": 4863,
+          "path": "experiments/evidence_tools/README.md",
+          "sha256": "7c4e050cadaeedce4007e2655ab035f02d4af8d50872614f494354c376eb68cf"
+        },
+        "relative_file_links": [
+          {
+            "exists": true,
+            "target": "../native_readout_objective/REPRODUCE.md"
+          },
+          {
+            "exists": true,
+            "target": "../continuous_boundary_policy_reproduction/REPRODUCE.md"
+          },
+          {
+            "exists": true,
+            "target": "SHA256SUMS"
+          }
+        ]
+      },
+      {
+        "file": {
+          "bytes": 13591,
+          "path": "experiments/native_readout_objective/README.zh.md",
+          "sha256": "6857f717d0f906283ac3d2bec3523f80449f1fb927bc069352f2d0fe53a3e7a2"
+        },
+        "relative_file_links": [
+          {
+            "exists": true,
+            "target": "REPORT.zh.md"
+          },
+          {
+            "exists": true,
+            "target": "results/PRIMARY_COMPARISON.json"
+          },
+          {
+            "exists": true,
+            "target": "results/AUDIT_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/OWNER_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "RECOVERY_STATUS.json"
+          },
+          {
+            "exists": true,
+            "target": "REPORT.zh.md"
+          },
+          {
+            "exists": true,
+            "target": "results/AUDIT_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/PRIMARY_COMPARISON.json"
+          },
+          {
+            "exists": true,
+            "target": "results/ARM_SUMMARIES.json"
+          },
+          {
+            "exists": true,
+            "target": "results/COST_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/COMMON_STATE_PANEL.json"
+          },
+          {
+            "exists": true,
+            "target": "PROTOCOL.json"
+          },
+          {
+            "exists": true,
+            "target": "REPORT.zh.md"
+          },
+          {
+            "exists": true,
+            "target": "../continuous_boundary_policy/REPORT.zh.md"
+          },
+          {
+            "exists": true,
+            "target": "NUMERICAL_PREFLIGHT.json"
+          },
+          {
+            "exists": true,
+            "target": "PROTOCOL.json"
+          },
+          {
+            "exists": true,
+            "target": "results/COST_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/AUDIT_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/PUBLIC_RETRIEVAL.json"
+          },
+          {
+            "exists": true,
+            "target": "results/PUBLIC_FILE_VERIFY.jsonl.gz"
+          },
+          {
+            "exists": true,
+            "target": "results/PUBLIC_ROUNDTRIP_AUDIT.json"
+          },
+          {
+            "exists": true,
+            "target": "results/PUBLIC_ROUNDTRIP_FILES.json"
+          },
+          {
+            "exists": true,
+            "target": "results/PUBLIC_ROUNDTRIP_COST.json"
+          },
+          {
+            "exists": true,
+            "target": "REPRODUCE.md"
+          },
+          {
+            "exists": true,
+            "target": "../RESEARCH_DELIVERY_2026-10-29.zh.md"
+          }
+        ]
+      },
+      {
+        "file": {
+          "bytes": 25207,
+          "path": "experiments/native_readout_objective/REPORT.zh.md",
+          "sha256": "4b3cdcfbda58f150866b5db3aa67289aef0f0e89f99da52407d04a1972f1f556"
+        },
+        "relative_file_links": [
+          {
+            "exists": true,
+            "target": "results/PRIMARY_COMPARISON.json"
+          },
+          {
+            "exists": true,
+            "target": "results/AUDIT_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "../continuous_boundary_flow/REPORT.zh.md"
+          },
+          {
+            "exists": true,
+            "target": "../continuous_boundary_policy/REPORT.zh.md"
+          },
+          {
+            "exists": true,
+            "target": "PROTOCOL.json"
+          },
+          {
+            "exists": true,
+            "target": "PROTOCOL.json"
+          },
+          {
+            "exists": true,
+            "target": "results/AUDIT_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "PROTOCOL.json"
+          },
+          {
+            "exists": true,
+            "target": "SOURCE_SEAL.json"
+          },
+          {
+            "exists": true,
+            "target": "PROTOCOL.json"
+          },
+          {
+            "exists": true,
+            "target": "results/AUDIT_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "PROTOCOL.json"
+          },
+          {
+            "exists": true,
+            "target": "results/PRIMARY_COMPARISON.json"
+          },
+          {
+            "exists": true,
+            "target": "PROTOCOL.json"
+          },
+          {
+            "exists": true,
+            "target": "results/AUDIT_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/PRIMARY_COMPARISON.json"
+          },
+          {
+            "exists": true,
+            "target": "results/COST_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/ARM_SUMMARIES.json"
+          },
+          {
+            "exists": true,
+            "target": "results/PRIMARY_COMPARISON.json"
+          },
+          {
+            "exists": true,
+            "target": "results/ARM_SUMMARIES.json"
+          },
+          {
+            "exists": true,
+            "target": "PROTOCOL.json"
+          },
+          {
+            "exists": true,
+            "target": "results/ARM_SUMMARIES.json"
+          },
+          {
+            "exists": true,
+            "target": "results/ARM_SUMMARIES.json"
+          },
+          {
+            "exists": true,
+            "target": "results/AUDIT_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "PROTOCOL.json"
+          },
+          {
+            "exists": true,
+            "target": "results/COMMON_STATE_PANEL.json"
+          },
+          {
+            "exists": true,
+            "target": "results/COMMON_STATE_PANEL.json"
+          },
+          {
+            "exists": true,
+            "target": "results/COMMON_STATE_PANEL.json"
+          },
+          {
+            "exists": true,
+            "target": "results/AUDIT_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/AUDIT_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/COST_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/OWNER_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/AUDIT_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "PROTOCOL.json"
+          },
+          {
+            "exists": true,
+            "target": "results/OWNER_MANIFEST.json"
+          },
+          {
+            "exists": true,
+            "target": "results/OWNER_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/COST_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/COST_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/COST_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/COST_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/COST_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "native/BUILD_RECEIPT.json"
+          },
+          {
+            "exists": true,
+            "target": "results/ARM_SUMMARIES.json"
+          },
+          {
+            "exists": true,
+            "target": "results/COST_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "PROTOCOL.json"
+          },
+          {
+            "exists": true,
+            "target": "results/PRIMARY_COMPARISON.json"
+          },
+          {
+            "exists": true,
+            "target": "results/AUDIT_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/COMMON_STATE_PANEL.json"
+          },
+          {
+            "exists": true,
+            "target": "results/AUDIT_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/AUDIT_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/PRIMARY_COMPARISON.json"
+          },
+          {
+            "exists": true,
+            "target": "results/ARM_SUMMARIES.json"
+          },
+          {
+            "exists": true,
+            "target": "results/COST_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/COMMON_STATE_PANEL.json"
+          },
+          {
+            "exists": true,
+            "target": "results/OWNER_SUMMARY.json"
+          },
+          {
+            "exists": true,
+            "target": "results/PUBLIC_RETRIEVAL.json"
+          },
+          {
+            "exists": true,
+            "target": "results/PUBLIC_FILE_VERIFY.jsonl.gz"
+          },
+          {
+            "exists": true,
+            "target": "results/PUBLIC_ROUNDTRIP_AUDIT.json"
+          },
+          {
+            "exists": true,
+            "target": "results/PUBLIC_ROUNDTRIP_FILES.json"
+          },
+          {
+            "exists": true,
+            "target": "results/PUBLIC_ROUNDTRIP_COST.json"
+          },
+          {
+            "exists": true,
+            "target": "REPRODUCE.md"
+          },
+          {
+            "exists": true,
+            "target": "../RESEARCH_DELIVERY_2026-10-29.zh.md"
+          }
+        ]
+      },
+      {
+        "file": {
+          "bytes": 12169,
+          "path": "experiments/native_readout_objective/REPRODUCE.md",
+          "sha256": "bd45279b6564941601805f84252d2253309c27b791e6ec339b633de4106e183e"
+        },
+        "relative_file_links": [
+          {
+            "exists": true,
+            "target": "PROTOCOL.json"
+          },
+          {
+            "exists": true,
+            "target": "README.zh.md"
+          },
+          {
+            "exists": true,
+            "target": "native/"
+          },
+          {
+            "exists": true,
+            "target": "../continuous_boundary_policy_reproduction/preflight/RUNTIME_ROUNDTRIP.json"
+          },
+          {
+            "exists": true,
+            "target": "../continuous_boundary_flow/native/README.md"
+          }
+        ]
+      }
+    ],
+    "relative_file_link_count": 219,
+    "scope": "All Markdown in the two new research packages and evidence_tools, plus final delivery overview and the two updated original-policy documents. Relative file destinations only; external URLs and heading anchors are not re-fetched.",
+    "unexpected_missing": []
+  },
+  "passed": true,
+  "phase_costs": [
+    {
+      "phase": "actual_ci_blob_size",
+      "wall_seconds": 7.29967133399623
+    },
+    {
+      "phase": "sealed_source_and_identity_checks",
+      "wall_seconds": 0.07025491300737485
+    },
+    {
+      "phase": "derived_and_tool_catalogs",
+      "wall_seconds": 0.008091693991445936
+    },
+    {
+      "phase": "delivery_document_links_and_command_syntax",
+      "wall_seconds": 0.11714671499794349
+    }
+  ],
+  "repository": "/workspace/scratch/0b931bb7b314/hepta-continuous-recovered",
+  "repository_content_written": false,
+  "schema": "hepta.research.final-head-verification.v1",
+  "scope": "Exact published research head: actual CI blob-size checker, immutable source/protocol/selection bindings, delivery document links, derived file identities, command syntax, and clean worktree. No scientific run or semantic re-audit.",
+  "sealed_sources": {
+    "packages": [
+      {
+        "bindings": [
+          {
+            "bytes": 8577,
+            "exact_head_bytes": true,
+            "expected_match": true,
+            "expected_sha256": "6b3afbf2af8476730c1260f470bd8f0f68d69652950499388abc3b178f0fd858",
+            "path": "experiments/continuous_boundary_policy/SOURCE_SEAL.json",
+            "sha256": "6b3afbf2af8476730c1260f470bd8f0f68d69652950499388abc3b178f0fd858"
+          },
+          {
+            "bytes": 4025,
+            "exact_head_bytes": true,
+            "expected_match": true,
+            "expected_sha256": "c55747dd06640b92aca2198dcbfa21a0a5bf53f5890daf6bc51aa257f887865a",
+            "path": "experiments/continuous_boundary_policy/PROTOCOL.json",
+            "sha256": "c55747dd06640b92aca2198dcbfa21a0a5bf53f5890daf6bc51aa257f887865a"
+          },
+          {
+            "bytes": 71947,
+            "exact_head_bytes": true,
+            "expected_match": true,
+            "expected_sha256": "1e06fb919d5dd06f61de1c03940f0478a989e9c0fcbabd0e6f39f305837485b4",
+            "path": "experiments/continuous_boundary_policy/evidence/SELECTION_SEAL.json",
+            "sha256": "1e06fb919d5dd06f61de1c03940f0478a989e9c0fcbabd0e6f39f305837485b4"
+          }
+        ],
+        "entries": [
+          {
+            "bytes": 10629,
+            "expected_sha256": "47e25d71742021969d1fa41da32539897efc69260610f8d145e9e63d732923d2",
+            "path": "experiments/continuous_boundary_flow/PROTOCOL.json",
+            "sha256": "47e25d71742021969d1fa41da32539897efc69260610f8d145e9e63d732923d2",
+            "verified": true
+          },
+          {
+            "bytes": 88,
+            "expected_sha256": "5c26876d3b65c0832a2dcbf38de50397688e9fdd0f75ced4be9f4aae5187e421",
+            "path": "experiments/continuous_boundary_flow/__init__.py",
+            "sha256": "5c26876d3b65c0832a2dcbf38de50397688e9fdd0f75ced4be9f4aae5187e421",
+            "verified": true
+          },
+          {
+            "bytes": 38266,
+            "expected_sha256": "c3bcf4f6871c374e28e8c1c45b5230ceb6eebbac43d86dd496f1e87afd37baf4",
+            "path": "experiments/continuous_boundary_flow/audit.py",
+            "sha256": "c3bcf4f6871c374e28e8c1c45b5230ceb6eebbac43d86dd496f1e87afd37baf4",
+            "verified": true
+          },
+          {
+            "bytes": 6029,
+            "expected_sha256": "1de7012f2cdb4aaa376ae395196426219055e1970e8434ff0546d932e7881004",
+            "path": "experiments/continuous_boundary_flow/common.py",
+            "sha256": "1de7012f2cdb4aaa376ae395196426219055e1970e8434ff0546d932e7881004",
+            "verified": true
+          },
+          {
+            "bytes": 10062,
+            "expected_sha256": "a7417d048d23f07ae4ef82dece6297bf0142ca193bc06492d862fe286ba2d0ab",
+            "path": "experiments/continuous_boundary_flow/execution.py",
+            "sha256": "a7417d048d23f07ae4ef82dece6297bf0142ca193bc06492d862fe286ba2d0ab",
+            "verified": true
+          },
+          {
+            "bytes": 24400,
+            "expected_sha256": "f238eebcaad255c5a64f4239734a723f3a604428055047a94b5db8b381fc26bb",
+            "path": "experiments/continuous_boundary_flow/integration.py",
+            "sha256": "f238eebcaad255c5a64f4239734a723f3a604428055047a94b5db8b381fc26bb",
+            "verified": true
+          },
+          {
+            "bytes": 19212,
+            "expected_sha256": "fd6a1435c022f80b0ee3ddbf1f63a90767c8130cd15cf173f31e9044b40dc430",
+            "path": "experiments/continuous_boundary_flow/math_model.py",
+            "sha256": "fd6a1435c022f80b0ee3ddbf1f63a90767c8130cd15cf173f31e9044b40dc430",
+            "verified": true
+          },
+          {
+            "bytes": 17160,
+            "expected_sha256": "b79807feee40ca1fe5cc983aad770f544278848174da88e9286574208b4851e8",
+            "path": "experiments/continuous_boundary_flow/models.py",
+            "sha256": "b79807feee40ca1fe5cc983aad770f544278848174da88e9286574208b4851e8",
+            "verified": true
+          },
+          {
+            "bytes": 17,
+            "expected_sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584",
+            "path": "experiments/continuous_boundary_flow/native/.rustfmt.toml",
+            "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584",
+            "verified": true
+          },
+          {
+            "bytes": 91,
+            "expected_sha256": "d2c71d6e64fd718eb6d3204e888f6e4e60b34983070be652fff21f3bfe853ddb",
+            "path": "experiments/continuous_boundary_flow/native/__init__.py",
+            "sha256": "d2c71d6e64fd718eb6d3204e888f6e4e60b34983070be652fff21f3bfe853ddb",
+            "verified": true
+          },
+          {
+            "bytes": 11802,
+            "expected_sha256": "2a7be4914211a5166fc8ef7fbbf6a2de8632b2e7651c7175d6e3888ddbb1ec0c",
+            "path": "experiments/continuous_boundary_flow/native/adapter.py",
+            "sha256": "2a7be4914211a5166fc8ef7fbbf6a2de8632b2e7651c7175d6e3888ddbb1ec0c",
+            "verified": true
+          },
+          {
+            "bytes": 15428,
+            "expected_sha256": "bb8dc61ddd32112ff2a214108209f4b335bb6a1a8415cb00675045c501176797",
+            "path": "experiments/continuous_boundary_flow/native/build.py",
+            "sha256": "bb8dc61ddd32112ff2a214108209f4b335bb6a1a8415cb00675045c501176797",
+            "verified": true
+          },
+          {
+            "bytes": 10343,
+            "expected_sha256": "c8cc72432b30607eaca122114cb5478a8b2039443b591a23942a412106420353",
+            "path": "experiments/continuous_boundary_flow/native/continuous_host.rs",
+            "sha256": "c8cc72432b30607eaca122114cb5478a8b2039443b591a23942a412106420353",
+            "verified": true
+          },
+          {
+            "bytes": 4065,
+            "expected_sha256": "d96cd5e1a2cb34a917a2ce79369829762d7fa224dbad7d210b22eeea23b77acf",
+            "path": "experiments/continuous_boundary_flow/native/decision.rs",
+            "sha256": "d96cd5e1a2cb34a917a2ce79369829762d7fa224dbad7d210b22eeea23b77acf",
+            "verified": true
+          },
+          {
+            "bytes": 1270,
+            "expected_sha256": "27a8309398ef63818423ef7f06e8445a68954a6edb9160aa9d7bece9a8ab00b0",
+            "path": "experiments/continuous_boundary_flow/native/measure.rs",
+            "sha256": "27a8309398ef63818423ef7f06e8445a68954a6edb9160aa9d7bece9a8ab00b0",
+            "verified": true
+          },
+          {
+            "bytes": 9987,
+            "expected_sha256": "b2fc19f140438c62659b3a13e3a1e61f7af18af37e44222fd5296fcd14eec96c",
+            "path": "experiments/continuous_boundary_flow/native/model.rs",
+            "sha256": "b2fc19f140438c62659b3a13e3a1e61f7af18af37e44222fd5296fcd14eec96c",
+            "verified": true
+          },
+          {
+            "bytes": 2712,
+            "expected_sha256": "3c9a70f4703d9b33452b1258f12655bcd98a7e4416ee6366b5e41f3dad40b892",
+            "path": "experiments/continuous_boundary_flow/native/port.rs",
+            "sha256": "3c9a70f4703d9b33452b1258f12655bcd98a7e4416ee6366b5e41f3dad40b892",
+            "verified": true
+          },
+          {
+            "bytes": 6293,
+            "expected_sha256": "101af6aea2ce9a2e9705ad7dbc3bcc6a43ed1627a0d9cc099d991d20fcf2f9b5",
+            "path": "experiments/continuous_boundary_flow/native/pure.rs",
+            "sha256": "101af6aea2ce9a2e9705ad7dbc3bcc6a43ed1627a0d9cc099d991d20fcf2f9b5",
+            "verified": true
+          },
+          {
+            "bytes": 10238,
+            "expected_sha256": "6f15c92523c92861fd9d2dcafd50d4215aeefb183553d9f7b39e916769284cd1",
+            "path": "experiments/continuous_boundary_flow/native/replay.rs",
+            "sha256": "6f15c92523c92861fd9d2dcafd50d4215aeefb183553d9f7b39e916769284cd1",
+            "verified": true
+          },
+          {
+            "bytes": 10479,
+            "expected_sha256": "407ea77edd357fa1ece1c2e2f1f88ac635d4389da5fb023905625f1165e34860",
+            "path": "experiments/continuous_boundary_flow/native/session.rs",
+            "sha256": "407ea77edd357fa1ece1c2e2f1f88ac635d4389da5fb023905625f1165e34860",
+            "verified": true
+          },
+          {
+            "bytes": 10394,
+            "expected_sha256": "90cfaa881d625f8f055d53f6095c5f4368830dde08ce84af84cf48d056700f78",
+            "path": "experiments/continuous_boundary_flow/native/test_native.py",
+            "sha256": "90cfaa881d625f8f055d53f6095c5f4368830dde08ce84af84cf48d056700f78",
+            "verified": true
+          },
+          {
+            "bytes": 13494,
+            "expected_sha256": "df61842c11604f340889698b57571663d35fea5514d45afd9ac76438bb122059",
+            "path": "experiments/continuous_boundary_flow/native/test_stability.py",
+            "sha256": "df61842c11604f340889698b57571663d35fea5514d45afd9ac76438bb122059",
+            "verified": true
+          },
+          {
+            "bytes": 6791,
+            "expected_sha256": "240c3bccda083f95d317dd67a5867dbfc076d2a789fa2cc155caf90e59ab1f17",
+            "path": "experiments/continuous_boundary_flow/oracle.py",
+            "sha256": "240c3bccda083f95d317dd67a5867dbfc076d2a789fa2cc155caf90e59ab1f17",
+            "verified": true
+          },
+          {
+            "bytes": 23881,
+            "expected_sha256": "83af3a44decf914706f24dd405c9c1cdbbbaa68b26a00fdaad24e8e6435b4455",
+            "path": "experiments/continuous_boundary_flow/preflight/BUILD_RECEIPT.json",
+            "sha256": "83af3a44decf914706f24dd405c9c1cdbbbaa68b26a00fdaad24e8e6435b4455",
+            "verified": true
+          },
+          {
+            "bytes": 27,
+            "expected_sha256": "1668a3152e33680d94637b13421c15e68bd97cd8701f7f555c691f5bc5c0b9f3",
+            "path": "experiments/continuous_boundary_flow/requirements.txt",
+            "sha256": "1668a3152e33680d94637b13421c15e68bd97cd8701f7f555c691f5bc5c0b9f3",
+            "verified": true
+          },
+          {
+            "bytes": 3541,
+            "expected_sha256": "13ac1515a155873aaf09124ea46ccc5a04893040cf2ee0e688399e60d0e475ad",
+            "path": "experiments/continuous_boundary_flow/scenarios.py",
+            "sha256": "13ac1515a155873aaf09124ea46ccc5a04893040cf2ee0e688399e60d0e475ad",
+            "verified": true
+          },
+          {
+            "bytes": 3149,
+            "expected_sha256": "f436228ae99a831d1d2381912fe43f02da77387cf936da16cb3d5964f1281329",
+            "path": "experiments/continuous_boundary_flow/smoke.py",
+            "sha256": "f436228ae99a831d1d2381912fe43f02da77387cf936da16cb3d5964f1281329",
+            "verified": true
+          },
+          {
+            "bytes": 16458,
+            "expected_sha256": "d3c8fab4ac0b8f9cc3a25cb55edffc9cd4a658367568145ec04c1e4044103111",
+            "path": "experiments/continuous_boundary_flow/study.py",
+            "sha256": "d3c8fab4ac0b8f9cc3a25cb55edffc9cd4a658367568145ec04c1e4044103111",
+            "verified": true
+          },
+          {
+            "bytes": 16948,
+            "expected_sha256": "e1b2c4a9ee203000b99a07d0abcfa28007b637e159e00dd1e1d4e7dc06030709",
+            "path": "experiments/continuous_boundary_flow/test_audit.py",
+            "sha256": "e1b2c4a9ee203000b99a07d0abcfa28007b637e159e00dd1e1d4e7dc06030709",
+            "verified": true
+          },
+          {
+            "bytes": 2037,
+            "expected_sha256": "c53dea8a3e7408d23cc795783eed056a8fc3ab6080e69648156a474d89a54ab7",
+            "path": "experiments/continuous_boundary_flow/test_deadline.py",
+            "sha256": "c53dea8a3e7408d23cc795783eed056a8fc3ab6080e69648156a474d89a54ab7",
+            "verified": true
+          },
+          {
+            "bytes": 10107,
+            "expected_sha256": "c561e93eae04564cea301197de7d91f93470c141d1c283d702bbef06a39de686",
+            "path": "experiments/continuous_boundary_flow/test_integration.py",
+            "sha256": "c561e93eae04564cea301197de7d91f93470c141d1c283d702bbef06a39de686",
+            "verified": true
+          },
+          {
+            "bytes": 12756,
+            "expected_sha256": "afbb98323ec114b6c6cd0f8fc9887b614c5c5bd050de6d284f19f2b6cfed92de",
+            "path": "experiments/continuous_boundary_flow/test_math.py",
+            "sha256": "afbb98323ec114b6c6cd0f8fc9887b614c5c5bd050de6d284f19f2b6cfed92de",
+            "verified": true
+          },
+          {
+            "bytes": 10031,
+            "expected_sha256": "125cf6ad29f612c780e8e3c3ceae06c23e227c78e70965cc093fc94e35d692be",
+            "path": "experiments/continuous_boundary_flow/test_models.py",
+            "sha256": "125cf6ad29f612c780e8e3c3ceae06c23e227c78e70965cc093fc94e35d692be",
+            "verified": true
+          },
+          {
+            "bytes": 6803,
+            "expected_sha256": "6003e1448633d8e54abc2aa2e90f071a56e1912ce9f73760ad1f0f805e99f86d",
+            "path": "experiments/continuous_boundary_flow/training.py",
+            "sha256": "6003e1448633d8e54abc2aa2e90f071a56e1912ce9f73760ad1f0f805e99f86d",
+            "verified": true
+          },
+          {
+            "bytes": 4025,
+            "expected_sha256": "c55747dd06640b92aca2198dcbfa21a0a5bf53f5890daf6bc51aa257f887865a",
+            "path": "experiments/continuous_boundary_policy/PROTOCOL.json",
+            "sha256": "c55747dd06640b92aca2198dcbfa21a0a5bf53f5890daf6bc51aa257f887865a",
+            "verified": true
+          },
+          {
+            "bytes": 83,
+            "expected_sha256": "2d7fc19669c07a4d1db47b711da2546a8e9ea3456f79ab5881105966195ac06b",
+            "path": "experiments/continuous_boundary_policy/__init__.py",
+            "sha256": "2d7fc19669c07a4d1db47b711da2546a8e9ea3456f79ab5881105966195ac06b",
+            "verified": true
+          },
+          {
+            "bytes": 15956,
+            "expected_sha256": "2f6523928bc17bf721d3a5f29cd0706b146a2b889d1f461d1c9b52c96628ef0b",
+            "path": "experiments/continuous_boundary_policy/audit.py",
+            "sha256": "2f6523928bc17bf721d3a5f29cd0706b146a2b889d1f461d1c9b52c96628ef0b",
+            "verified": true
+          },
+          {
+            "bytes": 10757,
+            "expected_sha256": "0050f94f49ea80472665402020f0b371ef75db7d6255f608f316e3cb7daacf70",
+            "path": "experiments/continuous_boundary_policy/audit_cell.py",
+            "sha256": "0050f94f49ea80472665402020f0b371ef75db7d6255f608f316e3cb7daacf70",
+            "verified": true
+          },
+          {
+            "bytes": 23904,
+            "expected_sha256": "1dcfb1117770f21ec1c0ab0e19c27c6d318f32474c4179118931ff4136fa634d",
+            "path": "experiments/continuous_boundary_policy/audit_integrity.py",
+            "sha256": "1dcfb1117770f21ec1c0ab0e19c27c6d318f32474c4179118931ff4136fa634d",
+            "verified": true
+          },
+          {
+            "bytes": 12392,
+            "expected_sha256": "a8d664a642686a7567eb2411fe6badda8e4dbe7e7a16c746741f63afe08527df",
+            "path": "experiments/continuous_boundary_policy/audit_math.py",
+            "sha256": "a8d664a642686a7567eb2411fe6badda8e4dbe7e7a16c746741f63afe08527df",
+            "verified": true
+          },
+          {
+            "bytes": 10422,
+            "expected_sha256": "b48b3ca024ecc734668d2847e02389ecd6e7131e45da21a51e39c9e58f35661c",
+            "path": "experiments/continuous_boundary_policy/audit_stats.py",
+            "sha256": "b48b3ca024ecc734668d2847e02389ecd6e7131e45da21a51e39c9e58f35661c",
+            "verified": true
+          },
+          {
+            "bytes": 14635,
+            "expected_sha256": "9d966e977ea247d82ecbfedd09b2b4d177c5ef9704a45022456224ba4c2d20c9",
+            "path": "experiments/continuous_boundary_policy/cells.py",
+            "sha256": "9d966e977ea247d82ecbfedd09b2b4d177c5ef9704a45022456224ba4c2d20c9",
+            "verified": true
+          },
+          {
+            "bytes": 6357,
+            "expected_sha256": "367542c215a5c3b2ada6e5480652eba50eb8dd5b73819e5581d8d322c3ac2ccf",
+            "path": "experiments/continuous_boundary_policy/common.py",
+            "sha256": "367542c215a5c3b2ada6e5480652eba50eb8dd5b73819e5581d8d322c3ac2ccf",
+            "verified": true
+          },
+          {
+            "bytes": 9361,
+            "expected_sha256": "c33e2971a5e3d4ee4f5fd9609d03a35adc77257cc19ff49e6548fd5c53d13043",
+            "path": "experiments/continuous_boundary_policy/dp_reference.py",
+            "sha256": "c33e2971a5e3d4ee4f5fd9609d03a35adc77257cc19ff49e6548fd5c53d13043",
+            "verified": true
+          },
+          {
+            "bytes": 14455,
+            "expected_sha256": "1a76af55d9939a7e62ff4038e054502548b7d853cb5db3622e037e0bf20688a3",
+            "path": "experiments/continuous_boundary_policy/engineering.py",
+            "sha256": "1a76af55d9939a7e62ff4038e054502548b7d853cb5db3622e037e0bf20688a3",
+            "verified": true
+          },
+          {
+            "bytes": 13885,
+            "expected_sha256": "94d7980ec192fd073afce86b15b042b7781b10da08fd746950e6ebb3d014ba06",
+            "path": "experiments/continuous_boundary_policy/engineering_replay.py",
+            "sha256": "94d7980ec192fd073afce86b15b042b7781b10da08fd746950e6ebb3d014ba06",
+            "verified": true
+          },
+          {
+            "bytes": 9538,
+            "expected_sha256": "3d37ee044a0637c7fca4193d17cb56dc185e1b26cb651e3e0d7c9352af9d8e1e",
+            "path": "experiments/continuous_boundary_policy/execution.py",
+            "sha256": "3d37ee044a0637c7fca4193d17cb56dc185e1b26cb651e3e0d7c9352af9d8e1e",
+            "verified": true
+          },
+          {
+            "bytes": 6009,
+            "expected_sha256": "d45ac5e0bd5405025eacb726c03a2a4a778eef13aa1f64fd1d0e296c0c582825",
+            "path": "experiments/continuous_boundary_policy/features.py",
+            "sha256": "d45ac5e0bd5405025eacb726c03a2a4a778eef13aa1f64fd1d0e296c0c582825",
+            "verified": true
+          },
+          {
+            "bytes": 80,
+            "expected_sha256": "5598724157d8d2e3190301561adb9638d92e2de6894e42990356823b76e75eac",
+            "path": "experiments/continuous_boundary_policy/native/__init__.py",
+            "sha256": "5598724157d8d2e3190301561adb9638d92e2de6894e42990356823b76e75eac",
+            "verified": true
+          },
+          {
+            "bytes": 6823,
+            "expected_sha256": "cae1d87934a16caacb6264da1265c05175d2163acec4fa2da32c42640b27d257",
+            "path": "experiments/continuous_boundary_policy/native/bridge.py",
+            "sha256": "cae1d87934a16caacb6264da1265c05175d2163acec4fa2da32c42640b27d257",
+            "verified": true
+          },
+          {
+            "bytes": 7942,
+            "expected_sha256": "1d83bd9286d741c3812d58f78ca4ab15f8124461655227a001a5b3ac95ca59a7",
+            "path": "experiments/continuous_boundary_policy/native/build.py",
+            "sha256": "1d83bd9286d741c3812d58f78ca4ab15f8124461655227a001a5b3ac95ca59a7",
+            "verified": true
+          },
+          {
+            "bytes": 4533,
+            "expected_sha256": "9e28ef093957de7099c4987187187ddce1522c8db6374ce08322be452c36faae",
+            "path": "experiments/continuous_boundary_policy/native/decision.rs",
+            "sha256": "9e28ef093957de7099c4987187187ddce1522c8db6374ce08322be452c36faae",
+            "verified": true
+          },
+          {
+            "bytes": 22938,
+            "expected_sha256": "dd465ccea6ca70aadb23f1760915b35e0da751d95b76be5c0d21d83da443865f",
+            "path": "experiments/continuous_boundary_policy/native/preflight/BUILD_RECEIPT.json",
+            "sha256": "dd465ccea6ca70aadb23f1760915b35e0da751d95b76be5c0d21d83da443865f",
+            "verified": true
+          },
+          {
+            "bytes": 18733,
+            "expected_sha256": "93b2a3ca65f369c4e193e3471d8e2fd5299564c9a754cdf0e5733d44fb68fb5a",
+            "path": "experiments/continuous_boundary_policy/native/preflight/SOURCE_MANIFEST.json",
+            "sha256": "93b2a3ca65f369c4e193e3471d8e2fd5299564c9a754cdf0e5733d44fb68fb5a",
+            "verified": true
+          },
+          {
+            "bytes": 2534,
+            "expected_sha256": "90cf307cc3b8e8755d4636272b6687d656af17d8124bbf9874b2a76af67c232b",
+            "path": "experiments/continuous_boundary_policy/native/protocol.rs",
+            "sha256": "90cf307cc3b8e8755d4636272b6687d656af17d8124bbf9874b2a76af67c232b",
+            "verified": true
+          },
+          {
+            "bytes": 4800,
+            "expected_sha256": "b0fd9585c18063bbc7e99e7fc80879aeee6b7c91feb5921b8c784db04298216d",
+            "path": "experiments/continuous_boundary_policy/native/score_host.rs",
+            "sha256": "b0fd9585c18063bbc7e99e7fc80879aeee6b7c91feb5921b8c784db04298216d",
+            "verified": true
+          },
+          {
+            "bytes": 8091,
+            "expected_sha256": "c74dbfd779063573cb89681b2b5798d58399db98518bb3e869d65445a09ba889",
+            "path": "experiments/continuous_boundary_policy/native/test_native.py",
+            "sha256": "c74dbfd779063573cb89681b2b5798d58399db98518bb3e869d65445a09ba889",
+            "verified": true
+          },
+          {
+            "bytes": 3608,
+            "expected_sha256": "1c54675eb2a6438afd16eefbed70a9d5075da3146f057bfca794f2cd35117836",
+            "path": "experiments/continuous_boundary_policy/smoke.py",
+            "sha256": "1c54675eb2a6438afd16eefbed70a9d5075da3146f057bfca794f2cd35117836",
+            "verified": true
+          },
+          {
+            "bytes": 17455,
+            "expected_sha256": "8b18c82e4218f67ef36698f2746bb112d8ad24e357715b513a9e418cf772f016",
+            "path": "experiments/continuous_boundary_policy/study.py",
+            "sha256": "8b18c82e4218f67ef36698f2746bb112d8ad24e357715b513a9e418cf772f016",
+            "verified": true
+          },
+          {
+            "bytes": 13238,
+            "expected_sha256": "a1d9fa3017a19d0019657c61beec8732aa2fc4f6fb166be803453a4f81a7b948",
+            "path": "experiments/continuous_boundary_policy/test_audit.py",
+            "sha256": "a1d9fa3017a19d0019657c61beec8732aa2fc4f6fb166be803453a4f81a7b948",
+            "verified": true
+          },
+          {
+            "bytes": 5174,
+            "expected_sha256": "890f53dba393af8f780857a398cef72b19667a809df6134099acbbe06fd95b6c",
+            "path": "experiments/continuous_boundary_policy/test_cells.py",
+            "sha256": "890f53dba393af8f780857a398cef72b19667a809df6134099acbbe06fd95b6c",
+            "verified": true
+          },
+          {
+            "bytes": 2077,
+            "expected_sha256": "0d07848c86c3a9d622ba658ae3b045d6697cf66f76d11024d26b87ac71fdcba4",
+            "path": "experiments/continuous_boundary_policy/test_dp_reference.py",
+            "sha256": "0d07848c86c3a9d622ba658ae3b045d6697cf66f76d11024d26b87ac71fdcba4",
+            "verified": true
+          },
+          {
+            "bytes": 4078,
+            "expected_sha256": "4069ad822be55bf0a93b8c35905246309c929b22c6cb3b77f2c6f5e6ea0c8895",
+            "path": "experiments/continuous_boundary_policy/test_features.py",
+            "sha256": "4069ad822be55bf0a93b8c35905246309c929b22c6cb3b77f2c6f5e6ea0c8895",
+            "verified": true
+          },
+          {
+            "bytes": 6537,
+            "expected_sha256": "25a382b7d85e88cfc0460b18a799141c26ac3c39ea7e12febce432db6c8a476b",
+            "path": "experiments/continuous_boundary_policy/test_seals.py",
+            "sha256": "25a382b7d85e88cfc0460b18a799141c26ac3c39ea7e12febce432db6c8a476b",
+            "verified": true
+          },
+          {
+            "bytes": 7476,
+            "expected_sha256": "685ea3d9c70f5f841872fe1d7067a6f291289f0b0365611fb19ee9ff0f9b43dd",
+            "path": "experiments/continuous_boundary_policy/training.py",
+            "sha256": "685ea3d9c70f5f841872fe1d7067a6f291289f0b0365611fb19ee9ff0f9b43dd",
+            "verified": true
+          },
+          {
+            "bytes": 76,
+            "expected_sha256": "90376aca2cc0b7bbaf19dbb5ce848d13f9cc9aa9bbe842afd47b8fd4f8bd53c0",
+            "path": "experiments/first_passage_cell/__init__.py",
+            "sha256": "90376aca2cc0b7bbaf19dbb5ce848d13f9cc9aa9bbe842afd47b8fd4f8bd53c0",
+            "verified": true
+          },
+          {
+            "bytes": 15856,
+            "expected_sha256": "f2b739eaa7f86f755e283ec8e7a63ed2e9d3029d56d928f7b651ea323c1f3308",
+            "path": "experiments/first_passage_cell/kernels.py",
+            "sha256": "f2b739eaa7f86f755e283ec8e7a63ed2e9d3029d56d928f7b651ea323c1f3308",
+            "verified": true
+          }
+        ],
+        "expected_source_files": 67,
+        "original_publications": [],
+        "package": "continuous_boundary_policy",
+        "selection_binding_valid": true
+      },
+      {
+        "bindings": [
+          {
+            "bytes": 14624,
+            "exact_head_bytes": true,
+            "expected_match": true,
+            "expected_sha256": "6608ee0c6ddd33862096a3c7d5085ab670b05a7c4c45d728f9f59efaa064b717",
+            "path": "experiments/continuous_boundary_policy_reproduction/SOURCE_SEAL.json",
+            "sha256": "6608ee0c6ddd33862096a3c7d5085ab670b05a7c4c45d728f9f59efaa064b717"
+          },
+          {
+            "bytes": 4025,
+            "exact_head_bytes": true,
+            "expected_match": true,
+            "expected_sha256": "c55747dd06640b92aca2198dcbfa21a0a5bf53f5890daf6bc51aa257f887865a",
+            "path": "experiments/continuous_boundary_policy_reproduction/PROTOCOL.json",
+            "sha256": "c55747dd06640b92aca2198dcbfa21a0a5bf53f5890daf6bc51aa257f887865a"
+          },
+          {
+            "bytes": 72329,
+            "exact_head_bytes": true,
+            "expected_match": true,
+            "expected_sha256": "c996086ace2ab38f25b24a8b8f29e1eeba447100b2dcb212a4438e595bb7fa56",
+            "path": "experiments/continuous_boundary_policy_reproduction/evidence/SELECTION_SEAL.json",
+            "sha256": "c996086ace2ab38f25b24a8b8f29e1eeba447100b2dcb212a4438e595bb7fa56"
+          }
+        ],
+        "entries": [
+          {
+            "bytes": 10629,
+            "expected_sha256": "47e25d71742021969d1fa41da32539897efc69260610f8d145e9e63d732923d2",
+            "path": "experiments/continuous_boundary_flow/PROTOCOL.json",
+            "sha256": "47e25d71742021969d1fa41da32539897efc69260610f8d145e9e63d732923d2",
+            "verified": true
+          },
+          {
+            "bytes": 88,
+            "expected_sha256": "5c26876d3b65c0832a2dcbf38de50397688e9fdd0f75ced4be9f4aae5187e421",
+            "path": "experiments/continuous_boundary_flow/__init__.py",
+            "sha256": "5c26876d3b65c0832a2dcbf38de50397688e9fdd0f75ced4be9f4aae5187e421",
+            "verified": true
+          },
+          {
+            "bytes": 38266,
+            "expected_sha256": "c3bcf4f6871c374e28e8c1c45b5230ceb6eebbac43d86dd496f1e87afd37baf4",
+            "path": "experiments/continuous_boundary_flow/audit.py",
+            "sha256": "c3bcf4f6871c374e28e8c1c45b5230ceb6eebbac43d86dd496f1e87afd37baf4",
+            "verified": true
+          },
+          {
+            "bytes": 6029,
+            "expected_sha256": "1de7012f2cdb4aaa376ae395196426219055e1970e8434ff0546d932e7881004",
+            "path": "experiments/continuous_boundary_flow/common.py",
+            "sha256": "1de7012f2cdb4aaa376ae395196426219055e1970e8434ff0546d932e7881004",
+            "verified": true
+          },
+          {
+            "bytes": 10062,
+            "expected_sha256": "a7417d048d23f07ae4ef82dece6297bf0142ca193bc06492d862fe286ba2d0ab",
+            "path": "experiments/continuous_boundary_flow/execution.py",
+            "sha256": "a7417d048d23f07ae4ef82dece6297bf0142ca193bc06492d862fe286ba2d0ab",
+            "verified": true
+          },
+          {
+            "bytes": 24400,
+            "expected_sha256": "f238eebcaad255c5a64f4239734a723f3a604428055047a94b5db8b381fc26bb",
+            "path": "experiments/continuous_boundary_flow/integration.py",
+            "sha256": "f238eebcaad255c5a64f4239734a723f3a604428055047a94b5db8b381fc26bb",
+            "verified": true
+          },
+          {
+            "bytes": 19212,
+            "expected_sha256": "fd6a1435c022f80b0ee3ddbf1f63a90767c8130cd15cf173f31e9044b40dc430",
+            "path": "experiments/continuous_boundary_flow/math_model.py",
+            "sha256": "fd6a1435c022f80b0ee3ddbf1f63a90767c8130cd15cf173f31e9044b40dc430",
+            "verified": true
+          },
+          {
+            "bytes": 17160,
+            "expected_sha256": "b79807feee40ca1fe5cc983aad770f544278848174da88e9286574208b4851e8",
+            "path": "experiments/continuous_boundary_flow/models.py",
+            "sha256": "b79807feee40ca1fe5cc983aad770f544278848174da88e9286574208b4851e8",
+            "verified": true
+          },
+          {
+            "bytes": 17,
+            "expected_sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584",
+            "path": "experiments/continuous_boundary_flow/native/.rustfmt.toml",
+            "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584",
+            "verified": true
+          },
+          {
+            "bytes": 91,
+            "expected_sha256": "d2c71d6e64fd718eb6d3204e888f6e4e60b34983070be652fff21f3bfe853ddb",
+            "path": "experiments/continuous_boundary_flow/native/__init__.py",
+            "sha256": "d2c71d6e64fd718eb6d3204e888f6e4e60b34983070be652fff21f3bfe853ddb",
+            "verified": true
+          },
+          {
+            "bytes": 11802,
+            "expected_sha256": "2a7be4914211a5166fc8ef7fbbf6a2de8632b2e7651c7175d6e3888ddbb1ec0c",
+            "path": "experiments/continuous_boundary_flow/native/adapter.py",
+            "sha256": "2a7be4914211a5166fc8ef7fbbf6a2de8632b2e7651c7175d6e3888ddbb1ec0c",
+            "verified": true
+          },
+          {
+            "bytes": 15428,
+            "expected_sha256": "bb8dc61ddd32112ff2a214108209f4b335bb6a1a8415cb00675045c501176797",
+            "path": "experiments/continuous_boundary_flow/native/build.py",
+            "sha256": "bb8dc61ddd32112ff2a214108209f4b335bb6a1a8415cb00675045c501176797",
+            "verified": true
+          },
+          {
+            "bytes": 10343,
+            "expected_sha256": "c8cc72432b30607eaca122114cb5478a8b2039443b591a23942a412106420353",
+            "path": "experiments/continuous_boundary_flow/native/continuous_host.rs",
+            "sha256": "c8cc72432b30607eaca122114cb5478a8b2039443b591a23942a412106420353",
+            "verified": true
+          },
+          {
+            "bytes": 4065,
+            "expected_sha256": "d96cd5e1a2cb34a917a2ce79369829762d7fa224dbad7d210b22eeea23b77acf",
+            "path": "experiments/continuous_boundary_flow/native/decision.rs",
+            "sha256": "d96cd5e1a2cb34a917a2ce79369829762d7fa224dbad7d210b22eeea23b77acf",
+            "verified": true
+          },
+          {
+            "bytes": 1270,
+            "expected_sha256": "27a8309398ef63818423ef7f06e8445a68954a6edb9160aa9d7bece9a8ab00b0",
+            "path": "experiments/continuous_boundary_flow/native/measure.rs",
+            "sha256": "27a8309398ef63818423ef7f06e8445a68954a6edb9160aa9d7bece9a8ab00b0",
+            "verified": true
+          },
+          {
+            "bytes": 9987,
+            "expected_sha256": "b2fc19f140438c62659b3a13e3a1e61f7af18af37e44222fd5296fcd14eec96c",
+            "path": "experiments/continuous_boundary_flow/native/model.rs",
+            "sha256": "b2fc19f140438c62659b3a13e3a1e61f7af18af37e44222fd5296fcd14eec96c",
+            "verified": true
+          },
+          {
+            "bytes": 2712,
+            "expected_sha256": "3c9a70f4703d9b33452b1258f12655bcd98a7e4416ee6366b5e41f3dad40b892",
+            "path": "experiments/continuous_boundary_flow/native/port.rs",
+            "sha256": "3c9a70f4703d9b33452b1258f12655bcd98a7e4416ee6366b5e41f3dad40b892",
+            "verified": true
+          },
+          {
+            "bytes": 6293,
+            "expected_sha256": "101af6aea2ce9a2e9705ad7dbc3bcc6a43ed1627a0d9cc099d991d20fcf2f9b5",
+            "path": "experiments/continuous_boundary_flow/native/pure.rs",
+            "sha256": "101af6aea2ce9a2e9705ad7dbc3bcc6a43ed1627a0d9cc099d991d20fcf2f9b5",
+            "verified": true
+          },
+          {
+            "bytes": 10238,
+            "expected_sha256": "6f15c92523c92861fd9d2dcafd50d4215aeefb183553d9f7b39e916769284cd1",
+            "path": "experiments/continuous_boundary_flow/native/replay.rs",
+            "sha256": "6f15c92523c92861fd9d2dcafd50d4215aeefb183553d9f7b39e916769284cd1",
+            "verified": true
+          },
+          {
+            "bytes": 10479,
+            "expected_sha256": "407ea77edd357fa1ece1c2e2f1f88ac635d4389da5fb023905625f1165e34860",
+            "path": "experiments/continuous_boundary_flow/native/session.rs",
+            "sha256": "407ea77edd357fa1ece1c2e2f1f88ac635d4389da5fb023905625f1165e34860",
+            "verified": true
+          },
+          {
+            "bytes": 10394,
+            "expected_sha256": "90cfaa881d625f8f055d53f6095c5f4368830dde08ce84af84cf48d056700f78",
+            "path": "experiments/continuous_boundary_flow/native/test_native.py",
+            "sha256": "90cfaa881d625f8f055d53f6095c5f4368830dde08ce84af84cf48d056700f78",
+            "verified": true
+          },
+          {
+            "bytes": 13494,
+            "expected_sha256": "df61842c11604f340889698b57571663d35fea5514d45afd9ac76438bb122059",
+            "path": "experiments/continuous_boundary_flow/native/test_stability.py",
+            "sha256": "df61842c11604f340889698b57571663d35fea5514d45afd9ac76438bb122059",
+            "verified": true
+          },
+          {
+            "bytes": 6791,
+            "expected_sha256": "240c3bccda083f95d317dd67a5867dbfc076d2a789fa2cc155caf90e59ab1f17",
+            "path": "experiments/continuous_boundary_flow/oracle.py",
+            "sha256": "240c3bccda083f95d317dd67a5867dbfc076d2a789fa2cc155caf90e59ab1f17",
+            "verified": true
+          },
+          {
+            "bytes": 23881,
+            "expected_sha256": "83af3a44decf914706f24dd405c9c1cdbbbaa68b26a00fdaad24e8e6435b4455",
+            "path": "experiments/continuous_boundary_flow/preflight/BUILD_RECEIPT.json",
+            "sha256": "83af3a44decf914706f24dd405c9c1cdbbbaa68b26a00fdaad24e8e6435b4455",
+            "verified": true
+          },
+          {
+            "bytes": 27,
+            "expected_sha256": "1668a3152e33680d94637b13421c15e68bd97cd8701f7f555c691f5bc5c0b9f3",
+            "path": "experiments/continuous_boundary_flow/requirements.txt",
+            "sha256": "1668a3152e33680d94637b13421c15e68bd97cd8701f7f555c691f5bc5c0b9f3",
+            "verified": true
+          },
+          {
+            "bytes": 3541,
+            "expected_sha256": "13ac1515a155873aaf09124ea46ccc5a04893040cf2ee0e688399e60d0e475ad",
+            "path": "experiments/continuous_boundary_flow/scenarios.py",
+            "sha256": "13ac1515a155873aaf09124ea46ccc5a04893040cf2ee0e688399e60d0e475ad",
+            "verified": true
+          },
+          {
+            "bytes": 3149,
+            "expected_sha256": "f436228ae99a831d1d2381912fe43f02da77387cf936da16cb3d5964f1281329",
+            "path": "experiments/continuous_boundary_flow/smoke.py",
+            "sha256": "f436228ae99a831d1d2381912fe43f02da77387cf936da16cb3d5964f1281329",
+            "verified": true
+          },
+          {
+            "bytes": 16458,
+            "expected_sha256": "d3c8fab4ac0b8f9cc3a25cb55edffc9cd4a658367568145ec04c1e4044103111",
+            "path": "experiments/continuous_boundary_flow/study.py",
+            "sha256": "d3c8fab4ac0b8f9cc3a25cb55edffc9cd4a658367568145ec04c1e4044103111",
+            "verified": true
+          },
+          {
+            "bytes": 16948,
+            "expected_sha256": "e1b2c4a9ee203000b99a07d0abcfa28007b637e159e00dd1e1d4e7dc06030709",
+            "path": "experiments/continuous_boundary_flow/test_audit.py",
+            "sha256": "e1b2c4a9ee203000b99a07d0abcfa28007b637e159e00dd1e1d4e7dc06030709",
+            "verified": true
+          },
+          {
+            "bytes": 2037,
+            "expected_sha256": "c53dea8a3e7408d23cc795783eed056a8fc3ab6080e69648156a474d89a54ab7",
+            "path": "experiments/continuous_boundary_flow/test_deadline.py",
+            "sha256": "c53dea8a3e7408d23cc795783eed056a8fc3ab6080e69648156a474d89a54ab7",
+            "verified": true
+          },
+          {
+            "bytes": 10107,
+            "expected_sha256": "c561e93eae04564cea301197de7d91f93470c141d1c283d702bbef06a39de686",
+            "path": "experiments/continuous_boundary_flow/test_integration.py",
+            "sha256": "c561e93eae04564cea301197de7d91f93470c141d1c283d702bbef06a39de686",
+            "verified": true
+          },
+          {
+            "bytes": 12756,
+            "expected_sha256": "afbb98323ec114b6c6cd0f8fc9887b614c5c5bd050de6d284f19f2b6cfed92de",
+            "path": "experiments/continuous_boundary_flow/test_math.py",
+            "sha256": "afbb98323ec114b6c6cd0f8fc9887b614c5c5bd050de6d284f19f2b6cfed92de",
+            "verified": true
+          },
+          {
+            "bytes": 10031,
+            "expected_sha256": "125cf6ad29f612c780e8e3c3ceae06c23e227c78e70965cc093fc94e35d692be",
+            "path": "experiments/continuous_boundary_flow/test_models.py",
+            "sha256": "125cf6ad29f612c780e8e3c3ceae06c23e227c78e70965cc093fc94e35d692be",
+            "verified": true
+          },
+          {
+            "bytes": 6803,
+            "expected_sha256": "6003e1448633d8e54abc2aa2e90f071a56e1912ce9f73760ad1f0f805e99f86d",
+            "path": "experiments/continuous_boundary_flow/training.py",
+            "sha256": "6003e1448633d8e54abc2aa2e90f071a56e1912ce9f73760ad1f0f805e99f86d",
+            "verified": true
+          },
+          {
+            "bytes": 4025,
+            "expected_sha256": "c55747dd06640b92aca2198dcbfa21a0a5bf53f5890daf6bc51aa257f887865a",
+            "path": "experiments/continuous_boundary_policy/PROTOCOL.json",
+            "sha256": "c55747dd06640b92aca2198dcbfa21a0a5bf53f5890daf6bc51aa257f887865a",
+            "verified": true
+          },
+          {
+            "bytes": 8577,
+            "expected_sha256": "6b3afbf2af8476730c1260f470bd8f0f68d69652950499388abc3b178f0fd858",
+            "path": "experiments/continuous_boundary_policy/SOURCE_SEAL.json",
+            "sha256": "6b3afbf2af8476730c1260f470bd8f0f68d69652950499388abc3b178f0fd858",
+            "verified": true
+          },
+          {
+            "bytes": 83,
+            "expected_sha256": "2d7fc19669c07a4d1db47b711da2546a8e9ea3456f79ab5881105966195ac06b",
+            "path": "experiments/continuous_boundary_policy/__init__.py",
+            "sha256": "2d7fc19669c07a4d1db47b711da2546a8e9ea3456f79ab5881105966195ac06b",
+            "verified": true
+          },
+          {
+            "bytes": 15956,
+            "expected_sha256": "2f6523928bc17bf721d3a5f29cd0706b146a2b889d1f461d1c9b52c96628ef0b",
+            "path": "experiments/continuous_boundary_policy/audit.py",
+            "sha256": "2f6523928bc17bf721d3a5f29cd0706b146a2b889d1f461d1c9b52c96628ef0b",
+            "verified": true
+          },
+          {
+            "bytes": 10757,
+            "expected_sha256": "0050f94f49ea80472665402020f0b371ef75db7d6255f608f316e3cb7daacf70",
+            "path": "experiments/continuous_boundary_policy/audit_cell.py",
+            "sha256": "0050f94f49ea80472665402020f0b371ef75db7d6255f608f316e3cb7daacf70",
+            "verified": true
+          },
+          {
+            "bytes": 23904,
+            "expected_sha256": "1dcfb1117770f21ec1c0ab0e19c27c6d318f32474c4179118931ff4136fa634d",
+            "path": "experiments/continuous_boundary_policy/audit_integrity.py",
+            "sha256": "1dcfb1117770f21ec1c0ab0e19c27c6d318f32474c4179118931ff4136fa634d",
+            "verified": true
+          },
+          {
+            "bytes": 12392,
+            "expected_sha256": "a8d664a642686a7567eb2411fe6badda8e4dbe7e7a16c746741f63afe08527df",
+            "path": "experiments/continuous_boundary_policy/audit_math.py",
+            "sha256": "a8d664a642686a7567eb2411fe6badda8e4dbe7e7a16c746741f63afe08527df",
+            "verified": true
+          },
+          {
+            "bytes": 10422,
+            "expected_sha256": "b48b3ca024ecc734668d2847e02389ecd6e7131e45da21a51e39c9e58f35661c",
+            "path": "experiments/continuous_boundary_policy/audit_stats.py",
+            "sha256": "b48b3ca024ecc734668d2847e02389ecd6e7131e45da21a51e39c9e58f35661c",
+            "verified": true
+          },
+          {
+            "bytes": 14635,
+            "expected_sha256": "9d966e977ea247d82ecbfedd09b2b4d177c5ef9704a45022456224ba4c2d20c9",
+            "path": "experiments/continuous_boundary_policy/cells.py",
+            "sha256": "9d966e977ea247d82ecbfedd09b2b4d177c5ef9704a45022456224ba4c2d20c9",
+            "verified": true
+          },
+          {
+            "bytes": 6357,
+            "expected_sha256": "367542c215a5c3b2ada6e5480652eba50eb8dd5b73819e5581d8d322c3ac2ccf",
+            "path": "experiments/continuous_boundary_policy/common.py",
+            "sha256": "367542c215a5c3b2ada6e5480652eba50eb8dd5b73819e5581d8d322c3ac2ccf",
+            "verified": true
+          },
+          {
+            "bytes": 9361,
+            "expected_sha256": "c33e2971a5e3d4ee4f5fd9609d03a35adc77257cc19ff49e6548fd5c53d13043",
+            "path": "experiments/continuous_boundary_policy/dp_reference.py",
+            "sha256": "c33e2971a5e3d4ee4f5fd9609d03a35adc77257cc19ff49e6548fd5c53d13043",
+            "verified": true
+          },
+          {
+            "bytes": 14455,
+            "expected_sha256": "1a76af55d9939a7e62ff4038e054502548b7d853cb5db3622e037e0bf20688a3",
+            "path": "experiments/continuous_boundary_policy/engineering.py",
+            "sha256": "1a76af55d9939a7e62ff4038e054502548b7d853cb5db3622e037e0bf20688a3",
+            "verified": true
+          },
+          {
+            "bytes": 13885,
+            "expected_sha256": "94d7980ec192fd073afce86b15b042b7781b10da08fd746950e6ebb3d014ba06",
+            "path": "experiments/continuous_boundary_policy/engineering_replay.py",
+            "sha256": "94d7980ec192fd073afce86b15b042b7781b10da08fd746950e6ebb3d014ba06",
+            "verified": true
+          },
+          {
+            "bytes": 9538,
+            "expected_sha256": "3d37ee044a0637c7fca4193d17cb56dc185e1b26cb651e3e0d7c9352af9d8e1e",
+            "path": "experiments/continuous_boundary_policy/execution.py",
+            "sha256": "3d37ee044a0637c7fca4193d17cb56dc185e1b26cb651e3e0d7c9352af9d8e1e",
+            "verified": true
+          },
+          {
+            "bytes": 6009,
+            "expected_sha256": "d45ac5e0bd5405025eacb726c03a2a4a778eef13aa1f64fd1d0e296c0c582825",
+            "path": "experiments/continuous_boundary_policy/features.py",
+            "sha256": "d45ac5e0bd5405025eacb726c03a2a4a778eef13aa1f64fd1d0e296c0c582825",
+            "verified": true
+          },
+          {
+            "bytes": 80,
+            "expected_sha256": "5598724157d8d2e3190301561adb9638d92e2de6894e42990356823b76e75eac",
+            "path": "experiments/continuous_boundary_policy/native/__init__.py",
+            "sha256": "5598724157d8d2e3190301561adb9638d92e2de6894e42990356823b76e75eac",
+            "verified": true
+          },
+          {
+            "bytes": 6823,
+            "expected_sha256": "cae1d87934a16caacb6264da1265c05175d2163acec4fa2da32c42640b27d257",
+            "path": "experiments/continuous_boundary_policy/native/bridge.py",
+            "sha256": "cae1d87934a16caacb6264da1265c05175d2163acec4fa2da32c42640b27d257",
+            "verified": true
+          },
+          {
+            "bytes": 7942,
+            "expected_sha256": "1d83bd9286d741c3812d58f78ca4ab15f8124461655227a001a5b3ac95ca59a7",
+            "path": "experiments/continuous_boundary_policy/native/build.py",
+            "sha256": "1d83bd9286d741c3812d58f78ca4ab15f8124461655227a001a5b3ac95ca59a7",
+            "verified": true
+          },
+          {
+            "bytes": 4533,
+            "expected_sha256": "9e28ef093957de7099c4987187187ddce1522c8db6374ce08322be452c36faae",
+            "path": "experiments/continuous_boundary_policy/native/decision.rs",
+            "sha256": "9e28ef093957de7099c4987187187ddce1522c8db6374ce08322be452c36faae",
+            "verified": true
+          },
+          {
+            "bytes": 22938,
+            "expected_sha256": "dd465ccea6ca70aadb23f1760915b35e0da751d95b76be5c0d21d83da443865f",
+            "path": "experiments/continuous_boundary_policy/native/preflight/BUILD_RECEIPT.json",
+            "sha256": "dd465ccea6ca70aadb23f1760915b35e0da751d95b76be5c0d21d83da443865f",
+            "verified": true
+          },
+          {
+            "bytes": 18733,
+            "expected_sha256": "93b2a3ca65f369c4e193e3471d8e2fd5299564c9a754cdf0e5733d44fb68fb5a",
+            "path": "experiments/continuous_boundary_policy/native/preflight/SOURCE_MANIFEST.json",
+            "sha256": "93b2a3ca65f369c4e193e3471d8e2fd5299564c9a754cdf0e5733d44fb68fb5a",
+            "verified": true
+          },
+          {
+            "bytes": 2534,
+            "expected_sha256": "90cf307cc3b8e8755d4636272b6687d656af17d8124bbf9874b2a76af67c232b",
+            "path": "experiments/continuous_boundary_policy/native/protocol.rs",
+            "sha256": "90cf307cc3b8e8755d4636272b6687d656af17d8124bbf9874b2a76af67c232b",
+            "verified": true
+          },
+          {
+            "bytes": 4800,
+            "expected_sha256": "b0fd9585c18063bbc7e99e7fc80879aeee6b7c91feb5921b8c784db04298216d",
+            "path": "experiments/continuous_boundary_policy/native/score_host.rs",
+            "sha256": "b0fd9585c18063bbc7e99e7fc80879aeee6b7c91feb5921b8c784db04298216d",
+            "verified": true
+          },
+          {
+            "bytes": 8091,
+            "expected_sha256": "c74dbfd779063573cb89681b2b5798d58399db98518bb3e869d65445a09ba889",
+            "path": "experiments/continuous_boundary_policy/native/test_native.py",
+            "sha256": "c74dbfd779063573cb89681b2b5798d58399db98518bb3e869d65445a09ba889",
+            "verified": true
+          },
+          {
+            "bytes": 3608,
+            "expected_sha256": "1c54675eb2a6438afd16eefbed70a9d5075da3146f057bfca794f2cd35117836",
+            "path": "experiments/continuous_boundary_policy/smoke.py",
+            "sha256": "1c54675eb2a6438afd16eefbed70a9d5075da3146f057bfca794f2cd35117836",
+            "verified": true
+          },
+          {
+            "bytes": 17455,
+            "expected_sha256": "8b18c82e4218f67ef36698f2746bb112d8ad24e357715b513a9e418cf772f016",
+            "path": "experiments/continuous_boundary_policy/study.py",
+            "sha256": "8b18c82e4218f67ef36698f2746bb112d8ad24e357715b513a9e418cf772f016",
+            "verified": true
+          },
+          {
+            "bytes": 13238,
+            "expected_sha256": "a1d9fa3017a19d0019657c61beec8732aa2fc4f6fb166be803453a4f81a7b948",
+            "path": "experiments/continuous_boundary_policy/test_audit.py",
+            "sha256": "a1d9fa3017a19d0019657c61beec8732aa2fc4f6fb166be803453a4f81a7b948",
+            "verified": true
+          },
+          {
+            "bytes": 5174,
+            "expected_sha256": "890f53dba393af8f780857a398cef72b19667a809df6134099acbbe06fd95b6c",
+            "path": "experiments/continuous_boundary_policy/test_cells.py",
+            "sha256": "890f53dba393af8f780857a398cef72b19667a809df6134099acbbe06fd95b6c",
+            "verified": true
+          },
+          {
+            "bytes": 2077,
+            "expected_sha256": "0d07848c86c3a9d622ba658ae3b045d6697cf66f76d11024d26b87ac71fdcba4",
+            "path": "experiments/continuous_boundary_policy/test_dp_reference.py",
+            "sha256": "0d07848c86c3a9d622ba658ae3b045d6697cf66f76d11024d26b87ac71fdcba4",
+            "verified": true
+          },
+          {
+            "bytes": 4078,
+            "expected_sha256": "4069ad822be55bf0a93b8c35905246309c929b22c6cb3b77f2c6f5e6ea0c8895",
+            "path": "experiments/continuous_boundary_policy/test_features.py",
+            "sha256": "4069ad822be55bf0a93b8c35905246309c929b22c6cb3b77f2c6f5e6ea0c8895",
+            "verified": true
+          },
+          {
+            "bytes": 6537,
+            "expected_sha256": "25a382b7d85e88cfc0460b18a799141c26ac3c39ea7e12febce432db6c8a476b",
+            "path": "experiments/continuous_boundary_policy/test_seals.py",
+            "sha256": "25a382b7d85e88cfc0460b18a799141c26ac3c39ea7e12febce432db6c8a476b",
+            "verified": true
+          },
+          {
+            "bytes": 7476,
+            "expected_sha256": "685ea3d9c70f5f841872fe1d7067a6f291289f0b0365611fb19ee9ff0f9b43dd",
+            "path": "experiments/continuous_boundary_policy/training.py",
+            "sha256": "685ea3d9c70f5f841872fe1d7067a6f291289f0b0365611fb19ee9ff0f9b43dd",
+            "verified": true
+          },
+          {
+            "bytes": 4025,
+            "expected_sha256": "c55747dd06640b92aca2198dcbfa21a0a5bf53f5890daf6bc51aa257f887865a",
+            "path": "experiments/continuous_boundary_policy_reproduction/PROTOCOL.json",
+            "sha256": "c55747dd06640b92aca2198dcbfa21a0a5bf53f5890daf6bc51aa257f887865a",
+            "verified": true
+          },
+          {
+            "bytes": 2541,
+            "expected_sha256": "750f7d38a6872e9cf093b3b8296c67c102712943a204a3e1bf28e8371c05b866",
+            "path": "experiments/continuous_boundary_policy_reproduction/REPRODUCTION_PLAN.json",
+            "sha256": "750f7d38a6872e9cf093b3b8296c67c102712943a204a3e1bf28e8371c05b866",
+            "verified": true
+          },
+          {
+            "bytes": 77,
+            "expected_sha256": "d9f897af7de1b520bb6b66e5a256d9359a61fe40a92c595df2c6e46376f9d171",
+            "path": "experiments/continuous_boundary_policy_reproduction/__init__.py",
+            "sha256": "d9f897af7de1b520bb6b66e5a256d9359a61fe40a92c595df2c6e46376f9d171",
+            "verified": true
+          },
+          {
+            "bytes": 8017,
+            "expected_sha256": "de720eb24b62163a95c73765fc01fc3c25f53b694d5ebd3eb0c38dab8e47080f",
+            "path": "experiments/continuous_boundary_policy_reproduction/audit.py",
+            "sha256": "de720eb24b62163a95c73765fc01fc3c25f53b694d5ebd3eb0c38dab8e47080f",
+            "verified": true
+          },
+          {
+            "bytes": 8691,
+            "expected_sha256": "c2466785adfb2678bf6d241fa8020be562f202559bb6de37c56fa3b60821d70f",
+            "path": "experiments/continuous_boundary_policy_reproduction/build_score.py",
+            "sha256": "c2466785adfb2678bf6d241fa8020be562f202559bb6de37c56fa3b60821d70f",
+            "verified": true
+          },
+          {
+            "bytes": 10116,
+            "expected_sha256": "a8b4addc02ef36eb195c6147dfc1452650b87a389987faefb40c67f7e7c675ca",
+            "path": "experiments/continuous_boundary_policy_reproduction/identity.py",
+            "sha256": "a8b4addc02ef36eb195c6147dfc1452650b87a389987faefb40c67f7e7c675ca",
+            "verified": true
+          },
+          {
+            "bytes": 10278,
+            "expected_sha256": "8cf5d97df0779dcfc02706275aee1c866847b569d0738f1032060c6e3af5e3aa",
+            "path": "experiments/continuous_boundary_policy_reproduction/phases.py",
+            "sha256": "8cf5d97df0779dcfc02706275aee1c866847b569d0738f1032060c6e3af5e3aa",
+            "verified": true
+          },
+          {
+            "bytes": 1003,
+            "expected_sha256": "8d4951ec209276d2419567ec1af44290d8decdf4a83fc3f788cf804c1347d372",
+            "path": "experiments/continuous_boundary_policy_reproduction/preflight/ARCHIVE_CLEANUP.json",
+            "sha256": "8d4951ec209276d2419567ec1af44290d8decdf4a83fc3f788cf804c1347d372",
+            "verified": true
+          },
+          {
+            "bytes": 1391,
+            "expected_sha256": "bb3d48d40c28ab195761d22e9463932387543b8750b57c8dbd7380c5b3148d5b",
+            "path": "experiments/continuous_boundary_policy_reproduction/preflight/DIAGNOSTIC.log",
+            "sha256": "bb3d48d40c28ab195761d22e9463932387543b8750b57c8dbd7380c5b3148d5b",
+            "verified": true
+          },
+          {
+            "bytes": 10085,
+            "expected_sha256": "1113a17857e75da31c66f113e8bc158154e54cf8e0c52e8f1219f2cffe944e09",
+            "path": "experiments/continuous_boundary_policy_reproduction/preflight/DIAGNOSTIC_AUDIT.json",
+            "sha256": "1113a17857e75da31c66f113e8bc158154e54cf8e0c52e8f1219f2cffe944e09",
+            "verified": true
+          },
+          {
+            "bytes": 10073,
+            "expected_sha256": "0573ac2349f12edec7cc9553fd29e81bfa88664c9f7ade83fd865888ca3b1e04",
+            "path": "experiments/continuous_boundary_policy_reproduction/preflight/DIAGNOSTIC_SUMMARY.json",
+            "sha256": "0573ac2349f12edec7cc9553fd29e81bfa88664c9f7ade83fd865888ca3b1e04",
+            "verified": true
+          },
+          {
+            "bytes": 2624,
+            "expected_sha256": "065a5e70ccbfad1ba8c8391dcfee0cac276a5212917c9d5d0f1e3fc2fd53e23a",
+            "path": "experiments/continuous_boundary_policy_reproduction/preflight/DRIVER_HANDOFF.json",
+            "sha256": "065a5e70ccbfad1ba8c8391dcfee0cac276a5212917c9d5d0f1e3fc2fd53e23a",
+            "verified": true
+          },
+          {
+            "bytes": 12441,
+            "expected_sha256": "7c7b597377bb92f4a16489fe03b946dd837ed0ed9b5c9e7023c583a7da682d0f",
+            "path": "experiments/continuous_boundary_policy_reproduction/preflight/FORMAT_VALIDATION.json",
+            "sha256": "7c7b597377bb92f4a16489fe03b946dd837ed0ed9b5c9e7023c583a7da682d0f",
+            "verified": true
+          },
+          {
+            "bytes": 3158,
+            "expected_sha256": "3b667c667bd352b4aa1c3251e7964da3fd58b0190d307f1d4360b68163fc64e1",
+            "path": "experiments/continuous_boundary_policy_reproduction/preflight/HANDOFF.json",
+            "sha256": "3b667c667bd352b4aa1c3251e7964da3fd58b0190d307f1d4360b68163fc64e1",
+            "verified": true
+          },
+          {
+            "bytes": 1123,
+            "expected_sha256": "6cfa81a600391c2d5c6d2ee99fcfccfad7639cba1ce05696561a17684a26316d",
+            "path": "experiments/continuous_boundary_policy_reproduction/preflight/IDENTITY_TESTS.json",
+            "sha256": "6cfa81a600391c2d5c6d2ee99fcfccfad7639cba1ce05696561a17684a26316d",
+            "verified": true
+          },
+          {
+            "bytes": 1567,
+            "expected_sha256": "91e070e828d0afe43b957b7e9daeadf10ad5e70b916b4ac8070436a87ba95eb6",
+            "path": "experiments/continuous_boundary_policy_reproduction/preflight/IDENTITY_TESTS.log",
+            "sha256": "91e070e828d0afe43b957b7e9daeadf10ad5e70b916b4ac8070436a87ba95eb6",
+            "verified": true
+          },
+          {
+            "bytes": 23744,
+            "expected_sha256": "911f5b3488540dee5022875c04d9dc22994b636ea24f1a53efbc4b8b3a1dacd9",
+            "path": "experiments/continuous_boundary_policy_reproduction/preflight/NATIVE_BUILD.json",
+            "sha256": "911f5b3488540dee5022875c04d9dc22994b636ea24f1a53efbc4b8b3a1dacd9",
+            "verified": true
+          },
+          {
+            "bytes": 2375,
+            "expected_sha256": "56ac17c2aab14b0a8ce55f9302d461dea718561f4eca5cc1e144e837028feb44",
+            "path": "experiments/continuous_boundary_policy_reproduction/preflight/NATIVE_BUILD.log",
+            "sha256": "56ac17c2aab14b0a8ce55f9302d461dea718561f4eca5cc1e144e837028feb44",
+            "verified": true
+          },
+          {
+            "bytes": 19855,
+            "expected_sha256": "6addea031fa9ba2ca403137d8d10da6088c255474c681b106d9a2706c645dd09",
+            "path": "experiments/continuous_boundary_policy_reproduction/preflight/NATIVE_SOURCE_MANIFEST.json",
+            "sha256": "6addea031fa9ba2ca403137d8d10da6088c255474c681b106d9a2706c645dd09",
+            "verified": true
+          },
+          {
+            "bytes": 1261,
+            "expected_sha256": "d6f77bb281514b4f7a2895599e9f4afabc1f8282a432f9fc6b2bbe116de89d9b",
+            "path": "experiments/continuous_boundary_policy_reproduction/preflight/NATIVE_SUMMARY.json",
+            "sha256": "d6f77bb281514b4f7a2895599e9f4afabc1f8282a432f9fc6b2bbe116de89d9b",
+            "verified": true
+          },
+          {
+            "bytes": 10380,
+            "expected_sha256": "343a20bc85add1499aee9efacc3a914cccf45bef918acc0562340030ddc3a91b",
+            "path": "experiments/continuous_boundary_policy_reproduction/preflight/NATIVE_VALIDATION.json",
+            "sha256": "343a20bc85add1499aee9efacc3a914cccf45bef918acc0562340030ddc3a91b",
+            "verified": true
+          },
+          {
+            "bytes": 1072,
+            "expected_sha256": "d6695d10d2bdcc14198514532576aea3098d7673f4eaa20c66e5f0d615402430",
+            "path": "experiments/continuous_boundary_policy_reproduction/preflight/NATIVE_VALIDATION.log",
+            "sha256": "d6695d10d2bdcc14198514532576aea3098d7673f4eaa20c66e5f0d615402430",
+            "verified": true
+          },
+          {
+            "bytes": 742,
+            "expected_sha256": "32c980ca1c704f5438e54cd1be63776bd85a5bbcf9cd36d8d0e26ac585a7a9cf",
+            "path": "experiments/continuous_boundary_policy_reproduction/preflight/RUNTIME_ROUNDTRIP.json",
+            "sha256": "32c980ca1c704f5438e54cd1be63776bd85a5bbcf9cd36d8d0e26ac585a7a9cf",
+            "verified": true
+          },
+          {
+            "bytes": 163,
+            "expected_sha256": "7658b0792a74e1c95ca13076318062b6121b9925cc7b24c4f2835c845c432e1f",
+            "path": "experiments/continuous_boundary_policy_reproduction/preflight/SCORE_BUILD.final.log",
+            "sha256": "7658b0792a74e1c95ca13076318062b6121b9925cc7b24c4f2835c845c432e1f",
+            "verified": true
+          },
+          {
+            "bytes": 23268,
+            "expected_sha256": "b48192533097a37bb71f5865a3f01c25cf7920b264d8670bcb518cf0d879a72c",
+            "path": "experiments/continuous_boundary_policy_reproduction/preflight/SCORE_BUILD.json",
+            "sha256": "b48192533097a37bb71f5865a3f01c25cf7920b264d8670bcb518cf0d879a72c",
+            "verified": true
+          },
+          {
+            "bytes": 163,
+            "expected_sha256": "94240c9fb2474ce1524bff23d2db1e1142a4c3731e26b9bc9eeeb07484a29160",
+            "path": "experiments/continuous_boundary_policy_reproduction/preflight/SCORE_BUILD.log",
+            "sha256": "94240c9fb2474ce1524bff23d2db1e1142a4c3731e26b9bc9eeeb07484a29160",
+            "verified": true
+          },
+          {
+            "bytes": 23290,
+            "expected_sha256": "e7dda1be88bc1cdaf6203706487f1a565b2772d0c2c36f8a2170ba0ac8187bde",
+            "path": "experiments/continuous_boundary_policy_reproduction/preflight/SCORE_BUILD.preformat.json",
+            "sha256": "e7dda1be88bc1cdaf6203706487f1a565b2772d0c2c36f8a2170ba0ac8187bde",
+            "verified": true
+          },
+          {
+            "bytes": 18733,
+            "expected_sha256": "93b2a3ca65f369c4e193e3471d8e2fd5299564c9a754cdf0e5733d44fb68fb5a",
+            "path": "experiments/continuous_boundary_policy_reproduction/preflight/SCORE_SOURCE_MANIFEST.json",
+            "sha256": "93b2a3ca65f369c4e193e3471d8e2fd5299564c9a754cdf0e5733d44fb68fb5a",
+            "verified": true
+          },
+          {
+            "bytes": 4774,
+            "expected_sha256": "0b83df2d6f0b796a6fb35ec0352e822dca3b8aae7d527fccb641fd6181bad479",
+            "path": "experiments/continuous_boundary_policy_reproduction/preflight/SCORE_TESTS.json",
+            "sha256": "0b83df2d6f0b796a6fb35ec0352e822dca3b8aae7d527fccb641fd6181bad479",
+            "verified": true
+          },
+          {
+            "bytes": 857,
+            "expected_sha256": "96fdaa9e2d1b75ac785ca93b0a2bf4b3e40bdb5603800576597775faf9726a89",
+            "path": "experiments/continuous_boundary_policy_reproduction/preflight/SCORE_TESTS.log",
+            "sha256": "96fdaa9e2d1b75ac785ca93b0a2bf4b3e40bdb5603800576597775faf9726a89",
+            "verified": true
+          },
+          {
+            "bytes": 1555,
+            "expected_sha256": "4844aed1b66715f70d1a7bc94cb3f9085dac05ff4297bd4ef2f611d728113140",
+            "path": "experiments/continuous_boundary_policy_reproduction/preflight/TOOLCHAIN.json",
+            "sha256": "4844aed1b66715f70d1a7bc94cb3f9085dac05ff4297bd4ef2f611d728113140",
+            "verified": true
+          },
+          {
+            "bytes": 946,
+            "expected_sha256": "343b59bfa029ff261bf3b3326d23c7ddfbf0f0b4f4418e3e64be022f1d123ba7",
+            "path": "experiments/continuous_boundary_policy_reproduction/preflight/runtime_evidence/INDEX.json",
+            "sha256": "343b59bfa029ff261bf3b3326d23c7ddfbf0f0b4f4418e3e64be022f1d123ba7",
+            "verified": true
+          },
+          {
+            "bytes": 4535,
+            "expected_sha256": "c838abce2259f31d119869f9fe353d63bc27a7be2e025e2048fdb8728ad0b516",
+            "path": "experiments/continuous_boundary_policy_reproduction/smoke.py",
+            "sha256": "c838abce2259f31d119869f9fe353d63bc27a7be2e025e2048fdb8728ad0b516",
+            "verified": true
+          },
+          {
+            "bytes": 10916,
+            "expected_sha256": "25316fdcc98b8bba978fd843244c3a6c4bcc3196cc7c01d609f8a88883f4f380",
+            "path": "experiments/continuous_boundary_policy_reproduction/sources.py",
+            "sha256": "25316fdcc98b8bba978fd843244c3a6c4bcc3196cc7c01d609f8a88883f4f380",
+            "verified": true
+          },
+          {
+            "bytes": 1300,
+            "expected_sha256": "c39f3cd7f56af5e8f5e7dabdf2402c3644b3dd21211464b5bd746da3b37b8a59",
+            "path": "experiments/continuous_boundary_policy_reproduction/study.py",
+            "sha256": "c39f3cd7f56af5e8f5e7dabdf2402c3644b3dd21211464b5bd746da3b37b8a59",
+            "verified": true
+          },
+          {
+            "bytes": 12035,
+            "expected_sha256": "578f087e39336096c9177678a42e5479c9abb666ae5205d5aa6c9a6e87353621",
+            "path": "experiments/continuous_boundary_policy_reproduction/test_identity.py",
+            "sha256": "578f087e39336096c9177678a42e5479c9abb666ae5205d5aa6c9a6e87353621",
+            "verified": true
+          },
+          {
+            "bytes": 76,
+            "expected_sha256": "90376aca2cc0b7bbaf19dbb5ce848d13f9cc9aa9bbe842afd47b8fd4f8bd53c0",
+            "path": "experiments/first_passage_cell/__init__.py",
+            "sha256": "90376aca2cc0b7bbaf19dbb5ce848d13f9cc9aa9bbe842afd47b8fd4f8bd53c0",
+            "verified": true
+          },
+          {
+            "bytes": 15856,
+            "expected_sha256": "f2b739eaa7f86f755e283ec8e7a63ed2e9d3029d56d928f7b651ea323c1f3308",
+            "path": "experiments/first_passage_cell/kernels.py",
+            "sha256": "f2b739eaa7f86f755e283ec8e7a63ed2e9d3029d56d928f7b651ea323c1f3308",
+            "verified": true
+          }
+        ],
+        "expected_source_files": 104,
+        "original_publications": [
+          {
+            "path": "experiments/continuous_boundary_policy_reproduction/SOURCE_SEAL.json",
+            "publication_commit": "7908860cb959cbe1599379d4ecbfcc22fbccbe61",
+            "same_bytes": true
+          },
+          {
+            "path": "experiments/continuous_boundary_policy_reproduction/PROTOCOL.json",
+            "publication_commit": "7908860cb959cbe1599379d4ecbfcc22fbccbe61",
+            "same_bytes": true
+          },
+          {
+            "path": "experiments/continuous_boundary_policy_reproduction/evidence/SELECTION_SEAL.json",
+            "publication_commit": "4fb7482ed8506d6646b833124c2975957c3a681c",
+            "same_bytes": true
+          }
+        ],
+        "package": "continuous_boundary_policy_reproduction",
+        "selection_binding_valid": true
+      },
+      {
+        "bindings": [
+          {
+            "bytes": 11800,
+            "exact_head_bytes": true,
+            "expected_match": true,
+            "expected_sha256": "83f5243f7b7c7aead3742baccd01caaf619759658f320e824589ff016269d2e9",
+            "path": "experiments/native_readout_objective/SOURCE_SEAL.json",
+            "sha256": "83f5243f7b7c7aead3742baccd01caaf619759658f320e824589ff016269d2e9"
+          },
+          {
+            "bytes": 13234,
+            "exact_head_bytes": true,
+            "expected_match": true,
+            "expected_sha256": "3d19c2f0aef69da5d368da01e34308f1344ec98b10fd0aaefa1ba4877aa9baff",
+            "path": "experiments/native_readout_objective/PROTOCOL.json",
+            "sha256": "3d19c2f0aef69da5d368da01e34308f1344ec98b10fd0aaefa1ba4877aa9baff"
+          },
+          {
+            "bytes": 96850,
+            "exact_head_bytes": true,
+            "expected_match": true,
+            "expected_sha256": "28477204d0ef4a94fc990295196d5c51f792a95e2546750217a2a5592f682d66",
+            "path": "experiments/native_readout_objective/evidence/SELECTION_SEAL.json",
+            "sha256": "28477204d0ef4a94fc990295196d5c51f792a95e2546750217a2a5592f682d66"
+          }
+        ],
+        "entries": [
+          {
+            "bytes": 10629,
+            "expected_sha256": "47e25d71742021969d1fa41da32539897efc69260610f8d145e9e63d732923d2",
+            "path": "experiments/continuous_boundary_flow/PROTOCOL.json",
+            "sha256": "47e25d71742021969d1fa41da32539897efc69260610f8d145e9e63d732923d2",
+            "verified": true
+          },
+          {
+            "bytes": 88,
+            "expected_sha256": "5c26876d3b65c0832a2dcbf38de50397688e9fdd0f75ced4be9f4aae5187e421",
+            "path": "experiments/continuous_boundary_flow/__init__.py",
+            "sha256": "5c26876d3b65c0832a2dcbf38de50397688e9fdd0f75ced4be9f4aae5187e421",
+            "verified": true
+          },
+          {
+            "bytes": 38266,
+            "expected_sha256": "c3bcf4f6871c374e28e8c1c45b5230ceb6eebbac43d86dd496f1e87afd37baf4",
+            "path": "experiments/continuous_boundary_flow/audit.py",
+            "sha256": "c3bcf4f6871c374e28e8c1c45b5230ceb6eebbac43d86dd496f1e87afd37baf4",
+            "verified": true
+          },
+          {
+            "bytes": 6029,
+            "expected_sha256": "1de7012f2cdb4aaa376ae395196426219055e1970e8434ff0546d932e7881004",
+            "path": "experiments/continuous_boundary_flow/common.py",
+            "sha256": "1de7012f2cdb4aaa376ae395196426219055e1970e8434ff0546d932e7881004",
+            "verified": true
+          },
+          {
+            "bytes": 10062,
+            "expected_sha256": "a7417d048d23f07ae4ef82dece6297bf0142ca193bc06492d862fe286ba2d0ab",
+            "path": "experiments/continuous_boundary_flow/execution.py",
+            "sha256": "a7417d048d23f07ae4ef82dece6297bf0142ca193bc06492d862fe286ba2d0ab",
+            "verified": true
+          },
+          {
+            "bytes": 24400,
+            "expected_sha256": "f238eebcaad255c5a64f4239734a723f3a604428055047a94b5db8b381fc26bb",
+            "path": "experiments/continuous_boundary_flow/integration.py",
+            "sha256": "f238eebcaad255c5a64f4239734a723f3a604428055047a94b5db8b381fc26bb",
+            "verified": true
+          },
+          {
+            "bytes": 19212,
+            "expected_sha256": "fd6a1435c022f80b0ee3ddbf1f63a90767c8130cd15cf173f31e9044b40dc430",
+            "path": "experiments/continuous_boundary_flow/math_model.py",
+            "sha256": "fd6a1435c022f80b0ee3ddbf1f63a90767c8130cd15cf173f31e9044b40dc430",
+            "verified": true
+          },
+          {
+            "bytes": 17160,
+            "expected_sha256": "b79807feee40ca1fe5cc983aad770f544278848174da88e9286574208b4851e8",
+            "path": "experiments/continuous_boundary_flow/models.py",
+            "sha256": "b79807feee40ca1fe5cc983aad770f544278848174da88e9286574208b4851e8",
+            "verified": true
+          },
+          {
+            "bytes": 17,
+            "expected_sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584",
+            "path": "experiments/continuous_boundary_flow/native/.rustfmt.toml",
+            "sha256": "f32d2f03b3f4b1e295c79ed49d543f1205c7dac7c3dc74f05a5a27af4fea0584",
+            "verified": true
+          },
+          {
+            "bytes": 91,
+            "expected_sha256": "d2c71d6e64fd718eb6d3204e888f6e4e60b34983070be652fff21f3bfe853ddb",
+            "path": "experiments/continuous_boundary_flow/native/__init__.py",
+            "sha256": "d2c71d6e64fd718eb6d3204e888f6e4e60b34983070be652fff21f3bfe853ddb",
+            "verified": true
+          },
+          {
+            "bytes": 11802,
+            "expected_sha256": "2a7be4914211a5166fc8ef7fbbf6a2de8632b2e7651c7175d6e3888ddbb1ec0c",
+            "path": "experiments/continuous_boundary_flow/native/adapter.py",
+            "sha256": "2a7be4914211a5166fc8ef7fbbf6a2de8632b2e7651c7175d6e3888ddbb1ec0c",
+            "verified": true
+          },
+          {
+            "bytes": 15428,
+            "expected_sha256": "bb8dc61ddd32112ff2a214108209f4b335bb6a1a8415cb00675045c501176797",
+            "path": "experiments/continuous_boundary_flow/native/build.py",
+            "sha256": "bb8dc61ddd32112ff2a214108209f4b335bb6a1a8415cb00675045c501176797",
+            "verified": true
+          },
+          {
+            "bytes": 10343,
+            "expected_sha256": "c8cc72432b30607eaca122114cb5478a8b2039443b591a23942a412106420353",
+            "path": "experiments/continuous_boundary_flow/native/continuous_host.rs",
+            "sha256": "c8cc72432b30607eaca122114cb5478a8b2039443b591a23942a412106420353",
+            "verified": true
+          },
+          {
+            "bytes": 4065,
+            "expected_sha256": "d96cd5e1a2cb34a917a2ce79369829762d7fa224dbad7d210b22eeea23b77acf",
+            "path": "experiments/continuous_boundary_flow/native/decision.rs",
+            "sha256": "d96cd5e1a2cb34a917a2ce79369829762d7fa224dbad7d210b22eeea23b77acf",
+            "verified": true
+          },
+          {
+            "bytes": 1270,
+            "expected_sha256": "27a8309398ef63818423ef7f06e8445a68954a6edb9160aa9d7bece9a8ab00b0",
+            "path": "experiments/continuous_boundary_flow/native/measure.rs",
+            "sha256": "27a8309398ef63818423ef7f06e8445a68954a6edb9160aa9d7bece9a8ab00b0",
+            "verified": true
+          },
+          {
+            "bytes": 9987,
+            "expected_sha256": "b2fc19f140438c62659b3a13e3a1e61f7af18af37e44222fd5296fcd14eec96c",
+            "path": "experiments/continuous_boundary_flow/native/model.rs",
+            "sha256": "b2fc19f140438c62659b3a13e3a1e61f7af18af37e44222fd5296fcd14eec96c",
+            "verified": true
+          },
+          {
+            "bytes": 2712,
+            "expected_sha256": "3c9a70f4703d9b33452b1258f12655bcd98a7e4416ee6366b5e41f3dad40b892",
+            "path": "experiments/continuous_boundary_flow/native/port.rs",
+            "sha256": "3c9a70f4703d9b33452b1258f12655bcd98a7e4416ee6366b5e41f3dad40b892",
+            "verified": true
+          },
+          {
+            "bytes": 6293,
+            "expected_sha256": "101af6aea2ce9a2e9705ad7dbc3bcc6a43ed1627a0d9cc099d991d20fcf2f9b5",
+            "path": "experiments/continuous_boundary_flow/native/pure.rs",
+            "sha256": "101af6aea2ce9a2e9705ad7dbc3bcc6a43ed1627a0d9cc099d991d20fcf2f9b5",
+            "verified": true
+          },
+          {
+            "bytes": 10238,
+            "expected_sha256": "6f15c92523c92861fd9d2dcafd50d4215aeefb183553d9f7b39e916769284cd1",
+            "path": "experiments/continuous_boundary_flow/native/replay.rs",
+            "sha256": "6f15c92523c92861fd9d2dcafd50d4215aeefb183553d9f7b39e916769284cd1",
+            "verified": true
+          },
+          {
+            "bytes": 10479,
+            "expected_sha256": "407ea77edd357fa1ece1c2e2f1f88ac635d4389da5fb023905625f1165e34860",
+            "path": "experiments/continuous_boundary_flow/native/session.rs",
+            "sha256": "407ea77edd357fa1ece1c2e2f1f88ac635d4389da5fb023905625f1165e34860",
+            "verified": true
+          },
+          {
+            "bytes": 10394,
+            "expected_sha256": "90cfaa881d625f8f055d53f6095c5f4368830dde08ce84af84cf48d056700f78",
+            "path": "experiments/continuous_boundary_flow/native/test_native.py",
+            "sha256": "90cfaa881d625f8f055d53f6095c5f4368830dde08ce84af84cf48d056700f78",
+            "verified": true
+          },
+          {
+            "bytes": 13494,
+            "expected_sha256": "df61842c11604f340889698b57571663d35fea5514d45afd9ac76438bb122059",
+            "path": "experiments/continuous_boundary_flow/native/test_stability.py",
+            "sha256": "df61842c11604f340889698b57571663d35fea5514d45afd9ac76438bb122059",
+            "verified": true
+          },
+          {
+            "bytes": 6791,
+            "expected_sha256": "240c3bccda083f95d317dd67a5867dbfc076d2a789fa2cc155caf90e59ab1f17",
+            "path": "experiments/continuous_boundary_flow/oracle.py",
+            "sha256": "240c3bccda083f95d317dd67a5867dbfc076d2a789fa2cc155caf90e59ab1f17",
+            "verified": true
+          },
+          {
+            "bytes": 23881,
+            "expected_sha256": "83af3a44decf914706f24dd405c9c1cdbbbaa68b26a00fdaad24e8e6435b4455",
+            "path": "experiments/continuous_boundary_flow/preflight/BUILD_RECEIPT.json",
+            "sha256": "83af3a44decf914706f24dd405c9c1cdbbbaa68b26a00fdaad24e8e6435b4455",
+            "verified": true
+          },
+          {
+            "bytes": 27,
+            "expected_sha256": "1668a3152e33680d94637b13421c15e68bd97cd8701f7f555c691f5bc5c0b9f3",
+            "path": "experiments/continuous_boundary_flow/requirements.txt",
+            "sha256": "1668a3152e33680d94637b13421c15e68bd97cd8701f7f555c691f5bc5c0b9f3",
+            "verified": true
+          },
+          {
+            "bytes": 3541,
+            "expected_sha256": "13ac1515a155873aaf09124ea46ccc5a04893040cf2ee0e688399e60d0e475ad",
+            "path": "experiments/continuous_boundary_flow/scenarios.py",
+            "sha256": "13ac1515a155873aaf09124ea46ccc5a04893040cf2ee0e688399e60d0e475ad",
+            "verified": true
+          },
+          {
+            "bytes": 3149,
+            "expected_sha256": "f436228ae99a831d1d2381912fe43f02da77387cf936da16cb3d5964f1281329",
+            "path": "experiments/continuous_boundary_flow/smoke.py",
+            "sha256": "f436228ae99a831d1d2381912fe43f02da77387cf936da16cb3d5964f1281329",
+            "verified": true
+          },
+          {
+            "bytes": 16458,
+            "expected_sha256": "d3c8fab4ac0b8f9cc3a25cb55edffc9cd4a658367568145ec04c1e4044103111",
+            "path": "experiments/continuous_boundary_flow/study.py",
+            "sha256": "d3c8fab4ac0b8f9cc3a25cb55edffc9cd4a658367568145ec04c1e4044103111",
+            "verified": true
+          },
+          {
+            "bytes": 16948,
+            "expected_sha256": "e1b2c4a9ee203000b99a07d0abcfa28007b637e159e00dd1e1d4e7dc06030709",
+            "path": "experiments/continuous_boundary_flow/test_audit.py",
+            "sha256": "e1b2c4a9ee203000b99a07d0abcfa28007b637e159e00dd1e1d4e7dc06030709",
+            "verified": true
+          },
+          {
+            "bytes": 2037,
+            "expected_sha256": "c53dea8a3e7408d23cc795783eed056a8fc3ab6080e69648156a474d89a54ab7",
+            "path": "experiments/continuous_boundary_flow/test_deadline.py",
+            "sha256": "c53dea8a3e7408d23cc795783eed056a8fc3ab6080e69648156a474d89a54ab7",
+            "verified": true
+          },
+          {
+            "bytes": 10107,
+            "expected_sha256": "c561e93eae04564cea301197de7d91f93470c141d1c283d702bbef06a39de686",
+            "path": "experiments/continuous_boundary_flow/test_integration.py",
+            "sha256": "c561e93eae04564cea301197de7d91f93470c141d1c283d702bbef06a39de686",
+            "verified": true
+          },
+          {
+            "bytes": 12756,
+            "expected_sha256": "afbb98323ec114b6c6cd0f8fc9887b614c5c5bd050de6d284f19f2b6cfed92de",
+            "path": "experiments/continuous_boundary_flow/test_math.py",
+            "sha256": "afbb98323ec114b6c6cd0f8fc9887b614c5c5bd050de6d284f19f2b6cfed92de",
+            "verified": true
+          },
+          {
+            "bytes": 10031,
+            "expected_sha256": "125cf6ad29f612c780e8e3c3ceae06c23e227c78e70965cc093fc94e35d692be",
+            "path": "experiments/continuous_boundary_flow/test_models.py",
+            "sha256": "125cf6ad29f612c780e8e3c3ceae06c23e227c78e70965cc093fc94e35d692be",
+            "verified": true
+          },
+          {
+            "bytes": 6803,
+            "expected_sha256": "6003e1448633d8e54abc2aa2e90f071a56e1912ce9f73760ad1f0f805e99f86d",
+            "path": "experiments/continuous_boundary_flow/training.py",
+            "sha256": "6003e1448633d8e54abc2aa2e90f071a56e1912ce9f73760ad1f0f805e99f86d",
+            "verified": true
+          },
+          {
+            "bytes": 4025,
+            "expected_sha256": "c55747dd06640b92aca2198dcbfa21a0a5bf53f5890daf6bc51aa257f887865a",
+            "path": "experiments/continuous_boundary_policy/PROTOCOL.json",
+            "sha256": "c55747dd06640b92aca2198dcbfa21a0a5bf53f5890daf6bc51aa257f887865a",
+            "verified": true
+          },
+          {
+            "bytes": 83,
+            "expected_sha256": "2d7fc19669c07a4d1db47b711da2546a8e9ea3456f79ab5881105966195ac06b",
+            "path": "experiments/continuous_boundary_policy/__init__.py",
+            "sha256": "2d7fc19669c07a4d1db47b711da2546a8e9ea3456f79ab5881105966195ac06b",
+            "verified": true
+          },
+          {
+            "bytes": 15956,
+            "expected_sha256": "2f6523928bc17bf721d3a5f29cd0706b146a2b889d1f461d1c9b52c96628ef0b",
+            "path": "experiments/continuous_boundary_policy/audit.py",
+            "sha256": "2f6523928bc17bf721d3a5f29cd0706b146a2b889d1f461d1c9b52c96628ef0b",
+            "verified": true
+          },
+          {
+            "bytes": 10757,
+            "expected_sha256": "0050f94f49ea80472665402020f0b371ef75db7d6255f608f316e3cb7daacf70",
+            "path": "experiments/continuous_boundary_policy/audit_cell.py",
+            "sha256": "0050f94f49ea80472665402020f0b371ef75db7d6255f608f316e3cb7daacf70",
+            "verified": true
+          },
+          {
+            "bytes": 23904,
+            "expected_sha256": "1dcfb1117770f21ec1c0ab0e19c27c6d318f32474c4179118931ff4136fa634d",
+            "path": "experiments/continuous_boundary_policy/audit_integrity.py",
+            "sha256": "1dcfb1117770f21ec1c0ab0e19c27c6d318f32474c4179118931ff4136fa634d",
+            "verified": true
+          },
+          {
+            "bytes": 12392,
+            "expected_sha256": "a8d664a642686a7567eb2411fe6badda8e4dbe7e7a16c746741f63afe08527df",
+            "path": "experiments/continuous_boundary_policy/audit_math.py",
+            "sha256": "a8d664a642686a7567eb2411fe6badda8e4dbe7e7a16c746741f63afe08527df",
+            "verified": true
+          },
+          {
+            "bytes": 10422,
+            "expected_sha256": "b48b3ca024ecc734668d2847e02389ecd6e7131e45da21a51e39c9e58f35661c",
+            "path": "experiments/continuous_boundary_policy/audit_stats.py",
+            "sha256": "b48b3ca024ecc734668d2847e02389ecd6e7131e45da21a51e39c9e58f35661c",
+            "verified": true
+          },
+          {
+            "bytes": 14635,
+            "expected_sha256": "9d966e977ea247d82ecbfedd09b2b4d177c5ef9704a45022456224ba4c2d20c9",
+            "path": "experiments/continuous_boundary_policy/cells.py",
+            "sha256": "9d966e977ea247d82ecbfedd09b2b4d177c5ef9704a45022456224ba4c2d20c9",
+            "verified": true
+          },
+          {
+            "bytes": 6357,
+            "expected_sha256": "367542c215a5c3b2ada6e5480652eba50eb8dd5b73819e5581d8d322c3ac2ccf",
+            "path": "experiments/continuous_boundary_policy/common.py",
+            "sha256": "367542c215a5c3b2ada6e5480652eba50eb8dd5b73819e5581d8d322c3ac2ccf",
+            "verified": true
+          },
+          {
+            "bytes": 9361,
+            "expected_sha256": "c33e2971a5e3d4ee4f5fd9609d03a35adc77257cc19ff49e6548fd5c53d13043",
+            "path": "experiments/continuous_boundary_policy/dp_reference.py",
+            "sha256": "c33e2971a5e3d4ee4f5fd9609d03a35adc77257cc19ff49e6548fd5c53d13043",
+            "verified": true
+          },
+          {
+            "bytes": 14455,
+            "expected_sha256": "1a76af55d9939a7e62ff4038e054502548b7d853cb5db3622e037e0bf20688a3",
+            "path": "experiments/continuous_boundary_policy/engineering.py",
+            "sha256": "1a76af55d9939a7e62ff4038e054502548b7d853cb5db3622e037e0bf20688a3",
+            "verified": true
+          },
+          {
+            "bytes": 13885,
+            "expected_sha256": "94d7980ec192fd073afce86b15b042b7781b10da08fd746950e6ebb3d014ba06",
+            "path": "experiments/continuous_boundary_policy/engineering_replay.py",
+            "sha256": "94d7980ec192fd073afce86b15b042b7781b10da08fd746950e6ebb3d014ba06",
+            "verified": true
+          },
+          {
+            "bytes": 9538,
+            "expected_sha256": "3d37ee044a0637c7fca4193d17cb56dc185e1b26cb651e3e0d7c9352af9d8e1e",
+            "path": "experiments/continuous_boundary_policy/execution.py",
+            "sha256": "3d37ee044a0637c7fca4193d17cb56dc185e1b26cb651e3e0d7c9352af9d8e1e",
+            "verified": true
+          },
+          {
+            "bytes": 6009,
+            "expected_sha256": "d45ac5e0bd5405025eacb726c03a2a4a778eef13aa1f64fd1d0e296c0c582825",
+            "path": "experiments/continuous_boundary_policy/features.py",
+            "sha256": "d45ac5e0bd5405025eacb726c03a2a4a778eef13aa1f64fd1d0e296c0c582825",
+            "verified": true
+          },
+          {
+            "bytes": 80,
+            "expected_sha256": "5598724157d8d2e3190301561adb9638d92e2de6894e42990356823b76e75eac",
+            "path": "experiments/continuous_boundary_policy/native/__init__.py",
+            "sha256": "5598724157d8d2e3190301561adb9638d92e2de6894e42990356823b76e75eac",
+            "verified": true
+          },
+          {
+            "bytes": 6823,
+            "expected_sha256": "cae1d87934a16caacb6264da1265c05175d2163acec4fa2da32c42640b27d257",
+            "path": "experiments/continuous_boundary_policy/native/bridge.py",
+            "sha256": "cae1d87934a16caacb6264da1265c05175d2163acec4fa2da32c42640b27d257",
+            "verified": true
+          },
+          {
+            "bytes": 7942,
+            "expected_sha256": "1d83bd9286d741c3812d58f78ca4ab15f8124461655227a001a5b3ac95ca59a7",
+            "path": "experiments/continuous_boundary_policy/native/build.py",
+            "sha256": "1d83bd9286d741c3812d58f78ca4ab15f8124461655227a001a5b3ac95ca59a7",
+            "verified": true
+          },
+          {
+            "bytes": 4533,
+            "expected_sha256": "9e28ef093957de7099c4987187187ddce1522c8db6374ce08322be452c36faae",
+            "path": "experiments/continuous_boundary_policy/native/decision.rs",
+            "sha256": "9e28ef093957de7099c4987187187ddce1522c8db6374ce08322be452c36faae",
+            "verified": true
+          },
+          {
+            "bytes": 22938,
+            "expected_sha256": "dd465ccea6ca70aadb23f1760915b35e0da751d95b76be5c0d21d83da443865f",
+            "path": "experiments/continuous_boundary_policy/native/preflight/BUILD_RECEIPT.json",
+            "sha256": "dd465ccea6ca70aadb23f1760915b35e0da751d95b76be5c0d21d83da443865f",
+            "verified": true
+          },
+          {
+            "bytes": 18733,
+            "expected_sha256": "93b2a3ca65f369c4e193e3471d8e2fd5299564c9a754cdf0e5733d44fb68fb5a",
+            "path": "experiments/continuous_boundary_policy/native/preflight/SOURCE_MANIFEST.json",
+            "sha256": "93b2a3ca65f369c4e193e3471d8e2fd5299564c9a754cdf0e5733d44fb68fb5a",
+            "verified": true
+          },
+          {
+            "bytes": 2534,
+            "expected_sha256": "90cf307cc3b8e8755d4636272b6687d656af17d8124bbf9874b2a76af67c232b",
+            "path": "experiments/continuous_boundary_policy/native/protocol.rs",
+            "sha256": "90cf307cc3b8e8755d4636272b6687d656af17d8124bbf9874b2a76af67c232b",
+            "verified": true
+          },
+          {
+            "bytes": 4800,
+            "expected_sha256": "b0fd9585c18063bbc7e99e7fc80879aeee6b7c91feb5921b8c784db04298216d",
+            "path": "experiments/continuous_boundary_policy/native/score_host.rs",
+            "sha256": "b0fd9585c18063bbc7e99e7fc80879aeee6b7c91feb5921b8c784db04298216d",
+            "verified": true
+          },
+          {
+            "bytes": 8091,
+            "expected_sha256": "c74dbfd779063573cb89681b2b5798d58399db98518bb3e869d65445a09ba889",
+            "path": "experiments/continuous_boundary_policy/native/test_native.py",
+            "sha256": "c74dbfd779063573cb89681b2b5798d58399db98518bb3e869d65445a09ba889",
+            "verified": true
+          },
+          {
+            "bytes": 3608,
+            "expected_sha256": "1c54675eb2a6438afd16eefbed70a9d5075da3146f057bfca794f2cd35117836",
+            "path": "experiments/continuous_boundary_policy/smoke.py",
+            "sha256": "1c54675eb2a6438afd16eefbed70a9d5075da3146f057bfca794f2cd35117836",
+            "verified": true
+          },
+          {
+            "bytes": 17455,
+            "expected_sha256": "8b18c82e4218f67ef36698f2746bb112d8ad24e357715b513a9e418cf772f016",
+            "path": "experiments/continuous_boundary_policy/study.py",
+            "sha256": "8b18c82e4218f67ef36698f2746bb112d8ad24e357715b513a9e418cf772f016",
+            "verified": true
+          },
+          {
+            "bytes": 13238,
+            "expected_sha256": "a1d9fa3017a19d0019657c61beec8732aa2fc4f6fb166be803453a4f81a7b948",
+            "path": "experiments/continuous_boundary_policy/test_audit.py",
+            "sha256": "a1d9fa3017a19d0019657c61beec8732aa2fc4f6fb166be803453a4f81a7b948",
+            "verified": true
+          },
+          {
+            "bytes": 5174,
+            "expected_sha256": "890f53dba393af8f780857a398cef72b19667a809df6134099acbbe06fd95b6c",
+            "path": "experiments/continuous_boundary_policy/test_cells.py",
+            "sha256": "890f53dba393af8f780857a398cef72b19667a809df6134099acbbe06fd95b6c",
+            "verified": true
+          },
+          {
+            "bytes": 2077,
+            "expected_sha256": "0d07848c86c3a9d622ba658ae3b045d6697cf66f76d11024d26b87ac71fdcba4",
+            "path": "experiments/continuous_boundary_policy/test_dp_reference.py",
+            "sha256": "0d07848c86c3a9d622ba658ae3b045d6697cf66f76d11024d26b87ac71fdcba4",
+            "verified": true
+          },
+          {
+            "bytes": 4078,
+            "expected_sha256": "4069ad822be55bf0a93b8c35905246309c929b22c6cb3b77f2c6f5e6ea0c8895",
+            "path": "experiments/continuous_boundary_policy/test_features.py",
+            "sha256": "4069ad822be55bf0a93b8c35905246309c929b22c6cb3b77f2c6f5e6ea0c8895",
+            "verified": true
+          },
+          {
+            "bytes": 6537,
+            "expected_sha256": "25a382b7d85e88cfc0460b18a799141c26ac3c39ea7e12febce432db6c8a476b",
+            "path": "experiments/continuous_boundary_policy/test_seals.py",
+            "sha256": "25a382b7d85e88cfc0460b18a799141c26ac3c39ea7e12febce432db6c8a476b",
+            "verified": true
+          },
+          {
+            "bytes": 7476,
+            "expected_sha256": "685ea3d9c70f5f841872fe1d7067a6f291289f0b0365611fb19ee9ff0f9b43dd",
+            "path": "experiments/continuous_boundary_policy/training.py",
+            "sha256": "685ea3d9c70f5f841872fe1d7067a6f291289f0b0365611fb19ee9ff0f9b43dd",
+            "verified": true
+          },
+          {
+            "bytes": 76,
+            "expected_sha256": "90376aca2cc0b7bbaf19dbb5ce848d13f9cc9aa9bbe842afd47b8fd4f8bd53c0",
+            "path": "experiments/first_passage_cell/__init__.py",
+            "sha256": "90376aca2cc0b7bbaf19dbb5ce848d13f9cc9aa9bbe842afd47b8fd4f8bd53c0",
+            "verified": true
+          },
+          {
+            "bytes": 15856,
+            "expected_sha256": "f2b739eaa7f86f755e283ec8e7a63ed2e9d3029d56d928f7b651ea323c1f3308",
+            "path": "experiments/first_passage_cell/kernels.py",
+            "sha256": "f2b739eaa7f86f755e283ec8e7a63ed2e9d3029d56d928f7b651ea323c1f3308",
+            "verified": true
+          },
+          {
+            "bytes": 13234,
+            "expected_sha256": "3d19c2f0aef69da5d368da01e34308f1344ec98b10fd0aaefa1ba4877aa9baff",
+            "path": "experiments/native_readout_objective/PROTOCOL.json",
+            "sha256": "3d19c2f0aef69da5d368da01e34308f1344ec98b10fd0aaefa1ba4877aa9baff",
+            "verified": true
+          },
+          {
+            "bytes": 78,
+            "expected_sha256": "11e5aef5eedd73fa6570528a0f6d24696a19e0ecf16650d5b9b84710951ce14e",
+            "path": "experiments/native_readout_objective/__init__.py",
+            "sha256": "11e5aef5eedd73fa6570528a0f6d24696a19e0ecf16650d5b9b84710951ce14e",
+            "verified": true
+          },
+          {
+            "bytes": 15550,
+            "expected_sha256": "a3e1817ec65fd7adc5649a7f88baff71411b42f5d08bd96fbb2ec40099f021c0",
+            "path": "experiments/native_readout_objective/audit.py",
+            "sha256": "a3e1817ec65fd7adc5649a7f88baff71411b42f5d08bd96fbb2ec40099f021c0",
+            "verified": true
+          },
+          {
+            "bytes": 8754,
+            "expected_sha256": "3b2de3a5aa97c4006232efb4f18acc864675871d3987d03ddbecfac2bfc7d924",
+            "path": "experiments/native_readout_objective/audit_core.py",
+            "sha256": "3b2de3a5aa97c4006232efb4f18acc864675871d3987d03ddbecfac2bfc7d924",
+            "verified": true
+          },
+          {
+            "bytes": 9736,
+            "expected_sha256": "63e701e39982777c8eb3c60b20c8bf85d8067854a0987d22953fcc8352ed41fa",
+            "path": "experiments/native_readout_objective/audit_costs.py",
+            "sha256": "63e701e39982777c8eb3c60b20c8bf85d8067854a0987d22953fcc8352ed41fa",
+            "verified": true
+          },
+          {
+            "bytes": 13883,
+            "expected_sha256": "ab9675718f0179508277de95fc380d2535541731571ec229984035c77e5ab2e3",
+            "path": "experiments/native_readout_objective/audit_diagnostics.py",
+            "sha256": "ab9675718f0179508277de95fc380d2535541731571ec229984035c77e5ab2e3",
+            "verified": true
+          },
+          {
+            "bytes": 10039,
+            "expected_sha256": "435ed68172e0335df7bfdacb3a2083b11bea16943a52d53c65bda131724d334f",
+            "path": "experiments/native_readout_objective/audit_integrity.py",
+            "sha256": "435ed68172e0335df7bfdacb3a2083b11bea16943a52d53c65bda131724d334f",
+            "verified": true
+          },
+          {
+            "bytes": 8530,
+            "expected_sha256": "d21b1356129f6c9c65dd977f61bd9edfc54a544c438ec886b880367dd0ccf9ff",
+            "path": "experiments/native_readout_objective/audit_records.py",
+            "sha256": "d21b1356129f6c9c65dd977f61bd9edfc54a544c438ec886b880367dd0ccf9ff",
+            "verified": true
+          },
+          {
+            "bytes": 17934,
+            "expected_sha256": "7bfb6584cf97b6391c0ffdddb158564dca2ab96bff00f32f8cca60f577580180",
+            "path": "experiments/native_readout_objective/audit_training.py",
+            "sha256": "7bfb6584cf97b6391c0ffdddb158564dca2ab96bff00f32f8cca60f577580180",
+            "verified": true
+          },
+          {
+            "bytes": 4457,
+            "expected_sha256": "8d7ffb5600ff7896c15ceab27ffc78afdc99e88c1154fdab6651d94f413a9e7f",
+            "path": "experiments/native_readout_objective/common.py",
+            "sha256": "8d7ffb5600ff7896c15ceab27ffc78afdc99e88c1154fdab6651d94f413a9e7f",
+            "verified": true
+          },
+          {
+            "bytes": 9612,
+            "expected_sha256": "e71807c23c363edbf8ad30f08e677506529405e132ba8606da0376419024229a",
+            "path": "experiments/native_readout_objective/diagnostics.py",
+            "sha256": "e71807c23c363edbf8ad30f08e677506529405e132ba8606da0376419024229a",
+            "verified": true
+          },
+          {
+            "bytes": 8093,
+            "expected_sha256": "b17947674d2f126720662de2e4e5dfc424fe8ff8c95107e819f7b6b00b8e81ac",
+            "path": "experiments/native_readout_objective/engineering.py",
+            "sha256": "b17947674d2f126720662de2e4e5dfc424fe8ff8c95107e819f7b6b00b8e81ac",
+            "verified": true
+          },
+          {
+            "bytes": 15713,
+            "expected_sha256": "648c03843a4b60faaacfe94fe821a7f5a5f2fff017205f8c3956f62d10d3f97c",
+            "path": "experiments/native_readout_objective/engineering_replay.py",
+            "sha256": "648c03843a4b60faaacfe94fe821a7f5a5f2fff017205f8c3956f62d10d3f97c",
+            "verified": true
+          },
+          {
+            "bytes": 1395,
+            "expected_sha256": "80065606d1bf8b57adb2d3fb55fb06ba91e85a23929d890492d68f06d9887baf",
+            "path": "experiments/native_readout_objective/execution.py",
+            "sha256": "80065606d1bf8b57adb2d3fb55fb06ba91e85a23929d890492d68f06d9887baf",
+            "verified": true
+          },
+          {
+            "bytes": 8896,
+            "expected_sha256": "2061f928a7eef563cd4a90adabe2ac2044e7a60ea0b743dd5331ebc9e72414e9",
+            "path": "experiments/native_readout_objective/head.py",
+            "sha256": "2061f928a7eef563cd4a90adabe2ac2044e7a60ea0b743dd5331ebc9e72414e9",
+            "verified": true
+          },
+          {
+            "bytes": 23744,
+            "expected_sha256": "911f5b3488540dee5022875c04d9dc22994b636ea24f1a53efbc4b8b3a1dacd9",
+            "path": "experiments/native_readout_objective/native/BUILD_RECEIPT.json",
+            "sha256": "911f5b3488540dee5022875c04d9dc22994b636ea24f1a53efbc4b8b3a1dacd9",
+            "verified": true
+          },
+          {
+            "bytes": 19855,
+            "expected_sha256": "6addea031fa9ba2ca403137d8d10da6088c255474c681b106d9a2706c645dd09",
+            "path": "experiments/native_readout_objective/native/SOURCE_MANIFEST.json",
+            "sha256": "6addea031fa9ba2ca403137d8d10da6088c255474c681b106d9a2706c645dd09",
+            "verified": true
+          },
+          {
+            "bytes": 5933,
+            "expected_sha256": "e7f5895835054c86d04ceee9faf669482896aaf8565a1d62246551baffb58986",
+            "path": "experiments/native_readout_objective/preflight.py",
+            "sha256": "e7f5895835054c86d04ceee9faf669482896aaf8565a1d62246551baffb58986",
+            "verified": true
+          },
+          {
+            "bytes": 4681,
+            "expected_sha256": "e738c8926aaf9a8fe683f5c3fa7134c4162f1a63432177763f45108fbdc40c71",
+            "path": "experiments/native_readout_objective/smoke.py",
+            "sha256": "e738c8926aaf9a8fe683f5c3fa7134c4162f1a63432177763f45108fbdc40c71",
+            "verified": true
+          },
+          {
+            "bytes": 6610,
+            "expected_sha256": "0d86ccf925d467ef06d0c7cc16bb725d94b1ffdd6678b6159b8135cb5fa9161c",
+            "path": "experiments/native_readout_objective/source.py",
+            "sha256": "0d86ccf925d467ef06d0c7cc16bb725d94b1ffdd6678b6159b8135cb5fa9161c",
+            "verified": true
+          },
+          {
+            "bytes": 11072,
+            "expected_sha256": "cfbcd3009f2d786a1c851e11a7dcc21112f9e2da4feea33b1b2f538e65787255",
+            "path": "experiments/native_readout_objective/study.py",
+            "sha256": "cfbcd3009f2d786a1c851e11a7dcc21112f9e2da4feea33b1b2f538e65787255",
+            "verified": true
+          },
+          {
+            "bytes": 13607,
+            "expected_sha256": "081930baaaeca14a9fe93ba550c15c8ec08eee049a9797decac136d66f7fdba7",
+            "path": "experiments/native_readout_objective/test_audit.py",
+            "sha256": "081930baaaeca14a9fe93ba550c15c8ec08eee049a9797decac136d66f7fdba7",
+            "verified": true
+          },
+          {
+            "bytes": 5519,
+            "expected_sha256": "0502afc3c9c26ef46cc1c15664108bebbd26f45649da015bb8c75f21d31aee16",
+            "path": "experiments/native_readout_objective/test_head.py",
+            "sha256": "0502afc3c9c26ef46cc1c15664108bebbd26f45649da015bb8c75f21d31aee16",
+            "verified": true
+          },
+          {
+            "bytes": 8407,
+            "expected_sha256": "5f13b2c914ce9de69e0dfe4e2fa09e1b2c34d644226d084721aaead9a049cda3",
+            "path": "experiments/native_readout_objective/test_study.py",
+            "sha256": "5f13b2c914ce9de69e0dfe4e2fa09e1b2c34d644226d084721aaead9a049cda3",
+            "verified": true
+          },
+          {
+            "bytes": 9400,
+            "expected_sha256": "7ff0f187b8c5d7e98e83b8156f2be7c5d528947fbb18cc87faec7817e28967f0",
+            "path": "experiments/native_readout_objective/training.py",
+            "sha256": "7ff0f187b8c5d7e98e83b8156f2be7c5d528947fbb18cc87faec7817e28967f0",
+            "verified": true
+          }
+        ],
+        "expected_source_files": 92,
+        "original_publications": [
+          {
+            "path": "experiments/native_readout_objective/SOURCE_SEAL.json",
+            "publication_commit": "7908860cb959cbe1599379d4ecbfcc22fbccbe61",
+            "same_bytes": true
+          },
+          {
+            "path": "experiments/native_readout_objective/PROTOCOL.json",
+            "publication_commit": "7908860cb959cbe1599379d4ecbfcc22fbccbe61",
+            "same_bytes": true
+          },
+          {
+            "path": "experiments/native_readout_objective/evidence/SELECTION_SEAL.json",
+            "publication_commit": "87b03617077f9e5f275d291b7af06cd1418f87ce",
+            "same_bytes": true
+          }
+        ],
+        "package": "native_readout_objective",
+        "selection_binding_valid": true
+      }
+    ],
+    "source_entries": 263,
+    "unique_source_paths": 129
+  },
+  "sha256_catalogs": [
+    {
+      "catalog": {
+        "bytes": 169,
+        "path": "experiments/evidence_tools/SHA256SUMS",
+        "sha256": "0a41464771aa0032875c980439948e46f75c3140d05595b9ff38f29a3b1ec886"
+      },
+      "verified_files": [
+        {
+          "bytes": 21552,
+          "expected_sha256": "228760495adc3053a5caebbfd26a3b21c2f8585d7a9e77540e0ae80e6a054e6d",
+          "path": "experiments/evidence_tools/public_archive_retrieve.py",
+          "sha256": "228760495adc3053a5caebbfd26a3b21c2f8585d7a9e77540e0ae80e6a054e6d",
+          "verified": true
+        },
+        {
+          "bytes": 4863,
+          "expected_sha256": "7c4e050cadaeedce4007e2655ab035f02d4af8d50872614f494354c376eb68cf",
+          "path": "experiments/evidence_tools/README.md",
+          "sha256": "7c4e050cadaeedce4007e2655ab035f02d4af8d50872614f494354c376eb68cf",
+          "verified": true
+        }
+      ]
+    }
+  ],
+  "started_at_utc": "2026-10-29T17:18:43.456916+00:00"
+}
