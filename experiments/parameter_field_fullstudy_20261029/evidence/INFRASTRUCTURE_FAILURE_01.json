@@ -1,0 +1,64 @@
+{
+  "schema": "hepta.fullstudy.infrastructure-failure.1",
+  "observed_utc": "2026-10-29T07:48:24.201206+00:00",
+  "status": "INCOMPLETE_INFRASTRUCTURE_FAILURE",
+  "last_progress": {
+    "running": {
+      "A-17": {
+        "pid": 409403,
+        "last_line": "{\"stage\": \"A_bank\", \"seed\": 17, \"schedule\": 6003, \"prefix\": \"balanced\", \"step\": 0, \"rows\": 43}"
+      },
+      "A-29": {
+        "pid": 409404,
+        "last_line": "{\"stage\": \"A_bank\", \"seed\": 29, \"schedule\": 6003, \"prefix\": \"balanced\", \"step\": 0, \"rows\": 43}"
+      },
+      "A-43": {
+        "pid": 409405,
+        "last_line": "{\"stage\": \"A_bank\", \"seed\": 43, \"schedule\": 6003, \"prefix\": \"balanced\", \"step\": 0, \"rows\": 43}"
+      },
+      "C": {
+        "pid": 414131,
+        "last_line": "{\"stage\": \"C_warmup\", \"seed\": 808, \"mode\": \"dual\", \"role\": \"evaluation\", \"complete\": true}"
+      }
+    },
+    "pending": [],
+    "results": {
+      "preflight": {
+        "exit_code": 0,
+        "wall_seconds": 22.016673221995006,
+        "last_line": "{\"complete\": true, \"full_current_dimension\": 54740, \"wall_seconds\": 19.00305874300102}"
+      }
+    },
+    "raw_bytes": 410254736,
+    "elapsed_seconds": 1381.6519133149995
+  },
+  "cause_observed": "exec-server transport disconnected, then controller and all four study workers absent; unpinned private tmpfs namespace vanished",
+  "root_cause_confirmed": false,
+  "raw_namespace_lost": true,
+  "raw_archive_finalized": false,
+  "published_source_preserved": true,
+  "independent_endpoint_roles_opened": [],
+  "scientific_completeness_claim": false,
+  "rerun_rule": "Repeat exact frozen A/C configuration without seed/action/threshold/sample selection; record failed-attempt work separately, unknown unpersisted work not fabricated.",
+  "memory_observations": {
+    "memory_max_bytes": 8589934592,
+    "memory_peak_bytes": 8594927616,
+    "oom_events_cumulative": 8,
+    "oom_kill_cumulative": 4,
+    "memory_events_tied_to_specific_pid": false,
+    "interpretation": "Consistent with memory pressure; event counters alone do not identify each terminated process."
+  },
+  "retry_storage": "process-independent scratch filesystem, new root",
+  "empty_archive_reservation_released": true,
+  "known_scheduled_gradient_microsteps_lower_bound": {
+    "A_per_seed": 31440,
+    "A_all_three": 94320,
+    "C_completed_warmups": 8000,
+    "attempt01_training_total": 102320,
+    "attempt01_preflight": 432,
+    "earlier_disk_preflight": 432,
+    "all_known_before_retry": 103184,
+    "A_formula": "43 logged parents per seed: 7 complete prefixes*sum_d=0..5(4*(288\u221248*d)+48)+1200; each full prefix4320",
+    "unlogged_partial_work": "unknown; lower bound is not the complete actual compute cost"
+  }
+}

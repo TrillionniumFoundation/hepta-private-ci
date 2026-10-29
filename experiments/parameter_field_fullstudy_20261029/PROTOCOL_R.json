@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.fullstudy.branch-terminal-reconstruction.protocol.1",
+  "execution_ready": true,
+  "registration": {
+    "stage": "R",
+    "source_stage": "A",
+    "model_seeds": [
+      17,
+      29,
+      43
+    ],
+    "schedule_ids": [
+      6000,
+      6001,
+      6002,
+      6003
+    ],
+    "prefixes": [
+      "baseline",
+      "balanced"
+    ],
+    "parent_clocks": [
+      0,
+      48,
+      96,
+      144,
+      192,
+      240
+    ],
+    "candidate_actions": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "baseline_actions": {
+      "17": 2,
+      "29": 3,
+      "43": 3
+    },
+    "terminal_clock": 288,
+    "guard_grain": 48,
+    "parents_per_seed": 48,
+    "terminals_per_seed": 192,
+    "parents_total": 144,
+    "terminals_total": 576,
+    "scheduled_gradient_microsteps_per_seed": 32256,
+    "scheduled_gradient_microsteps_total": 96768,
+    "global_raw_cap_bytes": 2147483648,
+    "allocatable_reserve_bytes": 2147483648,
+    "minimum_available_inodes": 2000,
+    "cpu_seconds_per_seed": 7200,
+    "wall_seconds_per_seed": 10800,
+    "threads": 2,
+    "interop_threads": 1,
+    "cost_scope": "Additional reconstruction work only; original scientific counts remain unchanged.",
+    "evidence_scope": "Newly reconstructed terminal bytes matching original component/dynamics/history hashes, not previously archived original bytes.",
+    "new_source_roles": [],
+    "new_fitting_or_selection": false
+  },
+  "source_stage_A_protocol_sha256": "2c02b5aff224f125826931f3ecf691b2a01391a719075db8a1bc9fb5f5dafd55",
+  "created_at": "2026-10-29T07:50:41.797832+00:00",
+  "reason": "Repair discovered terminal raw-byte retention gap; additional deterministic work, unchanged original scientific labels and counts.",
+  "operational_amendment_required": true,
+  "original_storage_budget_passed": false
+}
