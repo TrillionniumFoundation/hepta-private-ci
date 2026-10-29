@@ -1,0 +1,102 @@
+{
+  "schema": "hcsn-native003-predeclared-extension.v1",
+  "study_id": "native003",
+  "status_when_written": "no fresh holdout inference and no head training performed",
+  "reason": "Preserved native002 showed margin-dominated KEEP behavior; test separately trained price-aware heads on a new fixed holdout",
+  "original_study_is_unchanged": true,
+  "original_freeze_identity": "caa1a503288d4986bf2f0bc3608bc211a12e221a45c822bfbd19fdacce953bc3",
+  "backbone": {
+    "task": "mnist",
+    "model": "free_dual",
+    "seed": 9101,
+    "training_run": "results/study001/runs/mnist/free_dual/9101",
+    "selected_checkpoint_sha256": "069ecacf9fa21cb8e4360893a2d6aa68621a1860d4baa6b9ae1c7343df289cfd",
+    "updates_permitted": false
+  },
+  "data": {
+    "head_train": "first 256 episodes of original frozen TRAIN split",
+    "head_validation": "first 128 episodes of original frozen VAL split",
+    "fresh_test": "MNIST original test source, generate deterministic 640 episodes and take indices 512:640",
+    "fresh_test_episodes": 128,
+    "fresh_test_overlap_prohibited": "all original TRAIN, VAL and 512 TEST image source IDs",
+    "frontend_normalization": "exact original train-only MNIST transform; no refitting",
+    "head_normalization": "six feature means and stds from head TRAIN prefixes and all three public prices only; std floor 0.0001",
+    "query_target": "final digit label; prefix correctness used only as offline training reward, never as head input"
+  },
+  "head_inputs": [
+    "tanh(mean internal stationary J))",
+    "tanh(mean natural margin))",
+    "1-max softmax classification confidence",
+    "mean interval first-passage probability",
+    "observed elapsed time / 32",
+    "public read price"
+  ],
+  "heads": {
+    "value_maxout": {
+      "name": "positive scaled softplus max-pool head with value features",
+      "formula": "max_j softplus(a_j)*softplus(W_j*z+b_j)+b_out, four branches, six standardized inputs",
+      "trainable_parameters": 33,
+      "qualification": "not literal max-of-affine maxout, not an optimal free boundary; active-parameter count matching does not imply equal functional capacity; hard stop sets remain intersections of affine halfspaces"
+    },
+    "ordinary_mlp": {
+      "name": "ordinary tanh MLP using the same six features",
+      "formula": "Linear(4,1)(tanh(Linear(6,4)(z)))",
+      "trainable_parameters": 33
+    },
+    "risk_threshold": {
+      "name": "restricted price-conditioned learned risk threshold",
+      "formula": "score=risk-sigmoid(a+b*read_price/0.05)",
+      "trainable_parameters": 2
+    }
+  },
+  "optimization": {
+    "seed": 440031,
+    "learning_rates": [0.003, 0.01],
+    "updates_per_learning_rate": 128,
+    "batch_size": 64,
+    "optimizer": "Adam default betas; no weight decay",
+    "gradient_clip_l2": 2.0,
+    "temperature": 0.1,
+    "temperature_selection": "none; fixed before training and fresh test",
+    "checkpoints": [32, 64, 128],
+    "objective": "negative mean soft first-stop expected(correct_at_stop-read_price*reads); final step forced to stop",
+    "soft_stop_probability": "sigmoid(-continue_score/temperature)",
+    "selection": "maximum validation hard-Q24 utility, macro average across the three prices; ties prefer earlier update, then smaller LR",
+    "paired_batches": "identical random minibatch index stream for every head and LR",
+    "budget_scope": "equal update/search counts, not equal CPU; complete measured CPU charged",
+    "head_train_examples": "256 episode traces crossed with all three read prices"
+  },
+  "execution": {
+    "read_prices": [0.005, 0.02, 0.05],
+    "references": ["read_all", "fixed8", "fixed16", "fixed24"],
+    "native_transport": "tanh(learned continue_score) into +/-score coordinates of unchanged width5/top_k1 native profile; KEEP iff Q24 score>0, STOP ties",
+    "parity": "record every float decision and quantized score; native must match Q24 action; float/Q24 disagreements allowed only for explicitly recorded rounding-to-zero ties",
+    "actual_computation": "one actual backbone.step and head evaluation before each actual native owner tick; STOP exits the model loop",
+    "hard_horizon": "finish at 32 even if native requests KEEP; record finite_horizon honestly",
+    "threads": 1,
+    "recovery": "first fresh episode at price0.005 for each learned head; restore if first observation requests KEEP, otherwise record not exercised; new native process and neural/head objects, same Python interpreter",
+    "pre_holdout_gate": "freeze protocol, new source files, fresh data hashes, original source identity and all head selections before fresh inference"
+  },
+  "cost_accounting": {
+    "backbone_training": "complete original training EXECUTION.json child CPU, including its full two-LR search",
+    "head_training": "charge both LR candidates and all validation/checkpoint work for each head, even when an earlier checkpoint is selected",
+    "trace_generation": "complete frozen-backbone TRAIN and VAL prefix computation and shared training setup charged once to each independent learned-head deployment scenario",
+    "references": "same backbone training charge; no learned-head search or trace charge assigned to references that do not need them",
+    "execution": "full evaluator wait4 CPU includes waited native descendants; native-child CPU is nested detail and must not be added again to that total",
+    "shared_setup": "fresh data generation and evaluator/orchestrator setup, imports and report work charged once/N to each separate policy scenario; policy scenarios are alternatives and must not be summed",
+    "recovery": "complete separate recovery-verification execution charged once/N, not a pure restart estimate",
+    "amortization_episode_counts": [1000, 10000, 100000],
+    "utility_units_per_cpu_second": [0, 0.0001, 0.001, 0.01],
+    "no_energy_claim": true
+  },
+  "interpretation": {
+    "primary": "descriptive fresh-cohort comparison of stopping heads on one fixed trained backbone",
+    "prohibited": [
+      "a head win does not prove the HCSN neuron is better than an ordinary backbone",
+      "one backbone seed and 128 deterministic fresh episodes do not establish population significance",
+      "native003 does not overwrite, tune, or reinterpret native002 as a successful maxout controller",
+      "no fresh-test-driven architecture, LR, temperature, threshold or checkpoint changes"
+    ],
+    "failures": "preserve development and main failures; a bug requires a new run identity and explicit explanation"
+  }
+}
