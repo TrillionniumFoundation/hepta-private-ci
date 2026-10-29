@@ -36,6 +36,10 @@ PATHS = {
     "bridge": "hepta/rr_bridge_results/trained_latest.json",
     "bootstrap": "hepta/bootstrap_repair_results/proof_latest.json",
     "ci": "hepta/ci_observation/observation.json",
+    "migration": "workspace_migration.json",
+    "migration_review": "workspace_migration_review.json",
+    "migration_runtime": "workspace_migration_runtime_review.json",
+    "storage_context": "policy_benchmark_results/storage_context.json",
 }
 
 def read(name):
@@ -83,6 +87,16 @@ def load_complete():
     for item in p["receipts"]:
         if sha(item["path"]) != item["sha256"]:
             raise ValueError("Resource raw changed")
+    for key in ("policy_summary", "storage_context"):
+        if e[key]["matrix_sha256"] != sha(PATHS["policy"]):
+            raise ValueError("Resource postprocessing binds a different matrix")
+    context = e["storage_context"]
+    if (context["workspace_migration_sha256"] != sha(PATHS["migration"])
+            or context["original_completed_conditions"] != 64
+            or context["tmpfs_completed_conditions"] != 16
+            or not context["all_original_result_hashes_unchanged"]
+            or e["migration_runtime"]["migration_receipt_sha256"] != sha(PATHS["migration"])):
+        raise ValueError("Resource migration provenance differs")
     if e["aggregate"]["primary_comparator"] != frozen["selection"]["primary_comparator"]:
         raise ValueError("Primary comparator changed")
     return e
@@ -200,6 +214,13 @@ def build():
         "conditional_trained_feature_bridge_passed":e["bridge"]["all_passed"],
         "production_owner_lifecycle_qualified":False,"independent_production_future_window":False,
         "full_cell_scale_qualified":False,"dot_identity_verified":False,
+        "resource_environment_migration":e["migration"]["environment_change"],
+        "resource_conditions_original_overlay":e["storage_context"]["original_completed_conditions"],
+        "resource_conditions_tmpfs":e["storage_context"]["tmpfs_completed_conditions"],
+        "resource_boundary_version":"original_frozen_rr_full",
+        "precision_repair_resource_measurements_performed":False,
+        "runtime_identity_review_status":e["migration_runtime"]["status"],
+        "resource_environment_identical_across_migration":False,
         "full_repository_ci_green":e["ci"]["full_repository_gate_green"],
         "global_resource_maturity_qvi_solved":False,"scientific_novelty_established":False,
         "all_blockers_closed":False,"production_activation_allowed":False,
