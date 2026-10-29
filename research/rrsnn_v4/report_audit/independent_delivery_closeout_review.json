@@ -1,0 +1,158 @@
+{
+  "schema": "rrsnn-v4-independent-delivery-closeout-review-1",
+  "created_at_utc": "2026-10-29T17:41:15.773267+00:00",
+  "reviewer": "/root/r5_real_execution",
+  "status": "passed_for_saved_archive_bindings_and_same_environment_new_directory_restoration",
+  "input_receipts_sha256": {
+    "report_audit/fresh_directory_restore.json": "66c7120d7842b72e96debd6f223489bf38f6a2686e91edfab44afa1bf6f572cf",
+    "report_audit/restore_input_binding.json": "129067f3f65862ea0634f10b047dd40585764d55ce59494ffac8cbae10c5fd6f",
+    "resource_audit/final_restore_published_paths.json": "e43899c995fe2e5bc02ce3a56cb8364c36e0e3dfc977eaa0bcab2c3862f2958a",
+    "report_audit/independent_restore_source_review.json": "55e2f59b9561291681c7213033ad27c7c0ba68cd698cf317b4526952d8b94150",
+    "report_audit/independent_final_report_review.json": "527ccf113861aad556177047f07db7f9deaa54c8a4a30c40d5ca21d5b3e9ded4",
+    "report_audit/restore_path_coverage_closure_addendum.json": "83bd9c3c0913b6e1dc259a61dac38be9cf9c0f36810616270f174fe7c1669751",
+    "raw_archive_receipts/core_prepared.json": "5d7117ecb16d716e155abcdc7fdc0684b8549661535c87d35957ef24cfd55d5c",
+    "raw_archive_receipts/core_uploaded.json": "fb710dcca9ed44d2a93ca5526ec58ddc836ddab7f43b093514426717ba7cee04",
+    "raw_archive_receipts/resources_prepared.json": "ea8e29eef16c1a66bc16e37570a0a0d0464c6a491a3b5181bf81905df334cf39",
+    "raw_archive_receipts/resources_uploaded.json": "95e56f940d703e9d71b711ceface446cfdf86bfa6a2a2a34c194beb02fb46121",
+    "restore_delivery.py": "47930c2448d19c5db3bbd2e71e6cdc397fac5d5e8c499aaf3dc741581f39f681",
+    "results/closeout.json": "aa288ad328299c720856af891d5d2b6df8dde5f7d20cef069fd84a653f104fa9",
+    "REPORT.zh-CN.md": "c028fdf05d387af79598c6474a677f02e0062a7e152b3723fde9ce18072a48e6"
+  },
+  "source_commit_restored": "fa46e1413cdf10402892bd6ca84bf4fbeeae9c9c",
+  "source_map_sha256": "e43899c995fe2e5bc02ce3a56cb8364c36e0e3dfc977eaa0bcab2c3862f2958a",
+  "source_map_entries": 179,
+  "source_map_remote_provenance": "Coordinator supplied and recorded a nontruncated remote tree and exact blob verification in restore_input_binding.json. This review checks metadata/local content binding and does not make an independent new network fetch.",
+  "small_source_checks": {
+    "__init__.py": {
+      "sha256": "227d288ec36b913d650a35915373df53b20d7c22cf3547f6106ffece9af6f0cb",
+      "git_blob_sha": "c9bb6916839653c2672e4ad76abbb7fdf6857eb7",
+      "active_and_restored_bytes_identical": true
+    },
+    "restore_delivery.py": {
+      "sha256": "47930c2448d19c5db3bbd2e71e6cdc397fac5d5e8c499aaf3dc741581f39f681",
+      "git_blob_sha": "ae5e8f666f8886344ec7b9cd4a26ad90708859b9",
+      "active_and_restored_bytes_identical": true
+    },
+    "build_closeout.py": {
+      "sha256": "56690e29b01db894f403d6e0dc0591cd3c44a06926c9db3e7534877e538c79ff",
+      "git_blob_sha": "1aa1d865965e4444987a595e56a315293631d522",
+      "active_and_restored_bytes_identical": true
+    },
+    "delivery_behavior_diagnostic.py": {
+      "sha256": "957e2314c5ccad817097ef6c4afa52716e4925b91d837e3e1ebe4e7549494175",
+      "git_blob_sha": "646c1b458254ad719480742e375eae2335b9854f",
+      "active_and_restored_bytes_identical": true
+    },
+    "report_audit/independent_restore_source_review.json": {
+      "sha256": "55e2f59b9561291681c7213033ad27c7c0ba68cd698cf317b4526952d8b94150",
+      "git_blob_sha": "089872bdede7bd7e7f99ced8067bfefca90d6f2f",
+      "active_and_restored_bytes_identical": true
+    },
+    "report_audit/independent_final_report_review.json": {
+      "sha256": "527ccf113861aad556177047f07db7f9deaa54c8a4a30c40d5ca21d5b3e9ded4",
+      "git_blob_sha": "c10ca541d11af5845549bf42d3f8ba277c930c2b",
+      "active_and_restored_bytes_identical": true
+    },
+    "REPORT.zh-CN.md": {
+      "sha256": "c028fdf05d387af79598c6474a677f02e0062a7e152b3723fde9ce18072a48e6",
+      "git_blob_sha": "21bfd7936371456bf13db3a768544e76e236586b",
+      "active_and_restored_bytes_identical": true
+    },
+    "results/closeout.json": {
+      "sha256": "aa288ad328299c720856af891d5d2b6df8dde5f7d20cef069fd84a653f104fa9",
+      "git_blob_sha": "c34df9f0ef7375c0b86c13920321e3323e3528af",
+      "active_and_restored_bytes_identical": true
+    }
+  },
+  "restore_receipt_status": "passed",
+  "destination": "/dev/shm/rrsnn-v4-recovery-g38d3wgp/restored_delivery",
+  "restored_files": 3412,
+  "restored_objects_including_root_and_directories": 3943,
+  "restored_tree_fingerprint_sha256": "f91b33d45aade93017e7d302148e6103d1b881d8f6458d23eca3cd008def3231",
+  "command_checks": [
+    {
+      "module": "rrsnn_v4.build_closeout",
+      "resolved_and_executed_module_file": "/dev/shm/rrsnn-v4-recovery-g38d3wgp/restored_delivery/rrsnn_v4/build_closeout.py",
+      "exit_code": 0,
+      "restored_tree_unchanged": true,
+      "verification_output": {
+        "read_only_evidence_verification": "passed",
+        "reports_rewritten": false
+      }
+    },
+    {
+      "module": "rrsnn_v4.delivery_behavior_diagnostic",
+      "resolved_and_executed_module_file": "/dev/shm/rrsnn-v4-recovery-g38d3wgp/restored_delivery/rrsnn_v4/delivery_behavior_diagnostic.py",
+      "exit_code": 0,
+      "restored_tree_unchanged": true,
+      "verification_output": {
+        "verified": true,
+        "raw_files": 180,
+        "result_sha256": "25d5c7fd79cd72fdbdc761afa1b23f330f6d807a8fd324c482a631eaa912171b"
+      }
+    }
+  ],
+  "archives": {
+    "core": {
+      "archive_sha256": "239e3ba9f786929135a505d001148df5cb82116d0422e8e483f9da37ca272792",
+      "archive_bytes": 77386526,
+      "raw_files": 3086,
+      "raw_bytes": 91251786,
+      "metadata_sha256": {
+        "RAW_MANIFEST_core.json": "3a9ff67a82b800e124109d9644c5512e1d638ea8105a5e459484fb7bd2383fd2",
+        "RESTORE_core.txt": "327ca824627979466176aebedc07f88a3d17548cf6352f74cc6b72a793f6d356"
+      },
+      "historical_source_commit": "8dc406ac222aea1609d7ee89979ad6d7b9fd1028",
+      "library_file_id": "libfile_ee2829448e808191baadc855491e0f81",
+      "library_upload_status": "succeeded",
+      "upload_receipt_sha256": "fb710dcca9ed44d2a93ca5526ec58ddc836ddab7f43b093514426717ba7cee04",
+      "local_archive_size_checked": true,
+      "whole_archive_hash_recomputed_by_this_review": false,
+      "manifest_and_restore_metadata_actual_bytes_checked": true
+    },
+    "resources": {
+      "archive_sha256": "3a993c1060e2e4ff7ec769513d99bc7773acb0ce0e3a97183d8c6e03d3105e82",
+      "archive_bytes": 1500989,
+      "raw_files": 143,
+      "raw_bytes": 6784040,
+      "metadata_sha256": {
+        "RAW_MANIFEST_resources.json": "579e09a5f97ccba18bfa25d65a52d4417735f7c7079abc2e757724274c29ca12",
+        "RESTORE_resources.txt": "327ca824627979466176aebedc07f88a3d17548cf6352f74cc6b72a793f6d356"
+      },
+      "historical_source_commit": "c210500bd975a100c2723b83ac17891c397f4b0c",
+      "library_file_id": "libfile_c6a224f547c88191a196832e246fce5c",
+      "library_upload_status": "succeeded",
+      "upload_receipt_sha256": "95e56f940d703e9d71b711ceface446cfdf86bfa6a2a2a34c194beb02fb46121",
+      "local_archive_size_checked": true,
+      "whole_archive_hash_recomputed_by_this_review": false,
+      "manifest_and_restore_metadata_actual_bytes_checked": true
+    }
+  },
+  "four_ELF_actual_file_header_and_mode_checked": true,
+  "four_ELF_mode": "0755",
+  "whole_tree_unchanged_after_each_verifier": "Both true in actual execution receipt from the source-pinned reviewed helper; root/directories/files, permissions, mtime/ctime and file hashes covered. No repeated full-tree scan in this final metadata audit.",
+  "source_and_reports_not_rewritten": true,
+  "archive_prepared_and_core_pending_scope_notes": "Historical prepared receipts and original core upload scope remain unchanged. Their not-yet-uploaded/complement-pending language describes their creation stage; both later upload-success receipts and the actual restore close those delivery steps without rewriting historical evidence.",
+  "actual_execution_scope": "Same interpreter and current runtime, new directory, locally available exact uploaded archive bytes and source bytes checked against supplied remote-verified Git blob map. The two existing --verify-only commands executed successfully from the restored modules.",
+  "fresh_remote_download_performed": false,
+  "new_environment_dependency_build_or_retraining": false,
+  "actor_or_model_benchmark_executed_by_review": false,
+  "large_archive_or_raw_payload_scan_by_review": false,
+  "review_method": "Metadata and small source/manifest reads only; rehash exact receipts, compare local/restored essential sources with Git blob map, parse actual verifier stdout, compare archive preparation/upload/restore hashes and counts, stat archive sizes, read four ELF magic headers and mode bits. No archive re-extraction, verification rerun, training, actor or network download.",
+  "identified_coverage_gap_closure_receipt_sha256": "83bd9c3c0913b6e1dc259a61dac38be9cf9c0f36810616270f174fe7c1669751",
+  "remaining_blockers_within_this_delivery_review": [],
+  "production_gate_status": {
+    "primary_utility_acceptance_passed": false,
+    "original_numerical_gate_passed": false,
+    "isolated_precision_repair_stored_path_comparisons_passed": true,
+    "production_owner_lifecycle_qualified": false,
+    "independent_production_future_window": false,
+    "full_cell_scale_qualified": false,
+    "dot_identity_verified": false,
+    "full_repository_ci_green": false,
+    "all_blockers_closed": false,
+    "production_activation_allowed": false
+  },
+  "final_audit_receipt_git_publication": "Pending coordinator final metadata publication after this review; not claimed completed here.",
+  "all_scientific_or_production_blockers_closed": false
+}
