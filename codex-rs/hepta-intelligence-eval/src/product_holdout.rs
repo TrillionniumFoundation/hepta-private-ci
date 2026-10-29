@@ -26,6 +26,16 @@ impl FrozenProductHoldoutV1 {
             .iter()
             .find(|fold| fold.holdout_windows.contains(&plan.final_holdout_window_id))
             .ok_or(ProductEvaluationError::Binding("frozen final fold"))?;
+        // The product runner releases only the final window. Reject an
+        // additional window before the durable owner consumes the holdout.
+        // Duplicate lineage entries still use the original freezer checks.
+        if fold
+            .holdout_windows
+            .iter()
+            .any(|window| window != &plan.final_holdout_window_id)
+        {
+            return Err(ProductEvaluationError::Binding("product final holdout window"));
+        }
         Ok(Self {
             training_lineage: lineage_digest([
                 fold.training_principals.iter().collect(),
