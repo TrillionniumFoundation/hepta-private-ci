@@ -2,9 +2,9 @@
 
 ## 结论与证据状态
 
-**Hepta 可以沿现有 neuron、认知 owner 和 Agentd 扩展出有不同职责的 memory cell；当前实现提供了这个方向的有限原型，还没有形成能够自主分工、独立演化的通用元记忆网络。** 已写入的原生代码将参数读出、来源授权、程序执行和发布资格分开。研究侧训练并比较了有限映射；原生侧准备通过真实 SQLite owner、控制 socket、独立进程和签名 artifact owner 验收这些参数能否进入实际读取流程。
+**Hepta 可以沿现有 neuron、认知 owner 和 Agentd 扩展出有不同职责的 memory cell；当前实现提供了这个方向的有限原型，还没有形成能够自主分工、独立演化的通用元记忆网络。** 已写入的原生代码将参数读出、来源授权、程序执行和发布资格分开。研究侧训练并比较了有限映射；原生侧已经在本轮 CI 中通过真实 SQLite owner、控制 socket、独立进程和签名 artifact owner 完成了限定规模的实际读取验收。
 
-**本报告的 actual owner 状态统一为“待本轮 CI 实测”。** 第三轮普通测试已有 969 passed／31 skipped，随后在 JUnit 收集阶段失败，actual 尚未启动；当前进度与原始证据见 [总报告](REPORT.md)。下文的原生加载、读出、停止、迁移、撤销和数值一致性均描述实现或测试设计；测试代码中的断言与预期生成的 `status: passed` 字段不是已经完成的证据。编译、单元／集成测试和 actual 五进程链路应分别记录结果，失败日志也必须保留。
+**原生验证已通过 [run 40909855139](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40909855139)。** 本轮为 11 项 Python 驱动检查、969 个普通 Rust 测试和一个 actual 生命周期 parent，原始归档的 343 个文件全部验证。实际测试的提交是 `4131172a07fdf5bf5fe84f0397800bf900248ab8`；最终修复／格式化与发布身份单独记录，见 [总报告](REPORT.md) 和 [原生结果](NATIVE_RESULTS.md)。前三轮失败证据仍保留。下文说明已执行的测试设计，同时区分 raw observations、测试断言和事后 JSON 审计；测试名称或代码中的 `passed` 字样不能独自作为证据。
 
 已经完成的冻结 Python 研究及其局限见 [研究结果报告](research_results_zh.md)、[完整计数](analysis/COUNTS.md) 和 [独立审计](audit/AUDIT_REPORT.md)。这里只保留对实现有影响的结论：固定 typed 分解在本次限定 joint 对照上较强，但没有超过同信息 SQL planner；直接未见措辞、学习型寻址与维护质量较弱；分裂和合并候选均未通过质量门槛。不能从这些结果推导一般压缩优势、动态结构优势或通用记忆已经形成。
 
@@ -148,13 +148,13 @@ Inventory 的 `(key, kind, effective_at)` 构成稳定地址，源记录经现�
 
 入口为 [`memory_inventory_actual_trained_owner_lifecycle`](../../codex-rs/hepta-agentd/src/memory_inventory_actual_tests.rs)，默认 ignored，要求显式给出 Python、研究代码、编码器、旧 checkpoint 和全新 evidence 路径。下表五个进程指 owner 生命周期进程，不包含 Python 训练／读取 worker、迁移接收进程或 Rust 测试父进程。
 
-| Owner 进程 | 设计动作 | 计划保留的证据 | 状态 |
+| Owner 进程 | 设计动作 | 保留的证据与断言 | 状态 |
 | --- | --- | --- | --- |
-| 1：原 checkpoint 读出 | 写入真实 SQLite 初始记录；从 owner snapshot 导出旧训练张量；安装签名 bundle；读取两类参数与独立 entity/workflow 组合；检查步预算、缓存休眠／重载、坏字节拒绝；门控 in-flight 请求后进入 Draining 并停止 | 初始 snapshot、release 身份、读取 trace、拒绝读出、PID 与控制流量 | 待本轮 CI 实测 |
-| 2：冷启动与更正 | 重开原 owner／原参数；更正未查询 semantic 来源并确认旧 bundle 应拒绝；写入 hold=true；从真实新 snapshot 训练新参数并安装；验证更正与存活地址及 hold 拒答；停止 | 原权重冷读、更正前后 cut、新训练收据、来源映射和读取 | 待本轮 CI 实测 |
-| 3：新参数冷读与删除 | 冷读更正后的参数；遗忘一个 semantic 地址；旧 bundle 应失效；仅用剩余来源清洁重建；被删 key 应拒答；停止 | Tombstone、剩余来源 snapshot、重建身份、存活地址和删除拒答 | 待本轮 CI 实测 |
-| 4：迁移后混合寻址与撤销 | 在独立目标根目录恢复冷镜像；原源路径不可用；启动实际混合地址 worker；检查组合请求及歧义拒答；向真实 artifact owner 安装撤销 frontier；后续读取应拒绝；停止 | TCP 迁移收据、恢复 anchor／pin、worker 模型和消息身份、撤销收据 | 待本轮 CI 实测 |
-| 5：带独立撤销见证的冷重开 | 父进程提供独立保留的 withdrawal receipt；目标恢复时应拒绝重新选择被撤销 bundle，控制读取不可用 | 冷启动拒绝原因、见证身份、PID／回收状态 | 待本轮 CI 实测 |
+| 1：原 checkpoint 读出 | 写入真实 SQLite 初始记录；从 owner snapshot 导出旧训练张量；安装签名 bundle；读取两类参数与独立 entity/workflow 组合；检查步预算、缓存休眠／重载、坏字节拒绝；门控 in-flight 请求后进入 Draining 并停止 | 初始 snapshot、release 身份、读取 trace、拒绝读出、PID 与控制流量 | actual CI 通过 |
+| 2：冷启动与更正 | 重开原 owner／原参数；更正未查询 semantic 来源并确认旧 bundle 应拒绝；写入 hold=true；从真实新 snapshot 训练新参数并安装；验证更正与存活地址及 hold 拒答；停止 | 原权重冷读、更正前后 cut、新训练收据、来源映射和读取 | actual CI 通过 |
+| 3：新参数冷读与删除 | 冷读更正后的参数；遗忘一个 semantic 地址；旧 bundle 应失效；仅用剩余来源清洁重建；被删 key 应拒答；停止 | Tombstone、剩余来源 snapshot、重建身份、存活地址和删除拒答 | actual CI 通过 |
+| 4：迁移后混合寻址与撤销 | 在独立目标根目录恢复冷镜像；原源路径不可用；启动实际混合地址 worker；检查组合请求及歧义拒答；向真实 artifact owner 安装撤销 frontier；后续读取应拒绝；停止 | TCP 迁移收据、恢复 anchor／pin、worker 模型和消息身份、撤销收据 | actual CI 通过 |
+| 5：带独立撤销见证的冷重开 | 父进程提供独立保留的 withdrawal receipt；目标恢复时应拒绝重新选择被撤销 bundle，控制读取不可用 | 冷启动拒绝原因、见证身份、PID／回收状态 | actual CI 通过 |
 
 旧桥接必须读取原有训练 checkpoint 的 A、B、head 原始 float32 位，保留原 parameter digest；不能把重新训练后输出一样的模型称为原 checkpoint 桥接。更正与删除后的新模型单独标识。初始 32 条 owner 记录来自旧 authored sources 的明确映射，不读取旧 held。[Actual 输入与桥接调用](../../codex-rs/hepta-agentd/src/memory_inventory_actual_cases.rs)；[旧 checkpoint 桥接](../memory-cell-v10/legacy_bridge.py)；[新训练桥接](../memory-cell-v10/native_bridge.py)。
 
@@ -162,11 +162,11 @@ Inventory 的 `(key, kind, effective_at)` 构成稳定地址，源记录经现�
 
 三个桥接阶段各有 semantic／procedure 两个 artifact。Python producer 退出后，独立 fresh reader 输出真正的 `*-reference.json`；Rust parent 中的 numeric helper 读取这些文件，对每个实际 owner 地址执行 `MemoryResidualCellV1::predict`，逐 logit 与 margin 按声明容差比较，同时要求 typed value、拒答、source IDs、parameter digest 和 artifact digest 一致。随后 owner 进程通过真实 socket 读取同身份 artifact，返回 typed 结果。
 
-Numeric helper 不自行合成参考答案；其计划写出的 `RUST_NATIVE_PARITY.json` 记录外部 reference 文件摘要、进程收据、参数／head／encoder 身份和逐地址结果。该数值比对发生在 Rust parent，不能描述为 owner socket 返回了 raw logits；owner 的 socket 验收是另一个检查层。[Numeric actual helper](../../codex-rs/hepta-agentd/src/memory_inventory_numeric_actual.rs)。这些原生断言均待本轮 CI 实测。
+Numeric helper 不自行合成参考答案；其已保存的 `RUST_NATIVE_PARITY.json` 记录外部 reference 文件摘要、进程收据、参数／head／encoder 身份和逐地址结果。该数值比对发生在 Rust parent，不能描述为 owner socket 返回了 raw logits；owner 的 socket 验收是另一个检查层。[Numeric actual helper](../../codex-rs/hepta-agentd/src/memory_inventory_numeric_actual.rs)。三阶段共 47 个阶段地址的 parity 已通过。Parity 本身不检查源真值；79 次 socket 单值强断言及独立保存输出审计另行验证内容，见 [原生结果](NATIVE_RESULTS.md)。
 
 ### 6.2 通过后也不能越过的证据边界
 
-即使以上测试以后通过，结论仍应限定为：
+以上测试已经通过，结论仍受以下范围限制：
 
 - 使用真实 SQLite、Agentd 独占 writer lock、控制 socket 与真实 artifact owner 接口，但 readiness 含明确的 control-only test seam，签名和撤销身份使用测试密钥；不等于完整生产 app-server 启动和生产凭据体系已验收。
 - 迁移设计使用同一物理宿主上的真实 TCP 和独立根目录，源 owner 先停止，WAL 等附件关闭后捕获，恢复对照独立 anchor；不证明跨物理宿主性能、迁移中断／崩溃恢复或无缝在线迁移。相关设计见 [迁移 actual](../../codex-rs/hepta-agentd/src/memory_inventory_migration_actual.rs)。
@@ -233,6 +233,6 @@ Projected training cut 应由 owner 为某个 cell 的完整训练依赖生成�
 
 ## 9. 工程上的下一步验收顺序
 
-先完成当前 native CI 的编译、行为测试、数值 parity 和五进程 actual，保留每项成功或失败的原始证据；这一步解决的是实现能否真实运行。随后优先缩小训练／发布依赖范围并建立持久维护对照，再考虑更强模型和动态结构控制器。质量与成本比较需要独立的新实验，不能由 native 测试通过替代。
+当前 native CI 的编译、行为测试、数值 parity 和五进程 actual 已完成，成功与失败的原始证据均保留；这解决的是限定实现能否真实运行。最终源码修复、格式化和发布身份应与被测试版本分别核对。下一步优先缩小训练／发布依赖范围并建立持久维护对照，再考虑更强模型和动态结构控制器。质量与成本比较需要独立的新实验，不能由 native 测试通过替代。
 
 在这样的顺序下，Hepta 的 neuron 可以逐步成为有不同输出能力的参数 cell；owner 提供可信来源和生命周期，执行器提供有界组合，未来控制器才负责决定哪些 cell 应存在、连接或分裂。后两种动态能力和通用优势都仍是需要实现并接受对照检验的假设。

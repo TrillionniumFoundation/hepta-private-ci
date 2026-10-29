@@ -13,7 +13,7 @@
 - [每个 seed 的计数](analysis/COUNTS.md) 与 [机器可读计数](analysis/COUNTS.json)。
 - [独立一致性审计](audit/AUDIT_REPORT.md)：审计范围、未保存的逐条 calibration 信息和其他证据边界。
 - [原始证据运输清单](formal-01/TRANSPORT.json)、[逐文件 SHA-256](formal-01/RAW_FILES.json)、[恢复程序](formal-01/restore.py)。
-- [native CI 的身份验证与最终格式化流程](../memory-cell-v10-ci/README.md)。
+- [原生实测结果与证据范围](NATIVE_RESULTS.md)；[CI 的身份验证与最终格式化流程](../memory-cell-v10-ci/README.md)。
 
 ## 1. 五个问题的答案
 
@@ -28,7 +28,11 @@
 ### Native 验证与最终源身份
 
 <!-- NATIVE_STATUS_BEGIN -->
-第三轮 native CI 的普通 Rust 测试完成 **969 passed、31 skipped**，随后因驱动未找到 JUnit 报告而失败；actual owner 尚未启动：[run 40906652698](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40906652698)。前两轮在普通测试的编译阶段失败，分别为 release wrapper 字段路径和未声明的测试断言依赖，均已修复。原始失败证据分别保存在 [attempt 01](../memory-cell-v10-ci/evidence/native-attempt-01/GITHUB_ORIGIN.json)、[attempt 02](../memory-cell-v10-ci/evidence/native-attempt-02/GITHUB_ORIGIN.json)、[attempt 03](../memory-cell-v10-ci/evidence/native-attempt-03/GITHUB_ORIGIN.json)。JUnit 路径已按 pinned nextest 实现修复，并增加旧报告清除和严格收集检查。第四轮完整验证已提交：[run 40909855139](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40909855139)，尚未执行最终 `just fix`／`just fmt`。
+**原生验证已通过 [run 40909855139](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40909855139)。** 实际测试提交为 `4131172a07fdf5bf5fe84f0397800bf900248ab8`；11 项 Python 驱动检查、969 个普通 Rust 测试和唯一的 actual 生命周期 parent 全部成功。三阶段 16＋16＋15 个地址的 Rust 数值 parity 通过，五组共 79 次 socket 单值真值检查实际完成。四个服务 owner 正常停止，第五个冷启动因撤销见证明确拒绝读取；迁移为同宿主真实 TCP。
+
+原始 GitHub ZIP 与全部 343 个归档成员已核对，保存为可恢复的 Git 分块；数值一致性、owner 源真值和组合读出的不同证据口径见 [原生结果](NATIVE_RESULTS.md)。前三轮失败均保留：前两次是测试编译问题，第三次普通测试已通过、但驱动 JUnit 路径错误导致 actual 未启动；没有修改断言或研究阈值来消除失败。
+
+最终 `just fix`／`just fmt` 单独运行：[run 40912733051](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40912733051)。它认证成功验证产物与完整保护源后才允许修复、格式化，之后不重跑测试。最终补丁与发布身份待该阶段完成后核对。
 <!-- NATIVE_STATUS_END -->
 
 原生实际生命周期与 Python 研究是两条独立证据链。研究的 32 周期不能冒充 native owner 已运行 32 周期；原生小规模参数读出也不能替代容量 32／64／128 的研究比较。原生 runtime 目前没有自动采用研究中的 split／merge 候选。
