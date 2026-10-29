@@ -15,6 +15,13 @@ codex_rust_crate(
     name = "hepta-agentd",
     compile_data = ["src/cognitive_three_generation_support.rs"],
     crate_name = "codex_hepta_agentd",
+    # Only this fixture writes the legacy ledger; its spawned Agentd stays on
+    # the ordinary product dependency graph and reads the durable descriptor.
+    integration_test_dependency_replacements = {
+        "hepta-agentd-plasticity_process_e2e-test": {
+            "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+        },
+    },
     integration_test_timeout = "long",
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
 )
