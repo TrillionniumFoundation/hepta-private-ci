@@ -28,8 +28,9 @@ tool versions, installed dependency versions, process logs and native evidence.
 It rejects a dirty checkout or a checkout different from `GITHUB_SHA`.
 
 The workflow uses checkout depth one, Rust 1.95.0, nextest 0.9.131, and the
-existing `memory-v7-target` cache location with V9/V8 fallback keys. Commands are
-passed as argument lists. Rust tests run through `just test`.
+runtime `CARGO_TARGET_DIR` selected by `setup-ci`, with V9/V8 fallback cache keys.
+`setup-ci` may override the initial target directory. Commands are passed as
+argument lists. Rust tests run through `just test`.
 
 The evidence working root is a fresh `/tmp/h10-<run-id>-<attempt>` directory.
 This keeps both original and migrated owners' Unix socket paths within the
