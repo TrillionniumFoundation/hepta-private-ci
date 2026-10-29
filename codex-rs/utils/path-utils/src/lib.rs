@@ -1,5 +1,9 @@
 //! Path normalization, symlink resolution, and atomic writes shared across Codex crates.
 
+#[cfg(windows)]
+#[path = "private_state_windows.rs"]
+pub mod private_state;
+
 pub(crate) mod env;
 pub use env::is_wsl;
 

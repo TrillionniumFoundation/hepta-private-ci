@@ -16,6 +16,16 @@ use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 
+#[cfg(windows)]
+use codex_utils_path::private_state::PrivateStateDirectory;
+#[cfg(windows)]
+use codex_utils_path::private_state::StateFileAccess;
+
+#[cfg(windows)]
+type StateDirectory = PrivateStateDirectory;
+#[cfg(not(windows))]
+type StateDirectory = File;
+
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_types::Digest32;
@@ -1230,7 +1240,7 @@ enum StoredAny {
 }
 
 struct Store {
-    root: File,
+    root: StateDirectory,
     _lock: File,
     payloads: payloads::PayloadState,
     #[cfg(test)]
@@ -1404,12 +1414,12 @@ fn open_private(
     Ok(file)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn prepare_directory(_root: &Path) -> Result<File, DurableRegistryError> {
     Err(DurableRegistryError::UnsafeStateDirectory)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn open_private(
     _directory: &File,
     _name: &str,
@@ -1427,7 +1437,7 @@ fn entry_exists(directory: &File, name: &str) -> Result<bool, DurableRegistryErr
     }
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn entry_exists(_directory: &File, _name: &str) -> Result<bool, DurableRegistryError> {
     Err(DurableRegistryError::UnsafeStateDirectory)
 }
@@ -1438,9 +1448,53 @@ fn replace_state(directory: &File) -> Result<(), DurableRegistryError> {
         .map_err(|_| DurableRegistryError::Unavailable)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn replace_state(_directory: &File) -> Result<(), DurableRegistryError> {
     Err(DurableRegistryError::UnsafeStateDirectory)
+}
+
+#[cfg(windows)]
+fn prepare_directory(root: &Path) -> Result<StateDirectory, DurableRegistryError> {
+    PrivateStateDirectory::open_or_create(root).map_err(map_windows_state_io)
+}
+
+#[cfg(windows)]
+fn open_private(
+    directory: &StateDirectory,
+    name: &str,
+    access: Access,
+) -> Result<File, DurableRegistryError> {
+    let access = match access {
+        Access::Read => StateFileAccess::Read,
+        Access::Create => StateFileAccess::Create,
+    };
+    directory
+        .open_file(name, access)
+        .map_err(map_windows_state_io)
+}
+
+#[cfg(windows)]
+fn entry_exists(directory: &StateDirectory, name: &str) -> Result<bool, DurableRegistryError> {
+    directory.entry_exists(name).map_err(map_windows_state_io)
+}
+
+#[cfg(windows)]
+fn replace_state(directory: &StateDirectory) -> Result<(), DurableRegistryError> {
+    directory
+        .replace_file("registry.next", "registry.json")
+        .map_err(map_windows_state_io)
+}
+
+#[cfg(windows)]
+fn map_windows_state_io(error: std::io::Error) -> DurableRegistryError {
+    if matches!(
+        error.kind(),
+        std::io::ErrorKind::PermissionDenied | std::io::ErrorKind::InvalidInput
+    ) {
+        DurableRegistryError::UnsafeStateDirectory
+    } else {
+        map_precommit_io(error)
+    }
 }
 
 fn map_precommit_io(error: std::io::Error) -> DurableRegistryError {
@@ -1478,6 +1532,10 @@ impl fmt::Display for DurableRegistryError {
 }
 
 impl std::error::Error for DurableRegistryError {}
+
+#[cfg(all(test, windows))]
+#[path = "durable_windows_tests.rs"]
+mod windows_tests;
 
 #[cfg(all(test, unix))]
 mod tests {
