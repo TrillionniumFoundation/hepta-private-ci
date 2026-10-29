@@ -1,0 +1,171 @@
+{
+  "schema": "rrsnn.v4-model-validation.1",
+  "all_passed": true,
+  "checks": [
+    {
+      "name": "independent_bracket_root_vs_Lambert_value_and_gradient",
+      "value_error": 9.50794998288984e-13,
+      "gradient_error": 1.2276846206304981e-12
+    },
+    {
+      "name": "matrix_exponential_vs_controlled_Poisson_series",
+      "max_error": 7.771561172376096e-15
+    },
+    {
+      "name": "censored_marked_path_rescore_and_fixed_path_gradient",
+      "path_score_error": 1.7763568394002505e-14,
+      "comparisons": [
+        {
+          "index": [
+            0,
+            0
+          ],
+          "finite_difference": -0.13827752809447702,
+          "analytic": -0.13827752249720124,
+          "scaled_error": 4.91732081465641e-09
+        },
+        {
+          "index": [
+            1,
+            4
+          ],
+          "finite_difference": 4.874705581414673,
+          "analytic": 4.874705603509208,
+          "scaled_error": 3.760960255116308e-09
+        },
+        {
+          "index": [
+            2,
+            7
+          ],
+          "finite_difference": 5.047157316084849,
+          "analytic": 5.047157324168462,
+          "scaled_error": 1.3367624600526755e-09
+        },
+        {
+          "index": [
+            5,
+            19
+          ],
+          "finite_difference": 5.713701824561213,
+          "analytic": 5.713701842561731,
+          "scaled_error": 2.681161433669033e-09
+        }
+      ]
+    },
+    {
+      "name": "frozen_resource_latches_first_true_observation_after_noop_prefix",
+      "score_error": 1.4210854715202004e-14
+    },
+    {
+      "name": "all_variants_causal_forward_and_finite_training_gradient",
+      "cases": [
+        {
+          "variant": "rr_full",
+          "parameters": 977,
+          "loss": 2.6844847202301025,
+          "physical_latent_spikes": 21,
+          "gradient_l2": 21.57518768310547
+        },
+        {
+          "variant": "fp_no_rollover",
+          "parameters": 977,
+          "loss": 2.659423589706421,
+          "physical_latent_spikes": 20,
+          "gradient_l2": 38.01808166503906
+        },
+        {
+          "variant": "rr_mean_maturity",
+          "parameters": 977,
+          "loss": 2.675194025039673,
+          "physical_latent_spikes": 24,
+          "gradient_l2": 35.14896011352539
+        },
+        {
+          "variant": "rr_shuffle_maturity",
+          "parameters": 977,
+          "loss": 2.6802966594696045,
+          "physical_latent_spikes": 20,
+          "gradient_l2": 36.13517379760742
+        },
+        {
+          "variant": "rr_fixed_boundary",
+          "parameters": 977,
+          "loss": 2.7298851013183594,
+          "physical_latent_spikes": 11,
+          "gradient_l2": 22.181209564208984
+        },
+        {
+          "variant": "rr_frozen_resource",
+          "parameters": 977,
+          "loss": 2.6853463649749756,
+          "physical_latent_spikes": 25,
+          "gradient_l2": 30.381580352783203
+        },
+        {
+          "variant": "lif",
+          "parameters": 977,
+          "loss": 2.623840570449829,
+          "physical_latent_spikes": 4,
+          "gradient_l2": 16.342453002929688
+        },
+        {
+          "variant": "alif",
+          "parameters": 977,
+          "loss": 2.623840570449829,
+          "physical_latent_spikes": 4,
+          "gradient_l2": 1.0910344123840332
+        },
+        {
+          "variant": "resource_lif",
+          "parameters": 977,
+          "loss": 2.6310322284698486,
+          "physical_latent_spikes": 0,
+          "gradient_l2": 1.9215978384017944
+        },
+        {
+          "variant": "ctrnn",
+          "parameters": 977,
+          "loss": 2.688060998916626,
+          "physical_latent_spikes": 0,
+          "gradient_l2": 0.8399916887283325
+        },
+        {
+          "variant": "ctrnn_state",
+          "parameters": 977,
+          "loss": 2.6937320232391357,
+          "physical_latent_spikes": 0,
+          "gradient_l2": 0.8444957733154297
+        },
+        {
+          "variant": "ctrnn_upper_state",
+          "parameters": 977,
+          "loss": 2.6929006576538086,
+          "physical_latent_spikes": 0,
+          "gradient_l2": 0.842013418674469
+        },
+        {
+          "variant": "alif_analog",
+          "parameters": 977,
+          "loss": 2.7694976329803467,
+          "physical_latent_spikes": 4,
+          "gradient_l2": 1.4338759183883667
+        },
+        {
+          "variant": "ctrnn_analog",
+          "parameters": 977,
+          "loss": 2.729965925216675,
+          "physical_latent_spikes": 0,
+          "gradient_l2": 1.0655033588409424
+        }
+      ]
+    },
+    {
+      "name": "same_weights_numerical_boundary_physical_network",
+      "logit_error": 1.8041124150158794e-15
+    }
+  ],
+  "development_only": true,
+  "training_or_holdout_data_generated": false,
+  "scope": "Finite CTMC and fixed scalar threshold formula; no global network QVI claim."
+}
