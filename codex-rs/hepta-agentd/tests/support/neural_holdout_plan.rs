@@ -104,7 +104,7 @@ pub fn plans(
     };
     let candidate = temporal("controlled-candidate-evaluation");
     let baseline = temporal("controlled-baseline-evaluation");
-    let raw = eval::CrossFoldPlanV1 {
+    let mut raw = eval::CrossFoldPlanV1 {
         plan_id: id("controlled-neural-boundary-plan"),
         claim_scope: eval::EvaluationClaimScopeV1::Qualification,
         candidate_id: id("controlled-neural-generation-3"),
@@ -143,6 +143,22 @@ pub fn plans(
             .manifest_digest()
             .unwrap_or_else(|error| panic!("{error:?}")),
     };
+    // This fixture's original ledger contains four calibration tasks and
+    // both actions; declare all of their real episode identities up front.
+    let final_fold = &mut raw.folds[0];
+    final_fold.training_episodes = (0..4)
+        .flat_map(|task| (0..2).map(move |action| id(&format!("calibration-{task}-{action}"))))
+        .collect();
+    final_fold.holdout_principals = material
+        .tasks
+        .iter()
+        .map(|task| task.principal_lineage.clone())
+        .collect();
+    final_fold.holdout_episodes = material
+        .tasks
+        .iter()
+        .map(|task| task.episode_lineage.clone())
+        .collect();
     let roles = vec![eval::MetricRoleContractV2 {
         metric_id: id("binary-correctness"),
         role: eval::MetricRoleV2::PrimarySuperiority {

@@ -1,4 +1,5 @@
 //! Deterministic product-qualification fixtures only; no measured learning evidence.
+use std::collections::BTreeSet;
 use std::sync::Arc;
 use std::sync::Mutex;
 
@@ -175,6 +176,8 @@ impl Fixture {
         }];
         let candidate_plan = temporal_plan("candidate", digest("objective"));
         let baseline_plan = temporal_plan("baseline", digest("objective"));
+        let mut provider = provider_inputs(dataset.snapshot.snapshot_id.clone());
+        let inputs = provider.inputs.as_ref().unwrap();
         let frozen = freeze_product_evaluation_plan_v1(
             CrossFoldPlanV1 {
                 plan_id: id("plan"),
@@ -205,11 +208,41 @@ impl Fixture {
                     },
                     CrossFoldPartitionV1 {
                         fold_id: id("fold-1"),
-                        training_principals: vec![id("training-person-1")],
-                        training_episodes: vec![id("training-episode-1")],
-                        training_windows: vec![id("training-window-1")],
-                        holdout_principals: vec![id("person-1")],
-                        holdout_episodes: vec![id("episode-1")],
+                        training_principals: inputs
+                            .training
+                            .iter()
+                            .map(|row| row.principal_lineage.clone())
+                            .collect::<BTreeSet<_>>()
+                            .into_iter()
+                            .collect(),
+                        training_episodes: inputs
+                            .training
+                            .iter()
+                            .map(|row| row.episode_lineage.clone())
+                            .collect::<BTreeSet<_>>()
+                            .into_iter()
+                            .collect(),
+                        training_windows: inputs
+                            .training
+                            .iter()
+                            .map(|row| row.window_id.clone())
+                            .collect::<BTreeSet<_>>()
+                            .into_iter()
+                            .collect(),
+                        holdout_principals: inputs
+                            .targets
+                            .iter()
+                            .map(|row| row.principal_lineage.clone())
+                            .collect::<BTreeSet<_>>()
+                            .into_iter()
+                            .collect(),
+                        holdout_episodes: inputs
+                            .targets
+                            .iter()
+                            .map(|row| row.episode_lineage.clone())
+                            .collect::<BTreeSet<_>>()
+                            .into_iter()
+                            .collect(),
                         holdout_windows: vec![id("window-1")],
                         model_digest: digest("test-fold-model-1"),
                         predictions_digest: digest("test-predictions-1"),
@@ -237,7 +270,6 @@ impl Fixture {
         )
         .unwrap();
         let mut runner = ProductEvaluationRunnerV1::new(owner);
-        let mut provider = provider_inputs(dataset.snapshot.snapshot_id.clone());
         let temporal = runner
             .evaluate_temporal_comparison(&frozen, &candidate_plan, &baseline_plan, &mut provider)
             .unwrap();

@@ -1,3 +1,5 @@
+use std::collections::BTreeSet;
+
 use codex_hepta_bellman_operator::BellmanReferenceCellV1;
 use codex_hepta_bellman_operator::BellmanReferencePlanV1;
 use codex_hepta_bellman_operator::WorldModelSampleV1;
@@ -506,6 +508,7 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
     }];
     let candidate_plan = temporal_plan("candidate", objective_digest);
     let baseline_plan = temporal_plan("baseline", objective_digest);
+    let inputs = evaluation_inputs(outcome_digest);
     let frozen_plan = match freeze_product_evaluation_plan_v1(
         CrossFoldPlanV1 {
             plan_id: id("evaluation-plan"),
@@ -536,11 +539,41 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
                 },
                 CrossFoldPartitionV1 {
                     fold_id: id("evaluation-fold-2"),
-                    training_principals: vec![id("evaluation-training-principal-2")],
-                    training_episodes: vec![id("evaluation-training-episode-2")],
-                    training_windows: vec![id("evaluation-training-window-2")],
-                    holdout_principals: vec![id("evaluation-holdout-principal-2")],
-                    holdout_episodes: vec![id("evaluation-holdout-episode-2")],
+                    training_principals: inputs
+                        .training
+                        .iter()
+                        .map(|row| row.principal_lineage.clone())
+                        .collect::<BTreeSet<_>>()
+                        .into_iter()
+                        .collect(),
+                    training_episodes: inputs
+                        .training
+                        .iter()
+                        .map(|row| row.episode_lineage.clone())
+                        .collect::<BTreeSet<_>>()
+                        .into_iter()
+                        .collect(),
+                    training_windows: inputs
+                        .training
+                        .iter()
+                        .map(|row| row.window_id.clone())
+                        .collect::<BTreeSet<_>>()
+                        .into_iter()
+                        .collect(),
+                    holdout_principals: inputs
+                        .targets
+                        .iter()
+                        .map(|row| row.principal_lineage.clone())
+                        .collect::<BTreeSet<_>>()
+                        .into_iter()
+                        .collect(),
+                    holdout_episodes: inputs
+                        .targets
+                        .iter()
+                        .map(|row| row.episode_lineage.clone())
+                        .collect::<BTreeSet<_>>()
+                        .into_iter()
+                        .collect(),
                     holdout_windows: vec![id("window-2")],
                     model_digest: digest("evaluation-model-2"),
                     predictions_digest: digest("evaluation-predictions-2"),
@@ -574,7 +607,7 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
     };
     let mut runner = ProductEvaluationRunnerV1::new(owner);
     let mut provider = EvalProvider {
-        inputs: Some(evaluation_inputs(outcome_digest)),
+        inputs: Some(inputs),
     };
     let temporal = match runner.evaluate_temporal_comparison(
         &frozen_plan,
