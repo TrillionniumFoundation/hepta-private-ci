@@ -37,10 +37,8 @@ def package_identity(row):
     return row["name"], row["version"], row.get("source"), row.get("checksum")
 
 
-def lock_subset(raw):
-    """Preserve original lock entries for the three roots' dependency closure."""
-    document = tomllib.loads(raw)
-    packages = document["package"]
+def lock_resolver(packages):
+    """Resolve the exact name/version/source edge recorded by the original lock."""
     by_name = {}
     for row in packages:
         by_name.setdefault(row["name"], []).append(row)
@@ -57,6 +55,35 @@ def lock_subset(raw):
             raise ValueError(f"Ambiguous or absent original lock dependency: {specification}")
         return rows[0]
 
+    return resolve
+
+
+def workspace_dependency_versions(packages):
+    """Derive workspace pins from the source roots, never a previous lock vintage."""
+    resolve = lock_resolver(packages)
+    root_names = {"codex-" + name for name in CRATES}
+    versions = {}
+    for name in root_names:
+        for edge in resolve(name).get("dependencies", []):
+            row = resolve(edge)
+            dependency = row["name"]
+            if dependency in root_names:
+                continue
+            if row.get("source") != "registry+https://github.com/rust-lang/crates.io-index":
+                raise ValueError("Unsupported nonregistry workspace dependency in pinned roots")
+            if dependency in versions and versions[dependency] != row["version"]:
+                raise ValueError("Pinned roots require incompatible workspace dependency versions")
+            versions[dependency] = row["version"]
+    if set(versions) != {"serde", "serde_json", "sha2", "pretty_assertions"}:
+        raise ValueError("Pinned root dependency set differs from the admitted isolated workspace")
+    return versions
+
+
+def lock_subset(raw):
+    """Preserve original lock entries for the three roots' dependency closure."""
+    document = tomllib.loads(raw)
+    packages = document["package"]
+    resolve = lock_resolver(packages)
     pending = [resolve("codex-" + name) for name in CRATES]
     retained = set()
     while pending:
@@ -114,6 +141,7 @@ def build(repository, destination, compiler=None, *, offline=False):
     versions = {row["version"] for row in roots}
     if len(roots) != 3 or len(versions) != 1:
         raise ValueError("Pinned workspace crate versions are inconsistent")
+    dependency_versions = workspace_dependency_versions(locked)
     workspace = f'''[workspace]
 members = ["hepta-types", "hepta-infer-core", "hepta-neuron"]
 resolver = "2"
@@ -122,10 +150,10 @@ version = "{versions.pop()}"
 edition = "2024"
 license = "Apache-2.0"
 [workspace.dependencies]
-serde = {{version = "=1.0.228", features = ["rc"]}}
-serde_json = "=1.0.149"
-sha2 = "=0.10.9"
-pretty_assertions = "=1.4.1"
+serde = {{version = "={dependency_versions['serde']}", features = ["rc"]}}
+serde_json = "={dependency_versions['serde_json']}"
+sha2 = "={dependency_versions['sha2']}"
+pretty_assertions = "={dependency_versions['pretty_assertions']}"
 [workspace.lints.rust]
 [profile.dev]
 debug = 0
@@ -169,6 +197,15 @@ incremental = false
     (destination / "RESOLVED_METADATA.json").write_text(metadata.stdout)
     resolved = tomllib.loads((destination / "Cargo.lock").read_text())["package"]
     resolved_identities = {package_identity(row) for row in resolved}
+    identity_check = {
+        "schema": "hepta.joint-output.native-lock-identity-check.v1",
+        "source_commit": SOURCE_COMMIT, "workspace_dependency_versions": dependency_versions,
+        "passed": resolved_identities <= original_identities,
+        "outside_original_lock": [list(row) for row in sorted(resolved_identities - original_identities, key=str)],
+        "resolved_package_count": len(resolved_identities),
+    }
+    (destination / "LOCK_IDENTITY_CHECK.json").write_text(json.dumps(identity_check, sort_keys=True, indent=2) + "\n")
+    print("LOCK_IDENTITY_CHECK=" + json.dumps(identity_check, sort_keys=True), flush=True)
     if not resolved_identities <= original_identities:
         raise ValueError("Isolated resolution introduced dependencies outside the pinned original lock")
     lock_sha = sha(destination / "Cargo.lock")
@@ -193,6 +230,7 @@ incremental = false
         "cargo": subprocess.check_output([str(cargo), "--version"], env=env, text=True).strip(),
         "command": command, "resolution_command": metadata_command,
         "resolved_dependencies": [list(row) for row in sorted(resolved_identities, key=str)],
+        "workspace_dependency_versions": dependency_versions,
         "all_dependencies_name_version_source_checksum_match": True,
         "owner_and_three_crates_unmodified": True,
         "host_sources_unmodified": True, "full_daemon_build": False,
@@ -200,6 +238,7 @@ incremental = false
         "repository_lock_sha256": hashlib.sha256(original_lock.encode()).hexdigest(),
         "build_log_sha256": sha(destination / "BUILD.log"),
         "resolution_log_sha256": sha(destination / "RESOLVE.log"),
+        "lock_identity_check_sha256": sha(destination / "LOCK_IDENTITY_CHECK.json"),
     }
     (destination / "BUILD_RECEIPT.json").write_text(json.dumps(receipt, indent=2) + "\n")
     return receipt

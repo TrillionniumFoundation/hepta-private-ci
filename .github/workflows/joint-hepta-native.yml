@@ -99,10 +99,10 @@ jobs:
                             "all_required_blobs_readable_locally": True, "source_sha256": hashes}, sort_keys=True))
           PY
           git diff --check
-      - name: Verify Python adapter contracts with explicitly fake transport
+      - name: Verify lock extraction and Python adapter contracts with explicitly fake transport
         run: |
           set -euo pipefail
-          python -B -m unittest experiments.multimodal_output_portfolio.joint_hepta_20261029.test_native_bridge -v 2>&1 | tee "$NATIVE_RESULTS/adapter-unit.log"
+          python -B -m unittest experiments.multimodal_output_portfolio.joint_hepta_20261029.test_native_bridge experiments.multimodal_output_portfolio.joint_hepta_20261029.test_native_build -v 2>&1 | tee "$NATIVE_RESULTS/adapter-unit.log"
       - name: Build actual unchanged Agentd owner under the original dependency identities
         run: |
           set -euo pipefail
@@ -176,6 +176,7 @@ jobs:
             ${{ runner.temp }}/joint-hepta-native/build/BUILD.log
             ${{ runner.temp }}/joint-hepta-native/build/RESOLVE.log
             ${{ runner.temp }}/joint-hepta-native/build/RESOLVED_METADATA.json
+            ${{ runner.temp }}/joint-hepta-native/build/LOCK_IDENTITY_CHECK.json
             ${{ runner.temp }}/joint-hepta-native/lifecycle/
             ${{ runner.temp }}/joint-hepta-native/smoke/
           if-no-files-found: warn
