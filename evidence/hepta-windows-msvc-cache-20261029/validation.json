@@ -1,0 +1,50 @@
+{
+  "git_diff_check_exit_code": 0,
+  "green": {
+    "errors": 0,
+    "failures": 0,
+    "modules": [
+      "test_run_bazel_native_msvc_toolchain",
+      "test_run_bazel_with_buildbuddy",
+      "test_run_bazel_windows_fallback"
+    ],
+    "test_methods": 39
+  },
+  "just_fmt_exit_code": 0,
+  "native_windows_rerun_completed": false,
+  "original_failed_job": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40849764813/job/123366204940",
+  "original_observation": "BuildBuddy cache-only generic configuration bypassed the local MSVC C toolchain override; AWS-LC libcrypto objects referenced MinGW symbols while linked by Rust MSVC.",
+  "parent_commit": "ff12b31339ebd93706064e382b3b70151dac349d",
+  "parent_tree": "c3cdbf22659c557c34282954f5ed095429c7584b",
+  "preserved": [
+    "explicit caller compiler precedence",
+    "argument separator payload",
+    "keyless local behavior",
+    "authenticated RBE cross behavior",
+    "non-Windows and non-build commands",
+    "native MSVC platform and runtime ABI",
+    "dependency versions and lockfiles",
+    "workflow permissions and test gates"
+  ],
+  "red": {
+    "errors": 1,
+    "failures": 2,
+    "scope": "New cache-only native tests against original wrapper source; the error is lookup of an absent expected compiler argument.",
+    "test_methods": 5
+  },
+  "schema": "hepta-native-msvc-cache-repair-v1",
+  "source_blobs": [
+    {
+      "git_blob": "c88e4cb32eb98aa193c7c4f5e47d59a4433a3436",
+      "mode": "100755",
+      "path": ".github/scripts/run_bazel_with_buildbuddy.py",
+      "sha256": "f46c47e6a60983d805c42742774fe7f4ef53b785580f34842142bff6544b324d"
+    },
+    {
+      "git_blob": "66df443056d5d2728a0139542bc64304b8b8214b",
+      "mode": "100644",
+      "path": ".github/scripts/test_run_bazel_native_msvc_toolchain.py",
+      "sha256": "f5bdb14eec4542336f8e5595aa8ac8661a81f7d9c2dd92ab81ba320f8975fe2a"
+    }
+  ]
+}
