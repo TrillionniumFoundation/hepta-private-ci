@@ -316,6 +316,23 @@ def codex_rust_crate(
     # crates, but do not inject extra aliases to codex-rs workspace libraries.
     # all_crate_deps() returns a select, so it cannot be iterated or tested for
     # membership during Starlark package loading.
+    # TEMPORARY diagnostic in an isolated HOLD_NO_GO Draft only.
+    # Reveal exact generated alias targets and Cargo dependency-kind buckets
+    # for the two known production cycles; remove before promoting any fix.
+    if native.package_name() in [
+        "codex-rs/network-proxy",
+        "codex-rs/exec-server",
+    ]:
+        dependency_data = DEP_DATA[native.package_name()]
+        print("HEPTA_ALIAS_KIND_DIAGNOSTIC {} aliases={}".format(native.package_name(), aliases()))
+        print("HEPTA_ALIAS_KIND_DIAGNOSTIC {} normal={} dev={} normal_platforms={} dev_platforms={}".format(
+            native.package_name(),
+            dependency_data.get("deps", []),
+            dependency_data.get("dev_deps", []),
+            dependency_data.get("deps_by_platform", {}),
+            dependency_data.get("dev_deps_by_platform", {}),
+        ))
+
     normal_crate_deps = all_crate_deps()
     production_aliases = {
         alias_name: label
