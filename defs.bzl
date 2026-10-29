@@ -310,16 +310,18 @@ def codex_rust_crate(
 
     maybe_deps = []
 
-    # rules_rs's generated aliases(package_name=None) does not take dependency
-    # kinds. These production libraries have no Cargo-renamed direct crates,
-    # but their package-wide alias map can add dev-only workspace edges:
-    # network-proxy -> windows-sandbox -> protocol -> network-proxy and
-    # exec-server -> test-binary-support -> arg0 -> exec-server.
-    # Preserve all actual deps and all aliases in test-only targets.
-    production_aliases = {} if native.package_name() in [
-        "codex-rs/network-proxy",
-        "codex-rs/exec-server",
-    ] else aliases()
+    # Generated package-wide aliases can introduce dev-only workspace edges
+    # into production libraries and form dependency cycles. First-party normal
+    # dependencies already come from all_crate_deps(); retain renamed external
+    # crates, but do not inject extra aliases to codex-rs workspace libraries.
+    # all_crate_deps() returns a select, so it cannot be iterated or tested for
+    # membership during Starlark package loading.
+    normal_crate_deps = all_crate_deps()
+    production_aliases = {
+        alias_name: label
+        for alias_name, label in aliases().items()
+        if "//codex-rs/" not in str(label)
+    }
 
     if build_script_enabled and native.glob(["build.rs"], allow_empty = True):
         cargo_build_script(
@@ -340,7 +342,7 @@ def codex_rust_crate(
             aliases = production_aliases,
             crate_name = crate_name,
             crate_features = crate_features,
-            deps = all_crate_deps() + maybe_deps + deps_extra,
+            deps = normal_crate_deps + maybe_deps + deps_extra,
             compile_data = compile_data,
             data = lib_data_extra,
             srcs = lib_srcs,
