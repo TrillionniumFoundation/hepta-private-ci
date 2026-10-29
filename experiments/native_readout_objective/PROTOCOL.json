@@ -1,0 +1,172 @@
+{
+  "schema": "hepta.native-readout-objective.protocol-draft.v1",
+  "status": "PREPARATION_ONLY_NOT_PUBLISHED_OR_CONFIRMATION_STARTED",
+  "parent_document_commit": "63bda3028b114eb4db49857977cc842cebc9f9fb",
+  "prior_results": {
+    "continuous_boundary_flow": "0/3 retained",
+    "continuous_boundary_policy": "0/4 retained; derived tables recovered; raw supplement archive unavailable in current workspace/verified remote tree"
+  },
+  "question": "Does a cost-sensitive policy objective improve the existing frozen native sparse encoder's 42-coefficient action readout relative to matched iterative Q regression?",
+  "arms": [
+    {
+      "name": "ridge_reference",
+      "program": "unchanged continuous_boundary_flow.training.ridge_head",
+      "candidate_penalties": [
+        0.001,
+        0.01,
+        0.1
+      ],
+      "target": "physical keep/repair Q divided by 8",
+      "role": "whole-training-program engineering reference, not isolated loss effect"
+    },
+    {
+      "name": "iterative_q_mse",
+      "objective": "q_mse",
+      "role": "primary control"
+    },
+    {
+      "name": "policy_regret",
+      "objective": "policy_regret",
+      "role": "primary treatment"
+    }
+  ],
+  "controls": [
+    "finite_grid_dp"
+  ],
+  "primary_pair": {
+    "treatment": "policy_regret",
+    "control": "iterative_q_mse",
+    "minimum_mean_net_utility": 0.005,
+    "confidence": 0.95,
+    "method": "two-sided paired-seed Student t interval; lower bound > 0.005 and zero stability failures",
+    "family_size": 1
+  },
+  "fixed_native": {
+    "kernel": "unchanged original sparse_tick and original NDU from 5898cd8b0f724c3152b6cc52856721f72e5e08be",
+    "width": 20,
+    "top_k": 4,
+    "frozen_encoder_scalars": 420,
+    "readout_scalars": 42,
+    "stop_weights_and_bias": 0,
+    "activation_source": "actual NativeBridge.kernel_batch, never a Python sparse emulator",
+    "encoder_source": "continuous_boundary_flow.training.encoder(seed)",
+    "task_features": "all 18 continuous_boundary_policy.FEATURE_NAMES; native_rows supplies 17 raw plus typed margin/risk/flow, with two duplicates",
+    "boundary": "same finite-grid value boundary for all arms",
+    "state_reset": "native state starts at episode beginning; no new hidden reset at repair/failure"
+  },
+  "matched_iterative_training": {
+    "initialization": "all 42 coefficients exactly zero",
+    "optimizer": "full-batch Adam",
+    "beta1": 0.9,
+    "beta2": 0.999,
+    "epsilon": 1e-8,
+    "updates": 120,
+    "learning_rate_candidates": [
+      0.005,
+      0.02,
+      0.05
+    ],
+    "gradient_norm_bound": 5,
+    "coefficient_abs_bound": 7.5,
+    "regularization": 0.0001,
+    "regularization_definition": "lambda * mean of 40 nonbias coefficients squared; both biases unpenalized",
+    "score_map": "same affine keep/repair scores; STOP=0; no tanh or score clamp",
+    "q_mse": "mean over N x 2 of (affine_score - physical_Q/8)^2",
+    "policy_objective": "teacher-action CE at temperature 1 plus sum_a softmax(score)_a * (max Q - Q_a)/(1+max_a(max Q-Q_a))",
+    "teacher_tie_order": [
+      "stop",
+      "repair",
+      "keep"
+    ],
+    "quantization": "same make_profile round(value*2^24); no straight-through estimator; exact per-product signed ties-even native readout; no score clamp",
+    "shared_inputs": "same saved actual native activation matrix and physical DP Q for every candidate and arm",
+    "split_verification": "low-level fit does not verify split provenance; future study runner must enforce it",
+    "active_parameter_reporting": "42 allocated trainable coefficients; report observed active columns and nonzero-gradient coordinates rather than claiming every coefficient receives data gradient"
+  },
+  "planned_seeds": [
+    3301,
+    3307,
+    3313,
+    3319,
+    3323,
+    3329,
+    3331,
+    3343,
+    3347,
+    3359,
+    3361,
+    3371,
+    3373,
+    3389,
+    3391,
+    3407
+  ],
+  "data_plan": {
+    "new_scientific_seeds": true,
+    "train_contexts_per_seed": 12,
+    "train_paths_per_context": 8,
+    "development_contexts_per_seed": 8,
+    "development_paths_per_context": 8,
+    "confirmation_contexts_per_split_per_seed": 8,
+    "confirmation_paths_per_context": 16,
+    "confirmation_splits": [
+      "test_id",
+      "test_ood"
+    ],
+    "split_weights": [
+      0.5,
+      0.5
+    ],
+    "context_generator": "unchanged continuous_boundary_flow.scenarios; fresh seed and phase-specific streams",
+    "grid_states": 64,
+    "grid_upper": 4.8,
+    "planned_confirmation_episodes_per_arm": 4096,
+    "planned_confirmation_episodes_including_dp": 16384,
+    "shared_uniforms": "fixed per seed/context/path/time/action slot across arms",
+    "old_confirmation_use": "arithmetic parity only, never training, development selection, or a new efficacy sample",
+    "behavior": "unchanged continuous_boundary_flow.execution.behavior_data: every window keep probability 0.8, repair probability 0.2, no exploratory STOP, complete declared horizon",
+    "row_weights": "equal weight for each observed training window; no padding, class reweighting, objective-dependent resampling, or different activation matrices",
+    "teacher_units": "behavior_data.target_q is already physical keep/repair Q divided by 8; future runner must multiply by 8 and append literal-zero STOP before head.fit; ridge takes physical Q/8 exactly once"
+  },
+  "selection": "maximum actual-native mean development net utility; smallest candidate index breaks ties; exactly three candidates per learned arm; source/protocol/binary publication before training and selection publication before confirmation",
+  "diagnostics": {
+    "policy_visitation": [
+      "ID/OOD net utility",
+      "failure frequency",
+      "Brier and fixed-bin ECE of common analytic after-action first-passage predictor",
+      "action counts",
+      "hidden/checkpoint bounds and replay"
+    ],
+    "same_state_panel": "same held-out diagnostic exploratory trajectories with recorded native activations for all arms; report physical DP action regret conditional on teacher keep/repair/stop; no hyperparameter selection",
+    "quantization": [
+      "float-affine vs Q24 score errors",
+      "float diagnostic argmax vs original NDU action disagreement",
+      "signed delta regret on the same state: regret(Q24/NDU action) - regret(float diagnostic action); preserve negative values and report flips separately"
+    ],
+    "multiplicity": "all diagnostics descriptive; no secondary benefit claims without a separately frozen testing family",
+    "calibration_bins": "10 fixed bins [0,.1),...,[.9,1]; empty exposure yields undefined calibration; also report episode-equal and window-weighted Brier"
+  },
+  "costs": {
+    "train": "separate shared exploration/model/DP/native feature export, per-candidate fitting, and development rollouts",
+    "runtime": "actual original kernel/NDU calls, whole rollout CPU/wall and serialization, numeric bytes and full request/response bytes",
+    "numeric_bytes_per_decision": 160,
+    "price_per_numeric_byte": 0.000001,
+    "cpu_price": null,
+    "energy_measurement": null,
+    "native_child_cpu": "included once in enclosing nonoverlapping windows",
+    "solver": "record model construction and DP separately, avoid double-counting shared setup",
+    "hardware_energy_claim": false,
+    "fit_receipt_scope": "head.fit internal clock starts after initial input validation/array allocation; includes later fit computations and hashing; enclosing future runner must separately measure full phase"
+  },
+  "release_gates": [
+    "integrate a new runner with strict phase/source/binary/manifest identity verification",
+    "rebuild and validate original native host; bind new exact binary rather than claiming the lost binary was recovered",
+    "perform native integration preflight on diagnostic-only seeds",
+    "format and publish exact new source/protocol/binary seal before training",
+    "publish development selection seal before opening confirmation",
+    "retain all attempts, raw records, models, costs and failures in a verified retrievable archive"
+  ],
+  "failure_policy": "abort and preserve; no seed extension, sample exclusion, threshold changes, or revisiting selection after confirmation",
+  "authority": "research only; DENY_ALL; no production promotion or main-branch merge",
+  "execution_so_far": "only numerical loss/gradient tests and replay of already published old Q24 readout records; no new native process or new efficacy samples"
+}
