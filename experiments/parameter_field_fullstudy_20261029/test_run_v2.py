@@ -96,6 +96,12 @@ class RunV2Tests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 r.verify_files({"source_files": {"../module.py": "0" * 64}}, root)
 
+    def test_live_linux_peak_meter_is_positive_and_monotone(self):
+        before = r.process_peak_rss_bytes()
+        self.assertGreater(before, 0)
+        self.assertEqual(before % 1024, 0)
+        self.assertGreaterEqual(r.process_peak_rss_bytes(), before)
+
     def test_completion_population_paths(self):
         self.assertEqual(r.completion_path("/tmp/raw", "W", None), Path("/tmp/raw/stage_W/COMPLETE.json"))
         for phase in ("A", "B", "R"):

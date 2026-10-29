@@ -12,6 +12,7 @@ import hashlib
 import importlib
 import json
 from pathlib import Path
+import resource
 import sys
 import time
 
@@ -149,6 +150,11 @@ def original_call(args, storage):
     return module, "ReplayBudget", replay_budget_type(module.ReplayBudget, storage, args.root), common + ["--protocolR", args.protocolR, "--seed", str(args.seed)]
 
 
+def process_peak_rss_bytes():
+    """Linux ru_maxrss is KiB and covers the full worker lifetime to this point."""
+    return int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss) * 1024
+
+
 def completion_path(root, phase, seed):
     stage = Path(root) / ("stage_" + phase)
     return stage / "COMPLETE.json" if phase == "W" else stage / ("seed-" + str(seed)) / "COMPLETE.json"
@@ -166,9 +172,10 @@ def execute(args):
     storage = StorageBudget(root, registration)
     token = args.phase + ("-all" if args.phase == "W" else "-seed-" + str(args.seed))
     operations = root / "operations"
-    lock = training_slot(root, registration) if args.phase in ("A", "B") else whole_phase_lock(root)
+    lock = training_slot(root, registration) if args.phase in ("A", "B", "R") else whole_phase_lock(root)
     provenance = {"schema": "hepta.fullstudy.training-operation.2" if args.phase in ("A", "B") else "hepta.fullstudy.operational-run.2", "attempt_id": "attempt02", "phase": args.phase,
                   "seed": args.seed, "execution_kind": KINDS[args.phase], "operational_amendment_sha256": registration["_sha256"],
+                  "controller_group": "training" if args.phase in ("A", "B") else "reconstruction" if args.phase == "R" else "witness_singleton",
                   "source_freeze_sha256": file_hash(args.freeze), "registered_commit": freeze["registered_commit"],
                   "scientific_parent": freeze["scientific_parent"], "scientific_protocol_sha256": ORIGINAL_A[2],
                   "entrypoint_protocol_sha256": freeze["protocol_sha256"],
@@ -192,7 +199,7 @@ def execute(args):
                 storage.check()
                 receipt = {**provenance, "complete": True, "completed_unix": time.time(),
                            "scientific_complete": {"path": target.relative_to(root).as_posix(), "bytes": target.stat().st_size, "sha256": file_hash(target)},
-                           "post_execution_storage_check": True}
+                           "post_execution_storage_check": True, "process_peak_rss_bytes": process_peak_rss_bytes()}
                 storage.write_json(operations / (token + ".COMPLETE.json"), receipt)
                 print(json.dumps({"operational_complete": True, "phase": args.phase, "seed": args.seed}), flush=True)
                 return receipt
