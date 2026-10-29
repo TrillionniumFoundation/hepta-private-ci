@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "finding": "Both the base and PR SDK jobs pass the SDK suites and fail only on a modified MODULE.bazel.lock. No SDK generated-source change is reported.",
+  "evidence": [
+    {
+      "head_sha": "71b4305c6619ed9faff98062f0ff7f932f4abfd0",
+      "run_id": 40838158978,
+      "job_id": 123328231465,
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40838158978/job/123328231465",
+      "log_path": "/workspace/scratch/65d421def718/holder_ci_audit/sdk-base71-job-123328231465.log",
+      "log_sha256": "21502837a1274ecb0c98e5503b06be1ef542f2a08955b0954087ff756a657c8a",
+      "anchors": [
+        {
+          "line": 7167,
+          "text": "2026-10-29T08:02:16.0716489Z Test Suites: 5 passed, 5 total"
+        },
+        {
+          "line": 7168,
+          "text": "2026-10-29T08:02:16.0721077Z Tests:       47 passed, 47 total"
+        },
+        {
+          "line": 7242,
+          "text": "2026-10-29T08:02:20.7845592Z ##[error]CI job left tracked changes or untracked files in the repository worktree"
+        },
+        {
+          "line": 7243,
+          "text": "2026-10-29T08:02:20.7846456Z  M MODULE.bazel.lock"
+        }
+      ],
+      "sdk_test_suites_passed": 5,
+      "sdk_tests_passed": 47,
+      "failure_step": "Check for a clean worktree",
+      "dirty_paths": [
+        "MODULE.bazel.lock"
+      ]
+    },
+    {
+      "head_sha": "dcce134867c7f3f8cb80ca661fa714b6d25a885b",
+      "run_id": 40875379058,
+      "job_id": 123453719127,
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40875379058/job/123453719127",
+      "log_path": "/workspace/scratch/65d421def718/holder_ci_audit/sdk-dcce134-job-123453719127.log",
+      "log_sha256": "1aea655df756117b35c4742bfb82d1bb64db8f193494ef65fd1acf06a3063724",
+      "anchors": [
+        {
+          "line": 7080,
+          "text": "2026-10-29T12:50:15.2403214Z Test Suites: 5 passed, 5 total"
+        },
+        {
+          "line": 7081,
+          "text": "2026-10-29T12:50:15.2403716Z Tests:       47 passed, 47 total"
+        },
+        {
+          "line": 7155,
+          "text": "2026-10-29T12:50:20.2555284Z ##[error]CI job left tracked changes or untracked files in the repository worktree"
+        },
+        {
+          "line": 7156,
+          "text": "2026-10-29T12:50:20.2555848Z  M MODULE.bazel.lock"
+        }
+      ],
+      "sdk_test_suites_passed": 5,
+      "sdk_tests_passed": 47,
+      "failure_step": "Check for a clean worktree",
+      "dirty_paths": [
+        "MODULE.bazel.lock"
+      ]
+    }
+  ],
+  "cause_assessment": {
+    "confirmed": "The dirty path and failure stage are identical in both logs. Both jobs invoke the Bazel SDK executable build before testing.",
+    "inference": "This is consistent with the already identified unregenerated Bazel module lock, rather than a new SDK source regression. The exact in-job lock content diff is not printed by this gate."
+  },
+  "recommended_action": "Include the canonical regenerated MODULE.bazel.lock and rerun the unmodified SDK gate on the new head. No SDK test or clean-worktree exemption is warranted.",
+  "source_edits_by_this_investigation": [],
+  "frozen_science_changed": false
+}

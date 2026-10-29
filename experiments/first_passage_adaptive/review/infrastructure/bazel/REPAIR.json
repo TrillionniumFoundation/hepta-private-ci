@@ -1,0 +1,113 @@
+{
+  "schema": "hepta.bazel-lock-repair.v1",
+  "source_head": "dcce134867c7f3f8cb80ca661fa714b6d25a885b",
+  "inherited_base": "71b4305c6619ed9faff98062f0ff7f932f4abfd0",
+  "baseline": "BASELINE.json",
+  "generated_lock": {
+    "path": "MODULE.bazel.lock",
+    "bytes": 1719496,
+    "sha256": "2a364eab94ffb0e790e96169c5e1d9507e5c0ae060d08c5e365c6b3f7f067ec4"
+  },
+  "cargo_input": {
+    "codex-rs/Cargo.toml": {
+      "bytes": 22152,
+      "sha256": "a6ef9861b7a08a842a8a54eac7eb919a0b583707b3576cd4366b5e6ca4179e8e"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 423598,
+      "sha256": "17f9eaf6e0f6833a3866857547cf6f7f3eb5fa0e1ecb07abb29de081fddd0404"
+    }
+  },
+  "commands": {
+    "canonical_update": {
+      "receipt": "migrated-update-03.json",
+      "exit_code": 0
+    },
+    "strict_error": {
+      "receipt": "migrated-error-01.json",
+      "exit_code": 0,
+      "input_output_hashes_unchanged": true
+    },
+    "agentd_target_loading": {
+      "receipt": "agentd-target-query.json",
+      "exit_code": 0
+    },
+    "five_patched_crate_target_loading": {
+      "receipt": "vendor-target-query-02.json",
+      "exit_code": 0
+    }
+  },
+  "generated_diff": {
+    "insertions": 245,
+    "deletions": 190,
+    "only_changed_top_level_section": "facts",
+    "entries": {
+      "@@rules_rs+//rs:extensions.bzl%crate": {
+        "before_entries": 1482,
+        "after_entries": 1537,
+        "added": 144,
+        "removed": 89,
+        "updated": 0
+      },
+      "@@rules_rs+//rs/toolchains:module_extension.bzl%toolchains": {
+        "before_entries": 101,
+        "after_entries": 101,
+        "added": 101,
+        "removed": 101,
+        "updated": 0
+      }
+    }
+  },
+  "agentd_variant_checks": {
+    "hepta-agentd-plasticity_process_e2e-test": {
+      "qualification_variants_present": true,
+      "ordinary_variants_absent": true,
+      "agentd_test_library_present": true,
+      "features": "[]"
+    },
+    "hepta-agentd-plasticity_process_e2e-test-windows-cross-bin": {
+      "qualification_variants_present": true,
+      "ordinary_variants_absent": true,
+      "agentd_test_library_present": true,
+      "features": "[]"
+    },
+    "hepta-agentd-test-lib": {
+      "qualification_variants_present": true,
+      "ordinary_variants_absent": true,
+      "agentd_test_library_present": true,
+      "features": "[]"
+    },
+    "hepta-agentd": {
+      "ordinary_variants_present": true,
+      "qualification_variants_absent": true
+    },
+    "codex-hepta-agentd": {
+      "ordinary_variants_present": true,
+      "qualification_variants_absent": true
+    }
+  },
+  "test_variant_sources": {
+    "defs.bzl": "f8b6b17fb750239fe1f375e343dd67b9508a8b2f502dca25a5aefc7db332488c",
+    "codex-rs/hepta-agentd/BUILD.bazel": "220f7efdbb551bf79af435022934210a873f0a3280020556f271fd86f12c66be"
+  },
+  "vendor_materialization": "Existing .bazelignore excludes codex-rs/third_party; @crates generates external rust_crate targets from Cargo patches. All five new patches loaded successfully; no redundant vendor BUILD files were added.",
+  "local_cache_workaround": {
+    "only_local_process_flags": true,
+    "repository_configuration_unchanged": true,
+    "startup_flag": "--noexperimental_remote_repo_contents_cache",
+    "command_flag": "--repo_contents_cache=",
+    "tls_verification_preserved": true,
+    "description": "Initial trusted runs retained partial external repositories; canonical update succeeded after expunging only this task output base and using normal materialized repository files. Basic content-addressed archive cache remained enabled.",
+    "upstream_related_issues": [
+      "https://github.com/bazelbuild/bazel/issues/30149",
+      "https://github.com/bazelbuild/bazel/issues/30217"
+    ],
+    "qualification": "Observed local cache errors match the general materialization failure class; this record does not assert a proven exact upstream bug identity."
+  },
+  "scope_limitations": [
+    "Target query verifies actual package/target loading and expanded dependency/feature attributes; it does not compile or execute the integration test.",
+    "The existing supervisor dependency may retain an ordinary intelligence-eval/ledger branch; the checks establish consistency at the intended direct interfaces, not global uniqueness of every transitive crate.",
+    "Final repository CI retains its original caching configuration and all lock/test gates.",
+    "Scientific frozen source and evidence were not modified by this repair."
+  ]
+}

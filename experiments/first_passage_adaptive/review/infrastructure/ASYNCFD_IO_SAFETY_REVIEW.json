@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "scope": "Migrate three first-party AsyncFd constructors to the resolved Tokio 1.54.1 unsafe registration contract.",
+  "modified_files": {
+    "codex-rs/utils/pty/src/unix_io.rs": "59d2dd0074b97eaef4207b6b18302dccba586ef077280994860dd0a20f9914b1",
+    "codex-rs/shell-escalation/src/unix/socket.rs": "da31e9d793f5c68abdadf931636e967631a41f1cf0360da7f864548d39a1e2a6"
+  },
+  "upstream_contract": {
+    "file": "/workspace/scratch/65d421def718/security-cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/io/async_fd.rs",
+    "sha256": "8d15003d40135ba61efb13a3403f086e4df3a5b59431662465dc5af300f7ae55",
+    "version": "1.54.1",
+    "locked_crate_checksum": "b52fd3255258d26fac7264ab5a76b53c13367136dc011d3d6ad4f8ed070396a3",
+    "requirements": [
+      "The descriptor is valid and open at registration.",
+      "Its numeric descriptor and underlying open file description remain stable until drop, into_inner or forgetting the AsyncFd.",
+      "The caller must not close or replace the descriptor while registered."
+    ],
+    "return_type": "Result<AsyncFd<T>, AsyncFdRegisterError<T>>; conversion to io::Error drops the retained inner owner on failure."
+  },
+  "safety_argument": [
+    "PtyIo clones the caller-owned descriptor into an OwnedFd while its owner is live, verifies and sets O_NONBLOCK, then moves that owner into File and AsyncFd. The private field is shared through Arc; reader/writer tasks receive references only and never close or replace the registered descriptor.",
+    "Both AsyncSocket and AsyncDatagramSocket move an owned socket2::Socket into their private AsyncFd after set_nonblocking(true). They expose no get_mut replacement path. Their into_inner calls AsyncFd::into_inner, which deregisters before returning the owned Socket.",
+    "Read/write interest, readiness I/O, EOF handling and error propagation are unchanged. PTY still catches a missing-I/O-driver panic and returns the same error. Register failure converts to io::Error and drops its retained owner, matching the prior constructor behavior."
+  ],
+  "actual_workspace_pty_tests": {
+    "command": "just test -p codex-utils-pty --lib",
+    "run_id": "24c5247e-9cf8-460b-a22a-5e901ff66204",
+    "passed": 27,
+    "skipped": 0,
+    "exit_code": 0,
+    "coverage_examples": [
+      "missing I/O driver error",
+      "inherited fd preservation",
+      "large input and EOF delivery",
+      "termination and drop with detached child",
+      "shutdown with full output channel",
+      "PTY process reaping and group termination"
+    ]
+  },
+  "actual_socket_module_tests": {
+    "harness": "/workspace/scratch/65d421def718/asyncfd_socket_qualification",
+    "source_path": "/workspace/scratch/65d421def718/bazel_lock_work/codex-rs/shell-escalation/src/unix/socket.rs",
+    "run_id": "ed98c373-7217-4946-b954-67d7a0857796",
+    "passed": 7,
+    "skipped": 0,
+    "exit_code": 0,
+    "limits": "Actual production module is the integration-test root with lock-matching dependency versions. This is not a full shell-escalation build. Two dead_code warnings concern unused public(crate) conversion methods when isolated; no suppressions were added.",
+    "coverage_examples": [
+      "stream payload and fd roundtrip",
+      "large stream payload",
+      "datagram payload and fd roundtrip",
+      "peer closes before frame header",
+      "fd count and message length rejection"
+    ]
+  },
+  "canonical_fix": {
+    "command": "just fix -p codex-utils-pty --locked",
+    "exit_code": 0,
+    "warnings": [],
+    "source_changes_by_fix": [],
+    "initial_attempt": "Sandbox prevented Cargo fix local TCP locking listener before compilation; original exit101/log retained. Standard approved escalation retried the same offline scoped gate successfully."
+  },
+  "additional_scan": "No remaining first-party AsyncFd::new, try_new, with_interest or try_with_interest references found outside third_party.",
+  "test_rerun_after_fix": false,
+  "test_rerun_reason": "Canonical fix made no source changes; existing passing tests were not repeated.",
+  "git_diff_check_exit_code": 0,
+  "commands_and_logs": [
+    {
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-utils-pty",
+        "--lib"
+      ],
+      "cwd": "/workspace/scratch/65d421def718/bazel_lock_work",
+      "exit_code": 0,
+      "elapsed_seconds": 24.227878564001003,
+      "log_path": "/workspace/scratch/65d421def718/holder_ci_audit/ASYNCFD_PTY_NEXTEST.log",
+      "environment": {
+        "CARGO_HOME": "/workspace/scratch/65d421def718/security-cargo-home",
+        "CARGO_TARGET_DIR": "/workspace/scratch/65d421def718/asyncfd-review-target",
+        "CARGO_NET_OFFLINE": "true",
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "CARGO_PROFILE_TEST_DEBUG": "0",
+        "CARGO_INCREMENTAL": "0"
+      },
+      "command_record_sha256": "97f4528255d875b6178a5a2817d36e4bd9b37df65f8a7a2616fd2cb33901bcd9",
+      "log_sha256": "5613accdb02345c4ef0b039a31ca7073f49b8c4aa7b789888b72aaf1bada36b7"
+    },
+    {
+      "command": [
+        "just",
+        "test"
+      ],
+      "cwd": "/workspace/scratch/65d421def718/asyncfd_socket_qualification",
+      "exit_code": 0,
+      "elapsed_seconds": 20.006548465004016,
+      "log_path": "/workspace/scratch/65d421def718/holder_ci_audit/ASYNCFD_SOCKET_NEXTEST.log",
+      "scope": "Unmodified actual socket.rs as integration test root; existing 7 tests; pinned dependency versions match workspace lock. Not a full shell-escalation crate build.",
+      "command_record_sha256": "f326cb636637cfde4619d0c7c4a34014a43b820c7b7342595003b3618ab20473",
+      "log_sha256": "190a566235a53a2707b4aa5c61d8fa5adb0f80ebc386e9825a14c567e5f8e2b9"
+    },
+    {
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-utils-pty"
+      ],
+      "cwd": "/workspace/scratch/65d421def718/bazel_lock_work",
+      "exit_code": 101,
+      "elapsed_seconds": 0.5113390589976916,
+      "log_path": "/workspace/scratch/65d421def718/holder_ci_audit/ASYNCFD_PTY_JUST_FIX.log",
+      "source_changes_by_fix": [],
+      "source_sha256_after": {
+        "codex-rs/utils/pty/tests/conpty_search_path.rs": "d2313cad3570a982a3aab1bba040b2528cda8b93cf228921b74b88e374a437e7",
+        "codex-rs/utils/pty/src/pipe_tests.rs": "f9a8fc8902a869b49687d3b295abf956d7f326569b1058e3fca4d6d125cc47d4",
+        "codex-rs/utils/pty/src/unix_io.rs": "59d2dd0074b97eaef4207b6b18302dccba586ef077280994860dd0a20f9914b1",
+        "codex-rs/utils/pty/src/process_group_tests.rs": "f28f56e7923869e73adbe30728362b14fcc7cbd5088a52e0a7cf63629879b000",
+        "codex-rs/utils/pty/src/windows_input.rs": "bac4b55825fe7becafb532c00d98188cd253a0ce07525f6474f8c76ad3681bad",
+        "codex-rs/utils/pty/src/process_group.rs": "4c9c062f990c9bfef8c61641956765379586c4f4bb8fc61db67cf1a515d084d3",
+        "codex-rs/utils/pty/src/lib.rs": "92475acd26e972bad0f9e0010fe970f19529ed968e12f305393d39082cfe8310",
+        "codex-rs/utils/pty/src/pipe.rs": "ce78d972bb162d5a54c47214aa4c83777f895dd316f6b32b75493c608e0654ab",
+        "codex-rs/utils/pty/src/windows_tests.rs": "0a5bd604c03f3ef7149937a61609a7d9e1ffad0aa253549c0a276cdd706be6c0",
+        "codex-rs/utils/pty/src/process.rs": "f6dca08eec90266e43c7bebe9d1e651611d8d074614bae9df707c11c1c64d71c",
+        "codex-rs/utils/pty/src/windows_input_tests.rs": "dca6cc92c081ca7a3bfdaaec13cc7bbf32185e3c0b343e6def76d2039a2a6921",
+        "codex-rs/utils/pty/src/tests.rs": "fee2bb89ffb4345243f6756297c4729d814fb6cee65b32ae700daccb1771bb77",
+        "codex-rs/utils/pty/src/pty.rs": "25d04fce155c670bef1098d26d2940883ad784528dd0c796ef468d3a9a38a5f2",
+        "codex-rs/utils/pty/src/win/procthreadattr.rs": "f143dff9ff9ce080e617e6bae2e1864e7f59b6f83569eae18fd7f02e997a1956",
+        "codex-rs/utils/pty/src/win/psuedocon.rs": "919099dfdc4962c5bd47c58393d9441f034f2a080907d960be6f6a96ed51e60c",
+        "codex-rs/utils/pty/src/win/conpty.rs": "0dc2739c7df7f84dafe65658db3802d917dd719afa1dfa40663e5ae9609aa8d0",
+        "codex-rs/utils/pty/src/win/job.rs": "3c904bcd4ac33719bb843639c30be39ca6e9ceda350be311f970aaf3d748a476",
+        "codex-rs/utils/pty/src/win/mod.rs": "4f355ebc286683984158ff5b3cc3994c55e8b4eaea39775da905d91fd1fbbb14"
+      },
+      "command_record_sha256": "5fa4c45388b828b695a087c99ced31221d3cc9b61c49707371b2a588487a68c5",
+      "log_sha256": "6bb10e993781fcfafa03cdc3bb9385d58a4125ed406243f1ca86f8aa893f5afd"
+    },
+    {
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-utils-pty",
+        "--locked"
+      ],
+      "cwd": "/workspace/scratch/65d421def718/bazel_lock_work",
+      "exit_code": 0,
+      "elapsed_seconds": 9.144864850997692,
+      "log_path": "/workspace/scratch/65d421def718/holder_ci_audit/ASYNCFD_PTY_JUST_FIX_RETRY.log",
+      "source_changes_by_fix": [],
+      "source_sha256_after": {
+        "codex-rs/utils/pty/tests/conpty_search_path.rs": "d2313cad3570a982a3aab1bba040b2528cda8b93cf228921b74b88e374a437e7",
+        "codex-rs/utils/pty/src/pipe_tests.rs": "f9a8fc8902a869b49687d3b295abf956d7f326569b1058e3fca4d6d125cc47d4",
+        "codex-rs/utils/pty/src/unix_io.rs": "59d2dd0074b97eaef4207b6b18302dccba586ef077280994860dd0a20f9914b1",
+        "codex-rs/utils/pty/src/process_group_tests.rs": "f28f56e7923869e73adbe30728362b14fcc7cbd5088a52e0a7cf63629879b000",
+        "codex-rs/utils/pty/src/windows_input.rs": "bac4b55825fe7becafb532c00d98188cd253a0ce07525f6474f8c76ad3681bad",
+        "codex-rs/utils/pty/src/process_group.rs": "4c9c062f990c9bfef8c61641956765379586c4f4bb8fc61db67cf1a515d084d3",
+        "codex-rs/utils/pty/src/lib.rs": "92475acd26e972bad0f9e0010fe970f19529ed968e12f305393d39082cfe8310",
+        "codex-rs/utils/pty/src/pipe.rs": "ce78d972bb162d5a54c47214aa4c83777f895dd316f6b32b75493c608e0654ab",
+        "codex-rs/utils/pty/src/windows_tests.rs": "0a5bd604c03f3ef7149937a61609a7d9e1ffad0aa253549c0a276cdd706be6c0",
+        "codex-rs/utils/pty/src/process.rs": "f6dca08eec90266e43c7bebe9d1e651611d8d074614bae9df707c11c1c64d71c",
+        "codex-rs/utils/pty/src/windows_input_tests.rs": "dca6cc92c081ca7a3bfdaaec13cc7bbf32185e3c0b343e6def76d2039a2a6921",
+        "codex-rs/utils/pty/src/tests.rs": "fee2bb89ffb4345243f6756297c4729d814fb6cee65b32ae700daccb1771bb77",
+        "codex-rs/utils/pty/src/pty.rs": "25d04fce155c670bef1098d26d2940883ad784528dd0c796ef468d3a9a38a5f2",
+        "codex-rs/utils/pty/src/win/procthreadattr.rs": "f143dff9ff9ce080e617e6bae2e1864e7f59b6f83569eae18fd7f02e997a1956",
+        "codex-rs/utils/pty/src/win/psuedocon.rs": "919099dfdc4962c5bd47c58393d9441f034f2a080907d960be6f6a96ed51e60c",
+        "codex-rs/utils/pty/src/win/conpty.rs": "0dc2739c7df7f84dafe65658db3802d917dd719afa1dfa40663e5ae9609aa8d0",
+        "codex-rs/utils/pty/src/win/job.rs": "3c904bcd4ac33719bb843639c30be39ca6e9ceda350be311f970aaf3d748a476",
+        "codex-rs/utils/pty/src/win/mod.rs": "4f355ebc286683984158ff5b3cc3994c55e8b4eaea39775da905d91fd1fbbb14"
+      },
+      "sandbox_note": "Standard escalation solely permits Cargo fix local TCP lock listener; registry access remains offline.",
+      "command_record_sha256": "7bd051b24c104199f2089c6092714f1a8e9285540db7367a071f63ccb0ab4df8",
+      "log_sha256": "37f4af04cf9665eaf85282095f406bda9f11e4dfc4e54de4fd2df3b165f0a980"
+    }
+  ],
+  "full_shell_escalation_and_cross_platform_ci": "pending",
+  "frozen_science_modified": false
+}

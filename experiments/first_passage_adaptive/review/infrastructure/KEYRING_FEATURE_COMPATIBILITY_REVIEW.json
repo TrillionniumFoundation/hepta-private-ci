@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "reviewer": "holder_literature",
+  "scope": "Independent read-only source review of keyring 3.6.3 Linux feature selection for codex-keyring-store and codex-rmcp-client.",
+  "decision": "No source-level API or credential-namespace incompatibility identified. Native service behavior is not independently exercised by this review.",
+  "manifest_change": {
+    "before": [
+      "linux-native-async-persistent"
+    ],
+    "after": [
+      "linux-native-sync-persistent",
+      "vendored"
+    ],
+    "retained": [
+      "keyring 3.6.3",
+      "crypto-rust"
+    ]
+  },
+  "findings": [
+    {
+      "id": "synchronous_entry_api",
+      "status": "confirmed_by_source",
+      "detail": "Both owners use synchronous Entry::new, get_password, set_password and delete_credential. The API surface does not change with the selected Linux backend feature."
+    },
+    {
+      "id": "credential_namespace",
+      "status": "confirmed_by_source",
+      "detail": "Both persistent feature choices select the same keyutils_persistent default module and constructor. SsCredential maps service to service, account to username, absent target to default, application to rust-keyring and uses the same label. OAuth KEYRING_SERVICE and compute_store_key are unchanged."
+    },
+    {
+      "id": "search_and_encryption",
+      "status": "confirmed_by_source",
+      "detail": "The same SsCredential implementation searches service/username/target, falls back to the legacy default-collection search when no target match exists, prefers updating an existing entry, and selects EncryptionType::Dh while crypto-rust is enabled."
+    },
+    {
+      "id": "actual_default_builder",
+      "status": "important_qualification",
+      "detail": "In upstream keyring 3.6.3, KeyutilsPersistentCredentialBuilder::build actually constructs SsCredential directly, despite its documentation naming KeyutilsPersistentCredential. Both old and new feature paths share this implementation. DefaultKeyringStore does not override it. A claim that this migration verifies or preserves an active kernel keyring cache is unsupported; the observed default builder is SecretService-only in both configurations."
+    },
+    {
+      "id": "backend_transport",
+      "status": "confirmed_by_source",
+      "detail": "The conditional import changes from secret_service::blocking to dbus_secret_service. Both expose synchronous methods here. Native error text, timing and environment interaction can differ; source-level API equivalence does not establish identical runtime behavior."
+    },
+    {
+      "id": "vendored_scope",
+      "status": "confirmed_by_source",
+      "detail": "vendored propagates through dbus-secret-service to dbus and libdbus-sys. It vendors the native D-Bus library for builds; it is not evidence that the complete backend is pure Rust or that a SecretService daemon exists."
+    },
+    {
+      "id": "coverage",
+      "status": "limited",
+      "detail": "OAuth unit fixtures use MockKeyringStore. The process store-pinning test child installs TestCredentialBuilder explicitly. These cover credential format, policy and recovery semantics but not a real native SecretService. No gnome-keyring/dbus-run-session setup was found in the inspected workflow/scripts. Native old-entry read/write, unlocking and persistence across reboot were not run in this review."
+    }
+  ],
+  "existing_regression_examples": [
+    "oauth::tests::store_lock_tests::legacy_rmcp_oauth_keyring_credentials_remain_readable",
+    "auto_store_remains_pinned_across_session_recovery",
+    "auto_store_remains_pinned_across_session_recovery_child"
+  ],
+  "no_new_native_runtime_claim": true,
+  "review_executed_native_keyring_io": false,
+  "review_modified_source": false,
+  "source_sha256": {
+    "/workspace/scratch/65d421def718/bazel_lock_work/codex-rs/keyring-store/Cargo.toml": "38c9281c50e4e5fd4950e3d51822589819cc8dfa2385ce962e006f39a9d09533",
+    "/workspace/scratch/65d421def718/bazel_lock_work/codex-rs/rmcp-client/Cargo.toml": "9ec2be95c6623fda1ae4a0b05cbbf502307e4b6c2deacf6a40447ae788020593",
+    "/workspace/scratch/65d421def718/bazel_lock_work/codex-rs/keyring-store/src/lib.rs": "8e345522aa87967a0ce36e6f58c09f5cbc2cd775fbccd7dd5fba2ab0e35b76ba",
+    "/workspace/scratch/65d421def718/bazel_lock_work/codex-rs/rmcp-client/src/oauth.rs": "cd0a5428aab1d5f1255b1ecaab2c61a742770230e5d4df515c8cc41db3ce10e0",
+    "/workspace/scratch/65d421def718/bazel_lock_work/codex-rs/rmcp-client/src/oauth/tests/store_lock_tests.rs": "f650fd3f8c3484d60cd98ac15229c66784c3ce3b249025ca4c42bc24b8b46b87",
+    "/workspace/scratch/65d421def718/bazel_lock_work/codex-rs/rmcp-client/tests/streamable_http_oauth_store_pinning.rs": "954a05fc248abccec59e7abe09b253e1d6e69ce36596bf3ec7cb9d54c7d2f600",
+    "/workspace/scratch/65d421def718/math_audit/crate-sources/keyring-3.6.3/Cargo.toml": "ecebaa095f7181b35d774b34f60fdfe387b1ba5eefe667cbdcad1d01d6bede64",
+    "/workspace/scratch/65d421def718/math_audit/crate-sources/keyring-3.6.3/src/lib.rs": "dfa7fa25141b5cfa6d6000fa753bcdd956679dabc7c55293d0b9ebd5f9eaa8fc",
+    "/workspace/scratch/65d421def718/math_audit/crate-sources/keyring-3.6.3/src/keyutils_persistent.rs": "e0e23b80f8547a278ff9786892b3b61d92c671ea4af8643f344e3d92a80636c4",
+    "/workspace/scratch/65d421def718/math_audit/crate-sources/keyring-3.6.3/src/secret_service.rs": "1f3e0dab29e3805e2e2c17a17e3504997128444f50cd15b29e921bb3562b0d19"
+  },
+  "upstream_anchors": {
+    "feature_composition": "/workspace/scratch/65d421def718/math_audit/crate-sources/keyring-3.6.3/Cargo.toml:59-84",
+    "default_selection": "/workspace/scratch/65d421def718/math_audit/crate-sources/keyring-3.6.3/src/lib.rs:237-254",
+    "actual_builder": "/workspace/scratch/65d421def718/math_audit/crate-sources/keyring-3.6.3/src/keyutils_persistent.rs:169-177",
+    "conditional_transport": "/workspace/scratch/65d421def718/math_audit/crate-sources/keyring-3.6.3/src/secret_service.rs:92-99",
+    "namespace_constructor": "/workspace/scratch/65d421def718/math_audit/crate-sources/keyring-3.6.3/src/secret_service.rs:237-261"
+  },
+  "recommendation": "Retain the narrowly scoped feature migration and report source-level API/namespace compatibility. Let actual new-head build/tests establish compilation. Do not describe mock-backed tests as native SecretService verification or assert a kernel cache on the observed default path."
+}

@@ -1,0 +1,68 @@
+{
+  "schema": "hepta.first-passage.infrastructure-review.v1",
+  "files": [
+    {
+      "path": "ASYNCFD_IO_SAFETY_REVIEW.json",
+      "bytes": 11369,
+      "sha256": "f0f202ec0024b8fd0f5e7c99d6b4dde32a583e6a69b06c90cc937d6d0fe4d01a"
+    },
+    {
+      "path": "KEYRING_FEATURE_COMPATIBILITY_REVIEW.json",
+      "bytes": 6380,
+      "sha256": "06301bfb64bbfb1d043d112487e422278382a11e4e0643869823f4263a7433ac"
+    },
+    {
+      "path": "OWNER_COMPATIBILITY_REVIEW.json",
+      "bytes": 16995,
+      "sha256": "15c6b0e3fb6d89c7ca9da531ace3c5e4e03d72216451d4eb746f7388c327d9ed"
+    },
+    {
+      "path": "SDK_CLEAN_WORKTREE_FINDING.json",
+      "bytes": 3227,
+      "sha256": "cb12a4b5c772fbdb4d4d9a8b8911114b0cdf5aeb770613a84a634cb1ee8bbeff"
+    },
+    {
+      "path": "bazel/MANIFEST.json",
+      "bytes": 4408,
+      "sha256": "c7c3bf8beb5c5a2afe316304624ce9c067ac2c26665883806e0e4405aa8b64ee"
+    },
+    {
+      "path": "bazel/NATIVE_PREFLIGHT.json",
+      "bytes": 6764,
+      "sha256": "54f63f33dd22c720b8098c0b762c536fd90abe59446d852394ce801596b6ab2c"
+    },
+    {
+      "path": "bazel/NATIVE_PREFLIGHT_MANIFEST.json",
+      "bytes": 4817,
+      "sha256": "355aef37b4b8f104cb47999d6534a8c5b46e4b92608c75f8efda0d3bd95c4692"
+    },
+    {
+      "path": "bazel/REPAIR.json",
+      "bytes": 4463,
+      "sha256": "aa7abf4eb199fe79c1207b15f371cabf3950e944b6a603d037fa5e80e0efe97d"
+    },
+    {
+      "path": "bazel/native-preflight-raw.tar.gz",
+      "bytes": 147391,
+      "sha256": "c9f45dd9f7b47c9e7576657cc9b3e25168c14441741573bbcb3a2f1e8f208a50"
+    },
+    {
+      "path": "bazel/raw.tar.gz",
+      "bytes": 162700,
+      "sha256": "7d9d98f59ee4a15616bf9aea0b1a7a22b6c6a97b9983f5de538dc3c5f09517d7"
+    },
+    {
+      "path": "security/SECURITY_MIGRATION_VERIFICATION.json",
+      "bytes": 7891,
+      "sha256": "e87861f4eb3f786580ac66738e0dfd34bb4559a19f7066238f7e06438f781e97"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3402,
+      "sha256": "e544baa62496db958bcf136a52f028ee1389c18593e2c8eebaaf61df50930b89"
+    }
+  ],
+  "scope": "Dependency security and owner compatibility qualification. Scientific source, selected models and confirmation data are unchanged. Historical successful runs are not substituted for new-head CI.",
+  "superseding_bazel_record": "bazel/NATIVE_PREFLIGHT.json",
+  "final_module_bazel_lock_sha256": "36e52d219967278c1c1d29bf760a41a4c0af5a01dd7f91a5410c89ae552c1e94"
+}

@@ -1,0 +1,398 @@
+{
+  "schema_version": 1,
+  "reviewed_at_utc": "2026-10-29T13:11:39Z",
+  "reviewer": "holder_literature",
+  "repository_worktree": "/workspace/scratch/65d421def718/bazel_lock_work",
+  "repository_head": "dcce134867c7f3f8cb80ca661fa714b6d25a885b",
+  "reviewed_uncommitted_source_sha256": {
+    "codex-rs/hepta-memory/src/production_writer.rs": "da13ab8b5b8f05085c16d3747891e760557ec050ab15a978b49e7a3617e589ec",
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs": "c5815b123bca7ed091e6cd5ebd97ed02e2f2eb420933fbf0c6888e59e7d37771",
+    "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs": "54c284d4b753df78d0fbbb8f36c4cd46a7851d1f8aa3d02fd60610ee13232632",
+    "codex-rs/hepta-automation/src/migration_convergence_tests.rs": "730a414b9aa1d5a17fd867d83ef2ea280c71fc051ac09785490f6aabadf6323b",
+    "codex-rs/hepta-memory/src/cognitive_schema_tests.rs": "4d08926230af3ee1f1593d8f657446db2cff5f6e9b397ac6a07e12358f00f397",
+    "codex-rs/core/src/tasks/mod.rs": "c2a9eb21a01371fd5efc539e9a6c78648b6d88b23468a810a224d75389136aa0",
+    "codex-rs/core/src/tasks/terminal_event_barrier_tests.rs": "60111dd9e042193e3698a54795bb5cbd5a63bfd188b5703932afabfb63fbcf46",
+    "codex-rs/core-plugins/src/migration_frontmatter.rs": "3740f3b713f64de0692f65e20d424c82a98e3c94a9dc25557a39924f5d174f24",
+    "codex-rs/core-plugins/src/migration_frontmatter_tests.rs": "f767e52b1bb1edc0c26cc4fdaecac35cd8666da8abfdfdca0039772e6ecf2bdc",
+    "codex-rs/core-plugins/src/command_migration.rs": "39f6b204992e055ecdaf8221e051372ee54690c9ac9fbec418b8d89dccef7690",
+    "codex-rs/core-plugins/src/command_migration_tests.rs": "255dcdf829a013ab33f88118a154e1b617aec3f43167f8be63f3467b2d4bb0fc",
+    "codex-rs/core-plugins/src/plugin_metrics.rs": "8734a804adb37cb8a1ee9f31356e95784f6b1e075e4accd0ff2a138ea5f864ce",
+    "codex-rs/skills/src/parser.rs": "5fd991ad014c12360ca8f56161b0b4cc4f504f9625388ae1903903cb274ab3f2",
+    "codex-rs/skills/src/parser_tests.rs": "7a13de76093eb71ef05f750c1295d311d89e255895039ec6ffd7230541688849",
+    "codex-rs/ext/skills/src/loader/metadata.rs": "a6cbbea580a0be139c9f3da90e4004ee508a4096004caf124f3ee6a183c7744d",
+    "codex-rs/ext/skills/src/loader/metadata_yaml_tests.rs": "214d8b9722c1c59e34e49f9c99d838c87b1814ca78950c3a58b29ea33ce46507",
+    "codex-rs/ext/skills/src/loader/environment.rs": "2a1177272c4fbdb60020cd4db21442eb42e1cee5788def29481b991a3e9ba113",
+    "codex-rs/external-agent-migration/src/subagents.rs": "a33e12d9fff7f5371c867a488d0073b511f61b267a64f27a41353fe804260d0e",
+    "codex-rs/external-agent-migration/src/lib_tests.rs": "cc664608b96630a2b6c5a5370967dbd0d13d75a9a46aa48a59b3235bc8926c1f",
+    "defs.bzl": "f8b6b17fb750239fe1f375e343dd67b9508a8b2f502dca25a5aefc7db332488c",
+    "codex-rs/hepta-agentd/BUILD.bazel": "220f7efdbb551bf79af435022934210a873f0a3280020556f271fd86f12c66be"
+  },
+  "decision": "No source-review blocker remains in reviewed changes; full owner integration and core compilation remain pending CI.",
+  "independence": {
+    "root_fixture_sqlite_and_bazel_changes": "Independent source review by an agent other than their author.",
+    "yaml_and_core_receiver_changes": "Author self-review plus actual-source isolated YAML tests and Clippy; not an independent correctness proof."
+  },
+  "findings": [
+    {
+      "area": "Result and Context helpers",
+      "status": "source_review_pass",
+      "files": [
+        "codex-rs/hepta-memory/src/production_writer.rs",
+        "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+        "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"
+      ],
+      "observations": [
+        "Helper return values propagate failures with Context/Result. Callers consume the Result using ? or test-local expect; no success default is introduced.",
+        "Original payload, signature, nonce, authority, dispatch-count and rejection assertions remain.",
+        "Error definitions inspected are standard error types compatible with anyhow Context. hepta-memory includes the needed dev dependency.",
+        "Existing clippy configuration permits expect inside test bodies; this change does not add allow attributes."
+      ]
+    },
+    {
+      "area": "SQLite migration and schema fixtures",
+      "status": "source_review_pass",
+      "files": [
+        "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_schema_tests.rs"
+      ],
+      "observations": [
+        "Direct in-memory SqlitePool connections are replaced with the existing SqliteConfig durable-pool API and a private temporary database.",
+        "historical_pool returns both TempDir and pool. All callers bind the TempDir guard; it remains alive through migration, VACUUM INTO and pool.close.",
+        "SqliteConfig opens the connection with WAL/FULL/foreign keys but does not run owner migrations; the historical fixtures still explicitly build their original migration cuts.",
+        "The VACUUM destination is separately retained. Source pool is closed before the real owner is opened. Checksum, branch-convergence, repeated-restart and corrupt-history assertions remain.",
+        "The schema oracle is still derived from compiled migrations in a fresh database; tampered trigger rejection remains."
+      ]
+    },
+    {
+      "area": "Core FIFO event receiver",
+      "status": "source_review_pass_integration_pending",
+      "files": [
+        "codex-rs/core/src/tasks/mod.rs",
+        "codex-rs/core/src/tasks/terminal_event_barrier_tests.rs"
+      ],
+      "observations": [
+        "A private one-permit Tokio semaphore serializes channel receive and synchronous sidecar pairing across concurrent consumers.",
+        "No data mutex guard is held over channel await. Cancellation and receive failure release the permit through RAII.",
+        "There is no suspension point between a successful event receive and sidecar pairing. Cancelling a pending async-channel receive does not consume an event.",
+        "Existing publisher ordering and completion-owner identity remain unchanged.",
+        "New actual-Session tests cover reused-turn FIFO pairing with reverse polling order, queued and active receiver cancellation, and consecutive closed-channel errors.",
+        "Review caught Event lacking PartialEq. Three comparisons now serialize and compare complete Event objects without changing the production Event type."
+      ],
+      "not_executed": [
+        "Full codex-core compilation",
+        "New actual-Session receiver tests"
+      ]
+    },
+    {
+      "area": "Pure Rust YAML migration",
+      "status": "actual_source_isolated_tests_pass_owner_ci_pending",
+      "observations": [
+        "Four production owners no longer reference serde_yaml. External-agent migration reuses the core-plugins compatibility reader instead of adding another direct parser dependency.",
+        "The parser pins YAML boolean interpretation and treats merge keys as ordinary keys. The dynamic migration reader retains ordered scalar fields, unsupported values and non-string-key handling.",
+        "Compatibility adjustments cover tagged mapping/key transparency, application-tagged values, aliases retaining definition spelling, leading-zero strings, finite and non-finite numeric spelling, and 64-bit integer range.",
+        "Existing skilled frontmatter repair tests execute against the actual edited parser source, not a mirrored parser implementation.",
+        "The finite differential corpus establishes compatibility for its 48 documents only; it is not a proof for all possible YAML inputs."
+      ]
+    },
+    {
+      "area": "Bazel qualification opt-in",
+      "status": "source_review_pass_bazel_ci_pending",
+      "observations": [
+        "Only plasticity_process_e2e opts into the test library and its coherent replacement dependency graph.",
+        "Production library and binary definitions retain their existing dependency/features configuration.",
+        "No gate skip, lint allow or production qualification feature is introduced by this reviewed change."
+      ]
+    }
+  ],
+  "executed_validation": {
+    "yaml_harness": {
+      "path": "/workspace/scratch/65d421def718/yaml_migration_qualification",
+      "runner_command": "just test",
+      "expanded_recipe": "cargo nextest run --no-fail-fast",
+      "environment": {
+        "PATH_prefix": "/workspace/scratch/65d421def718/rust-toolchain-1.96.0/bin:/workspace/scratch/65d421def718/task-tools/bin",
+        "CARGO_HOME": "/workspace/scratch/65d421def718/yaml-review-cargo-home",
+        "CARGO_TARGET_DIR": "/workspace/scratch/65d421def718/yaml-review-target"
+      },
+      "toolchain": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+      "nextest_run_id": "8927bd51-cf29-480c-b262-2c6e88112110",
+      "exit_code": 0,
+      "tests_run": 16,
+      "tests_passed": 16,
+      "tests_skipped": 0,
+      "test_groups": {
+        "actual_migration_frontmatter_source_tests": 7,
+        "actual_skills_parser_source_tests": 8,
+        "legacy_differential_corpus_test": 1
+      },
+      "legacy_corpus": {
+        "source_path": "/workspace/scratch/65d421def718/yaml_migration_qualification/tests/legacy_format.rs",
+        "source_sha256": "85243f831396ac00e1b39070d34c29f3e4b614b0723df49ec02c7e93ca9d8cd5",
+        "base_documents": 12,
+        "scalar_documents": 36,
+        "total_documents": 48,
+        "documents": [
+          {
+            "index": 1,
+            "yaml": "null"
+          },
+          {
+            "index": 2,
+            "yaml": ""
+          },
+          {
+            "index": 3,
+            "yaml": "[]"
+          },
+          {
+            "index": 4,
+            "yaml": "description: &d Review\nname: *d"
+          },
+          {
+            "index": 5,
+            "yaml": "description: first\ndescription: second"
+          },
+          {
+            "index": 6,
+            "yaml": "defaults: &d {description: inherited}\n<<: *d\nname: demo"
+          },
+          {
+            "index": 7,
+            "yaml": "? [a, b]\n: ignored\nname: demo"
+          },
+          {
+            "index": 8,
+            "yaml": "true: ignored\n1: ignored\nname: demo"
+          },
+          {
+            "index": 9,
+            "yaml": "description: first\n---\nname: demo"
+          },
+          {
+            "index": 10,
+            "yaml": "description: !application content\nname: demo"
+          },
+          {
+            "index": 11,
+            "yaml": "!application {name: demo}"
+          },
+          {
+            "index": 12,
+            "yaml": "description: [1, {a: 2}]\nname: demo"
+          },
+          {
+            "index": 13,
+            "yaml": "description: yes"
+          },
+          {
+            "index": 14,
+            "yaml": "description: Yes"
+          },
+          {
+            "index": 15,
+            "yaml": "description: YES"
+          },
+          {
+            "index": 16,
+            "yaml": "description: on"
+          },
+          {
+            "index": 17,
+            "yaml": "description: off"
+          },
+          {
+            "index": 18,
+            "yaml": "description: true"
+          },
+          {
+            "index": 19,
+            "yaml": "description: True"
+          },
+          {
+            "index": 20,
+            "yaml": "description: TRUE"
+          },
+          {
+            "index": 21,
+            "yaml": "description: false"
+          },
+          {
+            "index": 22,
+            "yaml": "description: False"
+          },
+          {
+            "index": 23,
+            "yaml": "description: FALSE"
+          },
+          {
+            "index": 24,
+            "yaml": "description: null"
+          },
+          {
+            "index": 25,
+            "yaml": "description: ~"
+          },
+          {
+            "index": 26,
+            "yaml": "description: 42"
+          },
+          {
+            "index": 27,
+            "yaml": "description: -42"
+          },
+          {
+            "index": 28,
+            "yaml": "description: 0x10"
+          },
+          {
+            "index": 29,
+            "yaml": "description: 0o10"
+          },
+          {
+            "index": 30,
+            "yaml": "description: 01"
+          },
+          {
+            "index": 31,
+            "yaml": "description: 1.0"
+          },
+          {
+            "index": 32,
+            "yaml": "description: 1e3"
+          },
+          {
+            "index": 33,
+            "yaml": "description: 1e20"
+          },
+          {
+            "index": 34,
+            "yaml": "description: 1e-10"
+          },
+          {
+            "index": 35,
+            "yaml": "description: .nan"
+          },
+          {
+            "index": 36,
+            "yaml": "description: .inf"
+          },
+          {
+            "index": 37,
+            "yaml": "description: -.inf"
+          },
+          {
+            "index": 38,
+            "yaml": "description: 18446744073709551615"
+          },
+          {
+            "index": 39,
+            "yaml": "description: 18446744073709551616"
+          },
+          {
+            "index": 40,
+            "yaml": "description: ! value"
+          },
+          {
+            "index": 41,
+            "yaml": "description: !!str 42"
+          },
+          {
+            "index": 42,
+            "yaml": "description: !!int 42"
+          },
+          {
+            "index": 43,
+            "yaml": "description: !!float 1.0"
+          },
+          {
+            "index": 44,
+            "yaml": "description: !!bool TRUE"
+          },
+          {
+            "index": 45,
+            "yaml": "description: !local text"
+          },
+          {
+            "index": 46,
+            "yaml": "description: '  quoted  '"
+          },
+          {
+            "index": 47,
+            "yaml": "description: \"hello: world\""
+          },
+          {
+            "index": 48,
+            "yaml": "description: |-\n  first\n  second"
+          }
+        ]
+      },
+      "legacy_dependency_scope": "serde_yaml 0.9.34 and unsafe-libyaml are used only as scratch-harness dev dependencies for the comparison oracle. They are not added to the production workspace.",
+      "scope_note": "Actual source is imported with #[path]. This harness does not build full owner dependency graphs. Current source hashes include subsequent formatting only; these are not presented as historical pre-format hashes."
+    },
+    "yaml_clippy": {
+      "cwd": "/workspace/scratch/65d421def718/yaml_migration_qualification",
+      "command": "cargo clippy --all-targets --offline -- -D warnings",
+      "environment_same_as_yaml_harness": true,
+      "exit_code": 0,
+      "elapsed_reported_seconds": 6.43,
+      "scope_note": "Scratch harness only. This is not the workspace Bazel Clippy gate and does not inherit all workspace lints."
+    },
+    "diff_check": {
+      "command": "git diff --check",
+      "cwd": "/workspace/scratch/65d421def718/bazel_lock_work",
+      "exit_code": 0
+    }
+  },
+  "original_retained_logs": [
+    {
+      "path": "/workspace/scratch/65d421def718/holder_ci_audit/YAML_NEXTEST_ORIGINAL_TAIL.log",
+      "sha256": "7b2f26bcd26b2c59238fdcbcda559d9bbe7b78550e78e3caa42efcce7a1650f7",
+      "retention_scope": "Retained original tool output tail only; contains final four results and 16/16 summary. Earlier output was not retained. No full-log claim."
+    },
+    {
+      "path": "/workspace/scratch/65d421def718/holder_ci_audit/YAML_NEXTEST_ORIGINAL_TAIL.tool-result.json",
+      "sha256": "79db1974d0b53a3b1e9da1d4b72271f201be4878db29b6d834ec49129bc8f736",
+      "retention_scope": "Original retained exec tool completion object, chunk 4d3f05, exit code 0."
+    },
+    {
+      "path": "/workspace/scratch/65d421def718/holder_ci_audit/YAML_CLIPPY_ORIGINAL_OUTPUT.log",
+      "sha256": "592d5a1a86ac65e1d87708eca4447fa11c7b3a5f72256573cbbf0d5b8e308e28",
+      "retention_scope": "Concatenated original tool outputs from exec chunk 436589 and completion chunk fffe72. Session 34074. No test rerun to recreate output."
+    }
+  ],
+  "not_claimed": [
+    "Full owner or codex-core compilation passed locally.",
+    "All newly authored owner/core integration tests executed locally.",
+    "Global YAML semantic equivalence outside the enumerated corpus.",
+    "Repository CI is green before its actual results are retrieved."
+  ],
+  "frozen_science": {
+    "changed_by_this_review": false,
+    "confirmation_reopened": false
+  },
+  "ci_snapshot": {
+    "head_sha": "dcce134867c7f3f8cb80ca661fa714b6d25a885b",
+    "architecture_run_id": 40875379046,
+    "architecture_conclusion": "success",
+    "architecture_jobs": [
+      {
+        "id": 123452914720,
+        "name": "source-head",
+        "conclusion": "success"
+      },
+      {
+        "id": 123452915076,
+        "name": "base-merge",
+        "conclusion": "success"
+      },
+      {
+        "id": 123467256064,
+        "name": "Architecture required",
+        "conclusion": "success"
+      }
+    ],
+    "blocking_run_id": 40875379058,
+    "blocking_status": "in_progress",
+    "blocking_has_existing_failures": true
+  }
+}
