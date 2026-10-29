@@ -1,0 +1,412 @@
+[
+  {
+    "label": "prepare-train-calibration",
+    "command": [
+      "/workspace/scratch/76e2020e4b36/memory-v10-runtime/venv/bin/python",
+      "/workspace/scratch/76e2020e4b36/hepta-memory-v10/qualification/memory-cell-v10/research_prepare.py",
+      "--output",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/data",
+      "--encoder-dir",
+      "/workspace/scratch/76e2020e4b36/memory-v10-runtime/encoder"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 22.666617034999945,
+    "child_user_cpu_seconds": 22.365555999999998,
+    "child_system_cpu_seconds": 0.26764299999999996,
+    "cumulative_child_maxrss_kib": 517420,
+    "rss_scope": "Linux RUSAGE_CHILDREN high-water mark, not per-stage allocation"
+  },
+  {
+    "label": "fit-capacity-32-seed-1741",
+    "command": [
+      "/workspace/scratch/76e2020e4b36/memory-v10-runtime/venv/bin/python",
+      "/workspace/scratch/76e2020e4b36/hepta-memory-v10/qualification/memory-cell-v10/research_fit.py",
+      "--data",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/data/capacity-32",
+      "--output",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/models/capacity-32-seed-1741",
+      "--capacity",
+      "32",
+      "--seed",
+      "1741"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 4.959945410999353,
+    "child_user_cpu_seconds": 4.698327000000003,
+    "child_system_cpu_seconds": 0.260439,
+    "cumulative_child_maxrss_kib": 517420,
+    "rss_scope": "Linux RUSAGE_CHILDREN high-water mark, not per-stage allocation"
+  },
+  {
+    "label": "fit-capacity-32-seed-1742",
+    "command": [
+      "/workspace/scratch/76e2020e4b36/memory-v10-runtime/venv/bin/python",
+      "/workspace/scratch/76e2020e4b36/hepta-memory-v10/qualification/memory-cell-v10/research_fit.py",
+      "--data",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/data/capacity-32",
+      "--output",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/models/capacity-32-seed-1742",
+      "--capacity",
+      "32",
+      "--seed",
+      "1742"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 5.1284701870026765,
+    "child_user_cpu_seconds": 4.918275999999999,
+    "child_system_cpu_seconds": 0.209488,
+    "cumulative_child_maxrss_kib": 517420,
+    "rss_scope": "Linux RUSAGE_CHILDREN high-water mark, not per-stage allocation"
+  },
+  {
+    "label": "fit-capacity-32-seed-1743",
+    "command": [
+      "/workspace/scratch/76e2020e4b36/memory-v10-runtime/venv/bin/python",
+      "/workspace/scratch/76e2020e4b36/hepta-memory-v10/qualification/memory-cell-v10/research_fit.py",
+      "--data",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/data/capacity-32",
+      "--output",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/models/capacity-32-seed-1743",
+      "--capacity",
+      "32",
+      "--seed",
+      "1743"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 4.992005918000359,
+    "child_user_cpu_seconds": 4.753444999999999,
+    "child_system_cpu_seconds": 0.23701799999999995,
+    "cumulative_child_maxrss_kib": 517420,
+    "rss_scope": "Linux RUSAGE_CHILDREN high-water mark, not per-stage allocation"
+  },
+  {
+    "label": "fit-capacity-64-seed-1741",
+    "command": [
+      "/workspace/scratch/76e2020e4b36/memory-v10-runtime/venv/bin/python",
+      "/workspace/scratch/76e2020e4b36/hepta-memory-v10/qualification/memory-cell-v10/research_fit.py",
+      "--data",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/data/capacity-64",
+      "--output",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/models/capacity-64-seed-1741",
+      "--capacity",
+      "64",
+      "--seed",
+      "1741"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 15.55240661399148,
+    "child_user_cpu_seconds": 15.241576000000002,
+    "child_system_cpu_seconds": 0.30925500000000006,
+    "cumulative_child_maxrss_kib": 517420,
+    "rss_scope": "Linux RUSAGE_CHILDREN high-water mark, not per-stage allocation"
+  },
+  {
+    "label": "fit-capacity-64-seed-1742",
+    "command": [
+      "/workspace/scratch/76e2020e4b36/memory-v10-runtime/venv/bin/python",
+      "/workspace/scratch/76e2020e4b36/hepta-memory-v10/qualification/memory-cell-v10/research_fit.py",
+      "--data",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/data/capacity-64",
+      "--output",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/models/capacity-64-seed-1742",
+      "--capacity",
+      "64",
+      "--seed",
+      "1742"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 15.050108161987737,
+    "child_user_cpu_seconds": 14.847967000000004,
+    "child_system_cpu_seconds": 0.19836600000000004,
+    "cumulative_child_maxrss_kib": 517420,
+    "rss_scope": "Linux RUSAGE_CHILDREN high-water mark, not per-stage allocation"
+  },
+  {
+    "label": "fit-capacity-64-seed-1743",
+    "command": [
+      "/workspace/scratch/76e2020e4b36/memory-v10-runtime/venv/bin/python",
+      "/workspace/scratch/76e2020e4b36/hepta-memory-v10/qualification/memory-cell-v10/research_fit.py",
+      "--data",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/data/capacity-64",
+      "--output",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/models/capacity-64-seed-1743",
+      "--capacity",
+      "64",
+      "--seed",
+      "1743"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 15.42324531300983,
+    "child_user_cpu_seconds": 15.117200999999994,
+    "child_system_cpu_seconds": 0.28813599999999995,
+    "cumulative_child_maxrss_kib": 517420,
+    "rss_scope": "Linux RUSAGE_CHILDREN high-water mark, not per-stage allocation"
+  },
+  {
+    "label": "fit-capacity-128-seed-1741",
+    "command": [
+      "/workspace/scratch/76e2020e4b36/memory-v10-runtime/venv/bin/python",
+      "/workspace/scratch/76e2020e4b36/hepta-memory-v10/qualification/memory-cell-v10/research_fit.py",
+      "--data",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/data/capacity-128",
+      "--output",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/models/capacity-128-seed-1741",
+      "--capacity",
+      "128",
+      "--seed",
+      "1741"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 5.443780258006882,
+    "child_user_cpu_seconds": 5.377065000000002,
+    "child_system_cpu_seconds": 0.06540400000000002,
+    "cumulative_child_maxrss_kib": 517420,
+    "rss_scope": "Linux RUSAGE_CHILDREN high-water mark, not per-stage allocation"
+  },
+  {
+    "label": "fit-capacity-128-seed-1742",
+    "command": [
+      "/workspace/scratch/76e2020e4b36/memory-v10-runtime/venv/bin/python",
+      "/workspace/scratch/76e2020e4b36/hepta-memory-v10/qualification/memory-cell-v10/research_fit.py",
+      "--data",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/data/capacity-128",
+      "--output",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/models/capacity-128-seed-1742",
+      "--capacity",
+      "128",
+      "--seed",
+      "1742"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 5.144023942993954,
+    "child_user_cpu_seconds": 5.086175999999995,
+    "child_system_cpu_seconds": 0.056850999999999985,
+    "cumulative_child_maxrss_kib": 517420,
+    "rss_scope": "Linux RUSAGE_CHILDREN high-water mark, not per-stage allocation"
+  },
+  {
+    "label": "fit-capacity-128-seed-1743",
+    "command": [
+      "/workspace/scratch/76e2020e4b36/memory-v10-runtime/venv/bin/python",
+      "/workspace/scratch/76e2020e4b36/hepta-memory-v10/qualification/memory-cell-v10/research_fit.py",
+      "--data",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/data/capacity-128",
+      "--output",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/models/capacity-128-seed-1743",
+      "--capacity",
+      "128",
+      "--seed",
+      "1743"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 5.164003048004815,
+    "child_user_cpu_seconds": 5.111404000000007,
+    "child_system_cpu_seconds": 0.04389300000000018,
+    "cumulative_child_maxrss_kib": 517420,
+    "rss_scope": "Linux RUSAGE_CHILDREN high-water mark, not per-stage allocation"
+  },
+  {
+    "label": "prepare-held-after-all-fits",
+    "command": [
+      "/workspace/scratch/76e2020e4b36/memory-v10-runtime/venv/bin/python",
+      "/workspace/scratch/76e2020e4b36/hepta-memory-v10/qualification/memory-cell-v10/research_prepare.py",
+      "--output",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/data",
+      "--encoder-dir",
+      "/workspace/scratch/76e2020e4b36/memory-v10-runtime/encoder",
+      "--held-only"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 14.228488371998537,
+    "child_user_cpu_seconds": 13.848185,
+    "child_system_cpu_seconds": 0.36146900000000004,
+    "cumulative_child_maxrss_kib": 524976,
+    "rss_scope": "Linux RUSAGE_CHILDREN high-water mark, not per-stage allocation"
+  },
+  {
+    "label": "read-capacity-32-seed-1741",
+    "command": [
+      "/workspace/scratch/76e2020e4b36/memory-v10-runtime/venv/bin/python",
+      "/workspace/scratch/76e2020e4b36/hepta-memory-v10/qualification/memory-cell-v10/research_evaluate.py",
+      "--data",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/data/capacity-32",
+      "--models",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/models/capacity-32-seed-1741",
+      "--output",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/evaluation/capacity-32-seed-1741"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.7932881869928678,
+    "child_user_cpu_seconds": 0.6914819999999935,
+    "child_system_cpu_seconds": 0.10127099999999967,
+    "cumulative_child_maxrss_kib": 524976,
+    "rss_scope": "Linux RUSAGE_CHILDREN high-water mark, not per-stage allocation"
+  },
+  {
+    "label": "read-capacity-32-seed-1742",
+    "command": [
+      "/workspace/scratch/76e2020e4b36/memory-v10-runtime/venv/bin/python",
+      "/workspace/scratch/76e2020e4b36/hepta-memory-v10/qualification/memory-cell-v10/research_evaluate.py",
+      "--data",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/data/capacity-32",
+      "--models",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/models/capacity-32-seed-1742",
+      "--output",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/evaluation/capacity-32-seed-1742"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.818042945000343,
+    "child_user_cpu_seconds": 0.6808520000000016,
+    "child_system_cpu_seconds": 0.13626400000000016,
+    "cumulative_child_maxrss_kib": 524976,
+    "rss_scope": "Linux RUSAGE_CHILDREN high-water mark, not per-stage allocation"
+  },
+  {
+    "label": "read-capacity-32-seed-1743",
+    "command": [
+      "/workspace/scratch/76e2020e4b36/memory-v10-runtime/venv/bin/python",
+      "/workspace/scratch/76e2020e4b36/hepta-memory-v10/qualification/memory-cell-v10/research_evaluate.py",
+      "--data",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/data/capacity-32",
+      "--models",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/models/capacity-32-seed-1743",
+      "--output",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/evaluation/capacity-32-seed-1743"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.7214000170060899,
+    "child_user_cpu_seconds": 0.6416710000000023,
+    "child_system_cpu_seconds": 0.079291,
+    "cumulative_child_maxrss_kib": 524976,
+    "rss_scope": "Linux RUSAGE_CHILDREN high-water mark, not per-stage allocation"
+  },
+  {
+    "label": "read-capacity-64-seed-1741",
+    "command": [
+      "/workspace/scratch/76e2020e4b36/memory-v10-runtime/venv/bin/python",
+      "/workspace/scratch/76e2020e4b36/hepta-memory-v10/qualification/memory-cell-v10/research_evaluate.py",
+      "--data",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/data/capacity-64",
+      "--models",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/models/capacity-64-seed-1741",
+      "--output",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/evaluation/capacity-64-seed-1741"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 1.4570626310014632,
+    "child_user_cpu_seconds": 1.267641999999995,
+    "child_system_cpu_seconds": 0.18799300000000008,
+    "cumulative_child_maxrss_kib": 524976,
+    "rss_scope": "Linux RUSAGE_CHILDREN high-water mark, not per-stage allocation"
+  },
+  {
+    "label": "read-capacity-64-seed-1742",
+    "command": [
+      "/workspace/scratch/76e2020e4b36/memory-v10-runtime/venv/bin/python",
+      "/workspace/scratch/76e2020e4b36/hepta-memory-v10/qualification/memory-cell-v10/research_evaluate.py",
+      "--data",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/data/capacity-64",
+      "--models",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/models/capacity-64-seed-1742",
+      "--output",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/evaluation/capacity-64-seed-1742"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 1.58181706200412,
+    "child_user_cpu_seconds": 1.3588430000000074,
+    "child_system_cpu_seconds": 0.2224919999999999,
+    "cumulative_child_maxrss_kib": 524976,
+    "rss_scope": "Linux RUSAGE_CHILDREN high-water mark, not per-stage allocation"
+  },
+  {
+    "label": "read-capacity-64-seed-1743",
+    "command": [
+      "/workspace/scratch/76e2020e4b36/memory-v10-runtime/venv/bin/python",
+      "/workspace/scratch/76e2020e4b36/hepta-memory-v10/qualification/memory-cell-v10/research_evaluate.py",
+      "--data",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/data/capacity-64",
+      "--models",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/models/capacity-64-seed-1743",
+      "--output",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/evaluation/capacity-64-seed-1743"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 1.5163799399888376,
+    "child_user_cpu_seconds": 1.3422459999999887,
+    "child_system_cpu_seconds": 0.17329099999999986,
+    "cumulative_child_maxrss_kib": 524976,
+    "rss_scope": "Linux RUSAGE_CHILDREN high-water mark, not per-stage allocation"
+  },
+  {
+    "label": "read-capacity-128-seed-1741",
+    "command": [
+      "/workspace/scratch/76e2020e4b36/memory-v10-runtime/venv/bin/python",
+      "/workspace/scratch/76e2020e4b36/hepta-memory-v10/qualification/memory-cell-v10/research_evaluate.py",
+      "--data",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/data/capacity-128",
+      "--models",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/models/capacity-128-seed-1741",
+      "--output",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/evaluation/capacity-128-seed-1741"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 4.04441612600931,
+    "child_user_cpu_seconds": 3.7280350000000055,
+    "child_system_cpu_seconds": 0.31551399999999985,
+    "cumulative_child_maxrss_kib": 524976,
+    "rss_scope": "Linux RUSAGE_CHILDREN high-water mark, not per-stage allocation"
+  },
+  {
+    "label": "read-capacity-128-seed-1742",
+    "command": [
+      "/workspace/scratch/76e2020e4b36/memory-v10-runtime/venv/bin/python",
+      "/workspace/scratch/76e2020e4b36/hepta-memory-v10/qualification/memory-cell-v10/research_evaluate.py",
+      "--data",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/data/capacity-128",
+      "--models",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/models/capacity-128-seed-1742",
+      "--output",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/evaluation/capacity-128-seed-1742"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 4.164921535004396,
+    "child_user_cpu_seconds": 3.8130060000000014,
+    "child_system_cpu_seconds": 0.3506260000000001,
+    "cumulative_child_maxrss_kib": 524976,
+    "rss_scope": "Linux RUSAGE_CHILDREN high-water mark, not per-stage allocation"
+  },
+  {
+    "label": "read-capacity-128-seed-1743",
+    "command": [
+      "/workspace/scratch/76e2020e4b36/memory-v10-runtime/venv/bin/python",
+      "/workspace/scratch/76e2020e4b36/hepta-memory-v10/qualification/memory-cell-v10/research_evaluate.py",
+      "--data",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/data/capacity-128",
+      "--models",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/models/capacity-128-seed-1743",
+      "--output",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01/evaluation/capacity-128-seed-1743"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 4.127366938002524,
+    "child_user_cpu_seconds": 3.7702740000000006,
+    "child_system_cpu_seconds": 0.35412100000000013,
+    "cumulative_child_maxrss_kib": 524976,
+    "rss_scope": "Linux RUSAGE_CHILDREN high-water mark, not per-stage allocation"
+  },
+  {
+    "label": "summarize",
+    "command": [
+      "/workspace/scratch/76e2020e4b36/memory-v10-runtime/venv/bin/python",
+      "/workspace/scratch/76e2020e4b36/hepta-memory-v10/qualification/memory-cell-v10/summarize.py",
+      "--run",
+      "/workspace/scratch/76e2020e4b36/memory-v10-formal-01"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.2466613709984813,
+    "child_user_cpu_seconds": 0.20531700000000797,
+    "child_system_cpu_seconds": 0.04053299999999993,
+    "cumulative_child_maxrss_kib": 524976,
+    "rss_scope": "Linux RUSAGE_CHILDREN high-water mark, not per-stage allocation"
+  }
+]
