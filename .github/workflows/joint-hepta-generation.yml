@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: joint-hepta-${{ github.ref }}
+  group: joint-hepta-${{ github.ref }}-${{ github.sha }}
   cancel-in-progress: false
 
 jobs:
@@ -140,6 +140,8 @@ jobs:
       - name: Install pinned real-media runtime
         run: |
           python -m pip install --disable-pip-version-check --only-binary=:all: --extra-index-url https://download.pytorch.org/whl/cpu torch==2.14.1+cpu torchvision==0.29.1+cpu numpy==2.3.5 scipy==1.16.3 Pillow==12.3.0
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y ffmpeg
           ffmpeg -version
       - name: Execute registered source roles and independent observer gate
         run: |

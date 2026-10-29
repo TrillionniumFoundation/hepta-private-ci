@@ -281,14 +281,16 @@ def execute(model, public, observe, directory, *, seed, context_id, source_id,
                 deliver()
             else:
                 result = native.perform("delivery", {"profile_sha256": profile.digest,
-                    "model_sha256": model_sha, "terminal_state_sha256": tensor_digest(state.tensors())}, deliver)
+                    "model_sha256": model_sha, "terminal_state_sha256": tensor_digest(state.tensors()),
+                    "tensor_checkpoint_sha256": tensor_checkpoints[-1]["payload_sha256"] if tensor_checkpoints else None}, deliver)
                 if not result.get("executed") or result.get("native_abstain_after_dispatch"):
                     terminal_kind, failure, observed = "refused", "native_delivery_refused", -1.0
         except Exception as exc:
             terminal_kind, failure, observed = "failed", f"{type(exc).__name__}: {exc}", -1.0
     if native is not None and not native.finished:
         try:
-            native.perform("stop", {"profile_sha256": profile.digest, "artifact_sha256": artifacts})
+            native.perform("stop", {"profile_sha256": profile.digest, "artifact_sha256": artifacts,
+                "tensor_checkpoint_sha256": tensor_checkpoints[-1]["payload_sha256"] if tensor_checkpoints else None})
         except Exception as exc:
             terminal_kind, failure, observed = "failed", f"native_close_failed: {exc}", -1.0
             native.abort(reason=failure)
