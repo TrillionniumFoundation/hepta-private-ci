@@ -1,0 +1,2124 @@
+{
+  "comparison_scope": "Compare the preserved original compact summary with new complete audit; omitted original per-seed calibration bins and original raw cost rows cannot be compared as if recovered.",
+  "cost_interpretation": "New measured CPU/wall and communication receipts retain their own identities; no old-cost substitution or normalized rewriting.",
+  "exact_equal_fields": {
+    "benefit_gates_passed": true,
+    "checkpoints_verified": true,
+    "continuous_forward_steps_verified": true,
+    "episodes_verified": true,
+    "exact_finite_dp": true,
+    "paired_comparisons": true,
+    "shards_verified": true,
+    "sparse_head_steps_verified": true
+  },
+  "independent_new_samples": false,
+  "new_per_seed_split_calibration_bin_lists": 208,
+  "original_benefit_gates": "0/4",
+  "original_complete_audit_sha256_from_summary": "320e45cdffe0299d39874686d114450d6babcb7a1d14bf0cf2286899e1feb1ee",
+  "original_complete_raw_evidence_recovered": false,
+  "original_preserved_summary_path": "experiments/continuous_boundary_policy/results/AUDIT_SUMMARY.json",
+  "original_preserved_summary_sha256": "6b97428559757a82dce9e15dad4ee2cd3a628aae37b903e38900ca96a9706c17",
+  "original_result_replaced": false,
+  "original_summary_documented_omissions": [
+    "costs.raw_rows",
+    "seed_summaries.*.splits.*.calibration.bins"
+  ],
+  "pool_with_original_results": false,
+  "reproduction_benefit_gates": "0/4",
+  "response_wire": {
+    "arms": [
+      {
+        "arm": "always_keep",
+        "difference": 0,
+        "original": 0,
+        "reproduction": 0
+      },
+      {
+        "arm": "always_repair",
+        "difference": 0,
+        "original": 0,
+        "reproduction": 0
+      },
+      {
+        "arm": "always_stop",
+        "difference": 0,
+        "original": 0,
+        "reproduction": 0
+      },
+      {
+        "arm": "dp",
+        "difference": 0,
+        "original": 0,
+        "reproduction": 0
+      },
+      {
+        "arm": "dual_event",
+        "difference": -215,
+        "original": 24915497,
+        "reproduction": 24915282
+      },
+      {
+        "arm": "dual_flow",
+        "difference": -216,
+        "original": 24911970,
+        "reproduction": 24911754
+      },
+      {
+        "arm": "elman_mlp",
+        "difference": -222,
+        "original": 24925728,
+        "reproduction": 24925506
+      },
+      {
+        "arm": "fixed_margin",
+        "difference": -224,
+        "original": 24910849,
+        "reproduction": 24910625
+      },
+      {
+        "arm": "generic_gru",
+        "difference": -253,
+        "original": 24914814,
+        "reproduction": 24914561
+      },
+      {
+        "arm": "learned_margin",
+        "difference": -254,
+        "original": 24908820,
+        "reproduction": 24908566
+      },
+      {
+        "arm": "native_sparse",
+        "difference": -901,
+        "original": 20846851,
+        "reproduction": 20845950
+      },
+      {
+        "arm": "value_call",
+        "difference": -246,
+        "original": 24908884,
+        "reproduction": 24908638
+      },
+      {
+        "arm": "value_margin",
+        "difference": -375,
+        "original": 24909137,
+        "reproduction": 24908762
+      }
+    ],
+    "difference": -2906,
+    "original_total": 220152550,
+    "reproduction_total": 220149644
+  },
+  "schema": "hepta.boundary-policy-reproduction.original-comparison.v1",
+  "scope": "mechanical projection of the completed same-seed reproduction; no retraining, new observations or new statistical tests",
+  "selection_seal_sha256": "c996086ace2ab38f25b24a8b8f29e1eeba447100b2dcb212a4438e595bb7fa56",
+  "shared_arm_seed_field_differences": {
+    "arm_summaries": {
+      "all_differences_are_response_wire_bytes": true,
+      "comparable_differing_leaf_count": 27,
+      "differences": [
+        {
+          "original": 24915497,
+          "path": [
+            "dual_event",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 24915282
+        },
+        {
+          "original": 12515718,
+          "path": [
+            "dual_event",
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 12515609
+        },
+        {
+          "original": 12399779,
+          "path": [
+            "dual_event",
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 12399673
+        },
+        {
+          "original": 24911970,
+          "path": [
+            "dual_flow",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 24911754
+        },
+        {
+          "original": 12513993,
+          "path": [
+            "dual_flow",
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 12513891
+        },
+        {
+          "original": 12397977,
+          "path": [
+            "dual_flow",
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 12397863
+        },
+        {
+          "original": 24925728,
+          "path": [
+            "elman_mlp",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 24925506
+        },
+        {
+          "original": 12521061,
+          "path": [
+            "elman_mlp",
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 12520963
+        },
+        {
+          "original": 12404667,
+          "path": [
+            "elman_mlp",
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 12404543
+        },
+        {
+          "original": 24910849,
+          "path": [
+            "fixed_margin",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 24910625
+        },
+        {
+          "original": 12513161,
+          "path": [
+            "fixed_margin",
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 12513062
+        },
+        {
+          "original": 12397688,
+          "path": [
+            "fixed_margin",
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 12397563
+        },
+        {
+          "original": 24914814,
+          "path": [
+            "generic_gru",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 24914561
+        },
+        {
+          "original": 12515252,
+          "path": [
+            "generic_gru",
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 12515126
+        },
+        {
+          "original": 12399562,
+          "path": [
+            "generic_gru",
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 12399435
+        },
+        {
+          "original": 24908820,
+          "path": [
+            "learned_margin",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 24908566
+        },
+        {
+          "original": 12512377,
+          "path": [
+            "learned_margin",
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 12512254
+        },
+        {
+          "original": 12396443,
+          "path": [
+            "learned_margin",
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 12396312
+        },
+        {
+          "original": 20846851,
+          "path": [
+            "native_sparse",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 20845950
+        },
+        {
+          "original": 10716556,
+          "path": [
+            "native_sparse",
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 10716099
+        },
+        {
+          "original": 10130295,
+          "path": [
+            "native_sparse",
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 10129851
+        },
+        {
+          "original": 24908884,
+          "path": [
+            "value_call",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 24908638
+        },
+        {
+          "original": 12512705,
+          "path": [
+            "value_call",
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 12512586
+        },
+        {
+          "original": 12396179,
+          "path": [
+            "value_call",
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 12396052
+        },
+        {
+          "original": 24909137,
+          "path": [
+            "value_margin",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 24908762
+        },
+        {
+          "original": 12512925,
+          "path": [
+            "value_margin",
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 12512754
+        },
+        {
+          "original": 12396212,
+          "path": [
+            "value_margin",
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 12396008
+        }
+      ],
+      "fields": {
+        "wire_response_bytes": 27
+      }
+    },
+    "seed_summaries": {
+      "all_differences_are_response_wire_bytes": true,
+      "comparable_differing_leaf_count": 142,
+      "differences": [
+        {
+          "original": 1563341,
+          "path": [
+            "dual_event",
+            0,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563333
+        },
+        {
+          "original": 1696043,
+          "path": [
+            "dual_event",
+            0,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1696034
+        },
+        {
+          "original": 1565489,
+          "path": [
+            "dual_event",
+            1,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565464
+        },
+        {
+          "original": 1436591,
+          "path": [
+            "dual_event",
+            1,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1436572
+        },
+        {
+          "original": 1565481,
+          "path": [
+            "dual_event",
+            2,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565455
+        },
+        {
+          "original": 1697821,
+          "path": [
+            "dual_event",
+            2,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1697795
+        },
+        {
+          "original": 1563839,
+          "path": [
+            "dual_event",
+            3,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563832
+        },
+        {
+          "original": 1435011,
+          "path": [
+            "dual_event",
+            3,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1434996
+        },
+        {
+          "original": 1563811,
+          "path": [
+            "dual_event",
+            4,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563801
+        },
+        {
+          "original": 1565757,
+          "path": [
+            "dual_event",
+            4,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565746
+        },
+        {
+          "original": 1565500,
+          "path": [
+            "dual_event",
+            5,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565490
+        },
+        {
+          "original": 1698172,
+          "path": [
+            "dual_event",
+            5,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1698163
+        },
+        {
+          "original": 1564101,
+          "path": [
+            "dual_event",
+            6,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1564089
+        },
+        {
+          "original": 1304808,
+          "path": [
+            "dual_event",
+            6,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1304799
+        },
+        {
+          "original": 1564156,
+          "path": [
+            "dual_event",
+            7,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1564145
+        },
+        {
+          "original": 1565576,
+          "path": [
+            "dual_event",
+            7,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565568
+        },
+        {
+          "original": 1563312,
+          "path": [
+            "dual_flow",
+            0,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563309
+        },
+        {
+          "original": 1696018,
+          "path": [
+            "dual_flow",
+            0,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1695995
+        },
+        {
+          "original": 1565496,
+          "path": [
+            "dual_flow",
+            1,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565482
+        },
+        {
+          "original": 1436599,
+          "path": [
+            "dual_flow",
+            1,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1436583
+        },
+        {
+          "original": 1565460,
+          "path": [
+            "dual_flow",
+            2,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565446
+        },
+        {
+          "original": 1697820,
+          "path": [
+            "dual_flow",
+            2,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1697800
+        },
+        {
+          "original": 1563816,
+          "path": [
+            "dual_flow",
+            4,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563802
+        },
+        {
+          "original": 1565753,
+          "path": [
+            "dual_flow",
+            4,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565748
+        },
+        {
+          "original": 1564149,
+          "path": [
+            "dual_flow",
+            5,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1564120
+        },
+        {
+          "original": 1696580,
+          "path": [
+            "dual_flow",
+            5,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1696561
+        },
+        {
+          "original": 1563756,
+          "path": [
+            "dual_flow",
+            6,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563742
+        },
+        {
+          "original": 1304578,
+          "path": [
+            "dual_flow",
+            6,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1304562
+        },
+        {
+          "original": 1564167,
+          "path": [
+            "dual_flow",
+            7,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1564153
+        },
+        {
+          "original": 1565585,
+          "path": [
+            "dual_flow",
+            7,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565570
+        },
+        {
+          "original": 1565707,
+          "path": [
+            "elman_mlp",
+            0,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565695
+        },
+        {
+          "original": 1698502,
+          "path": [
+            "elman_mlp",
+            0,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1698494
+        },
+        {
+          "original": 1565690,
+          "path": [
+            "elman_mlp",
+            1,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565667
+        },
+        {
+          "original": 1436736,
+          "path": [
+            "elman_mlp",
+            1,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1436714
+        },
+        {
+          "original": 1565302,
+          "path": [
+            "elman_mlp",
+            2,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565295
+        },
+        {
+          "original": 1697702,
+          "path": [
+            "elman_mlp",
+            2,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1697684
+        },
+        {
+          "original": 1565849,
+          "path": [
+            "elman_mlp",
+            3,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565831
+        },
+        {
+          "original": 1436912,
+          "path": [
+            "elman_mlp",
+            3,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1436900
+        },
+        {
+          "original": 1563683,
+          "path": [
+            "elman_mlp",
+            4,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563680
+        },
+        {
+          "original": 1565602,
+          "path": [
+            "elman_mlp",
+            4,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565589
+        },
+        {
+          "original": 1565233,
+          "path": [
+            "elman_mlp",
+            5,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565222
+        },
+        {
+          "original": 1697842,
+          "path": [
+            "elman_mlp",
+            5,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1697819
+        },
+        {
+          "original": 1565709,
+          "path": [
+            "elman_mlp",
+            6,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565696
+        },
+        {
+          "original": 1306006,
+          "path": [
+            "elman_mlp",
+            6,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1305991
+        },
+        {
+          "original": 1563888,
+          "path": [
+            "elman_mlp",
+            7,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563877
+        },
+        {
+          "original": 1565365,
+          "path": [
+            "elman_mlp",
+            7,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565352
+        },
+        {
+          "original": 1563777,
+          "path": [
+            "fixed_margin",
+            0,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563768
+        },
+        {
+          "original": 1696435,
+          "path": [
+            "fixed_margin",
+            0,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1696425
+        },
+        {
+          "original": 1564007,
+          "path": [
+            "fixed_margin",
+            1,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1564006
+        },
+        {
+          "original": 1435700,
+          "path": [
+            "fixed_margin",
+            1,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1435684
+        },
+        {
+          "original": 1564652,
+          "path": [
+            "fixed_margin",
+            2,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1564644
+        },
+        {
+          "original": 1697007,
+          "path": [
+            "fixed_margin",
+            2,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1696991
+        },
+        {
+          "original": 1564997,
+          "path": [
+            "fixed_margin",
+            3,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1564979
+        },
+        {
+          "original": 1435923,
+          "path": [
+            "fixed_margin",
+            3,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1435912
+        },
+        {
+          "original": 1563535,
+          "path": [
+            "fixed_margin",
+            4,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563506
+        },
+        {
+          "original": 1565592,
+          "path": [
+            "fixed_margin",
+            4,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565560
+        },
+        {
+          "original": 1564897,
+          "path": [
+            "fixed_margin",
+            5,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1564894
+        },
+        {
+          "original": 1697280,
+          "path": [
+            "fixed_margin",
+            5,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1697276
+        },
+        {
+          "original": 1563924,
+          "path": [
+            "fixed_margin",
+            6,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563912
+        },
+        {
+          "original": 1304660,
+          "path": [
+            "fixed_margin",
+            6,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1304642
+        },
+        {
+          "original": 1563372,
+          "path": [
+            "fixed_margin",
+            7,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563353
+        },
+        {
+          "original": 1565091,
+          "path": [
+            "fixed_margin",
+            7,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565073
+        },
+        {
+          "original": 1564035,
+          "path": [
+            "generic_gru",
+            0,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1564016
+        },
+        {
+          "original": 1696684,
+          "path": [
+            "generic_gru",
+            0,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1696667
+        },
+        {
+          "original": 1565507,
+          "path": [
+            "generic_gru",
+            1,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565480
+        },
+        {
+          "original": 1436610,
+          "path": [
+            "generic_gru",
+            1,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1436585
+        },
+        {
+          "original": 1565475,
+          "path": [
+            "generic_gru",
+            2,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565455
+        },
+        {
+          "original": 1697763,
+          "path": [
+            "generic_gru",
+            2,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1697750
+        },
+        {
+          "original": 1563515,
+          "path": [
+            "generic_gru",
+            3,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563514
+        },
+        {
+          "original": 1434736,
+          "path": [
+            "generic_gru",
+            3,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1434737
+        },
+        {
+          "original": 1563744,
+          "path": [
+            "generic_gru",
+            4,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563736
+        },
+        {
+          "original": 1565748,
+          "path": [
+            "generic_gru",
+            4,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565735
+        },
+        {
+          "original": 1565588,
+          "path": [
+            "generic_gru",
+            5,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565571
+        },
+        {
+          "original": 1698192,
+          "path": [
+            "generic_gru",
+            5,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1698178
+        },
+        {
+          "original": 1563655,
+          "path": [
+            "generic_gru",
+            6,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563638
+        },
+        {
+          "original": 1304539,
+          "path": [
+            "generic_gru",
+            6,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1304513
+        },
+        {
+          "original": 1563733,
+          "path": [
+            "generic_gru",
+            7,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563716
+        },
+        {
+          "original": 1565290,
+          "path": [
+            "generic_gru",
+            7,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565270
+        },
+        {
+          "original": 1563994,
+          "path": [
+            "learned_margin",
+            0,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563990
+        },
+        {
+          "original": 1696750,
+          "path": [
+            "learned_margin",
+            0,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1696743
+        },
+        {
+          "original": 1565462,
+          "path": [
+            "learned_margin",
+            1,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565442
+        },
+        {
+          "original": 1436776,
+          "path": [
+            "learned_margin",
+            1,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1436743
+        },
+        {
+          "original": 1563418,
+          "path": [
+            "learned_margin",
+            2,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563392
+        },
+        {
+          "original": 1695538,
+          "path": [
+            "learned_margin",
+            2,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1695507
+        },
+        {
+          "original": 1563666,
+          "path": [
+            "learned_margin",
+            3,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563658
+        },
+        {
+          "original": 1434702,
+          "path": [
+            "learned_margin",
+            3,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1434701
+        },
+        {
+          "original": 1564006,
+          "path": [
+            "learned_margin",
+            4,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563987
+        },
+        {
+          "original": 1565968,
+          "path": [
+            "learned_margin",
+            4,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565957
+        },
+        {
+          "original": 1564153,
+          "path": [
+            "learned_margin",
+            5,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1564146
+        },
+        {
+          "original": 1696692,
+          "path": [
+            "learned_margin",
+            5,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1696679
+        },
+        {
+          "original": 1564140,
+          "path": [
+            "learned_margin",
+            6,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1564111
+        },
+        {
+          "original": 1304858,
+          "path": [
+            "learned_margin",
+            6,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1304848
+        },
+        {
+          "original": 1563538,
+          "path": [
+            "learned_margin",
+            7,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563528
+        },
+        {
+          "original": 1565159,
+          "path": [
+            "learned_margin",
+            7,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565134
+        },
+        {
+          "original": 1330339,
+          "path": [
+            "native_sparse",
+            0,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1330319
+        },
+        {
+          "original": 1172395,
+          "path": [
+            "native_sparse",
+            0,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1172372
+        },
+        {
+          "original": 1342849,
+          "path": [
+            "native_sparse",
+            1,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1342787
+        },
+        {
+          "original": 1214743,
+          "path": [
+            "native_sparse",
+            1,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1214684
+        },
+        {
+          "original": 1340686,
+          "path": [
+            "native_sparse",
+            2,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1340643
+        },
+        {
+          "original": 1407734,
+          "path": [
+            "native_sparse",
+            2,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1407673
+        },
+        {
+          "original": 1344170,
+          "path": [
+            "native_sparse",
+            3,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1344106
+        },
+        {
+          "original": 1208204,
+          "path": [
+            "native_sparse",
+            3,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1208145
+        },
+        {
+          "original": 1340490,
+          "path": [
+            "native_sparse",
+            4,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1340408
+        },
+        {
+          "original": 1245803,
+          "path": [
+            "native_sparse",
+            4,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1245753
+        },
+        {
+          "original": 1343741,
+          "path": [
+            "native_sparse",
+            5,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1343681
+        },
+        {
+          "original": 1454436,
+          "path": [
+            "native_sparse",
+            5,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1454358
+        },
+        {
+          "original": 1331230,
+          "path": [
+            "native_sparse",
+            6,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1331163
+        },
+        {
+          "original": 1082288,
+          "path": [
+            "native_sparse",
+            6,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1082240
+        },
+        {
+          "original": 1343051,
+          "path": [
+            "native_sparse",
+            7,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1342992
+        },
+        {
+          "original": 1344692,
+          "path": [
+            "native_sparse",
+            7,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1344626
+        },
+        {
+          "original": 1562774,
+          "path": [
+            "value_call",
+            0,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1562769
+        },
+        {
+          "original": 1695372,
+          "path": [
+            "value_call",
+            0,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1695366
+        },
+        {
+          "original": 1565491,
+          "path": [
+            "value_call",
+            1,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565467
+        },
+        {
+          "original": 1436498,
+          "path": [
+            "value_call",
+            1,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1436475
+        },
+        {
+          "original": 1563393,
+          "path": [
+            "value_call",
+            2,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563383
+        },
+        {
+          "original": 1695624,
+          "path": [
+            "value_call",
+            2,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1695617
+        },
+        {
+          "original": 1563665,
+          "path": [
+            "value_call",
+            3,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563648
+        },
+        {
+          "original": 1434822,
+          "path": [
+            "value_call",
+            3,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1434814
+        },
+        {
+          "original": 1563702,
+          "path": [
+            "value_call",
+            4,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563693
+        },
+        {
+          "original": 1565627,
+          "path": [
+            "value_call",
+            4,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565609
+        },
+        {
+          "original": 1564156,
+          "path": [
+            "value_call",
+            5,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1564137
+        },
+        {
+          "original": 1696518,
+          "path": [
+            "value_call",
+            5,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1696494
+        },
+        {
+          "original": 1564091,
+          "path": [
+            "value_call",
+            6,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1564079
+        },
+        {
+          "original": 1304792,
+          "path": [
+            "value_call",
+            6,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1304766
+        },
+        {
+          "original": 1565433,
+          "path": [
+            "value_call",
+            7,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565410
+        },
+        {
+          "original": 1566926,
+          "path": [
+            "value_call",
+            7,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1566911
+        },
+        {
+          "original": 1562969,
+          "path": [
+            "value_margin",
+            0,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1562954
+        },
+        {
+          "original": 1695454,
+          "path": [
+            "value_margin",
+            0,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1695438
+        },
+        {
+          "original": 1565482,
+          "path": [
+            "value_margin",
+            1,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565448
+        },
+        {
+          "original": 1436493,
+          "path": [
+            "value_margin",
+            1,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1436462
+        },
+        {
+          "original": 1563408,
+          "path": [
+            "value_margin",
+            2,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563386
+        },
+        {
+          "original": 1695590,
+          "path": [
+            "value_margin",
+            2,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1695547
+        },
+        {
+          "original": 1563634,
+          "path": [
+            "value_margin",
+            3,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563627
+        },
+        {
+          "original": 1434816,
+          "path": [
+            "value_margin",
+            3,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1434808
+        },
+        {
+          "original": 1563774,
+          "path": [
+            "value_margin",
+            4,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1563740
+        },
+        {
+          "original": 1565602,
+          "path": [
+            "value_margin",
+            4,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565581
+        },
+        {
+          "original": 1564138,
+          "path": [
+            "value_margin",
+            5,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1564114
+        },
+        {
+          "original": 1696534,
+          "path": [
+            "value_margin",
+            5,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1696502
+        },
+        {
+          "original": 1564088,
+          "path": [
+            "value_margin",
+            6,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1564077
+        },
+        {
+          "original": 1304771,
+          "path": [
+            "value_margin",
+            6,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1304755
+        },
+        {
+          "original": 1565432,
+          "path": [
+            "value_margin",
+            7,
+            "splits",
+            "test_id",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1565408
+        },
+        {
+          "original": 1566952,
+          "path": [
+            "value_margin",
+            7,
+            "splits",
+            "test_ood",
+            "counters",
+            "wire_response_bytes"
+          ],
+          "reproduction": 1566915
+        }
+      ],
+      "fields": {
+        "wire_response_bytes": 142
+      }
+    }
+  },
+  "source_audit_archive_path": "engineering/audits/CONFIRMATION_AUDIT.json",
+  "source_audit_sha256": "7cb7b95f62bfc32218830e1c10bed2997bde8f2ffa1ffc238648fe99a9fac42f",
+  "source_manifest_sha256": "6bed365c60eec46e588b9a0ffa21e4f3c05d4f43928350dcdd13a3fdbe64b790",
+  "source_seal_sha256": "6608ee0c6ddd33862096a3c7d5085ab670b05a7c4c45d728f9f59efaa064b717",
+  "wire_interpretation": "Both original host response schemas contain measured physical_rpc_micros, whose serialized length can vary. The observed wire difference is retained. Original raw responses are unavailable, so this is a schema-supported possible explanation, not a verified per-response historical attribution."
+}
