@@ -20,7 +20,7 @@
     "repair": "Relative row validation uses actual diagonal/off-diagonal exit-rate scale; zero rows are handled explicitly.",
     "regression": "Illegal tiny-rate generator rejected; seven valid rate/time reciprocal scales agree."
   },
-  "final_source_review": "pending",
+  "final_source_review": "passed",
   "external_administrative_independence": false,
   "additional_information_timing_case": {
     "distribution": [
@@ -49,5 +49,23 @@
     "properForward": 2.625,
     "forcedFuturePrecommitment": 2.5,
     "impermissibleCurrentClairvoyance": 3.0625
-  }
+  },
+  "reviewed_fixed_code_sha": "a1536ad12acb7be633910e8ccbf1e766816e3d04",
+  "review_recorded_at_utc": "2026-10-29 09:58:06 UTC",
+  "source_blobs": {
+    "continuation_operator.cjs": "6569a8667019c4f7960d732195c358e0f0111ff8",
+    "validate.cjs": "d07a3c0dc24b01c2a4849ea395ab0c0e27741b8d"
+  },
+  "independent_reexecution": {
+    "runtime": "V8 via functions.exec; exact GitHub source loaded",
+    "checks_passed": 26,
+    "checks_total": 26,
+    "invalid_rejected": 17,
+    "invalid_total": 17,
+    "generator_cases": 64,
+    "closed_form_max_absolute_error": 6.861178292183467e-14,
+    "semigroup_max_absolute_error": 8.026912468039882e-14,
+    "rate_time_scale_max_absolute_error": 1.1102230246251565e-16
+  },
+  "scope": "Independent computational subtask review; not an independent administrative acceptance, Node CLI, PyTorch, target host, owner receipt, or real Cell evaluation. Event ordering was checked by explicit helper composition only."
 }
