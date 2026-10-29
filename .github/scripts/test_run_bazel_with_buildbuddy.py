@@ -12,6 +12,51 @@ import run_bazel_with_buildbuddy
 
 
 class RunBazelWithBuildBuddyTest(unittest.TestCase):
+    def test_windows_query_file_preserves_expression_and_cleans_up_on_failure(
+        self,
+    ) -> None:
+        expression = 'config(set("//codex-rs/a:one" "//codex-rs/路径:two"), target)'
+        for query in ("query", "cquery"):
+            with self.subTest(query=query):
+                path = None
+                with self.assertRaisesRegex(RuntimeError, "child failed"):
+                    with run_bazel_with_buildbuddy.windows_target_patterns(
+                        ["bazel", query, "--config=clippy", "--", expression],
+                        {"RUNNER_OS": "Windows"},
+                    ) as (command, path):
+                        self.assertEqual(
+                            command,
+                            ["bazel", query, "--config=clippy", f"--query_file={path}"],
+                        )
+                        self.assertEqual(
+                            path.read_text(encoding="utf-8"), expression + "\n"
+                        )
+                        raise RuntimeError("child failed")
+                self.assertIsNotNone(path)
+                self.assertFalse(path.exists())
+
+    def test_query_transport_preserves_caller_owned_file_and_rejects_multiple_expressions(
+        self,
+    ) -> None:
+        with TemporaryDirectory() as directory:
+            path = Path(directory) / "caller query.txt"
+            path.write_text("//caller:original\n", encoding="utf-8")
+            for option in ([f"--query_file={path}"], ["--query_file", str(path)]):
+                args = ["bazel", "cquery", *option, "--", "//caller:extra"]
+                with run_bazel_with_buildbuddy.windows_target_patterns(
+                    args, {"RUNNER_OS": "Windows"}
+                ) as (command, owned):
+                    self.assertEqual(command, args)
+                    self.assertIsNone(owned)
+                self.assertEqual(
+                    path.read_text(encoding="utf-8"), "//caller:original\n"
+                )
+        with self.assertRaisesRegex(ValueError, "exactly one expression"):
+            with run_bazel_with_buildbuddy.windows_target_patterns(
+                ["bazel", "query", "--", "//one:a", "//two:b"], {"RUNNER_OS": "Windows"}
+            ):
+                self.fail("ambiguous query must not be rewritten")
+
     def test_raw_target_patterns_still_reject_embedded_and_trailing_line_breaks(
         self,
     ) -> None:

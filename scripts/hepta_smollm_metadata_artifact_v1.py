@@ -51,11 +51,12 @@ COMMANDS = (
     "metadata-export-controls",
     "observation-boundary-controls",
     "observation-owner-controls",
+    "live-control-boundary-controls",
     "sandbox-host-capability",
 )
 ROUND = r"(?:n/p/round-[123]|descendant-diagnostics/round-[123]|answer-eos-research-v3)"
 ROLES = r"(?:candidate|current-backbone|fresh-budget-matched-lora|budget-matched-full-tune|randomized-rank-matched-lora|actual-current-incumbent)"
-STAGE_TEXT = r"(?:actual-receipt\.json|supervisor\.json|cost-events\.jsonl|process\.log|predictions\.json|artifact\.json)"
+STAGE_TEXT = r"(?:actual-receipt\.json|supervisor\.json|cost-events\.jsonl|process\.log|predictions\.json|artifact\.json|live-control-release-v1\.json)"
 RULES = tuple(
     re.compile(pattern)
     for pattern in (
@@ -70,6 +71,8 @@ RULES = tuple(
         ROUND + r"/(?:train|evaluate)-" + ROLES + "/" + STAGE_TEXT,
         ROUND + r"/train-candidate/parent-step-(?:input|result)(?:-v[23])?\.json",
         r"n/p/round-[123]/observation-plan-v1\.json",
+        r"n/p/round-[123]/control-execution-entry-v1\.json",
+        r"n/p/round-[123]/(?:train|evaluate)-" + ROLES + r"-live-input\.json",
         r"n/p/round-[123]/train-candidate/parent-step-(?:input|result)-observed-v1\.json",
         ROUND + r"/train-candidate/execution/" + STAGE_TEXT,
     )

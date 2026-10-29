@@ -53,17 +53,30 @@ case "${RUNNER_OS:-}" in
     ;;
 esac
 
+# cquery analyzes every wildcard target before applying kind(). Loading query
+# first keeps unrelated multi-platform release bundles out of that universe.
+# The configured pass still checks every discovered manual Rust test.
+loading_labels="$(mktemp)"
+trap 'rm -f "$loading_labels"' EXIT
+./.github/scripts/run-bazel-query-ci.sh --output=label \
+  -- 'kind("rust_test rule", attr(tags, "manual", //codex-rs/... except //codex-rs/v8-poc/...))' \
+  > "$loading_labels"
+configured_expression="$(
+  python3 ./.github/scripts/bazel_clippy_target_records.py \
+    --loading-expression "$loading_labels"
+)"
 manual_rust_test_records="$(
   ./.github/scripts/run-bazel-ci.sh \
     "${query_wrapper_args[@]}" -- cquery \
     "${query_bazel_args[@]}" \
     --output=starlark \
     --starlark:expr='("incompatible" if "IncompatiblePlatformProvider" in providers(target) else "compatible") + "\t" + str(target.label)' \
-    -- 'config(kind("rust_test rule", attr(tags, "manual", //codex-rs/... except //codex-rs/v8-poc/...)), target)'
+    -- "$configured_expression"
 )"
 manual_rust_test_targets="$(
   printf '%s\n' "${manual_rust_test_records}" \
-    | python3 ./.github/scripts/bazel_clippy_target_records.py
+    | python3 ./.github/scripts/bazel_clippy_target_records.py \
+      --expected-labels "$loading_labels"
 )"
 
 printf '%s\n' \

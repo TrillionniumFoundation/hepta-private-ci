@@ -53,6 +53,20 @@ impl Fixture {
         bytes: &[u8],
         compatibility_digest: Digest32,
     ) -> TestResult<Self> {
+        Self::with_study_objective(
+            root,
+            bytes,
+            compatibility_digest,
+            digest("initial-material-without-efficacy"),
+        )
+    }
+
+    fn with_study_objective(
+        root: PathBuf,
+        bytes: &[u8],
+        compatibility_digest: Digest32,
+        objective: Digest32,
+    ) -> TestResult<Self> {
         fs::create_dir(&root)?;
         let now = initial_now_seconds()?;
         let owner_key = SigningKey::from_bytes(&[71; 32]);
@@ -120,7 +134,7 @@ impl Fixture {
             training_code_digest: digest("initial-material-construction-not-training"),
             runtime_tuple_digest: digest("original-f32-runtime"),
             device_profile_digest: digest("cpu"),
-            objective_class_digest: digest("initial-material-without-efficacy"),
+            objective_class_digest: objective,
             compatibility_digest,
             schema_profile_digest: digest("canonical-positive-zero-v1"),
             normalization_digest: digest("positive-zero"),
@@ -752,3 +766,6 @@ mod agentd_tests;
 
 #[path = "smollm_public_initial_loop_tests.rs"]
 mod public_initial_loop_tests;
+
+#[path = "smollm_neural_study_tests.rs"]
+mod neural_study;

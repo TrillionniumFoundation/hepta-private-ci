@@ -31,8 +31,47 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          fetch-depth: 0
+          fetch-depth: 1
           persist-credentials: false
+
+      - name: Reserve exact base checkout path
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "$(git ls-files -- .hepta-ci-base)" ] || [ -e .hepta-ci-base ] || [ -L .hepta-ci-base ]; then
+            echo "exact base checkout path is already occupied" >&2
+            exit 1
+          fi
+
+      - name: Checkout exact comparison base
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: .hepta-ci-base
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Import complete base tree and remove owned checkout
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git --no-replace-objects rev-parse --verify HEAD)" = "$HEAD_SHA"
+          test "$(git --no-replace-objects -C .hepta-ci-base rev-parse --verify HEAD)" = "$BASE_SHA"
+          git --no-replace-objects fetch --no-tags --no-recurse-submodules \
+            --depth=1 --update-shallow --no-write-fetch-head .hepta-ci-base "$BASE_SHA"
+          git --no-replace-objects cat-file -e "$BASE_SHA^{commit}"
+          git --no-replace-objects cat-file -e "$HEAD_SHA^{commit}"
+          test "$(git --no-replace-objects rev-parse --verify HEAD)" = "$HEAD_SHA"
+          rm -rf -- .hepta-ci-base
+          test ! -e .hepta-ci-base
 
       - name: Select dependency impact
         id: scope
@@ -131,8 +170,47 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          fetch-depth: 0
+          fetch-depth: 1
           persist-credentials: false
+
+      - name: Reserve exact base checkout path
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "$(git ls-files -- .hepta-ci-base)" ] || [ -e .hepta-ci-base ] || [ -L .hepta-ci-base ]; then
+            echo "exact base checkout path is already occupied" >&2
+            exit 1
+          fi
+
+      - name: Checkout exact comparison base
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: .hepta-ci-base
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Import complete base tree and remove owned checkout
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git --no-replace-objects rev-parse --verify HEAD)" = "$HEAD_SHA"
+          test "$(git --no-replace-objects -C .hepta-ci-base rev-parse --verify HEAD)" = "$BASE_SHA"
+          git --no-replace-objects fetch --no-tags --no-recurse-submodules \
+            --depth=1 --update-shallow --no-write-fetch-head .hepta-ci-base "$BASE_SHA"
+          git --no-replace-objects cat-file -e "$BASE_SHA^{commit}"
+          git --no-replace-objects cat-file -e "$HEAD_SHA^{commit}"
+          test "$(git --no-replace-objects rev-parse --verify HEAD)" = "$HEAD_SHA"
+          rm -rf -- .hepta-ci-base
+          test ! -e .hepta-ci-base
 
       - name: Prepare native test prerequisites before compilation
         run: |
@@ -190,7 +268,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          fetch-depth: 0
+          fetch-depth: 1
           persist-credentials: false
 
       - name: Verify lightweight repository consistency
