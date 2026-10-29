@@ -1708,7 +1708,6 @@ V8 closes the remaining V8.1 review gaps rather than merely adding prose:
 
 The documentation gate is necessary but does not waive unrelated repository failures. A failed repository check must be attributed and closed or explicitly excluded by an independent policy authority; documentation source success cannot turn a red product matrix green.
 
-
 ### PN3 / I09–I10 cold release contract clarification — 2026-10-26 (OPEN)
 
 This refines the existing PN3/I09–I10 and PN5 implementation order. It creates no
@@ -1716,14 +1715,14 @@ new roadmap, budget, authority or passing gate. The pinned cold-release audit
 below supersedes any inference that unlike capacity measurements, by themselves,
 prove a universal runtime contradiction. All historical failed runs remain failed.
 
-| Original observation or cap | Exact scope retained | Required accounting |
-| --- | --- | --- |
-| 922,881,591 B installed-runtime observation | Sum of existing RECORD pathname lengths in the old 29-distribution venv; not a complete interpreter root, wheel archive size, physical peak or new admission | Complete the missing dependency closure and meter the actual retained representation; do not grant fit from this sum |
-| 432,269,632 B `libtorch_cpu.so` | Already included in that runtime sum | Do not add it a second time or treat it as an admitted I09 base role |
-| 512 MiB Cell cache | Original logical chunk/manifest accounting and separate main-DB image bound, both enforced; WAL/SHM are not free | Each cache must satisfy both constraints; simultaneously retained caches and destinations also enter the host total |
-| 300 MiB fixed I09 base role | Per-file bound for the unchanged eight base roles; adapter files remain 2MiB each and sidecar 64KiB | Reject an extra or oversized role under that old version; do not redefine it as a general runtime/VM limit or silently enlarge it |
-| 2 GiB per original LAN data-host root | Original cooperative controlled-root forecast/accounting, including both slots, cache DB/WAL/SHM, binaries, output and metadata | Count every overlapping staging/install/archive/old-version/held object; metadata64MiB remains inside the total. This is not a filesystem hardquota |
-| Pocket4 provider-0133 UNKNOWN 1GiB | Original NETWORK response reservation | Keep the charge and original failed outcome. Do not subtract it as measured disk use, refund it from SSH255/path absence, restart it or probe a replacement |
+| Original observation or cap                 | Exact scope retained                                                                                                                                         | Required accounting                                                                                                                                         |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 922,881,591 B installed-runtime observation | Sum of existing RECORD pathname lengths in the old 29-distribution venv; not a complete interpreter root, wheel archive size, physical peak or new admission | Complete the missing dependency closure and meter the actual retained representation; do not grant fit from this sum                                        |
+| 432,269,632 B `libtorch_cpu.so`             | Already included in that runtime sum                                                                                                                         | Do not add it a second time or treat it as an admitted I09 base role                                                                                        |
+| 512 MiB Cell cache                          | Original logical chunk/manifest accounting and separate main-DB image bound, both enforced; WAL/SHM are not free                                             | Each cache must satisfy both constraints; simultaneously retained caches and destinations also enter the host total                                         |
+| 300 MiB fixed I09 base role                 | Per-file bound for the unchanged eight base roles; adapter files remain 2MiB each and sidecar 64KiB                                                          | Reject an extra or oversized role under that old version; do not redefine it as a general runtime/VM limit or silently enlarge it                           |
+| 2 GiB per original LAN data-host root       | Original cooperative controlled-root forecast/accounting, including both slots, cache DB/WAL/SHM, binaries, output and metadata                              | Count every overlapping staging/install/archive/old-version/held object; metadata64MiB remains inside the total. This is not a filesystem hardquota         |
+| Pocket4 provider-0133 UNKNOWN 1GiB          | Original NETWORK response reservation                                                                                                                        | Keep the charge and original failed outcome. Do not subtract it as measured disk use, refund it from SSH255/path absence, restart it or probe a replacement |
 
 The original frozen LAN forecast is 1,964,390,944B; its 183,092,704B margin cannot
 admit another 269,060,552B weight file. That historical additional-weight NO_GO is
@@ -1814,13 +1813,11 @@ PN0 retained [155264e3 four-lane original Windows failures](../qualification/win
 keep all original twenty groups per lane: eighteen passed and broad-identity-delete /
 legacy-delete-boundary failed. These are historical failures, not later-source qualification.
 
-
 ### PN0 existing CI closed-world inventory repair — 2026-10-26 (PARTIAL)
 
 [Original six-job failures and local repair evidence](../qualification/pn0-ci/155264e3-blocking-original-failures-and-closed-set-repair/README.md) retain blocking run 40312011219 attempt 1 at `155264e3b5d3dcdafa244cd0c31c336ab25a207f`. The independent caller inventory now classifies two explicitly non-authorizing methods and enumerates the two reviewed observed paths. `shares_owner` only compares original opaque owners; `check_unclaimed_grant` only checks readiness and cannot replace claim or final live validation. The canonical raw caller remains the sealed wrapper; the ordinary CPU target consumes that wrapper after preparation and enters the original synchronous physical boundary.
 
 The unchanged 17 original closed-world tests reproduced two failures before the inventory repair and then passed with zero skips. Canonical caller self-test and verification passed on unchanged inputs. No scanner, CALLERS, authority implementation, original assertion or acceptance bound changed. This closes only that local inventory mismatch. It does not close original Windows isolation, the three failing Windows Bazel shards, Clippy platform incompatibility, dependency advisories or any model/release/WAN gate. Existing PN0–PN6, historical failures and `merge_ready=false` remain in force; exact published-head and actual merge qualification must be obtained separately.
-
 
 ### PN0 dependency advisory migration and native timeout attribution — 2026-10-26 (PARTIAL)
 
@@ -1830,21 +1827,15 @@ Seven private DPoP controls have not executed successfully: the original collect
 
 Next complete the real compression consumer and seven DPoP validation, generated Bazel consumer/toolchain qualification, then the exact paired source and actual-preview CI. Keep original four Windows lanes and twenty groups, pair steps, security policy, tests, deadlines and resource limits. No cache workaround, partial build or local source review closes those gates. Model rounds, benefit rejection, full release/Cell loader/custody repair and independent 72-hour WAN acceptance remain unchanged; `task_complete=false`, `merge_ready=false`, **NO_GO**.
 
-
 PN0 [SDK download-cache interface correction](../qualification/pn0-ci/sdk-original-namespace-download-cache-20261026/README.md) adds the missing restore and binds save to its actual cache-hit output. The existing cache namespace, pinned action, original jobs, commands, tests, concurrency and 60/20-minute limits remain exact. This is source-level correction only: action-cache reuse, measured throughput, a 60-minute PASS and actual musl qualification remain unknown/open. Keep original timeout and security failures; the exact paired CI and PN0–PN6 acceptance sequence are unchanged.
-
 
 PN0 [Linux target-routing correction](../qualification/pn0-ci/linux-real-platform-binding-20261026/README.md) explicitly binds the existing GNU/musl rows to their complete pinned target platforms and preserves that caller choice after keyed CI's GNU default. The existing recording-wrapper suite reproduced four keyed subcase failures on original source; the same 11 tests then passed, retaining all nine original test bodies and every job/feature/limit. Real musl compilation, ABI, execution and compatibility inventory remain unverified. GNU-only Wine coverage stays with GNU; the old release mapping's incomplete libc constraint remains a separate OPEN gate. Original hosted timeouts, four Windows lanes, exact paired CI and PN0–PN6 acceptance are unchanged; **NO_GO**.
 
-
 PN0 [ROG bounded startup/terminal and journal source integration](../qualification/pn0-ci/rog-d66-bounded-source-integration-20261026/README.md) preserves all ten original ROG commits endingd66 as a real local source merge. Windows-GNU cfg(test) type/lint checking returned0 with retained warnings; no binary link, MSVC/gnullvm, strict-warning or native PASS follows. Twenty synthetic receipt-parser and seventeen unchanged caller-unit tests passed. The original twenty native groups, four lanes, guard, two deletion failures and Unknown custody remain required. The private original-journal joins preserve initial/evaluated separation and nonce accounting, but do not prove model execution, I10 or three rounds. Source map history and the sole conflict are retained; actual merged-source bindings must be recorded separately from execution. No PR merge, production activation, old budget reset or source-head CI qualification is granted. **NO_GO**.
-
 
 PN0 [ROG host development failure and source-map observations](../qualification/pn0-ci/rog-d66-host-first-RED-and-source-map-20261026/README.md) permanently retain the first actual scoped host-lint failure on 82f6e9e. Its original 560-second work fence was exhausted before the host Checking label; all 10,198 source files and Cargo pins remained exact, with no autofix, retry or new allocation. This does not close previous model900/worker600 failures. The original forty-map verifier separately passed after preserving and correcting two earlier source-observation failures, without changing policy, tests or authority claims. Source-map consistency and Windows-GNU compile-only success grant no native Windows or model qualification. The normal production dependency graph already reaches core/core-plugins; deleting real dev tests cannot cut those production paths. All original PN0–PN6 acceptance, exact paired CI, two Windows deletion failures, three real model rounds with separate benefit evaluation, complete Cell cold release/custody repair and independent WAN remain required; **NO_GO**.
 
-
 PN0 [exact paired source interface](../qualification/pn0-ci/paired-source-bd8184-20261026/README.md) binds Chain `bd81849bb47b10e912cfea84f7532ccc1175e4ee` to the real ordered main snapshot `96175153365914375739e5ccf6dd47b84a9e97a2` (parents main9fed then sourcebd8184; treef1df). This is a source-input binding, not an execution receipt or the actual PR preview. The original56 pair steps,112 commands per lane and9 Windows-ledger steps remain exact. Resolve each actual Hepta head/base/preview independently; old PASS does not qualify the new tuple. Keep the old Legacy-path growth timeout, both Windows deletion failures and all original PN0-PN6 model/release/WAN gates; **NO_GO**.
-
 
 ### PN0 Windows terminal regression and source follow-up — 2026-10-27 (OPEN)
 
@@ -1889,7 +1880,6 @@ or longer limit. All existing PN0–PN6 exits, four native lanes, original twent
 groups, pair steps, resources, historical failures, model/release/WAN requirements
 and NO_GO remain; task_complete=false and merge_ready=false.
 
-
 PN0's next [exact paired source input](../qualification/pn0-ci/paired-source-c96022b-20261027/source-input-binding.json)
 now binds published Chain `c96022b897c1235fdbdbfcfa32764403511c6aab`
 to main `9fedf7ecbbe07177069c030592b4e03dcffebb81` through qualification
@@ -1905,7 +1895,6 @@ previous bd/0c results as history; no old PASS qualifies this new tuple. Publica
 must preserve every still-active original run. All PN0–PN6 acceptance gates,
 Windows isolation, paid identities, real model rounds, release/custody and WAN
 requirements remain unchanged; task_complete=false, merge_ready=false, NO_GO.
-
 
 PN0's [original Mac authorized-read failures and source correction](../qualification/pn0-ci/mac-authorized-read-0c03-original-failures-20261027/manifest.json)
 retain all seven complete job logs. Before its original90-minute cancellation,
