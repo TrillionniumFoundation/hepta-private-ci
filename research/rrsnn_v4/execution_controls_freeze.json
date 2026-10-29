@@ -1,0 +1,50 @@
+{
+  "schema": "rrsnn.v4-execution-controls-freeze.1",
+  "recorded_at_utc": "2026-10-29T14:47:47.448022+00:00",
+  "model_task_statistic_sources_unchanged": true,
+  "pre_data_freeze_sha256": "2c4e0e135940cf8fce04aa672963f47041be4065d8836d56671c335d7369e6bc",
+  "training_protocol_sha256": "e550dfca79fdb1b6bca551c5f1e6c3f8e4bd796fda310b6db2c48eaeabbaa09d",
+  "additional_source_sha256": {
+    "run_evaluation.py": "cb695390e69ebb896193ab517965ee1777de6fcbb7abd7237b783cf9b0c9a0e7",
+    "numerical_control.py": "8a686fc74d441c0ea8dc03651f9ee8adb77ae73fdc083021b7ccace50f2bfeee",
+    "policy_benchmark.py": "538db3796a1548d6920c2282367efeaf78f77489c84b083c7548f06a77a2235e",
+    "policy_benchmark_design.json": "1e82b5b6f2183cb8b467ce25c658c0baf377bfef9fd1b0b9af2f847e9c7ad50f"
+  },
+  "main_evaluation": {
+    "workers": 2,
+    "cpus": [
+      0,
+      1
+    ],
+    "checkpoints": 80,
+    "outputs": 960,
+    "required_selection_publication": "immutable remote bytes verified by root, receipt reverified locally"
+  },
+  "numerical_control": {
+    "training_seeds": [
+      101,
+      211,
+      307,
+      401,
+      503
+    ],
+    "datasets": [
+      "test",
+      "shift",
+      "paired"
+    ],
+    "latent_replays": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "same_weights_and_initial_rng": true,
+    "reference": "independent bracketed root, existing frozen RR implementation",
+    "event_time_tolerance": 1e-07,
+    "report_any_divergence": true
+  },
+  "policy_benchmark_design_frozen_before_production_checkpoint_access": true,
+  "holdout_evaluation_started": false,
+  "production_permission_granted": false
+}
