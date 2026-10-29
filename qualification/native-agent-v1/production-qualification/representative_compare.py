@@ -25,7 +25,8 @@ INSTRUCTIONS = "Use the supplied workspace tools to perform the task. Treat tool
 BUDGET = {"context_bytes": 65536, "output_tokens": 256, "model_calls": 6,
           "tool_calls": 5, "tool_output_bytes": 32768,
           "model_timeout_seconds": 120, "tool_timeout_seconds": 60}
-CASES = ("edit", "repair", "multi_tool", "mcp_readonly")
+DEFAULT_CASES = ("edit", "repair", "multi_tool", "mcp_readonly")
+CASES = (*DEFAULT_CASES, "long_output")
 LANES = ("app-server", "facade", "native")
 
 
@@ -52,13 +53,16 @@ def prepare(case, root):
         path.write_text(text)
     if case["id"] == "mcp_readonly":
         shutil.copyfile(HERE / "mcp_fixture.py", workspace / "mcp_fixture.py")
-    writable = ["src/calc.py"] if case["id"] in ("edit", "repair") else ["sorted.json"]
+    writable = {"edit": ["src/calc.py"], "repair": ["src/calc.py"],
+                "multi_tool": ["sorted.json"], "recover_process": ["done"]}.get(case["id"], [])
     initial = {str(p.relative_to(workspace)): digest(p) for p in workspace.rglob("*") if p.is_file()}
     readonly = {name: sha for name, sha in initial.items() if name not in writable}
     manifest = {"schema": "hepta.representative-workspace.v1", "case": case["id"],
                 "workspace": str(workspace), "readonly": readonly, "writable": writable,
-                "allowed_tools": ["hepta_read", "hepta_patch", "hepta_write", "hepta_tests", "hepta_mcp_lookup"],
+                "allowed_tools": ["hepta_read", "hepta_patch", "hepta_write", "hepta_tests", "hepta_mcp_lookup", "hepta_fixture"],
                 "mcp_server": "mcp_fixture.py"}
+    if case["id"] in ("long_output", "cancel", "recover_process"):
+        manifest["fixture_command"] = case["input"]["command"]
     save(root / "workspace.json", manifest)
     return workspace, initial, readonly
 
@@ -83,10 +87,16 @@ def steps_for(case):
                             "sha256": hashlib.sha256(text.encode()).hexdigest()}).decode() + "\n"},
                 {"tool": "hepta_write", "arguments": {"path": "sorted.json", "content": "[1,1,4,9]\n"}},
                 {"tool": "hepta_tests", "arguments": {}, "stdout": "VALIDATED\n"}]
+    if name == "long_output":
+        raw = b"".join(f"row={number:08d} value=0123456789abcdef\n".encode() for number in range(32768))
+        return [{"tool": "hepta_fixture", "arguments": {}, "presentation": {
+            "stdout": {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()},
+            "stderr": {"bytes": 0, "sha256": hashlib.sha256(b"").hexdigest()},
+            "limit_bytes": inputs["max_model_item_bytes"]}}]
     return [{"tool": "hepta_mcp_lookup", "arguments": inputs["arguments"]}]
 
 
-def configure(root, workspace, gateway, budgets):
+def configure(root, workspace, gateway, budgets, model_item_bytes=None):
     for directory in ("controller", "remote", "sessions", "codex-home"):
         (root / directory).mkdir(mode=0o700)
     runtime = {"state_dir": str(root / "controller"), "controller_workspace_roots": [],
@@ -98,9 +108,10 @@ def configure(root, workspace, gateway, budgets):
     fixture = {"representative": True, "host": "qualification", "script": str(HERE / "workspace_tool.py"),
         "script_sha256": digest(HERE / "workspace_tool.py"), "data": str(root / "workspace.json"),
         "data_sha256": digest(root / "workspace.json"), "cwd": str(workspace), "tool_timeout_seconds": 60}
+    presentation = {"model_item_bytes": model_item_bytes} if model_item_bytes else {}
     save(root / "runner.json", {"runtime_config": str(root / "runtime.json"),
         "sessions_dir": str(root / "sessions"), "fixture": fixture, "model": "qwen38-flash-next-uc",
-        "responses_url": gateway.url + "/responses", **budgets})
+        "responses_url": gateway.url + "/responses", **budgets, **presentation})
     config = '\n'.join(['model = "qwen38-flash-next-uc"', 'model_provider = "qualification"',
         'model_reasoning_summary = "none"', 'web_search = "disabled"', 'approval_policy = "never"',
         'sandbox_mode = "read-only"', '[model_providers.qualification]', 'name = "Qualification gateway"',
@@ -175,11 +186,16 @@ def run_case(args, lane, case, repeat):
     gateway = ScriptGateway(args.mode, args.upstream, evidence,
                             **{key: budgets[key] for key in ("context_bytes", "output_tokens", "model_calls")})
     gateway.begin_script(case_name, steps)
-    configure(root, workspace, gateway, budgets)
+    if case["id"] == "long_output" and budgets["tool_output_bytes"] < steps[0]["presentation"]["stdout"]["bytes"]:
+        gateway.close()
+        raise ValueError("long output needs an explicit profile with enough full-output retention")
+    configure(root, workspace, gateway, budgets, case["input"].get("max_model_item_bytes"))
     save(root / "FROZEN.json", {"case": case, "steps": steps, "initial_sha256": initial,
         "mode": args.mode, "group": args.group, "budgets": budgets,
         "scope": "representative qualification owner; production gate held"})
-    prompt = case["input"].get("request", "Read package hepta-qualification through the supplied MCP tool.")
+    fallback = ("Call hepta_fixture exactly once. Inspect the bounded excerpt and the original retained output reference."
+                if case["id"] == "long_output" else "Read package hepta-qualification through the supplied MCP tool.")
+    prompt = case["input"].get("request", fallback)
     prompt += " After the requested validation succeeds, return exactly " + ANSWER + "."
     clients = []
     row = {"lane": lane, "case": case["id"], "repeat": repeat, "status": "failed",
@@ -250,7 +266,7 @@ def main():
     for name in ("output", "native", "codex", "facade"):
         parser.add_argument("--" + name, type=lambda value: Path(value).resolve(), required=True)
     parser.add_argument("--lanes", nargs="+", choices=LANES, default=list(LANES))
-    parser.add_argument("--cases", nargs="+", choices=CASES, default=list(CASES))
+    parser.add_argument("--cases", nargs="+", choices=CASES, default=list(DEFAULT_CASES))
     parser.add_argument("--repeats", type=int, default=1)
     parser.add_argument("--timeout", type=int, default=240)
     parser.add_argument("--mode", choices=("replay", "live"), default="replay")
@@ -288,7 +304,7 @@ def main():
     if args.repeats < 1 or args.output.exists():
         raise ValueError("positive repeats and fresh output directory required")
     args.output.mkdir(parents=True)
-    sources = [HERE / name for name in ("representative_compare.py", "script_gateway.py", "workspace_tool.py", "mcp_fixture.py", "representative_audit.py", "corpus.json")]
+    sources = [HERE / name for name in ("representative_compare.py", "script_gateway.py", "workspace_tool.py", "mcp_fixture.py", "representative_audit.py", "representative_runtime_evidence.py", "corpus.json")]
     sources += [HERE.parent / name for name in ("protocol_driver.py", "model_gateway.py")]
     sources += [path.resolve() for path in (profile_path, evidence_path) if path]
     fingerprints = {str(path): digest(path) for path in sources + [args.native, args.codex, args.facade]}
@@ -313,7 +329,7 @@ def main():
          "limits": ["Qualification SessionOwner; Agentd/FinalUse composition not exercised",
                     ("Known response replay tests harness execution, not model reasoning quality" if args.mode == "replay"
                      else "Live responses from the frozen provider; four tasks do not establish general agent quality"),
-                    "Four representative capability cases; the remaining registered corpus stays held",
+                    "Only selected representative capabilities; the remaining registered corpus stays held",
                     "MCP case is a pinned stdio fixture behind a shared runtime tool, not a live connector",
                     "No resource-efficiency or p95 claim; each case launches a fresh resident executor",
                     "Original failing attempts and complete raw captures are retained"]})

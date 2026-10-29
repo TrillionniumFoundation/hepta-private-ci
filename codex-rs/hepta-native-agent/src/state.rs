@@ -121,6 +121,25 @@ pub trait ToolPort: Send + Sync {
     ) -> impl Future<Output = Result<ToolObservation>> + Send;
 
     fn cancel(&self, intent: &RuntimeToolIntentV1) -> impl Future<Output = Result<()>> + Send;
+
+    /// Present verified complete terminal bytes. A host may return an explicit
+    /// bounded excerpt with its original-owner reference. Recovery must freeze
+    /// and validate that same presentation policy; this does not change receipts.
+    fn present_output(
+        &self,
+        _intent: &RuntimeToolIntentV1,
+        receipt: &RuntimeReceiptV1,
+        stdout: &[u8],
+        stderr: &[u8],
+    ) -> impl Future<Output = Result<String>> + Send {
+        async move {
+            Ok(serde_json::json!({
+                "exit_code": receipt.tool_outcome.exit_code,
+                "stdout": String::from_utf8_lossy(stdout),
+                "stderr": String::from_utf8_lossy(stderr),
+            }).to_string())
+        }
+    }
 }
 
 /// Existing host owns admission, generation, FinalUse and durable checkpoints.

@@ -16,6 +16,7 @@ pub fn tool_specs() -> Vec<Value> {
         ("hepta_write", "Write one registered mutable workspace file.", vec!["path", "content"]),
         ("hepta_tests", "Execute the pinned independent workspace tests and return their real exit status.", vec![]),
         ("hepta_mcp_lookup", "Initialize a distinct stdio MCP fixture, discover its tool, and read the package version.", vec!["package"]),
+        ("hepta_fixture", "Execute this case's frozen process once; the runtime retains its complete output.", vec![]),
     ]
     .into_iter()
     .map(|(name, description, fields)| {

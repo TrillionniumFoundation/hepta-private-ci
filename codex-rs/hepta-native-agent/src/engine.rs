@@ -407,12 +407,28 @@ impl NativeAgent {
                     if stdout.len().saturating_add(stderr.len()) > self.limits.tool_output_bytes {
                         bail!("tool result exceeds retained output budget");
                     }
-                    let output = json!({
-                        "exit_code": receipt.tool_outcome.exit_code,
-                        "stdout": String::from_utf8_lossy(&stdout),
-                        "stderr": String::from_utf8_lossy(&stderr)
-                    })
-                    .to_string();
+                    let presentation = tokio::select! {
+                        biased;
+                        _ = cancel.cancelled(), if !pending.cancel_requested && !state.cancelled => {
+                            state.cancelled = true;
+                            Err(anyhow::anyhow!("tool output presentation cancelled"))
+                        }
+                        result = tokio::time::timeout(
+                            deadline.saturating_duration_since(Instant::now()),
+                            tools.present_output(&pending.intent, &receipt, &stdout, &stderr),
+                        ) => result.context("tool output presentation deadline").and_then(|value| value),
+                    };
+                    let output = match presentation {
+                        Ok(output) => output,
+                        Err(error) => {
+                            state.last_error = Some(format!("tool output presentation unavailable: {error}"));
+                            owner.checkpoint(state).await?;
+                            return Ok(Some(RunOutcome::PendingTool));
+                        }
+                    };
+                    if output.len() > self.limits.context_bytes {
+                        bail!("presented tool output exceeds the model context byte budget");
+                    }
                     state.context.push(json!({
                         "type":"function_call_output",
                         "call_id":pending.call.call_id,

@@ -2,6 +2,7 @@
 pub mod owner;
 pub mod persist;
 pub mod representative;
+mod runtime_output;
 pub mod runtime_bridge;
 pub mod snapshot;
 pub mod tool_session;

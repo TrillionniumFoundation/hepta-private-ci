@@ -1,6 +1,7 @@
 """Execute real workspace programs and reject replay that hides failed tools."""
 
 import json
+import hashlib
 from pathlib import Path
 import subprocess
 import sys
@@ -32,6 +33,9 @@ class RepresentativeTests(unittest.TestCase):
                         self.assertEqual(result.stdout, step["stdout"])
                     if "stderr_contains" in step:
                         self.assertIn(step["stderr_contains"], result.stderr)
+                    if "presentation" in step:
+                        self.assertEqual(len(result.stdout.encode()), step["presentation"]["stdout"]["bytes"])
+                        self.assertEqual(hashlib.sha256(result.stdout.encode()).hexdigest(), step["presentation"]["stdout"]["sha256"])
                     if case["id"] == "mcp_readonly":
                         content = json.loads(result.stdout)["result"]["content"]
                         self.assertEqual(json.loads(content[0]["text"]), {"version": "1.0.0", "source": "fixture"})

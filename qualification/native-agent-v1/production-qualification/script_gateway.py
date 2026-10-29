@@ -3,6 +3,7 @@
 import json
 
 from model_gateway import ModelGateway, wire
+from representative_audit import feedback_value, validate_excerpt
 
 ANSWER = "HEPTA_REPRESENTATIVE_OK"
 
@@ -29,9 +30,13 @@ class ScriptGateway(ModelGateway):
                 if len(output) != 1 or output[0].get("type") != "input_text":
                     raise ValueError("incomplete tool feedback")
                 output = output[0]["text"]
-            result = json.loads(output)
-            if set(result) != {"exit_code", "stdout", "stderr"}:
-                raise ValueError("unexpected tool result shape")
+            result = feedback_value(item, allow_excerpt="presentation" in step)
+            if "presentation" in step:
+                expected = step["presentation"]
+                validate_excerpt(item, result, expected["limit_bytes"])
+                if any(result["presentation"]["retained"].get(stream) != expected[stream]
+                       for stream in ("stdout", "stderr")):
+                    raise ValueError("long-output reference differs from the full independent oracle")
             if result["exit_code"] != step.get("exit", 0):
                 raise ValueError("real tool did not reach expected exit state")
             if "stdout" in step and result["stdout"] != step["stdout"]:

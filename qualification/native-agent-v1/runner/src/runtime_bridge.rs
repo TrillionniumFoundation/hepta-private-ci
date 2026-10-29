@@ -27,6 +27,9 @@ use hepta_runtime::mcp::runtime::jobs::ProcessRefParams;
 use hepta_runtime::mcp::runtime::jobs::ProcessStartParams;
 use hepta_runtime::mcp::runtime::runtime_config;
 use serde_json::Value;
+use serde_json::json;
+
+use crate::runtime_output::bounded_terminal_output;
 
 #[path = "runtime_bridge_wire.rs"]
 mod wire;
@@ -63,6 +66,7 @@ impl<T: AdmissionResolver + ?Sized> AdmissionResolver for Arc<T> {
 pub struct RuntimeToolBridge<R: AdmissionResolver> {
     resolver: R,
     max_output_bytes: usize,
+    model_item_bytes: Option<usize>,
 }
 
 impl<R: AdmissionResolver> RuntimeToolBridge<R> {
@@ -73,7 +77,18 @@ impl<R: AdmissionResolver> RuntimeToolBridge<R> {
         Ok(Self {
             resolver,
             max_output_bytes,
+            model_item_bytes: None,
         })
+    }
+
+    /// Keep the original full-byte retention bound separate from the model's
+    /// per-item presentation budget. This policy is frozen by SessionOwner.
+    pub fn with_model_item_bytes(mut self, limit: Option<usize>) -> Result<Self> {
+        if limit.is_some_and(|value| value < 3072) {
+            bail!("model item budget is too small for an original-owner reference");
+        }
+        self.model_item_bytes = limit;
+        Ok(self)
     }
 
     fn admitted(
@@ -210,6 +225,51 @@ impl<R: AdmissionResolver> RuntimeToolBridge<R> {
 }
 
 impl<R: AdmissionResolver> ToolPort for RuntimeToolBridge<R> {
+    async fn present_output(
+        &self,
+        intent: &RuntimeToolIntentV1,
+        receipt: &RuntimeReceiptV1,
+        stdout: &[u8],
+        stderr: &[u8],
+    ) -> Result<String> {
+        receipt.validate_against(intent)?;
+        if !receipt.tool_outcome.terminal_observed
+            || receipt.tool_outcome.stdout_digest != Some(Digest32::of_bytes(stdout))
+            || receipt.tool_outcome.stderr_digest != Some(Digest32::of_bytes(stderr))
+            || stdout.len().saturating_add(stderr.len()) > self.max_output_bytes
+        {
+            bail!("presentation requires the complete verified terminal bytes");
+        }
+        let Some(limit) = self.model_item_bytes else {
+            return Ok(json!({"exit_code":receipt.tool_outcome.exit_code,
+                "stdout":String::from_utf8_lossy(stdout),"stderr":String::from_utf8_lossy(stderr)}).to_string());
+        };
+        let admitted = self.admitted(intent, None)?;
+        let raw = hepta_runtime::native::observe_request(admitted.params.clone())
+            .await?
+            .context("original retained output binding is unavailable")?;
+        let envelope: Value = serde_json::from_str(&raw)?;
+        validate_observation_envelope(&envelope)?;
+        let job_id = validate_job(&envelope, &admitted, runtime_config()?.host(&admitted.params.host)?)?;
+        let proof = terminal_proof(&envelope["status"], &job_id)?
+            .context("retained output lost its original terminal publication")?;
+        if u128::from(proof.stdout_bytes) != stdout.len() as u128
+            || u128::from(proof.stderr_bytes) != stderr.len() as u128
+            || Some(proof.exit_code) != receipt.tool_outcome.exit_code
+        {
+            bail!("retained output reference changed after complete verification");
+        }
+        let retained = json!({
+            "host":admitted.params.host,"job_id":job_id,
+            "operation_id":intent.cell.operation_id.as_str(),
+            "idempotency_key":intent.idempotency_key.as_str(),
+            "runtime_intent_digest":receipt.runtime_intent_digest.to_string(),
+            "stdout":{"bytes":stdout.len(),"sha256":Digest32::of_bytes(stdout).to_string()},
+            "stderr":{"bytes":stderr.len(),"sha256":Digest32::of_bytes(stderr).to_string()},
+        });
+        bounded_terminal_output(receipt.tool_outcome.exit_code, stdout, stderr, retained, limit)
+    }
+
     async fn execute_or_observe(
         &self,
         intent: &RuntimeToolIntentV1,

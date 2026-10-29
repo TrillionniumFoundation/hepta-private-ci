@@ -6,6 +6,7 @@ not a production authority, does not create jobs, and never retries an action.
 
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -71,11 +72,22 @@ def main(tool, arguments, manifest_path):
     args = json.loads(arguments)
     fields = {"hepta_read": {"path"}, "hepta_patch": {"path", "old", "new"},
               "hepta_write": {"path", "content"}, "hepta_tests": set(),
-              "hepta_mcp_lookup": {"package"}}
+              "hepta_mcp_lookup": {"package"}, "hepta_fixture": set()}
     if not isinstance(args, dict) or set(args) != fields[tool]:
         raise ValueError("unexpected tool arguments")
     if any(not isinstance(value, str) or len(value.encode()) > 32768 for value in args.values()):
         raise ValueError("tool text argument budget")
+    if tool == "hepta_fixture":
+        if manifest["case"] not in ("long_output", "cancel", "recover_process"):
+            raise ValueError("case has no frozen process")
+        command = manifest["fixture_command"]
+        if (not isinstance(command, list) or len(command) not in (3, 4)
+                or command[0] != "python3" or command[-2] != "-c"
+                or (len(command) == 4 and command[1] != "-u")):
+            raise ValueError("unexpected frozen fixture command")
+        # Replace this owned process, preserving the runtime's original PID and
+        # stdout/stderr descriptors. No captured stream is substituted for it.
+        os.execv(sys.executable, [sys.executable, "-I", "-B", "-S", *command[1:]])
     if "path" in args:
         if args["path"] not in set(manifest["readonly"]) | set(manifest["writable"]):
             raise ValueError("unregistered workspace path")

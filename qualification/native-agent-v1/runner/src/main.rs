@@ -44,6 +44,8 @@ struct Config {
     model_calls: usize,
     tool_calls: usize,
     tool_output_bytes: usize,
+    #[serde(default)]
+    model_item_bytes: Option<usize>,
     model_timeout_seconds: u64,
     tool_timeout_seconds: u64,
 }
@@ -91,7 +93,8 @@ async fn run(
         json!({"config":config,"mode":request.op}),
     )?;
     let owner = Arc::new(owner);
-    let tools = RuntimeToolBridge::new(Arc::clone(&owner), config.tool_output_bytes)?;
+    let tools = RuntimeToolBridge::new(Arc::clone(&owner), config.tool_output_bytes)?
+        .with_model_item_bytes(config.model_item_bytes)?;
     let mut result = if request.op == "tool" {
         let call = ToolCall {
             call_id: request
