@@ -314,6 +314,15 @@ def run(args):
             model_plan_profile="strict-v1",
             observation_scope="new-execution-policy-original-model-plan-and-target",
         )
+    if observation:
+        import hepta_smollm_live_control_v1 as live_control
+
+        control_entry = live_control.manifest(args.chain, plan_path)
+        control_manifest = output / "control-execution-entry-v1.json"
+        live_control.save(control_manifest, control_entry)
+        freeze["control_execution_entry"] = dict(
+            path=str(control_manifest), sha256=runtime.file_sha(control_manifest)
+        )
     runtime.save(output / "round-freeze.json", freeze)
     phases = []
 
@@ -337,6 +346,22 @@ def run(args):
         ]
         if artifact is not None:
             command += ["--artifact", str(artifact)]
+        if observation:
+            live_input = live_control.request(
+                control_entry, stage, role, args.materials, path, artifact
+            )
+            live_path = output / (path.name + "-live-input.json")
+            live_control.save(live_path, live_input)
+            command = [
+                sys.executable,
+                "-I",
+                "-B",
+                str(Path(live_control.__file__).resolve()),
+                "--input",
+                str(live_path),
+                "--input-sha256",
+                runtime.file_sha(live_path),
+            ]
         result = runtime.supervise(
             command,
             path,
@@ -360,6 +385,8 @@ def run(args):
                 == plan["training_budget" if stage == "train" else "inference_budget"],
                 "exact observation policy and original phase budget required",
             )
+            phases[-1]["live_control_release"] = live_control.verify(live_input, result)
+            runtime.save(output / "phase-outcomes.json", phases)
         verify_runtime()
         return runtime.read_json(path / "actual-receipt.json")
 

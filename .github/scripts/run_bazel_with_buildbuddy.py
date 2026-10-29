@@ -305,18 +305,21 @@ def invocation_args(args: Sequence[str]) -> list[str]:
 
 @contextmanager
 def windows_target_patterns(args: Sequence[str], env: Mapping[str, str]):
-    """Keep a complete target roster out of the native Bazel command line."""
+    """Keep complete target rosters and queries out of the native command line."""
     command = next((arg for arg in args[1:] if not arg.startswith("-")), None)
     if (
         (os.name != "nt" and env.get("RUNNER_OS") != "Windows")
-        or command not in {"build", "test", "coverage"}
+        or command not in {"build", "test", "coverage", "query", "cquery"}
         or "--" not in args
     ):
         yield list(args), None
         return
     separator = args.index("--")
+    file_option = (
+        "--query_file" if command in {"query", "cquery"} else "--target_pattern_file"
+    )
     if any(
-        arg == "--target_pattern_file" or arg.startswith("--target_pattern_file=")
+        arg == file_option or arg.startswith(f"{file_option}=")
         for arg in args[:separator]
     ):
         # A caller's pattern file owns its selection semantics. Let Bazel
@@ -328,9 +331,11 @@ def windows_target_patterns(args: Sequence[str], env: Mapping[str, str]):
     if not targets:
         yield list(args), None
         return
+    if file_option == "--query_file" and len(targets) != 1:
+        raise ValueError("Bazel query transport requires exactly one expression")
     if any("\n" in target or "\r" in target for target in targets):
         raise ValueError("Bazel target patterns cannot contain line breaks")
-    # Bazel reads one UTF-8 pattern per line, including exclusion patterns.
+    # Bazel reads one UTF-8 pattern per line, or one complete query expression.
     # Keep the file until the real child retires, even when it reports failure.
     with NamedTemporaryFile(
         mode="w", encoding="utf-8", newline="\n", delete=False
@@ -338,7 +343,7 @@ def windows_target_patterns(args: Sequence[str], env: Mapping[str, str]):
         path = Path(output.name)
         output.writelines(f"{target}\n" for target in targets)
     try:
-        yield [*args[:separator], f"--target_pattern_file={path}"], path
+        yield [*args[:separator], f"{file_option}={path}"], path
     finally:
         path.unlink()
 

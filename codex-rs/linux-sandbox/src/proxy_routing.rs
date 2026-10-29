@@ -1,3 +1,4 @@
+use crate::pidfd_reaper::OwnerPidfd;
 use crate::proxy_lifecycle::PROXY_SOCKET_DIR_PREFIX;
 use crate::proxy_lifecycle::cleanup_stale_proxy_socket_dirs_in;
 use crate::proxy_lifecycle::close_fd;
@@ -23,6 +24,7 @@ use std::net::Shutdown;
 use std::net::SocketAddr;
 use std::net::TcpListener;
 use std::net::TcpStream;
+use std::os::fd::AsRawFd;
 use std::os::fd::FromRawFd;
 use std::os::unix::ffi::OsStrExt;
 use std::os::unix::fs::DirBuilderExt;
@@ -149,7 +151,10 @@ fn extract_attribution_token_and_plan(
     (attribution_token, plan)
 }
 
-pub(crate) fn activate_proxy_routes_in_netns(serialized_spec: &str) -> io::Result<()> {
+pub(crate) fn activate_proxy_routes_in_netns(
+    serialized_spec: &str,
+    owner: &OwnerPidfd,
+) -> io::Result<()> {
     let spec: ProxyRouteSpec = serde_json::from_str(serialized_spec).map_err(io::Error::other)?;
 
     if spec.routes.is_empty() {
@@ -164,7 +169,7 @@ pub(crate) fn activate_proxy_routes_in_netns(serialized_spec: &str) -> io::Resul
         if local_port_by_uds_path.contains_key(&route.uds_path) {
             continue;
         }
-        let local_port = spawn_local_bridge(route.uds_path.as_path())?;
+        let local_port = spawn_local_bridge(route.uds_path.as_path(), owner)?;
         local_port_by_uds_path.insert(route.uds_path.clone(), local_port);
     }
 
@@ -447,7 +452,7 @@ fn run_host_bridge(
     }
 }
 
-fn spawn_local_bridge(uds_path: &Path) -> io::Result<u16> {
+fn spawn_local_bridge(uds_path: &Path, owner: &OwnerPidfd) -> io::Result<u16> {
     let (read_fd, write_fd) = create_ready_pipe()?;
     let parent_pid = unsafe { libc::getpid() };
     let pid = unsafe { libc::fork() };
@@ -472,6 +477,10 @@ fn spawn_local_bridge(uds_path: &Path) -> io::Result<u16> {
     close_fd(write_fd)?;
     let mut port_bytes = [0_u8; 2];
     let mut read_file = unsafe { File::from_raw_fd(read_fd) };
+    // The trusted PID 1 has not entered its command reaper yet. Bind this
+    // actual readiness wait to the same owner so death during setup also
+    // terminates the namespace without waiting for a bridge or a timeout.
+    owner.wait_for_readable(read_file.as_raw_fd())?;
     read_file.read_exact(&mut port_bytes)?;
     Ok(u16::from_be_bytes(port_bytes))
 }

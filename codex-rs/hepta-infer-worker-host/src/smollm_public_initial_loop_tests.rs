@@ -335,7 +335,7 @@ fn observed_round_cannot_relabel_legacy_or_authorize_installation() -> TestResul
     });
     validate_round_assessment(&original, 1, RoundExecution::OriginalV2)?;
     assert!(validate_round_assessment(&original, 1, RoundExecution::ObservedV1).is_err());
-    let mut observed = original.clone();
+    let mut observed = original;
     observed["schema"] = serde_json::json!("hepta-controlled-real-round-assessment-observed-v1");
     observed["execution_profile"] = serde_json::json!(OBSERVED_PROFILE);
     observed["model_plan_profile"] = serde_json::json!("strict-v1");

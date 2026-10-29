@@ -21,6 +21,22 @@ use codex_hepta_types::FixedQ32;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
+#[cfg(windows)]
+#[path = "prompt_fixture_windows_tests.rs"]
+mod windows_fixture;
+#[cfg(windows)]
+pub(crate) use windows_fixture::FixtureDirectory;
+#[cfg(windows)]
+pub(crate) use windows_fixture::fixture_directory;
+
+#[cfg(not(windows))]
+pub(crate) type FixtureDirectory = tempfile::TempDir;
+
+#[cfg(not(windows))]
+pub(crate) fn fixture_directory() -> FixtureDirectory {
+    tempfile::tempdir().expect("tempdir")
+}
+
 fn id(value: &str) -> StableId {
     StableId::new(value).unwrap_or_else(|error| panic!("valid id: {error}"))
 }
@@ -39,8 +55,15 @@ pub(crate) fn admitted_registry(
     SigningKey,
     u64,
 ) {
+    #[cfg(not(windows))]
     let mut registry =
         DurablePromptRegistry::open_state_dir(root, 64).expect("open durable registry");
+    #[cfg(windows)]
+    let mut registry = DurablePromptRegistry::open_windows_private(
+        windows_fixture::fresh_directory(root),
+        /*maximum_records*/ 64,
+    )
+    .expect("open durable registry through private Windows owner");
     let factor = PromptFactor {
         factor_id: id("factor:verify"),
         proposer_id: id("proposer:1"),
@@ -61,17 +84,38 @@ pub(crate) fn admitted_registry(
         .parent()
         .expect("registry root parent")
         .join("prompt-admission-authority");
+    let head = FinalUseRevocations {
+        authority_epoch: 1,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    #[cfg(not(windows))]
     let authority = FinalUseAuthority::open_state_dir(
         &authority_root,
         "review-authority:prompt".to_owned(),
         signing_key.verifying_key().to_bytes(),
-        FinalUseRevocations {
-            authority_epoch: 1,
-            revision: 1,
-            revoked_grant_ids: BTreeSet::new(),
-        },
+        head,
     )
     .expect("final-use authority");
+    #[cfg(windows)]
+    let authority = {
+        let frontier = windows_fixture::Frontier {
+            owner_id: "review-authority:prompt".to_owned(),
+            value: std::sync::Mutex::new(
+                codex_hepta_contracts::FinalUseFrontier::for_initial_head(&head)
+                    .expect("initial test frontier"),
+            ),
+        };
+        FinalUseAuthority::open_windows_private_with_trust(
+            windows_fixture::fresh_directory(&authority_root),
+            "review-authority:prompt".to_owned(),
+            signing_key.verifying_key().to_bytes(),
+            head,
+            std::sync::Arc::new(codex_hepta_contracts::SystemAuthorityClock),
+            std::sync::Arc::new(frontier),
+        )
+        .expect("final-use authority through private Windows owner")
+    };
     let reviewer = id("reviewer:1");
     let scope = digest("scope:prompt");
     let evidence = digest("evidence:prompt");
@@ -244,7 +288,7 @@ pub(crate) fn canonical_selection(
 
 #[test]
 fn exercised_registry_payload_is_the_exact_context_attachment_input() {
-    let temporary = tempfile::tempdir().expect("tempdir");
+    let temporary = fixture_directory();
     let root = temporary.path().join("prompt-registry");
     let payload = b"Inspect evidence before mutation.";
     let (registry, tuple, _authority, _signing_key, _grant_now) = admitted_registry(&root, payload);
@@ -338,7 +382,7 @@ fn exercised_registry_payload_is_the_exact_context_attachment_input() {
 
 #[test]
 fn revocation_after_exercise_prevents_delivery_of_the_selected_realization() {
-    let temporary = tempfile::tempdir().expect("tempdir");
+    let temporary = fixture_directory();
     let root = temporary.path().join("prompt-registry-revocation");
     let (mut registry, tuple, authority, signing_key, grant_now) =
         admitted_registry(&root, b"Bound instruction");
@@ -418,7 +462,7 @@ fn revocation_after_exercise_prevents_delivery_of_the_selected_realization() {
 
 #[test]
 fn compiler_rejects_registry_and_context_model_drift() {
-    let temporary = tempfile::tempdir().expect("tempdir");
+    let temporary = fixture_directory();
     let root = temporary.path().join("prompt-registry-model-drift");
     let (registry, tuple, _authority, _signing_key, _grant_now) =
         admitted_registry(&root, b"Bound instruction");

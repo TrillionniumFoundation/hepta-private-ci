@@ -219,7 +219,7 @@ async fn selected_executor_discovers_browser_mcp_with_executor_only_bearer_token
             .is_some_and(|output| output.contains("ECHOING: browser use works"))
     );
 
-    let servers = mcp_server_statuses(&mut app_server, thread_id).await?;
+    let servers = mcp_server_statuses(&mut app_server, thread_id.clone()).await?;
     assert!(
         servers
             .iter()
@@ -230,6 +230,35 @@ async fn selected_executor_discovers_browser_mcp_with_executor_only_bearer_token
         servers
             .iter()
             .any(|server| server.name == "policy_unlisted" && server.tools.is_empty())
+    );
+
+    let request_id = app_server
+        .send_raw_request("config/mcpServer/reload", /*params*/ None)
+        .await?;
+    timeout(
+        DEFAULT_READ_TIMEOUT,
+        app_server.read_stream_until_response_message(RequestId::Integer(request_id)),
+    )
+    .await??;
+
+    let request_id = app_server
+        .send_mcp_server_tool_call_request(McpServerToolCallParams {
+            thread_id: thread_id.clone(),
+            server: PROJECT_MCP_SERVER_NAME.to_string(),
+            tool: "echo".to_string(),
+            arguments: Some(json!({"message": "browser use after reload"})),
+            meta: None,
+        })
+        .await?;
+    let response: McpServerToolCallResponse =
+        timeout(DEFAULT_READ_TIMEOUT, app_server.read_response(request_id)).await??;
+    assert_eq!(
+        response.structured_content,
+        Some(json!({"echo": "ECHOING: browser use after reload"}))
+    );
+    assert_eq!(
+        mcp_server_statuses(&mut app_server, thread_id).await?,
+        servers
     );
 
     http_server_handle.abort();

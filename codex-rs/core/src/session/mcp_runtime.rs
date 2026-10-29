@@ -301,6 +301,14 @@ impl Session {
         ready_selected_capability_roots: &[SelectedCapabilityRoot],
         elicitation_reviewer: Option<ElicitationReviewerHandle>,
     ) {
+        let mcp_projection = self
+            .project_selected_environment_mcp_servers(
+                &desired.session_source,
+                &desired.config,
+                &desired.environments,
+                mcp_projection,
+            )
+            .await;
         let input = self.build_mcp_runtime_input(
             desired,
             mcp_projection,

@@ -134,3 +134,15 @@ exports_files(
     ],
     visibility = ["//codex-rs/hepta-contracts:__pkg__"],
 )
+
+# Original process-only codec types reused by the real neural study test.
+exports_files(
+    [
+        "src/cognitive_process_wire.rs",
+        "src/cognitive_process_evidence.rs",
+        "src/cognitive_process_evaluation.rs",
+        "src/cognitive_process_materials.rs",
+        "src/cognitive_process_product_wire.rs",
+    ],
+    visibility = ["//codex-rs/hepta-infer-worker-host:__pkg__"],
+)
