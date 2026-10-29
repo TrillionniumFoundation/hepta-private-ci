@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from itertools import product
 import math
 
-from ..unified_20261028.profile import certainty_equivalent
+from experiments.multimodal_output_portfolio.unified_20261028.profile import certainty_equivalent
 
 
 @dataclass(frozen=True)

@@ -7,7 +7,7 @@ import unittest
 
 import torch
 
-from ..unified_20261028.profile import certainty_equivalent
+from experiments.multimodal_output_portfolio.unified_20261028.profile import certainty_equivalent
 from .learning import actor_score_loss
 from .mechanism_data import batch
 from .media import utility

@@ -146,6 +146,10 @@ def execute(model, public, observe, directory, *, seed, context_id, source_id,
     native = native_factory(model_sha, profile.digest, directory / "native") if native_factory else None
     generation = {m: 0 for m in MODALITIES}
     budget, costs, events, states, action_log, critics, teacher = INITIAL_BUDGET, [], [], [], [], [], []
+    tensor_checkpoints = []
+    episode_anchor = {"schema": "hepta.joint-generation.episode-anchor.v1",
+                      "parameter_snapshot_sha256": model_sha, "input_sha256": input_sha,
+                      "profile_sha256": profile.digest}
     previous_wall, previous_cpu = begun, cpu_start
     states.append(_snapshot(profile, state, context=context_id, input_sha=input_sha, model_sha=model_sha,
                             policy_sha=policy_sha, index=0, elapsed=0, budget=budget, generation=generation))
@@ -202,6 +206,8 @@ def execute(model, public, observe, directory, *, seed, context_id, source_id,
         before = tensor_digest(state.tensors())
         trace = {"step": index, "profile_sha256": profile.digest, "model_sha256": model_sha,
                  "state_sha256": before, "action": action, "joint_action_probabilities": law}
+        if tensor_checkpoints:
+            trace["tensor_checkpoint_sha256"] = tensor_checkpoints[-1]["payload_sha256"]
         dispatched = []
 
         def dispatch():
@@ -232,6 +238,22 @@ def execute(model, public, observe, directory, *, seed, context_id, source_id,
         action_log.append({**trace, "after_sha256": tensor_digest(state.tensors()),
                            "feedback": state.feedback.detach().tolist(), **usage,
                            "dispatched": bool(dispatched)})
+        if native is not None and native_reopen_at == index and not failure and action != "stop":
+            from .checkpoint import load_checkpoint, restore_named_rngs, save_checkpoint
+            checkpoint_path = directory / "TENSOR_CONTINUATION.pt"
+            anchored = {**episode_anchor, "remaining_budget": budget, "generation_steps": generation,
+                        "policy_snapshot_sha256": policy_sha, "strategy": strategy,
+                        "audio_rate": audio_rate, "frame_ms": frame_ms,
+                        "event_prefix": [asdict(e) for e in events], "state_prefix": [asdict(s) for s in states]}
+            identity = save_checkpoint(checkpoint_path, model, state, rng, profile, public,
+                metadata=anchored, named_rngs={"actor": rng, "emission": emission_rng})
+            restored, resumed, _, info = load_checkpoint(checkpoint_path, profile=profile, public=public)
+            if tensor_digest(resumed.tensors()) != tensor_digest(state.tensors()):
+                raise ValueError("Actual native episode tensor restore changed its continuation")
+            model, state = restored, resumed
+            streams = restore_named_rngs(info); rng, emission_rng = streams["actor"], streams["emission"]
+            tensor_checkpoints.append({**identity, "restored_in_this_process": True,
+                                       "separate_OS_process_equivalence": "independently_tested"})
         if failure or action == "stop":
             break
 
@@ -293,6 +315,7 @@ def execute(model, public, observe, directory, *, seed, context_id, source_id,
             "policy_snapshot_sha256": policy_sha,
             "strategy": strategy, "emission_law": "degenerate_mean_argmax" if deterministic_emission else "stochastic",
             "contract_validated": True, "native_receipt": native.receipt() if native else None,
+            "tensor_checkpoint_restores": tensor_checkpoints,
             "native_integration_executed": native is not None,
             "suffix_return_convention": "terminal_utility_minus_costs_from_current_decision_including_first_encoder",
             "semantic_qualification": False}

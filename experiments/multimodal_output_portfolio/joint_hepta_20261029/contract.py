@@ -8,7 +8,7 @@ The owner still has to read emitted files and independently observe their result
 from dataclasses import asdict, dataclass
 import math
 
-from ..unified_20261028.profile import (
+from experiments.multimodal_output_portfolio.unified_20261028.profile import (
     SCHEMA as PARENT_SCHEMA,
     CostEvent,
     DeliveredOutcome,

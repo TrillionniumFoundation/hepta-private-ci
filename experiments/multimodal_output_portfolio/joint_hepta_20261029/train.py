@@ -18,7 +18,7 @@ import numpy as np
 import torch
 from torch.nn import functional as F
 
-from ..unified_20261028.profile import certainty_equivalent
+from experiments.multimodal_output_portfolio.unified_20261028.profile import certainty_equivalent
 from .checkpoint import generation_metadata, save_checkpoint
 from .learning import actor_score_loss, critic_log_moment_loss
 from .mechanism_data import batch, select
@@ -285,7 +285,17 @@ def run(output, *, seed=17, width=32, smoke=False, native_binary=None):
     result["research_effect_qualified"] = False  # Requires all six registered replications and natural gate.
     result["total_wall_seconds"], result["total_cpu_seconds"] = time.perf_counter()-start, cpu_seconds()-cpu
     write(output/"RESULTS.json", result)
-    summary = {k: result[k] for k in ("seed", "width", "smoke", "comparisons", "total_wall_seconds", "total_cpu_seconds")}
+    summary = {k: result[k] for k in ("seed", "width", "smoke", "comparisons", "total_wall_seconds", "total_cpu_seconds", "profile_sha256", "protocol_sha256")}
+    summary["arms"] = {name: {"evaluation": {k: v for k, v in item["evaluation"].items() if k != "rows"},
+                               "parameters": item["parameters"],
+                               "actual_training_episodes": item["training"]["actual_episodes"],
+                               "score_nonzero_parameter_tensors": sum(v > 0 for v in item["training"]["score_only_gradient_max_l1_by_parameter"].values()),
+                               "parameter_snapshot": item["training"]["final_parameters_sha256"]}
+                       for name, item in result["arms"].items()}
+    summary["distillation"] = {k: v for k, v in result["distillation"].items() if k not in ("teacher", "student")}
+    summary["native_deployment"] = ({k: v for k, v in result["native_deployment"].items() if k != "rows"}
+                                      if "native_deployment" in result else None)
+    write(output/"SUMMARY.json", summary)
     print("RESULT_JSON=" + json.dumps(summary, sort_keys=True), flush=True)
     return result
 

@@ -5,7 +5,7 @@ import json
 import math
 import unittest
 
-from ..unified_20261028.profile import aggregate, certainty_equivalent
+from experiments.multimodal_output_portfolio.unified_20261028.profile import aggregate, certainty_equivalent
 from .contract import (
     CostEvent, DecisionEvent, DeliveredOutcome, GenerationState, JointGenerationProfile,
     NduProfile, digest, validate_episode, validate_runtime_features,
