@@ -5,7 +5,10 @@ all 240 B checkpoints; frozen originals are scored once per seed and role.
 """
 
 import argparse
+import hashlib
+import io
 import json
+import os
 from pathlib import Path
 import time
 
@@ -24,6 +27,20 @@ from . import sources
 SEEDS = (17, 29, 43)
 METHODS = ("ordinary", "field12", "full_current_state", "history6")
 TRAINING_ROLES = ["development_gradient", "development_rehearsal", "development_probe", "development_guard"]
+
+
+class EndpointBudget(Budget):
+    """Check the actual compressed payload before consuming the reserved bytes."""
+
+    def __call__(self, additional=0):
+        super().__call__()
+        if type(additional) is not int or additional < 0:
+            raise ValueError("Invalid pending evidence size")
+        if additional:
+            stat = os.statvfs(self.root)
+            raw = sum(path.stat().st_size for path in self.root.rglob("*") if path.is_file())
+            if stat.f_bavail * stat.f_frsize < 2 * 1024 ** 3 + additional or raw + additional > 1024 ** 3:
+                raise RuntimeError("Pending evidence would consume the registered reserve or raw cap")
 
 
 def require(condition, message):
@@ -141,12 +158,22 @@ def load_endpoint_corpus(asset_root, phase, inventory, source_manifest, scorer_f
     return corpus, {key: str(value) if isinstance(value, Path) else value for key, value in barrier.items()}
 
 
-def save_score(path, score):
+def save_score(path, score, check_write=None):
     """Persist actual emissions, re-read every array, and hash the saved bytes."""
-    metadata = learning.save_hard(path, score)
     expected = {"values_" + name: values for name, values in score["values"].items()}
     expected.update({key: np.asarray(score[key], dtype=str) for key in ("source_ids", "conditions", "output_sha256")})
     expected.update({key: score[key] for key in ("pixels_u8", "captions_utf8")})
+    buffer = io.BytesIO()
+    np.savez_compressed(buffer, **expected)
+    payload = buffer.getvalue()
+    if check_write is not None:
+        check_write(len(payload))
+    with Path(path).open("xb") as stream:
+        stream.write(payload)
+        stream.flush()
+        os.fsync(stream.fileno())
+    metadata = {"file_sha256": hashlib.sha256(payload).hexdigest(), "means": score["means"],
+                "rows": len(score["output_sha256"])}
     with np.load(path, allow_pickle=False) as saved:
         require(set(saved.files) == set(expected), "Saved hard-output inventory differs")
         for key, value in expected.items():
@@ -205,7 +232,7 @@ def score_one(model, panel, observers, action, protocol, costs, directory, ident
     score = timed(costs, "endpoint_scoring", lambda: learning.hard_panel(
         model, panel, observers, action, protocol, costs, "endpoint_" + role, retain=True))
     target = directory / "scores" / (identity + "-" + role + ".npz")
-    metadata = timed(costs, "endpoint_persist_readback", lambda: save_score(target, score))
+    metadata = timed(costs, "endpoint_persist_readback", lambda: save_score(target, score, check_write=check_budget))
     costs.add("endpoint_output_bytes", metadata["bytes"])
     check_budget()
     return {"id": identity + "-" + role, "seed": seed, "schedule_id": schedule, "method": method,
@@ -229,7 +256,7 @@ def execute(args):
     root = Path(args.root).resolve()
     require(root.is_dir(), "Training evidence root is missing")
     costs = Costs()
-    budget = Budget(root, costs, args.phase)
+    budget = EndpointBudget(root, costs, args.phase)
     budget()
     runtime = strict.runtime_descriptor()
     inventory = timed(costs, "endpoint_inventory_verify", lambda: collect_checkpoints(
@@ -289,6 +316,7 @@ def execute(args):
                   "source_freeze_sha256": file_hash(args.freeze), "registered_commit": freeze["registered_commit"],
                   "frozen_original_reuse": "One score per seed/role; reuse for paired comparisons, never independent schedule samples."}
         pending = directory / "ENDPOINTS.pending.json"
+        budget(len(json.dumps(result, sort_keys=True, indent=2, allow_nan=False).encode()) + 1)
         write_json(pending, result)
         require(json.loads(pending.read_text()) == result, "Endpoint manifest readback differs")
         budget()
