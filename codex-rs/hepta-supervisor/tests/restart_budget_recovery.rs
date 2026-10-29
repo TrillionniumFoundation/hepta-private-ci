@@ -286,7 +286,7 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     // A fourth crash after yet another supervisord recovery is budget
     // exhaustion, not a fresh attempt 1.
     let (mut supervisor, recovered) =
-        Supervisor::recover(registry, control.driver(), config(), now)?;
+        Supervisor::recover(registry.clone(), control.driver(), config(), now)?;
     assert_eq!(recovered, TickReport::default());
     now += Duration::from_millis(1);
     control.crash(&agent_id);
@@ -304,6 +304,94 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
         &event.kind,
         SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts: 3 }
     )));
+    assert_eq!(control.spawn_count(&agent_id), 4);
+    // A spent persistent budget must not schedule a delayed fifth spawn.
+    assert_eq!(
+        supervisor.tick(now + Duration::from_secs(2)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&agent_id), 4);
+    assert!(
+        !supervisor
+            .snapshot(&agent_id)
+            .expect("snapshot after budget exhaustion")
+            .active
+    );
+
+    // Inactivity alone cannot prove that recovery retained the spent budget:
+    // losing its journal would also leave no pending automatic spawn. Exercise
+    // the original public claim path and preserve the exact durable record.
+    let run_root = registry
+        .load()?
+        .agents
+        .get(&agent_id)
+        .expect("registered agent")
+        .layout
+        .run_root()
+        .to_path_buf();
+    let journal_path = run_root.join("supervisor-restart-budget.json");
+    let exhausted_bytes = std::fs::read(&journal_path)?;
+    let exhausted_record: serde_json::Value =
+        serde_json::from_slice(&exhausted_bytes).expect("canonical restart record");
+    assert_eq!(exhausted_record["schema_version"], 2);
+    assert_eq!(exhausted_record["main"]["attempts"], 3);
+    assert_eq!(exhausted_record["main"]["pending"], false);
+    let assert_spent_claim = |supervisor: &mut Supervisor<FakeDriver>, claim_at: Instant| {
+        assert_eq!(std::fs::read(&journal_path)?, exhausted_bytes);
+        assert!(matches!(
+            supervisor.restart(&agent_id, claim_at),
+            Err(SupervisorError::RestartBudgetExhausted(ref actual)) if actual == &agent_id
+        ));
+        assert_eq!(std::fs::read(&journal_path)?, exhausted_bytes);
+        Ok::<(), SupervisorError>(())
+    };
+    // Instant advances below schedule ticks only. The journal uses SystemTime;
+    // this is not a test of wall-clock expiry or rollback of the 300s window.
+
+    // Reconstruct Supervisor in the same OS process with the shared FakeDriver.
+    // Exhaustion must survive reconstruction without re-arming the child.
+    drop(supervisor);
+    let (mut supervisor, recovered) = Supervisor::recover(
+        registry.clone(),
+        control.driver(),
+        config(),
+        now + Duration::from_secs(3),
+    )?;
+    assert_eq!(recovered, TickReport::default());
+    assert!(
+        !supervisor
+            .snapshot(&agent_id)
+            .expect("snapshot after post-exhaustion recovery")
+            .active
+    );
+    assert_spent_claim(&mut supervisor, now + Duration::from_secs(4))?;
+    assert_eq!(
+        supervisor.tick(now + Duration::from_secs(4)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&agent_id), 4);
+
+    // A second same-process recovery, still inside the restart window, must not
+    // re-arm the exhausted child or create a fifth process.
+    drop(supervisor);
+    let (mut supervisor, recovered) = Supervisor::recover(
+        registry,
+        control.driver(),
+        config(),
+        now + Duration::from_secs(5),
+    )?;
+    assert_eq!(recovered, TickReport::default());
+    assert!(
+        !supervisor
+            .snapshot(&agent_id)
+            .expect("snapshot after repeated post-exhaustion recovery")
+            .active
+    );
+    assert_spent_claim(&mut supervisor, now + Duration::from_secs(6))?;
+    assert_eq!(
+        supervisor.tick(now + Duration::from_secs(6)),
+        TickReport::default()
+    );
     assert_eq!(control.spawn_count(&agent_id), 4);
     Ok(())
 }
