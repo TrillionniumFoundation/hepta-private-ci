@@ -51,7 +51,7 @@ jobs:
 
           REPOSITORY = "TrillionniumFoundation/Trillionnium-Chain"
           BRANCH = "research/chain-binary-answer-observed-v2-20261028"
-          EXPECTED_TREE = "49fac32ba70561c9378559bb4dcd30778d14706d"
+          EXPECTED_TREE = "1ba8d5460f77aa2e00f7bf1b5e400626b555e158"
           MAX_RESPONSE = 1024 * 1024
 
 
@@ -135,7 +135,7 @@ jobs:
       HEPTA_CI_LANE: source-head
       CHAIN_SHA: c96022b897c1235fdbdbfcfa32764403511c6aab
       RESEARCH_CHAIN_SHA: 9035171271e9f437b7224b53532f41a2b2894be7
-      OBSERVATION_CHAIN_SHA: 003ae1b94ddde054dcf2af28b2fbd2d058be9af3
+      OBSERVATION_CHAIN_SHA: 8444eeee03e29caaa45902107e82df0eb980bede
       BINARY_TRAINING_CHAIN_SHA: ${{ needs.resolve-binary-source.outputs.sha }}
       CARGO_BUILD_JOBS: "2"
       CARGO_PROFILE_DEV_DEBUG: "0"
@@ -189,7 +189,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git --no-replace-objects -C ../chain-binary rev-parse HEAD)" = "$BINARY_TRAINING_CHAIN_SHA"
-          test "$(git --no-replace-objects -C ../chain-binary rev-parse 'HEAD^{tree}')" = "49fac32ba70561c9378559bb4dcd30778d14706d"
+          test "$(git --no-replace-objects -C ../chain-binary rev-parse 'HEAD^{tree}')" = "1ba8d5460f77aa2e00f7bf1b5e400626b555e158"
           (cd ../chain-binary && bash scripts/project-preflight.sh --audit)
       - name: Initialize evidence before runtime prerequisites
         run: |

@@ -28,7 +28,7 @@ checkout, runtime_snapshot = original.checkout, original.runtime_snapshot
 checked_training_data = original.checked_training_data
 RUNTIME = original.RUNTIME
 SCHEMA = "hepta-neural-study-binary-v2"
-TRAINING_TREE = "49fac32ba70561c9378559bb4dcd30778d14706d"
+TRAINING_TREE = "1ba8d5460f77aa2e00f7bf1b5e400626b555e158"
 EXCLUSION_SHA = "d2101f954f9b025d5fe0a87b73ae2d31f20eb6f989ed279a04ffe38d0932b06d"
 
 

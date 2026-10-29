@@ -17,7 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import hepta_smollm_three_rounds_v2 as rounds
 
 PROFILE = "hepta-original-model-observed-execution-v1"
-CHAIN_COMMIT = "003ae1b94ddde054dcf2af28b2fbd2d058be9af3"
+CHAIN_COMMIT = "8444eeee03e29caaa45902107e82df0eb980bede"
 ASSESSMENT = "hepta-controlled-real-round-assessment-observed-v1"
 LOOP = "hepta-controlled-public-initial-three-round-loop-observed-v1"
 ROLES = (

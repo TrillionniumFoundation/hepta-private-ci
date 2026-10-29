@@ -19,7 +19,7 @@ import sys
 import time
 from types import SimpleNamespace
 
-TRAINING = "003ae1b94ddde054dcf2af28b2fbd2d058be9af3"
+TRAINING = "8444eeee03e29caaa45902107e82df0eb980bede"
 RUNTIME = "c96022b897c1235fdbdbfcfa32764403511c6aab"
 SCHEMA = "hepta-neural-study-v1"
 
