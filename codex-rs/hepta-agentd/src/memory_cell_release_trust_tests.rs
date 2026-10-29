@@ -163,11 +163,11 @@ async fn opaque_proofs_from_other_selector_or_owner_trust_cannot_replay_identica
         .expect("other-owner selection proof");
     assert_eq!(
         foreign_proof.trust_digest(),
-        fixture.host.selection_verifier.trust_digest()
+        fixture.host.inner.selection_verifier.trust_digest()
     );
     assert_ne!(
         foreign_proof.current_owner_trust_digest(),
-        fixture.host.selection_verifier.owner_trust_digest()
+        fixture.host.inner.selection_verifier.owner_trust_digest()
     );
     assert!(install(&fixture, &fixture.host, foreign_proof, receipt).is_err());
     fixture
