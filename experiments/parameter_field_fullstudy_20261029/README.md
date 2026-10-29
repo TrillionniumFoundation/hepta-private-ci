@@ -1,3 +1,5 @@
+> **Current execution status: BLOCKED.** Attempt01 ended in infrastructure loss; attempt02 has verified source freezes but no new scientific worker has passed RAM admission. Start with [EXECUTION_STATUS.md](EXECUTION_STATUS.md) and [ATTEMPT02_RUN.md](ATTEMPT02_RUN.md). Historical commands below describe their original source versions and are not an instruction to bypass the current operational registration.
+
 # Parameter-field full study — 2026-10-29
 
 **Status: RUNNING.** This README is the reproducibility entry point for the registered implementation. Scientific results, actual completion counts, integrity dispositions, negative findings and resource outcomes belong in the subsequent `REPORT.md`. No efficacy, sufficiency, interaction or net-benefit conclusion is asserted here.
