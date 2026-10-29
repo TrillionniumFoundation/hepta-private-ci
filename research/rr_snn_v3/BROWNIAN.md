@@ -105,7 +105,7 @@ sigma=1 and t={.01,.1,1,10}; extreme cancellation explicitly rejects.
 
 ## Actual validation
 
-There are 19 checks: independent normal-density quadrature, probability
+There are 20 checks: independent normal-density quadrature, probability
 mass, CDF/density agreement, killed Chapman-Kolmogorov composition, 36
 hit/censored/endpoint derivative components, inverse CDF residuals,
 non-hitting mass, twelve rejection cases and the restricted policy example.
