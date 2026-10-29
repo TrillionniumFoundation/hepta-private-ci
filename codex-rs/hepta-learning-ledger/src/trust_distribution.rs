@@ -9,10 +9,10 @@
 use std::error::Error as StdError;
 use std::fmt;
 
+use crate::LearningSignature;
+use crate::LearningVerificationKey;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
-use ed25519_dalek::Signature;
-use ed25519_dalek::VerifyingKey;
 
 use crate::LearningEvidenceTrustV1;
 use crate::LearningEvidenceVerifierV1;
@@ -22,7 +22,7 @@ use crate::SignedEvidenceError;
 pub struct LearningTrustRootV1 {
     pub root_id: StableId,
     pub scope_digest: Digest32,
-    pub verifying_key: [u8; 32],
+    pub verifying_key: LearningVerificationKey,
     pub valid_from: u64,
     pub expires_at: u64,
     pub revoked_at: Option<u64>,
@@ -42,7 +42,7 @@ pub struct SignedLearningTrustDistributionV1 {
     pub root_id: StableId,
     pub issued_at: u64,
     pub expires_at: u64,
-    pub signature: [u8; 64],
+    pub signature: LearningSignature,
 }
 
 impl SignedLearningTrustDistributionV1 {
@@ -68,6 +68,21 @@ pub struct ActivatedLearningTrustV1 {
 }
 
 impl ActivatedLearningTrustV1 {
+    /// Retain a separately hosted activation floor in every cloned verifier and
+    /// opaque signed role, so rotation invalidates old installation material.
+    pub fn with_trust_frontier(
+        mut self,
+        binding: Digest32,
+        store: std::sync::Arc<
+            dyn codex_hepta_contracts::AuthorityFrontierStore<crate::LearningTrustFrontier>,
+        >,
+    ) -> Result<Self, codex_hepta_contracts::AuthorityTrustError> {
+        let expected = crate::learning_trust_frontier(&self);
+        self.verifier
+            .bind_activation_frontier(binding, expected, store)?;
+        Ok(self)
+    }
+
     #[must_use]
     pub fn root_id(&self) -> &StableId {
         &self.root_id
@@ -117,7 +132,10 @@ pub fn activate_learning_trust(
     if signed.issued_at > now
         || signed.issued_at > signed.expires_at
         || signed.issued_at > signed.distribution.effective_at
-        || now > signed.expires_at
+        || root
+            .verifying_key
+            .profile()
+            .expired_at(now, signed.expires_at)
         || signed.issued_at < root.valid_from
         || signed.expires_at > root.expires_at
     {
@@ -132,16 +150,18 @@ pub fn activate_learning_trust(
         return Err(LearningTrustDistributionError::InvalidGeneration);
     }
 
-    let verifier = LearningEvidenceVerifierV1::new(distribution.trust.clone())?;
+    let mut verifier = LearningEvidenceVerifierV1::new(distribution.trust.clone())?;
     let payload = distribution_signing_bytes(
         &signed.root_id,
         distribution,
         signed.issued_at,
         signed.expires_at,
     )?;
-    VerifyingKey::from_bytes(&root.verifying_key)
-        .map_err(|_| LearningTrustDistributionError::InvalidRoot)?
-        .verify_strict(&payload, &Signature::from_bytes(&signed.signature))
+    if root.verifying_key.profile() != verifier.authentication_profile() {
+        return Err(LearningTrustDistributionError::InvalidRoot);
+    }
+    root.verifying_key
+        .verify(&payload, &signed.signature)
         .map_err(|_| LearningTrustDistributionError::InvalidSignature)?;
 
     if let Some(previous) = previous {
@@ -169,6 +189,7 @@ pub fn activate_learning_trust(
         signed.expires_at,
         &verifier,
     );
+    verifier.bind_activation_window(now, signed.expires_at.min(root.expires_at), root.revoked_at);
     Ok(ActivatedLearningTrustV1 {
         root_id: root.root_id.clone(),
         root_digest,
@@ -187,17 +208,21 @@ fn validate_root(
     if root.scope_digest.is_zero()
         || root.valid_from > root.expires_at
         || now < root.valid_from
-        || now > root.expires_at
+        || root
+            .verifying_key
+            .profile()
+            .expired_at(now, root.expires_at)
         || root.revoked_at.is_some_and(|at| now >= at)
     {
         return Err(LearningTrustDistributionError::InvalidRoot);
     }
-    let key = VerifyingKey::from_bytes(&root.verifying_key)
+    root.verifying_key
+        .validate()
         .map_err(|_| LearningTrustDistributionError::InvalidRoot)?;
-    if key.is_weak() {
-        return Err(LearningTrustDistributionError::InvalidRoot);
-    }
-    let mut bytes = b"hepta.learning-ledger.trust-root.v1".to_vec();
+    let mut bytes = root.verifying_key.profile().learning_domain(
+        b"hepta.learning-ledger.trust-root.v1",
+        b"hepta.learning-ledger.trust-root.pq.v2",
+    );
     push_id(&mut bytes, &root.root_id);
     bytes.extend_from_slice(root.scope_digest.as_array());
     bytes.extend_from_slice(&root.verifying_key);
@@ -220,7 +245,10 @@ fn distribution_signing_bytes(
     expires_at: u64,
 ) -> Result<Vec<u8>, LearningTrustDistributionError> {
     let verifier = LearningEvidenceVerifierV1::new(distribution.trust.clone())?;
-    let mut bytes = b"hepta.learning-ledger.trust-distribution-signature.v1".to_vec();
+    let mut bytes = verifier.authentication_profile().learning_domain(
+        b"hepta.learning-ledger.trust-distribution-signature.v1",
+        b"hepta.learning-ledger.trust-distribution-signature.pq.v2",
+    );
     push_id(&mut bytes, root_id);
     push_id(&mut bytes, &distribution.distribution_id);
     bytes.extend_from_slice(&distribution.generation.to_be_bytes());
@@ -243,7 +271,10 @@ fn digest_distribution(
     expires_at: u64,
     verifier: &LearningEvidenceVerifierV1,
 ) -> Digest32 {
-    let mut bytes = b"hepta.learning-ledger.trust-distribution.v2".to_vec();
+    let mut bytes = verifier.authentication_profile().learning_domain(
+        b"hepta.learning-ledger.trust-distribution.v2",
+        b"hepta.learning-ledger.trust-distribution.pq.v3",
+    );
     bytes.extend_from_slice(root_digest.as_array());
     push_id(&mut bytes, distribution_id);
     bytes.extend_from_slice(&generation.to_be_bytes());
@@ -273,6 +304,7 @@ pub enum LearningTrustDistributionError {
     NonMonotonicRotation,
     DistributionWindow,
     InvalidSignature,
+    TrustFrontier(codex_hepta_contracts::AuthorityTrustError),
 }
 
 impl fmt::Display for LearningTrustDistributionError {

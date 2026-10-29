@@ -57,7 +57,7 @@ impl Fixture {
             signers.push(TrustedLearningSignerV1 {
                 principal: principals[index].clone(),
                 controller_id: principals[index].principal_id.clone(),
-                verifying_key: keys[index].verifying_key().to_bytes(),
+                verifying_key: keys[index].verifying_key().to_bytes().into(),
                 roles: vec![role],
                 revoked_at: None,
             });
@@ -102,7 +102,7 @@ impl Fixture {
                 issued_at: 45,
                 expires_at: 90,
                 payload_digest: Digest32::ZERO,
-                signature: [0; 64],
+                signature: [0; 64].into(),
             },
         };
         Self {
@@ -132,9 +132,12 @@ impl Fixture {
             issued_at,
             expires_at: 90,
             payload_digest: Digest32::of_bytes(bytes),
-            signature: [0; 64],
+            signature: [0; 64].into(),
         };
-        evidence.signature = self.keys[index].sign(&evidence.signing_bytes()).to_bytes();
+        evidence.signature = self.keys[index]
+            .sign(&evidence.signing_bytes())
+            .to_bytes()
+            .into();
         evidence
     }
     fn attest(&mut self) -> SignedEvaluationEvidenceV1 {
@@ -283,14 +286,14 @@ fn evaluator_and_observer_cannot_share_identity_key_credential_or_controller() {
             TrustedLearningSignerV1 {
                 principal: fixture.principals[0].clone(),
                 controller_id: fixture.principals[0].principal_id.clone(),
-                verifying_key: fixture.keys[0].verifying_key().to_bytes(),
+                verifying_key: fixture.keys[0].verifying_key().to_bytes().into(),
                 roles: vec![LearningEvidenceRoleV1::Generator],
                 revoked_at: None,
             },
             TrustedLearningSignerV1 {
                 principal: fixture.principals[1].clone(),
                 controller_id: fixture.principals[1].principal_id.clone(),
-                verifying_key: fixture.keys[1].verifying_key().to_bytes(),
+                verifying_key: fixture.keys[1].verifying_key().to_bytes().into(),
                 roles: vec![
                     LearningEvidenceRoleV1::Evaluator,
                     LearningEvidenceRoleV1::Observer,

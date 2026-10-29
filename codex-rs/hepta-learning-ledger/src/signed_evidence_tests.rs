@@ -29,7 +29,7 @@ fn signer(
             expires_at: 100,
         },
         controller_id: id(controller),
-        verifying_key: key,
+        verifying_key: key.into(),
         roles: vec![role],
         revoked_at: None,
     }
@@ -73,11 +73,12 @@ fn sign(
         issued_at: 20,
         expires_at: 90,
         payload_digest: Digest32::of_bytes(payload),
-        signature: [0; 64],
+        signature: [0; 64].into(),
     };
     evidence.signature = SigningKey::from_bytes(&[seed; 32])
         .sign(&evidence.signing_bytes())
-        .to_bytes();
+        .to_bytes()
+        .into();
     evidence
 }
 

@@ -138,7 +138,7 @@ impl From<codex_hepta_learning_ledger::DatasetSnapshotReceiptV3> for DatasetSnap
 pub(super) struct TrustedLearningSignerV1Raw {
     pub principal: AuthenticatedPrincipalV1Raw,
     pub controller_id: Id,
-    pub verifying_key: Key,
+    pub verifying_key: LearningKey,
     pub roles: Vec<LearningEvidenceRoleV1Raw>,
     pub revoked_at: Option<u64>,
 }
@@ -227,7 +227,7 @@ pub(super) struct SignedLearningEvidenceV1Raw {
     pub issued_at: u64,
     pub expires_at: u64,
     pub payload_digest: Digest,
-    pub signature: Signature,
+    pub signature: LearningSignature,
 }
 
 impl From<SignedLearningEvidenceV1Raw> for codex_hepta_learning_ledger::SignedLearningEvidenceV1 {

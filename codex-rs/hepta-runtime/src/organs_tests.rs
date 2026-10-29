@@ -379,7 +379,7 @@ fn runtime_canary_observer() -> (
         signers: vec![TrustedLearningSignerV1 {
             principal: principal.clone(),
             controller_id: StableId::new("controller:runtime-topology-canary").expect("controller"),
-            verifying_key: key.verifying_key().to_bytes(),
+            verifying_key: key.verifying_key().to_bytes().into(),
             roles: vec![LearningEvidenceRoleV1::Observer],
             revoked_at: None,
         }],
@@ -415,9 +415,9 @@ fn sign_runtime_canary_observation(
         issued_at: 20,
         expires_at: 90,
         payload_digest: Digest32::of_bytes(&payload),
-        signature: [0; 64],
+        signature: [0; 64].into(),
     };
-    evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes();
+    evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes().into();
     evidence
 }
 

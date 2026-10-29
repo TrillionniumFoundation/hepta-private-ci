@@ -10,8 +10,10 @@ use std::error::Error as StdError;
 use std::io::Read;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::time::Duration;
 
+use codex_hepta_contracts::FinalUseAuthenticationProfile;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::FinalUseRevocations;
@@ -26,9 +28,17 @@ use tokio::time::timeout;
 use crate::native_app_server::TurnStartAuthorityFuture;
 use crate::native_app_server::TurnStartAuthorizer;
 
+mod pq;
+pub use pq::PqFinalUseAuthorizerConfig;
+pub use pq::PqIssuerRequestV2;
+pub use pq::PqIssuerResponseV2;
+
 const AUTHORITY_PORT_SCHEMA_VERSION: u32 = 1;
 const AUTHORITY_PORT_OPERATION: &str = "runtime.codex.turn_start";
 const MAX_CONFIG_BYTES: usize = 64 * 1024;
+// PQ carries up to eight issuer keys, eight feed keys and two independently
+// pinned service SPKIs. The classic profile keeps its original 64 KiB limit.
+const MAX_PQ_CONFIG_BYTES: usize = 256 * 1024;
 const MAX_REQUEST_BYTES: usize = 16 * 1024;
 const MAX_RESPONSE_BYTES: usize = 64 * 1024;
 const MAX_DENIAL_REASON_BYTES: usize = 1024;
@@ -61,13 +71,30 @@ pub struct UnixFinalUseAuthorizer {
     issuer_uid: u32,
     issuer_timeout: Duration,
     authority: FinalUseAuthority,
+    pq: Option<Arc<pq::PqRuntime>>,
 }
 
 impl UnixFinalUseAuthorizer {
+    /// The immutable profile selected by the original authority owner.
+    pub fn authentication_profile(&self) -> FinalUseAuthenticationProfile {
+        self.authority.authentication_profile()
+    }
+
     pub fn open(config_path: &Path) -> Result<Self> {
-        let config: FinalUseAuthorizerConfig =
-            serde_json::from_slice(&read_private_config(config_path)?)?;
-        Self::from_config(config)
+        let bytes = read_private_config(config_path)?;
+        let selector: serde_json::Value = serde_json::from_slice(&bytes)?;
+        match selector.get("authentication_profile") {
+            Some(serde_json::Value::String(profile)) if profile == "ml_dsa65_v2" => {
+                Self::from_pq_config(serde_json::from_slice(&bytes)?)
+            }
+            Some(_) => Err("unsupported final-use authentication profile".into()),
+            None => {
+                if bytes.len() > MAX_CONFIG_BYTES {
+                    return Err("classic final-use authority config exceeds 64 KiB".into());
+                }
+                Self::from_config(serde_json::from_slice(&bytes)?)
+            }
+        }
     }
 
     pub fn from_config(config: FinalUseAuthorizerConfig) -> Result<Self> {
@@ -93,10 +120,14 @@ impl UnixFinalUseAuthorizer {
             issuer_uid: config.issuer_uid,
             issuer_timeout,
             authority,
+            pq: None,
         })
     }
 
     async fn claim_exact(&self, binding: FinalUseBinding) -> Result<VerifiedUseToken> {
+        if self.pq.is_some() {
+            return self.claim_exact_pq(binding).await;
+        }
         let response = self.request_grant(&binding).await?;
         if response.schema_version != AUTHORITY_PORT_SCHEMA_VERSION {
             return Err("unsupported final-use authority response schema".into());
@@ -114,47 +145,48 @@ impl UnixFinalUseAuthorizer {
         }
     }
 
-    #[cfg(unix)]
     async fn request_grant(&self, binding: &FinalUseBinding) -> Result<IssuerResponse> {
-        validate_issuer_socket(&self.issuer_socket, self.issuer_uid)?;
         let request = IssuerRequest {
             schema_version: AUTHORITY_PORT_SCHEMA_VERSION,
             operation: AUTHORITY_PORT_OPERATION.to_string(),
             binding: binding.clone(),
         };
-        let request_bytes = serde_json::to_vec(&request)?;
+        let raw = self
+            .request_port_bytes(&serde_json::to_vec(&request)?)
+            .await?;
+        Ok(serde_json::from_slice(&raw)?)
+    }
+    #[cfg(unix)]
+    async fn request_port_bytes(&self, request_bytes: &[u8]) -> Result<Vec<u8>> {
+        validate_issuer_socket(&self.issuer_socket, self.issuer_uid)?;
         if request_bytes.is_empty() || request_bytes.len() > MAX_REQUEST_BYTES {
             return Err("final-use authority request exceeds its bound".into());
         }
         let request_len = u32::try_from(request_bytes.len())?;
         let exchange = async {
             let mut stream = tokio::net::UnixStream::connect(&self.issuer_socket).await?;
-            let peer = stream.peer_cred()?;
-            validate_issuer_peer_uid(peer.uid(), self.issuer_uid)?;
+            validate_issuer_peer_uid(stream.peer_cred()?.uid(), self.issuer_uid)?;
             stream.write_all(&request_len.to_be_bytes()).await?;
-            stream.write_all(&request_bytes).await?;
+            stream.write_all(request_bytes).await?;
             stream.flush().await?;
-
             let mut length = [0_u8; 4];
             stream.read_exact(&mut length).await?;
-            let response_len = usize::try_from(u32::from_be_bytes(length))?;
-            if response_len == 0 || response_len > MAX_RESPONSE_BYTES {
+            let size = usize::try_from(u32::from_be_bytes(length))?;
+            if size == 0 || size > MAX_RESPONSE_BYTES {
                 return Err::<Vec<u8>, Box<dyn StdError + Send + Sync>>(
                     "final-use authority response exceeds its bound".into(),
                 );
             }
-            let mut response = vec![0_u8; response_len];
+            let mut response = vec![0; size];
             stream.read_exact(&mut response).await?;
             Ok(response)
         };
-        let response = timeout(self.issuer_timeout, exchange)
+        timeout(self.issuer_timeout, exchange)
             .await
-            .map_err(|_| "final-use authority request timed out")??;
-        Ok(serde_json::from_slice(&response)?)
+            .map_err(|_| "final-use authority request timed out")?
     }
-
     #[cfg(not(unix))]
-    async fn request_grant(&self, _binding: &FinalUseBinding) -> Result<IssuerResponse> {
+    async fn request_port_bytes(&self, _request_bytes: &[u8]) -> Result<Vec<u8>> {
         Err("runtime.codex final-use Unix authority port is unsupported on this platform".into())
     }
 }
@@ -204,7 +236,7 @@ fn read_private_config(path: &Path) -> Result<Vec<u8>> {
     }
     let mut file = std::fs::OpenOptions::new()
         .read(true)
-        .custom_flags(libc::O_NOFOLLOW)
+        .custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK)
         .open(path)?;
     let metadata = file.metadata()?;
     let effective_uid = rustix::process::geteuid().as_raw();
@@ -217,12 +249,15 @@ fn read_private_config(path: &Path) -> Result<Vec<u8>> {
             "final-use authority config must be a protected root/owner regular file".into(),
         );
     }
+    if metadata.len() > u64::try_from(MAX_PQ_CONFIG_BYTES)? {
+        return Err("final-use authority config exceeds 256 KiB".into());
+    }
     let mut bytes = Vec::new();
     file.by_ref()
-        .take(u64::try_from(MAX_CONFIG_BYTES + 1)?)
+        .take(u64::try_from(MAX_PQ_CONFIG_BYTES + 1)?)
         .read_to_end(&mut bytes)?;
-    if bytes.len() > MAX_CONFIG_BYTES {
-        return Err("final-use authority config exceeds 64 KiB".into());
+    if bytes.len() > MAX_PQ_CONFIG_BYTES {
+        return Err("final-use authority config exceeds 256 KiB".into());
     }
     Ok(bytes)
 }

@@ -179,7 +179,7 @@ impl Roles {
                 .map(|i| ledger::TrustedLearningSignerV1 {
                     principal: principals[i].clone(),
                     controller_id: id(&format!("local-role-process-{}", processes[i].pid)),
-                    verifying_key: processes[i].key,
+                    verifying_key: processes[i].key.into(),
                     roles: vec![kinds[i]],
                     revoked_at: None,
                 })
@@ -213,9 +213,9 @@ impl Roles {
             issued_at,
             expires_at: self.until,
             payload_digest: Digest32::of_bytes(payload),
-            signature: [0; 64],
+            signature: [0; 64].into(),
         };
-        evidence.signature = self.processes[index].sign(&evidence.signing_bytes());
+        evidence.signature = self.processes[index].sign(&evidence.signing_bytes()).into();
         evidence
     }
     pub fn writer(&mut self, root: &std::path::Path) -> ledger::LedgerWriter {
@@ -224,7 +224,7 @@ impl Roles {
         let root_trust = ledger::LearningTrustRootV1 {
             root_id: id("local-study-root"),
             scope_digest: self.trust.scope_digest,
-            verifying_key: root_key,
+            verifying_key: root_key.into(),
             valid_from: self.from,
             expires_at: self.until,
             revoked_at: None,
@@ -240,9 +240,11 @@ impl Roles {
             root_id: root_trust.root_id.clone(),
             issued_at: now,
             expires_at: self.until,
-            signature: [0; 64],
+            signature: [0; 64].into(),
         };
-        distribution.signature = self.processes[5].sign(&distribution.signing_bytes().unwrap());
+        distribution.signature = self.processes[5]
+            .sign(&distribution.signing_bytes().unwrap())
+            .into();
         let activated =
             ledger::activate_learning_trust(&root_trust, distribution, None, micros()).unwrap();
         let create = |name| {

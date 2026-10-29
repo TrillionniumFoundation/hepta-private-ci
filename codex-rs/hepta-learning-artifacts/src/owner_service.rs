@@ -255,6 +255,8 @@ impl LearningArtifactOwnerService {
         {
             return Err(LearningArtifactOwnerServiceError::RequestMismatch);
         }
+        self.host
+            .verify_presented_head(&request.signed_current_head)?;
 
         let checkpoint = self.host.recover_publication(&request.operation_id)?;
         if let Some(recovery) = checkpoint.as_ref() {
@@ -555,7 +557,7 @@ mod tests {
     fn signer(key: &SigningKey) -> TrustedArtifactSignerV1 {
         TrustedArtifactSignerV1 {
             signer_id: id("owner-authority"),
-            verifying_key: key.verifying_key().to_bytes(),
+            verifying_key: key.verifying_key().to_bytes().into(),
             minimum_authority_epoch: 1,
             maximum_authority_epoch: 10,
             valid_from: 1,
@@ -588,9 +590,9 @@ mod tests {
             lease_generation: 1,
             issued_at: 10,
             expires_at: 1_000,
-            signature: [0; 64],
+            signature: [0; 64].into(),
         };
-        lease.signature = key.sign(&lease.signing_bytes()).to_bytes();
+        lease.signature = key.sign(&lease.signing_bytes()).to_bytes().into();
         lease
     }
 
@@ -646,9 +648,9 @@ mod tests {
                 issued_at: 20,
                 expires_at: 1_000,
             },
-            signature: [0; 64],
+            signature: [0; 64].into(),
         };
-        signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
+        signed.signature = key.sign(&signed.signing_bytes()).to_bytes().into();
         LearningArtifactPublishRequestV1 {
             operation_id: id("operation"),
             admission,
@@ -980,3 +982,7 @@ mod tests {
             .fixture("use reconciled CURRENT");
     }
 }
+
+#[cfg(test)]
+#[path = "owner_pq_tests.rs"]
+mod pq_tests;

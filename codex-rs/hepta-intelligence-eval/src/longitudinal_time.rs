@@ -87,7 +87,10 @@ pub fn longitudinal_evaluation_signing_payload_v3(
     timing: &LongitudinalTimeEvidenceV1,
     minimum_window_micros: u64,
 ) -> Result<Vec<u8>, SignedEvaluationError> {
-    let mut bytes = b"hepta.intelligence-eval.signed-request.v3\0".to_vec();
+    let mut bytes = timing.observer.signature.profile().learning_domain(
+        b"hepta.intelligence-eval.signed-request.v3\0",
+        b"hepta.intelligence-eval.signed-request.pq.v4\0",
+    );
     bytes.extend_from_slice(&evaluation_signing_payload_v2(bundle, roles)?);
     bytes.extend_from_slice(&future_window_signing_payload_v1(
         bundle,
@@ -95,7 +98,11 @@ pub fn longitudinal_evaluation_signing_payload_v3(
         minimum_window_micros,
     )?);
     bytes.extend_from_slice(&timing.observer.signing_bytes());
-    bytes.extend_from_slice(&timing.observer.signature);
+    if timing.observer.signature.profile()
+        == codex_hepta_learning_ledger::LearningAuthenticationProfile::ClassicalV1
+    {
+        bytes.extend_from_slice(&timing.observer.signature);
+    }
     Ok(bytes)
 }
 
@@ -149,7 +156,13 @@ pub fn decide_with_signed_longitudinal_evidence_v3(
         now_unix_micros,
     )?;
     let mut authenticated = authentication.as_array().to_vec();
-    authenticated.extend_from_slice(&timing.observer.signature);
+    if timing.observer.signature.profile()
+        == codex_hepta_learning_ledger::LearningAuthenticationProfile::ClassicalV1
+    {
+        authenticated.extend_from_slice(&timing.observer.signature);
+    } else {
+        authenticated.extend_from_slice(&timing.observer.signing_bytes());
+    }
     Ok(SignedEvaluationDecisionV1 {
         decision: decide_independently_v2(bundle, roles, now_unix_micros)?,
         trust_digest: verifier.trust_digest(),

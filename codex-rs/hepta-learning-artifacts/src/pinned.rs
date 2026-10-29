@@ -14,6 +14,7 @@ use codex_hepta_types::Digest32;
 use crate::ArtifactManifest;
 use crate::ArtifactRegistry;
 use crate::ArtifactStorageError;
+use crate::LearningAuthenticationProfile;
 use crate::RegistrySnapshotReceipt;
 use crate::read_candidate_payload;
 use crate::read_registry_snapshot;
@@ -68,6 +69,8 @@ pub enum PinnedCandidateLoadError {
     PinMismatch,
     /// A current view changed scope, rolled back, or forked accepted history.
     FrontierMismatch,
+    /// The authenticated registry changed its pinned algorithm or owner trust.
+    AuthenticationProfile,
     /// Current lineage is quarantined or revoked.
     Ineligible,
     /// An earlier failed refresh requires a newly admitted consumer.
@@ -84,6 +87,9 @@ impl fmt::Display for PinnedCandidateLoadError {
         match self {
             Self::PinMismatch => formatter.write_str("pinned candidate manifest mismatch"),
             Self::FrontierMismatch => formatter.write_str("candidate registry frontier mismatch"),
+            Self::AuthenticationProfile => {
+                formatter.write_str("candidate authentication trust mismatch")
+            }
             Self::Ineligible => formatter.write_str("candidate lineage is not eligible"),
             Self::Unavailable => formatter.write_str("candidate refresh failed; reload required"),
             Self::CurrentValidity => formatter.write_str("authenticated CURRENT validity ended"),
@@ -97,6 +103,7 @@ impl Error for PinnedCandidateLoadError {
         match self {
             Self::PinMismatch
             | Self::FrontierMismatch
+            | Self::AuthenticationProfile
             | Self::Ineligible
             | Self::Unavailable
             | Self::CurrentValidity => None,
@@ -146,6 +153,7 @@ pub struct VerifiedCurrentRegistryViewV1 {
     witness_digest: Digest32,
     trust_digest: Digest32,
     validity: CurrentRegistryValidityV1,
+    authentication_profile: LearningAuthenticationProfile,
 }
 
 /// Original signed CURRENT and signer time bounds, retained after verification.
@@ -157,6 +165,7 @@ pub struct CurrentRegistryValidityV1 {
     verified_at: u64,
     expires_at: u64,
     signer_revoked_at: Option<u64>,
+    authentication_profile: LearningAuthenticationProfile,
 }
 
 impl CurrentRegistryValidityV1 {
@@ -169,14 +178,23 @@ impl CurrentRegistryValidityV1 {
             verified_at,
             expires_at,
             signer_revoked_at,
+            authentication_profile: LearningAuthenticationProfile::ClassicalV1,
         }
+    }
+
+    pub(crate) const fn with_authentication_profile(
+        mut self,
+        profile: LearningAuthenticationProfile,
+    ) -> Self {
+        self.authentication_profile = profile;
+        self
     }
 
     /// Recheck the original window, including already-known signer revocation.
     /// New upstream revocations still require a freshly verified owner view.
     pub fn validate_at(self, now: u64) -> Result<(), PinnedCandidateLoadError> {
         if now < self.verified_at
-            || now > self.expires_at
+            || self.authentication_profile.expired_at(now, self.expires_at)
             || self
                 .signer_revoked_at
                 .is_some_and(|revoked_at| now >= revoked_at)
@@ -194,6 +212,7 @@ impl VerifiedCurrentRegistryViewV1 {
         witness_digest: Digest32,
         trust_digest: Digest32,
         validity: CurrentRegistryValidityV1,
+        authentication_profile: LearningAuthenticationProfile,
     ) -> Self {
         Self {
             receipt,
@@ -201,6 +220,7 @@ impl VerifiedCurrentRegistryViewV1 {
             witness_digest,
             trust_digest,
             validity,
+            authentication_profile,
         }
     }
 
@@ -217,6 +237,11 @@ impl VerifiedCurrentRegistryViewV1 {
     #[must_use]
     pub const fn trust_digest(&self) -> Digest32 {
         self.trust_digest
+    }
+
+    #[must_use]
+    pub const fn authentication_profile(&self) -> LearningAuthenticationProfile {
+        self.authentication_profile
     }
 
     #[must_use]
@@ -237,6 +262,7 @@ impl fmt::Debug for VerifiedCurrentRegistryViewV1 {
             .field("witness_digest", &self.witness_digest)
             .field("trust_digest", &self.trust_digest)
             .field("validity", &self.validity)
+            .field("authentication_profile", &self.authentication_profile)
             .finish_non_exhaustive()
     }
 }
@@ -250,16 +276,54 @@ impl fmt::Debug for VerifiedCurrentRegistryViewV1 {
 #[derive(Debug)]
 pub struct RevalidatingCandidate {
     candidate: LoadedPinnedCandidate,
+    authentication_profile: LearningAuthenticationProfile,
+    owner_trust_digest: Option<Digest32>,
     unavailable: bool,
 }
 
 impl RevalidatingCandidate {
+    /// Bind a read-only material cache to an opaque authenticated CURRENT view.
+    /// Selection and effect authority remain separate owner responsibilities.
+    pub fn from_authenticated_current(
+        candidate: LoadedPinnedCandidate,
+        current: VerifiedCurrentRegistryViewV1,
+        now: u64,
+    ) -> Result<Self, PinnedCandidateLoadError> {
+        let mut result = Self::from_selection(
+            candidate,
+            current.authentication_profile(),
+            current.trust_digest(),
+        );
+        result.with_current(current, now, |_| ())?;
+        Ok(result)
+    }
+
     #[must_use]
     pub const fn new(candidate: LoadedPinnedCandidate) -> Self {
         Self {
             candidate,
+            authentication_profile: LearningAuthenticationProfile::ClassicalV1,
+            owner_trust_digest: None,
             unavailable: false,
         }
+    }
+
+    pub(crate) const fn from_selection(
+        candidate: LoadedPinnedCandidate,
+        authentication_profile: LearningAuthenticationProfile,
+        owner_trust_digest: Digest32,
+    ) -> Self {
+        Self {
+            candidate,
+            authentication_profile,
+            owner_trust_digest: Some(owner_trust_digest),
+            unavailable: false,
+        }
+    }
+
+    #[must_use]
+    pub const fn authentication_profile(&self) -> LearningAuthenticationProfile {
+        self.authentication_profile
     }
 
     #[must_use]
@@ -278,6 +342,14 @@ impl RevalidatingCandidate {
         now: u64,
         consume: impl FnOnce(&[u8]) -> T,
     ) -> Result<T, PinnedCandidateLoadError> {
+        if current.authentication_profile != self.authentication_profile
+            || self
+                .owner_trust_digest
+                .is_some_and(|expected| current.trust_digest != expected)
+        {
+            self.unavailable = true;
+            return Err(PinnedCandidateLoadError::AuthenticationProfile);
+        }
         if let Err(error) = current.validity.validate_at(now) {
             self.unavailable = true;
             return Err(error);

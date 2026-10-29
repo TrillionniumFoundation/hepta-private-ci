@@ -8,8 +8,13 @@ use codex_hepta_intuition::*;
 use codex_hepta_learning_ledger::*;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
-use ed25519_dalek::Signer;
-use ed25519_dalek::SigningKey;
+
+#[path = "evaluated_shadow_test_signer.rs"]
+mod signer;
+use signer::FixtureSigner;
+
+#[path = "evaluated_shadow_pq_tests.rs"]
+mod pq_tests;
 
 pub(super) fn id(text: &str) -> StableId {
     StableId::new(text).unwrap()
@@ -105,9 +110,13 @@ pub(super) struct Fixture {
 
 impl Fixture {
     pub fn new() -> Self {
+        Self::with_profile(LearningAuthenticationProfile::ClassicalV1)
+    }
+
+    fn with_profile(profile: LearningAuthenticationProfile) -> Self {
         let keys = [
-            SigningKey::from_bytes(&[11; 32]),
-            SigningKey::from_bytes(&[22; 32]),
+            FixtureSigner::from_seed(profile, /*seed*/ 11),
+            FixtureSigner::from_seed(profile, /*seed*/ 22),
         ];
         let principals: Vec<_> = keys
             .iter()
@@ -115,7 +124,7 @@ impl Fixture {
             .map(|(i, key)| AuthenticatedPrincipalV1 {
                 principal_id: id(&format!("signer-{i}")),
                 credential_chain_digest: digest(&format!("credential-{i}")),
-                signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
+                signing_key_digest: Digest32::of_bytes(&key.verification_key()),
                 scope_digest: digest("scope"),
                 authority_epoch: 1,
                 authenticated_at: 10,
@@ -133,7 +142,7 @@ impl Fixture {
                 .map(|(i, (principal, key))| TrustedLearningSignerV1 {
                     principal: principal.clone(),
                     controller_id: principal.principal_id.clone(),
-                    verifying_key: key.verifying_key().to_bytes(),
+                    verifying_key: key.verification_key(),
                     roles: vec![if i == 0 {
                         LearningEvidenceRoleV1::Generator
                     } else {
@@ -143,7 +152,14 @@ impl Fixture {
                 })
                 .collect(),
         };
-        let verifier = LearningEvidenceVerifierV1::new(trust.clone()).unwrap();
+        let verifier = match profile {
+            LearningAuthenticationProfile::ClassicalV1 => {
+                LearningEvidenceVerifierV1::new(trust.clone()).unwrap()
+            }
+            LearningAuthenticationProfile::MlDsa65V2 => {
+                activate_fixture_trust(&trust).verifier().clone()
+            }
+        };
         let dataset = freeze_dataset_receipt_v3(
             DatasetFreezeRequestV1 {
                 snapshot_id: id("dataset"),
@@ -399,29 +415,7 @@ impl Fixture {
     }
 
     pub fn trust_activation(&self) -> ActivatedLearningTrustV1 {
-        let root_key = SigningKey::from_bytes(&[99; 32]);
-        let root = LearningTrustRootV1 {
-            root_id: id("evaluated-shadow-test-root"),
-            scope_digest: digest("scope"),
-            verifying_key: root_key.verifying_key().to_bytes(),
-            valid_from: 1,
-            expires_at: 200,
-            revoked_at: None,
-        };
-        let mut signed = SignedLearningTrustDistributionV1 {
-            distribution: LearningTrustDistributionV1 {
-                distribution_id: id("evaluated-shadow-test-trust"),
-                generation: 1,
-                effective_at: 20,
-                trust: self.trust.clone(),
-            },
-            root_id: root.root_id.clone(),
-            issued_at: 15,
-            expires_at: 90,
-            signature: [0; 64],
-        };
-        signed.signature = root_key.sign(&signed.signing_bytes().unwrap()).to_bytes();
-        activate_learning_trust(&root, signed, None, 50).unwrap()
+        activate_fixture_trust(&self.trust)
     }
 
     pub fn decision_evidence_for(
@@ -439,7 +433,8 @@ impl Fixture {
             self.candidate_evidence.payload_digest,
         )
         .unwrap();
-        let key = SigningKey::from_bytes(&[11; 32]);
+        let key =
+            FixtureSigner::from_seed(self.verifier.authentication_profile(), /*seed*/ 11);
         sign(
             &self.verifier,
             &self.qualification.generator,
@@ -467,6 +462,40 @@ impl Fixture {
             expected_ledger_head: Digest32::ZERO,
         }
     }
+}
+
+fn signed_trust_distribution(
+    trust: &LearningEvidenceTrustV1,
+) -> (LearningTrustRootV1, SignedLearningTrustDistributionV1) {
+    let profile = trust.signers[0].verifying_key.profile();
+    let root_key = FixtureSigner::from_seed(profile, /*seed*/ 99);
+    let root = LearningTrustRootV1 {
+        root_id: id("evaluated-shadow-test-root"),
+        scope_digest: digest("scope"),
+        verifying_key: root_key.verification_key(),
+        valid_from: 1,
+        expires_at: 200,
+        revoked_at: None,
+    };
+    let mut signed = SignedLearningTrustDistributionV1 {
+        distribution: LearningTrustDistributionV1 {
+            distribution_id: id("evaluated-shadow-test-trust"),
+            generation: 1,
+            effective_at: 20,
+            trust: trust.clone(),
+        },
+        root_id: root.root_id.clone(),
+        issued_at: 15,
+        expires_at: 90,
+        signature: root_key.placeholder(),
+    };
+    signed.signature = root_key.sign(&signed.signing_bytes().unwrap());
+    (root, signed)
+}
+
+fn activate_fixture_trust(trust: &LearningEvidenceTrustV1) -> ActivatedLearningTrustV1 {
+    let (root, signed) = signed_trust_distribution(trust);
+    activate_learning_trust(&root, signed, /*previous*/ None, /*now*/ 50).unwrap()
 }
 
 fn temporal_plan(name: &str, objective_digest: Digest32) -> TemporalEvaluationPlan {
@@ -582,7 +611,7 @@ fn provider_inputs(snapshot_id: StableId) -> Provider {
 fn sign(
     verifier: &LearningEvidenceVerifierV1,
     principal: &AuthenticatedPrincipalV1,
-    key: &SigningKey,
+    key: &FixtureSigner,
     role: LearningEvidenceRoleV1,
     payload: &[u8],
 ) -> SignedLearningEvidenceV1 {
@@ -597,8 +626,8 @@ fn sign(
         issued_at: 20,
         expires_at: 90,
         payload_digest: Digest32::of_bytes(payload),
-        signature: [0; 64],
+        signature: key.placeholder(),
     };
-    evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes();
+    evidence.signature = key.sign(&evidence.signing_bytes());
     evidence
 }

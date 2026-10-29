@@ -146,7 +146,7 @@ fn real_smollm_material_publishes_and_recovers_through_original_artifact_owner()
         });
     let signer = artifacts::TrustedArtifactSignerV1 {
         signer_id: id("controlled-material-publisher"),
-        verifying_key: public_key,
+        verifying_key: public_key.into(),
         minimum_authority_epoch: 1,
         maximum_authority_epoch: 1,
         valid_from: now,
@@ -174,9 +174,9 @@ fn real_smollm_material_publishes_and_recovers_through_original_artifact_owner()
         lease_generation: 1,
         issued_at: now,
         expires_at: until,
-        signature: [0; 64],
+        signature: [0; 64].into(),
     };
-    lease.signature = key.sign(&lease.signing_bytes()).to_bytes();
+    lease.signature = key.sign(&lease.signing_bytes()).to_bytes().into();
     let binding = hash("controlled-neural-material-storage-v1");
     let mut owner_config = artifacts::LearningArtifactOwnerServiceConfigV1 {
         root: root.clone(),
@@ -269,9 +269,9 @@ fn real_smollm_material_publishes_and_recovers_through_original_artifact_owner()
             issued_at: now,
             expires_at: until,
         },
-        signature: [0; 64],
+        signature: [0; 64].into(),
     };
-    signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
+    signed.signature = key.sign(&signed.signing_bytes()).to_bytes().into();
     let request = artifacts::LearningArtifactPublishRequestV1 {
         operation_id: operation,
         admission,

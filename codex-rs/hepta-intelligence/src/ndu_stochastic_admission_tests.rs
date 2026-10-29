@@ -100,14 +100,14 @@ fn evidence_verifier() -> (LearningEvidenceVerifierV1, SigningKey, SigningKey) {
             TrustedLearningSignerV1 {
                 principal: principal("artifact-producer", &producer_key),
                 controller_id: id("producer-controller"),
-                verifying_key: producer_key.verifying_key().to_bytes(),
+                verifying_key: producer_key.verifying_key().to_bytes().into(),
                 roles: vec![LearningEvidenceRoleV1::Generator],
                 revoked_at: None,
             },
             TrustedLearningSignerV1 {
                 principal: principal("independent-evaluator", &evaluator_key),
                 controller_id: id("evaluator-controller"),
-                verifying_key: evaluator_key.verifying_key().to_bytes(),
+                verifying_key: evaluator_key.verifying_key().to_bytes().into(),
                 roles: vec![LearningEvidenceRoleV1::Evaluator],
                 revoked_at: None,
             },
@@ -136,9 +136,9 @@ fn sign(
         issued_at: 10,
         expires_at: 80,
         payload_digest: Digest32::of_bytes(payload),
-        signature: [0; 64],
+        signature: [0; 64].into(),
     };
-    signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
+    signed.signature = key.sign(&signed.signing_bytes()).to_bytes().into();
     signed
 }
 
@@ -424,7 +424,7 @@ fn verified_current_view(fixture: &Fixture, now: u64) -> VerifiedCurrentRegistry
         .expect("scoped registry");
     let signer = TrustedArtifactSignerV1 {
         signer_id: signer_id.clone(),
-        verifying_key: key.verifying_key().to_bytes(),
+        verifying_key: key.verifying_key().to_bytes().into(),
         minimum_authority_epoch: 1,
         maximum_authority_epoch: 10,
         valid_from: 1,
@@ -456,9 +456,9 @@ fn verified_current_view(fixture: &Fixture, now: u64) -> VerifiedCurrentRegistry
         withdrawal_scope_digest: scope,
         binding: fixture.snapshot_receipt.binding,
         witness,
-        signature: [0; 64],
+        signature: [0; 64].into(),
     };
-    signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
+    signed.signature = key.sign(&signed.signing_bytes()).to_bytes().into();
     verifier
         .verify_current_registry_view(
             File::open(&fixture.snapshot_path).expect("current snapshot"),

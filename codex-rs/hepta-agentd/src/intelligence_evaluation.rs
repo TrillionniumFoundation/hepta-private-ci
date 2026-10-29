@@ -57,7 +57,14 @@ pub fn intelligence_evaluation_binding_payload_v1(
     if digests.iter().any(|digest| digest.is_zero()) {
         return Err(AgentdIntelligenceEvaluationError::Binding);
     }
-    let mut bytes = b"hepta.agentd.evaluation-use.v1\0".to_vec();
+    let profile = evidence.generator_plan.signature.profile();
+    if profile != evidence.evaluator_bundle.signature.profile() {
+        return Err(AgentdIntelligenceEvaluationError::Binding);
+    }
+    let mut bytes = profile.learning_domain(
+        b"hepta.agentd.evaluation-use.v1\0",
+        b"hepta.agentd.evaluation-use.pq.v2\0",
+    );
     for id in [&binding.run_id, &binding.selected_candidate_id] {
         let length = u64::try_from(id.as_str().len())
             .map_err(|_| AgentdIntelligenceEvaluationError::Binding)?;
@@ -69,7 +76,9 @@ pub fn intelligence_evaluation_binding_payload_v1(
     }
     for signed in [&evidence.generator_plan, &evidence.evaluator_bundle] {
         bytes.extend_from_slice(Digest32::of_bytes(&signed.signing_bytes()).as_array());
-        bytes.extend_from_slice(&signed.signature);
+        if profile == codex_hepta_learning_ledger::LearningAuthenticationProfile::ClassicalV1 {
+            bytes.extend_from_slice(&signed.signature);
+        }
     }
     Ok(bytes)
 }
@@ -135,11 +144,19 @@ impl AgentdEvaluationSessionV1 {
         {
             return Err(AgentdIntelligenceEvaluationError::Ineligible);
         }
-        let mut receipt = b"hepta.agentd.evaluation-consumption.v1\0".to_vec();
+        let profile = self.trust.verifier().authentication_profile();
+        let mut receipt = profile.learning_domain(
+            b"hepta.agentd.evaluation-consumption.v1\0",
+            b"hepta.agentd.evaluation-consumption.pq.v2\0",
+        );
         receipt.extend_from_slice(Digest32::of_bytes(&payload).as_array());
         receipt.extend_from_slice(result.authentication_digest.as_array());
         receipt.extend_from_slice(self.trust.distribution_digest().as_array());
-        receipt.extend_from_slice(&self.signed.use_attestation.signature);
+        if profile == codex_hepta_learning_ledger::LearningAuthenticationProfile::ClassicalV1 {
+            receipt.extend_from_slice(&self.signed.use_attestation.signature);
+        } else {
+            receipt.extend_from_slice(&self.signed.use_attestation.signing_bytes());
+        }
         Ok(Digest32::of_bytes(&receipt))
     }
 }

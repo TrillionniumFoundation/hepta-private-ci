@@ -38,10 +38,12 @@ impl ArtifactOwnerCurrentReaderV1 {
         {
             return Err(ArtifactOwnerHostError::CurrentObservationFence);
         }
+        let verifier = ArtifactOwnerVerifierV1::new(trust)?;
+        authentication::verify_namespace(root, verifier.authentication_profile())?;
         let observation_fence = owner_observation::open_existing(root)?;
         Ok(Self {
             root: root.to_owned(),
-            verifier: ArtifactOwnerVerifierV1::new(trust)?,
+            verifier,
             required_current_head,
             observation_fence,
         })

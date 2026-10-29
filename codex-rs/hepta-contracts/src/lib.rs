@@ -11,8 +11,17 @@ pub mod authbus_b5;
 #[cfg(test)]
 #[path = "authbus_tests.rs"]
 mod authbus_tests;
+mod authority_authentication;
 pub mod authority_lease;
 pub mod authority_trust;
+pub mod authority_trust_unix;
+mod learning_authentication;
+pub mod pq_auth;
+pub use authority_authentication::FinalUseAuthenticationProfile;
+pub use authority_authentication::PqAuthorityTrustKey;
+pub use learning_authentication::LearningAuthenticationProfile;
+pub use learning_authentication::LearningSignature;
+pub use learning_authentication::LearningVerificationKey;
 #[cfg(test)]
 mod callers_manifest_tests;
 mod canonical;
@@ -62,6 +71,7 @@ pub use final_use_control::FinalUseRevocationReceipt;
 pub use final_use_control::FinalUseRevocationUpdate;
 pub use final_use_control::FinalUseTrustKey;
 pub use final_use_control::MAX_REVOCATION_FEED_LIFETIME_MS;
+pub use final_use_control::PqFinalUseRevocationNodeTrust;
 pub use final_use_control::SignedFinalUseApproval;
 pub use final_use_control::SignedFinalUseRevocationAck;
 pub use final_use_control::SignedFinalUseRevocationUpdate;
@@ -313,3 +323,5 @@ pub use receipt::PolicyStamp;
 pub use receipt::Sha256Digest;
 pub use receipt::ToolAction;
 pub use receipt::ToolActionSource;
+
+pub use learning_authentication::LearningTrustFrontier;

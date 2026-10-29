@@ -564,7 +564,7 @@ fn build_verifier(
             Ok(TrustedLearningSignerV1 {
                 principal: principal(&signer.principal)?,
                 controller_id: stable_id(&signer.controller_id, "signer controller id")?,
-                verifying_key: parse_hex_32(&signer.verifying_key_hex, "verifying key")?,
+                verifying_key: parse_hex_32(&signer.verifying_key_hex, "verifying key")?.into(),
                 roles: signer
                     .roles
                     .iter()

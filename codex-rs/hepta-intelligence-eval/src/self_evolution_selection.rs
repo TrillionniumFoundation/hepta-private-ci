@@ -135,10 +135,18 @@ pub struct VerifiedSelfEvolutionSelectionV1 {
 }
 
 impl VerifiedSelfEvolutionSelectionV1 {
+    #[must_use]
+    pub fn authentication_profile(
+        &self,
+    ) -> codex_hepta_learning_ledger::LearningAuthenticationProfile {
+        self.selector.authentication_profile()
+    }
+
     /// Recheck the admitted role lifetimes at each bounded consumption. This
     /// uses the original immutable trust snapshot; the host still owns fresh
     /// trust/revocation distribution and must reload after a trust change.
     pub fn validate_at(&self, now: u64) -> Result<(), SelfEvolutionSelectionError> {
+        let now = self.selector.validate_at(now)?;
         validate_retained_product_at(
             &self.receipt,
             self.product_qualification.as_deref(),
@@ -242,6 +250,9 @@ pub fn prepare_self_evolution_selection_v1(
 ) -> Result<PreparedSelfEvolutionSelectionV1, SelfEvolutionSelectionError> {
     validate_policy(policy)?;
     validate_request(policy, &request)?;
+    if ledger_snapshot.authentication_profile() != verifier.authentication_profile() {
+        return Err(SelfEvolutionSelectionError::BindingMismatch);
+    }
     verify_dataset_snapshot_receipt_against_ledger_v3(dataset_receipt, ledger_snapshot, now)?;
     if dataset_receipt.snapshot.source_record_digests.len()
         < policy.minimum_dataset_records as usize
@@ -418,11 +429,17 @@ pub fn admit_self_evolution_selection_v1(
         verify_verified_role_separation(&selector, role, now)?;
     }
     let selector_evidence_digest = Digest32::of_bytes(&selector_evidence.signing_bytes());
-    let mut digest_bytes =
-        b"hepta.intelligence-eval.self-evolution-selection-receipt.v1\0".to_vec();
+    let mut digest_bytes = verifier.authentication_profile().learning_domain(
+        b"hepta.intelligence-eval.self-evolution-selection-receipt.v1\0",
+        b"hepta.intelligence-eval.self-evolution-selection-receipt.pq.v2\0",
+    );
     digest_bytes.extend_from_slice(&payload);
     digest_bytes.extend_from_slice(selector_evidence_digest.as_array());
-    digest_bytes.extend_from_slice(&selector_evidence.signature);
+    if selector_evidence.signature.profile()
+        == codex_hepta_learning_ledger::LearningAuthenticationProfile::ClassicalV1
+    {
+        digest_bytes.extend_from_slice(&selector_evidence.signature);
+    }
     Ok(VerifiedSelfEvolutionSelectionV1 {
         product_qualification: prepared.product_qualification,
         candidate_binding: prepared.candidate_binding,
@@ -700,9 +717,9 @@ mod tests {
             issued_at: 20,
             expires_at: 90,
             payload_digest: Digest32::of_bytes(payload),
-            signature: [0; 64],
+            signature: [0; 64].into(),
         };
-        evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes();
+        evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes().into();
         evidence
     }
 
@@ -757,7 +774,7 @@ mod tests {
                 |((name, controller, role, _), key)| TrustedLearningSignerV1 {
                     principal: principal(name, scope, key),
                     controller_id: id(controller),
-                    verifying_key: key.verifying_key().to_bytes(),
+                    verifying_key: key.verifying_key().to_bytes().into(),
                     roles: vec![*role],
                     revoked_at: if *role == LearningEvidenceRoleV1::Selector {
                         match revocation {

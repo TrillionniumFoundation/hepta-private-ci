@@ -109,6 +109,56 @@ consumer. If the consumer reports failure after entry, the outcome is
 `ConsumerIndeterminate`; do not infer no effect or blindly repeat it.
 `lease_lifecycle.rs` now provides a durable metadata-only lifecycle owner for issue/renew/revoke intents and observations. It enforces operation-id idempotency, semantic-conflict rejection, explicit Unknown states, restart recovery and provider-observation reconciliation. It deliberately does not dispatch provider mutation APIs: the OpenBao compatibility registry still marks dynamic lease issuance/renew/revoke as a blocking partial surface, so provider-native mutation remains fail-closed until that endpoint contract is qualified.
 
+## Explicit PQ registered-consumer profile
+
+`BaoFinalUseHost` can compose the original ML-DSA-65 FinalUse owner with a PQ
+operator-approval verifier and PQ revocation-feed verifier. Its constructor
+requires all three immutable authentication profiles to agree. Incoming schemas
+cannot select a different verifier, and a failed PQ verification cannot fall
+back to a classical key. Issuer, operator and distributor separation still
+depends on the host's independently approved role pins and key custody.
+
+The host retains an opaque signed-feed receipt together with its authority
+epoch, revocation revision and expiry. Feed application and publication of this
+lease are serialized. A freshly authenticated presentation of the same PQ head
+can restore freshness after cold reopen without rewriting the owner/frontier or
+restoring a spent nonce. For that same head the longer valid lease is retained;
+a successor head always installs its own lease. Classical feeds retain their
+strict head-advance requirement.
+
+At admission, one protected time sample must be inside both the grant and feed
+windows. The original owner still verifies signatures and binding and consumes
+the nonce. Immediately before provider dispatch, after provider I/O, and at the
+actual registered-consumer entry, the host also requires the real token's
+claimed epoch/revision to match the authenticated lease and current owner.
+Normal nonce updates do not invalidate a lease: the cache is not bound to the
+entire mutable frontier digest.
+
+These checks distinguish three outcomes:
+
+- Proof or initial-window refusal occurs before claim or provider dispatch.
+- Refusal after a durable claim keeps its nonce consumed and sends no provider
+  request if the refusal is at the pre-dispatch gate.
+- Refusal after provider I/O prevents the registered callback but cannot erase
+  the request that already occurred or authorize an automatic retry.
+
+Lease/owner locks are not held across network awaits or user callbacks. The
+crate-private client path carries the original token's claimed head into the
+final callback; it never substitutes a newly observed head for that claim.
+The public lower-level `BaoClient` interface remains available to trusted
+composers with its existing contract. Product code requiring independent
+approval, a signed freshness feed and a closed consumer registry must enter
+through `BaoFinalUseHost`.
+
+The native PQ tests use the original HTTPS client, real signature verification,
+durable authority owner and registered callback, plus controlled test clock and
+frontier services. They cover cold reopen, role/profile substitutions, replay,
+concurrent feed publication, nonoverlapping grant/feed windows, and head changes
+at dispatch and delivery boundaries. Those fixtures do not establish external
+service durability or deployment isolation. Existing AuthBus authorization,
+settlement and HTTPS peer identity retain their own profiles; this composition
+does not make the entire Bao product post-quantum.
+
 ## Verification
 
 Targeted tests cover a real loopback TLS exchange, exact request headers and

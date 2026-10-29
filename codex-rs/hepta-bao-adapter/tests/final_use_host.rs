@@ -4,6 +4,10 @@
 )]
 
 #[cfg(unix)]
+#[path = "final_use_host/pq_tests.rs"]
+mod pq;
+
+#[cfg(unix)]
 mod unix {
     use std::collections::BTreeSet;
     use std::os::unix::fs::PermissionsExt;
@@ -43,17 +47,17 @@ mod unix {
     use tokio::net::TcpListener;
     use tokio_rustls::TlsAcceptor;
 
-    type TestError = Box<dyn std::error::Error + Send + Sync>;
+    pub(super) type TestError = Box<dyn std::error::Error + Send + Sync>;
 
     #[derive(Debug)]
-    struct ManualClock(AtomicU64);
+    pub(super) struct ManualClock(AtomicU64);
 
     impl ManualClock {
-        fn new(now_unix_ms: u64) -> Self {
+        pub(super) fn new(now_unix_ms: u64) -> Self {
             Self(AtomicU64::new(now_unix_ms))
         }
 
-        fn set(&self, now_unix_ms: u64) {
+        pub(super) fn set(&self, now_unix_ms: u64) {
             self.0.store(now_unix_ms, Ordering::SeqCst);
         }
     }
@@ -64,7 +68,7 @@ mod unix {
         }
     }
 
-    async fn delayed_server(
+    pub(super) async fn delayed_server(
         body: String,
         before_body: impl FnOnce() + Send + 'static,
     ) -> Result<
@@ -405,5 +409,40 @@ mod unix {
             ))
         );
         let _ = fixture.approver;
+    }
+
+    #[test]
+    fn classic_bao_still_requires_a_revocation_head_advance() {
+        let fixture = fixture("model-provider", "model-provider");
+        let distributor = SigningKey::from_bytes(&[73; 32]);
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_millis() as u64;
+        let update = FinalUseRevocationUpdate::new(
+            "revocation-distributor".into(),
+            FinalUseRevocations {
+                authority_epoch: 5,
+                revision: 2,
+                revoked_grant_ids: BTreeSet::new(),
+            },
+            now - 1_000,
+            now + 30_000,
+        );
+        let signed = SignedFinalUseRevocationUpdate {
+            signature: distributor
+                .sign(&update.signing_bytes().unwrap())
+                .to_bytes()
+                .to_vec(),
+            update,
+        };
+        assert_eq!(
+            fixture.host.apply_revocation_update(&signed),
+            Err(BaoFinalUseHostError::Control(
+                FinalUseControlError::Authority(
+                    codex_hepta_contracts::FinalUseError::StaleRevocationHead
+                )
+            ))
+        );
     }
 }

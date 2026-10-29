@@ -16,6 +16,7 @@ use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::FinalUseError;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_contracts::VerifiedUseToken;
 use codex_hepta_contracts::claim_final_use;
 use codex_hepta_contracts::deliver_final_use;
 use codex_hepta_types::Digest32;
@@ -378,7 +379,13 @@ impl BaoClient {
         consumer: impl FnOnce(&[u8]) -> Result<(), ()>,
     ) -> Result<BaoSecretReceipt, BaoClientError> {
         match self
-            .consume_kv_v2_guarded(authority, grant, request, consumer)
+            .consume_kv_v2_guarded(
+                authority,
+                grant,
+                request,
+                |_| Ok(()),
+                move |secret, _head| consumer(secret),
+            )
             .await?
         {
             Ok(receipt) => Ok(receipt),
@@ -386,15 +393,16 @@ impl BaoClient {
         }
     }
 
-    /// Crate-private typed final-delivery gate used by the registered host.
-    /// Provider I/O and secret validation complete first, then kernel authority
-    /// is revalidated and this gate executes at the final consumer boundary.
+    /// Crate-private host gates immediately after claim and at final delivery.
+    /// The dispatch gate runs synchronously before any provider I/O; no host
+    /// lock is held across await. Kernel authority is checked again at delivery.
     pub(crate) async fn consume_kv_v2_guarded<E>(
         &self,
         authority: &FinalUseAuthority,
         grant: &SignedFinalUseGrant,
         request: &BaoReadRequest,
-        consumer: impl FnOnce(&[u8]) -> Result<(), E>,
+        admit: impl Fn(&VerifiedUseToken) -> Result<(), E>,
+        consumer: impl FnOnce(&[u8], (u64, u64)) -> Result<(), E>,
     ) -> Result<Result<BaoSecretReceipt, E>, BaoClientError> {
         let binding = self.binding(request)?;
         let mut url = self.origin.clone();
@@ -426,6 +434,10 @@ impl BaoClient {
         }
         let verified =
             claim_final_use(authority, grant, &binding).map_err(BaoClientError::Authority)?;
+        if let Err(error) = admit(&verified) {
+            // The durable nonce remains spent after a failed admission check.
+            return Ok(Err(error));
+        }
         let mut response = network_request.send().await.map_err(transport_error)?;
         match response.status() {
             StatusCode::OK => {}
@@ -469,8 +481,17 @@ impl BaoClient {
             version: request.version,
             secret_bytes: secret.len(),
         };
+        if let Err(error) = admit(&verified) {
+            return Ok(Err(error));
+        }
+        let claimed_head = (
+            verified.claimed_authority_epoch(),
+            verified.claimed_revocation_revision(),
+        );
         match deliver_final_use(authority, verified, &binding, || {
-            consumer(secret.as_bytes())
+            // Carry the actual opaque claim identity through the owner callback;
+            // the host must not substitute a newer lease after the precheck.
+            consumer(secret.as_bytes(), claimed_head)
         })
         .map_err(BaoClientError::Authority)?
         {

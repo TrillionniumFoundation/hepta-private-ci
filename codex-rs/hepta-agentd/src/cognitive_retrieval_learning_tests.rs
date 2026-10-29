@@ -54,7 +54,7 @@ fn trusted(
             expires_at: 100,
         },
         controller_id: id(controller),
-        verifying_key: key.verifying_key().to_bytes(),
+        verifying_key: key.verifying_key().to_bytes().into(),
         roles: vec![role],
         revoked_at: None,
     }
@@ -102,7 +102,7 @@ fn activated_trust() -> ActivatedLearningTrustV1 {
     let root = LearningTrustRootV1 {
         root_id: id("learning-root"),
         scope_digest: digest("scope"),
-        verifying_key: key.verifying_key().to_bytes(),
+        verifying_key: key.verifying_key().to_bytes().into(),
         valid_from: 1,
         expires_at: 200,
         revoked_at: None,
@@ -117,11 +117,12 @@ fn activated_trust() -> ActivatedLearningTrustV1 {
         root_id: root.root_id.clone(),
         issued_at: 15,
         expires_at: 90,
-        signature: [0; 64],
+        signature: [0; 64].into(),
     };
     signed.signature = key
         .sign(&signed.signing_bytes().expect("signing bytes"))
-        .to_bytes();
+        .to_bytes()
+        .into();
     activate_learning_trust(&root, signed, None, 50).expect("activate trust")
 }
 

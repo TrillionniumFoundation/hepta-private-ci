@@ -23,6 +23,8 @@ use crate::CurrentCognitiveRegistry;
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct CognitiveCurrentOwnerDescriptorV1 {
+    #[serde(default = "classical_profile")]
+    pub authentication_profile: artifacts::LearningAuthenticationProfile,
     pub root: PathBuf,
     pub trust: ArtifactTrustDescriptorV1,
     pub required_current_head: CurrentHeadDescriptorV1,
@@ -69,15 +71,25 @@ pub(crate) struct CurrentHeadDescriptorV1 {
     signature_hex: String,
 }
 
-struct ProcessCurrentOwnerV1(artifacts::ArtifactOwnerCurrentReaderV1);
+struct ProcessCurrentOwnerV1 {
+    reader: artifacts::ArtifactOwnerCurrentReaderV1,
+    clock: Option<Arc<dyn codex_hepta_contracts::AuthorityClock>>,
+}
 
 impl CurrentCognitiveRegistry for ProcessCurrentOwnerV1 {
+    fn authority_clock(&self) -> Option<Arc<dyn codex_hepta_contracts::AuthorityClock>> {
+        self.clock.clone()
+    }
+
     fn current(&self) -> Result<artifacts::VerifiedCurrentRegistryViewV1, String> {
-        let now = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map_err(|error| error.to_string())?
-            .as_secs();
-        self.0
+        let now = match &self.clock {
+            Some(clock) => clock.now_unix_ms().map_err(|error| error.to_string())? / 1_000,
+            None => SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .map_err(|error| error.to_string())?
+                .as_secs(),
+        };
+        self.reader
             .current_registry_view(now)
             .map_err(|error| error.to_string())
     }
@@ -87,7 +99,15 @@ pub(crate) fn load_current_cognitive_owner_v1(
     descriptor: CognitiveCurrentOwnerDescriptorV1,
     agent_home: &Path,
     now_secs: u64,
+    clock: Option<Arc<dyn codex_hepta_contracts::AuthorityClock>>,
 ) -> Result<Arc<dyn CurrentCognitiveRegistry>, AgentdError> {
+    if descriptor.authentication_profile == artifacts::LearningAuthenticationProfile::MlDsa65V2
+        && clock.is_none()
+    {
+        return Err(AgentdError::Invalid(
+            "PQ CURRENT requires a protected clock".to_owned(),
+        ));
+    }
     require_external_canonical_path(&descriptor.root, agent_home, /*directory*/ true)?;
     // Original owner open can bootstrap directories. Process installation must
     // reopen an existing store; a missing backup is not permission to bootstrap.
@@ -112,19 +132,24 @@ pub(crate) fn load_current_cognitive_owner_v1(
     )?;
     let reader = artifacts::ArtifactOwnerCurrentReaderV1::open(
         descriptor.root,
-        descriptor.trust.native()?,
-        descriptor.required_current_head.native()?,
+        descriptor.trust.native(descriptor.authentication_profile)?,
+        descriptor
+            .required_current_head
+            .native(descriptor.authentication_profile)?,
     )
     .map_err(|error| AgentdError::Invalid(error.to_string()))?;
     // This also checks ACK uncertainty and that a real nonempty CURRENT exists.
     reader
         .current_registry_view(now_secs)
         .map_err(|error| AgentdError::Invalid(error.to_string()))?;
-    Ok(Arc::new(ProcessCurrentOwnerV1(reader)))
+    Ok(Arc::new(ProcessCurrentOwnerV1 { reader, clock }))
 }
 
 impl ArtifactTrustDescriptorV1 {
-    fn native(self) -> Result<artifacts::ArtifactOwnerTrustV1, AgentdError> {
+    fn native(
+        self,
+        profile: artifacts::LearningAuthenticationProfile,
+    ) -> Result<artifacts::ArtifactOwnerTrustV1, AgentdError> {
         if self.writer_signers.len() > 32 || self.head_signers.len() > 32 {
             return Err(AgentdError::Invalid(
                 "artifact trust exceeds signer bound".to_owned(),
@@ -139,22 +164,34 @@ impl ArtifactTrustDescriptorV1 {
             writer_signers: self
                 .writer_signers
                 .into_iter()
-                .map(ArtifactSignerDescriptorV1::native)
+                .map(|signer| signer.native(profile))
                 .collect::<Result<_, _>>()?,
             head_signers: self
                 .head_signers
                 .into_iter()
-                .map(ArtifactSignerDescriptorV1::native)
+                .map(|signer| signer.native(profile))
                 .collect::<Result<_, _>>()?,
         })
     }
 }
 
 impl ArtifactSignerDescriptorV1 {
-    fn native(self) -> Result<artifacts::TrustedArtifactSignerV1, AgentdError> {
+    fn native(
+        self,
+        profile: artifacts::LearningAuthenticationProfile,
+    ) -> Result<artifacts::TrustedArtifactSignerV1, AgentdError> {
         Ok(artifacts::TrustedArtifactSignerV1 {
             signer_id: stable_id(self.signer_id)?,
-            verifying_key: hex(&self.verifying_key_hex)?,
+            verifying_key: match profile {
+                artifacts::LearningAuthenticationProfile::ClassicalV1 => {
+                    hex::<32>(&self.verifying_key_hex)?.into()
+                }
+                artifacts::LearningAuthenticationProfile::MlDsa65V2 => {
+                    artifacts::LearningVerificationKey::MlDsa65V2(
+                        hex::<1974>(&self.verifying_key_hex)?.to_vec(),
+                    )
+                }
+            },
             minimum_authority_epoch: self.minimum_authority_epoch,
             maximum_authority_epoch: self.maximum_authority_epoch,
             valid_from: self.valid_from,
@@ -165,7 +202,10 @@ impl ArtifactSignerDescriptorV1 {
 }
 
 impl CurrentHeadDescriptorV1 {
-    fn native(self) -> Result<artifacts::SignedCurrentArtifactHeadV1, AgentdError> {
+    fn native(
+        self,
+        profile: artifacts::LearningAuthenticationProfile,
+    ) -> Result<artifacts::SignedCurrentArtifactHeadV1, AgentdError> {
         Ok(artifacts::SignedCurrentArtifactHeadV1 {
             withdrawal_scope_digest: parse(&self.withdrawal_scope_digest)?,
             binding: parse(&self.binding)?,
@@ -180,7 +220,16 @@ impl CurrentHeadDescriptorV1 {
                 issued_at: self.issued_at,
                 expires_at: self.expires_at,
             },
-            signature: hex(&self.signature_hex)?,
+            signature: match profile {
+                artifacts::LearningAuthenticationProfile::ClassicalV1 => {
+                    hex::<64>(&self.signature_hex)?.into()
+                }
+                artifacts::LearningAuthenticationProfile::MlDsa65V2 => {
+                    artifacts::LearningSignature::MlDsa65V2(
+                        hex::<3309>(&self.signature_hex)?.to_vec(),
+                    )
+                }
+            },
         })
     }
 }
@@ -237,4 +286,8 @@ fn hex<const N: usize>(value: &str) -> Result<[u8; N], AgentdError> {
             .map_err(|error| AgentdError::Invalid(error.to_string()))?;
     }
     Ok(result)
+}
+
+fn classical_profile() -> artifacts::LearningAuthenticationProfile {
+    artifacts::LearningAuthenticationProfile::ClassicalV1
 }

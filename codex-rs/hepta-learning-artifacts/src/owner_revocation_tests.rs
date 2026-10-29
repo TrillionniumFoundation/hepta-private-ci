@@ -45,7 +45,8 @@ pub(super) fn published() -> (
     request.signed_current_head.witness.head_digest = staged.snapshot().head_digest;
     request.signed_current_head.signature = key
         .sign(&request.signed_current_head.signing_bytes())
-        .to_bytes();
+        .to_bytes()
+        .into();
     service.publish(request.clone()).fixture("publish");
     let change = StateChange {
         event_id: id("withdraw-candidate"),
@@ -61,7 +62,7 @@ pub(super) fn published() -> (
     signed.witness.generation = Generation::new(/*value*/ 2).fixture("generation");
     signed.witness.predecessor_head_digest = predecessor;
     signed.witness.head_digest = staged.snapshot().head_digest;
-    signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
+    signed.signature = key.sign(&signed.signing_bytes()).to_bytes().into();
     let revoke = LearningArtifactRevokeRequestV1 {
         operation_id: change.event_id.clone(),
         change,
@@ -262,7 +263,7 @@ fn revocation_refuses_self_evaluation_wrong_key_stale_head_and_changed_reason() 
         let before = service.registry().snapshot();
         match mode {
             "self" => request.change.evaluator_id = id("trainer"),
-            "key" => request.signed_current_head.signature = [0; 64],
+            "key" => request.signed_current_head.signature = [0; 64].into(),
             "head" => request.expected_registry_predecessor_head = digest("wrong predecessor"),
             "reason" => request.change.reason_digest = digest("unsigned reason"),
             "expired" => request.now = 1_001,
@@ -356,7 +357,7 @@ fn actual_owner_revoke_makes_published_descendant_ineligible() {
         .fixture("stage child");
     let mut signed = request.signed_current_head.clone();
     signed.witness.head_digest = staged.snapshot().head_digest;
-    signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
+    signed.signature = key.sign(&signed.signing_bytes()).to_bytes().into();
     service
         .publish(LearningArtifactPublishRequestV1 {
             operation_id: id("child-publication"),
@@ -378,7 +379,8 @@ fn actual_owner_revoke_makes_published_descendant_ineligible() {
     request.signed_current_head.witness.head_digest = staged.snapshot().head_digest;
     request.signed_current_head.signature = key
         .sign(&request.signed_current_head.signing_bytes())
-        .to_bytes();
+        .to_bytes()
+        .into();
     service.revoke(request).fixture("revoke ancestor");
     assert!(!service.registry().is_eligible(&id("child-candidate")));
     assert!(service.current_registry_view(/*now*/ 20).is_ok());
@@ -417,7 +419,7 @@ fn historical_revoke_retry_preserves_later_current_and_bad_retry_cannot_fence_it
     signed.witness.generation = Generation::new(/*value*/ 3).fixture("head generation");
     signed.witness.predecessor_head_digest = predecessor;
     signed.witness.head_digest = staged.snapshot().head_digest;
-    signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
+    signed.signature = key.sign(&signed.signing_bytes()).to_bytes().into();
     let newer = service
         .publish(LearningArtifactPublishRequestV1 {
             operation_id: id("unrelated-publication"),

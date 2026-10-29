@@ -4,11 +4,12 @@
 //! fixed-width append-only journal so the dispatch hot path does not rewrite an
 //! ever-growing JSON set.
 
+use super::FinalUseAuthenticationProfile;
 use super::FinalUseError;
 use super::FinalUseRevocations;
 use super::MAX_CLAIMS;
 use super::State;
-use super::valid_head;
+use super::valid_head_with_profile;
 use serde::Deserialize;
 use serde::Serialize;
 use std::collections::BTreeSet;
@@ -22,6 +23,7 @@ use std::path::Path;
 const STATE_SCHEMA_V1: u32 = 1;
 const STATE_SCHEMA_V2: u32 = 2;
 const STATE_SCHEMA_V3: u32 = 3;
+const STATE_SCHEMA_PQ_V4: u32 = 4;
 const CLAIM_FRAME_BYTES: usize = 8 + 32;
 
 #[derive(Deserialize)]
@@ -71,6 +73,7 @@ struct StoredV3 {
 enum StoreTrust {
     SingleKey([u8; 32]),
     IssuerKeyRing([u8; 32]),
+    PqIssuerKeyRing([u8; 32]),
 }
 
 pub(super) struct Store {
@@ -81,6 +84,20 @@ pub(super) struct Store {
 }
 
 impl Store {
+    pub(super) fn open_pq_key_ring_exact(
+        root: &Path,
+        signer_id: &str,
+        issuer_trust_sha256: [u8; 32],
+        initial: FinalUseRevocations,
+    ) -> Result<(Self, State), FinalUseError> {
+        Self::open_inner(
+            root,
+            signer_id,
+            StoreTrust::PqIssuerKeyRing(issuer_trust_sha256),
+            initial,
+            /*allow_startup_head_advance*/ false,
+        )
+    }
     pub(super) fn open(
         root: &Path,
         signer_id: &str,
@@ -186,7 +203,8 @@ impl Store {
                         false,
                     )
                 }
-                (_, STATE_SCHEMA_V3) => {
+                (StoreTrust::SingleKey(_) | StoreTrust::IssuerKeyRing(_), STATE_SCHEMA_V3)
+                | (StoreTrust::PqIssuerKeyRing(_), STATE_SCHEMA_PQ_V4) => {
                     let stored: StoredV3 =
                         serde_json::from_slice(&bytes).map_err(|_| FinalUseError::InvalidTrust)?;
                     if stored.signer_id != signer_id || stored.trust != trust {
@@ -203,11 +221,19 @@ impl Store {
                 }
                 _ => return Err(FinalUseError::InvalidTrust),
             };
-            if !valid_head(&state.head) || state.used_nonces.len() > MAX_CLAIMS {
+            let profile = match trust {
+                StoreTrust::SingleKey(_) | StoreTrust::IssuerKeyRing(_) => {
+                    FinalUseAuthenticationProfile::ClassicalV1
+                }
+                StoreTrust::PqIssuerKeyRing(_) => FinalUseAuthenticationProfile::MlDsa65V2,
+            };
+            if !valid_head_with_profile(&state.head, profile)
+                || state.used_nonces.len() > MAX_CLAIMS
+            {
                 return Err(FinalUseError::InvalidTrust);
             }
             state.failed = false;
-            if header.schema != STATE_SCHEMA_V3 {
+            if header.schema != STATE_SCHEMA_V3 && header.schema != STATE_SCHEMA_PQ_V4 {
                 // Publish a complete legacy nonce set before its journal-based
                 // snapshot. Retrying an interrupted migration is idempotent.
                 if legacy_snapshot {
@@ -291,7 +317,10 @@ impl Store {
 
     fn persist_snapshot(&self, head: &FinalUseRevocations) -> Result<(), FinalUseError> {
         let stored = StoredV3 {
-            schema: STATE_SCHEMA_V3,
+            schema: match self.trust {
+                StoreTrust::SingleKey(_) | StoreTrust::IssuerKeyRing(_) => STATE_SCHEMA_V3,
+                StoreTrust::PqIssuerKeyRing(_) => STATE_SCHEMA_PQ_V4,
+            },
             signer_id: self.signer_id.clone(),
             trust: self.trust,
             head: head.clone(),

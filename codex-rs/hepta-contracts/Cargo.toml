@@ -19,7 +19,8 @@ workspace = true
 
 [dependencies]
 ed25519-dalek = { workspace = true }
-rustix = { workspace = true, features = ["fs", "process"] }
+ml-dsa = { version = "=0.1.1", default-features = false, features = ["alloc", "zeroize"] }
+rustix = { workspace = true, features = ["event", "fs", "net", "process"] }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 sha2 = { workspace = true }

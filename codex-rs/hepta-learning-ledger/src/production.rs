@@ -163,6 +163,9 @@ pub struct LedgerWriter {
     backend: LedgerBackend,
     witness: LedgerWitnessStore,
     trust: ActivatedLearningTrustV1,
+    trust_frontier_store: Option<
+        std::sync::Arc<dyn codex_hepta_contracts::AuthorityFrontierStore<LearningTrustFrontier>>,
+    >,
 }
 
 impl LedgerWriter {
@@ -192,12 +195,44 @@ impl LedgerWriter {
 
     fn new(
         backend: LedgerBackend,
+        witness: LedgerWitnessStore,
+        trust: ActivatedLearningTrustV1,
+    ) -> Result<Self, ProductionLedgerError> {
+        Self::new_with_trust_frontier(backend, witness, trust, None)
+    }
+
+    fn new_with_trust_frontier(
+        backend: LedgerBackend,
         mut witness: LedgerWitnessStore,
         trust: ActivatedLearningTrustV1,
+        trust_frontier_store: Option<
+            std::sync::Arc<
+                dyn codex_hepta_contracts::AuthorityFrontierStore<LearningTrustFrontier>,
+            >,
+        >,
     ) -> Result<Self, ProductionLedgerError> {
         if backend.binding() != witness.binding() {
             return Err(ProductionLedgerError::Binding("ledger/witness binding"));
         }
+        let profile = trust.verifier().authentication_profile();
+        if backend.core()?.authentication_profile() != profile
+            || witness.authentication_profile() != profile
+        {
+            return Err(ProductionLedgerError::Binding(
+                "ledger/witness/trust authentication profile",
+            ));
+        }
+        trust_frontier::verify_required_frontier(
+            backend.binding(),
+            &trust,
+            trust_frontier_store.as_deref(),
+        )?;
+        let trust = match &trust_frontier_store {
+            Some(store) => trust
+                .with_trust_frontier(backend.binding(), store.clone())
+                .map_err(ProductionLedgerError::TrustFrontier)?,
+            None => trust,
+        };
         let ledger_frontier = backend.frontier()?;
         let witness_frontier = witness.frontier()?;
         if ledger_frontier.anchor.sequence > 0
@@ -213,6 +248,7 @@ impl LedgerWriter {
             backend,
             witness,
             trust,
+            trust_frontier_store,
         })
     }
 
@@ -226,7 +262,13 @@ impl LedgerWriter {
     ) -> Result<Digest32, crate::LearningTrustDistributionError> {
         let next = crate::activate_learning_trust(root, signed, Some(&self.trust), now)?;
         let digest = next.distribution_digest();
-        self.trust = next;
+        self.advance_trust_frontier(&next)?;
+        self.trust = match &self.trust_frontier_store {
+            Some(store) => next
+                .with_trust_frontier(self.backend.binding(), store.clone())
+                .map_err(crate::LearningTrustDistributionError::TrustFrontier)?,
+            None => next,
+        };
         Ok(digest)
     }
 
@@ -246,6 +288,7 @@ impl LedgerWriter {
     }
 
     pub fn snapshot(&self) -> Result<LedgerSnapshot, ProductionLedgerError> {
+        self.ensure_current_trust()?;
         self.backend.snapshot().map_err(Into::into)
     }
 
@@ -300,6 +343,7 @@ impl LedgerWriter {
         expected: LedgerAnchor,
         segment_directory: &File,
     ) -> Result<LedgerSegmentCheckpoint, ProductionLedgerError> {
+        self.ensure_current_trust()?;
         let before = self.witness.frontier()?;
         let LedgerBackend::Segmented(ledger) = &mut self.backend else {
             return Err(ProductionLedgerError::UnsupportedBackend);
@@ -588,6 +632,8 @@ impl LedgerWriter {
         receipt: &DatasetSnapshotReceiptV3,
         now: u64,
     ) -> Result<(), ProductionLedgerError> {
+        self.ensure_current_trust()?;
+        let now = self.trust.verifier().validate_active_at(now)?;
         verify_dataset_snapshot_receipt_v3(receipt, now)?;
         let ledger = self.backend.core()?;
         for digest in &receipt.snapshot.source_record_digests {
@@ -648,7 +694,7 @@ impl LedgerWriter {
             now,
         )?;
         require_role(&verified, LearningEvidenceRoleV1::Evaluator)?;
-        freeze_dataset_from_ledger(&snapshot, plan, verified.principal().clone(), now)
+        freeze_dataset_from_ledger(&snapshot, plan, verified.principal_for_lifetime(), now)
     }
 
     fn commit(
@@ -656,6 +702,7 @@ impl LedgerWriter {
         expected_predecessor: Digest32,
         event: LedgerEvent,
     ) -> Result<AppendReceipt, ProductionLedgerError> {
+        self.ensure_current_trust()?;
         // The durable backend already owns a validated projection. Replaying
         // or copying every historical event here turns N appends into O(N^2)
         // work without adding integrity. Borrow it; preserve exact witness and
@@ -1077,7 +1124,9 @@ fn digest_cut(domain: &[u8], digests: &[Digest32]) -> Digest32 {
 
 fn signed_evidence_digest(evidence: &SignedLearningEvidenceV1) -> Digest32 {
     let mut bytes = evidence.signing_bytes();
-    bytes.extend_from_slice(&evidence.signature);
+    if evidence.signature.profile() == crate::LearningAuthenticationProfile::ClassicalV1 {
+        bytes.extend_from_slice(&evidence.signature);
+    }
     Digest32::of_bytes(&bytes)
 }
 
@@ -1189,6 +1238,7 @@ pub enum ProductionLedgerError {
     Causal(CausalV2Error),
     Dataset(DatasetReceiptError),
     Binding(&'static str),
+    TrustFrontier(codex_hepta_contracts::AuthorityTrustError),
     Role(LearningEvidenceRoleV1),
     AuthenticatedDecisionRequired,
     OutcomeWatermarkRequired,
@@ -1244,3 +1294,11 @@ impl From<DatasetReceiptError> for ProductionLedgerError {
 #[cfg(test)]
 #[path = "production_tests.rs"]
 mod tests;
+
+#[path = "production_trust_frontier.rs"]
+mod trust_frontier;
+pub use trust_frontier::LearningTrustFrontier;
+pub use trust_frontier::learning_trust_frontier;
+pub use trust_frontier::verify_learning_trust_frontier;
+
+pub(crate) use trust_frontier::verify_expected_frontier;

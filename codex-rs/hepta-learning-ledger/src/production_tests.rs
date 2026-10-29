@@ -55,7 +55,7 @@ fn trusted(
             expires_at: 100,
         },
         controller_id: id(controller),
-        verifying_key: key.verifying_key().to_bytes(),
+        verifying_key: key.verifying_key().to_bytes().into(),
         roles: vec![role],
         revoked_at: None,
     }
@@ -119,7 +119,7 @@ fn activated_trust() -> ActivatedLearningTrustV1 {
     let root = LearningTrustRootV1 {
         root_id: id("learning-root"),
         scope_digest: digest("scope"),
-        verifying_key: root_key.verifying_key().to_bytes(),
+        verifying_key: root_key.verifying_key().to_bytes().into(),
         valid_from: 1,
         expires_at: 200,
         revoked_at: None,
@@ -134,9 +134,12 @@ fn activated_trust() -> ActivatedLearningTrustV1 {
         root_id: root.root_id.clone(),
         issued_at: 15,
         expires_at: 90,
-        signature: [0; 64],
+        signature: [0; 64].into(),
     };
-    signed.signature = root_key.sign(&signed.signing_bytes().unwrap()).to_bytes();
+    signed.signature = root_key
+        .sign(&signed.signing_bytes().unwrap())
+        .to_bytes()
+        .into();
     activate_learning_trust(&root, signed, /*previous*/ None, /*now*/ 50).unwrap()
 }
 
@@ -168,11 +171,12 @@ fn sign(
         issued_at: 20,
         expires_at: 90,
         payload_digest: Digest32::of_bytes(payload),
-        signature: [0; 64],
+        signature: [0; 64].into(),
     };
     evidence.signature = SigningKey::from_bytes(&[seed(name); 32])
         .sign(&evidence.signing_bytes())
-        .to_bytes();
+        .to_bytes()
+        .into();
     evidence
 }
 
@@ -874,7 +878,7 @@ fn production_writer_rotates_root_signed_trust_and_rejects_revocation_and_rollba
     let root = LearningTrustRootV1 {
         root_id: id("learning-root"),
         scope_digest: digest("scope"),
-        verifying_key: root_key.verifying_key().to_bytes(),
+        verifying_key: root_key.verifying_key().to_bytes().into(),
         valid_from: 1,
         expires_at: 200,
         revoked_at: None,
@@ -896,9 +900,12 @@ fn production_writer_rotates_root_signed_trust_and_rejects_revocation_and_rollba
         root_id: root.root_id.clone(),
         issued_at: 35,
         expires_at: 90,
-        signature: [0; 64],
+        signature: [0; 64].into(),
     };
-    signed.signature = root_key.sign(&signed.signing_bytes().unwrap()).to_bytes();
+    signed.signature = root_key
+        .sign(&signed.signing_bytes().unwrap())
+        .to_bytes()
+        .into();
     let second = writer
         .rotate_trust(&root, signed.clone(), /*now*/ 50)
         .unwrap();
@@ -994,3 +1001,6 @@ fn product_writer_history_growth_keeps_exact_retry_and_witness_after_reopen() {
 
 #[path = "production_growth_tests.rs"]
 mod growth;
+
+#[path = "production_pq_tests.rs"]
+mod pq;

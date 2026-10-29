@@ -7,6 +7,9 @@ use crate::AuthenticatedPrincipalV1;
 use crate::LearningEvidenceRoleV1;
 use crate::TrustedLearningSignerV1;
 
+#[path = "trust_lifetime_tests.rs"]
+mod lifetime;
+
 fn id(value: &str) -> StableId {
     StableId::new(value.to_owned()).unwrap()
 }
@@ -32,7 +35,7 @@ fn trust(epoch: u64, seed: u8) -> LearningEvidenceTrustV1 {
                 expires_at: 100,
             },
             controller_id: id("controller"),
-            verifying_key: key.verifying_key().to_bytes(),
+            verifying_key: key.verifying_key().to_bytes().into(),
             roles: vec![LearningEvidenceRoleV1::Generator],
             revoked_at: None,
         }],
@@ -43,7 +46,7 @@ fn root(key: &SigningKey) -> LearningTrustRootV1 {
     LearningTrustRootV1 {
         root_id: id("root"),
         scope_digest: digest("scope"),
-        verifying_key: key.verifying_key().to_bytes(),
+        verifying_key: key.verifying_key().to_bytes().into(),
         valid_from: 1,
         expires_at: 200,
         revoked_at: None,
@@ -59,9 +62,12 @@ fn signed_distribution(
         root_id: id("root"),
         issued_at: 15,
         expires_at: 90,
-        signature: [0; 64],
+        signature: [0; 64].into(),
     };
-    signed.signature = root_key.sign(&signed.signing_bytes().unwrap()).to_bytes();
+    signed.signature = root_key
+        .sign(&signed.signing_bytes().unwrap())
+        .to_bytes()
+        .into();
     signed
 }
 
@@ -195,7 +201,10 @@ fn trust_distribution_rejects_retroactive_effective_time() {
         },
     );
     signed.issued_at = 15;
-    signed.signature = root_key.sign(&signed.signing_bytes().unwrap()).to_bytes();
+    signed.signature = root_key
+        .sign(&signed.signing_bytes().unwrap())
+        .to_bytes()
+        .into();
 
     assert_eq!(
         activate_learning_trust(&root, signed, /*previous*/ None, /*now*/ 50).unwrap_err(),
@@ -221,7 +230,7 @@ fn trust_distribution_rejects_root_substitution_and_revocation() {
     let other_root = LearningTrustRootV1 {
         root_id: id("other-root"),
         scope_digest: digest("scope"),
-        verifying_key: other_key.verifying_key().to_bytes(),
+        verifying_key: other_key.verifying_key().to_bytes().into(),
         valid_from: 1,
         expires_at: 200,
         revoked_at: None,

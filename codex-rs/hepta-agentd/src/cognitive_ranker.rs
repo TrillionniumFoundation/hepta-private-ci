@@ -32,6 +32,10 @@ use codex_hepta_types::StableId;
 
 use crate::CognitiveContextItem;
 
+#[path = "cognitive_ranker_time.rs"]
+mod time;
+use time::RankerAuthorityTime;
+
 #[path = "neural_cognitive_ranker.rs"]
 mod neural;
 pub use neural::NeuralCognitiveInferencePortV1;
@@ -73,6 +77,12 @@ impl RankerEvaluationAdmission {
 /// process provider uses `ArtifactOwnerCurrentReaderV1` for this boundary.
 pub trait CurrentCognitiveRegistry: Send + Sync {
     fn current(&self) -> Result<VerifiedCurrentRegistryViewV1, String>;
+
+    /// PQ material consumers must retain the same protected clock used by the
+    /// CURRENT owner. The classic compatibility provider needs no extra clock.
+    fn authority_clock(&self) -> Option<Arc<dyn codex_hepta_contracts::AuthorityClock>> {
+        None
+    }
 }
 
 #[cfg(test)]
@@ -131,7 +141,7 @@ fn verified_fixture_current_view_with_window(
     let scope_digest = Digest32::of_bytes(b"agentd-current-fixture-scope");
     let signer = TrustedArtifactSignerV1 {
         signer_id: signer_id.clone(),
-        verifying_key,
+        verifying_key: verifying_key.into(),
         minimum_authority_epoch: 1,
         maximum_authority_epoch: 10,
         valid_from: 1,
@@ -167,9 +177,9 @@ fn verified_fixture_current_view_with_window(
             issued_at: now,
             expires_at,
         },
-        signature: [0; 64],
+        signature: [0; 64].into(),
     };
-    signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
+    signed.signature = key.sign(&signed.signing_bytes()).to_bytes().into();
     let requirement = RegistryHeadRequirementV1 {
         registry_id,
         minimum_generation: generation,
@@ -191,6 +201,7 @@ pub struct PinnedCognitiveRanker {
     model: CognitiveRankModel,
     current: Arc<dyn CurrentCognitiveRegistry>,
     current_owner_trust_digest: Digest32,
+    time: RankerAuthorityTime,
     admission: RankerEvaluationAdmission,
     source_window: Option<(u64, u64)>,
     cache: Mutex<Option<RevalidatingCandidate>>,
@@ -226,6 +237,7 @@ pub fn cognitive_action_id(item: &CognitiveContextItem) -> Result<StableId, Stri
 }
 
 impl PinnedCognitiveRanker {
+    #[cfg(test)]
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn load(
         owner: AgentId,
@@ -236,6 +248,10 @@ impl PinnedCognitiveRanker {
         model_pin: TabularPayloadPinV1,
         current: Arc<dyn CurrentCognitiveRegistry>,
     ) -> Result<Self, String> {
+        let time = RankerAuthorityTime::new(
+            codex_hepta_contracts::LearningAuthenticationProfile::ClassicalV1,
+            current.as_ref(),
+        )?;
         Self::load_source(
             owner,
             body_generation,
@@ -245,6 +261,7 @@ impl PinnedCognitiveRanker {
             model_pin,
             current,
             None,
+            time,
         )
     }
 
@@ -258,13 +275,14 @@ impl PinnedCognitiveRanker {
         model_pin: TabularPayloadPinV1,
         current: Arc<dyn CurrentCognitiveRegistry>,
         source: Option<LearningArtifactManifestV2>,
+        time: RankerAuthorityTime,
     ) -> Result<Self, String> {
         let source_window = match source {
             Some(source) => {
                 let validated = validate_published_artifact_manifest_v2(
                     &selected.manifest,
                     source,
-                    current_unix_micros()? / 1_000_000,
+                    time.now_unix_micros()? / 1_000_000,
                 )
                 .map_err(|error| error.to_string())?;
                 if !validated
@@ -285,6 +303,7 @@ impl PinnedCognitiveRanker {
                 None
             }
         };
+        time.validate_source_window(source_window, time.now_unix_micros()? / 1_000_000)?;
         if selected.manifest.kind != codex_hepta_learning_artifacts::ArtifactKind::Policy
             || body_generation == 0
             || selected.manifest.content_digest != model_pin.payload_digest
@@ -302,10 +321,15 @@ impl PinnedCognitiveRanker {
         }
         let current_view = current.current()?;
         let current_owner_trust_digest = current_view.trust_digest();
-        let mut candidate = RevalidatingCandidate::new(candidate);
-        candidate
-            .with_current(current_view, current_unix_micros()? / 1_000_000, |_| ())
-            .map_err(|error| error.to_string())?;
+        if current_view.authentication_profile() != time.profile() {
+            return Err("ranker selection and CURRENT authentication profiles differ".to_owned());
+        }
+        let candidate = RevalidatingCandidate::from_authenticated_current(
+            candidate,
+            current_view,
+            time.now_unix_micros()? / 1_000_000,
+        )
+        .map_err(|error| error.to_string())?;
         Ok(Self {
             owner,
             body_generation,
@@ -313,6 +337,7 @@ impl PinnedCognitiveRanker {
             model: CognitiveRankModel::Tabular(model),
             current,
             current_owner_trust_digest,
+            time,
             admission: RankerEvaluationAdmission::HostPinned,
             source_window,
             cache: Mutex::new(Some(candidate)),
@@ -391,9 +416,10 @@ impl PinnedCognitiveRanker {
         selection: &VerifiedSelfEvolutionSelectionV1,
         source: Option<LearningArtifactManifestV2>,
     ) -> Result<Self, String> {
+        let time = RankerAuthorityTime::new(selection.authentication_profile(), current.as_ref())?;
         let receipt = selection.receipt();
         selection
-            .validate_at(current_unix_micros()?)
+            .validate_at(time.now_unix_micros()?)
             .map_err(|error| error.to_string())?;
         let registry = read_registry_snapshot(
             snapshot.try_clone().map_err(|error| error.to_string())?,
@@ -434,6 +460,7 @@ impl PinnedCognitiveRanker {
             model_pin,
             current,
             source,
+            time,
         )?;
         value.admission = RankerEvaluationAdmission::Selected(Box::new(selection.clone()));
         value.revalidate()?;
@@ -454,6 +481,13 @@ impl PinnedCognitiveRanker {
         current: Arc<dyn CurrentCognitiveRegistry>,
         rollback: &VerifiedSelfEvolutionRollbackV1,
     ) -> Result<Self, String> {
+        let time = RankerAuthorityTime::new(
+            rollback.selection().authentication_profile(),
+            current.as_ref(),
+        )?;
+        rollback
+            .validate_at(time.now_unix_micros()?)
+            .map_err(|error| error.to_string())?;
         let receipt = rollback.selection().receipt();
         if selected.manifest.artifact_id != receipt.predecessor_id
             || selected.manifest.generation != receipt.predecessor_generation
@@ -464,7 +498,7 @@ impl PinnedCognitiveRanker {
                 "rollback ranker does not match independently admitted predecessor".to_string(),
             );
         }
-        let mut value = Self::load(
+        let mut value = Self::load_source(
             owner,
             body_generation,
             snapshot,
@@ -472,6 +506,8 @@ impl PinnedCognitiveRanker {
             selected,
             model_pin,
             current,
+            None,
+            time,
         )?;
         value.admission = RankerEvaluationAdmission::Rollback(Box::new(rollback.clone()));
         value.revalidate()?;
@@ -493,8 +529,8 @@ impl PinnedCognitiveRanker {
         let Some(mut candidate) = cache.take() else {
             return Err("ranker unavailable; explicit reload required".to_string());
         };
-        self.admission.validate_at(current_unix_micros()?)?;
-        self.validate_source_window(current_unix_micros()? / 1_000_000)?;
+        self.admission.validate_at(self.time.now_unix_micros()?)?;
+        self.validate_source_window(self.time.now_unix_micros()? / 1_000_000)?;
         // Keep the cache absent on witness errors, panics and failed refreshes.
         // The provider cannot inject a bare file/receipt: the artifact authority
         // must first issue an opaque verified CURRENT view.
@@ -506,7 +542,9 @@ impl PinnedCognitiveRanker {
             );
         }
         let result = candidate
-            .with_current(current, current_unix_micros()? / 1_000_000, |_| consume())
+            .with_current(current, self.time.now_unix_micros()? / 1_000_000, |_| {
+                consume()
+            })
             .map_err(|error| error.to_string())??;
         // Reobserve the original owner before making a computed permutation
         // visible. A publication or revocation while computing must extend the
@@ -518,9 +556,13 @@ impl PinnedCognitiveRanker {
             return Err("ranker CURRENT owner trust changed during read".to_owned());
         }
         candidate
-            .with_current(current_after, current_unix_micros()? / 1_000_000, |_| ())
+            .with_current(
+                current_after,
+                self.time.now_unix_micros()? / 1_000_000,
+                |_| (),
+            )
             .map_err(|error| error.to_string())?;
-        let completed_at = current_unix_micros()?;
+        let completed_at = self.time.now_unix_micros()?;
         current_validity
             .validate_at(completed_at / 1_000_000)
             .map_err(|error| error.to_string())?;
@@ -534,13 +576,7 @@ impl PinnedCognitiveRanker {
     }
 
     fn validate_source_window(&self, now: u64) -> Result<(), String> {
-        if self
-            .source_window
-            .is_some_and(|(created_at, expires_at)| now < created_at || now > expires_at)
-        {
-            return Err("published ranker source validity ended".to_owned());
-        }
-        Ok(())
+        self.time.validate_source_window(self.source_window, now)
     }
 
     pub(crate) fn revalidate(&self) -> Result<(), String> {

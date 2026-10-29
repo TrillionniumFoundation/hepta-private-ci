@@ -239,3 +239,33 @@ pub(crate) async fn independent_test_authorizer(
     });
     Ok((authorizer, issuer))
 }
+
+#[cfg(target_os = "linux")]
+#[test]
+fn pq_selected_artifact_cannot_use_classic_final_use_before_issuer_dispatch() -> Result<()> {
+    let root = tempfile::tempdir()?;
+    std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700))?;
+    let socket = root.path().join("not-contacted.sock");
+    let signer = SigningKey::from_bytes(&[78; 32]);
+    let authorizer = UnixFinalUseAuthorizer::from_config(config(
+        root.path(),
+        socket.clone(),
+        signer.verifying_key().to_bytes(),
+    ))?;
+    assert!(
+        crate::smollm_cognitive_host::validate_final_use_profile(
+            &authorizer,
+            FinalUseAuthenticationProfile::ClassicalV1,
+        )
+        .is_ok()
+    );
+    assert!(
+        crate::smollm_cognitive_host::validate_final_use_profile(
+            &authorizer,
+            FinalUseAuthenticationProfile::MlDsa65V2,
+        )
+        .is_err()
+    );
+    assert!(!socket.exists());
+    Ok(())
+}

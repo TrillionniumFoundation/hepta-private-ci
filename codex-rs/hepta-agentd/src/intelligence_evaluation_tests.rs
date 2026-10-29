@@ -83,9 +83,9 @@ fn sign(
         issued_at: principal.authenticated_at + 10,
         expires_at: principal.expires_at - 10,
         payload_digest: Digest32::of_bytes(payload),
-        signature: [0; 64],
+        signature: [0; 64].into(),
     };
-    evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes();
+    evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes().into();
     evidence
 }
 
@@ -106,7 +106,7 @@ fn activate(trust: LearningEvidenceTrustV1, now: u64) -> ActivatedLearningTrustV
     let root = LearningTrustRootV1 {
         root_id: id("learning-root"),
         scope_digest: trust.scope_digest,
-        verifying_key: root_key.verifying_key().to_bytes(),
+        verifying_key: root_key.verifying_key().to_bytes().into(),
         valid_from: now - 200,
         expires_at: now + 120_000,
         revoked_at: None,
@@ -121,11 +121,12 @@ fn activate(trust: LearningEvidenceTrustV1, now: u64) -> ActivatedLearningTrustV
         root_id: root.root_id.clone(),
         issued_at: now - 150,
         expires_at: now + 60_000,
-        signature: [0; 64],
+        signature: [0; 64].into(),
     };
     distribution.signature = root_key
         .sign(&distribution.signing_bytes().unwrap())
-        .to_bytes();
+        .to_bytes()
+        .into();
     activate_learning_trust(&root, distribution, None, now).unwrap()
 }
 
@@ -230,14 +231,14 @@ pub(super) fn evidence_fixture(
             TrustedLearningSignerV1 {
                 principal: generator.clone(),
                 controller_id: generator.principal_id.clone(),
-                verifying_key: generator_key.verifying_key().to_bytes(),
+                verifying_key: generator_key.verifying_key().to_bytes().into(),
                 roles: vec![LearningEvidenceRoleV1::Generator],
                 revoked_at: None,
             },
             TrustedLearningSignerV1 {
                 principal: evaluator.clone(),
                 controller_id: evaluator.principal_id.clone(),
-                verifying_key: evaluator_key.verifying_key().to_bytes(),
+                verifying_key: evaluator_key.verifying_key().to_bytes().into(),
                 roles: vec![LearningEvidenceRoleV1::Evaluator],
                 revoked_at: None,
             },

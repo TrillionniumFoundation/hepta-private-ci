@@ -234,7 +234,7 @@ fn activated_trust() -> Result<codex_hepta_learning_ledger::ActivatedLearningTru
     let root = LearningTrustRootV1 {
         root_id: id("target-host-learning-root")?,
         scope_digest: scope,
-        verifying_key: root_key.verifying_key().to_bytes(),
+        verifying_key: root_key.verifying_key().to_bytes().into(),
         valid_from: 1,
         expires_at: NOW + 1_000_000,
         revoked_at: None,
@@ -254,7 +254,7 @@ fn activated_trust() -> Result<codex_hepta_learning_ledger::ActivatedLearningTru
                 expires_at: NOW + 1_000_000,
             },
             controller_id: id("target-host-generator-controller")?,
-            verifying_key: generator_key.verifying_key().to_bytes(),
+            verifying_key: generator_key.verifying_key().to_bytes().into(),
             roles: vec![LearningEvidenceRoleV1::Generator],
             revoked_at: None,
         }],
@@ -269,9 +269,9 @@ fn activated_trust() -> Result<codex_hepta_learning_ledger::ActivatedLearningTru
         root_id: root.root_id.clone(),
         issued_at: 5,
         expires_at: NOW + 500_000,
-        signature: [0_u8; 64],
+        signature: [0_u8; 64].into(),
     };
-    signed.signature = root_key.sign(&signed.signing_bytes()?).to_bytes();
+    signed.signature = root_key.sign(&signed.signing_bytes()?).to_bytes().into();
     Ok(activate_learning_trust(&root, signed, None, NOW)?)
 }
 
@@ -320,11 +320,12 @@ fn sign(
         issued_at: 20,
         expires_at: NOW + 100_000,
         payload_digest: Digest32::of_bytes(payload),
-        signature: [0_u8; 64],
+        signature: [0_u8; 64].into(),
     };
     evidence.signature = SigningKey::from_bytes(&[1_u8; 32])
         .sign(&evidence.signing_bytes())
-        .to_bytes();
+        .to_bytes()
+        .into();
     Ok(evidence)
 }
 

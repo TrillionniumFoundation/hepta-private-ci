@@ -57,7 +57,7 @@ receive the request.
 ## 3. Authority endpoint and protected configuration
 
 `hepta-infer-worker --profile native-app-server` requires an explicit
-final-use authority configuration. The current Unix implementation pins:
+final-use authority configuration. The classical Unix profile pins:
 
 - an absolute Unix socket path;
 - the expected issuer UID, checked both on socket metadata and the connected
@@ -77,6 +77,10 @@ The wire exchange is bounded and length framed. The request carries schema
 version, operation `runtime.codex.turn_start`, and the complete
 `FinalUseBinding`. The response carries exactly one signed grant or an
 explicit denial plus the issuer's revocation head.
+
+The PQ profile below has its own signed feed and independently pinned clock and
+frontier services. A received response cannot select or change the configured
+profile.
 
 ## 4. Revocation freshness boundary
 
@@ -143,3 +147,67 @@ signing-key custody, socket/peer ACLs, trusted time and revocation distribution,
 target-host Agentd/App Server identity, real provider terminal stream, any
 delegated tool terminal observation, indeterminate-effect operations, canary,
 rollback, independent acceptance, promotion, and release.
+
+## 8. Explicit ML-DSA-65 profile
+
+An exact `authentication_profile: "ml_dsa65_v2"` selects
+`PqFinalUseAuthorizerConfig`. Missing profile selects the original classical
+configuration; unknown values are rejected. PQ and classical schemas cannot be
+combined. The PQ owner uses the original durable claim and effect-entry path,
+with canonical ML-DSA-65 verification and its distinct durable namespace.
+
+PQ configuration pins the issuer's bounded key ring, an explicit revocation
+distributor and its key ring, the initial revocation head, and explicit
+external clock and FinalUse frontier endpoints. Clock/frontier responses bind
+the requested operation and a fresh challenge to a PQ signature and peer UID.
+The frontier client performs independent load and compare-and-set operations;
+it cannot fall back to a local checkpoint. Clock and frontier sockets must be
+existing, exact canonical paths outside the authority store. The owner and
+issuer paths may have only a missing final component under an existing
+canonical parent. Ancestor symlinks and lexical aliases are rejected before
+remote requests or local owner open. These checks still depend on host control
+of the protected filesystem hierarchy.
+
+Each issuer request is schema 2 and contains a fresh challenge plus the exact
+binding. Its response must echo that challenge, contain a separately signed PQ
+revocation feed, and contain exactly one grant or denial. An accepted grant must
+use schema 2 and sign that same challenge as its nonce. Its expiry may not
+exceed the authenticated feed expiry.
+
+The feed is verified before applying or confirming the durable head. A current
+head can be freshly confirmed after restart without advancing state or
+restoring spent nonces. Different heads retain the owner's strict monotonic
+rules. After the original owner claims a grant, the token's claimed epoch and
+revision must match this request's authenticated feed receipt. This rejects a
+concurrent claim that advanced the owner between feed verification and claim;
+an older feed cannot lend its longer lease to the newer head. Rejection at
+this point leaves the nonce consumed. A later head change is independently
+rejected by the original `VerifiedUseToken::enter()` exact-head check.
+
+| Bound | Classical | PQ |
+| --- | --- | --- |
+| Protected configuration | 64 KiB | 256 KiB |
+| Issuer request frame | 16 KiB | 16 KiB |
+| Issuer response frame | 64 KiB | 64 KiB |
+| Issuer timeout | 1–30,000 ms | 1–30,000 ms |
+| Signature encoding | 64 bytes | 3,309 bytes |
+| Revoked grant capacity | Existing owner limit | 256 |
+
+The resource tests construct maximum key rosters and a maximum feed response
+using the actual Rust DTOs. Configuration and frame prefixes are bounded before
+allocation or parsing. These limits and tests do not establish verification
+throughput, scheduling fairness, or a production denial-of-service budget.
+
+SmolLM preparation additionally requires the selected learning profile to match
+this immutable FinalUse profile before opening its inference journal or
+starting the model. This inference consumer retains its per-use issuer-grant
+requirement; the independent operator-approval requirement belongs to the
+separate Bao registered-consumer composition.
+
+Actual Unix fixture tests exercise signed clock/frontier and issuer exchanges,
+replay/profile refusal, configuration/frame limits, path aliases, and concurrent
+head changes. Their execution results must be recorded for the exact source
+revision. Signed fixture responses do not qualify deployed clock protection,
+CAS durability, service isolation, key custody, or App Server network identity.
+ML-DSA authentication does not provide transport confidentiality or make every
+other Hepta authorization protocol post-quantum.

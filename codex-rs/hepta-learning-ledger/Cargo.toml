@@ -18,6 +18,7 @@ default = []
 qualification-legacy-write = []
 
 [dependencies]
+codex-hepta-contracts = { workspace = true }
 codex-hepta-intuition = { path = "../hepta-intuition" }
 codex-hepta-memory-retrieval = { path = "../hepta-memory-retrieval" }
 codex-hepta-types = { path = "../hepta-types" }

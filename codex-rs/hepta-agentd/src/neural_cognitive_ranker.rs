@@ -137,11 +137,12 @@ impl PinnedCognitiveRanker {
         selection: &VerifiedSelfEvolutionSelectionV1,
         inference: Arc<dyn NeuralCognitiveInferencePortV1>,
     ) -> Result<Self, String> {
+        let time = RankerAuthorityTime::new(selection.authentication_profile(), current.as_ref())?;
         selection
             .require_product_qualification()
             .map_err(|error| error.to_string())?;
         selection
-            .validate_at(current_unix_micros()?)
+            .validate_at(time.now_unix_micros()?)
             .map_err(|error| error.to_string())?;
         let evaluated = selection.receipt();
         let manifest = &selected.manifest;
@@ -182,7 +183,7 @@ impl PinnedCognitiveRanker {
         let source = validate_published_artifact_manifest_v2(
             manifest,
             source_manifest,
-            current_unix_micros()? / 1_000_000,
+            time.now_unix_micros()? / 1_000_000,
         )
         .map_err(|error| error.to_string())?;
         if !source
@@ -192,6 +193,10 @@ impl PinnedCognitiveRanker {
         {
             return Err("neural published source omits its evaluated dataset".to_owned());
         }
+        time.validate_source_window(
+            Some((source.manifest.created_at, source.manifest.expires_at)),
+            time.now_unix_micros()? / 1_000_000,
+        )?;
         let loaded = load_pinned_candidate(snapshot, payload, selected)
             .map_err(|error| error.to_string())?;
         // Keep the exact bytes captured by the existing loader. The inference
@@ -199,10 +204,15 @@ impl PinnedCognitiveRanker {
         let parameters = loaded.bytes().to_vec();
         let current_view: VerifiedCurrentRegistryViewV1 = current.current()?;
         let current_owner_trust_digest = current_view.trust_digest();
-        let mut candidate = RevalidatingCandidate::new(loaded);
-        candidate
-            .with_current(current_view, current_unix_micros()? / 1_000_000, |_| ())
-            .map_err(|error| error.to_string())?;
+        if current_view.authentication_profile() != selection.authentication_profile() {
+            return Err("neural selection and CURRENT authentication profiles differ".to_owned());
+        }
+        let candidate = RevalidatingCandidate::from_authenticated_current(
+            loaded,
+            current_view,
+            time.now_unix_micros()? / 1_000_000,
+        )
+        .map_err(|error| error.to_string())?;
         Ok(Self {
             owner,
             body_generation,
@@ -218,6 +228,7 @@ impl PinnedCognitiveRanker {
             }),
             current,
             current_owner_trust_digest,
+            time,
             admission: RankerEvaluationAdmission::Selected(Box::new(selection.clone())),
             source_window: Some((source.manifest.created_at, source.manifest.expires_at)),
             cache: Mutex::new(Some(candidate)),

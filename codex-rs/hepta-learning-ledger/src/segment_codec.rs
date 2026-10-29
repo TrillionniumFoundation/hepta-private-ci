@@ -11,6 +11,7 @@ use codex_hepta_types::Digest32;
 
 use crate::AppendDisposition;
 use crate::DurableLedgerError;
+use crate::LearningAuthenticationProfile;
 use crate::LearningLedger;
 use crate::LedgerAnchor;
 use crate::LedgerRecovery;
@@ -36,8 +37,13 @@ fn header(
     limits: LedgerSegmentLimits,
     index: usize,
     prior: LedgerAnchor,
+    profile: LearningAuthenticationProfile,
 ) -> Vec<u8> {
-    let mut bytes = MAGIC.to_vec();
+    let mut bytes = match profile {
+        LearningAuthenticationProfile::ClassicalV1 => MAGIC,
+        LearningAuthenticationProfile::MlDsa65V2 => b"HEPTSP03",
+    }
+    .to_vec();
     bytes.extend_from_slice(binding.as_array());
     bytes.extend_from_slice(&(index as u64).to_be_bytes());
     bytes.extend_from_slice(&prior.sequence.to_be_bytes());
@@ -55,22 +61,31 @@ pub(crate) fn initialize(
     limits: LedgerSegmentLimits,
     index: usize,
     prior: LedgerAnchor,
+    profile: LearningAuthenticationProfile,
 ) -> Result<(), DurableLedgerError> {
     if file.metadata()?.len() != 0 {
         return Err(DurableLedgerError::AlreadyInitialized);
     }
-    let bytes = header(binding, limits, index, prior);
+    let bytes = header(binding, limits, index, prior, profile);
     file.seek(SeekFrom::Start(0))?;
     file.write_all(&bytes)
         .and_then(|()| file.sync_all())
         .map_err(|_| DurableLedgerError::Indeterminate)
 }
 
-pub(crate) fn footer(binding: Digest32, index: usize, anchor: LedgerAnchor) -> Vec<u8> {
+pub(crate) fn footer(
+    binding: Digest32,
+    index: usize,
+    anchor: LedgerAnchor,
+    profile: LearningAuthenticationProfile,
+) -> Vec<u8> {
     let mut bytes = vec![0, 0, 0, 0, 255, 255, 255, 255];
     bytes.extend_from_slice(&anchor.sequence.to_be_bytes());
     bytes.extend_from_slice(anchor.chain_digest.as_array());
-    let mut seal_bytes = b"hepta.learning-ledger.segment-seal.v2\0".to_vec();
+    let mut seal_bytes = profile.learning_domain(
+        b"hepta.learning-ledger.segment-seal.v2\0",
+        b"hepta.learning-ledger.segment-seal.pq.v3\0",
+    );
     seal_bytes.extend_from_slice(binding.as_array());
     seal_bytes.extend_from_slice(&(index as u64).to_be_bytes());
     seal_bytes.extend_from_slice(&bytes);
@@ -96,7 +111,7 @@ pub(crate) fn replay(
     file.seek(SeekFrom::Start(0))?;
     let mut stored = [0; HEADER];
     file.read_exact(&mut stored)?;
-    if stored.as_slice() != header(binding, limits, index, prior) {
+    if stored.as_slice() != header(binding, limits, index, prior, core.authentication_profile()) {
         return Err(DurableLedgerError::BindingMismatch);
     }
     let mut cursor = HEADER as u64;
@@ -128,7 +143,13 @@ pub(crate) fn replay(
             bytes[..8].copy_from_slice(&prefix);
             file.read_exact(&mut bytes[8..])?;
             if current_anchor(core).sequence == prior.sequence
-                || bytes.as_slice() != footer(binding, index, current_anchor(core))
+                || bytes.as_slice()
+                    != footer(
+                        binding,
+                        index,
+                        current_anchor(core),
+                        core.authentication_profile(),
+                    )
                 || cursor + FOOTER as u64 != length
             {
                 return Err(DurableLedgerError::Corrupt);

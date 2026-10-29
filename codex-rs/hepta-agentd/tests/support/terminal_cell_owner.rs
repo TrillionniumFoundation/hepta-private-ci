@@ -48,7 +48,7 @@ fn trusted(
             expires_at: 100,
         },
         controller_id: id(controller),
-        verifying_key: key.verifying_key().to_bytes(),
+        verifying_key: key.verifying_key().to_bytes().into(),
         roles: vec![role],
         revoked_at: None,
     }
@@ -112,7 +112,7 @@ fn activated_trust() -> ActivatedLearningTrustV1 {
     let root = LearningTrustRootV1 {
         root_id: id("learning-root"),
         scope_digest: digest("scope"),
-        verifying_key: root_key.verifying_key().to_bytes(),
+        verifying_key: root_key.verifying_key().to_bytes().into(),
         valid_from: 1,
         expires_at: 200,
         revoked_at: None,
@@ -127,9 +127,12 @@ fn activated_trust() -> ActivatedLearningTrustV1 {
         root_id: root.root_id.clone(),
         issued_at: 15,
         expires_at: 90,
-        signature: [0; 64],
+        signature: [0; 64].into(),
     };
-    signed.signature = root_key.sign(&signed.signing_bytes().unwrap()).to_bytes();
+    signed.signature = root_key
+        .sign(&signed.signing_bytes().unwrap())
+        .to_bytes()
+        .into();
     activate_learning_trust(&root, signed, None, 50).unwrap()
 }
 
@@ -161,11 +164,12 @@ pub(super) fn sign(
         issued_at: 20,
         expires_at: 90,
         payload_digest: Digest32::of_bytes(payload),
-        signature: [0; 64],
+        signature: [0; 64].into(),
     };
     evidence.signature = SigningKey::from_bytes(&[seed(name); 32])
         .sign(&evidence.signing_bytes())
-        .to_bytes();
+        .to_bytes()
+        .into();
     evidence
 }
 

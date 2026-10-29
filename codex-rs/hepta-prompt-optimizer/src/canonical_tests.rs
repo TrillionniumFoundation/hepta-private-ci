@@ -236,7 +236,7 @@ fn verifier() -> LearningEvidenceVerifierV1 {
                 expires_at: 10_000,
             },
             controller_id: id("controller:evaluator"),
-            verifying_key: public,
+            verifying_key: public.into(),
             roles: vec![LearningEvidenceRoleV1::Evaluator],
             revoked_at: None,
         }],

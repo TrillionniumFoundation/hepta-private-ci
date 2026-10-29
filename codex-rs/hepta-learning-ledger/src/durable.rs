@@ -14,6 +14,7 @@ use codex_hepta_types::Digest32;
 
 use crate::AppendDisposition;
 use crate::AppendReceipt;
+use crate::LearningAuthenticationProfile;
 use crate::LearningLedger;
 use crate::LedgerError;
 use crate::LedgerEvent;
@@ -103,12 +104,27 @@ impl DurableLedger {
         binding: Digest32,
         max_records: usize,
     ) -> Result<Self, DurableLedgerError> {
+        Self::create_with_authentication_profile(
+            file,
+            binding,
+            max_records,
+            LearningAuthenticationProfile::ClassicalV1,
+        )
+    }
+
+    /// Start a fresh explicitly selected history namespace. Profiles never mix.
+    pub fn create_with_authentication_profile(
+        file: File,
+        binding: Digest32,
+        max_records: usize,
+        profile: LearningAuthenticationProfile,
+    ) -> Result<Self, DurableLedgerError> {
         validate_domain(binding, max_records)?;
         let mut file = LockedFile::acquire(file)?;
         if file.metadata()?.len() != 0 {
             return Err(DurableLedgerError::AlreadyInitialized);
         }
-        let mut header = MAGIC.to_vec();
+        let mut header = history_magic(profile).to_vec();
         header.extend_from_slice(binding.as_array());
         let digest = Digest32::of_bytes(&header);
         header.extend_from_slice(digest.as_array());
@@ -118,7 +134,7 @@ impl DurableLedger {
             .map_err(|_| DurableLedgerError::Indeterminate)?;
         Ok(Self {
             file,
-            core: LearningLedger::new(),
+            core: LearningLedger::new_with_authentication_profile(profile),
             binding,
             max_records,
             durable_length: HEADER as u64,
@@ -135,10 +151,28 @@ impl DurableLedger {
         max_records: usize,
         recovery: LedgerRecovery,
     ) -> Result<Self, DurableLedgerError> {
+        Self::recover_with_authentication_profile(
+            file,
+            binding,
+            max_records,
+            recovery,
+            LearningAuthenticationProfile::ClassicalV1,
+        )
+    }
+
+    /// Recover only the host-selected profile before any incomplete-tail repair.
+    pub fn recover_with_authentication_profile(
+        file: File,
+        binding: Digest32,
+        max_records: usize,
+        recovery: LedgerRecovery,
+        profile: LearningAuthenticationProfile,
+    ) -> Result<Self, DurableLedgerError> {
         validate_domain(binding, max_records)?;
         validate_recovery(recovery, max_records)?;
         let mut file = LockedFile::acquire(file)?;
-        let (core, cursor, length) = replay_frames(&mut file, binding, max_records, recovery)?;
+        let (core, cursor, length) =
+            replay_frames(&mut file, binding, max_records, recovery, profile)?;
         if cursor != length {
             file.set_len(cursor)
                 .map_err(|_| DurableLedgerError::Indeterminate)?;
@@ -284,7 +318,13 @@ pub fn inspect_ledger(
     }
     // Construct only AFTER acquisition, so a failed lock never unlocks an owner.
     let mut guard = InspectionLock(file);
-    let (core, cursor, length) = replay_frames(&mut guard.0, binding, max_records, recovery)?;
+    let (core, cursor, length) = replay_frames(
+        &mut guard.0,
+        binding,
+        max_records,
+        recovery,
+        LearningAuthenticationProfile::ClassicalV1,
+    )?;
     if cursor != length {
         return Err(DurableLedgerError::IncompleteTail);
     }
@@ -309,6 +349,7 @@ fn replay_frames(
     binding: Digest32,
     max_records: usize,
     recovery: LedgerRecovery,
+    profile: LearningAuthenticationProfile,
 ) -> Result<(LearningLedger, u64, u64), DurableLedgerError> {
     let length = file.metadata()?.len();
     if length < HEADER as u64 {
@@ -320,13 +361,15 @@ fn replay_frames(
     file.seek(SeekFrom::Start(0))?;
     let mut header = [0; HEADER];
     file.read_exact(&mut header)?;
-    if &header[..8] != MAGIC || Digest32::of_bytes(&header[..40]).as_array() != &header[40..] {
+    if &header[..8] != history_magic(profile)
+        || Digest32::of_bytes(&header[..40]).as_array() != &header[40..]
+    {
         return Err(DurableLedgerError::Corrupt);
     }
     if &header[8..40] != binding.as_array() {
         return Err(DurableLedgerError::BindingMismatch);
     }
-    let mut core = LearningLedger::new();
+    let mut core = LearningLedger::new_with_authentication_profile(profile);
     let mut cursor = HEADER as u64;
     while cursor < length {
         if length - cursor < 8 {
@@ -416,3 +459,10 @@ mod tests;
 #[cfg(test)]
 #[path = "inspection_tests.rs"]
 mod inspection_tests;
+
+fn history_magic(profile: LearningAuthenticationProfile) -> &'static [u8; 8] {
+    match profile {
+        LearningAuthenticationProfile::ClassicalV1 => MAGIC,
+        LearningAuthenticationProfile::MlDsa65V2 => b"HEPTLP02",
+    }
+}

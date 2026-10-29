@@ -351,14 +351,14 @@ fn signed_context(
             TrustedLearningSignerV1 {
                 principal: generator.clone(),
                 controller_id: id("generator-controller"),
-                verifying_key: generator_key.verifying_key().to_bytes(),
+                verifying_key: generator_key.verifying_key().to_bytes().into(),
                 roles: vec![LearningEvidenceRoleV1::Generator],
                 revoked_at: None,
             },
             TrustedLearningSignerV1 {
                 principal: evaluator.clone(),
                 controller_id: id("evaluator-controller"),
-                verifying_key: evaluator_key.verifying_key().to_bytes(),
+                verifying_key: evaluator_key.verifying_key().to_bytes().into(),
                 roles: vec![LearningEvidenceRoleV1::Evaluator],
                 revoked_at: None,
             },
@@ -382,9 +382,9 @@ fn signed_context(
             issued_at: 10,
             expires_at: 90,
             payload_digest: Digest32::of_bytes(payload),
-            signature: [0; 64],
+            signature: [0; 64].into(),
         };
-        evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes();
+        evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes().into();
         evidence
     };
     let payload = match crate::evaluation_signing_payload_v2(bundle, roles) {

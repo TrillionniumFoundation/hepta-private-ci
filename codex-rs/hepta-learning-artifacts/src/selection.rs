@@ -11,12 +11,13 @@ use std::error::Error as StdError;
 use std::fmt;
 use std::fs::File;
 
+use crate::LearningAuthenticationProfile;
+use crate::LearningSignature;
+use crate::LearningVerificationKey;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use ed25519_dalek::Signature;
-use ed25519_dalek::VerifyingKey;
 
 use crate::ArtifactKind;
 use crate::ArtifactLifecycleEventV1;
@@ -40,7 +41,7 @@ const MAX_TRUSTED_SELECTORS: usize = 32;
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TrustedArtifactSelectorV1 {
     pub selector_id: StableId,
-    pub verifying_key: [u8; 32],
+    pub verifying_key: LearningVerificationKey,
     pub minimum_authority_epoch: u64,
     pub maximum_authority_epoch: u64,
     pub valid_from: u64,
@@ -79,13 +80,16 @@ pub struct SignedArtifactSelectionV1 {
     pub authority_epoch: u64,
     pub issued_at: u64,
     pub expires_at: u64,
-    pub signature: [u8; 64],
+    pub signature: LearningSignature,
 }
 
 impl SignedArtifactSelectionV1 {
     #[must_use]
     pub fn signing_bytes(&self) -> Vec<u8> {
-        let mut bytes = b"hepta.learning-artifacts.selection.v1".to_vec();
+        let mut bytes = self.signature.profile().learning_domain(
+            b"hepta.learning-artifacts.selection.v1",
+            b"hepta.learning-artifacts.selection.pq.v2",
+        );
         push_id(&mut bytes, &self.selection_id);
         push_id(&mut bytes, &self.artifact_id);
         push_id(&mut bytes, &self.registry_id);
@@ -130,6 +134,12 @@ pub struct VerifiedArtifactSelectionV1 {
     authority_epoch: u64,
     issued_at: u64,
     expires_at: u64,
+    verified_at: u64,
+    selector_expires_at: u64,
+    selector_revoked_at: Option<u64>,
+    current_validity: crate::CurrentRegistryValidityV1,
+    authentication_profile: LearningAuthenticationProfile,
+    owner_trust_digest: Digest32,
     trust_digest: Digest32,
     authority: AuthorityPosture,
 }
@@ -167,6 +177,7 @@ pub struct ArtifactSelectionVerifierV1 {
     trust_digest: Digest32,
     artifact_owner_trust_digest: Digest32,
     selectors: BTreeMap<StableId, TrustedArtifactSelectorV1>,
+    authentication_profile: LearningAuthenticationProfile,
 }
 
 impl ArtifactSelectionVerifierV1 {
@@ -201,10 +212,12 @@ impl ArtifactSelectionVerifierV1 {
             {
                 return Err(ArtifactSelectionError::InvalidTrust);
             }
-            let key = VerifyingKey::from_bytes(&selector.verifying_key)
+            selector
+                .verifying_key
+                .validate()
                 .map_err(|_| ArtifactSelectionError::InvalidKey)?;
-            if key.is_weak() {
-                return Err(ArtifactSelectionError::InvalidKey);
+            if selector.verifying_key.profile() != owner_verifier.authentication_profile() {
+                return Err(ArtifactSelectionError::InvalidTrust);
             }
             let selector_key_digest = Digest32::of_bytes(&selector.verifying_key);
             if artifact_owner_trust
@@ -223,7 +236,10 @@ impl ArtifactSelectionVerifierV1 {
             }
         }
 
-        let mut bytes = b"hepta.learning-artifacts.selection-trust.v1".to_vec();
+        let mut bytes = owner_verifier.authentication_profile().learning_domain(
+            b"hepta.learning-artifacts.selection-trust.v1",
+            b"hepta.learning-artifacts.selection-trust.pq.v2",
+        );
         push_id(&mut bytes, &trust.registry_id);
         bytes.extend_from_slice(trust.withdrawal_scope_digest.as_array());
         bytes.extend_from_slice(&trust.minimum_authority_epoch.to_be_bytes());
@@ -249,6 +265,7 @@ impl ArtifactSelectionVerifierV1 {
             trust_digest: Digest32::of_bytes(&bytes),
             artifact_owner_trust_digest,
             selectors,
+            authentication_profile: owner_verifier.authentication_profile(),
         })
     }
 
@@ -267,7 +284,9 @@ impl ArtifactSelectionVerifierV1 {
             .validity()
             .validate_at(now)
             .map_err(ArtifactSelectionError::Load)?;
-        if current.trust_digest() != self.artifact_owner_trust_digest
+        if current.authentication_profile() != self.authentication_profile
+            || signed.signature.profile() != self.authentication_profile
+            || current.trust_digest() != self.artifact_owner_trust_digest
             || signed.current_trust_digest != self.artifact_owner_trust_digest
         {
             return Err(ArtifactSelectionError::OwnerTrustMismatch);
@@ -277,7 +296,9 @@ impl ArtifactSelectionVerifierV1 {
             || signed.authority_epoch < self.trust.minimum_authority_epoch
             || signed.authority_epoch == 0
             || signed.issued_at > now
-            || now > signed.expires_at
+            || self
+                .authentication_profile
+                .expired_at(now, signed.expires_at)
             || signed.issued_at > signed.expires_at
             || signed.selector_credential_digest.is_zero()
             || signed.registry_head_digest.is_zero()
@@ -320,20 +341,21 @@ impl ArtifactSelectionVerifierV1 {
         if selector
             .revoked_at
             .is_some_and(|revoked_at| signed.issued_at >= revoked_at || now >= revoked_at)
-            || now > selector.expires_at
+            || self
+                .authentication_profile
+                .expired_at(now, selector.expires_at)
         {
             return Err(ArtifactSelectionError::SelectorRevoked);
         }
-        VerifyingKey::from_bytes(&selector.verifying_key)
-            .map_err(|_| ArtifactSelectionError::InvalidKey)?
-            .verify_strict(
-                &signed.signing_bytes(),
-                &Signature::from_bytes(&signed.signature),
-            )
+        selector
+            .verifying_key
+            .verify(&signed.signing_bytes(), &signed.signature)
             .map_err(|_| ArtifactSelectionError::InvalidSignature)?;
 
         let mut digest_bytes = signed.signing_bytes();
-        digest_bytes.extend_from_slice(&signed.signature);
+        if signed.signature.profile() == LearningAuthenticationProfile::ClassicalV1 {
+            digest_bytes.extend_from_slice(&signed.signature);
+        }
         Ok(VerifiedArtifactSelectionV1 {
             pin: PinnedCandidateSpec {
                 registry_receipt: current.receipt(),
@@ -345,6 +367,12 @@ impl ArtifactSelectionVerifierV1 {
             authority_epoch: signed.authority_epoch,
             issued_at: signed.issued_at,
             expires_at: signed.expires_at,
+            verified_at: now,
+            selector_expires_at: selector.expires_at,
+            selector_revoked_at: selector.revoked_at,
+            current_validity: current.validity(),
+            authentication_profile: current.authentication_profile(),
+            owner_trust_digest: current.trust_digest(),
             trust_digest: self.trust_digest,
             authority: AuthorityPosture::DENY_ALL,
         })
@@ -361,9 +389,25 @@ pub fn record_verified_selection(
     event_id: StableId,
     now: u64,
 ) -> Result<ArtifactLifecycleJournalReceiptV2, ArtifactSelectionError> {
-    if now < selection.issued_at || now > selection.expires_at {
+    if now < selection.issued_at
+        || now < selection.verified_at
+        || selection
+            .authentication_profile
+            .expired_at(now, selection.expires_at)
+    {
         return Err(ArtifactSelectionError::SelectionContext);
     }
+    if selection
+        .authentication_profile
+        .expired_at(now, selection.selector_expires_at)
+        || selection.selector_revoked_at.is_some_and(|at| now >= at)
+    {
+        return Err(ArtifactSelectionError::SelectorRevoked);
+    }
+    selection
+        .current_validity
+        .validate_at(now)
+        .map_err(ArtifactSelectionError::Load)?;
     let event = ArtifactLifecycleEventV1 {
         event_id,
         artifact_id: selection.pin.manifest.artifact_id.clone(),
@@ -397,7 +441,11 @@ pub fn load_selected_candidate(
 ) -> Result<RevalidatingCandidate, ArtifactSelectionError> {
     let loaded = load_pinned_candidate(snapshot_file, payload_file, selection.pin)
         .map_err(ArtifactSelectionError::Load)?;
-    Ok(RevalidatingCandidate::new(loaded))
+    Ok(RevalidatingCandidate::from_selection(
+        loaded,
+        selection.authentication_profile,
+        selection.owner_trust_digest,
+    ))
 }
 
 fn validate_manifest_binding(
@@ -474,6 +522,8 @@ impl StdError for ArtifactSelectionError {
 
 #[cfg(test)]
 mod tests {
+    #[path = "selection_lifetime_tests.rs"]
+    mod lifetime;
     use std::fmt::Debug;
 
     use ed25519_dalek::Signer;
@@ -518,7 +568,7 @@ mod tests {
     fn owner_trust(key: &SigningKey) -> ArtifactOwnerTrustV1 {
         let signer = TrustedArtifactSignerV1 {
             signer_id: id("artifact-owner"),
-            verifying_key: key.verifying_key().to_bytes(),
+            verifying_key: key.verifying_key().to_bytes().into(),
             minimum_authority_epoch: 1,
             maximum_authority_epoch: 9,
             valid_from: 1,
@@ -563,6 +613,7 @@ mod tests {
             crate::CurrentRegistryValidityV1::new(
                 /*verified_at*/ 20, /*expires_at*/ 1_000, /*signer_revoked_at*/ None,
             ),
+            owner_verifier.authentication_profile(),
         )
     }
 
@@ -573,7 +624,7 @@ mod tests {
             minimum_authority_epoch: 4,
             selectors: vec![TrustedArtifactSelectorV1 {
                 selector_id,
-                verifying_key: key.verifying_key().to_bytes(),
+                verifying_key: key.verifying_key().to_bytes().into(),
                 minimum_authority_epoch: 4,
                 maximum_authority_epoch: 9,
                 valid_from: 10,
@@ -611,9 +662,9 @@ mod tests {
             authority_epoch: 4,
             issued_at: 20,
             expires_at: 80,
-            signature: [0; 64],
+            signature: [0; 64].into(),
         };
-        signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
+        signed.signature = key.sign(&signed.signing_bytes()).to_bytes().into();
         signed
     }
 
@@ -640,7 +691,7 @@ mod tests {
 
         let mut drifted = signed;
         drifted.registry_head_digest = digest("different-head");
-        drifted.signature = key.sign(&drifted.signing_bytes()).to_bytes();
+        drifted.signature = key.sign(&drifted.signing_bytes()).to_bytes().into();
         assert!(matches!(
             verifier.verify(&drifted, &current, /*now*/ 30),
             Err(ArtifactSelectionError::CurrentHeadMismatch)

@@ -143,6 +143,11 @@ fn fixture(port: Arc<Port>) -> (tempfile::TempDir, Arc<PinnedCognitiveRanker>) {
     )
     .unwrap();
     let current_owner_trust_digest = current.current().unwrap().trust_digest();
+    let time = RankerAuthorityTime::new(
+        codex_hepta_contracts::LearningAuthenticationProfile::ClassicalV1,
+        current.as_ref(),
+    )
+    .unwrap();
     let ranker = PinnedCognitiveRanker {
         owner: owner(),
         body_generation: 1,
@@ -154,6 +159,7 @@ fn fixture(port: Arc<Port>) -> (tempfile::TempDir, Arc<PinnedCognitiveRanker>) {
         }),
         current,
         current_owner_trust_digest,
+        time,
         // Only this private test fixture bypasses product qualification. The
         // public neural constructor has no HostPinned compatibility path.
         admission: RankerEvaluationAdmission::HostPinned,

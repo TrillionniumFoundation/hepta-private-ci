@@ -215,3 +215,8 @@ impl From<codex_hepta_intelligence_eval::MetricRoleV2> for MetricRoleV2Raw {
         }
     }
 }
+
+#[path = "cognitive_process_learning_auth.rs"]
+mod learning_auth;
+pub(super) use learning_auth::LearningKey;
+pub(super) use learning_auth::LearningSignature;

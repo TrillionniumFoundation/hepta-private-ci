@@ -84,9 +84,9 @@ fn sign(
         issued_at: 20,
         expires_at: 90,
         payload_digest: Digest32::of_bytes(payload),
-        signature: [0; 64],
+        signature: [0; 64].into(),
     };
-    evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes();
+    evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes().into();
     evidence
 }
 
@@ -187,14 +187,14 @@ fn signed_qualification_e2e_binds_plan_holdout_roles_and_trust() {
             TrustedLearningSignerV1 {
                 principal: generator.clone(),
                 controller_id: generator.principal_id.clone(),
-                verifying_key: generator_key.verifying_key().to_bytes(),
+                verifying_key: generator_key.verifying_key().to_bytes().into(),
                 roles: vec![LearningEvidenceRoleV1::Generator],
                 revoked_at: None,
             },
             TrustedLearningSignerV1 {
                 principal: evaluator.clone(),
                 controller_id: evaluator.principal_id.clone(),
-                verifying_key: evaluator_key.verifying_key().to_bytes(),
+                verifying_key: evaluator_key.verifying_key().to_bytes().into(),
                 roles: vec![LearningEvidenceRoleV1::Evaluator],
                 revoked_at: None,
             },

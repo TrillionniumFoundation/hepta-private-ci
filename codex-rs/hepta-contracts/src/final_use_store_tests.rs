@@ -38,6 +38,7 @@ fn legacy_single_key_and_key_ring_snapshots_preserve_nonce_claims() {
             StoreTrust::IssuerKeyRing(digest) => serde_json::json!({
                 "schema": 2, "signer_id": "owner", "issuer_trust_sha256": digest, "state": state,
             }),
+            StoreTrust::PqIssuerKeyRing(_) => panic!("PQ stores have no legacy snapshot migration"),
         };
         std::fs::write(
             directory.path().join("authority.json"),

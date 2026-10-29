@@ -17,6 +17,7 @@ use codex_hepta_agentd::NeuralCognitiveInferencePortV1;
 use codex_hepta_agentd::NeuralCognitiveObservationV1;
 use codex_hepta_agentd::NeuralCognitiveRequestV1;
 use codex_hepta_agentd::load_neural_cognitive_process_bootstrap_v1;
+use codex_hepta_contracts::LearningAuthenticationProfile;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -164,6 +165,7 @@ fn prepare(
         slot.clone(),
     )
     .map_err(|error| format!("neural product qualification: {error}"))?;
+    let authentication_profile = bootstrap.verifier.authentication_profile();
     let pin = bootstrap.model_pin.pin.clone();
     let parameters = read_parameter_fd(&bootstrap.payload, pin.payload_digest)?;
     let config = config
@@ -179,6 +181,7 @@ fn prepare(
         UnixFinalUseAuthorizer::open(&inputs.final_use_authorizer_config)
             .map_err(|error| format!("neural original FinalUse owner: {error}"))?,
     );
+    validate_final_use_profile(&authorizer, authentication_profile)?;
     let control = Arc::new(Mutex::new(
         DurableInferenceControl::open(inputs.inference_journal, inputs.inference_journal_capacity)
             .map_err(|error| format!("neural original inference.control: {error}"))?,
@@ -218,6 +221,16 @@ fn prepare(
             runtime,
         },
     })
+}
+
+pub(crate) fn validate_final_use_profile(
+    authorizer: &UnixFinalUseAuthorizer,
+    selected: LearningAuthenticationProfile,
+) -> Result<(), String> {
+    if authorizer.authentication_profile() != selected {
+        return Err("neural selected artifact and FinalUse authentication profiles differ".into());
+    }
+    Ok(())
 }
 
 fn read_parameter_fd(file: &File, expected: Digest32) -> Result<Vec<u8>, String> {
