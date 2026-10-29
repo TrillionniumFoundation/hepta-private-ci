@@ -9,9 +9,11 @@ const ordered=x=>Array.isArray(x)?x.map(ordered):x&&typeof x==="object"?
 const files=fs.readdirSync(root).filter(x=>/^validate(?:_.*)?\.cjs$/.test(x)).sort();
 if(files.length===0)throw new Error("no validation entrypoints");
 if(fs.existsSync(path.join(root,"learn_network.cjs")))files.push("learn_network.cjs");
+if(fs.existsSync(path.join(root,"evaluate_network_calibration.cjs")))
+  files.push("evaluate_network_calibration.cjs");
 const records=[];
 for(const file of files) {
-  if(file==="learn_network.cjs"&&records.some(r=>!r.success)) {
+  if(!file.startsWith("validate")&&records.some(r=>!r.success)) {
     records.push({file,success:false,skipped:"functional gate failed"});continue;
   }
   const result=cp.spawnSync(process.execPath,[path.join(root,file)],{
@@ -28,12 +30,18 @@ for(const file of files) {
       record.semanticSha256=sha256(JSON.stringify(ordered(parsed)));
       if(parsed.allPassed===false||parsed.checks?.some(x=>x.passed===false))
         record.success=false;
-      if(file==="validate_replay.cjs")record.summary={
+      if(file==="validate_replay.cjs"||file==="validate_network_replay.cjs")record.summary={
         allPassed:parsed.allPassed,restores:parsed.completeStateRestores.length,
         referenceCrashes:parsed.referenceCrashRecoveries.length,
-        rejected:parsed.rejections.length,physicalPulses:parsed.actualFinalPulses,
+        rejected:parsed.rejections.length,physicalPulses:parsed.actualFinalPulses??parsed.physicalPulseCount,
         sourceHashes:parsed.sourceHashes};
-      if(file==="validate_replay_fs.cjs")record.result=parsed;
+      if(file==="validate_replay_fs.cjs"||file==="validate_network_replay_fs.cjs")record.result=parsed;
+      if(file==="evaluate_network_calibration.cjs")record.summary={
+        execution:parsed.execution,comparisons:parsed.comparisons,
+        fittedArtifactSha256:parsed.fittedArtifactSha256,
+        generativeDiagnosticCompleted:parsed.generativeDiagnosticCompleted,
+        calibrationAcceptanceAssessed:parsed.calibrationAcceptanceAssessed,
+        fullCalibrationPassed:parsed.fullCalibrationPassed,status:parsed.status};
       if(file==="learn_network.cjs")record.summary={
         teacherWeights:parsed.teacherWeights,learnedWeights:parsed.learnedWeights,
         scores:parsed.scores,pairedDifference:parsed.pairedDifference,
@@ -53,6 +61,7 @@ const sources=fs.readdirSync(root).filter(x=>x.endsWith(".cjs")||x.endsWith("pro
   });
 const receipt={schema:"rr-snn-node-verification-2",sourceCommit:process.env.GITHUB_SHA||null,
   networkProtocolFreeze:"16ecf52b7faaa43e9ab0612cc22b5dd35345f063",
+  calibrationProtocolFreeze:"c391e8b7d8ceada0765b6b9d454d2736b98e04dc",
   node:process.version,v8:process.versions.v8,platform:process.platform,arch:process.arch,
   allPassed:records.every(x=>x.success),records,sources,
   scope:{functionalNodeExecution:true,targetDotHost:false,productionOwnerExecuted:false,
