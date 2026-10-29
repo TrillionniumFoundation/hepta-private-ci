@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.p41-macos-native-unit-fixture-canonicalization.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_before": "2a2d408162d57a5a759dfbca91b539427e377c98",
+  "base_sha": "2f393197ec7e4e76f5405f66c3f6e478421a35f4",
+  "observed_utc_date": "2026-10-29",
+  "native_failure": {
+    "run_id": 40890668451,
+    "job_id": 123506911726,
+    "job_name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+    "terminal": "completed/failure",
+    "source_head": "2a2d408162d57a5a759dfbca91b539427e377c98",
+    "tests": [
+      {
+        "name": "cognitive_context::tests::hnmf::changed_hnmf_context_before_publication_fails_closed",
+        "symptom": "per-agent cognitive root must be canonical and must not traverse a symlink",
+        "same_fixture_also_fails": [
+          "current_hnmf_context_filters_owner_candidates_before_delivery",
+          "final_use_revalidation_rejects_changed_hnmf_context"
+        ]
+      },
+      {
+        "name": "state::isolation_tests::current_durable_run_start_requires_live_owner_trust",
+        "symptom": "AuthBus text external replay checkpoint parent must be canonical and symlink-free"
+      },
+      {
+        "name": "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation",
+        "symptom": "Unix control path must be shorter than SUN_LEN"
+      }
+    ]
+  },
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+      "intent": "canonicalize created fleet test fixture before enforcing unchanged production path validation"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+      "intent": "write replay fixture checkpoint under canonical temporary parent; do not alter ingress trust check"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
+      "intent": "macOS-only short random private TempDir for true control socket test; preserve original real socket assertions"
+    }
+  ],
+  "freeze_unchanged": true,
+  "negative_tests_unchanged": true,
+  "production_policy_unchanged": true,
+  "mode": "SHADOW_ONLY",
+  "authority": "DENY_ALL",
+  "promotion": "HOLD_NO_GO",
+  "owning_macOS_result": "PENDING_NEW_HEAD_REAL_EXECUTION",
+  "cross_platform_ci": "OPEN",
+  "unrelated_macOS_failures": "OPEN",
+  "full_policy_and_target_energy": "OPEN"
+}
