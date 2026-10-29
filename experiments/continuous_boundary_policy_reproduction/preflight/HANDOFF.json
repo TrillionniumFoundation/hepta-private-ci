@@ -1,0 +1,77 @@
+{
+  "schema": "hepta.boundary-policy-reproduction.native-handoff.v1",
+  "status": "built_and_behaviorally_verified_new_artifacts",
+  "original_67_source_files_unchanged": true,
+  "native_binary": "/dev/shm/hepta-native-objective-20261029/build/target/release/examples/continuous_host",
+  "native_sha256": "fa9dc78b129b0ec3b072e9fc8c8fdd49479515c79aeb2660f355e38f41e54dce",
+  "score_binary": "/dev/shm/hepta-native-objective-20261029/build/target/release/examples/boundary_policy_score_host",
+  "score_sha256": "655b919aca126a33ee2fd54501b024eb80f4b1842b0e3410791958d93a588c47",
+  "native_tests_passed": true,
+  "native_tests": 6,
+  "score_tests_passed": true,
+  "score_tests": 5,
+  "original_binary_recovered": false,
+  "toolchain_bin": "/dev/shm/hepta-native-objective-20261029/toolchain/bin",
+  "native_build": "/dev/shm/hepta-native-objective-20261029/build",
+  "raw_record_roots": [
+    "/dev/shm/hepta-native-objective-20261029/native-validation-001",
+    "/dev/shm/hepta-native-objective-20261029/score-validation-001"
+  ],
+  "metadata_files": {
+    "NATIVE_BUILD.json": {
+      "bytes": 23744,
+      "sha256": "911f5b3488540dee5022875c04d9dc22994b636ea24f1a53efbc4b8b3a1dacd9"
+    },
+    "NATIVE_SOURCE_MANIFEST.json": {
+      "bytes": 19855,
+      "sha256": "6addea031fa9ba2ca403137d8d10da6088c255474c681b106d9a2706c645dd09"
+    },
+    "NATIVE_VALIDATION.json": {
+      "bytes": 10380,
+      "sha256": "343a20bc85add1499aee9efacc3a914cccf45bef918acc0562340030ddc3a91b"
+    },
+    "NATIVE_SUMMARY.json": {
+      "bytes": 1261,
+      "sha256": "d6f77bb281514b4f7a2895599e9f4afabc1f8282a432f9fc6b2bbe116de89d9b"
+    },
+    "NATIVE_BUILD.log": {
+      "bytes": 2375,
+      "sha256": "56ac17c2aab14b0a8ce55f9302d461dea718561f4eca5cc1e144e837028feb44"
+    },
+    "NATIVE_VALIDATION.log": {
+      "bytes": 1072,
+      "sha256": "d6695d10d2bdcc14198514532576aea3098d7673f4eaa20c66e5f0d615402430"
+    },
+    "SCORE_BUILD.preformat.json": {
+      "bytes": 23290,
+      "sha256": "e7dda1be88bc1cdaf6203706487f1a565b2772d0c2c36f8a2170ba0ac8187bde"
+    },
+    "SCORE_SOURCE_MANIFEST.json": {
+      "bytes": 18733,
+      "sha256": "93b2a3ca65f369c4e193e3471d8e2fd5299564c9a754cdf0e5733d44fb68fb5a"
+    },
+    "SCORE_TESTS.json": {
+      "bytes": 4774,
+      "sha256": "0b83df2d6f0b796a6fb35ec0352e822dca3b8aae7d527fccb641fd6181bad479"
+    },
+    "SCORE_BUILD.log": {
+      "bytes": 163,
+      "sha256": "94240c9fb2474ce1524bff23d2db1e1142a4c3731e26b9bc9eeeb07484a29160"
+    },
+    "SCORE_TESTS.log": {
+      "bytes": 857,
+      "sha256": "96fdaa9e2d1b75ac785ca93b0a2bf4b3e40bdb5603800576597775faf9726a89"
+    },
+    "TOOLCHAIN.json": {
+      "bytes": 1555,
+      "sha256": "4844aed1b66715f70d1a7bc94cb3f9085dac05ff4297bd4ef2f611d728113140"
+    },
+    "ARCHIVE_CLEANUP.json": {
+      "bytes": 1003,
+      "sha256": "8d4951ec209276d2419567ec1af44290d8decdf4a83fc3f788cf804c1347d372"
+    }
+  },
+  "finalization": "root will format new builder, bind AST parity, rebuild score into a new receipt directory and verify binary identity; no test suite rerun after formatting",
+  "compiled_original_native_sources_unmodified": true,
+  "no_remote_mutation_performed": true
+}

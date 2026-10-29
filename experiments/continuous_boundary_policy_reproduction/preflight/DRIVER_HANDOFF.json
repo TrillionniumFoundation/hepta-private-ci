@@ -1,0 +1,53 @@
+{
+  "schema": "hepta.boundary-policy-reproduction.driver-handoff.v1",
+  "passed": true,
+  "identity_tests": 11,
+  "diagnostic_seed": 991,
+  "diagnostic_episodes_independently_verified": 52,
+  "training_receipts_independently_verified": 9,
+  "formal_study_initialized": false,
+  "formal_confirmation_accessed": false,
+  "raw_diagnostic_directory": "/dev/shm/hepta-native-objective-20261029/reproduction-smoke-001",
+  "raw_test_receipt": "/dev/shm/hepta-native-objective-20261029/REPRODUCTION_IDENTITY_TESTS-001.json",
+  "new_sources_sha256": {
+    "audit.py": "49a966334c16e397cc427ab5d9809fadcadd521e7b546204266488c2df5d5eb2",
+    "build_score.py": "35cc32b0eda16f02ee49d663d9b6c7c1dde7ad23d01d301921c05774964016d5",
+    "sources.py": "80536265de5d308e63f4dc538c88c0cfebc6db818fbe92db2ffb116ce8ad6eac",
+    "test_identity.py": "92d789490e4c5108a2f85a2be68be07fe9c42ed84ccd9bf7ebe82dd9791c19a1",
+    "identity.py": "3a627f6b543a9be4b894028948714d3028916f1dd0481d08ab69a8bd757d6416",
+    "phases.py": "29ddc89f4dd45d46bf7d8be881da1c339575af9f14b93c96c0c93aa892f9a716",
+    "study.py": "ce1c09a674aeb7b74bf3688d64885a56ba3fd4a3a22b1d3a87cc3fb8887c15d4",
+    "__init__.py": "d9f897af7de1b520bb6b66e5a256d9359a61fe40a92c595df2c6e46376f9d171",
+    "smoke.py": "3ad2d01be3f93ff6b146ba7a8ec67d118eac3292acd3e8e3b1d4d4ab89e2683d"
+  },
+  "files": {
+    "IDENTITY_TESTS.json": {
+      "sha256": "6cfa81a600391c2d5c6d2ee99fcfccfad7639cba1ce05696561a17684a26316d",
+      "bytes": 1123
+    },
+    "IDENTITY_TESTS.log": {
+      "sha256": "91e070e828d0afe43b957b7e9daeadf10ad5e70b916b4ac8070436a87ba95eb6",
+      "bytes": 1567
+    },
+    "DIAGNOSTIC_AUDIT.json": {
+      "sha256": "1113a17857e75da31c66f113e8bc158154e54cf8e0c52e8f1219f2cffe944e09",
+      "bytes": 10085
+    },
+    "DIAGNOSTIC_SUMMARY.json": {
+      "sha256": "0573ac2349f12edec7cc9553fd29e81bfa88664c9f7ade83fd865888ca3b1e04",
+      "bytes": 10073
+    },
+    "DIAGNOSTIC.log": {
+      "sha256": "bb3d48d40c28ab195761d22e9463932387543b8750b57c8dbd7380c5b3148d5b",
+      "bytes": 1391
+    }
+  },
+  "finalization": [
+    "Parent performs final unified formatting and records AST parity",
+    "Parent rebuilds score once into score-build-002 and copies final receipt as preflight/SCORE_BUILD.json; final SHA must equal tested SHA",
+    "Parent freezes source after final preflight files are present; do not add preflight files after source freeze",
+    "Publish source/protocol/plan before initialize; publish selection before confirm",
+    "No tests rerun after final formatting"
+  ],
+  "publication_remote": "refs/remotes/origin/research/continuous-boundary-flow-20261028"
+}
