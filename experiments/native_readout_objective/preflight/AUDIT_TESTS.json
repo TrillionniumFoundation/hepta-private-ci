@@ -1,0 +1,37 @@
+{
+  "command": "HEPTA_NATIVE_READOUT_SMOKE=/workspace/scratch/0b931bb7b314/hepta-readout-smoke-001 python -m unittest experiments.native_readout_objective.test_audit -v",
+  "errors": 0,
+  "exit_code": 0,
+  "failures": 0,
+  "independent_native_smoke_audit": {
+    "path": "NATIVE_SMOKE_AUDIT.json",
+    "sha256": "273f6d129a217da97ab63aac992fb20d13b330433a22ec05b68644b2374e4af0"
+  },
+  "output_capture": "Exact exec_command combined output from the completed invocation, persisted without rerunning tests",
+  "registered_confirmation_accessed": false,
+  "reported_elapsed_seconds": 0.419,
+  "schema": "hepta.native-readout-objective.audit-tests.v1",
+  "scope": "Independent audit and tamper preflight; no registered study data, no new efficacy result; later mechanical formatting may change source byte identities without test rerun",
+  "skipped": 0,
+  "smoke_input_manifest": {
+    "files": 43,
+    "path": "SMOKE_INPUT_MANIFEST.json",
+    "sha256": "22e641281037d37c95b370ed4f4d2f50c303637956d06c62fd0bc153ccfc2acd"
+  },
+  "smoke_summary_sha256": "6e6d7275859c60f49e12b5bb814b1187f1d4d42faa422d8ac80eb3eceb42be91",
+  "source_files_before_root_final_format": {
+    "experiments/native_readout_objective/audit.py": "1cb78b334a97c09e80c3e7a38696418d8caf5cbe13aee9ef6e232336a0d8b8e7",
+    "experiments/native_readout_objective/audit_core.py": "d6c17fa1fc72b445c0e1d06c13f686f18037f9381591b7fd725f6e24e647c966",
+    "experiments/native_readout_objective/audit_costs.py": "12cc341a2ac8db5774b7cf2ba474aaae065cf0d3adda3fa6cdb77dcc75d66e3f",
+    "experiments/native_readout_objective/audit_diagnostics.py": "67e8950d81f101d71902b23486ec4a07bae16f37af3582f9a81d418cb06593db",
+    "experiments/native_readout_objective/audit_integrity.py": "1e26e489ebc0e5d6449fea735d4afd26a9f07946454b9246175b201c9164a982",
+    "experiments/native_readout_objective/audit_records.py": "4075f526691540081a42821d828beb269ea858fe86623a9b8fc8a5a73f1b2c6d",
+    "experiments/native_readout_objective/audit_training.py": "797c6cff9d22147fc4d224ce993621b10d8d64a2071bc25ee8a6cda5b5014533"
+  },
+  "stdout": {
+    "path": "AUDIT_TESTS.stdout",
+    "sha256": "b59bd80f21d6c7e85f8121e80972ce1fc76a5895a1282c364ea7ffb114a053c6"
+  },
+  "test_file_sha256": "2de227beed4e80301a5b7e13bba37ec8024fd0162a7f7b5e644129b1b1249c6f",
+  "tests_run": 11
+}
