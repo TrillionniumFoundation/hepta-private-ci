@@ -15,9 +15,13 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import hepta_smollm_three_rounds_v2 as rounds
+import hepta_smollm_execution_source_v1 as execution_source
 
 PROFILE = "hepta-original-model-observed-execution-v1"
-CHAIN_COMMIT = "ad490ed4b1132a333159fd76702809fd248a4462"
+EXECUTION_SOURCE_PROFILE = os.environ.get("HEPTA_PAIRED_EXECUTION_PROFILE")
+CHAIN_COMMIT = execution_source.selected_commit(
+    "ad490ed4b1132a333159fd76702809fd248a4462", EXECUTION_SOURCE_PROFILE
+)
 ASSESSMENT = "hepta-controlled-real-round-assessment-observed-v1"
 LOOP = "hepta-controlled-public-initial-three-round-loop-observed-v1"
 ROLES = (
@@ -96,6 +100,8 @@ def validate_loop_context(loop):
 
 
 def freeze_plan(args, runtime, parent_step, parent, plan_path):
+    if EXECUTION_SOURCE_PROFILE is not None:
+        execution_source.verify(args.chain, EXECUTION_SOURCE_PROFILE)
     import llm_initial_trainable_setup_v2 as setup
     import llm_runtime_observed_execution_v1 as observed
 

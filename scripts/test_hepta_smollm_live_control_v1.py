@@ -1,7 +1,6 @@
 """Finite live-child and original-error controls; no model efficacy evidence."""
 
 from copy import deepcopy
-import hashlib
 import json
 import os
 from pathlib import Path
@@ -56,6 +55,8 @@ class LiveControlTests(unittest.TestCase):
             ["git", "-C", str(self.chain), "rev-parse", "HEAD"], text=True
         ).strip()
         for name, value in (
+            # This fixture deliberately exercises the historical tiny checkout.
+            ("EXECUTION_SOURCE_PROFILE", None),
             ("RUNTIME_SHA", runtime_sha),
             ("PLAN_SHA", live.sha(self.plan)),
             ("CHAIN_COMMIT", commit),

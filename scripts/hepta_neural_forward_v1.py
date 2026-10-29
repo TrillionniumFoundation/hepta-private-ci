@@ -23,8 +23,14 @@ import threading
 import time
 from types import SimpleNamespace
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import hepta_smollm_execution_source_v1 as execution_source
+
 SCHEMA = "hepta-neural-positive-forward-v1"
-CHAIN = "c96022b897c1235fdbdbfcfa32764403511c6aab"
+EXECUTION_SOURCE_PROFILE = os.environ.get("HEPTA_PAIRED_EXECUTION_PROFILE")
+CHAIN = execution_source.selected_commit(
+    "c96022b897c1235fdbdbfcfa32764403511c6aab", EXECUTION_SOURCE_PROFILE
+)
 COUNT = 512
 BATCH = 60
 LOADS = (COUNT + BATCH - 1) // BATCH
@@ -196,6 +202,7 @@ def run(args):
     )
     for relative, digest in config["sources"].items():
         checked({"path": str(chain / relative), "sha256": digest}, 4 * 1024 * 1024)
+    execution_source.verify_selected(chain, EXECUTION_SOURCE_PROFILE)
     sys.path.insert(0, str(chain / "scripts"))
     worker = importlib.import_module("llm_neural_read_worker")
     require(worker.MAX_REQUESTS == 64, "original worker request cap")

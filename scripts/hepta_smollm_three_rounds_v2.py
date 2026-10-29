@@ -18,7 +18,13 @@ import subprocess
 import sys
 from types import SimpleNamespace
 
-CHAIN_COMMIT = "c96022b897c1235fdbdbfcfa32764403511c6aab"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import hepta_smollm_execution_source_v1 as execution_source
+
+EXECUTION_SOURCE_PROFILE = os.environ.get("HEPTA_PAIRED_EXECUTION_PROFILE")
+CHAIN_COMMIT = execution_source.selected_commit(
+    "c96022b897c1235fdbdbfcfa32764403511c6aab", EXECUTION_SOURCE_PROFILE
+)
 CONTRACT = "c9b06f9a029a3257801844f89acb59b5f59f6a39087335af323f274e9152992f"
 PROFILES = (
     Path(__file__).resolve().parents[1] / "codex-rs/hepta-learning-artifacts/profiles"
@@ -138,6 +144,7 @@ def run(args):
         )
 
     verify_runtime()
+    execution_source.verify_selected(args.chain, EXECUTION_SOURCE_PROFILE)
     sys.path.insert(0, str(args.chain / "scripts"))
     import llm_inherited_runtime as inherited
     import llm_runtime_parent_step as parent_step_v1

@@ -19,8 +19,16 @@ import sys
 import time
 from types import SimpleNamespace
 
-TRAINING = "ad490ed4b1132a333159fd76702809fd248a4462"
-RUNTIME = "c96022b897c1235fdbdbfcfa32764403511c6aab"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import hepta_smollm_execution_source_v1 as execution_source
+
+EXECUTION_SOURCE_PROFILE = os.environ.get("HEPTA_PAIRED_EXECUTION_PROFILE")
+TRAINING = execution_source.selected_commit(
+    "ad490ed4b1132a333159fd76702809fd248a4462", EXECUTION_SOURCE_PROFILE
+)
+RUNTIME = execution_source.selected_commit(
+    "c96022b897c1235fdbdbfcfa32764403511c6aab", EXECUTION_SOURCE_PROFILE
+)
 SCHEMA = "hepta-neural-study-v1"
 
 
@@ -244,6 +252,8 @@ def train(value, input_pin):
     )
     checkout(training_chain, TRAINING)
     checkout(runtime_chain, RUNTIME)
+    execution_source.verify_selected(training_chain, EXECUTION_SOURCE_PROFILE)
+    execution_source.verify_selected(runtime_chain, EXECUTION_SOURCE_PROFILE)
     runtime_snapshot()
     sys.path.insert(0, str(training_chain / "scripts"))
     sys.path.insert(0, str(Path(__file__).parent))
@@ -296,6 +306,7 @@ def train(value, input_pin):
     plan_path = output / "model-plan.json"
     plan_path.write_bytes(plan_raw)
     args = SimpleNamespace(
+        chain=training_chain,
         parent=Path(value["parent"]["path"]),
         parent_sha256=value["parent"]["sha256"],
         output=output,
@@ -437,6 +448,12 @@ def forward(value, input_pin):
     )
     checkout(Path(value["runtime_chain"]), RUNTIME)
     checkout(Path(value["training_chain"]), TRAINING)
+    execution_source.verify_selected(
+        Path(value["training_chain"]), EXECUTION_SOURCE_PROFILE
+    )
+    execution_source.verify_selected(
+        Path(value["runtime_chain"]), EXECUTION_SOURCE_PROFILE
+    )
     runtime_snapshot()
     sys.path.insert(0, str(Path(value["training_chain"]) / "scripts"))
     runtime = importlib.import_module("llm_runtime_pilot")
