@@ -1,0 +1,69 @@
+{
+  "version": "hepta-independent-pretrain-audit-20261029-v1",
+  "created_unix": 1793278992.865195,
+  "status": "ready_for_registered_training",
+  "passed": true,
+  "checks": {
+    "formal_protocol_still_frozen": true,
+    "formal_core_matches_snapshot": true,
+    "appendix_protocol_matches_seal": true,
+    "appendix_binds_exact_formal_protocol_and_freeze": true,
+    "appendix_binds_exact_formal_source_map": true,
+    "appendix_sources_match_snapshot": true,
+    "24_selected_alias_scope_predeclared": true,
+    "8_DOP_alias_scope_predeclared": true,
+    "only_training_examples_in_appendix": true,
+    "registered_probe_exact_first4_training_arrays": true,
+    "training_not_started": true,
+    "selection_test_absent": true,
+    "registration_flags_true": true
+  },
+  "formal_protocol_sha256": "f94ff6491a2e98c1288ee2476404943f920042800d468435eba46d5235c0197b",
+  "formal_freeze_seal_sha256": "b18fce0abd11203f84404970a0c9d58228d215f889e59e9797374002c9c6244e",
+  "data_manifest_sha256": "b42cc25f957a9025555676dc2230a80298eb88e0523ef5b6b646a92a0483ec01",
+  "appendix_protocol_sha256": "5d22bec38799f63e10a58b7bc8ff91feb179a4c0108ddc9272a07dbf4b1d9934",
+  "appendix_registration_seal_sha256": "24eab192f72d0ac836e3ec74cbb075622e1dbff5c95ccb4f7c2fc4530eb06a85",
+  "appendix_sources_sha256": {
+    "PROTOCOL_SPEC.json": "3818ce7a1a7e9bdb8d131d88627a41fab56200c795eebf1ed4f874b60f9ffa9e",
+    "checkpoints.py": "0791cf0428e606303dab0a747f1d8d7fb66c0e2bd08c6ca176c79019f8622713"
+  },
+  "diagnostic_data_checks": {
+    "mqar": {
+      "original_file_sha_match": true,
+      "registered_file_sha_match": true,
+      "same_fields": true,
+      "exact_first4_arrays": true,
+      "field_matches": {
+        "inputs": true,
+        "targets": true,
+        "dt": true
+      }
+    },
+    "selective_copy": {
+      "original_file_sha_match": true,
+      "registered_file_sha_match": true,
+      "same_fields": true,
+      "exact_first4_arrays": true,
+      "field_matches": {
+        "inputs": true,
+        "targets": true,
+        "dt": true
+      }
+    }
+  },
+  "scheduler_source_sha256": "be61b13c74cefa1cf3d187d94e79301ba2fd4d255765c8d4525ada4652ac6f0f",
+  "prior_audit_receipts": {
+    "formal_freeze_audit.json": "6419d8b72d8ddebb1d2c6e35dbe0ab561ade8c5410fa0a00bc08e9c9cdaa0378",
+    "post_format_numerical_binding.json": "0b8cd83f4ade298bce5c66be0d99b59cc208d9ff40aeb7615234dc16316ab156",
+    "numerical_release_binding.json": "f4c674834b4d5509d276aede5e3329a11006cd17d27626d9100fd61bf4e18fa0"
+  },
+  "appendix_interpretation": "Fixed 24 primary selected aliases and 8 predeclared flow-DOP aliases, train-only diagnostics. Full and four parameter-group gradients reported; reference failures remain unresolved. No retraining, reselection or replacement of primary test results. DOP trace objective is explicitly distinct from end-to-end CE.",
+  "data_access_scope": "Only train arrays were loaded to verify registered first4 probes. Validation/test were hashed earlier without semantic loading or scoring.",
+  "remaining_execution": [
+    "Run all 60 registered candidates and retain budget checkpoints/traces",
+    "Seal validation-only selection before test access",
+    "Execute registered numerical appendix and retain failed/unresolved flags",
+    "Score fixed selections, independently audit raw predictions and statistical results",
+    "Publish and read back complete new evidence"
+  ]
+}

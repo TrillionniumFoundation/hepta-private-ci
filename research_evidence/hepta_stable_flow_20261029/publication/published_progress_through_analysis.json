@@ -1,0 +1,111 @@
+{
+  "schema": "hepta-publication-progress-binding-v1",
+  "observed_utc": "2026-10-29 14:05:23 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "branch": "research/hcsn-callput-rebuild-20261028",
+  "authorization": "Explicit user authorization for public source, checkpoints, raw data and complete evidence publication",
+  "transport": "Authenticated GitHub Git-object connector; no force updates; expected-head lease for every branch update",
+  "historical_recovery_commit": "a2037f471e01a3bb8e8126313c38f7c807f52885",
+  "publication_stages": [
+    {
+      "phase": "frozen_core",
+      "commits": [
+        {
+          "local_commit": "84c103acaa431d298502fba07bb1edc15db81e61",
+          "remote_commit": "59304329298cdf37c7b311cab2bbadc418b64068",
+          "tree": "5211cd3edfbc8d4a6bb02e830fe079ce08364b72"
+        },
+        {
+          "local_commit": "937a43d752cc7ae0c342a4b1e44bb8e3881ef302",
+          "remote_commit": "8bd0bb7060300067e658d8a3d98e78d9f9f2a12d",
+          "tree": "33ded2c5c08a33eced5feface5b3d4b3ee6bef83"
+        },
+        {
+          "local_commit": "9d7fb0776c4dc0ab5f2e0038f40a7e0e0e6e24d0",
+          "remote_commit": "a46356e257b1314619a4faec57d6bf617fb22ba5",
+          "tree": "4d4023d65b1471a57c67f2837dd406798579fd0f"
+        },
+        {
+          "local_commit": "e3f39aeb334eac57c22213cea9cce5bec6ce4b45",
+          "remote_commit": "22aecf0e49be7693ea3baac9ba66c9b417b352f2",
+          "tree": "0913d592bcd9a8b8e70239c2128e0b4c2e798593"
+        }
+      ]
+    },
+    {
+      "phase": "preregistration_and_sources",
+      "commits": [
+        {
+          "local_commit": "cd46d395086f8bf349513599ce2de6a1f0b86a50",
+          "remote_commit": "7c706a69789849e3570b665d0c6719267e289ceb",
+          "tree": "2e82a652b844d0f84f15d8acd01fc873a1f6cd84"
+        },
+        {
+          "local_commit": "01ca2881efa09c63a8b85dd5dc448d6b2d5b1403",
+          "remote_commit": "7eebec752b175274e3552dbd456ef978c0c5db4c",
+          "tree": "a9aa3096123a5a12b49cdd9bb38e29b782ea8a69"
+        },
+        {
+          "local_commit": "701fe90cb515522b9c773d0ff56ac087e240b949",
+          "remote_commit": "d6d6c479b0192e94a0081b9f0b4fbc4e0611eb4c",
+          "tree": "6febb34dd86b2f64b5e8ee6e48616ace209db698"
+        },
+        {
+          "local_commit": "c63dc2c6e9c430553c064988eddfed18a333a5da",
+          "remote_commit": "a7700bf785339b74b835ba19113aa071b53027ec",
+          "tree": "0c7e61f9dfdd12b0eb16d1eec22f3ab5eb9c884c"
+        },
+        {
+          "local_commit": "43298faeb77da9816ab8c4e6ab7f6463dfb5e7b6",
+          "remote_commit": "cce0a5ddf33068fbf0d135ee3fe010efe905146b",
+          "tree": "2762296b18c78e24801c46d1330e0f8705e2d228"
+        },
+        {
+          "local_commit": "3a2725457318e6fee32aa773bd8d3947e3a1a852",
+          "remote_commit": "ccbb668943017850860962bd29f6935c4c68e16b",
+          "tree": "1422a429b672db59fe95468d397c7c44600b7a08"
+        },
+        {
+          "local_commit": "fa4efd93226bb02f533f37a742c308d82d7b13af",
+          "remote_commit": "75d24f1be7093bb8fcc8117ad8c47fd6372f7006",
+          "tree": "5b4cbcf3d48f576760ebbc410171f1b5a580b4a6"
+        }
+      ]
+    },
+    {
+      "phase": "fifteen_completed_training_candidates",
+      "commits": [
+        {
+          "local_commit": "e13d99514cce21694ae77aebc7f5e4d94ad84110",
+          "remote_commit": "005f7967fecbd95164698804f9c1ac14abf768dc",
+          "tree": "70488b6f83288436c67a9303bf5464dabfd3f18b"
+        }
+      ]
+    },
+    {
+      "phase": "mathematical_analysis_and_evidence",
+      "commits": [
+        {
+          "local_commit": "c9562a2aaf423b7af2624619e10ad1478d0adc89",
+          "remote_commit": "586830194da057ea41167878386111be9b139470",
+          "tree": "b2ab6afda57d176cd5d9c4493e2b1c206aeb5468"
+        },
+        {
+          "local_commit": "bdee4c39a76a34aeab5bfa13113dbf38b61dba8e",
+          "remote_commit": "26be691c2aaecc5eaa298f3f6556c12f67b819ef",
+          "tree": "460670e924ed84f5c7151dc18e54dcbcb706b049"
+        }
+      ]
+    }
+  ],
+  "verified_remote_head": "26be691c2aaecc5eaa298f3f6556c12f67b819ef",
+  "verified_remote_tree": "460670e924ed84f5c7151dc18e54dcbcb706b049",
+  "checks": {
+    "every_created_blob_sha_compared_with_local_git_object": true,
+    "every_created_tree_sha_compared_with_local_commit_tree": true,
+    "public_git_fetch_sha_and_tree_readback": true,
+    "original_local_commits_preserved_in_backup_branches": true
+  },
+  "identity_scope": "Remote commit metadata are API assigned, so remote commit IDs differ from original local commits even though the full trees match. No claim is made to restore the missing historical b1806a2 commit.",
+  "completion_scope": "Partial training preserved at checkpoint15: 15 candidates / 75 weight files; full experiment evidence still in progress. Later publication will supersede this progress receipt."
+}
