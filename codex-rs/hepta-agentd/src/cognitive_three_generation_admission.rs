@@ -4,10 +4,87 @@ use super::support::Roles;
 use super::support::micros;
 use super::support::save;
 use super::*;
+use crate::cognitive_process_evaluation::MetricGateV1Raw;
+use crate::cognitive_process_evidence::AuthenticatedPrincipalV1Raw;
+use crate::cognitive_process_wire::Digest;
+use crate::cognitive_process_wire::EvaluationClaimScopeV1Raw;
+use crate::cognitive_process_wire::Id;
 use codex_hepta_intelligence_eval as eval;
 use codex_hepta_learning_artifacts as artifacts;
+use serde::Deserialize;
+use serde::Serialize;
 use serde_json::Value;
 use serde_json::json;
+
+#[cfg(test)]
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct IndependentEvaluationBundleV1Raw {
+    pub evaluation_id: Id,
+    pub candidate_id: Id,
+    pub baseline_id: Id,
+    pub claim_scope: EvaluationClaimScopeV1Raw,
+    pub generator: AuthenticatedPrincipalV1Raw,
+    pub evaluator: AuthenticatedPrincipalV1Raw,
+    pub objective_digest: Digest,
+    pub dataset_digest: Digest,
+    pub estimand_digest: Digest,
+    pub estimate_receipt_digest: Digest,
+    pub support_audit_digest: Digest,
+    pub confidence_receipt_digest: Digest,
+    pub retention_receipt_digests: Vec<Digest>,
+    pub unlearning_receipt_digest: Digest,
+    pub snapshot_ids: Vec<Id>,
+    pub future_window_ids: Vec<Id>,
+    pub family_alpha_ppm: u32,
+    pub simultaneous_comparisons: u32,
+    pub metrics: Vec<MetricGateV1Raw>,
+}
+
+#[cfg(test)]
+impl From<codex_hepta_intelligence_eval::IndependentEvaluationBundleV1>
+    for IndependentEvaluationBundleV1Raw
+{
+    fn from(raw: codex_hepta_intelligence_eval::IndependentEvaluationBundleV1) -> Self {
+        Self {
+            evaluation_id: raw.evaluation_id.into(),
+            candidate_id: raw.candidate_id.into(),
+            baseline_id: raw.baseline_id.into(),
+            claim_scope: raw.claim_scope.into(),
+            generator: raw.generator.into(),
+            evaluator: raw.evaluator.into(),
+            objective_digest: raw.objective_digest.into(),
+            dataset_digest: raw.dataset_digest.into(),
+            estimand_digest: raw.estimand_digest.into(),
+            estimate_receipt_digest: raw.estimate_receipt_digest.into(),
+            support_audit_digest: raw.support_audit_digest.into(),
+            confidence_receipt_digest: raw.confidence_receipt_digest.into(),
+            retention_receipt_digests: raw
+                .retention_receipt_digests
+                .into_iter()
+                .map(std::convert::Into::into)
+                .collect(),
+            unlearning_receipt_digest: raw.unlearning_receipt_digest.into(),
+            snapshot_ids: raw
+                .snapshot_ids
+                .into_iter()
+                .map(std::convert::Into::into)
+                .collect(),
+            future_window_ids: raw
+                .future_window_ids
+                .into_iter()
+                .map(std::convert::Into::into)
+                .collect(),
+            family_alpha_ppm: raw.family_alpha_ppm,
+            simultaneous_comparisons: raw.simultaneous_comparisons,
+            metrics: raw
+                .metrics
+                .into_iter()
+                .map(std::convert::Into::into)
+                .collect(),
+        }
+    }
+}
 
 pub(super) fn choices(fitted: &Fitted, actions: &[(CognitiveContextItem, String)]) -> Value {
     let model = LoadedTabularOperatorV1::from_pinned_payload(&fitted.bytes, &fitted.pin).unwrap();

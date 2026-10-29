@@ -10,6 +10,8 @@ on:
       - scripts/test_hepta_final_use_pq_ci.py
       - codex-rs/hepta-contracts/**
       - codex-rs/hepta-infer-worker-host/**
+      - codex-rs/hepta-agentd/src/cognitive_process_evaluation.rs
+      - codex-rs/hepta-agentd/src/cognitive_three_generation_admission.rs
       - codex-rs/Cargo.lock
       - MODULE.bazel.lock
 
@@ -114,6 +116,11 @@ jobs:
         shell: bash
         run: |
           python3 scripts/hepta_final_use_pq_ci.py native --output "$PQ_RECORDS/native" --build-record "$PQ_RECORDS/build-codex.json"
+      - name: Typecheck the original agentd study consumer of the relocated test codec
+        if: matrix.phase == 'native'
+        shell: bash
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$PQ_RECORDS/agentd-tests-typecheck.json" --timeout-seconds 1800 -- cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-agentd --tests
       - name: Require strict non-mutating component lint and formatting
         if: matrix.phase == 'native'
         shell: bash
