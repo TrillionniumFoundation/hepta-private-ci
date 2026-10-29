@@ -1,0 +1,17 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "experiments.adaptive_credit_bridge_v1.audit",
+    "--run",
+    "/workspace/scratch/07399998a2e3/recovery/credit-formal002",
+    "--destination",
+    "/workspace/scratch/07399998a2e3/recovery/credit-audit002",
+    "--source-seal",
+    "/workspace/scratch/07399998a2e3/recovery/frozen-credit-source/experiments/adaptive_neuron_v2/results/registration001/SOURCE_SEAL.json",
+    "--bridge-seal",
+    "/workspace/scratch/07399998a2e3/recovery/frozen-credit-source/experiments/adaptive_credit_bridge_v1/results/formal001/SOURCE_SEAL.json"
+  ],
+  "scope": "Independent cold audit of fresh isolated formal002 qualification; not additional training or efficacy evidence.",
+  "utc": "2026-10-29T06:44:15.419593+00:00"
+}

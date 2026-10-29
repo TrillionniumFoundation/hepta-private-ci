@@ -2,6 +2,15 @@
 
 #[path = "acl_setup_tests.rs"]
 mod acl_setup_tests;
+#[path = "broker_delete_tests.rs"]
+mod broker_delete_tests;
+#[path = "broker_test_support.rs"]
+mod broker_test_support;
+#[path = "legacy_rejection_tests.rs"]
+mod legacy_rejection_tests;
+
+use broker_test_support::run_broker_capture;
+use broker_test_support::spawn_broker_session;
 
 use super::WindowsSandboxSessionRequest;
 use super::spawn_windows_sandbox_session_elevated_for_permission_profile;
@@ -11,7 +20,6 @@ use crate::WindowsSandboxCancellationToken;
 use crate::ipc_framed::Message;
 use crate::ipc_framed::decode_bytes;
 use crate::ipc_framed::read_frame;
-use crate::run_windows_sandbox_capture;
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD as BASE64;
 use codex_protocol::config_types::WindowsSandboxLevel;
@@ -51,12 +59,12 @@ use windows_sys::Win32::System::Threading::PROCESS_SYNCHRONIZE;
 use windows_sys::Win32::System::Threading::WaitForSingleObject;
 
 static TEST_HOME_COUNTER: AtomicU64 = AtomicU64::new(0);
-static LEGACY_PROCESS_TEST_LOCK: Mutex<()> = Mutex::new(());
+static SANDBOX_PROCESS_TEST_LOCK: Mutex<()> = Mutex::new(());
 
-fn legacy_process_test_guard() -> MutexGuard<'static, ()> {
-    LEGACY_PROCESS_TEST_LOCK
+fn sandbox_process_test_guard() -> MutexGuard<'static, ()> {
+    SANDBOX_PROCESS_TEST_LOCK
         .lock()
-        .expect("legacy Windows sandbox process test lock poisoned")
+        .expect("Windows sandbox process test lock poisoned")
 }
 
 fn current_thread_runtime() -> tokio::runtime::Runtime {
@@ -230,7 +238,8 @@ async fn collect_stdout_and_exit(
 #[test]
 fn restricted_token_rejects_managed_network_before_spawn() {
     current_thread_runtime().block_on(async {
-        let cwd = sandbox_cwd();
+        let workspace = TempDir::new_in(sandbox_cwd()).expect("create process workspace");
+        let cwd = workspace.path().to_path_buf();
         let codex_home = sandbox_home("restricted-token-managed-network");
         let permission_profile = PermissionProfile::workspace_write();
         let error = spawn_windows_sandbox_session_for_level(WindowsSandboxSessionRequest {
@@ -265,22 +274,23 @@ fn restricted_token_rejects_managed_network_before_spawn() {
 }
 
 #[test]
-fn legacy_non_tty_cmd_emits_output() {
-    let _guard = legacy_process_test_guard();
+fn broker_non_tty_cmd_emits_output() {
+    let _guard = sandbox_process_test_guard();
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
-        let cwd = sandbox_cwd();
-        let codex_home = sandbox_home("legacy-non-tty-cmd");
+        let workspace = TempDir::new_in(sandbox_cwd()).expect("create process workspace");
+        let cwd = workspace.path().to_path_buf();
+        let codex_home = sandbox_home("broker-non-tty-cmd");
         println!("cmd codex_home={}", codex_home.path().display());
         let permission_profile = PermissionProfile::workspace_write();
-        let spawned = spawn_windows_sandbox_session_legacy(
+        let spawned = spawn_broker_session(
             &permission_profile,
             workspace_roots_for(cwd.as_path()).as_slice(),
             codex_home.path(),
             vec![
                 "C:\\Windows\\System32\\cmd.exe".to_string(),
                 "/c".to_string(),
-                "echo LEGACY-NONTTY-CMD".to_string(),
+                "echo BROKER-NONTTY-CMD".to_string(),
             ],
             cwd.as_path(),
             HashMap::new(),
@@ -292,23 +302,24 @@ fn legacy_non_tty_cmd_emits_output() {
             /*use_private_desktop*/ true,
         )
         .await
-        .expect("spawn legacy non-tty cmd session");
+        .expect("spawn broker non-tty cmd session");
         println!("cmd spawn returned");
         let (stdout, exit_code) =
             collect_stdout_and_exit(spawned, codex_home.path(), Duration::from_secs(10)).await;
         println!("cmd collect returned exit_code={exit_code}");
         let stdout = String::from_utf8_lossy(&stdout);
         assert_eq!(exit_code, 0, "stdout={stdout:?}");
-        assert!(stdout.contains("LEGACY-NONTTY-CMD"), "stdout={stdout:?}");
+        assert!(stdout.contains("BROKER-NONTTY-CMD"), "stdout={stdout:?}");
     });
 }
 
 #[test]
 fn elevated_non_tty_cmd_forwards_env_output_and_exit() {
-    let _guard = legacy_process_test_guard();
+    let _guard = sandbox_process_test_guard();
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
-        let cwd = sandbox_cwd();
+        let workspace = TempDir::new_in(sandbox_cwd()).expect("create process workspace");
+        let cwd = workspace.path().to_path_buf();
         let codex_home = sandbox_home("elevated-non-tty-cmd");
         let permission_profile = PermissionProfile::workspace_write();
         let env_map = HashMap::from([(
@@ -350,14 +361,15 @@ fn elevated_non_tty_cmd_forwards_env_output_and_exit() {
 }
 
 #[test]
-fn legacy_non_tty_cmd_rejects_deny_read_overrides() {
-    let _guard = legacy_process_test_guard();
+fn direct_legacy_session_rejects_deny_read_before_spawn() {
+    let _guard = sandbox_process_test_guard();
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
-        let cwd = sandbox_cwd();
-        let codex_home = sandbox_home("legacy-non-tty-deny-read");
+        let workspace = TempDir::new_in(sandbox_cwd()).expect("create process workspace");
+        let cwd = workspace.path().to_path_buf();
+        let codex_home = sandbox_home("broker-non-tty-deny-read");
         let secret_path =
-            AbsolutePathBuf::from_absolute_path(cwd.join("legacy-non-tty-deny-read-secret.env"))
+            AbsolutePathBuf::from_absolute_path(cwd.join("broker-non-tty-deny-read-secret.env"))
                 .expect("absolute deny-read fixture path");
         let permission_profile = PermissionProfile::workspace_write();
         let err = spawn_windows_sandbox_session_legacy(
@@ -382,25 +394,26 @@ fn legacy_non_tty_cmd_rejects_deny_read_overrides() {
         .expect_err("legacy deny-read should require the elevated backend");
         assert!(
             err.to_string()
-                .contains("deny-read overrides require the elevated Windows sandbox backend"),
+                .contains("cannot enforce filesystem deletion boundaries"),
             "unexpected error: {err:#}"
         );
     });
 }
 
 #[test]
-fn legacy_non_tty_powershell_interrupt_terminates_process() {
+fn broker_non_tty_powershell_interrupt_terminates_process() {
     let Some(pwsh) = pwsh_path() else {
         return;
     };
-    let _guard = legacy_process_test_guard();
+    let _guard = sandbox_process_test_guard();
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
-        let cwd = sandbox_cwd();
-        let codex_home = sandbox_home("legacy-non-tty-pwsh");
+        let workspace = TempDir::new_in(sandbox_cwd()).expect("create process workspace");
+        let cwd = workspace.path().to_path_buf();
+        let codex_home = sandbox_home("broker-non-tty-pwsh");
         println!("pwsh codex_home={}", codex_home.path().display());
         let permission_profile = PermissionProfile::workspace_write();
-        let spawned = spawn_windows_sandbox_session_legacy(
+        let spawned = spawn_broker_session(
             &permission_profile,
             workspace_roots_for(cwd.as_path()).as_slice(),
             codex_home.path(),
@@ -408,7 +421,7 @@ fn legacy_non_tty_powershell_interrupt_terminates_process() {
                 pwsh.display().to_string(),
                 "-NoProfile".to_string(),
                 "-Command".to_string(),
-                "Write-Output LEGACY-NONTTY-DIRECT; [System.Threading.ManualResetEvent]::new($false).WaitOne()".to_string(),
+                "Write-Output BROKER-NONTTY-DIRECT; [System.Threading.ManualResetEvent]::new($false).WaitOne()".to_string(),
             ],
             cwd.as_path(),
             HashMap::new(),
@@ -420,7 +433,7 @@ fn legacy_non_tty_powershell_interrupt_terminates_process() {
             /*use_private_desktop*/ true,
         )
         .await
-        .expect("spawn legacy non-tty powershell session");
+        .expect("spawn broker non-tty powershell session");
         println!("pwsh spawn returned");
         let codex_utils_pty::SpawnedProcess {
             session,
@@ -432,7 +445,7 @@ fn legacy_non_tty_powershell_interrupt_terminates_process() {
             let mut stdout = Vec::new();
             while let Some(chunk) = stdout_rx.recv().await {
                 stdout.extend(chunk);
-                if String::from_utf8_lossy(&stdout).contains("LEGACY-NONTTY-DIRECT") {
+                if String::from_utf8_lossy(&stdout).contains("BROKER-NONTTY-DIRECT") {
                     return;
                 }
             }
@@ -608,17 +621,18 @@ fn runner_resizer_sends_resize_frame() {
 }
 
 #[test]
-fn legacy_capture_emits_output_and_preserves_descendant_after_normal_exit() {
+fn broker_capture_emits_output_and_preserves_descendant_after_normal_exit() {
     let Some(pwsh) = pwsh_path() else {
         return;
     };
-    let _guard = legacy_process_test_guard();
-    let cwd = sandbox_cwd();
-    let codex_home = sandbox_home("legacy-capture-pwsh");
+    let _guard = sandbox_process_test_guard();
+    let workspace = TempDir::new_in(sandbox_cwd()).expect("create lifecycle workspace");
+    let cwd = workspace.path().to_path_buf();
+    let codex_home = sandbox_home("broker-capture-pwsh");
     println!("capture pwsh codex_home={}", codex_home.path().display());
-    let ready_marker = codex_home.path().join("descendant-started");
-    let release_marker = codex_home.path().join("release-descendant");
-    let survival_marker = codex_home.path().join("descendant-survived");
+    let ready_marker = cwd.join("descendant-started");
+    let release_marker = cwd.join("release-descendant");
+    let survival_marker = cwd.join("descendant-survived");
     let descendant_command = format!(
         "$deadline=(Get-Date).AddSeconds(30); Set-Content -LiteralPath '{}' -Value $PID; while (-not (Test-Path -LiteralPath '{}')) {{ if ((Get-Date) -ge $deadline) {{ exit 3 }}; Start-Sleep -Milliseconds 25 }}; Set-Content -LiteralPath '{}' -Value survived",
         powershell_literal(&ready_marker),
@@ -630,11 +644,11 @@ fn legacy_capture_emits_output_and_preserves_descendant_after_normal_exit() {
         powershell_literal(&ready_marker),
     );
     let parent_command = format!(
-        "Write-Output LEGACY-CAPTURE-DIRECT; {}",
-        start_powershell_child(&pwsh, codex_home.path(), &descendant_command, &parent_tail,),
+        "Write-Output BROKER-CAPTURE-DIRECT; {}",
+        start_powershell_child(&pwsh, &cwd, &descendant_command, &parent_tail,),
     );
     let permission_profile = PermissionProfile::workspace_write();
-    let result = run_windows_sandbox_capture(
+    let result = run_broker_capture(
         &permission_profile,
         workspace_roots_for(cwd.as_path()).as_slice(),
         codex_home.path(),
@@ -650,7 +664,7 @@ fn legacy_capture_emits_output_and_preserves_descendant_after_normal_exit() {
         /*cancellation*/ None,
         /*use_private_desktop*/ true,
     )
-    .expect("run legacy capture powershell");
+    .expect("run broker capture powershell");
     let descendant_pid = fs::read_to_string(&ready_marker)
         .expect("read descendant pid")
         .trim()
@@ -667,7 +681,7 @@ fn legacy_capture_emits_output_and_preserves_descendant_after_normal_exit() {
     println!("capture pwsh stderr={stderr:?}");
     assert_eq!(result.exit_code, 0, "stdout={stdout:?} stderr={stderr:?}");
     assert!(
-        stdout.contains("LEGACY-CAPTURE-DIRECT"),
+        stdout.contains("BROKER-CAPTURE-DIRECT"),
         "stdout={stdout:?}"
     );
     assert!(
@@ -679,137 +693,24 @@ fn legacy_capture_emits_output_and_preserves_descendant_after_normal_exit() {
 }
 
 #[test]
-fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
-    let _guard = legacy_process_test_guard();
-    let runtime = current_thread_runtime();
-    runtime.block_on(async move {
-        // Keep writable roots out of USERPROFILE exclusions such as AppData.
-        let test_root = TempDir::new_in(sandbox_cwd()).expect("create legacy delete test root");
-        let codex_home = sandbox_home("legacy-delete-writable-roots");
-        let workspace = test_root.path().join("workspace");
-        let temp_root = test_root.path().join("temp");
-        let tmp_root = test_root.path().join("tmp");
-        let outside_root = test_root.path().join("outside");
-        for directory in [&workspace, &temp_root, &tmp_root, &outside_root] {
-            fs::create_dir_all(directory).expect("create legacy delete test directory");
-        }
-        let protected_git_dir = workspace.join(".git");
-        fs::create_dir(&protected_git_dir).expect("create protected .git directory");
-
-        let workspace_file = workspace.join("workspace-delete.txt");
-        let temp_file = temp_root.join("temp-delete.txt");
-        let tmp_file = tmp_root.join("tmp-delete.txt");
-        let outside_file = outside_root.join("outside-delete.txt");
-        fs::write(&workspace_file, "workspace").expect("seed workspace file");
-        fs::write(&temp_file, "temp").expect("seed TEMP file");
-        fs::write(&tmp_file, "tmp").expect("seed TMP file");
-        fs::write(&outside_file, "outside").expect("seed outside file");
-
-        let script = workspace.join("delete-fixtures.cmd");
-        fs::write(
-            &script,
-            concat!(
-                "@echo off\r\n",
-                "del /f /q \"%WORKSPACE_DELETE%\"\r\n",
-                "del /f /q \"%TEMP_DELETE%\"\r\n",
-                "del /f /q \"%TMP_DELETE%\"\r\n",
-                "del /f /q \"%OUTSIDE_DELETE%\"\r\n",
-                "rmdir \"%PROTECTED_GIT_DIR%\"\r\n",
-                "exit /b 0\r\n",
-            ),
-        )
-        .expect("write delete script");
-
-        let env_map = HashMap::from([
-            ("TEMP".to_string(), temp_root.to_string_lossy().into_owned()),
-            ("TMP".to_string(), tmp_root.to_string_lossy().into_owned()),
-            (
-                "WORKSPACE_DELETE".to_string(),
-                workspace_file.to_string_lossy().into_owned(),
-            ),
-            (
-                "TEMP_DELETE".to_string(),
-                temp_file.to_string_lossy().into_owned(),
-            ),
-            (
-                "TMP_DELETE".to_string(),
-                tmp_file.to_string_lossy().into_owned(),
-            ),
-            (
-                "OUTSIDE_DELETE".to_string(),
-                outside_file.to_string_lossy().into_owned(),
-            ),
-            (
-                "PROTECTED_GIT_DIR".to_string(),
-                protected_git_dir.to_string_lossy().into_owned(),
-            ),
-        ]);
-
-        let permission_profile = PermissionProfile::workspace_write();
-        let spawned = spawn_windows_sandbox_session_legacy(
-            &permission_profile,
-            workspace_roots_for(workspace.as_path()).as_slice(),
-            codex_home.path(),
-            vec![
-                "C:\\Windows\\System32\\cmd.exe".to_string(),
-                "/d".to_string(),
-                "/c".to_string(),
-                script.display().to_string(),
-            ],
-            workspace.as_path(),
-            env_map,
-            /*timeout_ms*/ Some(5_000),
-            &[],
-            &[],
-            /*tty*/ false,
-            /*stdin_open*/ false,
-            /*use_private_desktop*/ true,
-        )
-        .await
-        .expect("spawn legacy delete session");
-        let (stdout, exit_code) =
-            collect_stdout_and_exit(spawned, codex_home.path(), Duration::from_secs(/*secs*/ 10))
-                .await;
-        let stdout = String::from_utf8_lossy(&stdout);
-
-        assert_eq!(
-            (
-                exit_code,
-                workspace_file.exists(),
-                temp_file.exists(),
-                tmp_file.exists(),
-                fs::read_to_string(&outside_file).ok(),
-                protected_git_dir.is_dir(),
-            ),
-            (0, false, false, false, Some("outside".to_string()), true),
-            "stdout={stdout:?}\n{}",
-            sandbox_log(codex_home.path())
-        );
-    });
-}
-
-#[test]
-fn legacy_capture_cancellation_terminates_descendants_without_timeout() {
+fn broker_capture_cancellation_terminates_descendants_without_timeout() {
     let Some(pwsh) = pwsh_path() else {
         eprintln!("skipping cancellation regression test: PowerShell 7 is not installed");
         return;
     };
-    let _guard = legacy_process_test_guard();
-    let cwd = sandbox_cwd();
-    let codex_home = sandbox_home("legacy-capture-cancel");
-    let descendant_marker = codex_home.path().join("descendant-survived");
-    let ready_marker = codex_home.path().join("descendant-started");
+    let _guard = sandbox_process_test_guard();
+    let workspace = TempDir::new_in(sandbox_cwd()).expect("create lifecycle workspace");
+    let cwd = workspace.path().to_path_buf();
+    let codex_home = sandbox_home("broker-capture-cancel");
+    let descendant_marker = cwd.join("descendant-survived");
+    let ready_marker = cwd.join("descendant-started");
     let descendant_command = format!(
         "Set-Content -LiteralPath '{}' -Value $PID; Start-Sleep -Seconds 1; Set-Content -LiteralPath '{}' -Value survived",
         powershell_literal(&ready_marker),
         powershell_literal(&descendant_marker),
     );
-    let parent_command = start_powershell_child(
-        &pwsh,
-        codex_home.path(),
-        &descendant_command,
-        "Start-Sleep -Seconds 30",
-    );
+    let parent_command =
+        start_powershell_child(&pwsh, &cwd, &descendant_command, "Start-Sleep -Seconds 30");
     let descendant_process = Arc::new(Mutex::new(None));
     let descendant_process_for_cancellation = Arc::clone(&descendant_process);
     let cancellation = WindowsSandboxCancellationToken::new(move || {
@@ -831,7 +732,7 @@ fn legacy_capture_cancellation_terminates_descendants_without_timeout() {
 
     let started_at = Instant::now();
     let permission_profile = PermissionProfile::workspace_write();
-    let result = run_windows_sandbox_capture(
+    let result = run_broker_capture(
         &permission_profile,
         workspace_roots_for(cwd.as_path()).as_slice(),
         codex_home.path(),
@@ -847,7 +748,7 @@ fn legacy_capture_cancellation_terminates_descendants_without_timeout() {
         /*cancellation*/ Some(cancellation),
         /*use_private_desktop*/ true,
     )
-    .expect("run legacy capture powershell with cancellation");
+    .expect("run broker capture powershell with cancellation");
 
     assert!(
         started_at.elapsed() < Duration::from_secs(10),
@@ -872,26 +773,27 @@ fn legacy_capture_cancellation_terminates_descendants_without_timeout() {
 }
 
 #[derive(Clone, Copy, Debug)]
-enum LegacyTtyDescendantLifecycle {
+enum BrokerTtyDescendantLifecycle {
     Terminate,
     Preserve,
 }
 
-async fn assert_legacy_tty_descendant_lifecycle(
+async fn assert_broker_tty_descendant_lifecycle(
     pwsh: &Path,
-    lifecycle: LegacyTtyDescendantLifecycle,
+    lifecycle: BrokerTtyDescendantLifecycle,
 ) {
-    let cwd = sandbox_cwd();
+    let workspace = TempDir::new_in(sandbox_cwd()).expect("create lifecycle workspace");
+    let cwd = workspace.path().to_path_buf();
     let codex_home = sandbox_home(match lifecycle {
-        LegacyTtyDescendantLifecycle::Terminate => "legacy-tty-descendant-terminate",
-        LegacyTtyDescendantLifecycle::Preserve => "legacy-tty-descendant-preserve",
+        BrokerTtyDescendantLifecycle::Terminate => "broker-tty-descendant-terminate",
+        BrokerTtyDescendantLifecycle::Preserve => "broker-tty-descendant-preserve",
     });
-    let ready_marker = codex_home.path().join("descendant-started");
-    let release_marker = codex_home.path().join("release-descendant");
-    let survival_marker = codex_home.path().join("descendant-survived");
+    let ready_marker = cwd.join("descendant-started");
+    let release_marker = cwd.join("release-descendant");
+    let survival_marker = cwd.join("descendant-survived");
     let child_tail = match lifecycle {
-        LegacyTtyDescendantLifecycle::Terminate => "Start-Sleep -Seconds 30".to_string(),
-        LegacyTtyDescendantLifecycle::Preserve => format!(
+        BrokerTtyDescendantLifecycle::Terminate => "Start-Sleep -Seconds 30".to_string(),
+        BrokerTtyDescendantLifecycle::Preserve => format!(
             "$deadline=(Get-Date).AddSeconds(30); while (-not (Test-Path -LiteralPath '{}')) {{ if ((Get-Date) -ge $deadline) {{ exit 3 }}; Start-Sleep -Milliseconds 25 }}; Set-Content -LiteralPath '{}' -Value survived",
             powershell_literal(&release_marker),
             powershell_literal(&survival_marker),
@@ -902,16 +804,15 @@ async fn assert_legacy_tty_descendant_lifecycle(
         powershell_literal(&ready_marker),
     );
     let parent_tail = match lifecycle {
-        LegacyTtyDescendantLifecycle::Terminate => "Start-Sleep -Seconds 30".to_string(),
-        LegacyTtyDescendantLifecycle::Preserve => format!(
+        BrokerTtyDescendantLifecycle::Terminate => "Start-Sleep -Seconds 30".to_string(),
+        BrokerTtyDescendantLifecycle::Preserve => format!(
             "while (-not (Test-Path -LiteralPath '{}')) {{ Start-Sleep -Milliseconds 25 }}",
             powershell_literal(&ready_marker),
         ),
     };
-    let parent_command =
-        start_powershell_child(pwsh, codex_home.path(), &child_command, &parent_tail);
+    let parent_command = start_powershell_child(pwsh, &cwd, &child_command, &parent_tail);
     let permission_profile = PermissionProfile::workspace_write();
-    let spawned = spawn_windows_sandbox_session_legacy(
+    let spawned = spawn_broker_session(
         &permission_profile,
         workspace_roots_for(cwd.as_path()).as_slice(),
         codex_home.path(),
@@ -931,7 +832,7 @@ async fn assert_legacy_tty_descendant_lifecycle(
         /*use_private_desktop*/ true,
     )
     .await
-    .expect("spawn legacy sandbox ConPTY lifecycle test");
+    .expect("spawn broker sandbox ConPTY lifecycle test");
     assert!(
         wait_for_path(&ready_marker, Duration::from_secs(10)),
         "{lifecycle:?} descendant did not start"
@@ -943,19 +844,19 @@ async fn assert_legacy_tty_descendant_lifecycle(
         .expect("parse descendant pid");
     let descendant_process = open_process_for_wait(descendant_pid);
 
-    if matches!(lifecycle, LegacyTtyDescendantLifecycle::Terminate) {
+    if matches!(lifecycle, BrokerTtyDescendantLifecycle::Terminate) {
         spawned.session.request_terminate();
     }
     let (_, exit_code) =
         collect_stdout_and_exit(spawned, codex_home.path(), Duration::from_secs(15)).await;
-    if matches!(lifecycle, LegacyTtyDescendantLifecycle::Preserve) {
+    if matches!(lifecycle, BrokerTtyDescendantLifecycle::Preserve) {
         fs::write(&release_marker, "release").expect("release preserved descendant");
     }
     let descendant_process = descendant_process.expect("open sandbox ConPTY descendant");
 
     match lifecycle {
-        LegacyTtyDescendantLifecycle::Terminate => assert_ne!(exit_code, 0),
-        LegacyTtyDescendantLifecycle::Preserve => {
+        BrokerTtyDescendantLifecycle::Terminate => assert_ne!(exit_code, 0),
+        BrokerTtyDescendantLifecycle::Preserve => {
             assert_eq!(exit_code, 0);
             assert!(
                 wait_for_path(&survival_marker, Duration::from_secs(10)),
@@ -968,32 +869,33 @@ async fn assert_legacy_tty_descendant_lifecycle(
 }
 
 #[test]
-fn legacy_tty_job_terminates_and_preserves_descendants() {
+fn broker_tty_job_terminates_and_preserves_descendants() {
     let Some(pwsh) = pwsh_path() else {
         eprintln!("skipping sandbox ConPTY lifecycle test: PowerShell 7 is not installed");
         return;
     };
-    let _guard = legacy_process_test_guard();
+    let _guard = sandbox_process_test_guard();
     current_thread_runtime().block_on(async move {
-        assert_legacy_tty_descendant_lifecycle(&pwsh, LegacyTtyDescendantLifecycle::Terminate)
+        assert_broker_tty_descendant_lifecycle(&pwsh, BrokerTtyDescendantLifecycle::Terminate)
             .await;
-        assert_legacy_tty_descendant_lifecycle(&pwsh, LegacyTtyDescendantLifecycle::Preserve).await;
+        assert_broker_tty_descendant_lifecycle(&pwsh, BrokerTtyDescendantLifecycle::Preserve).await;
     });
 }
 
 #[test]
-fn legacy_tty_powershell_emits_output_and_accepts_input() {
+fn broker_tty_powershell_emits_output_and_accepts_input() {
     let Some(pwsh) = pwsh_path() else {
         return;
     };
-    let _guard = legacy_process_test_guard();
+    let _guard = sandbox_process_test_guard();
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
-        let cwd = sandbox_cwd();
-        let codex_home = sandbox_home("legacy-tty-pwsh");
+        let workspace = TempDir::new_in(sandbox_cwd()).expect("create process workspace");
+        let cwd = workspace.path().to_path_buf();
+        let codex_home = sandbox_home("broker-tty-pwsh");
         println!("tty pwsh codex_home={}", codex_home.path().display());
         let permission_profile = PermissionProfile::workspace_write();
-        let spawned = spawn_windows_sandbox_session_legacy(
+        let spawned = spawn_broker_session(
             &permission_profile,
             workspace_roots_for(cwd.as_path()).as_slice(),
             codex_home.path(),
@@ -1015,7 +917,7 @@ fn legacy_tty_powershell_emits_output_and_accepts_input() {
             /*use_private_desktop*/ true,
         )
         .await
-        .expect("spawn legacy tty powershell session");
+        .expect("spawn broker tty powershell session");
         println!("tty pwsh spawn returned");
 
         let writer = spawned.session.writer_sender();
@@ -1040,14 +942,15 @@ fn legacy_tty_powershell_emits_output_and_accepts_input() {
 
 #[test]
 #[ignore = "TODO: legacy ConPTY cmd.exe exits with STATUS_DLL_INIT_FAILED in CI"]
-fn legacy_tty_cmd_emits_output_and_accepts_input() {
+fn broker_tty_cmd_emits_output_and_accepts_input() {
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
-        let cwd = sandbox_cwd();
-        let codex_home = sandbox_home("legacy-tty-cmd");
+        let workspace = TempDir::new_in(sandbox_cwd()).expect("create process workspace");
+        let cwd = workspace.path().to_path_buf();
+        let codex_home = sandbox_home("broker-tty-cmd");
         println!("tty cmd codex_home={}", codex_home.path().display());
         let permission_profile = PermissionProfile::workspace_write();
-        let spawned = spawn_windows_sandbox_session_legacy(
+        let spawned = spawn_broker_session(
             &permission_profile,
             workspace_roots_for(cwd.as_path()).as_slice(),
             codex_home.path(),
@@ -1066,7 +969,7 @@ fn legacy_tty_cmd_emits_output_and_accepts_input() {
             /*use_private_desktop*/ true,
         )
         .await
-        .expect("spawn legacy tty cmd session");
+        .expect("spawn broker tty cmd session");
         println!("tty cmd spawn returned");
 
         let writer = spawned.session.writer_sender();
@@ -1091,17 +994,18 @@ fn legacy_tty_cmd_emits_output_and_accepts_input() {
 
 #[test]
 #[ignore = "TODO: legacy ConPTY cmd.exe exits with STATUS_DLL_INIT_FAILED in CI"]
-fn legacy_tty_cmd_default_desktop_emits_output_and_accepts_input() {
+fn broker_tty_cmd_default_desktop_emits_output_and_accepts_input() {
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
-        let cwd = sandbox_cwd();
-        let codex_home = sandbox_home("legacy-tty-cmd-default-desktop");
+        let workspace = TempDir::new_in(sandbox_cwd()).expect("create process workspace");
+        let cwd = workspace.path().to_path_buf();
+        let codex_home = sandbox_home("broker-tty-cmd-default-desktop");
         println!(
             "tty cmd default desktop codex_home={}",
             codex_home.path().display()
         );
         let permission_profile = PermissionProfile::workspace_write();
-        let spawned = spawn_windows_sandbox_session_legacy(
+        let spawned = spawn_broker_session(
             &permission_profile,
             workspace_roots_for(cwd.as_path()).as_slice(),
             codex_home.path(),
@@ -1120,7 +1024,7 @@ fn legacy_tty_cmd_default_desktop_emits_output_and_accepts_input() {
             /*use_private_desktop*/ false,
         )
         .await
-        .expect("spawn legacy tty cmd session");
+        .expect("spawn broker tty cmd session");
         println!("tty cmd default desktop spawn returned");
 
         let writer = spawned.session.writer_sender();

@@ -1,0 +1,30 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_credit_bridge_v1/results/recovery_portable.py",
+    "--worker",
+    "export",
+    "--source-root",
+    "/workspace/scratch/07399998a2e3/recovery/frozen-credit-source",
+    "--run",
+    "/workspace/scratch/07399998a2e3/recovery/credit-formal002",
+    "--audit",
+    "/workspace/scratch/07399998a2e3/recovery/credit-audit002",
+    "--build",
+    "/workspace/scratch/07399998a2e3/recovery/credit-build001",
+    "--preserved",
+    "/workspace/scratch/07399998a2e3/recovery/preserved-v2-for-credit",
+    "--v2-archive",
+    "/workspace/scratch/07399998a2e3/recovered_artifacts/hepta_adaptive_neuron_v2_complete.tar.gz",
+    "--original-cost-root",
+    "/workspace/scratch/07399998a2e3/recovery",
+    "--destination",
+    "/workspace/scratch/07399998a2e3/recovery/credit-portable002",
+    "--receipt",
+    "/workspace/scratch/07399998a2e3/recovery/credit-export-launch002"
+  ],
+  "schema": "hepta.recovery.outer-launch.v1",
+  "scope": "Includes child interpreter startup, full stage and descendant processes; excludes this launcher's own interpreter startup. Nested receipts are explanatory and not additive.",
+  "stage": "export",
+  "started_at_utc": "2026-10-29T06:57:42.569467+00:00"
+}

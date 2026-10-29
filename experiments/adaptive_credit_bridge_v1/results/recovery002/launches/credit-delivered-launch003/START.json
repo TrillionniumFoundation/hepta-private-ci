@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "/workspace/scratch/07399998a2e3/hepta/experiments/adaptive_credit_bridge_v1/results/recovery_verify_archive.py",
+    "--worker",
+    "--archive",
+    "/workspace/scratch/07399998a2e3/recovered_artifacts/hepta_authenticated_credit_bridge_formal002.tar.gz",
+    "--archive-receipt",
+    "/workspace/scratch/07399998a2e3/recovered_artifacts/hepta_authenticated_credit_bridge_formal002.tar.gz.json",
+    "--destination",
+    "/workspace/scratch/07399998a2e3/recovery/credit-delivered-verification003",
+    "--receipt",
+    "/workspace/scratch/07399998a2e3/recovery/credit-delivered-launch003"
+  ],
+  "helper_sha256": "988e96f2e7470797cf3f3b87cca571e2c4e4a17df938a3431666c1ec97ccc884",
+  "schema": "hepta.recovery.outer-launch.v1",
+  "scope": "Includes child Python startup, archive verification, extraction and delivered replay; excludes this launcher's interpreter startup. All descendant costs are included, not additive.",
+  "stage": "delivered_archive_verification",
+  "started_at_utc": "2026-10-29T07:03:56.630238+00:00"
+}

@@ -1,0 +1,24 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "/workspace/scratch/07399998a2e3/recovery/credit-portable002/REPLAY.py",
+    "--worker",
+    "package",
+    "--bundle",
+    "/workspace/scratch/07399998a2e3/recovery/credit-portable002",
+    "--replay",
+    "/workspace/scratch/07399998a2e3/recovery/credit-portable-replay002",
+    "--export-receipt",
+    "/workspace/scratch/07399998a2e3/recovery/credit-export-launch002",
+    "--replay-receipt",
+    "/workspace/scratch/07399998a2e3/recovery/credit-replay-launch002",
+    "--archive",
+    "/workspace/scratch/07399998a2e3/recovered_artifacts/hepta_authenticated_credit_bridge_formal002.tar.gz",
+    "--receipt",
+    "/workspace/scratch/07399998a2e3/recovery/credit-archive-launch002"
+  ],
+  "schema": "hepta.recovery.outer-launch.v1",
+  "scope": "Includes child interpreter startup, full stage and descendant processes; excludes this launcher's own interpreter startup. Nested receipts are explanatory and not additive.",
+  "stage": "package",
+  "started_at_utc": "2026-10-29T07:00:30.226231+00:00"
+}

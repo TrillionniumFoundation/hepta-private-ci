@@ -1,0 +1,14 @@
+{
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    ".github/scripts",
+    "-p",
+    "test_run_bazel_ci.py",
+    "-v"
+  ],
+  "scope": "CI wrapper test execution after complete-log preservation change; test subprocess CPU and wall only, excludes authoring and hosted CI."
+}

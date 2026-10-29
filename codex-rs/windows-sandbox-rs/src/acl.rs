@@ -53,6 +53,7 @@ const INHERITED_ACE: u8 = 0x10;
 const ACCESS_ALLOWED_ACE_TYPE: u8 = 0;
 const ACCESS_DENIED_ACE_TYPE: u8 = 1;
 const GENERIC_READ_MASK: u32 = 0x8000_0000;
+#[cfg(test)]
 const GENERIC_WRITE_MASK: u32 = 0x4000_0000;
 const DENY_ACCESS: i32 = 3;
 
@@ -587,12 +588,14 @@ impl DenyAceKind {
         match self {
             Self::Read => FILE_GENERIC_READ | GENERIC_READ_MASK,
             Self::Write => {
-                FILE_GENERIC_WRITE
-                    | FILE_WRITE_DATA
+                // FILE_GENERIC_WRITE also carries READ_CONTROL and SYNCHRONIZE,
+                // which would deny ordinary reads on a fully restricted token.
+                // Install the specific mutating rights, without generic bits
+                // that Windows can split into effective and inherit-only ACEs.
+                FILE_WRITE_DATA
                     | FILE_APPEND_DATA
                     | FILE_WRITE_EA
                     | FILE_WRITE_ATTRIBUTES
-                    | GENERIC_WRITE_MASK
                     | DELETE
                     | FILE_DELETE_CHILD
             }

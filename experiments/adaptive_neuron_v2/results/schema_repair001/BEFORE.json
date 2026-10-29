@@ -1,0 +1,46 @@
+{
+  "source_commit": "0d8c19da477aabf5a1f143e74936e3eec636ae71",
+  "exports": {
+    "stable": {
+      "path": "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-stable.json.zst",
+      "compressed_bytes": 137561,
+      "sha256": "252cd8c5afad894abdc69b67803204de33b2ee445d4d9eabcee0ea9382b280e6",
+      "counts": {
+        "typescript": 679,
+        "json_schema": 292,
+        "internal_json_schema": 1
+      },
+      "fixture_paths_missing_from_precomputed": {
+        "typescript": [
+          "v2/HeptaGovernanceEvidenceSummary.ts",
+          "v2/HeptaHistoricalEvidenceFamily.ts",
+          "v2/HeptaHistoricalEvidenceRecord.ts",
+          "v2/HeptaHistoricalEvidenceState.ts",
+          "v2/HeptaProviderEvidenceSummary.ts",
+          "v2/ThreadQueueReconcileMode.ts",
+          "v2/ThreadQueueReconcileOutcome.ts",
+          "v2/TurnRecoverParams.ts",
+          "v2/TurnRecoverResponse.ts"
+        ],
+        "json_schema": [
+          "v2/TurnRecoverParams.json",
+          "v2/TurnRecoverResponse.json"
+        ]
+      },
+      "precomputed_paths_missing_from_fixture": {
+        "typescript": [],
+        "json_schema": []
+      }
+    },
+    "experimental": {
+      "path": "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-experimental.json.zst",
+      "compressed_bytes": 143060,
+      "sha256": "e6770c2c885a2a4640ae49e137c5efa10cb592f1b59c913ccece4b5d8cc876a1",
+      "counts": {
+        "typescript": 801,
+        "json_schema": 406,
+        "internal_json_schema": 0
+      }
+    }
+  }
+}

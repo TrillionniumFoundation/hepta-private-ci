@@ -1,0 +1,44 @@
+{
+  "archive_sha256_before_and_after": "655a25e9c06569213750e0c228eaac565edfbe7f07ee32c11f66e51d57efdc81",
+  "cleanup_scope": "Archive verification, receipt preservation and reproducible-copy removal; separate storage maintenance, not a further experiment or efficacy run.",
+  "cleanup_self_cpu_seconds": 0.41762099999999996,
+  "cleanup_wall_seconds": 0.462543765999726,
+  "logical_file_bytes_reclaimed": 127531558,
+  "nested_delivered_cost_already_included_in": "credit-delivered-launch003",
+  "nested_delivered_launch_copied_to_git": "launches/nested-delivered-replay003",
+  "original_raw_evidence_unchanged": true,
+  "removed_copies": [
+    {
+      "logical_file_bytes": 63503635,
+      "path": "/workspace/scratch/07399998a2e3/recovery/credit-portable002",
+      "reason": "Reproducible archive payload copy or failed partial extraction; exact source tar and original raw retained.",
+      "regular_files": 5316
+    },
+    {
+      "logical_file_bytes": 63503635,
+      "path": "/workspace/scratch/07399998a2e3/recovery/credit-delivered-verification003/credit-portable002",
+      "reason": "Reproducible archive payload copy or failed partial extraction; exact source tar and original raw retained.",
+      "regular_files": 5316
+    },
+    {
+      "logical_file_bytes": 524288,
+      "path": "/workspace/scratch/07399998a2e3/recovery/credit-delivered-verification002",
+      "reason": "Reproducible archive payload copy or failed partial extraction; exact source tar and original raw retained.",
+      "regular_files": 1
+    }
+  ],
+  "retained_actual_replay_and_audit_outputs": [
+    "/workspace/scratch/07399998a2e3/recovery/credit-portable-replay002",
+    "/workspace/scratch/07399998a2e3/recovery/credit-delivered-verification003/delivered-replay",
+    "/workspace/scratch/07399998a2e3/recovery/credit-delivered-verification003/nested-replay-launch"
+  ],
+  "retained_original_identity_checks": {
+    "/workspace/scratch/07399998a2e3/recovery/credit-audit002/AUDIT.json": "f9ccca8fbdf8847f1aebc32adc53eea7c9b7eb01b7a796040f00c405b4e0507c",
+    "/workspace/scratch/07399998a2e3/recovery/credit-build001/target/release/signed_credit_bridge": "839b75613e98d182b6f2f9e5b1276ab81c41e18e976cf0faea732e17e866a026",
+    "/workspace/scratch/07399998a2e3/recovery/credit-formal002/INPUTS.json": "cc49c670e4b94479c5e5a3aa02f921145c8d4b16f96ab3e8828a1fd86bc43ae0",
+    "/workspace/scratch/07399998a2e3/recovery/credit-formal002/SUMMARY.json": "a3abb9fb2e4c212788236a75adfa16e1e96baa2467b740717860c65d7f0913ab",
+    "/workspace/scratch/07399998a2e3/recovery/frozen-credit-source/GIT_OBJECT_PROOF.json": "d0f47702ca1808ea5b0e7e548ac0bbd7ce4a02ea6e9479afa667154570556119",
+    "/workspace/scratch/07399998a2e3/recovery/preserved-v2-for-credit/sealed-builds/build01/target/release/examples/adaptive_neuron_host": "261c63bc5f3a8ca1940dac27424ef8740e03ddc918b12f29af7d44b4b4ad25e4"
+  },
+  "schema": "hepta.recovery.copy-cleanup.v1"
+}

@@ -36,6 +36,7 @@ use windows_sys::Win32::Security::TOKEN_QUERY;
 use windows_sys::Win32::Security::TOKEN_USER;
 use windows_sys::Win32::Security::TokenDefaultDacl;
 use windows_sys::Win32::Security::TokenGroups;
+use windows_sys::Win32::Security::TokenHasRestrictions;
 use windows_sys::Win32::Security::TokenUser;
 use windows_sys::Win32::System::Threading::GetCurrentProcess;
 
@@ -375,7 +376,14 @@ pub unsafe fn create_readonly_token_with_cap_from(
     Ok((new_token, psid_capability))
 }
 
-/// Restrict legacy workspace writes to the provided capability SIDs alone.
+/// Applies restricting-SID checks to every requested object-access right.
+///
+/// Callers must provision explicit read and execute grants as well as writable
+/// roots. This token does not preserve ambient filesystem reads and is not a
+/// drop-in replacement for a legacy sandbox process launch. It requires a
+/// fresh, unfiltered base token; composing an existing restricted token could
+/// preserve its write-only restriction mode. Directory traversal still uses
+/// `SeChangeNotifyPrivilege`, as in the other token constructors.
 ///
 /// # Safety
 /// Caller must close the returned token handle; base_token must be a valid primary token.
@@ -383,6 +391,26 @@ pub unsafe fn create_workspace_write_token_with_caps_from(
     base_token: HANDLE,
     psid_capabilities: &[*mut c_void],
 ) -> Result<HANDLE> {
+    let mut has_restrictions: u32 = 0;
+    let mut returned = 0;
+    if GetTokenInformation(
+        base_token,
+        TokenHasRestrictions,
+        (&mut has_restrictions as *mut u32).cast(),
+        std::mem::size_of::<u32>() as u32,
+        &mut returned,
+    ) == 0
+    {
+        return Err(anyhow!(
+            "GetTokenInformation(TokenHasRestrictions) failed: {}",
+            GetLastError()
+        ));
+    }
+    if returned != std::mem::size_of::<u32>() as u32 || has_restrictions != 0 {
+        return Err(anyhow!(
+            "capability-only tokens require a fresh, unfiltered base token"
+        ));
+    }
     create_token_with_caps_from(
         base_token,
         psid_capabilities,
@@ -493,7 +521,7 @@ unsafe fn create_token_with_caps_from(
         })
         .collect();
     // A restricting SID is an alternative ACE match, not an additional requirement.
-    // Legacy workspace writes must not pass via a broad parent Logon/Everyone ACE.
+    // Capability-only access must not pass via a broad parent Logon/Everyone ACE.
     // Readonly and dedicated elevated-account tokens retain their existing policy.
     if matches!(restricting_identity, RestrictingIdentity::Include) {
         entries.push(SID_AND_ATTRIBUTES {
@@ -507,7 +535,16 @@ unsafe fn create_token_with_caps_from(
     }
 
     let mut new_token: HANDLE = 0;
-    let flags = DISABLE_MAX_PRIVILEGE | LUA_TOKEN | WRITE_RESTRICTED;
+    let flags = DISABLE_MAX_PRIVILEGE
+        | LUA_TOKEN
+        | match restricting_identity {
+            RestrictingIdentity::Include => WRITE_RESTRICTED,
+            // Deletion can use an ambient parent's FILE_DELETE_CHILD grant,
+            // which is separate from FILE_GENERIC_WRITE. Capability-only tokens
+            // apply the second SID check to every requested right, including
+            // explicit read/execute grants.
+            RestrictingIdentity::Exclude => 0,
+        };
     let ok = CreateRestrictedToken(
         base_token,
         flags,

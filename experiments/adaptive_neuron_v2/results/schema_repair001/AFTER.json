@@ -1,0 +1,117 @@
+{
+  "source_commit": "9da183aa9c97335c673003b9c5a9b8650df7e50a",
+  "exports": {
+    "stable": {
+      "path": "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-stable.json.zst",
+      "sha256": "ae5edc54372651ff430ad70729b97f8139bef6562f7a773df2ca3f571edb2964",
+      "bytes": 139671,
+      "counts": {
+        "typescript": 688,
+        "json_schema": 294,
+        "internal_json_schema": 1
+      },
+      "delta": {
+        "typescript": {
+          "added_paths": [
+            "v2/HeptaGovernanceEvidenceSummary.ts",
+            "v2/HeptaHistoricalEvidenceFamily.ts",
+            "v2/HeptaHistoricalEvidenceRecord.ts",
+            "v2/HeptaHistoricalEvidenceState.ts",
+            "v2/HeptaProviderEvidenceSummary.ts",
+            "v2/ThreadQueueReconcileMode.ts",
+            "v2/ThreadQueueReconcileOutcome.ts",
+            "v2/TurnRecoverParams.ts",
+            "v2/TurnRecoverResponse.ts"
+          ],
+          "removed_paths": [],
+          "changed_existing_paths": [
+            "ClientRequest.ts",
+            "v2/index.ts"
+          ]
+        },
+        "json_schema": {
+          "added_paths": [
+            "v2/TurnRecoverParams.json",
+            "v2/TurnRecoverResponse.json"
+          ],
+          "removed_paths": [],
+          "changed_existing_paths": [
+            "ClientRequest.json",
+            "codex_app_server_protocol.schemas.json",
+            "codex_app_server_protocol.v2.schemas.json"
+          ]
+        },
+        "internal_json_schema": {
+          "added_paths": [],
+          "removed_paths": [],
+          "changed_existing_paths": [
+            "RolloutLine.json"
+          ]
+        }
+      },
+      "fixture_tree_exact_text_equality": {
+        "typescript": true,
+        "json": true
+      }
+    },
+    "experimental": {
+      "path": "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-experimental.json.zst",
+      "sha256": "2ca64026eba6ae9fb9d0d7b1bd7901d31a0cb0715b1e33918b99a1402b74a967",
+      "bytes": 145385,
+      "counts": {
+        "typescript": 816,
+        "json_schema": 414,
+        "internal_json_schema": 0
+      },
+      "delta": {
+        "typescript": {
+          "added_paths": [
+            "v2/HeptaEvidenceSummaryReadParams.ts",
+            "v2/HeptaEvidenceSummaryReadResponse.ts",
+            "v2/HeptaGovernanceEvidenceSummary.ts",
+            "v2/HeptaHistoricalEvidenceFamily.ts",
+            "v2/HeptaHistoricalEvidenceReadParams.ts",
+            "v2/HeptaHistoricalEvidenceReadResponse.ts",
+            "v2/HeptaHistoricalEvidenceRecord.ts",
+            "v2/HeptaHistoricalEvidenceState.ts",
+            "v2/HeptaProviderEvidenceSummary.ts",
+            "v2/ThreadQueueReconcileMode.ts",
+            "v2/ThreadQueueReconcileOutcome.ts",
+            "v2/ThreadQueueReconcileParams.ts",
+            "v2/ThreadQueueReconcileResponse.ts",
+            "v2/TurnRecoverParams.ts",
+            "v2/TurnRecoverResponse.ts"
+          ],
+          "removed_paths": [],
+          "changed_existing_paths": [
+            "ClientRequest.ts",
+            "v2/index.ts"
+          ]
+        },
+        "json_schema": {
+          "added_paths": [
+            "v2/HeptaEvidenceSummaryReadParams.json",
+            "v2/HeptaEvidenceSummaryReadResponse.json",
+            "v2/HeptaHistoricalEvidenceReadParams.json",
+            "v2/HeptaHistoricalEvidenceReadResponse.json",
+            "v2/ThreadQueueReconcileParams.json",
+            "v2/ThreadQueueReconcileResponse.json",
+            "v2/TurnRecoverParams.json",
+            "v2/TurnRecoverResponse.json"
+          ],
+          "removed_paths": [],
+          "changed_existing_paths": [
+            "ClientRequest.json",
+            "codex_app_server_protocol.schemas.json",
+            "codex_app_server_protocol.v2.schemas.json"
+          ]
+        },
+        "internal_json_schema": {
+          "added_paths": [],
+          "removed_paths": [],
+          "changed_existing_paths": []
+        }
+      }
+    }
+  }
+}
