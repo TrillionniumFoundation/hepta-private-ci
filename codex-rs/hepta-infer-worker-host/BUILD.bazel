@@ -5,7 +5,8 @@ codex_rust_crate(
     compile_data = [
         "ordinary_cpu_owner.sql",
         "fixtures/smollm-consumed-prompts-067-v2.json",
-        "fixtures/smollm-consumed-prompts-all-through-a593-v3.json",
+        "fixtures/smollm-a593-exclusions.part1",
+        "fixtures/smollm-a593-exclusions.part2",
         "fixtures/smollm-diverse60-training-v3.json",
     ],
     crate_name = "codex_hepta_infer_worker_host",

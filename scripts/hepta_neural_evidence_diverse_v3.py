@@ -29,8 +29,12 @@ COMMANDS = {
     "diverse-reader-controls": 13,
     "diverse-chain-controls": 14,
 }
-EXCLUSION_PATH = Path(__file__).resolve().parents[1] / (
-    "codex-rs/hepta-infer-worker-host/fixtures/smollm-consumed-prompts-all-through-a593-v3.json"
+EXCLUSION_ROOT = Path(__file__).resolve().parents[1] / (
+    "codex-rs/hepta-infer-worker-host/fixtures"
+)
+EXCLUSION_PARTS = (
+    EXCLUSION_ROOT / "smollm-a593-exclusions.part1",
+    EXCLUSION_ROOT / "smollm-a593-exclusions.part2",
 )
 
 
@@ -50,14 +54,24 @@ def published_source(item):
 
 
 def excluded_prompts():
+    parts = []
+    for path in EXCLUSION_PARTS:
+        identity = regular(path, 512_000)
+        with original.open_regular(path) as stream:
+            chunk = stream.read(512_001)
+        require(
+            hashlib.sha256(chunk).hexdigest() == identity["sha256"],
+            "frozen exclusion shard changed",
+        )
+        parts.append(chunk)
+    raw = b"".join(parts)
     require(
         type(study_driver.EXCLUSION_SHA) is str
         and re.fullmatch("[0-9a-f]{64}", study_driver.EXCLUSION_SHA)
-        and regular(EXCLUSION_PATH, 1024 * 1024)["sha256"]
-        == study_driver.EXCLUSION_SHA,
+        and hashlib.sha256(raw).hexdigest() == study_driver.EXCLUSION_SHA,
         "exact frozen all-observed prompt exclusions",
     )
-    value = read(EXCLUSION_PATH)
+    value = original.decode(raw)
     work.closed(
         value,
         "schema encoding formal_study_count formal_unique_prompts labels_or_scores_included "
