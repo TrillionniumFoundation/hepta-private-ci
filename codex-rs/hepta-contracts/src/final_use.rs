@@ -15,15 +15,20 @@ use crate::AuthorityTrustError;
 use crate::SystemAuthorityClock;
 use crate::VerifiedUseBoundaryV1;
 use crate::VerifiedUseTokenWitnessV1;
-use ed25519_dalek::Signature;
 use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
 use serde::Serialize;
 use sha2::Digest;
 use sha2::Sha256;
 
+#[path = "final_use_ml_dsa65_v2.rs"]
+mod ml_dsa65_v2;
 #[path = "final_use_store.rs"]
 mod store;
+pub use ml_dsa65_v2::FINAL_USE_ML_DSA65_V2_CONTEXT;
+pub use ml_dsa65_v2::FinalUseMlDsa65IssuerTrustKeyV2;
+use ml_dsa65_v2::IssuerVerifier;
+pub use ml_dsa65_v2::encode_ml_dsa65_final_use_signature_v2;
 #[cfg(windows)]
 #[path = "final_use_windows.rs"]
 mod windows_owner;
@@ -69,9 +74,17 @@ pub struct FinalUseGrant {
 }
 
 impl FinalUseGrant {
-    /// Canonical signing input for an independently operated issuer.
+    /// Canonical V1 signing input for an independently operated issuer.
     pub fn signing_bytes(&self) -> Result<Vec<u8>, FinalUseError> {
-        if self.schema_version != 1
+        self.canonical_signing_bytes(/*schema*/ 1, b"hepta.kernel.authority.final-use.v1\0")
+    }
+
+    fn canonical_signing_bytes(
+        &self,
+        schema: u32,
+        domain: &[u8],
+    ) -> Result<Vec<u8>, FinalUseError> {
+        if self.schema_version != schema
             || self.authority_epoch == 0
             || !identifier(&self.signer_id)
             || !identifier(&self.grant_id)
@@ -86,7 +99,7 @@ impl FinalUseGrant {
         {
             return Err(FinalUseError::InvalidGrant);
         }
-        let mut bytes = b"hepta.kernel.authority.final-use.v1\0".to_vec();
+        let mut bytes = domain.to_vec();
         bytes.extend(serde_json::to_vec(self).map_err(|_| FinalUseError::InvalidGrant)?);
         Ok(bytes)
     }
@@ -113,7 +126,7 @@ pub struct FinalUseIssuerTrustKey {
 #[derive(Clone)]
 struct PinnedIssuerKey {
     key_id: String,
-    key: VerifyingKey,
+    key: IssuerVerifier,
     not_before_authority_epoch: u64,
     not_after_authority_epoch: u64,
 }
@@ -149,7 +162,7 @@ fn pin_issuer_keys(
         digest.update(candidate.not_after_authority_epoch.to_le_bytes());
         pinned.push(PinnedIssuerKey {
             key_id: candidate.key_id,
-            key,
+            key: IssuerVerifier::Ed25519V1(key),
             not_before_authority_epoch: candidate.not_before_authority_epoch,
             not_after_authority_epoch: candidate.not_after_authority_epoch,
         });
@@ -387,7 +400,7 @@ impl FinalUseAuthority {
             signer_id,
             issuer_keys: vec![PinnedIssuerKey {
                 key_id: "single-key".into(),
-                key,
+                key: IssuerVerifier::Ed25519V1(key),
                 not_before_authority_epoch: 1,
                 not_after_authority_epoch: u64::MAX,
             }],
@@ -428,7 +441,7 @@ impl FinalUseAuthority {
             signer_id,
             issuer_keys: vec![PinnedIssuerKey {
                 key_id: "single-key".into(),
-                key,
+                key: IssuerVerifier::Ed25519V1(key),
                 not_before_authority_epoch: 1,
                 not_after_authority_epoch: u64::MAX,
             }],
@@ -599,16 +612,25 @@ impl FinalUseAuthority {
         signed: &SignedFinalUseGrant,
         expected: &FinalUseBinding,
     ) -> Result<Vec<u8>, FinalUseError> {
-        let input = signed.grant.signing_bytes()?;
+        let input = self
+            .0
+            .issuer_keys
+            .first()
+            .ok_or(FinalUseError::InvalidTrust)?
+            .key
+            .signing_bytes(&signed.grant)?;
         if signed.grant.signer_id != self.0.signer_id || &signed.grant.binding != expected {
             return Err(FinalUseError::BindingMismatch);
         }
-        let signature = Signature::from_slice(&signed.signature)
-            .map_err(|_| FinalUseError::InvalidSignature)?;
         let verified = self.0.issuer_keys.iter().any(|candidate| {
             signed.grant.authority_epoch >= candidate.not_before_authority_epoch
                 && signed.grant.authority_epoch <= candidate.not_after_authority_epoch
-                && candidate.key.verify_strict(&input, &signature).is_ok()
+                && candidate.key.verify(
+                    signed.grant.schema_version,
+                    &candidate.key_id,
+                    &input,
+                    &signed.signature,
+                )
         });
         if !verified {
             return Err(FinalUseError::InvalidSignature);

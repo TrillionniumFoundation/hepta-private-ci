@@ -71,6 +71,7 @@ struct StoredV3 {
 pub(super) enum StoreTrust {
     SingleKey([u8; 32]),
     IssuerKeyRing([u8; 32]),
+    MlDsa65IssuerKeyRingV2([u8; 32]),
 }
 
 pub(super) struct Store {
@@ -122,6 +123,21 @@ impl Store {
             root,
             signer_id,
             StoreTrust::IssuerKeyRing(issuer_trust_sha256),
+            initial,
+            /*allow_startup_head_advance*/ false,
+        )
+    }
+
+    pub(super) fn open_ml_dsa65_key_ring_exact(
+        root: &Path,
+        signer_id: &str,
+        issuer_trust_sha256: [u8; 32],
+        initial: FinalUseRevocations,
+    ) -> Result<(Self, State), FinalUseError> {
+        Self::open_inner(
+            root,
+            signer_id,
+            StoreTrust::MlDsa65IssuerKeyRingV2(issuer_trust_sha256),
             initial,
             /*allow_startup_head_advance*/ false,
         )

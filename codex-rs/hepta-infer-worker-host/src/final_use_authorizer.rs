@@ -26,6 +26,10 @@ use tokio::time::timeout;
 use crate::native_app_server::TurnStartAuthorityFuture;
 use crate::native_app_server::TurnStartAuthorizer;
 
+#[path = "final_use_authorizer_ml_dsa65_v2.rs"]
+mod ml_dsa65_v2;
+pub use ml_dsa65_v2::FinalUseMlDsa65AuthorizerConfigV2;
+
 const AUTHORITY_PORT_SCHEMA_VERSION: u32 = 1;
 const AUTHORITY_PORT_OPERATION: &str = "runtime.codex.turn_start";
 const MAX_CONFIG_BYTES: usize = 64 * 1024;
@@ -61,6 +65,7 @@ pub struct UnixFinalUseAuthorizer {
     issuer_uid: u32,
     issuer_timeout: Duration,
     authority: FinalUseAuthority,
+    port_schema: u32,
 }
 
 impl UnixFinalUseAuthorizer {
@@ -93,12 +98,13 @@ impl UnixFinalUseAuthorizer {
             issuer_uid: config.issuer_uid,
             issuer_timeout,
             authority,
+            port_schema: AUTHORITY_PORT_SCHEMA_VERSION,
         })
     }
 
     async fn claim_exact(&self, binding: FinalUseBinding) -> Result<VerifiedUseToken> {
         let response = self.request_grant(&binding).await?;
-        if response.schema_version != AUTHORITY_PORT_SCHEMA_VERSION {
+        if response.schema_version != self.port_schema {
             return Err("unsupported final-use authority response schema".into());
         }
         sync_revocations(&self.authority, response.revocations)?;
@@ -118,7 +124,7 @@ impl UnixFinalUseAuthorizer {
     async fn request_grant(&self, binding: &FinalUseBinding) -> Result<IssuerResponse> {
         validate_issuer_socket(&self.issuer_socket, self.issuer_uid)?;
         let request = IssuerRequest {
-            schema_version: AUTHORITY_PORT_SCHEMA_VERSION,
+            schema_version: self.port_schema,
             operation: AUTHORITY_PORT_OPERATION.to_string(),
             binding: binding.clone(),
         };
@@ -272,3 +278,6 @@ fn validate_issuer_socket(path: &Path, issuer_uid: u32) -> Result<()> {
 #[cfg(all(test, unix))]
 #[path = "final_use_authorizer_tests.rs"]
 pub(crate) mod tests;
+
+#[cfg(all(test, unix))]
+pub(crate) use ml_dsa65_v2::tests::independent_test_authorizer_v2;
