@@ -346,6 +346,42 @@ fn subagent_accepts_yaml_block_lists_by_ignoring_unsupported_fields() {
 }
 
 #[test]
+fn subagent_preserves_yaml12_scalars_aliases_and_ignored_non_string_keys() {
+    let document = parse_document_content(
+        "---\n42: ignored\n? [one, two]\n: ignored\nname: &name on\ndescription: >-\n  Review changes\n  safely\npermissionMode: *name\nunsupported: !application value\n---\nReview body.\n",
+    );
+    assert!(agent_metadata(&document).is_some());
+    assert_eq!(
+        (
+            document
+                .frontmatter
+                .get("name")
+                .and_then(FrontmatterValue::as_scalar),
+            document
+                .frontmatter
+                .get("description")
+                .and_then(FrontmatterValue::as_scalar),
+            document
+                .frontmatter
+                .get("permissionMode")
+                .and_then(FrontmatterValue::as_scalar),
+            document
+                .frontmatter
+                .get("unsupported")
+                .and_then(FrontmatterValue::as_scalar),
+            document.body.as_str(),
+        ),
+        (
+            Some("on"),
+            Some("Review changes safely"),
+            Some("on"),
+            None,
+            "Review body.\n"
+        )
+    );
+}
+
+#[test]
 fn subagent_requires_minimum_codex_agent_fields() {
     let missing_description =
         parse_document_content("---\nname: incomplete\n---\nInvestigate carefully.\n");

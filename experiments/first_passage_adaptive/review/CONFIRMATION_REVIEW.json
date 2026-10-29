@@ -1,0 +1,259 @@
+{
+  "A1": {
+    "confirmation_final_expected_loss": 0.011961764106890786,
+    "confirmation_initial_expected_loss": 0.40165927441877786,
+    "interpretation": "True expected task-loss decrease in the registered 12-context diagnostic; diffusion and cancellation remain at their selected lower bounds. No population superiority gate was registered.",
+    "physical_parameters": [
+      0.6500460029976326,
+      0.2,
+      0.0
+    ]
+  },
+  "A2": {
+    "both_trees_leaf_count": 27,
+    "both_trees_probability_mass": 1.0,
+    "exact_expected_loss": 0.2865819177231294,
+    "fixed_sg_expected_loss": 0.3402562802508976,
+    "interpretation": "Learned meta-SG improves fixed SG but remains worse than the true expected-gradient baseline. This is a finite known-law diagnostic without population inference.",
+    "leaf_weighted_objectives_recomputed": true,
+    "meta_minus_exact": 0.05087402399163421,
+    "meta_minus_fixed": -0.002800338536133984,
+    "meta_sg_expected_loss": 0.3374559417147636
+  },
+  "confirmation_registries": {
+    "A1_A2": {
+      "freeze_sha256": "61dc449591527b823af41bb9f931b37299daa67b1554dfab525664e8f04daa46",
+      "opened_at": "2026-10-29T12:19:17.885938+00:00",
+      "output": "experiments/first_passage_adaptive/evidence/confirmation_20261029_v1",
+      "scope": "A1/A2 adaptive gradient and meta study",
+      "study_id": "fpt-adaptive-task-gradient-20261029-v1"
+    },
+    "threshold": {
+      "freeze_sha256": "3c494a13762286ce73e4579c8feab0fad93f840ba1c40a4c29fd6f390234bb20",
+      "opened_at": "2026-10-29T12:19:18.634843+00:00",
+      "output": "experiments/first_passage_adaptive/evidence/threshold_confirmation_20261029_v1",
+      "scope": "registered threshold comparisons",
+      "study_id": "fpt-adaptive-task-gradient-20261029-v1"
+    }
+  },
+  "costs_over_all_confirmation_contexts": {
+    "fixed_threshold": {
+      "diagnostic": {
+        "calls": 768,
+        "context_evaluations": 768,
+        "first_passage_terms": 1881,
+        "gradient_terms": 0,
+        "wall_seconds": 0.2558055919507751
+      },
+      "execution": {
+        "calls": 768,
+        "rollouts": 49152,
+        "wall_seconds": 0.13006862502516015
+      },
+      "policy": {
+        "calls": 0,
+        "context_evaluations": 0,
+        "first_passage_terms": 0,
+        "gradient_terms": 0,
+        "wall_seconds": 0.0
+      }
+    },
+    "ordinary_context_threshold": {
+      "diagnostic": {
+        "calls": 768,
+        "context_evaluations": 768,
+        "first_passage_terms": 1881,
+        "gradient_terms": 0,
+        "wall_seconds": 0.22587783200287959
+      },
+      "execution": {
+        "calls": 768,
+        "rollouts": 49152,
+        "wall_seconds": 0.08920848787965951
+      },
+      "policy": {
+        "calls": 0,
+        "context_evaluations": 0,
+        "first_passage_terms": 0,
+        "gradient_terms": 0,
+        "inference_batches": 3,
+        "inference_contexts": 768,
+        "wall_seconds": 0.0012435739990905859
+      }
+    },
+    "value_threshold": {
+      "diagnostic": {
+        "calls": 768,
+        "context_evaluations": 768,
+        "first_passage_terms": 1881,
+        "gradient_terms": 0,
+        "wall_seconds": 0.2154079170213663
+      },
+      "execution": {
+        "calls": 768,
+        "rollouts": 49152,
+        "wall_seconds": 0.07633280805021059
+      },
+      "policy": {
+        "calls": 203700,
+        "context_evaluations": 203700,
+        "first_passage_terms": 499293,
+        "gradient_terms": 0,
+        "wall_seconds": 50.22714223914227
+      }
+    }
+  },
+  "evidence_sha256": {
+    "evidence/confirmation_20261029_v1/confirmation.json": "11034fbe1c5b8b81ce86f417a6327e4b47442397e7be4264965a551901412a2a",
+    "evidence/threshold_confirmation_20261029_v1/confirmation.json": "0e58711d7d32269fbcc951eb7ab733dabeca0c73e3b3b2d112979106b216f711",
+    "evidence/threshold_confirmation_20261029_v1/planner_searches.jsonl.gz": "ff00dde695a4c6ccf14a70a5a2d476c7c02d4902a6527468af35a128fefb4abb",
+    "evidence/threshold_confirmation_20261029_v1/rollouts.jsonl.gz": "24258eb073b8167ccee52beea11a13223e188f354c1e277bab90bf10940cfd65"
+  },
+  "identity_audit": "All component-freeze, scientific-freeze, selected-v2 checkpoint and current source/runtime identities matched; raw evidence hashes also matched.",
+  "interpretation_limits": [
+    "The primary advantage is conditional on three frozen fits and the registered synthetic constant-threshold family.",
+    "All three value-minus-ordinary stratum lower bounds are below the registered 0.005 effect margin; no across-strata material advantage claim.",
+    "Value planning used 203700 analytic objective calls and about 50.227 seconds in this implementation; ordinary batched inference used about 0.001244 seconds, with training separately accounted. This is not compute or energy superiority.",
+    "The b-cost task reward is an explicit additional value model; results do not transfer automatically to fixed unit payoff.",
+    "No bootstrap seed, comparator, effect margin or cohort was changed after opening. No supplementary inferential sensitivity sweep was used to upgrade the registered verdict."
+  ],
+  "method": "Read-only evidence audit and independent reduction of retained raw utilities; no model training, rollout execution or confirmation opening repeated.",
+  "remote_freeze_verification": {
+    "commit": "99f4d90ce4bb773240840f10cf65e28c72a4092e",
+    "commit_time": "2026-10-29T12:19:15Z",
+    "freeze_blob_matches": {
+      "ADAPTIVE_FREEZE.json": true,
+      "SCIENTIFIC_FREEZE.json": true,
+      "THRESHOLD_FREEZE.json": true
+    },
+    "method": "Independently fetched GitHub commit resource and compared Git blob SHA1 for all three local freeze files.",
+    "parent": "66457136e7e1f76e27f847a6423a8c0b962c87b3",
+    "recorded_commit_time_precedes_both_registry_openings": true,
+    "repository_commit_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/99f4d90ce4bb773240840f10cf65e28c72a4092e",
+    "scope": "Recorded commit and local registry chronology, not an external tamper-proof execution attestation."
+  },
+  "reviewed_at": "2026-10-29T12:26:23.256468+00:00",
+  "schema": "hepta.first-passage.adaptive.confirmation-independent-review.v1",
+  "status": "registered_primary_gate_passed_cross_stratum_gate_failed",
+  "threshold": {
+    "calibration": {
+      "fixed_threshold": {
+        "context_standard_error": 0.0032023647075283927,
+        "mean_MC_minus_analytic": -0.004761918702264611
+      },
+      "ordinary_context_threshold": {
+        "context_standard_error": 0.0035950263000091055,
+        "mean_MC_minus_analytic": -0.002620558135375855
+      },
+      "value_threshold": {
+        "context_standard_error": 0.0036682527535054662,
+        "mean_MC_minus_analytic": -0.00403334435948727
+      }
+    },
+    "counts_by_fit_stratum": [
+      [
+        86,
+        85,
+        85
+      ],
+      [
+        86,
+        85,
+        85
+      ],
+      [
+        86,
+        85,
+        85
+      ]
+    ],
+    "cross_stratum_gate": false,
+    "per_fit_pooled_means": [
+      [
+        0.14238524220814539,
+        0.008202418786616645
+      ],
+      [
+        0.12274594858198384,
+        0.013788923565562902
+      ],
+      [
+        0.13488979676683813,
+        0.007950615639226347
+      ]
+    ],
+    "pooled_effects": [
+      0.13334032918565578,
+      0.009980652663801964
+    ],
+    "pooled_intervals": [
+      [
+        0.12044427465095113,
+        0.14781023208641775
+      ],
+      [
+        0.0055018673903663405,
+        0.01511432893082418
+      ]
+    ],
+    "primary_gate": true,
+    "reference_recomputation_absolute_errors": {
+      "per_fit_pooled_means": 0.0,
+      "pooled_effects": 0.0,
+      "pooled_intervals": 0.0,
+      "stratum_effects": 0.0,
+      "stratum_intervals": 0.0
+    },
+    "retained_planner_searches": 768,
+    "rollouts_per_arm": 49152,
+    "rollouts_per_context_per_arm": 64,
+    "stratum_effects": [
+      [
+        0.07949715754965986,
+        0.013847999630996713
+      ],
+      [
+        0.11256700660443104,
+        0.010958886228544622
+      ],
+      [
+        0.20795682340287644,
+        0.005135072131864556
+      ]
+    ],
+    "stratum_intervals": [
+      [
+        [
+          0.058629908059664414,
+          0.10303423554713594
+        ],
+        [
+          0.0032979663098203216,
+          0.026053995039881574
+        ]
+      ],
+      [
+        [
+          0.08588624274355025,
+          0.14286438438323656
+        ],
+        [
+          0.003211067316300209,
+          0.019322730333165963
+        ]
+      ],
+      [
+        [
+          0.18846059417121916,
+          0.22690327977087105
+        ],
+        [
+          0.0015886185464173642,
+          0.009240905431642056
+        ]
+      ]
+    ],
+    "unique_contexts": 768,
+    "value_minus_ordinary_lower_bound_margin_excess": 0.0005018673903663404
+  }
+}

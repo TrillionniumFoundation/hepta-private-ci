@@ -1,0 +1,184 @@
+{
+  "checkpoint_sha256": "9a5b67e505afee10b9ba6f9f6c0c586ebf0fd049a5f8b281d375075a263a831d",
+  "configuration": {
+    "allow_stop": true,
+    "analytic_value": "J(b)=(b-cost)*sum[n=1..K] exp[-(rho+cancel_rate)*(n-1)*d]*H_(rho+cancel_rate)(T-(n-1)*d,n*b); terms with nonpositive remaining time are zero; STOP has J=0.",
+    "arms": [
+      "fixed_threshold",
+      "ordinary_context_threshold",
+      "value_threshold"
+    ],
+    "bootstrap": "Resample paired complete context clusters within each (fit_seed,stratum); retain all arms and repeats together; then apply the registered equal weights. Fits are treated as frozen, not as a population sample of fitted networks.",
+    "bootstrap_replicates": 4000,
+    "bootstrap_seed": 2026102985,
+    "configuration": "Before confirmation, bind the runner's complete fixed/ordinary/planner configuration, searches, selected parameters, context hashes and cost accounting to the source/model freeze. Training and development may not inspect confirmation.",
+    "context_rng": "numpy default_rng(SeedSequence([split_seed_base, fit_seed])); serialize and hash generated contexts",
+    "contexts_per_fit_seed": {
+      "confirmation": 256,
+      "development": 64,
+      "train": 128
+    },
+    "cross_stratum_gate": "Additionally require all six stratum-specific adjusted lower bounds above 0.005 before claiming advantage in all three strata.",
+    "episode_contract": "One constant threshold b per episode. Each hit pays b-cost, resets voltage to zero and starts refractory duration d. Stop after integer budget K hits, global cancellation, or physical horizon T. Cancellation remains active during both active and refractory phases; discount rho is separate.",
+    "family_alpha": 0.05,
+    "family_comparisons": 8,
+    "family_members": "Two pooled primary contrasts and each of those contrasts in each of three strata.",
+    "fit_seeds": [
+      41011,
+      41017,
+      41023
+    ],
+    "gate": "Both pooled Bonferroni-adjusted empirical lower bounds exceed 0.005 and all three per-fit-seed pooled means are positive for both contrasts.",
+    "implementation_configuration": {
+      "fixed_and_value": {
+        "bounded_xatol": 1e-10,
+        "claim": "Numerical grid/refinement planner in the registered constant-threshold family, not a certified global QVI optimum.",
+        "grid_points": 257,
+        "refine": "Bounded scalar optimization around every interior local grid maximum; retain grid points, both endpoints and STOP."
+      },
+      "ordinary_features": "Standardize all eight inputs using training means and standard deviations; replace standard deviations <=1e-12 by one. Use intercept, all linear terms, and all products z_i*z_j for i<=j.",
+      "ordinary_ftol": 1e-12,
+      "ordinary_gtol": 1e-07,
+      "ordinary_initial_intercepts": [
+        -2.0,
+        -1.0,
+        0.0
+      ],
+      "ordinary_inputs": [
+        "mu",
+        "sigma",
+        "cancel_rate",
+        "cost",
+        "horizon",
+        "budget",
+        "refractory",
+        "discount"
+      ],
+      "ordinary_maxiter": 160,
+      "ordinary_optimizer": "L-BFGS-B with analytic J derivative; minimize negative mean training J plus ridge times squared nonintercept weights.",
+      "ordinary_other_initial_weights": 0.0,
+      "ordinary_ridge": 1e-05,
+      "ordinary_selection": "Highest mean development J among the three predeclared initializations; report every candidate, including unsuccessful convergence statuses.",
+      "ordinary_threshold": "b=cost+(upper_bound-cost)*sigmoid(features dot weights); current registered costs lie strictly between threshold bounds.",
+      "parameter_accounting": "Report stored coefficients, nonzero feature columns and feature rank; constant discount and its centered interactions do not create active capacity."
+    },
+    "individual_interval_tail_probability": 0.003125,
+    "information": "Same public state, dynamics estimate, cost, deadline, budget, legal actions, guard, and continuation contract for every arm.",
+    "initial_and_reset_voltage": 0.0,
+    "limits": "Small-sample empirical intervals are conditional on frozen fits and are not population coverage guarantees; descriptive analytic-J comparisons alone do not satisfy the executed-utility gate.",
+    "minimum_effect": 0.005,
+    "nominal_distribution": {
+      "budget_integers_inclusive": [
+        1,
+        4
+      ],
+      "cancel_rate_uniform": [
+        0.04,
+        0.3
+      ],
+      "cost_uniform": [
+        0.2,
+        0.8
+      ],
+      "discount": 0.05,
+      "horizon_uniform": [
+        2.0,
+        5.0
+      ],
+      "mu_uniform": [
+        0.6,
+        1.4
+      ],
+      "refractory_uniform": [
+        0.08,
+        0.25
+      ],
+      "sigma_uniform": [
+        0.35,
+        0.9
+      ]
+    },
+    "optimization": "Fixed learns one b from training contexts. Ordinary context threshold directly optimizes the same J using all public context features without value-planner labels. Value threshold maximizes J for the current context. Record the complete searches and all objective evaluations.",
+    "ordinary_control": "The ordinary threshold must actually consume cost/deadline/budget when the value threshold consumes them; a constant learned distance is not the only strong control.",
+    "pairing": "Same context and named noise stream for all arms; no claim of identical continuous Brownian paths across different thresholds. Preserve all 64 repeats inside the context cluster.",
+    "parameter_counts": "Report active counts and controller classes; do not pad the fixed arm with unused parameters.",
+    "pooled_weighting": "Equal weight to each of the three strata, then equal weight to each of the three fitted seeds.",
+    "primary_contrasts": [
+      "value_threshold minus fixed_threshold",
+      "value_threshold minus ordinary_context_threshold"
+    ],
+    "primary_measure": "Actual subsequent net task utility under the shared execution contract",
+    "realized_value": "sum of exp(-rho*actual_hit_time)*(b-cost) over executed hits before horizon and cancellation, capped at K",
+    "rollout_seed_base": 2026102984,
+    "rollouts_per_context": 64,
+    "split_seed_bases": {
+      "confirmation": 2026102983,
+      "development": 2026102982,
+      "train": 2026102981
+    },
+    "strata": [
+      "nominal",
+      "cost_high",
+      "deadline_short"
+    ],
+    "stratum_assignment": "Assign in the declared order by example_index modulo 3; any remainder belongs to earlier strata.",
+    "stratum_overrides": {
+      "cost_high": {
+        "cost_uniform": [
+          0.8,
+          1.4
+        ]
+      },
+      "deadline_short": {
+        "horizon_uniform": [
+          0.5,
+          1.5
+        ]
+      }
+    },
+    "threshold_bounds": [
+      0.03,
+      4.0
+    ]
+  },
+  "confirmation_opened": false,
+  "schema": "hepta.first-passage.threshold.freeze.v1",
+  "source_identity": {
+    "implementation_configuration": {
+      "ordinary_features": "standardized full quadratic of all eight public inputs",
+      "ordinary_ftol": 1e-12,
+      "ordinary_gtol": 1e-07,
+      "ordinary_initial_intercepts": [
+        -2.0,
+        -1.0,
+        0.0
+      ],
+      "ordinary_maxiter": 160,
+      "ordinary_ridge": 1e-05,
+      "planner_grid_size": 257,
+      "planner_xatol": 1e-10,
+      "selection": "highest development analytic expected task utility"
+    },
+    "runtime": {
+      "numpy": "2.3.5",
+      "python": "3.12.14",
+      "scipy": "1.17.0"
+    },
+    "source_sha256": {
+      "experiments/first_passage_adaptive/ADAPTIVE_PROTOCOL.json": "407f4b9b78c9d9407d2c6fe556b9eae2e9a6ec2d9e2e11223a624573f20545b9",
+      "experiments/first_passage_adaptive/CONTRACT.md": "3fcc37abdd5aa5daddd682e9cb577e24d7af28cbaa57002f5a425a040af3b65b",
+      "experiments/first_passage_adaptive/__init__.py": "36161a31787589412cc337531279ebe5ffded4bee9e368bc0b5fccdf86caa866",
+      "experiments/first_passage_adaptive/requirements.txt": "1668a3152e33680d94637b13421c15e68bd97cd8701f7f555c691f5bc5c0b9f3",
+      "experiments/first_passage_adaptive/review/paired_cluster_reference.py": "e8ac127185c9e2d1ea4a6fff3d01e0b01d55545e6298cc441bf9cdc64142284f",
+      "experiments/first_passage_adaptive/tests/test_threshold_statistics.py": "f0c0d09ffc6998fc2863d07dc67f4afa4727ab883e56fff372f4bc461bf13274",
+      "experiments/first_passage_adaptive/tests/test_threshold_study.py": "55c9db0ff2c3f3d1ab4f70b9df939f2675befd4e313b0815af18c3221114fe3b",
+      "experiments/first_passage_adaptive/tests/test_thresholds.py": "d67602a08f1eef26a561445223136c7c3bbf31f5186f0f276751fa263b75ad1c",
+      "experiments/first_passage_adaptive/threshold_policies.py": "a9b2e9c467516a624b88d881c1302914b465178928f6f86e813da98d2b016c22",
+      "experiments/first_passage_adaptive/threshold_statistics.py": "fd581f796f41ea4c936d8160cc2ac56c76b9236a48a03d001a17824525755d06",
+      "experiments/first_passage_adaptive/threshold_study.py": "afafba7f330cd7de0cd277adcfd9854df6a884dc94fac99473691a18091a1eae",
+      "experiments/first_passage_adaptive/thresholds.py": "49b8229adea929b25fe0639e01040e68e5aabb35beab5db68391547cd6bf0cc6",
+      "experiments/first_passage_cell/kernels.py": "f2b739eaa7f86f755e283ec8e7a63ed2e9d3029d56d928f7b651ea323c1f3308"
+    }
+  },
+  "study_id": "fpt-adaptive-task-gradient-20261029-v1"
+}

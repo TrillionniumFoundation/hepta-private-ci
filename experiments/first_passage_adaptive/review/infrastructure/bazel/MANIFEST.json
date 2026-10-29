@@ -1,0 +1,137 @@
+{
+  "schema": "hepta.bazel-lock-repair.raw-evidence.v1",
+  "files": [
+    {
+      "path": "BASELINE.json",
+      "bytes": 2641,
+      "sha256": "0c6acef78fe1cb2ff538269cbf3c94f623270ceb1f67fc40b5850d0fadad4528"
+    },
+    {
+      "path": "MODULE.bazel.lock.generated.diff",
+      "bytes": 928846,
+      "sha256": "91e516c02b3ccbebce185cdd987c721d89e1331e00ccbcaacdbf6c55e8b35feb"
+    },
+    {
+      "path": "REPAIR.json",
+      "bytes": 4463,
+      "sha256": "aa7abf4eb199fe79c1207b15f371cabf3950e944b6a603d037fa5e80e0efe97d"
+    },
+    {
+      "path": "TEST_VARIANT_REVIEW.json",
+      "bytes": 2658,
+      "sha256": "9d257a81ce86471b9c38272154235e59598c0d9cce159fb149d30b63b21a9170"
+    },
+    {
+      "path": "agentd-target-query.json",
+      "bytes": 1120,
+      "sha256": "df9901e4695df4cc3ac528a138b6c8207588352bd291bd26522484ad1de01e99"
+    },
+    {
+      "path": "agentd-target-query.log",
+      "bytes": 53370,
+      "sha256": "869bb413f891e7b64791c72d9de4c59e62b93a48a41adba08112f767ead12bd5"
+    },
+    {
+      "path": "baseline-command.json",
+      "bytes": 544,
+      "sha256": "27cc8b59dbea833ae341fbedd211d49913d4b88ce2738a08334081d0379ab8cb"
+    },
+    {
+      "path": "baseline-error.log",
+      "bytes": 2041,
+      "sha256": "422b3f9d9bff81414c0cac4061e74aeba9f9116161073ad6a1b487b08362e133"
+    },
+    {
+      "path": "baseline-trusted-command.json",
+      "bytes": 734,
+      "sha256": "46c22df971f304f4ea141570e63b97682dd6dd70512006509455a55bf3ecaf92"
+    },
+    {
+      "path": "baseline-trusted-error.log",
+      "bytes": 52122,
+      "sha256": "a52e897ada8b8c859c51bb08256720bc003e39adc6b1ad4fdfc42fd5690cebcf"
+    },
+    {
+      "path": "local-cache-expunge.json",
+      "bytes": 629,
+      "sha256": "5496b93e6adf93f67f32cbbbf592aa3b5b92f3a59696cdb2756b538b280e645a"
+    },
+    {
+      "path": "local-cache-expunge.log",
+      "bytes": 162,
+      "sha256": "a5a66e1992ce38b68428b7ffe18f657dd0fc726aaa4e1d555ef7dbc9dc0f7e6b"
+    },
+    {
+      "path": "migrated-error-01.json",
+      "bytes": 3075,
+      "sha256": "868e1296486782f451568728add96d2f88bbe35b73d938806c5d6727f9ac490e"
+    },
+    {
+      "path": "migrated-error-01.log",
+      "bytes": 551,
+      "sha256": "8d8eeb23555f3592fd7fd2a20a8493b6df6cf8c95f091f1b29d422437c1b6e54"
+    },
+    {
+      "path": "migrated-update-01.json",
+      "bytes": 2952,
+      "sha256": "6b1006db63ab93d443d172233c0c5987c25938e94345d5c09866f53c857b5c9b"
+    },
+    {
+      "path": "migrated-update-01.log",
+      "bytes": 6817,
+      "sha256": "b5b99bfecf9dce4b4cd703bbe7da522ea80dd793d535863b8b289a883585f919"
+    },
+    {
+      "path": "migrated-update-02.json",
+      "bytes": 3142,
+      "sha256": "a427c69dac032ee452d99ef963c79b9b278cfde4a3580bc4083a89bd5eaba44b"
+    },
+    {
+      "path": "migrated-update-02.log",
+      "bytes": 3489,
+      "sha256": "eb6310bd722de9dea30f4be167dfc6ba3822a57124cf04d7a269dbb8a9b2e7d5"
+    },
+    {
+      "path": "migrated-update-03.json",
+      "bytes": 3079,
+      "sha256": "664212777dfa7caefcc9fb23abf380fe6dcf93ed9cf575dad72f42abe5df8931"
+    },
+    {
+      "path": "migrated-update-03.log",
+      "bytes": 2226,
+      "sha256": "4711f9016ca88a32361775dc277faf828c17a4a41044a03dc4b4b708ac633e47"
+    },
+    {
+      "path": "run_bazel_lock.py",
+      "bytes": 3864,
+      "sha256": "5b7087abb0d9b1d7ae4d4424668cdfae6b0dec8aaa9e97746ec6de0bac6451b9"
+    },
+    {
+      "path": "vendor-target-query-01.json",
+      "bytes": 882,
+      "sha256": "d8febdc98a7ba77ad01c655e4c5e9e3ae9ad99e1699eb27ebc459a58b088e15a"
+    },
+    {
+      "path": "vendor-target-query-01.log",
+      "bytes": 206,
+      "sha256": "1b2ea004a0166e8766861cd66116047c534e816e39cb22a9f9e2db3bde00c9ee"
+    },
+    {
+      "path": "vendor-target-query-02.json",
+      "bytes": 1013,
+      "sha256": "af11c243e863385d8693acb438c4d37cd0f37707ab7a3063859b87169fdafcc1"
+    },
+    {
+      "path": "vendor-target-query-02.log",
+      "bytes": 171018,
+      "sha256": "8c6dfaafa889ad585c319254da5717f455aeea20ca284366b084439c0a59d993"
+    }
+  ],
+  "exclusions": "No executable binary, toolchain archive, repository cache, credentials, or duplicate full source workspace.",
+  "archive": {
+    "path": "raw.tar.gz",
+    "bytes": 162700,
+    "sha256": "7d9d98f59ee4a15616bf9aea0b1a7a22b6c6a97b9983f5de538dc3c5f09517d7"
+  },
+  "verification": "Every retained archive member was read back and its byte length/SHA-256 matched the manifest."
+}

@@ -1,0 +1,135 @@
+{
+  "meta_check": {
+    "finite_difference_step": 1e-05,
+    "fixtures": [
+      {
+        "finite_difference_max_abs_error": 7.20744991467015e-12,
+        "hypergradient": [
+          0.01994604042322224,
+          0.04791705188041185,
+          0.022765778757533203
+        ],
+        "pathwise_component": [
+          0.020942068122124034,
+          0.050616589506195755,
+          0.02410417508818034
+        ],
+        "probability_mass": 0.9999999999999997,
+        "projection_contacts": 0,
+        "score_component": [
+          -0.0009960276989017932,
+          -0.002699537625783908,
+          -0.001338396330647135
+        ],
+        "shape": [
+          0.4,
+          0.9,
+          0.45
+        ]
+      },
+      {
+        "finite_difference_max_abs_error": 2.6023280752518474e-11,
+        "hypergradient": [
+          0.032131385682850795,
+          0.06338068233569268,
+          0.02788094022216948
+        ],
+        "pathwise_component": [
+          0.03372193863633226,
+          0.06730863513232421,
+          0.029992286897692986
+        ],
+        "probability_mass": 1.0,
+        "projection_contacts": 1,
+        "score_component": [
+          -0.0015905529534814627,
+          -0.00392795279663154,
+          -0.0021113466755235057
+        ],
+        "shape": [
+          0.4,
+          0.9,
+          0.0
+        ]
+      }
+    ],
+    "inner_seed": 8111,
+    "inner_steps": 3,
+    "leaves": 27,
+    "outer_seed": 8117,
+    "qualification": "One-sided rate derivative at lambda=0; clipping is locally piecewise differentiable, with no general derivative claim at a projection kink.",
+    "status": "passed"
+  },
+  "physical_check": {
+    "finite_difference_step": 1e-05,
+    "fixtures": [
+      {
+        "hessian_max_abs_error": 6.549910613884435e-10,
+        "horizon": 1.0,
+        "jacobian_max_abs_error": 1.195084031735405e-10,
+        "lambda_zero_cancellation_derivative_integral_abs_error": 9.825473767932635e-14,
+        "parameters": [
+          1.0,
+          0.0,
+          0.65,
+          0.0
+        ]
+      },
+      {
+        "hessian_max_abs_error": 2.537432708393794e-09,
+        "horizon": 0.8,
+        "jacobian_max_abs_error": 4.0530584444198325e-10,
+        "lambda_zero_cancellation_derivative_integral_abs_error": 5.10702591327572e-15,
+        "parameters": [
+          0.7,
+          1.1,
+          0.3,
+          0.0
+        ]
+      },
+      {
+        "hessian_max_abs_error": 9.49571254960091e-11,
+        "horizon": 1.3,
+        "jacobian_max_abs_error": 5.3364868080052474e-11,
+        "parameters": [
+          1.4,
+          -0.4,
+          1.2,
+          1e-06
+        ]
+      },
+      {
+        "hessian_max_abs_error": 1.0199341371475157e-10,
+        "horizon": 0.9,
+        "jacobian_max_abs_error": 2.2549018208195548e-11,
+        "parameters": [
+          0.4,
+          0.8,
+          0.7,
+          0.45
+        ]
+      }
+    ],
+    "independent_boundary_identity": "At lambda=0, d p_cancel / d lambda = integral_0^T S(t) dt",
+    "mass_derivative_max_abs_error": 0.0,
+    "scheme": "Central differences of probability and analytic Jacobian; second-order forward differences for cancellation rates below the step",
+    "status": "passed"
+  },
+  "protocol_sha256": "407f4b9b78c9d9407d2c6fe556b9eae2e9a6ec2d9e2e11223a624573f20545b9",
+  "reviewed_sources": {
+    "gradients.py": "117bd9dbaa175dfcd92851f90b9520526538b4d66700a850c495ece596238c67",
+    "meta.py": "60177a17882a24a6c2e63ab8b4930942788304898a5d10319f5aa51e5c194b0b",
+    "threshold_policies.py": "a9b2e9c467516a624b88d881c1302914b465178928f6f86e813da98d2b016c22",
+    "thresholds.py": "49b8229adea929b25fe0639e01040e68e5aabb35beab5db68391547cd6bf0cc6",
+    "training.py": "aadcac61485672d6b3c16c5f4db1ea673d67a5da2e0fa0e4932d3daf48dcf9c6"
+  },
+  "schema": "hepta.first-passage.adaptive.independent-review.v1",
+  "scope": "Independent density-derivative and finite-tree audit; no confirmation stream read",
+  "threshold_review": {
+    "controller": "45 stored quadratic coefficients; with constant centered discount, 9 zero columns leave 36 potentially active features. b>=cost loses no positive optimum in the declared b-cost reward family.",
+    "method": "Independent formula and sampler derivation plus code inspection; the implementation tests separately compare density integrals, finite differences and 80000 Monte Carlo samples.",
+    "renewal_identity": "Active time of hit n has FPT law at distance n*b by independent Brownian reset increments; actual time adds (n-1)*d. Global cancellation and discount multiply as exp[-(lambda+rho)*actual_time].",
+    "sampling": "Stable inverse-Gaussian root and branch mixture give each first-passage marginal. CRN arrays do not assert identical continuous Brownian paths.",
+    "status": "formula_and_core_code_passed; statistics runner pending"
+  }
+}

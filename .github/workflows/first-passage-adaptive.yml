@@ -1,0 +1,128 @@
+name: First-passage adaptive research
+
+on:
+  pull_request:
+    paths:
+      - experiments/first_passage_adaptive/**
+      - .github/workflows/first-passage-adaptive.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: first-passage-adaptive-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Frozen research and native execution
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+          sparse-checkout: |
+            experiments/first_passage_adaptive
+            experiments/first_passage_cell
+            codex-rs/hepta-neuron
+            codex-rs/hepta-infer-core
+            codex-rs/hepta-types
+            scripts
+            .github/workflows
+
+      - name: Set up the frozen Python runtime
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+
+      - name: Install repository Rust toolchain
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+
+      - name: Install native test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.59.0,nextest@0.9.150
+
+      - name: Verify source and install scientific dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          python -m pip install --requirement experiments/first_passage_adaptive/requirements.txt
+
+      - name: Restore retained evidence without reopening confirmation
+        run: |
+          python -m experiments.first_passage_adaptive.retain_evidence restore --manifest evidence/retained/manifest.json
+          python -m experiments.first_passage_adaptive.verify_evidence
+
+      - name: Run mathematical and contract regression tests
+        run: python -m unittest discover -s experiments/first_passage_adaptive/tests -v
+
+      - name: Restore original native NDU
+        run: |
+          python -m experiments.first_passage_cell.evidence.audit_helpers.restore_archives --only experiments/first_passage_cell/evidence/native/hepta-first-passage-ndu.gz
+          python -m experiments.first_passage_cell.restore_native
+
+      - name: Compile and test the original native owner adapter
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin 71b4305c6619ed9faff98062f0ff7f932f4abfd0
+          python -m experiments.first_passage_adaptive.materialize_owner_sources \
+            --repository "$PWD" --output "$RUNNER_TEMP/fpt-owner-source"
+          python -m experiments.first_passage_adaptive.native_build \
+            --source-root "$RUNNER_TEMP/fpt-owner-source" --output "$RUNNER_TEMP/fpt-owner-build" \
+            --toolchain-bin "$(dirname "$(rustup which rustc)")" \
+            --tools-bin "$(dirname "$(command -v just)")"
+
+      - name: Reproduce mechanical execution and selected-model credit feedback
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m experiments.first_passage_adaptive.native_execution \
+            --owner-build "$RUNNER_TEMP/fpt-owner-build/NATIVE_BUILD.json" \
+            --output "$RUNNER_TEMP/fpt-native-execution"
+          python -m experiments.first_passage_adaptive.credit_execution freeze \
+            --checkpoint experiments/first_passage_adaptive/evidence/train_20261029_v2/checkpoint.json \
+            --owner-build "$RUNNER_TEMP/fpt-owner-build/NATIVE_BUILD.json" \
+            --output "$RUNNER_TEMP/fpt-credit/SOURCE_FREEZE.json"
+          python -m experiments.first_passage_adaptive.credit_execution run \
+            --checkpoint experiments/first_passage_adaptive/evidence/train_20261029_v2/checkpoint.json \
+            --owner-build "$RUNNER_TEMP/fpt-owner-build/NATIVE_BUILD.json" \
+            --freeze "$RUNNER_TEMP/fpt-credit/SOURCE_FREEZE.json" --output "$RUNNER_TEMP/fpt-credit/run"
+          python -m experiments.first_passage_adaptive.credit_recovery freeze \
+            --input "$RUNNER_TEMP/fpt-credit/run" \
+            --owner-build "$RUNNER_TEMP/fpt-owner-build/NATIVE_BUILD.json" \
+            --output "$RUNNER_TEMP/fpt-credit-recovery-freeze.json"
+          python -m experiments.first_passage_adaptive.credit_recovery run \
+            --input "$RUNNER_TEMP/fpt-credit/run" \
+            --owner-build "$RUNNER_TEMP/fpt-owner-build/NATIVE_BUILD.json" \
+            --freeze "$RUNNER_TEMP/fpt-credit-recovery-freeze.json" \
+            --output "$RUNNER_TEMP/fpt-credit-recovery"
+
+      - name: Preserve tracked source state
+        if: always()
+        run: git diff --exit-code
+
+      - name: Retain native execution evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: fpt-adaptive-${{ env.SOURCE_SHA }}
+          path: |
+            ${{ runner.temp }}/fpt-owner-build/NATIVE_BUILD.json
+            ${{ runner.temp }}/fpt-owner-build/Cargo.lock
+            ${{ runner.temp }}/fpt-owner-source/MATERIALIZATION.json
+            ${{ runner.temp }}/fpt-native-execution
+            ${{ runner.temp }}/fpt-credit
+            ${{ runner.temp }}/fpt-credit-recovery-freeze.json
+            ${{ runner.temp }}/fpt-credit-recovery
+          if-no-files-found: warn
+          retention-days: 30

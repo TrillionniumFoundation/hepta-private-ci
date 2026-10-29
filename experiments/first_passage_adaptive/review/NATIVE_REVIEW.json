@@ -1,0 +1,80 @@
+{
+  "all_adapter_and_binary_hashes_matched": true,
+  "audited_counts": {
+    "cold_restore_vs_uninterrupted_live_checks": 7,
+    "original_ndu_calls": 15,
+    "original_neuron_ticks": 15,
+    "recovered_native_owners": 8,
+    "zero_attempt_completed_replays": 7
+  },
+  "binary_sha256": "6d40e975e9bb1ff496ac2e269c27c9b518ecf2b78dee5fb53e802d90dd09ec94",
+  "each_tick_verified": [
+    "canonical request SHA256",
+    "raw complete FPT payload SHA256",
+    "native predecessor anchor",
+    "prior response task state",
+    "FPT predecessor",
+    "exact physical parameter continuity guard",
+    "actual attempted-read budget increment and no overrun"
+  ],
+  "evidence_origin": "/workspace/scratch/65d421def718/fpt_native_execution_v3/NATIVE_EXECUTION.json",
+  "evidence_sha256": "995ccf8cf1b2fee7a7df29be9843aec2525c3fcd23c3c13f9dc9bf0461a03af9",
+  "mechanistic_checks": {
+    "answer_then_stop": true,
+    "budget_stop": true,
+    "cancellation": true,
+    "cold_fpt_restore_exact": true,
+    "deadline_stop": true,
+    "natural_event": true,
+    "no_budget_overrun": true,
+    "refractory": true,
+    "replay_no_new_reads": true,
+    "risk_stop": true
+  },
+  "natural_event_case": {
+    "actions": [
+      "Wait",
+      "Read",
+      "Stop"
+    ],
+    "actual_task_utility": -0.050000000000000044,
+    "case": "natural_event",
+    "cold_fpt_restore_exact": true,
+    "event_count": 1,
+    "found": true,
+    "full_fpt_checkpoint_digest": "6863ff4ba76f3d908e1f4eae6ca462cd8406ceee2b1e7c46261027f4f99c2850",
+    "native_owner_recoveries": 2,
+    "owner_final_anchor": "3b5e84cfb59ef358614be485caf36c2fc69daf7ceceebfa9fef25bb63bd8a613",
+    "physical_clock": 0.11011039902778418,
+    "read_budget": 4,
+    "replay_source_reads": 0,
+    "source_reads": 1,
+    "spent": 1,
+    "terminal": "Stopped"
+  },
+  "retained_scope_limits": [
+    "Serial trusted research runner; no concurrent exactly-once or crash-atomic transaction guarantee.",
+    "Native V1 owns sparse runtime state and binds admission/request/FPT digests; complete FPT/post-I/O state is a research sidecar.",
+    "Initial physical model identity and observed hit stream originate in the trusted simulator; native validates consistency and phase/time contracts, not an independent stochastic-law proof.",
+    "Fixed task read price and numerical identity head are not a learned Organ Credit valuation.",
+    "A1/A2 learned physical and SG shape parameters are separate mechanism experiments and are not claimed to train these seven retrieval fixtures.",
+    "Mechanistic recovery evidence does not establish efficacy, energy savings or production activation."
+  ],
+  "review_method": "Source inspection followed by read-only audit of every retained execution receipt; no duplicate execution or confirmation data accessed.",
+  "schema": "hepta.first-passage.adaptive.native-independent-review.v1",
+  "source_sha256": {
+    "native/execution_state.rs": "bbd411ced57a356f978bddd1c2f52f634b5f651144d8a0f346c85fdd1fc06dff",
+    "native/owner_bridge.rs": "99261129526b961999d5e524c168af57b2a0d3b3dfe1fb6aca964242e94bf0d3",
+    "native/owner_bridge_tests.rs": "a9b5d41e6fe8a256b481b3852fa74ef3722eb199fa8bac440b54c1706c990a8a",
+    "native/task_journal.rs": "109a253acff6db8f580838be334c201f2baea296f25975327313373b53be20bc",
+    "native_build.py": "c2fcb5509470bfa8afd1325e2e7bc15f5c56f3c243b50212768bef006fc3fdc4",
+    "native_execution.py": "47db9083b36b038d202461e750bc46725263bcc66c5a35ae6fc87b9e6969b2ee"
+  },
+  "specific_repairs_verified": {
+    "cold_restore": "Expected continuation now advances a deepcopy of the live object. Child process restores the saved artifact; its restored checkpoint and future event/state/random stream must equal the original live state and its uninterrupted continuation.",
+    "model_binding": "Compare previous/current parsed parameters as well as declared model_digest. Test rejects changed sigma despite unchanged declared model_digest and correct new raw-payload hash.",
+    "read_charging": "Count attempted content reads separately from successful reads; reject/refund pre-open path guards; charge failed UTF-8/oversize attempts once; completed replays have zero new attempts.",
+    "uncertain_completion": "Missing post-I/O sidecar after native commit causes refusal to reexecute; native anchor can be inspected without reopening task data."
+  },
+  "status": "passed_for_declared_research_scope"
+}

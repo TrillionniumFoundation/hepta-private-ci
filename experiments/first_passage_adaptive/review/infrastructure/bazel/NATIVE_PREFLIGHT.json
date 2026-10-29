@@ -1,0 +1,151 @@
+{
+  "schema": "hepta.native-dependency-preflight.final.v1",
+  "supersedes_lock_digest_in": "REPAIR.json (which is retained unchanged as evidence of the earlier pre-Matrix-feature snapshot)",
+  "final_module_lock": {
+    "path": "MODULE.bazel.lock",
+    "bytes": 1719503,
+    "sha256": "36e52d219967278c1c1d29bf760a41a4c0af5a01dd7f91a5410c89ae552c1e94"
+  },
+  "upstream_verified_patch_rebase": {
+    "schema": "hepta.zstd-msvc-patch-rebase.v1",
+    "upstream_crate": "zstd-sys-2.1.2+zstd.1.5.7",
+    "upstream_archive_sha256": "481ada9c543b2323cbb7bbdbb5249177fbf0188ed959ed2c15e4b22421c84ed3",
+    "upstream_build_rs_sha256": "ff97fca52b72ba76c2c71f0d4ca3475d5fa746e184e7d01c6085f9efee360171",
+    "before_patch_sha256": "a4b70e82eb982ed76d9733bbe10d8a53a70910f93c316586c020c92a7128dbcb",
+    "after_patch_sha256": "6ce040bf865845f91cc30e6e58962bee6ac48f890102ac55ce6774d43dd2a6f0",
+    "expected_patched_build_rs_sha256": "b4d324c3020334d34236e5974bbdc9fe7c05b30532d9527910ea8a50e61968b5",
+    "intent": "Retain the existing MSVC-specific compress/decompress and feature-gated dictBuilder/legacy/seekable header include paths. Reuse upstream target_is_msvc(); preserve upstream hide_symbols() and MSVC visibility protection unchanged.",
+    "change": "Remove obsolete target-string setup and obsolete unconditional visibility hunk; retain one include-path hunk against the verified new upstream source.",
+    "repository_scope": "Only patches/zstd-sys_windows_msvc_include_dirs.patch changed by this rebase. No vendor source, dependency version, or gate changed."
+  },
+  "successful_native_query": {
+    "receipt": "changed-native-preflight-03.json",
+    "rust_targets": [
+      {
+        "name": "bzip2",
+        "version": "0.6.1"
+      },
+      {
+        "name": "bzip2-sys",
+        "version": "0.1.13+1.0.8"
+      },
+      {
+        "name": "ring",
+        "version": "0.17.14"
+      },
+      {
+        "name": "rustls",
+        "version": "0.23.46"
+      },
+      {
+        "name": "rustls-webpki",
+        "version": "0.103.16"
+      },
+      {
+        "name": "webpki-roots",
+        "version": "1.0.11"
+      },
+      {
+        "name": "zip",
+        "version": "9.1.3"
+      },
+      {
+        "name": "zstd",
+        "version": "0.14.3"
+      },
+      {
+        "name": "zstd-safe",
+        "version": "8.2.0"
+      },
+      {
+        "name": "zstd-sys",
+        "version": "2.1.2+zstd.1.5.7"
+      }
+    ],
+    "additional_native_target": "@bzip2//:bz2",
+    "exit_code": 0
+  },
+  "exact_materialized_zstd_source": {
+    "schema": "hepta.zstd-materialized-source.v1",
+    "path": "/workspace/scratch/65d421def718/bazel-lock-cache/user/b7351866d0d9e928b132132c54eefc9e/external/rules_rs++crate+crates__zstd-sys-2.1.2-zstd.1.5.7/build.rs",
+    "sha256": "b4d324c3020334d34236e5974bbdc9fe7c05b30532d9527910ea8a50e61968b5",
+    "matches_exact_expected_patch": true,
+    "query_receipt": "changed-native-preflight-03.json"
+  },
+  "final_canonical_update": {
+    "receipt": "final-vendor-update-01.json",
+    "exit_code": 0
+  },
+  "final_strict_error": {
+    "receipt": "final-vendor-error-01.json",
+    "exit_code": 0,
+    "before_after_identity_equal": true
+  },
+  "matrix_feature_propagation": {
+    "receipt": "matrix-anymap3-feature-query.json",
+    "exit_code": 0,
+    "anymap3_features": [
+      "std"
+    ],
+    "matrix_sdk_features": [
+      "e2e-encryption",
+      "sqlite"
+    ],
+    "matrix_manifest_sha256": "d612e7d706c91d05b0eb4dedd99d103430c7ea58c246fcd10f0c33ca5b278ac3",
+    "matrix_event_handler_source_sha256": "aee42368b0bba6f542913f50b730252110ea2cebfb458194b0de328de2444822"
+  },
+  "final_input_sha256": {
+    "MODULE.bazel": "595a1ddad96510295e70bf2e04427da8b2a5536559d08e0ddd6c98b779a6ddf0",
+    "codex-rs/Cargo.toml": "a6ef9861b7a08a842a8a54eac7eb919a0b583707b3576cd4366b5e6ca4179e8e",
+    "codex-rs/Cargo.lock": "17f9eaf6e0f6833a3866857547cf6f7f3eb5fa0e1ecb07abb29de081fddd0404",
+    "patches/zstd-sys_windows_msvc_include_dirs.patch": "6ce040bf865845f91cc30e6e58962bee6ac48f890102ac55ce6774d43dd2a6f0",
+    "patches/ring_windows_msvc_include_dirs.patch": "df8880b43ecfa96bb18138ea215b7c85c8103e17ca66541d0e284a705f787318",
+    "patches/bzip2_windows_stack_args.patch": "8ace989a58a300587ba6fa8b2b76c5d8f035155be5ed818de663b31cdfb0c00a"
+  },
+  "final_fact_changes_vs_dcce": {
+    "@@rules_rs+//rs:extensions.bzl%crate": {
+      "added": 144,
+      "removed": 89,
+      "updated": 0
+    },
+    "@@rules_rs+//rs/toolchains:module_extension.bzl%toolchains": {
+      "added": 101,
+      "removed": 101,
+      "updated": 0
+    }
+  },
+  "sealed_prior_evidence_unchanged": {
+    "raw.tar.gz": "7d9d98f59ee4a15616bf9aea0b1a7a22b6c6a97b9983f5de538dc3c5f09517d7",
+    "MANIFEST.json": "c7c3bf8beb5c5a2afe316304624ce9c067ac2c26665883806e0e4405aa8b64ee"
+  },
+  "cleanup": {
+    "schema": "hepta.bazel-output-cleanup.v1",
+    "started_utc": "2026-10-29T13:24:00.060173+00:00",
+    "command": [
+      "/workspace/scratch/65d421def718/bazel-audit-tools/bazel-9.0.0-linux-x86_64",
+      "--output_user_root=/workspace/scratch/65d421def718/bazel-lock-cache/user",
+      "--noexperimental_remote_repo_contents_cache",
+      "--host_jvm_args=-Djavax.net.ssl.trustStore=/workspace/scratch/65d421def718/bazel-lock-cache/managed-runtime-cacerts",
+      "--host_jvm_args=-Djavax.net.ssl.trustStorePassword=changeit",
+      "clean",
+      "--expunge",
+      "--repo_contents_cache="
+    ],
+    "scope": "Only this task Bazel output base, after completed final strict check and package queries. Preserve content-addressed repository downloads, installed tools, shared Cargo cache, source workspaces, locks, and all evidence.",
+    "output_base": "/workspace/scratch/65d421def718/bazel-lock-cache/user/b7351866d0d9e928b132132c54eefc9e",
+    "output_base_existed_before": true,
+    "before_free_bytes": 618332160,
+    "completed_utc": "2026-10-29T13:24:02.703249+00:00",
+    "exit_code": 0,
+    "output_base_exists_after": false,
+    "after_free_bytes": 1729511424,
+    "observed_free_byte_increase": 1111179264,
+    "free_space_caveat": "Other authorized agents may write concurrently; the delta is filesystem-wide observed free space."
+  },
+  "limitations": [
+    "Bazel query verifies real repository materialization, patch application, and target attributes. It does not execute the Rust or C/C++ compiler, link binaries, or run Windows/end-to-end tests.",
+    "Final full-target compilation and test execution remain assigned to unchanged CI gates for the new source head.",
+    "Local materialized-cache flags and configured CA trust are the same documented task-only execution settings used by the previous repair; repository gate/configuration files were not changed.",
+    "All scientific frozen code, models, and evidence remain untouched."
+  ]
+}

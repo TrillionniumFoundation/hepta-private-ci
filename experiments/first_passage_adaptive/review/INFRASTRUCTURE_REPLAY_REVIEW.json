@@ -1,0 +1,63 @@
+{
+  "schema": "hepta.first-passage.infrastructure-replay-review.v1",
+  "prior_exact_head": "dcce134867c7f3f8cb80ca661fa714b6d25a885b",
+  "prior_research_ci": {
+    "result": "success",
+    "run_id": 40875378990,
+    "job_id": 123452730789,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40875378990/job/123452730789",
+    "artifact_id": 12896929361,
+    "artifact_sha256": "b2db11a633525727c8888381a997f08e6d7cf7679fdbd21dfa331d2a860bf923"
+  },
+  "new_replay_transport_tests": {
+    "command": "python -m unittest discover -s experiments/first_passage_adaptive/tests -v",
+    "count": 49,
+    "exit_code": 0,
+    "raw_log_sha256": "0446af003513030d95eafdda5e21dd1f170dd9d611db2d97e36ec4748e3ce4f3"
+  },
+  "pinned_owner_materialization": "OWNER_SOURCE_MATERIALIZATION.json",
+  "native_dependency_audit": "NATIVE_DEPENDENCY_AUDIT.json",
+  "frozen_evidence_verifier": {
+    "confirmation_reopened": false,
+    "cross_stratum_gate": false,
+    "frozen_source_files_verified": 39,
+    "gate_policy": "Any scientific outcome is accepted when source, raw evidence and recomputed results agree.",
+    "models_retrained": false,
+    "native_raw_archives": {
+      "credit_execution_20261029_v1": {
+        "archive_sha256": "3a98cb7d89a005298b4242d9dbf9b48d8962bb34caff42e629f71f4fbd1abaed",
+        "raw_files_verified": 58
+      },
+      "credit_recovery_20261029_v1": {
+        "original_inputs_verified": 46,
+        "records_verified": 8
+      },
+      "native_v1": {
+        "archive_sha256": "3106ea87f9cecdcdc9b8f75902582ad49fcc624e723560163e6dc87d99d694da",
+        "raw_files_verified": 91
+      },
+      "native_v2": {
+        "archive_sha256": "7c42064a02bbd1142ccf13a2b8cd4bfcbf08a51ae0b16b8c471bfda28a9cc0da",
+        "raw_files_verified": 110
+      },
+      "native_v3": {
+        "archive_sha256": "386ac94cfc7b568b281f5d9856af0fdf34000ebf88cf7ba1c84f59587f5c27ec",
+        "raw_files_verified": 110
+      }
+    },
+    "planner_searches": 768,
+    "primary_gate": true,
+    "schema": "hepta.first-passage.adaptive.evidence-verification.v1",
+    "status": "verified",
+    "study_id": "fpt-adaptive-task-gradient-20261029-v1",
+    "threshold_contexts": 768,
+    "transport": {
+      "archive_sha256": "0e6d7b0219ab4b0900504a06a803c943c8862a6b0b890774762a63f10d2980f1",
+      "file_count": 111,
+      "packed_verified": true,
+      "restored_verified": true,
+      "status": "verified"
+    }
+  },
+  "scope": "No scientific source/model/confirmation-data changes. The added transport reads the exact historical Git commit after independent production dependency repairs. New-head whole-repository qualification is a separate gate, not inferred from prior-head success."
+}

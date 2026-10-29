@@ -1,0 +1,11 @@
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -131,7 +131,7 @@
+ ]
+ 
+ [dependencies.rusqlite]
+-version = "0.40.2"
++version = "0.39.0"
+ features = [
+     "limits",
+     "fallible_uint",

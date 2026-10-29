@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.fpt-adaptive.native-build.v1",
+  "owner_source_commit": "71b4305c6619ed9faff98062f0ff7f932f4abfd0",
+  "adapter_sources": {
+    "owner_bridge.rs": "99261129526b961999d5e524c168af57b2a0d3b3dfe1fb6aca964242e94bf0d3",
+    "owner_bridge_tests.rs": "a9b5d41e6fe8a256b481b3852fa74ef3722eb199fa8bac440b54c1706c990a8a",
+    "execution_state.rs": "bbd411ced57a356f978bddd1c2f52f634b5f651144d8a0f346c85fdd1fc06dff",
+    "task_journal.rs": "109a253acff6db8f580838be334c201f2baea296f25975327313373b53be20bc"
+  },
+  "source_digest": "2673cdb99ef2830fe4d138093ea9580500d19d6c184987e90b917ebb2165630d",
+  "binary": "/workspace/scratch/65d421def718/fpt_native_build/hepta-first-passage-owner-bridge",
+  "binary_sha256": "6d40e975e9bb1ff496ac2e269c27c9b518ecf2b78dee5fb53e802d90dd09ec94",
+  "lock_sha256": "5826e8ffcd9946f949a0d54265de15f51f748e4bde3586533900e6a6819e438d",
+  "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "commands": [
+    [
+      "cargo",
+      "build",
+      "--locked",
+      "--manifest-path",
+      "/workspace/scratch/65d421def718/fpt_native_build/Cargo.toml"
+    ],
+    [
+      "just",
+      "--justfile",
+      "/workspace/scratch/65d421def718/hepta_fpt_work/justfile",
+      "test",
+      "-p",
+      "hepta-first-passage-owner-bridge",
+      "--manifest-path",
+      "/workspace/scratch/65d421def718/fpt_native_build/Cargo.toml",
+      "--locked",
+      "--profile",
+      "default"
+    ]
+  ],
+  "test_status": "passed",
+  "original_owner_source_changed": false,
+  "fpt_state_profile": "research-task external state; owner V1 sparse checkpoint remains distinct",
+  "production_activation": false
+}

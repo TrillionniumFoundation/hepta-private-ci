@@ -224,6 +224,28 @@ class FormatterScopeTests(unittest.TestCase):
         self.assertEqual(command.cwd, self.root / "qualification/fixture")
         self.assertEqual(command.args[command.args.index("--edition") + 1], "2021")
 
+    def test_vendor_bytes_survive_direct_and_root_config_scopes(self):
+        vendor = self.write(
+            "codex-rs/third_party/upstream/src/lib.rs", "pub fn upstream( ){}\n"
+        )
+        owned = [
+            "codex-rs/example/src/third_party.rs",
+            "codex-rs/third_party_adapter/src/lib.rs",
+            "qualification/third_party/src/lib.rs",
+        ]
+        for name in owned:
+            self.write(name, "pub fn owned() {}\n")
+        config = self.write("rustfmt.toml", "max_width=88\n")
+        for paths in (FMT.changed_paths(), [str(config.relative_to(self.root))]):
+            with self.subTest(paths=paths):
+                groups = FMT.scoped_formatter_groups(paths, check=True)
+                self.assertEqual([group.name for group in groups], ["Rust"])
+                self.assertEqual(
+                    [command.args[-1] for command in groups[0].commands],
+                    [str(self.root / name) for name in sorted(owned)],
+                )
+        self.assertEqual(vendor.read_text(), "pub fn upstream( ){}\n")
+
     def test_changed_ruff_configuration_checks_the_owning_python_tree(self):
         groups = FMT.scoped_formatter_groups(["scripts/ruff.toml"], check=True)
         self.assertEqual([group.name for group in groups], ["Python scripts"])

@@ -15,6 +15,36 @@ const TEST_REWRITE_PROFILE: RewriteProfile = RewriteProfile::new(
 );
 
 #[test]
+fn command_frontmatter_preserves_scalars_and_ignores_unsupported_yaml_fields() {
+    let document = parse_command_content(
+        "---\r\n42: ignored\r\n? [one, two]\r\n: ignored\r\nother: !application value\r\ndescription: >-\r\n  Review changes\r\n  safely\r\n---\r\nReview body.\r\n",
+    );
+    assert_eq!(
+        (document.description, document.body),
+        (
+            Some("Review changes safely".to_string()),
+            "Review body.\r\n".to_string()
+        )
+    );
+    assert_eq!(
+        parse_command_description("description: on"),
+        Some("on".to_string())
+    );
+    assert_eq!(
+        parse_command_description("description: 1.0"),
+        Some("1.0".to_string())
+    );
+    assert_eq!(
+        parse_command_description("description: !application hidden"),
+        None
+    );
+    assert_eq!(
+        parse_command_description("defaults: &d {description: hidden}\n<<: *d"),
+        None
+    );
+}
+
+#[test]
 fn command_skill_names_must_fit_codex_skill_loader_limit() {
     let source_name = "this-is-a-deeply-nested-command-with-a-very-long-name";
     let file = Path::new("commands/this/is/a/deeply/nested/command/with/a/very/long/name.md");

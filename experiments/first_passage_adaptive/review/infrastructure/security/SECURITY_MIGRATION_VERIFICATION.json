@@ -1,0 +1,272 @@
+{
+  "baseline": {
+    "artifact": {
+      "bytes": 858865,
+      "sha256": "b13ac7f26badbcbd372e42f6a18b56a8b6d818688ad949cca8449e145eafe95a"
+    },
+    "artifact_id": 12881651637,
+    "commit": "71b4305c6619ed9faff98062f0ff7f932f4abfd0",
+    "errors": 22,
+    "unmaintained": 6,
+    "vulnerabilities": 16
+  },
+  "canonical_just_fmt_exit_code": 0,
+  "cargo_deny": {
+    "command": "cargo deny --log-level error --format json --manifest-path codex-rs/Cargo.toml --all-features check",
+    "exit_code": 0,
+    "new_ignores_added": false,
+    "new_license_exceptions_added": false,
+    "policy_modified": false,
+    "summary": {
+      "advisories": {
+        "errors": 0,
+        "helps": 0,
+        "notes": 22,
+        "warnings": 3
+      },
+      "bans": {
+        "errors": 0,
+        "helps": 0,
+        "notes": 21,
+        "warnings": 114
+      },
+      "licenses": {
+        "errors": 0,
+        "helps": 1342,
+        "notes": 0,
+        "warnings": 1
+      },
+      "sources": {
+        "errors": 0,
+        "helps": 0,
+        "notes": 6,
+        "warnings": 1
+      }
+    },
+    "version": "0.19.0"
+  },
+  "inputs": {
+    "MODULE.bazel.lock": {
+      "bytes": 1719503,
+      "sha256": "36e52d219967278c1c1d29bf760a41a4c0af5a01dd7f91a5410c89ae552c1e94"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 423598,
+      "sha256": "17f9eaf6e0f6833a3866857547cf6f7f3eb5fa0e1ecb07abb29de081fddd0404"
+    },
+    "codex-rs/Cargo.toml": {
+      "bytes": 22152,
+      "sha256": "a6ef9861b7a08a842a8a54eac7eb919a0b583707b3576cd4366b5e6ca4179e8e"
+    },
+    "codex-rs/core-plugins/src/startup_sync.rs": {
+      "bytes": 39103,
+      "sha256": "6b8ba88761db1205238b2733eb9c487f993d8251ba306f0b8576caa743499700"
+    },
+    "codex-rs/core-plugins/src/startup_sync_tests.rs": {
+      "bytes": 48008,
+      "sha256": "9136bef68197ff0ad1eeafdefa1ce1363e2cc447e1d85ff89302ff6a1ab687ad"
+    },
+    "codex-rs/deny.toml": {
+      "bytes": 18803,
+      "sha256": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352"
+    },
+    "codex-rs/third_party/SECURITY_PATCHES.json": {
+      "bytes": 904,
+      "sha256": "addcda2673612a118f3837e895b5bd1c4dfcc522f03f06b0ad217bceb5e5a276"
+    },
+    "scripts/test_security_vendors.py": {
+      "bytes": 5045,
+      "sha256": "a06f01468a7f0eb73675df4d5af9cb868ad9501f02d414895454f0908b343281"
+    },
+    "scripts/verify_security_vendors.py": {
+      "bytes": 7683,
+      "sha256": "1ccd135a0d6cdf47bace88c5de08ae8238d5043fd41f38918a81a040bef6fd85"
+    }
+  },
+  "limitations": [
+    "Full workspace tests and cross-platform compilation are delegated to the unchanged PR gates.",
+    "Keyring API and namespace compatibility is source-reviewed; existing mock-based tests do not prove live desktop SecretService unlock, old-entry access, or persistence.",
+    "Matrix check reported the existing first-party AsyncFd deprecated call under the upgraded Tokio; a separate agent is migrating and verifying those callers."
+  ],
+  "logs": {
+    "aws-auth-check-final.log": {
+      "bytes": 284,
+      "sha256": "addfeed87c8f8bda66ab46bdcaaf7a63415787038224e988b43c0190b4c1c965"
+    },
+    "matrix-sdk-check-v2.log": {
+      "bytes": 832,
+      "sha256": "c0d7f8f324d43fee00db6b0861c75e5e3b1eb5200ff74c30770d49782be15b59"
+    },
+    "security-final-format-v3.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "security-vendor-verify-v2.json": {
+      "bytes": 1517,
+      "sha256": "eca4f12f1f0cd200b73a45a901252bffe960c76830d3f31aeae30f833316f890"
+    },
+    "workspace-deny-final.stderr": {
+      "bytes": 262,
+      "sha256": "d2be92f56a38982c445bda67c9130bf1f672e71ec829c8bca9fafcf25307af3c"
+    },
+    "zip-regression/SOURCE_IDENTITY.json": {
+      "bytes": 724,
+      "sha256": "d051e23d63de89d6f4a3738dd1b922262917e160ee3a0d460c77d88612433f9a"
+    },
+    "zip-regression/test-v2.log": {
+      "bytes": 1211,
+      "sha256": "799da5c4135bbc1bf1195b4623ffa2b6e639e7bdefdec3ef54ed609399917d12"
+    }
+  },
+  "owner_checks": {
+    "codex-aws-auth": {
+      "command": "cargo check -p codex-aws-auth --lib -j 2",
+      "exit_code": 0
+    },
+    "codex-hepta-matrix-sdk": {
+      "command": "cargo check -p codex-hepta-matrix-sdk --lib -j 2",
+      "exit_code": 0
+    }
+  },
+  "scope": "Production dependency security migration and narrowly scoped compatibility verification. Scientific sources and frozen evidence are not changed.",
+  "selected_lock_versions": {
+    "anymap3": [
+      "1.1.0"
+    ],
+    "aws-config": [
+      "1.8.12"
+    ],
+    "crypto-bigint": [
+      "0.7.10"
+    ],
+    "dbus-secret-service": [
+      "4.1.0"
+    ],
+    "i18n-config": [
+      "0.4.8"
+    ],
+    "matrix-sdk": [
+      "0.19.1"
+    ],
+    "matrix-sdk-crypto": [
+      "0.19.1"
+    ],
+    "matrix-sdk-sqlite": [
+      "0.19.1"
+    ],
+    "p256": [
+      "0.14.0"
+    ],
+    "rustls": [
+      "0.23.46"
+    ],
+    "rustls-webpki": [
+      "0.103.16"
+    ],
+    "serde-saphyr": [
+      "2.0.0"
+    ],
+    "starlark": [
+      "0.14.2"
+    ],
+    "webpki-root-certs": [
+      "1.0.11"
+    ],
+    "webpki-roots": [
+      "1.0.11"
+    ],
+    "zip": [
+      "9.1.3"
+    ],
+    "zstd": [
+      "0.14.3"
+    ],
+    "zstd-safe": [
+      "8.2.0"
+    ],
+    "zstd-sys": [
+      "2.1.2+zstd.1.5.7"
+    ]
+  },
+  "vendor_identity": {
+    "artificial_tests_passed": 7,
+    "exit_code": 0,
+    "original_upstream_files_modified": 8,
+    "packages": [
+      {
+        "bytes": 751653,
+        "files": 75,
+        "modified_upstream_files": [
+          "Cargo.toml",
+          "src/login/dpop.rs"
+        ],
+        "name": "aws-config",
+        "upstream_archive_sha256": "96571e6996817bf3d58f6b569e4b9fd2e9d2fcf9f7424eed07b2ce9bb87535e5",
+        "version": "1.8.12"
+      },
+      {
+        "bytes": 34194,
+        "files": 14,
+        "modified_upstream_files": [
+          "Cargo.toml",
+          "src/lib.rs"
+        ],
+        "name": "i18n-config",
+        "upstream_archive_sha256": "3e06b90c8a0d252e203c94344b21e35a30f3a3a85dc7db5af8f8df9f3e0c63ef",
+        "version": "0.4.8"
+      },
+      {
+        "bytes": 5726722,
+        "files": 212,
+        "modified_upstream_files": [
+          "Cargo.toml",
+          "src/event_handler/mod.rs"
+        ],
+        "name": "matrix-sdk",
+        "upstream_archive_sha256": "2afc652a144822f6fbe24084e08bc59cb483fd0b504396d492131dec0749396e",
+        "version": "0.19.1"
+      },
+      {
+        "bytes": 568361,
+        "files": 74,
+        "modified_upstream_files": [
+          "Cargo.toml"
+        ],
+        "name": "matrix-sdk-sqlite",
+        "upstream_archive_sha256": "8d4271e06d52a17bc6ec39b5a2985b65dcced737969fac3678967783656edb34",
+        "version": "0.19.1"
+      },
+      {
+        "bytes": 3613326,
+        "files": 688,
+        "modified_upstream_files": [
+          "Cargo.toml"
+        ],
+        "name": "starlark",
+        "upstream_archive_sha256": "9062e866918dc4c9701c98ac99f7f4fa9e4b3b4edce306e147393bc75458c4fc",
+        "version": "0.14.2"
+      }
+    ],
+    "snapshot": {
+      "bytes": 206118,
+      "sha256": "4c2b2ec12af1317fd21faabb33678ece27cbae83465f03ccb0a04e5e64cc3f72"
+    }
+  },
+  "zip_regression": {
+    "command": "just test --manifest-path math_audit/zip-regression/Cargo.toml -p hepta-zip-security-regression --lib -j 2 --locked",
+    "contents_preserved": true,
+    "exit_code": 0,
+    "input_modes_octal": [
+      "0107755",
+      "0100640"
+    ],
+    "passed": 1,
+    "qualification": "ZIP 9.1.3 unix_mode already strips special bits; the repository explicit rwx mask records the same policy. This is not claimed as a separate remaining vulnerability after the dependency upgrade.",
+    "result_modes_octal": [
+      "0755",
+      "0640"
+    ],
+    "scope": "Exact source extraction functions and actual new test in a small ZIP 9.1.3 deflate-only fixture, not a complete codex-core-plugins owner test.",
+    "skipped": 0
+  }
+}

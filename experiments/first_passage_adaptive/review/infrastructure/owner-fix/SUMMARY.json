@@ -1,0 +1,64 @@
+{
+  "schema": "hepta.two-owner-canonical-fix.summary.v1",
+  "command": [
+    "just",
+    "fix",
+    "-p",
+    "codex-hepta-memory",
+    "-p",
+    "codex-hepta-automation",
+    "--locked"
+  ],
+  "controlled_environment": {
+    "CARGO_HOME": "/workspace/scratch/65d421def718/security-cargo-home",
+    "CARGO_TARGET_DIR": "/workspace/scratch/65d421def718/security-target",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0"
+  },
+  "final_result": {
+    "exit_code": 0,
+    "cargo_reported_duration_seconds": 52.47,
+    "selected_packages": [
+      "codex-hepta-memory",
+      "codex-hepta-automation"
+    ],
+    "automatic_source_changes": 0,
+    "cargo_and_module_identities_unchanged": true,
+    "receipt": "retry_after_sparse_input/two-owner-fix.json",
+    "log": "retry_after_sparse_input/two-owner-fix.log"
+  },
+  "initial_environment_failure": {
+    "exit_code": 101,
+    "receipt": "two-owner-fix.json",
+    "cause": "Sparse checkout omitted docs/modules/MODULES.json required by the hepta-fleet dependency include_str macro.",
+    "source_changes": 0,
+    "tracked_input_repair": {
+      "schema": "hepta.sparse-build-input-materialization.v1",
+      "reason": "Canonical two-owner fix initially stopped because the shared sparse checkout omitted hepta-fleet include_str docs/modules/MODULES.json.",
+      "command": [
+        "git",
+        "sparse-checkout",
+        "add",
+        "docs/modules"
+      ],
+      "checkout_head": "dcce134867c7f3f8cb80ca661fa714b6d25a885b",
+      "path": "docs/modules/MODULES.json",
+      "head_blob_sha1": "e4a5965a06b0af917130bd929158e714684a91bc",
+      "materialized_blob_sha1": "e4a5965a06b0af917130bd929158e714684a91bc",
+      "sha256": "be10ee569a0a12c94631e0d5f25e5ee627b337369e8bccf5b75f236c98d444a5",
+      "repository_content_changed": false
+    }
+  },
+  "warnings": "Existing non-blocking large_enum_variant, too_many_arguments, and one dead_code diagnostic were retained; no lint or gate was weakened to obtain success.",
+  "scope": "The canonical fix recipe invokes cargo clippy --fix --tests --allow-dirty for the two named default-feature packages. This validates the crates and their test targets by compilation/Clippy; it does not execute test bodies or claim broader all-feature/workspace coverage.",
+  "final_guard_sha256": {
+    "codex-rs/Cargo.toml": "a6ef9861b7a08a842a8a54eac7eb919a0b583707b3576cd4366b5e6ca4179e8e",
+    "codex-rs/Cargo.lock": "17f9eaf6e0f6833a3866857547cf6f7f3eb5fa0e1ecb07abb29de081fddd0404",
+    "MODULE.bazel": "595a1ddad96510295e70bf2e04427da8b2a5536559d08e0ddd6c98b779a6ddf0",
+    "MODULE.bazel.lock": "36e52d219967278c1c1d29bf760a41a4c0af5a01dd7f91a5410c89ae552c1e94"
+  },
+  "cache_cleanup": "IDLE_BAZEL_CACHE_CLEANUP.json",
+  "current_free_bytes_observed": 1544032256,
+  "next_gate": "Complete new-head repository CI remains responsible for full target/test matrices."
+}

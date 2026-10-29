@@ -255,7 +255,10 @@ pub(crate) struct AsyncSocket {
 impl AsyncSocket {
     fn new(socket: Socket) -> std::io::Result<AsyncSocket> {
         socket.set_nonblocking(true)?;
-        let async_socket = AsyncFd::new(socket)?;
+        // SAFETY: Socket owns a valid descriptor and the private AsyncFd only
+        // lends shared references. The descriptor is never closed or replaced
+        // before AsyncFd drops it or deregisters it through into_inner.
+        let async_socket = unsafe { AsyncFd::register(socket)? };
         Ok(AsyncSocket {
             inner: async_socket,
         })
@@ -370,9 +373,11 @@ pub(crate) struct AsyncDatagramSocket {
 impl AsyncDatagramSocket {
     fn new(socket: Socket) -> std::io::Result<Self> {
         socket.set_nonblocking(true)?;
-        Ok(Self {
-            inner: AsyncFd::new(socket)?,
-        })
+        // SAFETY: Socket owns a valid descriptor and the private AsyncFd only
+        // lends shared references. The descriptor is never closed or replaced
+        // before AsyncFd drops it or deregisters it through into_inner.
+        let inner = unsafe { AsyncFd::register(socket)? };
+        Ok(Self { inner })
     }
 
     pub unsafe fn from_raw_fd(fd: RawFd) -> std::io::Result<Self> {

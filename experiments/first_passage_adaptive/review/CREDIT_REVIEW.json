@@ -1,0 +1,179 @@
+{
+  "audited_counts": {
+    "actual_credit_settlements": 7,
+    "idempotent_native_and_credit_replays": 3,
+    "native_ndu_evaluations": 8,
+    "native_owner_ticks": 7,
+    "unexecuted_price_interventions": 1
+  },
+  "cases": [
+    {
+      "actions": [
+        "Read",
+        "Stop"
+      ],
+      "actual_attempts": 1,
+      "actual_base_cost": 0.05,
+      "case": "feedback_enabled",
+      "cell_model_digest": "97f41c8c8a37969ae085b98dcc2f82e59e71bef929250d6a11acc71c2c216bf5",
+      "credit_final_sha256": "a160484fcec776db34ecb420d48f0759d0b809b333b0d33f96367e9df5c7812d",
+      "feedback_enabled": true,
+      "final_price": 0.4000000000000001,
+      "found": false,
+      "natural_events": 0,
+      "owner_final_anchor": "a8cea9e574b91ddd6dce12dd06a58723c73ea69c0d5aafb7a1bc06acbfe98be6",
+      "physical_task_return": -0.05,
+      "prices_before_decision": [
+        0.0,
+        0.6000000000000001
+      ],
+      "replay_attempts": 0,
+      "replay_credit_unchanged": true,
+      "selected_physical_parameters": {
+        "physical_cancel_rate": 0.0,
+        "sigma": 0.2,
+        "upper_mu_bias": 0.6500460029976326
+      },
+      "shadow_resource_charges": 0.0,
+      "successful_reads": 1,
+      "terminal": "Stopped"
+    },
+    {
+      "actions": [
+        "Read",
+        "Read",
+        "Read",
+        "Stop"
+      ],
+      "actual_attempts": 3,
+      "actual_base_cost": 0.15000000000000002,
+      "case": "feedback_disabled",
+      "cell_model_digest": "97f41c8c8a37969ae085b98dcc2f82e59e71bef929250d6a11acc71c2c216bf5",
+      "credit_final_sha256": "c1597533d3447696bc31d349cdded70e35be6caa8ca681c997b2456532a90382",
+      "feedback_enabled": false,
+      "final_price": 0.0,
+      "found": true,
+      "natural_events": 0,
+      "owner_final_anchor": "d6728527b33cf93d9c06bc1661096ac4719ba12764e327176183e8a6b65f0e42",
+      "physical_task_return": 0.85,
+      "prices_before_decision": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "replay_attempts": 0,
+      "replay_credit_unchanged": true,
+      "selected_physical_parameters": {
+        "physical_cancel_rate": 0.0,
+        "sigma": 0.2,
+        "upper_mu_bias": 0.6500460029976326
+      },
+      "shadow_resource_charges": 0.0,
+      "successful_reads": 3,
+      "terminal": "Stopped"
+    },
+    {
+      "actions": [
+        "Read"
+      ],
+      "actual_attempts": 1,
+      "actual_base_cost": 0.05,
+      "case": "failed_attempt_feedback",
+      "cell_model_digest": "97f41c8c8a37969ae085b98dcc2f82e59e71bef929250d6a11acc71c2c216bf5",
+      "credit_final_sha256": "93b4b280a89d124b0ceb7dbff4a73f038540ced29057c6b26e1cd5ef5ebdc722",
+      "feedback_enabled": true,
+      "final_price": 0.6000000000000001,
+      "found": false,
+      "natural_events": 0,
+      "owner_final_anchor": "636fb314b9a4cc0015148b874f7dc254aae7f7ae93b4b6485fee0a629636dc1a",
+      "physical_task_return": -0.05,
+      "prices_before_decision": [
+        0.0
+      ],
+      "replay_attempts": 0,
+      "replay_credit_unchanged": true,
+      "selected_physical_parameters": {
+        "physical_cancel_rate": 0.0,
+        "sigma": 0.2,
+        "upper_mu_bias": 0.6500460029976326
+      },
+      "shadow_resource_charges": 0.0,
+      "successful_reads": 0,
+      "terminal": "ReadFailed"
+    }
+  ],
+  "coordinate_mapping": "lower-distance drift = -(trained upper mu bias + declared drift_offset)",
+  "execution_sha256": "deb6ed463f8787c033e6a0993c484e3249cc3f0fa07a229535d88ac6e7c56d5a",
+  "lower_distance_drift": -0.6500460029976326,
+  "mechanistic_checks": {
+    "actual_result_disables_read_after_answer": true,
+    "failed_opened_read_is_charged_and_updates_price": true,
+    "feedback_chain_reaches_next_ndu_snapshot": true,
+    "feedback_changes_next_real_action": true,
+    "lambda_preserved_not_relabelled_price": true,
+    "price_stop_is_not_a_guard_rejection": true,
+    "real_reads_differ": true,
+    "replay_does_not_update_credit_or_read": true,
+    "same_observed_task_successor_at_price_intervention": true,
+    "same_physical_successor_at_price_intervention": true,
+    "source_identity_unchanged": true,
+    "stop_has_zero_attempts": true,
+    "trained_physics_loaded": true
+  },
+  "method": "Source review and read-only validation of all retained requests, native responses, NDU evaluations and credit-settlement receipts; no additional native execution.",
+  "permitted_conclusion": "The trained physical coefficients genuinely feed this research adapter, and an explicitly separate resource price causally changes a later legal action and actual attempted reads in the retained fixture.",
+  "physical_parameters": {
+    "physical_cancel_rate": 0.0,
+    "sigma": 0.2,
+    "upper_mu_bias": 0.6500460029976326
+  },
+  "required_limits": [
+    "Enabled feedback returns -0.05 versus 0.85 without feedback; fewer reads came with failure to find the answer. This is a mechanism demonstration with worse task return, not an efficiency or efficacy gain.",
+    "Only the selected physical cancellation rate zero was exercised; positive-lambda cancellation/answer timing is not validated by this fixture.",
+    "Credit settlement replay was validated within the serial research adapter. A cold-process credit-ledger restoration protocol is not implemented or claimed.",
+    "The relevance prior, price step and target usage are frozen fixture choices, not a learned calibrated value function or a dual-convergence theorem.",
+    "This adapter is separate from the frozen threshold cohort and does not modify its gate or multiply its scientific evidence.",
+    "Original native owner digests and bounded local reads are real; this remains a research credit sidecar, not an existing Organ Credit API or production TaskFlow activation."
+  ],
+  "reviewed_at": "2026-10-29T12:26:23.258304+00:00",
+  "schema": "hepta.first-passage.adaptive.credit-independent-review.v1",
+  "selected_model_sha256": "f664c74c80054ba61b31f45cc953791052c36b936ed0e5c677fcba9c6625b8df",
+  "source_freeze_sha256": "d66c47b7693fd70c88d0cbd41d803c6a5c836515447724225d2588a02ad82ec1",
+  "source_identity": {
+    "runtime": {
+      "numpy": "2.3.5",
+      "python": "3.12.14",
+      "scipy": "1.17.0"
+    },
+    "sha256": {
+      "experiments/first_passage_adaptive/credit_execution.py": "122e6780535379e9ecbafeaf3c3770edb00f76bbe7dd800d77c6bcc74d735527",
+      "experiments/first_passage_adaptive/native/SOURCE_IDENTITY.json": "7d80b4b068856af308baf7de41e32a78af167a487f3f2bc3e1a06614eb8c86dd",
+      "experiments/first_passage_adaptive/native/execution_state.rs": "bbd411ced57a356f978bddd1c2f52f634b5f651144d8a0f346c85fdd1fc06dff",
+      "experiments/first_passage_adaptive/native/owner-Cargo.lock": "5826e8ffcd9946f949a0d54265de15f51f748e4bde3586533900e6a6819e438d",
+      "experiments/first_passage_adaptive/native/owner_bridge.rs": "99261129526b961999d5e524c168af57b2a0d3b3dfe1fb6aca964242e94bf0d3",
+      "experiments/first_passage_adaptive/native/owner_bridge_tests.rs": "a9b5d41e6fe8a256b481b3852fa74ef3722eb199fa8bac440b54c1706c990a8a",
+      "experiments/first_passage_adaptive/native/task_journal.rs": "109a253acff6db8f580838be334c201f2baea296f25975327313373b53be20bc",
+      "experiments/first_passage_adaptive/native_build.py": "c2fcb5509470bfa8afd1325e2e7bc15f5c56f3c243b50212768bef006fc3fdc4",
+      "experiments/first_passage_adaptive/native_execution.py": "47db9083b36b038d202461e750bc46725263bcc66c5a35ae6fc87b9e6969b2ee",
+      "experiments/first_passage_adaptive/tests/test_credit_execution.py": "4d4b2e781fac5d22716e54ff6bd35680c11a5928fad76e1cd059c3ae4fff2a16",
+      "experiments/first_passage_cell/NATIVE_BUILD.json": "8ab32954c8a9def93e41cb7703adec1b198b30b5f771b20e962b868957d02664",
+      "experiments/first_passage_cell/NATIVE_SOURCE_MANIFEST.json": "4c2df16a69c6579ae8b5bc2683acc1060bc31c7c5790e70e3161b9dd6fc89a0d",
+      "experiments/first_passage_cell/cell.py": "2c21d6ffaf4fea4e9a0be1858364054e37302c34619e2b331911fd3b0130346e",
+      "experiments/first_passage_cell/kernels.py": "f2b739eaa7f86f755e283ec8e7a63ed2e9d3029d56d928f7b651ea323c1f3308",
+      "experiments/first_passage_cell/native_bridge.rs": "29e1d4e295a6603bcdaaf0b01206b58b26bca7ca6d7e82eac52af6d993b0c915",
+      "experiments/first_passage_cell/ndu.py": "72da43b774f6a79d7fe723a98d9fd38fde26b47f6acc591860abfb64d3718fd5"
+    }
+  },
+  "status": "passed_for_declared_mechanistic_integration_scope",
+  "verified": [
+    "Selected A1 training checkpoint and source/registration binding; exact upper-to-lower drift sign.",
+    "Same immutable physical model throughout all cases; physical cancellation rate is zero and never replaced by the dual resource price.",
+    "Canonical request, response and feedback-receipt hashes; native anchor chain; actual read-attempt budget delta; physical base cost.",
+    "Projected price update computed only from observed attempt usage; failed UTF-8 read charged and raises price despite zero successful reads.",
+    "Previous feedback receipt and current price enter the next real NDU snapshot.",
+    "Second enabled/disabled decision has the same complete FPT and observed task successor, with READ still feasible.",
+    "Native evaluator chooses READ when only the price is intervened to zero; this alternative is not executed.",
+    "Completed native replay has zero new attempts and credit settlement is not applied twice."
+  ]
+}

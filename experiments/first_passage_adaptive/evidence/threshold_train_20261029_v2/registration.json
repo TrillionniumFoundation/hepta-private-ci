@@ -1,0 +1,42 @@
+{
+  "confirmation_opened": false,
+  "registered_at": "2026-10-29T12:17:37.754663+00:00",
+  "source_identity": {
+    "implementation_configuration": {
+      "ordinary_features": "standardized full quadratic of all eight public inputs",
+      "ordinary_ftol": 1e-12,
+      "ordinary_gtol": 1e-07,
+      "ordinary_initial_intercepts": [
+        -2.0,
+        -1.0,
+        0.0
+      ],
+      "ordinary_maxiter": 160,
+      "ordinary_ridge": 1e-05,
+      "planner_grid_size": 257,
+      "planner_xatol": 1e-10,
+      "selection": "highest development analytic expected task utility"
+    },
+    "runtime": {
+      "numpy": "2.3.5",
+      "python": "3.12.14",
+      "scipy": "1.17.0"
+    },
+    "source_sha256": {
+      "experiments/first_passage_adaptive/ADAPTIVE_PROTOCOL.json": "407f4b9b78c9d9407d2c6fe556b9eae2e9a6ec2d9e2e11223a624573f20545b9",
+      "experiments/first_passage_adaptive/CONTRACT.md": "3fcc37abdd5aa5daddd682e9cb577e24d7af28cbaa57002f5a425a040af3b65b",
+      "experiments/first_passage_adaptive/__init__.py": "36161a31787589412cc337531279ebe5ffded4bee9e368bc0b5fccdf86caa866",
+      "experiments/first_passage_adaptive/requirements.txt": "1668a3152e33680d94637b13421c15e68bd97cd8701f7f555c691f5bc5c0b9f3",
+      "experiments/first_passage_adaptive/review/paired_cluster_reference.py": "e8ac127185c9e2d1ea4a6fff3d01e0b01d55545e6298cc441bf9cdc64142284f",
+      "experiments/first_passage_adaptive/tests/test_threshold_statistics.py": "f0c0d09ffc6998fc2863d07dc67f4afa4727ab883e56fff372f4bc461bf13274",
+      "experiments/first_passage_adaptive/tests/test_threshold_study.py": "55c9db0ff2c3f3d1ab4f70b9df939f2675befd4e313b0815af18c3221114fe3b",
+      "experiments/first_passage_adaptive/tests/test_thresholds.py": "d67602a08f1eef26a561445223136c7c3bbf31f5186f0f276751fa263b75ad1c",
+      "experiments/first_passage_adaptive/threshold_policies.py": "a9b2e9c467516a624b88d881c1302914b465178928f6f86e813da98d2b016c22",
+      "experiments/first_passage_adaptive/threshold_statistics.py": "fd581f796f41ea4c936d8160cc2ac56c76b9236a48a03d001a17824525755d06",
+      "experiments/first_passage_adaptive/threshold_study.py": "afafba7f330cd7de0cd277adcfd9854df6a884dc94fac99473691a18091a1eae",
+      "experiments/first_passage_adaptive/thresholds.py": "49b8229adea929b25fe0639e01040e68e5aabb35beab5db68391547cd6bf0cc6",
+      "experiments/first_passage_cell/kernels.py": "f2b739eaa7f86f755e283ec8e7a63ed2e9d3029d56d928f7b651ea323c1f3308"
+    }
+  },
+  "study_id": "fpt-adaptive-task-gradient-20261029-v1"
+}

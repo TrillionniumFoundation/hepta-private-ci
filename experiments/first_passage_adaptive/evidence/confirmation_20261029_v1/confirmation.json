@@ -1,0 +1,1430 @@
+{
+  "checkpoint_sha256": "4b731f8500e13a033a61956aa999cd5dd1e7e36c22937c2cf894ebc4644f3226",
+  "confirmation_opened": true,
+  "data": {
+    "outer": {
+      "contexts": [
+        {
+          "distance": 1.1850092058843922,
+          "drift_offset": 0.948992733191916,
+          "feature": 1.0,
+          "horizon": 1.0341367982830512,
+          "target": 0
+        },
+        {
+          "distance": 1.3020691915242582,
+          "drift_offset": -0.36816493962691754,
+          "feature": -0.8,
+          "horizon": 0.9085284773050214,
+          "target": 1
+        },
+        {
+          "distance": 1.1237703651019992,
+          "drift_offset": 0.9148538353286981,
+          "feature": 1.0,
+          "horizon": 1.0362953677131077,
+          "target": 0
+        }
+      ],
+      "seed": 2026102974,
+      "sha256": "473821e8a959db47eb9065a9ee304771a093baadb6290a9e8f2f6588a75c7712",
+      "split": "confirmation"
+    },
+    "physical": {
+      "contexts": [
+        {
+          "costs": [
+            0.0,
+            1.2,
+            1.5
+          ],
+          "distance": 0.8189946826221287,
+          "drift_offset": 0.9269166659040551,
+          "horizon": 1.1669762613089683
+        },
+        {
+          "costs": [
+            2.0,
+            0.0,
+            0.35
+          ],
+          "distance": 1.1302519376954767,
+          "drift_offset": -0.6795845662193695,
+          "horizon": 0.88169403402489
+        },
+        {
+          "costs": [
+            0.0,
+            1.2,
+            1.5
+          ],
+          "distance": 0.9060799525462886,
+          "drift_offset": 0.867494927248871,
+          "horizon": 0.842268004474209
+        },
+        {
+          "costs": [
+            2.0,
+            0.0,
+            0.35
+          ],
+          "distance": 1.1916241703028991,
+          "drift_offset": -0.4827765486381959,
+          "horizon": 1.170784042940943
+        },
+        {
+          "costs": [
+            0.0,
+            1.2,
+            1.5
+          ],
+          "distance": 0.7753608550737148,
+          "drift_offset": 1.077509880382815,
+          "horizon": 0.9427117520183157
+        },
+        {
+          "costs": [
+            2.0,
+            0.0,
+            0.35
+          ],
+          "distance": 1.0670532862397386,
+          "drift_offset": -0.5543118252489401,
+          "horizon": 0.9591124529866202
+        },
+        {
+          "costs": [
+            0.0,
+            1.2,
+            1.5
+          ],
+          "distance": 0.8012261698408327,
+          "drift_offset": 0.9958200503674749,
+          "horizon": 1.11847228912824
+        },
+        {
+          "costs": [
+            2.0,
+            0.0,
+            0.35
+          ],
+          "distance": 0.9055920684419002,
+          "drift_offset": -0.3264737133055728,
+          "horizon": 0.8343400280380331
+        },
+        {
+          "costs": [
+            0.0,
+            1.2,
+            1.5
+          ],
+          "distance": 0.8806706957321275,
+          "drift_offset": 0.8912462729801501,
+          "horizon": 0.7186846383837552
+        },
+        {
+          "costs": [
+            2.0,
+            0.0,
+            0.35
+          ],
+          "distance": 1.0108561924555501,
+          "drift_offset": -0.508359687875678,
+          "horizon": 0.953049816894525
+        },
+        {
+          "costs": [
+            0.0,
+            1.2,
+            1.5
+          ],
+          "distance": 0.9312797667310347,
+          "drift_offset": 0.9600421620948314,
+          "horizon": 0.7836377467017824
+        },
+        {
+          "costs": [
+            2.0,
+            0.0,
+            0.35
+          ],
+          "distance": 1.0962407373233958,
+          "drift_offset": -0.6939774912781469,
+          "horizon": 1.1798283905721323
+        }
+      ],
+      "seed": 2026102964,
+      "sha256": "d4f7cd3f8baef5844f866937d9325d7bb010e6640d147c543edc029bd3d8346f",
+      "split": "confirmation"
+    }
+  },
+  "elapsed_seconds": 0.15727604699350195,
+  "freeze_sha256": "61dc449591527b823af41bb9f931b37299daa67b1554dfab525664e8f04daa46",
+  "interpretation": "Finite known-law mechanism diagnostic; no population superiority inference.",
+  "meta": {
+    "biased_sg": {
+      "hypergradient": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "kernel_evaluations": 107,
+      "leaf_records": [
+        {
+          "outcome_path": [
+            0,
+            0,
+            0
+          ],
+          "outer_expected_loss": 0.3518994209449277,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.011860513278788008,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.07843604211936205,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            0,
+            0,
+            1
+          ],
+          "outer_expected_loss": 0.301201329944839,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.004034305096397116,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.20434575470893057,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            0,
+            0,
+            2
+          ],
+          "outer_expected_loss": 0.30372491981289806,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.0024663034875402104,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.19790098520626737,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            0,
+            1,
+            0
+          ],
+          "outer_expected_loss": 0.3846118693561455,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.26091144093453916,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.0,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            0,
+            1,
+            1
+          ],
+          "outer_expected_loss": 0.330883637141906,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.11157206367322624,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.12981684826682044,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            0,
+            1,
+            2
+          ],
+          "outer_expected_loss": 0.33566096958541464,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.06170214455196153,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.11805051036115988,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            0,
+            2,
+            0
+          ],
+          "outer_expected_loss": 0.3744349480439984,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.0699242138610123,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.024246355180276277,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            0,
+            2,
+            1
+          ],
+          "outer_expected_loss": 0.3215780386035105,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.027882508613299047,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.15290303776887598,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            0,
+            2,
+            2
+          ],
+          "outer_expected_loss": 0.3256567285648777,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.01589254198413219,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.14275591224323836,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            1,
+            0,
+            0
+          ],
+          "outer_expected_loss": 0.3026502267793551,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.004394723032912619,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.20064280964148745,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            1,
+            0,
+            1
+          ],
+          "outer_expected_loss": 0.2576528058629399,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.001026974067180758,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.31974595089870994,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            1,
+            0,
+            2
+          ],
+          "outer_expected_loss": 0.25684651452215873,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.0007449677451721639,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.32197067362854365,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            1,
+            1,
+            0
+          ],
+          "outer_expected_loss": 0.32962226035553044,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.14802466095600367,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.13293292654692196,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            1,
+            1,
+            1
+          ],
+          "outer_expected_loss": 0.28134718968190325,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.04272497771330832,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.25589606712970986,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            1,
+            1,
+            2
+          ],
+          "outer_expected_loss": 0.28234284772916063,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.02812580368719582,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.2532722134962427,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            1,
+            2,
+            0
+          ],
+          "outer_expected_loss": 0.32076177569666303,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.039085146214039954,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.15493930746886125,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            1,
+            2,
+            1
+          ],
+          "outer_expected_loss": 0.2735241000325852,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.010542772129796601,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.2766690113934958,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            1,
+            2,
+            2
+          ],
+          "outer_expected_loss": 0.27392012977041913,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.007158255480501479,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.27561053212680964,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            2,
+            0,
+            0
+          ],
+          "outer_expected_loss": 0.30592581415815223,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.002419941848331362,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.19229837539438188,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            2,
+            0,
+            1
+          ],
+          "outer_expected_loss": 0.26051185092870993,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.000580687921033998,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.311886863265818,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            2,
+            0,
+            2
+          ],
+          "outer_expected_loss": 0.25992024627453597,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.0004160940183496939,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.31350934694369625,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            2,
+            1,
+            0
+          ],
+          "outer_expected_loss": 0.3332902208949325,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.07915061598744226,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.12388264443373637,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            2,
+            1,
+            1
+          ],
+          "outer_expected_loss": 0.284597601296966,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.023484943351147047,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.24734627983824153,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            2,
+            1,
+            2
+          ],
+          "outer_expected_loss": 0.2858431538541864,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.01526739678406416,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.2440820956473509,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            2,
+            2,
+            0
+          ],
+          "outer_expected_loss": 0.3243313433890997,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.02091801819299447,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.14604827349636895,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            2,
+            2,
+            1
+          ],
+          "outer_expected_loss": 0.2766709233115645,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.005799470784329811,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.268279014120379,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            2,
+            2,
+            2
+          ],
+          "outer_expected_loss": 0.2773077726991887,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.0038885146053000428,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.26658672576940684,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "leaves": 27,
+      "objective": 0.3402562802508976,
+      "pathwise_component": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "probability_mass": 1.0000000000000002,
+      "probability_mass_gradient": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "projection_contacts": 0,
+      "score_component": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "exact_expected": {
+      "final_weight": 0.2421491416728216,
+      "history": [
+        {
+          "hard_expected_loss": 0.4337539645191042,
+          "step": 1,
+          "true_gradient": -0.5977028076165394,
+          "weight_after": 0.11954056152330789,
+          "weight_before": 0.0
+        },
+        {
+          "hard_expected_loss": 0.22422157221838013,
+          "step": 2,
+          "true_gradient": -0.06446554755406612,
+          "weight_after": 0.13243367103412113,
+          "weight_before": 0.11954056152330789
+        },
+        {
+          "hard_expected_loss": 0.3239774988016063,
+          "step": 3,
+          "true_gradient": -0.5485773531935023,
+          "weight_after": 0.2421491416728216,
+          "weight_before": 0.13243367103412113
+        }
+      ],
+      "kernel_evaluations": 6,
+      "method": "true_expected_inner_gradient",
+      "objective": 0.2865819177231294
+    },
+    "meta_minus_exact_expected_loss": 0.05087402399163421,
+    "meta_minus_fixed_expected_loss": -0.002800338536133984,
+    "meta_sg": {
+      "hypergradient": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "kernel_evaluations": 107,
+      "leaf_records": [
+        {
+          "outcome_path": [
+            0,
+            0,
+            0
+          ],
+          "outer_expected_loss": 0.3556595280573889,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.011765996280108411,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.06933747059558511,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            0,
+            0,
+            1
+          ],
+          "outer_expected_loss": 0.29982552964463777,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.004111578747072103,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.20786882037375343,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            0,
+            0,
+            2
+          ],
+          "outer_expected_loss": 0.30518367632060606,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.0024835468355448196,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.19418571420948189,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            0,
+            1,
+            0
+          ],
+          "outer_expected_loss": 0.3846118693561455,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.26091144093453916,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.0,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            0,
+            1,
+            1
+          ],
+          "outer_expected_loss": 0.325760476409247,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.11157206367322624,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.14249839342143797,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            0,
+            1,
+            2
+          ],
+          "outer_expected_loss": 0.333407179850012,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.06170214455196153,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.12359460538322525,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            0,
+            2,
+            0
+          ],
+          "outer_expected_loss": 0.3748717829932571,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.06985566457908786,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.023203146938139914,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            0,
+            2,
+            1
+          ],
+          "outer_expected_loss": 0.3169667059369213,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.02793948891522843,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.16443172084574045,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            0,
+            2,
+            2
+          ],
+          "outer_expected_loss": 0.3238504168079866,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.01590411096412725,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.14724410833034288,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            1,
+            0,
+            0
+          ],
+          "outer_expected_loss": 0.3018660521327132,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.004231316968282352,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.2026460016173035,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            1,
+            0,
+            1
+          ],
+          "outer_expected_loss": 0.253102293746117,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.000982496969967429,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.33235112665566335,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            1,
+            0,
+            2
+          ],
+          "outer_expected_loss": 0.2541900174102885,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.0007148159599232271,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.3293270531067407,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            1,
+            1,
+            0
+          ],
+          "outer_expected_loss": 0.3244046220542128,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.14972369323177115,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.14586611966807994,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            1,
+            1,
+            1
+          ],
+          "outer_expected_loss": 0.2724703502325682,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.04153383432793197,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.2794890865847629,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            1,
+            1,
+            2
+          ],
+          "outer_expected_loss": 0.27533096131272833,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.02784107757063088,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.2718458604491357,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            1,
+            2,
+            0
+          ],
+          "outer_expected_loss": 0.31643920976819634,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.0394267213271154,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.16575446406518432,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            1,
+            2,
+            1
+          ],
+          "outer_expected_loss": 0.2655937925119641,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.010283577862613481,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.29802796793808245,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            1,
+            2,
+            2
+          ],
+          "outer_expected_loss": 0.26782306157840835,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.007090746807875464,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.29199167497207046,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            2,
+            0,
+            0
+          ],
+          "outer_expected_loss": 0.30779648728404035,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.002371184538981889,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.18754927747191202,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            2,
+            0,
+            1
+          ],
+          "outer_expected_loss": 0.25817215898681084,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.0005775992920633228,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.31831491001447987,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            2,
+            0,
+            2
+          ],
+          "outer_expected_loss": 0.25972192131219507,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.0004110164318012803,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.3140536905178357,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            2,
+            1,
+            0
+          ],
+          "outer_expected_loss": 0.33104054783195896,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.07954654256328096,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.129429498704117,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            2,
+            1,
+            1
+          ],
+          "outer_expected_loss": 0.27822726004521964,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.02320687284212823,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.2641466985011436,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            2,
+            1,
+            2
+          ],
+          "outer_expected_loss": 0.28161652740931614,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.015202874720024347,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.25518585061375776,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            2,
+            2,
+            0
+          ],
+          "outer_expected_loss": 0.32286728891132843,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.02098107383605787,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.14969064820039937,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            2,
+            2,
+            1
+          ],
+          "outer_expected_loss": 0.27114034859651953,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.005751985487090716,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.28305620760169237,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "outcome_path": [
+            2,
+            2,
+            2
+          ],
+          "outer_expected_loss": 0.27387879859152725,
+          "outer_weight_gradient": 0.0,
+          "probability": 0.0038765337815642228,
+          "probability_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "weight": 0.27572096383937583,
+          "weight_derivative": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "leaves": 27,
+      "objective": 0.3374559417147636,
+      "pathwise_component": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "probability_mass": 1.0000000000000002,
+      "probability_mass_gradient": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "projection_contacts": 0,
+      "score_component": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "physical": {
+    "final_expected_loss": 0.011961764106890786,
+    "final_parameters": [
+      0.6500460029976326,
+      0.2,
+      0.0
+    ],
+    "initial_expected_loss": 0.40165927441877786,
+    "initial_parameters": [
+      0.2,
+      0.8,
+      0.4
+    ],
+    "kernel_evaluations": 24,
+    "loss_reduction": 0.3896975103118871
+  },
+  "schema": "hepta.first-passage.adaptive.evaluation.v1",
+  "source_identity": {
+    "runtime": {
+      "numpy": "2.3.5",
+      "python": "3.12.14",
+      "scipy": "1.17.0"
+    },
+    "source_sha256": {
+      "ADAPTIVE_PROTOCOL.json": "407f4b9b78c9d9407d2c6fe556b9eae2e9a6ec2d9e2e11223a624573f20545b9",
+      "CONTRACT.md": "3fcc37abdd5aa5daddd682e9cb577e24d7af28cbaa57002f5a425a040af3b65b",
+      "__init__.py": "36161a31787589412cc337531279ebe5ffded4bee9e368bc0b5fccdf86caa866",
+      "adaptive_study.py": "6a4755d2abe676878896d7a631b84c312fc5fca8235afc702ea33350b11d283b",
+      "diagnostics.py": "84dc1ecec9e358859a46dcb222620f69d225d479df23ea6336e194268da5b8fc",
+      "gradients.py": "117bd9dbaa175dfcd92851f90b9520526538b4d66700a850c495ece596238c67",
+      "meta.py": "60177a17882a24a6c2e63ab8b4930942788304898a5d10319f5aa51e5c194b0b",
+      "requirements.txt": "1668a3152e33680d94637b13421c15e68bd97cd8701f7f555c691f5bc5c0b9f3",
+      "tests/test_gradients.py": "fca5799f871108e1b27b449167e7898876c6e7e0edd1df590a6fe3a1e13dc0e3",
+      "tests/test_meta.py": "100cb8251f956ca476453f67ddce579e4ea0c1adfbc2f3dbfcb1e69b1148a07f",
+      "tests/test_study.py": "4a9b71528ceb670959c91a5e66e1071368650ad4167271980614d6b989b4f87e",
+      "tests/test_training.py": "4588f86fe4c86f2f32b8be19ce99ea21fcda0aaa7db74fe311b258e490efb1d9",
+      "training.py": "aadcac61485672d6b3c16c5f4db1ea673d67a5da2e0fa0e4932d3daf48dcf9c6"
+    }
+  },
+  "split": "confirmation",
+  "study_id": "fpt-adaptive-task-gradient-20261029-v1"
+}

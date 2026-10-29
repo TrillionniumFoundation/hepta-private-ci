@@ -1,6 +1,6 @@
 [codespell]
 # Ref: https://github.com/codespell-project/codespell#using-a-config-file
-skip = .git*,vendor,third_party,*-lock.yaml,*.lock,.codespellrc,*test.ts,*.jsonl,frame*.txt,*.snap,*.snap.new,.codespell-frozen-lines,./experiments/first_passage_cell/evidence/data_parts/*/*.bin,./experiments/analytic_event_neuron/round3/evidence/confirmation/*.tar.gz.part*
+skip = .git*,vendor,third_party,*-lock.yaml,*.lock,.codespellrc,*test.ts,*.jsonl,frame*.txt,*.snap,*.snap.new,.codespell-frozen-lines,./experiments/first_passage_cell/evidence/data_parts/*/*.bin,./experiments/analytic_event_neuron/round3/evidence/confirmation/*.tar.gz.part*,./experiments/first_passage_adaptive/evidence/retained/scientific-evidence.part*
 check-hidden = true
 ignore-regex = ^\s*"image/\S+": ".*|\b(afterAll)\b
 ignore-words-list = ratatui,ser,iTerm,iterm2,iterm,te,TE,PASE,SEH,disjointness

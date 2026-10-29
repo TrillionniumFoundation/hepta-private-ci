@@ -33,7 +33,7 @@ pub enum SkillParseError {
     #[error("missing YAML frontmatter delimited by ---")]
     MissingFrontmatter,
     #[error("invalid YAML: {0}")]
-    InvalidYaml(#[source] serde_yaml::Error),
+    InvalidYaml(#[source] serde_saphyr::Error),
     #[error("missing field `{0}`")]
     MissingField(&'static str),
     #[error("invalid {field}: {reason}")]
@@ -47,19 +47,21 @@ pub fn parse_skill_frontmatter_metadata(
 ) -> Result<ParsedSkillFrontmatter, SkillParseError> {
     let frontmatter = extract_frontmatter(contents).ok_or(SkillParseError::MissingFrontmatter)?;
 
-    let parsed: SkillFrontmatter = match serde_yaml::from_str(&frontmatter) {
-        Ok(parsed) => Ok(parsed),
-        Err(original_error) => match repair_frontmatter_scalar_fields(&frontmatter) {
-            // Some third-party skills use prose like `description: Build for AWS: ECS`
-            // or `argument-hint: <duration: e.g. 7d>`. Keep the repair line-oriented
-            // so unrelated invalid YAML still surfaces.
-            Some(repaired_frontmatter) => {
-                serde_yaml::from_str(&repaired_frontmatter).map_err(|_| original_error)
-            }
-            None => Err(original_error),
-        },
-    }
-    .map_err(SkillParseError::InvalidYaml)?;
+    let parsed: SkillFrontmatter =
+        match serde_saphyr::from_str_with_options(&frontmatter, yaml_options()) {
+            Ok(parsed) => Ok(parsed),
+            Err(original_error) => match repair_frontmatter_scalar_fields(&frontmatter) {
+                // Some third-party skills use prose like `description: Build for AWS: ECS`
+                // or `argument-hint: <duration: e.g. 7d>`. Keep the repair line-oriented
+                // so unrelated invalid YAML still surfaces.
+                Some(repaired_frontmatter) => {
+                    serde_saphyr::from_str_with_options(&repaired_frontmatter, yaml_options())
+                        .map_err(|_| original_error)
+                }
+                None => Err(original_error),
+            },
+        }
+        .map_err(SkillParseError::InvalidYaml)?;
 
     let name = parsed
         .name
@@ -93,6 +95,15 @@ pub fn parse_skill_frontmatter_metadata(
 
 fn sanitize_single_line(raw: &str) -> String {
     raw.split_whitespace().collect::<Vec<_>>().join(" ")
+}
+
+fn yaml_options() -> serde_saphyr::Options {
+    // Keep YAML 1.2 scalars and ordinary merge keys compatible with existing skills.
+    serde_saphyr::options! {
+        strict_booleans: true,
+        merge_keys: serde_saphyr::options::MergeKeyPolicy::AsOrdinary,
+        non_finite_float_policy: serde_saphyr::NonFiniteFloatPolicy::PassThrough,
+    }
 }
 
 fn repair_frontmatter_scalar_fields(frontmatter: &str) -> Option<String> {
@@ -165,7 +176,8 @@ fn repair_frontmatter_scalar_fields(frontmatter: &str) -> Option<String> {
             }
         }
         let invalid_flow_like_scalar = matches!(first_char, '[' | '{' | '@' | '`')
-            && serde_yaml::from_str::<serde_yaml::Value>(scalar).is_err();
+            && serde_saphyr::from_str_with_options::<serde::de::IgnoredAny>(scalar, yaml_options())
+                .is_err();
         if !has_colon_separator && !invalid_flow_like_scalar {
             repaired_lines.push(line.to_string());
             continue;
