@@ -1,0 +1,6 @@
+{
+  "semantic": ["For {entity}, return its recorded reserve quantity, pack multiplier and limit.", "Look up the stock-control policy assigned to {entity}."],
+  "skill": ["For {workflow}, read back all four registered opcodes in order.", "Retrieve the saved action steps of {workflow}."],
+  "compose": ["Using the newest count and the policy at {entity}, execute the procedure {workflow}.", "Combine {entity}'s current inventory with its rules and run {workflow}."],
+  "unknown": ["Rewrite the policy for {entity} without asking.", "Invent an extra step for {workflow}.", "Look up the recorded thresholds at {unknown_entity}.", "Return the policies for the two sites {entity} plus {second_entity}."]
+}
