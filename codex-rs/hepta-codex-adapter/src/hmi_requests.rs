@@ -396,7 +396,7 @@ impl HmiRequestsV1 {
             return Ok(None);
         }
         if outcome.generated_text.len() > MAX_SPEECH_BYTES {
-            return Err(HmiError::Invalid("completed speech exceeds 4096 bytes"));
+            return Err(HmiError::Invalid("completed speech exceeds 16384 bytes"));
         }
         let (Some(turn_id), Some(utterance_id)) = (&scope.turn_id, &scope.utterance_id) else {
             return Err(HmiError::Invalid("media scope identity"));

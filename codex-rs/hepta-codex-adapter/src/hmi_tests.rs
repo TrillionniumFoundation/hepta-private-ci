@@ -409,11 +409,14 @@ async fn completed_items_form_one_bounded_media_request_and_cancel_fences_the_cl
         reply(&mut socket, &request, admission(&request, false)).await;
         started(&mut socket, &request).await;
         delta(&mut socket, "thread:test", "你").await;
-        for (id, text) in [("answer:test", "你好"), ("answer:two", "世界")] {
+        for (id, text) in [
+            ("answer:test", "你好".repeat(400)),
+            ("answer:two", "世界".repeat(400)),
+        ] {
             let event = codex_app_server_protocol::ItemCompletedNotification {
                 item: ThreadItem::AgentMessage {
                     id: id.into(),
-                    text: text.into(),
+                    text,
                     phase: None,
                     memory_citation: None,
                     delivery: None,
@@ -472,7 +475,7 @@ async fn completed_items_form_one_bounded_media_request_and_cancel_fences_the_cl
     assert_eq!(
         serde_json::to_value(&request).unwrap(),
         json!({
-            "type":"speak", "scope":terminal.scope, "text":"你好\n世界"
+            "type":"speak", "scope":terminal.scope, "text":format!("{}\n{}", "你好".repeat(400), "世界".repeat(400))
         })
     );
     let HmiSpeechRequestV1::Speak { scope, .. } = &request;
@@ -502,8 +505,8 @@ async fn completed_speech_media_bounds_are_explicit_and_preserve_terminal_text()
     for (binding, text, expected) in [
         (
             binding(),
-            "x".repeat(4097),
-            HmiError::Invalid("completed speech exceeds 4096 bytes"),
+            "x".repeat(16385),
+            HmiError::Invalid("completed speech exceeds 16384 bytes"),
         ),
         (
             long_scope,

@@ -40,7 +40,7 @@ use serde::Serialize;
 
 const MAX_TEXT_BYTES: usize = 64 * 1024;
 const MAX_ITEMS: usize = 32;
-const MAX_SPEECH_BYTES: usize = 4096;
+const MAX_SPEECH_BYTES: usize = 16 * 1024;
 
 #[path = "hmi_events.rs"]
 mod events;
