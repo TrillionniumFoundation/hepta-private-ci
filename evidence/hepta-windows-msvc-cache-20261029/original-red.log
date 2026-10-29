@@ -1,0 +1,75 @@
+test_cache_credentials_do_not_change_unrelated_action_compilers (test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_cache_credentials_do_not_change_unrelated_action_compilers) ... ok
+test_cache_only_native_msvc_preserves_explicit_compiler_precedence (test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_cache_only_native_msvc_preserves_explicit_compiler_precedence) ... ERROR
+test_cache_only_native_msvc_registers_matching_cc_for_both_hosts (test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_cache_only_native_msvc_registers_matching_cc_for_both_hosts) ... 
+  test_cache_only_native_msvc_registers_matching_cc_for_both_hosts (test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_cache_only_native_msvc_registers_matching_cc_for_both_hosts) (host='generic') ... FAIL
+  test_cache_only_native_msvc_registers_matching_cc_for_both_hosts (test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_cache_only_native_msvc_registers_matching_cc_for_both_hosts) (host='openai') ... FAIL
+test_native_msvc_does_not_duplicate_explicit_toolchain_flags (test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_native_msvc_does_not_duplicate_explicit_toolchain_flags) ... ok
+test_native_msvc_keeps_target_and_injects_matching_cc_toolchain (test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_native_msvc_keeps_target_and_injects_matching_cc_toolchain) ... ok
+
+======================================================================
+ERROR: test_cache_only_native_msvc_preserves_explicit_compiler_precedence (test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_cache_only_native_msvc_preserves_explicit_compiler_precedence)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/faebcae3f86e/hepta/.github/scripts/test_run_bazel_native_msvc_toolchain.py", line 56, in test_cache_only_native_msvc_preserves_explicit_compiler_precedence
+    args.index("--extra_toolchains=//:local_windows_msvc_cc_toolchain"),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: '--extra_toolchains=//:local_windows_msvc_cc_toolchain' is not in list
+
+======================================================================
+FAIL: test_cache_only_native_msvc_registers_matching_cc_for_both_hosts (test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_cache_only_native_msvc_registers_matching_cc_for_both_hosts) (host='generic')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/faebcae3f86e/hepta/.github/scripts/test_run_bazel_native_msvc_toolchain.py", line 32, in test_cache_only_native_msvc_registers_matching_cc_for_both_hosts
+    self.assertEqual(
+AssertionError: Lists differ: ['tes[84 chars], '--config=ci-windows', '--host_platform=//:l[75 chars]get'] != ['tes[84 chars], '--extra_toolchains=//:local_windows_msvc_cc[182 chars]get']
+
+First differing element 3:
+'--config=ci-windows'
+'--extra_toolchains=//:local_windows_msvc_cc_toolchain'
+
+Second list contains 2 additional elements.
+First extra element 8:
+'--'
+
+  ['test',
+   '--config=buildbuddy-generic',
+   '--remote_header=x-buildbuddy-api-key=test-token',
++  '--extra_toolchains=//:local_windows_msvc_cc_toolchain',
++  '--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0',
+   '--config=ci-windows',
+   '--host_platform=//:local_windows_msvc',
+   '--platforms=//:windows_x86_64_msvc',
+   '--',
+   '//fake:target']
+
+======================================================================
+FAIL: test_cache_only_native_msvc_registers_matching_cc_for_both_hosts (test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_cache_only_native_msvc_registers_matching_cc_for_both_hosts) (host='openai')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/faebcae3f86e/hepta/.github/scripts/test_run_bazel_native_msvc_toolchain.py", line 32, in test_cache_only_native_msvc_registers_matching_cc_for_both_hosts
+    self.assertEqual(
+AssertionError: Lists differ: ['tes[83 chars], '--config=ci-windows', '--host_platform=//:l[75 chars]get'] != ['tes[83 chars], '--extra_toolchains=//:local_windows_msvc_cc[182 chars]get']
+
+First differing element 3:
+'--config=ci-windows'
+'--extra_toolchains=//:local_windows_msvc_cc_toolchain'
+
+Second list contains 2 additional elements.
+First extra element 8:
+'--'
+
+  ['test',
+   '--config=buildbuddy-openai',
+   '--remote_header=x-buildbuddy-api-key=test-token',
++  '--extra_toolchains=//:local_windows_msvc_cc_toolchain',
++  '--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0',
+   '--config=ci-windows',
+   '--host_platform=//:local_windows_msvc',
+   '--platforms=//:windows_x86_64_msvc',
+   '--',
+   '//fake:target']
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.002s
+
+FAILED (failures=2, errors=1)
