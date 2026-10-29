@@ -1,0 +1,121 @@
+{
+  "version": "hepta-independent-formal-freeze-audit-20261029-v1",
+  "created_unix": 1793278864.3925562,
+  "protocol_sha256": "f94ff6491a2e98c1288ee2476404943f920042800d468435eba46d5235c0197b",
+  "freeze_seal_sha256": "b18fce0abd11203f84404970a0c9d58228d215f889e59e9797374002c9c6244e",
+  "data_manifest_sha256": "b42cc25f957a9025555676dc2230a80298eb88e0523ef5b6b646a92a0483ec01",
+  "checks": {
+    "protocol_matches_freeze_seal": true,
+    "60_unique_grid": true,
+    "60_unique_candidate_ids": true,
+    "source_inventory_complete": true,
+    "all_source_bytes_match_frozen_and_snapshot": true,
+    "budgets_match_declared_audit": true,
+    "registered_step_is_numerically_qualified": true,
+    "all_six_data_file_hashes_match": true,
+    "data_manifest_counts_and_seeds_match_protocol": true,
+    "training_not_started_at_this_audit": true,
+    "selection_and_test_results_absent": true
+  },
+  "passed": true,
+  "source_checks": {
+    "audit.py": {
+      "declared": "9fb7acbc25b489bfeb571e6edd2a9861836a086de5b76f26ebda1590c35c90d9",
+      "live": "9fb7acbc25b489bfeb571e6edd2a9861836a086de5b76f26ebda1590c35c90d9",
+      "snapshot": "9fb7acbc25b489bfeb571e6edd2a9861836a086de5b76f26ebda1590c35c90d9"
+    },
+    "data.py": {
+      "declared": "13ad1d59884821ec76e071a0481911de5d675135abde3e41dc84e07fd5e57772",
+      "live": "13ad1d59884821ec76e071a0481911de5d675135abde3e41dc84e07fd5e57772",
+      "snapshot": "13ad1d59884821ec76e071a0481911de5d675135abde3e41dc84e07fd5e57772"
+    },
+    "flow.py": {
+      "declared": "bfbfcbc290d8677cf3872418446981d9d7f67ce6656255b31cc5a75f577fa95e",
+      "live": "bfbfcbc290d8677cf3872418446981d9d7f67ce6656255b31cc5a75f577fa95e",
+      "snapshot": "bfbfcbc290d8677cf3872418446981d9d7f67ce6656255b31cc5a75f577fa95e"
+    },
+    "memory.py": {
+      "declared": "75b0f6b348b8704116a6e496704a945525a701e119c169f436c7b4c7fabc082a",
+      "live": "75b0f6b348b8704116a6e496704a945525a701e119c169f436c7b4c7fabc082a",
+      "snapshot": "75b0f6b348b8704116a6e496704a945525a701e119c169f436c7b4c7fabc082a"
+    },
+    "models.py": {
+      "declared": "54e1686a51ae668d5e541cf6e7e8f5fa139c5075cd6894a93fe1f823ab64bc77",
+      "live": "54e1686a51ae668d5e541cf6e7e8f5fa139c5075cd6894a93fe1f823ab64bc77",
+      "snapshot": "54e1686a51ae668d5e541cf6e7e8f5fa139c5075cd6894a93fe1f823ab64bc77"
+    },
+    "numerics.py": {
+      "declared": "a1c24cbe295ffc0ab68d44ad314e7e67e113d478cb652cc4ad5a99ac8dd6ce86",
+      "live": "a1c24cbe295ffc0ab68d44ad314e7e67e113d478cb652cc4ad5a99ac8dd6ce86",
+      "snapshot": "a1c24cbe295ffc0ab68d44ad314e7e67e113d478cb652cc4ad5a99ac8dd6ce86"
+    },
+    "study.py": {
+      "declared": "12663dc80fb38b18b595812a64f191e70796994ea734d8bfc61c9ec16156ba17",
+      "live": "12663dc80fb38b18b595812a64f191e70796994ea734d8bfc61c9ec16156ba17",
+      "snapshot": "12663dc80fb38b18b595812a64f191e70796994ea734d8bfc61c9ec16156ba17"
+    },
+    "tests/test_data.py": {
+      "declared": "dc2b9647145712c36c10a905362b6a3a04a0b3664578888e393a4f9656a2b57f",
+      "live": "dc2b9647145712c36c10a905362b6a3a04a0b3664578888e393a4f9656a2b57f",
+      "snapshot": "dc2b9647145712c36c10a905362b6a3a04a0b3664578888e393a4f9656a2b57f"
+    },
+    "tests/test_flow.py": {
+      "declared": "2f9559ad06746d2366702776d34b60f2b9781c137b3ad5cf56c612a45892b2cf",
+      "live": "2f9559ad06746d2366702776d34b60f2b9781c137b3ad5cf56c612a45892b2cf",
+      "snapshot": "2f9559ad06746d2366702776d34b60f2b9781c137b3ad5cf56c612a45892b2cf"
+    },
+    "tests/test_memory.py": {
+      "declared": "2286e781169204998b450ae2ba4b4c7da86040ecaa152df75449d4ae54fced68",
+      "live": "2286e781169204998b450ae2ba4b4c7da86040ecaa152df75449d4ae54fced68",
+      "snapshot": "2286e781169204998b450ae2ba4b4c7da86040ecaa152df75449d4ae54fced68"
+    },
+    "tests/test_numerics.py": {
+      "declared": "d88be39828ce931a4acd8545879948e5446b270ff3f0df6ac091e7cd36013def",
+      "live": "d88be39828ce931a4acd8545879948e5446b270ff3f0df6ac091e7cd36013def",
+      "snapshot": "d88be39828ce931a4acd8545879948e5446b270ff3f0df6ac091e7cd36013def"
+    }
+  },
+  "data_file_checks": {
+    "mqar/test": {
+      "manifest_file_sha256": "7bad40d5e5ec329f8a8b6237a823713b98b6306cf6ab8a4dcb9551b18b28489b",
+      "observed_file_sha256": "7bad40d5e5ec329f8a8b6237a823713b98b6306cf6ab8a4dcb9551b18b28489b",
+      "declared_count": 512,
+      "declared_seed": 174203
+    },
+    "mqar/train": {
+      "manifest_file_sha256": "5aeaf18cc50b7d65a0ddee8e2c48dcca01a53b12d4fad94ff7ba8ffc745daeae",
+      "observed_file_sha256": "5aeaf18cc50b7d65a0ddee8e2c48dcca01a53b12d4fad94ff7ba8ffc745daeae",
+      "declared_count": 1024,
+      "declared_seed": 174201
+    },
+    "mqar/validation": {
+      "manifest_file_sha256": "56a47a59f9cdf74721baad0b63bc6911a04daae16ca85cfdc1f520a5d61e8374",
+      "observed_file_sha256": "56a47a59f9cdf74721baad0b63bc6911a04daae16ca85cfdc1f520a5d61e8374",
+      "declared_count": 256,
+      "declared_seed": 174202
+    },
+    "selective_copy/test": {
+      "manifest_file_sha256": "c6c0c51bb90471d85a6e7efd477e88ae9d01b698a64d3233cd6bafc8dcbf1bfe",
+      "observed_file_sha256": "c6c0c51bb90471d85a6e7efd477e88ae9d01b698a64d3233cd6bafc8dcbf1bfe",
+      "declared_count": 512,
+      "declared_seed": 174103
+    },
+    "selective_copy/train": {
+      "manifest_file_sha256": "34e0f3d1d244d53c97ca00785421ff5c70cd2d0c9e62bad1272bfd26633ee04e",
+      "observed_file_sha256": "34e0f3d1d244d53c97ca00785421ff5c70cd2d0c9e62bad1272bfd26633ee04e",
+      "declared_count": 1024,
+      "declared_seed": 174101
+    },
+    "selective_copy/validation": {
+      "manifest_file_sha256": "03bc83a3d49b283157ed4a5526b4b7cc35759756d4c6bf888825ab2285e4e6dc",
+      "observed_file_sha256": "03bc83a3d49b283157ed4a5526b4b7cc35759756d4c6bf888825ab2285e4e6dc",
+      "declared_count": 256,
+      "declared_seed": 174102
+    }
+  },
+  "data_access_scope": "Read compressed file bytes only for hashes; did not load validation/test arrays or compute model scores",
+  "selection_review": "Per task/arm/seed/regime validation CE minimum of 2 learning rates x 2 eligible checkpoints; ties checkpoint name then candidate id; 60 completed candidates sealed before first validation load; selection sealed before test scoring",
+  "quality_review": "Both groups all seeds validation accuracy >=.9; analytic all seeds test accuracy >=.9; minimum effect and within-metric-family adjusted interval required",
+  "statistics_scope": "Paired seed df2 exploratory intervals; primary4 and secondary8 separately per metric; no across-metric familywise or choose-best-metric advantage claim",
+  "remaining_before_training": "The separately registered trained-checkpoint appendix must be sealed before the first candidate starts; no core change is required"
+}

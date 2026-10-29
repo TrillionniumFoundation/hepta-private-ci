@@ -1,0 +1,97 @@
+{
+  "version": "hepta-independent-preregistration-archive-audit-20261029-v1",
+  "created_unix": 1793279653.410343,
+  "archive": "research_evidence/hepta_stable_flow_20261029/releases/hepta_stable_flow_preregistration_20261029.tar.gz",
+  "archive_sha256": "0047e9ec766a67d8d0530006231cd6624225e656436286d8019eeff5d7c7d4e3",
+  "archive_bytes": 1425167,
+  "packager_sha256": "fa792a60abcdea334ff591ae3b12aaa74fac1469f8d18a3c8a621bfe62fad923",
+  "manifest_sha256": "7236d7fa17e684fc9a8ced835186ddece7e011dd438ee68cf1941be94c604f41",
+  "package_receipt_sha256": "5c1c5e514bc0bb829f70279adc0501e56e7ef61351e0ee8cb724853572065775",
+  "checks": {
+    "archive_sha256_expected": true,
+    "archive_size_expected": true,
+    "archive_file_count_expected": true,
+    "fresh_tree_isolated_stdlib_verified": true,
+    "packaged_verifier_exact_current_source": true,
+    "all_counterexamples_rejected": true,
+    "fresh_tree_restored_and_still_valid": true
+  },
+  "passed": true,
+  "fresh_extraction": "/tmp/hepta_actual_prereg_audit_57gk729q/fresh_extraction",
+  "isolated_verify_tree": {
+    "command": [
+      "/workspace/scratch/45b3735e7225/hepta-oct29-venv/bin/python",
+      "-I",
+      "-S",
+      "/tmp/hepta_actual_prereg_audit_57gk729q/fresh_extraction/experiments/call_put_stable_flow_analysis/release.py",
+      "verify-tree",
+      "--root",
+      "/tmp/hepta_actual_prereg_audit_57gk729q/fresh_extraction"
+    ],
+    "returncode": 0,
+    "stdout": "{\"files\": 186, \"manifest_identity_sha256\": \"3d6cfbdd2430de1919dc7b89a70ead7c56ab50590124e01ba3613ae44df15840\", \"status\": \"relocated_tree_verified\"}",
+    "stderr": ""
+  },
+  "counterexamples": {
+    "ancestor_directory_symlink": {
+      "rejected": true,
+      "message": "Symlink in evidence path: experiments/call_put_stable_flow/README.md"
+    },
+    "unexpected_in_scope_file": {
+      "rejected": true,
+      "message": "Extracted in-scope inventory differs or contains extra evidence"
+    },
+    "path:'.'": {
+      "rejected": true,
+      "message": "Noncanonical or unsafe archive path"
+    },
+    "path:'../escape'": {
+      "rejected": true,
+      "message": "Noncanonical or unsafe archive path"
+    },
+    "path:'/absolute'": {
+      "rejected": true,
+      "message": "Noncanonical or unsafe archive path"
+    },
+    "path:'a//b'": {
+      "rejected": true,
+      "message": "Noncanonical or unsafe archive path"
+    },
+    "path:'a\\\\b'": {
+      "rejected": true,
+      "message": "Noncanonical or unsafe archive path"
+    },
+    "path:'a\\x00b'": {
+      "rejected": true,
+      "message": "Noncanonical or unsafe archive path"
+    },
+    "missing_member": {
+      "rejected": true,
+      "message": "Archive is missing declared evidence"
+    },
+    "same_size_tamper": {
+      "rejected": true,
+      "message": "Archive member hash mismatch"
+    }
+  },
+  "verification": {
+    "status": "verified_bytes_no_scientific_rerun",
+    "phase": "preregistration",
+    "files": 186,
+    "uncompressed_bytes": 2818910,
+    "manifest_identity_sha256": "3d6cfbdd2430de1919dc7b89a70ead7c56ab50590124e01ba3613ae44df15840",
+    "completion_gates": {
+      "candidate_count": 60,
+      "data_splits": 6,
+      "formal_protocol_sha256": "f94ff6491a2e98c1288ee2476404943f920042800d468435eba46d5235c0197b",
+      "frozen_core_files": 11,
+      "meaning": "Frozen source/data/protocol bytes; training may be in progress and is excluded"
+    }
+  },
+  "prior_findings_closed": [
+    "Dot file member rejected",
+    "Ancestor symlinks rejected",
+    "Unexpected in-scope extracted files rejected"
+  ],
+  "scope": "Preregistration package only: source, protocols, formal data and completed diagnostics; growing formal training and appendix executions are explicitly excluded. This audit is outside the archive it verifies."
+}

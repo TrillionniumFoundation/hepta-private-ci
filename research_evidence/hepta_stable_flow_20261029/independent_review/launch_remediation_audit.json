@@ -1,0 +1,43 @@
+{
+  "version": "hepta-independent-launch-remediation-audit-20261029-v1",
+  "created_unix": 1793279188.6973522,
+  "checks": {
+    "four_import_failures_retained": true,
+    "failed_session_no_completions": true,
+    "only_scheduler_interpreter_resolution_semantic_change": true,
+    "original_scheduler_bound_by_pretrain_audit": true,
+    "new_scheduler_bound_by_incident_and_dispatch": true,
+    "new_child_path_preserves_venv": true,
+    "appendix_and_pretrain_audit_precede_training": true,
+    "all_new_registration_snapshots_match": true,
+    "core_still_frozen": true,
+    "no_selection_or_test_results_yet": true
+  },
+  "passed": true,
+  "old_session": "research_evidence/hepta_stable_flow_20261029/formal_run001/orchestration/session_20261029T130324Z_5",
+  "new_session": "research_evidence/hepta_stable_flow_20261029/formal_run001/orchestration/session_20261029T130423Z_5",
+  "stderr_checks": {
+    "mqar__analytic__s81301__lr0.003.stderr.log": {
+      "sha256": "454da7b2bbd20726e29aa75b8dbd18d0e024dbfb67aa0bb4ad1a044e37667dde",
+      "failed_at_torch_import": true
+    },
+    "selective_copy__ordinary__s81302__lr0.003.stderr.log": {
+      "sha256": "454da7b2bbd20726e29aa75b8dbd18d0e024dbfb67aa0bb4ad1a044e37667dde",
+      "failed_at_torch_import": true
+    },
+    "selective_copy__analytic__s81303__lr0.001.stderr.log": {
+      "sha256": "454da7b2bbd20726e29aa75b8dbd18d0e024dbfb67aa0bb4ad1a044e37667dde",
+      "failed_at_torch_import": true
+    },
+    "selective_copy__analytic__s81301__lr0.003.stderr.log": {
+      "sha256": "454da7b2bbd20726e29aa75b8dbd18d0e024dbfb67aa0bb4ad1a044e37667dde",
+      "failed_at_torch_import": true
+    }
+  },
+  "old_summary_sha256": "6c0806e37de2abd9c880618ac271de9f128f1bad4086fbc9eb8a8bea737c0638",
+  "new_dispatch_contract_sha256": "6c524f0bddcd038df303c5d690c8626892304be9248d156fd0b1b233bcfe0162",
+  "incident_sha256": "33aeb12f5ec6773f97dccd4ccfe9ae0334c01019b88ea8547d4e5cb35b92c7d8",
+  "old_scheduler_sha256": "be61b13c74cefa1cf3d187d94e79301ba2fd4d255765c8d4525ada4652ac6f0f",
+  "new_scheduler_sha256": "a729af73d0528ebd29562af6b4eb1c9678e3741d639b535abe3cee0545e5a776",
+  "interpretation": "All failed children stopped at top-level torch import before the train function or formal data loading. The retained engineering restart changes only the interpreter symlink handling; it does not restart a learned candidate or change scientific gates."
+}
