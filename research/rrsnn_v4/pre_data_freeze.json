@@ -1,0 +1,203 @@
+{
+  "schema": "rrsnn.v4-pre-data-freeze.1",
+  "created_at_utc": "2026-10-29T14:33:39.155348+00:00",
+  "frozen_before_data": true,
+  "task_sha256": "fb25701b47bd12df3006732a544d9a454de7495c395ccb98daada944baae87d4",
+  "source_sha256": {
+    "__init__.py": "227d288ec36b913d650a35915373df53b20d7c22cf3547f6106ffece9af6f0cb",
+    "aggregate.py": "eb4157f0f149089a35e66a51f1fd4a808aeab53e8edc5acef8f0eee43dffe671",
+    "baselines.py": "14d06b7189982bdef8b737c912e2704a8d2647385789c60f5a9760f279037325",
+    "evaluate.py": "04509ce268f11b02e8c601e605adafe7e1dd114582e4c236f56a91dea048162c",
+    "models.py": "a0bc0100ae7e937322d5210d19d0def4ae3eae0e8b62a5a0ea280dcd7e186154",
+    "operators.py": "2d2b85a8695d79f8e81eab21ea67a3796aae2d8f5b346a83ca990068b3c61398",
+    "prepare_data.py": "592abdc964eb515db6abee381ff99a9867bd4e644943e1ce48e897672c508e7c",
+    "task.py": "fb25701b47bd12df3006732a544d9a454de7495c395ccb98daada944baae87d4",
+    "train.py": "0abc20779fc64aa1ec0ff0d24ec1b6fe4ad84a585f60ec22b8d53a9c66860825",
+    "train_matrix.py": "39aad256271acc8763db88b96992824382fd44492b48cbe971329eefa108c31a",
+    "validate_baselines.py": "e676aa43ad32c3133f1adee2bd8a1e852df7c103b580671364a3f302ef53a6e4",
+    "validate_models.py": "ab79f903c340473ee959056f91c384769f93ca5a4464d9d870818b271145fe82",
+    "validate_task.py": "3f44689c64369cbe5a8ed9d0ddcf0f9020e9ebd034c6dff93c694bc3772b46d7",
+    "validate_training.py": "c5f4f84a31214533e5cb82d3adb08b6644fa2e1f467becd8025a9496a3269855"
+  },
+  "data_spec": {
+    "train": {
+      "episodes": 512,
+      "seed": 1401001,
+      "distribution": "train"
+    },
+    "validation": {
+      "episodes": 128,
+      "seed": 2401001,
+      "distribution": "train"
+    },
+    "test": {
+      "episodes": 256,
+      "seed": 3401001,
+      "distribution": "train"
+    },
+    "shift": {
+      "episodes": 256,
+      "seed": 4401001,
+      "distribution": "shift"
+    },
+    "paired": {
+      "episodes": 256,
+      "seed": 5401001,
+      "value_groups": 64,
+      "conditions": [
+        "A0",
+        "A2",
+        "B0",
+        "B2"
+      ],
+      "value_range": [
+        0.25,
+        1.5
+      ],
+      "budget": 3,
+      "refill": 1,
+      "deadlines_A": [
+        1.0,
+        1.0,
+        3.0,
+        3.0
+      ],
+      "deadlines_B": [
+        2.0,
+        2.0,
+        2.0,
+        2.0
+      ]
+    }
+  },
+  "seeds": [
+    101,
+    211,
+    307,
+    401,
+    503
+  ],
+  "variants": [
+    "rr_full",
+    "fp_no_rollover",
+    "rr_mean_maturity",
+    "rr_shuffle_maturity",
+    "rr_fixed_boundary",
+    "rr_frozen_resource",
+    "lif",
+    "alif",
+    "resource_lif",
+    "ctrnn",
+    "ctrnn_state",
+    "ctrnn_upper_state",
+    "alif_analog",
+    "ctrnn_analog"
+  ],
+  "cpu_matched_variants": {
+    "ctrnn_state_cpu": "ctrnn_state",
+    "ctrnn_analog_cpu": "ctrnn_analog"
+  },
+  "training": {
+    "epochs": 16,
+    "batch_size": 64,
+    "learning_rate": 0.003,
+    "clip_norm": 1.0,
+    "validation_every": 4,
+    "validation_draws": 4,
+    "validation_seed": 777001,
+    "cpu_epoch_cap": 10000,
+    "train_episodes": 512,
+    "validation_episodes": 128
+  },
+  "task_interpretation": "New identified-delivery synthetic task; only emitted, delivered and queried items earn realized utility. Not a retroactive change to V2/V3.",
+  "training_objective": "Oracle optimal-action-set imitation on teacher-forced demonstrations; selected by validation NLL, not heldout utility.",
+  "input_fairness": {
+    "raw_features": 22,
+    "actions": 81,
+    "trainable_coefficients_per_model": 977,
+    "same_raw_observation_and_feasible_actions": true,
+    "cue_only_at_t0": true,
+    "first_decision_time": 0.25
+  },
+  "state_comparators": {
+    "rr_numeric_bytes": 309,
+    "ctrnn_state_numeric_bytes": 292,
+    "ctrnn_state_modes": 8,
+    "ctrnn_upper_state_numeric_bytes": 676,
+    "ctrnn_upper_state_modes": 20,
+    "scope": "Allocated numeric state excludes shared parameters, RNG object, task environment and interpreter overhead. Upper-state control is explicitly a larger cap."
+  },
+  "selection": {
+    "primary_comparator": "ctrnn_state_cpu",
+    "secondary_eligible": [
+      "lif",
+      "alif",
+      "resource_lif",
+      "ctrnn",
+      "ctrnn_state",
+      "ctrnn_upper_state",
+      "alif_analog",
+      "ctrnn_analog"
+    ],
+    "secondary_rule": "minimum five-seed mean best_validation_nll; lexical tie break",
+    "checkpoints": "minimum validation optimal-set NLL including initialization",
+    "must_freeze_before_holdout": true,
+    "full_training_protocol_sha_required": true
+  },
+  "statistics": {
+    "latent_replays": 4,
+    "query_draws_after_actor": 4,
+    "bootstrap_replicates": 10000,
+    "bootstrap_seeds": {
+      "test": 65401001,
+      "shift": 65401002,
+      "paired": 65401003
+    },
+    "primary_estimand": "mean normalized expected delivered query utility, average latent paths within seed/scenario before paired crossed seed-by-scenario bootstrap",
+    "interval": "two-sided percentile 95%; pointwise; only five training seeds",
+    "paired_grouping": "64 value groups, each A0/A2/B0/B2 kept together; same pre-cue physical and RNG state within group",
+    "negative_transfer": "indicator RR utility below paired baseline formed on raw replay, then averaged; includes finite-path stochastic variability",
+    "secondary_realized": "four observer query draws nested under each latent path; independent synthetic outcomes, not a real future window"
+  },
+  "mechanism_controls": {
+    "ablations": [
+      "fp_no_rollover",
+      "rr_mean_maturity",
+      "rr_shuffle_maturity",
+      "rr_fixed_boundary",
+      "rr_frozen_resource"
+    ],
+    "numerical_boundary": "same frozen RR weights, scalar Lambert-W threshold replaced by independent bracketed root; no retraining",
+    "semigroup": "finite CTMC matrix exponential compared to Poisson uniformization",
+    "event_baselines": "LIF exact crossings; continuous-threshold ALIF event root, independently validated against DOP853; biased training surrogate disclosed"
+  },
+  "acceptance": {
+    "engineering": "All predeclared runtime/identity/invariant checks and all 80 training/evaluation runs complete with finite gradients",
+    "utility_support": "Primary RR-minus-ctrnn_state_cpu normalized expected utility interval lower bound > 0 on test AND shift",
+    "mechanism_interpretation": "All ablation and paired interaction intervals reported, no post-hoc winning subset; no global optimality or novelty proof",
+    "promotion_requires": [
+      "real identified production owner/lifecycle evidence",
+      "real independent future query window",
+      "actual full Cells at 64/256/1024/4096",
+      "dot identity and measured deployment resources"
+    ],
+    "all_blockers_closed": false,
+    "activation_allowed": false
+  },
+  "execution": {
+    "workers": 2,
+    "cpus": [
+      0,
+      1
+    ],
+    "cpu8_reserved_for_native": true,
+    "disk_free_guard_bytes": 209715200,
+    "shared_linux_workspace_not_verified_dot": true,
+    "training_vs_compute_cost": "Common task-output/renewal ledger; actual latent spikes, CT updates, state bytes, process CPU/RSS measured separately"
+  },
+  "preserved_prior_evidence": {
+    "v3_commit": "31cf44ebbf6d25ec0768ec60d4c996b4f6d1fdba",
+    "v3_diagnostic_zero_pulse_dominance": "retained",
+    "v2_strong_baseline_negative_results": "retained"
+  }
+}
