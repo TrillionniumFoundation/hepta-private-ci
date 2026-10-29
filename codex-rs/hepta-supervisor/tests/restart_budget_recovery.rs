@@ -311,6 +311,36 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
             .active
     );
 
+    // Inactivity alone cannot prove that recovery retained the spent budget:
+    // losing its journal would also leave no pending automatic spawn. Exercise
+    // the original public claim path and preserve the exact durable record.
+    let run_root = registry
+        .load()?
+        .agents
+        .get(&agent_id)
+        .expect("registered agent")
+        .layout
+        .run_root()
+        .to_path_buf();
+    let journal_path = run_root.join("supervisor-restart-budget.json");
+    let exhausted_bytes = std::fs::read(&journal_path)?;
+    let exhausted_record: serde_json::Value =
+        serde_json::from_slice(&exhausted_bytes).expect("canonical restart record");
+    assert_eq!(exhausted_record["schema_version"], 2);
+    assert_eq!(exhausted_record["main"]["attempts"], 3);
+    assert_eq!(exhausted_record["main"]["pending"], false);
+    let assert_spent_claim = |supervisor: &mut Supervisor<FakeDriver>, claim_at: Instant| {
+        assert_eq!(std::fs::read(&journal_path)?, exhausted_bytes);
+        assert!(matches!(
+            supervisor.restart(&agent_id, claim_at),
+            Err(SupervisorError::RestartBudgetExhausted(ref actual)) if actual == &agent_id
+        ));
+        assert_eq!(std::fs::read(&journal_path)?, exhausted_bytes);
+        Ok::<(), SupervisorError>(())
+    };
+    // Instant advances below schedule ticks only. The journal uses SystemTime;
+    // this is not a test of wall-clock expiry or rollback of the 300s window.
+
     // Even a new supervisord process after exhaustion must not re-arm the
     // persisted budget or restart the disabled child.
     drop(supervisor);
@@ -327,6 +357,7 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
             .expect("snapshot after post-exhaustion recovery")
             .active
     );
+    assert_spent_claim(&mut supervisor, now + Duration::from_secs(4))?;
     assert_eq!(
         supervisor.tick(now + Duration::from_secs(4)),
         TickReport::default()
@@ -349,6 +380,7 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
             .expect("snapshot after repeated post-exhaustion recovery")
             .active
     );
+    assert_spent_claim(&mut supervisor, now + Duration::from_secs(6))?;
     assert_eq!(
         supervisor.tick(now + Duration::from_secs(6)),
         TickReport::default()
