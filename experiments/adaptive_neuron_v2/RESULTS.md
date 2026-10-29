@@ -73,41 +73,41 @@ fixed-barrier closed form.
 
 ## Joint meta-training and its mathematical scope
 
-For a threshold gap \(d\geq0\), unit surrogate horizon, and the registered
+For a threshold gap $d\geq0$, unit surrogate horizon, and the registered
 positive cancellation rate, the killed Brownian first-passage primitive is
 
-\[
+$$
 \Delta=\sqrt{\mu^2+2\lambda\sigma^2},\qquad
 \kappa=\frac{\Delta-\mu}{\sigma^2},\qquad
 \gamma=\frac{\Delta+\mu}{\sigma^2},
-\]
+$$
 
-\[
+$$
 P(d)=e^{-\kappa d}\Phi\!\left(\frac{\Delta-d}{\sigma}\right)
 +e^{\gamma d}\Phi\!\left(-\frac{d+\Delta}{\sigma}\right),
 \qquad g(d)=-P_d(d).
-\]
+$$
 
 The implementation uses a positive Mills-ratio decomposition for the slope and
 its parameter derivatives. The root derivatives are
 
-\[
-\nabla*{(\mu,\sigma,\lambda)}\kappa
+$$
+\nabla_{(\mu,\sigma,\lambda)}\kappa
 =\Delta^{-1}(-\kappa,-\sigma\kappa^2,1),\qquad
-\nabla*{(\mu,\sigma,\lambda)}\gamma
+\nabla_{(\mu,\sigma,\lambda)}\gamma
 =\Delta^{-1}(\gamma,-\sigma\gamma^2,1).
-\]
+$$
 
-The raw parameters are projected into \([-6,6]^3\) and transformed by
+The raw parameters are projected into $[-6,6]^3$ and transformed by
 
-\[
+$$
 \mu=1.25\tanh(a_1),\quad
 \sigma=0.35+1.65\operatorname{sigmoid}(a_2),\quad
 \lambda=0.01+0.99\operatorname{sigmoid}(a_3).
-\]
+$$
 
-Consequently \(\sigma>0.35\), \(\lambda>0.01\), and the conservative bound
-\(\Delta>\sqrt{2(0.01)(0.35)^2}\approx0.04950\) excludes root degeneracy in
+Consequently $\sigma>0.35$, $\lambda>0.01$, and the conservative bound
+$\Delta>\sqrt{2(0.01)(0.35)^2}\approx0.04950$ excludes root degeneracy in
 this training domain. The raw box, bounded features, finite horizon, neural
 weight projection and gradient clipping keep this finite computation bounded.
 They do not prove global optimizer convergence. Clipping and projection have
@@ -115,21 +115,21 @@ explicit branch conventions at kinks; ordinary local derivatives apply away
 from those kinks. The constant-step online Adam schedule is not a theorem of
 convergence to an optimal policy.
 
-At fixed current neural weights \(W\), the actual support update is
+At fixed current neural weights $W$, the actual support update is
 
-\[
-\phi=\Pi*{\mathcal W}\!left[W-\alpha\,
-\operatorname{clip}\_c\bigl(G*{\mathrm{SG}}(W,a;S)\bigr)\right].
-\]
+$$
+\phi=\Pi_{\mathcal W}\!\left[W-\alpha\,
+\operatorname{clip}_c\bigl(G_{\mathrm{SG}}(W,a;S)\bigr)\right].
+$$
 
 The independent query objective is a fixed logistic-soft BCE,
-\(F(a;W,S,Q)=L\_{\mathrm{query,soft}}(\phi;Q)\), with no direct dependence on
-\(a\). Its hypergradient is
+$F(a;W,S,Q)=L_{\mathrm{query,soft}}(\phi;Q)$, with no direct dependence on
+$a$. Its hypergradient is
 
-\[
-\nabla*a F=(D_a\phi)^\top\nabla*\phi L*{\mathrm{query,soft}},\qquad
-D_a\phi=-\alpha D\Pi D\operatorname{clip}\_c D_aG*{\mathrm{SG}}.
-\]
+$$
+\nabla_a F=(D_a\phi)^\top\nabla_\phi L_{\mathrm{query,soft}},\qquad
+D_a\phi=-\alpha D\Pi D\operatorname{clip}_c D_aG_{\mathrm{SG}}.
+$$
 
 The complete recurrent mixed derivative includes clipping and active projection.
 It differentiates a specified surrogate update rule. It is not the ordinary
@@ -143,39 +143,39 @@ at three finite-difference scales for all 15 final meta checkpoints. The largest
 scaled error was **5.3175333e-11**, below the registered **2e-7** tolerance; the
 normalization is the declared scaled-error metric, not relative error to a tiny
 gradient component. Each coordinate changed in every meta fit. Across all 15,
-the minimum absolute changes in \((\mu,\sigma,\lambda)\) were
-\((0.00574794,0.01710668,0.00458130)\).
+the minimum absolute changes in $(\mu,\sigma,\lambda)$ were
+$(0.00574794,0.01710668,0.00458130)$.
 
 ![Confirmation parameter endpoints](results/delivery001/figures/joint_parameters.svg)
 
-For the 10 confirmation fits, final \(\mu\) ranged from 0.244252 to 0.925276,
-\(\sigma\) from 1.066418 to 1.325635, and \(\lambda\) from 0.060044 to
-0.118839, starting from \((0.25,1,0.1)\). These observed directions are task
+For the 10 confirmation fits, final $\mu$ ranged from 0.244252 to 0.925276,
+$\sigma$ from 1.066418 to 1.325635, and $\lambda$ from 0.060044 to
+0.118839, starting from $(0.25,1,0.1)$. These observed directions are task
 outcomes, not universal claims that noise must increase or cancellation must
 decrease. [Full derivative contract](learning/THEORY.md)
 
 ## Credit changes future decisions
 
-The surrogate cancellation parameter \(\lambda\) and the resource shadow price
-\(p\) have different roles. The former changes training gradients. The latter
+The surrogate cancellation parameter $\lambda$ and the resource shadow price
+$p$ have different roles. The former changes training gradients. The latter
 prices execution in the task and is held constant within an episode. They are
 not silently identified with one another.
 
-Actual work for an observation tick is \(1+\text{spikes}/8\). A non-neural
+Actual work for an observation tick is $1+\text{spikes}/8$. A non-neural
 baseline is charged one work unit per tick and zero SNN spikes. Boundary and
 solver operations, identity validation, replay and native CPU are separately
 counted. None of these work units is a measurement of Joules.
 
-The decision rule uses \(c\_{\mathrm{effective}}=c+2p\), with the registered
+The decision rule uses $c_{\mathrm{effective}}=c+2p$, with the registered
 maximum per-observation work quote of two. After an observed terminal reward,
 
-\[
-p*{e+1}=\Pi*{[0,0.08]}
+$$
+p_{e+1}=\Pi_{[0,0.08]}
 \left[p_e+0.005\left(w_e-B_e-0.5R_e\right)\right].
-\]
+$$
 
 The durable balance is debited by measured tick work and replenished only at
-terminal settlement by \(B_e+0.5R_e\), with cap 32 and explicit overflow.
+terminal settlement by $B_e+0.5R_e$, with cap 32 and explicit overflow.
 All arms retain admission and accounting. The `off` condition ignores price in
 the decision rule; it does not disable budget admission. The `frozen` condition
 uses price 0.02. The `live` condition uses the current durable price.

@@ -1,0 +1,37 @@
+{
+  "additional_nonoverlapping_intervals": [
+    {
+      "cpu_components": {
+        "child_system_seconds": 0.0,
+        "child_user_seconds": 0.0,
+        "self_system_seconds": 0.007993,
+        "self_user_seconds": 0.0008289999999999964
+      },
+      "cpu_seconds": 0.008821999999999997,
+      "receipt": "experiments/adaptive_credit_bridge_v1/results/formal001/COMPLETE.json",
+      "sha256": "f90910ca7da2b7b41876a7bea092851a1925b790095e363c0c2684723d0ab6de",
+      "stage": "formal001_publication",
+      "wall_seconds": 0.01672966000478482
+    },
+    {
+      "cpu_components": {
+        "child_system_seconds": 0.0,
+        "child_user_seconds": 0.0,
+        "self_system_seconds": 0.651344,
+        "self_user_seconds": 5.529689
+      },
+      "cpu_seconds": 6.181033,
+      "receipt": "experiments/adaptive_credit_bridge_v1/results/archive001/COMPLETE.json",
+      "sha256": "efc30d12934d7c19881ad510d1a8ecf2e6541731a3ca38d4736246d64f4485aa",
+      "stage": "archive_and_all_member_verification",
+      "wall_seconds": 6.689023996004835
+    }
+  ],
+  "baseline_whole_launch_costs_sha256": "1c06ad006a2345f6da163bd78219cc5c637461c64e88247370e965cc1cc54b6e",
+  "recorded_stage_cpu_sum_seconds": 483.87475,
+  "recorded_stage_wall_sum_seconds": 496.07989764700875,
+  "schema": "hepta.signed-credit-bridge.complete-declared-cost.v1",
+  "scope": "Sum of declared computational processing intervals including archived failures, formal caller startup and all nested children counted exactly once. It is not calendar development time or tool/service/authoring overhead; no joule estimate. Final archive receipt is external to the archive to avoid self-reference.",
+  "whole_launch_rounding_cpu_half_width_seconds": 0.03,
+  "whole_launch_rounding_wall_half_width_seconds": 0.015
+}

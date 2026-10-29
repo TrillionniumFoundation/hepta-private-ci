@@ -81,9 +81,25 @@
       "sha256": "e78b6e6940878a51629a383363dde42e9248de9f308a2d34c4a1b1e5dcafa86a",
       "stage": "discard_reproducible_portable_copy",
       "stage_wall_seconds": 2.0719899289979367
+    },
+    {
+      "complete": true,
+      "cpu_seconds": 0.082841,
+      "receipt": "experiments/adaptive_neuron_v2/results/delivery001/cache_cleanup002/COMPLETE.json",
+      "sha256": "11ea7e5700cf2a0dda71441b7ab00f6fb56dc7554fd885a8c933061a3c23f0f9",
+      "stage": "discard_reproducible_compiler_objects",
+      "stage_wall_seconds": 0.09635750499728601
+    },
+    {
+      "complete": true,
+      "cpu_seconds": 5.7146360000000005,
+      "receipt": "experiments/adaptive_neuron_v2/results/delivery001/ram_cleanup003/COMPLETE.json",
+      "sha256": "8df3aedcc65a53c78af045c8688ec40ae055d626140ebc504e2f577c6b88e6e7",
+      "stage": "retire_verified_original_ram_copy",
+      "stage_wall_seconds": 9.564465356997971
     }
   ],
   "schema": "hepta.adaptive-neuron.delivery-cost-ledger.v1",
-  "sum_disjoint_process_cpu_seconds": 608.148553954,
-  "sum_stage_wall_seconds": 658.7105238370059
+  "sum_disjoint_process_cpu_seconds": 613.9460309540001,
+  "sum_stage_wall_seconds": 668.3713466990012
 }

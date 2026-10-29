@@ -1,0 +1,28 @@
+{
+  "confirmed_volumes": {
+    "build_dev_drive": "E: ReFS Fixed",
+    "test_temp": "C: NTFS Fixed"
+  },
+  "failed": 0,
+  "job": 122780464363,
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40677378223/job/122780464363",
+  "log": {
+    "bytes": 143720,
+    "path": "native-windows-0d113abe-122780464363.log",
+    "sha256": "9db1ed4746b61e0f156e6b9523ce479eb79e563c6dd12ae833e508d8f92877f6"
+  },
+  "packages": [
+    "codex-hepta-paths",
+    "codex-utils-path",
+    "codex-hepta-contracts",
+    "codex-hepta-prompt-registry"
+  ],
+  "passed": 180,
+  "raw_log_preservation": "The exact upstream job log retains timestamp-only lines with trailing spaces and its final blank line. Source whitespace checks exclude this single immutable diagnostic data file; no log bytes were normalized.",
+  "schema": "hepta.adaptive-neuron.platform-ci-evidence.v1",
+  "scope": "Actual Windows runtime validation of four host-native path/private-state/authority packages, not the entire core or repository test matrix.",
+  "skipped": 0,
+  "source_commit": "0d113abe0ead3b23a682c052583f4dd1381b9656",
+  "tests": 180,
+  "workflow_run": 40677378223
+}

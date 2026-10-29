@@ -1,0 +1,26 @@
+{
+  "accounting": "This enclosing interval includes child subprocesses. Nested receipts explain its components and must not be added to it again.",
+  "complete": true,
+  "cpu": {
+    "child_system_seconds": 0.0,
+    "child_user_seconds": 0.0,
+    "self_system_seconds": 3.011784,
+    "self_user_seconds": 2.702852
+  },
+  "error": null,
+  "facts": {
+    "exact_binaries_preserved": 2,
+    "ram_available_bytes_after": 800776192,
+    "retained": "/workspace/scratch/07399998a2e3/deliverables/hepta-adaptive-v2-batch001-preserved",
+    "verified_scientific_bytes": 173036583,
+    "verified_scientific_files": 19757
+  },
+  "finished_at_utc": "2026-10-28T11:32:46.105706+00:00",
+  "identity": {
+    "stage": "retire_original_ram_working_directory"
+  },
+  "schema": "hepta.adaptive-neuron.cost-stage.v2",
+  "scope": "Hash-check every original scientific/launch file against the preserved workspace copy, then remove only the original task RAM working directory. Complete raw evidence and final binaries remain preserved and were archived and uploaded successfully; recompilable build objects are not retained twice.",
+  "started_at_utc": "2026-10-28T11:32:36.541283+00:00",
+  "wall_seconds": 9.564465356997971
+}

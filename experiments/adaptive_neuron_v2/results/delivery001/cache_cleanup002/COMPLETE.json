@@ -1,0 +1,65 @@
+{
+  "accounting": "This enclosing interval includes child subprocesses. Nested receipts explain its components and must not be added to it again.",
+  "complete": true,
+  "cpu": {
+    "child_system_seconds": 0.0,
+    "child_user_seconds": 0.0,
+    "self_system_seconds": 0.043132000000000004,
+    "self_user_seconds": 0.039709
+  },
+  "error": null,
+  "facts": {
+    "available_bytes_after": 20115456,
+    "removed_reproducible_caches": [
+      {
+        "files": 77,
+        "logical_bytes": 56393874,
+        "path": "/workspace/scratch/07399998a2e3/deliverables/hepta-adaptive-v2-batch001-preserved/sealed-builds/build01/target/release/deps"
+      },
+      {
+        "files": 51,
+        "logical_bytes": 5864675,
+        "path": "/workspace/scratch/07399998a2e3/deliverables/hepta-adaptive-v2-batch001-preserved/sealed-builds/build01/target/release/build"
+      },
+      {
+        "files": 0,
+        "logical_bytes": 0,
+        "path": "/workspace/scratch/07399998a2e3/deliverables/hepta-adaptive-v2-batch001-preserved/sealed-builds/build01/target/release/incremental"
+      },
+      {
+        "files": 151,
+        "logical_bytes": 41060,
+        "path": "/workspace/scratch/07399998a2e3/deliverables/hepta-adaptive-v2-batch001-preserved/sealed-builds/build01/target/release/.fingerprint"
+      },
+      {
+        "files": 77,
+        "logical_bytes": 56393874,
+        "path": "/workspace/scratch/07399998a2e3/deliverables/hepta-adaptive-v2-batch001-preserved/sealed-builds/build02/target/release/deps"
+      },
+      {
+        "files": 51,
+        "logical_bytes": 5864675,
+        "path": "/workspace/scratch/07399998a2e3/deliverables/hepta-adaptive-v2-batch001-preserved/sealed-builds/build02/target/release/build"
+      },
+      {
+        "files": 0,
+        "logical_bytes": 0,
+        "path": "/workspace/scratch/07399998a2e3/deliverables/hepta-adaptive-v2-batch001-preserved/sealed-builds/build02/target/release/incremental"
+      },
+      {
+        "files": 151,
+        "logical_bytes": 41058,
+        "path": "/workspace/scratch/07399998a2e3/deliverables/hepta-adaptive-v2-batch001-preserved/sealed-builds/build02/target/release/.fingerprint"
+      }
+    ],
+    "retained_exact_binary_sha256": "261c63bc5f3a8ca1940dac27424ef8740e03ddc918b12f29af7d44b4b4ad25e4"
+  },
+  "finished_at_utc": "2026-10-28T11:26:35.572181+00:00",
+  "identity": {
+    "stage": "discard_reproducible_compiler_objects"
+  },
+  "schema": "hepta.adaptive-neuron.cost-stage.v2",
+  "scope": "Remove only this task\u2019s intermediate Cargo artifacts after final exact binaries, source and receipts were archived, byte-verified and uploaded. All final executables and scientific raw records remain at the same paths.",
+  "started_at_utc": "2026-10-28T11:26:35.475856+00:00",
+  "wall_seconds": 0.09635750499728601
+}

@@ -1,0 +1,14 @@
+{
+  "action": "Transmit hepta_authenticated_credit_bridge_v1.tar.gz through the provided Library transfer helper",
+  "archive": "/workspace/scratch/07399998a2e3/deliverables/hepta_authenticated_credit_bridge_v1.tar.gz",
+  "archive_bytes": 11881111,
+  "archive_sha256": "b860b10029ca9db3c053846933d117cac158ff971a04949cdd353862a7ca513b",
+  "measured_transfer_cpu_seconds": null,
+  "measurement_note": "No transfer process ran; tool approval-review elapsed time is not an experiment CPU measurement.",
+  "next_action": "Retain the complete local archive, continue unaffected authorized repository/CI work, and request specific upload approval if persistent transfer is still required. No workaround or indirect upload was attempted.",
+  "reason_summary": "Automatic approval review requires end-user approval identifying the external Library destination and disclosure of the private repository source, binaries and replay evidence. Task completion was authorized in substance, but that specific sensitive-egress approval was not present.",
+  "recorded_at_utc": "2026-10-28T11:55:51.316394+00:00",
+  "schema": "hepta.delivery-review-block.v1",
+  "status": "automatic_approval_review_rejected_before_process_start",
+  "transfer_process_started": false
+}
