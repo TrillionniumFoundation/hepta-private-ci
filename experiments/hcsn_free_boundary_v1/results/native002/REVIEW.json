@@ -1,0 +1,30 @@
+{
+  "all_native_processes_exit_zero": true,
+  "all_saved_read_model_step_and_event_counts_agree": true,
+  "artifact_sha256": {
+    "COST_SCENARIOS.json": "b2df50d341f18bfeebf3cb1e12024e10877edc74ed7883341b2c9e28a087a618",
+    "INPUT_IDENTITY.json": "88eed9d94c59a657f9c3eab3290c6911accc5f6f1e7daa8f2c5152a8654938e1",
+    "REPORT.md": "45a78ba823865fd9dc65357d6de25142ce0511f46243cf9e9521a7090b398714",
+    "REQUEST.json": "3754aad97c09add5202f226c4374fe6fa1e342fe9909c75a7ea9fbadad4b7216",
+    "SUMMARY.json": "17a9a8bd3a7b880382ed261b8cf1c1e5c423b4ea29479162d852171ecaa34e56"
+  },
+  "cost_scenario_rows_independently_recomputed": 252,
+  "fixed_reference_episodes": 384,
+  "intentional_terminal_guard_rejections": 85,
+  "maximum_permitted_recomputation_absolute_error": 1e-12,
+  "maxout_and_continuation_predictions_equal_read_all_each_episode_each_price": true,
+  "method": "Read every saved episode receipt and every exact-child process cost; check guard frontier equality, process exits, read/call counts, every complete-read prediction against the separately executed read_all reference, all source hashes, and recompute every CPU-cost scenario from saved components; no source edits or re-execution",
+  "native_child_processes": 294,
+  "native_kernels_including_replay": 7355,
+  "native_main_episodes": 288,
+  "native_ndu_calls_including_replay": 7352,
+  "owner_ticks": 7349,
+  "reviewed_at_utc": "2026-10-29T13:01:59.997587+00:00",
+  "schema": "hcsn-native002-readonly-review.v1",
+  "separate_recovery_episodes": 3,
+  "source_files_after_run_matching": 38,
+  "source_freeze_identity": "caa1a503288d4986bf2f0bc3608bc211a12e221a45c822bfbd19fdacce953bc3",
+  "status": "passed_execution_and_accounting_checks_not_utility_superiority",
+  "training_execution_receipt_sha256": "67372fad504f34435c84a31c63e8e27a767184d505929d6207677fb28ee6d678",
+  "unexpected_native_errors": 0
+}
