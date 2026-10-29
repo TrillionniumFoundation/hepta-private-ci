@@ -1,0 +1,100 @@
+{
+  "schema": "rrsnn.v4.independent-precision-review-draft.v1",
+  "reviewer": "/root/r5_real_execution",
+  "status": "independent_diagnosis_complete_isolated_patch_review_pending",
+  "recorded_at_utc": "2026-10-29T15:30:51.564197+00:00",
+  "scope": "Read-only source review and one independent in-memory synthetic scalar grid. No trained checkpoint, heldout task or original result opened by the numerical probe; no frozen source or tolerance modified.",
+  "source_sha256": {
+    "operators.py": "2d2b85a8695d79f8e81eab21ea67a3796aae2d8f5b346a83ca990068b3c61398",
+    "models.py": "a0bc0100ae7e937322d5210d19d0def4ae3eae0e8b62a5a0ea280dcd7e186154",
+    "validate_models.py": "ab79f903c340473ee959056f91c384769f93ca5a4464d9d870818b271145fe82",
+    "numerical_control.py": "8a686fc74d441c0ea8dc03651f9ee8adb77ae73fdc083021b7ccace50f2bfeee"
+  },
+  "fixed_event_time_tolerance": 1e-07,
+  "diagnosis": [
+    "frozen_control_boundary computes gamma, exp argument and z in input precision before LambertW0 internally promotes its already-rounded z to float64.",
+    "LambertW0 then returns input precision, so 1+W, division by gamma and addition of cost are again evaluated in float32 for the trained profile.",
+    "RootBoundary promotes drift/cost to float64 before computing gamma and solving the scalar equation, casting only the final threshold back to drift dtype.",
+    "The CTMC generator later promotes already-rounded boundaries to float64; it cannot reconstruct lost threshold bits. Identical exponential random draws with slightly different rates can shift event times without changing count, type, RNG-consumption or action histories.",
+    "The existing independent boundary/gradient test and same-weight physical-network test in validate_models use double inputs/models, leaving the actual float32 arithmetic path uncovered."
+  ],
+  "independent_in_memory_probe": {
+    "execution_session": 78315,
+    "grid": [
+      33,
+      33
+    ],
+    "points": 1089,
+    "torch_dtype": "float32",
+    "cpu_affinity": [
+      8
+    ],
+    "drift_grid": "linspace(-1.5*tanh(1),1.5*tanh(1),33); broadcast rows",
+    "cost_grid": "linspace(.2,.98,33); broadcast columns",
+    "sigma": 0.4,
+    "discount": 0.4,
+    "refractory": 0.1,
+    "old_f32_vs_root_f32_max_abs": 9.5367431640625e-07,
+    "old_f32_vs_root_f32_nonidentical": 416,
+    "full_expression_double_then_final_f32_vs_root_max_abs": 0.0,
+    "full_expression_double_then_final_f32_nonidentical": 0,
+    "full_double_formula_vs_double_brent_max_abs": 8.997247391562269e-13,
+    "old_gradient_vs_implicit_root_max_abs_drift_cost": [
+      1.7881393432617188e-06,
+      9.5367431640625e-07
+    ],
+    "promoted_gradient_vs_implicit_root_max_abs_drift_cost": [
+      0.0,
+      0.0
+    ],
+    "worst_scalar": {
+      "drift": 0.9995923042297363,
+      "cost": 0.9556249976158142,
+      "old": 2.6455671787261963,
+      "root_and_promoted": 2.6455681324005127
+    },
+    "worst_scalar_is_pre_clamp": true,
+    "no_claim_that_pre_clamp_max_equals_actual_policy_max": true,
+    "gamma_range": [
+      0.34195412938970987,
+      14.621844189814512
+    ],
+    "z_range": [
+      -0.3300897054064128,
+      -2.114224473482632e-07
+    ],
+    "minimum_z_distance_from_minus_inverse_e": 0.03778973576502953,
+    "synthetic_diagnosis_not_completed_60_control_evidence": true
+  },
+  "mathematical_contract": {
+    "equation": "F(h)=gamma*(h-cost)-1+exp(-discount*refractory-gamma*h)=0",
+    "admissible_interval": "cost <= h <= cost+1/gamma for gamma>0 and positive frozen-profile cost/refractory-discount product",
+    "branch": "Lambert W principal real branch W0; W-1 gives h<=cost and is not the intended bracketed threshold.",
+    "q": "q=exp(-discount*refractory-gamma*h)=-W0(z)",
+    "dh_dc": "1/(1-q)",
+    "dgamma_da": "-gamma/sqrt(drift^2+2*discount*sigma^2)",
+    "dh_da": "-((h-cost)-h*q)*dgamma_da/(gamma*(1-q))",
+    "gradient_scope": "First derivatives in drift/cost. Existing custom Lambert backward does not establish a general higher-order-autograd contract."
+  },
+  "minimum_repair_requirements": [
+    "Promote the entire scalar threshold expression before gamma and exp, and cast only the final result to the original expression result dtype.",
+    "Keep weights, observed controls, resource/maturity cost, RNG consumption rules, CTMC generator, root reference, clamps, actor seeds and event-time tolerance unchanged.",
+    "Preserve input broadcasting, device and first-order autograd paths; do not detach or turn tensors into NumPy for the analytic path.",
+    "For mixed dtype or zero-dimensional inputs, preserve actual torch result-type semantics; blindly returning drift dtype or promote_types can change existing scalar-versus-array behavior.",
+    "Use an isolated source file and separately identified candidate manifest; original frozen source, sixty original controls and trained results remain historical evidence.",
+    "Same-weight repair validation is not a retraining result and cannot replace the original main table."
+  ],
+  "stability_limits": [
+    "The fixed network envelope is well inside W0 real domain; branch-point ill-conditioning does not explain this observed float32 discrepancy.",
+    "Positive drift causes subtraction in sqrt(drift^2+2*r*sigma^2)-drift; float64 promotion is sufficient in the declared bounded profile and also matches the existing Brent gamma arithmetic.",
+    "For broader future domains, rationalized gamma and small-cost/branch-point asymptotics may be useful, but would be separately reviewed changes, not necessary additions to this minimal fix.",
+    "At extreme underflow z=0 the current Lambert derivative w/(z*(1+w)) yields 0/0, and at the branch point it is singular. Neither edge occurs in this probe; no global-domain guarantee is claimed.",
+    "A finite grid matching rounded Brent exactly is empirical evidence, not a guarantee for every possible floating-point input or full closed-loop path."
+  ],
+  "formal_patch_review_required": true,
+  "frozen_source_count_verified": 14,
+  "all_frozen_sources_unchanged": true,
+  "r5_publication_plan_sha256": "09ec672f834d23b3b826a6b9cf731417dcc095f698f9ae5fa533bb763122521b",
+  "r5_publication_plan_unchanged": true,
+  "all_blockers_closed": false
+}
