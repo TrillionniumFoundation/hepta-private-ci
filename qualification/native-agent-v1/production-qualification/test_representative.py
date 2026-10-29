@@ -10,6 +10,7 @@ import unittest
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import representative_compare as runner
+from representative_audit import audit_actual
 from script_gateway import ScriptGateway
 
 
@@ -57,6 +58,53 @@ class RepresentativeTests(unittest.TestCase):
         native["input"][0]["output"] = json.dumps({"exit_code": 0, "stdout": "", "stderr": ""})
         with self.assertRaisesRegex(ValueError, "expected exit"):
             gateway.replay(case, native)
+
+    def test_audit_binds_real_repair_feedback_to_original_proposals_and_admissions(self):
+        case = next(case for case in json.loads((HERE / "corpus.json").read_text())["cases"]
+                    if case["id"] == "repair")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            workspace, _, _ = runner.prepare(case, root)
+            evidence, sessions = root / "model", root / "sessions" / "fixture"
+            evidence.mkdir()
+            sessions.mkdir(parents=True)
+            steps, history = runner.steps_for(case), []
+            gateway = object.__new__(ScriptGateway)
+            for number in range(len(steps) + 1):
+                request = {"input": list(history)}
+                data, response = gateway.replay({"name": "repair", "calls": number + 1,
+                    "steps": steps}, request)
+                runner.save(evidence / f"model-{number:02}.request.json", request)
+                (evidence / f"model-{number:02}.response.sse").write_bytes(data)
+                if number == len(steps):
+                    break
+                item = response["output"][0]
+                runner.save(sessions / f"tool-{number:02}.json", {"call": {
+                    key: item[key] for key in ("call_id", "name", "arguments")}})
+                run = subprocess.run([sys.executable, "-I", "-B", "-S", str(HERE / "workspace_tool.py"),
+                    item["name"], item["arguments"], str(root / "workspace.json")],
+                    cwd=workspace, capture_output=True, text=True, check=False)
+                history += [item, {"type": "function_call_output", "call_id": item["call_id"],
+                    "output": json.dumps({"exit_code": run.returncode, "stdout": run.stdout, "stderr": run.stderr})}]
+            audited = audit_actual(root, "repair", "replay")
+            self.assertEqual([call["exit_code"] for call in audited["calls"]], [1, 0, 0, 0])
+            self.assertTrue(audited["usage_is_synthetic"])
+            with self.assertRaisesRegex(ValueError, "provider identity"):
+                audit_actual(root, "repair", "live", "different-provider-model")
+            admission = sessions / "tool-02.json"
+            original = admission.read_bytes()
+            value = json.loads(original)
+            value["call"]["arguments"] = json.dumps({"path": "src/calc.py", "old": "sum(values) + 1", "new": "0"})
+            admission.write_text(json.dumps(value))
+            with self.assertRaisesRegex(ValueError, "admitted payload"):
+                audit_actual(root, "repair", "replay")
+            admission.write_bytes(original)
+            request_path = evidence / "model-04.request.json"
+            request = json.loads(request_path.read_text())
+            request["input"][1]["output"] = json.dumps({"exit_code": 0, "stdout": "", "stderr": ""})
+            request_path.write_text(json.dumps(request))
+            with self.assertRaisesRegex(ValueError, "rewritten"):
+                audit_actual(root, "repair", "replay")
 
 
 if __name__ == "__main__":

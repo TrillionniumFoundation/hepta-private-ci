@@ -61,10 +61,14 @@ class ScriptGateway(ModelGateway):
                        {"type": "response.function_call_arguments.done", "item_id": item["id"],
                         "output_index": 0, "arguments": item["arguments"]}]
         else:
-            events += [{"type": "response.output_text.delta", "item_id": item["id"],
+            events += [{"type": "response.content_part.added", "item_id": item["id"], "output_index": 0,
+                        "content_index": 0, "part": {"type": "output_text", "text": "", "annotations": []}},
+                       {"type": "response.output_text.delta", "item_id": item["id"],
                         "output_index": 0, "content_index": 0, "delta": ANSWER},
                        {"type": "response.output_text.done", "item_id": item["id"],
-                        "output_index": 0, "content_index": 0, "text": ANSWER}]
+                        "output_index": 0, "content_index": 0, "text": ANSWER},
+                       {"type": "response.content_part.done", "item_id": item["id"], "output_index": 0,
+                        "content_index": 0, "part": item["content"][0]}]
         events += [{"type": "response.output_item.done", "output_index": 0, "item": item},
                    {"type": "response.completed", "response": response}]
         for number, event in enumerate(events):
