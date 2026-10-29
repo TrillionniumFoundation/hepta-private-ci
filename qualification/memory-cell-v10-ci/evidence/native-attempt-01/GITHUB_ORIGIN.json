@@ -1,0 +1,187 @@
+{
+  "schema": "hepta.memory.v10.github-origin.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "run": {
+    "id": 40900187124,
+    "event": "push",
+    "status": "completed",
+    "conclusion": "failure",
+    "head_sha": "d87b0bf14ed399438a7052126977579baf1edb70",
+    "run_attempt": 1,
+    "workflow_id": 400769562,
+    "path": ".github/workflows/memory-cell-v10.yml",
+    "created_at": "2026-10-29T15:18:17Z",
+    "run_started_at": "2026-10-29T15:18:17Z",
+    "updated_at": "2026-10-29T15:31:08Z",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40900187124"
+  },
+  "job": {
+    "id": 123540014064,
+    "name": "verify",
+    "status": "completed",
+    "conclusion": "failure",
+    "head_sha": "d87b0bf14ed399438a7052126977579baf1edb70",
+    "started_at": "2026-10-29T15:18:21Z",
+    "completed_at": "2026-10-29T15:31:07Z",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40900187124/job/123540014064",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-10-29T15:18:22Z",
+        "completed_at": "2026-10-29T15:18:24Z"
+      },
+      {
+        "name": "Retain the runner-local job start boundary",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-10-29T15:18:24Z",
+        "completed_at": "2026-10-29T15:18:24Z"
+      },
+      {
+        "name": "Checkout the exact request commit",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-10-29T15:18:24Z",
+        "completed_at": "2026-10-29T15:18:36Z"
+      },
+      {
+        "name": "Set up Python 3.12",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-10-29T15:18:36Z",
+        "completed_at": "2026-10-29T15:18:36Z"
+      },
+      {
+        "name": "Select the strict verification or finalization request",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-10-29T15:18:36Z",
+        "completed_at": "2026-10-29T15:18:36Z"
+      },
+      {
+        "name": "Run ./.github/actions/setup-ci",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-10-29T15:18:36Z",
+        "completed_at": "2026-10-29T15:18:40Z"
+      },
+      {
+        "name": "Install the pinned Rust toolchain",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-10-29T15:18:40Z",
+        "completed_at": "2026-10-29T15:18:48Z"
+      },
+      {
+        "name": "Install the pinned nextest runner",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8,
+        "started_at": "2026-10-29T15:18:48Z",
+        "completed_at": "2026-10-29T15:18:51Z"
+      },
+      {
+        "name": "Restore the existing scoped Rust cache",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9,
+        "started_at": "2026-10-29T15:18:51Z",
+        "completed_at": "2026-10-29T15:18:51Z"
+      },
+      {
+        "name": "Run ordinary scoped tests and the actual trained owner lifecycle",
+        "status": "completed",
+        "conclusion": "failure",
+        "number": 10,
+        "started_at": "2026-10-29T15:18:51Z",
+        "completed_at": "2026-10-29T15:30:36Z"
+      },
+      {
+        "name": "Authenticate successful verification, then final fix and format",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 11,
+        "started_at": "2026-10-29T15:30:36Z",
+        "completed_at": "2026-10-29T15:30:36Z"
+      },
+      {
+        "name": "Preserve successful or failed logs, model files, and Unix artifact names",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 12,
+        "started_at": "2026-10-29T15:30:36Z",
+        "completed_at": "2026-10-29T15:30:37Z"
+      },
+      {
+        "name": "Upload immutable attempt evidence before optional cache work",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 13,
+        "started_at": "2026-10-29T15:30:37Z",
+        "completed_at": "2026-10-29T15:30:38Z"
+      },
+      {
+        "name": "Save compiled dependencies for the next source attempt",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 14,
+        "started_at": "2026-10-29T15:30:38Z",
+        "completed_at": "2026-10-29T15:31:03Z"
+      },
+      {
+        "name": "Post Set up Python 3.12",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 27,
+        "started_at": "2026-10-29T15:31:03Z",
+        "completed_at": "2026-10-29T15:31:03Z"
+      },
+      {
+        "name": "Post Checkout the exact request commit",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 28,
+        "started_at": "2026-10-29T15:31:03Z",
+        "completed_at": "2026-10-29T15:31:03Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 29,
+        "started_at": "2026-10-29T15:31:03Z",
+        "completed_at": "2026-10-29T15:31:03Z"
+      }
+    ]
+  },
+  "artifact": {
+    "id": 12910550493,
+    "name": "memory-v10-verify-d87b0bf14ed399438a7052126977579baf1edb70-40900187124-1",
+    "size_in_bytes": 684796,
+    "digest": "sha256:b8fd50d63ab1aae019224623f94a790beaa51b5d690bcf2abc9253d3b34f3d64",
+    "expired": false,
+    "created_at": "2026-10-29T15:30:38Z",
+    "updated_at": "2026-10-29T15:30:38Z",
+    "workflow_run": {
+      "id": 40900187124,
+      "repository_id": 1320694176,
+      "head_repository_id": 1320694176,
+      "head_branch": "research/memory-cell-v10-20261029",
+      "head_sha": "d87b0bf14ed399438a7052126977579baf1edb70"
+    }
+  },
+  "downloaded_zip": {
+    "bytes": 684796,
+    "sha256": "b8fd50d63ab1aae019224623f94a790beaa51b5d690bcf2abc9253d3b34f3d64"
+  },
+  "original_failure_preserved": true
+}
