@@ -1,0 +1,1129 @@
+{
+  "schema": "rrsnn.v3.continuation-primitive.validation.v1",
+  "allPassed": true,
+  "scope": "Finite CTMC and finite decision-time mechanism validation; not neural training, target-host execution, or production acceptance.",
+  "checks": [
+    {
+      "name": "two_state_transition_closed_form",
+      "passed": true,
+      "details": {
+        "cases": 64,
+        "maxAbsoluteError": 6.861178292183467e-14
+      }
+    },
+    {
+      "name": "semigroup_composition",
+      "passed": true,
+      "details": {
+        "cases": 64,
+        "maxAbsoluteError": 8.026912468039882e-14
+      }
+    },
+    {
+      "name": "probability_mass",
+      "passed": true,
+      "details": {
+        "maxAbsoluteError": 9.85878045867139e-14,
+        "maxReportedPoissonTail": 9.843077189724355e-14
+      }
+    },
+    {
+      "name": "discounted_continuation_mass",
+      "passed": true,
+      "details": {
+        "maxAbsoluteError": 9.29256671611256e-14
+      }
+    },
+    {
+      "name": "independent_discounted_vector",
+      "passed": true,
+      "details": {
+        "actual": [
+          1.455865588322037,
+          1.7882750634090385
+        ]
+      }
+    },
+    {
+      "name": "loss_timestamp_discount",
+      "passed": true,
+      "details": {
+        "immediateLoss": 0.955865588322037,
+        "deadlineLoss": 1.0465002117830533
+      }
+    },
+    {
+      "name": "atomic_joint_reset_golden",
+      "passed": true,
+      "details": {
+        "actual": {
+          "actions": "RR",
+          "charge": 2,
+          "loss": 1,
+          "emittedReward": 0,
+          "next": {
+            "budget": 1,
+            "evidence": 1,
+            "renewedMask": 3,
+            "emitCount": 0
+          },
+          "value": 3.5
+        }
+      }
+    },
+    {
+      "name": "shared_budget_feasibility",
+      "passed": true,
+      "details": {
+        "actual": {
+          "actions": "DR",
+          "charge": 1,
+          "loss": 0.5,
+          "emittedReward": 0,
+          "next": {
+            "budget": 0,
+            "evidence": 1,
+            "renewedMask": 2,
+            "emitCount": 0
+          },
+          "value": 2.5
+        }
+      }
+    },
+    {
+      "name": "simultaneous_outputs_use_pre_reset_evidence",
+      "passed": true,
+      "details": {
+        "actual": {
+          "actions": "EE",
+          "charge": 4,
+          "loss": 0,
+          "emittedReward": 4,
+          "next": {
+            "budget": 0,
+            "evidence": 0,
+            "renewedMask": 0,
+            "emitCount": 2
+          },
+          "value": 4
+        }
+      }
+    },
+    {
+      "name": "shock_precedes_joint_deadline",
+      "passed": true,
+      "details": {
+        "beforeShockValue": 3.5,
+        "afterShockValue": 2.5
+      }
+    },
+    {
+      "name": "fee_value_envelope_exact",
+      "passed": true
+    },
+    {
+      "name": "fee_value_nonincreasing",
+      "passed": true
+    },
+    {
+      "name": "fee_value_convex",
+      "passed": true
+    },
+    {
+      "name": "optimal_renewal_exposure_nonincreasing",
+      "passed": true
+    },
+    {
+      "name": "continuation_cost_reverses_wrong_direction",
+      "passed": true
+    },
+    {
+      "name": "brownian_three_time_closed_form",
+      "passed": true,
+      "details": {
+        "actual": [
+          1.5000000028478495,
+          0.8000014290517379,
+          0.7006125845198248
+        ],
+        "closedForm": [
+          1.500000002847777,
+          0.8000014290516865,
+          0.7006125845197289
+        ]
+      }
+    },
+    {
+      "name": "brownian_cost_placement_direction",
+      "passed": true
+    },
+    {
+      "name": "no_unaffordable_output_or_renewal",
+      "passed": true
+    },
+    {
+      "name": "future_fee_enters_current_continuation",
+      "passed": true,
+      "details": {
+        "lowFee": {
+          "D": 2.5,
+          "R": 3.25,
+          "E": 2.5
+        },
+        "highFee": {
+          "D": 1,
+          "R": 1.75,
+          "E": 2.5
+        }
+      }
+    },
+    {
+      "name": "future_fee_uses_public_prior_not_realized_outcome",
+      "passed": true
+    },
+    {
+      "name": "independent_forward_policy_enumeration",
+      "passed": true,
+      "details": {
+        "actual": [
+          {
+            "p": 0.25,
+            "plans": 27,
+            "best": {
+              "value": 2.875,
+              "first": "R",
+              "low": "R",
+              "high": "R"
+            }
+          },
+          {
+            "p": 0.75,
+            "plans": 27,
+            "best": {
+              "value": 2.5,
+              "first": "E",
+              "low": "D",
+              "high": "D"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "joint_leg_permutation_invariance",
+      "passed": true
+    },
+    {
+      "name": "piecewise_loss_sensitivity_away_from_ties",
+      "passed": true,
+      "details": {
+        "actual": [
+          -2.0000000000131024,
+          0
+        ],
+        "tieExcluded": 0.75
+      }
+    },
+    {
+      "name": "invalid_inputs_fail_closed",
+      "passed": true,
+      "details": {
+        "rejected": 16,
+        "total": 16
+      }
+    }
+  ],
+  "raw": {
+    "budgetFixtures": [
+      {
+        "budget": 1,
+        "best": {
+          "actions": "DR",
+          "charge": 1,
+          "loss": 0.5,
+          "emittedReward": 0,
+          "next": {
+            "budget": 0,
+            "evidence": 1,
+            "renewedMask": 2,
+            "emitCount": 0
+          },
+          "value": 2.5
+        },
+        "choices": [
+          {
+            "actions": "DD",
+            "charge": 0,
+            "loss": 0,
+            "emittedReward": 0,
+            "next": {
+              "budget": 1,
+              "evidence": 1,
+              "renewedMask": 0,
+              "emitCount": 0
+            },
+            "value": 0
+          },
+          {
+            "actions": "DR",
+            "charge": 1,
+            "loss": 0.5,
+            "emittedReward": 0,
+            "next": {
+              "budget": 0,
+              "evidence": 1,
+              "renewedMask": 2,
+              "emitCount": 0
+            },
+            "value": 2.5
+          },
+          {
+            "actions": "RD",
+            "charge": 1,
+            "loss": 0.5,
+            "emittedReward": 0,
+            "next": {
+              "budget": 0,
+              "evidence": 1,
+              "renewedMask": 1,
+              "emitCount": 0
+            },
+            "value": 1
+          }
+        ]
+      },
+      {
+        "budget": 3,
+        "best": {
+          "actions": "RR",
+          "charge": 2,
+          "loss": 1,
+          "emittedReward": 0,
+          "next": {
+            "budget": 1,
+            "evidence": 1,
+            "renewedMask": 3,
+            "emitCount": 0
+          },
+          "value": 3.5
+        },
+        "choices": [
+          {
+            "actions": "DD",
+            "charge": 0,
+            "loss": 0,
+            "emittedReward": 0,
+            "next": {
+              "budget": 3,
+              "evidence": 1,
+              "renewedMask": 0,
+              "emitCount": 0
+            },
+            "value": 0
+          },
+          {
+            "actions": "DR",
+            "charge": 1,
+            "loss": 0.5,
+            "emittedReward": 0,
+            "next": {
+              "budget": 2,
+              "evidence": 1,
+              "renewedMask": 2,
+              "emitCount": 0
+            },
+            "value": 2.5
+          },
+          {
+            "actions": "DE",
+            "charge": 2,
+            "loss": 0,
+            "emittedReward": 1,
+            "next": {
+              "budget": 1,
+              "evidence": 0,
+              "renewedMask": 0,
+              "emitCount": 1
+            },
+            "value": 1
+          },
+          {
+            "actions": "RD",
+            "charge": 1,
+            "loss": 0.5,
+            "emittedReward": 0,
+            "next": {
+              "budget": 2,
+              "evidence": 1,
+              "renewedMask": 1,
+              "emitCount": 0
+            },
+            "value": 1
+          },
+          {
+            "actions": "RR",
+            "charge": 2,
+            "loss": 1,
+            "emittedReward": 0,
+            "next": {
+              "budget": 1,
+              "evidence": 1,
+              "renewedMask": 3,
+              "emitCount": 0
+            },
+            "value": 3.5
+          },
+          {
+            "actions": "RE",
+            "charge": 3,
+            "loss": 0.5,
+            "emittedReward": 1,
+            "next": {
+              "budget": 0,
+              "evidence": 0,
+              "renewedMask": 1,
+              "emitCount": 1
+            },
+            "value": 0.5
+          },
+          {
+            "actions": "ED",
+            "charge": 2,
+            "loss": 0,
+            "emittedReward": 3,
+            "next": {
+              "budget": 1,
+              "evidence": 0,
+              "renewedMask": 0,
+              "emitCount": 1
+            },
+            "value": 3
+          },
+          {
+            "actions": "ER",
+            "charge": 3,
+            "loss": 0.5,
+            "emittedReward": 3,
+            "next": {
+              "budget": 0,
+              "evidence": 0,
+              "renewedMask": 2,
+              "emitCount": 1
+            },
+            "value": 2.5
+          }
+        ]
+      },
+      {
+        "budget": 4,
+        "best": {
+          "actions": "EE",
+          "charge": 4,
+          "loss": 0,
+          "emittedReward": 4,
+          "next": {
+            "budget": 0,
+            "evidence": 0,
+            "renewedMask": 0,
+            "emitCount": 2
+          },
+          "value": 4
+        },
+        "choices": [
+          {
+            "actions": "DD",
+            "charge": 0,
+            "loss": 0,
+            "emittedReward": 0,
+            "next": {
+              "budget": 4,
+              "evidence": 1,
+              "renewedMask": 0,
+              "emitCount": 0
+            },
+            "value": 0
+          },
+          {
+            "actions": "DR",
+            "charge": 1,
+            "loss": 0.5,
+            "emittedReward": 0,
+            "next": {
+              "budget": 3,
+              "evidence": 1,
+              "renewedMask": 2,
+              "emitCount": 0
+            },
+            "value": 2.5
+          },
+          {
+            "actions": "DE",
+            "charge": 2,
+            "loss": 0,
+            "emittedReward": 1,
+            "next": {
+              "budget": 2,
+              "evidence": 0,
+              "renewedMask": 0,
+              "emitCount": 1
+            },
+            "value": 1
+          },
+          {
+            "actions": "RD",
+            "charge": 1,
+            "loss": 0.5,
+            "emittedReward": 0,
+            "next": {
+              "budget": 3,
+              "evidence": 1,
+              "renewedMask": 1,
+              "emitCount": 0
+            },
+            "value": 1
+          },
+          {
+            "actions": "RR",
+            "charge": 2,
+            "loss": 1,
+            "emittedReward": 0,
+            "next": {
+              "budget": 2,
+              "evidence": 1,
+              "renewedMask": 3,
+              "emitCount": 0
+            },
+            "value": 3.5
+          },
+          {
+            "actions": "RE",
+            "charge": 3,
+            "loss": 0.5,
+            "emittedReward": 1,
+            "next": {
+              "budget": 1,
+              "evidence": 0,
+              "renewedMask": 1,
+              "emitCount": 1
+            },
+            "value": 0.5
+          },
+          {
+            "actions": "ED",
+            "charge": 2,
+            "loss": 0,
+            "emittedReward": 3,
+            "next": {
+              "budget": 2,
+              "evidence": 0,
+              "renewedMask": 0,
+              "emitCount": 1
+            },
+            "value": 3
+          },
+          {
+            "actions": "ER",
+            "charge": 3,
+            "loss": 0.5,
+            "emittedReward": 3,
+            "next": {
+              "budget": 1,
+              "evidence": 0,
+              "renewedMask": 2,
+              "emitCount": 1
+            },
+            "value": 2.5
+          },
+          {
+            "actions": "EE",
+            "charge": 4,
+            "loss": 0,
+            "emittedReward": 4,
+            "next": {
+              "budget": 0,
+              "evidence": 0,
+              "renewedMask": 0,
+              "emitCount": 2
+            },
+            "value": 4
+          }
+        ]
+      }
+    ],
+    "feeSweep": [
+      {
+        "loss": 0,
+        "value": 4.5,
+        "actions": "RR",
+        "renewals": 2
+      },
+      {
+        "loss": 0.05,
+        "value": 4.4,
+        "actions": "RR",
+        "renewals": 2
+      },
+      {
+        "loss": 0.1,
+        "value": 4.3,
+        "actions": "RR",
+        "renewals": 2
+      },
+      {
+        "loss": 0.15000000000000002,
+        "value": 4.2,
+        "actions": "RR",
+        "renewals": 2
+      },
+      {
+        "loss": 0.2,
+        "value": 4.1,
+        "actions": "RR",
+        "renewals": 2
+      },
+      {
+        "loss": 0.25,
+        "value": 4,
+        "actions": "RR",
+        "renewals": 2
+      },
+      {
+        "loss": 0.30000000000000004,
+        "value": 3.9,
+        "actions": "RR",
+        "renewals": 2
+      },
+      {
+        "loss": 0.35000000000000003,
+        "value": 3.8,
+        "actions": "RR",
+        "renewals": 2
+      },
+      {
+        "loss": 0.4,
+        "value": 3.7,
+        "actions": "RR",
+        "renewals": 2
+      },
+      {
+        "loss": 0.45,
+        "value": 3.6,
+        "actions": "RR",
+        "renewals": 2
+      },
+      {
+        "loss": 0.5,
+        "value": 3.5,
+        "actions": "RR",
+        "renewals": 2
+      },
+      {
+        "loss": 0.55,
+        "value": 3.4,
+        "actions": "RR",
+        "renewals": 2
+      },
+      {
+        "loss": 0.6000000000000001,
+        "value": 3.3,
+        "actions": "RR",
+        "renewals": 2
+      },
+      {
+        "loss": 0.65,
+        "value": 3.2,
+        "actions": "RR",
+        "renewals": 2
+      },
+      {
+        "loss": 0.7000000000000001,
+        "value": 3.0999999999999996,
+        "actions": "RR",
+        "renewals": 2
+      },
+      {
+        "loss": 0.75,
+        "value": 3,
+        "actions": "RR",
+        "renewals": 2
+      },
+      {
+        "loss": 0.8,
+        "value": 3,
+        "actions": "ED",
+        "renewals": 0
+      },
+      {
+        "loss": 0.8500000000000001,
+        "value": 3,
+        "actions": "ED",
+        "renewals": 0
+      },
+      {
+        "loss": 0.9,
+        "value": 3,
+        "actions": "ED",
+        "renewals": 0
+      },
+      {
+        "loss": 0.9500000000000001,
+        "value": 3,
+        "actions": "ED",
+        "renewals": 0
+      },
+      {
+        "loss": 1,
+        "value": 3,
+        "actions": "ED",
+        "renewals": 0
+      },
+      {
+        "loss": 1.05,
+        "value": 3,
+        "actions": "ED",
+        "renewals": 0
+      },
+      {
+        "loss": 1.1,
+        "value": 3,
+        "actions": "ED",
+        "renewals": 0
+      },
+      {
+        "loss": 1.1500000000000001,
+        "value": 3,
+        "actions": "ED",
+        "renewals": 0
+      },
+      {
+        "loss": 1.2000000000000002,
+        "value": 3,
+        "actions": "ED",
+        "renewals": 0
+      },
+      {
+        "loss": 1.25,
+        "value": 3,
+        "actions": "ED",
+        "renewals": 0
+      },
+      {
+        "loss": 1.3,
+        "value": 3,
+        "actions": "ED",
+        "renewals": 0
+      },
+      {
+        "loss": 1.35,
+        "value": 3,
+        "actions": "ED",
+        "renewals": 0
+      },
+      {
+        "loss": 1.4000000000000001,
+        "value": 3,
+        "actions": "ED",
+        "renewals": 0
+      },
+      {
+        "loss": 1.4500000000000002,
+        "value": 3,
+        "actions": "ED",
+        "renewals": 0
+      },
+      {
+        "loss": 1.5,
+        "value": 3,
+        "actions": "ED",
+        "renewals": 0
+      },
+      {
+        "loss": 1.55,
+        "value": 3,
+        "actions": "ED",
+        "renewals": 0
+      },
+      {
+        "loss": 1.6,
+        "value": 3,
+        "actions": "ED",
+        "renewals": 0
+      },
+      {
+        "loss": 1.6500000000000001,
+        "value": 3,
+        "actions": "ED",
+        "renewals": 0
+      },
+      {
+        "loss": 1.7000000000000002,
+        "value": 3,
+        "actions": "ED",
+        "renewals": 0
+      },
+      {
+        "loss": 1.75,
+        "value": 3,
+        "actions": "ED",
+        "renewals": 0
+      },
+      {
+        "loss": 1.8,
+        "value": 3,
+        "actions": "ED",
+        "renewals": 0
+      },
+      {
+        "loss": 1.85,
+        "value": 3,
+        "actions": "ED",
+        "renewals": 0
+      },
+      {
+        "loss": 1.9000000000000001,
+        "value": 3,
+        "actions": "ED",
+        "renewals": 0
+      },
+      {
+        "loss": 1.9500000000000002,
+        "value": 3,
+        "actions": "ED",
+        "renewals": 0
+      },
+      {
+        "loss": 2,
+        "value": 3,
+        "actions": "ED",
+        "renewals": 0
+      }
+    ],
+    "discrete": [
+      {
+        "loss": 0,
+        "placement": "continuation",
+        "budget": 2,
+        "outputValue": 1,
+        "waitValue": 1.4999999999999467,
+        "value": 1.4999999999999467,
+        "action": "wait",
+        "expectedRenewals": 1,
+        "dueActions": [
+          "renew",
+          "renew"
+        ]
+      },
+      {
+        "loss": 0.8,
+        "placement": "continuation",
+        "budget": 2,
+        "outputValue": 1,
+        "waitValue": 0.8499999999999751,
+        "value": 1,
+        "action": "emit",
+        "expectedRenewals": 0,
+        "dueActions": [
+          "renew",
+          "emit"
+        ]
+      },
+      {
+        "loss": 0.8,
+        "placement": "output_cost",
+        "budget": 2,
+        "outputValue": 0.19999999999999996,
+        "waitValue": 0.6999999999999751,
+        "value": 0.6999999999999751,
+        "action": "wait",
+        "expectedRenewals": 1,
+        "dueActions": [
+          "renew",
+          "renew"
+        ]
+      }
+    ],
+    "brownian": [
+      {
+        "loss": 0,
+        "placement": "continuation",
+        "budget": 2,
+        "outputValue": 1,
+        "waitValue": 1.5000000028478495,
+        "action": "wait",
+        "value": 1.5000000028478495
+      },
+      {
+        "loss": 0.8,
+        "placement": "continuation",
+        "budget": 2,
+        "outputValue": 1,
+        "waitValue": 0.8000014290517379,
+        "action": "emit",
+        "value": 1
+      },
+      {
+        "loss": 0.8,
+        "placement": "output_cost",
+        "budget": 2,
+        "outputValue": 0.19999999999999996,
+        "waitValue": 0.7006125845198248,
+        "action": "wait",
+        "value": 0.7006125845198248
+      }
+    ],
+    "twoDeadlines": [
+      {
+        "fee": 0.5,
+        "best": {
+          "actions": "R",
+          "charge": 1,
+          "loss": 0.25,
+          "emittedReward": 0,
+          "next": {
+            "budget": 1,
+            "evidence": 1,
+            "renewedMask": 1,
+            "emitCount": 0
+          },
+          "value": 3.25
+        },
+        "choices": [
+          {
+            "actions": "D",
+            "charge": 0,
+            "loss": 0,
+            "emittedReward": 0,
+            "next": {
+              "budget": 2,
+              "evidence": 1,
+              "renewedMask": 0,
+              "emitCount": 0
+            },
+            "value": 2.5
+          },
+          {
+            "actions": "R",
+            "charge": 1,
+            "loss": 0.25,
+            "emittedReward": 0,
+            "next": {
+              "budget": 1,
+              "evidence": 1,
+              "renewedMask": 1,
+              "emitCount": 0
+            },
+            "value": 3.25
+          },
+          {
+            "actions": "E",
+            "charge": 1,
+            "loss": 0,
+            "emittedReward": 2.5,
+            "next": {
+              "budget": 1,
+              "evidence": 0,
+              "renewedMask": 0,
+              "emitCount": 1
+            },
+            "value": 2.5
+          }
+        ]
+      },
+      {
+        "fee": 2,
+        "best": {
+          "actions": "E",
+          "charge": 1,
+          "loss": 0,
+          "emittedReward": 2.5,
+          "next": {
+            "budget": 1,
+            "evidence": 0,
+            "renewedMask": 0,
+            "emitCount": 1
+          },
+          "value": 2.5
+        },
+        "choices": [
+          {
+            "actions": "D",
+            "charge": 0,
+            "loss": 0,
+            "emittedReward": 0,
+            "next": {
+              "budget": 2,
+              "evidence": 1,
+              "renewedMask": 0,
+              "emitCount": 0
+            },
+            "value": 1
+          },
+          {
+            "actions": "R",
+            "charge": 1,
+            "loss": 0.25,
+            "emittedReward": 0,
+            "next": {
+              "budget": 1,
+              "evidence": 1,
+              "renewedMask": 1,
+              "emitCount": 0
+            },
+            "value": 1.75
+          },
+          {
+            "actions": "E",
+            "charge": 1,
+            "loss": 0,
+            "emittedReward": 2.5,
+            "next": {
+              "budget": 1,
+              "evidence": 0,
+              "renewedMask": 0,
+              "emitCount": 1
+            },
+            "value": 2.5
+          }
+        ]
+      }
+    ],
+    "lateObservedFee": [
+      {
+        "highFeeProbability": 0.25,
+        "best": {
+          "actions": "R",
+          "charge": 1,
+          "loss": 0.25,
+          "emittedReward": 0,
+          "next": {
+            "budget": 1,
+            "evidence": 1,
+            "renewedMask": 1,
+            "emitCount": 0
+          },
+          "value": 2.875
+        },
+        "choices": [
+          {
+            "actions": "D",
+            "charge": 0,
+            "loss": 0,
+            "emittedReward": 0,
+            "next": {
+              "budget": 2,
+              "evidence": 1,
+              "renewedMask": 0,
+              "emitCount": 0
+            },
+            "value": 2.125
+          },
+          {
+            "actions": "R",
+            "charge": 1,
+            "loss": 0.25,
+            "emittedReward": 0,
+            "next": {
+              "budget": 1,
+              "evidence": 1,
+              "renewedMask": 1,
+              "emitCount": 0
+            },
+            "value": 2.875
+          },
+          {
+            "actions": "E",
+            "charge": 1,
+            "loss": 0,
+            "emittedReward": 2.5,
+            "next": {
+              "budget": 1,
+              "evidence": 0,
+              "renewedMask": 0,
+              "emitCount": 1
+            },
+            "value": 2.5
+          }
+        ]
+      },
+      {
+        "highFeeProbability": 0.75,
+        "best": {
+          "actions": "E",
+          "charge": 1,
+          "loss": 0,
+          "emittedReward": 2.5,
+          "next": {
+            "budget": 1,
+            "evidence": 0,
+            "renewedMask": 0,
+            "emitCount": 1
+          },
+          "value": 2.5
+        },
+        "choices": [
+          {
+            "actions": "D",
+            "charge": 0,
+            "loss": 0,
+            "emittedReward": 0,
+            "next": {
+              "budget": 2,
+              "evidence": 1,
+              "renewedMask": 0,
+              "emitCount": 0
+            },
+            "value": 1.375
+          },
+          {
+            "actions": "R",
+            "charge": 1,
+            "loss": 0.25,
+            "emittedReward": 0,
+            "next": {
+              "budget": 1,
+              "evidence": 1,
+              "renewedMask": 1,
+              "emitCount": 0
+            },
+            "value": 2.125
+          },
+          {
+            "actions": "E",
+            "charge": 1,
+            "loss": 0,
+            "emittedReward": 2.5,
+            "next": {
+              "budget": 1,
+              "evidence": 0,
+              "renewedMask": 0,
+              "emitCount": 1
+            },
+            "value": 2.5
+          }
+        ]
+      }
+    ],
+    "forwardEnumeration": [
+      {
+        "p": 0.25,
+        "plans": 27,
+        "best": {
+          "value": 2.875,
+          "first": "R",
+          "low": "R",
+          "high": "R"
+        }
+      },
+      {
+        "p": 0.75,
+        "plans": 27,
+        "best": {
+          "value": 2.5,
+          "first": "E",
+          "low": "D",
+          "high": "D"
+        }
+      }
+    ]
+  }
+}
