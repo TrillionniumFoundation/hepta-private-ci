@@ -27,11 +27,15 @@ pub(super) fn training_rows() -> TestResult<Vec<Value>> {
 }
 
 pub(super) fn excluded_prompts() -> TestResult<std::collections::BTreeSet<String>> {
-    let raw = include_bytes!("../fixtures/smollm-consumed-prompts-all-through-a593-v3.json");
-    if Digest32::of_bytes(raw).to_string() != EXCLUSION_SHA {
+    let raw = [
+        include_bytes!("../fixtures/smollm-a593-exclusions.part1").as_slice(),
+        include_bytes!("../fixtures/smollm-a593-exclusions.part2").as_slice(),
+    ]
+    .concat();
+    if Digest32::of_bytes(&raw).to_string() != EXCLUSION_SHA {
         return Err("complete frozen prompt exclusions changed".into());
     }
-    let value: Value = serde_json::from_slice(raw)?;
+    let value: Value = serde_json::from_slice(&raw)?;
     let hashes = value["excluded_prompt_sha256"]
         .as_array()
         .ok_or("excluded prompts")?;
