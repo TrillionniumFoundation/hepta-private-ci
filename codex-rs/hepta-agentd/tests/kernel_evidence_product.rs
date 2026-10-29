@@ -556,8 +556,11 @@ async fn signed_recovery_frontier_allows_exact_current_database() -> Result<()> 
     store.close().await;
 
     let external = tempfile::tempdir()?;
+    // The real recovery guard requires a canonical external parent, including
+    // on macOS where the temporary directory may be exposed via /var.
+    let external_root = external.path().canonicalize()?;
     let (frontier_file, frontier_trust_file) = write_recovery_frontier(
-        external.path(),
+        &external_root,
         "store:kernel-evidence-recovery-ok",
         snapshot,
     )?;
@@ -616,7 +619,8 @@ async fn signed_recovery_frontier_rejects_valid_older_database_image() -> Result
     old_store.close().await;
 
     let external = tempfile::tempdir()?;
-    let old_image = external.path().join("hepta-evidence-old.sqlite");
+    let external_root = external.path().canonicalize()?;
+    let old_image = external_root.join("hepta-evidence-old.sqlite");
     std::fs::copy(&database_path, &old_image)?;
 
     let current_store = HeptaEvidenceStore::open(&sqlite).await?;
@@ -645,7 +649,7 @@ async fn signed_recovery_frontier_rejects_valid_older_database_image() -> Result
     current_store.close().await;
 
     let (frontier_file, frontier_trust_file) = write_recovery_frontier(
-        external.path(),
+        &external_root,
         "store:kernel-evidence-recovery-old",
         current_snapshot,
     )?;
