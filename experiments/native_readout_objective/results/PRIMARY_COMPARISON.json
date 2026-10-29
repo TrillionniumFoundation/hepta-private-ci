@@ -1,0 +1,74 @@
+{
+  "data": {
+    "benefit_gate_passed": false,
+    "confidence": 0.95,
+    "control": "iterative_q_mse",
+    "descriptive_split_mean_deltas": {
+      "test_id": -0.11431787872070309,
+      "test_ood": 0.10357779069618545
+    },
+    "df": 15,
+    "family_size": 1,
+    "interpretation": "0/1 benefit gates; the interval does not establish improvement above 0.005, equivalence, or inferiority; split differences are descriptive only",
+    "interval": [
+      -0.11412016184568621,
+      0.10338007382116862
+    ],
+    "mean_delta": -0.005370044012258796,
+    "minimum_effect": 0.005,
+    "n_independent_seeds": 16,
+    "seed_deltas": [
+      -0.04516724304804898,
+      -0.3061713912356545,
+      -0.05020454323905099,
+      0.045148884583085636,
+      0.038771304173069954,
+      0.1748265291417983,
+      0.09469301357788229,
+      -0.14556718838970983,
+      0.017051362820208915,
+      -0.1775214236513989,
+      -0.35464486418254637,
+      0.028746192550997307,
+      -0.22980196871527347,
+      0.15045319562671233,
+      0.36866935124698186,
+      0.3047980845448057
+    ],
+    "seed_ids": [
+      3301,
+      3307,
+      3313,
+      3319,
+      3323,
+      3329,
+      3331,
+      3343,
+      3347,
+      3359,
+      3361,
+      3371,
+      3373,
+      3389,
+      3391,
+      3407
+    ],
+    "stability_failures": 0,
+    "standard_error": 0.051021671172078675,
+    "treatment": "policy_regret"
+  },
+  "provenance": {
+    "derivation": "exact extraction and arithmetic aggregation from the named independent audit; extra cost aggregates additionally bind audited costs.jsonl",
+    "full_audit_engineering_relative_path": "audits/CONFIRMATION_AUDIT.json",
+    "full_audit_sha256": "4db0de9b32926b4415c2179715f520ad8b852362b112b103218d447de415a8fb",
+    "native_binary_sha256": "fa9dc78b129b0ec3b072e9fc8c8fdd49479515c79aeb2660f355e38f41e54dce",
+    "protocol_sha256": "3d19c2f0aef69da5d368da01e34308f1344ec98b10fd0aaefa1ba4877aa9baff",
+    "public_archive_directory": "evidence/bundle/",
+    "scientific_manifest_sha256": "861468d3cd2f1841291dfcd32c93f3efe1db58f494c02e549979376fb26e60b7",
+    "selection_publication_commit": "87b03617077f9e5f275d291b7af06cd1418f87ce",
+    "selection_seal_sha256": "28477204d0ef4a94fc990295196d5c51f792a95e2546750217a2a5592f682d66",
+    "source_publication_commit": "7908860cb959cbe1599379d4ecbfcc22fbccbe61",
+    "source_seal_sha256": "83f5243f7b7c7aead3742baccd01caaf619759658f320e824589ff016269d2e9"
+  },
+  "schema": "hepta.native-readout-objective.primary-comparison.derived.v1"
+}
