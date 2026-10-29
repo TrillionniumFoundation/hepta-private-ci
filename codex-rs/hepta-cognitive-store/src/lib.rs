@@ -71,6 +71,11 @@ pub use durable::RecoveredCognitiveReadOnly;
 pub use durable::SourceDraft;
 pub use durable::StableMemoryId;
 pub use durable::memory_cell_scope_id;
+pub use durable::MAX_MEMORY_INVENTORY_OWNER_HEADS;
+pub use durable::MemoryInventoryAddressV1;
+pub use durable::MemoryInventoryOwnerRecordV1;
+pub use durable::MemoryInventoryOwnerSnapshotV1;
+pub use durable::MemoryInventoryRecordV1;
 
 pub use v2::AdmittedCognitiveStoreV2;
 pub use v2::CanonicalDurableMemoryEventBindingV1;

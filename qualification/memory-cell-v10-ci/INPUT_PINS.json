@@ -1,0 +1,102 @@
+{
+  "encoder": {
+    "encoder_digest": "4bff7b22bc544468dca828c404026aaa5d011ce83e305d056c14a24658955faf",
+    "files": {
+      "1_Pooling/config.json": {
+        "bytes": 190,
+        "sha256": "4be450dde3b0273bb9787637cfbd28fe04a7ba6ab9d36ac48e92b11e350ffc23"
+      },
+      "config.json": {
+        "bytes": 645,
+        "sha256": "6300193cb75e01cf80c96decef7187dfb33094d97cc1490b7ead6ff134476e4e"
+      },
+      "onnx/model_quint8_avx2.onnx": {
+        "bytes": 118453870,
+        "sha256": "98a01d88b7de996cdea58c32ca71208c09968d143798814b2ea09d3439dc334f"
+      },
+      "special_tokens_map.json": {
+        "bytes": 239,
+        "sha256": "378eb3bf733eb16e65792d7e3fda5b8a4631387ca04d2015199c4d4f22ae554d"
+      },
+      "tokenizer.json": {
+        "bytes": 9081518,
+        "sha256": "2c3387be76557bd40970cec13153b3bbf80407865484b209e655e5e4729076b8"
+      },
+      "tokenizer_config.json": {
+        "bytes": 526,
+        "sha256": "5036ea374ffedd706e3bef33e2e0d6953cb868ef8a490e76e32ba0faa37a6b9b"
+      }
+    },
+    "repo": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+    "revision": "e8f8c211226b894fcb81acc59f3b34ba3efd5f42"
+  },
+  "legacy": {
+    "archive": {
+      "bytes": 3991976,
+      "sha256": "ac5a13169fcad61eda46ee4e42c67e5549c82da48a32c1121e9727baa2ee706f"
+    },
+    "commit": "0f41c4968eea63727c69e2b979491e94a99a9dbb",
+    "held_files_opened": false,
+    "index_git_blob": "a4e56925ab7426ae0124f80a68c3c5201d72a9be",
+    "repository_directory": "qualification/memory-cell-adapters/evidence/formal-01",
+    "selected_files": {
+      "FREEZE.json": {
+        "bytes": 6691,
+        "sha256": "7a298c2bdc850529f2059ffbe4c20e507c2da844db4f5c07b19fc33f71d9beb6"
+      },
+      "canonical.npz": {
+        "bytes": 23189,
+        "sha256": "a2956040051c390cf5ea8ada8603d3224348d50e80888b278a6131d436d8c87d"
+      },
+      "development-encoder.json": {
+        "bytes": 1466,
+        "sha256": "dcbe012721f82e7b86fc6bd4de52d30969dda170641daf8dd966a0c2065112e3"
+      },
+      "models/seed-731/semantic/A.0000.npz": {
+        "bytes": 5935,
+        "sha256": "ff3c649caf54ae23752d8cf33015d3beaf9151426703cb6dcc0e4357fff202dd"
+      },
+      "models/seed-731/semantic/B.0000.npz": {
+        "bytes": 5886,
+        "sha256": "e20794ca9feff79c75a5e123f1b8c4c399e9d3b009d7f2844d267ab99364c284"
+      },
+      "models/seed-731/semantic/head.bias.0000.npz": {
+        "bytes": 258,
+        "sha256": "fd4be672d9a49d9a7c533fc9609daf1e7f99cd5cf34a6f3d6851667b087942e9"
+      },
+      "models/seed-731/semantic/head.weight.0000.npz": {
+        "bytes": 17227,
+        "sha256": "0e225234232692bf3567be3877c56a1c9e829c9abe73aa98c63ffe8ec8b7ee28"
+      },
+      "models/seed-731/semantic/manifest.json": {
+        "bytes": 2733,
+        "sha256": "3ce13110a57c4a1aeaff8fb5113c23e7ec4f20474a2800792e87b12ee87c73db"
+      },
+      "models/seed-731/skill/A.0000.npz": {
+        "bytes": 5941,
+        "sha256": "f1ded51b00c97e00cf69a5a06a1a130d9d92514c0ac40c385092241c5c95f45b"
+      },
+      "models/seed-731/skill/B.0000.npz": {
+        "bytes": 5935,
+        "sha256": "88c7fb6fb95de3f5e6540558bd2ad5ad11f2f9eaf1983e78dc97dfeb3379c321"
+      },
+      "models/seed-731/skill/head.bias.0000.npz": {
+        "bytes": 325,
+        "sha256": "2eddea10a4c572c4df1037d1d234c5cf4876717eeaf349c21c5ee3c9bb786f92"
+      },
+      "models/seed-731/skill/head.weight.0000.npz": {
+        "bytes": 39460,
+        "sha256": "c486aa1ed8e537b72de7a4cef33c445c93cdf588bdccd1da5d0c77ad6cd53c8e"
+      },
+      "models/seed-731/skill/manifest.json": {
+        "bytes": 3132,
+        "sha256": "396515dedd46def6a687ac44a68a1a501c74c7c1de2ff6af49060b1df5ae2f80"
+      },
+      "sources.json": {
+        "bytes": 2542,
+        "sha256": "4fdee74e78e1ac3762af1a48214c12fc25394d457e329bb90d911b5434dd4c1f"
+      }
+    }
+  },
+  "schema": "hepta.memory.v10.ci-input-pins.v1"
+}

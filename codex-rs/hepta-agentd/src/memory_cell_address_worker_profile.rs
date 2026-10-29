@@ -7,6 +7,8 @@ use std::path::PathBuf;
 
 #[path = "memory_cell_address_worker_profile_v9.rs"]
 mod v9;
+#[path = "memory_inventory_address_profile.rs"]
+mod inventory;
 
 pub(super) struct SourceProfile {
     pub required: BTreeSet<PathBuf>,
@@ -15,6 +17,9 @@ pub(super) struct SourceProfile {
 }
 
 pub(super) fn source_profile(script: &Path, schema: Option<&str>) -> Result<SourceProfile, String> {
+    if schema == Some("hepta.memory.v10.inventory-router.v1") {
+        return inventory::source_profile(script);
+    }
     let addressing = script.parent().ok_or("address worker parent is missing")?;
     let qualification = addressing
         .parent()

@@ -1,0 +1,5066 @@
+{
+  "schema": "hepta.memory.v10.native-json-audit.v1",
+  "mode": "posthoc_saved_evidence_only",
+  "input_root": "/workspace/scratch/76e2020e4b36/memory-v10-native-verified-04",
+  "models_loaded": false,
+  "training_run": false,
+  "tests_run": false,
+  "encoder_run": false,
+  "run_id": "40909855139",
+  "source_commit": "4131172a07fdf5bf5fe84f0397800bf900248ab8",
+  "request_id": "native-formal-04",
+  "source_files": {
+    "codex-rs/hepta-agentd/src/memory_inventory_actual_tests.rs": {
+      "bytes": 13911,
+      "git_blob": "ba7bcf2812db152470bd1f710277a026472aa707",
+      "mode": "100644",
+      "sha256": "4b1aeac18fb761d59851ff28bbc88e6116291b0b07df167c8cf7076ea9793892"
+    },
+    "codex-rs/hepta-agentd/src/memory_inventory_actual_cases.rs": {
+      "bytes": 9316,
+      "git_blob": "ec99f23da9389fe37949b55cdcfdc27eff8638cb",
+      "mode": "100644",
+      "sha256": "f236a25a1eec958b73c1a3e61083e32a6e1024de22eb61b6f47300ebec7108eb"
+    },
+    "codex-rs/hepta-agentd/src/memory_inventory_numeric_actual.rs": {
+      "bytes": 8817,
+      "git_blob": "5e08dba2273abe2037985da5b589ad39141a7096",
+      "mode": "100644",
+      "sha256": "c55654b3d5f47109ec601053e23ea88f6f2d980d95d72289b8a815ff8b3454e6"
+    },
+    "qualification/memory-cell-v10/native_train_worker.py": {
+      "bytes": 7283,
+      "git_blob": "458c6d83638ea593012c74e7c773df1ba77b42b1",
+      "mode": "100644",
+      "sha256": "3fb9da92a6167b1aa3a574171c568e04e9e59b2b327a4f4697bd4fffefd499d0"
+    },
+    "qualification/memory-cell-v10/native_bridge.py": {
+      "bytes": 3914,
+      "git_blob": "79733ce88cf1d559a40b85067335b3f764e33a58",
+      "mode": "100644",
+      "sha256": "eb56b1c2eb9ece68610b017ce8efed894e6fdd244b3f6f03f71a847bf486b71d"
+    },
+    "qualification/memory-cell-v10/reference.py": {
+      "bytes": 6858,
+      "git_blob": "36450afac6d27c20754d29f527ee859cd6e24f32",
+      "mode": "100644",
+      "sha256": "0a6a13949da5cc5ff2ddb25b5afd2626c33fb529ba5969a6f81a4f71293374a8"
+    }
+  },
+  "checks": 1064,
+  "issues": [],
+  "numeric_and_truth_totals": {
+    "rows": 47,
+    "reference_accepted": 47,
+    "native_accepted": 47,
+    "reference_source_truth_correct": 47,
+    "native_source_truth_correct": 47,
+    "logit_coordinates": 948,
+    "reference_copy_changed_logits": 137,
+    "reference_copy_changed_rows": 43,
+    "reference_copy_changed_margins": 14
+  },
+  "distinct_parameter_digest_address_pairs": 39,
+  "distinct_artifact_digest_address_pairs": 47,
+  "stages": [
+    {
+      "stage": "original-checkpoint",
+      "owner_snapshot": "owner-before.json",
+      "owner_agent_id": "00000000-0000-4000-9000-000000000010",
+      "scope": "cognitive:00000000-0000-4000-9000-000000000010:e30997020f10b1a19a604b5072202e330cc43ecefab205185301171e96fda28f",
+      "owner_cut_digest": "9dc210f657333558d1791362a3e2902574b23028c82e80554fbd0de0b3b4839a",
+      "models": [
+        {
+          "kind": "semantic",
+          "artifact_sha256": "52f693260a626c824aa8e5e7ce94cda119195c1eb4494df951b168ff93db7cc3",
+          "parameter_sha256": "4cac583bd2967bb3ed828b31200b98b5e8c4e96a76d2eb2e07570acc1559b442",
+          "counts": {
+            "rows": 8,
+            "reference_accepted": 8,
+            "native_accepted": 8,
+            "reference_source_truth_correct": 8,
+            "native_source_truth_correct": 8,
+            "logit_coordinates": 96,
+            "reference_copy_changed_logits": 15,
+            "reference_copy_changed_rows": 6,
+            "reference_copy_changed_margins": 2
+          },
+          "maximum_absolute_logit_error": 7.105427357601002e-15,
+          "maximum_external_reference_absolute_logit_error": 0.0,
+          "rows": [
+            {
+              "key": "inventory:semantic:7",
+              "address_sha256": "2c1368d046a280f29d006888fee38df09772c218e6fc0f69df327cc9e472f1fe",
+              "source_id": "d3f5a2dbf65c4e547865dfbac840f0bd7d84d924751cb10763c57562b8814993",
+              "owner_truth": [
+                12,
+                1,
+                10
+              ],
+              "reference_value": [
+                12,
+                1,
+                10
+              ],
+              "native_value": [
+                12,
+                1,
+                10
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 5,
+                  "external_reference": -11.422766459518149,
+                  "rust_embedded_reference": -11.422766459518147,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 8,
+                  "external_reference": -12.575329169846137,
+                  "rust_embedded_reference": -12.575329169846135,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 10.34799483766977,
+              "reference_copy_margin_embedded": 10.34799483766977,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:semantic:5",
+              "address_sha256": "2e9fdb7126885c6f9a1239748ea08fa3ca519856bc34d66dc23a09bf1ae4bf8a",
+              "source_id": "6053ab33dde87d34c03b1ca813b2427fa93e943a7a84658c4a7deef78244910b",
+              "owner_truth": [
+                14,
+                2,
+                8
+              ],
+              "reference_value": [
+                14,
+                2,
+                8
+              ],
+              "native_value": [
+                14,
+                2,
+                8
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 1,
+                  "external_reference": 10.555005421400823,
+                  "rust_embedded_reference": 10.555005421400825,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 10,
+                  "external_reference": -10.931000758209379,
+                  "rust_embedded_reference": -10.93100075820938,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 9.800473339169036,
+              "reference_copy_margin_embedded": 9.800473339169036,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:semantic:2",
+              "address_sha256": "82ac4da1d87f4833c5f3569737fce89eb8305bad22bbf2440f1a5148808849fa",
+              "source_id": "509582e146e52a1d568823f4b98d2b1390195fafdf9f28b1b9252b9e1f6b5eed",
+              "owner_truth": [
+                13,
+                4,
+                9
+              ],
+              "reference_value": [
+                13,
+                4,
+                9
+              ],
+              "native_value": [
+                13,
+                4,
+                9
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 1,
+                  "external_reference": -13.796713766404185,
+                  "rust_embedded_reference": -13.796713766404183,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 5,
+                  "external_reference": -13.854740160280217,
+                  "rust_embedded_reference": -13.854740160280215,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 8,
+                  "external_reference": 13.531633520389157,
+                  "rust_embedded_reference": 13.531633520389155,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 11.30774499078542,
+              "reference_copy_margin_embedded": 11.30774499078542,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:semantic:0",
+              "address_sha256": "9252640d29d158d7ffa5e174894f891165b14e787a30cd569d163c2af086254c",
+              "source_id": "fe2b4307b4a5e34746a8346ed339bb9b9c18fe6ad44061c44998bbd211bc5931",
+              "owner_truth": [
+                11,
+                3,
+                14
+              ],
+              "reference_value": [
+                11,
+                3,
+                14
+              ],
+              "native_value": [
+                11,
+                3,
+                14
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 0.0,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 0.0,
+              "reference_copy_differences": [],
+              "reference_copy_margin_external": 10.389991658352564,
+              "reference_copy_margin_embedded": 10.389991658352564,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:semantic:1",
+              "address_sha256": "9a379b97954b9f173df8cce75a53b85fd6a543a093c8c63ff6dd3146eb3539da",
+              "source_id": "2a8c252bb521e35b6f395d977a131c6ac866c4c6098955734259f9b844d52998",
+              "owner_truth": [
+                7,
+                2,
+                13
+              ],
+              "reference_value": [
+                7,
+                2,
+                13
+              ],
+              "native_value": [
+                7,
+                2,
+                13
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 8,
+                  "external_reference": 10.490989278530943,
+                  "rust_embedded_reference": 10.490989278530945,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 10,
+                  "external_reference": 14.521427308884599,
+                  "rust_embedded_reference": 14.5214273088846,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 11,
+                  "external_reference": 11.323599183219045,
+                  "rust_embedded_reference": 11.323599183219043,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 10.490989278530943,
+              "reference_copy_margin_embedded": 10.490989278530945,
+              "reference_copy_margin_ulps": 1.0,
+              "reference_copy_margin_absolute_error": 1.7763568394002505e-15
+            },
+            {
+              "key": "inventory:semantic:3",
+              "address_sha256": "a4718b638bf36a5f3e30fd03caaa2bb69773a6015197027eca24f26e42a7b77a",
+              "source_id": "642b273ddfd802a3bae38f143fceb2957986b876bf54792f65a92d1d677c023e",
+              "owner_truth": [
+                9,
+                1,
+                12
+              ],
+              "reference_value": [
+                9,
+                1,
+                12
+              ],
+              "native_value": [
+                9,
+                1,
+                12
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 1,
+                  "external_reference": -10.738026526599855,
+                  "rust_embedded_reference": -10.738026526599857,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 2,
+                  "external_reference": -12.818777923993453,
+                  "rust_embedded_reference": -12.818777923993451,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 7,
+                  "external_reference": -15.157956518721459,
+                  "rust_embedded_reference": -15.15795651872146,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 10.2937482103441,
+              "reference_copy_margin_embedded": 10.2937482103441,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:semantic:6",
+              "address_sha256": "ecc08210c4068dfa9dbf98b780cea69942b0f7898b8c51b5db39c085db7fd560",
+              "source_id": "fda5618abf7438259f8158780daad892d9284d51a33e5ebd38624f6887a4b3b8",
+              "owner_truth": [
+                8,
+                4,
+                11
+              ],
+              "reference_value": [
+                8,
+                4,
+                11
+              ],
+              "native_value": [
+                8,
+                4,
+                11
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 7.105427357601002e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 7.105427357601002e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 0,
+                  "external_reference": -36.242660480662316,
+                  "rust_embedded_reference": -36.24266048066232,
+                  "absolute_error": 7.105427357601002e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 2,
+                  "external_reference": -10.298726445224437,
+                  "rust_embedded_reference": -10.298726445224435,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 10.298726445224437,
+              "reference_copy_margin_embedded": 10.298726445224435,
+              "reference_copy_margin_ulps": 1.0,
+              "reference_copy_margin_absolute_error": 1.7763568394002505e-15
+            },
+            {
+              "key": "inventory:semantic:4",
+              "address_sha256": "f2a0a60cf32a4f69b7c9d27b01f32efc57b8e1fbf068ef4f381b2a8c480d3918",
+              "source_id": "3d06cba367e2efb3ee00e5c86989ac2f60493cd8d9822e237b1252df6ec3013f",
+              "owner_truth": [
+                6,
+                3,
+                15
+              ],
+              "reference_value": [
+                6,
+                3,
+                15
+              ],
+              "native_value": [
+                6,
+                3,
+                15
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 0.0,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 0.0,
+              "reference_copy_differences": [],
+              "reference_copy_margin_external": 11.89259135667186,
+              "reference_copy_margin_embedded": 11.89259135667186,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            }
+          ]
+        },
+        {
+          "kind": "procedure",
+          "artifact_sha256": "98a841358123d8538f7ed97227090585252197ff2cb4bf59e9576b4381a0b01f",
+          "parameter_sha256": "bf9dfd42f8a661f7b56834788f4bf311fc13529535ea858eb4021b2c3eec62f4",
+          "counts": {
+            "rows": 8,
+            "reference_accepted": 8,
+            "native_accepted": 8,
+            "reference_source_truth_correct": 8,
+            "native_source_truth_correct": 8,
+            "logit_coordinates": 224,
+            "reference_copy_changed_logits": 25,
+            "reference_copy_changed_rows": 7,
+            "reference_copy_changed_margins": 2
+          },
+          "maximum_absolute_logit_error": 1.7763568394002505e-15,
+          "maximum_external_reference_absolute_logit_error": 0.0,
+          "rows": [
+            {
+              "key": "inventory:procedure:1",
+              "address_sha256": "2128378eee84b2a9df767167de64baf2d7706000bf48858638ec93f29d51e65d",
+              "source_id": "9c54c428fe70e3577e4722c026fac0f54b4e3c34c5ed79ffed0aade2968ce012",
+              "owner_truth": [
+                4,
+                5,
+                3,
+                6
+              ],
+              "reference_value": [
+                4,
+                5,
+                3,
+                6
+              ],
+              "native_value": [
+                4,
+                5,
+                3,
+                6
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 8,
+                  "external_reference": -1.8604213002146586,
+                  "rust_embedded_reference": -1.8604213002146583,
+                  "absolute_error": 2.220446049250313e-16,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 9,
+                  "external_reference": -15.217814861776935,
+                  "rust_embedded_reference": -15.217814861776937,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 12,
+                  "external_reference": 13.183130985331317,
+                  "rust_embedded_reference": 13.183130985331315,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 9.234320539767179,
+              "reference_copy_margin_embedded": 9.23432053976718,
+              "reference_copy_margin_ulps": 1.0,
+              "reference_copy_margin_absolute_error": 1.7763568394002505e-15
+            },
+            {
+              "key": "inventory:procedure:6",
+              "address_sha256": "4750d02ba666ed1629d80855c1c4bceaaf2a0406b020c044f8ac6b96dd36f882",
+              "source_id": "2cf8f5edb6a84bca3af80c059b65229d9d33862345e87e1b59ca964c5ab951f6",
+              "owner_truth": [
+                2,
+                3,
+                5,
+                6
+              ],
+              "reference_value": [
+                2,
+                3,
+                5,
+                6
+              ],
+              "native_value": [
+                2,
+                3,
+                5,
+                6
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 2,
+                  "external_reference": 15.985612026741613,
+                  "rust_embedded_reference": 15.985612026741611,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 14,
+                  "external_reference": -14.938037784552503,
+                  "rust_embedded_reference": -14.938037784552504,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 15,
+                  "external_reference": -14.692149452496801,
+                  "rust_embedded_reference": -14.6921494524968,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 19,
+                  "external_reference": 14.157442183161383,
+                  "rust_embedded_reference": 14.157442183161384,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 22,
+                  "external_reference": -15.734229208843345,
+                  "rust_embedded_reference": -15.734229208843344,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 23,
+                  "external_reference": -15.268542411188655,
+                  "rust_embedded_reference": -15.268542411188657,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 8.83109263938849,
+              "reference_copy_margin_embedded": 8.83109263938849,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:procedure:2",
+              "address_sha256": "4dfeb52310460d44a3b40a83967f2890a3e95e2cf311d0c8c2acf7b01b8d52f4",
+              "source_id": "280178e86f86388b0f652e282f4a13cb60a869e8621fac24cf98301b7220b8a4",
+              "owner_truth": [
+                2,
+                1,
+                3,
+                6
+              ],
+              "reference_value": [
+                2,
+                1,
+                3,
+                6
+              ],
+              "native_value": [
+                2,
+                1,
+                3,
+                6
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 0.0,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 0.0,
+              "reference_copy_differences": [],
+              "reference_copy_margin_external": 11.400516735974058,
+              "reference_copy_margin_embedded": 11.400516735974058,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:procedure:0",
+              "address_sha256": "6ce64ee56918abe8fe69112f1c873cf4d1701a501f0b1bb800096d85d5ea8b74",
+              "source_id": "be7d6327fd9d8095c03b455fd11932ca15ff0a1527b9c6fe9e63f100926c2fe6",
+              "owner_truth": [
+                1,
+                2,
+                3,
+                6
+              ],
+              "reference_value": [
+                1,
+                2,
+                3,
+                6
+              ],
+              "native_value": [
+                1,
+                2,
+                3,
+                6
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 5,
+                  "external_reference": 3.5622726113757954,
+                  "rust_embedded_reference": 3.562272611375795,
+                  "absolute_error": 4.440892098500626e-16,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 10,
+                  "external_reference": -11.240739881435559,
+                  "rust_embedded_reference": -11.24073988143556,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 10.67237248934387,
+              "reference_copy_margin_embedded": 10.67237248934387,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:procedure:3",
+              "address_sha256": "9007015072795b5e7e85a1aa631a973112f276a02927b8e50b79c06cf0af74de",
+              "source_id": "af21c07915ad7a573af2443f8c1add9b45c30a3c451080069ce9d51b4aad1225",
+              "owner_truth": [
+                5,
+                4,
+                3,
+                6
+              ],
+              "reference_value": [
+                5,
+                4,
+                3,
+                6
+              ],
+              "native_value": [
+                5,
+                4,
+                3,
+                6
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 1,
+                  "external_reference": -1.3769432906591201,
+                  "rust_embedded_reference": -1.37694329065912,
+                  "absolute_error": 2.220446049250313e-16,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 7,
+                  "external_reference": -9.439689613344287,
+                  "rust_embedded_reference": -9.439689613344289,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 11,
+                  "external_reference": 15.350041753068659,
+                  "rust_embedded_reference": 15.35004175306866,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 22,
+                  "external_reference": -9.306743748704601,
+                  "rust_embedded_reference": -9.3067437487046,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 24,
+                  "external_reference": -9.336398205752307,
+                  "rust_embedded_reference": -9.336398205752308,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 10.047406406648278,
+              "reference_copy_margin_embedded": 10.047406406648278,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:procedure:5",
+              "address_sha256": "a1c77fe8e1d558f64c2e97b9101560d79c109bf3ac6612c2e8e8346757b6a32c",
+              "source_id": "29bdfe6eef82d88fde51f3ee879cfcd1a04f1522ec59bb3e8eebf3cb425f86f5",
+              "owner_truth": [
+                3,
+                5,
+                4,
+                6
+              ],
+              "reference_value": [
+                3,
+                5,
+                4,
+                6
+              ],
+              "native_value": [
+                3,
+                5,
+                4,
+                6
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 1,
+                  "external_reference": -13.967417523742629,
+                  "rust_embedded_reference": -13.967417523742627,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 9.558893227709609,
+              "reference_copy_margin_embedded": 9.558893227709609,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:procedure:4",
+              "address_sha256": "bc74c611e7932db3c1b7bff7024558bfee941fb580008958c85d8fb5a357db90",
+              "source_id": "054009bd83a9c18fd46a16d1d80bf0d94bbace78d5954264740dcd60d081d742",
+              "owner_truth": [
+                1,
+                3,
+                2,
+                6
+              ],
+              "reference_value": [
+                1,
+                3,
+                2,
+                6
+              ],
+              "native_value": [
+                1,
+                3,
+                2,
+                6
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 10,
+                  "external_reference": 15.238921590544093,
+                  "rust_embedded_reference": 15.238921590544091,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 10.948857098574507,
+              "reference_copy_margin_embedded": 10.948857098574509,
+              "reference_copy_margin_ulps": 1.0,
+              "reference_copy_margin_absolute_error": 1.7763568394002505e-15
+            },
+            {
+              "key": "inventory:procedure:7",
+              "address_sha256": "bd990ef2fe214af29d5cc6f414307ffd563b4927fa7906cde606d6dcc6ddbc2d",
+              "source_id": "2acfa1854c0b6fcf7de12087e8f0a3deaefa0c3501cf9aa060f954bb1e834e2a",
+              "owner_truth": [
+                4,
+                3,
+                5,
+                6
+              ],
+              "reference_value": [
+                4,
+                3,
+                5,
+                6
+              ],
+              "native_value": [
+                4,
+                3,
+                5,
+                6
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 0,
+                  "external_reference": -13.606717007452755,
+                  "rust_embedded_reference": -13.606717007452756,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 4,
+                  "external_reference": 12.554893126475863,
+                  "rust_embedded_reference": 12.554893126475864,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 6,
+                  "external_reference": -14.082285150381173,
+                  "rust_embedded_reference": -14.082285150381171,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 15,
+                  "external_reference": -12.985351397112717,
+                  "rust_embedded_reference": -12.985351397112716,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 21,
+                  "external_reference": -14.326483833107535,
+                  "rust_embedded_reference": -14.326483833107536,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 25,
+                  "external_reference": -13.982139902334113,
+                  "rust_embedded_reference": -13.982139902334112,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 27,
+                  "external_reference": 14.485550472405613,
+                  "rust_embedded_reference": 14.485550472405611,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 9.231193669447762,
+              "reference_copy_margin_embedded": 9.231193669447762,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stage": "corrected-training",
+      "owner_snapshot": "owner-corrected.json",
+      "owner_agent_id": "00000000-0000-4000-9000-000000000010",
+      "scope": "cognitive:00000000-0000-4000-9000-000000000010:e30997020f10b1a19a604b5072202e330cc43ecefab205185301171e96fda28f",
+      "owner_cut_digest": "c37e14e0b640f55c65294b0f07bdfe7f1995878dacd74ebf781a179c22951ab6",
+      "models": [
+        {
+          "kind": "semantic",
+          "artifact_sha256": "d7f56f1b96f19c9efd7c556e28287b63d7dd030bb3f78b875bd5d55595c9b6af",
+          "parameter_sha256": "e5dcd4840e75475853e2b0f5d255d488e89d72361325f3355e5452f4ef649c04",
+          "counts": {
+            "rows": 8,
+            "reference_accepted": 8,
+            "native_accepted": 8,
+            "reference_source_truth_correct": 8,
+            "native_source_truth_correct": 8,
+            "logit_coordinates": 96,
+            "reference_copy_changed_logits": 20,
+            "reference_copy_changed_rows": 7,
+            "reference_copy_changed_margins": 2
+          },
+          "maximum_absolute_logit_error": 7.105427357601002e-15,
+          "maximum_external_reference_absolute_logit_error": 0.0,
+          "rows": [
+            {
+              "key": "inventory:semantic:7",
+              "address_sha256": "2c1368d046a280f29d006888fee38df09772c218e6fc0f69df327cc9e472f1fe",
+              "source_id": "d3f5a2dbf65c4e547865dfbac840f0bd7d84d924751cb10763c57562b8814993",
+              "owner_truth": [
+                12,
+                1,
+                10
+              ],
+              "reference_value": [
+                12,
+                1,
+                10
+              ],
+              "native_value": [
+                12,
+                1,
+                10
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 3.552713678800501e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 3.552713678800501e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 1,
+                  "external_reference": -9.403297176630145,
+                  "rust_embedded_reference": -9.403297176630144,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 9,
+                  "external_reference": 23.658867397909326,
+                  "rust_embedded_reference": 23.65886739790933,
+                  "absolute_error": 3.552713678800501e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 11,
+                  "external_reference": 28.599927903437674,
+                  "rust_embedded_reference": 28.59992790343767,
+                  "absolute_error": 3.552713678800501e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 7.927270733114229,
+              "reference_copy_margin_embedded": 7.927270733114229,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:semantic:5",
+              "address_sha256": "2e9fdb7126885c6f9a1239748ea08fa3ca519856bc34d66dc23a09bf1ae4bf8a",
+              "source_id": "6053ab33dde87d34c03b1ca813b2427fa93e943a7a84658c4a7deef78244910b",
+              "owner_truth": [
+                14,
+                2,
+                8
+              ],
+              "reference_value": [
+                14,
+                2,
+                8
+              ],
+              "native_value": [
+                14,
+                2,
+                8
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 3,
+                  "external_reference": 12.462315542578633,
+                  "rust_embedded_reference": 12.462315542578631,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 6,
+                  "external_reference": -11.235476457861319,
+                  "rust_embedded_reference": -11.23547645786132,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 8,
+                  "external_reference": -15.183128673677341,
+                  "rust_embedded_reference": -15.18312867367734,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 9,
+                  "external_reference": -9.158130285367731,
+                  "rust_embedded_reference": -9.158130285367733,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 9.158130285367731,
+              "reference_copy_margin_embedded": 9.158130285367733,
+              "reference_copy_margin_ulps": 1.0,
+              "reference_copy_margin_absolute_error": 1.7763568394002505e-15
+            },
+            {
+              "key": "inventory:semantic:2",
+              "address_sha256": "82ac4da1d87f4833c5f3569737fce89eb8305bad22bbf2440f1a5148808849fa",
+              "source_id": "509582e146e52a1d568823f4b98d2b1390195fafdf9f28b1b9252b9e1f6b5eed",
+              "owner_truth": [
+                13,
+                4,
+                9
+              ],
+              "reference_value": [
+                13,
+                4,
+                9
+              ],
+              "native_value": [
+                13,
+                4,
+                9
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 7.105427357601002e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 7.105427357601002e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 9,
+                  "external_reference": -9.262065571848643,
+                  "rust_embedded_reference": -9.262065571848645,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 10,
+                  "external_reference": -59.907124123780676,
+                  "rust_embedded_reference": -59.90712412378067,
+                  "absolute_error": 7.105427357601002e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 8.459458841813149,
+              "reference_copy_margin_embedded": 8.459458841813149,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:semantic:0",
+              "address_sha256": "9252640d29d158d7ffa5e174894f891165b14e787a30cd569d163c2af086254c",
+              "source_id": "fe2b4307b4a5e34746a8346ed339bb9b9c18fe6ad44061c44998bbd211bc5931",
+              "owner_truth": [
+                11,
+                3,
+                14
+              ],
+              "reference_value": [
+                11,
+                3,
+                14
+              ],
+              "native_value": [
+                11,
+                3,
+                14
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 0,
+                  "external_reference": 9.212946264683685,
+                  "rust_embedded_reference": 9.212946264683683,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 1,
+                  "external_reference": 9.858483695976213,
+                  "rust_embedded_reference": 9.858483695976211,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 3,
+                  "external_reference": 9.411733070760663,
+                  "rust_embedded_reference": 9.411733070760665,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 11,
+                  "external_reference": 11.850499108540557,
+                  "rust_embedded_reference": 11.850499108540555,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 9.212946264683685,
+              "reference_copy_margin_embedded": 9.212946264683683,
+              "reference_copy_margin_ulps": 1.0,
+              "reference_copy_margin_absolute_error": 1.7763568394002505e-15
+            },
+            {
+              "key": "inventory:semantic:1",
+              "address_sha256": "9a379b97954b9f173df8cce75a53b85fd6a543a093c8c63ff6dd3146eb3539da",
+              "source_id": "ba753b8b9d624e2a960e4668fbdb6623963533737ce12c9ac27d5bd7dcc66bed",
+              "owner_truth": [
+                5,
+                4,
+                11
+              ],
+              "reference_value": [
+                5,
+                4,
+                11
+              ],
+              "native_value": [
+                5,
+                4,
+                11
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 0.0,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 0.0,
+              "reference_copy_differences": [],
+              "reference_copy_margin_external": 10.317888985237234,
+              "reference_copy_margin_embedded": 10.317888985237234,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:semantic:3",
+              "address_sha256": "a4718b638bf36a5f3e30fd03caaa2bb69773a6015197027eca24f26e42a7b77a",
+              "source_id": "642b273ddfd802a3bae38f143fceb2957986b876bf54792f65a92d1d677c023e",
+              "owner_truth": [
+                9,
+                1,
+                12
+              ],
+              "reference_value": [
+                9,
+                1,
+                12
+              ],
+              "native_value": [
+                9,
+                1,
+                12
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 5,
+                  "external_reference": -14.055706549573335,
+                  "rust_embedded_reference": -14.055706549573337,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 11,
+                  "external_reference": 9.895069555008385,
+                  "rust_embedded_reference": 9.895069555008384,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 8.988078356769892,
+              "reference_copy_margin_embedded": 8.988078356769892,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:semantic:6",
+              "address_sha256": "ecc08210c4068dfa9dbf98b780cea69942b0f7898b8c51b5db39c085db7fd560",
+              "source_id": "fda5618abf7438259f8158780daad892d9284d51a33e5ebd38624f6887a4b3b8",
+              "owner_truth": [
+                8,
+                4,
+                11
+              ],
+              "reference_value": [
+                8,
+                4,
+                11
+              ],
+              "native_value": [
+                8,
+                4,
+                11
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 3.552713678800501e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 3.552713678800501e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 4,
+                  "external_reference": -9.343627155874701,
+                  "rust_embedded_reference": -9.3436271558747,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 10,
+                  "external_reference": -24.368215510998034,
+                  "rust_embedded_reference": -24.36821551099803,
+                  "absolute_error": 3.552713678800501e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 7.549060702946815,
+              "reference_copy_margin_embedded": 7.549060702946815,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:semantic:4",
+              "address_sha256": "f2a0a60cf32a4f69b7c9d27b01f32efc57b8e1fbf068ef4f381b2a8c480d3918",
+              "source_id": "3d06cba367e2efb3ee00e5c86989ac2f60493cd8d9822e237b1252df6ec3013f",
+              "owner_truth": [
+                6,
+                3,
+                15
+              ],
+              "reference_value": [
+                6,
+                3,
+                15
+              ],
+              "native_value": [
+                6,
+                3,
+                15
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 3.552713678800501e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 3.552713678800501e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 2,
+                  "external_reference": 18.160525134238558,
+                  "rust_embedded_reference": 18.16052513423856,
+                  "absolute_error": 3.552713678800501e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 5,
+                  "external_reference": 11.397587615836281,
+                  "rust_embedded_reference": 11.39758761583628,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 7,
+                  "external_reference": -10.049968114061107,
+                  "rust_embedded_reference": -10.049968114061109,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 8.656824473697284,
+              "reference_copy_margin_embedded": 8.656824473697284,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            }
+          ]
+        },
+        {
+          "kind": "procedure",
+          "artifact_sha256": "0cd8d28814b575e0c7f6a8aba5b46f2be462045476d60665befc2bf290300f89",
+          "parameter_sha256": "24d4c4c613c04a14488118887dc8daa4343050a1276f737cfd1346e066144613",
+          "counts": {
+            "rows": 8,
+            "reference_accepted": 8,
+            "native_accepted": 8,
+            "reference_source_truth_correct": 8,
+            "native_source_truth_correct": 8,
+            "logit_coordinates": 224,
+            "reference_copy_changed_logits": 31,
+            "reference_copy_changed_rows": 8,
+            "reference_copy_changed_margins": 4
+          },
+          "maximum_absolute_logit_error": 3.552713678800501e-15,
+          "maximum_external_reference_absolute_logit_error": 0.0,
+          "rows": [
+            {
+              "key": "inventory:procedure:1",
+              "address_sha256": "2128378eee84b2a9df767167de64baf2d7706000bf48858638ec93f29d51e65d",
+              "source_id": "9c54c428fe70e3577e4722c026fac0f54b4e3c34c5ed79ffed0aade2968ce012",
+              "owner_truth": [
+                4,
+                5,
+                3,
+                6
+              ],
+              "reference_value": [
+                4,
+                5,
+                3,
+                6
+              ],
+              "native_value": [
+                4,
+                5,
+                3,
+                6
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 6,
+                  "external_reference": -11.104796493067571,
+                  "rust_embedded_reference": -11.104796493067573,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 17,
+                  "external_reference": 11.534902095209057,
+                  "rust_embedded_reference": 11.534902095209056,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 20,
+                  "external_reference": -10.652501717361893,
+                  "rust_embedded_reference": -10.652501717361892,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 21,
+                  "external_reference": -10.007227867348593,
+                  "rust_embedded_reference": -10.007227867348591,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 24,
+                  "external_reference": -10.199256738467007,
+                  "rust_embedded_reference": -10.199256738467009,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 26,
+                  "external_reference": -9.518444173442127,
+                  "rust_embedded_reference": -9.518444173442129,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 10.207460940582335,
+              "reference_copy_margin_embedded": 10.207460940582337,
+              "reference_copy_margin_ulps": 1.0,
+              "reference_copy_margin_absolute_error": 1.7763568394002505e-15
+            },
+            {
+              "key": "inventory:procedure:6",
+              "address_sha256": "4750d02ba666ed1629d80855c1c4bceaaf2a0406b020c044f8ac6b96dd36f882",
+              "source_id": "2cf8f5edb6a84bca3af80c059b65229d9d33862345e87e1b59ca964c5ab951f6",
+              "owner_truth": [
+                2,
+                3,
+                5,
+                6
+              ],
+              "reference_value": [
+                2,
+                3,
+                5,
+                6
+              ],
+              "native_value": [
+                2,
+                3,
+                5,
+                6
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 0,
+                  "external_reference": -10.995733930207475,
+                  "rust_embedded_reference": -10.995733930207477,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 22,
+                  "external_reference": -10.873976277286499,
+                  "rust_embedded_reference": -10.8739762772865,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 24,
+                  "external_reference": -11.015670093355519,
+                  "rust_embedded_reference": -11.01567009335552,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 27,
+                  "external_reference": 11.228429096515363,
+                  "rust_embedded_reference": 11.228429096515365,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 9.223345032727106,
+              "reference_copy_margin_embedded": 9.223345032727106,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:procedure:2",
+              "address_sha256": "4dfeb52310460d44a3b40a83967f2890a3e95e2cf311d0c8c2acf7b01b8d52f4",
+              "source_id": "280178e86f86388b0f652e282f4a13cb60a869e8621fac24cf98301b7220b8a4",
+              "owner_truth": [
+                2,
+                1,
+                3,
+                6
+              ],
+              "reference_value": [
+                2,
+                1,
+                3,
+                6
+              ],
+              "native_value": [
+                2,
+                1,
+                3,
+                6
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 3.552713678800501e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 3.552713678800501e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 4,
+                  "external_reference": 12.556913484650877,
+                  "rust_embedded_reference": 12.556913484650876,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 5,
+                  "external_reference": -23.332202878221338,
+                  "rust_embedded_reference": -23.332202878221334,
+                  "absolute_error": 3.552713678800501e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 6,
+                  "external_reference": -11.526112940292897,
+                  "rust_embedded_reference": -11.526112940292895,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 7,
+                  "external_reference": -12.079253344772313,
+                  "rust_embedded_reference": -12.079253344772312,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 20,
+                  "external_reference": -11.117779889604861,
+                  "rust_embedded_reference": -11.11777988960486,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 27,
+                  "external_reference": 10.742603531440517,
+                  "rust_embedded_reference": 10.742603531440515,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 9.826935195369487,
+              "reference_copy_margin_embedded": 9.826935195369488,
+              "reference_copy_margin_ulps": 1.0,
+              "reference_copy_margin_absolute_error": 1.7763568394002505e-15
+            },
+            {
+              "key": "inventory:procedure:0",
+              "address_sha256": "6ce64ee56918abe8fe69112f1c873cf4d1701a501f0b1bb800096d85d5ea8b74",
+              "source_id": "be7d6327fd9d8095c03b455fd11932ca15ff0a1527b9c6fe9e63f100926c2fe6",
+              "owner_truth": [
+                1,
+                2,
+                3,
+                6
+              ],
+              "reference_value": [
+                1,
+                2,
+                3,
+                6
+              ],
+              "native_value": [
+                1,
+                2,
+                3,
+                6
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 3.552713678800501e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 3.552713678800501e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 3,
+                  "external_reference": -24.298913257936622,
+                  "rust_embedded_reference": -24.298913257936626,
+                  "absolute_error": 3.552713678800501e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 5,
+                  "external_reference": 11.003484793763267,
+                  "rust_embedded_reference": 11.003484793763269,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 14,
+                  "external_reference": -12.945879310293877,
+                  "rust_embedded_reference": -12.945879310293876,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 9.860847876796132,
+              "reference_copy_margin_embedded": 9.860847876796132,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:procedure:3",
+              "address_sha256": "9007015072795b5e7e85a1aa631a973112f276a02927b8e50b79c06cf0af74de",
+              "source_id": "af21c07915ad7a573af2443f8c1add9b45c30a3c451080069ce9d51b4aad1225",
+              "owner_truth": [
+                5,
+                4,
+                3,
+                6
+              ],
+              "reference_value": [
+                5,
+                4,
+                3,
+                6
+              ],
+              "native_value": [
+                5,
+                4,
+                3,
+                6
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 3,
+                  "external_reference": -14.372283691943549,
+                  "rust_embedded_reference": -14.372283691943547,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 9.284664116466562,
+              "reference_copy_margin_embedded": 9.284664116466562,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:procedure:5",
+              "address_sha256": "a1c77fe8e1d558f64c2e97b9101560d79c109bf3ac6612c2e8e8346757b6a32c",
+              "source_id": "29bdfe6eef82d88fde51f3ee879cfcd1a04f1522ec59bb3e8eebf3cb425f86f5",
+              "owner_truth": [
+                3,
+                5,
+                4,
+                6
+              ],
+              "reference_value": [
+                3,
+                5,
+                4,
+                6
+              ],
+              "native_value": [
+                3,
+                5,
+                4,
+                6
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 10,
+                  "external_reference": 12.537261583287565,
+                  "rust_embedded_reference": 12.537261583287563,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 19,
+                  "external_reference": 14.978951889222627,
+                  "rust_embedded_reference": 14.978951889222628,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 9.356086058308653,
+              "reference_copy_margin_embedded": 9.356086058308652,
+              "reference_copy_margin_ulps": 1.0,
+              "reference_copy_margin_absolute_error": 1.7763568394002505e-15
+            },
+            {
+              "key": "inventory:procedure:4",
+              "address_sha256": "bc74c611e7932db3c1b7bff7024558bfee941fb580008958c85d8fb5a357db90",
+              "source_id": "054009bd83a9c18fd46a16d1d80bf0d94bbace78d5954264740dcd60d081d742",
+              "owner_truth": [
+                1,
+                3,
+                2,
+                6
+              ],
+              "reference_value": [
+                1,
+                3,
+                2,
+                6
+              ],
+              "native_value": [
+                1,
+                3,
+                2,
+                6
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 9,
+                  "external_reference": -3.6543792227676564,
+                  "rust_embedded_reference": -3.654379222767656,
+                  "absolute_error": 4.440892098500626e-16,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 16,
+                  "external_reference": 10.850945195461321,
+                  "rust_embedded_reference": 10.85094519546132,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 27,
+                  "external_reference": 9.239457225373739,
+                  "rust_embedded_reference": 9.23945722537374,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 9.319076915652797,
+              "reference_copy_margin_embedded": 9.319076915652795,
+              "reference_copy_margin_ulps": 1.0,
+              "reference_copy_margin_absolute_error": 1.7763568394002505e-15
+            },
+            {
+              "key": "inventory:procedure:7",
+              "address_sha256": "bd990ef2fe214af29d5cc6f414307ffd563b4927fa7906cde606d6dcc6ddbc2d",
+              "source_id": "2acfa1854c0b6fcf7de12087e8f0a3deaefa0c3501cf9aa060f954bb1e834e2a",
+              "owner_truth": [
+                4,
+                3,
+                5,
+                6
+              ],
+              "reference_value": [
+                4,
+                3,
+                5,
+                6
+              ],
+              "native_value": [
+                4,
+                3,
+                5,
+                6
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 4,
+                  "external_reference": 13.785104530671013,
+                  "rust_embedded_reference": 13.785104530671012,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 19,
+                  "external_reference": 11.896629525737609,
+                  "rust_embedded_reference": 11.896629525737607,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 20,
+                  "external_reference": -11.895983317439875,
+                  "rust_embedded_reference": -11.895983317439876,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 22,
+                  "external_reference": -11.998302154262749,
+                  "rust_embedded_reference": -11.998302154262747,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 23,
+                  "external_reference": -11.750062682996205,
+                  "rust_embedded_reference": -11.750062682996203,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 27,
+                  "external_reference": 12.914261166569995,
+                  "rust_embedded_reference": 12.914261166569997,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 8.934505417650815,
+              "reference_copy_margin_embedded": 8.934505417650815,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stage": "deleted-rebuild",
+      "owner_snapshot": "owner-deleted.json",
+      "owner_agent_id": "00000000-0000-4000-9000-000000000010",
+      "scope": "cognitive:00000000-0000-4000-9000-000000000010:e30997020f10b1a19a604b5072202e330cc43ecefab205185301171e96fda28f",
+      "owner_cut_digest": "1c0203bb9ca33b23446c4ff2a20b3bd662e95d7ac4f1101cd21627f5e0a12680",
+      "models": [
+        {
+          "kind": "semantic",
+          "artifact_sha256": "3a8209df3e65bea4cf4b1e05c0320a9c556683563d101bf625958e1bf0ede56a",
+          "parameter_sha256": "8af786127f64c70af6d34c2ce771de90257ca05e6a5a7cfb1830243cdd32ea7a",
+          "counts": {
+            "rows": 7,
+            "reference_accepted": 7,
+            "native_accepted": 7,
+            "reference_source_truth_correct": 7,
+            "native_source_truth_correct": 7,
+            "logit_coordinates": 84,
+            "reference_copy_changed_logits": 15,
+            "reference_copy_changed_rows": 7,
+            "reference_copy_changed_margins": 0
+          },
+          "maximum_absolute_logit_error": 7.105427357601002e-15,
+          "maximum_external_reference_absolute_logit_error": 0.0,
+          "rows": [
+            {
+              "key": "inventory:semantic:7",
+              "address_sha256": "2c1368d046a280f29d006888fee38df09772c218e6fc0f69df327cc9e472f1fe",
+              "source_id": "d3f5a2dbf65c4e547865dfbac840f0bd7d84d924751cb10763c57562b8814993",
+              "owner_truth": [
+                12,
+                1,
+                10
+              ],
+              "reference_value": [
+                12,
+                1,
+                10
+              ],
+              "native_value": [
+                12,
+                1,
+                10
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 7.105427357601002e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 7.105427357601002e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 1,
+                  "external_reference": -10.294617755482017,
+                  "rust_embedded_reference": -10.294617755482015,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 2,
+                  "external_reference": 44.919636861828764,
+                  "rust_embedded_reference": 44.91963686182877,
+                  "absolute_error": 7.105427357601002e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 4,
+                  "external_reference": 9.247523729806689,
+                  "rust_embedded_reference": 9.247523729806687,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 5,
+                  "external_reference": -10.290598353188773,
+                  "rust_embedded_reference": -10.290598353188772,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 8.32523353984438,
+              "reference_copy_margin_embedded": 8.32523353984438,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:semantic:5",
+              "address_sha256": "2e9fdb7126885c6f9a1239748ea08fa3ca519856bc34d66dc23a09bf1ae4bf8a",
+              "source_id": "6053ab33dde87d34c03b1ca813b2427fa93e943a7a84658c4a7deef78244910b",
+              "owner_truth": [
+                14,
+                2,
+                8
+              ],
+              "reference_value": [
+                14,
+                2,
+                8
+              ],
+              "native_value": [
+                14,
+                2,
+                8
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 7,
+                  "external_reference": -14.999426908263855,
+                  "rust_embedded_reference": -14.999426908263857,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 10,
+                  "external_reference": -12.438659861841451,
+                  "rust_embedded_reference": -12.438659861841453,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 7.967849815594134,
+              "reference_copy_margin_embedded": 7.967849815594134,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:semantic:2",
+              "address_sha256": "82ac4da1d87f4833c5f3569737fce89eb8305bad22bbf2440f1a5148808849fa",
+              "source_id": "509582e146e52a1d568823f4b98d2b1390195fafdf9f28b1b9252b9e1f6b5eed",
+              "owner_truth": [
+                13,
+                4,
+                9
+              ],
+              "reference_value": [
+                13,
+                4,
+                9
+              ],
+              "native_value": [
+                13,
+                4,
+                9
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 3.552713678800501e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 3.552713678800501e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 6,
+                  "external_reference": 15.216375482121041,
+                  "rust_embedded_reference": 15.21637548212104,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 7,
+                  "external_reference": -21.322859156114678,
+                  "rust_embedded_reference": -21.32285915611468,
+                  "absolute_error": 3.552713678800501e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 8,
+                  "external_reference": 13.683742089710423,
+                  "rust_embedded_reference": 13.683742089710424,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 11,
+                  "external_reference": 20.843989557723326,
+                  "rust_embedded_reference": 20.84398955772333,
+                  "absolute_error": 3.552713678800501e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 8.701455649948407,
+              "reference_copy_margin_embedded": 8.701455649948407,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:semantic:1",
+              "address_sha256": "9a379b97954b9f173df8cce75a53b85fd6a543a093c8c63ff6dd3146eb3539da",
+              "source_id": "ba753b8b9d624e2a960e4668fbdb6623963533737ce12c9ac27d5bd7dcc66bed",
+              "owner_truth": [
+                5,
+                4,
+                11
+              ],
+              "reference_value": [
+                5,
+                4,
+                11
+              ],
+              "native_value": [
+                5,
+                4,
+                11
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 3.552713678800501e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 3.552713678800501e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 9,
+                  "external_reference": 29.924887687932706,
+                  "rust_embedded_reference": 29.924887687932703,
+                  "absolute_error": 3.552713678800501e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 10.153102274965487,
+              "reference_copy_margin_embedded": 10.153102274965487,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:semantic:3",
+              "address_sha256": "a4718b638bf36a5f3e30fd03caaa2bb69773a6015197027eca24f26e42a7b77a",
+              "source_id": "642b273ddfd802a3bae38f143fceb2957986b876bf54792f65a92d1d677c023e",
+              "owner_truth": [
+                9,
+                1,
+                12
+              ],
+              "reference_value": [
+                9,
+                1,
+                12
+              ],
+              "native_value": [
+                9,
+                1,
+                12
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 0,
+                  "external_reference": 12.597834423942903,
+                  "rust_embedded_reference": 12.597834423942905,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 9.155241465995944,
+              "reference_copy_margin_embedded": 9.155241465995944,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:semantic:6",
+              "address_sha256": "ecc08210c4068dfa9dbf98b780cea69942b0f7898b8c51b5db39c085db7fd560",
+              "source_id": "fda5618abf7438259f8158780daad892d9284d51a33e5ebd38624f6887a4b3b8",
+              "owner_truth": [
+                8,
+                4,
+                11
+              ],
+              "reference_value": [
+                8,
+                4,
+                11
+              ],
+              "native_value": [
+                8,
+                4,
+                11
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 3,
+                  "external_reference": 15.626295850632827,
+                  "rust_embedded_reference": 15.626295850632829,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 7,
+                  "external_reference": -12.259285783512743,
+                  "rust_embedded_reference": -12.259285783512745,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 8.453718456633421,
+              "reference_copy_margin_embedded": 8.453718456633421,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:semantic:4",
+              "address_sha256": "f2a0a60cf32a4f69b7c9d27b01f32efc57b8e1fbf068ef4f381b2a8c480d3918",
+              "source_id": "3d06cba367e2efb3ee00e5c86989ac2f60493cd8d9822e237b1252df6ec3013f",
+              "owner_truth": [
+                6,
+                3,
+                15
+              ],
+              "reference_value": [
+                6,
+                3,
+                15
+              ],
+              "native_value": [
+                6,
+                3,
+                15
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 1,
+                  "external_reference": 10.992147090337745,
+                  "rust_embedded_reference": 10.992147090337744,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 8.88841183471203,
+              "reference_copy_margin_embedded": 8.88841183471203,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            }
+          ]
+        },
+        {
+          "kind": "procedure",
+          "artifact_sha256": "e2e086a14c7533e43bbd91b02ef132a5aa8ee038e30b9925de198d7800135849",
+          "parameter_sha256": "24d4c4c613c04a14488118887dc8daa4343050a1276f737cfd1346e066144613",
+          "counts": {
+            "rows": 8,
+            "reference_accepted": 8,
+            "native_accepted": 8,
+            "reference_source_truth_correct": 8,
+            "native_source_truth_correct": 8,
+            "logit_coordinates": 224,
+            "reference_copy_changed_logits": 31,
+            "reference_copy_changed_rows": 8,
+            "reference_copy_changed_margins": 4
+          },
+          "maximum_absolute_logit_error": 3.552713678800501e-15,
+          "maximum_external_reference_absolute_logit_error": 0.0,
+          "rows": [
+            {
+              "key": "inventory:procedure:1",
+              "address_sha256": "2128378eee84b2a9df767167de64baf2d7706000bf48858638ec93f29d51e65d",
+              "source_id": "9c54c428fe70e3577e4722c026fac0f54b4e3c34c5ed79ffed0aade2968ce012",
+              "owner_truth": [
+                4,
+                5,
+                3,
+                6
+              ],
+              "reference_value": [
+                4,
+                5,
+                3,
+                6
+              ],
+              "native_value": [
+                4,
+                5,
+                3,
+                6
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 6,
+                  "external_reference": -11.104796493067571,
+                  "rust_embedded_reference": -11.104796493067573,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 17,
+                  "external_reference": 11.534902095209057,
+                  "rust_embedded_reference": 11.534902095209056,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 20,
+                  "external_reference": -10.652501717361893,
+                  "rust_embedded_reference": -10.652501717361892,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 21,
+                  "external_reference": -10.007227867348593,
+                  "rust_embedded_reference": -10.007227867348591,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 24,
+                  "external_reference": -10.199256738467007,
+                  "rust_embedded_reference": -10.199256738467009,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 26,
+                  "external_reference": -9.518444173442127,
+                  "rust_embedded_reference": -9.518444173442129,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 10.207460940582335,
+              "reference_copy_margin_embedded": 10.207460940582337,
+              "reference_copy_margin_ulps": 1.0,
+              "reference_copy_margin_absolute_error": 1.7763568394002505e-15
+            },
+            {
+              "key": "inventory:procedure:6",
+              "address_sha256": "4750d02ba666ed1629d80855c1c4bceaaf2a0406b020c044f8ac6b96dd36f882",
+              "source_id": "2cf8f5edb6a84bca3af80c059b65229d9d33862345e87e1b59ca964c5ab951f6",
+              "owner_truth": [
+                2,
+                3,
+                5,
+                6
+              ],
+              "reference_value": [
+                2,
+                3,
+                5,
+                6
+              ],
+              "native_value": [
+                2,
+                3,
+                5,
+                6
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 0,
+                  "external_reference": -10.995733930207475,
+                  "rust_embedded_reference": -10.995733930207477,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 22,
+                  "external_reference": -10.873976277286499,
+                  "rust_embedded_reference": -10.8739762772865,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 24,
+                  "external_reference": -11.015670093355519,
+                  "rust_embedded_reference": -11.01567009335552,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 27,
+                  "external_reference": 11.228429096515363,
+                  "rust_embedded_reference": 11.228429096515365,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 9.223345032727106,
+              "reference_copy_margin_embedded": 9.223345032727106,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:procedure:2",
+              "address_sha256": "4dfeb52310460d44a3b40a83967f2890a3e95e2cf311d0c8c2acf7b01b8d52f4",
+              "source_id": "280178e86f86388b0f652e282f4a13cb60a869e8621fac24cf98301b7220b8a4",
+              "owner_truth": [
+                2,
+                1,
+                3,
+                6
+              ],
+              "reference_value": [
+                2,
+                1,
+                3,
+                6
+              ],
+              "native_value": [
+                2,
+                1,
+                3,
+                6
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 3.552713678800501e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 3.552713678800501e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 4,
+                  "external_reference": 12.556913484650877,
+                  "rust_embedded_reference": 12.556913484650876,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 5,
+                  "external_reference": -23.332202878221338,
+                  "rust_embedded_reference": -23.332202878221334,
+                  "absolute_error": 3.552713678800501e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 6,
+                  "external_reference": -11.526112940292897,
+                  "rust_embedded_reference": -11.526112940292895,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 7,
+                  "external_reference": -12.079253344772313,
+                  "rust_embedded_reference": -12.079253344772312,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 20,
+                  "external_reference": -11.117779889604861,
+                  "rust_embedded_reference": -11.11777988960486,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 27,
+                  "external_reference": 10.742603531440517,
+                  "rust_embedded_reference": 10.742603531440515,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 9.826935195369487,
+              "reference_copy_margin_embedded": 9.826935195369488,
+              "reference_copy_margin_ulps": 1.0,
+              "reference_copy_margin_absolute_error": 1.7763568394002505e-15
+            },
+            {
+              "key": "inventory:procedure:0",
+              "address_sha256": "6ce64ee56918abe8fe69112f1c873cf4d1701a501f0b1bb800096d85d5ea8b74",
+              "source_id": "be7d6327fd9d8095c03b455fd11932ca15ff0a1527b9c6fe9e63f100926c2fe6",
+              "owner_truth": [
+                1,
+                2,
+                3,
+                6
+              ],
+              "reference_value": [
+                1,
+                2,
+                3,
+                6
+              ],
+              "native_value": [
+                1,
+                2,
+                3,
+                6
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 3.552713678800501e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 3.552713678800501e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 3,
+                  "external_reference": -24.298913257936622,
+                  "rust_embedded_reference": -24.298913257936626,
+                  "absolute_error": 3.552713678800501e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 5,
+                  "external_reference": 11.003484793763267,
+                  "rust_embedded_reference": 11.003484793763269,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 14,
+                  "external_reference": -12.945879310293877,
+                  "rust_embedded_reference": -12.945879310293876,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 9.860847876796132,
+              "reference_copy_margin_embedded": 9.860847876796132,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:procedure:3",
+              "address_sha256": "9007015072795b5e7e85a1aa631a973112f276a02927b8e50b79c06cf0af74de",
+              "source_id": "af21c07915ad7a573af2443f8c1add9b45c30a3c451080069ce9d51b4aad1225",
+              "owner_truth": [
+                5,
+                4,
+                3,
+                6
+              ],
+              "reference_value": [
+                5,
+                4,
+                3,
+                6
+              ],
+              "native_value": [
+                5,
+                4,
+                3,
+                6
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 3,
+                  "external_reference": -14.372283691943549,
+                  "rust_embedded_reference": -14.372283691943547,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 9.284664116466562,
+              "reference_copy_margin_embedded": 9.284664116466562,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            },
+            {
+              "key": "inventory:procedure:5",
+              "address_sha256": "a1c77fe8e1d558f64c2e97b9101560d79c109bf3ac6612c2e8e8346757b6a32c",
+              "source_id": "29bdfe6eef82d88fde51f3ee879cfcd1a04f1522ec59bb3e8eebf3cb425f86f5",
+              "owner_truth": [
+                3,
+                5,
+                4,
+                6
+              ],
+              "reference_value": [
+                3,
+                5,
+                4,
+                6
+              ],
+              "native_value": [
+                3,
+                5,
+                4,
+                6
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 10,
+                  "external_reference": 12.537261583287565,
+                  "rust_embedded_reference": 12.537261583287563,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 19,
+                  "external_reference": 14.978951889222627,
+                  "rust_embedded_reference": 14.978951889222628,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 9.356086058308653,
+              "reference_copy_margin_embedded": 9.356086058308652,
+              "reference_copy_margin_ulps": 1.0,
+              "reference_copy_margin_absolute_error": 1.7763568394002505e-15
+            },
+            {
+              "key": "inventory:procedure:4",
+              "address_sha256": "bc74c611e7932db3c1b7bff7024558bfee941fb580008958c85d8fb5a357db90",
+              "source_id": "054009bd83a9c18fd46a16d1d80bf0d94bbace78d5954264740dcd60d081d742",
+              "owner_truth": [
+                1,
+                3,
+                2,
+                6
+              ],
+              "reference_value": [
+                1,
+                3,
+                2,
+                6
+              ],
+              "native_value": [
+                1,
+                3,
+                2,
+                6
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 9,
+                  "external_reference": -3.6543792227676564,
+                  "rust_embedded_reference": -3.654379222767656,
+                  "absolute_error": 4.440892098500626e-16,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 16,
+                  "external_reference": 10.850945195461321,
+                  "rust_embedded_reference": 10.85094519546132,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 27,
+                  "external_reference": 9.239457225373739,
+                  "rust_embedded_reference": 9.23945722537374,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 9.319076915652797,
+              "reference_copy_margin_embedded": 9.319076915652795,
+              "reference_copy_margin_ulps": 1.0,
+              "reference_copy_margin_absolute_error": 1.7763568394002505e-15
+            },
+            {
+              "key": "inventory:procedure:7",
+              "address_sha256": "bd990ef2fe214af29d5cc6f414307ffd563b4927fa7906cde606d6dcc6ddbc2d",
+              "source_id": "2acfa1854c0b6fcf7de12087e8f0a3deaefa0c3501cf9aa060f954bb1e834e2a",
+              "owner_truth": [
+                4,
+                3,
+                5,
+                6
+              ],
+              "reference_value": [
+                4,
+                3,
+                5,
+                6
+              ],
+              "native_value": [
+                4,
+                3,
+                5,
+                6
+              ],
+              "reference_accepted": true,
+              "native_accepted": true,
+              "reference_source_truth_correct": true,
+              "native_source_truth_correct": true,
+              "maximum_absolute_logit_error": 1.7763568394002505e-15,
+              "maximum_external_reference_absolute_logit_error": 0.0,
+              "maximum_reference_copy_absolute_error": 1.7763568394002505e-15,
+              "reference_copy_differences": [
+                {
+                  "coordinate": 4,
+                  "external_reference": 13.785104530671013,
+                  "rust_embedded_reference": 13.785104530671012,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 19,
+                  "external_reference": 11.896629525737609,
+                  "rust_embedded_reference": 11.896629525737607,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 20,
+                  "external_reference": -11.895983317439875,
+                  "rust_embedded_reference": -11.895983317439876,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 22,
+                  "external_reference": -11.998302154262749,
+                  "rust_embedded_reference": -11.998302154262747,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 23,
+                  "external_reference": -11.750062682996205,
+                  "rust_embedded_reference": -11.750062682996203,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                },
+                {
+                  "coordinate": 27,
+                  "external_reference": 12.914261166569995,
+                  "rust_embedded_reference": 12.914261166569997,
+                  "absolute_error": 1.7763568394002505e-15,
+                  "ulps": 1.0
+                }
+              ],
+              "reference_copy_margin_external": 8.934505417650815,
+              "reference_copy_margin_embedded": 8.934505417650815,
+              "reference_copy_margin_ulps": 0.0,
+              "reference_copy_margin_absolute_error": 0.0
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "socket_groups": [
+    {
+      "observation": "original_parameters_on_actual_owner",
+      "model_stage": "original-checkpoint",
+      "count": 16,
+      "source_truth_correct": 16,
+      "distinct_query_ids": 2,
+      "rows": [
+        {
+          "key": "inventory:procedure:4",
+          "kind": "procedure",
+          "source_id": "054009bd83a9c18fd46a16d1d80bf0d94bbace78d5954264740dcd60d081d742",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              1,
+              3,
+              2,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              1,
+              3,
+              2,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "98a841358123d8538f7ed97227090585252197ff2cb4bf59e9576b4381a0b01f"
+        },
+        {
+          "key": "inventory:procedure:2",
+          "kind": "procedure",
+          "source_id": "280178e86f86388b0f652e282f4a13cb60a869e8621fac24cf98301b7220b8a4",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              2,
+              1,
+              3,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              2,
+              1,
+              3,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "98a841358123d8538f7ed97227090585252197ff2cb4bf59e9576b4381a0b01f"
+        },
+        {
+          "key": "inventory:procedure:5",
+          "kind": "procedure",
+          "source_id": "29bdfe6eef82d88fde51f3ee879cfcd1a04f1522ec59bb3e8eebf3cb425f86f5",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              3,
+              5,
+              4,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              3,
+              5,
+              4,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "98a841358123d8538f7ed97227090585252197ff2cb4bf59e9576b4381a0b01f"
+        },
+        {
+          "key": "inventory:semantic:1",
+          "kind": "semantic",
+          "source_id": "2a8c252bb521e35b6f395d977a131c6ac866c4c6098955734259f9b844d52998",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 13,
+            "pack": 2,
+            "reserve": 7
+          },
+          "owner_truth": {
+            "limit": 13,
+            "pack": 2,
+            "reserve": 7
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "52f693260a626c824aa8e5e7ce94cda119195c1eb4494df951b168ff93db7cc3"
+        },
+        {
+          "key": "inventory:procedure:7",
+          "kind": "procedure",
+          "source_id": "2acfa1854c0b6fcf7de12087e8f0a3deaefa0c3501cf9aa060f954bb1e834e2a",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              4,
+              3,
+              5,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              4,
+              3,
+              5,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "98a841358123d8538f7ed97227090585252197ff2cb4bf59e9576b4381a0b01f"
+        },
+        {
+          "key": "inventory:procedure:6",
+          "kind": "procedure",
+          "source_id": "2cf8f5edb6a84bca3af80c059b65229d9d33862345e87e1b59ca964c5ab951f6",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              2,
+              3,
+              5,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              2,
+              3,
+              5,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "98a841358123d8538f7ed97227090585252197ff2cb4bf59e9576b4381a0b01f"
+        },
+        {
+          "key": "inventory:semantic:4",
+          "kind": "semantic",
+          "source_id": "3d06cba367e2efb3ee00e5c86989ac2f60493cd8d9822e237b1252df6ec3013f",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 15,
+            "pack": 3,
+            "reserve": 6
+          },
+          "owner_truth": {
+            "limit": 15,
+            "pack": 3,
+            "reserve": 6
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "52f693260a626c824aa8e5e7ce94cda119195c1eb4494df951b168ff93db7cc3"
+        },
+        {
+          "key": "inventory:semantic:2",
+          "kind": "semantic",
+          "source_id": "509582e146e52a1d568823f4b98d2b1390195fafdf9f28b1b9252b9e1f6b5eed",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 9,
+            "pack": 4,
+            "reserve": 13
+          },
+          "owner_truth": {
+            "limit": 9,
+            "pack": 4,
+            "reserve": 13
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "52f693260a626c824aa8e5e7ce94cda119195c1eb4494df951b168ff93db7cc3"
+        },
+        {
+          "key": "inventory:semantic:5",
+          "kind": "semantic",
+          "source_id": "6053ab33dde87d34c03b1ca813b2427fa93e943a7a84658c4a7deef78244910b",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 8,
+            "pack": 2,
+            "reserve": 14
+          },
+          "owner_truth": {
+            "limit": 8,
+            "pack": 2,
+            "reserve": 14
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "52f693260a626c824aa8e5e7ce94cda119195c1eb4494df951b168ff93db7cc3"
+        },
+        {
+          "key": "inventory:semantic:3",
+          "kind": "semantic",
+          "source_id": "642b273ddfd802a3bae38f143fceb2957986b876bf54792f65a92d1d677c023e",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 12,
+            "pack": 1,
+            "reserve": 9
+          },
+          "owner_truth": {
+            "limit": 12,
+            "pack": 1,
+            "reserve": 9
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "52f693260a626c824aa8e5e7ce94cda119195c1eb4494df951b168ff93db7cc3"
+        },
+        {
+          "key": "inventory:procedure:1",
+          "kind": "procedure",
+          "source_id": "9c54c428fe70e3577e4722c026fac0f54b4e3c34c5ed79ffed0aade2968ce012",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              4,
+              5,
+              3,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              4,
+              5,
+              3,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "98a841358123d8538f7ed97227090585252197ff2cb4bf59e9576b4381a0b01f"
+        },
+        {
+          "key": "inventory:procedure:3",
+          "kind": "procedure",
+          "source_id": "af21c07915ad7a573af2443f8c1add9b45c30a3c451080069ce9d51b4aad1225",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              5,
+              4,
+              3,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              5,
+              4,
+              3,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "98a841358123d8538f7ed97227090585252197ff2cb4bf59e9576b4381a0b01f"
+        },
+        {
+          "key": "inventory:procedure:0",
+          "kind": "procedure",
+          "source_id": "be7d6327fd9d8095c03b455fd11932ca15ff0a1527b9c6fe9e63f100926c2fe6",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              1,
+              2,
+              3,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              1,
+              2,
+              3,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "98a841358123d8538f7ed97227090585252197ff2cb4bf59e9576b4381a0b01f"
+        },
+        {
+          "key": "inventory:semantic:7",
+          "kind": "semantic",
+          "source_id": "d3f5a2dbf65c4e547865dfbac840f0bd7d84d924751cb10763c57562b8814993",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 10,
+            "pack": 1,
+            "reserve": 12
+          },
+          "owner_truth": {
+            "limit": 10,
+            "pack": 1,
+            "reserve": 12
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "52f693260a626c824aa8e5e7ce94cda119195c1eb4494df951b168ff93db7cc3"
+        },
+        {
+          "key": "inventory:semantic:6",
+          "kind": "semantic",
+          "source_id": "fda5618abf7438259f8158780daad892d9284d51a33e5ebd38624f6887a4b3b8",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 11,
+            "pack": 4,
+            "reserve": 8
+          },
+          "owner_truth": {
+            "limit": 11,
+            "pack": 4,
+            "reserve": 8
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "52f693260a626c824aa8e5e7ce94cda119195c1eb4494df951b168ff93db7cc3"
+        },
+        {
+          "key": "inventory:semantic:0",
+          "kind": "semantic",
+          "source_id": "fe2b4307b4a5e34746a8346ed339bb9b9c18fe6ad44061c44998bbd211bc5931",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 14,
+            "pack": 3,
+            "reserve": 11
+          },
+          "owner_truth": {
+            "limit": 14,
+            "pack": 3,
+            "reserve": 11
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "52f693260a626c824aa8e5e7ce94cda119195c1eb4494df951b168ff93db7cc3"
+        }
+      ]
+    },
+    {
+      "observation": "fresh_process_original_parameters",
+      "model_stage": "original-checkpoint",
+      "count": 16,
+      "source_truth_correct": 16,
+      "distinct_query_ids": 2,
+      "rows": [
+        {
+          "key": "inventory:procedure:4",
+          "kind": "procedure",
+          "source_id": "054009bd83a9c18fd46a16d1d80bf0d94bbace78d5954264740dcd60d081d742",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              1,
+              3,
+              2,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              1,
+              3,
+              2,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "98a841358123d8538f7ed97227090585252197ff2cb4bf59e9576b4381a0b01f"
+        },
+        {
+          "key": "inventory:procedure:2",
+          "kind": "procedure",
+          "source_id": "280178e86f86388b0f652e282f4a13cb60a869e8621fac24cf98301b7220b8a4",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              2,
+              1,
+              3,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              2,
+              1,
+              3,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "98a841358123d8538f7ed97227090585252197ff2cb4bf59e9576b4381a0b01f"
+        },
+        {
+          "key": "inventory:procedure:5",
+          "kind": "procedure",
+          "source_id": "29bdfe6eef82d88fde51f3ee879cfcd1a04f1522ec59bb3e8eebf3cb425f86f5",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              3,
+              5,
+              4,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              3,
+              5,
+              4,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "98a841358123d8538f7ed97227090585252197ff2cb4bf59e9576b4381a0b01f"
+        },
+        {
+          "key": "inventory:semantic:1",
+          "kind": "semantic",
+          "source_id": "2a8c252bb521e35b6f395d977a131c6ac866c4c6098955734259f9b844d52998",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 13,
+            "pack": 2,
+            "reserve": 7
+          },
+          "owner_truth": {
+            "limit": 13,
+            "pack": 2,
+            "reserve": 7
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "52f693260a626c824aa8e5e7ce94cda119195c1eb4494df951b168ff93db7cc3"
+        },
+        {
+          "key": "inventory:procedure:7",
+          "kind": "procedure",
+          "source_id": "2acfa1854c0b6fcf7de12087e8f0a3deaefa0c3501cf9aa060f954bb1e834e2a",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              4,
+              3,
+              5,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              4,
+              3,
+              5,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "98a841358123d8538f7ed97227090585252197ff2cb4bf59e9576b4381a0b01f"
+        },
+        {
+          "key": "inventory:procedure:6",
+          "kind": "procedure",
+          "source_id": "2cf8f5edb6a84bca3af80c059b65229d9d33862345e87e1b59ca964c5ab951f6",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              2,
+              3,
+              5,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              2,
+              3,
+              5,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "98a841358123d8538f7ed97227090585252197ff2cb4bf59e9576b4381a0b01f"
+        },
+        {
+          "key": "inventory:semantic:4",
+          "kind": "semantic",
+          "source_id": "3d06cba367e2efb3ee00e5c86989ac2f60493cd8d9822e237b1252df6ec3013f",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 15,
+            "pack": 3,
+            "reserve": 6
+          },
+          "owner_truth": {
+            "limit": 15,
+            "pack": 3,
+            "reserve": 6
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "52f693260a626c824aa8e5e7ce94cda119195c1eb4494df951b168ff93db7cc3"
+        },
+        {
+          "key": "inventory:semantic:2",
+          "kind": "semantic",
+          "source_id": "509582e146e52a1d568823f4b98d2b1390195fafdf9f28b1b9252b9e1f6b5eed",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 9,
+            "pack": 4,
+            "reserve": 13
+          },
+          "owner_truth": {
+            "limit": 9,
+            "pack": 4,
+            "reserve": 13
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "52f693260a626c824aa8e5e7ce94cda119195c1eb4494df951b168ff93db7cc3"
+        },
+        {
+          "key": "inventory:semantic:5",
+          "kind": "semantic",
+          "source_id": "6053ab33dde87d34c03b1ca813b2427fa93e943a7a84658c4a7deef78244910b",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 8,
+            "pack": 2,
+            "reserve": 14
+          },
+          "owner_truth": {
+            "limit": 8,
+            "pack": 2,
+            "reserve": 14
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "52f693260a626c824aa8e5e7ce94cda119195c1eb4494df951b168ff93db7cc3"
+        },
+        {
+          "key": "inventory:semantic:3",
+          "kind": "semantic",
+          "source_id": "642b273ddfd802a3bae38f143fceb2957986b876bf54792f65a92d1d677c023e",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 12,
+            "pack": 1,
+            "reserve": 9
+          },
+          "owner_truth": {
+            "limit": 12,
+            "pack": 1,
+            "reserve": 9
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "52f693260a626c824aa8e5e7ce94cda119195c1eb4494df951b168ff93db7cc3"
+        },
+        {
+          "key": "inventory:procedure:1",
+          "kind": "procedure",
+          "source_id": "9c54c428fe70e3577e4722c026fac0f54b4e3c34c5ed79ffed0aade2968ce012",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              4,
+              5,
+              3,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              4,
+              5,
+              3,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "98a841358123d8538f7ed97227090585252197ff2cb4bf59e9576b4381a0b01f"
+        },
+        {
+          "key": "inventory:procedure:3",
+          "kind": "procedure",
+          "source_id": "af21c07915ad7a573af2443f8c1add9b45c30a3c451080069ce9d51b4aad1225",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              5,
+              4,
+              3,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              5,
+              4,
+              3,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "98a841358123d8538f7ed97227090585252197ff2cb4bf59e9576b4381a0b01f"
+        },
+        {
+          "key": "inventory:procedure:0",
+          "kind": "procedure",
+          "source_id": "be7d6327fd9d8095c03b455fd11932ca15ff0a1527b9c6fe9e63f100926c2fe6",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              1,
+              2,
+              3,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              1,
+              2,
+              3,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "98a841358123d8538f7ed97227090585252197ff2cb4bf59e9576b4381a0b01f"
+        },
+        {
+          "key": "inventory:semantic:7",
+          "kind": "semantic",
+          "source_id": "d3f5a2dbf65c4e547865dfbac840f0bd7d84d924751cb10763c57562b8814993",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 10,
+            "pack": 1,
+            "reserve": 12
+          },
+          "owner_truth": {
+            "limit": 10,
+            "pack": 1,
+            "reserve": 12
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "52f693260a626c824aa8e5e7ce94cda119195c1eb4494df951b168ff93db7cc3"
+        },
+        {
+          "key": "inventory:semantic:6",
+          "kind": "semantic",
+          "source_id": "fda5618abf7438259f8158780daad892d9284d51a33e5ebd38624f6887a4b3b8",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 11,
+            "pack": 4,
+            "reserve": 8
+          },
+          "owner_truth": {
+            "limit": 11,
+            "pack": 4,
+            "reserve": 8
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "52f693260a626c824aa8e5e7ce94cda119195c1eb4494df951b168ff93db7cc3"
+        },
+        {
+          "key": "inventory:semantic:0",
+          "kind": "semantic",
+          "source_id": "fe2b4307b4a5e34746a8346ed339bb9b9c18fe6ad44061c44998bbd211bc5931",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 14,
+            "pack": 3,
+            "reserve": 11
+          },
+          "owner_truth": {
+            "limit": 14,
+            "pack": 3,
+            "reserve": 11
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "52f693260a626c824aa8e5e7ce94cda119195c1eb4494df951b168ff93db7cc3"
+        }
+      ]
+    },
+    {
+      "observation": "actual_new_training_and_retention",
+      "model_stage": "corrected-training",
+      "count": 16,
+      "source_truth_correct": 16,
+      "distinct_query_ids": 2,
+      "rows": [
+        {
+          "key": "inventory:procedure:4",
+          "kind": "procedure",
+          "source_id": "054009bd83a9c18fd46a16d1d80bf0d94bbace78d5954264740dcd60d081d742",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              1,
+              3,
+              2,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              1,
+              3,
+              2,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "0cd8d28814b575e0c7f6a8aba5b46f2be462045476d60665befc2bf290300f89"
+        },
+        {
+          "key": "inventory:procedure:2",
+          "kind": "procedure",
+          "source_id": "280178e86f86388b0f652e282f4a13cb60a869e8621fac24cf98301b7220b8a4",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              2,
+              1,
+              3,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              2,
+              1,
+              3,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "0cd8d28814b575e0c7f6a8aba5b46f2be462045476d60665befc2bf290300f89"
+        },
+        {
+          "key": "inventory:procedure:5",
+          "kind": "procedure",
+          "source_id": "29bdfe6eef82d88fde51f3ee879cfcd1a04f1522ec59bb3e8eebf3cb425f86f5",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              3,
+              5,
+              4,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              3,
+              5,
+              4,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "0cd8d28814b575e0c7f6a8aba5b46f2be462045476d60665befc2bf290300f89"
+        },
+        {
+          "key": "inventory:procedure:7",
+          "kind": "procedure",
+          "source_id": "2acfa1854c0b6fcf7de12087e8f0a3deaefa0c3501cf9aa060f954bb1e834e2a",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              4,
+              3,
+              5,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              4,
+              3,
+              5,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "0cd8d28814b575e0c7f6a8aba5b46f2be462045476d60665befc2bf290300f89"
+        },
+        {
+          "key": "inventory:procedure:6",
+          "kind": "procedure",
+          "source_id": "2cf8f5edb6a84bca3af80c059b65229d9d33862345e87e1b59ca964c5ab951f6",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              2,
+              3,
+              5,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              2,
+              3,
+              5,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "0cd8d28814b575e0c7f6a8aba5b46f2be462045476d60665befc2bf290300f89"
+        },
+        {
+          "key": "inventory:semantic:4",
+          "kind": "semantic",
+          "source_id": "3d06cba367e2efb3ee00e5c86989ac2f60493cd8d9822e237b1252df6ec3013f",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 15,
+            "pack": 3,
+            "reserve": 6
+          },
+          "owner_truth": {
+            "limit": 15,
+            "pack": 3,
+            "reserve": 6
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "d7f56f1b96f19c9efd7c556e28287b63d7dd030bb3f78b875bd5d55595c9b6af"
+        },
+        {
+          "key": "inventory:semantic:2",
+          "kind": "semantic",
+          "source_id": "509582e146e52a1d568823f4b98d2b1390195fafdf9f28b1b9252b9e1f6b5eed",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 9,
+            "pack": 4,
+            "reserve": 13
+          },
+          "owner_truth": {
+            "limit": 9,
+            "pack": 4,
+            "reserve": 13
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "d7f56f1b96f19c9efd7c556e28287b63d7dd030bb3f78b875bd5d55595c9b6af"
+        },
+        {
+          "key": "inventory:semantic:5",
+          "kind": "semantic",
+          "source_id": "6053ab33dde87d34c03b1ca813b2427fa93e943a7a84658c4a7deef78244910b",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 8,
+            "pack": 2,
+            "reserve": 14
+          },
+          "owner_truth": {
+            "limit": 8,
+            "pack": 2,
+            "reserve": 14
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "d7f56f1b96f19c9efd7c556e28287b63d7dd030bb3f78b875bd5d55595c9b6af"
+        },
+        {
+          "key": "inventory:semantic:3",
+          "kind": "semantic",
+          "source_id": "642b273ddfd802a3bae38f143fceb2957986b876bf54792f65a92d1d677c023e",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 12,
+            "pack": 1,
+            "reserve": 9
+          },
+          "owner_truth": {
+            "limit": 12,
+            "pack": 1,
+            "reserve": 9
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "d7f56f1b96f19c9efd7c556e28287b63d7dd030bb3f78b875bd5d55595c9b6af"
+        },
+        {
+          "key": "inventory:procedure:1",
+          "kind": "procedure",
+          "source_id": "9c54c428fe70e3577e4722c026fac0f54b4e3c34c5ed79ffed0aade2968ce012",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              4,
+              5,
+              3,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              4,
+              5,
+              3,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "0cd8d28814b575e0c7f6a8aba5b46f2be462045476d60665befc2bf290300f89"
+        },
+        {
+          "key": "inventory:procedure:3",
+          "kind": "procedure",
+          "source_id": "af21c07915ad7a573af2443f8c1add9b45c30a3c451080069ce9d51b4aad1225",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              5,
+              4,
+              3,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              5,
+              4,
+              3,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "0cd8d28814b575e0c7f6a8aba5b46f2be462045476d60665befc2bf290300f89"
+        },
+        {
+          "key": "inventory:semantic:1",
+          "kind": "semantic",
+          "source_id": "ba753b8b9d624e2a960e4668fbdb6623963533737ce12c9ac27d5bd7dcc66bed",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 11,
+            "pack": 4,
+            "reserve": 5
+          },
+          "owner_truth": {
+            "limit": 11,
+            "pack": 4,
+            "reserve": 5
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "d7f56f1b96f19c9efd7c556e28287b63d7dd030bb3f78b875bd5d55595c9b6af"
+        },
+        {
+          "key": "inventory:procedure:0",
+          "kind": "procedure",
+          "source_id": "be7d6327fd9d8095c03b455fd11932ca15ff0a1527b9c6fe9e63f100926c2fe6",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              1,
+              2,
+              3,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              1,
+              2,
+              3,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "0cd8d28814b575e0c7f6a8aba5b46f2be462045476d60665befc2bf290300f89"
+        },
+        {
+          "key": "inventory:semantic:7",
+          "kind": "semantic",
+          "source_id": "d3f5a2dbf65c4e547865dfbac840f0bd7d84d924751cb10763c57562b8814993",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 10,
+            "pack": 1,
+            "reserve": 12
+          },
+          "owner_truth": {
+            "limit": 10,
+            "pack": 1,
+            "reserve": 12
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "d7f56f1b96f19c9efd7c556e28287b63d7dd030bb3f78b875bd5d55595c9b6af"
+        },
+        {
+          "key": "inventory:semantic:6",
+          "kind": "semantic",
+          "source_id": "fda5618abf7438259f8158780daad892d9284d51a33e5ebd38624f6887a4b3b8",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 11,
+            "pack": 4,
+            "reserve": 8
+          },
+          "owner_truth": {
+            "limit": 11,
+            "pack": 4,
+            "reserve": 8
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "d7f56f1b96f19c9efd7c556e28287b63d7dd030bb3f78b875bd5d55595c9b6af"
+        },
+        {
+          "key": "inventory:semantic:0",
+          "kind": "semantic",
+          "source_id": "fe2b4307b4a5e34746a8346ed339bb9b9c18fe6ad44061c44998bbd211bc5931",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 14,
+            "pack": 3,
+            "reserve": 11
+          },
+          "owner_truth": {
+            "limit": 14,
+            "pack": 3,
+            "reserve": 11
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "d7f56f1b96f19c9efd7c556e28287b63d7dd030bb3f78b875bd5d55595c9b6af"
+        }
+      ]
+    },
+    {
+      "observation": "fresh_process_new_training",
+      "model_stage": "corrected-training",
+      "count": 16,
+      "source_truth_correct": 16,
+      "distinct_query_ids": 2,
+      "rows": [
+        {
+          "key": "inventory:procedure:4",
+          "kind": "procedure",
+          "source_id": "054009bd83a9c18fd46a16d1d80bf0d94bbace78d5954264740dcd60d081d742",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              1,
+              3,
+              2,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              1,
+              3,
+              2,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "0cd8d28814b575e0c7f6a8aba5b46f2be462045476d60665befc2bf290300f89"
+        },
+        {
+          "key": "inventory:procedure:2",
+          "kind": "procedure",
+          "source_id": "280178e86f86388b0f652e282f4a13cb60a869e8621fac24cf98301b7220b8a4",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              2,
+              1,
+              3,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              2,
+              1,
+              3,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "0cd8d28814b575e0c7f6a8aba5b46f2be462045476d60665befc2bf290300f89"
+        },
+        {
+          "key": "inventory:procedure:5",
+          "kind": "procedure",
+          "source_id": "29bdfe6eef82d88fde51f3ee879cfcd1a04f1522ec59bb3e8eebf3cb425f86f5",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              3,
+              5,
+              4,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              3,
+              5,
+              4,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "0cd8d28814b575e0c7f6a8aba5b46f2be462045476d60665befc2bf290300f89"
+        },
+        {
+          "key": "inventory:procedure:7",
+          "kind": "procedure",
+          "source_id": "2acfa1854c0b6fcf7de12087e8f0a3deaefa0c3501cf9aa060f954bb1e834e2a",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              4,
+              3,
+              5,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              4,
+              3,
+              5,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "0cd8d28814b575e0c7f6a8aba5b46f2be462045476d60665befc2bf290300f89"
+        },
+        {
+          "key": "inventory:procedure:6",
+          "kind": "procedure",
+          "source_id": "2cf8f5edb6a84bca3af80c059b65229d9d33862345e87e1b59ca964c5ab951f6",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              2,
+              3,
+              5,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              2,
+              3,
+              5,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "0cd8d28814b575e0c7f6a8aba5b46f2be462045476d60665befc2bf290300f89"
+        },
+        {
+          "key": "inventory:semantic:4",
+          "kind": "semantic",
+          "source_id": "3d06cba367e2efb3ee00e5c86989ac2f60493cd8d9822e237b1252df6ec3013f",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 15,
+            "pack": 3,
+            "reserve": 6
+          },
+          "owner_truth": {
+            "limit": 15,
+            "pack": 3,
+            "reserve": 6
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "d7f56f1b96f19c9efd7c556e28287b63d7dd030bb3f78b875bd5d55595c9b6af"
+        },
+        {
+          "key": "inventory:semantic:2",
+          "kind": "semantic",
+          "source_id": "509582e146e52a1d568823f4b98d2b1390195fafdf9f28b1b9252b9e1f6b5eed",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 9,
+            "pack": 4,
+            "reserve": 13
+          },
+          "owner_truth": {
+            "limit": 9,
+            "pack": 4,
+            "reserve": 13
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "d7f56f1b96f19c9efd7c556e28287b63d7dd030bb3f78b875bd5d55595c9b6af"
+        },
+        {
+          "key": "inventory:semantic:5",
+          "kind": "semantic",
+          "source_id": "6053ab33dde87d34c03b1ca813b2427fa93e943a7a84658c4a7deef78244910b",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 8,
+            "pack": 2,
+            "reserve": 14
+          },
+          "owner_truth": {
+            "limit": 8,
+            "pack": 2,
+            "reserve": 14
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "d7f56f1b96f19c9efd7c556e28287b63d7dd030bb3f78b875bd5d55595c9b6af"
+        },
+        {
+          "key": "inventory:semantic:3",
+          "kind": "semantic",
+          "source_id": "642b273ddfd802a3bae38f143fceb2957986b876bf54792f65a92d1d677c023e",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 12,
+            "pack": 1,
+            "reserve": 9
+          },
+          "owner_truth": {
+            "limit": 12,
+            "pack": 1,
+            "reserve": 9
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "d7f56f1b96f19c9efd7c556e28287b63d7dd030bb3f78b875bd5d55595c9b6af"
+        },
+        {
+          "key": "inventory:procedure:1",
+          "kind": "procedure",
+          "source_id": "9c54c428fe70e3577e4722c026fac0f54b4e3c34c5ed79ffed0aade2968ce012",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              4,
+              5,
+              3,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              4,
+              5,
+              3,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "0cd8d28814b575e0c7f6a8aba5b46f2be462045476d60665befc2bf290300f89"
+        },
+        {
+          "key": "inventory:procedure:3",
+          "kind": "procedure",
+          "source_id": "af21c07915ad7a573af2443f8c1add9b45c30a3c451080069ce9d51b4aad1225",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              5,
+              4,
+              3,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              5,
+              4,
+              3,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "0cd8d28814b575e0c7f6a8aba5b46f2be462045476d60665befc2bf290300f89"
+        },
+        {
+          "key": "inventory:semantic:1",
+          "kind": "semantic",
+          "source_id": "ba753b8b9d624e2a960e4668fbdb6623963533737ce12c9ac27d5bd7dcc66bed",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 11,
+            "pack": 4,
+            "reserve": 5
+          },
+          "owner_truth": {
+            "limit": 11,
+            "pack": 4,
+            "reserve": 5
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "d7f56f1b96f19c9efd7c556e28287b63d7dd030bb3f78b875bd5d55595c9b6af"
+        },
+        {
+          "key": "inventory:procedure:0",
+          "kind": "procedure",
+          "source_id": "be7d6327fd9d8095c03b455fd11932ca15ff0a1527b9c6fe9e63f100926c2fe6",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              1,
+              2,
+              3,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              1,
+              2,
+              3,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "0cd8d28814b575e0c7f6a8aba5b46f2be462045476d60665befc2bf290300f89"
+        },
+        {
+          "key": "inventory:semantic:7",
+          "kind": "semantic",
+          "source_id": "d3f5a2dbf65c4e547865dfbac840f0bd7d84d924751cb10763c57562b8814993",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 10,
+            "pack": 1,
+            "reserve": 12
+          },
+          "owner_truth": {
+            "limit": 10,
+            "pack": 1,
+            "reserve": 12
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "d7f56f1b96f19c9efd7c556e28287b63d7dd030bb3f78b875bd5d55595c9b6af"
+        },
+        {
+          "key": "inventory:semantic:6",
+          "kind": "semantic",
+          "source_id": "fda5618abf7438259f8158780daad892d9284d51a33e5ebd38624f6887a4b3b8",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 11,
+            "pack": 4,
+            "reserve": 8
+          },
+          "owner_truth": {
+            "limit": 11,
+            "pack": 4,
+            "reserve": 8
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "d7f56f1b96f19c9efd7c556e28287b63d7dd030bb3f78b875bd5d55595c9b6af"
+        },
+        {
+          "key": "inventory:semantic:0",
+          "kind": "semantic",
+          "source_id": "fe2b4307b4a5e34746a8346ed339bb9b9c18fe6ad44061c44998bbd211bc5931",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 14,
+            "pack": 3,
+            "reserve": 11
+          },
+          "owner_truth": {
+            "limit": 14,
+            "pack": 3,
+            "reserve": 11
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "d7f56f1b96f19c9efd7c556e28287b63d7dd030bb3f78b875bd5d55595c9b6af"
+        }
+      ]
+    },
+    {
+      "observation": "delete_and_rebuild_from_remaining_sources",
+      "model_stage": "deleted-rebuild",
+      "count": 15,
+      "source_truth_correct": 15,
+      "distinct_query_ids": 2,
+      "rows": [
+        {
+          "key": "inventory:procedure:4",
+          "kind": "procedure",
+          "source_id": "054009bd83a9c18fd46a16d1d80bf0d94bbace78d5954264740dcd60d081d742",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              1,
+              3,
+              2,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              1,
+              3,
+              2,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "e2e086a14c7533e43bbd91b02ef132a5aa8ee038e30b9925de198d7800135849"
+        },
+        {
+          "key": "inventory:procedure:2",
+          "kind": "procedure",
+          "source_id": "280178e86f86388b0f652e282f4a13cb60a869e8621fac24cf98301b7220b8a4",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              2,
+              1,
+              3,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              2,
+              1,
+              3,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "e2e086a14c7533e43bbd91b02ef132a5aa8ee038e30b9925de198d7800135849"
+        },
+        {
+          "key": "inventory:procedure:5",
+          "kind": "procedure",
+          "source_id": "29bdfe6eef82d88fde51f3ee879cfcd1a04f1522ec59bb3e8eebf3cb425f86f5",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              3,
+              5,
+              4,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              3,
+              5,
+              4,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "e2e086a14c7533e43bbd91b02ef132a5aa8ee038e30b9925de198d7800135849"
+        },
+        {
+          "key": "inventory:procedure:7",
+          "kind": "procedure",
+          "source_id": "2acfa1854c0b6fcf7de12087e8f0a3deaefa0c3501cf9aa060f954bb1e834e2a",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              4,
+              3,
+              5,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              4,
+              3,
+              5,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "e2e086a14c7533e43bbd91b02ef132a5aa8ee038e30b9925de198d7800135849"
+        },
+        {
+          "key": "inventory:procedure:6",
+          "kind": "procedure",
+          "source_id": "2cf8f5edb6a84bca3af80c059b65229d9d33862345e87e1b59ca964c5ab951f6",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              2,
+              3,
+              5,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              2,
+              3,
+              5,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "e2e086a14c7533e43bbd91b02ef132a5aa8ee038e30b9925de198d7800135849"
+        },
+        {
+          "key": "inventory:semantic:4",
+          "kind": "semantic",
+          "source_id": "3d06cba367e2efb3ee00e5c86989ac2f60493cd8d9822e237b1252df6ec3013f",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 15,
+            "pack": 3,
+            "reserve": 6
+          },
+          "owner_truth": {
+            "limit": 15,
+            "pack": 3,
+            "reserve": 6
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "3a8209df3e65bea4cf4b1e05c0320a9c556683563d101bf625958e1bf0ede56a"
+        },
+        {
+          "key": "inventory:semantic:2",
+          "kind": "semantic",
+          "source_id": "509582e146e52a1d568823f4b98d2b1390195fafdf9f28b1b9252b9e1f6b5eed",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 9,
+            "pack": 4,
+            "reserve": 13
+          },
+          "owner_truth": {
+            "limit": 9,
+            "pack": 4,
+            "reserve": 13
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "3a8209df3e65bea4cf4b1e05c0320a9c556683563d101bf625958e1bf0ede56a"
+        },
+        {
+          "key": "inventory:semantic:5",
+          "kind": "semantic",
+          "source_id": "6053ab33dde87d34c03b1ca813b2427fa93e943a7a84658c4a7deef78244910b",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 8,
+            "pack": 2,
+            "reserve": 14
+          },
+          "owner_truth": {
+            "limit": 8,
+            "pack": 2,
+            "reserve": 14
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "3a8209df3e65bea4cf4b1e05c0320a9c556683563d101bf625958e1bf0ede56a"
+        },
+        {
+          "key": "inventory:semantic:3",
+          "kind": "semantic",
+          "source_id": "642b273ddfd802a3bae38f143fceb2957986b876bf54792f65a92d1d677c023e",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 12,
+            "pack": 1,
+            "reserve": 9
+          },
+          "owner_truth": {
+            "limit": 12,
+            "pack": 1,
+            "reserve": 9
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "3a8209df3e65bea4cf4b1e05c0320a9c556683563d101bf625958e1bf0ede56a"
+        },
+        {
+          "key": "inventory:procedure:1",
+          "kind": "procedure",
+          "source_id": "9c54c428fe70e3577e4722c026fac0f54b4e3c34c5ed79ffed0aade2968ce012",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              4,
+              5,
+              3,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              4,
+              5,
+              3,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "e2e086a14c7533e43bbd91b02ef132a5aa8ee038e30b9925de198d7800135849"
+        },
+        {
+          "key": "inventory:procedure:3",
+          "kind": "procedure",
+          "source_id": "af21c07915ad7a573af2443f8c1add9b45c30a3c451080069ce9d51b4aad1225",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              5,
+              4,
+              3,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              5,
+              4,
+              3,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "e2e086a14c7533e43bbd91b02ef132a5aa8ee038e30b9925de198d7800135849"
+        },
+        {
+          "key": "inventory:semantic:1",
+          "kind": "semantic",
+          "source_id": "ba753b8b9d624e2a960e4668fbdb6623963533737ce12c9ac27d5bd7dcc66bed",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 11,
+            "pack": 4,
+            "reserve": 5
+          },
+          "owner_truth": {
+            "limit": 11,
+            "pack": 4,
+            "reserve": 5
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "3a8209df3e65bea4cf4b1e05c0320a9c556683563d101bf625958e1bf0ede56a"
+        },
+        {
+          "key": "inventory:procedure:0",
+          "kind": "procedure",
+          "source_id": "be7d6327fd9d8095c03b455fd11932ca15ff0a1527b9c6fe9e63f100926c2fe6",
+          "query_id": "native-procedure-0-0",
+          "value": {
+            "opcodes": [
+              1,
+              2,
+              3,
+              6
+            ]
+          },
+          "owner_truth": {
+            "opcodes": [
+              1,
+              2,
+              3,
+              6
+            ]
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "e2e086a14c7533e43bbd91b02ef132a5aa8ee038e30b9925de198d7800135849"
+        },
+        {
+          "key": "inventory:semantic:7",
+          "kind": "semantic",
+          "source_id": "d3f5a2dbf65c4e547865dfbac840f0bd7d84d924751cb10763c57562b8814993",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 10,
+            "pack": 1,
+            "reserve": 12
+          },
+          "owner_truth": {
+            "limit": 10,
+            "pack": 1,
+            "reserve": 12
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "3a8209df3e65bea4cf4b1e05c0320a9c556683563d101bf625958e1bf0ede56a"
+        },
+        {
+          "key": "inventory:semantic:6",
+          "kind": "semantic",
+          "source_id": "fda5618abf7438259f8158780daad892d9284d51a33e5ebd38624f6887a4b3b8",
+          "query_id": "native-semantic-0-0",
+          "value": {
+            "limit": 11,
+            "pack": 4,
+            "reserve": 8
+          },
+          "owner_truth": {
+            "limit": 11,
+            "pack": 4,
+            "reserve": 8
+          },
+          "source_truth_correct": true,
+          "artifact_sha256": "3a8209df3e65bea4cf4b1e05c0320a9c556683563d101bf625958e1bf0ede56a"
+        }
+      ]
+    }
+  ],
+  "socket_total": 79,
+  "socket_source_truth_correct": 79,
+  "saved_compositions": [
+    {
+      "observation": "independent_entity_and_workflow_composition",
+      "model_stage": "original-checkpoint",
+      "entity_key": "inventory:semantic:0",
+      "workflow_key": "inventory:procedure:0",
+      "owner_event": 4,
+      "owner_policy": {
+        "limit": 14,
+        "pack": 3,
+        "reserve": 11
+      },
+      "owner_program": {
+        "opcodes": [
+          1,
+          2,
+          3,
+          6
+        ]
+      },
+      "owner_hold": false,
+      "max_steps": 4,
+      "expected_execution": {
+        "status": "completed",
+        "value": 14,
+        "trace": [
+          {
+            "op": "reserve_gap",
+            "before": 4,
+            "after": 7
+          },
+          {
+            "op": "pack",
+            "before": 7,
+            "after": 21
+          },
+          {
+            "op": "cap",
+            "before": 21,
+            "after": 14
+          },
+          {
+            "op": "stop",
+            "before": 14,
+            "after": 14
+          }
+        ]
+      },
+      "saved_execution": {
+        "status": "completed",
+        "trace": [
+          {
+            "after": 7,
+            "before": 4,
+            "op": "reserve_gap"
+          },
+          {
+            "after": 21,
+            "before": 7,
+            "op": "pack"
+          },
+          {
+            "after": 14,
+            "before": 21,
+            "op": "cap"
+          },
+          {
+            "after": 14,
+            "before": 14,
+            "op": "stop"
+          }
+        ],
+        "value": 14
+      },
+      "source_truth_exact": true,
+      "source_ids": [
+        "72eae3ba24f6469c7174abca3e761514a8bde12560efccfc8736018331e4cdd8",
+        "74418c8cbad54690419c8658a074488bf56a6b7c2a8fcdd6e69e0131a5ee5d47",
+        "be7d6327fd9d8095c03b455fd11932ca15ff0a1527b9c6fe9e63f100926c2fe6",
+        "fe2b4307b4a5e34746a8346ed339bb9b9c18fe6ad44061c44998bbd211bc5931"
+      ],
+      "source_truth_asserted_in_original_ci": true
+    },
+    {
+      "observation": "independent_entity_and_workflow_composition",
+      "model_stage": "original-checkpoint",
+      "entity_key": "inventory:semantic:0",
+      "workflow_key": "inventory:procedure:1",
+      "owner_event": 4,
+      "owner_policy": {
+        "limit": 14,
+        "pack": 3,
+        "reserve": 11
+      },
+      "owner_program": {
+        "opcodes": [
+          4,
+          5,
+          3,
+          6
+        ]
+      },
+      "owner_hold": false,
+      "max_steps": 4,
+      "expected_execution": {
+        "status": "completed",
+        "value": 7,
+        "trace": [
+          {
+            "op": "add_reserve",
+            "before": 4,
+            "after": 15
+          },
+          {
+            "op": "halve",
+            "before": 15,
+            "after": 7
+          },
+          {
+            "op": "cap",
+            "before": 7,
+            "after": 7
+          },
+          {
+            "op": "stop",
+            "before": 7,
+            "after": 7
+          }
+        ]
+      },
+      "saved_execution": {
+        "status": "completed",
+        "trace": [
+          {
+            "after": 15,
+            "before": 4,
+            "op": "add_reserve"
+          },
+          {
+            "after": 7,
+            "before": 15,
+            "op": "halve"
+          },
+          {
+            "after": 7,
+            "before": 7,
+            "op": "cap"
+          },
+          {
+            "after": 7,
+            "before": 7,
+            "op": "stop"
+          }
+        ],
+        "value": 7
+      },
+      "source_truth_exact": true,
+      "source_ids": [
+        "72eae3ba24f6469c7174abca3e761514a8bde12560efccfc8736018331e4cdd8",
+        "74418c8cbad54690419c8658a074488bf56a6b7c2a8fcdd6e69e0131a5ee5d47",
+        "9c54c428fe70e3577e4722c026fac0f54b4e3c34c5ed79ffed0aade2968ce012",
+        "fe2b4307b4a5e34746a8346ed339bb9b9c18fe6ad44061c44998bbd211bc5931"
+      ],
+      "source_truth_asserted_in_original_ci": true
+    },
+    {
+      "observation": "independent_entity_and_workflow_composition",
+      "model_stage": "original-checkpoint",
+      "entity_key": "inventory:semantic:1",
+      "workflow_key": "inventory:procedure:0",
+      "owner_event": 5,
+      "owner_policy": {
+        "limit": 13,
+        "pack": 2,
+        "reserve": 7
+      },
+      "owner_program": {
+        "opcodes": [
+          1,
+          2,
+          3,
+          6
+        ]
+      },
+      "owner_hold": false,
+      "max_steps": 4,
+      "expected_execution": {
+        "status": "completed",
+        "value": 4,
+        "trace": [
+          {
+            "op": "reserve_gap",
+            "before": 5,
+            "after": 2
+          },
+          {
+            "op": "pack",
+            "before": 2,
+            "after": 4
+          },
+          {
+            "op": "cap",
+            "before": 4,
+            "after": 4
+          },
+          {
+            "op": "stop",
+            "before": 4,
+            "after": 4
+          }
+        ]
+      },
+      "saved_execution": {
+        "status": "completed",
+        "trace": [
+          {
+            "after": 2,
+            "before": 5,
+            "op": "reserve_gap"
+          },
+          {
+            "after": 4,
+            "before": 2,
+            "op": "pack"
+          },
+          {
+            "after": 4,
+            "before": 4,
+            "op": "cap"
+          },
+          {
+            "after": 4,
+            "before": 4,
+            "op": "stop"
+          }
+        ],
+        "value": 4
+      },
+      "source_truth_exact": true,
+      "source_ids": [
+        "107e2aa31d96e9c5aa7ac90ed176cf47e9a5bbbe0116a0056dafd9d5244a1917",
+        "2a8c252bb521e35b6f395d977a131c6ac866c4c6098955734259f9b844d52998",
+        "b5b24eb298487a5a51d683bb9ad1b7c82acef6c00c33db19e4f4e1481b77b4be",
+        "be7d6327fd9d8095c03b455fd11932ca15ff0a1527b9c6fe9e63f100926c2fe6"
+      ],
+      "source_truth_asserted_in_original_ci": true
+    },
+    {
+      "observation": "independent_entity_and_workflow_composition",
+      "model_stage": "original-checkpoint",
+      "entity_key": "inventory:semantic:1",
+      "workflow_key": "inventory:procedure:1",
+      "owner_event": 5,
+      "owner_policy": {
+        "limit": 13,
+        "pack": 2,
+        "reserve": 7
+      },
+      "owner_program": {
+        "opcodes": [
+          4,
+          5,
+          3,
+          6
+        ]
+      },
+      "owner_hold": false,
+      "max_steps": 4,
+      "expected_execution": {
+        "status": "completed",
+        "value": 6,
+        "trace": [
+          {
+            "op": "add_reserve",
+            "before": 5,
+            "after": 12
+          },
+          {
+            "op": "halve",
+            "before": 12,
+            "after": 6
+          },
+          {
+            "op": "cap",
+            "before": 6,
+            "after": 6
+          },
+          {
+            "op": "stop",
+            "before": 6,
+            "after": 6
+          }
+        ]
+      },
+      "saved_execution": {
+        "status": "completed",
+        "trace": [
+          {
+            "after": 12,
+            "before": 5,
+            "op": "add_reserve"
+          },
+          {
+            "after": 6,
+            "before": 12,
+            "op": "halve"
+          },
+          {
+            "after": 6,
+            "before": 6,
+            "op": "cap"
+          },
+          {
+            "after": 6,
+            "before": 6,
+            "op": "stop"
+          }
+        ],
+        "value": 6
+      },
+      "source_truth_exact": true,
+      "source_ids": [
+        "107e2aa31d96e9c5aa7ac90ed176cf47e9a5bbbe0116a0056dafd9d5244a1917",
+        "2a8c252bb521e35b6f395d977a131c6ac866c4c6098955734259f9b844d52998",
+        "9c54c428fe70e3577e4722c026fac0f54b4e3c34c5ed79ffed0aade2968ce012",
+        "b5b24eb298487a5a51d683bb9ad1b7c82acef6c00c33db19e4f4e1481b77b4be"
+      ],
+      "source_truth_asserted_in_original_ci": true
+    },
+    {
+      "observation": "decoded_cache_reloaded",
+      "model_stage": "original-checkpoint",
+      "entity_key": "inventory:semantic:0",
+      "workflow_key": "inventory:procedure:0",
+      "owner_event": 4,
+      "owner_policy": {
+        "limit": 14,
+        "pack": 3,
+        "reserve": 11
+      },
+      "owner_program": {
+        "opcodes": [
+          1,
+          2,
+          3,
+          6
+        ]
+      },
+      "owner_hold": false,
+      "max_steps": 4,
+      "expected_execution": {
+        "status": "completed",
+        "value": 14,
+        "trace": [
+          {
+            "op": "reserve_gap",
+            "before": 4,
+            "after": 7
+          },
+          {
+            "op": "pack",
+            "before": 7,
+            "after": 21
+          },
+          {
+            "op": "cap",
+            "before": 21,
+            "after": 14
+          },
+          {
+            "op": "stop",
+            "before": 14,
+            "after": 14
+          }
+        ]
+      },
+      "saved_execution": {
+        "status": "completed",
+        "trace": [
+          {
+            "after": 7,
+            "before": 4,
+            "op": "reserve_gap"
+          },
+          {
+            "after": 21,
+            "before": 7,
+            "op": "pack"
+          },
+          {
+            "after": 14,
+            "before": 21,
+            "op": "cap"
+          },
+          {
+            "after": 14,
+            "before": 14,
+            "op": "stop"
+          }
+        ],
+        "value": 14
+      },
+      "source_truth_exact": true,
+      "source_ids": [
+        "72eae3ba24f6469c7174abca3e761514a8bde12560efccfc8736018331e4cdd8",
+        "74418c8cbad54690419c8658a074488bf56a6b7c2a8fcdd6e69e0131a5ee5d47",
+        "be7d6327fd9d8095c03b455fd11932ca15ff0a1527b9c6fe9e63f100926c2fe6",
+        "fe2b4307b4a5e34746a8346ed339bb9b9c18fe6ad44061c44998bbd211bc5931"
+      ],
+      "source_truth_asserted_in_original_ci": true
+    },
+    {
+      "observation": "fresh_process_trained_hybrid_worker",
+      "model_stage": "deleted-rebuild",
+      "entity_key": "inventory:semantic:1",
+      "workflow_key": "inventory:procedure:0",
+      "owner_event": 5,
+      "owner_policy": {
+        "limit": 11,
+        "pack": 4,
+        "reserve": 5
+      },
+      "owner_program": {
+        "opcodes": [
+          1,
+          2,
+          3,
+          6
+        ]
+      },
+      "owner_hold": false,
+      "max_steps": 4,
+      "expected_execution": {
+        "status": "completed",
+        "value": 0,
+        "trace": [
+          {
+            "op": "reserve_gap",
+            "before": 5,
+            "after": 0
+          },
+          {
+            "op": "pack",
+            "before": 0,
+            "after": 0
+          },
+          {
+            "op": "cap",
+            "before": 0,
+            "after": 0
+          },
+          {
+            "op": "stop",
+            "before": 0,
+            "after": 0
+          }
+        ]
+      },
+      "saved_execution": {
+        "status": "completed",
+        "trace": [
+          {
+            "after": 0,
+            "before": 5,
+            "op": "reserve_gap"
+          },
+          {
+            "after": 0,
+            "before": 0,
+            "op": "pack"
+          },
+          {
+            "after": 0,
+            "before": 0,
+            "op": "cap"
+          },
+          {
+            "after": 0,
+            "before": 0,
+            "op": "stop"
+          }
+        ],
+        "value": 0
+      },
+      "source_truth_exact": true,
+      "source_ids": [
+        "107e2aa31d96e9c5aa7ac90ed176cf47e9a5bbbe0116a0056dafd9d5244a1917",
+        "b5b24eb298487a5a51d683bb9ad1b7c82acef6c00c33db19e4f4e1481b77b4be",
+        "ba753b8b9d624e2a960e4668fbdb6623963533737ce12c9ac27d5bd7dcc66bed",
+        "be7d6327fd9d8095c03b455fd11932ca15ff0a1527b9c6fe9e63f100926c2fe6"
+      ],
+      "source_truth_asserted_in_original_ci": false
+    }
+  ],
+  "denials": [
+    {
+      "observation": "step_budget",
+      "expected_status": "budget_exceeded",
+      "saved_status": "budget_exceeded",
+      "empty_success_payload": true,
+      "reason": "inventory program exceeds step budget"
+    },
+    {
+      "observation": "unqueried_correction_invalidates_complete_cut",
+      "expected_status": "stale",
+      "saved_status": "stale",
+      "empty_success_payload": true,
+      "reason": "selected memory inventory bundle lineage differs from the owner cut"
+    },
+    {
+      "observation": "owner_exception",
+      "expected_status": "abstain",
+      "saved_status": "abstain",
+      "empty_success_payload": true,
+      "reason": "inventory entity is on hold"
+    },
+    {
+      "observation": "delete_and_rebuild_from_remaining_sources",
+      "expected_status": "abstain",
+      "saved_status": "abstain",
+      "empty_success_payload": true,
+      "reason": "inventory dependency is missing or withdrawn"
+    },
+    {
+      "observation": "ambiguous_address_and_real_artifact_revocation",
+      "expected_status": "abstain",
+      "saved_status": "abstain",
+      "empty_success_payload": true,
+      "reason": "address resolver declined the request"
+    }
+  ],
+  "owner_process_ids": [
+    27823,
+    27834,
+    27847,
+    27867,
+    27875
+  ],
+  "maximum_absolute_logit_error": 7.105427357601002e-15,
+  "maximum_external_reference_absolute_logit_error": 0.0,
+  "json_float_copy": {
+    "exact_copy_assumption_holds": false,
+    "scope": "external reference JSON parsed in Python versus its Rust-parsed and reserialized copy in the receipt",
+    "maximum_allowed_ulps": 1,
+    "changed_logit_coordinates": 137,
+    "changed_margins": 14,
+    "changed_logit_rows": 43,
+    "coordinate_indices_are_zero_based": true,
+    "maximum_observed_ulps": 1.0,
+    "maximum_absolute_error": 7.105427357601002e-15,
+    "interpretation": "Tiny JSON float representation differences are recorded explicitly; original model parity tolerances and typed/source-truth equality are unchanged."
+  },
+  "boundaries": [
+    "Parity and source-truth quality are separate metrics.",
+    "47 counts stage/type/address positions, not independent facts.",
+    "79 socket rows include cold-reopen repeats; query_id is repeated within each operation, so rows bind by unique source_id and owner key.",
+    "Five saved original composition source-truth assertions are present. Two other asserted composition calls did not retain their returned readouts in NATIVE_ACTUAL.json.",
+    "The migrated mixed-worker value/trace comparison is newly derived post hoc; original CI asserted status and artifact count, not direct source-truth equality for that request.",
+    "Complete socket requests are not separately retained for the 79 single-value rows; the migrated worker does retain its full request.",
+    "No inference, training, test rerun, physical-host migration claim or complete lifecycle cost claim is made."
+  ],
+  "input_manifest_sha256": "803d13fd681a9de0728b6bd433adea45c19f6c27de0f933516d689abbfc2fd15",
+  "audit_script_sha256": "98cba152ffdbf522e8118c0e2512ab1cbe9bc99dbb5a424c60da68596fd32092"
+}

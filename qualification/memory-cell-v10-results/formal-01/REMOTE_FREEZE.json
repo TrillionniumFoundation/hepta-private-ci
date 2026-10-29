@@ -1,0 +1,179 @@
+{
+  "schema": "hepta.memory.v10.remote-source-freeze.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "branch": "research/memory-cell-v10-20261029",
+  "commit": "dd727713ad8074a74f88b5782b2a86f26a1cc30b",
+  "tree": "33ef33e258fa3f00530f764cb991bc542377f4c9",
+  "baseline": "0f41c4968eea63727c69e2b979491e94a99a9dbb",
+  "source_manifest_sha256": "38559a7e81e22b6742febb4fdca9b52e567495cb0233eabd28aae9979c6c24b7",
+  "remote_files": [
+    {
+      "path": "qualification/memory-cell-v10/DEPENDENCIES.freeze.txt",
+      "sha": "259d0b0b0badcc2a1fd4b09cd4255ebc5593456c",
+      "size": 1818
+    },
+    {
+      "path": "qualification/memory-cell-v10/PROTOCOL.json",
+      "sha": "f88a8ea6b878b6cbf0b0d8060867325940cd51c1",
+      "size": 9103
+    },
+    {
+      "path": "qualification/memory-cell-v10/README.md",
+      "sha": "a5e41d242c8e59a2c03f7a09f9582a9945638f06",
+      "size": 11123
+    },
+    {
+      "path": "qualification/memory-cell-v10/SOURCE_MANIFEST.json",
+      "sha": "7649c85137709d4e1e2844f79d526e212f5e871f",
+      "size": 2988
+    },
+    {
+      "path": "qualification/memory-cell-v10/cells.py",
+      "sha": "d7438671f2a26ccac0b8d05173d444fb7d9ebbd2",
+      "size": 13358
+    },
+    {
+      "path": "qualification/memory-cell-v10/corpus.py",
+      "sha": "f3fac0e319de7c34b2adb6a63aa1dd0879cc7511",
+      "size": 6438
+    },
+    {
+      "path": "qualification/memory-cell-v10/development_check.py",
+      "sha": "17038acc6e33b77fa8b633d5922402ede8e93953",
+      "size": 5793
+    },
+    {
+      "path": "qualification/memory-cell-v10/development_suite.py",
+      "sha": "0b61702dcf9bdc4ddebd8b67553c18502f365831",
+      "size": 5557
+    },
+    {
+      "path": "qualification/memory-cell-v10/development_worker_check.py",
+      "sha": "51285a8dab8c4c36fda859ab813f2ca31fd1fca9",
+      "size": 5873
+    },
+    {
+      "path": "qualification/memory-cell-v10/export_native.py",
+      "sha": "9e2ae66f2ba38a546584eae8506fa8f8b30a94e8",
+      "size": 9883
+    },
+    {
+      "path": "qualification/memory-cell-v10/freeze_source.py",
+      "sha": "4fe473549db0b23a96ab8e826aa50b76b7b0c179",
+      "size": 1747
+    },
+    {
+      "path": "qualification/memory-cell-v10/held_templates.json",
+      "sha": "45e7d8f9ab1305800d72cca96bb061010ee262c2",
+      "size": 701
+    },
+    {
+      "path": "qualification/memory-cell-v10/inventory_worker.py",
+      "sha": "f202308aaddba721b3e406cf0275a2dfcf5409bc",
+      "size": 7070
+    },
+    {
+      "path": "qualification/memory-cell-v10/legacy_bridge.py",
+      "sha": "c3bc6e095627058e945f72cddffc06ae367df235",
+      "size": 2645
+    },
+    {
+      "path": "qualification/memory-cell-v10/legacy_worker.py",
+      "sha": "f2fc69ffd1a8b597c40279eed99bbda901a7bcd4",
+      "size": 6661
+    },
+    {
+      "path": "qualification/memory-cell-v10/maintenance_evaluate.py",
+      "sha": "6223d04ccc9b23ed82555a32d19d669a6d4ff9d7",
+      "size": 6797
+    },
+    {
+      "path": "qualification/memory-cell-v10/maintenance_fit.py",
+      "sha": "99b456d2a6bfb15dac126d520436547e0f95c0f7",
+      "size": 4522
+    },
+    {
+      "path": "qualification/memory-cell-v10/native_bridge.py",
+      "sha": "79733ce88cf1d559a40b85067335b3f764e33a58",
+      "size": 3914
+    },
+    {
+      "path": "qualification/memory-cell-v10/native_train_worker.py",
+      "sha": "458c6d83638ea593012c74e7c773df1ba77b42b1",
+      "size": 7283
+    },
+    {
+      "path": "qualification/memory-cell-v10/owner_input.py",
+      "sha": "5a83404a59ce36ec1fa6c6749b257afd670f6b4a",
+      "size": 3144
+    },
+    {
+      "path": "qualification/memory-cell-v10/processes.py",
+      "sha": "4441ceda47d3aa9986e4d12a6b97d6fb3dd2c765",
+      "size": 1728
+    },
+    {
+      "path": "qualification/memory-cell-v10/reference.py",
+      "sha": "36450afac6d27c20754d29f527ee859cd6e24f32",
+      "size": 6858
+    },
+    {
+      "path": "qualification/memory-cell-v10/requirements.txt",
+      "sha": "61ce57462e7304f427e5de29825f4a9c5ea41988",
+      "size": 133
+    },
+    {
+      "path": "qualification/memory-cell-v10/research_evaluate.py",
+      "sha": "7bf17c00885f05ab6053c4c52285e1594f47ffeb",
+      "size": 15658
+    },
+    {
+      "path": "qualification/memory-cell-v10/research_fit.py",
+      "sha": "a5b19259696788a81d21fd80934f191fc8081a63",
+      "size": 7966
+    },
+    {
+      "path": "qualification/memory-cell-v10/research_prepare.py",
+      "sha": "8c60f45bd3a2fa64d1c05f6c0e11a0ff4d38a592",
+      "size": 4596
+    },
+    {
+      "path": "qualification/memory-cell-v10/routing.py",
+      "sha": "768a3d6f6c96e1e7fef0ddeb47c5653a59c01e4c",
+      "size": 6272
+    },
+    {
+      "path": "qualification/memory-cell-v10/run.py",
+      "sha": "c8a99b404fbbebbe8741258afb06c33420a40e9b",
+      "size": 3910
+    },
+    {
+      "path": "qualification/memory-cell-v10/structure_fit.py",
+      "sha": "a0a9a1ae3761da7ba396397146bc8ff91678700f",
+      "size": 5179
+    },
+    {
+      "path": "qualification/memory-cell-v10/summarize.py",
+      "sha": "35ff3175294f6641bc232bb7b98736322e71ad52",
+      "size": 7976
+    },
+    {
+      "path": "qualification/memory-cell-v10/train_inventory_router.py",
+      "sha": "7eb1c70becd4527223e5c2daae48c9d878689ce6",
+      "size": 4394
+    }
+  ],
+  "unchanged_original_files": [
+    {
+      "path": "qualification/memory-cell-adapters/encoder.py",
+      "sha": "59e5c7238c42de3cc5124aa9503dcfdf25964c93",
+      "size": 7392
+    },
+    {
+      "path": "qualification/memory-cell-adapters/tensor_cell.py",
+      "sha": "d59c077e7d6b14c09e6de1470af7816705837799",
+      "size": 19726
+    }
+  ],
+  "formal_fits_started": false
+}

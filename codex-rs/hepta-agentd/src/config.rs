@@ -84,6 +84,7 @@ pub struct AgentdConfig {
     authbus_checkpoint_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
     memory_cells: Option<std::sync::Arc<crate::AgentdMemoryCellRuntimeV1>>,
+    memory_inventory: Option<std::sync::Arc<crate::AgentdMemoryInventoryRuntimeV1>>,
     production_operations: Option<crate::AgentdProductionOperationRuntimeConfig>,
     production_writer_host: Option<std::sync::Arc<crate::AgentdProductionWriterHost>>,
     cognitive_retrieval_mode: CognitiveRetrievalMode,
@@ -208,6 +209,7 @@ impl AgentdConfig {
             authbus_checkpoint_file: None,
             cognitive_ranker: None,
             memory_cells: None,
+            memory_inventory: None,
             production_operations: None,
             production_writer_host: None,
             cognitive_retrieval_mode: CognitiveRetrievalMode::Compatibility,
@@ -342,6 +344,30 @@ impl AgentdConfig {
 
     pub(crate) fn memory_cells(&self) -> Option<std::sync::Arc<crate::AgentdMemoryCellRuntimeV1>> {
         self.memory_cells.clone()
+    }
+
+    /// Attach one owner-selected inventory release and pinned addressing resolver.
+    /// This explicit startup host, never a request, chooses the learned models.
+    pub fn with_memory_inventory(
+        mut self,
+        cells: std::sync::Arc<crate::AgentdMemoryInventoryRuntimeV1>,
+    ) -> Result<Self, AgentdError> {
+        cells.require_identity(
+            &self.identity.agent_id,
+            self.identity.spawn_generation,
+            &self.identity.workspace,
+        )?;
+        if self.memory_inventory.is_some() {
+            return Err(AgentdError::Invalid(
+                "memory inventory already configured".to_string(),
+            ));
+        }
+        self.memory_inventory = Some(cells);
+        Ok(self)
+    }
+
+    pub(crate) fn memory_inventory(&self) -> Option<std::sync::Arc<crate::AgentdMemoryInventoryRuntimeV1>> {
+        self.memory_inventory.clone()
     }
 
     /// Attach an externally-authorized long-lived production operation host.

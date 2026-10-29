@@ -1,0 +1,135 @@
+name: Memory cell V10 actual trained owner and finalization
+
+on:
+  push:
+    branches:
+      - research/memory-cell-v10-20261029
+    paths:
+      - qualification/memory-cell-v10-ci/VERIFY_REQUEST.json
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: memory-v10-ci-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 260
+    env:
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_TARGET_DIR: ${{ github.workspace }}/memory-v7-target
+      HEPTA_MEMORY_V10_CI_OUTPUT: /tmp/h10-${{ github.run_id }}-${{ github.run_attempt }}
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - name: Retain the runner-local job start boundary
+        shell: bash
+        run: |
+          python3 -I -B - <<'PY'
+          import json, os, pathlib, time
+          marker = {"schema": "hepta.memory.v10.ci-job-start.v1",
+                    "monotonic_ns": time.monotonic_ns(), "unix_ns": time.time_ns(),
+                    "boot_id": pathlib.Path("/proc/sys/kernel/random/boot_id").read_text().strip(),
+                    "scope": "first workflow step; excludes VM provisioning and earlier scheduling"}
+          pathlib.Path(os.environ["RUNNER_TEMP"], "memory-v10-job-start.json").write_text(json.dumps(marker) + "\n")
+          PY
+      - name: Checkout the exact request commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        timeout-minutes: 5
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Set up Python 3.12
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        timeout-minutes: 5
+        with:
+          python-version: '3.12'
+      - name: Select the strict verification or finalization request
+        id: request
+        timeout-minutes: 2
+        run: python3 -I -B qualification/memory-cell-v10-ci/request.py --github-output "$GITHUB_OUTPUT"
+      - uses: ./.github/actions/setup-ci
+        timeout-minutes: 5
+      - name: Install the pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        timeout-minutes: 5
+        with:
+          toolchain: '1.95.0'
+          components: clippy,rustfmt
+      - name: Install the pinned nextest runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        timeout-minutes: 5
+        with:
+          tool: cargo-nextest@0.9.131
+      - name: Restore the existing scoped Rust cache
+        id: rust-cache
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        timeout-minutes: 10
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ${{ env.CARGO_TARGET_DIR }}
+          key: memory-v10-rust-1.95-${{ steps.request.outputs.mode }}-${{ hashFiles('codex-rs/Cargo.lock') }}-${{ github.sha }}
+          restore-keys: |
+            memory-v10-rust-1.95-${{ steps.request.outputs.mode }}-${{ hashFiles('codex-rs/Cargo.lock') }}-
+            memory-v10-rust-1.95-verify-${{ hashFiles('codex-rs/Cargo.lock') }}-
+            memory-v9-rust-1.95-finalize-${{ hashFiles('codex-rs/Cargo.lock') }}-
+            memory-v9-rust-1.95-${{ hashFiles('codex-rs/Cargo.lock') }}-
+            memory-v8-rust-1.95-finalize-${{ hashFiles('codex-rs/Cargo.lock') }}-
+      - name: Run ordinary scoped tests and the actual trained owner lifecycle
+        if: steps.request.outputs.mode == 'verify'
+        timeout-minutes: 180
+        run: |
+          python3 -I -B qualification/memory-cell-v10-ci/ci.py \
+            --output "$HEPTA_MEMORY_V10_CI_OUTPUT" \
+            --runtime "$RUNNER_TEMP/memory-v10-runtime" \
+            --job-start-marker "$RUNNER_TEMP/memory-v10-job-start.json"
+      - name: Authenticate successful verification, then final fix and format
+        if: steps.request.outputs.mode == 'finalize'
+        timeout-minutes: 90
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 -I -B qualification/memory-cell-v10-ci/ci.py \
+            --output "$HEPTA_MEMORY_V10_CI_OUTPUT" \
+            --runtime "$RUNNER_TEMP/memory-v10-runtime" \
+            --job-start-marker "$RUNNER_TEMP/memory-v10-job-start.json"
+      - name: Preserve successful or failed logs, model files, and Unix artifact names
+        if: always()
+        timeout-minutes: 10
+        run: |
+          python3 -I -B qualification/memory-cell-v10-ci/pack.py \
+            --source "$HEPTA_MEMORY_V10_CI_OUTPUT" \
+            --output "$GITHUB_WORKSPACE/memory-v10-evidence-transport"
+      - name: Upload immutable attempt evidence before optional cache work
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        timeout-minutes: 15
+        with:
+          name: memory-v10-${{ steps.request.outputs.mode || 'unselected' }}-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: memory-v10-evidence-transport/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
+      - name: Save compiled dependencies for the next source attempt
+        if: always() && steps.rust-cache.outcome == 'success'
+        continue-on-error: true
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        timeout-minutes: 5
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ${{ env.CARGO_TARGET_DIR }}
+          key: memory-v10-rust-1.95-${{ steps.request.outputs.mode }}-${{ hashFiles('codex-rs/Cargo.lock') }}-${{ github.sha }}

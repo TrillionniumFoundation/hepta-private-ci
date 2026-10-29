@@ -1,0 +1,34 @@
+{
+  "fixed_read_ref": "0f41c4968eea63727c69e2b979491e94a99a9dbb",
+  "git_blobs": {
+    ".github/workflows/memory-adapter-skill-longrun.yml": "751826da5c3f010435eef347867b0ecd6a86f65a",
+    ".github/workflows/memory-cell-completion-finalize.yml": "9f4a5bc3cf8999fbafb28b48713e07a6e9db77cf",
+    ".github/workflows/memory-cell-v9.yml": "3292035d1ac3a3f8931d387dc12c1754aa918818",
+    "codex-rs/.config/nextest.toml": "67ab14f86b998bd31d93ca55adc73d6241b28e00",
+    "codex-rs/hepta-paths/src/fleet.rs": "30d3a88e199578ace3e2fb0387e86d0c467e3806",
+    "justfile": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+    "qualification/memory-cell-adapters/evidence/formal-01/ARCHIVE.json": "a4e56925ab7426ae0124f80a68c3c5201d72a9be",
+    "qualification/memory-cell-adapters/skill_longrun/ci_run.py": "20620ec1b3936ab42c0af675845135c123658d44",
+    "qualification/memory-cell-completion/authenticate_ci_artifact.py": "8c4503743ca4268cabca23a1cc1cb5dbf6fede8f",
+    "qualification/memory-cell-v9/ci_finalize.py": "487b92d476dbc1c73c928d50b4cb4cba7d226525",
+    "qualification/memory-cell-v9/ci_verify.py": "49be8047b2df484f56ad2bb6eb87bbf908d62dc2",
+    "qualification/memory-cell-v9/pack_evidence.py": "57910b515660e5ab47963e01a20164488ffb0469",
+    "qualification/memory-cell-v9/prepare_ci.py": "06f8791bc8e9b1904cf8debe68d50668a7128217",
+    "scripts/format.py": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+    "scripts/run-nextest.py": "1ed63abe84267b320cbfb0123a70aac5507f4595"
+  },
+  "github_writes_by_this_agent": false,
+  "nextest_junit_provenance": {
+    "git_blobs": {
+      "nextest-runner/default-config.toml": "ed8e064306e07d2fb0971e9698183392d6e799af",
+      "nextest-runner/src/config/core/imp.rs": "83b1398f966b0c7df33d309c73a8f0d129972aa8",
+      "nextest-runner/src/config/elements/junit.rs": "10aaae87cc0fce5127ec6f8cfb2b7878080953f4"
+    },
+    "ref": "cargo-nextest-0.9.131",
+    "repository": "nextest-rs/nextest",
+    "resolution": "workspace_root / store.dir / selected_profile / junit.path; independent of CARGO_TARGET_DIR"
+  },
+  "old_qualification_scripts_executed": false,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "hepta.memory.v10.ci-template-provenance.v1"
+}

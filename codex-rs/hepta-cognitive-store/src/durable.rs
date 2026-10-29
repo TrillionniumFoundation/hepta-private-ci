@@ -58,3 +58,8 @@ pub use codex_hepta_memory::RecoveredCognitiveReadOnly;
 pub use codex_hepta_memory::SourceDraft;
 pub use codex_hepta_memory::StableMemoryId;
 pub use codex_hepta_memory::memory_cell_scope_id;
+pub use codex_hepta_memory::MAX_MEMORY_INVENTORY_OWNER_HEADS;
+pub use codex_hepta_memory::MemoryInventoryAddressV1;
+pub use codex_hepta_memory::MemoryInventoryOwnerRecordV1;
+pub use codex_hepta_memory::MemoryInventoryOwnerSnapshotV1;
+pub use codex_hepta_memory::MemoryInventoryRecordV1;

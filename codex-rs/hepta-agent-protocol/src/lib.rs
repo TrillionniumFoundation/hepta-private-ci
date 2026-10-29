@@ -6,6 +6,7 @@ mod authbus;
 mod capabilities;
 mod evidence;
 mod memory_cells;
+mod memory_inventory;
 pub use authbus::AuthBusObjectiveBody;
 pub use authbus::AuthBusObjectiveIngress;
 pub use authbus::AuthBusTextBody;
@@ -35,6 +36,12 @@ pub use memory_cells::MEMORY_CELL_CONTROL_CAPABILITY_V1;
 pub use memory_cells::MemoryCellSnapshotPageV1;
 pub use memory_cells::MemoryCellSnapshotSourceV1;
 pub use memory_cells::MemoryCellSnapshotValueV1;
+pub use memory_inventory::MAX_MEMORY_INVENTORY_PAGE_ROWS;
+pub use memory_inventory::MAX_MEMORY_INVENTORY_PAYLOAD_BYTES;
+pub use memory_inventory::MEMORY_INVENTORY_CONTROL_CAPABILITY_V1;
+pub use memory_inventory::MemoryInventorySnapshotPageV1;
+pub use memory_inventory::MemoryInventorySnapshotSourceV1;
+pub use memory_inventory::MemoryInventorySnapshotValueV1;
 
 use std::path::PathBuf;
 
@@ -614,6 +621,14 @@ pub enum AgentdMethod {
     MemoryCellRead {
         request: codex_hepta_cognitive_types::MemoryRequestV1,
     },
+    MemoryInventorySnapshot {
+        after: Option<codex_hepta_cognitive_types::hnmf::ContractDigestV1>,
+        expected_owner_cut: Option<codex_hepta_cognitive_types::hnmf::ContractDigestV1>,
+        limit: u16,
+    },
+    MemoryInventoryRead {
+        request: codex_hepta_cognitive_types::MemoryInventoryRequestV1,
+    },
     CognitiveContextRevalidate {
         snapshot_digest: String,
         read_digest: String,
@@ -763,6 +778,10 @@ pub enum AgentdPayload {
     CognitiveContext(CognitiveContextSnapshot),
     MemoryCellSnapshot(MemoryCellSnapshotPageV1),
     MemoryCellRead {
+        readout_json: String,
+    },
+    MemoryInventorySnapshot(MemoryInventorySnapshotPageV1),
+    MemoryInventoryRead {
         readout_json: String,
     },
     CognitiveContextRevalidated(CognitiveContextRevalidation),

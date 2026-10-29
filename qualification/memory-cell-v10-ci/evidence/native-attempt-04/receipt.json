@@ -1,0 +1,595 @@
+{
+  "actual_junit": {
+    "bytes": 537,
+    "cases": 1,
+    "location_receipt": {
+      "bytes": 489,
+      "sha256": "936deb468f18235e7fd01e302b2a07d1961e7a3ebe7702160c1d10df779dc67d"
+    },
+    "path": "actual-junit.xml",
+    "sha256": "e077123153daf685328194ecbef717fe0ef0928442d27be75424caef2d4ebf65",
+    "source": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/target/nextest/local/junit.xml"
+  },
+  "actual_trained_owner_lifecycle_passed": true,
+  "baseline_commit": "0f41c4968eea63727c69e2b979491e94a99a9dbb",
+  "complete_workspace_test": false,
+  "disk_after": {
+    "free": 78036197376,
+    "total": 154894188544,
+    "used": 76841213952
+  },
+  "executions": [
+    {
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "completed_children_cpu_seconds": 0.012928999999999927,
+      "cumulative_children_maxrss_kib": 74968,
+      "exit_code": 0,
+      "log": "commands/01-rustc-version.log",
+      "log_identity": {
+        "bytes": 36,
+        "sha256": "f4d034f5660bb49f22bfcba3f3445be67e25b704c193ff421b53863b4faee148"
+      },
+      "name": "rustc-version",
+      "pid": 2837,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793290656336877791,
+      "wall_ns": 13346603
+    },
+    {
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "completed_children_cpu_seconds": 0.009233999999999992,
+      "cumulative_children_maxrss_kib": 74968,
+      "exit_code": 0,
+      "log": "commands/02-cargo-version.log",
+      "log_identity": {
+        "bytes": 36,
+        "sha256": "c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5"
+      },
+      "name": "cargo-version",
+      "pid": 2843,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793290656350876491,
+      "wall_ns": 9190489
+    },
+    {
+      "command": [
+        "cargo",
+        "nextest",
+        "--version"
+      ],
+      "completed_children_cpu_seconds": 0.018582000000000043,
+      "cumulative_children_maxrss_kib": 74968,
+      "exit_code": 0,
+      "log": "commands/03-nextest-version.log",
+      "log_identity": {
+        "bytes": 171,
+        "sha256": "87195837e3b766934f3022b0ff917e4b7b50904a16f79838efa8af309a3e7ea4"
+      },
+      "name": "nextest-version",
+      "pid": 2848,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793290656360799669,
+      "wall_ns": 18491012
+    },
+    {
+      "command": [
+        "just",
+        "--version"
+      ],
+      "completed_children_cpu_seconds": 0.0010429999999999329,
+      "cumulative_children_maxrss_kib": 74968,
+      "exit_code": 0,
+      "log": "commands/04-just-version.log",
+      "log_identity": {
+        "bytes": 12,
+        "sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87"
+      },
+      "name": "just-version",
+      "pid": 2853,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793290656380152330,
+      "wall_ns": 1304469
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/memory-cell-v10-ci",
+        "-p",
+        "ci_tests.py"
+      ],
+      "completed_children_cpu_seconds": 0.3181869999999999,
+      "cumulative_children_maxrss_kib": 74968,
+      "exit_code": 0,
+      "log": "commands/05-driver-evidence-boundaries.log",
+      "log_identity": {
+        "bytes": 1000,
+        "sha256": "14d388ba62cd47685f6f9f9859cda7f21f45bdc39b9e153ef2dd71775a9644b3"
+      },
+      "name": "driver-evidence-boundaries",
+      "pid": 2856,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793290657074916129,
+      "wall_ns": 352734828
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python3",
+        "-I",
+        "-m",
+        "venv",
+        "/home/runner/work/_temp/memory-v10-runtime/venv"
+      ],
+      "completed_children_cpu_seconds": 2.4558809999999998,
+      "cumulative_children_maxrss_kib": 74984,
+      "exit_code": 0,
+      "log": "commands/06-create-venv.log",
+      "log_identity": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "create-venv",
+      "pid": 2857,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793290657429243581,
+      "wall_ns": 2491924360
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v10-runtime/venv/bin/python",
+        "-I",
+        "-m",
+        "pip",
+        "--isolated",
+        "--disable-pip-version-check",
+        "install",
+        "--no-deps",
+        "--no-cache-dir",
+        "--index-url",
+        "https://pypi.org/simple",
+        "pip==25.0.1"
+      ],
+      "completed_children_cpu_seconds": 0.41363200000000006,
+      "cumulative_children_maxrss_kib": 74984,
+      "exit_code": 0,
+      "log": "commands/07-pin-pip.log",
+      "log_identity": {
+        "bytes": 132,
+        "sha256": "691996767183405344ca2ab4871a1c799be0c2f18ace7ff077e413365ddd8a41"
+      },
+      "name": "pin-pip",
+      "pid": 2882,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793290659922241495,
+      "wall_ns": 411279715
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v10-runtime/venv/bin/python",
+        "-I",
+        "-m",
+        "pip",
+        "--isolated",
+        "--disable-pip-version-check",
+        "install",
+        "--no-deps",
+        "--no-cache-dir",
+        "--index-url",
+        "https://pypi.org/simple",
+        "-r",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/memory-cell-v10-ci/runtime-requirements.txt"
+      ],
+      "completed_children_cpu_seconds": 14.275417999999997,
+      "cumulative_children_maxrss_kib": 128272,
+      "exit_code": 0,
+      "log": "commands/08-install-runtime.log",
+      "log_identity": {
+        "bytes": 10345,
+        "sha256": "3d3490aa56433c04661903eed27a41bd9d7a812f571b24b726143b9d048dd9b6"
+      },
+      "name": "install-runtime",
+      "pid": 2905,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793290660334614813,
+      "wall_ns": 15334214348
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v10-runtime/venv/bin/python",
+        "-I",
+        "-m",
+        "pip",
+        "--isolated",
+        "--disable-pip-version-check",
+        "install",
+        "--no-deps",
+        "--no-cache-dir",
+        "--index-url",
+        "https://download.pytorch.org/whl/cpu",
+        "torch==2.8.0+cpu"
+      ],
+      "completed_children_cpu_seconds": 10.93738,
+      "cumulative_children_maxrss_kib": 147168,
+      "exit_code": 0,
+      "log": "commands/09-install-cpu-torch.log",
+      "log_identity": {
+        "bytes": 566,
+        "sha256": "42b5a1d7bc651ab91b85d595af05fee2c57c883a229cf92529b6fe598288cb0e"
+      },
+      "name": "install-cpu-torch",
+      "pid": 2940,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793290675670102879,
+      "wall_ns": 11655967703
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v10-runtime/venv/bin/python",
+        "-I",
+        "-m",
+        "pip",
+        "--isolated",
+        "--disable-pip-version-check",
+        "check"
+      ],
+      "completed_children_cpu_seconds": 0.3144750000000007,
+      "cumulative_children_maxrss_kib": 147168,
+      "exit_code": 0,
+      "log": "commands/10-dependency-consistency.log",
+      "log_identity": {
+        "bytes": 30,
+        "sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09"
+      },
+      "name": "dependency-consistency",
+      "pid": 2969,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793290687327312280,
+      "wall_ns": 314807978
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v10-runtime/venv/bin/python",
+        "-I",
+        "-m",
+        "pip",
+        "--isolated",
+        "--disable-pip-version-check",
+        "freeze",
+        "--all"
+      ],
+      "completed_children_cpu_seconds": 0.25912200000000274,
+      "cumulative_children_maxrss_kib": 147168,
+      "exit_code": 0,
+      "log": "commands/11-pip-freeze.log",
+      "log_identity": {
+        "bytes": 482,
+        "sha256": "8dac5ddd626416229bf15ef058f1ee2803c571a2212055c250a386c4b5278e21"
+      },
+      "name": "pip-freeze",
+      "pid": 2970,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793290687643583100,
+      "wall_ns": 259486001
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v10-runtime/venv/bin/python",
+        "-I",
+        "-B",
+        "-c",
+        "import importlib.metadata as m,json,pathlib,sys\nimport numpy,onnxruntime,tokenizers,torch\nsource,output=map(pathlib.Path,sys.argv[1:])\npins=[row.split('==') for row in source.read_text().splitlines() if row and not row.startswith('#')]\npins += [('torch','2.8.0+cpu'),('pip','25.0.1')]\nassert all(m.version(name)==version for name,version in pins), 'installed dependency pin differs'\nassert torch.version.cuda is None and str(torch.__version__)=='2.8.0+cpu', 'CPU Torch required'\noutput.write_text(json.dumps({'versions':dict(pins),'python':sys.version,'executable':sys.executable,\n 'torch_cuda':torch.version.cuda,'numpy_config':str(numpy.show_config(mode='dicts')),\n 'full_environment_dependency_freeze_used':False},indent=2)+'\\n')\n",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/memory-cell-v10-ci/runtime-requirements.txt",
+        "/tmp/h10-40909855139-1/inputs/DEPENDENCIES.json"
+      ],
+      "completed_children_cpu_seconds": 1.585326999999996,
+      "cumulative_children_maxrss_kib": 291672,
+      "exit_code": 0,
+      "log": "commands/12-validate-dependencies.log",
+      "log_identity": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "validate-dependencies",
+      "pid": 2974,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793290687904461229,
+      "wall_ns": 1679477963
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v10-runtime/venv/bin/python",
+        "-B",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/memory-cell-v10/freeze_source.py"
+      ],
+      "completed_children_cpu_seconds": 0.10880300000000087,
+      "cumulative_children_maxrss_kib": 291672,
+      "exit_code": 0,
+      "log": "commands/13-research-source-freeze.log",
+      "log_identity": {
+        "bytes": 101,
+        "sha256": "ea05f4d11e6166562c4eed8f802a25effcfae469e3e3ed81f05f7095fc58b1c5"
+      },
+      "name": "research-source-freeze",
+      "pid": 2975,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793290691901174264,
+      "wall_ns": 109096942
+    },
+    {
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "-p",
+        "codex-app-server",
+        "--bin",
+        "codex-app-server"
+      ],
+      "completed_children_cpu_seconds": 363.009562,
+      "cumulative_children_maxrss_kib": 3043048,
+      "exit_code": 0,
+      "log": "commands/14-same-source-app-server.log",
+      "log_identity": {
+        "bytes": 17105,
+        "sha256": "91b372f88597be155aecd7694e100a88ceeabfd8848422ba8791aa92967aa865"
+      },
+      "name": "same-source-app-server",
+      "pid": 2976,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793290692011826700,
+      "wall_ns": 202890003713
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--retries",
+        "0",
+        "-p",
+        "codex-hepta-cognitive-types",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-cognitive-store",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-context-compiler",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "-p",
+        "codex-hepta-plasticity"
+      ],
+      "completed_children_cpu_seconds": 881.9911280000001,
+      "cumulative_children_maxrss_kib": 3431380,
+      "exit_code": 0,
+      "log": "commands/15-ordinary-scoped-rust.log",
+      "log_identity": {
+        "bytes": 222522,
+        "sha256": "9770f8e907f01ab4a53e7eea9ca212735f485b5adf20de46ce780b5d637e1871"
+      },
+      "name": "ordinary-scoped-rust",
+      "pid": 5087,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793290894904865811,
+      "wall_ns": 381551288132
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--lib",
+        "-p",
+        "codex-hepta-agentd",
+        "--run-ignored",
+        "only",
+        "--retries",
+        "0",
+        "--test-threads",
+        "1",
+        "-E",
+        "test(=memory_inventory_actual_tests::memory_inventory_actual_trained_owner_lifecycle)"
+      ],
+      "completed_children_cpu_seconds": 80.96386999999999,
+      "cumulative_children_maxrss_kib": 3431492,
+      "exit_code": 0,
+      "log": "commands/16-actual-trained-owner-lifecycle.log",
+      "log_identity": {
+        "bytes": 23880,
+        "sha256": "a75b948a79c8228da8b8aca81713c46d338a1d27b9aeee81d871684000a2f952"
+      },
+      "name": "actual-trained-owner-lifecycle",
+      "pid": 27674,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793291276463210687,
+      "wall_ns": 68314533990
+    }
+  ],
+  "final_fix_executed": false,
+  "final_tracked_changes": "",
+  "formatter_executed": false,
+  "full_lifecycle_cost_exact": false,
+  "full_research_matrix_executed": false,
+  "github": {
+    "GITHUB_JOB": "verify",
+    "GITHUB_REF": "refs/heads/research/memory-cell-v10-20261029",
+    "GITHUB_REPOSITORY": "TrillionniumFoundation/hepta-private-ci",
+    "GITHUB_RUN_ATTEMPT": "1",
+    "GITHUB_RUN_ID": "40909855139",
+    "GITHUB_SHA": "4131172a07fdf5bf5fe84f0397800bf900248ab8"
+  },
+  "initial_tracked_changes": "",
+  "missing_required_receipts": [],
+  "mode": "verify",
+  "native_actual_identity": {
+    "bytes": 120988,
+    "sha256": "93396743dac2303a81b7a72a23ed974f805051758c523912b7f56b42af25cb66"
+  },
+  "native_numeric_parity": {
+    "corrected-training": {
+      "bytes": 45676,
+      "rows": 16,
+      "sha256": "d5e0c4ff7ee01f3b1dfa4dad17f7b8cfc6c361875241278a21bd27f6a5b65c7b"
+    },
+    "deleted-rebuild": {
+      "bytes": 43677,
+      "rows": 15,
+      "sha256": "c1e1479fa9125237132bf0758a41a640f0e342c14469235f288db42fcd989d88"
+    },
+    "original-checkpoint": {
+      "bytes": 45891,
+      "rows": 16,
+      "sha256": "841d3fe9a5e5f2963660a13c33efd39d5768d1b4dd163fdaad22e348faca8ebb"
+    }
+  },
+  "old_holdout_run": false,
+  "ordinary_junit": {
+    "bytes": 214751,
+    "cases": 969,
+    "location_receipt": {
+      "bytes": 490,
+      "sha256": "57e74f7c0c1d5dca49f7cef12fbef2fd0d333f5e6f428ca1d9885c4cc511709f"
+    },
+    "path": "ordinary-junit.xml",
+    "sha256": "0fed493e9d0ea681e6e20c0be2528a442346550b040e05b0899e4187f2cc97c7",
+    "source": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/target/nextest/local/junit.xml"
+  },
+  "ordinary_scoped_tests_passed": true,
+  "passed": true,
+  "request": {
+    "baseline_commit": "0f41c4968eea63727c69e2b979491e94a99a9dbb",
+    "mode": "verify",
+    "protocol_sha256": "ecbf06ba74e51dae0f3d9d2eadde62aec97c4dbd05c32d3d520d2f1ff311b355",
+    "request_id": "native-formal-04",
+    "schema": "hepta.memory.v10.ci-request.v1",
+    "source_manifest_sha256": "38559a7e81e22b6742febb4fdca9b52e567495cb0233eabd28aae9979c6c24b7",
+    "tests_before_final_fix_and_format": true
+  },
+  "request_identity": {
+    "bytes": 400,
+    "sha256": "aa17792d56ae50651c8d8c5be9e6a9be8d736f0f65bb67078e89453f307164cd"
+  },
+  "required_native_artifacts": {
+    "NATIVE_ACTUAL.json": {
+      "bytes": 120988,
+      "sha256": "93396743dac2303a81b7a72a23ed974f805051758c523912b7f56b42af25cb66"
+    },
+    "corrected-training/PARITY.json": {
+      "bytes": 42810,
+      "sha256": "83ddfd30672f0e1797b7c1cdf173a52ca5b1f10bfad327df64dc2dc784591dcb"
+    },
+    "corrected-training/RUST_NATIVE_PARITY.json": {
+      "bytes": 45676,
+      "sha256": "d5e0c4ff7ee01f3b1dfa4dad17f7b8cfc6c361875241278a21bd27f6a5b65c7b"
+    },
+    "corrected-training/TRAINING.json": {
+      "bytes": 13409,
+      "sha256": "fbeaeb96755199fa859a3739e70fd04291ab1707eeceb0f5b7e7dd6357d5e83b"
+    },
+    "corrected-training/procedure.json": {
+      "bytes": 140028,
+      "sha256": "0cd8d28814b575e0c7f6a8aba5b46f2be462045476d60665befc2bf290300f89"
+    },
+    "corrected-training/semantic.json": {
+      "bytes": 90746,
+      "sha256": "d7f56f1b96f19c9efd7c556e28287b63d7dd030bb3f78b875bd5d55595c9b6af"
+    },
+    "deleted-rebuild/PARITY.json": {
+      "bytes": 41057,
+      "sha256": "4d734b29ee35075ac258e219800626d952fc4fc85eb7eda7fb2273d613196bb7"
+    },
+    "deleted-rebuild/RUST_NATIVE_PARITY.json": {
+      "bytes": 43677,
+      "sha256": "c1e1479fa9125237132bf0758a41a640f0e342c14469235f288db42fcd989d88"
+    },
+    "deleted-rebuild/TRAINING.json": {
+      "bytes": 13170,
+      "sha256": "a3428cb0d271c5a2c11f2a3f0db80b0d65d762fd17822ac5469a1de20b94ce1c"
+    },
+    "deleted-rebuild/inventory-router/manifest.json": {
+      "bytes": 1350,
+      "sha256": "b9707074a19c86878360ca5ad7be5faf43c6cddd1388538fd7da1565a4cc5928"
+    },
+    "deleted-rebuild/procedure.json": {
+      "bytes": 140028,
+      "sha256": "e2e086a14c7533e43bbd91b02ef132a5aa8ee038e30b9925de198d7800135849"
+    },
+    "deleted-rebuild/semantic.json": {
+      "bytes": 87212,
+      "sha256": "3a8209df3e65bea4cf4b1e05c0320a9c556683563d101bf625958e1bf0ede56a"
+    },
+    "inventory-migration/MIGRATION.json": {
+      "bytes": 26891,
+      "sha256": "985d1b88f21f68a87cd68a884c46d33bc915b3b76e06fc3edfeec756cc5bc0ab"
+    },
+    "original-checkpoint/LEGACY_TORCH.json": {
+      "bytes": 29037,
+      "sha256": "44c151d8a5de9b4c7b7a2743cd8d0b8e353babb0d35f7fd6fb3b880e9042e9b3"
+    },
+    "original-checkpoint/PARITY.json": {
+      "bytes": 23403,
+      "sha256": "fd68acc4d65a32862114d80f3413018db46cd5be0665bc42a2f746029def54a6"
+    },
+    "original-checkpoint/RUST_NATIVE_PARITY.json": {
+      "bytes": 45891,
+      "sha256": "841d3fe9a5e5f2963660a13c33efd39d5768d1b4dd163fdaad22e348faca8ebb"
+    },
+    "original-checkpoint/procedure.json": {
+      "bytes": 140028,
+      "sha256": "98a841358123d8538f7ed97227090585252197ff2cb4bf59e9576b4381a0b01f"
+    },
+    "original-checkpoint/semantic.json": {
+      "bytes": 90746,
+      "sha256": "52f693260a626c824aa8e5e7ce94cda119195c1eb4494df951b168ff93db7cc3"
+    },
+    "owner-before.json": {
+      "bytes": 16716,
+      "sha256": "fac4329ebc11c560383dd179a8335e72fa78ac5c78b5ccf9103cded15ccb071f"
+    },
+    "owner-corrected.json": {
+      "bytes": 16715,
+      "sha256": "eeb22a33f4fcfde581d5a5f24c916847e56d1d6dc25694829b70cc616e243cdf"
+    },
+    "owner-deleted.json": {
+      "bytes": 16187,
+      "sha256": "fb1ce83d7f8adec92b5ec16608073b7196772677916e85119032b62e7ac7b506"
+    }
+  },
+  "schema": "hepta.memory.v10.ci-receipt.v1",
+  "scientific_superiority_claimed": false,
+  "source_commit": "4131172a07fdf5bf5fe84f0397800bf900248ab8",
+  "source_inventory": {
+    "bytes": 1997280,
+    "sha256": "6f650a9ea43d53c4f35a1d4b42ca8d24c2f40f18a360ba750d483625f31dd6c7"
+  },
+  "source_tree": "6de01a5c1158b90d5e7db9cd18fc3bef36cfa8c1",
+  "tests_before_final_fix_and_format": true,
+  "tests_executed": true,
+  "workflow_identity": {
+    "bytes": 5778,
+    "sha256": "97ac512eaac4e96a7eb35faf9239c6af6a07674ea6e4b433dd7c33c5938acd98"
+  },
+  "wrapper_own_cpu_ns": 2410201813,
+  "wrapper_wall_ns": 691088817697
+}

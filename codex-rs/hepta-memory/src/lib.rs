@@ -33,6 +33,10 @@ mod logical_turn_registry;
 mod memory_admission;
 mod memory_cell_owner;
 mod memory_cell_write;
+mod memory_inventory_owner;
+mod memory_inventory_revalidate;
+mod memory_inventory_snapshot;
+mod memory_inventory_write;
 mod model_receipt;
 mod neuron_proposal;
 mod operation_claims;
@@ -63,6 +67,11 @@ pub use memory_cell_owner::MemoryCellOwnerSnapshotV1;
 pub use memory_cell_owner::MemoryCellRecordV1;
 pub use memory_cell_owner::memory_cell_scope_id;
 pub use memory_cell_write::MemoryCellWriteModeV1;
+pub use memory_inventory_owner::MAX_MEMORY_INVENTORY_OWNER_HEADS;
+pub use memory_inventory_owner::MemoryInventoryAddressV1;
+pub use memory_inventory_owner::MemoryInventoryOwnerRecordV1;
+pub use memory_inventory_owner::MemoryInventoryOwnerSnapshotV1;
+pub use memory_inventory_owner::MemoryInventoryRecordV1;
 
 pub use codex_hepta_memory_retrieval::RetrievalCandidateIdentityV1;
 pub use cognitive_compact::COGNITIVE_COMPACT_HOOK_NAMESPACE;
@@ -527,3 +536,7 @@ mod cognitive_test_support;
 #[cfg(test)]
 #[path = "lane_c_snapshot_tests.rs"]
 mod lane_c_snapshot_tests;
+
+#[cfg(test)]
+#[path = "memory_inventory_owner_tests.rs"]
+mod memory_inventory_owner_tests;

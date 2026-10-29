@@ -1,0 +1,432 @@
+{
+  "baseline_commit": "0f41c4968eea63727c69e2b979491e94a99a9dbb",
+  "disk_after": {
+    "free": 78821724160,
+    "total": 154894188544,
+    "used": 76055687168
+  },
+  "error": "phase failed: ordinary-scoped-rust; retained log 15-ordinary-scoped-rust.log",
+  "error_type": "ValueError",
+  "executions": [
+    {
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "completed_children_cpu_seconds": 0.012615999999999988,
+      "cumulative_children_maxrss_kib": 75088,
+      "exit_code": 0,
+      "log": "commands/01-rustc-version.log",
+      "log_identity": {
+        "bytes": 36,
+        "sha256": "f4d034f5660bb49f22bfcba3f3445be67e25b704c193ff421b53863b4faee148"
+      },
+      "name": "rustc-version",
+      "pid": 2806,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793288269263619369,
+      "wall_ns": 12346375
+    },
+    {
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "completed_children_cpu_seconds": 0.009307999999999955,
+      "cumulative_children_maxrss_kib": 75088,
+      "exit_code": 0,
+      "log": "commands/02-cargo-version.log",
+      "log_identity": {
+        "bytes": 36,
+        "sha256": "c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5"
+      },
+      "name": "cargo-version",
+      "pid": 2812,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793288269276627463,
+      "wall_ns": 9179831
+    },
+    {
+      "command": [
+        "cargo",
+        "nextest",
+        "--version"
+      ],
+      "completed_children_cpu_seconds": 0.018534000000000078,
+      "cumulative_children_maxrss_kib": 75088,
+      "exit_code": 0,
+      "log": "commands/03-nextest-version.log",
+      "log_identity": {
+        "bytes": 171,
+        "sha256": "87195837e3b766934f3022b0ff917e4b7b50904a16f79838efa8af309a3e7ea4"
+      },
+      "name": "nextest-version",
+      "pid": 2817,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793288269286607981,
+      "wall_ns": 18465160
+    },
+    {
+      "command": [
+        "just",
+        "--version"
+      ],
+      "completed_children_cpu_seconds": 0.001175000000000051,
+      "cumulative_children_maxrss_kib": 75088,
+      "exit_code": 0,
+      "log": "commands/04-just-version.log",
+      "log_identity": {
+        "bytes": 12,
+        "sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87"
+      },
+      "name": "just-version",
+      "pid": 2822,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793288269305964716,
+      "wall_ns": 1413322
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python3",
+        "-I",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/memory-cell-v10-ci",
+        "-p",
+        "ci_tests.py"
+      ],
+      "completed_children_cpu_seconds": 0.340809,
+      "cumulative_children_maxrss_kib": 75088,
+      "exit_code": 0,
+      "log": "commands/05-driver-evidence-boundaries.log",
+      "log_identity": {
+        "bytes": 997,
+        "sha256": "8fc3d235972a68afc34d2c570518936ca6b06b46c6ccfffa26e5ddd69c5e11e4"
+      },
+      "name": "driver-evidence-boundaries",
+      "pid": 2825,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793288270021914836,
+      "wall_ns": 392786301
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.15/x64/bin/python3",
+        "-I",
+        "-m",
+        "venv",
+        "/home/runner/work/_temp/memory-v10-runtime/venv"
+      ],
+      "completed_children_cpu_seconds": 2.5400359999999997,
+      "cumulative_children_maxrss_kib": 75088,
+      "exit_code": 0,
+      "log": "commands/06-create-venv.log",
+      "log_identity": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "create-venv",
+      "pid": 2826,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793288270416534713,
+      "wall_ns": 2730680739
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v10-runtime/venv/bin/python",
+        "-I",
+        "-m",
+        "pip",
+        "--isolated",
+        "--disable-pip-version-check",
+        "install",
+        "--no-deps",
+        "--no-cache-dir",
+        "--index-url",
+        "https://pypi.org/simple",
+        "pip==25.0.1"
+      ],
+      "completed_children_cpu_seconds": 0.42793800000000004,
+      "cumulative_children_maxrss_kib": 75088,
+      "exit_code": 0,
+      "log": "commands/07-pin-pip.log",
+      "log_identity": {
+        "bytes": 132,
+        "sha256": "691996767183405344ca2ab4871a1c799be0c2f18ace7ff077e413365ddd8a41"
+      },
+      "name": "pin-pip",
+      "pid": 2852,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793288273148257557,
+      "wall_ns": 425728787
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v10-runtime/venv/bin/python",
+        "-I",
+        "-m",
+        "pip",
+        "--isolated",
+        "--disable-pip-version-check",
+        "install",
+        "--no-deps",
+        "--no-cache-dir",
+        "--index-url",
+        "https://pypi.org/simple",
+        "-r",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/memory-cell-v10-ci/runtime-requirements.txt"
+      ],
+      "completed_children_cpu_seconds": 14.986241999999997,
+      "cumulative_children_maxrss_kib": 128260,
+      "exit_code": 0,
+      "log": "commands/08-install-runtime.log",
+      "log_identity": {
+        "bytes": 10345,
+        "sha256": "126603f7e2125787de616916cbc76984a1e5058da87ab4ad4bdb62c6258954cc"
+      },
+      "name": "install-runtime",
+      "pid": 2875,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793288273575602983,
+      "wall_ns": 16325250891
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v10-runtime/venv/bin/python",
+        "-I",
+        "-m",
+        "pip",
+        "--isolated",
+        "--disable-pip-version-check",
+        "install",
+        "--no-deps",
+        "--no-cache-dir",
+        "--index-url",
+        "https://download.pytorch.org/whl/cpu",
+        "torch==2.8.0+cpu"
+      ],
+      "completed_children_cpu_seconds": 11.222857000000003,
+      "cumulative_children_maxrss_kib": 147212,
+      "exit_code": 0,
+      "log": "commands/09-install-cpu-torch.log",
+      "log_identity": {
+        "bytes": 566,
+        "sha256": "38ca131eaec5a0d57d13c5a4dd90cbce29c5c478f249d0b49e11c456737df0b9"
+      },
+      "name": "install-cpu-torch",
+      "pid": 2910,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793288289902405385,
+      "wall_ns": 12167711142
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v10-runtime/venv/bin/python",
+        "-I",
+        "-m",
+        "pip",
+        "--isolated",
+        "--disable-pip-version-check",
+        "check"
+      ],
+      "completed_children_cpu_seconds": 0.3264639999999992,
+      "cumulative_children_maxrss_kib": 147212,
+      "exit_code": 0,
+      "log": "commands/10-dependency-consistency.log",
+      "log_identity": {
+        "bytes": 30,
+        "sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09"
+      },
+      "name": "dependency-consistency",
+      "pid": 2936,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793288302085983890,
+      "wall_ns": 327435842
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v10-runtime/venv/bin/python",
+        "-I",
+        "-m",
+        "pip",
+        "--isolated",
+        "--disable-pip-version-check",
+        "freeze",
+        "--all"
+      ],
+      "completed_children_cpu_seconds": 0.27275200000000144,
+      "cumulative_children_maxrss_kib": 147212,
+      "exit_code": 0,
+      "log": "commands/11-pip-freeze.log",
+      "log_identity": {
+        "bytes": 482,
+        "sha256": "8dac5ddd626416229bf15ef058f1ee2803c571a2212055c250a386c4b5278e21"
+      },
+      "name": "pip-freeze",
+      "pid": 2937,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793288302430628400,
+      "wall_ns": 273169136
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v10-runtime/venv/bin/python",
+        "-I",
+        "-B",
+        "-c",
+        "import importlib.metadata as m,json,pathlib,sys\nimport numpy,onnxruntime,tokenizers,torch\nsource,output=map(pathlib.Path,sys.argv[1:])\npins=[row.split('==') for row in source.read_text().splitlines() if row and not row.startswith('#')]\npins += [('torch','2.8.0+cpu'),('pip','25.0.1')]\nassert all(m.version(name)==version for name,version in pins), 'installed dependency pin differs'\nassert torch.version.cuda is None and str(torch.__version__)=='2.8.0+cpu', 'CPU Torch required'\noutput.write_text(json.dumps({'versions':dict(pins),'python':sys.version,'executable':sys.executable,\n 'torch_cuda':torch.version.cuda,'numpy_config':str(numpy.show_config(mode='dicts')),\n 'full_environment_dependency_freeze_used':False},indent=2)+'\\n')\n",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/memory-cell-v10-ci/runtime-requirements.txt",
+        "/tmp/h10-40902864222-1/inputs/DEPENDENCIES.json"
+      ],
+      "completed_children_cpu_seconds": 1.587383999999997,
+      "cumulative_children_maxrss_kib": 291716,
+      "exit_code": 0,
+      "log": "commands/12-validate-dependencies.log",
+      "log_identity": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "validate-dependencies",
+      "pid": 2940,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793288302746635674,
+      "wall_ns": 1905344405
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/memory-v10-runtime/venv/bin/python",
+        "-B",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/memory-cell-v10/freeze_source.py"
+      ],
+      "completed_children_cpu_seconds": 0.11159400000000019,
+      "cumulative_children_maxrss_kib": 291716,
+      "exit_code": 0,
+      "log": "commands/13-research-source-freeze.log",
+      "log_identity": {
+        "bytes": 101,
+        "sha256": "ea05f4d11e6166562c4eed8f802a25effcfae469e3e3ed81f05f7095fc58b1c5"
+      },
+      "name": "research-source-freeze",
+      "pid": 2941,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793288307092881372,
+      "wall_ns": 111880621
+    },
+    {
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "-p",
+        "codex-app-server",
+        "--bin",
+        "codex-app-server"
+      ],
+      "completed_children_cpu_seconds": 965.421439,
+      "cumulative_children_maxrss_kib": 3067192,
+      "exit_code": 0,
+      "log": "commands/14-same-source-app-server.log",
+      "log_identity": {
+        "bytes": 97196,
+        "sha256": "a01c9c695a09630174f8b25c126ebea66d4419a6e9c197abdac46427f4fbd3c1"
+      },
+      "name": "same-source-app-server",
+      "pid": 2942,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793288307206436504,
+      "wall_ns": 522240871151
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--retries",
+        "0",
+        "-p",
+        "codex-hepta-cognitive-types",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-cognitive-store",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-context-compiler",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "-p",
+        "codex-hepta-plasticity"
+      ],
+      "completed_children_cpu_seconds": 632.736004,
+      "cumulative_children_maxrss_kib": 3452512,
+      "exit_code": 101,
+      "log": "commands/15-ordinary-scoped-rust.log",
+      "log_identity": {
+        "bytes": 42575,
+        "sha256": "eadc4871478db547d9827f190ae2cc579416e63d9f87a22b488182f09ce0a043"
+      },
+      "name": "ordinary-scoped-rust",
+      "pid": 19825,
+      "rss_scope": "kernel high-water over all completed wrapper children; not a per-phase RSS sum",
+      "started_unix_ns": 1793288829449056598,
+      "wall_ns": 306838731129
+    }
+  ],
+  "final_fix_executed": false,
+  "final_tracked_changes": "",
+  "formatter_executed": false,
+  "full_lifecycle_cost_exact": false,
+  "github": {
+    "GITHUB_JOB": "verify",
+    "GITHUB_REF": "refs/heads/research/memory-cell-v10-20261029",
+    "GITHUB_REPOSITORY": "TrillionniumFoundation/hepta-private-ci",
+    "GITHUB_RUN_ATTEMPT": "1",
+    "GITHUB_RUN_ID": "40902864222",
+    "GITHUB_SHA": "3a7ac99067b9e36c4bee13d5e9da9aa92a9d7793"
+  },
+  "initial_tracked_changes": "",
+  "mode": "verify",
+  "old_holdout_run": false,
+  "passed": false,
+  "request": {
+    "baseline_commit": "0f41c4968eea63727c69e2b979491e94a99a9dbb",
+    "mode": "verify",
+    "protocol_sha256": "ecbf06ba74e51dae0f3d9d2eadde62aec97c4dbd05c32d3d520d2f1ff311b355",
+    "request_id": "native-formal-02",
+    "schema": "hepta.memory.v10.ci-request.v1",
+    "source_manifest_sha256": "38559a7e81e22b6742febb4fdca9b52e567495cb0233eabd28aae9979c6c24b7",
+    "tests_before_final_fix_and_format": true
+  },
+  "request_identity": {
+    "bytes": 400,
+    "sha256": "8c05a1e47fd839a3052dcfd59c4d6f89a06b83afc665d4184eab5b57d7699d0f"
+  },
+  "schema": "hepta.memory.v10.ci-receipt.v1",
+  "scientific_superiority_claimed": false,
+  "source_commit": "3a7ac99067b9e36c4bee13d5e9da9aa92a9d7793",
+  "source_inventory": {
+    "bytes": 1997280,
+    "sha256": "0cf4a7327a36aac6ac4f7caa61a5609cbb37f0686bbbe93a074cdde4285e46f4"
+  },
+  "source_tree": "49ef5a06cf06d32733a64dd363a6f5ef871aa972",
+  "tests_before_final_fix_and_format": true,
+  "tests_executed": true,
+  "workflow_identity": {
+    "bytes": 5778,
+    "sha256": "97ac512eaac4e96a7eb35faf9239c6af6a07674ea6e4b433dd7c33c5938acd98"
+  },
+  "wrapper_own_cpu_ns": 1776946033,
+  "wrapper_wall_ns": 867765664345
+}

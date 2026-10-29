@@ -37,6 +37,28 @@ pub struct MemoryCellMigrationPinV9 {
 }
 
 impl MemoryCellMigrationPinV9 {
+    /// The image transport is payload agnostic. Inventory readers still
+    /// independently load the inventory bundle and revalidate its owner cut;
+    /// this pin neither selects that bundle nor creates destination authority.
+    pub fn from_inventory_source(
+        snapshot: &codex_hepta_memory::MemoryInventoryOwnerSnapshotV1,
+        bundle: &crate::LoadedMemoryInventoryBundleV1,
+        cognitive_anchor: CognitiveRecoveryAnchor,
+    ) -> Result<Self, String> {
+        bundle.validate_owner_snapshot(snapshot)?;
+        if cognitive_anchor.owner_agent_id != *snapshot.owner_agent_id() {
+            return Err("inventory migration cognitive witness owner mismatch".into());
+        }
+        Ok(Self {
+            owner_agent_id: snapshot.owner_agent_id().clone(),
+            scope: snapshot.scope().clone(),
+            owner_cut_digest: snapshot.owner_cut_digest(),
+            generation: bundle.generation(),
+            bundle_digest: bundle.bundle_digest(),
+            cognitive_anchor,
+        })
+    }
+
     pub fn from_source(
         snapshot: &MemoryCellOwnerSnapshotV1,
         bundle: &LoadedMemoryCellBundleV1,

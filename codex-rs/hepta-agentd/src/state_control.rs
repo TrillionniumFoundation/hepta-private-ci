@@ -30,6 +30,9 @@ use super::AgentdState;
 use super::poisoned_state;
 use super::run_error;
 
+#[path = "memory_inventory_control.rs"]
+mod inventory;
+
 const AUTOMATION_UNAVAILABLE_CODE: &str = "automation_unavailable";
 const AUTOMATION_UNAVAILABLE_MESSAGE: &str =
     "this Agent's private automation storage is unavailable";
@@ -113,6 +116,16 @@ impl AgentdState {
                     capabilities.push(
                         crate::AgentdCapability::new(
                             codex_hepta_agent_protocol::MEMORY_CELL_CONTROL_CAPABILITY_V1,
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
+                    );
+                }
+                if self.memory_inventory.get().is_some() {
+                    capabilities.push(
+                        crate::AgentdCapability::new(
+                            codex_hepta_agent_protocol::MEMORY_INVENTORY_CONTROL_CAPABILITY_V1,
                             /*major*/ 1,
                             /*minor*/ 0,
                         )
@@ -259,6 +272,12 @@ impl AgentdState {
                 AgentdPayload::KernelEvidenceResult(
                     crate::evidence_host::verify(self, request).await?,
                 )
+            }
+            crate::AgentdMethod::MemoryInventorySnapshot { after, expected_owner_cut, limit } => {
+                self.inventory_snapshot_payload(cognitive, after, expected_owner_cut, limit).await?
+            }
+            crate::AgentdMethod::MemoryInventoryRead { request } => {
+                self.inventory_read_payload(cognitive, &request).await?
             }
             crate::AgentdMethod::MemoryCellSnapshot {
                 after,

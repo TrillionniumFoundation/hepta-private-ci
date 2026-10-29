@@ -52,7 +52,7 @@ async fn memory_cell_v9_migration_target_child() {
     target_support::target_child().await;
 }
 
-fn descriptors(root: &Path, prefix: &str) -> BTreeMap<String, File> {
+pub(crate) fn descriptors(root: &Path, prefix: &str) -> BTreeMap<String, File> {
     let mut pending = vec![PathBuf::new()];
     let mut files = BTreeMap::new();
     while let Some(relative) = pending.pop() {
@@ -72,6 +72,25 @@ fn descriptors(root: &Path, prefix: &str) -> BTreeMap<String, File> {
         }
     }
     files
+}
+
+/// Reuse the already authorized payload-agnostic transport for the additive
+/// inventory actual case; none of the old language holdout is executed.
+pub(crate) fn inventory_image(pin: MemoryCellMigrationPinV9, files: BTreeMap<String, File>) -> MemoryCellMigrationImageV9 {
+    MemoryCellMigrationImageV9::capture(DESTINATION.into(), 1, None, pin, files).expect("inventory source image")
+}
+
+pub(crate) async fn transfer_inventory_image(
+    directory: &Path,
+    destination: &Path,
+    layout: &codex_hepta_paths::HeptaAgentLayout,
+    image: &MemoryCellMigrationImageV9,
+) -> (Value, ProviderEffectIntent) {
+    case_support::transfer_case(directory, destination, layout, "inventory-residual", image, None).await
+}
+
+pub(crate) fn copy_inventory_data(source: &Path, destination: &Path) -> Vec<Value> {
+    target_support::copy_tree(source, destination)
 }
 
 fn save_json(path: &Path, value: &impl serde::Serialize) {

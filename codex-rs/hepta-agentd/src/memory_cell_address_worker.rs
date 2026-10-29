@@ -33,6 +33,11 @@ mod config;
 mod time_view;
 #[path = "memory_cell_address_worker_wire.rs"]
 mod wire;
+#[path = "memory_inventory_address_worker.rs"]
+mod inventory;
+#[path = "memory_inventory_address_wire.rs"]
+mod inventory_wire;
+pub use inventory::MemoryInventoryAddressWorkerV1;
 pub use config::MemoryCellAddressWorkerConfigV1;
 pub use time_view::MEMORY_CELL_TIME_VIEW_PROFILE_V1;
 
@@ -72,19 +77,40 @@ struct Counters {
 /// `AgentdMemoryCellRuntimeV1::new` and `AgentdConfig::with_memory_cells`.
 pub struct MemoryCellAddressWorkerV1 {
     config: MemoryCellAddressWorkerConfigV1,
+    wire_profile: WireProfile,
     policy_digest: ContractDigestV1,
     session: Mutex<Option<WorkerSession>>,
     last_validated_response: Mutex<Option<Vec<u8>>>,
     counters: Counters,
 }
 
+#[derive(Clone, Copy, Eq, PartialEq)]
+enum WireProfile {
+    Legacy,
+    Inventory,
+}
+
+impl WireProfile {
+    fn ready_schema(self) -> &'static str {
+        match self {
+            Self::Legacy => "hepta.memory.v7.address-worker-ready.v1",
+            Self::Inventory => "hepta.memory.inventory-address-worker-ready.v1",
+        }
+    }
+}
+
 impl MemoryCellAddressWorkerV1 {
     pub async fn start(config: MemoryCellAddressWorkerConfigV1) -> Result<Self, String> {
+        Self::start_profile(config, WireProfile::Legacy).await
+    }
+
+    async fn start_profile(config: MemoryCellAddressWorkerConfigV1, wire_profile: WireProfile) -> Result<Self, String> {
         let policy_digest = tokio::time::timeout(config.startup_timeout, config.verify())
             .await
             .map_err(|_| "address worker pin verification timed out")??;
         let worker = Self {
             config,
+            wire_profile,
             policy_digest,
             session: Mutex::new(None),
             last_validated_response: Mutex::new(None),
@@ -167,7 +193,7 @@ impl MemoryCellAddressWorkerV1 {
         }
         let ready: WorkerReady = serde_json::from_slice(&ready)
             .map_err(|_| "invalid address worker readiness envelope")?;
-        if ready.schema != "hepta.memory.v7.address-worker-ready.v1"
+        if ready.schema != self.wire_profile.ready_schema()
             || ready.model_digest != self.config.model_digest
             || ready.policy_digest != self.policy_digest
             || ready.max_frame_bytes != MAX_REQUEST_FRAME
@@ -188,11 +214,11 @@ impl MemoryCellAddressWorkerV1 {
         })
     }
 
-    async fn exchange(
+    async fn exchange<T>(
         &self,
-        request: &MemoryRequestV1,
-        bound: BoundRequest,
-    ) -> Result<Option<MemoryCellResolvedAddressV1>, String> {
+        request_bytes: &[u8],
+        validate: impl FnOnce(&[u8]) -> Result<(T, wire::WorkerCost), String>,
+    ) -> Result<T, String> {
         let mut slot = self.session.lock().await;
         // Taking ownership is deliberate: cancellation drops this exact child,
         // while the shared slot stays empty for the next explicitly new spawn.
@@ -210,10 +236,10 @@ impl MemoryCellAddressWorkerV1 {
         }
         session.require_idle(&self.counters.stdout).await?;
         let mut written = 0;
-        while written < bound.bytes.len() {
+        while written < request_bytes.len() {
             let count = session
                 .stdin
-                .write(&bound.bytes[written..])
+                .write(&request_bytes[written..])
                 .await
                 .map_err(|_| "address worker input failed")?;
             self.counters
@@ -252,8 +278,7 @@ impl MemoryCellAddressWorkerV1 {
             );
         }
         session.require_idle(&self.counters.stdout).await?;
-        let (decision, cost) =
-            bound.validate_response(&response, self.config.model_digest, request)?;
+        let (decision, cost) = validate(&response)?;
         *self.last_validated_response.lock().await = Some(response);
         self.counters.responses.fetch_add(1, Ordering::Relaxed);
         self.counters.cpu.fetch_add(
@@ -282,6 +307,9 @@ impl MemoryCellAddressResolverV1 for MemoryCellAddressWorkerV1 {
         Box<dyn Future<Output = Result<Option<MemoryCellResolvedAddressV1>, String>> + Send + 'a>,
     > {
         Box::pin(async move {
+            if self.wire_profile != WireProfile::Legacy {
+                return Err("inventory address worker cannot serve the legacy profile".to_string());
+            }
             let _elapsed = ElapsedCounter {
                 counter: &self.counters.host,
                 started: Instant::now(),
@@ -294,7 +322,9 @@ impl MemoryCellAddressResolverV1 for MemoryCellAddressWorkerV1 {
                 return Ok(None);
             };
 
-            tokio::time::timeout(self.config.request_timeout, self.exchange(request, bound))
+            tokio::time::timeout(self.config.request_timeout, self.exchange(&bound.bytes, |response| {
+                bound.validate_response(response, self.config.model_digest, request)
+            }))
                 .await
                 .map_err(|_| "address worker request timed out".to_string())
                 .and_then(|result| result)

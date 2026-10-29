@@ -1,0 +1,1388 @@
+{
+  "archive": {
+    "bytes": 1293916,
+    "path": "memory-v10-evidence.tar.xz",
+    "sha256": "5313231c09d852a66b1d2035790656e148e8b3ca4f6654fa713a135cce38037c"
+  },
+  "files": {
+    "memory-v10-ci-output/EXECUTIONS.json": {
+      "bytes": 13094,
+      "sha256": "06499b0afb2aba62065f60fa3566d8efcc1eba36437a81ff3341e536214f48e6"
+    },
+    "memory-v10-ci-output/HARDWARE.json": {
+      "bytes": 491,
+      "sha256": "85bebb0566bc8e92e12f7931d58ea63942e029fda87058cea8cdf2a6835abdf3"
+    },
+    "memory-v10-ci-output/JOB_START.json": {
+      "bytes": 252,
+      "sha256": "f29df220452f0feeec542d80f0a1b4f8ab8f688039920b21eb18561a5938f0f9"
+    },
+    "memory-v10-ci-output/REQUEST.json": {
+      "bytes": 400,
+      "sha256": "07760857f07da31d8e740e6c6fc1397374596de12daf1f35901684e291c75335"
+    },
+    "memory-v10-ci-output/SOURCE_FILES.json": {
+      "bytes": 1997280,
+      "sha256": "6f650a9ea43d53c4f35a1d4b42ca8d24c2f40f18a360ba750d483625f31dd6c7"
+    },
+    "memory-v10-ci-output/actual-junit-location.json": {
+      "bytes": 489,
+      "sha256": "936deb468f18235e7fd01e302b2a07d1961e7a3ebe7702160c1d10df779dc67d"
+    },
+    "memory-v10-ci-output/actual-junit.xml": {
+      "bytes": 537,
+      "sha256": "e077123153daf685328194ecbef717fe0ef0928442d27be75424caef2d4ebf65"
+    },
+    "memory-v10-ci-output/commands/01-rustc-version.log": {
+      "bytes": 36,
+      "sha256": "f4d034f5660bb49f22bfcba3f3445be67e25b704c193ff421b53863b4faee148"
+    },
+    "memory-v10-ci-output/commands/02-cargo-version.log": {
+      "bytes": 36,
+      "sha256": "c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5"
+    },
+    "memory-v10-ci-output/commands/03-nextest-version.log": {
+      "bytes": 171,
+      "sha256": "87195837e3b766934f3022b0ff917e4b7b50904a16f79838efa8af309a3e7ea4"
+    },
+    "memory-v10-ci-output/commands/04-just-version.log": {
+      "bytes": 12,
+      "sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87"
+    },
+    "memory-v10-ci-output/commands/05-driver-evidence-boundaries.log": {
+      "bytes": 1000,
+      "sha256": "14d388ba62cd47685f6f9f9859cda7f21f45bdc39b9e153ef2dd71775a9644b3"
+    },
+    "memory-v10-ci-output/commands/06-create-venv.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/commands/07-pin-pip.log": {
+      "bytes": 132,
+      "sha256": "691996767183405344ca2ab4871a1c799be0c2f18ace7ff077e413365ddd8a41"
+    },
+    "memory-v10-ci-output/commands/08-install-runtime.log": {
+      "bytes": 10345,
+      "sha256": "3d3490aa56433c04661903eed27a41bd9d7a812f571b24b726143b9d048dd9b6"
+    },
+    "memory-v10-ci-output/commands/09-install-cpu-torch.log": {
+      "bytes": 566,
+      "sha256": "42b5a1d7bc651ab91b85d595af05fee2c57c883a229cf92529b6fe598288cb0e"
+    },
+    "memory-v10-ci-output/commands/10-dependency-consistency.log": {
+      "bytes": 30,
+      "sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09"
+    },
+    "memory-v10-ci-output/commands/11-pip-freeze.log": {
+      "bytes": 482,
+      "sha256": "8dac5ddd626416229bf15ef058f1ee2803c571a2212055c250a386c4b5278e21"
+    },
+    "memory-v10-ci-output/commands/12-validate-dependencies.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/commands/13-research-source-freeze.log": {
+      "bytes": 101,
+      "sha256": "ea05f4d11e6166562c4eed8f802a25effcfae469e3e3ed81f05f7095fc58b1c5"
+    },
+    "memory-v10-ci-output/commands/14-same-source-app-server.log": {
+      "bytes": 17105,
+      "sha256": "91b372f88597be155aecd7694e100a88ceeabfd8848422ba8791aa92967aa865"
+    },
+    "memory-v10-ci-output/commands/15-ordinary-scoped-rust.log": {
+      "bytes": 222522,
+      "sha256": "9770f8e907f01ab4a53e7eea9ca212735f485b5adf20de46ce780b5d637e1871"
+    },
+    "memory-v10-ci-output/commands/16-actual-trained-owner-lifecycle.log": {
+      "bytes": 23880,
+      "sha256": "a75b948a79c8228da8b8aca81713c46d338a1d27b9aeee81d871684000a2f952"
+    },
+    "memory-v10-ci-output/generated.patch": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/inputs/DEPENDENCIES.json": {
+      "bytes": 2783,
+      "sha256": "afe4670fcd38aed9f4276ead4fff8d67a492cf24ad06a500cc3e24c0fcb93361"
+    },
+    "memory-v10-ci-output/inputs/ENCODER_DOWNLOAD.json": {
+      "bytes": 3695,
+      "sha256": "8cf89678691fbdd249828fe68d931c107f503e03bd44841c44eeb180646cc3b3"
+    },
+    "memory-v10-ci-output/inputs/INPUT_PINS.json": {
+      "bytes": 3876,
+      "sha256": "99b96403d4727a0c75b7abb22d20a55fa1239cc2adb08ef7dcec21d145b86617"
+    },
+    "memory-v10-ci-output/inputs/LEGACY_RESTORATION.json": {
+      "bytes": 2612,
+      "sha256": "9ca6747a50412be62dffea39a04a1ec3d7bbc973400c78198c77c1c82312ae5f"
+    },
+    "memory-v10-ci-output/inputs/PREPARATION.json": {
+      "bytes": 446,
+      "sha256": "b0430e1450c93dcafd5b55225af78e7229f0be1adbfc4ca17938fd9100024a7f"
+    },
+    "memory-v10-ci-output/inputs/legacy/FREEZE.json": {
+      "bytes": 6691,
+      "sha256": "7a298c2bdc850529f2059ffbe4c20e507c2da844db4f5c07b19fc33f71d9beb6"
+    },
+    "memory-v10-ci-output/inputs/legacy/canonical.npz": {
+      "bytes": 23189,
+      "sha256": "a2956040051c390cf5ea8ada8603d3224348d50e80888b278a6131d436d8c87d"
+    },
+    "memory-v10-ci-output/inputs/legacy/development-encoder.json": {
+      "bytes": 1466,
+      "sha256": "dcbe012721f82e7b86fc6bd4de52d30969dda170641daf8dd966a0c2065112e3"
+    },
+    "memory-v10-ci-output/inputs/legacy/models/seed-731/semantic/A.0000.npz": {
+      "bytes": 5935,
+      "sha256": "ff3c649caf54ae23752d8cf33015d3beaf9151426703cb6dcc0e4357fff202dd"
+    },
+    "memory-v10-ci-output/inputs/legacy/models/seed-731/semantic/B.0000.npz": {
+      "bytes": 5886,
+      "sha256": "e20794ca9feff79c75a5e123f1b8c4c399e9d3b009d7f2844d267ab99364c284"
+    },
+    "memory-v10-ci-output/inputs/legacy/models/seed-731/semantic/head.bias.0000.npz": {
+      "bytes": 258,
+      "sha256": "fd4be672d9a49d9a7c533fc9609daf1e7f99cd5cf34a6f3d6851667b087942e9"
+    },
+    "memory-v10-ci-output/inputs/legacy/models/seed-731/semantic/head.weight.0000.npz": {
+      "bytes": 17227,
+      "sha256": "0e225234232692bf3567be3877c56a1c9e829c9abe73aa98c63ffe8ec8b7ee28"
+    },
+    "memory-v10-ci-output/inputs/legacy/models/seed-731/semantic/manifest.json": {
+      "bytes": 2733,
+      "sha256": "3ce13110a57c4a1aeaff8fb5113c23e7ec4f20474a2800792e87b12ee87c73db"
+    },
+    "memory-v10-ci-output/inputs/legacy/models/seed-731/skill/A.0000.npz": {
+      "bytes": 5941,
+      "sha256": "f1ded51b00c97e00cf69a5a06a1a130d9d92514c0ac40c385092241c5c95f45b"
+    },
+    "memory-v10-ci-output/inputs/legacy/models/seed-731/skill/B.0000.npz": {
+      "bytes": 5935,
+      "sha256": "88c7fb6fb95de3f5e6540558bd2ad5ad11f2f9eaf1983e78dc97dfeb3379c321"
+    },
+    "memory-v10-ci-output/inputs/legacy/models/seed-731/skill/head.bias.0000.npz": {
+      "bytes": 325,
+      "sha256": "2eddea10a4c572c4df1037d1d234c5cf4876717eeaf349c21c5ee3c9bb786f92"
+    },
+    "memory-v10-ci-output/inputs/legacy/models/seed-731/skill/head.weight.0000.npz": {
+      "bytes": 39460,
+      "sha256": "c486aa1ed8e537b72de7a4cef33c445c93cdf588bdccd1da5d0c77ad6cd53c8e"
+    },
+    "memory-v10-ci-output/inputs/legacy/models/seed-731/skill/manifest.json": {
+      "bytes": 3132,
+      "sha256": "396515dedd46def6a687ac44a68a1a501c74c7c1de2ff6af49060b1df5ae2f80"
+    },
+    "memory-v10-ci-output/inputs/legacy/sources.json": {
+      "bytes": 2542,
+      "sha256": "4fdee74e78e1ac3762af1a48214c12fc25394d457e329bb90d911b5434dd4c1f"
+    },
+    "memory-v10-ci-output/inputs/runtime-requirements.txt": {
+      "bytes": 599,
+      "sha256": "3c54ab8c0ee3281b9ff1fcc99501c000b9fe1861dc6b1a6ef8f5f9dbc878affb"
+    },
+    "memory-v10-ci-output/native-actual/NATIVE_ACTUAL.json": {
+      "bytes": 120988,
+      "sha256": "93396743dac2303a81b7a72a23ed974f805051758c523912b7f56b42af25cb66"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training-process.json": {
+      "bytes": 345,
+      "sha256": "61fc844d464adc21dd04e1e7d011f9441fcb4b73ea3b269bed8d905c4a54996c"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training.stdout": {
+      "bytes": 208,
+      "sha256": "f32e1db1e3d99e1ed891fdc92b0d366eb10e1b011a87433d6e42dc2989b2b3ea"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/OWNER_INPUT.json": {
+      "bytes": 10838,
+      "sha256": "bc3532656cc0dacae1717e59fb6553dbb5e75a9505904534b0b90d7d129c8913"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/PARITY.json": {
+      "bytes": 42810,
+      "sha256": "83ddfd30672f0e1797b7c1cdf173a52ca5b1f10bfad327df64dc2dc784591dcb"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/PROCESSES.json": {
+      "bytes": 3354,
+      "sha256": "9de6fdbcd7235a04ee799feb3b33c34736a980649f9048b9197c5bf1406e2a9f"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/RUST_NATIVE_PARITY.json": {
+      "bytes": 45676,
+      "sha256": "d5e0c4ff7ee01f3b1dfa4dad17f7b8cfc6c361875241278a21bd27f6a5b65c7b"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/TRAINING.json": {
+      "bytes": 13409,
+      "sha256": "fbeaeb96755199fa859a3739e70fd04291ab1707eeceb0f5b7e7dd6357d5e83b"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/inventory-router/TRAINING.json": {
+      "bytes": 4230,
+      "sha256": "ef98e9c7aa1f974907d3dcf7678ee72ba9fa42b1ffab77afa2681df078e020ab"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/inventory-router/checkpoint/head.bias.f32": {
+      "bytes": 16,
+      "sha256": "5d6d9be7cb031cb621324e2a6bc72e848789642cf0579d47e2baaf67f7b9344e"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/inventory-router/checkpoint/head.weight.f32": {
+      "bytes": 6144,
+      "sha256": "58fe37faf2fe573d6526b0877923b26950bc9e134c8f7d97001910210fe228d3"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/inventory-router/checkpoint/manifest.json": {
+      "bytes": 2495,
+      "sha256": "bc8fe9ddef52a53486cdb41e61df93ed8de1dc9f74d426943b0a6b8e9ba9d858"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/inventory-router/features.npz": {
+      "bytes": 29067,
+      "sha256": "8e85c058914b32244fde9ba82553ab992a777372b8b35a75c7b0e4d62e1b2fde"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/inventory-router/manifest.json": {
+      "bytes": 1350,
+      "sha256": "78852fc0cf098ff8c73b483798d9aca959425694302399d8639c6a17fe07b199"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/inventory-router/schedule.npy": {
+      "bytes": 204928,
+      "sha256": "ea57fee3b2fd7b3fd25eba513c8867397e4be6fec00a43cb67b4ece3d8e1cf3f"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/procedure-ablation-checkpoint/A.f32": {
+      "bytes": 6144,
+      "sha256": "9cbd41a514afc075287a65e284146f9aed63967081832eb6eba5c0b2157506dc"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/procedure-ablation-checkpoint/B.f32": {
+      "bytes": 6144,
+      "sha256": "fd9243e1ba57263ed469c3bdbd7ade6ec5254e7ed924a9f5737fa44749933cc0"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/procedure-ablation-checkpoint/head.bias.f32": {
+      "bytes": 112,
+      "sha256": "c332b09baeaae60809b4bf45104f5c20981a4364ea0f06c3815d5f8e0b6592ce"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/procedure-ablation-checkpoint/head.weight.f32": {
+      "bytes": 43008,
+      "sha256": "483ffea5d231771a11140491fd2d0b59d39aedd77a3e1898359b39fb9be2493a"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/procedure-ablation-checkpoint/manifest.json": {
+      "bytes": 1770,
+      "sha256": "3d7a4f64d2011d2bbad6f1fe215a47f3f01e10f05dab3eb651bcc7b9582853d3"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/procedure-ablation-export.json": {
+      "bytes": 2540,
+      "sha256": "05551e5dabe9c9b85d62a701ede4d4d9802ccae5c32945f4eca2ed9e91332b64"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/procedure-ablation-reference.json": {
+      "bytes": 6797,
+      "sha256": "8aa61b9e86524a0c578c0d8e832ced175daa2b6ef711678ef53b4fa865374a4e"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/procedure-ablation.json": {
+      "bytes": 140028,
+      "sha256": "2e746282681571eca0d6ba70e1e50692264573def7b3ccc07e9207aee7f8ef36"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/procedure-canonical.npz": {
+      "bytes": 11635,
+      "sha256": "e08d7da8fd71802919531b85232304cc1ae085502bd49a297e6e85b06955a7a4"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/procedure-checkpoint/A.f32": {
+      "bytes": 6144,
+      "sha256": "9cbd41a514afc075287a65e284146f9aed63967081832eb6eba5c0b2157506dc"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/procedure-checkpoint/B.f32": {
+      "bytes": 6144,
+      "sha256": "d631907143e2e19e2d62235ffdea518d24554b67efba27a5e28d3a83d2e479df"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/procedure-checkpoint/head.bias.f32": {
+      "bytes": 112,
+      "sha256": "c332b09baeaae60809b4bf45104f5c20981a4364ea0f06c3815d5f8e0b6592ce"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/procedure-checkpoint/head.weight.f32": {
+      "bytes": 43008,
+      "sha256": "483ffea5d231771a11140491fd2d0b59d39aedd77a3e1898359b39fb9be2493a"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/procedure-checkpoint/manifest.json": {
+      "bytes": 2880,
+      "sha256": "62ad0b6358fb6acd559c344ab1a8b42f0286acdefcce3aba1d32a4fa7dc4c4aa"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/procedure-export.json": {
+      "bytes": 2540,
+      "sha256": "66f84f1fd0ac370e1b3937bfc69af096436e2fca1f95801f47e2aef748455966"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/procedure-reference.json": {
+      "bytes": 6710,
+      "sha256": "735e1af4f11d3938c368912777b90446fb299e45be9f65b00b275a274684674a"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/procedure-schedule.npy": {
+      "bytes": 307328,
+      "sha256": "d3dd85403045868ccc7eea41e9a6357c2bc7b5b6ab8812a40adfc704488bcc59"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/procedure-targets.npy": {
+      "bytes": 1024,
+      "sha256": "f247c8da8b9e45fb9909bb7d851f5cda278bb6edac55b9d0ec6e673ba0016e23"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/procedure.json": {
+      "bytes": 140028,
+      "sha256": "0cd8d28814b575e0c7f6a8aba5b46f2be462045476d60665befc2bf290300f89"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/read-procedure-ablation.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/read-procedure-ablation.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/read-procedure.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/read-procedure.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/read-semantic-ablation.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/read-semantic-ablation.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/read-semantic.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/read-semantic.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/semantic-ablation-checkpoint/A.f32": {
+      "bytes": 6144,
+      "sha256": "ce230d6fad7050cbb62d50f558e612b00ba4e78a60df985602909e043229a874"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/semantic-ablation-checkpoint/B.f32": {
+      "bytes": 6144,
+      "sha256": "fd9243e1ba57263ed469c3bdbd7ade6ec5254e7ed924a9f5737fa44749933cc0"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/semantic-ablation-checkpoint/head.bias.f32": {
+      "bytes": 48,
+      "sha256": "45a92346c4f62fbf909c7426bb7d8a49fee2a97cfabdcfd871b199edf7546a72"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/semantic-ablation-checkpoint/head.weight.f32": {
+      "bytes": 18432,
+      "sha256": "7c93c4e9d98bfeb5f24c76d7899ccadf7dd5e7124d9dacd81aafe78300741c3e"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/semantic-ablation-checkpoint/manifest.json": {
+      "bytes": 1740,
+      "sha256": "d169bcb4f739e21750e43def78531a27855c84facde816da27f3509640c40ef3"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/semantic-ablation-export.json": {
+      "bytes": 2538,
+      "sha256": "3399b3452d1f0c804e7e4d286073a1d3b1d80dfe188f6a7977af81dfd13d0bc9"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/semantic-ablation-reference.json": {
+      "bytes": 4276,
+      "sha256": "ac314ea8c4ad602bae6f82cfb37764f67c125fcccac62271581c6f7db66c9e3c"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/semantic-ablation.json": {
+      "bytes": 90746,
+      "sha256": "55f35fe0147edccde60270afdbe0fdfb0f53fb858dfbb61b5aa9dc1b185684b8"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/semantic-canonical.npz": {
+      "bytes": 11644,
+      "sha256": "4616475e7386fb938a095194898725d9bd05f961426a20da58e527620f480477"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/semantic-checkpoint/A.f32": {
+      "bytes": 6144,
+      "sha256": "ce230d6fad7050cbb62d50f558e612b00ba4e78a60df985602909e043229a874"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/semantic-checkpoint/B.f32": {
+      "bytes": 6144,
+      "sha256": "373ed11273dca5adccd725c0d33204db4796598fa85592aac6feca1b5c4f1a48"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/semantic-checkpoint/head.bias.f32": {
+      "bytes": 48,
+      "sha256": "45a92346c4f62fbf909c7426bb7d8a49fee2a97cfabdcfd871b199edf7546a72"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/semantic-checkpoint/head.weight.f32": {
+      "bytes": 18432,
+      "sha256": "7c93c4e9d98bfeb5f24c76d7899ccadf7dd5e7124d9dacd81aafe78300741c3e"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/semantic-checkpoint/manifest.json": {
+      "bytes": 2844,
+      "sha256": "fffc19a0d42c9c79e4d82b0f67467e5064ef7900ffc7a28a4ff59268d58cd691"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/semantic-export.json": {
+      "bytes": 2538,
+      "sha256": "5f63c376c0bbc6d88147225196a52ce90abe672817df22eeeadd59b4d47a111b"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/semantic-reference.json": {
+      "bytes": 4238,
+      "sha256": "57e45a0dd12cd5fd8ae0f6ec2f769949fd6b42d64fd01469dc0fa487d7f7a7d1"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/semantic-schedule.npy": {
+      "bytes": 307328,
+      "sha256": "6253406122c29f7602c2ffd1eadf947f7ffe6fe3e152acd1327cb912a4f3fd37"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/semantic-targets.npy": {
+      "bytes": 512,
+      "sha256": "ab6c4946bf1d201a9433f1e6b1a08313ed267fc08bd047cc7b00f1b3ab9ac2d7"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/semantic.json": {
+      "bytes": 90746,
+      "sha256": "d7f56f1b96f19c9efd7c556e28287b63d7dd030bb3f78b875bd5d55595c9b6af"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/training.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/corrected-training/training.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild-process.json": {
+      "bytes": 345,
+      "sha256": "889db087f61c3ec26d8b8e4690b327a07c0ee7796eaf0fd4e1949788982a4b86"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild.stdout": {
+      "bytes": 205,
+      "sha256": "8fa30351ab0d29ab26c642d8a36dd93332fd8f84c5a6e6cc90e9e1dbfe020fc4"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/OWNER_INPUT.json": {
+      "bytes": 10497,
+      "sha256": "0206dfcaf8e91ed7d9839dce2c041a03ae9c4dc7a4b8b8945c1f758c90f0b8ac"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/PARITY.json": {
+      "bytes": 41057,
+      "sha256": "4d734b29ee35075ac258e219800626d952fc4fc85eb7eda7fb2273d613196bb7"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/PROCESSES.json": {
+      "bytes": 3326,
+      "sha256": "ec5dfea631fd854357ff11c7d0a049e92be840e6389e4563985a91f59d74a4af"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/RUST_NATIVE_PARITY.json": {
+      "bytes": 43677,
+      "sha256": "c1e1479fa9125237132bf0758a41a640f0e342c14469235f288db42fcd989d88"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/TRAINING.json": {
+      "bytes": 13170,
+      "sha256": "a3428cb0d271c5a2c11f2a3f0db80b0d65d762fd17822ac5469a1de20b94ce1c"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/inventory-router/TRAINING.json": {
+      "bytes": 4238,
+      "sha256": "f3538feea5a4749adea94bac9ec7edda3ac7a068bc8dfacc8795442f29e7f4de"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/inventory-router/checkpoint/head.bias.f32": {
+      "bytes": 16,
+      "sha256": "5d6d9be7cb031cb621324e2a6bc72e848789642cf0579d47e2baaf67f7b9344e"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/inventory-router/checkpoint/head.weight.f32": {
+      "bytes": 6144,
+      "sha256": "58fe37faf2fe573d6526b0877923b26950bc9e134c8f7d97001910210fe228d3"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/inventory-router/checkpoint/manifest.json": {
+      "bytes": 2503,
+      "sha256": "87e1c32636bc62076ae9a405af4c338825bb8d0bce6ee0433056d5220d640b2a"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/inventory-router/features.npz": {
+      "bytes": 29067,
+      "sha256": "8e85c058914b32244fde9ba82553ab992a777372b8b35a75c7b0e4d62e1b2fde"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/inventory-router/manifest.json": {
+      "bytes": 1350,
+      "sha256": "b9707074a19c86878360ca5ad7be5faf43c6cddd1388538fd7da1565a4cc5928"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/inventory-router/schedule.npy": {
+      "bytes": 204928,
+      "sha256": "ea57fee3b2fd7b3fd25eba513c8867397e4be6fec00a43cb67b4ece3d8e1cf3f"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/procedure-ablation-checkpoint/A.f32": {
+      "bytes": 6144,
+      "sha256": "9cbd41a514afc075287a65e284146f9aed63967081832eb6eba5c0b2157506dc"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/procedure-ablation-checkpoint/B.f32": {
+      "bytes": 6144,
+      "sha256": "fd9243e1ba57263ed469c3bdbd7ade6ec5254e7ed924a9f5737fa44749933cc0"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/procedure-ablation-checkpoint/head.bias.f32": {
+      "bytes": 112,
+      "sha256": "c332b09baeaae60809b4bf45104f5c20981a4364ea0f06c3815d5f8e0b6592ce"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/procedure-ablation-checkpoint/head.weight.f32": {
+      "bytes": 43008,
+      "sha256": "483ffea5d231771a11140491fd2d0b59d39aedd77a3e1898359b39fb9be2493a"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/procedure-ablation-checkpoint/manifest.json": {
+      "bytes": 1770,
+      "sha256": "3d7a4f64d2011d2bbad6f1fe215a47f3f01e10f05dab3eb651bcc7b9582853d3"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/procedure-ablation-export.json": {
+      "bytes": 2540,
+      "sha256": "233f8199316c4e375977474b85764391f4a885a57b73de18b7ee455164c50b0e"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/procedure-ablation-reference.json": {
+      "bytes": 6797,
+      "sha256": "ca3b12c73616fca333468ee541b837a906c3062f1f0ce2eb1fb0416d04e61822"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/procedure-ablation.json": {
+      "bytes": 140028,
+      "sha256": "13776cf75e580746a85a8ef49c8ef1591ef3a7ab68f882d914cce4b88344a754"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/procedure-canonical.npz": {
+      "bytes": 11635,
+      "sha256": "e08d7da8fd71802919531b85232304cc1ae085502bd49a297e6e85b06955a7a4"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/procedure-checkpoint/A.f32": {
+      "bytes": 6144,
+      "sha256": "9cbd41a514afc075287a65e284146f9aed63967081832eb6eba5c0b2157506dc"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/procedure-checkpoint/B.f32": {
+      "bytes": 6144,
+      "sha256": "d631907143e2e19e2d62235ffdea518d24554b67efba27a5e28d3a83d2e479df"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/procedure-checkpoint/head.bias.f32": {
+      "bytes": 112,
+      "sha256": "c332b09baeaae60809b4bf45104f5c20981a4364ea0f06c3815d5f8e0b6592ce"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/procedure-checkpoint/head.weight.f32": {
+      "bytes": 43008,
+      "sha256": "483ffea5d231771a11140491fd2d0b59d39aedd77a3e1898359b39fb9be2493a"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/procedure-checkpoint/manifest.json": {
+      "bytes": 2873,
+      "sha256": "dbc7061091200e1db4617d91a4cf0931341ef222f544649e50cfe95a6544c033"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/procedure-export.json": {
+      "bytes": 2540,
+      "sha256": "08685ea396eb0a0b6203a0de2629a7935e2a3162b9f9c9b6cb0199a074334a18"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/procedure-reference.json": {
+      "bytes": 6710,
+      "sha256": "8d637b333b36d79f6c19efefc3179e373fad794e825c30bafd5bb95017da3000"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/procedure-schedule.npy": {
+      "bytes": 307328,
+      "sha256": "d3dd85403045868ccc7eea41e9a6357c2bc7b5b6ab8812a40adfc704488bcc59"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/procedure-targets.npy": {
+      "bytes": 1024,
+      "sha256": "f247c8da8b9e45fb9909bb7d851f5cda278bb6edac55b9d0ec6e673ba0016e23"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/procedure.json": {
+      "bytes": 140028,
+      "sha256": "e2e086a14c7533e43bbd91b02ef132a5aa8ee038e30b9925de198d7800135849"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/read-procedure-ablation.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/read-procedure-ablation.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/read-procedure.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/read-procedure.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/read-semantic-ablation.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/read-semantic-ablation.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/read-semantic.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/read-semantic.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/semantic-ablation-checkpoint/A.f32": {
+      "bytes": 6144,
+      "sha256": "ce2c570dda0a1e4e4c53ee80a6c2ea1cc2d935dc323be8ade0276cfe1e9b1938"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/semantic-ablation-checkpoint/B.f32": {
+      "bytes": 6144,
+      "sha256": "fd9243e1ba57263ed469c3bdbd7ade6ec5254e7ed924a9f5737fa44749933cc0"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/semantic-ablation-checkpoint/head.bias.f32": {
+      "bytes": 48,
+      "sha256": "4fac516a9873f065e62a9eb3c8b72367da7fcbaddfac756c1b93787dfac8ca03"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/semantic-ablation-checkpoint/head.weight.f32": {
+      "bytes": 18432,
+      "sha256": "8c310196853404b96ab72e3c20a9424cd8bce37b7c22c48dba046f8d5fa4bf02"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/semantic-ablation-checkpoint/manifest.json": {
+      "bytes": 1673,
+      "sha256": "6b6fae18463e1b0134b3b9dbb01267c27ccfd3a1ab8f6abe4edc62a7302fd3cb"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/semantic-ablation-export.json": {
+      "bytes": 2337,
+      "sha256": "bbdec41f28a9ef94a4c642436159e51b0eb34e6479b0e597ada3476c798f1aa6"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/semantic-ablation-reference.json": {
+      "bytes": 3792,
+      "sha256": "bcc6d36a0c9ea09abe1bbf1efeba786a67d3ab0e961c70f15b740cfba7cfbf25"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/semantic-ablation.json": {
+      "bytes": 87212,
+      "sha256": "8eb1f553fefc42e749dfcb2970d662a686054ec0a4d066f40a43160f462d8bf0"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/semantic-canonical.npz": {
+      "bytes": 10214,
+      "sha256": "f8d75e604627a55f8c4322ca5a7ead37e5225edbde47fcbb001c5355743c36e5"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/semantic-checkpoint/A.f32": {
+      "bytes": 6144,
+      "sha256": "ce2c570dda0a1e4e4c53ee80a6c2ea1cc2d935dc323be8ade0276cfe1e9b1938"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/semantic-checkpoint/B.f32": {
+      "bytes": 6144,
+      "sha256": "96e3518d04b80bb5f31654f04c779d3acbffbdb009ea269a9b772a01c93b1c30"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/semantic-checkpoint/head.bias.f32": {
+      "bytes": 48,
+      "sha256": "4fac516a9873f065e62a9eb3c8b72367da7fcbaddfac756c1b93787dfac8ca03"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/semantic-checkpoint/head.weight.f32": {
+      "bytes": 18432,
+      "sha256": "8c310196853404b96ab72e3c20a9424cd8bce37b7c22c48dba046f8d5fa4bf02"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/semantic-checkpoint/manifest.json": {
+      "bytes": 2783,
+      "sha256": "0fa2fd1345241570fa3c5adab39d6d7152e9871acecc4bbde4449686883a2cd3"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/semantic-export.json": {
+      "bytes": 2337,
+      "sha256": "6572b67e23769738ca91a0e8bada94ed151ab87fdf1f5592a93bc7b8e6cd9ea2"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/semantic-reference.json": {
+      "bytes": 3767,
+      "sha256": "4d88e9ae4b21502f5780fdb9747e5d6a563256ba001c3878fa38179631960379"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/semantic-schedule.npy": {
+      "bytes": 307328,
+      "sha256": "62f8f0e5fd06c88566aa5ec4e1c52160aaa1b7a5b310f431ca71f0a7bd2f0e3d"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/semantic-targets.npy": {
+      "bytes": 464,
+      "sha256": "6768b3a73e540075cb3319a2d632dcdaf8bc99db663f167e8535c805278e9fe0"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/semantic.json": {
+      "bytes": 87212,
+      "sha256": "3a8209df3e65bea4cf4b1e05c0320a9c556683563d101bf625958e1bf0ede56a"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/training.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/deleted-rebuild/training.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/MIGRATION.json": {
+      "bytes": 26891,
+      "sha256": "985d1b88f21f68a87cd68a884c46d33bc915b3b76e06fc3edfeec756cc5bc0ab"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/inventory-residual-fixture-authority/authority.claims": {
+      "bytes": 40,
+      "sha256": "313c3c854a772a4af9ed921dc2787c9c1b32ed0c2910dd41038fedee2da1fda8"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/inventory-residual-fixture-authority/authority.json": {
+      "bytes": 262,
+      "sha256": "872665d0991470ac8ae2e37c6c75f4ce192404a442a7f4e141a5e654a042131c"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/inventory-residual-fixture-authority/authority.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/inventory-residual-receiver.json": {
+      "bytes": 7018,
+      "sha256": "ebb477f8b2c67cb0bf3fef134504afa98ed49af78c488fdb6175ddd67436f03d"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/CURRENT.json": {
+      "bytes": 7118,
+      "sha256": "8c896bf560bc52f4501bb91f7a6b06b5549e74722a1d5f5203547da984ede66c"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/LOCK": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/PAYLOAD": {
+      "bytes": 1422332,
+      "sha256": "e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/heads/1-c1a3e75c3157de1f6facc88bc9bd41aeb3e4a7c0c3d34ec6680cbea4c9c99f92.head": {
+      "bytes": 559,
+      "sha256": "54f88a8fe32288bdf40a34307b8f9c588474e5caea9fe5e9b33ea4bdb7d5b545"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/heads/2-3bae0db5e38594b90d4f2325aa152b7f560eb44868fc3862cb7b00a56b7be9ab.head": {
+      "bytes": 559,
+      "sha256": "5690961b72c3632da380e4d17b3ccd19c84531ae16ee13a38bfd6e08dfd25b16"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/heads/3-063925c82090f0f52e968c2d764c8b94753bddfc7d5be071f4cc985a0962465b.head": {
+      "bytes": 559,
+      "sha256": "85b8dadabfdf51eb1dc097244a8c6e2a822f991d84c6f3a8650242632a8bc088"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/payloads/memory-bundle:1-0a5e3a060e8134fae063c271d91e6fb255e0ad1ccdcb77ec4c8640e1e8332998.bin": {
+      "bytes": 232831,
+      "sha256": "0a5e3a060e8134fae063c271d91e6fb255e0ad1ccdcb77ec4c8640e1e8332998"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/payloads/memory-bundle:2-4f7a33af197f31017d6e3d624aaf8951fab02dfba30d17bdfb7dd1fea19a44f6.bin": {
+      "bytes": 232831,
+      "sha256": "4f7a33af197f31017d6e3d624aaf8951fab02dfba30d17bdfb7dd1fea19a44f6"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/payloads/memory-bundle:3-9327348cb33472eaef1f5fad50716e52056284ed14eb6080d4144d8d8b21b091.bin": {
+      "bytes": 229210,
+      "sha256": "9327348cb33472eaef1f5fad50716e52056284ed14eb6080d4144d8d8b21b091"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/registries/134c82ae46c9ace534687cbd14b4c738392788aa85ecbc76fd2e0f7c793a20dc-262ff69f5b6dc138722be81cd43fe72b0bc6a3453cc88172d2756ceab9b7c81e.snapshot": {
+      "bytes": 467,
+      "sha256": "262ff69f5b6dc138722be81cd43fe72b0bc6a3453cc88172d2756ceab9b7c81e"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/registries/6357d1c3c24d1dd036bcc97eb178c137b5ffb16263fa40173c152c8f46a73ac6-c8486d82718e5940684a6a16625b181110356b3d3491fbd988ab53b485155f15.snapshot": {
+      "bytes": 1279,
+      "sha256": "c8486d82718e5940684a6a16625b181110356b3d3491fbd988ab53b485155f15"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/registries/bd41b24c8126c6cd2627ec38ff41f43f13a9b02812cb9ec5f3dbb3f19b062e57-cb8357eca479d22467d0619e36020a66abd1bf01cdbabea6a877009ceb19483a.snapshot": {
+      "bytes": 873,
+      "sha256": "cb8357eca479d22467d0619e36020a66abd1bf01cdbabea6a877009ceb19483a"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/transactions/3efa63f59f63d42e920681b28b0be26b8e37197501f2b58238a243474eb91269-0.checkpoint": {
+      "bytes": 513,
+      "sha256": "8ebbea7b6134842654b6f9c4b11b3a0890393d223d152411faa27212abe5dd98"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/transactions/3efa63f59f63d42e920681b28b0be26b8e37197501f2b58238a243474eb91269-1.checkpoint": {
+      "bytes": 513,
+      "sha256": "450bbf0e2373286b785784398a243ed82e4a6ee72b36f0d4b5b027334795d232"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/transactions/3efa63f59f63d42e920681b28b0be26b8e37197501f2b58238a243474eb91269-2.checkpoint": {
+      "bytes": 713,
+      "sha256": "511d277e3f5e529b9a0d600c76e45e595e087319594027338fb72cdd9a4bb5ee"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/transactions/3efa63f59f63d42e920681b28b0be26b8e37197501f2b58238a243474eb91269-3.checkpoint": {
+      "bytes": 910,
+      "sha256": "031055f8a2f68f4a2b00ddc168e0f58ddbc4a4010248c97888bec0df7d44e164"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/transactions/3efa63f59f63d42e920681b28b0be26b8e37197501f2b58238a243474eb91269-4.checkpoint": {
+      "bytes": 919,
+      "sha256": "bd73ff53ca072e7ebb501126669d8ef251240bf8cd5fa85a2dd48c5304fb03af"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-0.checkpoint": {
+      "bytes": 513,
+      "sha256": "5ebc453d218ef3e9e4d4488a8d4b53535e8381c73de13c1f60614dd157996329"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-1.checkpoint": {
+      "bytes": 513,
+      "sha256": "77e6c4d80227b56c63cc9b8e7bdd0cbb7b7b2a717ef63904ee1883b6fb9f8277"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-2.checkpoint": {
+      "bytes": 712,
+      "sha256": "e718e1f2910d698b61104def87db865bdfaa7ee1e218e13201daef85a1606d7e"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-3.checkpoint": {
+      "bytes": 909,
+      "sha256": "18352b41c0eb8cedae82c39ebf8fd46105f57bb2f4d6374cc82f2b7d222c8079"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-4.checkpoint": {
+      "bytes": 918,
+      "sha256": "86d133c629a4d6dd9515d1f931e2f59e00b063b7b0270b18021ddabd52fe9819"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/transactions/f8c836ca50307e637ab03400d53b3aeb8c9a4c0fbf4b114993d82cb31083067c-0.checkpoint": {
+      "bytes": 513,
+      "sha256": "abb7bb5a517473214765874c4bee73c3dc583ceca772f3d8c8fbc4bf2bd54bb3"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/transactions/f8c836ca50307e637ab03400d53b3aeb8c9a4c0fbf4b114993d82cb31083067c-1.checkpoint": {
+      "bytes": 513,
+      "sha256": "b14952dc146d72299d932777e62d45c417f020184f0c5b97da852e212d4fd4b1"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/transactions/f8c836ca50307e637ab03400d53b3aeb8c9a4c0fbf4b114993d82cb31083067c-2.checkpoint": {
+      "bytes": 712,
+      "sha256": "35ab5d108bcaabbbaeb3a41b83ae46820219d1d075c3b2f7c85328de0cd320fc"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/transactions/f8c836ca50307e637ab03400d53b3aeb8c9a4c0fbf4b114993d82cb31083067c-3.checkpoint": {
+      "bytes": 909,
+      "sha256": "0bed9dee943ad85afe4e3aad2808b431030ea83ce43819a5ecf6ead5978d5295"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/transactions/f8c836ca50307e637ab03400d53b3aeb8c9a4c0fbf4b114993d82cb31083067c-4.checkpoint": {
+      "bytes": 918,
+      "sha256": "ca0eb415a21a45bcba2c419b8847ae3fac7fa1d22b165709df9138bfbcbc2c82"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/witnesses/1-99703539f8ab97e6152e944646d7b91e941bfb1fc3a800a1e12301d70e4578ad.witness": {
+      "bytes": 343,
+      "sha256": "a903d53d91e17b8d390bab76b8db49fb4c697f46b5a3b05d7c4ea852ea2fc159"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/witnesses/2-0c41b592eab9c80fa1d375acf50ba45ccb81e4486635975bd9873f08224c51a3.witness": {
+      "bytes": 343,
+      "sha256": "37953b5bab03b9fb6d63481f556de983cd304706149af7542aac44ddee662c77"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/witnesses/3-3b9706e135f853d206791483532c19722be444df1a5e4c456b954d925453b4ad.witness": {
+      "bytes": 343,
+      "sha256": "a6a7ac54f57e751fb954ea735c0ffb9233b757dc83c0e07a58b552207c529d0a"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/artifacts/writer/owner.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/images/e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec/data/cognitive/cognitive_1.sqlite3": {
+      "bytes": 704512,
+      "sha256": "70c070f8673a702b4518f8b931c9697be31bf67f54d252aae721b6cf3c531284"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/received/transactions/31640db85828f927e947a3df2c41fdc74bc22c1cccbdbacc54b489ab15e255f4.json": {
+      "bytes": 305,
+      "sha256": "842133e2b1796eee762819c655b077d4c288ef9d428138590c35eb902272d0f8"
+    },
+    "memory-v10-ci-output/native-actual/inventory-migration/source.image": {
+      "bytes": 1422332,
+      "sha256": "e969a5482bef50e601e549b481a3fc6179557f2d74239f6169a1545cad21f7ec"
+    },
+    "memory-v10-ci-output/native-actual/malformed-semantic.json": {
+      "bytes": 90746,
+      "sha256": "69975e9416d5fb8956b6059f8e9b9b4e3e07539a28e71b1866557afa6f7becce"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/heads/1-c1a3e75c3157de1f6facc88bc9bd41aeb3e4a7c0c3d34ec6680cbea4c9c99f92.head": {
+      "bytes": 559,
+      "sha256": "54f88a8fe32288bdf40a34307b8f9c588474e5caea9fe5e9b33ea4bdb7d5b545"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/heads/2-3bae0db5e38594b90d4f2325aa152b7f560eb44868fc3862cb7b00a56b7be9ab.head": {
+      "bytes": 559,
+      "sha256": "5690961b72c3632da380e4d17b3ccd19c84531ae16ee13a38bfd6e08dfd25b16"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/heads/3-063925c82090f0f52e968c2d764c8b94753bddfc7d5be071f4cc985a0962465b.head": {
+      "bytes": 559,
+      "sha256": "85b8dadabfdf51eb1dc097244a8c6e2a822f991d84c6f3a8650242632a8bc088"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/inventory-withdrawal-frontier.snapshot": {
+      "bytes": 559,
+      "sha256": "c91aa5a63f77900a05497d6d7fa4acd338ad20f0db705a38e4de5b195750490b"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/payloads/memory-bundle:1-0a5e3a060e8134fae063c271d91e6fb255e0ad1ccdcb77ec4c8640e1e8332998.bin": {
+      "bytes": 232831,
+      "sha256": "0a5e3a060e8134fae063c271d91e6fb255e0ad1ccdcb77ec4c8640e1e8332998"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/payloads/memory-bundle:2-4f7a33af197f31017d6e3d624aaf8951fab02dfba30d17bdfb7dd1fea19a44f6.bin": {
+      "bytes": 232831,
+      "sha256": "4f7a33af197f31017d6e3d624aaf8951fab02dfba30d17bdfb7dd1fea19a44f6"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/payloads/memory-bundle:3-9327348cb33472eaef1f5fad50716e52056284ed14eb6080d4144d8d8b21b091.bin": {
+      "bytes": 229210,
+      "sha256": "9327348cb33472eaef1f5fad50716e52056284ed14eb6080d4144d8d8b21b091"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/registries/134c82ae46c9ace534687cbd14b4c738392788aa85ecbc76fd2e0f7c793a20dc-262ff69f5b6dc138722be81cd43fe72b0bc6a3453cc88172d2756ceab9b7c81e.snapshot": {
+      "bytes": 467,
+      "sha256": "262ff69f5b6dc138722be81cd43fe72b0bc6a3453cc88172d2756ceab9b7c81e"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/registries/6357d1c3c24d1dd036bcc97eb178c137b5ffb16263fa40173c152c8f46a73ac6-c8486d82718e5940684a6a16625b181110356b3d3491fbd988ab53b485155f15.snapshot": {
+      "bytes": 1279,
+      "sha256": "c8486d82718e5940684a6a16625b181110356b3d3491fbd988ab53b485155f15"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/registries/bd41b24c8126c6cd2627ec38ff41f43f13a9b02812cb9ec5f3dbb3f19b062e57-cb8357eca479d22467d0619e36020a66abd1bf01cdbabea6a877009ceb19483a.snapshot": {
+      "bytes": 873,
+      "sha256": "cb8357eca479d22467d0619e36020a66abd1bf01cdbabea6a877009ceb19483a"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/transactions/3efa63f59f63d42e920681b28b0be26b8e37197501f2b58238a243474eb91269-0.checkpoint": {
+      "bytes": 513,
+      "sha256": "8ebbea7b6134842654b6f9c4b11b3a0890393d223d152411faa27212abe5dd98"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/transactions/3efa63f59f63d42e920681b28b0be26b8e37197501f2b58238a243474eb91269-1.checkpoint": {
+      "bytes": 513,
+      "sha256": "450bbf0e2373286b785784398a243ed82e4a6ee72b36f0d4b5b027334795d232"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/transactions/3efa63f59f63d42e920681b28b0be26b8e37197501f2b58238a243474eb91269-2.checkpoint": {
+      "bytes": 713,
+      "sha256": "511d277e3f5e529b9a0d600c76e45e595e087319594027338fb72cdd9a4bb5ee"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/transactions/3efa63f59f63d42e920681b28b0be26b8e37197501f2b58238a243474eb91269-3.checkpoint": {
+      "bytes": 910,
+      "sha256": "031055f8a2f68f4a2b00ddc168e0f58ddbc4a4010248c97888bec0df7d44e164"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/transactions/3efa63f59f63d42e920681b28b0be26b8e37197501f2b58238a243474eb91269-4.checkpoint": {
+      "bytes": 919,
+      "sha256": "bd73ff53ca072e7ebb501126669d8ef251240bf8cd5fa85a2dd48c5304fb03af"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-0.checkpoint": {
+      "bytes": 513,
+      "sha256": "5ebc453d218ef3e9e4d4488a8d4b53535e8381c73de13c1f60614dd157996329"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-1.checkpoint": {
+      "bytes": 513,
+      "sha256": "77e6c4d80227b56c63cc9b8e7bdd0cbb7b7b2a717ef63904ee1883b6fb9f8277"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-2.checkpoint": {
+      "bytes": 712,
+      "sha256": "e718e1f2910d698b61104def87db865bdfaa7ee1e218e13201daef85a1606d7e"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-3.checkpoint": {
+      "bytes": 909,
+      "sha256": "18352b41c0eb8cedae82c39ebf8fd46105f57bb2f4d6374cc82f2b7d222c8079"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-4.checkpoint": {
+      "bytes": 918,
+      "sha256": "86d133c629a4d6dd9515d1f931e2f59e00b063b7b0270b18021ddabd52fe9819"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/transactions/f8c836ca50307e637ab03400d53b3aeb8c9a4c0fbf4b114993d82cb31083067c-0.checkpoint": {
+      "bytes": 513,
+      "sha256": "abb7bb5a517473214765874c4bee73c3dc583ceca772f3d8c8fbc4bf2bd54bb3"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/transactions/f8c836ca50307e637ab03400d53b3aeb8c9a4c0fbf4b114993d82cb31083067c-1.checkpoint": {
+      "bytes": 513,
+      "sha256": "b14952dc146d72299d932777e62d45c417f020184f0c5b97da852e212d4fd4b1"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/transactions/f8c836ca50307e637ab03400d53b3aeb8c9a4c0fbf4b114993d82cb31083067c-2.checkpoint": {
+      "bytes": 712,
+      "sha256": "35ab5d108bcaabbbaeb3a41b83ae46820219d1d075c3b2f7c85328de0cd320fc"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/transactions/f8c836ca50307e637ab03400d53b3aeb8c9a4c0fbf4b114993d82cb31083067c-3.checkpoint": {
+      "bytes": 909,
+      "sha256": "0bed9dee943ad85afe4e3aad2808b431030ea83ce43819a5ecf6ead5978d5295"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/transactions/f8c836ca50307e637ab03400d53b3aeb8c9a4c0fbf4b114993d82cb31083067c-4.checkpoint": {
+      "bytes": 918,
+      "sha256": "ca0eb415a21a45bcba2c419b8847ae3fac7fa1d22b165709df9138bfbcbc2c82"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/witnesses/1-99703539f8ab97e6152e944646d7b91e941bfb1fc3a800a1e12301d70e4578ad.witness": {
+      "bytes": 343,
+      "sha256": "a903d53d91e17b8d390bab76b8db49fb4c697f46b5a3b05d7c4ea852ea2fc159"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/witnesses/2-0c41b592eab9c80fa1d375acf50ba45ccb81e4486635975bd9873f08224c51a3.witness": {
+      "bytes": 343,
+      "sha256": "37953b5bab03b9fb6d63481f556de983cd304706149af7542aac44ddee662c77"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/witnesses/3-3b9706e135f853d206791483532c19722be444df1a5e4c456b954d925453b4ad.witness": {
+      "bytes": 343,
+      "sha256": "a6a7ac54f57e751fb954ea735c0ffb9233b757dc83c0e07a58b552207c529d0a"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/artifacts/writer/owner.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/child-1.json": {
+      "bytes": 1775,
+      "sha256": "f773cd7936c4f7b66c6f6e23091af602ffe38d9b2aa92b400a07fabe2f71ae72"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/child-5.json": {
+      "bytes": 1820,
+      "sha256": "19e4df620c1ec19c3f8acd52a9b06103378a0ffd5b7e81c4247b690e720b2497"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/fleet/agents/00000000-0000-4000-9000-000000000010/agent.toml": {
+      "bytes": 265,
+      "sha256": "5e419127e65d6be80f77c325f26a1716ef960b6d47a25f3ed74015f56a3f21d8"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/fleet/agents/00000000-0000-4000-9000-000000000010/cognitive/.cognitive-store.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/fleet/agents/00000000-0000-4000-9000-000000000010/cognitive/cognitive_1.sqlite3": {
+      "bytes": 704512,
+      "sha256": "70c070f8673a702b4518f8b931c9697be31bf67f54d252aae721b6cf3c531284"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/fleet/agents/00000000-0000-4000-9000-000000000010/home/prompt-registry/registry.json": {
+      "bytes": 375,
+      "sha256": "1edf3bd8993b220ce3323afdd2d0d6305040e69138d681b811ed691feeae6a7b"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/fleet/agents/00000000-0000-4000-9000-000000000010/home/prompt-registry/registry.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/fleet/agents/00000000-0000-4000-9000-000000000010/home/prompt-registry/registry.payloads": {
+      "bytes": 25,
+      "sha256": "eb624871708fd187307717d8dd1eeeec84d1e44f85c7edba1644f6ffc61562bf"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/fleet/agents/00000000-0000-4000-9000-000000000010/releases/release-state-00000000000000000000.json": {
+      "bytes": 117,
+      "sha256": "3aeab3256c31c058d5f28868e734ba5d422059bf63a64f3aeb160218fd5dd3d1"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/fleet/agents/00000000-0000-4000-9000-000000000010/run/lifecycle-00000000000000000000.json": {
+      "bytes": 108,
+      "sha256": "34ece1cdffe90116e4c05ba2ed2ad1518323df40fc1f2bdf39f7100ee70693cc"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/fleet/agents/00000000-0000-4000-9000-000000000010/run/lifecycle-00000000000000000001.json": {
+      "bytes": 109,
+      "sha256": "584a08d7a15625914f930977e38639931976bf6b863b53a7a312f47f5fb29170"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/fleet/agents/00000000-0000-4000-9000-000000000010/run/lifecycle-00000000000000000002.json": {
+      "bytes": 108,
+      "sha256": "3db1c80b1ad3772177f1b58baeec88332dddd872fd0797a21093e37f3f6f45e5"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/fleet/agents/00000000-0000-4000-9000-000000000010/run/lifecycle-00000000000000000003.json": {
+      "bytes": 109,
+      "sha256": "6a14888d40de9fdb01558eb5f193c103a1e0b0d69908491c88935214ed350ea3"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/fleet/agents/00000000-0000-4000-9000-000000000010/run/lifecycle-00000000000000000004.json": {
+      "bytes": 108,
+      "sha256": "acfe8e8ef81f77e339f59afa0b2049fa764532032c0bf1a43a79641bcd3ec069"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/fleet/agents/00000000-0000-4000-9000-000000000010/run/lifecycle-00000000000000000005.json": {
+      "bytes": 109,
+      "sha256": "8d4849a8da01aea64014a33a929c9dab17cf6ca7762a1a4ae3cc0a4160068c4d"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/fleet/agents/00000000-0000-4000-9000-000000000010/run/lifecycle-00000000000000000006.json": {
+      "bytes": 107,
+      "sha256": "004ee8b9e708325b8afc7d28cce40010f0aaeaf0ca3bee79ac34ba331ccda357"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/fleet/agents/00000000-0000-4000-9000-000000000010/run/prompt-runtime/prompt-runtime.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/migrated-owner/fleet/agents/00000000-0000-4000-9000-000000000010/run/writer.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/native-progress.json": {
+      "bytes": 79842,
+      "sha256": "6d3286500240157aa5907a077adb599623cb3140a1b10532df5c0ed0193814b3"
+    },
+    "memory-v10-ci-output/native-actual/original-checkpoint-process.json": {
+      "bytes": 345,
+      "sha256": "98ba06144a5a5d0395bf38e6e48d6f2d7f5ce01cac38607477e84f220e7082bc"
+    },
+    "memory-v10-ci-output/native-actual/original-checkpoint.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/original-checkpoint.stdout": {
+      "bytes": 120,
+      "sha256": "94c72d0ad445790f8ff153939f4502f849dd5511e5ddb993d5bc7f809fde5a24"
+    },
+    "memory-v10-ci-output/native-actual/original-checkpoint/LEGACY_TORCH.json": {
+      "bytes": 29037,
+      "sha256": "44c151d8a5de9b4c7b7a2743cd8d0b8e353babb0d35f7fd6fb3b880e9042e9b3"
+    },
+    "memory-v10-ci-output/native-actual/original-checkpoint/OWNER_INPUT.json": {
+      "bytes": 10839,
+      "sha256": "ecd937d6a7c5b139ec70a146767927a5766d87045a9d5e8e3c4562baa0e247ee"
+    },
+    "memory-v10-ci-output/native-actual/original-checkpoint/PARITY.json": {
+      "bytes": 23403,
+      "sha256": "fd68acc4d65a32862114d80f3413018db46cd5be0665bc42a2f746029def54a6"
+    },
+    "memory-v10-ci-output/native-actual/original-checkpoint/PROCESSES.json": {
+      "bytes": 2301,
+      "sha256": "57a6645983c79f9421f1c1cd6feec3303ea52aefffcf72dff477c9c734e77ba9"
+    },
+    "memory-v10-ci-output/native-actual/original-checkpoint/RUST_NATIVE_PARITY.json": {
+      "bytes": 45891,
+      "sha256": "841d3fe9a5e5f2963660a13c33efd39d5768d1b4dd163fdaad22e348faca8ebb"
+    },
+    "memory-v10-ci-output/native-actual/original-checkpoint/original-torch.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/original-checkpoint/original-torch.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/original-checkpoint/procedure-canonical.npz": {
+      "bytes": 11606,
+      "sha256": "01cc7bdd5de686e89e074630feabfc8b218e79a9307dc764e1efb6fbe208c486"
+    },
+    "memory-v10-ci-output/native-actual/original-checkpoint/procedure-export.json": {
+      "bytes": 2540,
+      "sha256": "82c02231a1218f9ebaa20435776b0d43321607b12c0682b1bb0fa1f61d32ab64"
+    },
+    "memory-v10-ci-output/native-actual/original-checkpoint/procedure-reference.json": {
+      "bytes": 6719,
+      "sha256": "224f285cda4b42f831eeac7a2bbb940cd4373821d7a015e56985d8313a6daa78"
+    },
+    "memory-v10-ci-output/native-actual/original-checkpoint/procedure.json": {
+      "bytes": 140028,
+      "sha256": "98a841358123d8538f7ed97227090585252197ff2cb4bf59e9576b4381a0b01f"
+    },
+    "memory-v10-ci-output/native-actual/original-checkpoint/read-procedure.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/original-checkpoint/read-procedure.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/original-checkpoint/read-semantic.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/original-checkpoint/read-semantic.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/original-checkpoint/semantic-canonical.npz": {
+      "bytes": 11611,
+      "sha256": "74d57f2108db8bb4a8ca5436b407ff1a2761a23aaf0e1b7c0cbf60166d530e7c"
+    },
+    "memory-v10-ci-output/native-actual/original-checkpoint/semantic-export.json": {
+      "bytes": 2538,
+      "sha256": "6a9e4c0190d1360b7d77f0a004e9fd88129ca32a7b01d8ce2db9cae1cdf2cde2"
+    },
+    "memory-v10-ci-output/native-actual/original-checkpoint/semantic-reference.json": {
+      "bytes": 4254,
+      "sha256": "ee60a1489c81761fdb9e92285befd685a10ead9284307b11c3f9f506bc5d32ed"
+    },
+    "memory-v10-ci-output/native-actual/original-checkpoint/semantic.json": {
+      "bytes": 90746,
+      "sha256": "52f693260a626c824aa8e5e7ce94cda119195c1eb4494df951b168ff93db7cc3"
+    },
+    "memory-v10-ci-output/native-actual/owner-before.json": {
+      "bytes": 16716,
+      "sha256": "fac4329ebc11c560383dd179a8335e72fa78ac5c78b5ccf9103cded15ccb071f"
+    },
+    "memory-v10-ci-output/native-actual/owner-corrected.json": {
+      "bytes": 16715,
+      "sha256": "eeb22a33f4fcfde581d5a5f24c916847e56d1d6dc25694829b70cc616e243cdf"
+    },
+    "memory-v10-ci-output/native-actual/owner-deleted.json": {
+      "bytes": 16187,
+      "sha256": "fb1ce83d7f8adec92b5ec16608073b7196772677916e85119032b62e7ac7b506"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/heads/1-c1a3e75c3157de1f6facc88bc9bd41aeb3e4a7c0c3d34ec6680cbea4c9c99f92.head": {
+      "bytes": 559,
+      "sha256": "54f88a8fe32288bdf40a34307b8f9c588474e5caea9fe5e9b33ea4bdb7d5b545"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/heads/2-3bae0db5e38594b90d4f2325aa152b7f560eb44868fc3862cb7b00a56b7be9ab.head": {
+      "bytes": 559,
+      "sha256": "5690961b72c3632da380e4d17b3ccd19c84531ae16ee13a38bfd6e08dfd25b16"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/heads/3-063925c82090f0f52e968c2d764c8b94753bddfc7d5be071f4cc985a0962465b.head": {
+      "bytes": 559,
+      "sha256": "85b8dadabfdf51eb1dc097244a8c6e2a822f991d84c6f3a8650242632a8bc088"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/payloads/memory-bundle:1-0a5e3a060e8134fae063c271d91e6fb255e0ad1ccdcb77ec4c8640e1e8332998.bin": {
+      "bytes": 232831,
+      "sha256": "0a5e3a060e8134fae063c271d91e6fb255e0ad1ccdcb77ec4c8640e1e8332998"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/payloads/memory-bundle:2-4f7a33af197f31017d6e3d624aaf8951fab02dfba30d17bdfb7dd1fea19a44f6.bin": {
+      "bytes": 232831,
+      "sha256": "4f7a33af197f31017d6e3d624aaf8951fab02dfba30d17bdfb7dd1fea19a44f6"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/payloads/memory-bundle:3-9327348cb33472eaef1f5fad50716e52056284ed14eb6080d4144d8d8b21b091.bin": {
+      "bytes": 229210,
+      "sha256": "9327348cb33472eaef1f5fad50716e52056284ed14eb6080d4144d8d8b21b091"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/registries/134c82ae46c9ace534687cbd14b4c738392788aa85ecbc76fd2e0f7c793a20dc-262ff69f5b6dc138722be81cd43fe72b0bc6a3453cc88172d2756ceab9b7c81e.snapshot": {
+      "bytes": 467,
+      "sha256": "262ff69f5b6dc138722be81cd43fe72b0bc6a3453cc88172d2756ceab9b7c81e"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/registries/6357d1c3c24d1dd036bcc97eb178c137b5ffb16263fa40173c152c8f46a73ac6-c8486d82718e5940684a6a16625b181110356b3d3491fbd988ab53b485155f15.snapshot": {
+      "bytes": 1279,
+      "sha256": "c8486d82718e5940684a6a16625b181110356b3d3491fbd988ab53b485155f15"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/registries/bd41b24c8126c6cd2627ec38ff41f43f13a9b02812cb9ec5f3dbb3f19b062e57-cb8357eca479d22467d0619e36020a66abd1bf01cdbabea6a877009ceb19483a.snapshot": {
+      "bytes": 873,
+      "sha256": "cb8357eca479d22467d0619e36020a66abd1bf01cdbabea6a877009ceb19483a"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/transactions/3efa63f59f63d42e920681b28b0be26b8e37197501f2b58238a243474eb91269-0.checkpoint": {
+      "bytes": 513,
+      "sha256": "8ebbea7b6134842654b6f9c4b11b3a0890393d223d152411faa27212abe5dd98"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/transactions/3efa63f59f63d42e920681b28b0be26b8e37197501f2b58238a243474eb91269-1.checkpoint": {
+      "bytes": 513,
+      "sha256": "450bbf0e2373286b785784398a243ed82e4a6ee72b36f0d4b5b027334795d232"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/transactions/3efa63f59f63d42e920681b28b0be26b8e37197501f2b58238a243474eb91269-2.checkpoint": {
+      "bytes": 713,
+      "sha256": "511d277e3f5e529b9a0d600c76e45e595e087319594027338fb72cdd9a4bb5ee"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/transactions/3efa63f59f63d42e920681b28b0be26b8e37197501f2b58238a243474eb91269-3.checkpoint": {
+      "bytes": 910,
+      "sha256": "031055f8a2f68f4a2b00ddc168e0f58ddbc4a4010248c97888bec0df7d44e164"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/transactions/3efa63f59f63d42e920681b28b0be26b8e37197501f2b58238a243474eb91269-4.checkpoint": {
+      "bytes": 919,
+      "sha256": "bd73ff53ca072e7ebb501126669d8ef251240bf8cd5fa85a2dd48c5304fb03af"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-0.checkpoint": {
+      "bytes": 513,
+      "sha256": "5ebc453d218ef3e9e4d4488a8d4b53535e8381c73de13c1f60614dd157996329"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-1.checkpoint": {
+      "bytes": 513,
+      "sha256": "77e6c4d80227b56c63cc9b8e7bdd0cbb7b7b2a717ef63904ee1883b6fb9f8277"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-2.checkpoint": {
+      "bytes": 712,
+      "sha256": "e718e1f2910d698b61104def87db865bdfaa7ee1e218e13201daef85a1606d7e"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-3.checkpoint": {
+      "bytes": 909,
+      "sha256": "18352b41c0eb8cedae82c39ebf8fd46105f57bb2f4d6374cc82f2b7d222c8079"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/transactions/dba807fda4862f4be3d185dc15473559953ae09a36385a2f5f19a71f25a0742c-4.checkpoint": {
+      "bytes": 918,
+      "sha256": "86d133c629a4d6dd9515d1f931e2f59e00b063b7b0270b18021ddabd52fe9819"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/transactions/f8c836ca50307e637ab03400d53b3aeb8c9a4c0fbf4b114993d82cb31083067c-0.checkpoint": {
+      "bytes": 513,
+      "sha256": "abb7bb5a517473214765874c4bee73c3dc583ceca772f3d8c8fbc4bf2bd54bb3"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/transactions/f8c836ca50307e637ab03400d53b3aeb8c9a4c0fbf4b114993d82cb31083067c-1.checkpoint": {
+      "bytes": 513,
+      "sha256": "b14952dc146d72299d932777e62d45c417f020184f0c5b97da852e212d4fd4b1"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/transactions/f8c836ca50307e637ab03400d53b3aeb8c9a4c0fbf4b114993d82cb31083067c-2.checkpoint": {
+      "bytes": 712,
+      "sha256": "35ab5d108bcaabbbaeb3a41b83ae46820219d1d075c3b2f7c85328de0cd320fc"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/transactions/f8c836ca50307e637ab03400d53b3aeb8c9a4c0fbf4b114993d82cb31083067c-3.checkpoint": {
+      "bytes": 909,
+      "sha256": "0bed9dee943ad85afe4e3aad2808b431030ea83ce43819a5ecf6ead5978d5295"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/transactions/f8c836ca50307e637ab03400d53b3aeb8c9a4c0fbf4b114993d82cb31083067c-4.checkpoint": {
+      "bytes": 918,
+      "sha256": "ca0eb415a21a45bcba2c419b8847ae3fac7fa1d22b165709df9138bfbcbc2c82"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/witnesses/1-99703539f8ab97e6152e944646d7b91e941bfb1fc3a800a1e12301d70e4578ad.witness": {
+      "bytes": 343,
+      "sha256": "a903d53d91e17b8d390bab76b8db49fb4c697f46b5a3b05d7c4ea852ea2fc159"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/witnesses/2-0c41b592eab9c80fa1d375acf50ba45ccb81e4486635975bd9873f08224c51a3.witness": {
+      "bytes": 343,
+      "sha256": "37953b5bab03b9fb6d63481f556de983cd304706149af7542aac44ddee662c77"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/witnesses/3-3b9706e135f853d206791483532c19722be444df1a5e4c456b954d925453b4ad.witness": {
+      "bytes": 343,
+      "sha256": "a6a7ac54f57e751fb954ea735c0ffb9233b757dc83c0e07a58b552207c529d0a"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/artifacts/writer/owner.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/authored-records.json": {
+      "bytes": 6118,
+      "sha256": "2bea6e43d770a6a7df1f98830c8f6c1da77cde6def2fdd8ed35e53999632e3d7"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/child-1.json": {
+      "bytes": 346,
+      "sha256": "081d45a9eb08ff9279aab724bb4876e979c213ff7be9bc5a614e46be2f836e4f"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/child-5.json": {
+      "bytes": 717,
+      "sha256": "50a052d921dd1a24b4af1ee5c28870187fcc560dcd3ac8926d7e3ea10728fce4"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/child-9.json": {
+      "bytes": 717,
+      "sha256": "fe76f3d327cd9efb07fc6da9a7f4fff5e95c9a23ed23f98840b3ccea7bc7777f"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/fleet/agents/00000000-0000-4000-9000-000000000010/agent.toml": {
+      "bytes": 263,
+      "sha256": "b59d109488f3e9dd5404744dff8c8780bcb6c1b5cc3b81f5b9edc8a05f177681"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/fleet/agents/00000000-0000-4000-9000-000000000010/automation/automation_1.sqlite3": {
+      "bytes": 290816,
+      "sha256": "c613c63dbf6d983650bd1e602ac6d533fe019bf2899ce2ddd51aa873ee1ff316"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/fleet/agents/00000000-0000-4000-9000-000000000010/cognitive/.cognitive-store.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/fleet/agents/00000000-0000-4000-9000-000000000010/cognitive/cognitive_1.sqlite3": {
+      "bytes": 704512,
+      "sha256": "70c070f8673a702b4518f8b931c9697be31bf67f54d252aae721b6cf3c531284"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/fleet/agents/00000000-0000-4000-9000-000000000010/home/prompt-registry/registry.json": {
+      "bytes": 375,
+      "sha256": "1edf3bd8993b220ce3323afdd2d0d6305040e69138d681b811ed691feeae6a7b"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/fleet/agents/00000000-0000-4000-9000-000000000010/home/prompt-registry/registry.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/fleet/agents/00000000-0000-4000-9000-000000000010/home/prompt-registry/registry.payloads": {
+      "bytes": 25,
+      "sha256": "eb624871708fd187307717d8dd1eeeec84d1e44f85c7edba1644f6ffc61562bf"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/fleet/agents/00000000-0000-4000-9000-000000000010/releases/release-state-00000000000000000000.json": {
+      "bytes": 117,
+      "sha256": "3aeab3256c31c058d5f28868e734ba5d422059bf63a64f3aeb160218fd5dd3d1"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/fleet/agents/00000000-0000-4000-9000-000000000010/run/lifecycle-00000000000000000000.json": {
+      "bytes": 108,
+      "sha256": "34ece1cdffe90116e4c05ba2ed2ad1518323df40fc1f2bdf39f7100ee70693cc"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/fleet/agents/00000000-0000-4000-9000-000000000010/run/lifecycle-00000000000000000001.json": {
+      "bytes": 109,
+      "sha256": "584a08d7a15625914f930977e38639931976bf6b863b53a7a312f47f5fb29170"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/fleet/agents/00000000-0000-4000-9000-000000000010/run/lifecycle-00000000000000000002.json": {
+      "bytes": 108,
+      "sha256": "3db1c80b1ad3772177f1b58baeec88332dddd872fd0797a21093e37f3f6f45e5"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/fleet/agents/00000000-0000-4000-9000-000000000010/run/lifecycle-00000000000000000003.json": {
+      "bytes": 109,
+      "sha256": "6a14888d40de9fdb01558eb5f193c103a1e0b0d69908491c88935214ed350ea3"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/fleet/agents/00000000-0000-4000-9000-000000000010/run/lifecycle-00000000000000000004.json": {
+      "bytes": 108,
+      "sha256": "acfe8e8ef81f77e339f59afa0b2049fa764532032c0bf1a43a79641bcd3ec069"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/fleet/agents/00000000-0000-4000-9000-000000000010/run/lifecycle-00000000000000000005.json": {
+      "bytes": 109,
+      "sha256": "8d4849a8da01aea64014a33a929c9dab17cf6ca7762a1a4ae3cc0a4160068c4d"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/fleet/agents/00000000-0000-4000-9000-000000000010/run/lifecycle-00000000000000000006.json": {
+      "bytes": 108,
+      "sha256": "8374186df9f3fcbd1c01ac7a1ba2cdedae63bd918d7e400e53849ac5a1fbb704"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/fleet/agents/00000000-0000-4000-9000-000000000010/run/lifecycle-00000000000000000007.json": {
+      "bytes": 109,
+      "sha256": "b1a94b3ba081a8816ab95ff1c3b25c182c4f2f30fb18d652695ba0bbf302e94f"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/fleet/agents/00000000-0000-4000-9000-000000000010/run/lifecycle-00000000000000000008.json": {
+      "bytes": 108,
+      "sha256": "aadfbf0a5886e1895cd6dff7bdeeb0da5c453a5f5a79dcf90df37cdeb4b8866a"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/fleet/agents/00000000-0000-4000-9000-000000000010/run/lifecycle-00000000000000000009.json": {
+      "bytes": 109,
+      "sha256": "f24c729ae71ef56fa0150d281479f91ab202245f55d5b5b9776dbb1ab728dd5f"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/fleet/agents/00000000-0000-4000-9000-000000000010/run/lifecycle-00000000000000000010.json": {
+      "bytes": 109,
+      "sha256": "5a8c2f5b284ffcf9361b755e371ab8737c1853fa82d4e2f491a35207e26b13e0"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/fleet/agents/00000000-0000-4000-9000-000000000010/run/lifecycle-00000000000000000011.json": {
+      "bytes": 110,
+      "sha256": "4f2bcc28259f79b042e080d99725e6ee693045a63c12c0e6ce3cfc07402c314c"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/fleet/agents/00000000-0000-4000-9000-000000000010/run/lifecycle-00000000000000000012.json": {
+      "bytes": 109,
+      "sha256": "9aaa59b97d96bcb8b2f87b69069385fb9cf18bc6afa99d3227752eaca36fc4d0"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/fleet/agents/00000000-0000-4000-9000-000000000010/run/prompt-runtime/prompt-runtime.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/native-actual/quiesced-source-retained/fleet/agents/00000000-0000-4000-9000-000000000010/run/writer.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-v10-ci-output/ordinary-junit-location.json": {
+      "bytes": 490,
+      "sha256": "57e74f7c0c1d5dca49f7cef12fbef2fd0d333f5e6f428ca1d9885c4cc511709f"
+    },
+    "memory-v10-ci-output/ordinary-junit.xml": {
+      "bytes": 214751,
+      "sha256": "0fed493e9d0ea681e6e20c0be2528a442346550b040e05b0899e4187f2cc97c7"
+    },
+    "memory-v10-ci-output/ordinary-network-process.json": {
+      "bytes": 4440,
+      "sha256": "aa8f0416d0124afe7309bd70f0add4554a88eed5758a2ae60f82fcf795873c43"
+    },
+    "memory-v10-ci-output/receipt.json": {
+      "bytes": 20749,
+      "sha256": "25a4ffad028f5061b2c26cc6e38221f0a6f90a7de210a1acc7bcbd533c0cde9e"
+    }
+  },
+  "nonregular_entries": {},
+  "original_file_names_preserved": true,
+  "pack_cpu_ns": 2949121543,
+  "pack_wall_ns": 2949707588,
+  "schema": "hepta.memory.v10.ci-transport.v1",
+  "symlinks_followed": false,
+  "upload_cost": "retained separately by Actions; not included in wrapper measurements"
+}

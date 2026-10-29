@@ -1,0 +1,123 @@
+{
+  "schema": "hepta.memory.v10.protocol.v1",
+  "baseline_commit": "0f41c4968eea63727c69e2b979491e94a99a9dbb",
+  "scope": "New finite authored inventory mappings at growing capacity. This is a fresh experiment, not a re-score or retune of V9 held data. Frozen MiniLM features plus affine learned operators; no Transformer finetuning or general-memory claim.",
+  "seeds": [
+    1741,
+    1742,
+    1743
+  ],
+  "capacities": [
+    32,
+    64,
+    128
+  ],
+  "dataset_seed": 817400,
+  "encoder": {
+    "repository": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+    "revision": "e8f8c211226b894fcb81acc59f3b34ba3efd5f42",
+    "dimension": 384,
+    "native_batch": 1,
+    "max_tokens": 128,
+    "frozen": true
+  },
+  "optimizer": {
+    "name": "NumPy float32 Adam",
+    "beta1": 0.9,
+    "beta2": 0.999,
+    "epsilon": 1e-08,
+    "learning_rate": 0.01,
+    "batch_size": 32,
+    "moments": "Reset at every declared fit, including each maintenance cycle; per-parameter step counters retained."
+  },
+  "budget": {
+    "content_steps": 1200,
+    "composition_steps": 1200,
+    "router_steps": 800,
+    "structure_steps": 600,
+    "merge_steps": 600,
+    "maintenance_steps": 600,
+    "maintenance_cycles": 32,
+    "maintenance_capacity": 64,
+    "replay_records": 16
+  },
+  "content_arms": [
+    "independently_trained_linear",
+    "rank4_residual",
+    "untrained",
+    "exact_sql"
+  ],
+  "composition_arms": [
+    "two_typed_rank4",
+    "joint_rank4_block_head",
+    "joint_rank4_dense_head",
+    "exact_sql_same_information_planner"
+  ],
+  "composition_contract": "All learned arms receive the identical 768-dimensional entity/workflow pair array, identical row schedule, all 40 target coordinates, seven equally weighted output groups, and equal steps/batch size. Typed and block-head joint each have 21544 free/stored float32 scalars and equal dense matrix multiply counts; the joint adapter mixes both slots. The stronger dense-head joint has 36904 scalars and its extra compute/storage are charged. All arms share the exact episodic values, exceptions and bounded interpreter. Pair offsets train=[0,1], calibration=[5,7], held=[11,13] are disjoint at every capacity.",
+  "routing_arms": [
+    "oracle",
+    "deterministic",
+    "learned",
+    "nearest_training_embedding"
+  ],
+  "routing_selection": "Training, calibration and held wording groups are distinct. Both learned and nearest-embedding confidence thresholds are selected on calibration only. Candidates [0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,0.95,0.99]; require zero accepted unsupported/ambiguous calibration requests, maximize exact correct-known acceptance, ties prefer higher threshold. If no threshold qualifies, reject all. No held relaxation or outcome-driven retries.",
+  "structure": "On a preregistered policy correction, propose two groups using deterministic two-means of training loss gradients. Compare two private rank4 adapters against static alternating experts and one rank8 adapter, all sharing the same frozen head. Every arm consumes the exact same global row schedule; children only process their routed rows. Record per-parameter optimizer steps because routed children may have empty minibatches. Merge distills routed child behavior. Admit split only with strictly better calibration quality than both controls, no canonical-read regression, and complete noninferior lifecycle cost; missing costs deny promotion. Merge requires no calibration/canonical regression and a complete cost improvement. Canonical reads concern stored knowledge, not unseen facts. Worded structural reads use true registry addresses to select saved cluster membership and are conditional on oracle addressing; learned address access is evaluated separately.",
+  "maintenance": "32 cycles per seed at 64 known addresses. Compare full replay against 16-record replay sampling: each ordinary cycle deterministically samples 15 afresh without replacement from the complete active list and includes the corrected/inserted record (compatibility arm name reservoir16; no persistent streaming reservoir); same 600x32 presentations, exact SQL reference. Every eighth cycle deletes a record, immediately denies it before any model read, then clean-rebuilds from the original initialization on all retained records. The next cycle inserts a new version. Raw schedules, all checkpoints, before/after reads, clean initialization identities, active lineage and stopped-owner denials are retained. Historical artifacts remain for audit; this is service revocation/rebuild rather than physical erasure.",
+  "native_bridge": "Export at least one original trained V9-research tensor checkpoint without changing float32 bits plus a separately identified V10-trained checkpoint. Canonical owner import/source mapping, owner cut, feature cache and training lineage must be explicit. Both use the new residual numeric/profile contract; existing byte/catalog execution is not substituted for them.",
+  "numeric_contract": {
+    "training": "NumPy float32 factored residual",
+    "reference": "independent scalar float64 factored residual",
+    "native": "hepta.memory.f32-f64-residual.v1",
+    "logit_absolute_tolerance": 0.0001,
+    "logit_relative_tolerance": 1e-05,
+    "minimum_raw_logit_margin": 0.001
+  },
+  "freeze": "Root publishes protocol/source/input identity before formal fits. Development uses distinct seed and generated development fixtures, never formal held wording/outcomes. The fit child never opens held files; it exits before fresh evaluation children load them. Preserve failed attempts and stop rather than silently overwriting evidence.",
+  "cost": "Report source, encoder, cached features, weights, heads, routes, optimizer/sample schedules, candidates and retained history separately. Capture every worker return code, wall, child user/system CPU, max RSS, raw stage receipts and artifact byte inventories. Partially rotate six read arms by offsets 0, 1, 2 across the three seeds; this partial rotation is not a fully counterbalanced order design. No repeated addition of nested CPU scopes. Report unmeasured installation/upload/host or sampling intervals; do not claim exact full lifecycle cost or a win if any required scope is absent. Quality and cost gates remain separate from test success.",
+  "publication_authority": false,
+  "routing_minimum_probability_margin": 0.05,
+  "native_operation_router": {
+    "classes": [
+      "semantic",
+      "procedure",
+      "apply",
+      "reject"
+    ],
+    "architecture": "independently trained linear four-class head on pinned 384-dimensional MiniLM",
+    "steps": 800,
+    "batch_size": 32,
+    "learning_rate": 0.01,
+    "seed_offset_from_native_content": 5000,
+    "normalization": "only unique owner-registry key/alias matches replaced by ENTITY/WORKFLOW; deterministic key binding is explicit",
+    "train_calibration_templates": "corpus.py fixed train and calibration groups; no native actual query or held template read",
+    "policy_files": [
+      "memory-cell-v10/inventory_worker.py",
+      "memory-cell-v10/routing.py",
+      "memory-cell-v10/reference.py",
+      "memory-cell-v10/export_native.py",
+      "memory-cell-adapters/encoder.py"
+    ]
+  },
+  "episodic_contract": "Two source-backed events at effective times 10 and 20 per entity; latest-at-20 SQL read plus explicit current hold source. Memory models store only policy/procedure values; every learned and SQL planner shares exact episode/hold evidence and interpreter.",
+  "structure_detail": {
+    "correction": "indices divisible by 7: add [5,3,7] modulo16 to reserve/pack/limit",
+    "proposal": "two-means of per-row B training gradients, first center maxnorm, second farthest, exactly20 updates; no replacement on degenerate proposal",
+    "query_routing": "True registry address supplied by the evaluator selects saved cluster membership: an oracle-address condition. Value target labels are not consulted for prediction; learned addressing is a separate experiment.",
+    "head_storage": "logical shared head counted once; physical duplicated checkpoint bytes charged separately",
+    "merge": "rank4 candidate distills routed child sigmoid probabilities for600 fixed steps"
+  },
+  "maintenance_detail": {
+    "correction_index": "cycle*7 mod64",
+    "correction_delta": [
+      3,
+      5,
+      7
+    ],
+    "deleted_index": "(cycle//8)*13 mod64",
+    "deletion_schedule": "cycles8,16,24,32",
+    "insertion_schedule": "following cycle when within declared32",
+    "lineage": "all historical fit sources retained for incremental models; clean reconstruction excludes every deleted-source version; historical lineage alone is not valid live owner authority",
+    "guard_scope": "research evaluator separately executes service deletion/stopped guards; real owner proof belongs to native integration",
+    "replay_sampling": "reservoir16 is a compatibility label for per-cycle sampling from the full active list:15 retained records without replacement plus the corrected/inserted record; it is not a persistent streaming reservoir. Deletion rebuilds sample all retained records in both arms."
+  }
+}
