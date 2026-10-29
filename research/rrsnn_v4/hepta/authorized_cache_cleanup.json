@@ -1,0 +1,39 @@
+{
+  "schema": "rrsnn.authorized-reproducible-cache-cleanup.v1",
+  "at_unix_ns": 1793284606533328943,
+  "removed_paths": [
+    "/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/native_build/target/release/deps",
+    "/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/native_build/target/release/build",
+    "/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/native_build/target/release/.fingerprint",
+    "/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/native_build/target/release/incremental",
+    "/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/native_results/owners-4096-1793280047530745972/stores",
+    "/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/native_results/owners-64-1793279483009461088/stores"
+  ],
+  "estimated_allocated_bytes_reclaimed": 101855232,
+  "free_bytes_before": 196468736,
+  "free_bytes_after": 298676224,
+  "root_binary_sha256_before": {
+    "/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/native_build/target/release/rrsnn-native-owner": "b161a4131076b2b795b47609fe787256deeae508340089c46762990c181659ba",
+    "/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/native_build/target/release/rrsnn-native-bootstrap-repair": "21ef09d33d4390a6fe324bbf85eb71fba4c7c01ed44f81631f3e9fcf762dfed9"
+  },
+  "root_binary_sha256_after": {
+    "/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/native_build/target/release/rrsnn-native-owner": "b161a4131076b2b795b47609fe787256deeae508340089c46762990c181659ba",
+    "/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/native_build/target/release/rrsnn-native-bootstrap-repair": "21ef09d33d4390a6fe324bbf85eb71fba4c7c01ed44f81631f3e9fcf762dfed9"
+  },
+  "fully_summarized_stores": [
+    {
+      "path": "/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/native_results/owners-4096-1793280047530745972/stores",
+      "summary_sha256": "c3a62ec5eaa359c6eee4baa8e78d5eb8c9de1e5264657d813777a17e30ce0b7f",
+      "timing_file_count": 32,
+      "remaining_entries": 1973
+    },
+    {
+      "path": "/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/native_results/owners-64-1793279483009461088/stores",
+      "summary_sha256": "94c7de559a8239ba42136b50d76f42d7180b8c4c43a087f6ec716327a115ec67",
+      "timing_file_count": 32,
+      "remaining_entries": 128
+    }
+  ],
+  "sources_results_checkpoints_unique_crash_stores_preserved": true,
+  "original_failure_preserved": true
+}

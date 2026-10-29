@@ -1,0 +1,26 @@
+{
+  "schema": "rrsnn.v4-bootstrap-ci-observation.1",
+  "commit": "fda9689456189c7dad3a1d033b5488d02b29334a",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "run": 40896889641,
+  "scope": "Read-only observation of automatically triggered CI. No reruns or filter changes. Local log files are labelled diagnostic excerpts, not unabridged logs.",
+  "full_repository_gate_green": false,
+  "observations": [
+    {
+      "job": 123529652593,
+      "conclusion": "failure",
+      "observed_failures": "Unwrap/expect lint in unchanged hepta-fleet/automation/memory/agentd, and missing DurableLedger.append_qualification in hepta-agentd tests.",
+      "interpretation": "Observed errors refer to paths outside this two-file patch; this observation is not a full baseline-equivalence proof.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40896889641/job/123529652593"
+    },
+    {
+      "job": 123529652474,
+      "conclusion": "failure",
+      "observed_failures": "Windows release linking reports MinGW/MSVC undefined symbols including __mingw_vsnprintf and RtlSecureZeroMemory in rmcp-client/exec-server and other unchanged targets.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/40896889641/job/123529652474"
+    }
+  ],
+  "targeted_local_evidence": "86 real changed-crate unit tests on pre-format source; final formatting-only supersession is explicitly bound in its separate receipt.",
+  "qualification": "Rust format, manifest, cargo shear and Native Hepta path checks succeeded; path checks do not substitute for runtime unit tests. Automatic broader checks are not all green.",
+  "endpoint_limitations": "Generic fetch rejects jobs and check-run annotations; dedicated job-log tool succeeded for the two quoted logs. Cargo-deny log attempt returned a transport error; its cause is not inferred."
+}
