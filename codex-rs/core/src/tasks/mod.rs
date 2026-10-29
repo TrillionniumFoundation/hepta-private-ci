@@ -63,6 +63,7 @@ use codex_otel::TURN_TOKEN_USAGE_METRIC;
 use codex_otel::TURN_TOOL_CALL_METRIC;
 use codex_otel::TURN_UNIFIED_EXEC_RUNNING_PROCESSES_METRIC;
 use codex_protocol::models::ResponseItem;
+use codex_protocol::protocol::Event;
 use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::MultiAgentVersion;
 use codex_protocol::protocol::TokenUsage;
@@ -722,6 +723,42 @@ impl Drop for StartTransitionOwner {
     }
 }
 
+struct TerminalEventCompletionEntry {
+    identity: Arc<()>,
+    turn_id: String,
+    completions: Vec<Arc<StartTransitionCompletion>>,
+}
+
+/// Private runtime observation data; this queue never owns admission authority.
+/// It is allocated with the thread runtime and discarded with that runtime.
+#[derive(Default)]
+struct TerminalEventCompletionQueue {
+    entries: std::sync::Mutex<std::collections::VecDeque<TerminalEventCompletionEntry>>,
+    publisher: Arc<tokio::sync::Mutex<()>>,
+    receiver: tokio::sync::Mutex<()>,
+}
+
+/// Keeps sidecar insertion and event enqueue in the same publication order.
+/// This guard observes completion owners and never carries admission authority.
+pub(crate) struct TerminalEventPublication {
+    identity: Arc<()>,
+    _publisher: tokio::sync::OwnedMutexGuard<()>,
+}
+
+fn terminal_event_turn_id(event: &Event) -> Option<&str> {
+    match &event.msg {
+        EventMsg::TurnComplete(turn) => Some(&turn.turn_id),
+        EventMsg::TurnAborted(turn) => Some(turn.turn_id.as_deref().unwrap_or(&event.id)),
+        _ => None,
+    }
+}
+
+async fn wait_for_completion_owners(completions: Vec<Arc<StartTransitionCompletion>>) {
+    for completion in completions {
+        completion.wait().await;
+    }
+}
+
 impl Session {
     /// Registers the completion fence before releasing the active-turn lock.
     /// The registry intentionally outlives `ActiveTurn::start_transition` so
@@ -977,6 +1014,120 @@ impl Session {
             })
             .map(|(_, completion, _, _, _, _)| Arc::clone(completion))
             .collect()
+    }
+
+    fn pending_turn_completion_owners(
+        &self,
+        turn_id: Option<&str>,
+    ) -> Vec<Arc<StartTransitionCompletion>> {
+        let mut completions = self.pending_start_transition_completions();
+        completions.extend(self.pending_task_terminalization_completions_except(None));
+        completions
+            .retain(|completion| turn_id.is_none_or(|turn_id| completion.turn_id() == turn_id));
+        completions
+    }
+
+    /// Captures the currently registered owners before returning. Awaiting the
+    /// barrier neither retires a fence nor follows owners registered later.
+    /// Idle contributors capture owners that still fence the current callback.
+    pub(crate) fn turn_completion_barrier(
+        &self,
+        turn_id: Option<&str>,
+    ) -> impl std::future::Future<Output = ()> + Send + 'static + use<> {
+        wait_for_completion_owners(self.pending_turn_completion_owners(turn_id))
+    }
+
+    /// Attach exact completion identities before a terminal event enters the
+    /// event channel. Retain the returned publication guard through the send:
+    /// insertion order must match event order even when two publishers reuse a
+    /// logical turn id. Publisher, receiver and owner-registry locks are distinct.
+    /// A receive-time registry lookup cannot safely identify an old generation.
+    pub(crate) async fn capture_terminal_event_completion(
+        &self,
+        event: &Event,
+    ) -> Option<TerminalEventPublication> {
+        let turn_id = terminal_event_turn_id(event)?;
+        let queue = self
+            .services
+            .thread_extension_data
+            .get_or_init::<TerminalEventCompletionQueue>(Default::default);
+        let publisher = Arc::clone(&queue.publisher).lock_owned().await;
+        let identity = Arc::new(());
+        let entry = TerminalEventCompletionEntry {
+            identity: Arc::clone(&identity),
+            turn_id: turn_id.to_string(),
+            completions: self.pending_turn_completion_owners(Some(turn_id)),
+        };
+        queue
+            .entries
+            .lock()
+            .unwrap_or_else(|error| panic!("terminal event completion queue poisoned: {error:?}"))
+            .push_back(entry);
+        Some(TerminalEventPublication {
+            identity,
+            _publisher: publisher,
+        })
+    }
+
+    /// Remove an undeliverable event's observation without signalling owners.
+    pub(crate) fn discard_terminal_event_completion(&self, publication: &TerminalEventPublication) {
+        if let Some(queue) = self
+            .services
+            .thread_extension_data
+            .get::<TerminalEventCompletionQueue>()
+        {
+            queue
+                .entries
+                .lock()
+                .unwrap_or_else(|error| {
+                    panic!("terminal event completion queue poisoned: {error:?}")
+                })
+                .retain(|entry| !Arc::ptr_eq(&entry.identity, &publication.identity));
+        }
+    }
+
+    /// Serialize receive-and-pair across replacement listeners. Without this
+    /// lock, two receivers could dequeue same-id events in order but claim their
+    /// FIFO sidecars in the opposite order on different executor threads.
+    pub(crate) async fn receive_event_with_completion(
+        &self,
+        io: &crate::session::SessionIo,
+    ) -> CodexResult<(
+        Event,
+        impl std::future::Future<Output = ()> + Send + 'static + use<>,
+    )> {
+        let queue = self
+            .services
+            .thread_extension_data
+            .get_or_init::<TerminalEventCompletionQueue>(Default::default);
+        let _receiver = queue.receiver.lock().await;
+        let event = io.next_event().await?;
+        let completion = self.take_terminal_event_completion(&event);
+        Ok((event, completion))
+    }
+
+    /// Consume the publication-time sidecar with the received event. Events for
+    /// one logical turn are FIFO; no registry lookup occurs here. The queue is
+    /// bounded by unread terminal events, and dropping the returned observer
+    /// only releases its Arcs, never an admission or shutdown fence.
+    pub(crate) fn take_terminal_event_completion(
+        &self,
+        event: &Event,
+    ) -> impl std::future::Future<Output = ()> + Send + 'static + use<> {
+        let completions = terminal_event_turn_id(event)
+            .and_then(|turn_id| {
+                let queue = self
+                    .services
+                    .thread_extension_data
+                    .get::<TerminalEventCompletionQueue>()?;
+                let mut entries = queue.entries.lock().unwrap_or_else(|error| {
+                    panic!("terminal event completion queue poisoned: {error:?}")
+                });
+                let position = entries.iter().position(|entry| entry.turn_id == turn_id)?;
+                entries.remove(position).map(|entry| entry.completions)
+            })
+            .unwrap_or_default();
+        wait_for_completion_owners(completions)
     }
 
     /// Shutdown waits for every materialized task terminalizer.  A panic or
@@ -1443,7 +1594,7 @@ impl Session {
             return None;
         }
         let identity = Arc::new(());
-        let completion = StartTransitionCompletion::new();
+        let completion = StartTransitionCompletion::new(turn_context.sub_id.clone());
         active_turn.task_terminalization = Some(TaskTerminalization {
             identity: Arc::clone(&identity),
             task_identity: Arc::clone(task_identity),
@@ -4369,3 +4520,6 @@ fn qualification_admission_identity(
 #[cfg(test)]
 #[path = "mod_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+mod terminal_event_barrier_tests;

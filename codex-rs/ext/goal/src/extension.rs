@@ -151,12 +151,7 @@ where
                 return;
             };
 
-            if let Err(err) = runtime.continue_if_idle().await {
-                tracing::warn!(
-                    "failed to continue active goal for idle thread {}: {err}",
-                    runtime.thread_id()
-                );
-            }
+            runtime.schedule_idle_continuation().await;
         })
     }
 

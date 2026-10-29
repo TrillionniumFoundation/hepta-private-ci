@@ -50,6 +50,7 @@ struct GoalRuntimeInner {
     enabled: AtomicBool,
     tools_available_for_thread: bool,
     goal_state_lock: Semaphore,
+    idle_continuation_pending: AtomicBool,
 }
 
 pub(crate) struct AccountedGoalProgress {
@@ -102,6 +103,7 @@ impl GoalRuntimeHandle {
                 enabled: AtomicBool::new(config.enabled),
                 tools_available_for_thread: config.tools_available_for_thread,
                 goal_state_lock: Semaphore::new(/*permits*/ 1),
+                idle_continuation_pending: AtomicBool::new(false),
             }),
         }
     }
@@ -357,6 +359,49 @@ impl GoalRuntimeHandle {
             Some(_) | None => self.inner.accounting_state.clear_active_goal(),
         }
         Ok(())
+    }
+
+    /// Idle callbacks run before their owner's completion fence is retired.
+    /// Capture that fence now and wake once afterward, without granting this
+    /// extension privileged admission or blocking the callback on itself.
+    pub(crate) async fn schedule_idle_continuation(&self) {
+        if !self.tools_visible() {
+            return;
+        }
+        let Some(thread_manager) = self.inner.thread_manager.upgrade() else {
+            return;
+        };
+        let Ok(thread) = thread_manager.get_thread(self.inner.thread_id).await else {
+            return;
+        };
+        let completion = thread.current_turn_completion_barrier();
+        if self
+            .inner
+            .idle_continuation_pending
+            .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
+            .is_err()
+        {
+            return;
+        }
+        let runtime = self.clone();
+        tokio::spawn(async move {
+            completion.await;
+            // Clear before admission: a new, very short turn may itself reach
+            // idle while this admission reply is still in flight.
+            runtime
+                .inner
+                .idle_continuation_pending
+                .store(false, Ordering::Release);
+            // Re-read the goal, its deferral and tools policy under the usual
+            // lock. Ordinary Core admission still rejects shutdown, active
+            // turns, pending mailbox work and every other completion fence.
+            if let Err(err) = runtime.continue_if_idle().await {
+                tracing::warn!(
+                    "failed to continue active goal for idle thread {}: {err}",
+                    runtime.thread_id()
+                );
+            }
+        });
     }
 
     pub(crate) async fn continue_if_idle(&self) -> Result<(), String> {

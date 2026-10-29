@@ -2465,12 +2465,20 @@ impl Session {
         self.deliver_event_raw(event).await;
     }
 
-    async fn deliver_event_raw(&self, event: Event) {
+    pub(crate) async fn deliver_event_raw(&self, event: Event) {
+        // The guard remains live through the unbounded send, so concurrent
+        // terminal publishers cannot reorder event and completion-sidecar FIFOs.
+        let terminal_completion = self.capture_terminal_event_completion(&event).await;
+        #[cfg(test)]
+        self.pause_terminal_event_publication_for_test(&event).await;
         // Record the last known agent status.
         if let Some(status) = agent_status_from_event(&event.msg) {
             self.agent_status.send_replace(status);
         }
         if let Err(e) = self.tx_event.send(event).await {
+            if let Some(publication) = terminal_completion.as_ref() {
+                self.discard_terminal_event_completion(publication);
+            }
             debug!("dropping event because channel is closed: {e}");
         }
     }
