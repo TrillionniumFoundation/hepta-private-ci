@@ -16,7 +16,8 @@ current production dependency graph receives separate security qualification.
 | ZIP migration | Actual extraction source test passed for both malicious special permission bits and ordinary permissions | Same security record |
 | Async file descriptors | Actual PTY workspace: 27 tests; actual socket module: seven tests; scoped PTY `just fix --locked` passed | `ASYNCFD_IO_SAFETY_REVIEW.json` |
 | Bazel lock | Canonical update and strict error checks passed for the final Cargo/features; native dependency patches materialized | `bazel/NATIVE_PREFLIGHT.json` |
-| Fixture and FIFO changes | Independent source review; complete owner execution is checked by the new-head CI | `OWNER_COMPATIBILITY_REVIEW.json` |
+| Fixture and FIFO changes | Independent source review; canonical `just fix --locked` compiled the default test targets of memory and automation successfully, with no automatic edits | `OWNER_COMPATIBILITY_REVIEW.json` and `owner-fix/SUMMARY.json` |
+| Spelling preflight | Original Codespell rules passed for changed first-party and new review text | `CODESPELL_PREFLIGHT_RESULTS.json` |
 | Earlier SDK worktree failure | Both baseline and prior research head changed only the stale Bazel lock; five suites / 47 tests had passed | `SDK_CLEAN_WORKTREE_FINDING.json` |
 
 `bazel/REPAIR.json` records the earlier successful lock regeneration. The later
