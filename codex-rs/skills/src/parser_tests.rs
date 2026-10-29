@@ -117,3 +117,35 @@ fn preserves_overlong_descriptions_and_short_descriptions() {
         }
     );
 }
+
+#[test]
+fn preserves_aliases_block_scalars_and_unknown_complex_fields() -> Result<(), super::SkillParseError>
+{
+    let parsed = parse_skill_frontmatter_metadata(
+        "---\nname: &name on\ndescription: >-\n  Review changes\n  safely\nmetadata:\n  short-description: *name\nunknown: {nested: [one, two]}\n---\n",
+        || "fallback".to_string(),
+    )?;
+    assert_eq!(
+        parsed,
+        ParsedSkillFrontmatter {
+            name: "on".to_string(),
+            description: "Review changes safely".to_string(),
+            short_description: Some("on".to_string()),
+        }
+    );
+    Ok(())
+}
+
+#[test]
+fn rejects_duplicate_skill_fields_and_does_not_inherit_merge_metadata() {
+    let duplicate = "---\nname: demo\ndescription: one\ndescription: two\n---\n";
+    assert!(matches!(
+        parse_skill_frontmatter_metadata(duplicate, || "fallback".to_string()),
+        Err(super::SkillParseError::InvalidYaml(_))
+    ));
+    let merged = "---\ndefaults: &defaults {description: hidden}\n<<: *defaults\nname: demo\n---\n";
+    assert!(matches!(
+        parse_skill_frontmatter_metadata(merged, || "fallback".to_string()),
+        Err(super::SkillParseError::MissingField("description"))
+    ));
+}

@@ -34,6 +34,19 @@ pub(super) struct SkillMetadataFile {
     pub(super) policy: Option<Policy>,
 }
 
+impl SkillMetadataFile {
+    pub(super) fn parse(contents: &str) -> Result<Self, serde_saphyr::Error> {
+        serde_saphyr::from_str_with_options(
+            contents,
+            serde_saphyr::options! {
+                strict_booleans: true,
+                merge_keys: serde_saphyr::options::MergeKeyPolicy::AsOrdinary,
+                non_finite_float_policy: serde_saphyr::NonFiniteFloatPolicy::PassThrough,
+            },
+        )
+    }
+}
+
 #[derive(Default)]
 pub(super) struct LoadedSkillMetadata {
     pub(super) interface: Option<SkillInterface>,
@@ -127,7 +140,7 @@ pub(super) async fn load_host_skill_metadata(
         }
     };
 
-    let parsed: SkillMetadataFile = match serde_yaml::from_str(&contents) {
+    let parsed = match SkillMetadataFile::parse(&contents) {
         Ok(parsed) => parsed,
         Err(error) => {
             tracing::warn!(
@@ -266,3 +279,7 @@ fn resolve_required_str(
     };
     resolve_str(Some(value), max_len, field)
 }
+
+#[cfg(test)]
+#[path = "metadata_yaml_tests.rs"]
+mod yaml_tests;

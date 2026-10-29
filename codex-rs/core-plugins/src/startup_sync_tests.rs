@@ -1300,6 +1300,52 @@ fn read_extracted_backup_archive_git_sha_rejects_path_traversal_ref() {
     assert!(err.contains("invalid path components"));
 }
 
+#[cfg(unix)]
+#[test]
+fn zipball_extraction_preserves_rwx_permissions_without_special_bits() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let tmp = tempdir().expect("tempdir");
+    let mut extracted = Vec::new();
+    for (name, archived_mode) in [("special", 0o107755_u32), ("ordinary", 0o100640_u32)] {
+        let mut writer = ZipWriter::new(std::io::Cursor::new(Vec::new()));
+        writer
+            .start_file(
+                format!("repository/{name}"),
+                SimpleFileOptions::default().unix_permissions(/*mode*/ 0o755),
+            )
+            .expect("start entry");
+        writer.write_all(b"plugin content").expect("write entry");
+        let mut bytes = writer.finish().expect("finish zip").into_inner();
+
+        // The maintained ZIP writer strips special bits. Craft the central
+        // directory to represent an untrusted archive that retains them.
+        let central_header = bytes
+            .windows(/*size*/ 4)
+            .position(|window| window == b"PK\x01\x02")
+            .expect("central directory header");
+        let attributes = central_header + 38;
+        bytes[attributes..attributes + 4].copy_from_slice(&(archived_mode << 16).to_le_bytes());
+        extract_zipball_to_dir(&bytes, tmp.path()).expect("extract crafted archive");
+        let path = tmp.path().join(name);
+        extracted.push((
+            std::fs::read(&path).expect("read extracted contents"),
+            std::fs::metadata(path)
+                .expect("read extracted metadata")
+                .permissions()
+                .mode()
+                & 0o7777,
+        ));
+    }
+    assert_eq!(
+        extracted,
+        vec![
+            (b"plugin content".to_vec(), 0o755),
+            (b"plugin content".to_vec(), 0o640),
+        ]
+    );
+}
+
 fn curated_repo_zipball_bytes(sha: &str) -> Vec<u8> {
     let cursor = std::io::Cursor::new(Vec::new());
     let mut writer = ZipWriter::new(cursor);
