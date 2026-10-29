@@ -1,0 +1,75 @@
+{
+  "version": "hepta-independent-preregistration-publication-audit-20261029-v1",
+  "observed_unix": 1793280311.0992923,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "commit": "75d24f1be7093bb8fcc8117ad8c47fd6372f7006",
+  "branch": "research/hcsn-callput-rebuild-20261028",
+  "exact_commit_readback": true,
+  "download_url": "https://raw.githubusercontent.com/TrillionniumFoundation/hepta-private-ci/75d24f1be7093bb8fcc8117ad8c47fd6372f7006/research_evidence/hepta_stable_flow_20261029/releases/hepta_stable_flow_preregistration_20261029.tar.gz",
+  "public_remote_archive_sha256": "0047e9ec766a67d8d0530006231cd6624225e656436286d8019eeff5d7c7d4e3",
+  "public_remote_archive_bytes": 1425167,
+  "public_remote_archive_git_blob_sha": "120b0271a0a9dcf7c0677ae01252e6fadc38606b",
+  "direct_file_checks": [
+    {
+      "path": "research_evidence/hepta_stable_flow_20261029/releases/hepta_stable_flow_preregistration_20261029.tar.gz.manifest.json",
+      "remote_git_blob_sha": "8616996191d7be7a66306863426e8b2d0b5b4453",
+      "bytes": 36854,
+      "sha256": "7236d7fa17e684fc9a8ced835186ddece7e011dd438ee68cf1941be94c604f41",
+      "exact_bytes_match": true,
+      "git_blob_sha_matches": true
+    },
+    {
+      "path": "experiments/call_put_stable_flow/flow.py",
+      "remote_git_blob_sha": "360d5a5c62226bd5e7bd61cb079161b617aa5f34",
+      "bytes": 10645,
+      "sha256": "bfbfcbc290d8677cf3872418446981d9d7f67ce6656255b31cc5a75f577fa95e",
+      "exact_bytes_match": true,
+      "git_blob_sha_matches": true
+    },
+    {
+      "path": "experiments/call_put_stable_flow/numerics.py",
+      "remote_git_blob_sha": "5582b6f3c5545acf872179df1f9b984e496da078",
+      "bytes": 4088,
+      "sha256": "a1c24cbe295ffc0ab68d44ad314e7e67e113d478cb652cc4ad5a99ac8dd6ce86",
+      "exact_bytes_match": true,
+      "git_blob_sha_matches": true
+    },
+    {
+      "path": "experiments/call_put_stable_flow/study.py",
+      "remote_git_blob_sha": "74ce4ea7574fed3c3c0f8a64d0f3ae57c2b9a152",
+      "bytes": 31210,
+      "sha256": "12663dc80fb38b18b595812a64f191e70796994ea734d8bfc61c9ec16156ba17",
+      "exact_bytes_match": true,
+      "git_blob_sha_matches": true
+    }
+  ],
+  "checks": {
+    "remote_binary_exact_local_bytes": true,
+    "remote_binary_size_expected": true,
+    "remote_binary_sha256_expected": true,
+    "remote_binary_git_blob_identity_matches_api": true,
+    "remote_archive_all_186_members_verified": true,
+    "all_frozen_core_sources_in_remote_archive_match": true,
+    "frozen_formal_protocol_in_remote_archive_matches": true,
+    "numeric_and_runtime_protocols_in_remote_archive_match": true,
+    "directly_published_kernel_study_and_manifest_exact": true,
+    "growing_training_and_execution_files_excluded": true
+  },
+  "passed": true,
+  "archive_verification": {
+    "status": "verified_bytes_no_scientific_rerun",
+    "phase": "preregistration",
+    "files": 186,
+    "uncompressed_bytes": 2818910,
+    "manifest_identity_sha256": "3d6cfbdd2430de1919dc7b89a70ead7c56ab50590124e01ba3613ae44df15840",
+    "completion_gates": {
+      "candidate_count": 60,
+      "data_splits": 6,
+      "formal_protocol_sha256": "f94ff6491a2e98c1288ee2476404943f920042800d468435eba46d5235c0197b",
+      "frozen_core_files": 11,
+      "meaning": "Frozen source/data/protocol bytes; training may be in progress and is excluded"
+    }
+  },
+  "prior_local_relocated_audit_sha256": "c767ab0db3ae52b0fb08de3d33b03ad20b22c43057d59466d0441f81ccfa0fef",
+  "scope": "Public preregistration snapshot. Formal training is ongoing and excluded from this archive; this does not claim completed formal results or recovery of lost historical archives. The audit is intentionally outside the archive it verifies."
+}
