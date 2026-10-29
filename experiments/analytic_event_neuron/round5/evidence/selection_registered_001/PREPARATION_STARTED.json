@@ -1,0 +1,1972 @@
+{
+  "confirmation_arrays_constructed": false,
+  "created_utc": "2026-10-29T00:10:15.556321+00:00",
+  "environment": {
+    "executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "implementation": "CPython",
+    "machine": "x86_64",
+    "numerical_builds": {
+      "numpy": "Build Dependencies:\n  blas:\n    detection method: pkgconfig\n    found: true\n    include directory: /opt/_internal/cpython-3.12.12/lib/python3.12/site-packages/scipy_openblas64/include\n    lib directory: /opt/_internal/cpython-3.12.12/lib/python3.12/site-packages/scipy_openblas64/lib\n    name: scipy-openblas\n    openblas configuration: OpenBLAS 0.3.30  USE64BITINT DYNAMIC_ARCH NO_AFFINITY\n      Haswell MAX_THREADS=64\n    pc file directory: /project/.openblas\n    version: 0.3.30\n  lapack:\n    detection method: pkgconfig\n    found: true\n    include directory: /opt/_internal/cpython-3.12.12/lib/python3.12/site-packages/scipy_openblas64/include\n    lib directory: /opt/_internal/cpython-3.12.12/lib/python3.12/site-packages/scipy_openblas64/lib\n    name: scipy-openblas\n    openblas configuration: OpenBLAS 0.3.30  USE64BITINT DYNAMIC_ARCH NO_AFFINITY\n      Haswell MAX_THREADS=64\n    pc file directory: /project/.openblas\n    version: 0.3.30\nCompilers:\n  c:\n    commands: cc\n    linker: ld.bfd\n    name: gcc\n    version: 14.2.1\n  c++:\n    commands: c++\n    linker: ld.bfd\n    name: gcc\n    version: 14.2.1\n  cython:\n    commands: cython\n    linker: cython\n    name: cython\n    version: 3.2.1\nMachine Information:\n  build:\n    cpu: x86_64\n    endian: little\n    family: x86_64\n    system: linux\n  host:\n    cpu: x86_64\n    endian: little\n    family: x86_64\n    system: linux\nPython Information:\n  path: /tmp/build-env-aw1mwcap/bin/python\n  version: '3.12'\nSIMD Extensions:\n  baseline:\n  - SSE\n  - SSE2\n  - SSE3\n  found:\n  - SSSE3\n  - SSE41\n  - POPCNT\n  - SSE42\n  - AVX\n  - F16C\n  - FMA3\n  - AVX2\n  - AVX512F\n  - AVX512CD\n  - AVX512_SKX\n  - AVX512_CLX\n  - AVX512_CNL\n  - AVX512_ICL\n  not found:\n  - AVX512_KNL\n  - AVX512_KNM\n  - AVX512_SPR\n\n",
+      "scipy": "Build Dependencies:\n  blas:\n    detection method: pkgconfig\n    found: true\n    has ilp64: false\n    include directory: /opt/_internal/cpython-3.12.11/lib/python3.12/site-packages/scipy_openblas32/include\n    lib directory: /opt/_internal/cpython-3.12.11/lib/python3.12/site-packages/scipy_openblas32/lib\n    name: scipy-openblas\n    openblas configuration: OpenBLAS 0.3.30 DYNAMIC_ARCH NO_AFFINITY Haswell MAX_THREADS=64\n    pc file directory: /project/\n    version: 0.3.30\n  lapack:\n    detection method: pkgconfig\n    found: true\n    has ilp64: false\n    include directory: /opt/_internal/cpython-3.12.11/lib/python3.12/site-packages/scipy_openblas32/include\n    lib directory: /opt/_internal/cpython-3.12.11/lib/python3.12/site-packages/scipy_openblas32/lib\n    name: scipy-openblas\n    openblas configuration: OpenBLAS 0.3.30 DYNAMIC_ARCH NO_AFFINITY Haswell MAX_THREADS=64\n    pc file directory: /project/\n    version: 0.3.30\n  pybind11:\n    detection method: config-tool\n    include directory: unknown\n    name: pybind11\n    version: 3.0.1\nCompilers:\n  c:\n    commands: cc\n    linker: ld.bfd\n    name: gcc\n    version: 14.2.1\n  c++:\n    commands: c++\n    linker: ld.bfd\n    name: gcc\n    version: 14.2.1\n  cython:\n    commands: cython\n    linker: cython\n    name: cython\n    version: 3.2.4\n  fortran:\n    commands: gfortran\n    linker: ld.bfd\n    name: gcc\n    version: 14.2.1\n  pythran:\n    include directory: ../../tmp/build-env-h6rtuvfe/lib/python3.12/site-packages/pythran\n    version: 0.18.1\nMachine Information:\n  build:\n    cpu: x86_64\n    endian: little\n    family: x86_64\n    system: linux\n  cross-compiled: false\n  host:\n    cpu: x86_64\n    endian: little\n    family: x86_64\n    system: linux\nPython Information:\n  path: /tmp/build-env-h6rtuvfe/bin/python\n  version: '3.12'\n\n"
+    },
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "scipy": "1.17.0",
+    "thread_environment": {
+      "BLIS_NUM_THREADS": null,
+      "MKL_DYNAMIC": null,
+      "MKL_NUM_THREADS": null,
+      "NUMEXPR_NUM_THREADS": null,
+      "OMP_DYNAMIC": null,
+      "OMP_NUM_THREADS": null,
+      "OPENBLAS_NUM_THREADS": null,
+      "PYTHONHASHSEED": null,
+      "VECLIB_MAXIMUM_THREADS": null
+    }
+  },
+  "planned_seed_schedule": [
+    {
+      "generator_seed": 7462102494708213,
+      "phase": "prepare",
+      "role": "anchor",
+      "seed": 2131,
+      "window": -1
+    },
+    {
+      "generator_seed": 4990291640661645,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2131,
+      "window": 0
+    },
+    {
+      "generator_seed": 3397034278587669,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2131,
+      "window": 0
+    },
+    {
+      "generator_seed": 4775270136806445,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2131,
+      "window": 0
+    },
+    {
+      "generator_seed": 3178724199287145,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2131,
+      "window": 1
+    },
+    {
+      "generator_seed": 1213637136106943,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2131,
+      "window": 1
+    },
+    {
+      "generator_seed": 2617000621144420,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2131,
+      "window": 1
+    },
+    {
+      "generator_seed": 1767717581665290,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2131,
+      "window": 2
+    },
+    {
+      "generator_seed": 5490195703851644,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2131,
+      "window": 2
+    },
+    {
+      "generator_seed": 7327497692948248,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2131,
+      "window": 2
+    },
+    {
+      "generator_seed": 6304293294437935,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2131,
+      "window": 3
+    },
+    {
+      "generator_seed": 7188653853037221,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2131,
+      "window": 3
+    },
+    {
+      "generator_seed": 4332746573530970,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2131,
+      "window": 3
+    },
+    {
+      "generator_seed": 3501173648620346,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2131,
+      "window": 4
+    },
+    {
+      "generator_seed": 4052575973867252,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2131,
+      "window": 4
+    },
+    {
+      "generator_seed": 6799860780003973,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2131,
+      "window": 4
+    },
+    {
+      "generator_seed": 8548519375535969,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2131,
+      "window": 5
+    },
+    {
+      "generator_seed": 6861944042129440,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2131,
+      "window": 5
+    },
+    {
+      "generator_seed": 2033234971604762,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2131,
+      "window": 5
+    },
+    {
+      "generator_seed": 637177487947172,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2131,
+      "window": 6
+    },
+    {
+      "generator_seed": 4360156744350942,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2131,
+      "window": 6
+    },
+    {
+      "generator_seed": 1433196733232112,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2131,
+      "window": 6
+    },
+    {
+      "generator_seed": 7121040252291232,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2131,
+      "window": 7
+    },
+    {
+      "generator_seed": 8479100606830432,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2131,
+      "window": 7
+    },
+    {
+      "generator_seed": 4714428176740071,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2131,
+      "window": 7
+    },
+    {
+      "generator_seed": 4257996017604431,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2131,
+      "window": 8
+    },
+    {
+      "generator_seed": 1681711515642361,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2131,
+      "window": 8
+    },
+    {
+      "generator_seed": 4735137973509354,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2131,
+      "window": 8
+    },
+    {
+      "generator_seed": 1740489708888,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2131,
+      "window": 9
+    },
+    {
+      "generator_seed": 2960867992115198,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2131,
+      "window": 9
+    },
+    {
+      "generator_seed": 3055168140323891,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2131,
+      "window": 9
+    },
+    {
+      "generator_seed": 5156173629509794,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2131,
+      "window": 10
+    },
+    {
+      "generator_seed": 8335020905107473,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2131,
+      "window": 10
+    },
+    {
+      "generator_seed": 1558233544114914,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2131,
+      "window": 10
+    },
+    {
+      "generator_seed": 7621480924801144,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2131,
+      "window": 11
+    },
+    {
+      "generator_seed": 3072016809397937,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2131,
+      "window": 11
+    },
+    {
+      "generator_seed": 6067389238064626,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2131,
+      "window": 11
+    },
+    {
+      "generator_seed": 2968070223579714,
+      "phase": "confirmation",
+      "role": "old",
+      "seed": 2131,
+      "window": -1
+    },
+    {
+      "generator_seed": 4712103880118505,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2131,
+      "window": 0
+    },
+    {
+      "generator_seed": 8315495227589934,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2131,
+      "window": 1
+    },
+    {
+      "generator_seed": 949906627511780,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2131,
+      "window": 2
+    },
+    {
+      "generator_seed": 3257303914314942,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2131,
+      "window": 3
+    },
+    {
+      "generator_seed": 3491078282643992,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2131,
+      "window": 4
+    },
+    {
+      "generator_seed": 8061198656408014,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2131,
+      "window": 5
+    },
+    {
+      "generator_seed": 6127919751343299,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2131,
+      "window": 6
+    },
+    {
+      "generator_seed": 1514688740342959,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2131,
+      "window": 7
+    },
+    {
+      "generator_seed": 8492749103308782,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2131,
+      "window": 8
+    },
+    {
+      "generator_seed": 3456384762742699,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2131,
+      "window": 9
+    },
+    {
+      "generator_seed": 1245285862395251,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2131,
+      "window": 10
+    },
+    {
+      "generator_seed": 3373436219637586,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2131,
+      "window": 11
+    },
+    {
+      "generator_seed": 4453462158449373,
+      "phase": "prepare",
+      "role": "anchor",
+      "seed": 2377,
+      "window": -1
+    },
+    {
+      "generator_seed": 8772383750218450,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2377,
+      "window": 0
+    },
+    {
+      "generator_seed": 7413814303822684,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2377,
+      "window": 0
+    },
+    {
+      "generator_seed": 4426095403412510,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2377,
+      "window": 0
+    },
+    {
+      "generator_seed": 7735766659631337,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2377,
+      "window": 1
+    },
+    {
+      "generator_seed": 3289178364491765,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2377,
+      "window": 1
+    },
+    {
+      "generator_seed": 801302441303048,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2377,
+      "window": 1
+    },
+    {
+      "generator_seed": 1006000156556284,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2377,
+      "window": 2
+    },
+    {
+      "generator_seed": 2577766672624159,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2377,
+      "window": 2
+    },
+    {
+      "generator_seed": 1634389895852038,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2377,
+      "window": 2
+    },
+    {
+      "generator_seed": 5273760618926684,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2377,
+      "window": 3
+    },
+    {
+      "generator_seed": 2258719699215306,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2377,
+      "window": 3
+    },
+    {
+      "generator_seed": 4799403241776109,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2377,
+      "window": 3
+    },
+    {
+      "generator_seed": 5119113297813509,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2377,
+      "window": 4
+    },
+    {
+      "generator_seed": 2058275073398854,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2377,
+      "window": 4
+    },
+    {
+      "generator_seed": 1348332470005469,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2377,
+      "window": 4
+    },
+    {
+      "generator_seed": 4425624157412356,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2377,
+      "window": 5
+    },
+    {
+      "generator_seed": 1340195370786551,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2377,
+      "window": 5
+    },
+    {
+      "generator_seed": 463595288546418,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2377,
+      "window": 5
+    },
+    {
+      "generator_seed": 8914525323352283,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2377,
+      "window": 6
+    },
+    {
+      "generator_seed": 1079685000895482,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2377,
+      "window": 6
+    },
+    {
+      "generator_seed": 602995107854887,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2377,
+      "window": 6
+    },
+    {
+      "generator_seed": 181428911520894,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2377,
+      "window": 7
+    },
+    {
+      "generator_seed": 8903081709066141,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2377,
+      "window": 7
+    },
+    {
+      "generator_seed": 7684242834582623,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2377,
+      "window": 7
+    },
+    {
+      "generator_seed": 6950141117984468,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2377,
+      "window": 8
+    },
+    {
+      "generator_seed": 2442071648605721,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2377,
+      "window": 8
+    },
+    {
+      "generator_seed": 5703534626858555,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2377,
+      "window": 8
+    },
+    {
+      "generator_seed": 2161558372095016,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2377,
+      "window": 9
+    },
+    {
+      "generator_seed": 4419060843082849,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2377,
+      "window": 9
+    },
+    {
+      "generator_seed": 7143728118639659,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2377,
+      "window": 9
+    },
+    {
+      "generator_seed": 1350687562624835,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2377,
+      "window": 10
+    },
+    {
+      "generator_seed": 1335818728655889,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2377,
+      "window": 10
+    },
+    {
+      "generator_seed": 4610266566977538,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2377,
+      "window": 10
+    },
+    {
+      "generator_seed": 7694106706879649,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2377,
+      "window": 11
+    },
+    {
+      "generator_seed": 3585827120219382,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2377,
+      "window": 11
+    },
+    {
+      "generator_seed": 8318607599676397,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2377,
+      "window": 11
+    },
+    {
+      "generator_seed": 6222405795871623,
+      "phase": "confirmation",
+      "role": "old",
+      "seed": 2377,
+      "window": -1
+    },
+    {
+      "generator_seed": 422084543490815,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2377,
+      "window": 0
+    },
+    {
+      "generator_seed": 676260076978500,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2377,
+      "window": 1
+    },
+    {
+      "generator_seed": 5763338670410701,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2377,
+      "window": 2
+    },
+    {
+      "generator_seed": 743424787934118,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2377,
+      "window": 3
+    },
+    {
+      "generator_seed": 6096985648651648,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2377,
+      "window": 4
+    },
+    {
+      "generator_seed": 5455720464109704,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2377,
+      "window": 5
+    },
+    {
+      "generator_seed": 3653208554833162,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2377,
+      "window": 6
+    },
+    {
+      "generator_seed": 5220251196250772,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2377,
+      "window": 7
+    },
+    {
+      "generator_seed": 2299042620567198,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2377,
+      "window": 8
+    },
+    {
+      "generator_seed": 6822157737517261,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2377,
+      "window": 9
+    },
+    {
+      "generator_seed": 8072741187030038,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2377,
+      "window": 10
+    },
+    {
+      "generator_seed": 6935229596537041,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2377,
+      "window": 11
+    },
+    {
+      "generator_seed": 6970806257840098,
+      "phase": "prepare",
+      "role": "anchor",
+      "seed": 2539,
+      "window": -1
+    },
+    {
+      "generator_seed": 4238920956460117,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2539,
+      "window": 0
+    },
+    {
+      "generator_seed": 4205088368299480,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2539,
+      "window": 0
+    },
+    {
+      "generator_seed": 6343878821681888,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2539,
+      "window": 0
+    },
+    {
+      "generator_seed": 7761443609513817,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2539,
+      "window": 1
+    },
+    {
+      "generator_seed": 3861959991025908,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2539,
+      "window": 1
+    },
+    {
+      "generator_seed": 3536414812429688,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2539,
+      "window": 1
+    },
+    {
+      "generator_seed": 3763072782678099,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2539,
+      "window": 2
+    },
+    {
+      "generator_seed": 5684699724597423,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2539,
+      "window": 2
+    },
+    {
+      "generator_seed": 1783357483595576,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2539,
+      "window": 2
+    },
+    {
+      "generator_seed": 3966571089342405,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2539,
+      "window": 3
+    },
+    {
+      "generator_seed": 617280327220086,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2539,
+      "window": 3
+    },
+    {
+      "generator_seed": 3141010115377189,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2539,
+      "window": 3
+    },
+    {
+      "generator_seed": 7404105721936912,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2539,
+      "window": 4
+    },
+    {
+      "generator_seed": 8442740506458750,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2539,
+      "window": 4
+    },
+    {
+      "generator_seed": 5870836704395313,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2539,
+      "window": 4
+    },
+    {
+      "generator_seed": 5054140218055660,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2539,
+      "window": 5
+    },
+    {
+      "generator_seed": 3251613559779198,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2539,
+      "window": 5
+    },
+    {
+      "generator_seed": 1672890618402940,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2539,
+      "window": 5
+    },
+    {
+      "generator_seed": 4399645742383150,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2539,
+      "window": 6
+    },
+    {
+      "generator_seed": 579259275961307,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2539,
+      "window": 6
+    },
+    {
+      "generator_seed": 5059990281097318,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2539,
+      "window": 6
+    },
+    {
+      "generator_seed": 6277027001930411,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2539,
+      "window": 7
+    },
+    {
+      "generator_seed": 8380808299076721,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2539,
+      "window": 7
+    },
+    {
+      "generator_seed": 6653344010331760,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2539,
+      "window": 7
+    },
+    {
+      "generator_seed": 3726981022630824,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2539,
+      "window": 8
+    },
+    {
+      "generator_seed": 535129855400817,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2539,
+      "window": 8
+    },
+    {
+      "generator_seed": 2760205410135383,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2539,
+      "window": 8
+    },
+    {
+      "generator_seed": 7389782823552697,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2539,
+      "window": 9
+    },
+    {
+      "generator_seed": 8661397517483954,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2539,
+      "window": 9
+    },
+    {
+      "generator_seed": 8836970471758961,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2539,
+      "window": 9
+    },
+    {
+      "generator_seed": 7394627130226390,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2539,
+      "window": 10
+    },
+    {
+      "generator_seed": 7626267880678351,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2539,
+      "window": 10
+    },
+    {
+      "generator_seed": 5802983286608802,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2539,
+      "window": 10
+    },
+    {
+      "generator_seed": 3319499032367475,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2539,
+      "window": 11
+    },
+    {
+      "generator_seed": 2457069603702012,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2539,
+      "window": 11
+    },
+    {
+      "generator_seed": 1844612849742361,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2539,
+      "window": 11
+    },
+    {
+      "generator_seed": 3243319586498553,
+      "phase": "confirmation",
+      "role": "old",
+      "seed": 2539,
+      "window": -1
+    },
+    {
+      "generator_seed": 5047082148925449,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2539,
+      "window": 0
+    },
+    {
+      "generator_seed": 4866344799357117,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2539,
+      "window": 1
+    },
+    {
+      "generator_seed": 2332680953644437,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2539,
+      "window": 2
+    },
+    {
+      "generator_seed": 1117592615471860,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2539,
+      "window": 3
+    },
+    {
+      "generator_seed": 6948822714367010,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2539,
+      "window": 4
+    },
+    {
+      "generator_seed": 3655506959519655,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2539,
+      "window": 5
+    },
+    {
+      "generator_seed": 3198559222588906,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2539,
+      "window": 6
+    },
+    {
+      "generator_seed": 3546883665928080,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2539,
+      "window": 7
+    },
+    {
+      "generator_seed": 6442649703458737,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2539,
+      "window": 8
+    },
+    {
+      "generator_seed": 4190312168724911,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2539,
+      "window": 9
+    },
+    {
+      "generator_seed": 1531742686130989,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2539,
+      "window": 10
+    },
+    {
+      "generator_seed": 6351876970613085,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2539,
+      "window": 11
+    },
+    {
+      "generator_seed": 7081155967401963,
+      "phase": "prepare",
+      "role": "anchor",
+      "seed": 2791,
+      "window": -1
+    },
+    {
+      "generator_seed": 8153225795609515,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2791,
+      "window": 0
+    },
+    {
+      "generator_seed": 1710727383140799,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2791,
+      "window": 0
+    },
+    {
+      "generator_seed": 3038474978912108,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2791,
+      "window": 0
+    },
+    {
+      "generator_seed": 4529335551219898,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2791,
+      "window": 1
+    },
+    {
+      "generator_seed": 6724876590129539,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2791,
+      "window": 1
+    },
+    {
+      "generator_seed": 7577332631532604,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2791,
+      "window": 1
+    },
+    {
+      "generator_seed": 5816793914221020,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2791,
+      "window": 2
+    },
+    {
+      "generator_seed": 8220788792486026,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2791,
+      "window": 2
+    },
+    {
+      "generator_seed": 4099642521831109,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2791,
+      "window": 2
+    },
+    {
+      "generator_seed": 7530948562617533,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2791,
+      "window": 3
+    },
+    {
+      "generator_seed": 3317244433354065,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2791,
+      "window": 3
+    },
+    {
+      "generator_seed": 8381814148526743,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2791,
+      "window": 3
+    },
+    {
+      "generator_seed": 7301859249245284,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2791,
+      "window": 4
+    },
+    {
+      "generator_seed": 811901003302696,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2791,
+      "window": 4
+    },
+    {
+      "generator_seed": 1030092195944133,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2791,
+      "window": 4
+    },
+    {
+      "generator_seed": 5106152931642463,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2791,
+      "window": 5
+    },
+    {
+      "generator_seed": 5246322061090971,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2791,
+      "window": 5
+    },
+    {
+      "generator_seed": 7933123745657626,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2791,
+      "window": 5
+    },
+    {
+      "generator_seed": 5470190111094546,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2791,
+      "window": 6
+    },
+    {
+      "generator_seed": 6956925660171462,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2791,
+      "window": 6
+    },
+    {
+      "generator_seed": 104889941251241,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2791,
+      "window": 6
+    },
+    {
+      "generator_seed": 8799663323962769,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2791,
+      "window": 7
+    },
+    {
+      "generator_seed": 6593878167921871,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2791,
+      "window": 7
+    },
+    {
+      "generator_seed": 7696287347537842,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2791,
+      "window": 7
+    },
+    {
+      "generator_seed": 1286348970466329,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2791,
+      "window": 8
+    },
+    {
+      "generator_seed": 7150840196438307,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2791,
+      "window": 8
+    },
+    {
+      "generator_seed": 7239617982092651,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2791,
+      "window": 8
+    },
+    {
+      "generator_seed": 5211565501713482,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2791,
+      "window": 9
+    },
+    {
+      "generator_seed": 6778281534742608,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2791,
+      "window": 9
+    },
+    {
+      "generator_seed": 2108427191589595,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2791,
+      "window": 9
+    },
+    {
+      "generator_seed": 7210133638378133,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2791,
+      "window": 10
+    },
+    {
+      "generator_seed": 2235199391216744,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2791,
+      "window": 10
+    },
+    {
+      "generator_seed": 783445143422555,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2791,
+      "window": 10
+    },
+    {
+      "generator_seed": 2412727354261500,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 2791,
+      "window": 11
+    },
+    {
+      "generator_seed": 5273396521755375,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 2791,
+      "window": 11
+    },
+    {
+      "generator_seed": 1614180621526213,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 2791,
+      "window": 11
+    },
+    {
+      "generator_seed": 5658337788263000,
+      "phase": "confirmation",
+      "role": "old",
+      "seed": 2791,
+      "window": -1
+    },
+    {
+      "generator_seed": 3008081522973566,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2791,
+      "window": 0
+    },
+    {
+      "generator_seed": 3318193882747724,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2791,
+      "window": 1
+    },
+    {
+      "generator_seed": 3854660330939694,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2791,
+      "window": 2
+    },
+    {
+      "generator_seed": 4717801730981873,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2791,
+      "window": 3
+    },
+    {
+      "generator_seed": 4743466314156199,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2791,
+      "window": 4
+    },
+    {
+      "generator_seed": 7139787649595629,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2791,
+      "window": 5
+    },
+    {
+      "generator_seed": 2855571761373816,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2791,
+      "window": 6
+    },
+    {
+      "generator_seed": 1896721254674888,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2791,
+      "window": 7
+    },
+    {
+      "generator_seed": 7933638077451973,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2791,
+      "window": 8
+    },
+    {
+      "generator_seed": 3715793891042989,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2791,
+      "window": 9
+    },
+    {
+      "generator_seed": 2206768533810016,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2791,
+      "window": 10
+    },
+    {
+      "generator_seed": 6741119998884031,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 2791,
+      "window": 11
+    },
+    {
+      "generator_seed": 8548018201195056,
+      "phase": "prepare",
+      "role": "anchor",
+      "seed": 3011,
+      "window": -1
+    },
+    {
+      "generator_seed": 2602835564581736,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 3011,
+      "window": 0
+    },
+    {
+      "generator_seed": 7451525093201044,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 3011,
+      "window": 0
+    },
+    {
+      "generator_seed": 3265518197320809,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 3011,
+      "window": 0
+    },
+    {
+      "generator_seed": 6425443155320474,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 3011,
+      "window": 1
+    },
+    {
+      "generator_seed": 4426180376499331,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 3011,
+      "window": 1
+    },
+    {
+      "generator_seed": 8504229357329863,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 3011,
+      "window": 1
+    },
+    {
+      "generator_seed": 8462502619132620,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 3011,
+      "window": 2
+    },
+    {
+      "generator_seed": 3826710738640971,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 3011,
+      "window": 2
+    },
+    {
+      "generator_seed": 7377257041461962,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 3011,
+      "window": 2
+    },
+    {
+      "generator_seed": 4043398728215587,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 3011,
+      "window": 3
+    },
+    {
+      "generator_seed": 5877934151140665,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 3011,
+      "window": 3
+    },
+    {
+      "generator_seed": 1481027839606141,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 3011,
+      "window": 3
+    },
+    {
+      "generator_seed": 6230378960554311,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 3011,
+      "window": 4
+    },
+    {
+      "generator_seed": 3933509844010912,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 3011,
+      "window": 4
+    },
+    {
+      "generator_seed": 4804333407682207,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 3011,
+      "window": 4
+    },
+    {
+      "generator_seed": 2125950274665749,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 3011,
+      "window": 5
+    },
+    {
+      "generator_seed": 573347451930666,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 3011,
+      "window": 5
+    },
+    {
+      "generator_seed": 35553466571685,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 3011,
+      "window": 5
+    },
+    {
+      "generator_seed": 8679662620926445,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 3011,
+      "window": 6
+    },
+    {
+      "generator_seed": 6470125784926393,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 3011,
+      "window": 6
+    },
+    {
+      "generator_seed": 7006797186227307,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 3011,
+      "window": 6
+    },
+    {
+      "generator_seed": 4302981168921448,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 3011,
+      "window": 7
+    },
+    {
+      "generator_seed": 5567456738936146,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 3011,
+      "window": 7
+    },
+    {
+      "generator_seed": 5288613739687414,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 3011,
+      "window": 7
+    },
+    {
+      "generator_seed": 7858781952860316,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 3011,
+      "window": 8
+    },
+    {
+      "generator_seed": 2929373547554609,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 3011,
+      "window": 8
+    },
+    {
+      "generator_seed": 2412738588580822,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 3011,
+      "window": 8
+    },
+    {
+      "generator_seed": 7479817692638596,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 3011,
+      "window": 9
+    },
+    {
+      "generator_seed": 7975968402443888,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 3011,
+      "window": 9
+    },
+    {
+      "generator_seed": 3444130537516285,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 3011,
+      "window": 9
+    },
+    {
+      "generator_seed": 1050745750174509,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 3011,
+      "window": 10
+    },
+    {
+      "generator_seed": 3960164045352541,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 3011,
+      "window": 10
+    },
+    {
+      "generator_seed": 5321519642513237,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 3011,
+      "window": 10
+    },
+    {
+      "generator_seed": 2289069040340655,
+      "phase": "prepare",
+      "role": "train",
+      "seed": 3011,
+      "window": 11
+    },
+    {
+      "generator_seed": 4455104186330529,
+      "phase": "prepare",
+      "role": "old_dev",
+      "seed": 3011,
+      "window": 11
+    },
+    {
+      "generator_seed": 6727646178642697,
+      "phase": "prepare",
+      "role": "new_dev",
+      "seed": 3011,
+      "window": 11
+    },
+    {
+      "generator_seed": 1463212617892043,
+      "phase": "confirmation",
+      "role": "old",
+      "seed": 3011,
+      "window": -1
+    },
+    {
+      "generator_seed": 1064970363856739,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 3011,
+      "window": 0
+    },
+    {
+      "generator_seed": 2666908742319686,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 3011,
+      "window": 1
+    },
+    {
+      "generator_seed": 1124334161206133,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 3011,
+      "window": 2
+    },
+    {
+      "generator_seed": 1182636367465939,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 3011,
+      "window": 3
+    },
+    {
+      "generator_seed": 6235249646783460,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 3011,
+      "window": 4
+    },
+    {
+      "generator_seed": 3663539814642245,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 3011,
+      "window": 5
+    },
+    {
+      "generator_seed": 6560913475717396,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 3011,
+      "window": 6
+    },
+    {
+      "generator_seed": 7069307667472284,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 3011,
+      "window": 7
+    },
+    {
+      "generator_seed": 6918439672776128,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 3011,
+      "window": 8
+    },
+    {
+      "generator_seed": 873632285502063,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 3011,
+      "window": 9
+    },
+    {
+      "generator_seed": 3469746202565329,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 3011,
+      "window": 10
+    },
+    {
+      "generator_seed": 6317752441758359,
+      "phase": "confirmation",
+      "role": "new",
+      "seed": 3011,
+      "window": 11
+    }
+  ],
+  "registration": {
+    "anchor_rows": 512,
+    "architectures_and_arithmetic_costs_not_identical": true,
+    "arms": [
+      "frozen",
+      "replay_legacy",
+      "gaussian_full_range",
+      "mixture_legacy",
+      "mixture_full_range",
+      "moment_legacy",
+      "moment_full_range",
+      "same_weight_moment_full"
+    ],
+    "bootstrap_replicates": 4000,
+    "bootstrap_seed": 28102855,
+    "calibration_ece_max": 0.04,
+    "candidate_sets_not_assumed_nested": true,
+    "candidates_per_selector": 21,
+    "confirmation_constructed_after_source_and_prepared_freeze_only": true,
+    "confirmation_rows_per_domain": 256,
+    "coverage95_range": [
+      0.92,
+      0.98
+    ],
+    "development_rows_per_domain": 256,
+    "diagnostic_interval_alpha": 0.05,
+    "final_new_nll_improvement_min": 0.005,
+    "full_range_prior_grid": "linspace(0,1,21)",
+    "independent_unit": "one query trajectory; three correlated future horizons stay together",
+    "interval_coverage": "nominal approximate bootstrap coverage; five independent training-seed clusters",
+    "legacy_prior_grid": "linspace(0,fit_prior,21)",
+    "namespace": "hepta.aen.r5.selection.confirmation-study.v1",
+    "native_runtime_or_utility_claim": false,
+    "old_confirmation_rows_reused_across_windows": true,
+    "old_nll_margin": 0.02,
+    "original_round4_evidence_reconstructed": false,
+    "primary_comparisons": [
+      [
+        "mixture_full_range",
+        "mixture_legacy"
+      ],
+      [
+        "moment_full_range",
+        "moment_legacy"
+      ]
+    ],
+    "primary_endpoint": "mean new-domain density NLL difference over the six fixed drift windows",
+    "primary_evidence": "upper endpoint below zero; sign evidence only, no prespecified practical range-effect margin",
+    "primary_family_size": 2,
+    "primary_interval_alpha": 0.025,
+    "profile": "registered",
+    "profile_gates_are_not_familywise_or_pointwise_certificates": true,
+    "profile_gates_use_descriptive_anchor_intervals": true,
+    "public_context_histories_per_query": 0,
+    "replay_rows": 256,
+    "schema": "hepta.analytic-event.selection-registration.v5",
+    "seed_rule": "first8 SHA256 bytes of namespace|phase|seed|window|role, masked to53bits; explicit schedule collision checked",
+    "seeds": [
+      2131,
+      2377,
+      2539,
+      2791,
+      3011
+    ],
+    "selector": "old-dev mean NLL increase +1.645 pairedSE<=.02; minimize new-dev NLL; index tie break",
+    "selectors_per_window": 6,
+    "training_rows": 256,
+    "windows": [
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift",
+      "gaussian",
+      "drift_shift"
+    ]
+  },
+  "registration_sha256": "ec3c907a0d016ba7bad960d69e76a0571af1eec14bb9e24a8ded202179a0defc",
+  "sources_sha256": {
+    "experiments/analytic_event_neuron/FEEDBACK.md": "9239938a7c2a01756df5a3b5d99b34b11c77640a201075f8cf788fd248c7e553",
+    "experiments/analytic_event_neuron/MATH.md": "ec7752a079791fea54625ac93c08f12781424c2c51bb00f6f296600f5632fcf9",
+    "experiments/analytic_event_neuron/NATIVE_SOURCE_MANIFEST.json": "7ee363fc23278df3dbb491ee60f4416e993f60f8f9af6570fac924d1a83fe40c",
+    "experiments/analytic_event_neuron/PROTOCOL.json": "73e18acc4eb593a89f4dfd7bd6396e528b40a9a6d4751ef915bd5aee3de573fc",
+    "experiments/analytic_event_neuron/RUNTIME.md": "eb6d1236e6b98dadbfc5b22688a3a7a250ef901a35754ee8e87a55a3db1418c8",
+    "experiments/analytic_event_neuron/SPEC.md": "b816199bbdb8744a06f526f4f0c351613182e695dacaa1b36f9f05cfb7ccda87",
+    "experiments/analytic_event_neuron/TASK.md": "879797e2ddf7540dac828d58f7b4090af2a88bf9c17baabbac5342be25b1f3b2",
+    "experiments/analytic_event_neuron/__init__.py": "f94bbf75a71aaf08882c29b109df510f609f0cac188c70a3ee59805dc1b59ce4",
+    "experiments/analytic_event_neuron/analytic.py": "6d447f88aa5c52b6a273271f4936b5e3dc1a2db8b791f48db71d141d97713264",
+    "experiments/analytic_event_neuron/audit_feedback.py": "bdc3ca4d5e30fbeebd7af5f8ef67a3b5dd0629d05b4c7f43d351e94ace857dd9",
+    "experiments/analytic_event_neuron/evidence_audit.py": "00f2df0d998b6d882ef7de0cf2529969553e7d305cf5c99581c3874e50355f37",
+    "experiments/analytic_event_neuron/experiment.py": "de73ce68c3158eebe3119c1c40f407e9bf46687c6a11cdce9c35195cd062d68d",
+    "experiments/analytic_event_neuron/feedback_chain.py": "2e51b708e45e71e400aa78bff3983ebf6d5e45f3958ad824354cca8d5eadeaa4",
+    "experiments/analytic_event_neuron/feedback_driver.py": "efdb0b25729d9d937dc99a09f42d8eb727c9c71ce04b5c1a677665995db21da5",
+    "experiments/analytic_event_neuron/learners.py": "3ad97885325df186b3a9545019df033d93ef8c92a7f1aa5c991b0d5a5d149d8d",
+    "experiments/analytic_event_neuron/native.rs": "039432dd6b0f8387813e71de5a5e239d2deb1c8c36f6b1082a7616faa5522935",
+    "experiments/analytic_event_neuron/native_adapter.py": "24e3b7babc15a60341a7ce0e74e02c48bbc477d9801664f55509a4caec40a389",
+    "experiments/analytic_event_neuron/native_head.rs": "b5312dea693ea7edcef5db210b6a25e08573fe2a3a5e2873843fd6b01d5ac983",
+    "experiments/analytic_event_neuron/prepare_native.py": "a687147a3539328ca99f7858805cda3aacd7f14f630f0a671c9a71cb9ee99364",
+    "experiments/analytic_event_neuron/reference.py": "f6793ae7a19fe324ecbb86eb2af38c9e55820e643a4fd7ed09bab66a5be84fdb",
+    "experiments/analytic_event_neuron/requirements.txt": "f793676a40e71a12c2d9066d4f2e342bf5d920a971a725519c00ed500c4231ed",
+    "experiments/analytic_event_neuron/retention.py": "202210e0047a48da272c9bc4e9810d16781c7d91dfd35a13153bcfaa151a7488",
+    "experiments/analytic_event_neuron/round2/CONTRACT.md": "c17240da55a297040674a568b2b45bdeff5a4f06ecaacf9325547cf7a9385f5b",
+    "experiments/analytic_event_neuron/round2/FEEDBACK_RUNTIME.md": "d0172e8e45dda48dca50635fac5251fa38cbcd1650c84626c8c98de4918dcfae",
+    "experiments/analytic_event_neuron/round2/PROTOCOL.json": "a64a785fbb3302bf271065fd950b3397cfe997094a85f271a089f92674bef317",
+    "experiments/analytic_event_neuron/round2/PULSE.md": "d4c6626ceea17d2bbe06a64275495d1274fcb5e6e3abd590c4c67ce5ecdf21f8",
+    "experiments/analytic_event_neuron/round2/QUANTIZED_GUARD.md": "025e5a9ab4c9305c28c4061064982eb7761598b24f458280db4fe5b25c19820d",
+    "experiments/analytic_event_neuron/round2/RETENTION.md": "ccde55ef39edd598cc594f0b647573e05b4a3d19d4633a9a772a8d01e6bb33f5",
+    "experiments/analytic_event_neuron/round2/RUNTIME_HARNESS_AMENDMENT.md": "c278bb2590d409beadd27d0a334b1f30305d99faca63827c44e38fd6513f3779",
+    "experiments/analytic_event_neuron/round2/__init__.py": "27e184e3992c8195edccd3e51acc9469259baa02fe3786ef61aa7f8815c82a38",
+    "experiments/analytic_event_neuron/round2/adaptation.py": "4aa017c439303f5760fb478991d3e7fc7dbc47eda3e50776ad273b5d97911f8c",
+    "experiments/analytic_event_neuron/round2/adaptation_validation.py": "d65679a43e55d0b6a01ab051837e31bc5d60a958819f17afe5bceb28bf5fd273",
+    "experiments/analytic_event_neuron/round2/audit.py": "9074a6c7454dc86e2a621cc9b5aa5202cd5cf08bef3669f3e11a851961da388e",
+    "experiments/analytic_event_neuron/round2/evaluation.py": "2750300b0fccfdb4025ab8d9fbc0f1637595ec8b6a7b316434d9b266102164a2",
+    "experiments/analytic_event_neuron/round2/feedback.py": "dd538060c36f189b664401c89f7004d14ddbd66be9c0f086a9984c3b8ece157e",
+    "experiments/analytic_event_neuron/round2/feedback_study.py": "f90afac6e523e7d96b4ffe81ccf1e4850ec428a03999fa289a87903db07d7ade",
+    "experiments/analytic_event_neuron/round2/feedback_summary.py": "2e5fb9b3bef84a247c792c51146f25761a8dff3086738438790e3f72b4e86798",
+    "experiments/analytic_event_neuron/round2/independent_validation.py": "dc5a1d314ff9faf3112673ccefb6189683c16f04b7f9d744aec6bfe10d826e28",
+    "experiments/analytic_event_neuron/round2/predictors.py": "7628157442228af4816e711377fdd83b77f405680b7ef28a6f4610b00253ae96",
+    "experiments/analytic_event_neuron/round2/preflight.py": "2eb7056c3451e9be7651f4425828f9e37b017676264b399b5be13799462ad69d",
+    "experiments/analytic_event_neuron/round2/pulse.py": "4c8528150ae738329175777fe49ae9f2ecce2010e1e28e2b78829a61aceca6e4",
+    "experiments/analytic_event_neuron/round2/pulse_validation.py": "d9f13ad0c0d4594ab396e979789f0b7de8bb0e4de36cc05c2bcf77dee2cccfc0",
+    "experiments/analytic_event_neuron/round2/quantized_guard.py": "7be5ac2877f5d09f94e0f85b7b7efe4efb453e43f50e0f4de8b77cbe951e5859",
+    "experiments/analytic_event_neuron/round2/restore_evidence.py": "1cf39883b9cb4aea03db0ef343edecb04313d9c05cfe53809b7a3f069d2348ed",
+    "experiments/analytic_event_neuron/round2/retention_study.py": "bbf3d066c7eab6ea709e5cdd13bb48e06c3dd32cbef14c5e1b1840e7e0e23b16",
+    "experiments/analytic_event_neuron/round2/run.py": "9c50652eaace9cd9ba56123e1d7c9f164d9d9d110d389eb4105a07e09c82a135",
+    "experiments/analytic_event_neuron/round2/runtime_bridge.py": "b1cac1179e8fdab0380be2b9f619fdfac0ae3ee0c30a89f542ed785bcbf41194",
+    "experiments/analytic_event_neuron/round2/runtime_confirmation.py": "ca68ba58cece2639de96d75c11e82802dbe6fbd255ed05923f37ab11e8831392",
+    "experiments/analytic_event_neuron/round2/statistics.py": "3121b92443e8f9a4977af569dd566097cde8a72e2438a5ea70c0d88c5538a19d",
+    "experiments/analytic_event_neuron/round3/CALIBRATION_CONTRACT.md": "08d2373e2bc4d70ab03c6d4299a384a23b5eee840e6e59bf81690330c84b2d4f",
+    "experiments/analytic_event_neuron/round3/CONTRACT.md": "38d1c25dee23a4683e8c9dc62567bf65dfe0d5b134156062410e41e7a0de2f79",
+    "experiments/analytic_event_neuron/round3/EVENT_CONTRACT.md": "201778d7786441e15225319d84f63cf9cd2837758d28578f88e79f3ecfc918a4",
+    "experiments/analytic_event_neuron/round3/FEEDBACK_RUNTIME.md": "2c26773b1d890fd71bd30ecf68ebd89654283744b495512d2792ee7e9a9263ca",
+    "experiments/analytic_event_neuron/round3/PROTOCOL.json": "db2d045c733e892e3beeb1de2bdd2e469837373e9ec9cef35ab4785dfae7cffc",
+    "experiments/analytic_event_neuron/round3/__init__.py": "f203b998feb38e7a6069177ec9c78f04f01c35dc113288a3139c56070db1e6ad",
+    "experiments/analytic_event_neuron/round3/audit.py": "3516ec7d1eaf791597bf41e1c0d612173607f1e5cf8341b98ca33562d4b71384",
+    "experiments/analytic_event_neuron/round3/calibration.py": "f5086b8fd0f6652b8b2098b5b75cd78f2e6a873c3da908e54ac52c84db97649d",
+    "experiments/analytic_event_neuron/round3/calibration_study.py": "1a26a50f427d3c6f1943ebe9f20ae3a98446244f8e5d0cbc4de992308c8aa9a4",
+    "experiments/analytic_event_neuron/round3/calibration_validation.py": "2da5194af7d4f9101a4544b2a0e9d762e23e75c56c34c391df73fc263055bece",
+    "experiments/analytic_event_neuron/round3/event_codec.py": "47f39617d919fd8e02835734d73b42af11e564cc2aa855d6f55e5e2a6842b32f",
+    "experiments/analytic_event_neuron/round3/event_study.py": "a533ed0646e7bf631bc27e1f6b516780aca9002cc828c5cac2adb3faa85fd32c",
+    "experiments/analytic_event_neuron/round3/event_validation.py": "40390adb09613efd4147838c4fa24533badc2e9141c10bcd243226fb4e46519f",
+    "experiments/analytic_event_neuron/round3/feedback.py": "4e8f2b01048af4cfff5d90b3215e88535b7f447a6ccc2ddb8c5506b518c882b6",
+    "experiments/analytic_event_neuron/round3/feedback_audit.py": "ff7829057a2970a28fb0765d4e7905647c1b3e3634546db58bbad5410530b37b",
+    "experiments/analytic_event_neuron/round3/feedback_study.py": "77ddd04fc08f783cab16b2c46b81e0c780f10e9e2c96d56eba7c0fbe48c76288",
+    "experiments/analytic_event_neuron/round3/feedback_summary.py": "ce6dd8df9c0380424897fb840b4d4fdf36f1b137c476e89139c896554256d75c",
+    "experiments/analytic_event_neuron/round3/feedback_validation.py": "42f914dc41af2f8f0e098cca3e343b345da0cd54d69f8dba4ee4a74ec96f924c",
+    "experiments/analytic_event_neuron/round3/freeze.py": "ed376a074ba333cbf14d2b133cc5c240789cb7db65217aeeae2bd955d7cd7072",
+    "experiments/analytic_event_neuron/round3/phases.py": "2b96c5673ccaf8059e71206ed2c100dcd8c99a29a6a182ac967402f9de853e40",
+    "experiments/analytic_event_neuron/round3/prepare.py": "47e346c37242e29287c550007b9c236ae2b481b93a1f0b755ca98b24ba1ff6af",
+    "experiments/analytic_event_neuron/round3/run.py": "7681c71f37123dae5e4bb3bca0ac17cd1d161f8d07f2d159303a310e4c85f652",
+    "experiments/analytic_event_neuron/round3/runtime_feedback.py": "eee01cc5eaea553bfa4b6f7ade5cbce703501b9f13e9b220a649b69927f0d07f",
+    "experiments/analytic_event_neuron/round3/runtime_feedback_study.py": "75ad90a0e0861e9c151e8702d19f2187862310e0abeecab815887bf8e2e564c1",
+    "experiments/analytic_event_neuron/round3/statistics.py": "f4fd01a14ecbd2e0f9748d58096ef112eca38f7329e6fdb3c78ce5d0061e59ca",
+    "experiments/analytic_event_neuron/round4/CALIBRATION_CONTRACT.md": "8ab84121037d300eaad48e9e8bd4bbf44e03e815a1f9a7cc5cbb6fe2284f7f22",
+    "experiments/analytic_event_neuron/round4/CONTRACT.md": "4bbe8744425b4d92355a54d8b2e90d78a0c189822cab42262db7f3e0aa1f8b67",
+    "experiments/analytic_event_neuron/round4/PROTOCOL.json": "8678b8af4d7f60ef5aac8818bd50a7ab8b2675e5b21e35cc7ca179052d24a6d1",
+    "experiments/analytic_event_neuron/round4/RUNTIME_CONTRACT.md": "4be7efa594183227ac3a5810a2011bbb52fbe18cf181ce42ffd91ca37d4a7092",
+    "experiments/analytic_event_neuron/round4/__init__.py": "fd1b02c824267f63293798efb7bdbd8373f654dcb85c1a1a7e7211c72be77907",
+    "experiments/analytic_event_neuron/round4/calibration.py": "7bd392b1dd1bf2b7c611225a68bbf57938b381e337e5ebbe19f79261a3c2b1e1",
+    "experiments/analytic_event_neuron/round4/calibration_study.py": "c0280e930b7efc639296d3fcb41d8e72adc3fa9686cc15abb142834d264c7ab9",
+    "experiments/analytic_event_neuron/round4/freeze.py": "0f9bb561b958ac6b43df76809bb4f767c4f899858ed653031a00a3d2505ecb36",
+    "experiments/analytic_event_neuron/round4/math_validation.py": "8c827f7b0e207d1d4b0ab3a556db5c158f7d247789d76a9ef37d807e8778973b",
+    "experiments/analytic_event_neuron/round4/prefreeze_review.py": "60a57757de1c7dff8aa36f1fdd13aa22264eeaa85e9ab5d1012b2ca6be8f1b07",
+    "experiments/analytic_event_neuron/round4/runtime_audit.py": "34e3e82634dd185dd30411ea7db60e431984543d4200c1b672df5caa722e63c1",
+    "experiments/analytic_event_neuron/round4/runtime_codec.py": "aa7904959b2d0facfa1c902b2602973019b3a575ef22c0a80c66e7640651e744",
+    "experiments/analytic_event_neuron/round4/runtime_evidence.py": "aaa09f4046e32fa4ea17b002980e1c54a7cd282085620f6a84539700b39c1efc",
+    "experiments/analytic_event_neuron/round4/runtime_law.py": "1bfdb5ff3262a7b8cf54f96f0896f13f956432b9f261c22705dc0e28aacb218f",
+    "experiments/analytic_event_neuron/round4/runtime_learning.py": "cdc6bff686caaeab533676194b92e0068fe446d6d4c10cd759673f0f90efd096",
+    "experiments/analytic_event_neuron/round4/runtime_owner.py": "0a7b6d2fa94a5195984a773c145445afa10deec1124120f4956ed8d326b16c63",
+    "experiments/analytic_event_neuron/round4/runtime_qualification.py": "2319f96ac4ca577f4f34af8801bdd7db74910338581136c0fb0bce223d5171d1",
+    "experiments/analytic_event_neuron/round4/runtime_study.py": "8423356449123f2f0cd064da1741ee38b2c0f9db6a27d7f96ea3ac85b9faafc2",
+    "experiments/analytic_event_neuron/round4/runtime_summary.py": "ac9687af76e02c0f0043a5df2ed3328fe3bc3724a65c987ee38d985153f32800",
+    "experiments/analytic_event_neuron/round5/SELECTION_CONTRACT.md": "cb00c253a1564ceb3533d78831964e5bb17a36d022ef920bf5c0b1d2fdaffa4a",
+    "experiments/analytic_event_neuron/round5/__init__.py": "b02ccc3b03e70e66e4338ce36e0a12cc76e38a8ec50845e315a4695e39dee4b5",
+    "experiments/analytic_event_neuron/round5/selection_math.py": "ea1344a6c4c5a81d9fa932f4f70e938e9d37cb9a695301c5bcabe87055d9f72b",
+    "experiments/analytic_event_neuron/round5/selection_study.py": "32d5033041ed69c4f6b880f165d98705d1aa1a2ea91136714d7b4229f9a73e83",
+    "experiments/analytic_event_neuron/round5/test_selection.py": "f86a63f1e9fb91706efe4865e55e507d7b91da91c40282cf59a6dcfb279908ec",
+    "experiments/analytic_event_neuron/run.py": "a7b5a60936e7fb84d2fb4d5bf911123b32ca75b5f642b9ee894c2cddb963a46b",
+    "experiments/analytic_event_neuron/runtime.py": "f10545abcd1dad3edfdc88f3e3f48a108edf1418dc0f2295c8adb5d3df757c02",
+    "experiments/analytic_event_neuron/statistics.py": "c92f983b7bac7d24b3a759f36f859dbbf2e2f182277e1d78d074e7add9bb3323",
+    "experiments/analytic_event_neuron/summarize_compat.py": "e22291b457342c488b2027ec04621cde5ef83eb1170f216cb3bdb4966b4a4b22",
+    "experiments/analytic_event_neuron/task.py": "d113363eefc6c29a10c1ee493ba11d45371221600b861e966f6617f34d8d1971",
+    "experiments/analytic_event_neuron/train.py": "b359e291a7485252a7d9a62645bd18f29373ba787fe40bf1b26773b1164586b3",
+    "experiments/analytic_event_neuron/trained_runtime.py": "96d82fe7a64adf22263d63e571a6714862a62f749a716baa6e4d00a4defd8be5",
+    "experiments/analytic_event_neuron/transport.py": "9c4ef85de95b8f797f5c7da37f20bc675b67d0a32fe114fafdba4009ba9fe6f8",
+    "experiments/analytic_event_neuron/validate_runtime.py": "c9168f5c52d3311cee2d2b050fc04fde0d097a6f533793999d6a17bb56f6b874"
+  }
+}
