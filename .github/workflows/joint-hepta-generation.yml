@@ -1,0 +1,56 @@
+name: Joint Hepta generation source qualification
+
+on:
+  push:
+    branches: [research/joint-hepta-generation-20261029]
+    paths:
+      - experiments/multimodal_output_portfolio/joint_hepta_20261029/**
+      - .github/workflows/joint-hepta-generation.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: joint-hepta-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  operator-and-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONNOUSERSITE: "1"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: |
+            experiments/multimodal_output_portfolio/joint_hepta_20261029
+            experiments/multimodal_output_portfolio/unified_20261028
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+      - name: Install isolated pinned numerical runtime
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: --extra-index-url https://download.pytorch.org/whl/cpu torch==2.14.1+cpu numpy==2.3.5 scipy==1.16.3 Pillow==12.3.0
+      - name: Verify source-bound operator, gradients and execution contracts
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/joint-hepta"
+          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          python -B -m unittest experiments.multimodal_output_portfolio.joint_hepta_20261029.test_contract experiments.multimodal_output_portfolio.joint_hepta_20261029.test_hepta_core -v 2>&1 | tee "$RUNNER_TEMP/joint-hepta/operator.log"
+          python -m pip freeze > "$RUNNER_TEMP/joint-hepta/runtime.txt"
+          git diff --check
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: joint-hepta-operator-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/joint-hepta/
+          if-no-files-found: warn
+          retention-days: 30
