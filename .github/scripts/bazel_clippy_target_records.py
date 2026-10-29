@@ -32,6 +32,9 @@ def loading_roster(path: Path) -> set[str]:
 
 
 def main() -> None:
+    # Bash consumes a machine protocol. Native Windows TextIO must not turn
+    # the validated label separators into CRLF and leave CR in build targets.
+    sys.stdout.reconfigure(encoding="utf-8", newline="\n")
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--loading-expression", type=Path)

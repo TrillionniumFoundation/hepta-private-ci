@@ -4,6 +4,7 @@
 import json
 from pathlib import Path
 import subprocess
+import sys
 import unittest
 
 import test_run_bazel_ci as original
@@ -57,6 +58,70 @@ if os.environ.get('CLIPPY_DISCOVERY_FAIL') in {'1', command}:
 
 
 class ClippyTargetDiscoveryTests(unittest.TestCase):
+    def test_native_text_newlines_cannot_enter_the_real_build_target_transport(
+        self,
+    ) -> None:
+        # Reconfigure the actual Python text stream as native Windows would,
+        # before executing the real record parser. Capture bytes, not the
+        # subprocess text mode that silently normalizes CRLF on Linux.
+        source = SCRIPTS / "bazel_clippy_target_records.py"
+        driver = (
+            "import runpy,sys;sys.stdout.reconfigure(newline='\\r\\n');"
+            "p=sys.argv[1];sys.argv=sys.argv[1:];runpy.run_path(p,run_name='__main__')"
+        )
+        labels = self.root / "loading labels.txt"
+        labels.write_bytes((UNIT + "\r\n").encode())
+        for args, input_bytes, expected in (
+            (
+                ["--loading-expression", str(labels)],
+                b"",
+                f'config(set("{UNIT}"), target)\n'.encode(),
+            ),
+            (
+                ["--expected-labels", str(labels)],
+                f"compatible\t{UNIT}\r\n".encode(),
+                (UNIT + "\n").encode(),
+            ),
+        ):
+            with self.subTest(args=args):
+                result = subprocess.run(
+                    [sys.executable, "-c", driver, str(source), *args],
+                    input=input_bytes,
+                    capture_output=True,
+                    check=False,
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(result.stdout, expected)
+                self.assertNotIn(b"\r", result.stdout)
+        roster = self.root / "actual canonical roster.txt"
+        roster.write_bytes(b"//codex-rs/...\n-//codex-rs/v8-poc:all\n" + result.stdout)
+        (self.root / "probe.py").write_text(original.PROBE, encoding="utf-8")
+        # Match the workflow's Bash array parsing and invoke the existing real
+        # shell/Python Windows transport; the recording child checks argv.
+        command = 'targets=(); while IFS= read -r target; do targets+=("$target"); done < "$1"; "$2" --windows-msvc-host-platform -- build --config=clippy --platforms=//:windows_x86_64_msvc -- "${targets[@]}"'
+        result = subprocess.run(
+            [
+                self.bash,
+                "-c",
+                command,
+                "roster-build",
+                str(roster),
+                str(SCRIPTS / "run-bazel-ci.sh"),
+            ],
+            cwd=ROOT,
+            env=self.env,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=60,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        call = json.loads(self.log.read_text(encoding="utf-8").splitlines()[-1])
+        self.assertEqual(
+            call[call.index("--") + 1 :],
+            ["//codex-rs/...", "-//codex-rs/v8-poc:all", UNIT],
+        )
+
     def setUp(self) -> None:
         # Retain the existing physical Windows/Linux process transport fixture.
         # It creates a real probe launcher and selects Bash without changing any
