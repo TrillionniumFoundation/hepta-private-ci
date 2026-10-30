@@ -183,6 +183,66 @@ fn output_is_observed_bounded_and_never_predeclares_success() {
 }
 
 #[test]
+fn terminal_summary_recovers_final_agent_text_without_delta_and_fences_conflicts() {
+    let summary = |text: String| {
+        let mut event = terminal("thread-a", "turn-a", TurnStatus::Completed);
+        if let ServerNotification::TurnCompleted(notification) = &mut event {
+            notification.turn.items_view = TurnItemsView::Summary;
+            notification.turn.items = vec![ThreadItem::AgentMessage {
+                id: "item-final".to_string(),
+                text,
+                phase: None,
+                memory_citation: None,
+                delivery: None,
+            }];
+        }
+        event
+    };
+
+    let mut without_delta = output();
+    assert!(
+        observe_for_test(
+            &mut without_delta,
+            summary("fresh context accepted".to_string())
+        )
+        .unwrap()
+    );
+    assert_eq!(without_delta.output, "fresh context accepted");
+    assert!(without_delta.terminal_observed);
+
+    let mut partial = output();
+    observe_for_test(
+        &mut partial,
+        ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
+            thread_id: "thread-a".to_string(),
+            turn_id: "turn-a".to_string(),
+            item_id: "item-final".to_string(),
+            delta: "fresh context".to_string(),
+        }),
+    )
+    .unwrap();
+    assert!(
+        observe_for_test(&mut partial, summary("fresh context accepted".to_string())).unwrap()
+    );
+    assert_eq!(partial.output, "fresh context accepted");
+
+    let mut conflict = output();
+    conflict.output = "forged delta".to_string();
+    assert!(
+        observe_for_test(&mut conflict, summary("fresh context accepted".to_string())).is_err()
+    );
+    assert_eq!(conflict.output, "forged delta");
+    assert!(!conflict.terminal_observed);
+
+    let mut oversized = output();
+    assert!(
+        observe_for_test(&mut oversized, summary("x".repeat(MAX_OUTPUT_BYTES + 1))).is_err()
+    );
+    assert!(oversized.output.is_empty());
+    assert!(!oversized.terminal_observed);
+}
+
+#[test]
 fn in_progress_is_not_a_terminal_observation() {
     let mut output = output();
     assert!(

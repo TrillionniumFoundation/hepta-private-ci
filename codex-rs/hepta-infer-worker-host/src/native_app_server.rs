@@ -27,6 +27,7 @@ use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::SandboxMode;
 use codex_app_server_protocol::ServerNotification;
 use codex_app_server_protocol::ThreadItem;
+use codex_app_server_protocol::TurnItemsView;
 use codex_app_server_protocol::ThreadReadParams;
 use codex_app_server_protocol::ThreadReadResponse;
 use codex_app_server_protocol::ThreadStartParams;
@@ -1453,6 +1454,46 @@ fn observe_event(
             let receipt = adapt_observed_event(&binding.intent, &binding.turn_id, observed)
                 .map_err(|error| format!("invalid App Server terminal witness: {error}"))?
                 .ok_or_else(|| "turn/completed did not produce terminal receipt".to_string())?;
+            // Responses may complete an entire AgentMessage without text deltas.
+            // Reconcile the terminal's bounded owner-observed text first, rather
+            // than marking an empty observation as a valid successful output.
+            match completed.turn.items_view {
+                TurnItemsView::Full => {
+                    let mut complete = String::new();
+                    for item in &completed.turn.items {
+                        if let ThreadItem::AgentMessage { text, .. } = item {
+                            if text.len() > MAX_OUTPUT_BYTES.saturating_sub(complete.len()) {
+                                return Err("terminal output byte limit exceeded".to_string());
+                            }
+                            complete.push_str(text);
+                        }
+                    }
+                    if !complete.starts_with(&output.output) {
+                        return Err("terminal output contradicts observed deltas".to_string());
+                    }
+                    output.output = complete;
+                }
+                TurnItemsView::Summary => {
+                    if let Some(text) = completed.turn.items.iter().find_map(|item| {
+                        if let ThreadItem::AgentMessage { text, .. } = item {
+                            Some(text.as_str())
+                        } else {
+                            None
+                        }
+                    }) {
+                        if text.len() > MAX_OUTPUT_BYTES {
+                            return Err("terminal output byte limit exceeded".to_string());
+                        }
+                        if text.starts_with(&output.output) {
+                            output.output.clear();
+                            output.output.push_str(text);
+                        } else if !output.output.ends_with(text) {
+                            return Err("terminal summary contradicts observed deltas".to_string());
+                        }
+                    }
+                }
+                TurnItemsView::NotLoaded => {}
+            }
             let physical_boundary = match receipt.status {
                 AdapterStatus::Succeeded => {
                     output.status = NativeRunStatus::Completed;
