@@ -1,0 +1,65 @@
+{
+  "complete": true,
+  "equal_constant_assignments": [
+    "ORDER",
+    "RAM_GATE/DISK_GATE",
+    "MiB/GiB"
+  ],
+  "equal_original_functions_and_blocks": [
+    "process_identity",
+    "require_matching_proc_namespace",
+    "capacity",
+    "args_map",
+    "canonical_queue",
+    "activated_prefix",
+    "require_durable_predecessor",
+    "OwnedChild complete class",
+    "Supervisor.status",
+    "Supervisor.heartbeat",
+    "Supervisor.quiescent",
+    "Supervisor.gate",
+    "Supervisor.child",
+    "Supervisor.wait_child",
+    "Supervisor.cwd_command",
+    "Supervisor.register",
+    "Supervisor.durable",
+    "Supervisor.sealed_sources",
+    "Supervisor.run_analysis",
+    "Supervisor.fail",
+    "Supervisor.execute full fourteen-job loop"
+  ],
+  "explicit_new_boundaries": [
+    "One byte-verified imported A17; exact initial import-only RAW and empty CAS",
+    "A17 original-profile and exact IMPORT/RESULT validation; no new START/log",
+    "Current execution05 ACK episode/sequence before next activation",
+    "Immutable shared START_POLICY deadline and integer supervisor identity",
+    "Registered finalizer wrapper and evidence_v2/verification05",
+    "Explicit17 durable barriers and 1 imported/13 executed scope",
+    "Final closed wrapper/resource journal coverage with exact owned populations"
+  ],
+  "new_source": {
+    "bytes": 51312,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/supervisor.py",
+    "sha256": "e91ddc38e374f37c379618cbf89bb05a46e265a5e9865afbe3d47a585934661b"
+  },
+  "normalization": "Only new episode/status/failure text labels map back to original labels.",
+  "original_source": {
+    "bytes": 41463,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery04/supervisor.py",
+    "sha256": "cc1526c88184e26ce9eb363f053e2e2babce924020d80589b0891f4385307682"
+  },
+  "retained_registered_gates": [
+    "RAM 1879048192 B",
+    "Disk 2415919104 B",
+    "Three consecutive admission samples spaced 10 s",
+    "12 h absolute supervisor window",
+    "1 GiB archive RAM margin",
+    "258 MiB archive disk reserve and 2000 inodes",
+    "Full 14-job serial activation loop with registration after A43/R43",
+    "26 aggregate and 30 finalizer required seals",
+    "Frozen durable_archive protocol and actual ACK verification"
+  ],
+  "schema": "hepta.execution05.supervisor-static-preservation.1",
+  "scientific_or_remote_execution": false,
+  "unchanged_job_loop_ast_sha256": "fb1c08250af2d32625af948d666b2dce13b6584c127e58cd3f49897259eb7a94"
+}

@@ -1,0 +1,26 @@
+{
+  "active_record_ast_equal": true,
+  "complete": true,
+  "new_source": {
+    "bytes": 24990,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/controller.py",
+    "sha256": "26347d490932f0c007dd78b5167438be8fda675b049a6838863204d8182a4b50"
+  },
+  "normalizations": [
+    "Map object-local original helper references back to original symbols.",
+    "Remove only started_here.append bookkeeping.",
+    "Admission count len(started_here) reverses to old len(submitted).",
+    "Remove only imported_jobs/import_receipt/scientific_jobs_executed_here explanation keys."
+  ],
+  "normalized_while_sha256": "775f72e25c466dad869385ca1b08c3854296a9ac823dcbbf0b3a37b6fd0bbba0",
+  "old_full_run_ast_sha256": "8d494e2f453c6ff3cb1613b2f976f3193949f51d8e0f21a9d28c95c29b08a56c",
+  "old_source": {
+    "bytes": 21330,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/experiments/parameter_field_fullstudy_20261029/launch_v2.py",
+    "sha256": "7423f368c7ec8fd39a666c575f91e36f69da78bd1ec6cdc39f3afbe8224332e3"
+  },
+  "reconstruction": "CONTEXT_RECONSTRUCTION",
+  "schema": "hepta.execution05.controller-static-loop-audit.1",
+  "scientific_execution": false,
+  "while_ast_equal": true
+}

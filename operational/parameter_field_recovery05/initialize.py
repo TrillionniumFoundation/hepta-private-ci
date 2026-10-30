@@ -81,6 +81,7 @@ def committed_closure(commit):
     files = {SOURCE / name for name in expected}
     files.update(STUDY.glob('*.py'))
     files.update(OWN.glob('*.py'))
+    files.update((OWN / 'postseal').glob('*.py'))
     files.update(LEGACY.glob('*.py'))
     files.update((SOURCE / 'supplements/parameter_field_fullstudy_20261030').glob('*.py'))
     result = {}
@@ -230,6 +231,7 @@ def main():
     from operational.parameter_field_recovery05 import ancestry
     from operational.parameter_field_recovery05.controller import ControllerCore
     from operational.parameter_field_recovery05.execution04_costs import build_cost_facts
+    from operational.parameter_field_recovery05.postseal.prepare_plan import build_plan
     pins, runtime = desc(PINS), desc(RUNTIME)
     require(pins['sha256'] == args.expected_pins_sha256
             and runtime['sha256'] == args.expected_runtime_sha256, 'Externally selected recovery input differs')
@@ -306,6 +308,7 @@ def main():
     cost_facts = build_cost_facts(imported)
     reg = write(initial / 'REGISTRATION_CONFIG.json',
         registration_config(args.source_commit, amend, a, c, controller, queue, producer, cost_facts))
+    postseal_plan = write(initial / 'PRE_ENDPOINT_PLAN05.json', build_plan(producer, args.source_commit))
     descriptors = {'amendment': amend, 'initial_queue': queue, 'controller_freeze': controller,
         'cwd_runner': desc(OWN / 'cwd_runner.py'), 'cwd_policy': policy,
         'registration_driver': desc(OWN / 'registration.py'), 'registration_config': reg,
@@ -323,7 +326,8 @@ def main():
         'imported_jobs': ['A-17'], 'new_scientific_jobs': ORDER[1:],
         'initial_metadata': [a, c, core, assets, asset_recovery,
             desc(LEGACY / 'evidence/EXECUTION03_CONTINUITY_OBSERVATION.json'),
-            desc(SOURCE / 'supplements/parameter_field_fullstudy_20261030/PRE_ENDPOINT_PLAN.json')]})
+            desc(SOURCE / 'supplements/parameter_field_fullstudy_20261030/PRE_ENDPOINT_PLAN.json'),
+            postseal_plan]})
     write(initial / 'INITIALIZATION.json', {'schema': 'hepta.fullstudy.initialization.5',
         'source_commit': args.source_commit, 'pipeline_config': config, 'original_source_files': original_count,
         'source_files': len(closure), 'imported_jobs': ['A-17'], 'workers_started': 0,

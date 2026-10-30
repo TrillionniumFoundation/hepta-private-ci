@@ -1,0 +1,192 @@
+{
+  "adaptation_scope": "Source/producer/cost provenance and interpretation only; original scientific metrics, analyses and thresholds unchanged.",
+  "aliases": {
+    "A_GLOBAL": "Postseal A_INACTIVE_GLOBAL.json",
+    "B": "R.formal_analyses.B",
+    "C": "R.formal_analyses.C",
+    "F(n)": "The sole R.five_priority_findings row with priority=n",
+    "R": "Actual primary.artifacts.aggregate_results after full completion gate",
+    "S": "Registered postseal supplement output directory"
+  },
+  "at_utc": "2026-10-30T05:40:26.184113+00:00",
+  "common_gate": "Actual execution05 14 logical jobs with imported A17 plus13 fresh jobs; exact26/30seals, verification05 literal restore,17 actual execution05 ACKs plus original imported A17 ancestry; matching outer wait4; complete supplement gate and integrity disposition; global inactive predicate; terminal persistence remains separate.",
+  "execution05_cost_scope": {
+    "A17_counted_once_in_current_scientific_rows": true,
+    "execution04_outer_CPU_nonadditive_contains_A17": true,
+    "execution05_outer_CPU_excludes_historical_A17": true,
+    "failed_execution04_A29_increment": 14784,
+    "historical_lower_bound_including_execution04": 196880,
+    "prior_gradient_lower_bound": 182096,
+    "unmeasured_costs_remain_unknown": true
+  },
+  "execution_episode": "execution05_backpressure_20261030",
+  "new_experiments_metrics_thresholds_or_analysis_family": false,
+  "original_static_template": {
+    "bytes": 13856,
+    "path": "/workspace/scratch/178ced6a501f/continuation_recovery_20261030/current_readiness_0253/postseal_readiness_0533/FINAL_CONCLUSION_FIELD_MAP.json",
+    "sha256": "72f738fc7ad6f91b4f5cafd6f11950914023729a4793c9daba6e576f7fab07ec"
+  },
+  "priorities": [
+    {
+      "disposition_template": "Among the exact population, report counts of distinct whole-state/parameter-optimizer/output successors and actual field overrides/fallbacks, then the registered inactive boolean and integrity status. State the measured time resolution and missing component resolution.",
+      "fields": [
+        "F(1).banks[].counts.parents_with_multiple_complete_legal_hashes",
+        "F(1).banks[].counts.parents_with_multiple_parameter_optimizer_successors",
+        "F(1).banks[].counts.parents_with_hash_diversity_only_in_other_components",
+        "F(1).banks[].parents_with_distinct_terminal_hard_outputs",
+        "F(1).paths.{A,B,C}[]: overrides,accepted_overrides,guard_rejections,fallbacks,first_complete_legal_hash_divergence_clock,first_parameter_optimizer_divergence_clock,parameter_optimizer_trace_available,same_baseline_terminal_complete_state",
+        "F(1).terminal_output_differences",
+        "S/BANK_SUMMARY.json models[].successor_difference_summaries",
+        "S/SUCCESSOR_DIFFERENCES.jsonl difference.parameters/momentum/gradients/buffers, different_components, reference_tail_state_equal",
+        "S/EQUAL_DYNAMICS_GROUPS.jsonl groups[] consistency checks",
+        "A_GLOBAL.A_registered_inactive_predicate"
+      ],
+      "interpretation": "Separate intention, accepted transition, physical state identity, parameter/optimizer change, semantic output and costs. A/B macro48 vs C macro16. Full physical dynamics hash excludes controller history/path-kind. C component first divergence is unavailable; whole-state first divergence exists independently.",
+      "population": "A: 144 parents x 4 actions = 576 tails; 48 A paths. B: 240 paths. C: 32 final paths and existing C bank traces. A_GLOBAL: 12 field paths / 72 decisions.",
+      "priority": 1,
+      "question": "Candidate controls produce distinct lawful postguard successor states?"
+    },
+    {
+      "disposition_template": "Report label/replay agreement, per-head error-to-gain and actual gated regret/choice; distinguish no attainable gain, insufficient prediction, strict-gate fallback and integrity failure. Gain0 makes ratio null/undefined, not zero or a favorable bound.",
+      "fields": [
+        "A BANK.records[].action_values,advantages,baseline,step,parent_sha256,branches; BANK.label_reference",
+        "F(2).reconstruction[] all_original_component_and_receipt_hashes_equal/all_literal_terminal_restores_equal and terminal_count",
+        "F(1).banks[].calibration.{field12,full_current_state,history6}.diagnostics",
+        "F(1).paths.C_heads.{ordinary,dual}.diagnostics",
+        "S/GATED_CALIBRATION.json models_and_modes[]",
+        "S/GATED_CALIBRATION_ROWS.jsonl choice,gated_selection_regret,rowwise_ungated_selection_regret,chosen_baseline_aligned_advantage,attainable_gain,chosen_action_is_optimal"
+      ],
+      "interpretation": "A/B target is first legal action + fixed seed baseline to clock288 under same guarded tape/budget. C uses macro16 and baseline2 to96, its own context/head. Structural baseline zero is not an independent proof. Realized tails are not expected Q or a uniform policy-occupancy guarantee. C means paired per-example differences, A means differenced scalar means; do not demand bitwise identical float arithmetic across the implementations.",
+      "population_limit": "Nine A heads: each36fit/12cal; supplement36 distinct dependent parent slots and108 head rows, zero new independent samples. Two C architecture heads: each72fit/24cal; A gated supplement does not evaluate those C calibration rows. R192 terminals/seed reconstructs A, not all C branches.",
+      "priority": 2,
+      "question": "Labels match baseline, clock, guard and remaining budget; error vs attainable gain?",
+      "required_existing_metrics": [
+        "calibration_rmse",
+        "mean_attainable_gain",
+        "rmse_over_mean_attainable_gain",
+        "threshold/calibration_max_overprediction",
+        "fit_design_rank/regularized_gram_condition",
+        "gated_regret",
+        "mean_gated_regret_over_mean_attainable_gain",
+        "gated_optimal_set_accuracy",
+        "mean_chosen_advantage",
+        "override_count/exact_max_score_tie_count/fallback_counts"
+      ]
+    },
+    {
+      "disposition_template": "State which learned representation improves registered endpoint contrasts and gated diagnostics. Identify the constructed hidden direction and whether common optimal actions remain; qualify local decision relevance without claiming global field sufficiency or a lower bound for every field policy.",
+      "fields": [
+        "B.effects[field-history task] point/ci/per_seed",
+        "B.effects[full-state-field task] point/ci/per_seed",
+        "A head dimension/fit_count/calibration_count/ridge/normalizer/rank/conditioning",
+        "S/GATED_CALIBRATION.json",
+        "R.constructed_witness.records[]",
+        "S/W_SHARED_ACTION_REGRET.json records[] common_best_actions/shared_deterministic_action_minimax_regret/equal_state_mixture_minimum_average_regret/near_field/normalized_field_drift/field_coordinate_values_exactly_equal"
+      ],
+      "interpretation": "Compare fixed learned predictors, not optimal information oracles. History still pays H12 observation cost. W is three predetermined momentum-reflection pairs near-field at fixed1e-5, not exact equal field or guaranteed reachable occupancy. Ranking change with a common best action need not force regret.",
+      "priority": 3,
+      "question": "What decision information does the field omit?",
+      "shared_contract": "Actions [0,.25,1,2], same actual guard and candidate bank/labels/fit-cal schedules/ridge rules; H12 vs complete-current54740 vs same-observed-information history114; future RNG/tape inaccessible to all heads."
+    },
+    {
+      "baseline_scope": "A/B strong ordinary is historically selected seed-specific indices17:2,29:3,43:3; taper fixed[b,b,2,1,1,0], no added probes or fits. history6 is not the cheap controller.",
+      "cost_scope": "All learned A/B methods use the current richer30/margin feature implementation and construct all feature vectors. Label terminal utility excludes training CPU/quadratic effort; shared fixed refinement charge cancels within-parent. Charge zero-action/guard rejection work. Separate offline cost, deployment cost, scoring and whole-episode/root costs; no nested CPU double count or posthoc price.",
+      "disposition_template": "Report B gate and ordinary adequacy, taper comparison in its registered direction, retention and measured cost jointly. If more quality costs more, state conditional tradeoff/break-even where already defined; do not declare unconditional net gain without the existing task/retention and measured Pareto conditions.",
+      "fields": [
+        "F(4).development",
+        "B.arm_means.task/clean",
+        "All ten B.effects with point/ci/per_seed for reward and audit",
+        "B.statistical_thresholds ordinary_gain_thresholds_pass/field_task_deltas_nonnegative_each_fixed_model/field_advantage_thresholds_pass/ordinary_pooled_development_target_0.005_met",
+        "B.costs.arms",
+        "B.costs.field_minus_taper_descriptive",
+        "R.actual_costs.rows/prior_attempt_costs and actual outer/root wait4 ledgers"
+      ],
+      "lightweight_required": [
+        "B.effects[fixed-taper-field task (secondary)]",
+        "B.effects[fixed-taper-frozen clean (secondary)]",
+        "B.costs.field_minus_taper_descriptive"
+      ],
+      "population": "B3 fixed models x16 independent registered schedules x5methods=240 paths,486 task/clean endpoint records. Fixed-model conditional bootstrap8000,10 comparisons per observer, quantiles .0025/.9975; not cross-observer simultaneous coverage.",
+      "priority": 4,
+      "question": "Independent net benefit vs strong ordinary and lightweight controller?",
+      "registered_gate": "Both observers: lower CI(field-ordinary task)>.001, lower CI(field-history task)>0, lower CI(field-frozen clean)>-.01; field-ordinary and field-history per-model points nonnegative. This boolean does not include the taper contrast or total-cost Pareto admission."
+    },
+    {
+      "baseline_scope": "C uses fixed action2 multiplier1 across every architecture/seed. Protocol explicitly describes matched conventional baseline, not best tuned. Architecture-specific frozen heads share the same fitting procedure/budget, not identical coefficients.",
+      "disposition_template": "Give Delta_dual, Delta_ordinary, their interaction and dual-field vs ordinary-field with both observer intervals/per-seed values, retention and cost. State exactly which incremental benefit is supported. Decide whether existing evidence justifies further expansion; a completed negative/no-benefit study closes the comparison without expanding.",
+      "fields": [
+        "C.arm_means.task/clean",
+        "C.effects[interaction task]",
+        "C.effects[dual field increment task]",
+        "C.effects[ordinary field increment task]",
+        "C.effects[dual-field minus ordinary-field task]",
+        "C.effects[ordinary-baseline minus warmstart clean]",
+        "C.effects[ordinary-field minus warmstart clean]",
+        "C.effects[dual-baseline minus warmstart clean]",
+        "C.effects[dual-field minus warmstart clean]",
+        "C.statistical_thresholds interaction_positive_both_observers/all_four_arms_retained_both_observers/interaction_and_retention_thresholds_pass",
+        "C.costs.arms and F(1).paths.C activity"
+      ],
+      "interpretation": "Positive interaction can mean less harm. Read both simple-effect intervals without redefining the preregistered gate. Whole treatment is pinned sigmoid event law vs FPT CDF/interval-end mean-reset in text encoder/decoder, own warmstarts and matching field-head procedure. No complete Hepta/NDU, natural free-boundary or LLM-scale claim.",
+      "population": "8 paired seeds801..808 x4arms=32 paths;16 evaluation own warmstarts;48 final checkpoints and96 endpoint records;8-effect family/observer,8000 paired bootstrap, quantiles .003125/.996875.",
+      "priority": 5,
+      "question": "Additional Hepta adaptability under architecture x controller factorial?",
+      "registered_gate": "Both observers lower CI(interaction)>0 and all four own-warmstart clean effects lower CI>-.01. Preserve this exact gate; it does not require dual simple-effect lower CI>0."
+    }
+  ],
+  "schema": "hepta.execution05.final-five-priority-field-map.1",
+  "scientific_values_read": false,
+  "source_descriptors": [
+    {
+      "bytes": 32757,
+      "path": "/workspace/scratch/178ced6a501f/publication_bridge_20261030/report_remote_readback_522b344da763/files/reports/parameter_field_r45_hepta_review_20261030/THEORY_TO_HEPTA_REVIEW.md",
+      "sha256": "a3e8dcbffc5bbe4c800e6ec7d4ae867e501249c036e48604fbae45e69ada66b5"
+    },
+    {
+      "bytes": 31618,
+      "path": "/workspace/scratch/178ced6a501f/publication_bridge_20261030/report_remote_readback_522b344da763/files/reports/parameter_field_r45_hepta_review_20261030/DECISION_MATRIX_DRAFT.zh-CN.md",
+      "sha256": "245d9f5282dbd8a22cb3d8f962b0b2479592876bef703ab9116cf85bc05a381d"
+    },
+    {
+      "bytes": 37799,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/experiments/parameter_field_fullstudy_20261029/PROTOCOL.json",
+      "sha256": "2c02b5aff224f125826931f3ecf691b2a01391a719075db8a1bc9fb5f5dafd55"
+    },
+    {
+      "bytes": 28615,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/experiments/parameter_field_fullstudy_20261029/report_results.py",
+      "sha256": "ccfe0f9fa555906f9cda0834424a5396c7146f523a47a4cd8696134d007e614f"
+    },
+    {
+      "bytes": 16693,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/experiments/parameter_field_fullstudy_20261029/analysis.py",
+      "sha256": "46ace84fa720026daa2f0b9de95b8c446f4e87ae6f1873ba43e9bceaca3f73e2"
+    },
+    {
+      "bytes": 8098,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/experiments/parameter_field_fullstudy_20261029/bank.py",
+      "sha256": "710a9a069f2d8bdbb208e16db62bc55fb1a07cbd3f9686546b46056673402653"
+    },
+    {
+      "bytes": 12971,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/experiments/parameter_field_fullstudy_20261029/branching.py",
+      "sha256": "3825744797572e8a28aedec57fb0e6ed924586ea4b3c0f49accb0bf7bfbeee79"
+    },
+    {
+      "bytes": 5571,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/experiments/parameter_field_fullstudy_20261029/heads.py",
+      "sha256": "19254959a30e3719024841dc91376d1ecdfa018c30427b962a265e3b3d4647f7"
+    },
+    {
+      "bytes": 9084,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/experiments/parameter_field_fullstudy_20261029/architecture_bank.py",
+      "sha256": "379160d95ded58ccfb198711c6d17187552b598414389e4c5c6062afa24980a3"
+    },
+    {
+      "bytes": 45470,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/supplements/parameter_field_fullstudy_20261030/postseal_supplement.py",
+      "sha256": "1b705285b99fc7185c20155fa85f3a5d370b473196eaf59c8ae1d6bb2941a633"
+    }
+  ],
+  "status": "UNFILLED_STATIC_CONCLUSION_TEMPLATE"
+}

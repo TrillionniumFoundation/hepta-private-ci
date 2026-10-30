@@ -1,0 +1,71 @@
+{
+  "adaptation_scope": "Source/producer/cost provenance and interpretation only; original scientific metrics, analyses and thresholds unchanged.",
+  "at_utc": "2026-10-30T05:40:26.183430+00:00",
+  "available_existing_fields": {
+    "actual_work": "transaction.work_before/work_after counts+CPU+wall, per-path metadata.work_before/work_after, C COMPLETE.work and endpoint scoring_work; work ledger never rolled back",
+    "bank_immediate_successor": "C branch row branches[action].trace[0].after, with before/candidate/accepted, parent_state_sha256 and context_sha256. All four original actions retained.",
+    "guard_and_fallback": "trace[].choice (actual field choose, predicted margin, tau, fallback_reason) and transaction accepted/guard_delta/guard_values/guard_output_sha256/clock_advances",
+    "microstep_trace": "step/tape_identity/noise_seed/loss/unclipped_gradient_norm/optimizer_advanced/incoming_gradients_after_step",
+    "rollout_first_whole_state_divergence": "stage_C/COMPLETE.json paths[].first_legal_divergence_decision and first_legal_divergence_clock; producer compares six decision_state_sha256 entries against paired same-architecture baseline. Aggregate merges COMPLETE path metadata with saved trace.",
+    "rollout_immediate_successor": "endpoint trace[].transaction.after plus decision_state_sha256[]",
+    "terminal_parameter_identity": "endpoint metadata.parameter_sha256 only (plus terminal whole-state hash and actual tensor checkpoint)"
+  },
+  "can_answer_without_new_science": "Whether stored whole postguard successor identities differ under matched context/clock, first whole-state rollout divergence at macro16, guard/fallback activity, actual work and terminal semantics. Equal whole-state hashes support equality of covered components; differing whole-state hashes do not identify which component differs.",
+  "context_clock_budget_binding": "Training-state digest itself excludes clock, remaining budget and fixed Context. Bind transaction start/end/schedule/action with fixed plan (macro16/horizon96/baseline2), seed/context_sha256/own-warmstart metadata and deterministic tape identity.",
+  "critical_null_semantics": "Aggregate parameter_optimizer_trace_available=false and first_parameter_optimizer_divergence_clock=null for C mean unavailable by this diagnostic. Do not convert that null to no divergence. C first_complete_legal_hash_divergence_clock comes from producer metadata and can independently be present or null.",
+  "execution_episode": "execution05_backpressure_20261030",
+  "mutable_state_digest_components": [
+    "model_config",
+    "model state_dict including buffers",
+    "SGD optimizer state_dict",
+    "parameter_names",
+    "requires_grad",
+    "incoming gradients",
+    "module training modes",
+    "torch RNG",
+    "Python RNG",
+    "NumPy RNG"
+  ],
+  "new_experiments_or_thresholds": false,
+  "original_static_template": {
+    "bytes": 4540,
+    "path": "/workspace/scratch/178ced6a501f/continuation_recovery_20261030/current_readiness_0253/postseal_readiness_0533/C_STATE_EVIDENCE_SCOPE.json",
+    "sha256": "d88ecbd9d4bd428adc39cf2631cb8f35bbcc5bf655ee910bbb92e20c246bbcc8"
+  },
+  "schema": "hepta.execution05.C-existing-state-evidence-scope.1",
+  "scientific_values_read": false,
+  "scope_limit": "C branch tensors are not all literally archived; original fixed reconstruction audits cover four prescribed cases. No claim that all C bank branches have the A/R 576-terminal literal-replay coverage.",
+  "source_files": [
+    {
+      "bytes": 4878,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/experiments/parameter_field_fullstudy_20261029/architecture_state.py",
+      "sha256": "d321d60d9657442237895b807d7b7db98a42938f733d583502687bb8d60e439b"
+    },
+    {
+      "bytes": 13777,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/experiments/parameter_field_fullstudy_20261029/architecture_kernel.py",
+      "sha256": "4ff6a03e6316e0b4767a0b9799b9685ededacdeecab39f35a3cd3b9be7b6d967"
+    },
+    {
+      "bytes": 9084,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/experiments/parameter_field_fullstudy_20261029/architecture_bank.py",
+      "sha256": "379160d95ded58ccfb198711c6d17187552b598414389e4c5c6062afa24980a3"
+    },
+    {
+      "bytes": 14668,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/experiments/parameter_field_fullstudy_20261029/architecture_run.py",
+      "sha256": "eabf22053ab92bd6babcd8d9e053ab9dd555d537cc4479c912336b85d8e6851d"
+    },
+    {
+      "bytes": 28615,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/experiments/parameter_field_fullstudy_20261029/report_results.py",
+      "sha256": "ccfe0f9fa555906f9cda0834424a5396c7146f523a47a4cd8696134d007e614f"
+    }
+  ],
+  "unavailable_in_registered_step_diagnostics": [
+    "Separate parameter and optimizer/momentum hashes at every C decision",
+    "C postguard per-component numeric difference norms",
+    "First C parameter/optimizer component divergence clock",
+    "First internal microstep state divergence"
+  ]
+}

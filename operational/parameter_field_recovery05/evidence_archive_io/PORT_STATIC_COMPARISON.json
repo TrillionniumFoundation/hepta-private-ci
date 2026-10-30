@@ -1,0 +1,112 @@
+{
+  "actual_ack_published": false,
+  "allowed_function_normalizations": [
+    "Only new local execution05 metadata schema labels; frozen root-engineering .4 labels remain unchanged.",
+    "External helper argv uses unchanged LEGACY_OWN/external_step.py.",
+    "Liveness import points to the current pinned execution05 supervisor.",
+    "Remove sole added strict execution05 request binding guard for equivalence comparison."
+  ],
+  "complete": true,
+  "equal_functions": [
+    {
+      "equal": true,
+      "function": "stable_process_identity",
+      "normalized_ast_sha256": "36c1dfc2923adc3b71db5e9c8c8c41ae424ccc38041763623167298773eaa117"
+    },
+    {
+      "equal": true,
+      "function": "path_in",
+      "normalized_ast_sha256": "73b2c89b201e8f02d3d133462d7a6307b801696534b00fe5fe65a14b4caceb47"
+    },
+    {
+      "equal": true,
+      "function": "same_or_write",
+      "normalized_ast_sha256": "4494b501564112021f0195e015814b06be83945a30e1431f76b900e1a7d0b7ee"
+    },
+    {
+      "equal": true,
+      "function": "request_value",
+      "normalized_ast_sha256": "fc0684d3478200ebb9c59a923edeff87bb79da0a8121fb752d30833d6ac8298f"
+    },
+    {
+      "equal": true,
+      "function": "awaiting",
+      "normalized_ast_sha256": "e98fdab594a4ae75f4959a7e41020e416690597c5c89a8e018cf665b60bb0731"
+    },
+    {
+      "equal": true,
+      "function": "work_bound",
+      "normalized_ast_sha256": "01d833df6029895bb65163cb18537786dc43c7dab132c58ce5bea7682231e2aa"
+    },
+    {
+      "equal": true,
+      "function": "publish_liveness",
+      "normalized_ast_sha256": "787f3b43b6019b78398f9686fce730f47289a0382cc09d1a082fe94fc90535ef"
+    },
+    {
+      "equal": true,
+      "function": "step",
+      "normalized_ast_sha256": "450639e1b63b81a20468f649ec764f9087d85dc7dfdf6ebec9e834b7dd9ed50b"
+    },
+    {
+      "equal": true,
+      "function": "remote",
+      "normalized_ast_sha256": "081b918f9225d2d4eda5b6d8504cf5725ccb473805ed46019312cd9c87a1a5ba"
+    },
+    {
+      "equal": true,
+      "function": "upload_evidence",
+      "normalized_ast_sha256": "33b4e75cabcde8d94416b7fe1f2ad064449b7d1bef678b2c6df8aad98d26f063"
+    },
+    {
+      "equal": true,
+      "function": "prepare_upload",
+      "normalized_ast_sha256": "796f012ef21977f6996e6e511d133a399912fe0ee2794d0b36d319d5e18e9a75"
+    },
+    {
+      "equal": true,
+      "function": "prepare_readback",
+      "normalized_ast_sha256": "82632883030617b440dafab46cd9760354f963a40088154cce0f0ed1a66e806c"
+    },
+    {
+      "equal": true,
+      "function": "materialize_payload",
+      "normalized_ast_sha256": "4c8652531907d0bb6c445b127eb8b9decd83d57193db0deea7599f8a15b796fd"
+    },
+    {
+      "equal": true,
+      "function": "prepare_transfers",
+      "normalized_ast_sha256": "796986c3af099d2fba230ec4bf300de0d27a64b829bfa4254e05fc897639bd28"
+    },
+    {
+      "equal": true,
+      "function": "make_ack",
+      "normalized_ast_sha256": "95df22cbb2ed3187b986cf82a25688a37d2a27a00df0d052ceda2d1fb8121131"
+    },
+    {
+      "equal": true,
+      "function": "main",
+      "normalized_ast_sha256": "ce717dcd4fe40934875be3ec39b5ac7dc45fe750c1455155303001a529c2d5fc"
+    }
+  ],
+  "network_or_scientific_calls_executed": false,
+  "new_code_identity_scope": [
+    "Current supervisor exact SHA.",
+    "Unchanged durable_archive exact SHA.",
+    "Unchanged external_step exact SHA.",
+    "All four actual restored official helper SHA pins.",
+    "Metadata helper exact current descriptor."
+  ],
+  "new_source": {
+    "bytes": 22851,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/archive_io.py",
+    "sha256": "27459ed53282fce7f6a381c11da49347bcfb2e8f94c10865808843d19255d09f"
+  },
+  "operational_paths": "ROOT is OPS/root_archive_io, outside Git source; OWN is source05; archive/external_step remain source04.",
+  "original_restored_source": {
+    "bytes": 21490,
+    "path": "/workspace/scratch/178ced6a501f/continuation_recovery_20261030/current_readiness_0253/root_archive_io/archive_io.py",
+    "sha256": "81d5adafc692013dfe29855c1d1d5e6fcc07527942e23c7b936d3308cc508183"
+  },
+  "schema": "hepta.execution05.archive-io-port-static-audit.1"
+}
