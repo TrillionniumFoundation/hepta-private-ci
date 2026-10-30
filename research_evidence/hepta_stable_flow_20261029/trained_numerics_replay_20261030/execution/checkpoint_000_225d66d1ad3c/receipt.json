@@ -1,0 +1,438 @@
+{
+  "aliases": [
+    {
+      "arm": "analytic",
+      "checkpoint": "cpu30",
+      "checkpoint_sha256": "225d66d1ad3cc58fd39ac875019fd624972ff6b49f87f17a53cb45fd30951a74",
+      "id": "mqar__analytic__s81301__lr0.003",
+      "learning_rate": 0.003,
+      "regime": "cpu30",
+      "seed": 81301,
+      "task": "mqar",
+      "validation": {
+        "accuracy": 0.12109375,
+        "cross_entropy": 2.0967156291007996,
+        "examples": 256,
+        "queries": 1024,
+        "sequence_accuracy": 0.0
+      }
+    }
+  ],
+  "checkpoint_relative_path": "candidates/mqar__analytic__s81301__lr0.003/cpu30.npz",
+  "checkpoint_sha256": "225d66d1ad3cc58fd39ac875019fd624972ff6b49f87f17a53cb45fd30951a74",
+  "checkpoint_unchanged": true,
+  "cpu_seconds": 23.362530485999997,
+  "end_to_end": {
+    "comparisons": {
+      "reference_consistency": {
+        "all_group_gradients_passed": true,
+        "final_flow_state_scaled_max": 4.2769028282973175e-05,
+        "final_memory_scaled_max": 8.803606256886121e-07,
+        "flow_rate_trace_scaled_max": 2.8879543990254084e-05,
+        "gradient": {
+          "all": {
+            "absolute_l2_difference": 7.816624693796886e-07,
+            "cosine": 0.9999999999971312,
+            "observed_norm": 0.32530393502004196,
+            "reference_below_denominator_floor": false,
+            "reference_norm": 0.3253038734409997,
+            "relative_l2_difference": 2.402868619765939e-06
+          },
+          "boundary_dynamics": {
+            "absolute_l2_difference": 8.576791712166785e-08,
+            "cosine": 0.9999999971574887,
+            "observed_norm": 0.0007629456925723737,
+            "reference_below_denominator_floor": false,
+            "reference_norm": 0.0007630093061468604,
+            "relative_l2_difference": 0.00011240743255778802
+          },
+          "boundary_input": {
+            "absolute_l2_difference": 7.063551830749992e-07,
+            "cosine": 0.9999999991958191,
+            "observed_norm": 0.010792377073195103,
+            "reference_below_denominator_floor": false,
+            "reference_norm": 0.010792935278698476,
+            "relative_l2_difference": 6.54460686398352e-05
+          },
+          "content": {
+            "absolute_l2_difference": 3.229777208431236e-07,
+            "cosine": 0.9999999999995369,
+            "observed_norm": 0.32509981887471434,
+            "reference_below_denominator_floor": false,
+            "reference_norm": 0.32509973849663604,
+            "relative_l2_difference": 9.93472718054695e-07
+          },
+          "rate_head": {
+            "absolute_l2_difference": 1.9693339265574702e-08,
+            "cosine": 0.9999999999890139,
+            "observed_norm": 0.003962375314352329,
+            "reference_below_denominator_floor": false,
+            "reference_norm": 0.003962381860120055,
+            "relative_l2_difference": 4.970076070603154e-06
+          }
+        },
+        "logit_max_absolute_difference": 2.9906624390840797e-07,
+        "logit_scaled_max": 2.4860565487789005e-07,
+        "logits_passed": true,
+        "loss_absolute_difference": 2.97677957838971e-08,
+        "loss_scaled_difference": 9.637132167661633e-09,
+        "passed": true
+      },
+      "registered_h_mesh": {
+        "all_group_gradients_passed": true,
+        "final_flow_state_scaled_max": 0.00020848656715460748,
+        "final_memory_scaled_max": 4.3588899784422196e-06,
+        "flow_rate_trace_scaled_max": 0.0001433116764749414,
+        "gradient": {
+          "all": {
+            "absolute_l2_difference": 4.738294668496703e-06,
+            "cosine": 0.999999999894294,
+            "observed_norm": 0.3253041549036324,
+            "reference_below_denominator_floor": false,
+            "reference_norm": 0.3253038734409997,
+            "relative_l2_difference": 1.4565749305029677e-05
+          },
+          "boundary_dynamics": {
+            "absolute_l2_difference": 6.07819743805668e-07,
+            "cosine": 0.9999998559104151,
+            "observed_norm": 0.0007625601173907675,
+            "reference_below_denominator_floor": false,
+            "reference_norm": 0.0007630093061468604,
+            "relative_l2_difference": 0.0007966085589114397
+          },
+          "boundary_input": {
+            "absolute_l2_difference": 4.415544173475867e-06,
+            "cosine": 0.9999999681948746,
+            "observed_norm": 0.010789458265408213,
+            "reference_below_denominator_floor": false,
+            "reference_norm": 0.010792935278698476,
+            "relative_l2_difference": 0.00040911430111052597
+          },
+          "content": {
+            "absolute_l2_difference": 1.604858281196302e-06,
+            "cosine": 0.9999999999885665,
+            "observed_norm": 0.3251001369970576,
+            "reference_below_denominator_floor": false,
+            "reference_norm": 0.32509973849663604,
+            "relative_l2_difference": 4.936510526331624e-06
+          },
+          "rate_head": {
+            "absolute_l2_difference": 9.690755338603859e-08,
+            "cosine": 0.9999999997340411,
+            "observed_norm": 0.003962349614465461,
+            "reference_below_denominator_floor": false,
+            "reference_norm": 0.003962381860120055,
+            "relative_l2_difference": 2.4456894061972718e-05
+          }
+        },
+        "logit_max_absolute_difference": 1.4675101203953655e-06,
+        "logit_scaled_max": 1.2199013494567255e-06,
+        "logits_passed": true,
+        "loss_absolute_difference": 1.4653544555542908e-07,
+        "loss_scaled_difference": 4.743990674743797e-08,
+        "passed": true
+      },
+      "same_h_precision": {
+        "all_group_gradients_passed": true,
+        "final_flow_state_scaled_max": 1.3302501844387348e-06,
+        "final_memory_scaled_max": 7.039801996933991e-08,
+        "flow_rate_trace_scaled_max": 2.8044229357055336e-06,
+        "gradient": {
+          "all": {
+            "absolute_l2_difference": 5.2496822284818865e-08,
+            "cosine": 0.9999999999999875,
+            "observed_norm": 0.32530415974759436,
+            "reference_below_denominator_floor": false,
+            "reference_norm": 0.3253041549036324,
+            "relative_l2_difference": 1.6137765685891851e-07
+          },
+          "boundary_dynamics": {
+            "absolute_l2_difference": 4.711155222159314e-09,
+            "cosine": 0.9999999999926873,
+            "observed_norm": 0.0007625638174730745,
+            "reference_below_denominator_floor": false,
+            "reference_norm": 0.0007625601173907675,
+            "relative_l2_difference": 6.178077130861962e-06
+          },
+          "boundary_input": {
+            "absolute_l2_difference": 2.963447923439697e-08,
+            "cosine": 0.9999999999988277,
+            "observed_norm": 0.010789482867344935,
+            "reference_below_denominator_floor": false,
+            "reference_norm": 0.010789458265408213,
+            "relative_l2_difference": 2.7466141955808164e-06
+          },
+          "content": {
+            "absolute_l2_difference": 4.3014435857297227e-08,
+            "cosine": 0.9999999999999913,
+            "observed_norm": 0.3251001410350154,
+            "reference_below_denominator_floor": false,
+            "reference_norm": 0.3251001369970576,
+            "relative_l2_difference": 1.3231134337444632e-07
+          },
+          "rate_head": {
+            "absolute_l2_difference": 2.2972407059627737e-09,
+            "cosine": 0.9999999999998875,
+            "observed_norm": 0.003962348291233818,
+            "reference_below_denominator_floor": false,
+            "reference_norm": 0.003962349614465461,
+            "relative_l2_difference": 5.797672920067862e-07
+          }
+        },
+        "logit_max_absolute_difference": 2.3938697024661337e-08,
+        "logit_scaled_max": 2.0422319998308123e-08,
+        "logits_passed": true,
+        "loss_absolute_difference": 3.0166158149214084e-07,
+        "loss_scaled_difference": 9.766099881111347e-08,
+        "passed": true
+      }
+    },
+    "parameter_layout": [
+      {
+        "group": "content",
+        "name": "key_projection.weight",
+        "shape": [
+          16,
+          16
+        ],
+        "start": 0,
+        "stop": 256
+      },
+      {
+        "group": "content",
+        "name": "query_projection.weight",
+        "shape": [
+          16,
+          16
+        ],
+        "start": 256,
+        "stop": 512
+      },
+      {
+        "group": "content",
+        "name": "value_projection.weight",
+        "shape": [
+          8,
+          8
+        ],
+        "start": 512,
+        "stop": 576
+      },
+      {
+        "group": "content",
+        "name": "readout.weight",
+        "shape": [
+          8,
+          8
+        ],
+        "start": 576,
+        "stop": 640
+      },
+      {
+        "group": "content",
+        "name": "readout.bias",
+        "shape": [
+          8
+        ],
+        "start": 640,
+        "stop": 648
+      },
+      {
+        "group": "boundary_input",
+        "name": "flow.drive_v.weight",
+        "shape": [
+          1,
+          32
+        ],
+        "start": 648,
+        "stop": 680
+      },
+      {
+        "group": "boundary_input",
+        "name": "flow.drive_v.bias",
+        "shape": [
+          1
+        ],
+        "start": 680,
+        "stop": 681
+      },
+      {
+        "group": "boundary_input",
+        "name": "flow.drive_q.weight",
+        "shape": [
+          1,
+          32
+        ],
+        "start": 681,
+        "stop": 713
+      },
+      {
+        "group": "boundary_input",
+        "name": "flow.drive_q.bias",
+        "shape": [
+          1
+        ],
+        "start": 713,
+        "stop": 714
+      },
+      {
+        "group": "boundary_dynamics",
+        "name": "flow.raw.g_call",
+        "shape": [
+          1
+        ],
+        "start": 714,
+        "stop": 715
+      },
+      {
+        "group": "boundary_dynamics",
+        "name": "flow.raw.g_put",
+        "shape": [
+          1
+        ],
+        "start": 715,
+        "stop": 716
+      },
+      {
+        "group": "boundary_dynamics",
+        "name": "flow.raw.g_recovery",
+        "shape": [
+          1
+        ],
+        "start": 716,
+        "stop": 717
+      },
+      {
+        "group": "boundary_dynamics",
+        "name": "flow.raw.kappa",
+        "shape": [
+          1
+        ],
+        "start": 717,
+        "stop": 718
+      },
+      {
+        "group": "boundary_dynamics",
+        "name": "flow.raw.tau_q",
+        "shape": [
+          1
+        ],
+        "start": 718,
+        "stop": 719
+      },
+      {
+        "group": "boundary_dynamics",
+        "name": "flow.raw.tau_v",
+        "shape": [
+          1
+        ],
+        "start": 719,
+        "stop": 720
+      },
+      {
+        "group": "boundary_dynamics",
+        "name": "flow.raw.tau_z_fraction",
+        "shape": [
+          1
+        ],
+        "start": 720,
+        "stop": 721
+      },
+      {
+        "group": "boundary_dynamics",
+        "name": "flow.raw.x_star",
+        "shape": [
+          1
+        ],
+        "start": 721,
+        "stop": 722
+      },
+      {
+        "group": "rate_head",
+        "name": "rate_raw.call_gain",
+        "shape": [
+          1
+        ],
+        "start": 722,
+        "stop": 723
+      },
+      {
+        "group": "rate_head",
+        "name": "rate_raw.leak_bias",
+        "shape": [
+          1
+        ],
+        "start": 723,
+        "stop": 724
+      },
+      {
+        "group": "rate_head",
+        "name": "rate_raw.put_gain",
+        "shape": [
+          1
+        ],
+        "start": 724,
+        "stop": 725
+      },
+      {
+        "group": "rate_head",
+        "name": "rate_raw.write_bias",
+        "shape": [
+          1
+        ],
+        "start": 725,
+        "stop": 726
+      }
+    ],
+    "reference_is_finite_mesh_not_continuous_truth": true,
+    "registered_h": 0.0625,
+    "status": "passed"
+  },
+  "identity": [
+    "mqar",
+    "analytic",
+    "225d66d1ad3cc58fd39ac875019fd624972ff6b49f87f17a53cb45fd30951a74"
+  ],
+  "independent_flow": {
+    "direction_count": 4,
+    "gradient_observed_norm": 0.19926672138328155,
+    "gradient_reference_norm": 0.19925106265117015,
+    "loss_is_flow_trace_function_not_end_to_end_ce": true,
+    "metrics": {
+      "directional_gradient_relative_l2": 0.00026212170517813776,
+      "oracle_fd_gradient_relative_change": 4.752208719520475e-06,
+      "oracle_scaled_state_change": 2.722621302185928e-10,
+      "same_h_precision_directional_gradient_relative": 3.082281915851397e-06,
+      "same_h_precision_scaled_state": 1.8440484865320408e-06,
+      "scaled_state_max": 0.00013312057122505063
+    },
+    "parameter_order": [
+      "drive_v.weight",
+      "drive_v.bias",
+      "drive_q.weight",
+      "drive_q.bias",
+      "raw.g_call",
+      "raw.g_put",
+      "raw.g_recovery",
+      "raw.kappa",
+      "raw.tau_q",
+      "raw.tau_v",
+      "raw.tau_z_fraction",
+      "raw.x_star"
+    ],
+    "reference_passed": true,
+    "sampled_endpoint_margin_range": [
+      -0.8741239828666535,
+      0.7062346816968676
+    ],
+    "sampled_endpoint_sign_changes": 11,
+    "status": "passed"
+  },
+  "raw_artifacts_sha256": {
+    "fp32_h.npz": "3600d6111a04a1d51609405e61ca76585b0a219a290b4a315976c9ee1c393bd8",
+    "fp64_h.npz": "d1ddb3704b21e00c98a9a47b77071d674a4255528b9c51f0bd2a56777a13ffd5",
+    "fp64_h_over_2.npz": "26aa0648f8c086d31f0a896a56d946dd50d5c79ad9f1bdb9a947cb0db3597763",
+    "fp64_h_over_4.npz": "ef0970d25e9f21deae55562e7235c7ec7a693621a4f9143526767238b52583b4",
+    "independent_flow_raw.npz": "4f400abc3aa70bd528fad8476eddad76d03af3c1a2378689efe2beb75c861ff5"
+  }
+}

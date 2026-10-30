@@ -1,0 +1,30 @@
+{
+  "child_total_cpu_seconds": 95.417443,
+  "command": [
+    "/workspace/scratch/45b3735e7225/hepta-oct30-venv/bin/python",
+    "-m",
+    "experiments.call_put_stable_flow_appendix.runtime",
+    "run",
+    "--study",
+    "/workspace/scratch/45b3735e7225/hepta-cfb/research_evidence/hepta_stable_flow_20261029/formal_run001",
+    "--numerics",
+    "/workspace/scratch/45b3735e7225/hepta-cfb/research_evidence/hepta_stable_flow_20261029/trained_numerics_replay_20261030",
+    "--output",
+    "/workspace/scratch/45b3735e7225/hepta-cfb/research_evidence/hepta_stable_flow_20261029/inference_cost_replay_20261030",
+    "--idle-cpu-attested"
+  ],
+  "finished_unix": 1793322665.4247203,
+  "is_original_execution": false,
+  "other_task_scientific_compute_paused": true,
+  "peak_rss_bytes": 262041600,
+  "purpose": "New clock measurements on identical frozen checkpoints; not recovery of missing original timing bytes",
+  "returncode": 0,
+  "runner_sha256": "c1e9ba97bdf4ffef93801eec7d65374ce6fcc27c82b78eca2fbc321904aff52e",
+  "schema": "hepta-runtime-replay-execution-v1",
+  "started_unix": 1793322566.8135407,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "b26122df158cc0075705e5abb652a851051162cff71ee9b3f1b7a60ad3eabebc",
+  "summary_sha256": "433f84ea538ce1ba5a602b7b25d4c960d12ae7d1f5b2c42c7554b9decb6dcc12",
+  "unrelated_host_activity_controlled": false,
+  "wall_seconds": 98.61086812300005
+}

@@ -1,0 +1,77 @@
+{
+  "version": "hepta-trained-checkpoint-numerics-20261029-v1",
+  "purpose": "Numerical appendix for new trained checkpoints; no claim of recovering or repairing old checkpoints",
+  "scope": {
+    "arms": ["analytic", "matched_c1"],
+    "tasks": ["selective_copy", "mqar"],
+    "seeds": [81301, 81302, 81303],
+    "regimes": ["cpu30", "updates384"],
+    "expected_selected_aliases": 24,
+    "physical_deduplication_key": ["task", "arm", "checkpoint_sha256"],
+    "checkpoint_source": "Only the already sealed validation selection; no reselection by this appendix"
+  },
+  "diagnostic_data": {
+    "source_split": "train",
+    "episode_indices": [0, 1, 2, 3],
+    "sequence": "All 32 external ticks, including every visible query",
+    "target_use": "Query-masked cross entropy objective only; targets never passed as model inputs",
+    "preserve_inputs": "Registered FP32 inputs and dt are promoted exactly for FP64; labels stay int64",
+    "test_or_validation_examples_used": false
+  },
+  "end_to_end": {
+    "objective": "Mean cross entropy over targets != -100 on the four fixed training episodes",
+    "model_mode": "eval; gradients enabled; no optimizer, clipping, dropout or parameter update",
+    "evaluations": ["fp32_h", "fp64_h", "fp64_h_over_2", "fp64_h_over_4"],
+    "initial_state": "Production learned parameter-dependent initialization, no state detach",
+    "parameter_groups": ["content", "boundary_input", "boundary_dynamics", "rate_head"],
+    "comparison_denominator_floor": 1e-8,
+    "same_h_precision": {
+      "gradient_relative_l2_max_full_and_each_group": 0.0001,
+      "scaled_logit_max": 0.00001
+    },
+    "reference_consistency_h_over_2_vs_h_over_4": {
+      "gradient_relative_l2_max_full_and_each_group": 0.0025,
+      "scaled_logit_max": 0.00025
+    },
+    "registered_h_vs_h_over_4": {
+      "gradient_relative_l2_max_full_and_each_group": 0.01,
+      "scaled_logit_max": 0.001
+    },
+    "reference_rule": "If the fixed h/2 vs h/4 consistency gate fails, report reference_unresolved; do not add adaptive meshes or label h/4 a continuous truth",
+    "raw_outputs": ["loss", "logits", "flow_rate_trace", "final_flow_state", "final_memory", "full_named_parameter_gradient"],
+    "reported_metrics": ["loss_absolute_difference", "loss_scaled_difference", "logit_max_absolute_difference", "logit_scaled_max", "flow_feature_scaled_max", "final_flow_state_scaled_max", "gradient_ref_norm", "gradient_observed_norm", "gradient_absolute_l2_difference", "gradient_relative_l2_difference", "gradient_cosine_when_norm_above_floor"]
+  },
+  "independent_flow": {
+    "subset_rule": "Both arms, both tasks, both regimes at predeclared seed 81301; eight aliases before physical deduplication",
+    "seed": 81301,
+    "expected_aliases": 8,
+    "episode_index": 0,
+    "sequence": "All 32 external ticks of the registered first training episode",
+    "initial_state": "Independently recomputed learned equilibrium (0,q_star,z_star)",
+    "parameter_snapshot": "flow.named_parameters order; model flow. prefix removed; weights loaded as stored FP32 then exactly promoted",
+    "objective": "audit.numpy_loss of the complete v/q/z trace; this is not end-to-end CE",
+    "directions": {"count": 4, "seed": 20261029, "distribution": "iid normal, each vector normalized to unit L2"},
+    "oracle": {"method": "independent NumPy parameter/channel/RHS implementation and SciPy DOP853", "rtol": 1e-11, "atol": 1e-13, "tight_rtol": 3e-13, "tight_atol": 3e-15},
+    "finite_difference_epsilons": [1e-5, 5e-6],
+    "thresholds": {"scaled_state_max": 0.001, "directional_gradient_relative_l2": 0.01, "oracle_scaled_state_change": 1e-8, "oracle_fd_gradient_relative_change": 0.0001, "same_h_precision_scaled_state": 0.00001, "same_h_precision_directional_gradient_relative": 0.0001},
+    "reference_rule": "Oracle state and finite-difference consistency must pass before claiming flow qualification; otherwise reference_unresolved",
+    "limitations": ["Four parameter directions do not certify the full continuous-time Jacobian", "Flow-only DOP is distinct from end-to-end CE mesh diagnostics", "One trajectory does not certify the whole learned parameter domain"]
+  },
+  "execution": {
+    "register_before": ["candidate training", "validation selection", "test scoring"],
+    "run_after": "Validation selection is sealed",
+    "preferred_run_before": "Test scoring; the runner never reads test data or test score files",
+    "torch_threads": 1,
+    "torch_deterministic_algorithms": true,
+    "source_binding": "Bind immutable core protocol, source hashes, freeze seal and this appendix source snapshot at registration",
+    "outputs": "Separate immutable numerical receipts and raw arrays, never overwrite a checkpoint or selection",
+    "failure_policy": "Retain failed/unresolved flags and all available raw arrays; no parameter changes, retraining, checkpoint exclusion, reselection or replacement of primary test scores"
+  },
+  "interpretation": [
+    "All numerical thresholds classify this appendix only and are not additional model-selection criteria",
+    "A small aggregate gradient error cannot hide a failing boundary parameter group",
+    "Near-zero reference gradients use the declared absolute denominator floor and retain their raw norms",
+    "Finite-mesh agreement is not an analytic continuous-time solution",
+    "Results apply to these newly trained checkpoints and fixed training probes, not the unavailable old checkpoints"
+  ]
+}

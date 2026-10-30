@@ -1,0 +1,4614 @@
+{
+  "alias_count": 20,
+  "case_count": 40,
+  "cases": [
+    {
+      "aliases": [
+        {
+          "arm": "analytic",
+          "checkpoint": "cpu30",
+          "checkpoint_sha256": "225d66d1ad3cc58fd39ac875019fd624972ff6b49f87f17a53cb45fd30951a74",
+          "id": "mqar__analytic__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "cpu30",
+          "seed": 81301,
+          "task": "mqar",
+          "validation": {
+            "accuracy": 0.12109375,
+            "cross_entropy": 2.0967156291007996,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 0.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.243193698,
+      "batch_size": 1,
+      "case_id": "physical_000_batch_1",
+      "checkpoint_relative_path": "candidates/mqar__analytic__s81301__lr0.003/cpu30.npz",
+      "checkpoint_sha256": "225d66d1ad3cc58fd39ac875019fd624972ff6b49f87f17a53cb45fd30951a74",
+      "cpu_seconds": {
+        "maximum": 0.293161202,
+        "mean": 0.23934371536363638,
+        "median": 0.243193137,
+        "minimum": 0.160696725,
+        "p25": 0.223181823,
+        "p75": 0.2595775685,
+        "sample_standard_deviation": 0.04054804913873092
+      },
+      "deterministic_output_sha256": "58975587aa7437169278057920011fdd6cdfdee5552e0aadb8f66a2447e03f38",
+      "dt_tensor_sha256": "b638277a8690e175a9137feff1e43c067f9faf4e2f600caf468fb05b0403b717",
+      "external_tokens_per_second_from_median_wall": 131.5823570395315,
+      "identity": [
+        "mqar",
+        "analytic",
+        "225d66d1ad3cc58fd39ac875019fd624972ff6b49f87f17a53cb45fd30951a74"
+      ],
+      "input_tensor_sha256": "48d5661faf3c7f54958dbe1bb5b7030d094f77d7f5d0ccbcd8268486c033be80",
+      "physical_index": 0,
+      "registered_input_file_sha256": "761a9730e3469617857152b5b6a337ef94e3b895838f46a48ef0472e64d68fb6",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 4.111948657485359,
+      "state_payload": {
+        "batch_size": 1,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "analytic",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "shared scalar margin drives both operator channels",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 605,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.293238416,
+        "mean": 0.23998841790909095,
+        "median": 0.243193698,
+        "minimum": 0.16069676400000002,
+        "p25": 0.22369696900000002,
+        "p75": 0.2624969625,
+        "sample_standard_deviation": 0.04085081318725007
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "analytic",
+          "checkpoint": "cpu30",
+          "checkpoint_sha256": "225d66d1ad3cc58fd39ac875019fd624972ff6b49f87f17a53cb45fd30951a74",
+          "id": "mqar__analytic__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "cpu30",
+          "seed": 81301,
+          "task": "mqar",
+          "validation": {
+            "accuracy": 0.12109375,
+            "cross_entropy": 2.0967156291007996,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 0.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.012680577812500001,
+      "batch_size": 32,
+      "case_id": "physical_000_batch_32",
+      "checkpoint_relative_path": "candidates/mqar__analytic__s81301__lr0.003/cpu30.npz",
+      "checkpoint_sha256": "225d66d1ad3cc58fd39ac875019fd624972ff6b49f87f17a53cb45fd30951a74",
+      "cpu_seconds": {
+        "maximum": 0.522383714,
+        "mean": 0.40149045,
+        "median": 0.405739485,
+        "minimum": 0.288323695,
+        "p25": 0.351416988,
+        "p75": 0.43980076450000005,
+        "sample_standard_deviation": 0.06931093306043816
+      },
+      "deterministic_output_sha256": "731be3eee7434442fb1e90aee1b8e2e79b62d1790407a69f8829b48da3b65e8c",
+      "dt_tensor_sha256": "e9bac255f4adc7cb4ada9298e193a5ff66b434d15afabd458505325f29c398c7",
+      "external_tokens_per_second_from_median_wall": 2523.5443110846018,
+      "identity": [
+        "mqar",
+        "analytic",
+        "225d66d1ad3cc58fd39ac875019fd624972ff6b49f87f17a53cb45fd30951a74"
+      ],
+      "input_tensor_sha256": "73fe6558903b64dfe4055c66ba17661566b2693646c7c3f0c6e4653c60c6f64e",
+      "physical_index": 0,
+      "registered_input_file_sha256": "761a9730e3469617857152b5b6a337ef94e3b895838f46a48ef0472e64d68fb6",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 78.8607597213938,
+      "state_payload": {
+        "batch_size": 32,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "analytic",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "shared scalar margin drives both operator channels",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 19360,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.522503603,
+        "mean": 0.40195255136363633,
+        "median": 0.40577849000000005,
+        "minimum": 0.28833093200000004,
+        "p25": 0.3514467995,
+        "p75": 0.4398312415,
+        "sample_standard_deviation": 0.06915123466094328
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "analytic",
+          "checkpoint": "update384",
+          "checkpoint_sha256": "a217c1cbc28a263db2f222ff0cb605c9ad0603276014c151d2b7ab70d4b3c906",
+          "id": "mqar__analytic__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "updates384",
+          "seed": 81301,
+          "task": "mqar",
+          "validation": {
+            "accuracy": 1.0,
+            "cross_entropy": 0.023906012531369925,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 1.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.21048080400000002,
+      "batch_size": 1,
+      "case_id": "physical_001_batch_1",
+      "checkpoint_relative_path": "candidates/mqar__analytic__s81301__lr0.003/update384.npz",
+      "checkpoint_sha256": "a217c1cbc28a263db2f222ff0cb605c9ad0603276014c151d2b7ab70d4b3c906",
+      "cpu_seconds": {
+        "maximum": 0.239226444,
+        "mean": 0.19265639963636366,
+        "median": 0.210464956,
+        "minimum": 0.13577569,
+        "p25": 0.1602610945,
+        "p75": 0.22149585700000002,
+        "sample_standard_deviation": 0.03762052841412361
+      },
+      "deterministic_output_sha256": "0669ed36f386a1299f8fbc824386407c04867a29ee6a5254bb563648eefaecf5",
+      "dt_tensor_sha256": "b638277a8690e175a9137feff1e43c067f9faf4e2f600caf468fb05b0403b717",
+      "external_tokens_per_second_from_median_wall": 152.03286661713815,
+      "identity": [
+        "mqar",
+        "analytic",
+        "a217c1cbc28a263db2f222ff0cb605c9ad0603276014c151d2b7ab70d4b3c906"
+      ],
+      "input_tensor_sha256": "48d5661faf3c7f54958dbe1bb5b7030d094f77d7f5d0ccbcd8268486c033be80",
+      "physical_index": 1,
+      "registered_input_file_sha256": "761a9730e3469617857152b5b6a337ef94e3b895838f46a48ef0472e64d68fb6",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 4.751027081785567,
+      "state_payload": {
+        "batch_size": 1,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "analytic",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "shared scalar margin drives both operator channels",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 605,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.24934603200000002,
+        "mean": 0.19574161890909095,
+        "median": 0.21048080400000002,
+        "minimum": 0.13578515100000002,
+        "p25": 0.16072276500000002,
+        "p75": 0.22937596250000003,
+        "sample_standard_deviation": 0.0408375797644373
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "analytic",
+          "checkpoint": "update384",
+          "checkpoint_sha256": "a217c1cbc28a263db2f222ff0cb605c9ad0603276014c151d2b7ab70d4b3c906",
+          "id": "mqar__analytic__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "updates384",
+          "seed": 81301,
+          "task": "mqar",
+          "validation": {
+            "accuracy": 1.0,
+            "cross_entropy": 0.023906012531369925,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 1.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.0058864263125,
+      "batch_size": 32,
+      "case_id": "physical_001_batch_32",
+      "checkpoint_relative_path": "candidates/mqar__analytic__s81301__lr0.003/update384.npz",
+      "checkpoint_sha256": "a217c1cbc28a263db2f222ff0cb605c9ad0603276014c151d2b7ab70d4b3c906",
+      "cpu_seconds": {
+        "maximum": 0.26975311300000004,
+        "mean": 0.1988576402727273,
+        "median": 0.18836480600000002,
+        "minimum": 0.148623068,
+        "p25": 0.17106345900000003,
+        "p75": 0.22879485500000002,
+        "sample_standard_deviation": 0.04062225275458952
+      },
+      "deterministic_output_sha256": "8a50ec4d008a2b6d62bc958dfb7305d32f51f7101a095aafa159f61ac28f2bcd",
+      "dt_tensor_sha256": "e9bac255f4adc7cb4ada9298e193a5ff66b434d15afabd458505325f29c398c7",
+      "external_tokens_per_second_from_median_wall": 5436.235552978393,
+      "identity": [
+        "mqar",
+        "analytic",
+        "a217c1cbc28a263db2f222ff0cb605c9ad0603276014c151d2b7ab70d4b3c906"
+      ],
+      "input_tensor_sha256": "73fe6558903b64dfe4055c66ba17661566b2693646c7c3f0c6e4653c60c6f64e",
+      "physical_index": 1,
+      "registered_input_file_sha256": "761a9730e3469617857152b5b6a337ef94e3b895838f46a48ef0472e64d68fb6",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 169.88236103057477,
+      "state_payload": {
+        "batch_size": 32,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "analytic",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "shared scalar margin drives both operator channels",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 19360,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.275616073,
+        "mean": 0.19941733272727277,
+        "median": 0.188365642,
+        "minimum": 0.148624272,
+        "p25": 0.1710734175,
+        "p75": 0.228822784,
+        "sample_standard_deviation": 0.041675383968770595
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "frozen_flow",
+          "checkpoint": "update384",
+          "checkpoint_sha256": "0ceddf60c60d4c592776465b5ba85b7e9e4abd88ac667450252d245832f3f682",
+          "id": "mqar__frozen_flow__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "updates384",
+          "seed": 81301,
+          "task": "mqar",
+          "validation": {
+            "accuracy": 1.0,
+            "cross_entropy": 0.02819892903789878,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 1.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.20989670500000002,
+      "batch_size": 1,
+      "case_id": "physical_002_batch_1",
+      "checkpoint_relative_path": "candidates/mqar__frozen_flow__s81301__lr0.003/update384.npz",
+      "checkpoint_sha256": "0ceddf60c60d4c592776465b5ba85b7e9e4abd88ac667450252d245832f3f682",
+      "cpu_seconds": {
+        "maximum": 0.255272659,
+        "mean": 0.21365418054545457,
+        "median": 0.209881653,
+        "minimum": 0.15960975800000002,
+        "p25": 0.1805977215,
+        "p75": 0.2491250855,
+        "sample_standard_deviation": 0.03677948443031441
+      },
+      "deterministic_output_sha256": "d2f94010f3cdab90527af4588af9961f1be3bf892b42b0ffc8d0922a7994a25b",
+      "dt_tensor_sha256": "b638277a8690e175a9137feff1e43c067f9faf4e2f600caf468fb05b0403b717",
+      "external_tokens_per_second_from_median_wall": 152.45594255517256,
+      "identity": [
+        "mqar",
+        "frozen_flow",
+        "0ceddf60c60d4c592776465b5ba85b7e9e4abd88ac667450252d245832f3f682"
+      ],
+      "input_tensor_sha256": "48d5661faf3c7f54958dbe1bb5b7030d094f77d7f5d0ccbcd8268486c033be80",
+      "physical_index": 2,
+      "registered_input_file_sha256": "761a9730e3469617857152b5b6a337ef94e3b895838f46a48ef0472e64d68fb6",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 4.764248204849142,
+      "state_payload": {
+        "batch_size": 1,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "frozen_flow",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 0,
+            "boundary_input": 0,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "frozen controller parameters; evolving states; fewer trainable parameters",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 652,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 605,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.25536655,
+        "mean": 0.21393315927272727,
+        "median": 0.20989670500000002,
+        "minimum": 0.15966803100000002,
+        "p25": 0.180598323,
+        "p75": 0.2491417215,
+        "sample_standard_deviation": 0.03695576670356594
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "frozen_flow",
+          "checkpoint": "update384",
+          "checkpoint_sha256": "0ceddf60c60d4c592776465b5ba85b7e9e4abd88ac667450252d245832f3f682",
+          "id": "mqar__frozen_flow__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "updates384",
+          "seed": 81301,
+          "task": "mqar",
+          "validation": {
+            "accuracy": 1.0,
+            "cross_entropy": 0.02819892903789878,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 1.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.01322345928125,
+      "batch_size": 32,
+      "case_id": "physical_002_batch_32",
+      "checkpoint_relative_path": "candidates/mqar__frozen_flow__s81301__lr0.003/update384.npz",
+      "checkpoint_sha256": "0ceddf60c60d4c592776465b5ba85b7e9e4abd88ac667450252d245832f3f682",
+      "cpu_seconds": {
+        "maximum": 0.533236758,
+        "mean": 0.4301736550909091,
+        "median": 0.423142879,
+        "minimum": 0.29343681,
+        "p25": 0.37541992450000006,
+        "p75": 0.500272635,
+        "sample_standard_deviation": 0.07644876516866325
+      },
+      "deterministic_output_sha256": "6f100fd8b53727db99e969aec5ab21ce369078e9b645dfa7109087b5c135e9c1",
+      "dt_tensor_sha256": "e9bac255f4adc7cb4ada9298e193a5ff66b434d15afabd458505325f29c398c7",
+      "external_tokens_per_second_from_median_wall": 2419.9416596967108,
+      "identity": [
+        "mqar",
+        "frozen_flow",
+        "0ceddf60c60d4c592776465b5ba85b7e9e4abd88ac667450252d245832f3f682"
+      ],
+      "input_tensor_sha256": "73fe6558903b64dfe4055c66ba17661566b2693646c7c3f0c6e4653c60c6f64e",
+      "physical_index": 2,
+      "registered_input_file_sha256": "761a9730e3469617857152b5b6a337ef94e3b895838f46a48ef0472e64d68fb6",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 75.62317686552221,
+      "state_payload": {
+        "batch_size": 32,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "frozen_flow",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 0,
+            "boundary_input": 0,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "frozen controller parameters; evolving states; fewer trainable parameters",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 652,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 19360,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.5342350570000001,
+        "mean": 0.43036270136363636,
+        "median": 0.423150697,
+        "minimum": 0.293573333,
+        "p25": 0.3755976755,
+        "p75": 0.50030264,
+        "sample_standard_deviation": 0.0765342442207982
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "frozen_flow",
+          "checkpoint": "cpu30",
+          "checkpoint_sha256": "3882369a0529fc468ed50bffc1e2ea06c3b3b60a75e3f683e5350d4b756c99d5",
+          "id": "mqar__frozen_flow__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "cpu30",
+          "seed": 81301,
+          "task": "mqar",
+          "validation": {
+            "accuracy": 0.7802734375,
+            "cross_entropy": 1.8426492512226105,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 0.34375
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.182044795,
+      "batch_size": 1,
+      "case_id": "physical_003_batch_1",
+      "checkpoint_relative_path": "candidates/mqar__frozen_flow__s81301__lr0.003/cpu30.npz",
+      "checkpoint_sha256": "3882369a0529fc468ed50bffc1e2ea06c3b3b60a75e3f683e5350d4b756c99d5",
+      "cpu_seconds": {
+        "maximum": 0.259777109,
+        "mean": 0.20093693909090907,
+        "median": 0.182042373,
+        "minimum": 0.157101759,
+        "p25": 0.1674222535,
+        "p75": 0.237877014,
+        "sample_standard_deviation": 0.038457087328706153
+      },
+      "deterministic_output_sha256": "42198bd363a0d312c57b8ef9d1d726bda13f6b228bc248ed212a370228177a08",
+      "dt_tensor_sha256": "b638277a8690e175a9137feff1e43c067f9faf4e2f600caf468fb05b0403b717",
+      "external_tokens_per_second_from_median_wall": 175.78091150587414,
+      "identity": [
+        "mqar",
+        "frozen_flow",
+        "3882369a0529fc468ed50bffc1e2ea06c3b3b60a75e3f683e5350d4b756c99d5"
+      ],
+      "input_tensor_sha256": "48d5661faf3c7f54958dbe1bb5b7030d094f77d7f5d0ccbcd8268486c033be80",
+      "physical_index": 3,
+      "registered_input_file_sha256": "761a9730e3469617857152b5b6a337ef94e3b895838f46a48ef0472e64d68fb6",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 5.493153484558567,
+      "state_payload": {
+        "batch_size": 1,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "frozen_flow",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 0,
+            "boundary_input": 0,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "frozen controller parameters; evolving states; fewer trainable parameters",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 652,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 605,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.26024113000000004,
+        "mean": 0.20139524881818183,
+        "median": 0.182044795,
+        "minimum": 0.15713837,
+        "p25": 0.169529394,
+        "p75": 0.2379439385,
+        "sample_standard_deviation": 0.03816281380527916
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "frozen_flow",
+          "checkpoint": "cpu30",
+          "checkpoint_sha256": "3882369a0529fc468ed50bffc1e2ea06c3b3b60a75e3f683e5350d4b756c99d5",
+          "id": "mqar__frozen_flow__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "cpu30",
+          "seed": 81301,
+          "task": "mqar",
+          "validation": {
+            "accuracy": 0.7802734375,
+            "cross_entropy": 1.8426492512226105,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 0.34375
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.01203870021875,
+      "batch_size": 32,
+      "case_id": "physical_003_batch_32",
+      "checkpoint_relative_path": "candidates/mqar__frozen_flow__s81301__lr0.003/cpu30.npz",
+      "checkpoint_sha256": "3882369a0529fc468ed50bffc1e2ea06c3b3b60a75e3f683e5350d4b756c99d5",
+      "cpu_seconds": {
+        "maximum": 0.486473131,
+        "mean": 0.3874669463636364,
+        "median": 0.385211318,
+        "minimum": 0.30569528300000004,
+        "p25": 0.35904700750000007,
+        "p75": 0.40986480300000006,
+        "sample_standard_deviation": 0.049741627759220856
+      },
+      "deterministic_output_sha256": "134637f2b36d1281a896a8346f03f79a49a3ca83a15bf9a1dcbc06d09c028bbd",
+      "dt_tensor_sha256": "e9bac255f4adc7cb4ada9298e193a5ff66b434d15afabd458505325f29c398c7",
+      "external_tokens_per_second_from_median_wall": 2658.094264209747,
+      "identity": [
+        "mqar",
+        "frozen_flow",
+        "3882369a0529fc468ed50bffc1e2ea06c3b3b60a75e3f683e5350d4b756c99d5"
+      ],
+      "input_tensor_sha256": "73fe6558903b64dfe4055c66ba17661566b2693646c7c3f0c6e4653c60c6f64e",
+      "physical_index": 3,
+      "registered_input_file_sha256": "761a9730e3469617857152b5b6a337ef94e3b895838f46a48ef0472e64d68fb6",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 83.0654457565546,
+      "state_payload": {
+        "batch_size": 32,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "frozen_flow",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 0,
+            "boundary_input": 0,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "frozen controller parameters; evolving states; fewer trainable parameters",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 652,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 19360,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.48647725900000005,
+        "mean": 0.38790351018181823,
+        "median": 0.385238407,
+        "minimum": 0.30570140500000004,
+        "p25": 0.359269151,
+        "p75": 0.410428217,
+        "sample_standard_deviation": 0.04978467856585625
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "matched_c1",
+          "checkpoint": "update384",
+          "checkpoint_sha256": "41e6e0ec1af6c442240f316e08ec3bcaef9c6af925c1676168dcdb5fca89eb2e",
+          "id": "mqar__matched_c1__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "updates384",
+          "seed": 81301,
+          "task": "mqar",
+          "validation": {
+            "accuracy": 1.0,
+            "cross_entropy": 0.024041229858994484,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 1.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.15121456700000002,
+      "batch_size": 1,
+      "case_id": "physical_004_batch_1",
+      "checkpoint_relative_path": "candidates/mqar__matched_c1__s81301__lr0.003/update384.npz",
+      "checkpoint_sha256": "41e6e0ec1af6c442240f316e08ec3bcaef9c6af925c1676168dcdb5fca89eb2e",
+      "cpu_seconds": {
+        "maximum": 0.18929293700000002,
+        "mean": 0.14903607672727276,
+        "median": 0.15116799,
+        "minimum": 0.104473414,
+        "p25": 0.1276560635,
+        "p75": 0.172411471,
+        "sample_standard_deviation": 0.030327255630917108
+      },
+      "deterministic_output_sha256": "dbaa52d1b62f3851e99d183cb7520d473ca8dcc1d3b27709203fcf30a19483b2",
+      "dt_tensor_sha256": "b638277a8690e175a9137feff1e43c067f9faf4e2f600caf468fb05b0403b717",
+      "external_tokens_per_second_from_median_wall": 211.61982363775837,
+      "identity": [
+        "mqar",
+        "matched_c1",
+        "41e6e0ec1af6c442240f316e08ec3bcaef9c6af925c1676168dcdb5fca89eb2e"
+      ],
+      "input_tensor_sha256": "48d5661faf3c7f54958dbe1bb5b7030d094f77d7f5d0ccbcd8268486c033be80",
+      "physical_index": 4,
+      "registered_input_file_sha256": "761a9730e3469617857152b5b6a337ef94e3b895838f46a48ef0472e64d68fb6",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 6.613119488679949,
+      "state_payload": {
+        "batch_size": 1,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "matched_c1",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "shared scalar margin drives both operator channels",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 605,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.18929715000000003,
+        "mean": 0.14970435345454547,
+        "median": 0.15121456700000002,
+        "minimum": 0.10447503600000001,
+        "p25": 0.129246205,
+        "p75": 0.1724679155,
+        "sample_standard_deviation": 0.02992197633536659
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "matched_c1",
+          "checkpoint": "update384",
+          "checkpoint_sha256": "41e6e0ec1af6c442240f316e08ec3bcaef9c6af925c1676168dcdb5fca89eb2e",
+          "id": "mqar__matched_c1__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "updates384",
+          "seed": 81301,
+          "task": "mqar",
+          "validation": {
+            "accuracy": 1.0,
+            "cross_entropy": 0.024041229858994484,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 1.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.004335571625,
+      "batch_size": 32,
+      "case_id": "physical_004_batch_32",
+      "checkpoint_relative_path": "candidates/mqar__matched_c1__s81301__lr0.003/update384.npz",
+      "checkpoint_sha256": "41e6e0ec1af6c442240f316e08ec3bcaef9c6af925c1676168dcdb5fca89eb2e",
+      "cpu_seconds": {
+        "maximum": 0.295051948,
+        "mean": 0.1631069030909091,
+        "median": 0.138734822,
+        "minimum": 0.11563880000000001,
+        "p25": 0.1261516865,
+        "p75": 0.17953613950000002,
+        "sample_standard_deviation": 0.056536706813365485
+      },
+      "deterministic_output_sha256": "5f005b2d114b9a69bfee4271a69cec81f78a7e164cf825fe2ba5933168da0815",
+      "dt_tensor_sha256": "e9bac255f4adc7cb4ada9298e193a5ff66b434d15afabd458505325f29c398c7",
+      "external_tokens_per_second_from_median_wall": 7380.802986964838,
+      "identity": [
+        "mqar",
+        "matched_c1",
+        "41e6e0ec1af6c442240f316e08ec3bcaef9c6af925c1676168dcdb5fca89eb2e"
+      ],
+      "input_tensor_sha256": "73fe6558903b64dfe4055c66ba17661566b2693646c7c3f0c6e4653c60c6f64e",
+      "physical_index": 4,
+      "registered_input_file_sha256": "761a9730e3469617857152b5b6a337ef94e3b895838f46a48ef0472e64d68fb6",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 230.6500933426512,
+      "state_payload": {
+        "batch_size": 32,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "matched_c1",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "shared scalar margin drives both operator channels",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 19360,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.29560816900000003,
+        "mean": 0.16515349927272727,
+        "median": 0.138738292,
+        "minimum": 0.115639721,
+        "p25": 0.1261534615,
+        "p75": 0.19049542400000002,
+        "sample_standard_deviation": 0.05654099864948545
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "matched_c1",
+          "checkpoint": "cpu30",
+          "checkpoint_sha256": "e9c0e10bfae8208f9f0c21800e4aa7d1039ecda619c028296a2201f44d4ec94f",
+          "id": "mqar__matched_c1__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "cpu30",
+          "seed": 81301,
+          "task": "mqar",
+          "validation": {
+            "accuracy": 0.19140625,
+            "cross_entropy": 2.0472195744514465,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 0.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.146535058,
+      "batch_size": 1,
+      "case_id": "physical_005_batch_1",
+      "checkpoint_relative_path": "candidates/mqar__matched_c1__s81301__lr0.003/cpu30.npz",
+      "checkpoint_sha256": "e9c0e10bfae8208f9f0c21800e4aa7d1039ecda619c028296a2201f44d4ec94f",
+      "cpu_seconds": {
+        "maximum": 0.19299042600000002,
+        "mean": 0.14718025963636364,
+        "median": 0.146533149,
+        "minimum": 0.10409868700000001,
+        "p25": 0.129009993,
+        "p75": 0.16553895600000001,
+        "sample_standard_deviation": 0.030185754698311612
+      },
+      "deterministic_output_sha256": "21a35114711e24f19ecf43242b51c778e4f075ec901ccd3f784191ec1128246d",
+      "dt_tensor_sha256": "b638277a8690e175a9137feff1e43c067f9faf4e2f600caf468fb05b0403b717",
+      "external_tokens_per_second_from_median_wall": 218.37777550816543,
+      "identity": [
+        "mqar",
+        "matched_c1",
+        "e9c0e10bfae8208f9f0c21800e4aa7d1039ecda619c028296a2201f44d4ec94f"
+      ],
+      "input_tensor_sha256": "48d5661faf3c7f54958dbe1bb5b7030d094f77d7f5d0ccbcd8268486c033be80",
+      "physical_index": 5,
+      "registered_input_file_sha256": "761a9730e3469617857152b5b6a337ef94e3b895838f46a48ef0472e64d68fb6",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 6.82430548463017,
+      "state_payload": {
+        "batch_size": 1,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "matched_c1",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "shared scalar margin drives both operator channels",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 605,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.193029908,
+        "mean": 0.14720086472727273,
+        "median": 0.146535058,
+        "minimum": 0.104112778,
+        "p25": 0.1290699225,
+        "p75": 0.1655409485,
+        "sample_standard_deviation": 0.03018379935238041
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "matched_c1",
+          "checkpoint": "cpu30",
+          "checkpoint_sha256": "e9c0e10bfae8208f9f0c21800e4aa7d1039ecda619c028296a2201f44d4ec94f",
+          "id": "mqar__matched_c1__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "cpu30",
+          "seed": 81301,
+          "task": "mqar",
+          "validation": {
+            "accuracy": 0.19140625,
+            "cross_entropy": 2.0472195744514465,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 0.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.005177878937500001,
+      "batch_size": 32,
+      "case_id": "physical_005_batch_32",
+      "checkpoint_relative_path": "candidates/mqar__matched_c1__s81301__lr0.003/cpu30.npz",
+      "checkpoint_sha256": "e9c0e10bfae8208f9f0c21800e4aa7d1039ecda619c028296a2201f44d4ec94f",
+      "cpu_seconds": {
+        "maximum": 0.20372172700000002,
+        "mean": 0.15859273045454547,
+        "median": 0.165690984,
+        "minimum": 0.111295159,
+        "p25": 0.13559923350000003,
+        "p75": 0.17925769600000002,
+        "sample_standard_deviation": 0.030465980264708713
+      },
+      "deterministic_output_sha256": "db500e947591015b80eaa79dcfa290644072185a06ff5bb38d29d3aa79b0a708",
+      "dt_tensor_sha256": "e9bac255f4adc7cb4ada9298e193a5ff66b434d15afabd458505325f29c398c7",
+      "external_tokens_per_second_from_median_wall": 6180.136767633725,
+      "identity": [
+        "mqar",
+        "matched_c1",
+        "e9c0e10bfae8208f9f0c21800e4aa7d1039ecda619c028296a2201f44d4ec94f"
+      ],
+      "input_tensor_sha256": "73fe6558903b64dfe4055c66ba17661566b2693646c7c3f0c6e4653c60c6f64e",
+      "physical_index": 5,
+      "registered_input_file_sha256": "761a9730e3469617857152b5b6a337ef94e3b895838f46a48ef0472e64d68fb6",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 193.1292739885539,
+      "state_payload": {
+        "batch_size": 32,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "matched_c1",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "shared scalar margin drives both operator channels",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 19360,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.203734302,
+        "mean": 0.15861316400000003,
+        "median": 0.16569212600000002,
+        "minimum": 0.111309586,
+        "p25": 0.13566715950000002,
+        "p75": 0.1792689815,
+        "sample_standard_deviation": 0.030458046988600516
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "ordinary",
+          "checkpoint": "cpu30",
+          "checkpoint_sha256": "3a86c448af32b9123f9216749a462bc0b87be88fa8175ea323b9b81c6cbdc14e",
+          "id": "mqar__ordinary__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "cpu30",
+          "seed": 81301,
+          "task": "mqar",
+          "validation": {
+            "accuracy": 0.900390625,
+            "cross_entropy": 1.7017270922660828,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 0.6484375
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.068888488,
+      "batch_size": 1,
+      "case_id": "physical_006_batch_1",
+      "checkpoint_relative_path": "candidates/mqar__ordinary__s81301__lr0.003/cpu30.npz",
+      "checkpoint_sha256": "3a86c448af32b9123f9216749a462bc0b87be88fa8175ea323b9b81c6cbdc14e",
+      "cpu_seconds": {
+        "maximum": 0.104966718,
+        "mean": 0.07744183545454546,
+        "median": 0.06888638500000001,
+        "minimum": 0.058211187000000005,
+        "p25": 0.06249167,
+        "p75": 0.0937265205,
+        "sample_standard_deviation": 0.01774388040829379
+      },
+      "deterministic_output_sha256": "1f6377c110c5f109c444d943edecc90447544fdd4eb75e65b6ef807181dd3a43",
+      "dt_tensor_sha256": "b638277a8690e175a9137feff1e43c067f9faf4e2f600caf468fb05b0403b717",
+      "external_tokens_per_second_from_median_wall": 464.5188322321721,
+      "identity": [
+        "mqar",
+        "ordinary",
+        "3a86c448af32b9123f9216749a462bc0b87be88fa8175ea323b9b81c6cbdc14e"
+      ],
+      "input_tensor_sha256": "48d5661faf3c7f54958dbe1bb5b7030d094f77d7f5d0ccbcd8268486c033be80",
+      "physical_index": 6,
+      "registered_input_file_sha256": "761a9730e3469617857152b5b6a337ef94e3b895838f46a48ef0472e64d68fb6",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 14.516213507255378,
+      "state_payload": {
+        "batch_size": 1,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "ordinary",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "ordinary changes controller features",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 605,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.104969476,
+        "mean": 0.07745481718181818,
+        "median": 0.068888488,
+        "minimum": 0.058212924000000006,
+        "p25": 0.062498753500000004,
+        "p75": 0.093729176,
+        "sample_standard_deviation": 0.017752035148614488
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "ordinary",
+          "checkpoint": "cpu30",
+          "checkpoint_sha256": "3a86c448af32b9123f9216749a462bc0b87be88fa8175ea323b9b81c6cbdc14e",
+          "id": "mqar__ordinary__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "cpu30",
+          "seed": 81301,
+          "task": "mqar",
+          "validation": {
+            "accuracy": 0.900390625,
+            "cross_entropy": 1.7017270922660828,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 0.6484375
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.00262259003125,
+      "batch_size": 32,
+      "case_id": "physical_006_batch_32",
+      "checkpoint_relative_path": "candidates/mqar__ordinary__s81301__lr0.003/cpu30.npz",
+      "checkpoint_sha256": "3a86c448af32b9123f9216749a462bc0b87be88fa8175ea323b9b81c6cbdc14e",
+      "cpu_seconds": {
+        "maximum": 0.10954195200000001,
+        "mean": 0.08002891972727273,
+        "median": 0.08339189000000001,
+        "minimum": 0.060454694,
+        "p25": 0.0643550055,
+        "p75": 0.0914142335,
+        "sample_standard_deviation": 0.01692693959809842
+      },
+      "deterministic_output_sha256": "88a67a5d73396962578a11d76ad886385f9248fe13d41d06cf1a2d532974da05",
+      "dt_tensor_sha256": "e9bac255f4adc7cb4ada9298e193a5ff66b434d15afabd458505325f29c398c7",
+      "external_tokens_per_second_from_median_wall": 12201.678348006188,
+      "identity": [
+        "mqar",
+        "ordinary",
+        "3a86c448af32b9123f9216749a462bc0b87be88fa8175ea323b9b81c6cbdc14e"
+      ],
+      "input_tensor_sha256": "73fe6558903b64dfe4055c66ba17661566b2693646c7c3f0c6e4653c60c6f64e",
+      "physical_index": 6,
+      "registered_input_file_sha256": "761a9730e3469617857152b5b6a337ef94e3b895838f46a48ef0472e64d68fb6",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 381.30244837519336,
+      "state_payload": {
+        "batch_size": 32,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "ordinary",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "ordinary changes controller features",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 19360,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.110064718,
+        "mean": 0.08016452527272727,
+        "median": 0.083922881,
+        "minimum": 0.060456499000000004,
+        "p25": 0.06435693249999999,
+        "p75": 0.091625618,
+        "sample_standard_deviation": 0.017046840649353547
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "ordinary",
+          "checkpoint": "update384",
+          "checkpoint_sha256": "d2feed645f1aba90be4a9141a167feaa985aa8d080a237d930484ac784b2e947",
+          "id": "mqar__ordinary__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "updates384",
+          "seed": 81301,
+          "task": "mqar",
+          "validation": {
+            "accuracy": 1.0,
+            "cross_entropy": 0.0233671716414392,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 1.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.07933691400000001,
+      "batch_size": 1,
+      "case_id": "physical_007_batch_1",
+      "checkpoint_relative_path": "candidates/mqar__ordinary__s81301__lr0.003/update384.npz",
+      "checkpoint_sha256": "d2feed645f1aba90be4a9141a167feaa985aa8d080a237d930484ac784b2e947",
+      "cpu_seconds": {
+        "maximum": 0.099486767,
+        "mean": 0.07886898618181819,
+        "median": 0.079031294,
+        "minimum": 0.058680405000000005,
+        "p25": 0.061472909500000006,
+        "p75": 0.092344569,
+        "sample_standard_deviation": 0.016109548825015085
+      },
+      "deterministic_output_sha256": "45ac871592c91d22187bb55cfeadc7993a224c301bb65368488c68015bd14d45",
+      "dt_tensor_sha256": "b638277a8690e175a9137feff1e43c067f9faf4e2f600caf468fb05b0403b717",
+      "external_tokens_per_second_from_median_wall": 403.34313986551075,
+      "identity": [
+        "mqar",
+        "ordinary",
+        "d2feed645f1aba90be4a9141a167feaa985aa8d080a237d930484ac784b2e947"
+      ],
+      "input_tensor_sha256": "48d5661faf3c7f54958dbe1bb5b7030d094f77d7f5d0ccbcd8268486c033be80",
+      "physical_index": 7,
+      "registered_input_file_sha256": "761a9730e3469617857152b5b6a337ef94e3b895838f46a48ef0472e64d68fb6",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 12.604473120797211,
+      "state_payload": {
+        "batch_size": 1,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "ordinary",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "ordinary changes controller features",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 605,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.09954175300000001,
+        "mean": 0.07893388036363637,
+        "median": 0.07933691400000001,
+        "minimum": 0.058683035,
+        "p25": 0.061474521500000004,
+        "p75": 0.0923640465,
+        "sample_standard_deviation": 0.016120022918746653
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "ordinary",
+          "checkpoint": "update384",
+          "checkpoint_sha256": "d2feed645f1aba90be4a9141a167feaa985aa8d080a237d930484ac784b2e947",
+          "id": "mqar__ordinary__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "updates384",
+          "seed": 81301,
+          "task": "mqar",
+          "validation": {
+            "accuracy": 1.0,
+            "cross_entropy": 0.0233671716414392,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 1.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.0030914233125,
+      "batch_size": 32,
+      "case_id": "physical_007_batch_32",
+      "checkpoint_relative_path": "candidates/mqar__ordinary__s81301__lr0.003/update384.npz",
+      "checkpoint_sha256": "d2feed645f1aba90be4a9141a167feaa985aa8d080a237d930484ac784b2e947",
+      "cpu_seconds": {
+        "maximum": 0.11013750900000001,
+        "mean": 0.09407523718181819,
+        "median": 0.09886894800000001,
+        "minimum": 0.069215475,
+        "p25": 0.0846333355,
+        "p75": 0.104134852,
+        "sample_standard_deviation": 0.015743423193378778
+      },
+      "deterministic_output_sha256": "424f6949abea83c1aa4e35d8cf7964496a8d6a2ba872b093c47ed2a0307a1e6f",
+      "dt_tensor_sha256": "e9bac255f4adc7cb4ada9298e193a5ff66b434d15afabd458505325f29c398c7",
+      "external_tokens_per_second_from_median_wall": 10351.21908753478,
+      "identity": [
+        "mqar",
+        "ordinary",
+        "d2feed645f1aba90be4a9141a167feaa985aa8d080a237d930484ac784b2e947"
+      ],
+      "input_tensor_sha256": "73fe6558903b64dfe4055c66ba17661566b2693646c7c3f0c6e4653c60c6f64e",
+      "physical_index": 7,
+      "registered_input_file_sha256": "761a9730e3469617857152b5b6a337ef94e3b895838f46a48ef0472e64d68fb6",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 323.4755964854619,
+      "state_payload": {
+        "batch_size": 32,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "ordinary",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "ordinary changes controller features",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 19360,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.110139579,
+        "mean": 0.09435369881818181,
+        "median": 0.098925546,
+        "minimum": 0.069226933,
+        "p25": 0.08603101900000001,
+        "p75": 0.10421598850000001,
+        "sample_standard_deviation": 0.015384302764853764
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "sigmoid",
+          "checkpoint": "update384",
+          "checkpoint_sha256": "1eae604b90708e2587c996fa81c842aa88be79e6d30a5ddbef4b4d8dcd8c013c",
+          "id": "mqar__sigmoid__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "updates384",
+          "seed": 81301,
+          "task": "mqar",
+          "validation": {
+            "accuracy": 1.0,
+            "cross_entropy": 0.023745283018797636,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 1.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.060632454,
+      "batch_size": 1,
+      "case_id": "physical_008_batch_1",
+      "checkpoint_relative_path": "candidates/mqar__sigmoid__s81301__lr0.003/update384.npz",
+      "checkpoint_sha256": "1eae604b90708e2587c996fa81c842aa88be79e6d30a5ddbef4b4d8dcd8c013c",
+      "cpu_seconds": {
+        "maximum": 0.100642647,
+        "mean": 0.06748597400000002,
+        "median": 0.06036986900000001,
+        "minimum": 0.055712502000000004,
+        "p25": 0.0599904795,
+        "p75": 0.06455307500000002,
+        "sample_standard_deviation": 0.015515588210151057
+      },
+      "deterministic_output_sha256": "4aa2365b15328f95efdd997665b7a0e9a657833ddebb572c7877d553af4fbd8d",
+      "dt_tensor_sha256": "b638277a8690e175a9137feff1e43c067f9faf4e2f600caf468fb05b0403b717",
+      "external_tokens_per_second_from_median_wall": 527.7701608448834,
+      "identity": [
+        "mqar",
+        "sigmoid",
+        "1eae604b90708e2587c996fa81c842aa88be79e6d30a5ddbef4b4d8dcd8c013c"
+      ],
+      "input_tensor_sha256": "48d5661faf3c7f54958dbe1bb5b7030d094f77d7f5d0ccbcd8268486c033be80",
+      "physical_index": 8,
+      "registered_input_file_sha256": "761a9730e3469617857152b5b6a337ef94e3b895838f46a48ef0472e64d68fb6",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 16.492817526402607,
+      "state_payload": {
+        "batch_size": 1,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "sigmoid",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "shared scalar margin drives both operator channels",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 605,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.10064545600000001,
+        "mean": 0.06780292354545456,
+        "median": 0.060632454,
+        "minimum": 0.0557138,
+        "p25": 0.0600602665,
+        "p75": 0.0645589765,
+        "sample_standard_deviation": 0.015334964444039763
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "sigmoid",
+          "checkpoint": "update384",
+          "checkpoint_sha256": "1eae604b90708e2587c996fa81c842aa88be79e6d30a5ddbef4b4d8dcd8c013c",
+          "id": "mqar__sigmoid__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "updates384",
+          "seed": 81301,
+          "task": "mqar",
+          "validation": {
+            "accuracy": 1.0,
+            "cross_entropy": 0.023745283018797636,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 1.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.002082185375,
+      "batch_size": 32,
+      "case_id": "physical_008_batch_32",
+      "checkpoint_relative_path": "candidates/mqar__sigmoid__s81301__lr0.003/update384.npz",
+      "checkpoint_sha256": "1eae604b90708e2587c996fa81c842aa88be79e6d30a5ddbef4b4d8dcd8c013c",
+      "cpu_seconds": {
+        "maximum": 0.11113842700000001,
+        "mean": 0.07515632972727272,
+        "median": 0.066620235,
+        "minimum": 0.059495868,
+        "p25": 0.06345930400000001,
+        "p75": 0.08484031350000001,
+        "sample_standard_deviation": 0.017795855235645315
+      },
+      "deterministic_output_sha256": "62f294bde91753d58db00942c6abf52d07e5f8505713aba0c23df8f7e4ea7066",
+      "dt_tensor_sha256": "e9bac255f4adc7cb4ada9298e193a5ff66b434d15afabd458505325f29c398c7",
+      "external_tokens_per_second_from_median_wall": 15368.46833342108,
+      "identity": [
+        "mqar",
+        "sigmoid",
+        "1eae604b90708e2587c996fa81c842aa88be79e6d30a5ddbef4b4d8dcd8c013c"
+      ],
+      "input_tensor_sha256": "73fe6558903b64dfe4055c66ba17661566b2693646c7c3f0c6e4653c60c6f64e",
+      "physical_index": 8,
+      "registered_input_file_sha256": "761a9730e3469617857152b5b6a337ef94e3b895838f46a48ef0472e64d68fb6",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 480.26463541940876,
+      "state_payload": {
+        "batch_size": 32,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "sigmoid",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "shared scalar margin drives both operator channels",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 19360,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.11114117100000001,
+        "mean": 0.0751601470909091,
+        "median": 0.066629932,
+        "minimum": 0.059497484,
+        "p25": 0.06346072,
+        "p75": 0.08484841100000001,
+        "sample_standard_deviation": 0.017796215689878804
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "sigmoid",
+          "checkpoint": "cpu30",
+          "checkpoint_sha256": "ea6402decbfdbf7ba0dc4ad9f8576cf3763f4858fcec572cd4256d784ad5cb16",
+          "id": "mqar__sigmoid__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "cpu30",
+          "seed": 81301,
+          "task": "mqar",
+          "validation": {
+            "accuracy": 0.79296875,
+            "cross_entropy": 1.8284182846546173,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 0.3671875
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.094837533,
+      "batch_size": 1,
+      "case_id": "physical_009_batch_1",
+      "checkpoint_relative_path": "candidates/mqar__sigmoid__s81301__lr0.003/cpu30.npz",
+      "checkpoint_sha256": "ea6402decbfdbf7ba0dc4ad9f8576cf3763f4858fcec572cd4256d784ad5cb16",
+      "cpu_seconds": {
+        "maximum": 0.108270292,
+        "mean": 0.0886051200909091,
+        "median": 0.094835605,
+        "minimum": 0.057966914,
+        "p25": 0.084543219,
+        "p75": 0.09832084400000002,
+        "sample_standard_deviation": 0.016003163138778805
+      },
+      "deterministic_output_sha256": "e73c85f963c48abf109752604d907dd7363ab7a9aed0e249f58854ecdfef6bf1",
+      "dt_tensor_sha256": "b638277a8690e175a9137feff1e43c067f9faf4e2f600caf468fb05b0403b717",
+      "external_tokens_per_second_from_median_wall": 337.41915239402107,
+      "identity": [
+        "mqar",
+        "sigmoid",
+        "ea6402decbfdbf7ba0dc4ad9f8576cf3763f4858fcec572cd4256d784ad5cb16"
+      ],
+      "input_tensor_sha256": "48d5661faf3c7f54958dbe1bb5b7030d094f77d7f5d0ccbcd8268486c033be80",
+      "physical_index": 9,
+      "registered_input_file_sha256": "761a9730e3469617857152b5b6a337ef94e3b895838f46a48ef0472e64d68fb6",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 10.544348512313158,
+      "state_payload": {
+        "batch_size": 1,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "sigmoid",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "shared scalar margin drives both operator channels",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 605,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.108291412,
+        "mean": 0.08862260281818182,
+        "median": 0.094837533,
+        "minimum": 0.057983392,
+        "p25": 0.08455059000000001,
+        "p75": 0.09832816700000001,
+        "sample_standard_deviation": 0.016004980601193885
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "sigmoid",
+          "checkpoint": "cpu30",
+          "checkpoint_sha256": "ea6402decbfdbf7ba0dc4ad9f8576cf3763f4858fcec572cd4256d784ad5cb16",
+          "id": "mqar__sigmoid__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "cpu30",
+          "seed": 81301,
+          "task": "mqar",
+          "validation": {
+            "accuracy": 0.79296875,
+            "cross_entropy": 1.8284182846546173,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 0.3671875
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.0023737231875000002,
+      "batch_size": 32,
+      "case_id": "physical_009_batch_32",
+      "checkpoint_relative_path": "candidates/mqar__sigmoid__s81301__lr0.003/cpu30.npz",
+      "checkpoint_sha256": "ea6402decbfdbf7ba0dc4ad9f8576cf3763f4858fcec572cd4256d784ad5cb16",
+      "cpu_seconds": {
+        "maximum": 0.12020074600000001,
+        "mean": 0.08091655,
+        "median": 0.075958168,
+        "minimum": 0.058386429000000004,
+        "p25": 0.0625695245,
+        "p75": 0.09250926500000001,
+        "sample_standard_deviation": 0.021459890098215566
+      },
+      "deterministic_output_sha256": "f3f7419d2d4abbd6044793975d09c49e624da9d02d82eb2b40bf4a1b8a630c70",
+      "dt_tensor_sha256": "e9bac255f4adc7cb4ada9298e193a5ff66b434d15afabd458505325f29c398c7",
+      "external_tokens_per_second_from_median_wall": 13480.931630323048,
+      "identity": [
+        "mqar",
+        "sigmoid",
+        "ea6402decbfdbf7ba0dc4ad9f8576cf3763f4858fcec572cd4256d784ad5cb16"
+      ],
+      "input_tensor_sha256": "73fe6558903b64dfe4055c66ba17661566b2693646c7c3f0c6e4653c60c6f64e",
+      "physical_index": 9,
+      "registered_input_file_sha256": "761a9730e3469617857152b5b6a337ef94e3b895838f46a48ef0472e64d68fb6",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 421.27911344759525,
+      "state_payload": {
+        "batch_size": 32,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "sigmoid",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "shared scalar margin drives both operator channels",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 19360,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.12020388600000001,
+        "mean": 0.08190698245454546,
+        "median": 0.07595914200000001,
+        "minimum": 0.058388126000000005,
+        "p25": 0.062571296,
+        "p75": 0.0942525745,
+        "sample_standard_deviation": 0.021742996257226553
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "analytic",
+          "checkpoint": "update384",
+          "checkpoint_sha256": "c91bdfe491190f5e90c49e776f8965415f3c102e5b7a3eb851cd4d9e5bd82547",
+          "id": "selective_copy__analytic__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "updates384",
+          "seed": 81301,
+          "task": "selective_copy",
+          "validation": {
+            "accuracy": 1.0,
+            "cross_entropy": 0.029708247631788254,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 1.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.18092144000000002,
+      "batch_size": 1,
+      "case_id": "physical_010_batch_1",
+      "checkpoint_relative_path": "candidates/selective_copy__analytic__s81301__lr0.003/update384.npz",
+      "checkpoint_sha256": "c91bdfe491190f5e90c49e776f8965415f3c102e5b7a3eb851cd4d9e5bd82547",
+      "cpu_seconds": {
+        "maximum": 0.24437074500000003,
+        "mean": 0.189086477,
+        "median": 0.167112852,
+        "minimum": 0.140305027,
+        "p25": 0.1554981665,
+        "p75": 0.22781474550000003,
+        "sample_standard_deviation": 0.040611137778010196
+      },
+      "deterministic_output_sha256": "090c2f03be71621f76778571e3b910dc2fa6abb607b878a0903cf175b9fca645",
+      "dt_tensor_sha256": "b638277a8690e175a9137feff1e43c067f9faf4e2f600caf468fb05b0403b717",
+      "external_tokens_per_second_from_median_wall": 176.87234857294965,
+      "identity": [
+        "selective_copy",
+        "analytic",
+        "c91bdfe491190f5e90c49e776f8965415f3c102e5b7a3eb851cd4d9e5bd82547"
+      ],
+      "input_tensor_sha256": "2f22b8f8b796ae130d1933230ac12185c524f0b2cfff9e2bb25469d3cd597540",
+      "physical_index": 10,
+      "registered_input_file_sha256": "3faff726a8338642f8f8df03a6e09dee57bdbc25e713565fdd52b1979dbc72a8",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 5.5272608929046765,
+      "state_payload": {
+        "batch_size": 1,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "analytic",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "shared scalar margin drives both operator channels",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 605,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.24438267500000002,
+        "mean": 0.19034608154545457,
+        "median": 0.18092144000000002,
+        "minimum": 0.14030609700000002,
+        "p25": 0.155507958,
+        "p75": 0.22781897550000002,
+        "sample_standard_deviation": 0.0400741867360314
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "analytic",
+          "checkpoint": "update384",
+          "checkpoint_sha256": "c91bdfe491190f5e90c49e776f8965415f3c102e5b7a3eb851cd4d9e5bd82547",
+          "id": "selective_copy__analytic__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "updates384",
+          "seed": 81301,
+          "task": "selective_copy",
+          "validation": {
+            "accuracy": 1.0,
+            "cross_entropy": 0.029708247631788254,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 1.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.00523030803125,
+      "batch_size": 32,
+      "case_id": "physical_010_batch_32",
+      "checkpoint_relative_path": "candidates/selective_copy__analytic__s81301__lr0.003/update384.npz",
+      "checkpoint_sha256": "c91bdfe491190f5e90c49e776f8965415f3c102e5b7a3eb851cd4d9e5bd82547",
+      "cpu_seconds": {
+        "maximum": 0.26704142200000003,
+        "mean": 0.1884301543636364,
+        "median": 0.16736953000000002,
+        "minimum": 0.143254764,
+        "p25": 0.153538256,
+        "p75": 0.2147905645,
+        "sample_standard_deviation": 0.04170128662463129
+      },
+      "deterministic_output_sha256": "3f5be9721449708a69f1fca7f52be9dec28e9a44a3fb2aa34f7760935503ef6a",
+      "dt_tensor_sha256": "e9bac255f4adc7cb4ada9298e193a5ff66b434d15afabd458505325f29c398c7",
+      "external_tokens_per_second_from_median_wall": 6118.186502364042,
+      "identity": [
+        "selective_copy",
+        "analytic",
+        "c91bdfe491190f5e90c49e776f8965415f3c102e5b7a3eb851cd4d9e5bd82547"
+      ],
+      "input_tensor_sha256": "3a6a88a2709e2d7f6e4de53b4cbb2f4fc3abc2e250209a203452969ebf5de8e9",
+      "physical_index": 10,
+      "registered_input_file_sha256": "3faff726a8338642f8f8df03a6e09dee57bdbc25e713565fdd52b1979dbc72a8",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 191.19332819887632,
+      "state_payload": {
+        "batch_size": 32,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "analytic",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "shared scalar margin drives both operator channels",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 19360,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.26705127,
+        "mean": 0.18900283463636364,
+        "median": 0.167369857,
+        "minimum": 0.143255622,
+        "p25": 0.15353856,
+        "p75": 0.2162596435,
+        "sample_standard_deviation": 0.0419836182456508
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "analytic",
+          "checkpoint": "cpu30",
+          "checkpoint_sha256": "d80cd992c96aa836a333e9b84cf9c1a9a08bf6faaf2894fe48900ad378db7fd4",
+          "id": "selective_copy__analytic__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "cpu30",
+          "seed": 81301,
+          "task": "selective_copy",
+          "validation": {
+            "accuracy": 0.2080078125,
+            "cross_entropy": 2.0351421236991882,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 0.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.247873539,
+      "batch_size": 1,
+      "case_id": "physical_011_batch_1",
+      "checkpoint_relative_path": "candidates/selective_copy__analytic__s81301__lr0.003/cpu30.npz",
+      "checkpoint_sha256": "d80cd992c96aa836a333e9b84cf9c1a9a08bf6faaf2894fe48900ad378db7fd4",
+      "cpu_seconds": {
+        "maximum": 0.357997463,
+        "mean": 0.25838001681818185,
+        "median": 0.247396725,
+        "minimum": 0.205312408,
+        "p25": 0.23132484450000002,
+        "p75": 0.278652404,
+        "sample_standard_deviation": 0.047863338726192424
+      },
+      "deterministic_output_sha256": "636a44b5189bac87ef9763da42f8f5ed711ffeb3af4d8c088989c4a9d8085a91",
+      "dt_tensor_sha256": "b638277a8690e175a9137feff1e43c067f9faf4e2f600caf468fb05b0403b717",
+      "external_tokens_per_second_from_median_wall": 129.09808819891825,
+      "identity": [
+        "selective_copy",
+        "analytic",
+        "d80cd992c96aa836a333e9b84cf9c1a9a08bf6faaf2894fe48900ad378db7fd4"
+      ],
+      "input_tensor_sha256": "2f22b8f8b796ae130d1933230ac12185c524f0b2cfff9e2bb25469d3cd597540",
+      "physical_index": 11,
+      "registered_input_file_sha256": "3faff726a8338642f8f8df03a6e09dee57bdbc25e713565fdd52b1979dbc72a8",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 4.034315256216195,
+      "state_payload": {
+        "batch_size": 1,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "analytic",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "shared scalar margin drives both operator channels",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 605,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.36077884600000004,
+        "mean": 0.25909481154545455,
+        "median": 0.247873539,
+        "minimum": 0.20535851700000002,
+        "p25": 0.23134173950000003,
+        "p75": 0.27865203000000005,
+        "sample_standard_deviation": 0.04901611261462287
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "analytic",
+          "checkpoint": "cpu30",
+          "checkpoint_sha256": "d80cd992c96aa836a333e9b84cf9c1a9a08bf6faaf2894fe48900ad378db7fd4",
+          "id": "selective_copy__analytic__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "cpu30",
+          "seed": 81301,
+          "task": "selective_copy",
+          "validation": {
+            "accuracy": 0.2080078125,
+            "cross_entropy": 2.0351421236991882,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 0.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.012125958656250001,
+      "batch_size": 32,
+      "case_id": "physical_011_batch_32",
+      "checkpoint_relative_path": "candidates/selective_copy__analytic__s81301__lr0.003/cpu30.npz",
+      "checkpoint_sha256": "d80cd992c96aa836a333e9b84cf9c1a9a08bf6faaf2894fe48900ad378db7fd4",
+      "cpu_seconds": {
+        "maximum": 0.471863411,
+        "mean": 0.37549813336363635,
+        "median": 0.388019143,
+        "minimum": 0.269047776,
+        "p25": 0.34767532,
+        "p75": 0.41622367000000005,
+        "sample_standard_deviation": 0.06214446609371327
+      },
+      "deterministic_output_sha256": "66a7b86f0b91a45686eea0ec4e407813fa5c107624400a28aba3b98a08a07ebe",
+      "dt_tensor_sha256": "e9bac255f4adc7cb4ada9298e193a5ff66b434d15afabd458505325f29c398c7",
+      "external_tokens_per_second_from_median_wall": 2638.9666093333126,
+      "identity": [
+        "selective_copy",
+        "analytic",
+        "d80cd992c96aa836a333e9b84cf9c1a9a08bf6faaf2894fe48900ad378db7fd4"
+      ],
+      "input_tensor_sha256": "3a6a88a2709e2d7f6e4de53b4cbb2f4fc3abc2e250209a203452969ebf5de8e9",
+      "physical_index": 11,
+      "registered_input_file_sha256": "3faff726a8338642f8f8df03a6e09dee57bdbc25e713565fdd52b1979dbc72a8",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 82.46770654166602,
+      "state_payload": {
+        "batch_size": 32,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "analytic",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "shared scalar margin drives both operator channels",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 19360,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.475684588,
+        "mean": 0.3799721660000001,
+        "median": 0.38803067700000005,
+        "minimum": 0.269071762,
+        "p25": 0.3478224045,
+        "p75": 0.416254712,
+        "sample_standard_deviation": 0.06765413908270894
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "frozen_flow",
+          "checkpoint": "update384",
+          "checkpoint_sha256": "bdd40c70a09a672eb4b8bd456a3ff5b43bcd0ba4839fe2a8f3f2198f4278f5fe",
+          "id": "selective_copy__frozen_flow__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "updates384",
+          "seed": 81301,
+          "task": "selective_copy",
+          "validation": {
+            "accuracy": 1.0,
+            "cross_entropy": 0.034285915084183216,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 1.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.207936321,
+      "batch_size": 1,
+      "case_id": "physical_012_batch_1",
+      "checkpoint_relative_path": "candidates/selective_copy__frozen_flow__s81301__lr0.003/update384.npz",
+      "checkpoint_sha256": "bdd40c70a09a672eb4b8bd456a3ff5b43bcd0ba4839fe2a8f3f2198f4278f5fe",
+      "cpu_seconds": {
+        "maximum": 0.24145655000000002,
+        "mean": 0.1977998110909091,
+        "median": 0.207896777,
+        "minimum": 0.139457666,
+        "p25": 0.183938373,
+        "p75": 0.21518710700000002,
+        "sample_standard_deviation": 0.03242078437922072
+      },
+      "deterministic_output_sha256": "6ba2fd343666ea77685c87bd084ec8156b41b9d62fccb52d7a143e21baca412e",
+      "dt_tensor_sha256": "b638277a8690e175a9137feff1e43c067f9faf4e2f600caf468fb05b0403b717",
+      "external_tokens_per_second_from_median_wall": 153.89326812221515,
+      "identity": [
+        "selective_copy",
+        "frozen_flow",
+        "bdd40c70a09a672eb4b8bd456a3ff5b43bcd0ba4839fe2a8f3f2198f4278f5fe"
+      ],
+      "input_tensor_sha256": "2f22b8f8b796ae130d1933230ac12185c524f0b2cfff9e2bb25469d3cd597540",
+      "physical_index": 12,
+      "registered_input_file_sha256": "3faff726a8338642f8f8df03a6e09dee57bdbc25e713565fdd52b1979dbc72a8",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 4.809164628819223,
+      "state_payload": {
+        "batch_size": 1,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "frozen_flow",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 0,
+            "boundary_input": 0,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "frozen controller parameters; evolving states; fewer trainable parameters",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 652,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 605,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.241456417,
+        "mean": 0.1979019250909091,
+        "median": 0.207936321,
+        "minimum": 0.139984051,
+        "p25": 0.1839389475,
+        "p75": 0.2154449135,
+        "sample_standard_deviation": 0.03234996521086216
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "frozen_flow",
+          "checkpoint": "update384",
+          "checkpoint_sha256": "bdd40c70a09a672eb4b8bd456a3ff5b43bcd0ba4839fe2a8f3f2198f4278f5fe",
+          "id": "selective_copy__frozen_flow__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "updates384",
+          "seed": 81301,
+          "task": "selective_copy",
+          "validation": {
+            "accuracy": 1.0,
+            "cross_entropy": 0.034285915084183216,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 1.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.0058342235625,
+      "batch_size": 32,
+      "case_id": "physical_012_batch_32",
+      "checkpoint_relative_path": "candidates/selective_copy__frozen_flow__s81301__lr0.003/update384.npz",
+      "checkpoint_sha256": "bdd40c70a09a672eb4b8bd456a3ff5b43bcd0ba4839fe2a8f3f2198f4278f5fe",
+      "cpu_seconds": {
+        "maximum": 0.23477451100000002,
+        "mean": 0.18478881072727277,
+        "median": 0.186687131,
+        "minimum": 0.142557298,
+        "p25": 0.15313329150000002,
+        "p75": 0.20920330250000002,
+        "sample_standard_deviation": 0.034109264452097054
+      },
+      "deterministic_output_sha256": "1cc0eb600cd3c5173169d02062bdb3a2d0a05a9a50eef70751b9e19a5d022fee",
+      "dt_tensor_sha256": "e9bac255f4adc7cb4ada9298e193a5ff66b434d15afabd458505325f29c398c7",
+      "external_tokens_per_second_from_median_wall": 5484.877234681731,
+      "identity": [
+        "selective_copy",
+        "frozen_flow",
+        "bdd40c70a09a672eb4b8bd456a3ff5b43bcd0ba4839fe2a8f3f2198f4278f5fe"
+      ],
+      "input_tensor_sha256": "3a6a88a2709e2d7f6e4de53b4cbb2f4fc3abc2e250209a203452969ebf5de8e9",
+      "physical_index": 12,
+      "registered_input_file_sha256": "3faff726a8338642f8f8df03a6e09dee57bdbc25e713565fdd52b1979dbc72a8",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 171.4024135838041,
+      "state_payload": {
+        "batch_size": 32,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "frozen_flow",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 0,
+            "boundary_input": 0,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "frozen controller parameters; evolving states; fewer trainable parameters",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 652,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 19360,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.23481247700000002,
+        "mean": 0.18481387072727273,
+        "median": 0.186695154,
+        "minimum": 0.14258151000000002,
+        "p25": 0.1532301465,
+        "p75": 0.20920319050000002,
+        "sample_standard_deviation": 0.034095388917748125
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "frozen_flow",
+          "checkpoint": "cpu30",
+          "checkpoint_sha256": "c2f74bf8dd2b6363a824839b9418e86dd979aa3f2939d0a29f47d2fa3fc98204",
+          "id": "selective_copy__frozen_flow__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "cpu30",
+          "seed": 81301,
+          "task": "selective_copy",
+          "validation": {
+            "accuracy": 1.0,
+            "cross_entropy": 1.1616176068782806,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 1.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.17453775000000002,
+      "batch_size": 1,
+      "case_id": "physical_013_batch_1",
+      "checkpoint_relative_path": "candidates/selective_copy__frozen_flow__s81301__lr0.003/cpu30.npz",
+      "checkpoint_sha256": "c2f74bf8dd2b6363a824839b9418e86dd979aa3f2939d0a29f47d2fa3fc98204",
+      "cpu_seconds": {
+        "maximum": 0.224601822,
+        "mean": 0.1836458310909091,
+        "median": 0.174507304,
+        "minimum": 0.133516921,
+        "p25": 0.162018131,
+        "p75": 0.2089561265,
+        "sample_standard_deviation": 0.030642675689265705
+      },
+      "deterministic_output_sha256": "2a73733f7dfcbf0f91d3e03e245f528fe5bc37997ce8b9550b28487c3f49ee77",
+      "dt_tensor_sha256": "b638277a8690e175a9137feff1e43c067f9faf4e2f600caf468fb05b0403b717",
+      "external_tokens_per_second_from_median_wall": 183.34142613847146,
+      "identity": [
+        "selective_copy",
+        "frozen_flow",
+        "c2f74bf8dd2b6363a824839b9418e86dd979aa3f2939d0a29f47d2fa3fc98204"
+      ],
+      "input_tensor_sha256": "2f22b8f8b796ae130d1933230ac12185c524f0b2cfff9e2bb25469d3cd597540",
+      "physical_index": 13,
+      "registered_input_file_sha256": "3faff726a8338642f8f8df03a6e09dee57bdbc25e713565fdd52b1979dbc72a8",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 5.729419566827233,
+      "state_payload": {
+        "batch_size": 1,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "frozen_flow",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 0,
+            "boundary_input": 0,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "frozen controller parameters; evolving states; fewer trainable parameters",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 652,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 605,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.22460184000000002,
+        "mean": 0.18587420818181818,
+        "median": 0.17453775000000002,
+        "minimum": 0.15322485800000002,
+        "p25": 0.1624661795,
+        "p75": 0.209000071,
+        "sample_standard_deviation": 0.02737825343434078
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "frozen_flow",
+          "checkpoint": "cpu30",
+          "checkpoint_sha256": "c2f74bf8dd2b6363a824839b9418e86dd979aa3f2939d0a29f47d2fa3fc98204",
+          "id": "selective_copy__frozen_flow__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "cpu30",
+          "seed": 81301,
+          "task": "selective_copy",
+          "validation": {
+            "accuracy": 1.0,
+            "cross_entropy": 1.1616176068782806,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 1.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.0063002815625,
+      "batch_size": 32,
+      "case_id": "physical_013_batch_32",
+      "checkpoint_relative_path": "candidates/selective_copy__frozen_flow__s81301__lr0.003/cpu30.npz",
+      "checkpoint_sha256": "c2f74bf8dd2b6363a824839b9418e86dd979aa3f2939d0a29f47d2fa3fc98204",
+      "cpu_seconds": {
+        "maximum": 0.260397301,
+        "mean": 0.20849176772727274,
+        "median": 0.20160054700000002,
+        "minimum": 0.150653488,
+        "p25": 0.1867487945,
+        "p75": 0.24163324800000002,
+        "sample_standard_deviation": 0.037646965873753886
+      },
+      "deterministic_output_sha256": "b52bc45d47a4b0ef9d0ca159de8ee985563a839c719dffaf84eea680cf773d1b",
+      "dt_tensor_sha256": "e9bac255f4adc7cb4ada9298e193a5ff66b434d15afabd458505325f29c398c7",
+      "external_tokens_per_second_from_median_wall": 5079.138080187983,
+      "identity": [
+        "selective_copy",
+        "frozen_flow",
+        "c2f74bf8dd2b6363a824839b9418e86dd979aa3f2939d0a29f47d2fa3fc98204"
+      ],
+      "input_tensor_sha256": "3a6a88a2709e2d7f6e4de53b4cbb2f4fc3abc2e250209a203452969ebf5de8e9",
+      "physical_index": 13,
+      "registered_input_file_sha256": "3faff726a8338642f8f8df03a6e09dee57bdbc25e713565fdd52b1979dbc72a8",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 158.72306500587447,
+      "state_payload": {
+        "batch_size": 32,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "frozen_flow",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 0,
+            "boundary_input": 0,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "frozen controller parameters; evolving states; fewer trainable parameters",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 652,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 19360,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.260428983,
+        "mean": 0.20878225154545452,
+        "median": 0.20160901,
+        "minimum": 0.15066837900000002,
+        "p25": 0.186765982,
+        "p75": 0.241644672,
+        "sample_standard_deviation": 0.038020737371691544
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "matched_c1",
+          "checkpoint": "update384",
+          "checkpoint_sha256": "4a36a2d59298272237bfc3173138c1b8a488128fc1d8564db4fe740edc398768",
+          "id": "selective_copy__matched_c1__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "updates384",
+          "seed": 81301,
+          "task": "selective_copy",
+          "validation": {
+            "accuracy": 1.0,
+            "cross_entropy": 0.0299191283993423,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 1.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.131320285,
+      "batch_size": 1,
+      "case_id": "physical_014_batch_1",
+      "checkpoint_relative_path": "candidates/selective_copy__matched_c1__s81301__lr0.003/update384.npz",
+      "checkpoint_sha256": "4a36a2d59298272237bfc3173138c1b8a488128fc1d8564db4fe740edc398768",
+      "cpu_seconds": {
+        "maximum": 0.204218425,
+        "mean": 0.15497707700000002,
+        "median": 0.131312609,
+        "minimum": 0.101952334,
+        "p25": 0.123951927,
+        "p75": 0.193022138,
+        "sample_standard_deviation": 0.040023653851875486
+      },
+      "deterministic_output_sha256": "ccb6d1bb5d68fd3a95cd3c75112c448f8f74c4da7eb82d8e3423aa31e8b30806",
+      "dt_tensor_sha256": "b638277a8690e175a9137feff1e43c067f9faf4e2f600caf468fb05b0403b717",
+      "external_tokens_per_second_from_median_wall": 243.6790325272291,
+      "identity": [
+        "selective_copy",
+        "matched_c1",
+        "4a36a2d59298272237bfc3173138c1b8a488128fc1d8564db4fe740edc398768"
+      ],
+      "input_tensor_sha256": "2f22b8f8b796ae130d1933230ac12185c524f0b2cfff9e2bb25469d3cd597540",
+      "physical_index": 14,
+      "registered_input_file_sha256": "3faff726a8338642f8f8df03a6e09dee57bdbc25e713565fdd52b1979dbc72a8",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 7.61496976647591,
+      "state_payload": {
+        "batch_size": 1,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "matched_c1",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "shared scalar margin drives both operator channels",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 605,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.204219379,
+        "mean": 0.1549811940909091,
+        "median": 0.131320285,
+        "minimum": 0.101953896,
+        "p25": 0.1239528175,
+        "p75": 0.19302719200000001,
+        "sample_standard_deviation": 0.04002429168987694
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "matched_c1",
+          "checkpoint": "update384",
+          "checkpoint_sha256": "4a36a2d59298272237bfc3173138c1b8a488128fc1d8564db4fe740edc398768",
+          "id": "selective_copy__matched_c1__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "updates384",
+          "seed": 81301,
+          "task": "selective_copy",
+          "validation": {
+            "accuracy": 1.0,
+            "cross_entropy": 0.0299191283993423,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 1.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.005433752875,
+      "batch_size": 32,
+      "case_id": "physical_014_batch_32",
+      "checkpoint_relative_path": "candidates/selective_copy__matched_c1__s81301__lr0.003/update384.npz",
+      "checkpoint_sha256": "4a36a2d59298272237bfc3173138c1b8a488128fc1d8564db4fe740edc398768",
+      "cpu_seconds": {
+        "maximum": 0.22155108,
+        "mean": 0.1643071151818182,
+        "median": 0.173870244,
+        "minimum": 0.11071391500000001,
+        "p25": 0.12724866750000002,
+        "p75": 0.1906095975,
+        "sample_standard_deviation": 0.038143430193288974
+      },
+      "deterministic_output_sha256": "f0d48d5aba519cf40f77bd556212919cc09982d34fe77262f76fb8fa41de0013",
+      "dt_tensor_sha256": "e9bac255f4adc7cb4ada9298e193a5ff66b434d15afabd458505325f29c398c7",
+      "external_tokens_per_second_from_median_wall": 5889.115816662898,
+      "identity": [
+        "selective_copy",
+        "matched_c1",
+        "4a36a2d59298272237bfc3173138c1b8a488128fc1d8564db4fe740edc398768"
+      ],
+      "input_tensor_sha256": "3a6a88a2709e2d7f6e4de53b4cbb2f4fc3abc2e250209a203452969ebf5de8e9",
+      "physical_index": 14,
+      "registered_input_file_sha256": "3faff726a8338642f8f8df03a6e09dee57bdbc25e713565fdd52b1979dbc72a8",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 184.03486927071557,
+      "state_payload": {
+        "batch_size": 32,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "matched_c1",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "shared scalar margin drives both operator channels",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 19360,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.22159452300000002,
+        "mean": 0.16440312909090912,
+        "median": 0.173880092,
+        "minimum": 0.11071488700000001,
+        "p25": 0.1272709105,
+        "p75": 0.19061518900000002,
+        "sample_standard_deviation": 0.03814312089478718
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "matched_c1",
+          "checkpoint": "cpu30",
+          "checkpoint_sha256": "c4222ed88235892223c74487c34a492e91f041b4c08a7e21cb392ca1565f275a",
+          "id": "selective_copy__matched_c1__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "cpu30",
+          "seed": 81301,
+          "task": "selective_copy",
+          "validation": {
+            "accuracy": 0.3291015625,
+            "cross_entropy": 1.9746403694152832,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 0.00390625
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.15177749000000001,
+      "batch_size": 1,
+      "case_id": "physical_015_batch_1",
+      "checkpoint_relative_path": "candidates/selective_copy__matched_c1__s81301__lr0.003/cpu30.npz",
+      "checkpoint_sha256": "c4222ed88235892223c74487c34a492e91f041b4c08a7e21cb392ca1565f275a",
+      "cpu_seconds": {
+        "maximum": 0.222411094,
+        "mean": 0.1558073692727273,
+        "median": 0.15176872800000002,
+        "minimum": 0.117509072,
+        "p25": 0.132669221,
+        "p75": 0.178006501,
+        "sample_standard_deviation": 0.032694943406693155
+      },
+      "deterministic_output_sha256": "02ad55bcfe725ffb32fbec2b009977a9fc6f5ce188ab1977827abaf83a843230",
+      "dt_tensor_sha256": "b638277a8690e175a9137feff1e43c067f9faf4e2f600caf468fb05b0403b717",
+      "external_tokens_per_second_from_median_wall": 210.83495319365207,
+      "identity": [
+        "selective_copy",
+        "matched_c1",
+        "c4222ed88235892223c74487c34a492e91f041b4c08a7e21cb392ca1565f275a"
+      ],
+      "input_tensor_sha256": "2f22b8f8b796ae130d1933230ac12185c524f0b2cfff9e2bb25469d3cd597540",
+      "physical_index": 15,
+      "registered_input_file_sha256": "3faff726a8338642f8f8df03a6e09dee57bdbc25e713565fdd52b1979dbc72a8",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 6.588592287301627,
+      "state_payload": {
+        "batch_size": 1,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "matched_c1",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "shared scalar margin drives both operator channels",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 605,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.23453393600000003,
+        "mean": 0.15794174045454545,
+        "median": 0.15177749000000001,
+        "minimum": 0.117510638,
+        "p25": 0.13516936400000001,
+        "p75": 0.17800821,
+        "sample_standard_deviation": 0.034693952500917044
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "matched_c1",
+          "checkpoint": "cpu30",
+          "checkpoint_sha256": "c4222ed88235892223c74487c34a492e91f041b4c08a7e21cb392ca1565f275a",
+          "id": "selective_copy__matched_c1__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "cpu30",
+          "seed": 81301,
+          "task": "selective_copy",
+          "validation": {
+            "accuracy": 0.3291015625,
+            "cross_entropy": 1.9746403694152832,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 0.00390625
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.004634414343750001,
+      "batch_size": 32,
+      "case_id": "physical_015_batch_32",
+      "checkpoint_relative_path": "candidates/selective_copy__matched_c1__s81301__lr0.003/cpu30.npz",
+      "checkpoint_sha256": "c4222ed88235892223c74487c34a492e91f041b4c08a7e21cb392ca1565f275a",
+      "cpu_seconds": {
+        "maximum": 0.20918504200000002,
+        "mean": 0.1604238419090909,
+        "median": 0.14829988800000002,
+        "minimum": 0.11755285800000001,
+        "p25": 0.1322027665,
+        "p75": 0.19173741,
+        "sample_standard_deviation": 0.0346106352712892
+      },
+      "deterministic_output_sha256": "f834d313ef3fbe5a7b0861daf359cfe86484814bf058d253bbf1d3e09a88bb15",
+      "dt_tensor_sha256": "e9bac255f4adc7cb4ada9298e193a5ff66b434d15afabd458505325f29c398c7",
+      "external_tokens_per_second_from_median_wall": 6904.8638353097185,
+      "identity": [
+        "selective_copy",
+        "matched_c1",
+        "c4222ed88235892223c74487c34a492e91f041b4c08a7e21cb392ca1565f275a"
+      ],
+      "input_tensor_sha256": "3a6a88a2709e2d7f6e4de53b4cbb2f4fc3abc2e250209a203452969ebf5de8e9",
+      "physical_index": 15,
+      "registered_input_file_sha256": "3faff726a8338642f8f8df03a6e09dee57bdbc25e713565fdd52b1979dbc72a8",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 215.7769948534287,
+      "state_payload": {
+        "batch_size": 32,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "matched_c1",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "shared scalar margin drives both operator channels",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 19360,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.209210887,
+        "mean": 0.16166347181818183,
+        "median": 0.14830125900000002,
+        "minimum": 0.11755456500000001,
+        "p25": 0.13220375550000002,
+        "p75": 0.1985298275,
+        "sample_standard_deviation": 0.035839744227922236
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "ordinary",
+          "checkpoint": "cpu30",
+          "checkpoint_sha256": "4d3775e952064f010b94e0df87c8e4f1695c8bb2cb87770771c89ea60d428679",
+          "id": "selective_copy__ordinary__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "cpu30",
+          "seed": 81301,
+          "task": "selective_copy",
+          "validation": {
+            "accuracy": 1.0,
+            "cross_entropy": 1.6404293477535248,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 1.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.097563784,
+      "batch_size": 1,
+      "case_id": "physical_016_batch_1",
+      "checkpoint_relative_path": "candidates/selective_copy__ordinary__s81301__lr0.003/cpu30.npz",
+      "checkpoint_sha256": "4d3775e952064f010b94e0df87c8e4f1695c8bb2cb87770771c89ea60d428679",
+      "cpu_seconds": {
+        "maximum": 0.12571136200000002,
+        "mean": 0.09105966636363637,
+        "median": 0.097561835,
+        "minimum": 0.060503558000000006,
+        "p25": 0.0776653625,
+        "p75": 0.09846307100000001,
+        "sample_standard_deviation": 0.01915032466636433
+      },
+      "deterministic_output_sha256": "3de2d6d0505aa477b13826fe801d0784c385581e3faa3c157b1ad0744d222a6c",
+      "dt_tensor_sha256": "b638277a8690e175a9137feff1e43c067f9faf4e2f600caf468fb05b0403b717",
+      "external_tokens_per_second_from_median_wall": 327.99055846378405,
+      "identity": [
+        "selective_copy",
+        "ordinary",
+        "4d3775e952064f010b94e0df87c8e4f1695c8bb2cb87770771c89ea60d428679"
+      ],
+      "input_tensor_sha256": "2f22b8f8b796ae130d1933230ac12185c524f0b2cfff9e2bb25469d3cd597540",
+      "physical_index": 16,
+      "registered_input_file_sha256": "3faff726a8338642f8f8df03a6e09dee57bdbc25e713565fdd52b1979dbc72a8",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 10.249704951993252,
+      "state_payload": {
+        "batch_size": 1,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "ordinary",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "ordinary changes controller features",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 605,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.125714096,
+        "mean": 0.09106748072727272,
+        "median": 0.097563784,
+        "minimum": 0.060505834,
+        "p25": 0.077675798,
+        "p75": 0.09848701300000001,
+        "sample_standard_deviation": 0.019151487678432975
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "ordinary",
+          "checkpoint": "cpu30",
+          "checkpoint_sha256": "4d3775e952064f010b94e0df87c8e4f1695c8bb2cb87770771c89ea60d428679",
+          "id": "selective_copy__ordinary__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "cpu30",
+          "seed": 81301,
+          "task": "selective_copy",
+          "validation": {
+            "accuracy": 1.0,
+            "cross_entropy": 1.6404293477535248,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 1.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.002432966,
+      "batch_size": 32,
+      "case_id": "physical_016_batch_32",
+      "checkpoint_relative_path": "candidates/selective_copy__ordinary__s81301__lr0.003/cpu30.npz",
+      "checkpoint_sha256": "4d3775e952064f010b94e0df87c8e4f1695c8bb2cb87770771c89ea60d428679",
+      "cpu_seconds": {
+        "maximum": 0.108660951,
+        "mean": 0.08227724318181819,
+        "median": 0.07784636,
+        "minimum": 0.063382653,
+        "p25": 0.06834219799999999,
+        "p75": 0.09908842450000001,
+        "sample_standard_deviation": 0.017218567830502404
+      },
+      "deterministic_output_sha256": "021c0a9ae55345388ad388915bf64203cab33d95a7170dab7ba3dc1dc3a3d722",
+      "dt_tensor_sha256": "e9bac255f4adc7cb4ada9298e193a5ff66b434d15afabd458505325f29c398c7",
+      "external_tokens_per_second_from_median_wall": 13152.670444223224,
+      "identity": [
+        "selective_copy",
+        "ordinary",
+        "4d3775e952064f010b94e0df87c8e4f1695c8bb2cb87770771c89ea60d428679"
+      ],
+      "input_tensor_sha256": "3a6a88a2709e2d7f6e4de53b4cbb2f4fc3abc2e250209a203452969ebf5de8e9",
+      "physical_index": 16,
+      "registered_input_file_sha256": "3faff726a8338642f8f8df03a6e09dee57bdbc25e713565fdd52b1979dbc72a8",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 411.02095138197575,
+      "state_payload": {
+        "batch_size": 32,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "ordinary",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "ordinary changes controller features",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 19360,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.108678012,
+        "mean": 0.08228594645454547,
+        "median": 0.077854912,
+        "minimum": 0.063415424,
+        "p25": 0.0683509225,
+        "p75": 0.09909424750000001,
+        "sample_standard_deviation": 0.017216934201504355
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "ordinary",
+          "checkpoint": "update384",
+          "checkpoint_sha256": "b75bf713515c31f22aed6cf14b392f9516ff766ca700d9f2d549a0db0bd6064d",
+          "id": "selective_copy__ordinary__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "updates384",
+          "seed": 81301,
+          "task": "selective_copy",
+          "validation": {
+            "accuracy": 1.0,
+            "cross_entropy": 0.029459666926413774,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 1.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.06885434600000001,
+      "batch_size": 1,
+      "case_id": "physical_017_batch_1",
+      "checkpoint_relative_path": "candidates/selective_copy__ordinary__s81301__lr0.003/update384.npz",
+      "checkpoint_sha256": "b75bf713515c31f22aed6cf14b392f9516ff766ca700d9f2d549a0db0bd6064d",
+      "cpu_seconds": {
+        "maximum": 0.09636209000000001,
+        "mean": 0.07086163027272728,
+        "median": 0.068852274,
+        "minimum": 0.054648179000000005,
+        "p25": 0.059922343,
+        "p75": 0.0813870595,
+        "sample_standard_deviation": 0.013845575982729705
+      },
+      "deterministic_output_sha256": "cab190d832c66d4df266e119dd2a91183d2d5567a388b82b9e93966fec3ef338",
+      "dt_tensor_sha256": "b638277a8690e175a9137feff1e43c067f9faf4e2f600caf468fb05b0403b717",
+      "external_tokens_per_second_from_median_wall": 464.74916775768946,
+      "identity": [
+        "selective_copy",
+        "ordinary",
+        "b75bf713515c31f22aed6cf14b392f9516ff766ca700d9f2d549a0db0bd6064d"
+      ],
+      "input_tensor_sha256": "2f22b8f8b796ae130d1933230ac12185c524f0b2cfff9e2bb25469d3cd597540",
+      "physical_index": 17,
+      "registered_input_file_sha256": "3faff726a8338642f8f8df03a6e09dee57bdbc25e713565fdd52b1979dbc72a8",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 14.523411492427796,
+      "state_payload": {
+        "batch_size": 1,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "ordinary",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "ordinary changes controller features",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 605,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.096364134,
+        "mean": 0.07086942581818183,
+        "median": 0.06885434600000001,
+        "minimum": 0.054649550000000005,
+        "p25": 0.059928126500000005,
+        "p75": 0.0813887185,
+        "sample_standard_deviation": 0.013845845958741703
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "ordinary",
+          "checkpoint": "update384",
+          "checkpoint_sha256": "b75bf713515c31f22aed6cf14b392f9516ff766ca700d9f2d549a0db0bd6064d",
+          "id": "selective_copy__ordinary__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "updates384",
+          "seed": 81301,
+          "task": "selective_copy",
+          "validation": {
+            "accuracy": 1.0,
+            "cross_entropy": 0.029459666926413774,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 1.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.0024242218437500003,
+      "batch_size": 32,
+      "case_id": "physical_017_batch_32",
+      "checkpoint_relative_path": "candidates/selective_copy__ordinary__s81301__lr0.003/update384.npz",
+      "checkpoint_sha256": "b75bf713515c31f22aed6cf14b392f9516ff766ca700d9f2d549a0db0bd6064d",
+      "cpu_seconds": {
+        "maximum": 0.11391770500000001,
+        "mean": 0.08276723336363635,
+        "median": 0.07757364600000001,
+        "minimum": 0.058823608000000006,
+        "p25": 0.064771059,
+        "p75": 0.10047222,
+        "sample_standard_deviation": 0.02049292660450298
+      },
+      "deterministic_output_sha256": "e370161f5ea644f695d60db5f91c3f9080adc6f3d1d061f36c865a21998c32a1",
+      "dt_tensor_sha256": "e9bac255f4adc7cb4ada9298e193a5ff66b434d15afabd458505325f29c398c7",
+      "external_tokens_per_second_from_median_wall": 13200.11206173259,
+      "identity": [
+        "selective_copy",
+        "ordinary",
+        "b75bf713515c31f22aed6cf14b392f9516ff766ca700d9f2d549a0db0bd6064d"
+      ],
+      "input_tensor_sha256": "3a6a88a2709e2d7f6e4de53b4cbb2f4fc3abc2e250209a203452969ebf5de8e9",
+      "physical_index": 17,
+      "registered_input_file_sha256": "3faff726a8338642f8f8df03a6e09dee57bdbc25e713565fdd52b1979dbc72a8",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 412.50350192914345,
+      "state_payload": {
+        "batch_size": 32,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "ordinary",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "ordinary changes controller features",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 19360,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.11392000000000001,
+        "mean": 0.082925749,
+        "median": 0.07757509900000001,
+        "minimum": 0.058834896000000005,
+        "p25": 0.06562085150000001,
+        "p75": 0.100475284,
+        "sample_standard_deviation": 0.020368634648222583
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "sigmoid",
+          "checkpoint": "update384",
+          "checkpoint_sha256": "856c6b315aefd00efd782a1485e437be22970398abb2b882bba137638097a00e",
+          "id": "selective_copy__sigmoid__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "updates384",
+          "seed": 81301,
+          "task": "selective_copy",
+          "validation": {
+            "accuracy": 1.0,
+            "cross_entropy": 0.029535727109760046,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 1.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.096761603,
+      "batch_size": 1,
+      "case_id": "physical_018_batch_1",
+      "checkpoint_relative_path": "candidates/selective_copy__sigmoid__s81301__lr0.003/update384.npz",
+      "checkpoint_sha256": "856c6b315aefd00efd782a1485e437be22970398abb2b882bba137638097a00e",
+      "cpu_seconds": {
+        "maximum": 0.10701353200000001,
+        "mean": 0.08663945872727274,
+        "median": 0.09674853500000001,
+        "minimum": 0.055792761,
+        "p25": 0.07076844900000001,
+        "p75": 0.1007360055,
+        "sample_standard_deviation": 0.018806886736582925
+      },
+      "deterministic_output_sha256": "a1a339d9bb044e64dace30188f47604647a0239879719bd4a5a00a5d673b2247",
+      "dt_tensor_sha256": "b638277a8690e175a9137feff1e43c067f9faf4e2f600caf468fb05b0403b717",
+      "external_tokens_per_second_from_median_wall": 330.70969276935193,
+      "identity": [
+        "selective_copy",
+        "sigmoid",
+        "856c6b315aefd00efd782a1485e437be22970398abb2b882bba137638097a00e"
+      ],
+      "input_tensor_sha256": "2f22b8f8b796ae130d1933230ac12185c524f0b2cfff9e2bb25469d3cd597540",
+      "physical_index": 18,
+      "registered_input_file_sha256": "3faff726a8338642f8f8df03a6e09dee57bdbc25e713565fdd52b1979dbc72a8",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 10.334677899042248,
+      "state_payload": {
+        "batch_size": 1,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "sigmoid",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "shared scalar margin drives both operator channels",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 605,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.10704732800000001,
+        "mean": 0.08665330045454546,
+        "median": 0.096761603,
+        "minimum": 0.055795478,
+        "p25": 0.070770638,
+        "p75": 0.1007382875,
+        "sample_standard_deviation": 0.01881214941761603
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "sigmoid",
+          "checkpoint": "update384",
+          "checkpoint_sha256": "856c6b315aefd00efd782a1485e437be22970398abb2b882bba137638097a00e",
+          "id": "selective_copy__sigmoid__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "updates384",
+          "seed": 81301,
+          "task": "selective_copy",
+          "validation": {
+            "accuracy": 1.0,
+            "cross_entropy": 0.029535727109760046,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 1.0
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.00213583321875,
+      "batch_size": 32,
+      "case_id": "physical_018_batch_32",
+      "checkpoint_relative_path": "candidates/selective_copy__sigmoid__s81301__lr0.003/update384.npz",
+      "checkpoint_sha256": "856c6b315aefd00efd782a1485e437be22970398abb2b882bba137638097a00e",
+      "cpu_seconds": {
+        "maximum": 0.11803966,
+        "mean": 0.07596107863636364,
+        "median": 0.068344509,
+        "minimum": 0.06145279000000001,
+        "p25": 0.063280117,
+        "p75": 0.08362134600000001,
+        "sample_standard_deviation": 0.018530901778463817
+      },
+      "deterministic_output_sha256": "10444bd701814f63cffebe915169c8f61eaac94a448ba546ca5724a02e609ad4",
+      "dt_tensor_sha256": "e9bac255f4adc7cb4ada9298e193a5ff66b434d15afabd458505325f29c398c7",
+      "external_tokens_per_second_from_median_wall": 14982.443254032753,
+      "identity": [
+        "selective_copy",
+        "sigmoid",
+        "856c6b315aefd00efd782a1485e437be22970398abb2b882bba137638097a00e"
+      ],
+      "input_tensor_sha256": "3a6a88a2709e2d7f6e4de53b4cbb2f4fc3abc2e250209a203452969ebf5de8e9",
+      "physical_index": 18,
+      "registered_input_file_sha256": "3faff726a8338642f8f8df03a6e09dee57bdbc25e713565fdd52b1979dbc72a8",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 468.2013516885235,
+      "state_payload": {
+        "batch_size": 32,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "sigmoid",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "shared scalar margin drives both operator channels",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 19360,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.11906549200000001,
+        "mean": 0.07646651300000001,
+        "median": 0.068346663,
+        "minimum": 0.061454919000000004,
+        "p25": 0.063281668,
+        "p75": 0.08362358950000001,
+        "sample_standard_deviation": 0.01865494310131678
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "sigmoid",
+          "checkpoint": "cpu30",
+          "checkpoint_sha256": "994590530833d483098bf424690804746f1ff0059475de14d03ec42cc0759dda",
+          "id": "selective_copy__sigmoid__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "cpu30",
+          "seed": 81301,
+          "task": "selective_copy",
+          "validation": {
+            "accuracy": 0.875,
+            "cross_entropy": 1.7590950429439545,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 0.58984375
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.064023209,
+      "batch_size": 1,
+      "case_id": "physical_019_batch_1",
+      "checkpoint_relative_path": "candidates/selective_copy__sigmoid__s81301__lr0.003/cpu30.npz",
+      "checkpoint_sha256": "994590530833d483098bf424690804746f1ff0059475de14d03ec42cc0759dda",
+      "cpu_seconds": {
+        "maximum": 0.097694211,
+        "mean": 0.07260715072727274,
+        "median": 0.063995861,
+        "minimum": 0.055167289,
+        "p25": 0.061709235,
+        "p75": 0.0863117525,
+        "sample_standard_deviation": 0.0152970794439934
+      },
+      "deterministic_output_sha256": "49cf2dc1006744d595abc4189bd805c416cde9ffdd6cf8fac34937b03eb4adfc",
+      "dt_tensor_sha256": "b638277a8690e175a9137feff1e43c067f9faf4e2f600caf468fb05b0403b717",
+      "external_tokens_per_second_from_median_wall": 499.818745417775,
+      "identity": [
+        "selective_copy",
+        "sigmoid",
+        "994590530833d483098bf424690804746f1ff0059475de14d03ec42cc0759dda"
+      ],
+      "input_tensor_sha256": "2f22b8f8b796ae130d1933230ac12185c524f0b2cfff9e2bb25469d3cd597540",
+      "physical_index": 19,
+      "registered_input_file_sha256": "3faff726a8338642f8f8df03a6e09dee57bdbc25e713565fdd52b1979dbc72a8",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 15.619335794305469,
+      "state_payload": {
+        "batch_size": 1,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "sigmoid",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "shared scalar margin drives both operator channels",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 605,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.097742296,
+        "mean": 0.0726173800909091,
+        "median": 0.064023209,
+        "minimum": 0.055188291,
+        "p25": 0.061711273500000004,
+        "p75": 0.0863136725,
+        "sample_standard_deviation": 0.015300927235185694
+      }
+    },
+    {
+      "aliases": [
+        {
+          "arm": "sigmoid",
+          "checkpoint": "cpu30",
+          "checkpoint_sha256": "994590530833d483098bf424690804746f1ff0059475de14d03ec42cc0759dda",
+          "id": "selective_copy__sigmoid__s81301__lr0.003",
+          "learning_rate": 0.003,
+          "regime": "cpu30",
+          "seed": 81301,
+          "task": "selective_copy",
+          "validation": {
+            "accuracy": 0.875,
+            "cross_entropy": 1.7590950429439545,
+            "examples": 256,
+            "queries": 1024,
+            "sequence_accuracy": 0.58984375
+          }
+        }
+      ],
+      "amortized_wall_seconds_per_sequence": 0.00233741521875,
+      "batch_size": 32,
+      "case_id": "physical_019_batch_32",
+      "checkpoint_relative_path": "candidates/selective_copy__sigmoid__s81301__lr0.003/cpu30.npz",
+      "checkpoint_sha256": "994590530833d483098bf424690804746f1ff0059475de14d03ec42cc0759dda",
+      "cpu_seconds": {
+        "maximum": 0.10872234400000001,
+        "mean": 0.07759266572727273,
+        "median": 0.074795604,
+        "minimum": 0.062665793,
+        "p25": 0.065174615,
+        "p75": 0.0851617075,
+        "sample_standard_deviation": 0.014747216086316553
+      },
+      "deterministic_output_sha256": "499e190e381d10c9b0d9e67fd761ac5f6189305024148f24be73f476a9b92bdd",
+      "dt_tensor_sha256": "e9bac255f4adc7cb4ada9298e193a5ff66b434d15afabd458505325f29c398c7",
+      "external_tokens_per_second_from_median_wall": 13690.33612141574,
+      "identity": [
+        "selective_copy",
+        "sigmoid",
+        "994590530833d483098bf424690804746f1ff0059475de14d03ec42cc0759dda"
+      ],
+      "input_tensor_sha256": "3a6a88a2709e2d7f6e4de53b4cbb2f4fc3abc2e250209a203452969ebf5de8e9",
+      "physical_index": 19,
+      "registered_input_file_sha256": "3faff726a8338642f8f8df03a6e09dee57bdbc25e713565fdd52b1979dbc72a8",
+      "sequence_length": 32,
+      "sequences_per_second_from_median_wall": 427.82300379424186,
+      "state_payload": {
+        "batch_size": 32,
+        "discrete_components": {
+          "cued": {
+            "bytes": 1,
+            "dtype": "bool"
+          },
+          "read_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          },
+          "write_count": {
+            "bytes": 8,
+            "dtype": "int64"
+          }
+        },
+        "discrete_payload_bytes_per_episode": 17,
+        "float_dtype": "torch.float32",
+        "float_element_bytes": 4,
+        "float_payload_bytes_per_episode": 588,
+        "model_accounting": {
+          "arm": "sigmoid",
+          "discrete_state_dtypes": [
+            "write_count:int64",
+            "read_count:int64",
+            "cued:bool"
+          ],
+          "group_trainable": {
+            "boundary_dynamics": 8,
+            "boundary_input": 66,
+            "content": 648,
+            "rate_head": 4
+          },
+          "interpretation": "shared scalar margin drives both operator channels",
+          "model_config": {
+            "heads": 1,
+            "initial_leak": 0.001953125,
+            "initial_write": 1.0,
+            "key_dim": 16,
+            "max_step": 0.0625,
+            "value_dim": 8
+          },
+          "parameters_total": 726,
+          "parameters_trainable": 726,
+          "persistent_float_state_per_episode": 147,
+          "persistent_integer_state_per_episode": 3,
+          "state_components": {
+            "flow": 3,
+            "matrix": 128,
+            "pending_key": 16,
+            "write_counter_read_counter_cue_flag": 3
+          }
+        },
+        "not_a_measured_peak_memory_or_streaming_cache": true,
+        "parameter_tensor_bytes": 2904,
+        "total_counted_payload_bytes_per_batch": 19360,
+        "total_counted_payload_bytes_per_episode": 605
+      },
+      "wall_seconds": {
+        "maximum": 0.108724232,
+        "mean": 0.07761656472727273,
+        "median": 0.074797287,
+        "minimum": 0.06266803500000001,
+        "p25": 0.065262455,
+        "p75": 0.08519252700000002,
+        "sample_standard_deviation": 0.0147353667020011
+      }
+    }
+  ],
+  "execution_plan_sha256": "c489c2cfaa0d40a3a7d9395bdcf713822d35f6f2d3b7577a552cbfd752b68881",
+  "physical_checkpoint_count": 20,
+  "quality_used_to_select_timing_cases": false,
+  "raw_events_sha256": "f7e83e9a8b2aba8e4c42fcfdf574be0ef45d139ffbaee19c94fbbf1f85b6b3d6",
+  "raw_times_sha256": "6d88103e8b9c32346fc671448bae70e4fc1f04cff39cf0c78d33769afb7087ca",
+  "status": "complete",
+  "timed_repetitions_per_case": 11,
+  "warmups_per_case": 3
+}
