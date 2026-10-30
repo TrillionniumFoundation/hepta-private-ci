@@ -1,10 +1,108 @@
 # Round6: verify, restore and replay
 
-Use the published research checkout, with the complete source closure and inherited
-freeze metadata. Run the commands below from its repository root. The transport
-helper [artifact_bundle.py](artifact_bundle.py) is outside the scientific freeze.
+The completed research bundle includes the source closure and inherited freeze
+metadata. Its standalone restoration recipe comes first; run later module commands
+from the restored repository root. The transport helper
+[artifact_bundle.py](artifact_bundle.py) is outside the scientific freeze.
 Its raw parts contain binary bytes; connector base64 responses must be decoded
 before saving them as part files.
+
+## Completed confirmation and final research bundle
+
+Confirmation and the full independent audit are complete. The audit records
+`passed: true`; the registered primary superiority gates did not pass, and
+production promotion remains false. Restoring or verifying this evidence requires
+no retraining. The fixed outputs are:
+
+| Artifact | SHA256 |
+| --- | --- |
+| [RESULTS.json](evidence/registered_001/RESULTS.json) | `303e98b4c6679f7dd827bb2c3a7083d96010984adbba43e1c6548b7930f53a69` |
+| [Full confirmation audit](evidence/review_confirmation_registered_001/REVIEW.json) | `ef2ef939432eaa457b97def830f8719030e5050afa79457e4c663d33e5f977f2` |
+| [Audit execution receipt](evidence/review_confirmation_registered_001_execution/execution/full_independent_confirmation_COMPLETED.json) | `ca46099d10d22a81b4fb0aa20c3ad0667056ba9b0605c8dee758ab8cae4a1818` |
+| [Descriptive diagnostics](evidence/review_confirmation_diagnostics_001/DIAGNOSTICS.json) | `ff3ea0e5a1b2b5039e268bdc999098340c57e70760649008618451679a9ae503` |
+| [Confirmation execution ledger](evidence/registered_001/execution/CONFIRMATION_BATCH_COMPLETED.json) | `5548532acbfdc14e43df432058a9dc67653786e3fb6d146a3f6c20f68a2e6c37` |
+
+The final publication uses the repository path
+`experiments/analytic_event_neuron/round6/evidence/final_bundle_001` for
+`BUNDLE.json` and all its declared `part-*.bin` files. Each raw part is at most
+786,432 bytes (768 KiB). Obtain the separate publication index at
+`experiments/analytic_event_neuron/round6/evidence/FINAL_PUBLICATION.json` from
+the same reviewed publication revision. Its top-level `manifest_sha256` pins the
+bundle manifest; `bundle_path` names that final-bundle location. The index also
+records the archive identity, remote byte readback and concrete restore receipt.
+
+The index is generated **after sealing**. It and the final raw parts live outside
+the packed source, so the archive does not contain a circular reference to its own
+manifest identity. The bundle contains the entire active **partial research
+checkout**, including inherited research sources, prepared and confirmation data,
+models, recovered native executables, retained archives, reviews and execution
+receipts. It excludes `__pycache__`. It is not a full historical Git repository or
+complete Rust workspace; in particular, this checkout has no `codex-rs` directory.
+
+For a standalone download, also obtain
+`experiments/analytic_event_neuron/round6/artifact_bundle.py` from that revision. The helper uses only the Python standard library and can run by filename
+before a package checkout exists. Its SHA256 is
+`3c98bfe234c1bfba14b72e114f771cd18c06fc900d754be3c59d3145a12cbb66`.
+Set three absolute download paths and restore into a **new** child of a fresh
+parent directory:
+
+```bash
+set -euo pipefail
+hepta_final_bundle=/absolute/path/to/downloaded/final_bundle_001
+hepta_publication=/absolute/path/to/downloaded/FINAL_PUBLICATION.json
+hepta_helper=/absolute/path/to/downloaded/artifact_bundle.py
+hepta_transport_python=python
+hepta_final_manifest=$(
+  "$hepta_transport_python" -B - "$hepta_publication" "$hepta_helper" <<'PYFINAL'
+import hashlib, json, re, sys
+from pathlib import Path
+index = json.loads(Path(sys.argv[1]).read_text())
+expected = index['manifest_sha256']
+if index['bundle_path'] != 'experiments/analytic_event_neuron/round6/evidence/final_bundle_001':
+    raise ValueError('Unexpected final bundle path')
+if not isinstance(expected, str) or not re.fullmatch(r'[0-9a-f]{64}', expected):
+    raise ValueError('Invalid final manifest identity')
+if hashlib.sha256(Path(sys.argv[2]).read_bytes()).hexdigest() != '3c98bfe234c1bfba14b72e114f771cd18c06fc900d754be3c59d3145a12cbb66':
+    raise ValueError('Bundle helper differs from the reviewed source')
+print(expected)
+PYFINAL
+)
+hepta_final_parent=$(mktemp -d -t hepta-round6-final.XXXXXX)
+"$hepta_transport_python" -B "$hepta_helper" verify "$hepta_final_bundle" \
+  --expected-manifest-sha256 "$hepta_final_manifest"
+"$hepta_transport_python" -B "$hepta_helper" restore \
+  "$hepta_final_bundle" "$hepta_final_parent/research" \
+  --expected-manifest-sha256 "$hepta_final_manifest"
+```
+
+Verification checks every chunk, the complete archive and every member before
+restoration creates a destination; restoration also reads back the extracted files
+and preserves executable modes. The helper refuses an existing destination.
+Reassembly needs writable space beside the downloaded bundle. An optional complete
+`archive.tar.gz` may be retained there; the helper still requires the declared raw
+parts and checks that the complete archive, when present, matches them.
+
+The restored repository root is directly
+`$hepta_final_parent/research`, with no extra enclosing `hepta-analytic` directory.
+The separately downloaded publication index and raw parts remain at their download
+paths. In the recorded numerical environment described below, verify the restored
+source closure and original preparation/freeze without rerunning training:
+
+```bash
+cd "$hepta_final_parent/research"
+hepta_python=/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python
+"$hepta_python" -B -m experiments.analytic_event_neuron.round6.lifecycle verify \
+  --run-dir experiments/analytic_event_neuron/round6/evidence/registered_001 \
+  --expected-freeze-sha256 1f4d994da28d3bd61853a904d3e9da03b6ea6c90fe9d680e217f976656450ca1
+```
+
+The exact freeze remains
+`1f4d994da28d3bd61853a904d3e9da03b6ea6c90fe9d680e217f976656450ca1`.
+Archive byte checks can be performed without the fitting dependencies; the
+lifecycle check requires the recorded numerical environment and all 118 frozen
+source files. A different environment does not invalidate an unchanged archive,
+but it cannot claim this exact environment verification. The preparation and
+legacy development recipes below provide separate, earlier snapshots when needed.
 
 ## Registered preparation bundle
 
@@ -81,8 +179,16 @@ In `round6/evidence`, obtain:
   `ROUND6_DEVELOPMENT_EVIDENCE_001_PARTS.json` and
   `ROUND6_DEVELOPMENT_EVIDENCE_001.part0000` through `.part0005`.
 
-Use a **new extraction directory outside the checkout**. This checked adapter
-handles the earlier format and leaves existing readable gate files untouched:
+Use a **new extraction directory outside the checkout**. Start a separate parent
+for this optional legacy restoration, including when the final bundle was restored
+without using the preparation recipe:
+
+```bash
+hepta_replay_parent=$(mktemp -d -t hepta-round6-development.XXXXXX)
+```
+
+This checked adapter handles the earlier format and leaves existing readable gate
+files untouched:
 
 ```bash
 hepta_dev_source=/absolute/path/to/downloaded_development_files
@@ -184,6 +290,3 @@ own registration, preparation, review and freeze. Preserve the existing run and
 its failures, migration records and successful receipts. Review the event and
 measurement boundaries in [CONTRACT.md](CONTRACT.md).
 
-**Final confirmation bundle and result identities: pending.** This guide supplies
-the prepared and development identities; the final publication index will add
-actual confirmation/audit/summary artifacts when completed.

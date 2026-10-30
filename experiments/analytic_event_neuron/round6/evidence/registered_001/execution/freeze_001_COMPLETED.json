@@ -1,0 +1,27 @@
+{
+  "children_system_seconds": 0.151415,
+  "children_user_seconds": 1.8997359999999999,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "experiments.analytic_event_neuron.round6.lifecycle",
+    "freeze",
+    "--run-dir",
+    "/dev/shm/hepta-round6-d831a963ef2f/hepta-analytic/experiments/analytic_event_neuron/round6/evidence/registered_001",
+    "--review",
+    "/dev/shm/hepta-round6-d831a963ef2f/hepta-analytic/experiments/analytic_event_neuron/round6/evidence/registered_001/validation/PREPARED_REVIEW.json"
+  ],
+  "cwd": "/dev/shm/hepta-round6-d831a963ef2f/hepta-analytic",
+  "financial_cost": null,
+  "finished_utc": "2026-10-30T12:53:31.155964+00:00",
+  "full_invocation_scope": true,
+  "label": "freeze_001",
+  "log": "execution/freeze_001.log",
+  "native_energy": null,
+  "nested_component_times_must_not_be_added": true,
+  "returncode": 0,
+  "schema": "hepta.analytic-event.round4.execution.v1",
+  "started_utc": "2026-10-30T12:53:30.497653+00:00",
+  "wall_ns": 658148449
+}

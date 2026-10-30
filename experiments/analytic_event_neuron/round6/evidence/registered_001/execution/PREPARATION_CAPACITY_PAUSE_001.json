@@ -1,0 +1,54 @@
+{
+  "available_bytes_now": 86917120,
+  "completed_seeds": [
+    {
+      "child_cpu_seconds": 27.725653,
+      "execution_receipt_sha256": "a8b43257144881c8c7a49a1eb1391ed7fd4a2b78f990c69af74f3b5a078baabd",
+      "head_parameter_l2_changes": {
+        "analytic": 3.7165904797336387,
+        "history": 3.7428248844333276,
+        "numeric": 5.597053161789015
+      },
+      "learned_noise_scale": 1.7156040358942959,
+      "native": {
+        "requests": 6144,
+        "roundtrip_ns": 3907306864,
+        "ticks": 10752
+      },
+      "seed": 3407,
+      "training_receipt_sha256": "463706a32696ab44d500516008c37d671017d5ba197abcce71c8dcbc36b89070",
+      "wall_ns": 33337135450
+    },
+    {
+      "child_cpu_seconds": 27.720445,
+      "execution_receipt_sha256": "28f2581754fde48a6f1c7ddd15a2557a99a743836074e6b9028b4d07de7962eb",
+      "head_parameter_l2_changes": {
+        "analytic": 2.4170966467647563,
+        "history": 2.4758405589008974,
+        "numeric": 11.265048545142237
+      },
+      "learned_noise_scale": 1.6480751695285674,
+      "native": {
+        "requests": 6144,
+        "roundtrip_ns": 4278954302,
+        "ticks": 10752
+      },
+      "seed": 3613,
+      "training_receipt_sha256": "c8ed2df1413f57bdf1656a877ef73aaf70383ac9171d4a5a097e73b2827d99ef",
+      "wall_ns": 33559732822
+    }
+  ],
+  "confirmation_constructed": false,
+  "failed_training_attempts": 0,
+  "not_launched_seeds": [
+    3821,
+    4001,
+    4219
+  ],
+  "observed_free_bytes": 87465984,
+  "parallel_wall_times_must_not_be_added": true,
+  "reason": "New preparation group paused below root-directed 150 MiB free-space threshold",
+  "recorded_utc": "2026-10-30T12:41:53.861023+00:00",
+  "required_free_bytes": 157286400,
+  "schema": "hepta.acquired-feedback.preparation-capacity-pause.v6"
+}
