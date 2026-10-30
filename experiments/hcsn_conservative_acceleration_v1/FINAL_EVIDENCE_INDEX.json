@@ -6,7 +6,7 @@
   "base_prior_research_commit": "63fd568b177c0456ddd8b590e3ac77d35307c0c4",
   "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41059620366",
   "draft_pr": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4362",
-  "mutation_scope": "New reports, independent audits, byte-restoration replay receipts, Actions logs, old failed-attempt archive, and README result index. No frozen scientific source, protocol, original result or workflow edited.",
+  "mutation_scope": "New reports, independent audits, byte-restoration replay receipts, Actions logs, old failed-attempt archive, and README result index. No frozen scientific source, protocol, original result or workflow edited. A subsequent CI repair changes only prose-spelling scope for immutable data transports and one exact verbatim upstream document, plus Markdown math delimiters; no workflow, word-ignore list, scientific payload or threshold changes.",
   "scientific_outcome": {
     "valid_jobs": 70,
     "expected_jobs": 70,
@@ -48,7 +48,7 @@
     "raw_non_data_archive_sha256": "c34002b119d2073cd8ec1c78149241750b218101ac10fd623c72ce4f8801115e",
     "failed_evidence_never_pooled_into_hosted_cohort": true
   },
-  "file_index_scope": "These 182 files are the final review/failed-evidence supplement, excluding this self-describing index. Original hosted files remain in the immutable parent. Git identity of this index is recorded by its containing commit.",
+  "file_index_scope": "These 184 files form the final review/failed-evidence supplement including the narrow CI prose-scope repair, excluding this self-describing index. Original hosted files remain in the immutable parent. Git identity of this index is recorded by its containing commit.",
   "files": [
     {
       "path": "experiments/hcsn_conservative_acceleration_v1/README.md",
@@ -59,8 +59,8 @@
     {
       "path": "experiments/hcsn_conservative_acceleration_v1/FINAL_REPORT_ZH.md",
       "bytes": 30677,
-      "sha256": "2539bac62541a107d4ee55ccad463bee20258603826a8d06d0e0c7bae757837a",
-      "git_blob_sha": "2647853d3327b9a0bfb52f2b52cf8a1238ff7349"
+      "sha256": "2818f04d69f28419d02019ba510015ee738dfc0296b389cd53831faac1f0f75e",
+      "git_blob_sha": "8594fca40d2012a2b8ca4bfd396a45ca90419f30"
     },
     {
       "path": "experiments/hcsn_conservative_acceleration_v1/REPRODUCE.md",
@@ -106,9 +106,9 @@
     },
     {
       "path": "experiments/hcsn_conservative_acceleration_v1/reports/MATHEMATICAL_STATUS_ZH.md",
-      "bytes": 7480,
-      "sha256": "240c23944edc48720dda79e3c4f8f868e8387c1a01d5d039032242a27364bdee",
-      "git_blob_sha": "c49a8b6a1b24823f6b622a8ee98bb15486b70cfc"
+      "bytes": 7380,
+      "sha256": "81003c1cf76ffd7cc5ef2f5f6ce10c97c4bf81432511a77bbe6de3edcd429409",
+      "git_blob_sha": "1ee84315ddc7b7a6c149785ccd1def207ce9b0f6"
     },
     {
       "path": "experiments/hcsn_conservative_acceleration_v1/reports/plot_hosted_results.py",
@@ -1141,6 +1141,25 @@
       "bytes": 5062,
       "sha256": "1f98446679d721bd512b8d9af208edee891c05158d624cb32a50a129f2cf270f",
       "git_blob_sha": "4e77176f73cb9477aca5ba8ffe65c3dd81d34df0"
+    },
+    {
+      "path": ".codespellrc",
+      "bytes": 781,
+      "sha256": "1af31c5c5b2d80f6292a3ee3a2a1e92b3e87d5bc5998263af89dfda03b553e44",
+      "git_blob_sha": "563ab58e70d0deb9515252aff9ce4e07d8f428b6"
+    },
+    {
+      "path": "experiments/hcsn_conservative_acceleration_v1/reports/CI_EVIDENCE_SPELLING_SCOPE.json",
+      "bytes": 1716,
+      "sha256": "a1a5bf755d52a9f5bb3877b583f89c6ed2e57deedfbce5273e4dd3979f71c375",
+      "git_blob_sha": "25b0be919e4c6eecba842a74d67b4bd36260314d"
     }
-  ]
+  ],
+  "ci_scope_repair": {
+    "prior_review_commit": "d0ffe51a8d39e7fe5b6657812412e557b26857b5",
+    "failed_codespell_job_id": 124098266850,
+    "diagnosis": "3563 archive payload annotations plus one verbatim upstream README; no new prose/code error.",
+    "report": "reports/CI_EVIDENCE_SPELLING_SCOPE.json",
+    "scope_validation": "All 665 observed error paths covered; 6 source/prose/manifest negative controls remain checked. Full CI rerun pending at commit creation."
+  }
 }

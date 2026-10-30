@@ -52,45 +52,45 @@ He 与 Xiong 的 *Rollover Risk and Credit Risk*（*Journal of Finance*, 2012, 6
 
 声明的标量问题为
 
-\[
+$$
 dX_t=\mu\,dt+\sigma\,dW_t,\qquad
 \sigma>0,\quad\rho>0,\quad r<K,\quad\tau\ge0.
-\]
+$$
 
 发放获得 $x-K$，经过确定不应期 $\tau$ 后从 $r$ 再生。相应干预算子与 QVI 是
 
-\[
+$$
 \mathcal M U(x)=x-K+e^{-\rho\tau}U(r),\qquad
 \max\{\mathcal L U-\rho U,\mathcal M U-U\}=0.
-\]
+$$
 
 令
 
-\[
+$$
 \kappa=\frac{\sqrt{\mu^2+2\rho\sigma^2}-\mu}{\sigma^2},\qquad
 q=e^{-\rho\tau-\kappa(b-r)}.
-\]
+$$
 
 给定可行阈值 $b>K$，其继续区域的策略值是
 
-\[
+$$
 U_b(x)=e^{\kappa(x-b)}\frac{b-K}{1-q},\qquad x<b.
-\]
+$$
 
 价值匹配和光滑粘贴给出
 
-\[
+$$
 U(b)=\mathcal M U(b),\quad U'(b-)=1,\quad
 \Psi(b)=\kappa(b-K)-1+q=0.
-\]
+$$
 
 在这个声明域内，
 
-\[
+$$
 \Psi_b=\kappa(1-q)>0,\qquad
 \frac{\partial b}{\partial\theta}
 =-\frac{\Psi_\theta}{\Psi_b}.
-\]
+$$
 
 这里 $\Psi_\theta$ 是固定 $b$ 取偏导；约束参数化及有效不应期需走完整链式法则，当前只认证一阶隐式梯度。因此边界可通过隐式梯度进入 BP。最优点的继续区值简化为 $U(x)=e^{\kappa(x-b)}/\kappa$。原数学文件还验证了全局 QVI 不等式和横截条件；仅有 matching/pasting 本身不足以证明最优性。此前 24 项、覆盖 6 个物理参数的边界有限差分核验，最大缩放误差约 $1.59\times10^{-9}$；独立数值 QVI 最细网格上的价值误差约 $4.43\times10^{-4}$，边界误差约 $1.34\times10^{-3}$。这些是对特定标量问题的证据。[数学详解](reports/MATHEMATICAL_STATUS_ZH.md) · [来源与原核验身份](reports/SIX_STAGE_AUDIT_1_3.json)
 
@@ -133,9 +133,9 @@ U(b)=\mathcal M U(b),\quad U'(b-)=1,\quad
 
 原算子用 uniformization 的 21 阶截断、归一化正系数 Poisson 多项式传播转移与重复事件计数。新后端对增广矩阵
 
-\[
+$$
 A=\begin{pmatrix}R&e\\0&1\end{pmatrix},\qquad R=I+Q/\Lambda,
-\]
+$$
 
 其中 $Q$ 为行生成元，$e=\lambda_{\rm event}/\Lambda$。计算同一个多项式，采用 5 项分块的 Paterson–Stockmeyer 求值，把 21 次 Python 稀疏递推换成 8 次小矩阵乘法。生成元、$\Lambda=8.1$、截断阶数 21、每 token 最大时间块 0.36、复位、事件计数和参数数目均保持不变。精确算术下二者是同一个有限算子。[CONTRACT](CONTRACT.md)
 
