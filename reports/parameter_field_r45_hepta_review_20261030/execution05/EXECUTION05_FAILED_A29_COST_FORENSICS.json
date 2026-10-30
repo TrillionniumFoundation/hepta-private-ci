@@ -1,0 +1,210 @@
+{
+  "CPU_nonoverlap": {
+    "actual_outer_wait4_missing": true,
+    "controller_wait4": {
+      "receipt": {
+        "bytes": 500,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/supervisor_run/children/controller.EXIT.json",
+        "sha256": "d2986e6ee5060090b962ed0b472bc4b6fc8059069922533cbba676f3e41108d5"
+      },
+      "value": {
+        "exit_code": 1,
+        "scope": "this child and descendants it waited for; includes nested phase/driver costs",
+        "system_cpu_seconds": 38.885092,
+        "total_cpu_seconds": 1548.712305,
+        "user_cpu_seconds": 1509.827213,
+        "wait_status": 256,
+        "wall_seconds": 2471.6205665350026
+      }
+    },
+    "measured_controller_plus_supervisor_self_interval_lower_bound_seconds": 1555.961190367,
+    "not_complete_execution05_total_CPU": true,
+    "outer_receipts_absent": {
+      "LAUNCH_FAILED.json": true,
+      "WAIT4_COMPLETE.json": true,
+      "WAIT4_PRIMARY_INVALID.json": true
+    },
+    "primary_failure": {
+      "bytes": 2597,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/FAILED.json",
+      "sha256": "c509c0b523fba34e0aa5190549d7bc78d2f5bedfb60b0041365abbbbd608a897"
+    },
+    "root_helpers_observers_launcher_and_unrecorded_tail_scopes_not_in_this_lower_bound": true,
+    "supervisor_self_interval_seconds": 7.248885367,
+    "wall_and_peak_RSS_not_added": true,
+    "worker_and_phase_CPU_are_nested_in_controller_do_not_add": true,
+    "worker_wait4": {
+      "receipt": {
+        "bytes": 532,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/wrapper_runs/CONTROLLER/273933-1819746/owned_children/001.WAIT4.json",
+        "sha256": "3b2058c9ac257f4026f74af1e290dd32e06619fd965086280c1c40acf9a76bb4"
+      },
+      "value": {
+        "cpu_seconds": 1512.719833,
+        "exit_code": -15,
+        "pid": 282783,
+        "scope": "Direct worker and descendants it waited for; nested inside outer controller wait4.",
+        "system_cpu_seconds": 26.670431,
+        "user_cpu_seconds": 1486.049402,
+        "wait_status": 15,
+        "wall_seconds": 2119.772368897
+      }
+    }
+  },
+  "SOURCE_RAW_OPS_writes": false,
+  "at_utc": "2026-10-30T13:55:14.308353+00:00",
+  "bank_state_and_npz_contents_opened": false,
+  "complete": true,
+  "completion_markers_and_head_artifacts_exist": {
+    "/workspace/scratch/178ced6a501f/fullstudy_execution05_durable_raw/operations/A-seed-29.COMPLETE.json": false,
+    "/workspace/scratch/178ced6a501f/fullstudy_execution05_durable_raw/stage_A/seed-29/COMPLETE.json": false,
+    "/workspace/scratch/178ced6a501f/fullstudy_execution05_durable_raw/stage_A/seed-29/bank/BANK.json": false,
+    "/workspace/scratch/178ced6a501f/fullstudy_execution05_durable_raw/stage_A/seed-29/bank/field12-bank.npz": false,
+    "/workspace/scratch/178ced6a501f/fullstudy_execution05_durable_raw/stage_A/seed-29/bank/field12-head.npz": false,
+    "/workspace/scratch/178ced6a501f/fullstudy_execution05_durable_raw/stage_A/seed-29/bank/full_current_state-bank.npz": false,
+    "/workspace/scratch/178ced6a501f/fullstudy_execution05_durable_raw/stage_A/seed-29/bank/full_current_state-head.npz": false,
+    "/workspace/scratch/178ced6a501f/fullstudy_execution05_durable_raw/stage_A/seed-29/bank/history6-bank.npz": false,
+    "/workspace/scratch/178ced6a501f/fullstudy_execution05_durable_raw/stage_A/seed-29/bank/history6-head.npz": false,
+    "/workspace/scratch/178ced6a501f/fullstudy_execution05_durable_raw/stage_A/seed-29/paths/PATHS.json": false
+  },
+  "cost_only_parser": {
+    "bytes": 38532,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/historical_costs.py",
+    "sha256": "035d6aed995e705bcde6af7bce9b4edb498d682d095e4578cbea00fbd1e238fe"
+  },
+  "counting_rule": "Original FAILED snapshots cumulative actual invocation counters; complete trace lines contain branch-local deltas. Trace sums are a corroborating subset, not additive to FAILED. Parent progress rows are never converted into gradient counts. Missing/partial bytes preserve unknown work.",
+  "execution_episode": "execution05_backpressure_20261030",
+  "failure_cost_only_projection": {
+    "complete": false,
+    "costs": {
+      "gradient_backward_calls": 17280,
+      "optimizer_steps": 15984,
+      "scheduled_gradient_microsteps": 17280
+    },
+    "cpu_seconds": 1509.489910855,
+    "wall_seconds": 2117.036076925997
+  },
+  "failure_minus_trace_explicit_counts_not_attributed_or_added_again": {
+    "gradient_backward_calls": 1152,
+    "optimizer_steps": 1008,
+    "scheduled_gradient_microsteps": 1152
+  },
+  "gradient_work_nonoverlap": {
+    "exact_all_work_or_upper_bound_claimed": false,
+    "execution04_failed_A29_increment": 14784,
+    "execution05_failed_A29_new_increment": 17280,
+    "execution05_imported_A17_new_increment": 0,
+    "history_plus_two_failed_A29_increments_excluding_once_counted_A17": 214160,
+    "known_chain_lower_bound_with_A17_once": 253328,
+    "original_completed_A17_counted_once": 39168,
+    "pre_execution04_known_lower_bound": 182096
+  },
+  "historical_anchors": {
+    "A17_original_complete": {
+      "bytes": 5780,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_durable_raw/stage_A/seed-17/COMPLETE.json",
+      "sha256": "ae0550f42d155750dce2186766ed986b58070edc983487e8736abefd528e4366"
+    },
+    "import_receipt": {
+      "bytes": 116921,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_durable_raw/imports/execution04/A-17/IMPORT_RECEIPT.json",
+      "sha256": "3b071dbaf2fc9468f3adbca069bb8ea297bdb2d2764d649dee8e21e54dad9fdd"
+    },
+    "old_A29_failed": {
+      "bytes": 3786,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_durable_raw/stage_A/seed-29/FAILED.json",
+      "sha256": "eedb52e2cc05c5fdcc8ed295f27954952730038cdc2851ca4d7e110562f7e0ec"
+    },
+    "old_cost_facts": {
+      "bytes": 11268,
+      "path": "/workspace/scratch/178ced6a501f/execution05_preregistration_inputs/EXECUTION04_COST_FACTS.json",
+      "sha256": "779e4cc90c49919ba8d84c7c965777f548b7561e4241529634585ba794f0e2f3"
+    }
+  },
+  "new_scientific_work": 0,
+  "original_failure": {
+    "bytes": 3788,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_durable_raw/stage_A/seed-29/FAILED.json",
+    "sha256": "8638412963d8d6191e9b3d9ab5cfe97c7b9aa890a1eb025213c17a997351c514"
+  },
+  "original_trace": {
+    "bytes": 4277203,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_durable_raw/stage_A/seed-29/bank/trace.jsonl.gz",
+    "sha256": "b553704859e400825a061bc591fe2539693392493e5b277b23ac5b6b084bcc5f"
+  },
+  "outcomes_or_weights_decoded": false,
+  "reader_source": {
+    "bytes": 17307,
+    "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/failed05_forensics/collect_failed_A29_costs.py",
+    "sha256": "dd7b2f8113f184d5eb29d9f3a4a5882205026c858bc6b39322a845df4f7299ba"
+  },
+  "schema": "hepta.execution05.failed-A29-cost-forensics.1",
+  "scientific_complete": false,
+  "source_semantics": {
+    "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/learning.py": {
+      "bytes": 15506,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/experiments/multimodal_output_portfolio/field_bridge_v3_20261027/learning.py",
+      "sha256": "97c3baabe208fd8d5e8ac9beb5ae4a244b3c8d6aac565e727fd64eed8c1371b7"
+    },
+    "experiments/multimodal_output_portfolio/field_bridge_v3_20261027/training_common.py": {
+      "bytes": 6073,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/experiments/multimodal_output_portfolio/field_bridge_v3_20261027/training_common.py",
+      "sha256": "e686e59dd34a0d8f2a31b192c1f47c59fd86cbc22fe42d60d821c4474db56591"
+    },
+    "experiments/parameter_field_fullstudy_20261029/bank.py": {
+      "bytes": 8098,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/experiments/parameter_field_fullstudy_20261029/bank.py",
+      "sha256": "710a9a069f2d8bdbb208e16db62bc55fb1a07cbd3f9686546b46056673402653"
+    },
+    "experiments/parameter_field_fullstudy_20261029/run.py": {
+      "bytes": 9283,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/experiments/parameter_field_fullstudy_20261029/run.py",
+      "sha256": "46f437e8756c83ae1abfedb7b36544f71a86093098363a8730b18357bf36c1c3"
+    }
+  },
+  "stage_artifact_files": 122,
+  "stage_artifact_metadata_unchanged": true,
+  "synthetic_reader_checks": {
+    "missing_gzip_footer_preserves_only_complete_prefix": true,
+    "missing_required_counters_rejected": true,
+    "new_scientific_work": 0,
+    "partial_final_JSON_not_counted": true,
+    "synthetic_only": true,
+    "valid_two_rows": true
+  },
+  "trace_cost_only_prefix_scan": {
+    "complete_newline_terminated_cost_rows": 96,
+    "compressed_bytes_read": 4277203,
+    "decompressed_prefix_bytes": 8468969,
+    "duplicate_complete_line_hashes": 0,
+    "explicit_counter_rows": {
+      "gradient_backward_calls": 96,
+      "optimizer_steps": 92,
+      "scheduled_gradient_microsteps": 96
+    },
+    "gzip_eof_and_checksum_verified": false,
+    "gzip_error": null,
+    "incomplete_gzip_container": true,
+    "omitted_counter_rows": {
+      "gradient_backward_calls": 0,
+      "optimizer_steps": 4,
+      "scheduled_gradient_microsteps": 0
+    },
+    "omitted_optimizer_entries_not_imputed_as_observed_zero": true,
+    "prefix_replay_feature_or_other_outside_branch_trace_costs_not_inferred_from_parent_counts": true,
+    "reported_optimizer_sum_uses_explicit_entries_only": true,
+    "row_error": null,
+    "scientific_outcome_values_numerically_decoded": false,
+    "source_delta_format_omits_unchanged_counters": true,
+    "sum_of_explicit_counter_values_lower_bound": {
+      "gradient_backward_calls": 16128,
+      "optimizer_steps": 14976,
+      "scheduled_gradient_microsteps": 16128
+    },
+    "trailing_compressed_bytes": 0,
+    "unknown_unwritten_unparsed_or_failed_chunk_work": true,
+    "unterminated_decompressed_tail_bytes_ignored": 0,
+    "unterminated_tail_sha256": null
+  },
+  "unknown_unwritten_work_retained": true
+}

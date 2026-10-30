@@ -1,0 +1,853 @@
+{
+  "actual_study_state": {
+    "accepted_durable_barriers": 1,
+    "complete": false,
+    "completed_logical_jobs": 1,
+    "confirmed_identity_violation": {
+      "changed_field": "supervisor.parent_pid",
+      "expected": 273439,
+      "guard_error": "Supervisor process identity changed",
+      "observed": 1,
+      "unchanged_pid_start_pgid_sid": true,
+      "underlying_parent_termination_actor_or_signal_not_established": true
+    },
+    "disk_cache_or_transport_failure_cause_not_inferred": true,
+    "failure_audit": {
+      "bytes": 17981,
+      "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/execution05_failure_resource_audit/AUDIT.json",
+      "sha256": "c9e899c3b81e8768281887e54bd6b4dd8d235fe3a2f3774f3a4bdddb4a2b6658"
+    },
+    "planned_durable_barriers": 17,
+    "planned_logical_jobs": 14,
+    "positive_effect_or_full_closure_claimed": false,
+    "primary_failure": {
+      "bytes": 2597,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/FAILED.json",
+      "sha256": "c509c0b523fba34e0aa5190549d7bc78d2f5bedfb60b0041365abbbbd608a897"
+    },
+    "recorded_capacity_waits": {
+      "A-29": {
+        "committed": 22,
+        "individual_limit_seconds": 300,
+        "max_wait_wall_seconds": 276.10640423899895,
+        "recorded_oom_pairs": [
+          [
+            0,
+            0
+          ]
+        ],
+        "started": 22
+      },
+      "CONTROLLER": {
+        "committed": 14,
+        "individual_limit_seconds": 300,
+        "max_wait_wall_seconds": 269.0278517830011,
+        "recorded_oom_pairs": [
+          [
+            0,
+            0
+          ]
+        ],
+        "started": 14
+      }
+    },
+    "scientific_effect_values_read_or_published": false,
+    "terminal_primary_message": "Controller exited before durable full-grid closure"
+  },
+  "agent_prefix_verification_cache_advice": {
+    "all_exact_retained_prefixes": true,
+    "cache_advice_errors": 0,
+    "candidates": 2,
+    "deleted_files": 0,
+    "final_resident_pages": [
+      {
+        "id": "failure04_incomplete_download",
+        "partial": 0,
+        "retained_complete": 0
+      },
+      {
+        "id": "A17_part0_incomplete_download",
+        "partial": 0,
+        "retained_complete": 0
+      }
+    ],
+    "receipt": {
+      "bytes": 60199,
+      "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/partial_download_prefix_audit_20261030T133245Z/PREFIX_PROOF.json",
+      "sha256": "f3be47ce1bad5787091a8d0e08fc7b2dbb3469afaa3a69772835ae3dab6c96aa"
+    },
+    "scope": "This agent separately compared archive bytes and advised only read archive ranges; this is distinct from four root cache-advice invocations.",
+    "wait4": {
+      "bytes": 1819,
+      "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/partial_download_prefix_audit_20261030T133245Z/wait4/WAIT4.json",
+      "sha256": "f9e86757d74111ea1804f785256d96da718b3d63a1e07b31542926fb503297f1"
+    }
+  },
+  "at_utc": "2026-10-30T13:51:13.501937+00:00",
+  "cache_advice_invocations": [
+    {
+      "actual_wait4": {
+        "bytes": 1775,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/advisory_archive_cache_release01/WAIT4.json",
+        "sha256": "ea26ba432b1e99c21df82eefafd7a726068ac9a6c5638f952a4ab3554caa4fd0"
+      },
+      "advice_requests": 12,
+      "after": {
+        "active_file": 5431861248,
+        "anon": 381915136,
+        "current": 8072912896,
+        "file": 6484320256,
+        "file_dirty": 57298944,
+        "file_writeback": 0,
+        "inactive_file": 841650176,
+        "kernel": 1205432320,
+        "limit": 8589934592,
+        "slab_reclaimable": 1197100328
+      },
+      "before": {
+        "active_file": 5691269120,
+        "anon": 381870080,
+        "current": 8339247104,
+        "file": 6743732224,
+        "file_dirty": 57298944,
+        "file_writeback": 0,
+        "inactive_file": 841654272,
+        "kernel": 1212493824,
+        "limit": 8589934592,
+        "slab_reclaimable": 1204153440
+      },
+      "deleted_files": 0,
+      "id": "cache_advice_01",
+      "item_status_counts": {
+        "absent_no_action": 1,
+        "advisory_cache_release_requested": 12
+      },
+      "kernel_hint_only": true,
+      "opened_read_only": true,
+      "receipt": {
+        "bytes": 7193,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/capacity_cleanup/ARCHIVE_CACHE_RELEASE01.json",
+        "sha256": "a2eb1c4fea8780daee0ce0dd7ec9391a12a6a2cee14139c7a7360e063a71c820"
+      },
+      "reported_memory_change_is_concurrent_observation_not_exclusive_effect": true,
+      "science_state_changes_by_advice": 0,
+      "scientific_threshold_changes": false
+    },
+    {
+      "actual_wait4": {
+        "bytes": 1763,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/advisory_cache_release02/WAIT4.json",
+        "sha256": "75c519534b465efcd59c31919f53ad9f379b5f51332da00b6c3bf6dbe9002edf"
+      },
+      "advice_requests": 396,
+      "after": {
+        "active_file": 5298581504,
+        "anon": 483082240,
+        "current": 7922302976,
+        "file": 6229602304,
+        "file_dirty": 78286848,
+        "file_writeback": 0,
+        "inactive_file": 720211968,
+        "kernel": 1208442880,
+        "limit": 8589934592,
+        "slab_reclaimable": 1199739288
+      },
+      "before": {
+        "active_file": 5298581504,
+        "anon": 483082240,
+        "current": 7922044928,
+        "file": 6229602304,
+        "file_dirty": 78286848,
+        "file_writeback": 0,
+        "inactive_file": 720211968,
+        "kernel": 1208442880,
+        "limit": 8589934592,
+        "slab_reclaimable": 1199739288
+      },
+      "deleted_files": 0,
+      "id": "cache_advice_02",
+      "item_status_counts": {
+        "advisory_cache_release_requested": 396
+      },
+      "kernel_hint_only": true,
+      "opened_read_only": true,
+      "receipt": {
+        "bytes": 210813,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/capacity_cleanup/CACHE_ARCHIVE_ADVICE02.json",
+        "sha256": "3a766e8dbba72647f097b16f7df99df2581a1c0eb575d98fd7799514ea5e028e"
+      },
+      "reported_memory_change_is_concurrent_observation_not_exclusive_effect": true,
+      "science_state_changes_by_advice": 0,
+      "scientific_threshold_changes": false
+    },
+    {
+      "actual_wait4": {
+        "bytes": 1756,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/advisory_idle_build_cache03/WAIT4.json",
+        "sha256": "ef7898972396bf07183eb7d4b985445b44b9b17cb02afec5f2b9a5e6917b6994"
+      },
+      "advice_requests": 65612,
+      "advised_logical_bytes": 1350771874,
+      "after": {
+        "active_file": 4908965888,
+        "anon": 1240199168,
+        "current": 8373587968,
+        "file": 5848510464,
+        "file_dirty": 7987200,
+        "file_writeback": 0,
+        "inactive_file": 644861952,
+        "kernel": 1283563520,
+        "limit": 8589934592,
+        "slab_reclaimable": 1263120560
+      },
+      "before": {
+        "active_file": 5018943488,
+        "anon": 1220673536,
+        "current": 8479977472,
+        "file": 5956096000,
+        "file_dirty": 7815168,
+        "file_writeback": 0,
+        "inactive_file": 644804608,
+        "kernel": 1302282240,
+        "limit": 8589934592,
+        "slab_reclaimable": 1282274568
+      },
+      "deleted_files": 0,
+      "detailed_record_count": 65612,
+      "detailed_records_decoded_here": false,
+      "id": "cache_advice_03",
+      "kernel_hint_only": true,
+      "opened_read_only": true,
+      "receipt": {
+        "bytes": 31635473,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/capacity_cleanup/IDLE_BUILD_CACHE_ADVICE03.json",
+        "sha256": "6e7ae99d71e496e582b015b7e280b148679018d0ae15edc43f4c627b8ff8b27b"
+      },
+      "reported_memory_change_is_concurrent_observation_not_exclusive_effect": true,
+      "science_state_changes_by_advice": 0,
+      "scientific_threshold_changes": false,
+      "skipped": {
+        "nonregular_or_recent_skip": 2
+      }
+    },
+    {
+      "actual_wait4": {
+        "bytes": 1768,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/advisory_resident_cache04/WAIT4.json",
+        "sha256": "2dd207fb3d01d07b3749d47c8608be3222480595c1b74e1405fb55bf1d82752b"
+      },
+      "advice_requests": 8,
+      "after": {
+        "active_file": 3379552256,
+        "anon": 2658074624,
+        "current": 8455262208,
+        "file": 4503048192,
+        "file_dirty": 305463296,
+        "file_writeback": 0,
+        "inactive_file": 599171072,
+        "kernel": 1292759040,
+        "limit": 8589934592,
+        "slab_reclaimable": 1265757952
+      },
+      "before": {
+        "active_file": 3397996544,
+        "anon": 2657828864,
+        "current": 8544460800,
+        "file": 4592328704,
+        "file_dirty": 305463296,
+        "file_writeback": 0,
+        "inactive_file": 669986816,
+        "kernel": 1292767232,
+        "limit": 8589934592,
+        "slab_reclaimable": 1265757952
+      },
+      "deleted_files": 0,
+      "id": "cache_advice_04",
+      "item_status_counts": {
+        "advisory_cache_release_requested": 8
+      },
+      "kernel_hint_only": true,
+      "opened_read_only": true,
+      "receipt": {
+        "bytes": 4249,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/capacity_cleanup/RESIDENT_CACHE_ADVICE04.json",
+        "sha256": "b4f8af75ac4b2b5950eb43e024f71ed46ebb1b038baaedace547bae3040e945f"
+      },
+      "reported_memory_change_is_concurrent_observation_not_exclusive_effect": true,
+      "science_state_changes_by_advice": 0,
+      "scientific_threshold_changes": false
+    }
+  ],
+  "checkpoint": {
+    "actual_finalized_items_after_failed_prepare": 0,
+    "failed_original_batch_item_count": 10,
+    "failed_prepare_reconciliation": {
+      "bytes": 675,
+      "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/post_a17_metadata_checkpoint_20261030T131950Z/FAILED_PREPARATION_RECONCILIATION.json",
+      "sha256": "057aa3346c08f7322f33a0f440b9f78e280648523eaaff1d414dd3965d2bdbc2"
+    },
+    "independently_read_back_item_count": 3,
+    "items_public_projection": [
+      {
+        "bytes": 1916665,
+        "independent_readback": true,
+        "index": 0,
+        "metadata_verified": true,
+        "sha256": "977a1969283d460e48cc2c4081f4bfb450962027954d5bf87585c5726bf448d3"
+      },
+      {
+        "bytes": 7553,
+        "independent_readback": true,
+        "index": 1,
+        "metadata_verified": true,
+        "sha256": "6bd25f5fc20743536c1df7f393864f18100b32149c207775b41f4c6210934104"
+      },
+      {
+        "bytes": 713,
+        "independent_readback": true,
+        "index": 2,
+        "metadata_verified": true,
+        "sha256": "8f9ebb9464676e065a3d86c8262a5d92df06709bf41b1a98b1edb29c5fdace1e"
+      }
+    ],
+    "original_failure_and_zero_byte_stderr_preserved": true,
+    "private_remote_ids_or_transfer_urls_copied": false,
+    "scope": "Durable post-A17 recovery metadata only, not study closure.",
+    "successful_container_readback_receipt": {
+      "bytes": 5332,
+      "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/post_a17_metadata_checkpoint_20261030T131950Z/CONTAINER_REMOTE_BYTES_VERIFIED.json",
+      "sha256": "f530b8eebcf2a774f722661f25108aad8330aeebd93c199a89fd1b1b0e13cd35"
+    },
+    "zero_byte_member_as_failure_cause_established": false
+  },
+  "cost_interpretation": {
+    "actual_execution05_outer_wait4_missing": true,
+    "do_not_add_nested_controller_worker_archive_or_supervisor_costs_to_inclusive_outer": true,
+    "external_root_steps_are_outside_production_supervisor_descendant_tree": true,
+    "failed_prepare_cpu_counted": true,
+    "nested_script_own_cpu_not_added": true,
+    "no_future_or_fabricated_outer_wait4_assumed": true,
+    "observer_wait4_and_exit_status_unavailable": true,
+    "only_selected_receipt_scopes_not_all_campaign_work": true,
+    "peak_rss_and_wall_times_not_additive": true,
+    "remote_service_compute_not_measured": true
+  },
+  "current_existence_observation": {
+    "at_utc": "2026-10-30T13:45:07.646436+00:00",
+    "cause_of_presence_not_inferred": true,
+    "historical_retired_paths": 403,
+    "inventory": {
+      "bytes": 967938,
+      "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/failure05_scope_draft_20261030T134507Z/FAILED05_SCOPE_INVENTORY.json",
+      "sha256": "41fd73e33a3f19a760dda3d88658b8ebd58d85fa868c521f1e9f5b42b3419c12"
+    },
+    "not_a_claim_of_current_795787264_byte_saving": true,
+    "now_absent_at_inventory": 396,
+    "now_present_at_inventory": 7,
+    "original_historical_results_not_modified": true,
+    "present_categories": {
+      "A17_readback_parts": 2,
+      "complete_download_copies": 3,
+      "partial_downloads": 2
+    }
+  },
+  "execution_episode": "execution05_backpressure_20261030",
+  "existing_public_evidence_commit": "0a3422b0a236ac2678ac8398082d3ee630a0354a",
+  "frozen_execution_source_commit": "7544b0a57a3b5624f3f2190449efeb84854b414d",
+  "historical_cleanup_actions": [
+    {
+      "allocation_scope": "Selected original file allocation or registered upper bound; not a claim of net current free-space increase.",
+      "filesystem_available_after": 1855700992,
+      "filesystem_available_before": 1668722688,
+      "filesystem_delta_exclusively_attributed": false,
+      "historical_result": {
+        "bytes": 3165,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/duplicate_retirement01/COMPLETE.json",
+        "sha256": "5f80dacdb5f2fda1e0142be0802e90c1d534d3684e175f0a364dca2cd6b9bcf7"
+      },
+      "historically_completed_file_count": 3,
+      "id": "duplicate_downloads",
+      "observed_filesystem_delta": 186978304,
+      "original_result_rewritten": false,
+      "selected_allocated_bytes": 187932672,
+      "wait4": {
+        "bytes": 1759,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/retire_duplicate_downloads01/WAIT4.json",
+        "sha256": "4cf568ab0ee96e67a9376f03b42b0305c52a1262187f80e84edad872f3810019"
+      }
+    },
+    {
+      "allocation_scope": "Selected original file allocation or registered upper bound; not a claim of net current free-space increase.",
+      "filesystem_available_after": 1963008000,
+      "filesystem_available_before": 1749889024,
+      "filesystem_delta_exclusively_attributed": false,
+      "historical_result": {
+        "bytes": 2321,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/partial_retirement01/COMPLETE.json",
+        "sha256": "b0b90833fc931bf054c494bab76020727f1a81a97fce3e6d3f0d7cba6692eead"
+      },
+      "historically_completed_file_count": 2,
+      "id": "partial_downloads",
+      "observed_filesystem_delta": 213118976,
+      "original_result_rewritten": false,
+      "selected_allocated_bytes": 213127168,
+      "wait4": {
+        "bytes": 1755,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/retire_partial_downloads01/WAIT4.json",
+        "sha256": "06227aea31555dc99eeeb016ce9301d498382bc50db2a2365ba56ce70a803c93"
+      }
+    },
+    {
+      "all_443_plan_directories_retained": true,
+      "allocation_scope": "Selected original file allocation or registered upper bound; not a claim of net current free-space increase.",
+      "directories_deleted": 0,
+      "filesystem_available_after": 2337644544,
+      "filesystem_available_before": 2181738496,
+      "filesystem_delta_exclusively_attributed": false,
+      "historical_result": {
+        "bytes": 55398,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/capacity_cleanup/exact_plan_execution01/evidence/RESULT.json",
+        "sha256": "f00e20581f0ae79593cac131bbecdb14789f5081acb036ccab21716df53164ba"
+      },
+      "historically_completed_file_count": 396,
+      "id": "exact_download_cache_plan",
+      "observed_filesystem_delta": 155906048,
+      "original_result_rewritten": false,
+      "protected_source_raw_ops_science_model_cargo_archives_index_toolchains_active_builds_untouched": true,
+      "selected_allocated_bytes": 265674752,
+      "wait4": {
+        "bytes": 1804,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/capacity_cleanup/exact_plan_execution01/wait4/WAIT4.json",
+        "sha256": "f6720ddb746c4741034a0733bcdc256b289a38c3d4ee30a07066ad33d540a11a"
+      }
+    },
+    {
+      "allocation_scope": "Selected original file allocation or registered upper bound; not a claim of net current free-space increase.",
+      "filesystem_available_after": 2557165568,
+      "filesystem_available_before": 2428125184,
+      "filesystem_delta_exclusively_attributed": false,
+      "historical_readback_path_absence_was_recorded_at_retirement": true,
+      "historical_result": {
+        "bytes": 1810,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/readback_retirement05/plans/01_A-17/RESULT.json",
+        "sha256": "a37c86eee9d004945b44b69ad799521b8cf48e8500fcd3b3827d1dd5fcf6c5f1"
+      },
+      "historically_completed_file_count": 2,
+      "id": "accepted_A17_readback_parts",
+      "observed_filesystem_delta": 129040384,
+      "original_archive_parts_retained_at_retirement": true,
+      "original_result_rewritten": false,
+      "preserved_files_verified_at_retirement": 67,
+      "private_plan_descriptor_only": {
+        "bytes": 22213,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/readback_retirement05/plans/01_A-17/PLAN.json",
+        "sha256": "f703bd0e1df0fc0f3d48b2254d329c1f01ebc3cfc66a85e78356b5a3e716426f"
+      },
+      "private_plan_payload_copied": false,
+      "reason_field_correction": "Original next-worker 2.25GiB wording is superseded by the external errata; original plan bytes remain unchanged.",
+      "selected_allocated_bytes": 129052672,
+      "wait4": {
+        "bytes": 1810,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/execute_A17_readback_retirement01/WAIT4.json",
+        "sha256": "8f3b1fd26dabfba0afc1e2b2560c4533fa2e1a04a1de085f8f333a4ca941c903"
+      }
+    }
+  ],
+  "historical_selected_allocated_bytes_total_or_upper_bound": 795787264,
+  "historical_selected_file_count": 403,
+  "independent_root_cost_rows": [
+    {
+      "at_utc": "2026-10-30T13:32:15.300380+00:00",
+      "category": "cleanup_execution",
+      "child_and_waited_descendants_cpu_seconds": 0.486658,
+      "child_identity": {
+        "pid": 323119,
+        "start_ticks": "2022615"
+      },
+      "child_peak_rss_bytes": 15466496,
+      "exit_code": 0,
+      "id": "duplicate_downloads",
+      "receipt": {
+        "bytes": 1759,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/retire_duplicate_downloads01/WAIT4.json",
+        "sha256": "4cf568ab0ee96e67a9376f03b42b0305c52a1262187f80e84edad872f3810019"
+      },
+      "scope": "Independent root helper and waited descendants plus its separate measuring parent; nested script own CPU is not added again.",
+      "scope_cpu_seconds": 0.491025766,
+      "separate_measuring_parent_cpu_seconds": 0.004367765999999995,
+      "wall_seconds": 0.6335219249995134
+    },
+    {
+      "at_utc": "2026-10-30T13:34:18.902502+00:00",
+      "category": "cleanup_execution",
+      "child_and_waited_descendants_cpu_seconds": 0.545611,
+      "child_identity": {
+        "pid": 329424,
+        "start_ticks": "2034978"
+      },
+      "child_peak_rss_bytes": 15466496,
+      "exit_code": 0,
+      "id": "partial_downloads",
+      "receipt": {
+        "bytes": 1755,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/retire_partial_downloads01/WAIT4.json",
+        "sha256": "06227aea31555dc99eeeb016ce9301d498382bc50db2a2365ba56ce70a803c93"
+      },
+      "scope": "Independent root helper and waited descendants plus its separate measuring parent; nested script own CPU is not added again.",
+      "scope_cpu_seconds": 0.549579482,
+      "separate_measuring_parent_cpu_seconds": 0.003968481999999995,
+      "wall_seconds": 0.6091176700028882
+    },
+    {
+      "at_utc": "2026-10-30T13:33:46.231628+00:00",
+      "category": "cleanup_execution",
+      "child_and_waited_descendants_cpu_seconds": 4.056264,
+      "child_identity": {
+        "pid": 326147,
+        "start_ticks": "2031289"
+      },
+      "child_peak_rss_bytes": 15466496,
+      "exit_code": 0,
+      "id": "exact_download_cache_plan",
+      "receipt": {
+        "bytes": 1804,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/capacity_cleanup/exact_plan_execution01/wait4/WAIT4.json",
+        "sha256": "f6720ddb746c4741034a0733bcdc256b289a38c3d4ee30a07066ad33d540a11a"
+      },
+      "scope": "Independent root helper and waited descendants plus its separate measuring parent; nested script own CPU is not added again.",
+      "scope_cpu_seconds": 4.065172617,
+      "separate_measuring_parent_cpu_seconds": 0.008908616999999994,
+      "wall_seconds": 4.82939218500178
+    },
+    {
+      "at_utc": "2026-10-30T13:35:53.381025+00:00",
+      "category": "cleanup_execution",
+      "child_and_waited_descendants_cpu_seconds": 0.42896999999999996,
+      "child_identity": {
+        "pid": 331732,
+        "start_ticks": "2044435"
+      },
+      "child_peak_rss_bytes": 15466496,
+      "exit_code": 0,
+      "id": "accepted_A17_readback_parts",
+      "receipt": {
+        "bytes": 1810,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/execute_A17_readback_retirement01/WAIT4.json",
+        "sha256": "8f3b1fd26dabfba0afc1e2b2560c4533fa2e1a04a1de085f8f333a4ca941c903"
+      },
+      "scope": "Independent root helper and waited descendants plus its separate measuring parent; nested script own CPU is not added again.",
+      "scope_cpu_seconds": 0.433712027,
+      "separate_measuring_parent_cpu_seconds": 0.004742026999999996,
+      "wall_seconds": 0.5142514270009997
+    },
+    {
+      "at_utc": "2026-10-30T13:07:25.382441+00:00",
+      "category": "reversible_cache_advice",
+      "child_and_waited_descendants_cpu_seconds": 0.050029,
+      "child_identity": {
+        "pid": 287196,
+        "start_ticks": "1873676"
+      },
+      "child_peak_rss_bytes": 15466496,
+      "exit_code": 0,
+      "id": "advisory_archive_cache_release01",
+      "receipt": {
+        "bytes": 1775,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/advisory_archive_cache_release01/WAIT4.json",
+        "sha256": "ea26ba432b1e99c21df82eefafd7a726068ac9a6c5638f952a4ab3554caa4fd0"
+      },
+      "scope": "Independent root helper and waited descendants plus its separate measuring parent; nested script own CPU is not added again.",
+      "scope_cpu_seconds": 0.054009182,
+      "separate_measuring_parent_cpu_seconds": 0.003980181999999999,
+      "wall_seconds": 0.10913129999971716
+    },
+    {
+      "at_utc": "2026-10-30T13:08:19.641447+00:00",
+      "category": "reversible_cache_advice",
+      "child_and_waited_descendants_cpu_seconds": 0.047462,
+      "child_identity": {
+        "pid": 288019,
+        "start_ticks": "1879102"
+      },
+      "child_peak_rss_bytes": 15466496,
+      "exit_code": 0,
+      "id": "advisory_cache_release02",
+      "receipt": {
+        "bytes": 1763,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/advisory_cache_release02/WAIT4.json",
+        "sha256": "75c519534b465efcd59c31919f53ad9f379b5f51332da00b6c3bf6dbe9002edf"
+      },
+      "scope": "Independent root helper and waited descendants plus its separate measuring parent; nested script own CPU is not added again.",
+      "scope_cpu_seconds": 0.050883652,
+      "separate_measuring_parent_cpu_seconds": 0.003421652000000011,
+      "wall_seconds": 0.10810238499834668
+    },
+    {
+      "at_utc": "2026-10-30T13:13:36.681385+00:00",
+      "category": "reversible_cache_advice",
+      "child_and_waited_descendants_cpu_seconds": 2.777563,
+      "child_identity": {
+        "pid": 298046,
+        "start_ticks": "1910535"
+      },
+      "child_peak_rss_bytes": 74469376,
+      "exit_code": 0,
+      "id": "advisory_idle_build_cache03",
+      "receipt": {
+        "bytes": 1756,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/advisory_idle_build_cache03/WAIT4.json",
+        "sha256": "ef7898972396bf07183eb7d4b985445b44b9b17cb02afec5f2b9a5e6917b6994"
+      },
+      "scope": "Independent root helper and waited descendants plus its separate measuring parent; nested script own CPU is not added again.",
+      "scope_cpu_seconds": 2.78238302,
+      "separate_measuring_parent_cpu_seconds": 0.004820019999999994,
+      "wall_seconds": 2.8171483510013786
+    },
+    {
+      "at_utc": "2026-10-30T13:21:28.684114+00:00",
+      "category": "reversible_cache_advice",
+      "child_and_waited_descendants_cpu_seconds": 0.068023,
+      "child_identity": {
+        "pid": 306968,
+        "start_ticks": "1958006"
+      },
+      "child_peak_rss_bytes": 15466496,
+      "exit_code": 0,
+      "id": "advisory_resident_cache04",
+      "receipt": {
+        "bytes": 1768,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/advisory_resident_cache04/WAIT4.json",
+        "sha256": "2dd207fb3d01d07b3749d47c8608be3222480595c1b74e1405fb55bf1d82752b"
+      },
+      "scope": "Independent root helper and waited descendants plus its separate measuring parent; nested script own CPU is not added again.",
+      "scope_cpu_seconds": 0.071087212,
+      "separate_measuring_parent_cpu_seconds": 0.0030642119999999967,
+      "wall_seconds": 0.10821760199905839
+    },
+    {
+      "at_utc": "2026-10-30T13:33:06.893029+00:00",
+      "category": "verification_or_preparation",
+      "child_and_waited_descendants_cpu_seconds": 0.657168,
+      "child_identity": {
+        "pid": 324685,
+        "start_ticks": "2027757"
+      },
+      "child_peak_rss_bytes": 15597568,
+      "exit_code": 0,
+      "id": "partial_prefix_and_cache_advice",
+      "receipt": {
+        "bytes": 1819,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/partial_download_prefix_audit_20261030T133245Z/wait4/WAIT4.json",
+        "sha256": "f9e86757d74111ea1804f785256d96da718b3d63a1e07b31542926fb503297f1"
+      },
+      "scope": "Independent root helper and waited descendants plus its separate measuring parent; nested script own CPU is not added again.",
+      "scope_cpu_seconds": 0.660911301,
+      "separate_measuring_parent_cpu_seconds": 0.0037433009999999975,
+      "wall_seconds": 0.8132902850011305
+    },
+    {
+      "at_utc": "2026-10-30T13:35:32.442100+00:00",
+      "category": "verification_or_preparation",
+      "child_and_waited_descendants_cpu_seconds": 0.467348,
+      "child_identity": {
+        "pid": 331553,
+        "start_ticks": "2042342"
+      },
+      "child_peak_rss_bytes": 16023552,
+      "exit_code": 0,
+      "id": "prepare_A17_readback_retirement",
+      "receipt": {
+        "bytes": 1798,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/root_steps/prepare_A17_readback_retirement01/WAIT4.json",
+        "sha256": "0ba95d7a4beb48dc67c6e9c7a25be85b81eda57d43cb41af207228373a4d5731"
+      },
+      "scope": "Independent root helper and waited descendants plus its separate measuring parent; nested script own CPU is not added again.",
+      "scope_cpu_seconds": 0.471384872,
+      "separate_measuring_parent_cpu_seconds": 0.004036871999999997,
+      "wall_seconds": 0.5118727320004837
+    },
+    {
+      "at_utc": "2026-10-30T13:22:00.490180+00:00",
+      "category": "checkpoint_local_engineering",
+      "child_and_waited_descendants_cpu_seconds": 0.731888,
+      "child_identity": {
+        "pid": 307534,
+        "start_ticks": "1961116"
+      },
+      "child_peak_rss_bytes": 20156416,
+      "exit_code": 0,
+      "id": "checkpoint_build",
+      "receipt": {
+        "bytes": 1833,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/post_a17_metadata_checkpoint_20261030T131950Z/build_wait4/WAIT4.json",
+        "sha256": "be3d613e208b71a75e634d920250bcfd621a84ca98d718db8b4a25c957fe19e0"
+      },
+      "scope": "Independent root helper and waited descendants plus its separate measuring parent; nested script own CPU is not added again.",
+      "scope_cpu_seconds": 0.737009424,
+      "separate_measuring_parent_cpu_seconds": 0.005121423999999999,
+      "wall_seconds": 0.8164385939999192
+    },
+    {
+      "at_utc": "2026-10-30T13:24:16.117526+00:00",
+      "category": "checkpoint_local_engineering",
+      "child_and_waited_descendants_cpu_seconds": 0.199341,
+      "child_identity": {
+        "pid": 310329,
+        "start_ticks": "1974518"
+      },
+      "child_peak_rss_bytes": 26599424,
+      "exit_code": 1,
+      "id": "failed_10_item_prepare",
+      "receipt": {
+        "bytes": 1836,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/post_a17_metadata_checkpoint_20261030T131950Z/upload_wait4/WAIT4.json",
+        "sha256": "23380b8009e9eb92cf2bb41beb698cb6359782cdd69e33e581c84e5e1252f913"
+      },
+      "scope": "Independent root helper and waited descendants plus its separate measuring parent; nested script own CPU is not added again.",
+      "scope_cpu_seconds": 0.204964371,
+      "separate_measuring_parent_cpu_seconds": 0.005623371000000002,
+      "wall_seconds": 2.4233595469995635
+    },
+    {
+      "at_utc": "2026-10-30T13:26:33.547222+00:00",
+      "category": "checkpoint_local_engineering",
+      "child_and_waited_descendants_cpu_seconds": 0.134269,
+      "child_identity": {
+        "pid": 313202,
+        "start_ticks": "1988482"
+      },
+      "child_peak_rss_bytes": 15466496,
+      "exit_code": 0,
+      "id": "container_build",
+      "receipt": {
+        "bytes": 1866,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/post_a17_metadata_checkpoint_20261030T131950Z/container_build_wait4/WAIT4.json",
+        "sha256": "ff169a3f2c90b387abf7598a3be90516cf7fabd2155aad726605400d24abce44"
+      },
+      "scope": "Independent root helper and waited descendants plus its separate measuring parent; nested script own CPU is not added again.",
+      "scope_cpu_seconds": 0.137531239,
+      "separate_measuring_parent_cpu_seconds": 0.003262239,
+      "wall_seconds": 0.20956408599886345
+    },
+    {
+      "at_utc": "2026-10-30T13:26:54.533662+00:00",
+      "category": "checkpoint_local_engineering",
+      "child_and_waited_descendants_cpu_seconds": 0.227978,
+      "child_identity": {
+        "pid": 313280,
+        "start_ticks": "1989999"
+      },
+      "child_peak_rss_bytes": 26578944,
+      "exit_code": 0,
+      "id": "container_upload",
+      "receipt": {
+        "bytes": 1867,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/post_a17_metadata_checkpoint_20261030T131950Z/container_upload_wait4/WAIT4.json",
+        "sha256": "048a621e6ec1db5c788ff12c79a9019b737f67be74b0452bf5bd2159380f3021"
+      },
+      "scope": "Independent root helper and waited descendants plus its separate measuring parent; nested script own CPU is not added again.",
+      "scope_cpu_seconds": 0.236242154,
+      "separate_measuring_parent_cpu_seconds": 0.00826415400000001,
+      "wall_seconds": 6.030466766002064
+    },
+    {
+      "at_utc": "2026-10-30T13:28:11.475914+00:00",
+      "category": "checkpoint_local_engineering",
+      "child_and_waited_descendants_cpu_seconds": 0.15511899999999998,
+      "child_identity": {
+        "pid": 315302,
+        "start_ticks": "1998265"
+      },
+      "child_peak_rss_bytes": 20578304,
+      "exit_code": 0,
+      "id": "container_readback_0",
+      "receipt": {
+        "bytes": 1908,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/post_a17_metadata_checkpoint_20261030T131950Z/container_readback_steps/000/WAIT4.json",
+        "sha256": "879c5858e7f77016ae97b5471bb8cb8ee279e4c8bd26d617bb44e3de3b01f735"
+      },
+      "scope": "Independent root helper and waited descendants plus its separate measuring parent; nested script own CPU is not added again.",
+      "scope_cpu_seconds": 0.158295745,
+      "separate_measuring_parent_cpu_seconds": 0.0031767450000000017,
+      "wall_seconds": 0.3151551700029813
+    },
+    {
+      "at_utc": "2026-10-30T13:28:11.918341+00:00",
+      "category": "checkpoint_local_engineering",
+      "child_and_waited_descendants_cpu_seconds": 0.18939299999999998,
+      "child_identity": {
+        "pid": 315314,
+        "start_ticks": "1998307"
+      },
+      "child_peak_rss_bytes": 20578304,
+      "exit_code": 0,
+      "id": "container_readback_1",
+      "receipt": {
+        "bytes": 1908,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/post_a17_metadata_checkpoint_20261030T131950Z/container_readback_steps/001/WAIT4.json",
+        "sha256": "b86b9366f5c9cd6a8bb5e3f704e382061351b2fbf31a94630aa8a3b103539921"
+      },
+      "scope": "Independent root helper and waited descendants plus its separate measuring parent; nested script own CPU is not added again.",
+      "scope_cpu_seconds": 0.196397841,
+      "separate_measuring_parent_cpu_seconds": 0.007004841000000005,
+      "wall_seconds": 0.33399516299687093
+    },
+    {
+      "at_utc": "2026-10-30T13:28:12.312213+00:00",
+      "category": "checkpoint_local_engineering",
+      "child_and_waited_descendants_cpu_seconds": 0.160441,
+      "child_identity": {
+        "pid": 315317,
+        "start_ticks": "1998349"
+      },
+      "child_peak_rss_bytes": 20578304,
+      "exit_code": 0,
+      "id": "container_readback_2",
+      "receipt": {
+        "bytes": 1900,
+        "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/post_a17_metadata_checkpoint_20261030T131950Z/container_readback_steps/002/WAIT4.json",
+        "sha256": "435442553aed461d85cb22133a98291b2b810c90d718f9f636ad6e1fea2e4d4a"
+      },
+      "scope": "Independent root helper and waited descendants plus its separate measuring parent; nested script own CPU is not added again.",
+      "scope_cpu_seconds": 0.164734616,
+      "separate_measuring_parent_cpu_seconds": 0.004293616,
+      "wall_seconds": 0.31245331700120005
+    }
+  ],
+  "independent_root_cpu_seconds_by_scope": {
+    "checkpoint_local_engineering": 1.83517539,
+    "cleanup_execution": 5.539489892,
+    "reversible_cache_advice": 2.958363066,
+    "verification_or_preparation": 1.132296173
+  },
+  "privacy_projection": "Private retirement plans, ACKs and readback receipts are referenced by descriptors only; remote identity and transfer fields are excluded.",
+  "resource_operations_changed_scientific_source_or_thresholds": false,
+  "schema": "hepta.execution05.public-resource-interventions-draft.1",
+  "selected_independent_root_scope_cpu_seconds_total": 11.465324521,
+  "status": "ACTUAL_HISTORICAL_RESOURCE_EVIDENCE_PUBLIC_PROJECTION",
+  "threshold_errata": {
+    "archive_heartbeat": {
+      "effective_available_ram_bytes": 1073741824,
+      "minimum_available_inodes": 2000,
+      "physical_available_bytes": 270532608
+    },
+    "controller_worker_admission": "Original dynamic memory_admission plus StorageBudget.check; no blanket per-worker 2.25GiB disk gate.",
+    "descriptor": {
+      "bytes": 4189,
+      "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/EXECUTION05_RESOURCE_THRESHOLD_ERRATA.md",
+      "sha256": "5e506ebd110b42f9664dbd487fdc556981bb7663ff0039fc3f2472bc3bc89324"
+    },
+    "original_error_records_unchanged": true,
+    "supervisor_initial_analysis_finalization_gate": {
+      "consecutive_samples": 3,
+      "disk_bytes": 2415919104,
+      "ram_bytes": 1879048192
+    },
+    "worker_storage": {
+      "memory_margin_and_pending_growth_checks_retained": true,
+      "minimum_available_inodes": 2000,
+      "physical_reserve_bytes": 268435456,
+      "plus_block_rounded_requested_allocation": true
+    }
+  }
+}

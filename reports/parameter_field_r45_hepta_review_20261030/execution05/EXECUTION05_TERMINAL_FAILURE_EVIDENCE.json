@@ -1,0 +1,538 @@
+{
+  "CPU_nonoverlap": {
+    "actual_outer_wait4_missing": true,
+    "controller_wait4": {
+      "receipt": {
+        "bytes": 500,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/supervisor_run/children/controller.EXIT.json",
+        "sha256": "d2986e6ee5060090b962ed0b472bc4b6fc8059069922533cbba676f3e41108d5"
+      },
+      "value": {
+        "exit_code": 1,
+        "scope": "this child and descendants it waited for; includes nested phase/driver costs",
+        "system_cpu_seconds": 38.885092,
+        "total_cpu_seconds": 1548.712305,
+        "user_cpu_seconds": 1509.827213,
+        "wait_status": 256,
+        "wall_seconds": 2471.6205665350026
+      }
+    },
+    "measured_controller_plus_supervisor_self_interval_lower_bound_seconds": 1555.961190367,
+    "not_complete_execution05_total_CPU": true,
+    "outer_receipts_absent": {
+      "LAUNCH_FAILED.json": true,
+      "WAIT4_COMPLETE.json": true,
+      "WAIT4_PRIMARY_INVALID.json": true
+    },
+    "primary_failure": {
+      "bytes": 2597,
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/FAILED.json",
+      "sha256": "c509c0b523fba34e0aa5190549d7bc78d2f5bedfb60b0041365abbbbd608a897"
+    },
+    "root_helpers_observers_launcher_and_unrecorded_tail_scopes_not_in_this_lower_bound": true,
+    "supervisor_self_interval_seconds": 7.248885367,
+    "wall_and_peak_RSS_not_added": true,
+    "worker_and_phase_CPU_are_nested_in_controller_do_not_add": true,
+    "worker_wait4": {
+      "receipt": {
+        "bytes": 532,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/wrapper_runs/CONTROLLER/273933-1819746/owned_children/001.WAIT4.json",
+        "sha256": "3b2058c9ac257f4026f74af1e290dd32e06619fd965086280c1c40acf9a76bb4"
+      },
+      "value": {
+        "cpu_seconds": 1512.719833,
+        "exit_code": -15,
+        "pid": 282783,
+        "scope": "Direct worker and descendants it waited for; nested inside outer controller wait4.",
+        "system_cpu_seconds": 26.670431,
+        "user_cpu_seconds": 1486.049402,
+        "wait_status": 15,
+        "wall_seconds": 2119.772368897
+      }
+    }
+  },
+  "accepted_durable_barriers": 1,
+  "actual_failure_receipt": {
+    "bytes": 2597,
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/FAILED.json",
+    "sha256": "c509c0b523fba34e0aa5190549d7bc78d2f5bedfb60b0041365abbbbd608a897"
+  },
+  "admission_publication_commit": "0a3422b0a236ac2678ac8398082d3ee630a0354a",
+  "all_blockers_closed": false,
+  "at_utc": "2026-10-30T14:14:51.155178+00:00",
+  "barrier_total": 17,
+  "capacity_waits": {
+    "A-29": {
+      "all_recorded_waits_committed": true,
+      "descriptor": {
+        "bytes": 45674,
+        "observed_mtime_ns": 1793367492135106766,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/resource_backpressure/A-29/282783-1854924/CAPACITY_EVENTS.jsonl",
+        "sha256": "db9d7cabcb578a29bba1b3d185dd9e249e32c15d4241d26b8dd9ec075a30a572"
+      },
+      "event_counts": {
+        "capacity_wait_committed": 22,
+        "capacity_wait_started": 22,
+        "policy_started": 1
+      },
+      "last_wait_commit_monotonic": 20583.621491638,
+      "max_wait_wall_seconds": 276.10640423899895,
+      "oom_counter_pairs_observed": [
+        [
+          0,
+          0
+        ]
+      ],
+      "registered_individual_wait_limit_seconds": 300,
+      "scientific_work_repeated_flags": [
+        false
+      ],
+      "wait_committed": 22,
+      "wait_started": 22,
+      "wait_wall_seconds_total": 1324.975098415991,
+      "writer_lock_depths_at_wait_start": [
+        0
+      ]
+    },
+    "CONTROLLER": {
+      "all_recorded_waits_committed": true,
+      "descriptor": {
+        "bytes": 32123,
+        "observed_mtime_ns": 1793367492206430045,
+        "path": "/workspace/scratch/178ced6a501f/fullstudy_execution05_ops/resource_backpressure/CONTROLLER/273933-1819746/CAPACITY_EVENTS.jsonl",
+        "sha256": "7b4013b70fb2b907c7bd74a2b058e2065d51da96db565999032f2ee9053fe8e7"
+      },
+      "event_counts": {
+        "capacity_wait_committed": 14,
+        "capacity_wait_started": 14,
+        "policy_started": 1
+      },
+      "last_wait_commit_monotonic": 20583.692470679,
+      "max_wait_wall_seconds": 269.0278517830011,
+      "oom_counter_pairs_observed": [
+        [
+          0,
+          0
+        ]
+      ],
+      "registered_individual_wait_limit_seconds": 300,
+      "scientific_work_repeated_flags": [
+        false
+      ],
+      "wait_committed": 14,
+      "wait_started": 14,
+      "wait_wall_seconds_total": 1263.670737937009,
+      "writer_lock_depths_at_wait_start": [
+        0
+      ]
+    }
+  },
+  "completed_jobs": [
+    "A-17"
+  ],
+  "confirmed_initiating_identity_violation": {
+    "changed_fields": {
+      "parent_pid": {
+        "expected": 273439,
+        "observed": 1
+      }
+    },
+    "conclusion": "The original supervisor remained the same live process but its measuring parent PID changed from 273439 to 1. The registered exact-parent identity guard then rejected controller persistence. Parent guard is retained; there is no authorization to relax it.",
+    "controller_original_exception": {
+      "message": "Supervisor process identity changed",
+      "type": "ValueError"
+    },
+    "controller_traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/experiments/parameter_field_fullstudy_20261029/controller_envelope_v2.py\", line 333, in execute\n    code = core.run(args)\n           ^^^^^^^^^^^^^^\n  File \"/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/controller.py\", line 316, in run\n    storage.append_bytes(item['log'], chunk)\n  File \"/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/resource_backpressure.py\", line 364, in append_bytes\n    return self.atomic(prepare, commit, context={\"operation\": \"append_bytes\", \"path\": str(target)})\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/resource_backpressure.py\", line 282, in atomic\n    self.policy.health()\n  File \"/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/resource_backpressure.py\", line 177, in health\n    self.health_check()\n  File \"/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/cwd_runner.py\", line 210, in health\n    require(identity(owner[\"pid\"]) == owner, \"Supervisor process identity changed\")\n  File \"/workspace/scratch/178ced6a501f/fullstudy_recovery05_git/operational/parameter_field_recovery05/cwd_runner.py\", line 46, in require\n    raise ValueError(message)\nValueError: Supervisor process identity changed\n",
+    "expected_supervisor_identity": {
+      "parent_pid": 273439,
+      "pgid": 273442,
+      "pid": 273442,
+      "sid": 273442,
+      "start_ticks": 1816684
+    },
+    "not_established": "These receipts do not establish who or what terminated outer measuring parent 273439, its signal/exit code, or an exclusive causal link to exec-server transport loss.",
+    "observed_at_utc": "2026-10-30T13:39:36.664742+00:00",
+    "observed_supervisor_identity": {
+      "parent_pid": 1,
+      "pgid": 273442,
+      "pid": 273442,
+      "sid": 273442,
+      "start_ticks": 1816684,
+      "state": "S"
+    },
+    "original_supervisor_still_live_state": "S",
+    "unchanged_pid_start_pgid_sid": true
+  },
+  "cost_forensics": {
+    "bytes": 10117,
+    "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/failed05_forensics/FAILED_A29_COST_FORENSICS.json",
+    "sha256": "25eab40176693625b3c6fcf6f29be7ee566805d32301b84191fe154a930af324"
+  },
+  "cost_forensics_wait4": {
+    "bytes": 1752,
+    "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/failed05_forensics/measurement/WAIT4.json",
+    "sha256": "a3bb92e5327c5ee214fe057d5fab592b291be5606e8844b18aaf5f7345d4acb9"
+  },
+  "durable_failure_archive": {
+    "archive_verification": {
+      "bytes": 4234,
+      "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/archive/VERIFIED.json",
+      "sha256": "f625cd43f207b47e480ada4ab97c17f0904c4baa98330a8dde07884a5cc24666"
+    },
+    "complete": true,
+    "items": [
+      {
+        "identity_xattr_verified": true,
+        "independent_inode_verified": true,
+        "local": {
+          "bytes": 93207682,
+          "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/archive/part-0000.tar.gz",
+          "sha256": "9dcf3db433da92bbbf3d5ab33197d967d3f91251641a03ecc65830c119f4a579"
+        },
+        "readback": {
+          "bytes": 93207682,
+          "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/remote/readback/part-0000.tar.gz",
+          "sha256": "9dcf3db433da92bbbf3d5ab33197d967d3f91251641a03ecc65830c119f4a579"
+        },
+        "readback_wait4": {
+          "bytes": 1790,
+          "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/remote/readback_steps/000/WAIT4.json",
+          "sha256": "2f90559fafbfbbe1d4d3e1035560b79173f0974e4dfa437ff597e9786d815b88"
+        },
+        "same_actual_uploaded_version_verified": true
+      },
+      {
+        "identity_xattr_verified": true,
+        "independent_inode_verified": true,
+        "local": {
+          "bytes": 120891438,
+          "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/archive/part-0001.tar.gz",
+          "sha256": "8b0d2a294554e83bc354d8dd1c1216d4bac7e0cff444b8edaf58f412fea66c6b"
+        },
+        "readback": {
+          "bytes": 120891438,
+          "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/remote/readback/part-0001.tar.gz",
+          "sha256": "8b0d2a294554e83bc354d8dd1c1216d4bac7e0cff444b8edaf58f412fea66c6b"
+        },
+        "readback_wait4": {
+          "bytes": 1788,
+          "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/remote/readback_steps/001/WAIT4.json",
+          "sha256": "02933612424c11f8015481156d89997908672399721534bcf53d4585e9fa8e97"
+        },
+        "same_actual_uploaded_version_verified": true
+      },
+      {
+        "identity_xattr_verified": true,
+        "independent_inode_verified": true,
+        "local": {
+          "bytes": 133743430,
+          "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/archive/part-0002.tar.gz",
+          "sha256": "6697208400018a9e2159a5c059e1a6ea5f4c12d87578b2e529b10b832f4eee6a"
+        },
+        "readback": {
+          "bytes": 133743430,
+          "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/remote/readback/part-0002.tar.gz",
+          "sha256": "6697208400018a9e2159a5c059e1a6ea5f4c12d87578b2e529b10b832f4eee6a"
+        },
+        "readback_wait4": {
+          "bytes": 1801,
+          "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/remote/readback_steps/002/WAIT4.json",
+          "sha256": "d01794b06236ac84dbe24a6899a37e2d57e9f4b2bfb8f922e82999470c61bbfd"
+        },
+        "same_actual_uploaded_version_verified": true
+      },
+      {
+        "identity_xattr_verified": true,
+        "independent_inode_verified": true,
+        "local": {
+          "bytes": 99873473,
+          "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/archive/part-0003.tar.gz",
+          "sha256": "3f3fe6327e31b1c124e8c93df39cfd560a62095a3359873eb2650d9dc3f232cd"
+        },
+        "readback": {
+          "bytes": 99873473,
+          "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/remote/readback/part-0003.tar.gz",
+          "sha256": "3f3fe6327e31b1c124e8c93df39cfd560a62095a3359873eb2650d9dc3f232cd"
+        },
+        "readback_wait4": {
+          "bytes": 1811,
+          "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/remote/readback_steps/003/WAIT4.json",
+          "sha256": "e558c0ed2cac43269b3fd899d6e0a0d022ebd60fd2e8bfa8d2573c3d3374cc8e"
+        },
+        "same_actual_uploaded_version_verified": true
+      },
+      {
+        "identity_xattr_verified": true,
+        "independent_inode_verified": true,
+        "local": {
+          "bytes": 863314,
+          "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/archive/MANIFEST.json",
+          "sha256": "d80629e0a41c3b08313c8c2d07a08caf3a2f82622529ef8ea0b091316694bf62"
+        },
+        "readback": {
+          "bytes": 863314,
+          "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/remote/readback/MANIFEST.json",
+          "sha256": "d80629e0a41c3b08313c8c2d07a08caf3a2f82622529ef8ea0b091316694bf62"
+        },
+        "readback_wait4": {
+          "bytes": 1778,
+          "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/remote/readback_steps/004/WAIT4.json",
+          "sha256": "216af784662729bd29f6eae6ac3f530cdc7197428fb2434aa97fa8920353d66e"
+        },
+        "same_actual_uploaded_version_verified": true
+      },
+      {
+        "identity_xattr_verified": true,
+        "independent_inode_verified": true,
+        "local": {
+          "bytes": 4234,
+          "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/archive/VERIFIED.json",
+          "sha256": "f625cd43f207b47e480ada4ab97c17f0904c4baa98330a8dde07884a5cc24666"
+        },
+        "readback": {
+          "bytes": 4234,
+          "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/remote/readback/VERIFIED.json",
+          "sha256": "f625cd43f207b47e480ada4ab97c17f0904c4baa98330a8dde07884a5cc24666"
+        },
+        "readback_wait4": {
+          "bytes": 1790,
+          "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/remote/readback_steps/005/WAIT4.json",
+          "sha256": "c359b4fbb7266cd4aeab2322efe775bd260bb4059a016b16be91c5e399cae52f"
+        },
+        "same_actual_uploaded_version_verified": true
+      },
+      {
+        "identity_xattr_verified": true,
+        "independent_inode_verified": true,
+        "local": {
+          "bytes": 4030,
+          "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/archive/ARCHIVE_COST.json",
+          "sha256": "eb317de0c4cacae18ac7bf7f42a33dc97b07b3135d8c51fd204dac236eacebeb"
+        },
+        "readback": {
+          "bytes": 4030,
+          "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/remote/readback/ARCHIVE_COST.json",
+          "sha256": "eb317de0c4cacae18ac7bf7f42a33dc97b07b3135d8c51fd204dac236eacebeb"
+        },
+        "readback_wait4": {
+          "bytes": 1790,
+          "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/remote/readback_steps/006/WAIT4.json",
+          "sha256": "4ba84b0508caef67373f725b4480286d1fe8f61f5b9c4d118df14e5b00023e0a"
+        },
+        "same_actual_uploaded_version_verified": true
+      }
+    ],
+    "manifest": {
+      "bytes": 863314,
+      "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/archive/MANIFEST.json",
+      "sha256": "d80629e0a41c3b08313c8c2d07a08caf3a2f82622529ef8ea0b091316694bf62"
+    },
+    "not_a_second_scientific_stage_or_ACK": true,
+    "private_remote_closure_descriptor": {
+      "bytes": 9886,
+      "path": "/workspace/scratch/178ced6a501f/execution05_failure_archive_20261030T140500Z/REMOTE_BYTES_VERIFIED.json",
+      "sha256": "6be3c974c12815cab3740b9c7dfb55a7f3819f2002fc52f31cfb97615c1f63c8"
+    },
+    "remote_bytes_verified": true,
+    "remote_service_ids_and_transfer_credentials_excluded": true
+  },
+  "execution_episode": "execution05_backpressure_20261030",
+  "expected_supervisor": {
+    "parent_pid": 273439,
+    "pgid": 273442,
+    "pid": 273442,
+    "sid": 273442,
+    "start_ticks": 1816684
+  },
+  "failure_and_cleanup_sequence": {
+    "completed_jobs": [
+      "A-17"
+    ],
+    "controller_envelope_failed_receipt": {
+      "error_type": "ValueError",
+      "file_mtime_ns": 1793367577497916698,
+      "message": "Supervisor process identity changed"
+    },
+    "durable_acks_count": 1,
+    "owned_child_actual_wait4": {
+      "cpu_seconds": 1512.719833,
+      "exit_code": -15,
+      "identity": {
+        "parent_pid": 273933,
+        "pgid": 273933,
+        "pid": 282783,
+        "sid": 273933,
+        "start_ticks": 1854924
+      },
+      "peak_rss_bytes": 430665728,
+      "pid": 282783,
+      "scientific_completion_claim": false,
+      "scope": "Direct worker and descendants it waited for; nested inside outer controller wait4.",
+      "system_cpu_seconds": 26.670431,
+      "user_cpu_seconds": 1486.049402,
+      "wait_status": 15,
+      "waited_unix": 1793367577.5334806,
+      "wall_seconds": 2119.772368897
+    },
+    "owned_child_signals": [
+      {
+        "identity": {
+          "parent_pid": 273933,
+          "pgid": 273933,
+          "pid": 282783,
+          "sid": 273933,
+          "start_ticks": 1854924
+        },
+        "mechanism": "pidfd_send_signal",
+        "sent": true,
+        "sent_unix": 1793367577.4991713,
+        "signal": 15
+      }
+    ],
+    "owner_accounting_complete_for_attempted_direct_workers": true,
+    "owner_all_returned_direct_children_reaped": true,
+    "owner_cleanup_errors": [],
+    "terminal_ops_message": "Controller exited before durable full-grid closure",
+    "timestamp_scope": "File mtimes are current filesystem receipt observations; signal/wait timestamps are the actual owned-child records.",
+    "worker_failed_receipt": {
+      "cost_counters": {
+        "discarded_gradient_microsteps": 14688,
+        "optimizer_steps": 15984,
+        "scheduled_gradient_microsteps": 17280
+      },
+      "error_type": "ValueError",
+      "file_mtime_ns": 1793367577453171262,
+      "message": "Guarded file is closed or a prior persistence attempt failed",
+      "phase_cpu_seconds": 1509.489910855,
+      "phase_wall_seconds": 2117.036076925997
+    },
+    "worker_wrapper_failed_receipt": {
+      "error_type": "ValueError",
+      "file_mtime_ns": 1793367577460940422,
+      "message": "Guarded file is closed or a prior persistence attempt failed",
+      "own_cpu_seconds": 1512.577834299,
+      "wall_seconds": 2119.611407537999
+    }
+  },
+  "failure_cost_only_projection": {
+    "complete": false,
+    "costs": {
+      "gradient_backward_calls": 17280,
+      "optimizer_steps": 15984,
+      "scheduled_gradient_microsteps": 17280
+    },
+    "cpu_seconds": 1509.489910855,
+    "wall_seconds": 2117.036076925997
+  },
+  "frozen_source_commit": "7544b0a57a3b5624f3f2190449efeb84854b414d",
+  "gradient_work_nonoverlap": {
+    "exact_all_work_or_upper_bound_claimed": false,
+    "execution04_failed_A29_increment": 14784,
+    "execution05_failed_A29_new_increment": 17280,
+    "execution05_imported_A17_new_increment": 0,
+    "history_plus_two_failed_A29_increments_excluding_once_counted_A17": 214160,
+    "known_chain_lower_bound_with_A17_once": 253328,
+    "original_completed_A17_counted_once": 39168,
+    "pre_execution04_known_lower_bound": 182096
+  },
+  "historical_outer_wait4_remains_unknown": true,
+  "identity_observation": {
+    "bytes": 2807,
+    "path": "/workspace/scratch/178ced6a501f/executor_recovery_20261030T1152/observer_A29_once.TERMINAL.json",
+    "sha256": "065a3eb7559ede61be66525ec4267eb98d1a866be6ccf0761932c30047099a60"
+  },
+  "job_total": 14,
+  "last_observation": {
+    "A_bank_progress": {
+      "prefix": "balanced",
+      "rows": 23,
+      "schedule": 6001,
+      "seed": 29,
+      "stage": "A_bank",
+      "step": 192
+    },
+    "at_utc": "2026-10-30T13:39:36.664742+00:00",
+    "completed_jobs": [
+      "A-17"
+    ],
+    "durable_acks": 1,
+    "phase": "science_A-29",
+    "resources": {
+      "available_inodes": 1623461,
+      "deadline_remaining_seconds": 40699.061414143,
+      "disk_available_bytes": 2382520320,
+      "effective_available_bytes": 1935335424,
+      "memory_current_bytes": 7260631040,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_unchanged": true
+    }
+  },
+  "observed_supervisor": {
+    "parent_pid": 1,
+    "pgid": 273442,
+    "pid": 273442,
+    "sid": 273442,
+    "start_ticks": 1816684,
+    "state": "S"
+  },
+  "rejected_failure_attributions": [
+    "No recorded wait timeout: all 22 worker and 14 controller waits committed within 300 seconds.",
+    "No recorded OOM/OOM-kill increase: all capacity event profiles and the final independent snapshot show 0/0.",
+    "Absolute twelve-hour deadline was not exhausted: independent snapshot retained over 40,699 seconds.",
+    "Disk below 2.25 GiB is not a next-worker automatic rejection: that supervisor gate is called at initial admission, analysis and finalization; worker storage and archive have distinct original physical reserve checks.",
+    "The service transport disconnection is not by itself evidence of who terminated the outer process."
+  ],
+  "remaining_requirements": [
+    "new registered detached measuring parent with real lifecycle proof",
+    "complete fixed scientific grid and all new durable barriers",
+    "original 26/30 seals and literal restore",
+    "postseal review and full terminal cost/evidence closure"
+  ],
+  "schema": "hepta.execution05.terminal-failure-public-evidence.1",
+  "scientific_benefit_estimate_available": false,
+  "status": "FAILED",
+  "trace_cost_only_prefix_scan": {
+    "complete_newline_terminated_cost_rows": 96,
+    "compressed_bytes_read": 4277203,
+    "decompressed_prefix_bytes": 8468969,
+    "duplicate_complete_line_hashes": 0,
+    "explicit_counter_rows": {
+      "gradient_backward_calls": 96,
+      "optimizer_steps": 92,
+      "scheduled_gradient_microsteps": 96
+    },
+    "gzip_eof_and_checksum_verified": false,
+    "gzip_error": null,
+    "incomplete_gzip_container": true,
+    "omitted_counter_rows": {
+      "gradient_backward_calls": 0,
+      "optimizer_steps": 4,
+      "scheduled_gradient_microsteps": 0
+    },
+    "omitted_optimizer_entries_not_imputed_as_observed_zero": true,
+    "prefix_replay_feature_or_other_outside_branch_trace_costs_not_inferred_from_parent_counts": true,
+    "reported_optimizer_sum_uses_explicit_entries_only": true,
+    "row_error": null,
+    "scientific_outcome_values_numerically_decoded": false,
+    "source_delta_format_omits_unchanged_counters": true,
+    "sum_of_explicit_counter_values_lower_bound": {
+      "gradient_backward_calls": 16128,
+      "optimizer_steps": 14976,
+      "scheduled_gradient_microsteps": 16128
+    },
+    "trailing_compressed_bytes": 0,
+    "unknown_unwritten_unparsed_or_failed_chunk_work": true,
+    "unterminated_decompressed_tail_bytes_ignored": 0,
+    "unterminated_tail_sha256": null
+  },
+  "worker_error_limit": {
+    "actual_exit_code": -15,
+    "actual_exit_mechanism": "Owned controller cleanup sent pidfd SIGTERM after writing failure evidence; its real wait4 records -15. Do not relabel as a normally returned error exit.",
+    "closed_progress_log_scope": "23 JSON progress rows only; keys classified without opening scientific traces or checkpoints.",
+    "no_traceback_in_closed_progress_log": true,
+    "original_inner_write_exception_not_preserved_in_worker_failure_message": true,
+    "recorded_message": "Guarded file is closed or a prior persistence attempt failed",
+    "static_context": "bank.build_bank uses gzip.open(..., xt). A CheckedFile persistence error marks the underlying file poisoned; subsequent gzip/text-layer closing writes can raise the observed guarded-file rejection. The adapter CheckedFile.__exit__ itself preserves an incoming exception, but surrounding gzip/text layers may replace it. Worker error string alone cannot establish the exact first failing call."
+  }
+}
