@@ -1,0 +1,69 @@
+{
+  "base_head": "8976aee9209c353131ce3cf67d8318bd6a9e2de2",
+  "source_paths": [
+    "codex-rs/windows-sandbox-rs/src/backend_selection.rs",
+    "codex-rs/windows-sandbox-rs/src/capture.rs",
+    "codex-rs/windows-sandbox-rs/src/lib.rs",
+    "codex-rs/windows-sandbox-rs/src/public_admission_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/mod.rs",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+    "codex-rs/core/src/exec.rs"
+  ],
+  "sources": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/backend_selection.rs",
+      "baseline_sha256": null,
+      "sha256": "cee7d6f6020481c8b69e79bdb3b131f32897fa0867d3c1d2580ab1f6efd67c8c",
+      "bytes": 3384
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/capture.rs",
+      "baseline_sha256": null,
+      "sha256": "9e77e69b2b69422cb54300b9531ed878095b3672694f5364e3c8184c5a974b9d",
+      "bytes": 4715
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+      "baseline_sha256": "7154ed07604553cd278db04a9e39b337aa2abe12dd8b5df782b3461cd906e124",
+      "sha256": "73431871c5748bf32f0de53b8bea096e4fb42dea02576b32e515ae5fc236dc0d",
+      "bytes": 29752
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/public_admission_tests.rs",
+      "baseline_sha256": null,
+      "sha256": "9341e1fe52a75912c6c2ec8be3f2a4f39f203c501881d9a44f4b8b124e48fde4",
+      "bytes": 9626
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/mod.rs",
+      "baseline_sha256": "6de412ae0a3102084a0b28fc57a276dfc58e5113ffbd0e2d39df4931863e3a72",
+      "sha256": "8dd2f204749ddd738c184d48c0a8766a661a7a63fb747aef3a67419699368463",
+      "bytes": 7745
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs",
+      "baseline_sha256": "3e18d56a783b2ab3804b879d92c66a47c858b4360083082fd6b956118d411a4c",
+      "sha256": "14c55cdf16bcc945154fb2383b1eb5eb7ae7b491948a70670c3d6704f5654c2a",
+      "bytes": 16293
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+      "baseline_sha256": "1c433d36d0099a33d1e96570b77a753ade76bdfa3f1dec1e91197895c3b3715e",
+      "sha256": "97da63ede919ab414023336ec32087d2829d4464fa8e8590643dc2169a203f8c",
+      "bytes": 41902
+    },
+    {
+      "path": "codex-rs/core/src/exec.rs",
+      "baseline_sha256": "14a6682ba0d97f24df25d8d9bb900936d836df1387c9016d580adeeec6d7b68d",
+      "sha256": "30c05f175d1512eac4e55094de677a7826f0e07e750a042ef961a4d877eda4aa",
+      "bytes": 39991
+    }
+  ],
+  "review_receipt": {
+    "path": "/workspace/scratch/8b9f3e9fd04d/recovery_ci/windows_public_admission/IMPLEMENTATION_REVIEW.json",
+    "sha256": "2677350ecbe90983c6b9dc7e761b0a24a5fc4d73a0ac9d10fcd14d2dd9a144d0"
+  },
+  "unformatted": true,
+  "native_validation": "pending; no runtime verdict"
+}

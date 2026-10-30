@@ -1,0 +1,164 @@
+{
+  "recorded_at_utc": "2026-10-30T16:18:25.224744+00:00",
+  "baseline_head": "8976aee9209c353131ce3cf67d8318bd6a9e2de2",
+  "original_failure_head": "6396bc013fdb16a955cced8a746e27279311361c",
+  "original_run_id": 40990854635,
+  "original_job_id": 123853058007,
+  "recovery_note": "The prior scratch filesystem and original DIAGNOSIS.json/log copies were lost. Observations below are reconstructed from retained task messages and fresh exact-6396 source reads; no old local validation is claimed for this reconstructed patch.",
+  "original_observations": [
+    {
+      "test": "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+      "expected_repairs": [
+        false,
+        true,
+        false
+      ],
+      "actual_repairs": [
+        true,
+        true,
+        true
+      ],
+      "status": "separate unresolved idempotence failure; no native stored-ACE layout available"
+    },
+    {
+      "test": "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+      "observed": "outside writes denied, outside file and directory deletes succeeded",
+      "status": "primitive WRITE_RESTRICTED limitation remains; this patch does not change low-level ACL/token mechanics"
+    },
+    {
+      "test": "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+      "observed": "real child deleted outside file and protected .git",
+      "status": "public entry now shares existing broker requirement; original runtime assertion remains unchanged; native rerun required"
+    }
+  ],
+  "changes": [
+    "Extract the existing required-backend predicate into one private module without changing its policy.",
+    "Route every public capture/session entry through that predicate, including compatibility legacy and explicitly elevated APIs.",
+    "Pass the complete typed capture request from core, preserving root overrides, deny paths, timeout, cancellation, private desktop and network identity.",
+    "Propagate broker errors without raw-token fallback; retain private backend implementations.",
+    "Add five public-entry regression tests using real version-valid fixture metadata with an invalid base64 password. One test covers four override kinds through both capture and session, for twelve public-admission cases total. This reaches the actual broker identity decoder before any account setup or launch.",
+    "Keep private raw-backend ACL failure/restricted-read tests testing their original mechanisms and exact assertions.",
+    "Keep the new capture wrappers in capture.rs; lib.rs only registers modules/exports and retains the existing raw implementation."
+  ],
+  "sources": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/backend_selection.rs",
+      "baseline_sha256": null,
+      "sha256": "cee7d6f6020481c8b69e79bdb3b131f32897fa0867d3c1d2580ab1f6efd67c8c",
+      "bytes": 3384
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/capture.rs",
+      "baseline_sha256": null,
+      "sha256": "9e77e69b2b69422cb54300b9531ed878095b3672694f5364e3c8184c5a974b9d",
+      "bytes": 4715
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+      "baseline_sha256": "7154ed07604553cd278db04a9e39b337aa2abe12dd8b5df782b3461cd906e124",
+      "sha256": "73431871c5748bf32f0de53b8bea096e4fb42dea02576b32e515ae5fc236dc0d",
+      "bytes": 29752
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/public_admission_tests.rs",
+      "baseline_sha256": null,
+      "sha256": "9341e1fe52a75912c6c2ec8be3f2a4f39f203c501881d9a44f4b8b124e48fde4",
+      "bytes": 9626
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/mod.rs",
+      "baseline_sha256": "6de412ae0a3102084a0b28fc57a276dfc58e5113ffbd0e2d39df4931863e3a72",
+      "sha256": "8dd2f204749ddd738c184d48c0a8766a661a7a63fb747aef3a67419699368463",
+      "bytes": 7745
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs",
+      "baseline_sha256": "3e18d56a783b2ab3804b879d92c66a47c858b4360083082fd6b956118d411a4c",
+      "sha256": "14c55cdf16bcc945154fb2383b1eb5eb7ae7b491948a70670c3d6704f5654c2a",
+      "bytes": 16293
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+      "baseline_sha256": "1c433d36d0099a33d1e96570b77a753ade76bdfa3f1dec1e91197895c3b3715e",
+      "sha256": "97da63ede919ab414023336ec32087d2829d4464fa8e8590643dc2169a203f8c",
+      "bytes": 41902
+    },
+    {
+      "path": "codex-rs/core/src/exec.rs",
+      "baseline_sha256": "14a6682ba0d97f24df25d8d9bb900936d836df1387c9016d580adeeec6d7b68d",
+      "sha256": "30c05f175d1512eac4e55094de677a7826f0e07e750a042ef961a4d877eda4aa",
+      "bytes": 39991
+    }
+  ],
+  "preserved_delete_assertion": {
+    "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+    "test": "legacy_workspace_write_delete_is_limited_to_writable_roots",
+    "sha256": "292aafb21bd1f06e8b866293998e1694f7ef9e1744ff9bba5c0c0029d875fb8c",
+    "byte_identical": true
+  },
+  "protected_sources": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+      "sha256": "58976c6d1594c116dfd108316bb748b5cf2e9f108785605eaa93c96b77145b83",
+      "unchanged_from_baseline": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+      "sha256": "3fe5daee06868755f298a415864e4087984f95b1d20325a86687638bba4cd8ac",
+      "unchanged_from_baseline": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+      "sha256": "b9ba4c055e5a65c645ae5c2ea8c5a0e6c256718b7705f28f5274079064eb5b2f",
+      "unchanged_from_baseline": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/env.rs",
+      "sha256": "aa3746281cd6c5bb056e3dd449bd92cc98ceea667fa8681add3e16572fdc521d",
+      "unchanged_from_baseline": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backend_selection_tests.rs",
+      "sha256": "1e5469c90c0e6343a571078dd9caf4451b0c4cc3431fdbe46eb76356299ffafb",
+      "unchanged_from_baseline": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+      "sha256": "9998482ac3ecbb420b33bbc50cfc9d87697d7a05efd786361c9deff8e7ba9e02",
+      "unchanged_from_baseline": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/legacy.rs",
+      "sha256": "121082fbb179ea82e808201e8478622c07c73ec90cecc9c25ce7b2f8b447f969",
+      "unchanged_from_baseline": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/elevated.rs",
+      "sha256": "dbaec663034a007063bf6967a10ae59e615a263378cf3f8bdb3a62a3ef660f00",
+      "unchanged_from_baseline": true
+    }
+  ],
+  "validation": {
+    "diff_check": "passed after final edits",
+    "rustfmt": "pending remote original just fmt; root resource plan forbids a local heavy toolchain install",
+    "native_windows": "not run; authoritative CI required",
+    "cross_compile": "not run",
+    "heavy_builds": "not attempted under root resource constraint",
+    "dependencies_changed": false,
+    "github_mutated": false,
+    "selector_policy_body": "same as baseline, with only the borrowed env_map field representation adjusted",
+    "raw_capture_body": "byte-identical to baseline",
+    "native_test_count": "five new test functions; none executed locally"
+  },
+  "required_native_checks": [
+    "original just test -p codex-windows-sandbox --lib --locked; retain all deletion/runtime assertions",
+    "public_admission_tests: actual broker failure must not launch marker command",
+    "existing capture timeout/cancellation and session tests",
+    "existing full required Windows matrix; no skips or gate relaxation"
+  ],
+  "primary_sources": [
+    "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-deletefilew",
+    "https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-createrestrictedtoken",
+    "https://learn.microsoft.com/en-us/windows/win32/secauthz/ace-inheritance-rules"
+  ]
+}

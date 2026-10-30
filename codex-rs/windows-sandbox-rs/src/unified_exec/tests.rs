@@ -350,7 +350,7 @@ fn elevated_non_tty_cmd_forwards_env_output_and_exit() {
 }
 
 #[test]
-fn legacy_non_tty_cmd_rejects_deny_read_overrides() {
+fn restricted_token_non_tty_cmd_rejects_deny_read_overrides() {
     let _guard = legacy_process_test_guard();
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
@@ -360,7 +360,7 @@ fn legacy_non_tty_cmd_rejects_deny_read_overrides() {
             AbsolutePathBuf::from_absolute_path(cwd.join("legacy-non-tty-deny-read-secret.env"))
                 .expect("absolute deny-read fixture path");
         let permission_profile = PermissionProfile::workspace_write();
-        let err = spawn_windows_sandbox_session_legacy(
+        let err = super::backends::legacy::spawn_windows_sandbox_session_legacy(
             &permission_profile,
             workspace_roots_for(cwd.as_path()).as_slice(),
             codex_home.path(),

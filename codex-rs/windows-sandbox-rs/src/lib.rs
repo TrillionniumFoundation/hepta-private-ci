@@ -53,7 +53,11 @@ mod allow;
 #[cfg(target_os = "windows")]
 mod audit;
 #[cfg(target_os = "windows")]
+mod backend_selection;
+#[cfg(target_os = "windows")]
 mod cap;
+#[cfg(target_os = "windows")]
+mod capture;
 #[cfg(target_os = "windows")]
 mod deny_read_acl;
 #[cfg(target_os = "windows")]
@@ -123,6 +127,10 @@ mod unified_exec;
 #[cfg(target_os = "windows")]
 mod wrapper;
 
+#[cfg(all(target_os = "windows", test))]
+#[path = "public_admission_tests.rs"]
+mod public_admission_tests;
+
 #[cfg(target_os = "windows")]
 pub(crate) use elevated::ipc_framed;
 
@@ -164,6 +172,16 @@ pub use cap::workspace_write_root_contains_path;
 #[cfg(target_os = "windows")]
 pub use cap::workspace_write_root_overlaps_path;
 #[cfg(target_os = "windows")]
+pub use capture::WindowsSandboxCaptureRequest;
+#[cfg(target_os = "windows")]
+pub use capture::run_windows_sandbox_capture;
+#[cfg(target_os = "windows")]
+pub use capture::run_windows_sandbox_capture_with_filesystem_overrides;
+#[cfg(target_os = "windows")]
+pub use capture::run_windows_sandbox_capture_for_level;
+#[cfg(target_os = "windows")]
+pub use capture::run_windows_sandbox_capture_for_permission_profile_elevated;
+#[cfg(target_os = "windows")]
 pub use conpty::ConptyInstance;
 #[cfg(target_os = "windows")]
 pub use conpty::spawn_conpty_process_as_user;
@@ -182,8 +200,6 @@ pub use dpapi::protect as dpapi_protect;
 pub use dpapi::unprotect as dpapi_unprotect;
 #[cfg(target_os = "windows")]
 pub use elevated_impl::ElevatedSandboxProfileCaptureRequest;
-#[cfg(target_os = "windows")]
-pub use elevated_impl::run_windows_sandbox_capture_for_permission_profile as run_windows_sandbox_capture_for_permission_profile_elevated;
 #[cfg(target_os = "windows")]
 pub use helper_materialization::resolve_current_exe_for_launch;
 #[cfg(target_os = "windows")]
@@ -332,10 +348,6 @@ pub use wfp_setup::install_wfp_filters;
 #[cfg(target_os = "windows")]
 pub use windows_impl::CaptureResult;
 #[cfg(target_os = "windows")]
-pub use windows_impl::run_windows_sandbox_capture;
-#[cfg(target_os = "windows")]
-pub use windows_impl::run_windows_sandbox_capture_with_filesystem_overrides;
-#[cfg(target_os = "windows")]
 pub use windows_impl::run_windows_sandbox_legacy_preflight;
 #[cfg(target_os = "windows")]
 pub use winutil::quote_windows_arg;
@@ -478,34 +490,7 @@ mod windows_impl {
     }
 
     #[allow(clippy::too_many_arguments)]
-    pub fn run_windows_sandbox_capture(
-        permission_profile: &PermissionProfile,
-        workspace_roots: &[AbsolutePathBuf],
-        codex_home: &Path,
-        command: Vec<String>,
-        cwd: &Path,
-        env_map: HashMap<String, String>,
-        timeout_ms: Option<u64>,
-        cancellation: Option<WindowsSandboxCancellationToken>,
-        use_private_desktop: bool,
-    ) -> Result<CaptureResult> {
-        run_windows_sandbox_capture_with_filesystem_overrides(
-            permission_profile,
-            workspace_roots,
-            codex_home,
-            command,
-            cwd,
-            env_map,
-            timeout_ms,
-            cancellation,
-            &[],
-            &[],
-            use_private_desktop,
-        )
-    }
-
-    #[allow(clippy::too_many_arguments)]
-    pub fn run_windows_sandbox_capture_with_filesystem_overrides(
+    pub(super) fn run_windows_sandbox_capture_restricted(
         permission_profile: &PermissionProfile,
         workspace_roots: &[AbsolutePathBuf],
         codex_home: &Path,
