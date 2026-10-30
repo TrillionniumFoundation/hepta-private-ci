@@ -1,0 +1,273 @@
+name: Joint Hepta full-checkpoint native deployment
+
+on:
+  push:
+    branches: [research/joint-hepta-generation-20261029]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: joint-hepta-deployment-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  registered-full-checkpoint-deployment:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[joint-deploy]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: src
+        shell: bash
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONNOUSERSITE: "1"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "2"
+      STUDY_RUN_ID: "40834365977"
+      STUDY_JOB_ID: "123315967843"
+      SOURCE_GATE_JOB_ID: "123315579122"
+      STUDY_SOURCE_SHA: 5a4a763c0001010c172bcef057e137adc636b477
+      STUDY_ARTIFACT_ID: "12879762721"
+      STUDY_ARTIFACT_NAME: joint-study-17-32-5a4a763c0001010c172bcef057e137adc636b477
+      STUDY_ARTIFACT_DIGEST: sha256:14be22f2ce057d0a10970a93db91b23322ba9e8f26e2a5045e475bc8d02c0b20
+    steps:
+      - name: Checkout current deployment and NDU source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          path: src
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout: |
+            experiments/multimodal_output_portfolio/joint_hepta_20261029
+            experiments/multimodal_output_portfolio/unified_20261028
+      - name: Checkout immutable original owner source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: a50c8974ac23c20c5174f7c3ad542a96e5652854
+          path: native-source
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout: |
+            codex-rs/hepta-types
+            codex-rs/hepta-infer-core
+            codex-rs/hepta-neuron
+            codex-rs/hepta-agentd/src
+            experiments/multimodal_output_portfolio/continuation_20261027/control
+            experiments/multimodal_output_portfolio/abc_next/native
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+      - name: Initialize isolated deployment output
+        run: |
+          set -euo pipefail
+          deployment_results="$RUNNER_TEMP/joint-hepta-deployment"
+          study_download="$RUNNER_TEMP/study"
+          test ! -e "$study_download"
+          mkdir -p "$deployment_results/provenance"
+          printf 'DEPLOYMENT_RESULTS=%s\n' "$deployment_results" >> "$GITHUB_ENV"
+          printf 'STUDY_DOWNLOAD=%s\n' "$study_download" >> "$GITHUB_ENV"
+          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          test "$(git -C "$GITHUB_WORKSPACE/native-source" rev-parse HEAD)" = a50c8974ac23c20c5174f7c3ad542a96e5652854
+      - name: Verify registered successful source jobs and artifact metadata, then download
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: TrillionniumFoundation/hepta-private-ci
+        run: |
+          set -euo pipefail
+          gh --version > "$DEPLOYMENT_RESULTS/provenance/gh-version.txt"
+          gh api "repos/$GH_REPO/actions/runs/$STUDY_RUN_ID" > "$DEPLOYMENT_RESULTS/provenance/SOURCE_RUN_API.json"
+          gh api "repos/$GH_REPO/actions/jobs/$STUDY_JOB_ID" > "$DEPLOYMENT_RESULTS/provenance/TARGET_JOB_API.json"
+          gh api "repos/$GH_REPO/actions/jobs/$SOURCE_GATE_JOB_ID" > "$DEPLOYMENT_RESULTS/provenance/SOURCE_GATE_JOB_API.json"
+          gh api "repos/$GH_REPO/actions/artifacts/$STUDY_ARTIFACT_ID" > "$DEPLOYMENT_RESULTS/provenance/ARTIFACT_API.json"
+          python -B - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path(os.environ["DEPLOYMENT_RESULTS"]) / "provenance"
+          run = json.loads((root / "SOURCE_RUN_API.json").read_text())
+          target = json.loads((root / "TARGET_JOB_API.json").read_text())
+          source_gate = json.loads((root / "SOURCE_GATE_JOB_API.json").read_text())
+          artifact = json.loads((root / "ARTIFACT_API.json").read_text())
+          run_id, head = int(os.environ["STUDY_RUN_ID"]), os.environ["STUDY_SOURCE_SHA"]
+          if run["id"] != run_id or run["head_sha"] != head:
+              raise ValueError("Registered study run/source identity mismatch")
+          for job, job_id, job_name in (
+              (target, int(os.environ["STUDY_JOB_ID"]), "mechanism-replications (17, 32)"),
+              (source_gate, int(os.environ["SOURCE_GATE_JOB_ID"]), "operator-and-contract"),
+          ):
+              if (job["id"] != job_id or job["run_id"] != run_id or job["head_sha"] != head
+                      or job["name"] != job_name or job["status"] != "completed" or job["conclusion"] != "success"):
+                  raise ValueError("Registered target training/source qualification job did not succeed")
+          if (artifact["id"] != int(os.environ["STUDY_ARTIFACT_ID"])
+                  or artifact["name"] != os.environ["STUDY_ARTIFACT_NAME"] or artifact["expired"]
+                  or artifact["workflow_run"]["id"] != run_id
+                  or artifact["workflow_run"]["head_sha"] != head
+                  or artifact["digest"] != os.environ["STUDY_ARTIFACT_DIGEST"]
+                  or artifact["size_in_bytes"] != 75331042):
+              raise ValueError("Registered artifact identity/digest/size differs")
+          receipt = {
+              "schema": "hepta.joint-generation.deployment-source.v1",
+              "run_id": run_id, "head_sha": head,
+              "artifact_id": artifact["id"], "artifact_name": artifact["name"],
+              "artifact_digest": artifact["digest"], "artifact_size_bytes": artifact["size_in_bytes"],
+              "target_job_id": target["id"], "target_job_conclusion": target["conclusion"],
+              "source_gate_job_id": source_gate["id"], "source_gate_conclusion": source_gate["conclusion"],
+              "source_run_status": run["status"], "source_run_conclusion": run["conclusion"],
+              "origin_verified_with_github_api": True,
+              "archive_digest_from_github_metadata": True, "archive_bytes_rehashed_locally": False,
+              "whole_run_success_required": False,
+              "gate_scope": "registered target training job and source qualification job; unrelated natural jobs are separate",
+              "api_metadata_sha256": {path.name: hashlib.sha256(path.read_bytes()).hexdigest()
+                                      for path in sorted(root.glob("*_API.json"))},
+          }
+          (root / "DEPLOYMENT_SOURCE.json").write_text(json.dumps(receipt, sort_keys=True, indent=2) + "\n")
+          print("SOURCE_RESULT_JSON=" + json.dumps(receipt, sort_keys=True))
+          PY
+          gh run download "$STUDY_RUN_ID" -R "$GH_REPO" -n "$STUDY_ARTIFACT_NAME" -D "$STUDY_DOWNLOAD"
+      - name: Verify complete registered training and freeze the downloaded file manifest
+        id: study_prepare
+        run: |
+          set -euo pipefail
+          python -B - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          downloaded = Path(os.environ["STUDY_DOWNLOAD"])
+          provenance = Path(os.environ["DEPLOYMENT_RESULTS"]) / "provenance"
+          def file_hash(path):
+              with path.open("rb") as stream:
+                  return hashlib.file_digest(stream, "sha256").hexdigest()
+          candidates = []
+          for path in downloaded.rglob("RESULTS.json"):
+              result = json.loads(path.read_text())
+              if (result.get("smoke") is False and result.get("seed") == 17 and result.get("width") == 32
+                      and (path.parent / "distillation/STUDENT.pt").is_file()):
+                  candidates.append((path.parent, result))
+          if len(candidates) != 1:
+              raise ValueError("Require one complete registered full 17/32 study, never a smoke or partial artifact")
+          study, result = candidates[0]
+          protocol = json.loads((study / "EXECUTED_PROTOCOL.json").read_text())
+          expected_arms = {"ordinary_fixed_mean", "ordinary_dynamic_mean", "hepta_fixed_mean",
+                           "hepta_dynamic_mean", "hepta_dynamic_risk", "hepta_dynamic_risk_actor_only"}
+          if (result.get("schema") != "hepta.joint-generation.study.v1"
+                  or protocol.get("pretraining_updates") != 384 or protocol.get("joint_updates") != 64
+                  or protocol.get("joint_batch") != 8 or protocol.get("distillation_updates") != 256
+                  or set(protocol.get("arms", [])) != expected_arms
+                  or set(result.get("arms", {})) != expected_arms
+                  or set(result.get("pretraining", {})) != {"ordinary", "dual"}):
+              raise ValueError("Downloaded study does not execute the full registered update protocol")
+          for pretraining in result["pretraining"].values():
+              if pretraining["updates"] != 384 or len(pretraining["loss_history"]) != 384:
+                  raise ValueError("Incomplete pretraining")
+          for name, arm in result["arms"].items():
+              training = arm["training"]
+              if (training["actual_episodes"] != 512 or len(training["updates"]) != 64
+                      or [row["update"] for row in training["updates"]] != list(range(64))
+                      or arm["evaluation"]["actual_draws"] != 128
+                      or not (study / name / "MODEL.pt").is_file()):
+                  raise ValueError("Incomplete registered arm: " + name)
+          manifest = []
+          for path in sorted(downloaded.rglob("*")):
+              if path.is_symlink():
+                  raise ValueError("Study input manifest requires ordinary files")
+              if path.is_file():
+                  manifest.append({"path": str(path.relative_to(downloaded)), "bytes": path.stat().st_size,
+                                   "sha256": file_hash(path)})
+          manifest_path = provenance / "STUDY_INPUT_MANIFEST.json"
+          manifest_path.write_text(json.dumps(manifest, sort_keys=True, indent=2) + "\n")
+          receipt_path = provenance / "DEPLOYMENT_SOURCE.json"
+          receipt = json.loads(receipt_path.read_text())
+          receipt.update({"study_directory_within_download": str(study.relative_to(downloaded)),
+                          "complete_registered_updates_verified": True,
+                          "source_research_effect_qualified": result.get("research_effect_qualified"),
+                          "source_positive_effect_required": False,
+                          "input_file_manifest_sha256": hashlib.sha256(manifest_path.read_bytes()).hexdigest()})
+          receipt_path.write_text(json.dumps(receipt, sort_keys=True, indent=2) + "\n")
+          with Path(os.environ["GITHUB_ENV"]).open("a") as output:
+              output.write("DEPLOYMENT_STUDY=" + str(study.resolve()) + "\n")
+          print(json.dumps({"verified_input_files": len(manifest), "full_training_updates": True,
+                            "smoke": False, "seed": 17, "width": 32,
+                            "source_research_effect_qualified": result.get("research_effect_qualified")}))
+          PY
+      - name: Install pinned numerical runtime and Rust toolchain
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --only-binary=:all: --extra-index-url https://download.pytorch.org/whl/cpu torch==2.14.1+cpu numpy==2.3.5 scipy==1.16.3 Pillow==12.3.0 pytest==8.4.2
+          rustup toolchain install 1.95.0 --profile minimal
+          python -m pip freeze > "$DEPLOYMENT_RESULTS/provenance/runtime.txt"
+          rustup run 1.95.0 rustc --version > "$DEPLOYMENT_RESULTS/provenance/rust-runtime.txt"
+      - name: Verify real tensor checkpoint loading and deployment source contracts
+        run: |
+          set -euo pipefail
+          python -B -m unittest experiments.multimodal_output_portfolio.joint_hepta_20261029.test_deployment -v 2>&1 | tee "$DEPLOYMENT_RESULTS/deployment-unit.log"
+      - name: Build the actual unchanged owner with original lock identities
+        run: |
+          set -euo pipefail
+          native_rustc="$(rustup which --toolchain 1.95.0 rustc)"
+          native_compiler_bin="${native_rustc%/*}"
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.native_build --repository "$GITHUB_WORKSPACE/native-source" --destination "$DEPLOYMENT_RESULTS/build" --compiler "$native_compiler_bin" 2>&1 | tee "$DEPLOYMENT_RESULTS/native-build.log"
+      - name: Verify real native lifecycle before checkpoint deployment
+        run: |
+          set -euo pipefail
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.native_bridge --binary "$DEPLOYMENT_RESULTS/build/target/debug/examples/owner_host" --output "$DEPLOYMENT_RESULTS/lifecycle" 2>&1 | tee "$DEPLOYMENT_RESULTS/lifecycle.log"
+      - name: Execute full-trained teacher, distilled student and ordinary model through the actual owner
+        run: |
+          set -euo pipefail
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.deployment --study "$DEPLOYMENT_STUDY" --source-receipt "$DEPLOYMENT_RESULTS/provenance/DEPLOYMENT_SOURCE.json" --binary "$DEPLOYMENT_RESULTS/build/target/debug/examples/owner_host" --output "$DEPLOYMENT_RESULTS/deployment" 2>&1 | tee "$DEPLOYMENT_RESULTS/deployment.log"
+      - name: Verify downloaded study stayed byte-identical, including after deployment failure
+        if: always() && steps.study_prepare.outcome == 'success'
+        run: |
+          set -euo pipefail
+          python -B - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          downloaded = Path(os.environ["STUDY_DOWNLOAD"])
+          provenance = Path(os.environ["DEPLOYMENT_RESULTS"]) / "provenance"
+          def file_hash(path):
+              with path.open("rb") as stream:
+                  return hashlib.file_digest(stream, "sha256").hexdigest()
+          expected = json.loads((provenance / "STUDY_INPUT_MANIFEST.json").read_text())
+          actual = []
+          for path in sorted(downloaded.rglob("*")):
+              if path.is_symlink():
+                  raise ValueError("Downloaded study acquired a symlink")
+              if path.is_file():
+                  actual.append({"path": str(path.relative_to(downloaded)), "bytes": path.stat().st_size,
+                                 "sha256": file_hash(path)})
+          result = {"downloaded_study_unchanged": actual == expected, "verified_files": len(actual)}
+          (provenance / "STUDY_INPUT_UNCHANGED.json").write_text(json.dumps(result, sort_keys=True, indent=2) + "\n")
+          print("SOURCE_IMMUTABILITY_RESULT_JSON=" + json.dumps(result, sort_keys=True))
+          if actual != expected:
+              raise ValueError("Deployment changed the registered source artifact")
+          PY
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: joint-hepta-full-deployment-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/joint-hepta-deployment/provenance/
+            ${{ runner.temp }}/joint-hepta-deployment/*.log
+            ${{ runner.temp }}/joint-hepta-deployment/build/BUILD_RECEIPT.json
+            ${{ runner.temp }}/joint-hepta-deployment/build/Cargo.toml
+            ${{ runner.temp }}/joint-hepta-deployment/build/Cargo.lock
+            ${{ runner.temp }}/joint-hepta-deployment/build/BUILD.log
+            ${{ runner.temp }}/joint-hepta-deployment/build/RESOLVE.log
+            ${{ runner.temp }}/joint-hepta-deployment/build/RESOLVED_METADATA.json
+            ${{ runner.temp }}/joint-hepta-deployment/build/LOCK_IDENTITY_CHECK.json
+            ${{ runner.temp }}/joint-hepta-deployment/lifecycle/
+            ${{ runner.temp }}/joint-hepta-deployment/deployment/
+          if-no-files-found: warn
+          retention-days: 30

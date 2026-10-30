@@ -1,0 +1,183 @@
+name: Joint Hepta native owner and generated delivery
+
+on:
+  push:
+    branches: [research/joint-hepta-generation-20261029]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: joint-hepta-native-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  native-owner-and-smoke:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[joint-native]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: src
+        shell: bash
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONNOUSERSITE: "1"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "2"
+    steps:
+      - name: Checkout current generation and NDU source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          path: src
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout: |
+            experiments/multimodal_output_portfolio/joint_hepta_20261029
+            experiments/multimodal_output_portfolio/unified_20261028
+      - name: Checkout immutable original owner source and required Git blobs
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: a50c8974ac23c20c5174f7c3ad542a96e5652854
+          path: native-source
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout: |
+            codex-rs/hepta-types
+            codex-rs/hepta-infer-core
+            codex-rs/hepta-neuron
+            codex-rs/hepta-agentd/src
+            experiments/multimodal_output_portfolio/continuation_20261027/control
+            experiments/multimodal_output_portfolio/abc_next/native
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+      - name: Initialize runner-local result directory
+        run: |
+          set -euo pipefail
+          native_results="$RUNNER_TEMP/joint-hepta-native"
+          mkdir -p "$native_results"
+          printf 'NATIVE_RESULTS=%s\n' "$native_results" >> "$GITHUB_ENV"
+      - name: Install pinned numerical runtime and Rust toolchain
+        run: |
+          set -euo pipefail
+          mkdir -p "$NATIVE_RESULTS"
+          python -m pip install --disable-pip-version-check --only-binary=:all: --extra-index-url https://download.pytorch.org/whl/cpu torch==2.14.1+cpu numpy==2.3.5 scipy==1.16.3 Pillow==12.3.0 pytest==8.4.2
+          rustup toolchain install 1.95.0 --profile minimal
+          python -m pip freeze > "$NATIVE_RESULTS/runtime.txt"
+          rustup run 1.95.0 rustc --version > "$NATIVE_RESULTS/rust-runtime.txt"
+      - name: Check exact source identities and local blob availability
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          test "$(git -C "$GITHUB_WORKSPACE/native-source" rev-parse HEAD)" = a50c8974ac23c20c5174f7c3ad542a96e5652854
+          python -B - <<'PY' | tee "$NATIVE_RESULTS/source-identities.json"
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          from experiments.multimodal_output_portfolio.joint_hepta_20261029.native_build import CRATES, HOST_FILES, SOURCE_COMMIT
+
+          source = Path(os.environ["GITHUB_WORKSPACE"]) / "native-source"
+          required = ["codex-rs/Cargo.lock", *HOST_FILES.values()]
+          for crate in CRATES:
+              required += subprocess.check_output(
+                  ["git", "ls-tree", "-r", "--name-only", SOURCE_COMMIT, "--", f"codex-rs/{crate}/"],
+                  cwd=source, text=True).splitlines()
+          hashes = {}
+          for name in required:
+              checked_out = (source / name).read_bytes()
+              original = subprocess.check_output(["git", "show", f"{SOURCE_COMMIT}:{name}"], cwd=source)
+              if checked_out != original:
+                  raise ValueError(f"Checked-out source differs from immutable object: {name}")
+              hashes[name] = hashlib.sha256(original).hexdigest()
+          print(json.dumps({"source_commit": SOURCE_COMMIT, "current_commit": os.environ["GITHUB_SHA"],
+                            "all_required_blobs_readable_locally": True, "source_sha256": hashes}, sort_keys=True))
+          PY
+          git diff --check
+      - name: Verify lock extraction and Python adapter contracts with explicitly fake transport
+        run: |
+          set -euo pipefail
+          python -B -m unittest experiments.multimodal_output_portfolio.joint_hepta_20261029.test_native_bridge experiments.multimodal_output_portfolio.joint_hepta_20261029.test_native_build -v 2>&1 | tee "$NATIVE_RESULTS/adapter-unit.log"
+      - name: Build actual unchanged Agentd owner under the original dependency identities
+        run: |
+          set -euo pipefail
+          native_rustc="$(rustup which --toolchain 1.95.0 rustc)"
+          native_compiler_bin="${native_rustc%/*}"
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.native_build --repository "$GITHUB_WORKSPACE/native-source" --destination "$NATIVE_RESULTS/build" --compiler "$native_compiler_bin" 2>&1 | tee "$NATIVE_RESULTS/native-build.log"
+      - name: Execute actual native tick, checkpoint recovery, STOP and expiry
+        run: |
+          set -euo pipefail
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.native_bridge --binary "$NATIVE_RESULTS/build/target/debug/examples/owner_host" --output "$NATIVE_RESULTS/lifecycle" 2>&1 | tee "$NATIVE_RESULTS/lifecycle.log"
+      - name: Train smoke models and execute generated output through the actual owner
+        run: |
+          set -euo pipefail
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.train --seed 17 --width 32 --smoke --native-binary "$NATIVE_RESULTS/build/target/debug/examples/owner_host" --output "$NATIVE_RESULTS/smoke" 2>&1 | tee "$NATIVE_RESULTS/smoke.log"
+      - name: Verify native completion and emit compact evidence summary
+        run: |
+          set -euo pipefail
+          python -B - <<'PY' | tee "$NATIVE_RESULTS/native-result.log"
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path(os.environ["NATIVE_RESULTS"])
+          build = json.loads((root / "build/BUILD_RECEIPT.json").read_text())
+          lifecycle = json.loads((root / "lifecycle/LIFECYCLE_PROBE.json").read_text())
+          results = json.loads((root / "smoke/RESULTS.json").read_text())
+          trajectories = [json.loads(path.read_text()) for path in sorted((root / "smoke/native").glob("*/TRAJECTORY.json"))]
+          deployment = results.get("native_deployment", {})
+          if (not lifecycle.get("passed") or not lifecycle.get("actual_native_owner")
+                  or len(trajectories) != 2 or deployment.get("failures") != 0):
+              raise ValueError("Actual owner lifecycle or generated deployment failed")
+          for row in trajectories:
+              receipt = row.get("native_receipt") or {}
+              if (not row.get("contract_validated") or not row.get("native_integration_executed")
+                      or row.get("failure") is not None or row["outcome"]["terminal_kind"] != "delivered"
+                      or not receipt.get("finished") or not receipt.get("native_process_reaped")
+                      or receipt.get("native_tick_count", 0) < 4 or receipt.get("failures")
+                      or receipt["identity"]["binary_sha256"] != build["binary_sha256"]
+                      or set(dict(row["outcome"]["artifact_sha256"])) != {"text", "image", "audio", "video"}):
+                  raise ValueError("Generated trajectory lacks a completed actual owner and four-file delivery")
+          summary = {
+              "schema": "hepta.joint-generation.native-ci.v1",
+              "source_commit": build["source_commit"], "binary_sha256": build["binary_sha256"],
+              "unchanged_owner_and_dependencies": build["all_dependencies_name_version_source_checksum_match"],
+              "actual_native_lifecycle_passed": lifecycle["passed"],
+              "cold_recovery_exact": lifecycle["cold_recovery_exact"],
+              "stop_prevented_later_dispatch": lifecycle["stop_prevented_later_dispatch"],
+              "expiry_prevented_third_dispatch": lifecycle["expiry_prevented_third_dispatch"],
+              "generated_native_episodes": len(trajectories),
+              "generated_native_ticks": sum(row["native_receipt"]["native_tick_count"] for row in trajectories),
+              "generated_native_recoveries": sum(len(row["native_receipt"]["recoveries"]) for row in trajectories),
+              "generated_native_cpu_seconds": sum(row["native_receipt"]["native_owner_cpu_seconds"] for row in trajectories),
+              "native_failures": deployment["failures"], "smoke_only": True,
+              "owner_authority": "DENY_ALL", "tensor_model_inside_native_port": False,
+              "natural_semantic_qualification": False, "statistical_effect_qualified": False,
+          }
+          (root / "NATIVE_CI_RESULT.json").write_text(json.dumps(summary, sort_keys=True, indent=2) + "\n")
+          print("RESULT_JSON=" + json.dumps(summary, sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: joint-hepta-native-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/joint-hepta-native/*.json
+            ${{ runner.temp }}/joint-hepta-native/*.log
+            ${{ runner.temp }}/joint-hepta-native/*.txt
+            ${{ runner.temp }}/joint-hepta-native/build/BUILD_RECEIPT.json
+            ${{ runner.temp }}/joint-hepta-native/build/Cargo.toml
+            ${{ runner.temp }}/joint-hepta-native/build/Cargo.lock
+            ${{ runner.temp }}/joint-hepta-native/build/BUILD.log
+            ${{ runner.temp }}/joint-hepta-native/build/RESOLVE.log
+            ${{ runner.temp }}/joint-hepta-native/build/RESOLVED_METADATA.json
+            ${{ runner.temp }}/joint-hepta-native/build/LOCK_IDENTITY_CHECK.json
+            ${{ runner.temp }}/joint-hepta-native/lifecycle/
+            ${{ runner.temp }}/joint-hepta-native/smoke/
+          if-no-files-found: warn
+          retention-days: 30

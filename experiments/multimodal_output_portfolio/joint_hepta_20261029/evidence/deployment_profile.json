@@ -1,0 +1,60 @@
+{
+  "commitment": "buffered_bundle; one_immutable_final_file_per_modality",
+  "compute_clock": "measured_monotonic_microseconds",
+  "conditional_scope": "same_gamma_joint_selected_action_complete_return",
+  "event_clock": "monotone_decision_index",
+  "filtration": "bound_input_and_past_executed_events",
+  "generation_clock": "per_modality_transition_count",
+  "input_contract_sha256": "ccb03e8cf957dde7d28587d5fa9837d99bb2c7ba14425dc0a3ff2b4b2dba848b",
+  "max_events": 9,
+  "media_units": {
+    "audio": "sample",
+    "image": "none",
+    "text": "token",
+    "video": "frame"
+  },
+  "model_port_sha256": "fc8779e1c0976d45a33a3bffa251415933daae09f1f125a156fc233fea34e1b5",
+  "ndu": {
+    "aggregation": "population",
+    "continuation_sha256": "976e5bffa701b3a83c32f6f4fb071d5b1d5e1b827d1111ff0f858a7146246de6",
+    "cost_treatment": "actual_joint_increment_once",
+    "cost_unit": "normalized_utility",
+    "gamma": 2.0,
+    "objective_sha256": "40d25e5e8376050dc0dc151e7b364c50b1405a3b5a716395393b649a0240abb3",
+    "observer_sha256": "a8f65e79460a1dbf2b4fd70e59bdb0953401b99f663bc1398e92d47f08bad93b",
+    "required_modalities": [
+      "text",
+      "image",
+      "audio",
+      "video"
+    ],
+    "reward_source": "bound_external_post_codec_observer",
+    "schema": "hepta.ndu.unified-profile.v1",
+    "stopping": "explicit_delivered_terminal_outcome",
+    "time_discount": 1.0,
+    "utility_bounds": [
+      -1.0,
+      1.0
+    ]
+  },
+  "parameter_updates": "candidate_only; immutable_selected_snapshot_per_episode",
+  "parent_blob": "98c62c6cef43489dadc8d010ce9b59735a88fc66",
+  "parent_code": "experiments/multimodal_output_portfolio/unified_20261028/profile.py",
+  "parent_commit": "a50c8974ac23c20c5174f7c3ad542a96e5652854",
+  "parent_schema": "hepta.ndu.unified-profile.v1",
+  "population_scope": "log_after_expectation_over_tasks_and_actual_rollouts",
+  "randomness_contract_sha256": "11a79e0ef5e669dbe20d5d450eaac0748563bd3247ce9fadea2a55a14961deb6",
+  "resource_accounting_sha256": "84c50f8b53c6c11fb5f8a155ce043d17acd5c7b1469b5ef36ebf459af103c90f",
+  "runtime_feature_keys": [
+    "encoded_input",
+    "latent_state",
+    "committed_prefix",
+    "remaining_budget",
+    "remaining_steps",
+    "clocks",
+    "uncertainty"
+  ],
+  "schema": "hepta.joint-generation.contract.v1",
+  "stopping": "execute_delivery_then_observe; no_oracle_terminal_label",
+  "time_discount": 1.0
+}

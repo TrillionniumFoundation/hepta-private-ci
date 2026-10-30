@@ -1,0 +1,72 @@
+{
+  "actor_lr": 0.001,
+  "all_original_retained_events": true,
+  "arms": [
+    "dual",
+    "ordinary"
+  ],
+  "batch": 4,
+  "budget": {
+    "cpu_seconds": 900,
+    "torch_threads": 2,
+    "wall_seconds": 1200
+  },
+  "clip_each_group": 5.0,
+  "critic_lr": 0.003,
+  "depth": 1,
+  "diagnostic_sources": [
+    "video_3960",
+    "video_3701",
+    "video_10657",
+    "video_1185"
+  ],
+  "diagnostic_sources_never_seen_claim": false,
+  "evaluation_draws_per_event": 2,
+  "evaluation_weight": "uniform source, uniform retained event, uniform emission draw",
+  "feedback": "Public context consistency, not target-coordinate reconstruction error",
+  "fit_sources": [
+    "video_8706",
+    "video_5023",
+    "video_10387",
+    "video_4031"
+  ],
+  "generator_lr": 1e-05,
+  "inherited_source_role": "generator_train",
+  "joint_objective": "gamma2 population moment score + decision moment critic + delivery moment critic + 0.05 supervised",
+  "joint_policy": "dynamic categorical actions and stochastic four-modal emission",
+  "joint_supervised_weight": 0.05,
+  "joint_updates": 32,
+  "media": {
+    "audio_rate": 512,
+    "audio_samples": 1024,
+    "duration_seconds": 2,
+    "frame_ms": 500,
+    "frames": 4,
+    "side": 16
+  },
+  "no_original_observer_or_qualification_access": true,
+  "no_test_driven_selection": true,
+  "pretraining_actions": "shared, rotating image/audio/video/text, shared, stop",
+  "pretraining_lr": 0.001,
+  "pretraining_updates": 256,
+  "public_input": "context video/audio with availability masks; image=context video frame0; constant instruction tokens [1,2,3]",
+  "readback_every_training_and_evaluation_draw": true,
+  "sampling": "IID source with replacement, then IID retained event within source; fresh episode RNG",
+  "schema": "hepta.joint-natural-restoration-diagnostic.v1",
+  "scope": "Small real-source mechanism diagnostic; neither large-model efficacy nor qualified natural semantics",
+  "scorer_scope": "Pixel/waveform restoration and literal text label matches; no visual/audio semantic classifier claim",
+  "seed": 17,
+  "semantic_qualified": false,
+  "source_order": [
+    "video_8706",
+    "video_5023",
+    "video_10387",
+    "video_4031",
+    "video_3960",
+    "video_3701",
+    "video_10657",
+    "video_1185"
+  ],
+  "text_output": "Two ontology indices, not free-form natural language",
+  "width": 32
+}

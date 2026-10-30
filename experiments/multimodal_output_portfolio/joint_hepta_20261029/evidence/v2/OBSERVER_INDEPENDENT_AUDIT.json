@@ -1,0 +1,129 @@
+{
+  "all_checks_passed": true,
+  "artifact_bytes": 1562597,
+  "artifact_id": 12977094407,
+  "artifact_sha256": "6a3bea15561b44150f53852f2814a884acbb26069892cfbdcde62367a56a40b3",
+  "complete_source_fits_verified": 42,
+  "development_passed": false,
+  "events_verified": 639,
+  "fresh_calibration_sources_unopened": 64,
+  "job_id": 124063796293,
+  "media_hash_receipt_to_inventory_consistency_checks": 2556,
+  "modalities": {
+    "action": {
+      "all_classes": 63,
+      "candidates": [
+        {
+          "candidate": "s3d-ridge100",
+          "majority_accuracy": 0.1034877232142857,
+          "source_accuracy": 0.1851190476190476
+        },
+        {
+          "candidate": "tsm-ridge1",
+          "majority_accuracy": 0.1034877232142857,
+          "source_accuracy": 0.17114025297619045
+        },
+        {
+          "candidate": "tsm-ridge10",
+          "majority_accuracy": 0.1034877232142857,
+          "source_accuracy": 0.17973400297619047
+        },
+        {
+          "candidate": "tsm-ridge100",
+          "majority_accuracy": 0.1034877232142857,
+          "source_accuracy": 0.22440476190476188
+        }
+      ],
+      "checkpoint_bytes": 794882,
+      "checkpoint_sha256": "9596ed0f04fe59813b4c7a49f9e53b7afcaedb800bca242e8b9e50d31fecdfdd",
+      "label_coverage_under_quarter_mass": 0.03901599702380952,
+      "oof_unseen_label_mass": 0.030171130952380953,
+      "present_classes": 42,
+      "selected": "tsm-ridge100"
+    },
+    "sound": {
+      "all_classes": 17,
+      "candidates": [
+        {
+          "candidate": "pann-ridge100",
+          "majority_accuracy": 0.3542968749999999,
+          "source_accuracy": 0.4245070684523809
+        },
+        {
+          "candidate": "temporal-pann-ridge1",
+          "majority_accuracy": 0.3542968749999999,
+          "source_accuracy": 0.4007254464285714
+        },
+        {
+          "candidate": "temporal-pann-ridge10",
+          "majority_accuracy": 0.3542968749999999,
+          "source_accuracy": 0.40156249999999993
+        },
+        {
+          "candidate": "temporal-pann-ridge100",
+          "majority_accuracy": 0.3542968749999999,
+          "source_accuracy": 0.41471354166666663
+        }
+      ],
+      "checkpoint_bytes": 130685,
+      "checkpoint_sha256": "6d4d426401e94121caa4860f0246b35418ce8dd4088fd222e0ae418e2cc257af",
+      "label_coverage_under_quarter_mass": 0.39111793154761904,
+      "oof_unseen_label_mass": 0.0,
+      "present_classes": 12,
+      "selected": "pann-ridge100"
+    }
+  },
+  "preserved_originals_verified": 146,
+  "process": {
+    "abnormal_exit_cost_is_only_measured_lower_bound": false,
+    "abnormal_exit_limit": "An interrupted parent may not have reaped its active codec children; their missing CPU is not estimated as zero",
+    "child_cpu_seconds": 2731.2428210000003,
+    "child_peak_rss_bytes": 885022720,
+    "child_reaped": true,
+    "command": [
+      "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+      "-B",
+      "-m",
+      "experiments.multimodal_output_portfolio.joint_hepta_20261029.observer_v2",
+      "--output",
+      "/home/runner/work/_temp/joint-v2-observer/run",
+      "--registration-sha",
+      "9a0b16a620b4203093268a2a917f76bb99eb61ef"
+    ],
+    "descendant_accounting_complete_under_registered_reaping_contract": true,
+    "detached_descendant_cpu_not_supported": true,
+    "ended_at_utc": "2026-10-30T12:52:27.730876+00:00",
+    "episode_costs_are_subtotals_not_additional_process_cost": true,
+    "excluded": [
+      "Environment provisioning and package installation",
+      "Supervisor interpreter startup before meter entry",
+      "External infrastructure and acquisition fees"
+    ],
+    "exit_code": 0,
+    "lifetime_savings_qualified": false,
+    "measured_process_tariff_cost": 55.799171597091004,
+    "physical_resource_tail_bound_proved": false,
+    "process_log_sha256": "ceb47b9fb25569c9fe9b9b5ca6ed752c4bea9b9e0181a8309f0fe3cf2f9dc86c",
+    "schema": "hepta.joint-process-meter.v2",
+    "scope": "Child interpreter startup, imports, model loading, all executed study phases, exit and reaped descendants; active supervisor measured separately",
+    "sigkill_required": false,
+    "started_at_utc": "2026-10-30T12:33:16.784107+00:00",
+    "supervisor_cpu_seconds": 1.16842,
+    "tariff": {
+      "cpu_second": 0.02,
+      "wall_second": 0.001
+    },
+    "timed_out": false,
+    "wall_seconds": 1150.946777091
+  },
+  "run_id": 41055922354,
+  "schema": "hepta.observer-independent-compact-review.v2",
+  "scope_limits": [
+    "No original media or feature arrays read from the full artifact. Media hashes cross-checked between preserved receipts and complete input inventory; original CI archive already hashed every file twice.",
+    "OOF is development and used for candidate selection; no independent semantic or generated-output qualification.",
+    "Pretrained feature backbones are frozen; 42 closed-form ridge fits, no neural optimizer updates."
+  ],
+  "source_commit": "9a0b16a620b4203093268a2a917f76bb99eb61ef",
+  "source_receipts_verified": 128,
+  "stored_files_verified": 149
+}

@@ -1,0 +1,457 @@
+{
+  "audit": {
+    "actual_output_files_verified": 96,
+    "counts_by_phase": {
+      "diagnostic": 24
+    },
+    "errors": [],
+    "failures": 0,
+    "fresh_media_opened_by_audit": false,
+    "integrity_passed": true,
+    "process_completed_successfully": true,
+    "profile_sha256_values": [
+      "53d15a19a124d68dbee656c6a4486f6f61895b5509aa2af8f1f62d56ec689ebe"
+    ],
+    "receipt_checks": {
+      "checkpoint_files_verified": 3,
+      "child_reaped": true,
+      "observer_checkpoints_verified": 0,
+      "process_exit_code": 0,
+      "process_receipt_present": true,
+      "process_timed_out": false,
+      "source_receipt_present": true
+    },
+    "schema": "hepta.joint-generation.compact-archive.v2.audit",
+    "scientific_qualification": false,
+    "scope": "Actual recorded chains and file identities; not semantic correctness or model efficacy",
+    "source_files_unchanged_during_archive": true,
+    "trajectory_chains_verified": 24,
+    "trajectory_files_found": 24
+  },
+  "input_bytes": 15855119,
+  "input_files": 352,
+  "input_manifest_sha256": "c5460c14c87119f36195fe1f554b2cb60d8122b70bab14b832f70e09fa77e093",
+  "media_and_pretrained_weights": "Omitted from compact archive; retained in original full artifact",
+  "original_bytes_rewritten": false,
+  "preserved_originals": [
+    {
+      "archive_member": "run/ordinary/source-000-draw-0/TRAJECTORY.json",
+      "encoding": "tar_member_original_bytes",
+      "source_bytes": 189792,
+      "source_path": "run/ordinary/source-000-draw-0/TRAJECTORY.json",
+      "source_sha256": "b8ea191e2b9f04f5695c5a26ae77cb0c087df0ae86443bfe3dccfcc9fbf2b2c6",
+      "stored_path": "TRAJECTORIES.tar.gz"
+    },
+    {
+      "archive_member": "run/ordinary/source-001-draw-0/TRAJECTORY.json",
+      "encoding": "tar_member_original_bytes",
+      "source_bytes": 88530,
+      "source_path": "run/ordinary/source-001-draw-0/TRAJECTORY.json",
+      "source_sha256": "a30449267cae33a41a6d14071ed84e865220bb9f925b4b5b261428e0b7b53426",
+      "stored_path": "TRAJECTORIES.tar.gz"
+    },
+    {
+      "archive_member": "run/ordinary/source-002-draw-0/TRAJECTORY.json",
+      "encoding": "tar_member_original_bytes",
+      "source_bytes": 134915,
+      "source_path": "run/ordinary/source-002-draw-0/TRAJECTORY.json",
+      "source_sha256": "9675bc13859329f6a629814342ff40bc9fdfce076985aa14a7462152cd918bbb",
+      "stored_path": "TRAJECTORIES.tar.gz"
+    },
+    {
+      "archive_member": "run/ordinary/source-003-draw-0/TRAJECTORY.json",
+      "encoding": "tar_member_original_bytes",
+      "source_bytes": 88435,
+      "source_path": "run/ordinary/source-003-draw-0/TRAJECTORY.json",
+      "source_sha256": "7d22701c4e16b0314e0fca933cb880b7d7c491a470506711df95adfaf4aa1d99",
+      "stored_path": "TRAJECTORIES.tar.gz"
+    },
+    {
+      "archive_member": "run/ordinary/source-004-draw-0/TRAJECTORY.json",
+      "encoding": "tar_member_original_bytes",
+      "source_bytes": 158067,
+      "source_path": "run/ordinary/source-004-draw-0/TRAJECTORY.json",
+      "source_sha256": "b1f74f8b13290bbf2cfbb1fd069921651bdc8e9807eff58e1d859007dc628081",
+      "stored_path": "TRAJECTORIES.tar.gz"
+    },
+    {
+      "archive_member": "run/ordinary/source-005-draw-0/TRAJECTORY.json",
+      "encoding": "tar_member_original_bytes",
+      "source_bytes": 135023,
+      "source_path": "run/ordinary/source-005-draw-0/TRAJECTORY.json",
+      "source_sha256": "8700bc0ce9bb3b2973bd29e98e580fa4cbcef035e8d4383219313085952c2c72",
+      "stored_path": "TRAJECTORIES.tar.gz"
+    },
+    {
+      "archive_member": "run/ordinary/source-006-draw-0/TRAJECTORY.json",
+      "encoding": "tar_member_original_bytes",
+      "source_bytes": 181140,
+      "source_path": "run/ordinary/source-006-draw-0/TRAJECTORY.json",
+      "source_sha256": "437cf9c2a7bd0fa048f8f735144cd937e2d9bb90c33a1e0d44bbf2052498348d",
+      "stored_path": "TRAJECTORIES.tar.gz"
+    },
+    {
+      "archive_member": "run/ordinary/source-007-draw-0/TRAJECTORY.json",
+      "encoding": "tar_member_original_bytes",
+      "source_bytes": 135050,
+      "source_path": "run/ordinary/source-007-draw-0/TRAJECTORY.json",
+      "source_sha256": "2f560d85aea7db3baed4a07a90264abb15e9938a763b61941aea9e84193623a0",
+      "stored_path": "TRAJECTORIES.tar.gz"
+    },
+    {
+      "archive_member": "run/student/source-000-draw-0/TRAJECTORY.json",
+      "encoding": "tar_member_original_bytes",
+      "source_bytes": 184652,
+      "source_path": "run/student/source-000-draw-0/TRAJECTORY.json",
+      "source_sha256": "f1c08a01d293382e208baa3a4aad92c3e810e5febcada9174dba75aad894551f",
+      "stored_path": "TRAJECTORIES.tar.gz"
+    },
+    {
+      "archive_member": "run/student/source-001-draw-0/TRAJECTORY.json",
+      "encoding": "tar_member_original_bytes",
+      "source_bytes": 176434,
+      "source_path": "run/student/source-001-draw-0/TRAJECTORY.json",
+      "source_sha256": "c6a7ad2764717ff31d78addfa8169cf9d653547cd701b8570f12a41168e4cc02",
+      "stored_path": "TRAJECTORIES.tar.gz"
+    },
+    {
+      "archive_member": "run/student/source-002-draw-0/TRAJECTORY.json",
+      "encoding": "tar_member_original_bytes",
+      "source_bytes": 175985,
+      "source_path": "run/student/source-002-draw-0/TRAJECTORY.json",
+      "source_sha256": "29261d93ed94d15c7de39dd94f53753742c974a12a3efefed76fd0cf3cedb2db",
+      "stored_path": "TRAJECTORIES.tar.gz"
+    },
+    {
+      "archive_member": "run/student/source-003-draw-0/TRAJECTORY.json",
+      "encoding": "tar_member_original_bytes",
+      "source_bytes": 175986,
+      "source_path": "run/student/source-003-draw-0/TRAJECTORY.json",
+      "source_sha256": "a48eef24ec9eb51d08c2f571cd1bbf5125208c756cc2a399bb310f746aac3b18",
+      "stored_path": "TRAJECTORIES.tar.gz"
+    },
+    {
+      "archive_member": "run/student/source-004-draw-0/TRAJECTORY.json",
+      "encoding": "tar_member_original_bytes",
+      "source_bytes": 176434,
+      "source_path": "run/student/source-004-draw-0/TRAJECTORY.json",
+      "source_sha256": "ab5376d7ad3807444997ba3b61dc48ab7db191aa3a11485bf54cfc02b858e1ba",
+      "stored_path": "TRAJECTORIES.tar.gz"
+    },
+    {
+      "archive_member": "run/student/source-005-draw-0/TRAJECTORY.json",
+      "encoding": "tar_member_original_bytes",
+      "source_bytes": 176032,
+      "source_path": "run/student/source-005-draw-0/TRAJECTORY.json",
+      "source_sha256": "5a6ec72890b3fffb9ec96cd34a20b46c74d970d2e64672e30f854e1c4e294f75",
+      "stored_path": "TRAJECTORIES.tar.gz"
+    },
+    {
+      "archive_member": "run/student/source-006-draw-0/TRAJECTORY.json",
+      "encoding": "tar_member_original_bytes",
+      "source_bytes": 175973,
+      "source_path": "run/student/source-006-draw-0/TRAJECTORY.json",
+      "source_sha256": "709d23c9876c828a7751c11ab65702bcba765d7dd6370dcad6fb99ec8eb547cb",
+      "stored_path": "TRAJECTORIES.tar.gz"
+    },
+    {
+      "archive_member": "run/student/source-007-draw-0/TRAJECTORY.json",
+      "encoding": "tar_member_original_bytes",
+      "source_bytes": 176430,
+      "source_path": "run/student/source-007-draw-0/TRAJECTORY.json",
+      "source_sha256": "b619fedffffcd0aa17bdfe7b6784d1315c16b2bf02bac60af82bc2c3ef6dfdbb",
+      "stored_path": "TRAJECTORIES.tar.gz"
+    },
+    {
+      "archive_member": "run/teacher/source-000-draw-0/TRAJECTORY.json",
+      "encoding": "tar_member_original_bytes",
+      "source_bytes": 185024,
+      "source_path": "run/teacher/source-000-draw-0/TRAJECTORY.json",
+      "source_sha256": "4897768caa583e9c1d0e01a5c4a44dd7b47b58b9cf2a8bc3681fff1fca201a6a",
+      "stored_path": "TRAJECTORIES.tar.gz"
+    },
+    {
+      "archive_member": "run/teacher/source-001-draw-0/TRAJECTORY.json",
+      "encoding": "tar_member_original_bytes",
+      "source_bytes": 176435,
+      "source_path": "run/teacher/source-001-draw-0/TRAJECTORY.json",
+      "source_sha256": "2cba6ee68840afa936b497c3a7a23819254ebed87f321028b010eb6e36208385",
+      "stored_path": "TRAJECTORIES.tar.gz"
+    },
+    {
+      "archive_member": "run/teacher/source-002-draw-0/TRAJECTORY.json",
+      "encoding": "tar_member_original_bytes",
+      "source_bytes": 176311,
+      "source_path": "run/teacher/source-002-draw-0/TRAJECTORY.json",
+      "source_sha256": "ffbfaffe5530be502b1fa47d6767cb46e030d1a5e0ed03ea3cd396b78f2359fb",
+      "stored_path": "TRAJECTORIES.tar.gz"
+    },
+    {
+      "archive_member": "run/teacher/source-003-draw-0/TRAJECTORY.json",
+      "encoding": "tar_member_original_bytes",
+      "source_bytes": 175991,
+      "source_path": "run/teacher/source-003-draw-0/TRAJECTORY.json",
+      "source_sha256": "f9dfe37663da7e10ddf6a086fc235e68ccf78a7b5799894c120bbd14b912eca2",
+      "stored_path": "TRAJECTORIES.tar.gz"
+    },
+    {
+      "archive_member": "run/teacher/source-004-draw-0/TRAJECTORY.json",
+      "encoding": "tar_member_original_bytes",
+      "source_bytes": 176435,
+      "source_path": "run/teacher/source-004-draw-0/TRAJECTORY.json",
+      "source_sha256": "296033f147370fe617224a5c2cca43835b7cfa2c582dc47e9a032f57759e2147",
+      "stored_path": "TRAJECTORIES.tar.gz"
+    },
+    {
+      "archive_member": "run/teacher/source-005-draw-0/TRAJECTORY.json",
+      "encoding": "tar_member_original_bytes",
+      "source_bytes": 176050,
+      "source_path": "run/teacher/source-005-draw-0/TRAJECTORY.json",
+      "source_sha256": "0dcdec3763efc7000967cfc5d8cce1ec20ac157c6f55163db1f0fa9739fd81b9",
+      "stored_path": "TRAJECTORIES.tar.gz"
+    },
+    {
+      "archive_member": "run/teacher/source-006-draw-0/TRAJECTORY.json",
+      "encoding": "tar_member_original_bytes",
+      "source_bytes": 176017,
+      "source_path": "run/teacher/source-006-draw-0/TRAJECTORY.json",
+      "source_sha256": "ff46c384e9747f25e8429b5a261df32f2eccd14d334552ed9d97f8290c3dcf85",
+      "stored_path": "TRAJECTORIES.tar.gz"
+    },
+    {
+      "archive_member": "run/teacher/source-007-draw-0/TRAJECTORY.json",
+      "encoding": "tar_member_original_bytes",
+      "source_bytes": 176414,
+      "source_path": "run/teacher/source-007-draw-0/TRAJECTORY.json",
+      "source_sha256": "ccca5bd244b43010062c374ac7345ea375eeea2a522a04e54e7b57ff0aa66edd",
+      "stored_path": "TRAJECTORIES.tar.gz"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 1864,
+      "source_path": "PROCESS_RECEIPT.json",
+      "source_sha256": "f48cf8d62859affcbe328a4a6244ded890d06bef4d875193eaa555db36c4f1dc",
+      "stored_bytes": 964,
+      "stored_path": "original/PROCESS_RECEIPT.json.gz",
+      "stored_sha256": "8d2b1f42b5c3cb57eb80d566103c59fb3dcbcbe68b51471f7f4769017c3e6cd3"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 23377,
+      "source_path": "SOURCE_RECEIPT.json",
+      "source_sha256": "49db08c9f77622adc58fd5e6af1a27f6bb188b7e71d818656ada6e7847e31cdd",
+      "stored_bytes": 3940,
+      "stored_path": "original/SOURCE_RECEIPT.json.gz",
+      "stored_sha256": "8fa59f6aced6e838f4b8688961cfc6dc080d4666904b89b9e6f8d3f95e2be14c"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 17451,
+      "source_path": "build/BUILD_RECEIPT.json",
+      "source_sha256": "70b5dc456915529f8455ce4618f5b7a19c14a6fa6d0e7a14e1ba819efdd87026",
+      "stored_bytes": 6745,
+      "stored_path": "original/build/BUILD_RECEIPT.json.gz",
+      "stored_sha256": "9b4b72a706b2235ecac0791b47dfa62602292d14d38061a4971bf783e0154d7b"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 361,
+      "source_path": "build/LOCK_IDENTITY_CHECK.json",
+      "source_sha256": "068a55d02f7f3ee0dc75f531c5773ddd3c6e9f2f2cc5c5ec0727703239474be6",
+      "stored_bytes": 257,
+      "stored_path": "original/build/LOCK_IDENTITY_CHECK.json.gz",
+      "stored_sha256": "aa63e86c125de54e589e76c834552a3b717b0b149c6cd4db6b8c03ed611776ad"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 212,
+      "source_path": "environment.txt",
+      "source_sha256": "2874702f6092ed33ce7d4e4f68c1080aee26d25e4e9371e3cf20cdd916304218",
+      "stored_bytes": 180,
+      "stored_path": "original/environment.txt.gz",
+      "stored_sha256": "e670ca27f936604b8f1b35a1dcb62d44d67615ad4846cae9bd56955f2f73daeb"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 5865,
+      "source_path": "process.log",
+      "source_sha256": "9e6a39ab7585a4940c11247d83988a2016f3c3a3da22f7221d2b88db7228ea02",
+      "stored_bytes": 1962,
+      "stored_path": "original/process.log.gz",
+      "stored_sha256": "46a2eb86d3e26e96818b7c507ebc7c3fa862a1f9c95ce99c87147ab4b6ba88a4"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 2392,
+      "source_path": "run/PROFILE.json",
+      "source_sha256": "f6ba88529fd726adf1b74363a67bcff1756b67b3cbe1611be838c2610f7c219b",
+      "stored_bytes": 1200,
+      "stored_path": "original/run/PROFILE.json.gz",
+      "stored_sha256": "43279a45b517b2f50e8fba099025104a61689da526acb5cea0fd161e78e0b0cf"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 108243,
+      "source_path": "run/RESULTS.json",
+      "source_sha256": "e2d622ae3eae75c4c5ecc7b1b8d939d9e48cc5ff1187beefe2ba9563236bea91",
+      "stored_bytes": 15865,
+      "stored_path": "original/run/RESULTS.json.gz",
+      "stored_sha256": "fbe2a5b268241df2d1c321c2ed5e4d1148f25254b9650d483c34934ba6012ffc"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 104911,
+      "source_path": "run/RESULTS.partial.json",
+      "source_sha256": "083d9532756d8e11adecdc021a6578a055e2138a5d9f0228a4bf25875414b9a0",
+      "stored_bytes": 15374,
+      "stored_path": "original/run/RESULTS.partial.json.gz",
+      "stored_sha256": "415ef1040cd64c76ddf46b183ed447d4e2155f4055f5a6b11fc0024efe29895f"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 7056,
+      "source_path": "run/SUMMARY.json",
+      "source_sha256": "b16ab03ad9f085513d2b914c84716c96b73b47ae2345b32c63e02e562c0a9baa",
+      "stored_bytes": 2023,
+      "stored_path": "original/run/SUMMARY.json.gz",
+      "stored_sha256": "3c5bc6be5851431996e151d97f27e372695bb4e2923d6eb23fe489cb9d23e5bf"
+    },
+    {
+      "encoding": "original_bytes",
+      "source_bytes": 2441782,
+      "source_path": "run/ordinary/source-000-draw-0/TENSOR_CONTINUATION.pt",
+      "source_sha256": "50be9cdd4b32a8a012c3c98cc64ef824e953f087501346858d3e2ea1d8025190",
+      "stored_bytes": 2441782,
+      "stored_path": "original/run/ordinary/source-000-draw-0/TENSOR_CONTINUATION.pt",
+      "stored_sha256": "50be9cdd4b32a8a012c3c98cc64ef824e953f087501346858d3e2ea1d8025190"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 951,
+      "source_path": "run/ordinary/source-000-draw-0/TENSOR_CONTINUATION.pt.manifest.json",
+      "source_sha256": "1477db5dac5984228ac557583432dd3e02a32d3e90d3701c14440f0da1289111",
+      "stored_bytes": 551,
+      "stored_path": "original/run/ordinary/source-000-draw-0/TENSOR_CONTINUATION.pt.manifest.json.gz",
+      "stored_sha256": "c662697abac44334dab57de848c4eae80a5f007b506d19417d91cb2fb465d2cf"
+    },
+    {
+      "encoding": "original_bytes",
+      "source_bytes": 2441782,
+      "source_path": "run/student/source-000-draw-0/TENSOR_CONTINUATION.pt",
+      "source_sha256": "9cb10be5f4f5ddcc22361bfbbe3d0d83832c8f7a2df4c47527912bce5a1c1260",
+      "stored_bytes": 2441782,
+      "stored_path": "original/run/student/source-000-draw-0/TENSOR_CONTINUATION.pt",
+      "stored_sha256": "9cb10be5f4f5ddcc22361bfbbe3d0d83832c8f7a2df4c47527912bce5a1c1260"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 951,
+      "source_path": "run/student/source-000-draw-0/TENSOR_CONTINUATION.pt.manifest.json",
+      "source_sha256": "aff49c54f9b224312413face92405f6eaa807d558a99862b34ff28be6f69a95f",
+      "stored_bytes": 555,
+      "stored_path": "original/run/student/source-000-draw-0/TENSOR_CONTINUATION.pt.manifest.json.gz",
+      "stored_sha256": "e34509a5743889b6d74c03bc97fe041cdec8bcca760c04721fd91bcbcf96a169"
+    },
+    {
+      "encoding": "original_bytes",
+      "source_bytes": 2441782,
+      "source_path": "run/teacher/source-000-draw-0/TENSOR_CONTINUATION.pt",
+      "source_sha256": "725d005b9a90401c45324a3bf13cd80c04f9c49497f3d95970a6eff2ba0c6723",
+      "stored_bytes": 2441782,
+      "stored_path": "original/run/teacher/source-000-draw-0/TENSOR_CONTINUATION.pt",
+      "stored_sha256": "725d005b9a90401c45324a3bf13cd80c04f9c49497f3d95970a6eff2ba0c6723"
+    },
+    {
+      "encoding": "gzip_original_bytes",
+      "source_bytes": 951,
+      "source_path": "run/teacher/source-000-draw-0/TENSOR_CONTINUATION.pt.manifest.json",
+      "source_sha256": "0d00f272a916fad4faea87fd81f2091c00cfe294c433cfa8ef8746834a218f38",
+      "stored_bytes": 553,
+      "stored_path": "original/run/teacher/source-000-draw-0/TENSOR_CONTINUATION.pt.manifest.json.gz",
+      "stored_sha256": "8f25aa93670dc421554c8e3814761b05ce2dfb3464f2ab3d40bd13fea277259c"
+    }
+  ],
+  "schema": "hepta.joint-generation.compact-archive.v2",
+  "stored_files": {
+    "AUDIT.json": {
+      "bytes": 917,
+      "sha256": "1b9aa7e2019c5ccdef3cbe620ca5ae828ff72eb9e4f64f03f1164842985cf63a"
+    },
+    "INPUT_MANIFEST.json.gz": {
+      "bytes": 11607,
+      "sha256": "c5460c14c87119f36195fe1f554b2cb60d8122b70bab14b832f70e09fa77e093"
+    },
+    "TRAJECTORIES.tar.gz": {
+      "bytes": 382953,
+      "sha256": "640502bca80d5ceb4463c5933572852b0b27d13aef8206248808f55501f74943"
+    },
+    "TRAJECTORY_AUDIT.json.gz": {
+      "bytes": 4482,
+      "sha256": "405a588d0f17c585ca46b3ca1fbe183696380039408d4dfe051119398d4d4749"
+    },
+    "original/PROCESS_RECEIPT.json.gz": {
+      "bytes": 964,
+      "sha256": "8d2b1f42b5c3cb57eb80d566103c59fb3dcbcbe68b51471f7f4769017c3e6cd3"
+    },
+    "original/SOURCE_RECEIPT.json.gz": {
+      "bytes": 3940,
+      "sha256": "8fa59f6aced6e838f4b8688961cfc6dc080d4666904b89b9e6f8d3f95e2be14c"
+    },
+    "original/build/BUILD_RECEIPT.json.gz": {
+      "bytes": 6745,
+      "sha256": "9b4b72a706b2235ecac0791b47dfa62602292d14d38061a4971bf783e0154d7b"
+    },
+    "original/build/LOCK_IDENTITY_CHECK.json.gz": {
+      "bytes": 257,
+      "sha256": "aa63e86c125de54e589e76c834552a3b717b0b149c6cd4db6b8c03ed611776ad"
+    },
+    "original/environment.txt.gz": {
+      "bytes": 180,
+      "sha256": "e670ca27f936604b8f1b35a1dcb62d44d67615ad4846cae9bd56955f2f73daeb"
+    },
+    "original/process.log.gz": {
+      "bytes": 1962,
+      "sha256": "46a2eb86d3e26e96818b7c507ebc7c3fa862a1f9c95ce99c87147ab4b6ba88a4"
+    },
+    "original/run/PROFILE.json.gz": {
+      "bytes": 1200,
+      "sha256": "43279a45b517b2f50e8fba099025104a61689da526acb5cea0fd161e78e0b0cf"
+    },
+    "original/run/RESULTS.json.gz": {
+      "bytes": 15865,
+      "sha256": "fbe2a5b268241df2d1c321c2ed5e4d1148f25254b9650d483c34934ba6012ffc"
+    },
+    "original/run/RESULTS.partial.json.gz": {
+      "bytes": 15374,
+      "sha256": "415ef1040cd64c76ddf46b183ed447d4e2155f4055f5a6b11fc0024efe29895f"
+    },
+    "original/run/SUMMARY.json.gz": {
+      "bytes": 2023,
+      "sha256": "3c5bc6be5851431996e151d97f27e372695bb4e2923d6eb23fe489cb9d23e5bf"
+    },
+    "original/run/ordinary/source-000-draw-0/TENSOR_CONTINUATION.pt": {
+      "bytes": 2441782,
+      "sha256": "50be9cdd4b32a8a012c3c98cc64ef824e953f087501346858d3e2ea1d8025190"
+    },
+    "original/run/ordinary/source-000-draw-0/TENSOR_CONTINUATION.pt.manifest.json.gz": {
+      "bytes": 551,
+      "sha256": "c662697abac44334dab57de848c4eae80a5f007b506d19417d91cb2fb465d2cf"
+    },
+    "original/run/student/source-000-draw-0/TENSOR_CONTINUATION.pt": {
+      "bytes": 2441782,
+      "sha256": "9cb10be5f4f5ddcc22361bfbbe3d0d83832c8f7a2df4c47527912bce5a1c1260"
+    },
+    "original/run/student/source-000-draw-0/TENSOR_CONTINUATION.pt.manifest.json.gz": {
+      "bytes": 555,
+      "sha256": "e34509a5743889b6d74c03bc97fe041cdec8bcca760c04721fd91bcbcf96a169"
+    },
+    "original/run/teacher/source-000-draw-0/TENSOR_CONTINUATION.pt": {
+      "bytes": 2441782,
+      "sha256": "725d005b9a90401c45324a3bf13cd80c04f9c49497f3d95970a6eff2ba0c6723"
+    },
+    "original/run/teacher/source-000-draw-0/TENSOR_CONTINUATION.pt.manifest.json.gz": {
+      "bytes": 553,
+      "sha256": "8f25aa93670dc421554c8e3814761b05ce2dfb3464f2ab3d40bd13fea277259c"
+    }
+  }
+}

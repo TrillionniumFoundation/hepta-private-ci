@@ -1,0 +1,1363 @@
+{
+  "all_configurations_observed_cost": {
+    "combined_observed_time_and_fixed_service_cost": 413.80602682649186,
+    "external_scope_unmeasured_not_zero": true,
+    "inside_meter_fixed_service_fees": 375.02949999999186,
+    "post_meter_feedback_cost": 12.404278401407002,
+    "whole_process_plus_fixed_service_fees": 401.40174842508486,
+    "whole_process_time_tariff_cost": 26.372248425093
+  },
+  "analysis_source_sha256": "e7e08e22f04dac0c8d8c7b6e6307c10782d5c3f2024d25c753836d6a8f0b71a3",
+  "complete_validated_panel": true,
+  "configurations": [
+    {
+      "compact_manifest_sha256": "e9bab7368773a8c53a2607957941108e45a9ecd9522c74d1e8593a1f17cbecad",
+      "descriptive_arms": {
+        "hepta_dynamic_mean": {
+          "audit_inclusive_net_ce": 0.800296660586373,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 4.1509968656159094e-05,
+          "mean_audit_inclusive_cost": 0.017803334690968703,
+          "mean_serving_cost": 0.017761824722312542,
+          "mean_utility": 0.8247998552396894,
+          "serving_net_ce": 0.8003383898993082,
+          "utility_ce": 0.8181545896711637
+        },
+        "hepta_dynamic_risk": {
+          "audit_inclusive_net_ce": 0.8002641588986482,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 4.333109057814456e-05,
+          "mean_audit_inclusive_cost": 0.017834393478109382,
+          "mean_serving_cost": 0.01779106238753124,
+          "mean_utility": 0.8247840851545334,
+          "serving_net_ce": 0.8003076840325292,
+          "utility_ce": 0.8181427733753106
+        },
+        "hepta_dynamic_risk_actor_only": {
+          "audit_inclusive_net_ce": 0.8002152731404116,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 4.454274443746985e-05,
+          "mean_audit_inclusive_cost": 0.017862345421562474,
+          "mean_serving_cost": 0.017817802677125006,
+          "mean_utility": 0.8247597310692072,
+          "serving_net_ce": 0.8002599927703993,
+          "utility_ce": 0.8181234109111021
+        },
+        "hepta_fixed_mean": {
+          "audit_inclusive_net_ce": 0.8091947130200208,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 4.491834715620799e-05,
+          "mean_audit_inclusive_cost": 0.02122348494015623,
+          "mean_serving_cost": 0.021178566593000023,
+          "mean_utility": 0.837145765312016,
+          "serving_net_ce": 0.8092396056947235,
+          "utility_ce": 0.8304162790749238
+        },
+        "hepta_fixed_risk": {
+          "audit_inclusive_net_ce": 0.809176428650779,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 4.592915992190569e-05,
+          "mean_audit_inclusive_cost": 0.02123238729793756,
+          "mean_serving_cost": 0.021186458138015653,
+          "mean_utility": 0.8371352646499872,
+          "serving_net_ce": 0.8092223340441411,
+          "utility_ce": 0.8304071435996198
+        },
+        "hepta_student": {
+          "audit_inclusive_net_ce": 0.7853444717214407,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 6.051175685936692e-05,
+          "mean_audit_inclusive_cost": 0.025147176104921853,
+          "mean_serving_cost": 0.025086664348062483,
+          "mean_utility": 0.8203560546971858,
+          "serving_net_ce": 0.7854050478564896,
+          "utility_ce": 0.8104440626192659
+        },
+        "hepta_teacher": {
+          "audit_inclusive_net_ce": 0.7849693289057986,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 4.840152623444144e-05,
+          "mean_audit_inclusive_cost": 0.026183505379156324,
+          "mean_serving_cost": 0.026135103852921882,
+          "mean_utility": 0.820952270179987,
+          "serving_net_ce": 0.7850177396210459,
+          "utility_ce": 0.8111520764370876
+        },
+        "ordinary_dynamic_mean": {
+          "audit_inclusive_net_ce": 0.7740375297200051,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 4.548094204690368e-05,
+          "mean_audit_inclusive_cost": 0.018795581422078118,
+          "mean_serving_cost": 0.018750100480031215,
+          "mean_utility": 0.8030433785170317,
+          "serving_net_ce": 0.7740829191756892,
+          "utility_ce": 0.7927168163697007
+        },
+        "ordinary_dynamic_risk": {
+          "audit_inclusive_net_ce": 0.7810528185745584,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 4.534246334375429e-05,
+          "mean_audit_inclusive_cost": 0.0185426864431563,
+          "mean_serving_cost": 0.018497343979812543,
+          "mean_utility": 0.8084598425775766,
+          "serving_net_ce": 0.7810982295089559,
+          "utility_ce": 0.7995761237420365
+        },
+        "ordinary_fixed_mean": {
+          "audit_inclusive_net_ce": 0.7821296562077971,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 4.5644617906241e-05,
+          "mean_audit_inclusive_cost": 0.021188092701906247,
+          "mean_serving_cost": 0.021142448084000006,
+          "mean_utility": 0.8110421439632773,
+          "serving_net_ce": 0.7821752553131638,
+          "utility_ce": 0.803316848183444
+        }
+      },
+      "physical_cost_reconciliation": {
+        "accounting_limit": "Phase and process meters overlap; fixed serving action tariffs are separate. Cold deployment loading, fixed-volume lifecycle allocation and cross-host uncertainty are not inferred.",
+        "complete_lifecycle_savings_qualified": false,
+        "distillation_training_time_tariff_cost": 0.05003715758500048,
+        "named_phase_time_tariff_totals": {
+          "cpu_seconds": 260.58246800000006,
+          "physical_cost": 5.365450737644001,
+          "wall_seconds": 153.801377644
+        },
+        "outside_runner_including_startup_import_exit_and_supervisor": {
+          "cpu_seconds": 3.142346000000032,
+          "physical_cost": 0.06579374352800116,
+          "wall_seconds": 2.94682352800001
+        },
+        "runner_unassigned_residual": {
+          "cpu_seconds": 0.9291689999999448,
+          "physical_cost": 0.019366098766998796,
+          "wall_seconds": 0.7827187669999773
+        },
+        "whole_process_measured_time_tariff_cost": 5.450610579939001
+      },
+      "profile_sha256": "53d15a19a124d68dbee656c6a4486f6f61895b5509aa2af8f1f62d56ec689ebe",
+      "registered_run_cost_accounting": {
+        "combined_observed_time_and_fixed_service_cost": 98.23387051612309,
+        "deployment_lifecycle_savings_established": false,
+        "inside_meter_episode_time_tariff_cost_already_in_process": 3.648707483901016,
+        "inside_meter_fixed_service_fees": 89.7839999999981,
+        "inside_meter_other_time_cost_including_setup_optimization_and_audit": 1.801903096037985,
+        "interpretation": "Complete addition of the recorded registered-scope time and fixed fees; an observed lower bound for wider research infrastructure, not a per-candidate deployment allocation",
+        "post_meter_feedback": {
+          "cpu_seconds": 5.606206,
+          "excluded": "Feedback interpreter startup/imports and final summary serialization are outside its run-entry meter",
+          "fixed_service_fees": 2.8835,
+          "time_plus_fixed_service_cost": 2.999259936186,
+          "time_tariff_cost": 0.115759936186,
+          "wall_seconds": 3.6358161859999996
+        },
+        "same_cpu_wall_cost_added_twice": false,
+        "unmeasured_external_scope": [
+          "environment provisioning and package installation",
+          "repository and artifact downloads",
+          "public source/evidence publication",
+          "standalone archive/analysis and upload processes",
+          "supervisor startup before its timer and feedback startup/final summary tail"
+        ],
+        "whole_process_plus_fixed_service_fees": 95.2346105799371,
+        "whole_process_time_tariff_cost": 5.450610579939001
+      },
+      "result_original_sha256": "41d62ecb1888ee4e9843eb9b6af561df66d2f2cd49927fd986dbb05b7ecc5bdb",
+      "seed": 17,
+      "trajectory_audit": {
+        "cost_components_by_phase": {
+          "diagnostic": {
+            "actual_episode_cost": 2.9783131545129997,
+            "episode_time_tariff_cost": 0.09481315451300006,
+            "fixed_action_and_encode_service_fees": 2.8835,
+            "logged_action_cpu_seconds": 1.6124079999999976,
+            "logged_action_time_tariff_cost": 0.03317495964299996,
+            "logged_action_wall_seconds": 0.9267996430000096,
+            "terminal_delivery_time_tariff_cost": 0.06163819487000011
+          },
+          "distillation_evaluation": {
+            "actual_episode_cost": 3.278193164863001,
+            "episode_time_tariff_cost": 0.14419316486299938,
+            "fixed_action_and_encode_service_fees": 3.134000000000005,
+            "logged_action_cpu_seconds": 3.745555999999681,
+            "logged_action_time_tariff_cost": 0.0769663902739937,
+            "logged_action_wall_seconds": 2.055270274000037,
+            "terminal_delivery_time_tariff_cost": 0.06722677458900571
+          },
+          "distillation_training": {
+            "actual_episode_cost": 0.8697520927029991,
+            "episode_time_tariff_cost": 0.04575209270299903,
+            "fixed_action_and_encode_service_fees": 0.8239999999999998,
+            "logged_action_cpu_seconds": 1.4564730000000452,
+            "logged_action_time_tariff_cost": 0.029898941251000972,
+            "logged_action_wall_seconds": 0.7694812510000588,
+            "terminal_delivery_time_tariff_cost": 0.015853151451998063
+          },
+          "evaluation": {
+            "actual_episode_cost": 9.864038851957012,
+            "episode_time_tariff_cost": 0.3415388519570065,
+            "fixed_action_and_encode_service_fees": 9.522500000000038,
+            "logged_action_cpu_seconds": 5.504297000000051,
+            "logged_action_time_tariff_cost": 0.11346889582800042,
+            "logged_action_wall_seconds": 3.38295582799951,
+            "terminal_delivery_time_tariff_cost": 0.22806995612900582
+          },
+          "training": {
+            "actual_episode_cost": 79.42072337437806,
+            "episode_time_tariff_cost": 3.1172233743780113,
+            "fixed_action_and_encode_service_fees": 76.30349999999805,
+            "logged_action_cpu_seconds": 61.943439000001014,
+            "logged_action_time_tariff_cost": 1.2709093936820184,
+            "logged_action_wall_seconds": 32.040613681999744,
+            "terminal_delivery_time_tariff_cost": 1.846313980695996
+          }
+        },
+        "counts_by_phase": {
+          "diagnostic": 144,
+          "distillation_evaluation": 128,
+          "distillation_training": 36,
+          "evaluation": 512,
+          "training": 4096
+        },
+        "episode_costs_overlap_process_time_cost_and_must_not_be_added_wholesale": true,
+        "failures_by_phase": {
+          "diagnostic": 0,
+          "distillation_evaluation": 0,
+          "distillation_training": 0,
+          "evaluation": 0,
+          "training": 0
+        },
+        "sum_actual_episode_cost_by_phase": {
+          "diagnostic": 2.9783131545129997,
+          "distillation_evaluation": 3.278193164863001,
+          "distillation_training": 0.8697520927029991,
+          "evaluation": 9.864038851957012,
+          "training": 79.42072337437806
+        },
+        "terminal_delivery_cpu_wall_split": "Not recorded separately; only their metered tariff sum is recoverable"
+      },
+      "width": 32
+    },
+    {
+      "compact_manifest_sha256": "9e65354466bae322435f846fa68dabceb926e3fa36d419e6076c1ea05e4d4936",
+      "descriptive_arms": {
+        "hepta_dynamic_mean": {
+          "audit_inclusive_net_ce": 0.8638800024998452,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 5.6901326781230374e-05,
+          "mean_audit_inclusive_cost": 0.01927094319085935,
+          "mean_serving_cost": 0.019214041864078123,
+          "mean_utility": 0.8856304716318846,
+          "serving_net_ce": 0.8639374649531064,
+          "utility_ce": 0.8833557370461143
+        },
+        "hepta_dynamic_risk": {
+          "audit_inclusive_net_ce": 0.8626383916614558,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 5.8736179953078685e-05,
+          "mean_audit_inclusive_cost": 0.020578921313765663,
+          "mean_serving_cost": 0.020520185133812586,
+          "mean_utility": 0.8856597179546952,
+          "serving_net_ce": 0.8626976120788219,
+          "utility_ce": 0.8833842466820937
+        },
+        "hepta_dynamic_risk_actor_only": {
+          "audit_inclusive_net_ce": 0.8619716192517574,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 6.100882484374841e-05,
+          "mean_audit_inclusive_cost": 0.02127767962704692,
+          "mean_serving_cost": 0.02121667080220317,
+          "mean_utility": 0.8856734214350581,
+          "serving_net_ce": 0.8620330207660512,
+          "utility_ce": 0.8833980284340751
+        },
+        "hepta_fixed_mean": {
+          "audit_inclusive_net_ce": 0.862080039240213,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 5.892302712503204e-05,
+          "mean_audit_inclusive_cost": 0.021412036243765645,
+          "mean_serving_cost": 0.02135311321664061,
+          "mean_utility": 0.8858061004430056,
+          "serving_net_ce": 0.8621389446688169,
+          "utility_ce": 0.8834913124003163
+        },
+        "hepta_fixed_risk": {
+          "audit_inclusive_net_ce": 0.8620470724700466,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 6.089155510942586e-05,
+          "mean_audit_inclusive_cost": 0.021441223326281313,
+          "mean_serving_cost": 0.021380331771171886,
+          "mean_utility": 0.8858029320836067,
+          "serving_net_ce": 0.8621079642077483,
+          "utility_ce": 0.8834877648420744
+        },
+        "hepta_student": {
+          "audit_inclusive_net_ce": 0.8623028242249566,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 4.887500349997839e-05,
+          "mean_audit_inclusive_cost": 0.0178545832655624,
+          "mean_serving_cost": 0.01780570826206242,
+          "mean_utility": 0.8828846514225006,
+          "serving_net_ce": 0.8623520227530705,
+          "utility_ce": 0.8802221914082562
+        },
+        "hepta_teacher": {
+          "audit_inclusive_net_ce": 0.8637920429964898,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 4.6521246984409376e-05,
+          "mean_audit_inclusive_cost": 0.016289509160359365,
+          "mean_serving_cost": 0.016242987913374956,
+          "mean_utility": 0.8830803148448467,
+          "serving_net_ce": 0.8638392809327623,
+          "utility_ce": 0.8804098804219747
+        },
+        "ordinary_dynamic_mean": {
+          "audit_inclusive_net_ce": 0.8578383044664015,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 5.8704465593750754e-05,
+          "mean_audit_inclusive_cost": 0.019803494721765607,
+          "mean_serving_cost": 0.019744790256171856,
+          "mean_utility": 0.8804296711459756,
+          "serving_net_ce": 0.8578974941373472,
+          "utility_ce": 0.8778303701914482
+        },
+        "ordinary_dynamic_risk": {
+          "audit_inclusive_net_ce": 0.8600665481401235,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 6.062335425004173e-05,
+          "mean_audit_inclusive_cost": 0.02074083675798436,
+          "mean_serving_cost": 0.02068021340373432,
+          "mean_utility": 0.8831386072561145,
+          "serving_net_ce": 0.8601275526476795,
+          "utility_ce": 0.8809654484444612
+        },
+        "ordinary_fixed_mean": {
+          "audit_inclusive_net_ce": 0.8596342820095811,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 5.785526207810997e-05,
+          "mean_audit_inclusive_cost": 0.021356252498625,
+          "mean_serving_cost": 0.02129839723654689,
+          "mean_utility": 0.8831919291988015,
+          "serving_net_ce": 0.8596921401179053,
+          "utility_ce": 0.8809900198818685
+        }
+      },
+      "physical_cost_reconciliation": {
+        "accounting_limit": "Phase and process meters overlap; fixed serving action tariffs are separate. Cold deployment loading, fixed-volume lifecycle allocation and cross-host uncertainty are not inferred.",
+        "complete_lifecycle_savings_qualified": false,
+        "distillation_training_time_tariff_cost": 0.06263006263600027,
+        "named_phase_time_tariff_totals": {
+          "cpu_seconds": 321.005154,
+          "physical_cost": 6.613216263439002,
+          "wall_seconds": 193.113183439
+        },
+        "outside_runner_including_startup_import_exit_and_supervisor": {
+          "cpu_seconds": 3.3770279999999957,
+          "physical_cost": 0.07063118742799901,
+          "wall_seconds": 3.090627428000005
+        },
+        "runner_unassigned_residual": {
+          "cpu_seconds": 1.2743800000000078,
+          "physical_cost": 0.02658286287099898,
+          "wall_seconds": 1.0952628709999885
+        },
+        "whole_process_measured_time_tariff_cost": 6.710430313738
+      },
+      "profile_sha256": "53d15a19a124d68dbee656c6a4486f6f61895b5509aa2af8f1f62d56ec689ebe",
+      "registered_run_cost_accounting": {
+        "combined_observed_time_and_fixed_service_cost": 104.90546412582597,
+        "deployment_lifecycle_savings_established": false,
+        "inside_meter_episode_time_tariff_cost_already_in_process": 4.417796271223992,
+        "inside_meter_fixed_service_fees": 95.24149999999797,
+        "inside_meter_other_time_cost_including_setup_optimization_and_audit": 2.292634042514008,
+        "interpretation": "Complete addition of the recorded registered-scope time and fixed fees; an observed lower bound for wider research infrastructure, not a per-candidate deployment allocation",
+        "post_meter_feedback": {
+          "cpu_seconds": 7.113062,
+          "excluded": "Feedback interpreter startup/imports and final summary serialization are outside its run-entry meter",
+          "fixed_service_fees": 2.8064999999999998,
+          "time_plus_fixed_service_cost": 2.95353381209,
+          "time_tariff_cost": 0.14703381209,
+          "wall_seconds": 4.772572089999983
+        },
+        "same_cpu_wall_cost_added_twice": false,
+        "unmeasured_external_scope": [
+          "environment provisioning and package installation",
+          "repository and artifact downloads",
+          "public source/evidence publication",
+          "standalone archive/analysis and upload processes",
+          "supervisor startup before its timer and feedback startup/final summary tail"
+        ],
+        "whole_process_plus_fixed_service_fees": 101.95193031373597,
+        "whole_process_time_tariff_cost": 6.710430313738
+      },
+      "result_original_sha256": "f73339d31d02561c95c61ca39980be0d4c097812259a0e198373a2323a45321c",
+      "seed": 17,
+      "trajectory_audit": {
+        "cost_components_by_phase": {
+          "diagnostic": {
+            "actual_episode_cost": 2.925794807973999,
+            "episode_time_tariff_cost": 0.11929480797399972,
+            "fixed_action_and_encode_service_fees": 2.8064999999999998,
+            "logged_action_cpu_seconds": 2.115178000000004,
+            "logged_action_time_tariff_cost": 0.043531409002000185,
+            "logged_action_wall_seconds": 1.2278490020000845,
+            "terminal_delivery_time_tariff_cost": 0.07576339897199949
+          },
+          "distillation_evaluation": {
+            "actual_episode_cost": 2.179116555227993,
+            "episode_time_tariff_cost": 0.13311655522799215,
+            "fixed_action_and_encode_service_fees": 2.0459999999999963,
+            "logged_action_cpu_seconds": 3.203363999999624,
+            "logged_action_time_tariff_cost": 0.06589231476499278,
+            "logged_action_wall_seconds": 1.8250347650002823,
+            "terminal_delivery_time_tariff_cost": 0.06722424046299932
+          },
+          "distillation_training": {
+            "actual_episode_cost": 0.757850084787002,
+            "episode_time_tariff_cost": 0.05635008478700212,
+            "fixed_action_and_encode_service_fees": 0.7015000000000001,
+            "logged_action_cpu_seconds": 1.8193850000002385,
+            "logged_action_time_tariff_cost": 0.03735428103800479,
+            "logged_action_wall_seconds": 0.9665810380000153,
+            "terminal_delivery_time_tariff_cost": 0.018995803748997335
+          },
+          "evaluation": {
+            "actual_episode_cost": 10.586095595799014,
+            "episode_time_tariff_cost": 0.42359559579900435,
+            "fixed_action_and_encode_service_fees": 10.162500000000035,
+            "logged_action_cpu_seconds": 7.621639000000428,
+            "logged_action_time_tariff_cost": 0.15710577309700835,
+            "logged_action_wall_seconds": 4.672993096999846,
+            "terminal_delivery_time_tariff_cost": 0.2664898227019955
+          },
+          "training": {
+            "actual_episode_cost": 86.1362340354098,
+            "episode_time_tariff_cost": 3.804734035409993,
+            "fixed_action_and_encode_service_fees": 82.33149999999794,
+            "logged_action_cpu_seconds": 81.74963500000145,
+            "logged_action_time_tariff_cost": 1.6772682653360294,
+            "logged_action_wall_seconds": 42.275565336000724,
+            "terminal_delivery_time_tariff_cost": 2.1274657700739565
+          }
+        },
+        "counts_by_phase": {
+          "diagnostic": 144,
+          "distillation_evaluation": 128,
+          "distillation_training": 36,
+          "evaluation": 512,
+          "training": 4096
+        },
+        "episode_costs_overlap_process_time_cost_and_must_not_be_added_wholesale": true,
+        "failures_by_phase": {
+          "diagnostic": 0,
+          "distillation_evaluation": 0,
+          "distillation_training": 0,
+          "evaluation": 0,
+          "training": 0
+        },
+        "sum_actual_episode_cost_by_phase": {
+          "diagnostic": 2.925794807973999,
+          "distillation_evaluation": 2.179116555227993,
+          "distillation_training": 0.757850084787002,
+          "evaluation": 10.586095595799014,
+          "training": 86.1362340354098
+        },
+        "terminal_delivery_cpu_wall_split": "Not recorded separately; only their metered tariff sum is recoverable"
+      },
+      "width": 64
+    },
+    {
+      "compact_manifest_sha256": "d93f69a3ddc53c0238d218b4a13b538c3a72e4acbbe55cfdb6f04ba603ae2c45",
+      "descriptive_arms": {
+        "hepta_dynamic_mean": {
+          "audit_inclusive_net_ce": 0.8330151193350214,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 5.521136456255321e-05,
+          "mean_audit_inclusive_cost": 0.021282871877375074,
+          "mean_serving_cost": 0.02122766051281252,
+          "mean_utility": 0.8609570330008864,
+          "serving_net_ce": 0.833070079557235,
+          "utility_ce": 0.8541362883359516
+        },
+        "hepta_dynamic_risk": {
+          "audit_inclusive_net_ce": 0.8341612531745431,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 5.496991342187306e-05,
+          "mean_audit_inclusive_cost": 0.02014866693576562,
+          "mean_serving_cost": 0.020093697022343746,
+          "mean_utility": 0.861023279838264,
+          "serving_net_ce": 0.8342163005369927,
+          "utility_ce": 0.8542128800203901
+        },
+        "hepta_dynamic_risk_actor_only": {
+          "audit_inclusive_net_ce": 0.8341646729582861,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 5.4006575765562503e-05,
+          "mean_audit_inclusive_cost": 0.020141505574812556,
+          "mean_serving_cost": 0.020087498999046993,
+          "mean_utility": 0.8610211862251163,
+          "serving_net_ce": 0.8342186765704434,
+          "utility_ce": 0.8542092346178899
+        },
+        "hepta_fixed_mean": {
+          "audit_inclusive_net_ce": 0.829518628965801,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 5.4287481265599506e-05,
+          "mean_audit_inclusive_cost": 0.02127316354120311,
+          "mean_serving_cost": 0.02121887605993751,
+          "mean_utility": 0.8582273656502366,
+          "serving_net_ce": 0.8295729460502339,
+          "utility_ce": 0.8507911579903592
+        },
+        "hepta_fixed_risk": {
+          "audit_inclusive_net_ce": 0.8295131131524989,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 5.5451733156167485e-05,
+          "mean_audit_inclusive_cost": 0.021281389543374954,
+          "mean_serving_cost": 0.021225937810218785,
+          "mean_utility": 0.8582336017861962,
+          "serving_net_ce": 0.8295685186243336,
+          "utility_ce": 0.8507946628525238
+        },
+        "hepta_student": {
+          "audit_inclusive_net_ce": 0.8290931366277724,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 5.90778572030666e-05,
+          "mean_audit_inclusive_cost": 0.025603515234593775,
+          "mean_serving_cost": 0.02554443737739071,
+          "mean_utility": 0.8592927567660809,
+          "serving_net_ce": 0.8291521770409573,
+          "utility_ce": 0.8544892806842016
+        },
+        "hepta_teacher": {
+          "audit_inclusive_net_ce": 0.8292117397481211,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 5.972504274993212e-05,
+          "mean_audit_inclusive_cost": 0.025916807479062512,
+          "mean_serving_cost": 0.02585708243631258,
+          "mean_utility": 0.8595766415819526,
+          "serving_net_ce": 0.829271141405783,
+          "utility_ce": 0.8548015709335233
+        },
+        "ordinary_dynamic_mean": {
+          "audit_inclusive_net_ce": 0.8279038322707881,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 5.5538001906223385e-05,
+          "mean_audit_inclusive_cost": 0.0212872789331875,
+          "mean_serving_cost": 0.021231740931281273,
+          "mean_utility": 0.8558866316452622,
+          "serving_net_ce": 0.8279590469228391,
+          "utility_ce": 0.8489562864141711
+        },
+        "ordinary_dynamic_risk": {
+          "audit_inclusive_net_ce": 0.8261056082456253,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 5.447582198434518e-05,
+          "mean_audit_inclusive_cost": 0.020156443629078116,
+          "mean_serving_cost": 0.020101967807093772,
+          "mean_utility": 0.8534109303727746,
+          "serving_net_ce": 0.8261600691300508,
+          "utility_ce": 0.8461088686379135
+        },
+        "ordinary_fixed_mean": {
+          "audit_inclusive_net_ce": 0.824380728581758,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 5.466189401563421e-05,
+          "mean_audit_inclusive_cost": 0.021244556093703123,
+          "mean_serving_cost": 0.02118989419968749,
+          "mean_utility": 0.8531086156144738,
+          "serving_net_ce": 0.8244353997647125,
+          "utility_ce": 0.8456247390617753
+        }
+      },
+      "physical_cost_reconciliation": {
+        "accounting_limit": "Phase and process meters overlap; fixed serving action tariffs are separate. Cold deployment loading, fixed-volume lifecycle allocation and cross-host uncertainty are not inferred.",
+        "complete_lifecycle_savings_qualified": false,
+        "distillation_training_time_tariff_cost": 0.06503726469200063,
+        "named_phase_time_tariff_totals": {
+          "cpu_seconds": 278.17247499999996,
+          "physical_cost": 5.749169124161,
+          "wall_seconds": 185.71962416100004
+        },
+        "outside_runner_including_startup_import_exit_and_supervisor": {
+          "cpu_seconds": 3.0000729999999862,
+          "physical_cost": 0.06284961190000082,
+          "wall_seconds": 2.848151900000005
+        },
+        "runner_unassigned_residual": {
+          "cpu_seconds": 1.216314000000068,
+          "physical_cost": 0.02542641317100003,
+          "wall_seconds": 1.1001331709999533
+        },
+        "whole_process_measured_time_tariff_cost": 5.837445149232001
+      },
+      "profile_sha256": "53d15a19a124d68dbee656c6a4486f6f61895b5509aa2af8f1f62d56ec689ebe",
+      "registered_run_cost_accounting": {
+        "combined_observed_time_and_fixed_service_cost": 102.16979444059191,
+        "deployment_lifecycle_savings_established": false,
+        "inside_meter_episode_time_tariff_cost_already_in_process": 3.852657698803031,
+        "inside_meter_fixed_service_fees": 93.22849999999792,
+        "inside_meter_other_time_cost_including_setup_optimization_and_audit": 1.9847874504289695,
+        "interpretation": "Complete addition of the recorded registered-scope time and fixed fees; an observed lower bound for wider research infrastructure, not a per-candidate deployment allocation",
+        "post_meter_feedback": {
+          "cpu_seconds": 6.333992,
+          "excluded": "Feedback interpreter startup/imports and final summary serialization are outside its run-entry meter",
+          "fixed_service_fees": 2.9725,
+          "time_plus_fixed_service_cost": 3.103849291362,
+          "time_tariff_cost": 0.131349291362,
+          "wall_seconds": 4.66945136199999
+        },
+        "same_cpu_wall_cost_added_twice": false,
+        "unmeasured_external_scope": [
+          "environment provisioning and package installation",
+          "repository and artifact downloads",
+          "public source/evidence publication",
+          "standalone archive/analysis and upload processes",
+          "supervisor startup before its timer and feedback startup/final summary tail"
+        ],
+        "whole_process_plus_fixed_service_fees": 99.06594514922992,
+        "whole_process_time_tariff_cost": 5.837445149232001
+      },
+      "result_original_sha256": "f6b054d80ee4dbe7e548deb5d5a3f3d2d4cee1b11b6ed48cc971218b432e4fd4",
+      "seed": 29,
+      "trajectory_audit": {
+        "cost_components_by_phase": {
+          "diagnostic": {
+            "actual_episode_cost": 3.0796841727429993,
+            "episode_time_tariff_cost": 0.10718417274300028,
+            "fixed_action_and_encode_service_fees": 2.9725,
+            "logged_action_cpu_seconds": 1.9626969999999977,
+            "logged_action_time_tariff_cost": 0.04039372499700003,
+            "logged_action_wall_seconds": 1.1397849970000777,
+            "terminal_delivery_time_tariff_cost": 0.06679044774600024
+          },
+          "distillation_evaluation": {
+            "actual_episode_cost": 3.2896972680770085,
+            "episode_time_tariff_cost": 0.15269726807701026,
+            "fixed_action_and_encode_service_fees": 3.137000000000001,
+            "logged_action_cpu_seconds": 4.500069000000394,
+            "logged_action_time_tariff_cost": 0.09259763145000803,
+            "logged_action_wall_seconds": 2.5962514500001532,
+            "terminal_delivery_time_tariff_cost": 0.060099636627002205
+          },
+          "distillation_training": {
+            "actual_episode_cost": 0.9214160193759979,
+            "episode_time_tariff_cost": 0.05941601937599796,
+            "fixed_action_and_encode_service_fees": 0.8619999999999998,
+            "logged_action_cpu_seconds": 2.0615479999998456,
+            "logged_action_time_tariff_cost": 0.04234421159499699,
+            "logged_action_wall_seconds": 1.1132515950000652,
+            "terminal_delivery_time_tariff_cost": 0.01707180778100099
+          },
+          "evaluation": {
+            "actual_episode_cost": 10.64814549391501,
+            "episode_time_tariff_cost": 0.36864549391501383,
+            "fixed_action_and_encode_service_fees": 10.279500000000033,
+            "logged_action_cpu_seconds": 6.444955999999806,
+            "logged_action_time_tariff_cost": 0.133107881626996,
+            "logged_action_wall_seconds": 4.20876162699976,
+            "terminal_delivery_time_tariff_cost": 0.23553761228801795
+          },
+          "training": {
+            "actual_episode_cost": 82.22189891743488,
+            "episode_time_tariff_cost": 3.271898917435009,
+            "fixed_action_and_encode_service_fees": 78.94999999999789,
+            "logged_action_cpu_seconds": 66.08461199999977,
+            "logged_action_time_tariff_cost": 1.3592377538779983,
+            "logged_action_wall_seconds": 37.54551387799998,
+            "terminal_delivery_time_tariff_cost": 1.9126611635570019
+          }
+        },
+        "counts_by_phase": {
+          "diagnostic": 144,
+          "distillation_evaluation": 128,
+          "distillation_training": 36,
+          "evaluation": 512,
+          "training": 4096
+        },
+        "episode_costs_overlap_process_time_cost_and_must_not_be_added_wholesale": true,
+        "failures_by_phase": {
+          "diagnostic": 0,
+          "distillation_evaluation": 0,
+          "distillation_training": 0,
+          "evaluation": 0,
+          "training": 0
+        },
+        "sum_actual_episode_cost_by_phase": {
+          "diagnostic": 3.0796841727429993,
+          "distillation_evaluation": 3.2896972680770085,
+          "distillation_training": 0.9214160193759979,
+          "evaluation": 10.64814549391501,
+          "training": 82.22189891743488
+        },
+        "terminal_delivery_cpu_wall_split": "Not recorded separately; only their metered tariff sum is recoverable"
+      },
+      "width": 32
+    },
+    {
+      "compact_manifest_sha256": "404f95a01ad46a16c6b50c4e414fa0ebc32db73241435088ed3bbd7a829f1c03",
+      "descriptive_arms": {
+        "hepta_dynamic_mean": {
+          "audit_inclusive_net_ce": 0.8475238094409485,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 7.101714034375879e-05,
+          "mean_audit_inclusive_cost": 0.01929089362437499,
+          "mean_serving_cost": 0.01921987648403123,
+          "mean_utility": 0.8689235216006637,
+          "serving_net_ce": 0.847595098469646,
+          "utility_ce": 0.8668683840078
+        },
+        "hepta_dynamic_risk": {
+          "audit_inclusive_net_ce": 0.8461161493339109,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 7.252392845310922e-05,
+          "mean_audit_inclusive_cost": 0.020709832592734328,
+          "mean_serving_cost": 0.020637308664281217,
+          "mean_utility": 0.8688625004142523,
+          "serving_net_ce": 0.8461888178513043,
+          "utility_ce": 0.8668111757618041
+        },
+        "hepta_dynamic_risk_actor_only": {
+          "audit_inclusive_net_ce": 0.8451315025810169,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 7.55116647657185e-05,
+          "mean_audit_inclusive_cost": 0.021526645387921893,
+          "mean_serving_cost": 0.021451133723156175,
+          "mean_utility": 0.868749120272696,
+          "serving_net_ce": 0.8452071982993932,
+          "utility_ce": 0.8666725271306379
+        },
+        "hepta_fixed_mean": {
+          "audit_inclusive_net_ce": 0.8450874801291535,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 7.804615467179102e-05,
+          "mean_audit_inclusive_cost": 0.021618134181515595,
+          "mean_serving_cost": 0.021540088026843804,
+          "mean_utility": 0.8687773486599326,
+          "serving_net_ce": 0.845165506560932,
+          "utility_ce": 0.866705344608659
+        },
+        "hepta_fixed_risk": {
+          "audit_inclusive_net_ce": 0.8450945575602629,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 7.673259406260936e-05,
+          "mean_audit_inclusive_cost": 0.0215991290326093,
+          "mean_serving_cost": 0.021522396438546688,
+          "mean_utility": 0.8687661187723279,
+          "serving_net_ce": 0.84517128493838,
+          "utility_ce": 0.8666934580633687
+        },
+        "hepta_student": {
+          "audit_inclusive_net_ce": 0.8436880925521545,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 7.782075965614456e-05,
+          "mean_audit_inclusive_cost": 0.02249187892049994,
+          "mean_serving_cost": 0.022414058160843794,
+          "mean_utility": 0.8686876632273197,
+          "serving_net_ce": 0.843766021452103,
+          "utility_ce": 0.8662393096641137
+        },
+        "hepta_teacher": {
+          "audit_inclusive_net_ce": 0.8409303291686678,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 7.96598540780697e-05,
+          "mean_audit_inclusive_cost": 0.025406590678281174,
+          "mean_serving_cost": 0.025326930824203103,
+          "mean_utility": 0.8687432454898953,
+          "serving_net_ce": 0.8410104145138061,
+          "utility_ce": 0.8663051433608983
+        },
+        "ordinary_dynamic_mean": {
+          "audit_inclusive_net_ce": 0.8441912850796566,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 8.349197239062439e-05,
+          "mean_audit_inclusive_cost": 0.022426295643781246,
+          "mean_serving_cost": 0.02234280367139062,
+          "mean_utility": 0.868605780415237,
+          "serving_net_ce": 0.8442750709551418,
+          "utility_ce": 0.8666410409579643
+        },
+        "ordinary_dynamic_risk": {
+          "audit_inclusive_net_ce": 0.8460129338033734,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 7.251609267180589e-05,
+          "mean_audit_inclusive_cost": 0.02059263786528116,
+          "mean_serving_cost": 0.020520121772609354,
+          "mean_utility": 0.8685898995026946,
+          "serving_net_ce": 0.8460857048341008,
+          "utility_ce": 0.8666327880353634
+        },
+        "ordinary_fixed_mean": {
+          "audit_inclusive_net_ce": 0.8452013051287504,
+          "episodes": 64,
+          "failures": 0,
+          "mean_audit_close_cost": 7.66628645468611e-05,
+          "mean_audit_inclusive_cost": 0.02156361911076564,
+          "mean_serving_cost": 0.02148695624621878,
+          "mean_utility": 0.8687352892011404,
+          "serving_net_ce": 0.8452779895022169,
+          "utility_ce": 0.8667651474496675
+        }
+      },
+      "physical_cost_reconciliation": {
+        "accounting_limit": "Phase and process meters overlap; fixed serving action tariffs are separate. Cold deployment loading, fixed-volume lifecycle allocation and cross-host uncertainty are not inferred.",
+        "complete_lifecycle_savings_qualified": false,
+        "distillation_training_time_tariff_cost": 0.09573556908699936,
+        "named_phase_time_tariff_totals": {
+          "cpu_seconds": 400.3835900000001,
+          "physical_cost": 8.258361613856003,
+          "wall_seconds": 250.6898138560002
+        },
+        "outside_runner_including_startup_import_exit_and_supervisor": {
+          "cpu_seconds": 3.853165000000047,
+          "physical_cost": 0.08055982265400274,
+          "wall_seconds": 3.4965226540000174
+        },
+        "runner_unassigned_residual": {
+          "cpu_seconds": 1.6687039999998774,
+          "physical_cost": 0.034840945673995094,
+          "wall_seconds": 1.4668656739997914
+        },
+        "whole_process_measured_time_tariff_cost": 8.373762382184001
+      },
+      "profile_sha256": "53d15a19a124d68dbee656c6a4486f6f61895b5509aa2af8f1f62d56ec689ebe",
+      "registered_run_cost_accounting": {
+        "combined_observed_time_and_fixed_service_cost": 108.49689774395087,
+        "deployment_lifecycle_savings_established": false,
+        "inside_meter_episode_time_tariff_cost_already_in_process": 5.4103997078239345,
+        "inside_meter_fixed_service_fees": 96.77549999999788,
+        "inside_meter_other_time_cost_including_setup_optimization_and_audit": 2.9633626743600665,
+        "interpretation": "Complete addition of the recorded registered-scope time and fixed fees; an observed lower bound for wider research infrastructure, not a per-candidate deployment allocation",
+        "post_meter_feedback": {
+          "cpu_seconds": 8.806018,
+          "excluded": "Feedback interpreter startup/imports and final summary serialization are outside its run-entry meter",
+          "fixed_service_fees": 3.1655,
+          "time_plus_fixed_service_cost": 3.3476353617690005,
+          "time_tariff_cost": 0.18213536176900005,
+          "wall_seconds": 6.015001769000037
+        },
+        "same_cpu_wall_cost_added_twice": false,
+        "unmeasured_external_scope": [
+          "environment provisioning and package installation",
+          "repository and artifact downloads",
+          "public source/evidence publication",
+          "standalone archive/analysis and upload processes",
+          "supervisor startup before its timer and feedback startup/final summary tail"
+        ],
+        "whole_process_plus_fixed_service_fees": 105.14926238218187,
+        "whole_process_time_tariff_cost": 8.373762382184001
+      },
+      "result_original_sha256": "461c30eb6c42a6e33826feb5c8477cbfa4636cb85e28ac335dcadb4c72febcfa",
+      "seed": 29,
+      "trajectory_audit": {
+        "cost_components_by_phase": {
+          "diagnostic": {
+            "actual_episode_cost": 3.314081192201002,
+            "episode_time_tariff_cost": 0.14858119220100055,
+            "fixed_action_and_encode_service_fees": 3.1655,
+            "logged_action_cpu_seconds": 3.0216880000000064,
+            "logged_action_time_tariff_cost": 0.062120899020999966,
+            "logged_action_wall_seconds": 1.6871390209998367,
+            "terminal_delivery_time_tariff_cost": 0.08646029318000059
+          },
+          "distillation_evaluation": {
+            "actual_episode_cost": 3.0554232950430014,
+            "episode_time_tariff_cost": 0.21542329504300126,
+            "fixed_action_and_encode_service_fees": 2.840000000000001,
+            "logged_action_cpu_seconds": 6.706736000000035,
+            "logged_action_time_tariff_cost": 0.13778287515400053,
+            "logged_action_wall_seconds": 3.6481551539998236,
+            "terminal_delivery_time_tariff_cost": 0.07764041988900086
+          },
+          "distillation_training": {
+            "actual_episode_cost": 0.9231851199879975,
+            "episode_time_tariff_cost": 0.08718511998799756,
+            "fixed_action_and_encode_service_fees": 0.8359999999999997,
+            "logged_action_cpu_seconds": 3.165031000000056,
+            "logged_action_time_tariff_cost": 0.064951525069001,
+            "logged_action_wall_seconds": 1.6509050689998617,
+            "terminal_delivery_time_tariff_cost": 0.022233594918996576
+          },
+          "evaluation": {
+            "actual_episode_cost": 10.79812384173298,
+            "episode_time_tariff_cost": 0.512623841732983,
+            "fixed_action_and_encode_service_fees": 10.285500000000035,
+            "logged_action_cpu_seconds": 9.877347999999458,
+            "logged_action_time_tariff_cost": 0.2036566388499887,
+            "logged_action_wall_seconds": 6.109678849999568,
+            "terminal_delivery_time_tariff_cost": 0.30896720288299434
+          },
+          "training": {
+            "actual_episode_cost": 87.40916745105996,
+            "episode_time_tariff_cost": 4.595167451059953,
+            "fixed_action_and_encode_service_fees": 82.81399999999785,
+            "logged_action_cpu_seconds": 101.86811899999879,
+            "logged_action_time_tariff_cost": 2.093653669883967,
+            "logged_action_wall_seconds": 56.291289883998274,
+            "terminal_delivery_time_tariff_cost": 2.501513781175988
+          }
+        },
+        "counts_by_phase": {
+          "diagnostic": 144,
+          "distillation_evaluation": 128,
+          "distillation_training": 36,
+          "evaluation": 512,
+          "training": 4096
+        },
+        "episode_costs_overlap_process_time_cost_and_must_not_be_added_wholesale": true,
+        "failures_by_phase": {
+          "diagnostic": 0,
+          "distillation_evaluation": 0,
+          "distillation_training": 0,
+          "evaluation": 0,
+          "training": 0
+        },
+        "sum_actual_episode_cost_by_phase": {
+          "diagnostic": 3.314081192201002,
+          "distillation_evaluation": 3.0554232950430014,
+          "distillation_training": 0.9231851199879975,
+          "evaluation": 10.79812384173298,
+          "training": 87.40916745105996
+        },
+        "terminal_delivery_cpu_wall_split": "Not recorded separately; only their metered tariff sum is recoverable"
+      },
+      "width": 64
+    }
+  ],
+  "distillation_gate": {
+    "all_required_comparisons_pass": false,
+    "bootstrap": {
+      "adequate_tail_resamples": true,
+      "alpha": 0.05,
+      "family_size": 6,
+      "familywise_adjustment": "Bonferroni nominal; bootstrap coverage is approximate",
+      "method": "crossed_paired_seed_source_percentile",
+      "replicates": 4000
+    },
+    "cost_scope": "serving_including_audit_close",
+    "development_admission_pass": false,
+    "effects": [
+      {
+        "bonferroni_interval": [
+          -0.001719971679700262,
+          9.637173244603189e-05
+        ],
+        "difference": -0.0005101520335717424,
+        "id": "student_quality_noninferiority",
+        "left": "hepta_student",
+        "metric": "utility_ce",
+        "passed": true,
+        "per_seed_difference": {
+          "17": -0.0007080138178218176,
+          "29": -0.0003122902493217783
+        },
+        "right": "hepta_teacher",
+        "threshold": -0.005,
+        "unadjusted_interval": [
+          -0.001297379332936896,
+          -2.686192041398681e-05
+        ],
+        "width": 32
+      },
+      {
+        "bonferroni_interval": [
+          -0.001927307896672753,
+          0.0013615157999071997
+        ],
+        "difference": 0.00012826984764657823,
+        "id": "student_net_noninferiority",
+        "left": "hepta_student",
+        "metric": "net_ce",
+        "passed": true,
+        "per_seed_difference": {
+          "17": 0.00037514281564188234,
+          "29": -0.00011860312034872589
+        },
+        "right": "hepta_teacher",
+        "threshold": -0.005,
+        "unadjusted_interval": [
+          -0.0010857656350228893,
+          0.000993007898086401
+        ],
+        "width": 32
+      },
+      {
+        "bonferroni_interval": [
+          -0.0011795451874061188,
+          0.001616040336069283
+        ],
+        "difference": 0.0006748107593516108,
+        "id": "student_cost_saving",
+        "left": "hepta_student",
+        "metric": "cost_saving",
+        "passed": false,
+        "per_seed_difference": {
+          "17": 0.001036329274234478,
+          "29": 0.0003132922444687436
+        },
+        "right": "hepta_teacher",
+        "threshold": 0.0,
+        "unadjusted_interval": [
+          -0.00047899419130391233,
+          0.001397464643885603
+        ],
+        "width": 32
+      },
+      {
+        "bonferroni_interval": [
+          -0.0004923526355163715,
+          0.00026190323644868514
+        ],
+        "difference": -0.00012676135525147014,
+        "id": "student_quality_noninferiority",
+        "left": "hepta_student",
+        "metric": "utility_ce",
+        "passed": true,
+        "per_seed_difference": {
+          "17": -0.0001876890137184617,
+          "29": -6.583369678458961e-05
+        },
+        "right": "hepta_teacher",
+        "threshold": -0.005,
+        "unadjusted_interval": [
+          -0.0003702192636616725,
+          0.000131078060679829
+        ],
+        "width": 64
+      },
+      {
+        "bonferroni_interval": [
+          -0.004421934183325264,
+          0.005058828805370561
+        ],
+        "difference": 0.0006342723059767907,
+        "id": "student_net_noninferiority",
+        "left": "hepta_student",
+        "metric": "net_ce",
+        "passed": true,
+        "per_seed_difference": {
+          "17": -0.001489218771533296,
+          "29": 0.0027577633834867665
+        },
+        "right": "hepta_teacher",
+        "threshold": -0.005,
+        "unadjusted_interval": [
+          -0.003061349829011517,
+          0.004065248776493064
+        ],
+        "width": 64
+      },
+      {
+        "bonferroni_interval": [
+          -0.004358747566591261,
+          0.004874248161727281
+        ],
+        "difference": 0.0006748188262890968,
+        "id": "student_cost_saving",
+        "left": "hepta_student",
+        "metric": "cost_saving",
+        "passed": false,
+        "per_seed_difference": {
+          "17": -0.0015650741052030334,
+          "29": 0.0029147117577812236
+        },
+        "right": "hepta_teacher",
+        "threshold": 0.0,
+        "unadjusted_interval": [
+          -0.0030675524823950023,
+          0.0040965556618663525
+        ],
+        "width": 64
+      }
+    ],
+    "estimand": "mean_training_seed_effect_of_per_seed_population_CE",
+    "failures_by_arm": {},
+    "global_NDU_optimality_proved": false,
+    "lifecycle_costs_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+    "limits": [
+      "few training seeds limit population inference",
+      "CE plug-in has finite-sample bias",
+      "cost measurement authenticity requires independent trajectory audit",
+      "claims concern this registered task and scales only"
+    ],
+    "natural_semantic_qualified": false,
+    "panel_complete": true,
+    "plan_sha256": "d69b201890c11e0c44e3f7ab4ef345be86a1559ec3abacc7feda2258f110abdd",
+    "profile_sha256": "53d15a19a124d68dbee656c6a4486f6f61895b5509aa2af8f1f62d56ec689ebe",
+    "research_qualified": false,
+    "rows": 512,
+    "rows_sha256": "4f44e121aed9b757ec63a922ead6c4dc97995584c306d499acd5b5d765075d0c",
+    "schema": "hepta.joint-generation.research-gate.v2.result",
+    "source_count": 32,
+    "source_namespace": "controller-v2-development",
+    "stage": "development",
+    "training_seed_count": 2
+  },
+  "errors": [],
+  "fresh_confirmation_consumed_by_analysis": false,
+  "independent_original_file_audit_receipts_verified": true,
+  "lifecycle_savings_qualified": false,
+  "mechanism_gate": {
+    "all_required_comparisons_pass": false,
+    "bootstrap": {
+      "adequate_tail_resamples": true,
+      "alpha": 0.05,
+      "family_size": 8,
+      "familywise_adjustment": "Bonferroni nominal; bootstrap coverage is approximate",
+      "method": "crossed_paired_seed_source_percentile",
+      "replicates": 4000
+    },
+    "cost_scope": "serving_including_audit_close",
+    "development_admission_pass": false,
+    "effects": [
+      {
+        "bonferroni_interval": [
+          -0.0006458168502982305,
+          0.0022796398947317695
+        ],
+        "difference": 0.0005568160758986362,
+        "id": "risk",
+        "left": "hepta_dynamic_risk",
+        "metric": "net_ce",
+        "passed": false,
+        "per_seed_difference": {
+          "17": -3.250168772472861e-05,
+          "29": 0.001146133839522001
+        },
+        "right": "hepta_dynamic_mean",
+        "threshold": 0.0,
+        "unadjusted_interval": [
+          -0.00040214076251511577,
+          0.0017387927754963534
+        ],
+        "width": 32
+      },
+      {
+        "bonferroni_interval": [
+          -0.028571197564136327,
+          0.017040091557410677
+        ],
+        "difference": -0.0021320648650431373,
+        "id": "allocation",
+        "left": "hepta_dynamic_risk",
+        "metric": "net_ce",
+        "passed": false,
+        "per_seed_difference": {
+          "17": -0.008912269752130886,
+          "29": 0.004648140022044611
+        },
+        "right": "hepta_fixed_risk",
+        "threshold": 0.0,
+        "unadjusted_interval": [
+          -0.01825052412357759,
+          0.011382534554150985
+        ],
+        "width": 32
+      },
+      {
+        "bonferroni_interval": [
+          5.105992387102416e-05,
+          0.038668664991092394
+        ],
+        "difference": 0.013633492626503929,
+        "id": "operator",
+        "left": "hepta_dynamic_risk",
+        "metric": "net_ce",
+        "passed": true,
+        "per_seed_difference": {
+          "17": 0.019211340324089776,
+          "29": 0.008055644928917971
+        },
+        "right": "ordinary_dynamic_risk",
+        "threshold": 0.0,
+        "unadjusted_interval": [
+          0.0021532929237073257,
+          0.030421452461107553
+        ],
+        "width": 32
+      },
+      {
+        "bonferroni_interval": [
+          -0.00013862499169193138,
+          0.00012700062702391922
+        ],
+        "difference": 2.2732987246976144e-05,
+        "id": "joint_training",
+        "left": "hepta_dynamic_risk",
+        "metric": "net_ce",
+        "passed": false,
+        "per_seed_difference": {
+          "17": 4.888575823680519e-05,
+          "29": -3.4197837427418776e-06
+        },
+        "right": "hepta_dynamic_risk_actor_only",
+        "threshold": 0.0,
+        "unadjusted_interval": [
+          -7.233881437818945e-05,
+          9.86375298287795e-05
+        ],
+        "width": 32
+      },
+      {
+        "bonferroni_interval": [
+          -0.0028017034396937528,
+          -0.00024619740547457544
+        ],
+        "difference": -0.0013246354727135534,
+        "id": "risk",
+        "left": "hepta_dynamic_risk",
+        "metric": "net_ce",
+        "passed": false,
+        "per_seed_difference": {
+          "17": -0.00124161083838914,
+          "29": -0.0014076601070378558
+        },
+        "right": "hepta_dynamic_mean",
+        "threshold": 0.0,
+        "unadjusted_interval": [
+          -0.0022480080263931807,
+          -0.0005497053823674019
+        ],
+        "width": 64
+      },
+      {
+        "bonferroni_interval": [
+          -0.0009195660455676734,
+          0.0026686847013589377
+        ],
+        "difference": 0.0008064554825286674,
+        "id": "allocation",
+        "left": "hepta_dynamic_risk",
+        "metric": "net_ce",
+        "passed": false,
+        "per_seed_difference": {
+          "17": 0.0005913191914093119,
+          "29": 0.001021591773648023
+        },
+        "right": "hepta_fixed_risk",
+        "threshold": 0.0,
+        "unadjusted_interval": [
+          -0.00043170797091391934,
+          0.0020923367560986483
+        ],
+        "width": 64
+      },
+      {
+        "bonferroni_interval": [
+          -0.0066418415225975285,
+          0.004211283457838121
+        ],
+        "difference": 0.0013375295259347997,
+        "id": "operator",
+        "left": "hepta_dynamic_risk",
+        "metric": "net_ce",
+        "passed": false,
+        "per_seed_difference": {
+          "17": 0.0025718435213323287,
+          "29": 0.00010321553053727062
+        },
+        "right": "ordinary_dynamic_risk",
+        "threshold": 0.0,
+        "unadjusted_interval": [
+          -0.003564571049117857,
+          0.003681444154049221
+        ],
+        "width": 64
+      },
+      {
+        "bonferroni_interval": [
+          1.594046115217067e-05,
+          0.0022112230100363776
+        ],
+        "difference": 0.0008257095812962412,
+        "id": "joint_training",
+        "left": "hepta_dynamic_risk",
+        "metric": "net_ce",
+        "passed": true,
+        "per_seed_difference": {
+          "17": 0.0006667724096985905,
+          "29": 0.0009846467528938918
+        },
+        "right": "hepta_dynamic_risk_actor_only",
+        "threshold": 0.0,
+        "unadjusted_interval": [
+          0.00020356906285494414,
+          0.0016410232463438539
+        ],
+        "width": 64
+      }
+    ],
+    "estimand": "mean_training_seed_effect_of_per_seed_population_CE",
+    "failures_by_arm": {},
+    "global_NDU_optimality_proved": false,
+    "lifecycle_costs_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+    "limits": [
+      "few training seeds limit population inference",
+      "CE plug-in has finite-sample bias",
+      "cost measurement authenticity requires independent trajectory audit",
+      "claims concern this registered task and scales only"
+    ],
+    "natural_semantic_qualified": false,
+    "panel_complete": true,
+    "plan_sha256": "622661ff7b8b2b38d866a96e25b42553d12479579309b6f5fec0e837f2c37653",
+    "profile_sha256": "53d15a19a124d68dbee656c6a4486f6f61895b5509aa2af8f1f62d56ec689ebe",
+    "research_qualified": false,
+    "rows": 2048,
+    "rows_sha256": "5b6ce4b59ca838ff59434bda91cd3d5642d2265ffd0adafcca323fa116fcb21f",
+    "schema": "hepta.joint-generation.research-gate.v2.result",
+    "source_count": 32,
+    "source_namespace": "controller-v2-development",
+    "stage": "development",
+    "training_seed_count": 2
+  },
+  "missing_configurations": [],
+  "natural_semantic_qualified": false,
+  "original_media_reopened": false,
+  "plan_sha256": {
+    "development_plan_distillation_v2.json": "d69b201890c11e0c44e3f7ab4ef345be86a1559ec3abacc7feda2258f110abdd",
+    "development_plan_v2.json": "622661ff7b8b2b38d866a96e25b42553d12479579309b6f5fec0e837f2c37653"
+  },
+  "registration_sha": "9a0b16a620b4203093268a2a917f76bb99eb61ef",
+  "research_qualified": false,
+  "schema": "hepta.joint-generation.development-summary.v2",
+  "statistical_engine_sha256": "552cc7a993e3ab9249bc5cf4b96f8a07307cf7eeac1eaea27b424720473ecf9e"
+}

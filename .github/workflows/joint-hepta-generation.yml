@@ -1,0 +1,163 @@
+name: Joint Hepta generation source qualification
+
+on:
+  push:
+    branches: [research/joint-hepta-generation-20261029]
+    paths:
+      - experiments/multimodal_output_portfolio/joint_hepta_20261029/**
+      - .github/workflows/joint-hepta-generation.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: joint-hepta-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  operator-and-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONNOUSERSITE: "1"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: |
+            experiments/multimodal_output_portfolio/joint_hepta_20261029
+            experiments/multimodal_output_portfolio/unified_20261028
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+      - name: Install isolated pinned numerical runtime
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: --extra-index-url https://download.pytorch.org/whl/cpu torch==2.14.1+cpu numpy==2.3.5 scipy==1.16.3 Pillow==12.3.0 pytest==8.4.2
+      - name: Verify source-bound operator, gradients and execution contracts
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/joint-hepta"
+          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          python -B -m unittest experiments.multimodal_output_portfolio.joint_hepta_20261029.test_contract experiments.multimodal_output_portfolio.joint_hepta_20261029.test_learning experiments.multimodal_output_portfolio.joint_hepta_20261029.test_natural experiments.multimodal_output_portfolio.joint_hepta_20261029.test_native_bridge experiments.multimodal_output_portfolio.joint_hepta_20261029.test_native_build experiments.multimodal_output_portfolio.joint_hepta_20261029.test_runtime experiments.multimodal_output_portfolio.joint_hepta_20261029.test_train experiments.multimodal_output_portfolio.joint_hepta_20261029.test_deployment -v 2>&1 | tee "$RUNNER_TEMP/joint-hepta/contracts.log"
+          python -B -m pytest -c /dev/null --rootdir=. --import-mode=importlib -p no:cacheprovider experiments/multimodal_output_portfolio/joint_hepta_20261029/test_hepta_core.py experiments/multimodal_output_portfolio/joint_hepta_20261029/test_checkpoint.py -v 2>&1 | tee "$RUNNER_TEMP/joint-hepta/operator.log"
+          python -m pip freeze > "$RUNNER_TEMP/joint-hepta/runtime.txt"
+          git diff --check
+      - name: Exercise all training arms and safe checkpoint deployment
+        run: |
+          set -euo pipefail
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.train --smoke --output "$RUNNER_TEMP/joint-hepta/smoke" 2>&1 | tee "$RUNNER_TEMP/joint-hepta/smoke.log"
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: joint-hepta-operator-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/joint-hepta/
+          if-no-files-found: warn
+          retention-days: 30
+  mechanism-replications:
+    if: contains(github.event.head_commit.message, '[joint-study]')
+    needs: operator-and-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        seed: [17, 29, 43]
+        width: [32, 64]
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONNOUSERSITE: "1"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: |
+            experiments/multimodal_output_portfolio/joint_hepta_20261029
+            experiments/multimodal_output_portfolio/unified_20261028
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+      - name: Install registered CPU training runtime
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: --extra-index-url https://download.pytorch.org/whl/cpu torch==2.14.1+cpu numpy==2.3.5 scipy==1.16.3 Pillow==12.3.0
+      - name: Train every frozen mechanism arm and retain every physical rollout
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/joint-study"
+          python -m pip freeze > "$RUNNER_TEMP/joint-study/runtime.txt"
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.train --seed ${{ matrix.seed }} --width ${{ matrix.width }} --output "$RUNNER_TEMP/joint-study/run" 2>&1 | tee "$RUNNER_TEMP/joint-study/train.log"
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: joint-study-${{ matrix.seed }}-${{ matrix.width }}-${{ github.sha }}
+          path: ${{ runner.temp }}/joint-study/
+          if-no-files-found: warn
+          retention-days: 30
+  natural-observer-and-generator:
+    if: contains(github.event.head_commit.message, '[joint-natural]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        phase: [generator, observer]
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONNOUSERSITE: "1"
+      OMP_NUM_THREADS: "4"
+      MKL_NUM_THREADS: "4"
+      OPENBLAS_NUM_THREADS: "4"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /experiments/multimodal_output_portfolio/joint_hepta_20261029/
+            /experiments/multimodal_output_portfolio/unified_20261028/
+            /experiments/multimodal_output_portfolio/closure_20261028/data_prepare.py
+            /experiments/multimodal_output_portfolio/closure_20261028/data_prepare_v2.py
+            /experiments/multimodal_output_portfolio/closure_20261028/data_sources.py
+            /experiments/multimodal_output_portfolio/closure_20261028/semantic_backbones.py
+            /experiments/multimodal_output_portfolio/closure_20261028/semantic_tsm.py
+            /experiments/multimodal_output_portfolio/closure_20261028/data_source_usage_register.json
+            /experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/PILOT.json
+            /experiments/multimodal_output_portfolio/closure_20261028/semantic_top1_v4/ci/seed/
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+      - name: Install pinned real-media runtime
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: --extra-index-url https://download.pytorch.org/whl/cpu torch==2.14.1+cpu torchvision==0.29.1+cpu numpy==2.3.5 scipy==1.16.3 Pillow==12.3.0
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y ffmpeg
+          ffmpeg -version
+      - name: Execute registered source roles and independent observer gate
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/joint-natural"
+          python -m pip freeze > "$RUNNER_TEMP/joint-natural/runtime.txt"
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.natural_eval --phase ${{ matrix.phase }} --output "$RUNNER_TEMP/joint-natural/${{ matrix.phase }}" 2>&1 | tee "$RUNNER_TEMP/joint-natural/prepare.log"
+      - name: Train actual natural-source media mechanism
+        if: matrix.phase == 'generator'
+        run: |
+          set -euo pipefail
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.natural_train --manifest "$RUNNER_TEMP/joint-natural/generator/ALLOCATION.json" --assets "$RUNNER_TEMP/joint-natural/generator/actual" --output "$RUNNER_TEMP/joint-natural/training" 2>&1 | tee "$RUNNER_TEMP/joint-natural/train.log"
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: joint-natural-${{ matrix.phase }}-${{ github.sha }}
+          path: ${{ runner.temp }}/joint-natural/
+          if-no-files-found: warn
+          retention-days: 30
