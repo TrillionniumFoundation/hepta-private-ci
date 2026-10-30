@@ -73,6 +73,9 @@ const EFFECT_PAYLOAD: &[u8] = b"effect-payload";
 #[path = "support/authorized_provider_receipt_tests.rs"]
 mod provider_receipt_tests;
 
+#[path = "support/authorized_owner_recovery_tests.rs"]
+mod owner_recovery_tests;
+
 struct Fixture {
     _temp: tempfile::TempDir,
     layout: HeptaAgentLayout,

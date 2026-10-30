@@ -394,6 +394,7 @@ impl AutomationStore {
         run_id: &str,
         step_id: &str,
         attempt: u32,
+        fence: &TaskFlowFence,
         kind: EffectDispatchObservationKind,
         evidence_digest: &Sha256Digest,
         observed_at_ms: u64,
@@ -410,6 +411,19 @@ impl AutomationStore {
             .ok_or_else(|| {
                 TaskFlowError::Conflict("effect dispatch attempt is missing".to_string())
             })?;
+        let step = self
+            .read_verified_step_tx(&mut transaction, run_id, step_id, attempt, Some(fence))
+            .await?
+            .ok_or_else(|| {
+                TaskFlowError::Conflict("effect observation has no durable step".to_string())
+            })?;
+        if current.intent_digest != step.intent_digest
+            || current.payload_digest != step.payload_digest
+        {
+            return Err(TaskFlowError::Conflict(
+                "effect observation differs from the durable step".to_string(),
+            ));
+        }
         let provider_json = bind_provider_receipt(
             &mut transaction,
             owner,
@@ -819,6 +833,7 @@ mod tests {
                 "effect-run",
                 "work",
                 1,
+                &fence,
                 EffectDispatchObservationKind::Indeterminate,
                 &unknown,
                 25,
@@ -862,6 +877,7 @@ mod tests {
                 "effect-run",
                 "work",
                 1,
+                &fence,
                 EffectDispatchObservationKind::Succeeded,
                 &terminal,
                 30,
@@ -893,6 +909,7 @@ mod tests {
                 "effect-run",
                 "work",
                 1,
+                &fence,
                 EffectDispatchObservationKind::Succeeded,
                 &terminal,
                 31,
@@ -907,6 +924,7 @@ mod tests {
                     "effect-run",
                     "work",
                     1,
+                    &fence,
                     EffectDispatchObservationKind::Failed,
                     &Sha256Digest::for_bytes(b"different-terminal"),
                     32,
@@ -981,6 +999,7 @@ mod tests {
                 "effect-run",
                 "work",
                 1,
+                &fence,
                 EffectDispatchObservationKind::ProvenAbsent,
                 &Sha256Digest::for_bytes(b"actual-before-contact-proof"),
                 25,
