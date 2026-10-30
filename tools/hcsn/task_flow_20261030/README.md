@@ -187,6 +187,16 @@ in a separate experiment copy.
 
 ## Review and integration boundary
 
+Repository integration also changes three files outside this campaign.
+`.github/blob-size-allowlist.txt` adds nine exact paths for immutable evidence
+assets under the existing asset exception; the 512,000-byte limit is unchanged.
+`.codespellrc` excludes two exact historical non-prose data fragments and accepts
+the technical word `retuned`. The previously empty root `README.md` links to the
+existing readiness guide, as required by the documentation verifier. These
+changes preserve every historical HCSN byte and all frozen scientific gates.
+The local blob-policy and codespell checks pass; full repository CI status is
+reported by [PR #4367](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4367).
+
 Implementation commits are split into coherent numerical API, references,
 task owner, readouts, memory mechanism, runner, independent audit, numerical
 diagnosis, repair and reporting stages. Handwritten logical stages stay below

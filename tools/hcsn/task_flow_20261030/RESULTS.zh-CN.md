@@ -86,4 +86,6 @@ v2 补充独立审计验证了 3,560 个留出文件和全部 800 条状态、Ba
 
 原始 checkpoint、预测、更新日志、packet 与 traces 均以无损 ZIP、逐文件 SHA 清单交付，并完成真实新目录恢复；各模块 README 给出先恢复再审计的命令。记忆严格审计的 exit1 是保留的负结果。[记忆归档验证](memory/archive_validation.json)、[v1 恢复](control/restoration_validation.json)、[v2 恢复](control_v2/restoration_validation.json)
 
+仓库集成另有三处精确修复：在 `.github/blob-size-allowlist.txt` 按现有规则许可九个完整证据资产路径，保持 512,000 字节限制；在 `.codespellrc` 排除两个历史非正文数据片段并接受术语 `retuned`；给原为空的根 `README.md` 补上已有 readiness 文档链接。全部 1,025 个历史 HCSN 文件及冻结科学门保持原样。本地资产规则与拼写检查通过；全仓 CI 状态以 [PR #4367](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4367) 为准。
+
 **必要后续仍未执行：** 改进可学习的选择性写入及抗干扰机制，同时守住长期保持门；补齐 FP32 与混合精度恢复检验；针对实际访问状态的分布和轨迹误差改进 value-to-action 学习，再冻结新协议、使用新留出集。最终还需把内容、无观察流和任务控制联合训练、接入真实 Hepta owner，并做同信息、同质量与完整成本的 SNN／Transformer 对照。这些是下一阶段问题，不能列入本轮已完成的优势。
