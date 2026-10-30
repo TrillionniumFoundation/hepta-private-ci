@@ -194,13 +194,13 @@ mod tests {
         }
     }
 
-    fn ledger() -> Result<LeaseLedger, LeaseLedgerError> {
+    fn ledger_with_generation(generation: u64) -> Result<LeaseLedger, LeaseLedgerError> {
         let mut ledger = LeaseLedger::new();
         ledger
             .admit_host(HostObservation {
                 host_id: "host-one".into(),
                 failure_domain_id: "rack-one".into(),
-                generation: 1,
+                generation,
                 observed_at_ms: 1_000,
                 valid_until_ms: 10_000,
                 capacity: Resources {
@@ -210,6 +210,18 @@ mod tests {
                 },
             })?;
         Ok(ledger)
+    }
+
+    fn ledger() -> Result<LeaseLedger, LeaseLedgerError> {
+        ledger_with_generation(1)
+    }
+
+    #[test]
+    fn zero_generation_fixture_is_rejected_without_panic() {
+        assert!(matches!(
+            ledger_with_generation(0),
+            Err(LeaseLedgerError::HostCapacity)
+        ));
     }
 
     #[test]
