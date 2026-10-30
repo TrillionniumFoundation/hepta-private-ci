@@ -74,10 +74,10 @@ async fn rejected_head_allows_explicit_retry_and_changed_work(
                 break;
             }
         }
-        assert_eq!(queue.list(thread_id).await?, vec![rejected.clone()]);
+        std::assert_eq!(queue.list(thread_id).await?, vec![rejected.clone()]);
     }
     let log = fs::read_to_string(test.codex_home_path().join("queue_prompt_hook.log"))?;
-    assert_eq!(log.lines().collect::<Vec<_>>(), vec!["blocked", "blocked"]);
+    std::assert_eq!(log.lines().collect::<Vec<_>>(), vec!["blocked", "blocked"]);
     match binding {
         Binding::Unbound => {
             queue
@@ -102,7 +102,7 @@ async fn rejected_head_allows_explicit_retry_and_changed_work(
     })
     .await??;
     assert!(queue.list(thread_id).await?.is_empty());
-    assert_eq!(
+    std::assert_eq!(
         response
             .single_request()
             .message_input_texts("user")
@@ -111,7 +111,7 @@ async fn rejected_head_allows_explicit_retry_and_changed_work(
         Some("allowed")
     );
     let log = fs::read_to_string(test.codex_home_path().join("queue_prompt_hook.log"))?;
-    assert_eq!(
+    std::assert_eq!(
         log.lines().collect::<Vec<_>>(),
         vec!["blocked", "blocked", "allowed"]
     );
