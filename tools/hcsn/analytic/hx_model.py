@@ -13,8 +13,10 @@ from scipy.special import ndtr, log_ndtr
 
 if __package__:
     from .hx_precision import precision_boundary_equity
+    from .admissibility import require_admissible_boundary
 else:
     from hx_precision import precision_boundary_equity
+    from admissibility import require_admissible_boundary
 
 
 @dataclass(frozen=True)
@@ -66,7 +68,13 @@ def exp_cdf_interval(exponent, lo, hi):
     return np.exp(exponent+log_big)*(-np.expm1(log_small-log_big))
 
 
-class HXModel:
+class HXBoundaryCandidate:
+    """Unverified Eq.(12)/A7 candidate, retained for formula and failure audits.
+
+    Smooth pasting alone does not imply nonnegative equity. Neural consumers
+    should use HXModel, which rejects an inadmissible local boundary.
+    """
+
     def __init__(self, params=Parameters()):
         self.p = params
         self.s2 = params.sigma**2
@@ -91,16 +99,16 @@ class HXModel:
             self.boundary, _ = precision_boundary_equity(params, [])
 
     def _B_derivative_numerator(self, y):
-        q = .5*(self.z*self.z-y*y)*self.s*self.s
+        q = .5*(self.z-y)*(self.z+y)*self.s*self.s
         return self.s*exp_phi(0, y*self.s)+y*self.s*self.s*exp_cdf(q, -self.z*self.s)
 
     def B_aux(self, y):
         """Paper Eq.(12) B(y), including its removable limit at y=-z."""
         denominator = self.z+y
-        if abs(denominator) < 1e-5*(1+self.z):
+        if abs(denominator) < 1e-3*(1+self.z):
             ys = -self.z+self._nodes*denominator
             return float(self._weights @ self._B_derivative_numerator(ys))
-        q = .5*(self.z*self.z-y*y)*self.s*self.s
+        q = .5*(self.z-y)*(self.z+y)*self.s*self.s
         return float((ndtr(y*self.s)-exp_cdf(q, -self.z*self.s))/denominator)
 
     def default_boundary(self):
@@ -237,3 +245,11 @@ class HXModel:
         near = x[~far]
         result[~far] = near**2*(e2/2+near*(e3/6+near*e4/24))
         return result
+
+
+class HXModel(HXBoundaryCandidate):
+    """Full formulas with a necessary local limited-liability admission check."""
+
+    def __init__(self, params=Parameters()):
+        super().__init__(params)
+        require_admissible_boundary(params, self.boundary)

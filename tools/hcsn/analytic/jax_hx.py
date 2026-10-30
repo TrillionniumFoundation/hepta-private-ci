@@ -11,17 +11,25 @@ import numpy as np
 import jax.numpy as jnp
 from jax.scipy.special import ndtr, log_ndtr
 
+if __package__:
+    from .hx_model import HXModel
+else:
+    from hx_model import HXModel
+
 
 NAMES = ("r", "delta", "sigma", "alpha", "tax", "liquidity", "maturity", "coupon", "principal")
 LOWER = (.04, .01, .08, 0., 0., 1e-4, .01, .5, 20.)
 UPPER = (.15, .2, .8, 1., .6, .1, 20., 10., 100.)
+_GAUSS_NODES, _GAUSS_WEIGHTS = np.polynomial.legendre.leggauss(8)
+_GAUSS_NODES, _GAUSS_WEIGHTS = (_GAUSS_NODES+1)/2, _GAUSS_WEIGHTS/2
 
 
 def validate_parameters(parameters):
-    """Host-side check; reject unsupported inputs instead of clipping them."""
+    """Check the numeric box and necessary local boundary admissibility."""
     values = np.asarray([getattr(parameters, k) for k in NAMES], dtype=float)
     if not np.all(np.isfinite(values)) or np.any(values < LOWER) or np.any(values > UPPER):
         raise ValueError("Outside the controlled JAX domain; use the NumPy/mpmath reference")
+    HXModel(parameters)
     return values
 
 
@@ -31,7 +39,11 @@ def domain_mask(theta):
 
 
 def parameters_from_raw(raw):
-    """Optional trainable interior parameterization; not used in validation."""
+    """Map into the numeric box; boundary admissibility remains a separate check.
+
+    Some combinations in this box fail the stopping inequality. The boundary
+    and equity functions return NaN for those combinations, without clipping.
+    """
     lo, hi = jnp.asarray(LOWER, raw.dtype), jnp.asarray(UPPER, raw.dtype)
     return lo+(hi-lo)*(.5+.5*jnp.tanh(raw/2))
 
@@ -63,15 +75,35 @@ def constants(theta):
     return s2, R, a, z, zt, eta, gamma, s, c, p, q, discount, cost
 
 
-def boundary(theta):
+def boundary_candidate(theta):
+    """Original positive Eq.(12) candidate, before the stopping inequality."""
     r, delta, sigma, alpha, tax, liquidity, m, C, P = theta
     s2, R, a, z, zt, eta, gamma, s, c, p, q, discount, cost = constants(theta)
     def B(y):
-        return (ndtr(y*s)-exp_cdf(.5*(z*z-y*y)*s*s, -z*s))/(z+y)
+        denominator = z+y
+        near = jnp.abs(denominator) < 1e-3*(1+z)
+        at = -z+jnp.asarray(_GAUSS_NODES, theta.dtype)*denominator
+        exponent = .5*(z-at)*(z+at)*s*s
+        derivative = s*exp_phi(0., at*s)+at*s*s*exp_cdf(exponent, -z*s)
+        integrated = jnp.sum(jnp.asarray(_GAUSS_WEIGHTS, theta.dtype)*derivative)
+        direct = (ndtr(y*s)-exp_cdf(.5*(z-y)*(z+y)*s*s, -z*s))
+        direct /= jnp.where(near, 1., denominator)
+        return jnp.where(near, integrated, direct)
     bs = B(-zt)+B(zt)
     value = (cost/eta+q*discount*(B(-a)+B(a))+(c/R)*bs)
     value /= .5*s2*(gamma+1)+alpha/m*bs
     return jnp.where(domain_mask(theta) & (value > 0), value, jnp.nan)
+
+
+def boundary(theta):
+    """Admit only a candidate with resolvably nonnegative local equity."""
+    value = boundary_candidate(theta)
+    r, delta, sigma, alpha, tax, liquidity, m, C, P = theta
+    flow = delta*value-(1-tax)*C+(alpha*value-P)/m
+    scale = jnp.abs(delta*value)+jnp.abs((1-tax)*C)+(jnp.abs(alpha*value)+jnp.abs(P))/m
+    tolerance = 64*jnp.finfo(theta.dtype).eps*jnp.maximum(1., scale)
+    admissible = jnp.isfinite(flow) & (flow < -tolerance)
+    return jnp.where(admissible, value, jnp.nan)
 
 
 def first_hit_x(x, horizon, theta):
