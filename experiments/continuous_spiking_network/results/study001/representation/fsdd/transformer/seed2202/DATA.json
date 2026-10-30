@@ -1,0 +1,109 @@
+{
+  "canonical_events": 32,
+  "context_length": 32,
+  "context_policy": "identical evidence; subdivided dt and zero-input null steps",
+  "interpretation": "Independent MNIST/FSDD samples; artificial class pairing or query-selected pairing, never natural synchronization. The four-token text query names a modality but never a digit; it is not a general language benchmark. FSDD sources repeat when requested episodes exceed the split's unique recordings.",
+  "physical_duration": 32.0,
+  "preprocessing_fit": "none; fixed transforms only",
+  "schema": "hcsn-data-v1",
+  "seed": 7123,
+  "sizes": {
+    "test": 1024,
+    "train": 2048,
+    "val": 512
+  },
+  "source_counts": {
+    "test": {
+      "episodes": 1024,
+      "unique_images": 0,
+      "unique_recordings": 1000
+    },
+    "train": {
+      "episodes": 2048,
+      "unique_images": 0,
+      "unique_recordings": 1500
+    },
+    "val": {
+      "episodes": 512,
+      "unique_images": 0,
+      "unique_recordings": 500
+    }
+  },
+  "source_manifest_sha256": "96bc493ae46b081f55f46aec842f62ae9a965ddae375daf0d726562688f55fe6",
+  "sources": {
+    "fsdd": {
+      "archive": {
+        "bytes": 16628041,
+        "filename": "fsdd-26eb9aaf76e81b692f806f9140c2d2777410d7a1.zip",
+        "sha256": "beaca4fb849cad13103b2cffba913b3d7fdb5f15222da4ddd07187b3c38a757a",
+        "upstream_md5": null,
+        "url": "https://codeload.github.com/Jakobovski/free-spoken-digit-dataset/zip/26eb9aaf76e81b692f806f9140c2d2777410d7a1"
+      },
+      "authors": "Zohar Jackson and FSDD contributors",
+      "commit": "26eb9aaf76e81b692f806f9140c2d2777410d7a1",
+      "features": {
+        "filename": "fsdd_features_v1.npz",
+        "sha256": "9daeea070095526ec2652fa6ae1040a0f978cba48438e3ab76671a75c3b32b6a",
+        "transform": "fixed 20-band log-mel, 28 frames, no fitted statistics"
+      },
+      "homepage": "https://github.com/Jakobovski/free-spoken-digit-dataset",
+      "license": "CC-BY-SA-4.0",
+      "license_source": "https://github.com/Jakobovski/free-spoken-digit-dataset/blob/26eb9aaf76e81b692f806f9140c2d2777410d7a1/README.md#license",
+      "name": "Free Spoken Digit Dataset",
+      "recordings": 3000
+    },
+    "mnist": {
+      "authors": "Yann LeCun, Corinna Cortes, Christopher J.C. Burges",
+      "files": [
+        {
+          "bytes": 9912422,
+          "filename": "train-images-idx3-ubyte.gz",
+          "sha256": "440fcabf73cc546fa21475e81ea370265605f56be210a4024d2ca8f203523609",
+          "upstream_md5": "f68b3c2dcbeaaa9fbdd348bbdeb94873",
+          "url": "https://ossci-datasets.s3.amazonaws.com/mnist/train-images-idx3-ubyte.gz"
+        },
+        {
+          "bytes": 28881,
+          "filename": "train-labels-idx1-ubyte.gz",
+          "sha256": "3552534a0a558bbed6aed32b30c495cca23d567ec52cac8be1a0730e8010255c",
+          "upstream_md5": "d53e105ee54ea40749a09fcbcd1e9432",
+          "url": "https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyte.gz"
+        },
+        {
+          "bytes": 1648877,
+          "filename": "t10k-images-idx3-ubyte.gz",
+          "sha256": "8d422c7b0a1c1c79245a5bcf07fe86e33eeafee792b84584aec276f5a2dbc4e6",
+          "upstream_md5": "9fb629c4189551a2d022fa330f9573f3",
+          "url": "https://ossci-datasets.s3.amazonaws.com/mnist/t10k-images-idx3-ubyte.gz"
+        },
+        {
+          "bytes": 4542,
+          "filename": "t10k-labels-idx1-ubyte.gz",
+          "sha256": "f7ae60f92e00ec6debd23a6088c31dbd2371eca3ffa0defaefb259924204aec6",
+          "upstream_md5": "ec29112dd5afa0611ce80d1b7f02629c",
+          "url": "https://ossci-datasets.s3.amazonaws.com/mnist/t10k-labels-idx1-ubyte.gz"
+        }
+      ],
+      "homepage": "http://yann.lecun.com/exdb/mnist/",
+      "license": "CC-BY-SA-3.0",
+      "license_source": "https://keras.io/api/datasets/mnist/",
+      "name": "MNIST"
+    },
+    "schema": "hcsn-public-sources-v1"
+  },
+  "speaker_splits": {
+    "test": [
+      "lucas",
+      "yweweler"
+    ],
+    "train": [
+      "george",
+      "jackson",
+      "nicolas"
+    ],
+    "val": [
+      "theo"
+    ]
+  },
+  "task": "fsdd"
+}

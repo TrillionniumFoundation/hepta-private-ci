@@ -1,0 +1,38 @@
+{
+  "command": [
+    "/workspace/scratch/9bbd63a0445f/hcsn-venv/bin/python",
+    "-m",
+    "experiments.continuous_spiking_network.measure_study",
+    "--results",
+    "experiments/continuous_spiking_network/results/study001",
+    "--cache-dir",
+    "/workspace/scratch/9bbd63a0445f/hcsn-data",
+    "--repeats",
+    "7"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 365.38590836524963,
+  "child_user_cpu_seconds": 358.008358,
+  "child_system_cpu_seconds": 6.186101,
+  "host_before": {
+    "unix": 1793175273.0223505,
+    "loadavg": "1.78 2.22 3.93 2/237 3",
+    "cgroup": {
+      "cpu.stat": "usage_usec 75939588775\nuser_usec 58559096517\nsystem_usec 17380492258\nnice_usec 63442916\nnr_periods 288774\nnr_throttled 15522\nthrottled_usec 1446771454\nnr_bursts 0\nburst_usec 0",
+      "memory.current": "7686004736",
+      "memory.max": "8589934592",
+      "memory.events": "low 0\nhigh 0\nmax 1454100\noom 9\noom_kill 6\noom_group_kill 0"
+    }
+  },
+  "host_after": {
+    "unix": 1793175638.408372,
+    "loadavg": "2.86 2.81 3.64 3/205 6",
+    "cgroup": {
+      "cpu.stat": "usage_usec 77017723289\nuser_usec 59412394660\nsystem_usec 17605328628\nnice_usec 63442916\nnr_periods 292428\nnr_throttled 15542\nthrottled_usec 1449390776\nnr_bursts 0\nburst_usec 0",
+      "memory.current": "6963286016",
+      "memory.max": "8589934592",
+      "memory.events": "low 0\nhigh 0\nmax 1459509\noom 9\noom_kill 6\noom_group_kill 0"
+    }
+  },
+  "scope": "one serial process after all study training and independent replay/DP/plot tasks stopped; host is shared, no dedicated-machine isolation claimed"
+}
