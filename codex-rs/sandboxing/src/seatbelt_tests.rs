@@ -1551,59 +1551,40 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
         "expected empty root metadata protection regex requirements in policy:\n{policy_text}",
     );
 
+    // The numeric exclusion slots are assigned by discovery order, not by
+    // protected metadata name. Require an exact, bijective set of protected
+    // paths without turning HashSet iteration order into a security contract.
+    let cwd_canonical = cwd.canonicalize().expect("canonicalize cwd");
     let expected_definitions = [
-        format!(
-            "-DWRITABLE_ROOT_0={}",
-            cwd.canonicalize()
-                .expect("canonicalize cwd")
-                .to_string_lossy()
-        ),
-        format!(
-            "-DWRITABLE_ROOT_0_EXCLUDED_0={}",
-            cwd.canonicalize()
-                .expect("canonicalize cwd")
-                .join(".git")
-                .display()
-        ),
-        format!(
-            "-DWRITABLE_ROOT_0_EXCLUDED_1={}",
-            cwd.canonicalize()
-                .expect("canonicalize cwd")
-                .join(".agents")
-                .display()
-        ),
-        format!(
-            "-DWRITABLE_ROOT_0_EXCLUDED_2={}",
-            cwd.canonicalize()
-                .expect("canonicalize cwd")
-                .join(".codex")
-                .display()
-        ),
+        format!("-DWRITABLE_ROOT_0={}", cwd_canonical.to_string_lossy()),
         format!(
             "-DWRITABLE_ROOT_1={}",
             vulnerable_root_canonical.to_string_lossy()
         ),
-        format!(
-            "-DWRITABLE_ROOT_1_EXCLUDED_0={}",
-            dot_git_canonical.to_string_lossy()
-        ),
-        format!(
-            "-DWRITABLE_ROOT_1_EXCLUDED_1={}",
-            dot_codex_canonical.to_string_lossy()
-        ),
-        format!(
-            "-DWRITABLE_ROOT_2={}",
-            empty_root_canonical.to_string_lossy()
-        ),
+        format!("-DWRITABLE_ROOT_2={}", empty_root_canonical.to_string_lossy()),
     ];
     let writable_definitions: Vec<String> = args
         .iter()
-        .filter(|arg| arg.starts_with("-DWRITABLE_ROOT_"))
+        .filter(|arg| arg.starts_with("-DWRITABLE_ROOT_") && !arg.contains("_EXCLUDED_"))
         .cloned()
         .collect();
     assert_eq!(
         writable_definitions, expected_definitions,
-        "unexpected writable-root parameter definitions in {args:#?}"
+        "unexpected writable roots in {args:#?}"
+    );
+    assert_root_exclusions(
+        &args,
+        0,
+        &[
+            cwd_canonical.join(".git"),
+            cwd_canonical.join(".agents"),
+            cwd_canonical.join(".codex"),
+        ],
+    );
+    assert_root_exclusions(
+        &args,
+        1,
+        &[dot_git_canonical.clone(), dot_codex_canonical.clone()],
     );
     let command_index = args
         .iter()
@@ -2495,29 +2476,14 @@ fn create_seatbelt_args_for_cwd_as_git_repo() {
         args.contains(&expected_root),
         "missing {expected_root}: {args:#?}"
     );
-    let expected_dot_git = format!(
-        "-DWRITABLE_ROOT_0_EXCLUDED_0={}",
-        dot_git_canonical.to_string_lossy()
-    );
-    assert!(
-        args.contains(&expected_dot_git),
-        "missing {expected_dot_git}: {args:#?}"
-    );
-    let expected_dot_codex = format!(
-        "-DWRITABLE_ROOT_0_EXCLUDED_2={}",
-        dot_codex_canonical.to_string_lossy()
-    );
-    assert!(
-        args.contains(&expected_dot_codex),
-        "missing {expected_dot_codex}: {args:#?}"
-    );
-    let expected_dot_agents = format!(
-        "-DWRITABLE_ROOT_0_EXCLUDED_1={}",
-        dot_agents_canonical.to_string_lossy()
-    );
-    assert!(
-        args.contains(&expected_dot_agents),
-        "missing {expected_dot_agents}: {args:#?}"
+    assert_root_exclusions(
+        &args,
+        0,
+        &[
+            dot_git_canonical.clone(),
+            dot_codex_canonical.clone(),
+            dot_agents_canonical.clone(),
+        ],
     );
     let expected_slash_tmp = format!("-DWRITABLE_ROOT_1={}", slash_tmp.to_string_lossy());
     assert!(
@@ -2529,6 +2495,37 @@ fn create_seatbelt_args_for_cwd_as_git_repo() {
         .position(|arg| arg == "--")
         .expect("seatbelt args should include command separator");
     assert_eq!(args[command_index + 1..], shell_command);
+}
+
+// Assert every protected metadata path is present exactly once and every
+// numeric Seatbelt exclusion slot is defined. Order is not a security input;
+// missing, duplicated or extra exclusions are still rejected.
+fn assert_root_exclusions(args: &[String], root: usize, expected: &[PathBuf]) {
+    let prefix = format!("-DWRITABLE_ROOT_{root}_EXCLUDED_");
+    let total = args.iter().filter(|arg| arg.starts_with(&prefix)).count();
+    assert_eq!(total, expected.len(), "wrong exclusion count in {args:#?}");
+
+    let mut actual_paths = (0..expected.len())
+        .map(|index| {
+            let key = format!("{prefix}{index}=");
+            let matches = args
+                .iter()
+                .filter_map(|arg| arg.strip_prefix(&key))
+                .collect::<Vec<_>>();
+            assert_eq!(matches.len(), 1, "missing or duplicated {key} in {args:#?}");
+            matches[0].to_owned()
+        })
+        .collect::<Vec<_>>();
+    let mut expected_paths = expected
+        .iter()
+        .map(|path| path.to_string_lossy().into_owned())
+        .collect::<Vec<_>>();
+    actual_paths.sort_unstable();
+    expected_paths.sort_unstable();
+    assert_eq!(
+        actual_paths, expected_paths,
+        "missing or unexpected protected metadata paths in {args:#?}"
+    );
 }
 
 struct PopulatedTmp {
