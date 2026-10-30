@@ -1,0 +1,58 @@
+{
+  "schema": "hepta.vendor-compatibility-patch.v1",
+  "source_archive_sha256": "3e06b90c8a0d252e203c94344b21e35a30f3a3a85dc7db5af8f8df9f3e0c63ef",
+  "scope": {
+    "reason": "Remove unmaintained basic-toml from the existing i18n graph without dropping the localization consumer.",
+    "production_changes": [
+      "Use maintained toml0.9.5 for the two existing public loaders",
+      "Preserve CannotDeserializeToml variant and source path; inner parser error now toml::de::Error"
+    ],
+    "tests": [
+      "compatibility_tests::public_crate_loader_preserves_package_and_language_config",
+      "compatibility_tests::public_config_loader_preserves_defaults_and_unicode",
+      "compatibility_tests::public_parse_errors_keep_path_and_diagnostic"
+    ]
+  },
+  "modified_files": {
+    "Cargo.toml": {
+      "upstream": {
+        "sha256": "529a33a471dd8d4c8f0b83e9678822f78d06eadf8a815734cdf6e2206065d463",
+        "bytes": 1477
+      },
+      "patched": {
+        "sha256": "fa9af23aa873dffb238e36ca60c26b7cc01023741ab5037b8d793928f63fe1fa",
+        "bytes": 1516
+      }
+    },
+    "Cargo.toml.orig": {
+      "upstream": {
+        "sha256": "83619c9644c346a0c7b841220a01f97db4215a0df6280422e28de2d4f6128afb",
+        "bytes": 875
+      },
+      "patched": {
+        "sha256": "da879200fd98adbbf1e17b21864e4274bceafefd45485a76464269b016d150be",
+        "bytes": 906
+      }
+    },
+    "src/lib.rs": {
+      "upstream": {
+        "sha256": "420cdf6a53cad0724c48960216d50c864c10747587b52add6764d4fdec378ecc",
+        "bytes": 14701
+      },
+      "patched": {
+        "sha256": "29b6082882ea2c589555222289cb18c6c63a95eb83aab91ee1f569d04da94de5",
+        "bytes": 14761
+      }
+    }
+  },
+  "added_files": {
+    "src/compatibility_tests.rs": {
+      "sha256": "87f1e8142e36f9b5d03915f8fe4e014afad1efcd780c25ef9646eaae34e9e1dc",
+      "bytes": 3492
+    }
+  },
+  "removed_files": [],
+  "unchanged_original_file_count": 8,
+  "runtime_tests_executed": false,
+  "status": "restored source; fresh focused Rust execution required"
+}
