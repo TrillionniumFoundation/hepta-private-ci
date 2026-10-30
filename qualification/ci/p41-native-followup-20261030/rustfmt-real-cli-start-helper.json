@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.p41-native-followup.rustfmt-real-cli-start-helper.v1",
+  "observed_date_utc": "2026-10-30",
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 4184,
+  "parent_head": "5196cce0535abf831ce0171e0290ca706dad7606",
+  "parent_tree": "3dba526bf12c5edc4770ca122b8a83ed7c652362",
+  "source": "codex-rs/hepta-agentd/src/test_support.rs",
+  "source_blob_before": "8182a21d8eff4653ac5f1b7046365855c37c9716",
+  "original_run": 41067968320,
+  "original_jobs": {
+    "rust_format": 124105218086,
+    "repo_build_test": 124105075069
+  },
+  "native_report": "cargo fmt --check emitted one Diff in hepta-agentd/src/test_support.rs:78, formatting start_inner's default Arg0DispatchPaths invocation; repo-checks reached same diff.",
+  "change": "Apply exactly the rustfmt-emitted multiline argument layout and .await placement in start() test helper; no AST or behavior change.",
+  "preflight": {
+    "source_expected_single_match": true,
+    "original_before_pattern_retained": false,
+    "real_cli_start_helper_retained": true,
+    "production_runner_unmodified": true,
+    "finaluse_assertions_unmodified": true,
+    "no_rust_dependencies_changed": true
+  },
+  "validation": {
+    "native_origin": "failed exact source-head rustfmt run",
+    "local_rustfmt": "unavailable in current container; formatting taken verbatim from exact rustfmt job log",
+    "new_exact_head_owning": "PENDING",
+    "not_a_closed_gate": true
+  },
+  "mode": "SHADOW_ONLY",
+  "authority": "DENY_ALL",
+  "promotion": "HOLD_NO_GO",
+  "all_blockers_closed": false
+}

@@ -78,8 +78,14 @@ impl CognitiveTestHost {
         model: &str,
         provider_base_url: &str,
     ) -> TestResult<Self> {
-        Self::start_inner(root, agent_id, model, provider_base_url, Arg0DispatchPaths::default())
-            .await
+        Self::start_inner(
+            root,
+            agent_id,
+            model,
+            provider_base_url,
+            Arg0DispatchPaths::default(),
+        )
+        .await
     }
 
     /// Start a real App Server with an explicit CLI for cross-crate test runs.
