@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.p41-agentd-test-host-readiness-source-review.v1",
+  "publication_kind": "test-only-candidate-awaiting-owning-validation",
+  "date_utc": "2026-10-30",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 4184,
+  "source_before_head": "c460560e485530eb4f3a5f514b849e760064260c",
+  "source_before_tree": "5bc11c0232af46465c8b53bb9d8b9094a42d7c43",
+  "source_file": "codex-rs/hepta-agentd/src/test_support.rs",
+  "source_change": "Invoke existing AgentdState::mark_runtime_prerequisites_ready after attaching the canonical CognitiveStore and before entering the Running lifecycle, matching production runtime startup order.",
+  "failure_evidence": {
+    "workflow_run": 41072694562,
+    "linux_gnu_job": 124121376871,
+    "linux_musl_job": 124121376727,
+    "test": "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+    "observed_error": "timed out waiting for Agentd test control readiness",
+    "result": "FAILED",
+    "note": "Exact-head native failure observed on GNU and musl; other tests also fail independently."
+  },
+  "source_tracing": {
+    "production": "codex-rs/hepta-agentd/src/runtime.rs:240 calls mark_runtime_prerequisites_ready before control startup",
+    "initial_false": "codex-rs/hepta-agentd/src/state.rs:146-148 critical_stores_ready and revocation_ready initialized false",
+    "authority": "codex-rs/hepta-agentd/src/state.rs:427-432 derives critical store availability from the actual attached CognitiveStore; revocation-ready uses existing zero-effect baseline",
+    "app_ready": "codex-rs/hepta-agentd/src/state.rs:435-452 requires critical/revocation flags to open admission",
+    "health": "codex-rs/hepta-agentd/src/state_control.rs:148-164 Health.ready requires critical_stores_ready, revocation_ready and admission_open",
+    "test_host": "codex-rs/hepta-agentd/src/test_support.rs:160-206 attached store, marked App Server ready, but did not call prerequisite marker before polling ready"
+  },
+  "preserved": "Original test assertions, code path safety refusals, exact request counts, production owner permissions, fixed P39 cohort and acceptance remain unchanged.",
+  "validation": {
+    "source_unique_replacement": true,
+    "production_files_modified": false,
+    "security_checks_bypassed": false,
+    "rust_build_executed_this_run": false,
+    "owning_native_pass": false,
+    "target_device_test": false,
+    "required_ci_terminal_success": false,
+    "next_required": "Run exact-new-head native Hepta infer-worker-host + Agentd/AppServer owning tests on Linux GNU/musl and macOS, plus required Architecture/Bazel/V8/Stem; verify logs/artifacts and do not close without true PASS."
+  },
+  "deployment": "SHADOW_ONLY/DENY_ALL/HOLD_NO_GO"
+}
