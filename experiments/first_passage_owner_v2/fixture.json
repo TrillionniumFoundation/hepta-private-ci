@@ -1,0 +1,64 @@
+{
+  "schema": "hepta.fpt.owner-adoption.v2",
+  "sequence": 1,
+  "predecessor": "0000000000000000000000000000000000000000000000000000000000000000",
+  "config": {
+    "run_id": "fpt.v2.fixture",
+    "objective_digest": "1111111111111111111111111111111111111111111111111111111111111111",
+    "artifact_digest": "2222222222222222222222222222222222222222222222222222222222222222",
+    "model": {
+      "drift": -0.45,
+      "weights": [
+        0.0,
+        0.0
+      ],
+      "interaction": 0.0,
+      "sigma": 0.3,
+      "cancel_rate": 0.0,
+      "barrier": 0.0,
+      "reset_gap": 0.9,
+      "refractory_us": 60000
+    },
+    "deadline_us": 1000000,
+    "read_budget": 4,
+    "credit": {
+      "initial_micros": 0,
+      "maximum_micros": 2000000,
+      "step_micros": 800000,
+      "target_quarters": 1,
+      "maximum_read_price_micros": 2000000
+    }
+  },
+  "checkpoint": {
+    "level": 1.0,
+    "time_us": 0,
+    "phase": {
+      "kind": "Active"
+    },
+    "events": 0,
+    "rng_seed": 17,
+    "rng_counter": 0,
+    "cancellation": {
+      "seed": 19,
+      "counter": 0,
+      "at_us": null
+    }
+  },
+  "hit_times_us": [],
+  "owner_monotonic_us": 1,
+  "expected_price_micros": 0,
+  "expected_price_residue": 0,
+  "ndu_receipt_digest": "3333333333333333333333333333333333333333333333333333333333333333",
+  "features_q24": [
+    8388608,
+    0,
+    0,
+    0,
+    0
+  ],
+  "action": {
+    "kind": "Read",
+    "relative_path": "chunk.txt",
+    "query": "needle"
+  }
+}
