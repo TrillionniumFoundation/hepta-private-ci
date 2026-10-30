@@ -1,0 +1,260 @@
+{
+  "schema_version": 1,
+  "status": "review_complete_with_explicit_ci_limits",
+  "scope": "Post-refresh reconstruction, narrow runtime repairs, canonical schema generation and scoped Linux validation; separate from the scientific experiments.",
+  "base_head": "9b71cf4e65194593d5e0fb2a507026d21527a740",
+  "observed_at_utc": "2026-10-30T12:55:10Z",
+  "environment_refresh": "Unpublished pre-refresh local source and raw logs were lost. Retained historical source hashes are distinguished from fresh execution logs; no lost log is reconstructed as an original.",
+  "current_source_sha256": {
+    "cli": {
+      "codex-rs/cli/src/main.rs": "007417d32337ab694795dc994e3c8d2c144181c3b98c13da28a08c4fd15534fc",
+      "codex-rs/cli/src/hepta.rs": "007417d32337ab694795dc994e3c8d2c144181c3b98c13da28a08c4fd15534fc",
+      "codex-rs/cli/src/multitool_main.rs": "097ca019533619d964fa67f018e0a140645779f17a0e9a17212ad5398636a513"
+    },
+    "plasticity": {
+      "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs": "2cced12ff678b4284bc314c42c28f541949a91a978701b2ab35630482880163d"
+    },
+    "queue": {
+      "codex-rs/ext/queue/src/service.rs": "399262c6a59aec6b1883920098e8d6840a8a2c02071dc3185f2ddb5088146576",
+      "codex-rs/ext/queue/tests/queue_service.rs": "7f02020502bf82c396b90302e6205ea07c8f958631547da1ab627903448a611a"
+    },
+    "windows_authority_and_fixtures": {
+      "codex-rs/hepta-contracts/src/final_use.rs": "0ded468b140b8470d8b62efed1f0ba4a5919ef60373f15868bd57b97a38a4f71",
+      "codex-rs/hepta-contracts/src/final_use_unsupported_tests.rs": "073c8a7338945942d4ed2a49f807f85c22326e1e787ec3736828b2d119d8fb87",
+      "codex-rs/hepta-prompt-optimizer/src/canonical_tests.rs": "db97e6aa95b8dcfb029465af1f8bdb82089d2288397694a8e2cec777df32b619",
+      "codex-rs/hepta-intelligence/src/lib.rs": "d0c7193a1da835b5b4dd0a624bf4bcd2c3a8684619028b8fad192d2a1d85dd0a",
+      "codex-rs/hepta-intelligence/src/test_directory.rs": "2b20c2dadfe83b3ca1e7d540931ccb33570df6b80af37e1f693caa57aa96b701",
+      "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs": "45285b2f4f61872e93f6139673b9335ea5adb9077af73b37d8dccf06297c6e83",
+      "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs": "dec0e78edbb1080481d3e04e9899818f08eaed8ecf8f10290370d8ce67490458",
+      "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs": "19eb0ee19de73c8027a702039a16029f1fb6d0afe37587454c932d1f7ee06148",
+      "codex-rs/hepta-intelligence/src/prompt_delivery.rs": "124d2c31d47f20e6cd6f0d7fa7bc4533d15912559b4dfbbb068cf5a49721de95",
+      "codex-rs/hepta-intelligence/src/prompt_pipeline.rs": "88b29d450c89e8d85b7d3b7fba406daae7fd52397878d652a8d78da9041fa856",
+      "codex-rs/hepta-intelligence/src/prompt_authority_windows_tests.rs": "5099a8388c8b95ac389db1f36e5c2d02ecc90b75f9eddf038b8e0b7aa88cbec7"
+    },
+    "pty": {
+      "codex-rs/utils/pty/src/process.rs": "fa386dfce700d138c4d1dcce0d71f7b42c1be2997637f91c31cb2aed7576adb7",
+      "codex-rs/utils/pty/src/tests.rs": "36c2d1d601ab5d2cf0daa162a1aeb95b6ad8f6f159542b75268d074026aef70d"
+    },
+    "schema": {
+      "codex-rs/app-server-protocol/schema/json/v2/TurnRecoverResponse.json": "46831c10079913c27de4bb02cb0df199030150aaa3a0b218ae5133d8f5f82509",
+      "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-stable.json.zst": "ae5edc54372651ff430ad70729b97f8139bef6562f7a773df2ca3f571edb2964",
+      "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-experimental.json.zst": "2ca64026eba6ae9fb9d0d7b1bd7901d31a0cb0715b1e33918b99a1402b74a967"
+    }
+  },
+  "changes": {
+    "cli": "Both thin entrypoints set recursion_limit=256 and include the same implementation. multitool_main.rs is byte-identical to the original base main.rs; asynchronous behavior was not rewritten. Actual original compiler query depth was 130, beyond its default 128.",
+    "plasticity": "Test helpers propagate Result and preserve context, replacing disallowed expect calls without weakening assertions.",
+    "queue": "A pending completion barrier defers queue dispatch until the owner callback has returned; continuation holds no queue or owner lock while waiting and still uses ordinary admission. Shutdown/interrupted/not-found states do not dispatch queued work. New tests check pending-to-ready single dispatch and shutdown fencing; their behavior remains to be executed successfully on CI.",
+    "windows": "The already unsupported non-Unix final-use authority remains fail-closed. New Windows tests invoke real constructors and check no authority effects; existing positive authority cases remain Unix-only. Six ledger test directory-open fixtures use Windows backup-semantics and write access while retaining the actual flush operation. No production Windows durability backend is enabled.",
+    "pty": "Two REPL fixtures wait for an actual sys.ps1 prompt instead of echoed input or an early startup print. The reply needle is absent from the sent expression. Existing deadlines and assertions remain. Other changes only add bounded test diagnostics; production I/O is unchanged.",
+    "schema": "Both existing canonical writer modes run with the supported isolated schema-root flag. Generated bytes were copied unchanged and the full tree matched. The completed enum correction is in definitions.SubAgentActivityKind.enum of TurnRecoverResponse.json."
+  },
+  "fresh_completed": {
+    "windows_owner_linux": {
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-prompt-optimizer",
+        "-p",
+        "codex-hepta-intelligence",
+        "--lib",
+        "--locked"
+      ],
+      "passed": 286,
+      "skipped": 0,
+      "platform": "Linux x86_64",
+      "windows_specific_tests_executed": false,
+      "receipt": {
+        "path": "raw/RESTORED_WINDOWS_OWNER_TESTS.command.json",
+        "sha256": "6ff167d78fa4ace69b735e65840d6028ed514fc6b055d14109f54a163f77ef46"
+      },
+      "log": {
+        "path": "raw/RESTORED_WINDOWS_OWNER_TESTS.log",
+        "sha256": "3df58a814ca391cba30820893da45de4f90f4a40960ca4bdd01638d287ef4271"
+      }
+    },
+    "schema": {
+      "canonical_writers": [
+        {
+          "command": [
+            "just",
+            "write-app-server-schema",
+            "--schema-root",
+            "/tmp/holder-schema-20261030-v2-65d421def718"
+          ],
+          "exit_code": 0
+        },
+        {
+          "command": [
+            "just",
+            "write-app-server-schema",
+            "--experimental",
+            "--schema-root",
+            "/tmp/holder-schema-20261030-v2-65d421def718"
+          ],
+          "exit_code": 0
+        }
+      ],
+      "owner_tests_passed": 303,
+      "owner_tests_skipped": 1,
+      "skipped_test": "Existing ignored schema writer, explicitly executed successfully by each canonical generation command.",
+      "previous_ci_failure_cases": {
+        "schema_fixtures_tests::experimental_precomputed_exports_match_generated": "PASS [   1.901s] (301/303) codex-app-server-protocol schema_fixtures_tests::experimental_precomputed_exports_match_generated",
+        "schema_fixtures_tests::json_schema_fixtures_match_generated": "PASS [   2.162s] (302/303) codex-app-server-protocol schema_fixtures_tests::json_schema_fixtures_match_generated",
+        "schema_fixtures_tests::stable_precomputed_exports_match_schema_fixtures": "PASS [   0.213s] (296/303) codex-app-server-protocol schema_fixtures_tests::stable_precomputed_exports_match_schema_fixtures"
+      },
+      "no_new_ignore_or_retry": true,
+      "source_unchanged_during_build_and_test": true,
+      "review": {
+        "path": "raw/RESTORED_SCHEMA_FINAL_REVIEW.json",
+        "sha256": "47f22c48e332d5fac3c441611bcffe76f4f5eff4ec0d6b96ad87716819c44ff8"
+      },
+      "log": {
+        "path": "raw/RESTORED_SCHEMA_V2_TESTS.log",
+        "sha256": "63372d3a42d0a98d989b3390621f3b4cffd6bab8bff7c6bf0e50fb68328dcaca"
+      }
+    },
+    "pty_linux": {
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-utils-pty",
+        "--lib",
+        "--locked"
+      ],
+      "passed": 27,
+      "skipped": 0,
+      "retries": 0,
+      "platform": "Linux x86_64",
+      "source_unchanged_during_build_and_test": true,
+      "receipt": {
+        "path": "raw/RESTORED_PTY_TESTS_FRESH.command.json",
+        "sha256": "4fa90431ebb22443773511e17235b4b64fda7457413ed04d19f2b4b57cb0b612"
+      },
+      "log": {
+        "path": "raw/RESTORED_PTY_TESTS_FRESH.log",
+        "sha256": "3f1377ff9fc88796d77c18c64f200f769899273f805d9abdf2f7b0e13889ac0f"
+      }
+    }
+  },
+  "comment_only_identity": {
+    "review": {
+      "path": "raw/RESTORED_COMMENT_ONLY_IDENTITY.json",
+      "sha256": "e5d7238d087f2f39b7889529e9ab1813db3e85bbe047b0ea8751f48b7110a60c"
+    },
+    "method": "Deleting only the specifically reported argument comments in memory exactly reproduces the recorded complete-file SHA for both changed Windows test files, queue tests and plasticity tests. This is separate from an execution of final bytes."
+  },
+  "retained_failed_attempts": [
+    {
+      "receipt": {
+        "path": "raw/RESTORED_QUEUE_TESTS_WRONG_PACKAGE.command.json",
+        "sha256": "683a744115f49a940e1a1c599d03a793fbb3a2f7a74fbdde28f375bef45dd19f"
+      },
+      "outcome": "Incorrect package name: command failed before compiling or running tests."
+    },
+    {
+      "receipt": {
+        "path": "raw/RESTORED_QUEUE_TESTS.command.json",
+        "sha256": "b9b012f578daf30ec656d2aa3fa0a4ba731f3ae84b7d090abe9533e3c8146315"
+      },
+      "outcome": "Owner compiled; four tests failed at loopback binding under the restricted sandbox before behavior assertions."
+    },
+    {
+      "receipt": {
+        "path": "raw/RESTORED_QUEUE_TESTS_ESCALATED.command.json",
+        "sha256": "b81afff318de87b7d2f22ddc576d813486e2da2137e6ac725e7244c4cdc55dc5"
+      },
+      "outcome": "With loopback access, four tests failed at state database or temporary-directory setup due to a full disk. No model request occurred."
+    },
+    {
+      "receipt": {
+        "path": "raw/RESTORED_QUEUE_TESTS_AFTER_SPACE.command.json",
+        "sha256": "4534bbeb6547f62b0da1acd33a678db17fca362345d5697f7cb71fa41a39b284"
+      },
+      "outcome": "Compilation failed while loading the codex_home dependency in rlib form. The available archive and object were readable; the exact cause of incompatible local metadata was not proved. No source compatibility patch was made."
+    },
+    {
+      "receipt": {
+        "path": "raw/RESTORED_PTY_TESTS.command.json",
+        "sha256": "a80aec3dc788079b6cc9989fbbf51696fbf3ecd8fffd7d48c4cd268431288224"
+      },
+      "outcome": "Compilation failed after disk exhaustion; no PTY tests were executed."
+    },
+    {
+      "receipt": {
+        "path": "raw/RESTORED_SCHEMA_REGEN.json",
+        "sha256": "ae81c837bc5ec5a685054fb38974d95be991b5476d2782fb567265a54ceeb7a0"
+      },
+      "outcome": "First stable generation included two transient synchronization files in its compressed exports. Experimental compilation then failed with disk exhaustion. The later isolated canonical generation supersedes these artifacts."
+    }
+  ],
+  "open_gates": [
+    "New exact-head native CI must execute the four queue behavior cases; local environment and artifact failures are not passes.",
+    "Windows-specific fail-closed authority and directory-flush fixtures require actual Windows execution.",
+    "macOS must rerun the two repaired REPL cases. Three sustained-I/O macOS timeouts have no proved production cause; bounded diagnostics are not a claim of resolution.",
+    "Combined CLI/plasticity compilation, repository-wide checks and final scoped fix/format validation remain owned by the parent workflow and the next exact-head CI."
+  ],
+  "canonical_schema_hashes": {
+    "stable": {
+      "compressed_sha256": "ae5edc54372651ff430ad70729b97f8139bef6562f7a773df2ca3f571edb2964",
+      "decoded_sha256": "c4ec61becf7385dd5e8c2176d01dbd7abd8e3b007cc742d5c6274547514b6783",
+      "section_counts": {
+        "typescript": 688,
+        "json_schema": 294,
+        "internal_json_schema": 1
+      }
+    },
+    "experimental": {
+      "compressed_sha256": "2ca64026eba6ae9fb9d0d7b1bd7901d31a0cb0715b1e33918b99a1402b74a967",
+      "decoded_sha256": "5be2118f6d17d60f144a672562ee5ac047831a37838048f8b496c57c7a879129",
+      "section_counts": {
+        "typescript": 816,
+        "json_schema": 414,
+        "internal_json_schema": 0
+      }
+    }
+  },
+  "Cargo.lock_note": "Two new workspace dependency edges came from concurrent, separately authorized exec/supervisor manifest changes. The canonical schema generator did not introduce dependencies. Available evidence cannot identify which Cargo invocation physically updated Cargo.lock.",
+  "cargo_lock_unchanged_during_fresh_generation_and_tests": true,
+  "build_environment": {
+    "path_prefix": [
+      "/workspace/scratch/65d421def718/rust-toolchain-1.96.0/bin",
+      "/workspace/scratch/65d421def718/task-tools/bin"
+    ],
+    "cargo_home": "/workspace/scratch/65d421def718/security-cargo-home",
+    "fresh_target": "/tmp/hepta-runtime-target-20261030-65d421def718",
+    "schema_output": "/tmp/holder-schema-20261030-v2-65d421def718",
+    "jobs": 2,
+    "dev_debug": 0,
+    "test_debug": 0,
+    "incremental": 0,
+    "rustflags": "unset",
+    "cargo_encoded_rustflags": "unset",
+    "offline": "unset; standard configured networking",
+    "network_and_process_access": "Normal approved escalation for dependency access, loopback and local pseudo-terminals; no network policy workaround."
+  },
+  "artifact_recovery": {
+    "read_only_diagnosis": {
+      "path": "raw/RESTORED_QUEUE_ARTIFACT_FAILURE.json",
+      "sha256": "181f462a673e1a11c28a4b55736c01cb227f95f1e5b62da4a09b7c6cc4db37dc"
+    },
+    "rescue_move": {
+      "path": "raw/RESTORED_BUILD_RESCUE.json",
+      "sha256": "d07325cc4dbb192c2f4ef1354f483e38fdfbf98ded7dadadd363ddb29a04da3a"
+    },
+    "authorized_binary_cleanup": {
+      "path": "raw/RESTORED_OBSOLETE_BINARY_CLEANUP.json",
+      "sha256": "657cc4606feb5610417090abaeaf2e7b3b9c2e0072707f5f1212ca9235de56ca"
+    },
+    "old_binaries_not_reused_as_tests": true
+  },
+  "independent_reviews": {
+    "path": "raw/RESTORED_INDEPENDENT_REVIEWS.json",
+    "sha256": "c997ed63163be41456133074d1c001454cf6dea7b1c2fcd786c5a5c31962de98"
+  },
+  "scientific_scope": "No scientific protocol, source freeze, model, confirmation seed, scientific result or scientific archive was modified or rerun."
+}
