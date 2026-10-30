@@ -9,6 +9,8 @@ on:
       - ".github/scripts/**"
       - "experiments/first_passage_operator/**/*.py"
       - "experiments/first_passage_operator/requirements.txt"
+      - "experiments/first_passage_deadline/**/*.py"
+      - "experiments/first_passage_deadline/requirements.txt"
       - "codex-rs/**"
       - "bazel/**"
       - "tools/**"
@@ -57,6 +59,12 @@ jobs:
           - lane: idle-consumers
             runner: ubuntu-24.04
             timeout_minutes: 120
+          - lane: canonical-format
+            runner: ubuntu-24.04
+            timeout_minutes: 30
+          - lane: mac-native-consumers
+            runner: macos-15-intel
+            timeout_minutes: 90
           - lane: research-unit-tests
             runner: ubuntu-24.04
             timeout_minutes: 30
@@ -95,6 +103,7 @@ jobs:
               "codex-rs/Cargo.toml", "codex-rs/Cargo.lock", "codex-rs/deny.toml",
               "MODULE.bazel", "MODULE.bazel.lock", ".bazelversion", "justfile",
               "experiments/first_passage_operator/requirements.txt",
+              "experiments/first_passage_deadline/requirements.txt",
           ]
           inputs = {
               name: hashlib.sha256((root / name).read_bytes()).hexdigest()
@@ -138,6 +147,14 @@ jobs:
       - name: Install Rust toolchain
         if: matrix.lane != 'research-unit-tests'
         uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+        with:
+          components: clippy, rustfmt
+
+      - name: Install formatter Python tools
+        if: matrix.lane == 'canonical-format'
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.11.3"
 
       - name: Install exact audit tool
         if: matrix.lane == 'cargo-deny'
@@ -146,7 +163,7 @@ jobs:
           tool: cargo-deny@0.19.0
 
       - name: Install exact native test runner
-        if: matrix.lane == 'protocol-schema' || matrix.lane == 'windows-private-state' || matrix.lane == 'vendor-compatibility' || matrix.lane == 'security-consumers' || matrix.lane == 'idle-consumers'
+        if: matrix.lane == 'protocol-schema' || matrix.lane == 'windows-private-state' || matrix.lane == 'vendor-compatibility' || matrix.lane == 'security-consumers' || matrix.lane == 'idle-consumers' || matrix.lane == 'mac-native-consumers'
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
         with:
           tool: nextest@0.9.103
@@ -215,12 +232,19 @@ jobs:
               "windows-private-state": [
                   ["just", "test", "-p", "codex-utils-path",
                    "-p", "codex-hepta-prompt-registry", "-p", "codex-hepta-contracts", "--lib", "--locked"],
-                  ["just", "test", "-p", "codex-utils-pty", "--lib", "--locked"],
+                  ["just", "test", "-p", "codex-utils-pty", "--lib", "--locked",
+                   "--success-output", "immediate"],
                   ["just", "test", "-p", "codex-hepta-intelligence", "-p", "codex-hepta-prompt-optimizer",
                    "-p", "codex-hepta-operator-acceptance", "-p", "codex-hepta-shadow-qualification",
                    "--lib", "--locked"],
                   ["just", "test", "-p", "codex-v8-poc", "--lib",
                    "--features", "sandbox", "--locked"],
+                  ["just", "test", "-p", "codex-windows-sandbox", "-p", "codex-code-mode-runtime",
+                   "--lib", "--locked"],
+                  ["just", "fix", "-p", "codex-hepta-contracts", "-p", "codex-hepta-intelligence",
+                   "-p", "codex-hepta-operator-acceptance", "-p", "codex-hepta-shadow-qualification",
+                   "-p", "codex-v8-poc", "-p", "codex-windows-sandbox", "-p", "codex-code-mode-runtime",
+                   "--features", "codex-v8-poc/sandbox", "--locked", "--", "-D", "warnings"],
               ],
               "vendor-compatibility": [
                   [sys.executable, "scripts/run_hepta_vendor_compatibility.py", "--repo", str(Path.cwd()),
@@ -231,6 +255,8 @@ jobs:
                   ["just", "test", "-p", "codex-aws-auth", "-p", "codex-hepta-matrix-sdk",
                    "-p", "codex-secrets", "-p", "codex-execpolicy", "--lib", "--locked"],
                   ["just", "test", "-p", "codex-core-plugins", "--lib", "--locked"],
+                  ["just", "fix", "-p", "codex-hepta-matrix-sdk", "-p", "codex-core-plugins",
+                   "--locked", "--", "-D", "warnings"],
               ],
               "idle-consumers": [
                   ["just", "test", "-p", "codex-async-utils", "--lib", "--locked"],
@@ -238,12 +264,33 @@ jobs:
                   ["just", "test", "-p", "codex-queue-extension", "--test", "queue_service", "--locked", "-E",
                    "test(queue_idle_continuation::) | test(queue_hook_rejection_tests::) | test(registered_queue_lifecycle_starts_messages_in_fifo_order) | test(rejected_queue_messages_remain_durable_and_block_followups)"],
                   ["just", "test", "-p", "codex-app-server", "--test", "all", "--locked", "-E", "test(turn_completion_admission::)"],
+                  ["just", "test", "-p", "codex-hepta-supervisor", "--test", "robrix_control_projection", "--locked"],
+                  ["just", "test", "-p", "codex-hepta-supervisor", "--test", "paired_process_product", "--locked"],
+                  ["just", "fix", "-p", "codex-core", "-p", "codex-queue-extension",
+                   "-p", "codex-app-server", "-p", "codex-hepta-memory", "-p", "codex-hepta-supervisor",
+                   "--locked", "--", "-D", "warnings"],
+              ],
+              "canonical-format": [
+                  ["just", "fmt", "--all"],
+              ],
+              "mac-native-consumers": [
+                  ["just", "test", "-p", "codex-hepta-fleet", "-p", "codex-utils-pty",
+                   "-p", "codex-shell-escalation", "-p", "codex-sandboxing",
+                   "-p", "codex-exec-server", "--lib", "--locked", "--success-output", "immediate"],
+                  ["just", "test", "-p", "codex-exec-server", "--test", "file_system_unix",
+                   "--test", "authorized_read_rpc", "--locked"],
+                  ["just", "test", "-p", "codex-hepta-supervisor", "--test", "paired_process_product", "--locked"],
+                  ["just", "fix", "-p", "codex-hepta-fleet", "-p", "codex-utils-pty",
+                   "-p", "codex-shell-escalation", "-p", "codex-sandboxing", "-p", "codex-exec-server",
+                   "--locked", "--", "-D", "warnings"],
               ],
               "research-unit-tests": [
                   [sys.executable, "-m", "pip", "install", "--requirement",
                    "experiments/first_passage_operator/requirements.txt"],
                   [sys.executable, "-m", "unittest", "discover", "-s",
                    "experiments/first_passage_operator/tests", "-v"],
+                  [sys.executable, "-m", "unittest", "discover", "-s",
+                   "experiments/first_passage_deadline/tests", "-v"],
               ],
           }[lane]
           receipts = []
@@ -306,7 +353,7 @@ jobs:
           output = Path(os.environ["RUNNER_TEMP"]) / "hepta-operator-diagnostics"
           output.mkdir(parents=True, exist_ok=True)
           lane = os.environ["HEPTA_DIAGNOSTIC_LANE"]
-          paths = ["codex-rs/Cargo.lock"]
+          paths = ["."]
           if lane == "protocol-schema":
               schema = root / "codex-rs/app-server-protocol/schema"
               if schema.is_dir():

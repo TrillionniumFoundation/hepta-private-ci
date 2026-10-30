@@ -21,7 +21,8 @@ struct Fixture {
 impl Fixture {
     fn new() -> Self {
         Self {
-            parent: tempfile::tempdir().expect("create final-use fixture directory"),
+            parent: tempfile::tempdir()
+                .unwrap_or_else(|error| panic!("create final-use fixture directory: {error}")),
             issuer: SigningKey::from_bytes(&[47; 32]),
             head: FinalUseRevocations {
                 authority_epoch: 9,
@@ -67,7 +68,7 @@ impl Fixture {
             .sign(
                 &grant
                     .signing_bytes()
-                    .expect("encode final-use fixture grant"),
+                    .unwrap_or_else(|error| panic!("encode final-use fixture grant: {error}")),
             )
             .to_bytes()
             .to_vec();

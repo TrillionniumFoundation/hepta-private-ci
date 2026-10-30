@@ -1,4 +1,5 @@
 use super::*;
+use pretty_assertions::assert_eq;
 
 // Produced independently by Python's zipfile + bz2, with all three special
 // permission bits in the original central-directory Unix mode (0107755).

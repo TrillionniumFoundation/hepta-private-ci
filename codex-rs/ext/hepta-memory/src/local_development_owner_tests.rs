@@ -65,6 +65,9 @@ async fn prepared_owner_inputs() -> (
     let temp = TempDir::new().expect("temp");
     let fleet_root = temp.path().join("fleet");
     fs::create_dir_all(&fleet_root).expect("fleet root");
+    let fleet_root = fleet_root
+        .canonicalize()
+        .expect("canonical fixture fleet root");
     let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet");
     let owner_id = AgentId::parse("00000000-0000-4000-8000-000000000919").expect("owner id");
     let store = CognitiveStore::open(&fleet.layout().agent(&owner_id))
@@ -218,6 +221,9 @@ async fn explicit_owner_expires_bound_lease_and_fences_old_witness() {
     let temp = TempDir::new().expect("temp");
     let fleet_root = temp.path().join("fleet");
     fs::create_dir_all(&fleet_root).expect("fleet root");
+    let fleet_root = fleet_root
+        .canonicalize()
+        .expect("canonical fixture fleet root");
     let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet");
     let owner_id = AgentId::parse("00000000-0000-4000-8000-000000000920").expect("owner id");
     let store = CognitiveStore::open(&fleet.layout().agent(&owner_id))
@@ -257,6 +263,9 @@ async fn explicit_owner_expires_bound_lease_and_fences_old_witness() {
     let other_temp = TempDir::new().expect("other temp");
     let other_root = other_temp.path().join("fleet");
     fs::create_dir_all(&other_root).expect("other fleet root");
+    let other_root = other_root
+        .canonicalize()
+        .expect("canonical fixture fleet root");
     let other_fleet = HeptaFleetRoot::parse(other_root).expect("other fleet");
     let other_store = CognitiveStore::open(&other_fleet.layout().agent(&owner_id))
         .await
@@ -344,6 +353,9 @@ async fn explicit_owner_rejects_unbound_lease_expiry() {
     let temp = TempDir::new().expect("temp");
     let fleet_root = temp.path().join("fleet");
     fs::create_dir_all(&fleet_root).expect("fleet root");
+    let fleet_root = fleet_root
+        .canonicalize()
+        .expect("canonical fixture fleet root");
     let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet");
     let owner_id = AgentId::parse("00000000-0000-4000-8000-000000000921").expect("owner id");
     let store = CognitiveStore::open(&fleet.layout().agent(&owner_id))

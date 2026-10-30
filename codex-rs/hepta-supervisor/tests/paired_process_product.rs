@@ -13,9 +13,11 @@ use std::time::Instant;
 use anyhow::Context;
 use anyhow::Result;
 use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
+use codex_hepta_agent_protocol::AgentdMethod;
 use codex_hepta_agent_protocol::AgentdPayload;
 use codex_hepta_agent_protocol::AgentdRequest;
 use codex_hepta_agent_protocol::AgentdResponse;
+use codex_hepta_agent_protocol::DrainSnapshot;
 use codex_hepta_agent_protocol::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
@@ -227,7 +229,9 @@ impl PairFleet {
             agents.push(agent_id);
         }
         let release_id = ReleaseId::parse("paired-process-fixture-v1")?;
-        let fixture_binary = std::env::current_exe()?;
+        // Bazel may launch the test through a runfiles symlink on macOS. Select
+        // its physical fixture binary before applying the release-source guard.
+        let fixture_binary = std::env::current_exe()?.canonicalize()?;
         let child_args = vec![
             "--exact".to_string(),
             "paired_child_process".to_string(),
@@ -537,6 +541,11 @@ fn run_agent_child() -> Result<()> {
         let mut bytes = Vec::new();
         reader.read_until(b'\n', &mut bytes)?;
         let request: AgentdRequest = serde_json::from_slice(&bytes)?;
+        anyhow::ensure!(
+            (request.schema_version, request.spawn_generation)
+                == (AGENTD_CONTROL_SCHEMA_VERSION, spawn_generation),
+            "fixture request did not bind the control schema and spawn generation"
+        );
         let run_root = PathBuf::from(
             std::env::var_os("HEPTA_AGENT_RUN_ROOT").context("HEPTA_AGENT_RUN_ROOT")?,
         );
@@ -545,13 +554,8 @@ fn run_agent_child() -> Result<()> {
         let workspace = std::env::current_dir()?;
         let lifecycle = latest_lifecycle(&run_root)?;
         let running = lifecycle.lifecycle == AgentLifecycle::Running;
-        let response = AgentdResponse {
-            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
-            request_id: request.request_id,
-            agent_id: agent_id.clone(),
-            spawn_generation,
-            current_generation: lifecycle.generation,
-            payload: AgentdPayload::Health(HealthSnapshot {
+        let payload = match request.method {
+            AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {
                 promotion_ready: true,
                 ready: running,
                 fenced: false,
@@ -561,6 +565,30 @@ fn run_agent_child() -> Result<()> {
                 home_root,
                 run_root,
             }),
+            AgentdMethod::Drain => {
+                anyhow::ensure!(
+                    lifecycle.lifecycle == AgentLifecycle::Draining,
+                    "fixture drain request preceded the durable draining lifecycle"
+                );
+                // This controlled fixture never admits turns. Its acknowledgement
+                // still binds the actual durable lifecycle and generation.
+                AgentdPayload::Drain(DrainSnapshot {
+                    admission_closed: true,
+                    running_turns: 0,
+                    drained: true,
+                    lifecycle: lifecycle.lifecycle,
+                    fenced: false,
+                })
+            }
+            method => anyhow::bail!("unsupported fixture control method: {method:?}"),
+        };
+        let response = AgentdResponse {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: request.request_id,
+            agent_id: agent_id.clone(),
+            spawn_generation,
+            current_generation: lifecycle.generation,
+            payload,
         };
         let mut stream = reader.into_inner();
         serde_json::to_writer(&mut stream, &response)?;

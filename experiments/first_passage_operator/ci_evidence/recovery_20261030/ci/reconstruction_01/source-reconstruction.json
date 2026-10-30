@@ -1,0 +1,69 @@
+{
+  "base_head": "8976aee9209c353131ce3cf67d8318bd6a9e2de2",
+  "base_source_head": "6396bc013fdb16a955cced8a746e27279311361c",
+  "validation": "Source reconstruction only. No new Rust or Windows execution. Historical evidence is not relabeled as verification of reconstructed bytes.",
+  "paths": [
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs",
+      "before_sha256": "906b85c6f84d2e6b2db280386f058267ee98fc3f1f6ce2f860e9ebb6b6032f84",
+      "after_sha256": "027418496ea48034d4a9491f30b5670255642ce85b46fc30f10c35e81d31542e",
+      "historical_pre_format_sha256": "82ceecab4e7673aa9819711cc00668180be4b2eb91eb384ffd8f1341ee2ab05e",
+      "historical_bytes_reproduced": false
+    },
+    {
+      "path": "codex-rs/hepta-authbus/src/authority_schema_tests.rs",
+      "before_sha256": "7b92b58f01607cd96acca2a050b5f60c91557ffd63ae054acb37a59954247a19",
+      "after_sha256": "1a401037f79e2bbb30fbb9757694895a803bd2939f1b3c869fe703fdf9de312d",
+      "historical_pre_format_sha256": "1a401037f79e2bbb30fbb9757694895a803bd2939f1b3c869fe703fdf9de312d",
+      "historical_bytes_reproduced": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_windows_tests.rs",
+      "before_sha256": "d26784d9b25ef6ab6f5917f78bc7081c4cb347aedf340f900ae9d56ccba59e42",
+      "after_sha256": "c0bd028246e8ae6818672d3faf4b2f5d509f368263dcbb7386fe7da7d40a8371",
+      "historical_pre_format_sha256": "c0bd028246e8ae6818672d3faf4b2f5d509f368263dcbb7386fe7da7d40a8371",
+      "historical_bytes_reproduced": true
+    },
+    {
+      "path": "codex-rs/http-client/src/route_aware_client_pool_tests.rs",
+      "before_sha256": "7775de61490e53ea00eca2d8888b2f4e2047b6dcf7a44bf3bed6a6efdae36cd7",
+      "after_sha256": "3b3cc68cca689516d70732f8109f68f43da0b6fb13cf9a6a557ebb763c647a22",
+      "historical_pre_format_sha256": "3b3cc68cca689516d70732f8109f68f43da0b6fb13cf9a6a557ebb763c647a22",
+      "historical_bytes_reproduced": true
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+      "before_sha256": "e7586f76613f79ea2c131c2cfc9d22e7a8d3ab9b0ce89ee2b0080102d4546b58",
+      "after_sha256": "0a8d693b5bd7336a00545a8b2900e223d6db040e2c84a4f0cbacc9b16c60e7ba",
+      "historical_pre_format_sha256": "0a8d693b5bd7336a00545a8b2900e223d6db040e2c84a4f0cbacc9b16c60e7ba",
+      "historical_bytes_reproduced": true
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/paired_process_product.rs",
+      "before_sha256": "2ea6a3d90b18c21094130de7ef31b4ec3e53ac845009210177c2761fc4a04d82",
+      "after_sha256": "2e6687465ebb6474fd751d5a67662d0e15d4a0e266b031df1dbb605d9e920863",
+      "historical_pre_format_sha256": "acbe55d152520a51f830f47e3d0181a8534ddfe4615f08e016838d34b3bc06a8",
+      "historical_bytes_reproduced": false
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/release.rs",
+      "before_sha256": "5cc3c0e86b1e5d9bd1c3e76a6b35a9c3649fb7b01ef544cd32e9fd26dbac2d49",
+      "after_sha256": "3bebc2c2f2b644d9566a8107448d6ba969c1595439ee3c8fb9bb1056c29cbe19",
+      "historical_pre_format_sha256": null,
+      "historical_bytes_reproduced": false,
+      "scope": "Test-only operation/path/error diagnostics; the non-test macro expands to the original Result expression. No fsync ordering, error translation, source validation, mode or ACL changes."
+    }
+  ],
+  "native_validation_status": "Pending. New environment lacks the task toolchain and has insufficient storage/memory for Rust builds. git diff --check passed on the seven edited files before publication.",
+  "historical_result_scope": "Original logs describe head 6396bc013fdb16a955cced8a746e27279311361c only. Recovered source equality is not runtime verification.",
+  "pending_commands": [
+    "just test -p codex-hepta-fleet --lib --locked",
+    "just test -p codex-hepta-supervisor --test paired_process_product --locked",
+    "just test -p codex-hepta-authbus --lib --locked",
+    "just test -p codex-hepta-contracts --lib --locked",
+    "just test -p codex-hepta-intelligence --lib --locked",
+    "just test -p codex-http-client --lib --locked",
+    "just test -p codex-hepta-bao-adapter --lib --locked"
+  ],
+  "format_status": "Root will run canonical formatter and record post-format hashes separately."
+}

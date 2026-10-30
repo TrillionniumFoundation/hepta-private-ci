@@ -1,0 +1,227 @@
+{
+  "schema": 1,
+  "baseline_commit": "8976aee9209c353131ce3cf67d8318bd6a9e2de2",
+  "status": "source_reconstructed_native_validation_pending",
+  "scope": {
+    "external_normal_alias_rule_sites": 8,
+    "explicit_macro_imports": 3,
+    "canonical_fixture_files": 15,
+    "new_strict_unix_alias_regressions": 1,
+    "raw_windows_parent_alias_fixture": 1
+  },
+  "files": [
+    {
+      "path": "codex-rs/core-plugins/src/startup_sync_zip_compatibility_tests.rs",
+      "before_bytes": 2091,
+      "before_sha256": "7d3b1984d08dc8e28e49a17b633bac9179238691ff740e15d0ad76c119c18a1e",
+      "bytes": 2125,
+      "sha256": "662f4f6008ce58ba34a372618d1fd85f2651fea3fce587a14df14a16fcf8d21a"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "before_bytes": 54874,
+      "before_sha256": "8517d6b89405db170771348308569a494bc6599d48c6822e6e1620ef8bec1914",
+      "bytes": 54991,
+      "sha256": "297fdbfb421f5fd8ed302e96cdf41942020758e822536be04ad92b9f935319a9"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/tests.rs",
+      "before_bytes": 31074,
+      "before_sha256": "41084f85489f5c19ffecadf9fe63ee27c5ea55c8c070c47cdfa87ab457d98ade",
+      "bytes": 31263,
+      "sha256": "cad1143ff08a9316a85740202c7f77e24a2f5903f897a53d85dde87eb9081264"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/tools_tests.rs",
+      "before_bytes": 26973,
+      "before_sha256": "1522a016d573e995e481aba772da360c183df24c8e541fcba5b73579e1fba43c",
+      "bytes": 27162,
+      "sha256": "afcf09eae2af6438ec54afe92d65fb92c852f3b058e4d9de3d184631a54366d7"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/extension_tests.rs",
+      "before_bytes": 30541,
+      "before_sha256": "2e1421c7ba6e4f6d79727726f16633824fb1e48eefe297cf2bdbf510654ca4d9",
+      "bytes": 30646,
+      "sha256": "190a6b918d95b06c3f4ccd994bf5593fa02fa8ead6fcbd40ea452750a9b2971f"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/framing_tests.rs",
+      "before_bytes": 1809,
+      "before_sha256": "11df00dcc6205ed22170c7a4a77a330aaa3a8e171c09b9773309cea7c695506b",
+      "bytes": 2296,
+      "sha256": "c632fac9d81506e476cf0ee826b48922e176eec3a9c828eb93121e8cd38258b7"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/local_development_owner_tests.rs",
+      "before_bytes": 12088,
+      "before_sha256": "92470a5d31941f6469bc6a39ba175947e4c0ba39187317e047079411edc9781c",
+      "bytes": 12508,
+      "sha256": "c2036e19b017e33b3f204610a41868bc19c21e47ef86f8fdad363a63e67110e5"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/local_lifecycle.rs",
+      "before_bytes": 27637,
+      "before_sha256": "b48d504636aca1f2e10c05aa106b245a8cee938d67c8a027444063d0795eebb4",
+      "bytes": 27754,
+      "sha256": "6aa8b62679aee5f58d48c6296fb2e8649a9b2ba9a2b4651e00a8d603e5ec1024"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/local_rehydration.rs",
+      "before_bytes": 16948,
+      "before_sha256": "81b2c1a3e83a9f193450f22541209b036297d19c0a9d7a5b4dc3e52a08fb6c0e",
+      "bytes": 17065,
+      "sha256": "1216b15e9a694faa757e80276c375bcde1dba224d35ea259c0a738e67b3cbacd"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/local_replay.rs",
+      "before_bytes": 43270,
+      "before_sha256": "4d82f9149104448e07dc2b67706382097e32fe8974fc468d50f830c25b28d630",
+      "bytes": 43387,
+      "sha256": "9619ca716112b102ae260102f7430a34c8e90e8ffc1c43fc34e8c9ca0985fdbf"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/local_runtime.rs",
+      "before_bytes": 20858,
+      "before_sha256": "180da83acac69535412e87ba271e5fe7fa01592ac3add5835a66fcf887dfb94c",
+      "bytes": 20975,
+      "sha256": "8b9d574d36fa0150fee554a0be1c787ca126a9ff5fabe6bcc9e8e061dd18660a"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/local_turn_writer.rs",
+      "before_bytes": 82181,
+      "before_sha256": "b82e9b8ac19a6ebac0460475064684da34d6456be471a267c7d29108126b65eb",
+      "bytes": 82660,
+      "sha256": "9f3f0e99edff7eb7c69a6e6b35ec91da40019d322d7a0c5f0b686695002d360f"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/local_witness.rs",
+      "before_bytes": 17735,
+      "before_sha256": "7813c9059507ae7ac84826f4c9e146467a8452aad442f85940f43cf769bc0722",
+      "bytes": 17852,
+      "sha256": "5acda7dadce1943cee236a67585877d488997088992b092cd2a0acfdc3b26144"
+    },
+    {
+      "path": "codex-rs/ext/queue/tests/suite/queue_hook_rejection_tests.rs",
+      "before_bytes": 4773,
+      "before_sha256": "81f9b6ec87734a10bf016debc1909a2cc57c840c20d3ec62e3e8223166e1d9ce",
+      "bytes": 4807,
+      "sha256": "1c95ce6f88298bd141ba401ac056d1ecaec4d56b615f6266ed1095dfa14f5459"
+    },
+    {
+      "path": "codex-rs/ext/queue/tests/suite/queue_idle_continuation.rs",
+      "before_bytes": 2102,
+      "before_sha256": "b38671559d815fdb5ea7db6fe9117c58dcbb8c4aed40d6d3ab6a85144377c56f",
+      "bytes": 2136,
+      "sha256": "c8bea8853694157d7c6a5816a09f64678cf0b2904a13dd1f03ce073fe3f5dbf2"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_path_tests.rs",
+      "before_bytes": 4890,
+      "before_sha256": "fd7c55f420653e40d52a4aa4723d77939ac2d36d87fbb40cc3d8561acdf21e56",
+      "bytes": 6718,
+      "sha256": "18cbc06e34ccb333911cb53bef6481d4a1554d130b529cbfc24af7fc4475cf0c"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_test_support.rs",
+      "before_bytes": 1641,
+      "before_sha256": "8547bec659250c636a9997cdf537dd3e155aeadf76dcfd4ed0ab4161b0c1a708",
+      "bytes": 1798,
+      "sha256": "a9820b0e929aaedf8948f8ffc21346e0b483051d91b65c64a1f9abb80a44a5a8"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/h7_trajectory_store_tests.rs",
+      "before_bytes": 25875,
+      "before_sha256": "41ad8e5e69901c4ef057bc55dd694fa923c72142ea01741fad6c47ac3fc6e5da",
+      "bytes": 26241,
+      "sha256": "90bbd00c9317557739d65260bb98f474365944839ada7be04400d931fcee0cd9"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_compact_executor_tests.rs",
+      "before_bytes": 75867,
+      "before_sha256": "1bcaabe557749935a8dfcbebb3b2192ec1ee85c2ee4c9817eec165e8706dd505",
+      "bytes": 75958,
+      "sha256": "1f989654f7b3d67f61f6ffa59404fdee141ad6ac6f973155f6500216316ccb33"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_turn_binding.rs",
+      "before_bytes": 18152,
+      "before_sha256": "2e234df00adaa1f55c1e74cb2426eb5fba4d47f5549ca1f40ccf24a10aa5756a",
+      "bytes": 18269,
+      "sha256": "18b520be0ee1639350e40c39bac6edd59c7ef83607779a9bd72d086ee9abace0"
+    },
+    {
+      "path": "defs.bzl",
+      "before_bytes": 33611,
+      "before_sha256": "a099a1d1747f65d2d6369a4b7ee889c23025257fa3ad0b7b22754cbdf72e553c",
+      "bytes": 34541,
+      "sha256": "c0eb2bb588465f817764d201565338d521b01679d34ef1c37636b22ec1a775e1"
+    }
+  ],
+  "production_prefixes": [
+    {
+      "path": "codex-rs/hepta-memory/src/local_turn_binding.rs",
+      "prefix_bytes": 12799,
+      "sha256": "c80dd174396960bab1e9250d3b711fbbbec79f2678514cee257f23d99c4a8e95",
+      "unchanged": true
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "prefix_bytes": 33254,
+      "sha256": "920c97964ad7320a5d418d38e65030075503414ddb2e0e04972980164e69391f",
+      "unchanged": true
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/local_lifecycle.rs",
+      "prefix_bytes": 17235,
+      "sha256": "353928f0bef76eb73fcd987dbc1c767b9a158fd19da9381c3262a884f6406507",
+      "unchanged": true
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/local_rehydration.rs",
+      "prefix_bytes": 10637,
+      "sha256": "4d65c2082befe72fc78e1103d20c79f09918d7b2125cd217fe82f4a4a61f0f4b",
+      "unchanged": true
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/local_replay.rs",
+      "prefix_bytes": 20201,
+      "sha256": "8625833ab3b836480b06f2899bde8c6ba114c873614ad6964fa186c26e9054e7",
+      "unchanged": true
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/local_runtime.rs",
+      "prefix_bytes": 12456,
+      "sha256": "0a7e5e4a36a2a7b92d41eb909ccde12c7681e371375ad17268335acf5473a702",
+      "unchanged": true
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/local_turn_writer.rs",
+      "prefix_bytes": 44632,
+      "sha256": "54a9f527234fbf468114146c47edf468dc465bf194fc9e5f90cedefa94d9abf1",
+      "unchanged": true
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/local_witness.rs",
+      "prefix_bytes": 9714,
+      "sha256": "1029e48252c8077bc7cb2d7c612851e795f8b619e57507617deb2e6f255f6149",
+      "unchanged": true
+    }
+  ],
+  "production_guards_unchanged": {
+    "codex-rs/hepta-memory/src/cognitive_path.rs": "cf9e8bed3cfe7d8f8169fa6f8f0563973efc1844870cbafa798c240b58c493be",
+    "codex-rs/hepta-memory/src/cognitive_store.rs": "5b16090059597b362631056883367b974ff4a218ddd042de8eedabf5e128da3e",
+    "codex-rs/ext/hepta-memory/src/framing.rs": "5e3e5b188fd129fc47e61d2ec265b4292dfca9f9cda7f26c3e2909eb6deecd7a"
+  },
+  "checks": {
+    "exact_replacement_preconditions": true,
+    "expected_scope_counts": true,
+    "production_prefix_and_guard_identity": true
+  },
+  "validation_limits": [
+    "No Cargo or Bazel build was executed after reconstruction.",
+    "No macOS or Windows native execution was performed.",
+    "Historical receipts apply to their own source hashes, not this reconstruction.",
+    "The 6396 macOS logs did not reveal the exact requested/canonical path or errno; the system-temp parent redirection remains a source-supported hypothesis pending native validation."
+  ]
+}

@@ -1,4 +1,5 @@
 use super::*;
+use pretty_assertions::assert_eq;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn queued_messages_continue_after_each_completion_owner_retires() -> anyhow::Result<()> {

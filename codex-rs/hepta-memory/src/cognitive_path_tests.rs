@@ -94,6 +94,53 @@ async fn symlinked_fleet_and_database_are_rejected() {
     assert_eq!(std::fs::read(database).expect("read source"), b"unchanged");
 }
 
+#[cfg(unix)]
+#[tokio::test]
+async fn canonical_fixture_accepts_owned_temp_root_but_rejects_its_parent_alias() {
+    let parent = TempDir::new().expect("temporary parent");
+    let root = parent.path().canonicalize().expect("canonical parent");
+    let physical = root.join("physical");
+    let alias = root.join("redirected-parent");
+    std::fs::create_dir(&physical).expect("physical parent");
+    std::os::unix::fs::symlink(&physical, &alias).expect("redirected parent");
+    let temp = TempDir::new_in(&alias).expect("owned directory through parent alias");
+    let owner = agent_id(/*suffix*/ 232);
+    let fixture = crate::cognitive_test_support::layout(&temp, &owner);
+    let requested = HeptaFleetRoot::parse(temp.path().join("fleet"))
+        .expect("absolute fixture alias")
+        .layout()
+        .agent(&owner);
+
+    eprintln!(
+        "COGNITIVE_FIXTURE_PATH requested={} canonical={} parent_alias={} target={}",
+        requested.cognitive_root().display(),
+        fixture.cognitive_root().display(),
+        alias.display(),
+        std::fs::read_link(&alias)
+            .expect("inspect parent alias")
+            .display(),
+    );
+    assert_ne!(requested.cognitive_root(), fixture.cognitive_root());
+    assert!(matches!(
+        CognitiveStore::open(&requested).await,
+        Err(crate::CognitiveStoreError::Invalid(_))
+    ));
+    assert!(!requested.cognitive_root().join("cognitive_1.sqlite3").exists());
+
+    let store = CognitiveStore::open(&fixture)
+        .await
+        .expect("open canonical test-owned fixture");
+    assert_eq!(
+        store.path(),
+        store.path().canonicalize().expect("canonical fixture database")
+    );
+    assert_eq!(
+        canonical_path_without_redirection(requested.cognitive_root())
+            .expect("inspect requested alias"),
+        None
+    );
+}
+
 #[cfg(windows)]
 #[tokio::test]
 async fn junction_and_its_descendants_are_rejected() {

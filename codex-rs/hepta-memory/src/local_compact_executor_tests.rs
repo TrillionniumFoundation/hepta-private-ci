@@ -192,7 +192,12 @@ async fn open_process_soak_executor(
     CompactCheckpoint,
     Sha256Digest,
 ) {
-    let fleet = HeptaFleetRoot::parse(fleet_root.to_path_buf()).expect("process soak fleet root");
+    let fleet = HeptaFleetRoot::parse(
+        fleet_root
+            .canonicalize()
+            .expect("canonical process soak fleet root"),
+    )
+    .expect("process soak fleet root");
     let owner = agent_id(PROCESS_SOAK_OWNER_NUMBER);
     let layout = fleet.layout().agent(&owner);
     let store = CognitiveStore::open(&layout)

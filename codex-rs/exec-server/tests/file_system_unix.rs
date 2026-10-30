@@ -1130,7 +1130,7 @@ async fn file_system_bounded_authorized_read_enforces_limit_without_prefix(
         .capabilities
         .stable_handle_authorized_read;
 
-    let tmp = TempDir::new()?;
+    let tmp = TempDir::new_in(std::env::temp_dir().canonicalize()?)?;
     let root = tmp.path().join("allowed");
     std::fs::create_dir_all(&root)?;
     let exact_path = root.join("exact.txt");
@@ -1184,7 +1184,7 @@ async fn file_system_bounded_authorized_read_rejects_symlink_and_parent_escape(
         .capabilities
         .stable_handle_authorized_read;
 
-    let tmp = TempDir::new()?;
+    let tmp = TempDir::new_in(std::env::temp_dir().canonicalize()?)?;
     let allowed_dir = tmp.path().join("allowed");
     let outside_dir = tmp.path().join("outside");
     std::fs::create_dir_all(&allowed_dir)?;

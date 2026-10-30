@@ -349,9 +349,8 @@ fn writer_reproduces_the_tracked_artifact_set_byte_for_byte() -> Result<()> {
 }
 
 fn read_tracked_artifacts() -> Result<BTreeMap<String, Vec<u8>>> {
-    let manifest = codex_utils_cargo_bin::find_resource!(format!(
-        "fixtures/robrix-control-v2/{MANIFEST_FILE}"
-    ))?;
+    let relative_manifest = format!("fixtures/robrix-control-v2/{MANIFEST_FILE}");
+    let manifest = codex_utils_cargo_bin::find_resource!(relative_manifest)?;
     read_artifacts(
         manifest
             .parent()

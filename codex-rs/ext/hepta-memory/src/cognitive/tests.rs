@@ -165,6 +165,9 @@ async fn cognitive_fixture() -> CognitiveFixture {
     let temp = tempfile::tempdir().expect("tempdir");
     let fleet_root = temp.path().join("fleet");
     std::fs::create_dir_all(&fleet_root).expect("fleet root");
+    let fleet_root = fleet_root
+        .canonicalize()
+        .expect("canonical fixture fleet root");
     let agent_id = AgentId::parse("00000000-0000-4000-8000-000000000311").expect("agent id");
     let layout = HeptaFleetRoot::parse(fleet_root)
         .expect("fleet")
@@ -172,6 +175,7 @@ async fn cognitive_fixture() -> CognitiveFixture {
         .agent(&agent_id);
     let workspace = temp.path().join("workspace");
     std::fs::create_dir_all(&workspace).expect("workspace");
+    let workspace = workspace.canonicalize().expect("canonical fixture workspace");
     let store = Arc::new(
         CognitiveStore::open(&layout)
             .await
