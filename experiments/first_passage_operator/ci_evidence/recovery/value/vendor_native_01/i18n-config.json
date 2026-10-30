@@ -1,0 +1,23 @@
+{
+  "command": [
+    "just",
+    "--justfile",
+    "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/justfile",
+    "test",
+    "--manifest-path",
+    "/workspace/scratch/8b9f3e9fd04d/recovery_value/vendor_native_01/Cargo.toml",
+    "-p",
+    "i18n-config",
+    "--lib",
+    "--locked",
+    "-E",
+    "test(=compatibility_tests::public_crate_loader_preserves_package_and_language_config) | test(=compatibility_tests::public_config_loader_preserves_defaults_and_unicode) | test(=compatibility_tests::public_parse_errors_keep_path_and_diagnostic)"
+  ],
+  "cwd": "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci",
+  "exit_code": 0,
+  "seconds": 16.19008618099997,
+  "log": "i18n-config.log.gz",
+  "log_uncompressed_bytes": 5113,
+  "log_uncompressed_sha256": "090de2754e58fc5b9a7ea1030bbdca2f0f1defa781ff7931f76fa36f619acc09",
+  "log_gzip_sha256": "59c4b37df3da06a8eff14187cf4beb906df0adf069f5c2bf00bd323480fbd0ad"
+}

@@ -1,0 +1,10 @@
+{
+  "schema": "hepta.independent-zip-fixture.v1",
+  "generator": "Python stdlib zipfile.ZipFile.writestr using ZIP_BZIP2 (bz2); external_attr=0o107755 <<16, create_system=3, date_time=(2000,1,1,0,0,0)",
+  "member": "repository/plugin.txt",
+  "payload_utf8": "Independent bzip2 plugin archive\n",
+  "archive_bytes": 213,
+  "archive_sha256": "5cc717bf12c0e45e3d2da44316e6fb2dae1382cd8f59cbdfbad1d423798385d7",
+  "rust_source": "codex-rs/core-plugins/src/startup_sync_zip_compatibility_tests.rs",
+  "tests": "Actual consumer extraction, BZIP2 capability, and removal of special permission bits; fresh native execution pending."
+}

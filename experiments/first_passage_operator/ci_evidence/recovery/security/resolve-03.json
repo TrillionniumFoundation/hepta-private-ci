@@ -1,0 +1,18 @@
+{
+  "command": [
+    "cargo",
+    "+1.96.0",
+    "update",
+    "--manifest-path",
+    "codex-rs/Cargo.toml",
+    "-p",
+    "rustls-webpki",
+    "--precise",
+    "0.103.16"
+  ],
+  "exit_code": 0,
+  "duration_seconds": 8.032626545999847,
+  "before_lock_sha256": "052f4b4331b78851fcc0339cd0a486fc8b733af7d11fb49d0e7a0a8e802427fe",
+  "after_lock_sha256": "e622c25f8aa6ccda5ac53537eadac7398dae903f3cc7faf0306c51cf2b2361c3",
+  "log_sha256": "e0c5fcf1141d13e04f639793fa844991082a62be99816252cc898e14d4c723d3"
+}

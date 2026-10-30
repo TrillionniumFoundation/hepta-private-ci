@@ -1,0 +1,25 @@
+[
+  {
+    "argv": [
+      "cargo",
+      "deny",
+      "--version"
+    ],
+    "exit_code": 0,
+    "log": "command-1.log"
+  },
+  {
+    "argv": [
+      "cargo",
+      "deny",
+      "--log-level",
+      "warn",
+      "--manifest-path",
+      "codex-rs/Cargo.toml",
+      "--all-features",
+      "check"
+    ],
+    "exit_code": 0,
+    "log": "command-2.log"
+  }
+]

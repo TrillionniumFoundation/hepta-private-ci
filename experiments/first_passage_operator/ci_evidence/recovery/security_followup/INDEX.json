@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.security-feature-proof.v1",
+  "root_lock_sha256": "7cd3ac48f8a03093674bf8e54ffa8b86dcbeaac64d535b1d8c59b21e5dd327e3",
+  "distinction": "Cargo raw metadata resolve.nodes retains disabled weak optional dependencies. It is not the enabled feature graph. Actual cargo tree all-target all-feature reverse traversals return nothing for secret-service and zvariant; dbus-secret-service is enabled. The full original audit also passed.",
+  "upstream_issue": "https://github.com/rust-lang/cargo/issues/10801",
+  "files": {
+    "security_feature_traversal-receipt.json": {
+      "source": "/workspace/scratch/8b9f3e9fd04d/recovery_ci/security_feature_traversal/receipt.json",
+      "sha256": "36b68ad755afec27ec2a58adaad03de5d6238a79aa8b7a1362221ca83590efb7",
+      "bytes": 1861
+    },
+    "security_feature_traversal-secret-service.log": {
+      "source": "/workspace/scratch/8b9f3e9fd04d/recovery_ci/security_feature_traversal/secret-service.log",
+      "sha256": "148cf8a959b404b90289bb79394228ed267c4231a068bab6904df4e0866cc728",
+      "bytes": 648
+    },
+    "security_feature_traversal-zvariant.log": {
+      "source": "/workspace/scratch/8b9f3e9fd04d/recovery_ci/security_feature_traversal/zvariant.log",
+      "sha256": "148cf8a959b404b90289bb79394228ed267c4231a068bab6904df4e0866cc728",
+      "bytes": 648
+    },
+    "recovery_ci-raw-security-metadata-observation.json": {
+      "source": "/workspace/scratch/8b9f3e9fd04d/recovery_ci/raw-security-metadata-observation.json",
+      "sha256": "3b8b4d6cfd0ed51843c68500ace492d72baec5f0394d366f941275eb3348f576",
+      "bytes": 2506
+    },
+    "system_build_prerequisites-receipt.json": {
+      "source": "/workspace/scratch/8b9f3e9fd04d/recovery_ci/system_build_prerequisites/receipt.json",
+      "sha256": "e80d1044a377856de7f22610c7babfbe7f257b1af116854f729f86269505447a",
+      "bytes": 439
+    },
+    "system_build_prerequisites-pkg-config-install.log": {
+      "source": "/workspace/scratch/8b9f3e9fd04d/recovery_ci/system_build_prerequisites/pkg-config-install.log",
+      "sha256": "91d1be69f6f93138ce367c898e053b772640b0a510cef6e2e8ba46a8c55ff01a",
+      "bytes": 2504
+    },
+    "dbus-secret-service.log.gz": {
+      "source": "/workspace/scratch/8b9f3e9fd04d/recovery_ci/security_feature_traversal/dbus-secret-service.log",
+      "sha256": "fd059a929a329da92668e133c1b9f4c0ed3e4959830f08176f2f8f2e23b436f7",
+      "bytes": 3475,
+      "uncompressed_sha256": "26cc52a363c9b228c71ee2c8ece0619ab7ef322056c3201c99df4340d4c9087a",
+      "roundtrip_verified": true
+    }
+  }
+}

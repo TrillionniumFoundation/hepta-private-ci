@@ -1,0 +1,98 @@
+{
+  "schema": "hepta.ci-recovery.windows-owner.v1",
+  "generated_utc": "2026-10-30T01:17:23.079512+00:00",
+  "base_source_commit": "c71bdb0583d3265b931b31579d6bf3a9b85691d3",
+  "old_pre_reset_validation_reused": false,
+  "source_sha256": {
+    "codex-rs/hepta-contracts/Cargo.toml": "aea1dc99aee81bcabf8c8515f3ccfcdbe20cae9334720da298d2092dc9b9db92",
+    "codex-rs/hepta-contracts/src/final_use.rs": "92d946a5262ba32b3c87dbff72430f15bb86b971181587762bc54b8356a1b68a",
+    "codex-rs/hepta-contracts/src/final_use_store.rs": "843bbe58768c7d70b466232929f019b9f7d4f966d82a9aec1020ab9e02d3ce92",
+    "codex-rs/hepta-contracts/src/final_use_store_windows.rs": "c1ca6fc968e85fb288e09c74e544621d9b746008d6dd83399eb49ab18d4a4ac3",
+    "codex-rs/hepta-contracts/src/final_use_windows_tests.rs": "60af7ea37d5cc5face45063ac72a7b4c29421914040281f8312bfb5a7ddf5247",
+    "codex-rs/utils/path-utils/src/private_state_windows.rs": "615b40e81af0399fe821f0be74f6275502e87ccf1a1dc4cd5baefc6e77bfc607",
+    "codex-rs/hepta-intelligence/src/lib.rs": "3004a59f53b14e0c20294eea73486d3b50a9f53265e272eae7f3c46b6ea21a42",
+    "codex-rs/hepta-intelligence/src/durable_test_support.rs": "fe416412c81b236dae37aa4ecf1b917dde1dd53964b04bd3c025a002f556d887",
+    "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs": "cd8be9e8036921c0586a05d7fd3678d3c24eaa024ff44ad50af690dd80d93017",
+    "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs": "906b85c6f84d2e6b2db280386f058267ee98fc3f1f6ce2f860e9ebb6b6032f84",
+    "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs": "6aebe9e8a0572eaacf38a66f2b3b303d60c8901fa1a8ec36d876c546cd09cfda",
+    "codex-rs/hepta-operator-acceptance/src/durable.rs": "f679d9d408cb7418b7fa440431227373ab8215effac514ea4bbea6bc0525b1d7",
+    "codex-rs/hepta-operator-acceptance/src/trust.rs": "eb090fd20e0c11a51e7469593333b93de252c22bed05567f9522396c3bbb7927",
+    "codex-rs/hepta-operator-acceptance/src/g5_trust.rs": "1cc483a2c7658ec50abdf08a2158aeeb4f4b211e3bf286008814693b04920996",
+    "codex-rs/hepta-operator-acceptance/src/test_support.rs": "bff85fad63f5d33915defbafe9cab0c645ee12a0e18f2f0c686ba813c3cf24ac",
+    "codex-rs/hepta-operator-acceptance/src/trust_tests.rs": "a422d2f78d0d5ee465dbe028b5be5d9536a47d28e29bd107d8d7943b8a4a41b4",
+    "codex-rs/hepta-operator-acceptance/src/g5_trust_tests.rs": "1c379a862a9ca65846a73a126e5ce71da9e87d1107952cb1d57d52e30a82a08c",
+    "codex-rs/hepta-operator-acceptance/src/main.rs": "153d550a5e6761909f147c05ecd00f728cd40a8d45ad8d34f4d8b9c08c12c3e9",
+    "codex-rs/hepta-operator-acceptance/src/g5_main.rs": "af7785765d33608999b5a60b828efb91960b227a6158051dcccf8e118c0fa6e4",
+    "codex-rs/hepta-operator-acceptance/src/durable_windows.rs": "274d130950d045c9539eca4e14a7076a19d8fd28cdb6ce802a22842beb1ea3c6",
+    "codex-rs/hepta-operator-acceptance/src/lib_tests.rs": "725339019c4350a4cada1e325081f0ad8dfff858b05e84f03189d7ff48b77aed",
+    "codex-rs/hepta-operator-acceptance/src/manifest_inventory_tests.rs": "497c9eb39a040888514b32927843f3b6362a578e464c09dfe4e654e7b954aabe",
+    "codex-rs/hepta-operator-acceptance/src/lib.rs": "6da321eac1af84397958fa833229e274406e01591be9d0d33efc588ed79809c0",
+    "codex-rs/hepta-operator-acceptance/src/qualification_evidence.rs": "e5ed590959b157b7749ec5baabd657b198b0232c956e997c1de09bc1419e7caf",
+    "codex-rs/hepta-operator-acceptance/src/ceremony.rs": "8b2181e16a1292c07b310db7ab304a5686c13fabb368b50eca8e2ea85d99d075",
+    "codex-rs/hepta-operator-acceptance/src/durable_windows_tests.rs": "112a0c0e2fc92ab3143a1ae6e7c84f09b27c0d836dac2572efb1c89d68c6e94a",
+    "codex-rs/hepta-operator-acceptance/src/qualification_runs.rs": "048d923d2773dbb69af5c734df84f9475601f5b26501c78ec4c5d211be21079a",
+    "codex-rs/hepta-operator-acceptance/src/model.rs": "7dd0c78b2c72fff4b2154a8e13502b3376513c917d99663f12a404a461589e99",
+    "codex-rs/hepta-operator-acceptance/src/evidence.rs": "6aed7f7fa1306158595db6f43431490a5ddd6ae69936ea8cc2f0374c1b6a29c0",
+    "codex-rs/hepta-operator-acceptance/src/manifest_inventory.rs": "62951d647be00dd50b53f4eb0192185bb5215d7032643d5d8be326ae194b52cb",
+    "codex-rs/hepta-operator-acceptance/src/receipt_store.rs": "74b3f633277be40c3f1066a4ae0649c4b93fd7fa7eefa6b15a61719532f7c6d7",
+    "codex-rs/hepta-operator-acceptance/src/preflight.rs": "ffb1c2220de0b8d64d7386d9a5ede4a15384f0e0a6041dbb0a843281a3ca7a69"
+  },
+  "windows_crosscompile": {
+    "command": [
+      "cargo",
+      "+1.96.0",
+      "check",
+      "--manifest-path",
+      "codex-rs/Cargo.toml",
+      "--locked",
+      "-p",
+      "codex-hepta-contracts",
+      "-p",
+      "codex-hepta-operator-acceptance",
+      "--lib",
+      "--tests",
+      "--target",
+      "x86_64-pc-windows-gnu"
+    ],
+    "exit_code": 0,
+    "native_windows_executed": false,
+    "log": "windows-crosscheck.log",
+    "followup_incremental_log": "windows-crosscheck-frozen.log"
+  },
+  "linux_native": {
+    "command": [
+      "just",
+      "test",
+      "-p",
+      "codex-hepta-operator-acceptance",
+      "--lib",
+      "--locked"
+    ],
+    "exit_code": 0,
+    "passed": 24,
+    "skipped": 0,
+    "log": "operator-linux-test.log",
+    "junit_retained": false,
+    "junit_note": "The original profile.local invocation emitted no JUnit file in this fresh environment; full original nextest stdout is retained. No reconstructed JUnit is presented."
+  },
+  "lock_sha256_at_execution": "a3e787d1e6608e1479c4a2402490ebc4073df86e877aba2603f294b1edd78982",
+  "capability": "Windows SSHSIG verification remains explicitly unsupported; 8 policy/revocation/challenge tests remain active, 2 descriptor-based signature tests retain Unix scope, and 2 non-Unix typed Unsupported tests are added. Native Windows execution remains required.",
+  "owner_contract": "ACL/no-reparse relative-handle backend; no missing journal creation; process lock, replay, snapshot and failure semantics retained. Unsupported directory flushes propagate.",
+  "new_native_windows_tests": [
+    "native_owner_lock_and_claim_replay_survive_reopen",
+    "native_revocation_replacement_survives_reopen_and_missing_state_fails_closed",
+    "native_missing_claim_journal_is_never_recreated"
+  ],
+  "pending": [
+    "Native Windows FinalUse and acceptance runtime",
+    "Intelligence fixture owner consumers",
+    "Original full required CI and exact security audit"
+  ],
+  "evidence_sha256": {
+    "openssh-operator-key.pub": "648c65c366d132a615f33f392d6d260912c76f9e03e7c5bbb697fe54d836c097",
+    "windows-crosscheck.log": "cf1e1f7f5bb4d260202d1a070ad49da323091109fd6b82037bed9124e7d4ec3a",
+    "windows-crosscheck-frozen.log": "a7642a0867425c6137f6fda230ee0c5445d5148745ccd7b4f5b0b4f2b4540d91",
+    "operator-linux-test.log": "4fab5d60e0d19872de588f4651a57830c7498923d7a77689835bfda4586d9fe3",
+    "openssh-SOURCE.json": "198e274efb9ad754006868ef1b0533d05e507ad0056ca1f065c9a7c29d0f76cc"
+  }
+}

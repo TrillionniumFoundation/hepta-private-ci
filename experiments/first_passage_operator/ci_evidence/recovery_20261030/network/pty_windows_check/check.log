@@ -1,0 +1,17 @@
+    Blocking waiting for file lock on package cache
+warning: patch `imbl v6.1.0 (/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/third_party/imbl-6.1.0)` was not used in the crate graph
+help: Check that the patched package version and available features are compatible
+      with the dependency requirements. If the patch has a different version from
+      what is locked in the Cargo.lock file, run `cargo update` to use the new
+      version. This may also occur with an optional dependency that is not enabled.
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+   Compiling winapi-x86_64-pc-windows-gnu v0.4.0
+   Compiling winapi v0.3.9
+   Compiling windows_x86_64_gnu v0.53.1
+   Compiling libc v0.2.186
+   Compiling thiserror v1.0.69
+    Checking windows-targets v0.53.5
+   Compiling winreg v0.10.1
+    Checking windows-link v0.2.1
+    Checking windows-sys v0.61.2

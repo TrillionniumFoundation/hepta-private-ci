@@ -1,0 +1,42 @@
+{
+  "source_base": "c71bdb0583d3265b931b31579d6bf3a9b85691d3",
+  "original_run": 40838158978,
+  "original_job": 123328231746,
+  "changes": [
+    {
+      "problem": "Robrix test fixture directory incorrectly resolved using build-time CARGO_MANIFEST_DIR",
+      "fix": "Declare fixture runtime data in Bazel and resolve the manifest anchor through find_resource; preserve full byte-for-byte corpus comparison."
+    },
+    {
+      "problem": "Both existing experimental Bedrock methods routed to an unconditional not-implemented error",
+      "fix": "Dispatch to existing account owner handlers. Preserve experimentalApi gate, global account-auth serialization, policy/region/credential guards and actual public RPC tests."
+    }
+  ],
+  "sources": [
+    {
+      "path": "codex-rs/app-server/src/message_processor.rs",
+      "sha256": "60e0a0dc84aa9cf192e7b09dc5590148d9ceeaaa429f6bfe1a48974939347504"
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+      "sha256": "af9ceab5047c7ee06bba84d47684748b38bfbb32e287db4a6fca84b2b45fa6fa"
+    },
+    {
+      "path": "codex-rs/app-server/README.md",
+      "sha256": "b3021812ddba7dbacd87143341fc3fa256965f141b299bd6231c7cedd21a7e1f"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/robrix_control_projection.rs",
+      "sha256": "20e64095bc10f85e4b2e05b0bb023cf90596df94304eff30724b9ef7dcd39d05"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/BUILD.bazel",
+      "sha256": "eb292353534a14b8adb817cdac5bf3e1b69b32b833e8fe4806320a11bd1d055d"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/Cargo.toml",
+      "sha256": "16c8f5bb4a0f8681198c35a14970f918a716f48d89d305d0dade7d0496df0a5c"
+    }
+  ],
+  "native_tests": "pending root lock reconstruction"
+}

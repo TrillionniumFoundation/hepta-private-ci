@@ -1,0 +1,41 @@
+{
+  "source_files": [
+    {
+      "path": "codex-rs/v8-poc/src/lib.rs",
+      "sha256": "80bd02daaf945922ed74f4269c82afd7e28f3a6381280a47aa790e3817ae5fe2"
+    },
+    {
+      "path": "codex-rs/v8-poc/src/parallel_initialization_tests.rs",
+      "sha256": "4091c326d2bf02c8e0433458b2617b83f60bbe48627bf791e84804e339ae90f5"
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "generate-lockfile",
+        "--manifest-path",
+        "/workspace/scratch/8b9f3e9fd04d/recovery_build/v8-isolated/Cargo.toml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.2443549109998457
+    },
+    {
+      "argv": [
+        "just",
+        "test",
+        "--manifest-path",
+        "/workspace/scratch/8b9f3e9fd04d/recovery_build/v8-isolated/Cargo.toml",
+        "-p",
+        "codex-v8-poc",
+        "--lib",
+        "--features",
+        "sandbox",
+        "--locked"
+      ],
+      "exit_code": 101,
+      "elapsed_seconds": 33.29068289199995
+    }
+  ],
+  "scope": "Exact copied first-party sources and pinned v8 version with sandbox feature, isolated dependency workspace, native Linux only. Windows runtime remains pending."
+}

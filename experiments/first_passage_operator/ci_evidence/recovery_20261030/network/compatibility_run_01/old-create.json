@@ -1,0 +1,18 @@
+{
+  "command": [
+    "just",
+    "test",
+    "--manifest-path",
+    "/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/full_compat/old/Cargo.toml",
+    "--config-file",
+    "/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/full_compat/old/nextest.toml",
+    "--locked",
+    "--success-output",
+    "immediate",
+    "--test",
+    "transport_roundtrip"
+  ],
+  "exit_code": 100,
+  "wall_seconds": 29.761199925000028,
+  "log": "old-create.log.gz"
+}

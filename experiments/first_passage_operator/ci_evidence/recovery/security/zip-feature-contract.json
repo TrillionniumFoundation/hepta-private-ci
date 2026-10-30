@@ -1,0 +1,142 @@
+{
+  "command": [
+    "cargo",
+    "+1.96.0",
+    "metadata",
+    "--manifest-path",
+    "/workspace/scratch/8b9f3e9fd04d/recovery_ci/zip_features/upstream_default/Cargo.toml",
+    "--format-version",
+    "1"
+  ],
+  "exit_code": 0,
+  "duration_seconds": 1.8631737460000295,
+  "root_lock_sha256": "7cd3ac48f8a03093674bf8e54ffa8b86dcbeaac64d535b1d8c59b21e5dd327e3",
+  "root_lock_unchanged": true,
+  "workspace_selected_c_backend": {
+    "bzip2": {
+      "version": "0.6.1",
+      "features": [
+        "bzip2-sys"
+      ],
+      "dependencies": [
+        "bzip2-sys"
+      ]
+    },
+    "bzip2-sys": {
+      "version": "0.1.13+1.0.8",
+      "features": [],
+      "dependencies": [
+        "cc",
+        "pkg-config"
+      ]
+    },
+    "zip": {
+      "version": "9.1.3",
+      "features": [
+        "_bzip2_any",
+        "_deflate-any",
+        "aes-crypto",
+        "bzip2-rs",
+        "deflate",
+        "deflate-flate2",
+        "deflate-flate2-zlib-rs",
+        "deflate-zopfli",
+        "deflate64",
+        "lzma",
+        "ppmd",
+        "time",
+        "xz",
+        "zstd"
+      ],
+      "dependencies": [
+        "aes",
+        "bzip2",
+        "constant_time_eq",
+        "crc32fast",
+        "deflate64",
+        "flate2",
+        "getrandom",
+        "hmac",
+        "indexmap",
+        "lzma-rust2",
+        "memchr",
+        "nix",
+        "pbkdf2",
+        "ppmd-rust",
+        "sha1",
+        "time",
+        "typed-path",
+        "windows-sys",
+        "zeroize",
+        "zopfli",
+        "zstd"
+      ]
+    }
+  },
+  "upstream_default_control_rust_backend": {
+    "bzip2": {
+      "version": "0.6.1",
+      "features": [
+        "default"
+      ],
+      "dependencies": [
+        "libbz2-rs-sys"
+      ]
+    },
+    "libbz2-rs-sys": {
+      "version": "0.2.6",
+      "features": [
+        "rust-allocator"
+      ],
+      "dependencies": []
+    },
+    "zip": {
+      "version": "9.1.3",
+      "features": [
+        "_bzip2_any",
+        "_deflate-any",
+        "aes-crypto",
+        "bzip2",
+        "default",
+        "deflate",
+        "deflate-flate2",
+        "deflate-flate2-zlib-rs",
+        "deflate-zopfli",
+        "deflate64",
+        "lzma",
+        "ppmd",
+        "time",
+        "xz",
+        "zstd"
+      ],
+      "dependencies": [
+        "aes",
+        "bzip2",
+        "constant_time_eq",
+        "crc32fast",
+        "deflate64",
+        "flate2",
+        "getrandom",
+        "hmac",
+        "indexmap",
+        "lzma-rust2",
+        "memchr",
+        "nix",
+        "pbkdf2",
+        "ppmd-rust",
+        "sha1",
+        "time",
+        "typed-path",
+        "windows-sys",
+        "zeroize",
+        "zopfli",
+        "zstd"
+      ]
+    }
+  },
+  "manifest_patch_sha256": "ecb707a9125e995ce36040e211c4b6321ced0d5365c621bbbc7fc76fd3f6d7b6",
+  "control_manifest_sha256": "0896dcf9928cca12e9fe72949d5830b9d537bbd76e7df002a6bda591994c35b7",
+  "control_lock_sha256": "8630feac2d173de69c7e6c3f95846ff909b6cc0efa16523a42c70a224c112d44",
+  "control_metadata_sha256": "dcc194a065c191b2ffee5d05a28d3dc11a4fb43a1a68ca567f10284a7546ef23",
+  "status": "Actual Cargo feature graph checks passed; codec runtime validation remains a separate consumer test"
+}

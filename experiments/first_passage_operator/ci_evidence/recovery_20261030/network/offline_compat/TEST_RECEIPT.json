@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-30",
+  "run_kind": "new reconstructed-source validation",
+  "scope": "isolated exact-source offline metadata and YAML compatibility; no live credentials or whole-workspace compile",
+  "command": [
+    "just",
+    "test",
+    "--manifest-path",
+    "/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/offline_compat/Cargo.toml",
+    "--config-file",
+    "/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/offline_compat/nextest.toml",
+    "--lib"
+  ],
+  "exit_code": 0,
+  "tests": 13,
+  "passed": 13,
+  "skipped": 0,
+  "source_sha256": {
+    "codex-rs/keyring-store/tests/provider_compatibility.rs": "dc233f82da5a513f1685605cb8d8734eda1e73f07861fa38736039d52eafe91c",
+    "codex-rs/skills/src/parser.rs": "f3532df1cc16f4da423b8e5c813269940c90317bcd211b6659cad449fd877e89",
+    "codex-rs/skills/src/parser_tests.rs": "89bf58eb2bd97c47bcefcdc605914bc5b3b023e30a8504fa93e2040ae1913b57",
+    "codex-rs/skills/tests/yaml_compatibility.rs": "da25154f69dd7e1451107a3a43a4c6c3d0f0afe5b95703e8cc9b0f1144c0593b"
+  },
+  "old_yaml_dependency": "only in isolated comparison harness; not added to product workspace"
+}

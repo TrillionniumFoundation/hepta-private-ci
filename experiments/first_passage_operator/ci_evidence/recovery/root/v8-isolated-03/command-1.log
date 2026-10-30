@@ -1,0 +1,35 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+   Compiling v8 v150.4.0
+   Compiling temporal_rs v0.2.6
+   Compiling temporal_capi v0.2.6
+   Compiling codex-v8-poc v0.0.0 (/workspace/scratch/8b9f3e9fd04d/recovery_build/v8-isolated)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 12.55s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libm@0.2.16` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_locale_fallback_data@2.4.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#prettyplease@0.2.37` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#clang-sys@1.9.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crc32fast@1.5.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_calendar_data@2.4.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@0.38.44` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bindgen@0.72.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#paste@1.0.15` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#v8@150.4.0` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID 1a6df837-b99c-4223-98bc-bbb6591d688a with nextest profile: local
+    Starting 7 tests across 1 binary
+        PASS [   0.012s] codex-v8-poc tests::exposes_embedded_v8_version
+        PASS [   0.016s] codex-v8-poc tests::parses_crdtp_dispatchable_messages
+        PASS [   0.016s] codex-v8-poc tests::exposes_expected_bazel_target
+        PASS [   0.017s] codex-v8-poc tests::sandbox_feature_matches_linked_v8
+        PASS [   0.028s] codex-v8-poc tests::evaluates_string_concatenation
+        PASS [   0.031s] codex-v8-poc tests::evaluates_integer_addition
+        PASS [   0.048s] codex-v8-poc parallel_initialization_tests::parallel_isolates_allocate_backing_stores_after_initialization
+────────────
+     Summary [   0.052s] 7 tests run: 7 passed, 0 skipped

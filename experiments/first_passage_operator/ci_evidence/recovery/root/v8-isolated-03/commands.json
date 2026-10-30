@@ -1,0 +1,26 @@
+[
+  {
+    "argv": [
+      "python",
+      "scripts/hepta_ci_v8.py"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 2.087416585000028
+  },
+  {
+    "argv": [
+      "just",
+      "test",
+      "--manifest-path",
+      "/workspace/scratch/8b9f3e9fd04d/recovery_build/v8-isolated/Cargo.toml",
+      "-p",
+      "codex-v8-poc",
+      "--lib",
+      "--features",
+      "sandbox",
+      "--locked"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 13.168169828000373
+  }
+]

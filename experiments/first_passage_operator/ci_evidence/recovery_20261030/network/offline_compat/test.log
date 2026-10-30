@@ -1,0 +1,206 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+    Updating crates.io index
+     Locking 155 packages to latest Rust 1.96.0 compatible versions
+      Adding generic-array v0.14.7 (available: v0.14.9)
+      Adding keyring v3.6.3 (available: v4.2.0)
+      Adding serde v1.0.228 (available: v1.0.229)
+      Adding serde_core v1.0.228 (available: v1.0.229)
+      Adding serde_derive v1.0.228 (available: v1.0.229)
+      Adding thiserror v2.0.18 (available: v2.0.21)
+      Adding thiserror-impl v2.0.18 (available: v2.0.21)
+ Downloading crates ...
+  Downloaded zvariant_utils v2.1.0
+  Downloaded zeroize_derive v1.5.0
+  Downloaded zerocopy v0.8.63
+  Downloaded zeroize v1.9.1
+  Downloaded zbus_names v3.0.0
+  Downloaded zvariant v4.2.0
+  Downloaded winnow v1.0.4
+  Downloaded zbus v4.4.0
+  Downloaded zvariant_derive v4.2.0
+  Downloaded zbus_macros v4.4.0
+  Downloaded version_check v0.9.5
+  Downloaded autocfg v1.5.1
+  Downloaded xdg-home v1.3.0
+  Downloaded vcpkg v0.2.15
+  Downloaded async-broadcast v0.7.2
+  Downloaded block-buffer v0.10.4
+  Downloaded memoffset v0.9.1
+  Downloaded num v0.4.3
+  Downloaded pin-project-lite v0.2.17
+  Downloaded shlex v2.0.1
+  Downloaded quote v1.0.47
+  Downloaded toml_edit v0.25.17+spec-1.1.0
+  Downloaded num-bigint v0.4.8
+  Downloaded hkdf v0.12.4
+  Downloaded serde_repr v0.1.21
+  Downloaded ryu v1.0.23
+  Downloaded keyring v3.6.3
+  Downloaded num-iter v0.1.46
+  Downloaded hashbrown v0.17.1
+  Downloaded toml_parser v1.1.5+spec-1.1.0
+  Downloaded thiserror-impl v2.0.18
+  Downloaded find-msvc-tools v0.1.15
+  Downloaded getrandom v0.2.17
+  Downloaded hex v0.4.3
+  Downloaded foreign-types v0.3.2
+  Downloaded digest v0.10.7
+  Downloaded dbus-secret-service v4.1.0
+  Downloaded crypto-common v0.1.7
+  Downloaded cpufeatures v0.2.17
+  Downloaded cc v1.10.0
+  Downloaded unicode-ident v1.0.27
+  Downloaded ppv-lite86 v0.2.21
+  Downloaded equivalent v1.0.3
+  Downloaded cipher v0.4.4
+  Downloaded aes v0.8.4
+  Downloaded rand_core v0.6.4
+  Downloaded proc-macro2 v1.0.107
+  Downloaded sha2 v0.10.9
+  Downloaded serde_core v1.0.228
+  Downloaded foreign-types-shared v0.1.1
+  Downloaded ordered-stream v0.2.0
+  Downloaded serde_derive v1.0.228
+  Downloaded futures-sink v0.3.34
+  Downloaded cbc v0.1.2
+  Downloaded async-trait v0.1.92
+  Downloaded syn v3.0.9
+  Downloaded subtle v2.6.1
+  Downloaded parking v2.2.1
+  Downloaded num-rational v0.4.2
+  Downloaded endi v1.1.1
+  Downloaded futures-macro v0.3.34
+  Downloaded openssl-macros v0.1.1
+  Downloaded futures-core v0.3.34
+  Downloaded event-listener-strategy v0.5.4
+  Downloaded inout v0.1.4
+  Downloaded futures-task v0.3.34
+  Downloaded rand_chacha v0.3.1
+  Downloaded itoa v1.0.18
+  Downloaded enumflags2_derive v0.7.12
+  Downloaded block-padding v0.3.3
+  Downloaded enumflags2 v0.7.12
+  Downloaded serde_norway v0.9.42
+  Downloaded secret-service v4.0.0
+  Downloaded rand v0.8.8
+  Downloaded num-complex v0.4.6
+  Downloaded generic-array v0.14.7
+  Downloaded num-traits v0.2.19
+  Downloaded sha1 v0.10.7
+  Downloaded proc-macro-crate v3.5.0
+  Downloaded cfg-if v1.0.5
+  Downloaded pkg-config v0.3.34
+  Downloaded linux-keyutils v0.2.5
+  Downloaded static_assertions v1.1.0
+  Downloaded slab v0.4.12
+  Downloaded cfg_aliases v0.2.2
+  Downloaded toml_datetime v1.1.2+spec-1.1.0
+  Downloaded tracing-attributes v0.1.31
+  Downloaded bitflags v2.13.2
+  Downloaded thiserror v2.0.18
+  Downloaded serde_yaml v0.9.34+deprecated
+  Downloaded unsafe-libyaml v0.2.11
+  Downloaded unsafe-libyaml-norway v0.2.15
+  Downloaded openssl-sys v0.9.117
+  Downloaded typenum v1.20.1
+  Downloaded memchr v2.8.3
+  Downloaded dbus v0.9.12
+  Downloaded log v0.4.34
+  Downloaded indexmap v2.14.2
+  Downloaded futures-util v0.3.34
+  Downloaded tracing-core v0.1.36
+  Downloaded serde v1.0.228
+  Downloaded hmac v0.12.1
+  Downloaded event-listener v5.4.2
+  Downloaded once_cell v1.21.4
+  Downloaded nix v0.29.0
+  Downloaded syn v2.0.119
+  Downloaded openssl v0.10.81
+  Downloaded libdbus-sys v0.2.7
+  Downloaded fastrand v2.5.0
+  Downloaded tracing v0.1.44
+  Downloaded libc v0.2.191
+  Downloaded num-integer v0.1.47
+  Downloaded openssl-src v300.6.1+3.6.3
+   Compiling version_check v0.9.5
+   Compiling proc-macro2 v1.0.107
+   Compiling typenum v1.20.1
+   Compiling generic-array v0.14.7
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.27
+   Compiling autocfg v1.5.1
+   Compiling syn v2.0.119
+   Compiling num-traits v0.2.19
+   Compiling crypto-common v0.1.7
+   Compiling find-msvc-tools v0.1.15
+   Compiling shlex v2.0.1
+   Compiling cc v1.10.0
+   Compiling num-integer v0.1.47
+   Compiling block-padding v0.3.3
+   Compiling block-buffer v0.10.4
+   Compiling pkg-config v0.3.34
+   Compiling subtle v2.6.1
+   Compiling libc v0.2.191
+   Compiling digest v0.10.7
+   Compiling libdbus-sys v0.2.7
+   Compiling inout v0.1.4
+   Compiling serde_core v1.0.228
+   Compiling cipher v0.4.4
+   Compiling num-bigint v0.4.8
+   Compiling cpufeatures v0.2.17
+   Compiling serde v1.0.228
+   Compiling cfg-if v1.0.5
+   Compiling num-rational v0.4.2
+   Compiling hmac v0.12.1
+   Compiling zeroize_derive v1.5.0
+   Compiling serde_derive v1.0.228
+   Compiling num-iter v0.1.46
+   Compiling num-complex v0.4.6
+   Compiling hashbrown v0.17.1
+   Compiling equivalent v1.0.3
+   Compiling indexmap v2.14.2
+   Compiling num v0.4.3
+   Compiling zeroize v1.9.1
+   Compiling hkdf v0.12.4
+   Compiling dbus v0.9.12
+   Compiling aes v0.8.4
+   Compiling sha2 v0.10.9
+   Compiling cbc v0.1.2
+   Compiling itoa v1.0.18
+   Compiling fastrand v2.5.0
+   Compiling bitflags v2.13.2
+   Compiling ryu v1.0.23
+   Compiling once_cell v1.21.4
+   Compiling thiserror v2.0.18
+   Compiling dbus-secret-service v4.1.0
+   Compiling linux-keyutils v0.2.5
+   Compiling thiserror-impl v2.0.18
+   Compiling yansi v1.0.1
+   Compiling unsafe-libyaml-norway v0.2.15
+   Compiling log v0.4.34
+   Compiling diff v0.1.13
+   Compiling unsafe-libyaml v0.2.11
+   Compiling pretty_assertions v1.4.1
+   Compiling keyring v3.6.3
+   Compiling serde_yaml v0.9.34+deprecated
+   Compiling serde_norway v0.9.42
+   Compiling hepta-offline-compat-recovery v0.1.0 (/workspace/scratch/8b9f3e9fd04d/recovery_network_tests/offline_compat)
+    Finished `test` profile [unoptimized] target(s) in 18.84s
+────────────
+ Nextest run ID 58c55a54-5f84-4786-b3d4-8a10de3c14a0 with nextest profile: local
+    Starting 13 tests across 1 binary
+        PASS [   0.004s] hepta-offline-compat-recovery provider_compatibility::persistent_builder_retains_existing_secret_service_credential
+        PASS [   0.004s] hepta-offline-compat-recovery parser::tests::preserves_overlong_descriptions_and_short_descriptions
+        PASS [   0.004s] hepta-offline-compat-recovery parser::tests::repairs_short_descriptions_containing_colons_and_apostrophes
+        PASS [   0.005s] hepta-offline-compat-recovery parser::tests::uses_default_name_and_requires_description
+        PASS [   0.006s] hepta-offline-compat-recovery parser::tests::parses_repairs_and_sanitizes_frontmatter
+        PASS [   0.006s] hepta-offline-compat-recovery parser::tests::repairs_unrecognized_frontmatter_fields_that_need_quotes
+        PASS [   0.007s] hepta-offline-compat-recovery parser::tests::preserves_block_scalar_bodies_while_repairing_other_fields
+        PASS [   0.004s] hepta-offline-compat-recovery yaml_compatibility::scalar_repair_and_block_text_keep_their_meaning
+        PASS [   0.004s] hepta-offline-compat-recovery yaml_compatibility::duplicate_fields_and_malformed_documents_remain_errors
+        PASS [   0.008s] hepta-offline-compat-recovery provider_compatibility::service_user_and_target_namespace_remain_compatible
+        PASS [   0.004s] hepta-offline-compat-recovery yaml_differential::old_and_replacement_typed_yaml_agree_on_corpus
+        PASS [   0.005s] hepta-offline-compat-recovery yaml_compatibility::anchors_and_unicode_preserve_skill_frontmatter
+        PASS [   0.005s] hepta-offline-compat-recovery yaml_compatibility::tagged_values_and_quoted_scalars_round_trip
+────────────
+     Summary [   0.011s] 13 tests run: 13 passed, 0 skipped

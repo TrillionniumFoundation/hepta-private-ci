@@ -1,0 +1,7 @@
+{
+  "cause": "The private GNOME daemon adds xdg:schema=org.freedesktop.Secret.Generic to created items. The prototype compared the complete stored map to only four keyring-controlled entries. Actual create/read already succeeded; the metadata assertion failed.",
+  "correction": "Keep exact whole-map comparison, adding the known GNOME generic schema attribute alongside unchanged service, username, target and application fields. No credential/transport assertion removed.",
+  "helper_correction": "Archive each phase JUnit even when it fails and remove stale JUnit before a new run, preserving per-phase attribution.",
+  "old_failed_junit_retained": true,
+  "new_fixture_sha256": "4be640b1750162bc836aa6fd8de68e187511d4782f3f3cb0b4b7ec7e2398fed2"
+}

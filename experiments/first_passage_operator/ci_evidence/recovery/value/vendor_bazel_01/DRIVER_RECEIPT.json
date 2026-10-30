@@ -1,0 +1,10 @@
+{
+  "schema": "hepta.audit-driver-repair.v1",
+  "origin": "observed fresh tool execution",
+  "wrapper_exit_code": 1,
+  "child_audit_exit_code": 0,
+  "child_audit_status": "passed generated graph/source contract only",
+  "failure": "The audit archiver compressed and unlinked caller-owned driver.log; after the child completed, the caller failed to reopen it. The actual query and six-spoke assertions had already passed.",
+  "repair": "Archive only audit-owned metadata.stderr.log and query.stderr.log. Preserve caller-owned output files.",
+  "next_attempt": "vendor_bazel_02"
+}

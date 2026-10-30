@@ -1,0 +1,21 @@
+[package]
+name = "hepta-keyring-compat-new"
+version = "0.1.0"
+edition = "2024"
+[workspace]
+[lib]
+name = "codex_keyring_store"
+path = "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/codex-rs/keyring-store/src/lib.rs"
+test = false
+doctest = false
+[[test]]
+name = "transport_roundtrip"
+path = "/workspace/scratch/8b9f3e9fd04d/hepta-private-ci/scripts/fixtures/keyring_transport_roundtrip.rs"
+[dependencies]
+keyring = { version = "=3.6.3", default-features = false, features = ["crypto-rust", "linux-native-sync-persistent", "vendored"] }
+tracing = "=0.1.44"
+[dev-dependencies]
+anyhow = "=1.0.103"
+pretty_assertions = "=1.4.1"
+[profile.dev]
+debug = 0
