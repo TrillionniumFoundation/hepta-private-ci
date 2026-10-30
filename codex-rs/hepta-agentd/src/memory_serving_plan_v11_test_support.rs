@@ -18,6 +18,8 @@ use codex_hepta_learning_artifacts::ArtifactSelectionVerifierV1;
 use codex_hepta_learning_artifacts::LearningArtifactOwnerService;
 use codex_hepta_learning_artifacts::LearningArtifactOwnerServiceConfigV1;
 use codex_hepta_learning_artifacts::LearningArtifactPublishRequestV1;
+use codex_hepta_learning_artifacts::WithdrawalBoundArtifactAdmissionV3;
+use codex_hepta_learning_artifacts::admit_manifest_at_withdrawal_head_v3;
 use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
 use codex_hepta_memory::CognitiveStore;
@@ -248,6 +250,34 @@ impl CellFixture {
     }
 
     pub fn try_install(&self) -> Result<(), String> {
+        self.try_install_admission(self.publication.admission.clone())
+    }
+
+    /// Refresh only eligibility metadata against the actual owner frontier.
+    /// The published manifest, payload, generation and CURRENT are unchanged.
+    pub fn readmit_same_version(&self) -> Result<(), String> {
+        let admission = {
+            let service = self.service.lock().map_err(|error| error.to_string())?;
+            let frontier = service.withdrawal_registry();
+            admit_manifest_at_withdrawal_head_v3(
+                frontier,
+                frontier.head_digest(),
+                self.publication
+                    .admission
+                    .validated_manifest
+                    .manifest
+                    .clone(),
+                now() as u64,
+            )
+            .map_err(|error| error.to_string())?
+        };
+        self.try_install_admission(admission)
+    }
+
+    fn try_install_admission(
+        &self,
+        admission: WithdrawalBoundArtifactAdmissionV3,
+    ) -> Result<(), String> {
         let current = self
             .service
             .lock()
@@ -275,7 +305,7 @@ impl CellFixture {
             )))
             .expect("payload bytes"),
             selection,
-            self.publication.admission.clone(),
+            admission,
         )
     }
 

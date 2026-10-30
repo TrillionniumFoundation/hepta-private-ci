@@ -420,15 +420,25 @@ async fn memory_v11_return_fence_rechecks_timed_dependencies_outside_query_suppo
         .await
         .expect("after transition");
     assert_eq!(
-        owner.owner_cut_digest(),
-        after.owner_cut_digest(),
-        "no source write occurred between the two fences"
+        owner.current(&query.entity_key, MemoryInventoryKindV1::Semantic),
+        after.current(&query.entity_key, MemoryInventoryKindV1::Semantic),
+        "the queried semantic source itself did not change"
     );
+    assert_eq!(
+        after
+            .current(&query.workflow_key, MemoryInventoryKindV1::Procedure)
+            .expect("newly effective procedure")
+            .record
+            .effective_at,
+        transition as u64
+    );
+    // Lane C's complete cut can change as a future row becomes visible even
+    // without a new write. The explicit projection fence must reject as well.
     assert!(
         plan.finish_read(&store, &access, &scope, &query, prepared, transition)
             .await
-            .is_err(),
-        "an unqueried selected cell became stale even though the complete stored cut did not change"
+            .expect_err("an unqueried selected cell became stale")
+            .contains("training projection changed")
     );
 }
 
@@ -486,6 +496,11 @@ async fn memory_v11_recovery_requires_live_signed_selection_and_withdrawal_front
         )
         .is_err()
     );
+    let previous_sibling = procedure.host.load_current().expect("selected sibling");
+    let previous_sibling_plan =
+        MemoryServingPlanV11::prepare(&current, generation(2), vec![Arc::clone(&procedure.host)])
+            .expect("sibling before shared withdrawal frontier");
+    let previous_versions = previous_sibling_plan.versions().to_vec();
     let mut withdrawals = semantic
         .service
         .lock()
@@ -510,21 +525,66 @@ async fn memory_v11_recovery_requires_live_signed_selection_and_withdrawal_front
             issued_at: now() as u64,
         })
         .expect("withdrawal frontier");
-    semantic
-        .service
-        .lock()
-        .expect("owner")
-        .install_withdrawal_frontier(withdrawals.clone())
-        .expect("live owner frontier");
+    // These are independent artifact registries in the same withdrawal scope.
+    // Fan out the exact authenticated frontier to both, including the sibling.
+    for cell in [&semantic, &procedure] {
+        cell.service
+            .lock()
+            .expect("owner")
+            .install_withdrawal_frontier(withdrawals.clone())
+            .expect("shared live owner frontier");
+    }
     assert!(
         restored
             .read(&store, &access, &scope, &query, MemoryOperationV1::Apply)
             .await
             .is_err()
     );
+    assert!(
+        previous_sibling_plan
+            .read(
+                &store,
+                &access,
+                &scope,
+                &query,
+                MemoryOperationV1::Procedure
+            )
+            .await
+            .is_err(),
+        "V3 requires fresh admission even for unchanged sibling parameters"
+    );
+    assert!(
+        semantic.readmit_same_version().is_err(),
+        "fresh metadata cannot revive a withdrawn training dependency"
+    );
+    assert!(semantic.host.load_current().is_err());
+    procedure
+        .readmit_same_version()
+        .expect("unaffected parameters admitted at the actual new frontier");
+    let renewed_sibling = procedure.host.load_current().expect("renewed selection");
+    assert_eq!(renewed_sibling.digest(), previous_sibling.digest());
+    assert_eq!(
+        renewed_sibling.payload_digest(),
+        previous_sibling.payload_digest()
+    );
+    assert!(!Arc::ptr_eq(&renewed_sibling, &previous_sibling));
+    assert!(
+        previous_sibling_plan
+            .read(
+                &store,
+                &access,
+                &scope,
+                &query,
+                MemoryOperationV1::Procedure
+            )
+            .await
+            .expect_err("old plan cannot follow a renewed selection")
+            .contains("superseded selection")
+    );
     let sibling =
-        MemoryServingPlanV11::prepare(&current, generation(2), vec![Arc::clone(&procedure.host)])
-            .expect("unaffected independent registry");
+        MemoryServingPlanV11::prepare(&current, generation(3), vec![Arc::clone(&procedure.host)])
+            .expect("new plan after metadata-only re-admission");
+    assert_eq!(sibling.versions(), previous_versions.as_slice());
     sibling
         .read(
             &store,
@@ -534,7 +594,7 @@ async fn memory_v11_recovery_requires_live_signed_selection_and_withdrawal_front
             MemoryOperationV1::Procedure,
         )
         .await
-        .expect("sibling survives artifact withdrawal");
+        .expect("same sibling parameters execute after re-admission without training");
     // Crash recovery carries the authenticated external frontier, not the old
     // admission's frontier. An old checkpoint cannot reconstruct selection.
     drop(restored);

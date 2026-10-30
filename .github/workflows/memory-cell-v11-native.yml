@@ -107,6 +107,7 @@ jobs:
           import os
           from pathlib import Path
           import platform
+          import re
           import shutil
           import subprocess
           import time
@@ -193,6 +194,20 @@ jobs:
               report = workspace / store / "local" / junit
               report.unlink(missing_ok=True)
               receipt["junit_source"] = str(report)
+              # Existing context regression launches this actual executable.
+              # Build it from the same checkout; do not skip that regression.
+              target = Path(os.environ["CARGO_TARGET_DIR"])
+              if not target.is_absolute():
+                  raise RuntimeError("Absolute Cargo target directory required")
+              execute("same-source-app-server", ["cargo", "build", "--locked",
+                      "-p", "codex-app-server", "--bin", "codex-app-server"])
+              executable = target / "debug/codex-app-server"
+              with executable.open("rb") as stream:
+                  binary_sha256 = hashlib.file_digest(stream, "sha256").hexdigest()
+              receipt["app_server"] = {"path": str(executable), "sha256": binary_sha256,
+                                       "bytes": executable.stat().st_size,
+                                       "source_commit": receipt["source_commit"]}
+              os.environ["HEPTA_TEST_CODEX_EXECUTABLE"] = str(executable)
               receipt["tests_command_started"] = True
               execute("scoped-native-tests", ["just", "test", "--locked", "--lib", "--retries", "0",
                       "-p", "codex-hepta-memory", "-p", "codex-hepta-agentd"])
@@ -235,6 +250,29 @@ jobs:
           finally:
               if report is not None and report.is_file():
                   shutil.copy2(report, output / "native-junit.xml")
+                  # A failing test command still executed tests. Preserve the
+                  # observed JUnit counts instead of leaving the initial false.
+                  try:
+                      cases = ET.parse(report).getroot().findall(".//testcase")
+                      ran = [case for case in cases if case.find("skipped") is None]
+                      receipt.update(tests_executed=bool(ran), executed_cases=len(ran),
+                                     junit_skipped_cases=len(cases) - len(ran),
+                                     failed_cases=[case.get("name", "") for case in ran
+                                         if case.find("failure") is not None or case.find("error") is not None],
+                                     v11_cases=sorted(case.get("name", "").rsplit("::", 1)[-1] for case in ran
+                                         if case.get("name", "").rsplit("::", 1)[-1].startswith("memory_v11_")))
+                  except Exception as error:
+                      receipt.update(passed=False, junit_parse_error=str(error))
+              test_log = output / "scoped-native-tests.log"
+              if test_log.is_file():
+                  plain = re.sub(r"\x1b\[[0-9;]*m", "", test_log.read_text())
+                  summaries = [line.strip() for line in plain.splitlines()
+                               if re.match(r"\s*Summary\s+\[", line)]
+                  if summaries:
+                      receipt["nextest_summary"] = summaries[-1]
+                      skipped = re.search(r"(\d+) skipped", summaries[-1])
+                      if skipped:
+                          receipt["nextest_reported_skipped_cases"] = int(skipped.group(1))
               retain_tree("final")
               receipt.update(wall_seconds=time.monotonic() - started,
                              disk_after=shutil.disk_usage(output)._asdict())
