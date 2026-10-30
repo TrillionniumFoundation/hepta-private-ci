@@ -1,0 +1,135 @@
+{
+  "source_commit": "71b4305c6619ed9faff98062f0ff7f932f4abfd0",
+  "artifact_id": 12881523810,
+  "artifact_zip_sha256": "6a50760c6f74e79d7cb939a970df01197e92326ae48f76247d15abb0320a3324",
+  "manifest_members_verified": 991,
+  "scope": "Recovered original exact-head canonical commands and outputs; reconstructed dependency changes require new-head CI.",
+  "changed_files": [
+    {
+      "path": "codex-rs/app-server-protocol/schema/json/v2/TurnRecoverResponse.json",
+      "sha256": "46831c10079913c27de4bb02cb0df199030150aaa3a0b218ae5133d8f5f82509",
+      "bytes": 48967
+    },
+    {
+      "path": "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-experimental.json.zst",
+      "sha256": "2ca64026eba6ae9fb9d0d7b1bd7901d31a0cb0715b1e33918b99a1402b74a967",
+      "bytes": 145385
+    },
+    {
+      "path": "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-stable.json.zst",
+      "sha256": "ae5edc54372651ff430ad70729b97f8139bef6562f7a773df2ca3f571edb2964",
+      "bytes": 139671
+    }
+  ],
+  "evidence": [
+    {
+      "original_path": "artifact-manifest.json",
+      "original_bytes": 156147,
+      "original_sha256": "dc249551f13371010b68bd62435cb4f11f3b529e593e0f2e19504a72a2d2e06e",
+      "encoding": "concatenate-parts-then-gzip-decompress",
+      "parts": [
+        {
+          "path": "artifact-manifest.json.part00.gzbin",
+          "bytes": 50828,
+          "sha256": "546a67544eeb5da2b825111b1e29276645faa97b076c6164332223f6c2abe230"
+        }
+      ]
+    },
+    {
+      "original_path": "commands.json",
+      "original_bytes": 439,
+      "original_sha256": "c6f22df8d3efd96346c9661c8506c6eb3f95e61f4cc492fed838618c9c2c7499",
+      "encoding": "concatenate-parts-then-gzip-decompress",
+      "parts": [
+        {
+          "path": "commands.json.part00.gzbin",
+          "bytes": 167,
+          "sha256": "7204b119d769b38f4fd5c1a98fc03a98dcf257705ecfd9804693524824402ec3"
+        }
+      ]
+    },
+    {
+      "original_path": "source-provenance.json",
+      "original_bytes": 1184,
+      "original_sha256": "0b0d23e2feb81a4672a55d86641cff230dbbc03e4b8d8b78ab77a25472dcba34",
+      "encoding": "concatenate-parts-then-gzip-decompress",
+      "parts": [
+        {
+          "path": "source-provenance.json.part00.gzbin",
+          "bytes": 729,
+          "sha256": "748cd3b1f207a16962ebc67458cfcfc91cf51c104c7272401f2f643357ea6457"
+        }
+      ]
+    },
+    {
+      "original_path": "command-1.log",
+      "original_bytes": 49554,
+      "original_sha256": "bdf310f68c2d77c5150306920b7331a5d1fde69e2239dc7cc7d41c0616d58a42",
+      "encoding": "concatenate-parts-then-gzip-decompress",
+      "parts": [
+        {
+          "path": "command-1.log.part00.gzbin",
+          "bytes": 10513,
+          "sha256": "ab505892adb7888950232f453807c1cdf5683707319f080027c3f13ce758ef50"
+        }
+      ]
+    },
+    {
+      "original_path": "command-2.log",
+      "original_bytes": 591,
+      "original_sha256": "9dd38ed47c5ff803cf0f079a64486eff58a90ed516968daaea3dcc6b896f4602",
+      "encoding": "concatenate-parts-then-gzip-decompress",
+      "parts": [
+        {
+          "path": "command-2.log.part00.gzbin",
+          "bytes": 354,
+          "sha256": "5e4f7cf52ed504cf3bfaad30e2002ee668f1955885fbe87fb9d786ac6f44aeee"
+        }
+      ]
+    },
+    {
+      "original_path": "command-3.log",
+      "original_bytes": 50441,
+      "original_sha256": "ad9c40490a8c6815f5ba0035cc0989644d0042ec0776f8b7c67160ac3f28ed6b",
+      "encoding": "concatenate-parts-then-gzip-decompress",
+      "parts": [
+        {
+          "path": "command-3.log.part00.gzbin",
+          "bytes": 6445,
+          "sha256": "bc7e95494c61e3ace65f96d8af2e3afc2b48f17537b6d3eb0be6cec8d3b387b9"
+        }
+      ]
+    },
+    {
+      "original_path": "generated.patch",
+      "original_bytes": 730204,
+      "original_sha256": "80ddaceafb948a4f74bf635535d68df41be873a96132a8d8b815a0e27754145b",
+      "encoding": "concatenate-parts-then-gzip-decompress",
+      "parts": [
+        {
+          "path": "generated.patch.part00.gzbin",
+          "bytes": 470000,
+          "sha256": "b1be297cf5e5866ed13fbbcb9da5bbcb7d6b0d74d93f3e26ab89051691da4cc6"
+        },
+        {
+          "path": "generated.patch.part01.gzbin",
+          "bytes": 123240,
+          "sha256": "5787e79f60aea64ff70a272f11b69baa85967912342503022570d332a967afd2"
+        }
+      ]
+    },
+    {
+      "original_path": "worktree-status.txt",
+      "original_bytes": 250,
+      "original_sha256": "d4990b67ed645fc13645a276c20f13268746f6df9a4b3875bdc2a61bb4cafb19",
+      "encoding": "concatenate-parts-then-gzip-decompress",
+      "parts": [
+        {
+          "path": "worktree-status.txt.part00.gzbin",
+          "bytes": 132,
+          "sha256": "950ada4fbc3b664ebb0b97a9783a2ee9d25c33c3ae284ca71b80421db2e97ebf"
+        }
+      ]
+    }
+  ]
+}
